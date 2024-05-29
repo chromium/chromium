@@ -2497,16 +2497,20 @@ TEST_F(FormStructureTestImpl, SingleFieldEmailHeuristicsEnabled) {
   }
 }
 
-// Verifies that with single field email heuristics, fields with
-// autocomplete=off are not parsed as email fields.
+// Verifies that with kAutofillEnableEmailHeuristicAutocompleteEmail enabled,
+// only fields with autocomplete=email are parsed as email fields.
 TEST_F(FormStructureTestImpl,
-       SingleFieldEmailHeuristicsEnabledAutocompleteOff) {
-  base::test::ScopedFeatureList enabled{
-      features::kAutofillEnableEmailHeuristicOnlyAddressForms};
+       SingleFieldEmailHeuristicsEnabledAutocompleteEmail) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillEnableEmailHeuristicOnlyAddressForms,
+      base::FieldTrialParams{
+          {features::kAutofillEnableEmailHeuristicAutocompleteEmail.name,
+           "true"}});
 
   FormData form = test::GetFormData(
       {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "off"},
-                  {.role = EMAIL_ADDRESS, .autocomplete_attribute = "false"}}});
+                  {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
 
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
@@ -2518,12 +2522,10 @@ TEST_F(FormStructureTestImpl,
     form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
                                            nullptr);
     ASSERT_EQ(2U, form_structure.field_count());
-    // However, because the email field has autocomplete=off, it should not run
-    // heuristics.
-    ASSERT_EQ(0U, form_structure.autofill_count());
+    ASSERT_EQ(1U, form_structure.autofill_count());
     EXPECT_EQ(UNKNOWN_TYPE, form_structure.field(0)->heuristic_type());
-    EXPECT_EQ(UNKNOWN_TYPE, form_structure.field(1)->heuristic_type());
-    EXPECT_FALSE(form_structure.IsAutofillable());
+    EXPECT_EQ(EMAIL_ADDRESS, form_structure.field(1)->heuristic_type());
+    EXPECT_TRUE(form_structure.IsAutofillable());
   }
 }
 

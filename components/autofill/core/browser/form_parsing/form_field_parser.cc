@@ -337,10 +337,17 @@ void FormFieldParser::ParseStandaloneEmailFields(
   // autocomplete. Disabling autocomplete is a common practice on fields where
   // we don't want to offer email filling even if our heuristics match (e.g.
   // search input fields).
-  std::erase_if(processed_fields, [](const AutofillField* field) {
-    return field->autocomplete_attribute() == "off" ||
-           field->autocomplete_attribute() == "false";
-  });
+
+  if (features::kAutofillEnableEmailHeuristicAutocompleteEmail.Get()) {
+    std::erase_if(processed_fields, [](const AutofillField* field) {
+      return field->autocomplete_attribute() != "email";
+    });
+  } else {
+    std::erase_if(processed_fields, [](const AutofillField* field) {
+      return field->autocomplete_attribute() == "off" ||
+             field->autocomplete_attribute() == "false";
+    });
+  }
 
   ParseFormFieldsPass(EmailFieldParser::Parse, context, processed_fields,
                       field_candidates);

@@ -254,6 +254,13 @@ BASE_FEATURE(kAutofillEnableEmailHeuristicOnlyAddressForms,
              "AutofillEnableEmailHeuristicOnlyAddressForms",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When true, use autocomplete=email as required signal for email fields on
+// email-only forms, else accept a wider range of autocomplete values except for
+// `off` and `false`.
+const base::FeatureParam<bool> kAutofillEnableEmailHeuristicAutocompleteEmail{
+    &kAutofillEnableEmailHeuristicOnlyAddressForms, "autocomplete_email",
+    false};
+
 // Controls if Chrome support filling and importing apartment numbers.
 // TODO(crbug.com/40734406): Remove once launched.
 BASE_FEATURE(kAutofillEnableSupportForApartmentNumbers,
