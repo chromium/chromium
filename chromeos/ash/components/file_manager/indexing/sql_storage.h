@@ -49,77 +49,37 @@ class COMPONENT_EXPORT(FILE_MANAGER) SqlStorage : public IndexStorage {
   SqlStorage(const SqlStorage&) = delete;
   SqlStorage& operator=(const SqlStorage&) = delete;
 
-  // Initializes the database. Returns whether or not the initialization was
-  // successful. No other public method may be called until this method finishes
-  // and returns true.
-  [[nodiscard]] bool Init() override;
+  // SQL implementation of IndexStorage methods.
 
-  // Closes the database. Returns true if successful.
+  // Lifecycle methods.
+  [[nodiscard]] bool Init() override;
   bool Close() override;
 
-  // Returns the set of URL IDs associated with the given term ID.
+  // Inverted index and plain index functions.
   const std::set<int64_t> GetUrlIdsForTermId(int64_t term_id) const override;
-
-  // Returns term IDs associated with the given URL.
   const std::set<int64_t> GetTermIdsForUrl(int64_t url_id) const override;
 
-  // Creates an association between `term_id` and `url_id`. This
-  // method is to be used when a file with the given `url_id` is known to
-  // "have" the given `term_id`. The "have" here may be either the
-  // file contains that term, or the user or some system assigned this term
-  // to the file (labelled the file). Returns the number of added
-  // associations.
+  // Posting list support.
   size_t AddToPostingList(int64_t term_id, int64_t url_id) override;
-
-  // Removes the association between `term_id` and `url_id`. This
-  // method is the opposite of the AddToPostingList() and means that a file
-  // with the given `url_id` no longer "has" the given `term_id`.
-  // Returns the number of deleted associations.
   size_t DeleteFromPostingList(int64_t term_id, int64_t url_id) override;
 
-  // Returns the ID corresponding to the given token bytes. If the token bytes
-  // cannot be located, we return -1.
-  int64_t GetTokenId(const std::string& term_bytes) const override;
-
-  // Returns the ID corresponding to the given token bytes. If the token bytes
-  // cannot be located, a new ID is created and returned.
-  int64_t GetOrCreateTokenId(const std::string& token_bytes) override;
-
-  // Returns the ID corresponding to the given term. If the term cannot be
-  // located, the method returns -1.
+  // Term ID management.
   int64_t GetTermId(const Term& term) const override;
-
-  // Returns the ID corresponding to the term. If the term cannot be located,
-  // a new ID is allocated and returned.
   int64_t GetOrCreateTermId(const Term& term) override;
 
-  // Gets an ID for the given URL. Creates a new one, if this URL is seen for
-  // the first time.
-  int64_t GetOrCreateUrlId(const GURL& url) override;
+  // Token ID management.
+  int64_t GetTokenId(const std::string& token_bytes) const override;
+  int64_t GetOrCreateTokenId(const std::string& token0_bytes) override;
 
-  // Returns the ID of the given URL or -1 if it does not exists.
+  // URL ID management.
   int64_t GetUrlId(const GURL& url) const override;
-
-  // Deletes the given URL and returns its ID. If the URL was not
-  // seen before, this method returns -1.
+  int64_t GetOrCreateUrlId(const GURL& url) override;
+  int64_t MoveUrl(const GURL& from, const GURL& to) override;
   int64_t DeleteUrl(const GURL& url) override;
 
-  // Renames URL from `from` URL to `to` URL. This keeps the same URL ID, just
-  // changes the string associated with it.
-  int64_t MoveUrl(const GURL& from, const GURL& to) override;
-
-  // Stores the file info. The file info is stored using the ID generated from
-  // the file_url. This ID is returned when the `file_info` is stored
-  // successfully. Otherwise this method returns -1.
+  // FileInfo management.
   int64_t PutFileInfo(const FileInfo& file_info) override;
-
-  // Retrieves a FileInfo object for the give URL ID. The method returns -1,
-  // if the FileInfo could not be found. Otherwise, it returns the URL ID, and
-  // populates the object pointed to by the `file_info`.
   std::optional<FileInfo> GetFileInfo(int64_t url_id) const override;
-
-  // Removes the given file info from the storage. If it was not stored, this
-  // method returns -1. Otherwise, it returns the `url_id`.
   int64_t DeleteFileInfo(int64_t url_id) override;
 
   // Miscellaneous.

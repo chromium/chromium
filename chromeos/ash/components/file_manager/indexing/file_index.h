@@ -47,9 +47,9 @@ enum OpResults {
 //   FileInfo info = {...};
 //   index->PutFileInfo(info);
 //   // Set the terms used with the file.
-//   index->UpdateTerms({term_1, term_2}, info.file_url);
+//   index->SetTerms({term_1, term_2}, info.file_url);
 //   // Add new terms used with the file.
-//   index->AugmentTerms({term_1, term_3}, info.file_url);
+//   index->AddTerms({term_1, term_3}, info.file_url);
 //   // Remove some terms used with the file.
 //   index->RemoveTerms({term_3}, info.file_url);
 //   // Search for matching files by a query.
@@ -70,12 +70,12 @@ class FileIndex {
   OpResults Init();
 
   // Stores the given `file_info` in this index. This method must be called
-  // before any other methods that either update or terms associated
+  // before any other methods that either set or add terms associated
   // with this file are called.
   OpResults PutFileInfo(const FileInfo& file_info);
 
   // Removes the file uniquely identified by the URL from this index. This is
-  // preferred way of removing files over calling the UpdateFile method with an
+  // preferred way of removing files over calling the SetTerms method with an
   // empty terms vector. Returns true if the file was found and removed.
   OpResults RemoveFile(const GURL& url);
 

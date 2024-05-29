@@ -325,7 +325,7 @@ TEST_F(FileIndexServiceTest, SearchByNonexistingTerms) {
   EXPECT_THAT(Search(Query({downloaded_})), ContainsFiles(FileInfoList{}));
 }
 
-TEST_F(FileIndexServiceTest, EmptyUpdateIsInvalid) {
+TEST_F(FileIndexServiceTest, EmptySetTermsIsInvalid) {
   FileInfo file_info(foo_url_, 1024, base::Time());
   EXPECT_EQ(PutFileInfo(file_info), OpResults::kSuccess);
 
@@ -489,7 +489,7 @@ TEST_F(FileIndexServiceTest, RemoveTerms) {
   EXPECT_TRUE(Search(Query({downloaded_})).matches.empty());
 }
 
-TEST_F(FileIndexServiceTest, AddOrUpdateBeforePut) {
+TEST_F(FileIndexServiceTest, AddOrSetBeforePut) {
   EXPECT_EQ(SetTerms({starred_}, foo_url_), OpResults::kFileMissing);
   EXPECT_EQ(AddTerms({starred_}, foo_url_), OpResults::kFileMissing);
 }

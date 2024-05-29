@@ -34,7 +34,7 @@ typedef base::OnceCallback<void(OpResults)> IndexingOperationCallback;
 // could be "label".
 //
 // A typical use of the index is to register file via the PutFileInfo() method
-// followed by a call UpdateFile() for files, which creates association between
+// followed by a call SetTerms() for files, which creates association between
 // terms and passed file info. Later, those files can be efficiently retrieved
 // by calling the Search() method and passing a query to it. If the underlying
 // file is removed from the file system, the RemoveFile() method can be called
@@ -50,16 +50,16 @@ typedef base::OnceCallback<void(OpResults)> IndexingOperationCallback;
 //                      base::BindOnce([](OpResults results) {
 //                        if (results != OpResults::kSuccess) { ... }
 //                      }));
-// service->UpdateTerms({Term("label", "pinned")},
-//                      pinned_file_info.file_url,
-//                      base::BindOnce([](OpResults results) {
-//                        if (results != OpResults::kSuccess) { ... }
-//                      }));
-// service->UpdateTerms({Term("label", "downloaded")},
-//                      downloaded_file_info.file_url,
-//                      base::BindOnce([](OpResults results) {
-//                        if (results != OpResults::kSuccess) { ... }
-//                      }));
+// service->SetTerms({Term("label", "pinned")},
+//                    pinned_file_info.file_url,
+//                    base::BindOnce([](OpResults results) {
+//                      if (results != OpResults::kSuccess) { ... }
+//                    }));
+// service->AddTerms({Term("label", "downloaded")},
+//                    downloaded_file_info.file_url,
+//                    base::BindOnce([](OpResults results) {
+//                      if (results != OpResults::kSuccess) { ... }
+//                    }));
 // ...
 // std::vector<FileInfo> downloaded_files = service->Search(
 //     Query({Term("label", "downloaded")},
@@ -83,7 +83,7 @@ class COMPONENT_EXPORT(FILE_MANAGER) FileIndexService {
   void PutFileInfo(const FileInfo& info, IndexingOperationCallback callback);
 
   // Removes the file uniquely identified by the URL from this index. This is
-  // preferred way of removing files over calling the UpdateFile method with an
+  // preferred way of removing files over calling the SetTerms method with an
   // empty terms vector. Returns true if the file was found and removed.
   void RemoveFile(const GURL& url, IndexingOperationCallback callback);
 
