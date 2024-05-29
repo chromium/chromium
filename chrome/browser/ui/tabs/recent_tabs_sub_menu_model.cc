@@ -369,9 +369,7 @@ void RecentTabsSubMenuModel::BuildLocalEntries() {
   } else {
     recent_tabs_title_index_ = ++last_local_model_index_;
     InsertTitleWithStringIdAt(recent_tabs_title_index_.value(),
-                              features::IsChromeRefresh2023()
-                                  ? IDS_RECENT_TABS
-                                  : IDS_RECENTLY_CLOSED);
+                              IDS_RECENT_TABS);
 
     int added_count = 0;
     for (const auto& entry : service->entries()) {
