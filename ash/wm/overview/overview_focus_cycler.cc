@@ -164,6 +164,7 @@ void OverviewFocusCycler::UpdateAccessibilityFocus() {
 std::vector<views::Widget*> OverviewFocusCycler::GetTraversableWidgets(
     bool for_accessibility) const {
   std::vector<views::Widget*> traversable_widgets;
+  traversable_widgets.reserve(10);  // Conservative default.
 
   auto maybe_add_widget = [for_accessibility,
                            &traversable_widgets](views::Widget* widget) {
@@ -198,6 +199,7 @@ std::vector<views::Widget*> OverviewFocusCycler::GetTraversableWidgets(
   maybe_add_widget(primary_grid->feedback_widget());
   maybe_add_widget(primary_grid->birch_bar_widget());
   maybe_add_widget(primary_grid->saved_desk_library_widget());
+  maybe_add_widget(primary_grid->faster_splitview_widget());
   maybe_add_widget(primary_grid->no_windows_widget());
   return traversable_widgets;
 }

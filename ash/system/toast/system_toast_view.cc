@@ -48,8 +48,10 @@ constexpr int kDismissButtonFocusRingHaloInset = 1;
 SystemToastView::SystemToastView(const std::u16string& text,
                                  const std::u16string& dismiss_text,
                                  base::RepeatingClosure dismiss_callback,
-                                 const gfx::VectorIcon* leading_icon)
-    : scoped_a11y_overrider_(
+                                 const gfx::VectorIcon* leading_icon,
+                                 bool use_custom_focus)
+    : use_custom_focus_(use_custom_focus),
+      scoped_a11y_overrider_(
           std::make_unique<ScopedA11yOverrideWindowSetter>()) {
   // Paint to layer so the background can be transparent.
   SetPaintToLayer();
@@ -110,12 +112,14 @@ SystemToastView::SystemToastView(const std::u16string& text,
     auto* button_focus_ring = views::FocusRing::Get(dismiss_button_);
     button_focus_ring->SetHaloInset(kDismissButtonFocusRingHaloInset);
     button_focus_ring->SetOutsetFocusRingDisabled(true);
-    button_focus_ring->SetHasFocusPredicate(base::BindRepeating(
-        [](const SystemToastView* toast_view, const views::View* view) {
-          return toast_view->is_dismiss_button_highlighted_;
-        },
-        base::Unretained(this)));
-    button_focus_ring->SetVisible(false);
+    if (use_custom_focus_) {
+      button_focus_ring->SetHasFocusPredicate(base::BindRepeating(
+          [](const SystemToastView* toast_view, const views::View* view) {
+            return toast_view->is_dismiss_button_highlighted_;
+          },
+          base::Unretained(this)));
+      button_focus_ring->SetVisible(false);
+    }
   }
 
   // Need to size label to get the required number of lines.
@@ -146,6 +150,8 @@ void SystemToastView::SetText(const std::u16string& text) {
 }
 
 void SystemToastView::ToggleButtonA11yFocus() {
+  CHECK(use_custom_focus_);
+
   if (!dismiss_button_) {
     return;
   }

@@ -57,7 +57,7 @@
 #include "ash/wm/snap_group/snap_group_constants.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_metrics.h"
-#include "ash/wm/splitview/faster_split_view.h"
+#include "ash/wm/splitview/faster_split_view_old.h"
 #include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -853,7 +853,7 @@ TEST_F(FasterSplitScreenTest, SkipPairingToast) {
 
   auto* overview_grid = GetOverviewGridForRoot(w1->GetRootWindow());
   ASSERT_TRUE(overview_grid);
-  auto* faster_split_view = overview_grid->GetFasterSplitView();
+  auto* faster_split_view = overview_grid->GetFasterSplitViewOld();
   ASSERT_TRUE(faster_split_view);
   LeftClickOn(faster_split_view->GetDismissButton());
 
@@ -1305,7 +1305,8 @@ TEST_F(FasterSplitScreenTest, KeyboardAndWorkAreaBoundsChanges) {
   auto* overview_grid = GetOverviewGridForRoot(root_window);
   EXPECT_TRUE(
       GetOverviewGridBounds(root_window)
-          .Contains(overview_grid->GetFasterSplitView()->GetBoundsInScreen()));
+          .Contains(
+              overview_grid->GetFasterSplitViewOld()->GetBoundsInScreen()));
 
   // Hide the virtual keyboard. Test we refresh the grid and widget bounds.
   keyboard_controller->HideKeyboardByUser();
@@ -1314,7 +1315,8 @@ TEST_F(FasterSplitScreenTest, KeyboardAndWorkAreaBoundsChanges) {
             WindowState::Get(window1.get())->GetStateType());
   EXPECT_TRUE(
       GetOverviewGridBounds(root_window)
-          .Contains(overview_grid->GetFasterSplitView()->GetBoundsInScreen()));
+          .Contains(
+              overview_grid->GetFasterSplitViewOld()->GetBoundsInScreen()));
 
   // Show the docked magnifier, which ends overview.
   auto* docked_magnifier_controller =
@@ -1528,13 +1530,13 @@ TEST_F(FasterSplitScreenTest, BasicTabKeyNavigation) {
   // Tab to the toast dismiss button.
   PressAndReleaseKey(ui::VKEY_TAB);
   ASSERT_TRUE(IsInOverviewSession());
-  EXPECT_EQ(grid->GetFasterSplitView()->GetDismissButton(),
+  EXPECT_EQ(grid->GetFasterSplitViewOld()->GetDismissButton(),
             focus_cycler_old->focused_view()->GetView());
 
   // Tab to the settings button.
   PressAndReleaseKey(ui::VKEY_TAB);
   ASSERT_TRUE(IsInOverviewSession());
-  EXPECT_EQ(grid->GetFasterSplitView()->settings_button(),
+  EXPECT_EQ(grid->GetFasterSplitViewOld()->settings_button(),
             focus_cycler_old->focused_view());
 
   // Note we use `PressKeyAndModifierKeys()` to send modifier and key separately
@@ -1544,7 +1546,7 @@ TEST_F(FasterSplitScreenTest, BasicTabKeyNavigation) {
   auto* event_generator = GetEventGenerator();
   event_generator->PressKeyAndModifierKeys(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   ASSERT_TRUE(IsInOverviewSession());
-  EXPECT_EQ(grid->GetFasterSplitView()->GetDismissButton(),
+  EXPECT_EQ(grid->GetFasterSplitViewOld()->GetDismissButton(),
             focus_cycler_old->focused_view()->GetView());
 
   // Shift + Tab reverse tabs to the overview item.
@@ -1573,7 +1575,7 @@ TEST_F(FasterSplitScreenTest, NoCrashOnToastDestroying) {
   PressAndReleaseKey(ui::VKEY_TAB);
   OverviewFocusCyclerOld* focus_cycler_old =
       GetOverviewSession()->focus_cycler_old();
-  EXPECT_EQ(grid->GetFasterSplitView()->GetDismissButton(),
+  EXPECT_EQ(grid->GetFasterSplitViewOld()->GetDismissButton(),
             focus_cycler_old->focused_view()->GetView());
 
   // Enter tablet mode to destroy the toast.
@@ -1618,13 +1620,13 @@ TEST_F(FasterSplitScreenTest, TabbingChromevox) {
     OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
     OverviewFocusCyclerOld* focus_cycler_old =
         GetOverviewSession()->focus_cycler_old();
-    EXPECT_EQ(grid->GetFasterSplitView()->GetDismissButton(),
+    EXPECT_EQ(grid->GetFasterSplitViewOld()->GetDismissButton(),
               focus_cycler_old->focused_view()->GetView());
 
     // Search + Right moves to the settings button.
     event_generator->PressKeyAndModifierKeys(ui::VKEY_RIGHT,
                                              ui::EF_COMMAND_DOWN);
-    EXPECT_EQ(grid->GetFasterSplitView()->settings_button(),
+    EXPECT_EQ(grid->GetFasterSplitViewOld()->settings_button(),
               focus_cycler_old->focused_view());
 
     if (test_case == TestCase::kSettingsButton) {
@@ -1636,7 +1638,7 @@ TEST_F(FasterSplitScreenTest, TabbingChromevox) {
       // Search + Left moves back to the dismiss button.
       event_generator->PressKeyAndModifierKeys(ui::VKEY_LEFT,
                                                ui::EF_COMMAND_DOWN);
-      EXPECT_EQ(grid->GetFasterSplitView()->GetDismissButton(),
+      EXPECT_EQ(grid->GetFasterSplitViewOld()->GetDismissButton(),
                 focus_cycler_old->focused_view()->GetView());
 
       // Search + Space activates the dismiss button.

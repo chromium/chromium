@@ -32,7 +32,8 @@ class ASH_EXPORT SystemToastView : public views::FlexLayoutView {
   SystemToastView(const std::u16string& text,
                   const std::u16string& dismiss_text = std::u16string(),
                   base::RepeatingClosure dismiss_callback = base::DoNothing(),
-                  const gfx::VectorIcon* leading_icon = &gfx::kNoneIcon);
+                  const gfx::VectorIcon* leading_icon = &gfx::kNoneIcon,
+                  bool use_custom_focus = true);
   SystemToastView(const SystemToastView&) = delete;
   SystemToastView& operator=(const SystemToastView&) = delete;
   ~SystemToastView() override;
@@ -41,13 +42,16 @@ class ASH_EXPORT SystemToastView : public views::FlexLayoutView {
     return is_dismiss_button_highlighted_;
   }
 
-  views::LabelButton* dismiss_button() const { return dismiss_button_; }
+  views::LabelButton* dismiss_button() { return dismiss_button_; }
 
   // Updates the toast label text.
   void SetText(const std::u16string& text);
 
   // Toggles the dismiss button's focus. This function is necessary since toasts
-  // are not directly focus accessible by tab traversal.
+  // are not directly focus accessible by tab traversal. This function should
+  // only be called if `use_custom_focus` is true.
+  // TODO(http://b/325335020): Remove this function once the new overview focus
+  // is enabled.
   void ToggleButtonA11yFocus();
 
  private:
@@ -63,6 +67,10 @@ class ASH_EXPORT SystemToastView : public views::FlexLayoutView {
   // Used to a11y focus and draw a focus ring on the dismiss button directly
   // through `scoped_a11y_overrider_`.
   bool is_dismiss_button_highlighted_ = false;
+
+  // True if the client controls the focus ring of this view. If this is false,
+  // default views focus is used.
+  const bool use_custom_focus_;
 
   // Updates the current a11y override window when the dismiss button is being
   // highlighted.

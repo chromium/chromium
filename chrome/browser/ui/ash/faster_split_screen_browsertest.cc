@@ -14,7 +14,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
-#include "ash/wm/splitview/faster_split_view.h"
+#include "ash/wm/splitview/faster_split_view_old.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenWithNewSettingsBrowserTest,
       ash::OverviewController::Get()->overview_session()->GetGridWithRootWindow(
           window->GetRootWindow());
   ASSERT_TRUE(overview_grid);
-  auto* faster_split_view = overview_grid->GetFasterSplitView();
+  auto* faster_split_view = overview_grid->GetFasterSplitViewOld();
   ASSERT_TRUE(faster_split_view);
   auto* settings_button = faster_split_view->settings_button();
   ASSERT_TRUE(settings_button);
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenWithOldSettingsBrowserTest,
       ash::OverviewController::Get()->overview_session()->GetGridWithRootWindow(
           window->GetRootWindow());
   ASSERT_TRUE(overview_grid);
-  auto* faster_split_view = overview_grid->GetFasterSplitView();
+  auto* faster_split_view = overview_grid->GetFasterSplitViewOld();
   ASSERT_TRUE(faster_split_view);
   auto* settings_button = faster_split_view->settings_button();
   ASSERT_TRUE(settings_button);

@@ -42,7 +42,7 @@ class PresentationTimeRecorder;
 
 namespace ash {
 
-class FasterSplitView;
+class FasterSplitViewOld;
 class LegacyDeskBarView;
 class OverviewDropTarget;
 class OverviewGridEventHandler;
@@ -419,7 +419,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer();
   const SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer() const;
 
-  FasterSplitView* GetFasterSplitView();
+  // TODO(http://b/325335020): Remove this and add tests using the new faster
+  // split view widget.
+  FasterSplitViewOld* GetFasterSplitViewOld();
 
   // Gets the cropping area of the wallpaper in screen coordinates.
   gfx::Rect GetWallpaperClipBounds() const;

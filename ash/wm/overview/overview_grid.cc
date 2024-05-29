@@ -70,6 +70,7 @@
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
 #include "ash/wm/overview/scoped_overview_wallpaper_clipper.h"
 #include "ash/wm/splitview/faster_split_view.h"
+#include "ash/wm/splitview/faster_split_view_old.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
@@ -2524,9 +2525,9 @@ OverviewGrid::GetSaveDeskButtonContainer() const {
              : nullptr;
 }
 
-FasterSplitView* OverviewGrid::GetFasterSplitView() {
+FasterSplitViewOld* OverviewGrid::GetFasterSplitViewOld() {
   return faster_splitview_widget_
-             ? views::AsViewClass<FasterSplitView>(
+             ? views::AsViewClass<FasterSplitViewOld>(
                    faster_splitview_widget_->GetContentsView())
              : nullptr;
 }
@@ -3331,7 +3332,7 @@ void OverviewGrid::OnSettingsButtonPressed() {
 void OverviewGrid::UpdateFasterSplitViewWidget() {
   if (!window_util::IsInFasterSplitScreenSetupSession(root_window_)) {
     // If we weren't started by faster splitview, don't show the widget.
-    if (auto* faster_split_view = GetFasterSplitView()) {
+    if (auto* faster_split_view = GetFasterSplitViewOld()) {
       auto* focus_cycler_old = overview_session_->focus_cycler_old();
       focus_cycler_old->OnViewDestroyingOrDisabling(
           faster_split_view->GetToast());
@@ -3356,12 +3357,22 @@ void OverviewGrid::UpdateFasterSplitViewWidget() {
     faster_splitview_widget_ =
         std::make_unique<views::Widget>(std::move(params));
     faster_splitview_widget_->GetLayer()->SetFillsBoundsOpaquely(false);
-    faster_splitview_widget_->SetContentsView(std::make_unique<FasterSplitView>(
-        base::BindRepeating(&OverviewGrid::OnSkipButtonPressed,
-                            weak_ptr_factory_.GetWeakPtr()),
-        base::BindRepeating(&OverviewGrid::OnSettingsButtonPressed,
-                            weak_ptr_factory_.GetWeakPtr())));
-    faster_splitview_widget_->Show();
+    if (features::IsOverviewNewFocusEnabled()) {
+      faster_splitview_widget_->SetContentsView(
+          std::make_unique<FasterSplitView>(
+              base::BindRepeating(&OverviewGrid::OnSkipButtonPressed,
+                                  weak_ptr_factory_.GetWeakPtr()),
+              base::BindRepeating(&OverviewGrid::OnSettingsButtonPressed,
+                                  weak_ptr_factory_.GetWeakPtr())));
+    } else {
+      faster_splitview_widget_->SetContentsView(
+          std::make_unique<FasterSplitViewOld>(
+              base::BindRepeating(&OverviewGrid::OnSkipButtonPressed,
+                                  weak_ptr_factory_.GetWeakPtr()),
+              base::BindRepeating(&OverviewGrid::OnSettingsButtonPressed,
+                                  weak_ptr_factory_.GetWeakPtr())));
+    }
+    faster_splitview_widget_->ShowInactive();
   }
 
   const gfx::Rect grid_bounds = GetGridEffectiveBounds();
