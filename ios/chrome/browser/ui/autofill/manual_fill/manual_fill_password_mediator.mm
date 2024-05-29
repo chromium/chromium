@@ -6,6 +6,7 @@
 
 #import <vector>
 
+#import "base/i18n/message_formatter.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
@@ -264,9 +265,10 @@ BOOL AreCredentialsAtIndicesConnected(
 - (NSArray<ManualFillCredentialItem*>*)
     createItemsForCredentials:(NSArray<ManualFillCredential*>*)credentials
             withPasswordForms:(const std::vector<PasswordForm>&)passwordForms {
+  int credentialCount = (int)credentials.count;
   NSMutableArray* items =
-      [[NSMutableArray alloc] initWithCapacity:credentials.count];
-  for (int i = 0; i < (int)credentials.count; i++) {
+      [[NSMutableArray alloc] initWithCapacity:credentialCount];
+  for (int i = 0; i < credentialCount; i++) {
     // Credentials from the same affiliated group are never connected when the
     // Keyboard Accessory Upgrade feature is enabled.
     BOOL isConnectedToPreviousItem =
@@ -283,12 +285,19 @@ BOOL AreCredentialsAtIndicesConnected(
             ? @[ [self createMenuEditActionForPassword:passwordForms[i]] ]
             : @[];
 
+    NSString* cellIndexAccessibilityLabel = base::SysUTF16ToNSString(
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            l10n_util::GetStringUTF16(
+                IDS_IOS_MANUAL_FALLBACK_PASSWORD_CELL_INDEX),
+            "count", credentialCount, "position", i + 1));
+
     ManualFillCredentialItem* item = [[ManualFillCredentialItem alloc]
-               initWithCredential:credentials[i]
-        isConnectedToPreviousItem:isConnectedToPreviousItem
-            isConnectedToNextItem:isConnectedToNextItem
-                  contentInjector:self
-                      menuActions:menuActions];
+                 initWithCredential:credentials[i]
+          isConnectedToPreviousItem:isConnectedToPreviousItem
+              isConnectedToNextItem:isConnectedToNextItem
+                    contentInjector:self
+                        menuActions:menuActions
+        cellIndexAccessibilityLabel:cellIndexAccessibilityLabel];
     [items addObject:item];
   }
   return items;

@@ -30,6 +30,9 @@ extern NSString* const kMaskedPasswordTitle;
 // previous password item.
 @property(nonatomic, readonly) BOOL isConnectedToPreviousItem;
 
+// `cellIndexAccessibilityLabel` is the part of the cell's accessibility label
+// that is used to indicate the index at which the password represented by this
+// item is positioned in the list of passwords to show.
 // TODO(crbug.com/326398845): Remove the `isConnectedToPreviousItem` and
 // `isConnectedToNextItem` params once the Keyboard Accessory Upgrade feature
 // has launched both on iPhone and iPad.
@@ -39,6 +42,7 @@ extern NSString* const kMaskedPasswordTitle;
                    contentInjector:
                        (id<ManualFillContentInjector>)contentInjector
                        menuActions:(NSArray<UIAction*>*)menuActions
+       cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithType:(NSInteger)type NS_UNAVAILABLE;
@@ -55,11 +59,15 @@ extern NSString* const kMaskedPasswordTitle;
 // Updates the cell with the `credential`. If the user iteracts with it, the
 // `contentInjector` will be notified. `menuActions` are the UIActions that
 // should be available from the cell's overflow menu button.
+// `cellIndexAccessibilityLabel` is the part of this cell's accessibility label
+// that is used to indicate the index at which the password represented by this
+// cell is positioned in the list of passwords to show.
 - (void)setUpWithCredential:(ManualFillCredential*)credential
-    isConnectedToPreviousCell:(BOOL)isConnectedToPreviousCell
-        isConnectedToNextCell:(BOOL)isConnectedToNextCell
-              contentInjector:(id<ManualFillContentInjector>)contentInjector
-                  menuActions:(NSArray<UIAction*>*)menuActions;
+      isConnectedToPreviousCell:(BOOL)isConnectedToPreviousCell
+          isConnectedToNextCell:(BOOL)isConnectedToNextCell
+                contentInjector:(id<ManualFillContentInjector>)contentInjector
+                    menuActions:(NSArray<UIAction*>*)menuActions
+    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel;
 
 // Configures the cell for the passed favicon attributes.
 - (void)configureWithFaviconAttributes:(FaviconAttributes*)attributes;
