@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 
 namespace webnn {
@@ -137,6 +138,17 @@ std::string COMPONENT_EXPORT(WEBNN_UTILS)
     NotSupportedOptionTypeError(std::string_view op_name,
                                 std::string_view option_name,
                                 mojom::Operand::DataType type);
+
+// The length of `permutation` must be the same as `array`. The values in
+// `permutation` must be within the range [0, N-1] where N is the length of
+// `array`. There must be no two or more same values in `permutation`.
+//
+// e.g., Given an array of [10, 11, 12, 13] and a permutation of [0, 2, 3, 1],
+// the permuted array would be [10, 12, 13, 11].
+std::vector<uint32_t> COMPONENT_EXPORT(WEBNN_UTILS)
+    PermuteArray(base::span<const uint32_t> array,
+                 base::span<const uint32_t> permutation);
+
 }  // namespace webnn
 
 #endif  // SERVICES_WEBNN_WEBNN_UTILS_H_

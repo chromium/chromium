@@ -27,15 +27,6 @@ uint64_t CalculateDMLBufferTensorSize(DML_TENSOR_DATA_TYPE data_type,
 
 std::vector<uint32_t> CalculateStrides(base::span<const uint32_t> dimensions);
 
-// The length of `permutation` must be the same as `array`. The values in
-// `permutation` must be within the range [0, N-1] where N is the length of
-// `array`. There must be no two or more same values in `permutation`.
-//
-// e.g., Given an array of [10, 11, 12, 13] and a permutation of [0, 2, 3, 1],
-// the permuted array would be [10, 12, 13, 11].
-std::vector<uint32_t> PermuteArray(base::span<const uint32_t> array,
-                                   base::span<const uint32_t> permutation);
-
 // Gets the ID3D12Device used to create the IDMLDevice.
 Microsoft::WRL::ComPtr<ID3D12Device> GetD3D12Device(IDMLDevice* dml_device);
 

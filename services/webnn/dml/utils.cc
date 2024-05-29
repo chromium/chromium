@@ -6,15 +6,11 @@
 
 #include <string.h>
 
-#include <set>
-
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "services/webnn/dml/error.h"
 
@@ -43,31 +39,6 @@ uint64_t CalculateElementCount(const std::vector<uint32_t>& dimensions,
   }
 
   return checked_element_count.ValueOrDie();
-}
-
-// Check 1. no duplicate value in `axes`​, 2. values in `axes` ​​are all
-// within [0, N - 1], where N is the length of `axes`.
-bool ValidateAxes(base::span<const uint32_t> axes) {
-  size_t rank = axes.size();
-
-  if (base::ranges::any_of(axes, [rank](uint32_t axis) {
-        return base::checked_cast<size_t>(axis) >= rank;
-      })) {
-    // All axes should be within range [0, N - 1].
-    return false;
-  }
-
-  // TODO(crbug.com/40206287): Replace `std::set` with `std::bitset` for
-  // duplication check after the maximum number of operand dimensions has been
-  // settled and validated before using this function. Use `std::set` here at
-  // present to avoid dimensions count check. Dimensions number issue tracked in
-  // https://github.com/webmachinelearning/webnn/issues/456.
-  if (rank != std::set<uint32_t>(axes.begin(), axes.end()).size()) {
-    // Axes should not contain duplicate values.
-    return false;
-  }
-
-  return true;
 }
 
 D3D12_HEAP_PROPERTIES CreateHeapProperties(D3D12_HEAP_TYPE type) {
@@ -143,20 +114,6 @@ std::vector<uint32_t> CalculateStrides(base::span<const uint32_t> dimensions) {
     stride *= dimensions[i];
   }
   return strides;
-}
-
-std::vector<uint32_t> PermuteArray(base::span<const uint32_t> array,
-                                   base::span<const uint32_t> permutation) {
-  CHECK_EQ(array.size(), permutation.size());
-  CHECK(ValidateAxes(permutation));
-
-  size_t arr_size = array.size();
-  std::vector<uint32_t> permuted_array(arr_size);
-  for (size_t i = 0; i < arr_size; ++i) {
-    permuted_array[i] = array[permutation[i]];
-  }
-
-  return permuted_array;
 }
 
 Microsoft::WRL::ComPtr<ID3D12Device> GetD3D12Device(IDMLDevice* dml_device) {

@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "services/webnn/dml/utils.h"
+#include "services/webnn/webnn_utils.h"
 
 namespace webnn::dml {
 
