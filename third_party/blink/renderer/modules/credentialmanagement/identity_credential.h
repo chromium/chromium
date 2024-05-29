@@ -16,6 +16,8 @@
 
 namespace blink {
 
+class ContentSecurityPolicy;
+
 class MODULES_EXPORT IdentityCredential final : public Credential {
   DEFINE_WRAPPERTYPEINFO();
 
