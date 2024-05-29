@@ -1137,12 +1137,13 @@ views::View* ToolbarView::GetAnchorView(
     std::optional<PageActionIconType> type) {
   if (features::IsToolbarPinningEnabled()) {
     if (type.has_value()) {
-      const actions::ActionId action_id =
+      const std::optional<actions::ActionId> action_id =
           GetPageActionIconView(type.value())->action_id();
-      if (action_id &&
+      if (action_id.has_value() &&
           pinned_toolbar_actions_container_->IsActionPinnedOrPoppedOut(
-              action_id)) {
-        return pinned_toolbar_actions_container_->GetButtonFor(action_id);
+              action_id.value())) {
+        return pinned_toolbar_actions_container_->GetButtonFor(
+            action_id.value());
       }
     }
   }

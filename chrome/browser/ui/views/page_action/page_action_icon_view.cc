@@ -63,7 +63,7 @@ PageActionIconView::PageActionIconView(
     IconLabelBubbleView::Delegate* parent_delegate,
     PageActionIconView::Delegate* delegate,
     const char* name_for_histograms,
-    actions::ActionId action_id,
+    std::optional<actions::ActionId> action_id,
     bool ephemeral,
     const gfx::FontList& font_list)
     : IconLabelBubbleView(font_list, parent_delegate),

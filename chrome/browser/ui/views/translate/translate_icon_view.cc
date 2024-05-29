@@ -104,7 +104,7 @@ void TranslateIconView::UpdateImpl() {
     CHECK(browser_view);
     if (browser_view->toolbar()
             ->pinned_toolbar_actions_container()
-            ->IsActionPinnedOrPoppedOut(action_id())) {
+            ->IsActionPinnedOrPoppedOut(action_id().value())) {
       SetVisible(false);
     }
   } else {

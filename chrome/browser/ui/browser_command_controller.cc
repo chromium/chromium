@@ -1616,19 +1616,13 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   UpdateCommandAndActionEnabled(IDC_QRCODE_GENERATOR, kActionQrCodeGenerator,
                                 CanGenerateQrCode(browser_));
 
-  if (features::IsChromeRefresh2023()) {
-    ChromeTranslateClient* chrome_translate_client =
-        ChromeTranslateClient::FromWebContents(current_web_contents);
-    const bool can_translate =
-        chrome_translate_client &&
-        chrome_translate_client->GetTranslateManager()->CanManuallyTranslate();
-    command_updater_.UpdateCommandEnabled(IDC_SHOW_TRANSLATE, can_translate);
-    if (features::IsToolbarPinningEnabled()) {
-      actions::ActionManager::Get()
-          .FindAction(kActionShowTranslate)
-          ->SetEnabled(can_translate);
-    }
-  }
+  ChromeTranslateClient* chrome_translate_client =
+      ChromeTranslateClient::FromWebContents(current_web_contents);
+  const bool can_translate =
+      chrome_translate_client &&
+      chrome_translate_client->GetTranslateManager()->CanManuallyTranslate();
+  UpdateCommandAndActionEnabled(IDC_SHOW_TRANSLATE, kActionShowTranslate,
+                                can_translate);
 
   bool is_isolated_app = current_web_contents->GetPrimaryMainFrame()
                              ->GetWebExposedIsolationLevel() ==

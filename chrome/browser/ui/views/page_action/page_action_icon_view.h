@@ -104,7 +104,7 @@ class PageActionIconView : public IconLabelBubbleView {
 
   SkColor GetLabelColorForTesting() const;
 
-  actions::ActionId action_id() { return action_id_; }
+  std::optional<actions::ActionId> action_id() { return action_id_; }
   const char* name_for_histograms() const { return name_for_histograms_; }
   bool ephemeral() const { return ephemeral_; }
 
@@ -135,7 +135,7 @@ class PageActionIconView : public IconLabelBubbleView {
                      IconLabelBubbleView::Delegate* parent_delegate,
                      Delegate* delegate,
                      const char* name_for_histograms,
-                     actions::ActionId action_id = 0,
+                     std::optional<actions::ActionId> action_id = std::nullopt,
                      bool ephemeral = true,
                      const gfx::FontList& = gfx::FontList());
 
@@ -215,8 +215,9 @@ class PageActionIconView : public IconLabelBubbleView {
   // The command ID executed when the user clicks this icon.
   const int command_id_;
 
+  // The ID for the associated ActionItem for this icon.
   // This should eventually replace the above |command_id_|.
-  actions::ActionId action_id_;
+  std::optional<actions::ActionId> action_id_;
 
   // String that represents the page action type for metrics purposes.
   const char* const name_for_histograms_;
