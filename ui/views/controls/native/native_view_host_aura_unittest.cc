@@ -512,7 +512,7 @@ TEST_F(NativeViewHostAuraTest, FocusManagerUpdatedDuringDestruction) {
 
   auto widget_delegate_view = std::make_unique<WidgetDelegateView>();
   Widget::InitParams params =
-      CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                    Widget::InitParams::TYPE_CONTROL);
   // Delegate is "owned" via the view and will be deleted with it.
   params.delegate = widget_delegate_view.release();
