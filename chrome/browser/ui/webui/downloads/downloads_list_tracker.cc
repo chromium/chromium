@@ -172,6 +172,17 @@ std::u16string GetFormattedDisplayUrl(const GURL& url) {
   return result;
 }
 
+void FillUrlFields(const GURL& url,
+                   std::optional<GURL>& data_url,
+                   std::u16string& display_url_out) {
+  // If URL is too long, don't make it clickable.
+  if (url.is_valid() && url.spec().length() <= url::kMaxURLChars) {
+    data_url = std::make_optional<GURL>(url);
+  }
+
+  display_url_out = GetFormattedDisplayUrl(url);
+}
+
 }  // namespace
 
 DownloadsListTracker::DownloadsListTracker(
@@ -357,12 +368,10 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   file_name = base::i18n::GetDisplayStringInLTRDirectionality(file_name);
 
   file_value->file_name = base::UTF16ToUTF8(file_name);
-  // If URL is too long, don't make it clickable.
-  if (download_item->GetURL().is_valid() &&
-      download_item->GetURL().spec().length() <= url::kMaxURLChars) {
-    file_value->url = std::make_optional<GURL>(download_item->GetURL());
-  }
-  file_value->display_url = GetFormattedDisplayUrl(download_item->GetURL());
+  FillUrlFields(download_item->GetURL(), file_value->url,
+                file_value->display_url);
+  FillUrlFields(download_item->GetReferrerUrl(), file_value->referrer_url,
+                file_value->display_referrer_url);
   file_value->total = download_item->GetTotalBytes();
   file_value->file_externally_removed =
       download_item->GetFileExternallyRemoved();

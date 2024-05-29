@@ -105,6 +105,20 @@ class DownloadsListTracker
                            CreateDownloadData_UrlFormatting_Long);
   FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
                            CreateDownloadData_UrlFormatting_VeryLong);
+  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
+                           CreateDownloadData_ReferrerUrlPresent);
+  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
+                           CreateDownloadData_ReferrerUrlNotPresent);
+  FRIEND_TEST_ALL_PREFIXES(
+      DownloadsListTrackerTest,
+      CreateDownloadData_ReferrerUrlFormatting_OmitUserPass);
+  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
+                           CreateDownloadData_ReferrerUrlFormatting_Idn);
+  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
+                           CreateDownloadData_ReferrerUrlFormatting_Long);
+  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
+                           CreateDownloadData_ReferrerUrlFormatting_VeryLong);
+
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
                            CreateDownloadData_SafeBrowsing);

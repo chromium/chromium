@@ -160,6 +160,8 @@ export function createDownload(config?: Partial<MojomData>): MojomData {
         total: -1,
         url: stringToMojoUrl('http://permission.site'),
         displayUrl: stringToMojoString16('http://permission.site'),
+        referrerUrl: stringToMojoUrl('http://permission.site'),
+        displayReferrerUrl: stringToMojoString16('http://permission.site'),
         safeBrowsingState: SafeBrowsingState.kStandardProtection,
         hasSafeBrowsingVerdict: true,
       },

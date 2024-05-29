@@ -98,6 +98,13 @@ struct Data {
   // confirmation, the state will indicate the download is in progress, complete
   // or cancelled.
   State state;
+  // The referrer URL of the download item. Present if this field is populated
+  // with the referrer URL. Omitted if the URL is unknown.
+  url.mojom.Url? referrer_url;
+  // The display string for the referrer URL in the UI. May be truncated/elided
+  // from the original URL, and IDN domains may be converted to Unicode.
+  mojo_base.mojom.String16 display_referrer_url;
+
   // The URL of the download item. Present if this field is populated with the
   // original URL. Omitted if the URL should not be clickable on the downloads
   // page, due to URL size limits requiring truncation.
