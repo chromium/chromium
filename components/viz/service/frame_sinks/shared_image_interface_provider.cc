@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -60,6 +61,7 @@ void SharedImageInterfaceProvider::CreateSharedImageInterface() {
         /*target_thread_is_always_available=*/true);
   }
 
+  base::ScopedAllowBaseSyncPrimitives allow_wait;
   base::WaitableEvent event;
   scheduler_sequence_->ScheduleTask(
       base::BindOnce(
