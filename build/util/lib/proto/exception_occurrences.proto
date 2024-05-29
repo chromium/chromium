@@ -1,0 +1,26 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package build.util.lib.proto;
+
+import "google/protobuf/timestamp.proto";
+
+// Stored under the field "extended_properties" with key "exception_occurrences"
+// in the proto luci.resultdb.v1.Invocation
+// As a repeated message cannot fit directly into a google.protobuf.Struct,
+// Use "ExceptionOccurrences" message as a wrap.
+message ExceptionOccurrences {
+  repeated ExceptionOccurrence datapoints = 1;
+}
+
+message ExceptionOccurrence {
+  // The name of the exception.
+  string name = 1;
+  // The stacktrace associated with the exception.
+  repeated string stacktrace = 2;
+  // The time when this exception occurred.
+  google.protobuf.Timestamp occurred_time = 3;
+}

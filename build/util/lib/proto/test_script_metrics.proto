@@ -1,0 +1,19 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package build.util.lib.proto;
+
+// Stored under the field "extended_properties" with key "test_script_metrics"
+// in luci.resultdb.v1.Invocation message
+// As a repeated message cannot fit directly into a google.protobuf.Struct,
+// Use "TestScriptMetrics" message as a wrap.
+message TestScriptMetrics {
+  repeated TestScriptMetric datapoints = 1;
+}
+
+message TestScriptMetric {
+  // TODO(crbug.com/343242386): Add details of test script metric.
+}
