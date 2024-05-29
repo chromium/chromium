@@ -128,7 +128,6 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -669,29 +668,30 @@ public class MainSettingsFragmentTest {
         // Account set up.
         // If both fullName and givenName are empty, accountCapabilities is ignored.
         final SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
-        AccountInfo accountInfo =
-                new AccountInfo.Builder(
-                                AccountManagerTestRule.generateChildEmail("test@gmail.com"),
-                                FakeAccountManagerFacade.toGaiaId("test-gaia-id"))
-                        .givenName("child.test.given")
-                        .accountCapabilities(
-                                SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES)
-                        .build();
-        signinTestRule.addAccountAndWaitForSeeding(accountInfo);
-        signinTestRule.waitForSignin(accountInfo);
+        signinTestRule.addAccountThenSignin(
+                AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME);
 
         SignInPreference signInPreference = mMainSettings.findPreference(MainSettings.PREF_SIGN_IN);
         CriteriaHelper.pollUiThread(
                 () -> {
                     return !signInPreference
                             .getProfileDataCache()
-                            .getProfileDataOrDefault(accountInfo.getEmail())
+                            .getProfileDataOrDefault(
+                                    AccountManagerTestRule
+                                            .TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME
+                                            .getEmail())
                             .hasDisplayableEmailAddress();
                 });
         TestThreadUtils.runOnUiThreadBlocking(signInPreference::syncStateChanged);
 
         mSettingsActivityTestRule.startSettingsActivity();
-        onView(withText(accountInfo.getEmail())).check(doesNotExist());
+
+        onView(
+                        withText(
+                                AccountManagerTestRule
+                                        .TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME
+                                        .getEmail()))
+                .check(doesNotExist());
         onView(allOf(withText(R.string.default_google_account_username), isDisplayed()))
                 .check(matches(isDisplayed()));
     }

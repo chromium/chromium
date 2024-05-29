@@ -411,13 +411,8 @@ public class SyncConsentFragmentTest {
     public void testSyncConsentFragmentWithChildAccountWithNonDisplayableAccountEmail()
             throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addAccount(
-                        SigninTestRule.generateChildEmail(
-                                AccountManagerTestRule.TEST_ACCOUNT_EMAIL),
-                        SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
-        mSigninTestRule.waitForSeeding();
-        mSigninTestRule.waitForSignin(accountInfo);
+        AccountInfo accountInfo = AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL;
+        mSigninTestRule.addAccountAndWaitForSeeding(accountInfo);
         mSyncConsentActivity =
                 ActivityTestUtils.waitForActivity(
                         InstrumentationRegistry.getInstrumentation(),
@@ -438,16 +433,10 @@ public class SyncConsentFragmentTest {
             testSyncConsentFragmentWithChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName()
                     throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addAccount(
-                        SigninTestRule.generateChildEmail(
-                                AccountManagerTestRule.TEST_ACCOUNT_EMAIL),
-                        "",
-                        "",
-                        null,
-                        SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
-        mSigninTestRule.waitForSeeding();
-        mSigninTestRule.waitForSignin(accountInfo);
+        AccountInfo accountInfo =
+                AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME;
+        mSigninTestRule.addAccountThenSignin(accountInfo);
+
         mSyncConsentActivity =
                 ActivityTestUtils.waitForActivity(
                         InstrumentationRegistry.getInstrumentation(),

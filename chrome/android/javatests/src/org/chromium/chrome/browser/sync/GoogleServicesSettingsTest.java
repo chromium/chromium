@@ -52,9 +52,9 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -401,17 +401,20 @@ public class GoogleServicesSettingsTest {
     @EnableFeatures({ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS})
     @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void showPasswordsAccountStorageToggleForNonDisplayableEmail() {
-        String email = "auto-generated-email@gmail.com";
-        String gaiaId = FakeAccountManagerFacade.toGaiaId(email);
+        // TODO(b/343378391) Update accountInfo to use
+        // AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL.
         mSigninTestRule.addAccountThenSignin(
-                new AccountInfo(
-                        new CoreAccountId(gaiaId),
-                        email,
-                        gaiaId,
-                        "John Doe",
-                        "John",
-                        /* avatar= */ null,
-                        SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES));
+                new AccountInfo.Builder(
+                                "auto-generated-email@gmail.com",
+                                FakeAccountManagerFacade.toGaiaId("auto-generated-email@gmail.com"))
+                        .fullName("John Doe")
+                        .givenName("John")
+                        .accountCapabilities(
+                                new AccountCapabilitiesBuilder()
+                                        .setIsSubjectToParentalControls(true)
+                                        .setCanHaveEmailAddressDisplayed(false)
+                                        .build())
+                        .build());
 
         startGoogleServicesSettings();
 

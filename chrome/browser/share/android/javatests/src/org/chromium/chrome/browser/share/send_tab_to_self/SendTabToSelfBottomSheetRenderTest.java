@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
@@ -100,8 +100,7 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
     @Test
     @MediumTest
     public void testDevicePickerBottomSheetWithNonDisplayableAccountEmail() throws Throwable {
-        AccountInfo account =
-                createFakeAccount(SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
+        AccountInfo account = AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL;
         setUpAccountData(account);
         long todayTimestamp = Calendar.getInstance().getTimeInMillis();
         List<TargetDeviceInfo> devices =
@@ -146,8 +145,7 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
     @Test
     @MediumTest
     public void testNoTargetDeviceBottomSheetWithNonDisplayableAccountEmail() throws Throwable {
-        AccountInfo account =
-                createFakeAccount(SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
+        AccountInfo account = AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL;
         setUpAccountData(account);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

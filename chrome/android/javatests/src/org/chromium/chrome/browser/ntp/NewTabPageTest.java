@@ -91,8 +91,8 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -100,7 +100,6 @@ import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
@@ -871,7 +870,7 @@ public class NewTabPageTest {
     @SmallTest
     public void testRecordHistogramProfileButtonClick_Ntp() {
         // Identity Disc should be shown on sign-in state.
-        waitForSignIn();
+        addAccountWithNonDisplayableEmail();
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         HISTOGRAM_NTP_MODULE_CLICK, ModuleTypeOnStartAndNtp.PROFILE_BUTTON);
@@ -1324,12 +1323,9 @@ public class NewTabPageTest {
     }
 
     /** Transform the New Tab Page into the signed-in state. */
-    private void waitForSignIn() {
-        CoreAccountInfo coreAccountInfo =
-                mSigninTestRule.addAccount(
-                        EMAIL, NAME, SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
-        mSigninTestRule.waitForSeeding();
-        SigninTestUtil.signin(coreAccountInfo);
+    private void addAccountWithNonDisplayableEmail() {
+        mSigninTestRule.addAccountThenSignin(
+                AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
         // TODO(crbug.com/40721874): Remove the reload once the sign-in without sync observer
         //  is implemented.
         TestThreadUtils.runOnUiThreadBlocking(mTab::reload);

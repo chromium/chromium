@@ -172,11 +172,8 @@ public class SigninSignoutIntegrationTest {
     public void testSignInAndEnableSyncNonDisplayableAccountEmail() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
-        CoreAccountInfo coreAccountInfo =
-                mSigninTestRule.addAccount(
-                        SigninTestRule.generateChildEmail(
-                                AccountManagerTestRule.TEST_ACCOUNT_EMAIL),
-                        SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
+
+        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
         mSigninTestRule.waitForSeeding();
         SyncConsentActivity syncConsentActivity =
                 ActivityTestUtils.waitForActivity(
@@ -187,7 +184,9 @@ public class SigninSignoutIntegrationTest {
                                     .launchActivityForPromoDefaultFlow(
                                             mActivityTestRule.getActivity(),
                                             SigninAccessPoint.SETTINGS,
-                                            coreAccountInfo.getEmail());
+                                            AccountManagerTestRule
+                                                    .TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL
+                                                    .getEmail());
                         });
 
         // The child account will be automatically signed in.
@@ -208,7 +207,7 @@ public class SigninSignoutIntegrationTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            coreAccountInfo,
+                            AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL,
                             mSigninManager
                                     .getIdentityManager()
                                     .getPrimaryAccountInfo(ConsentLevel.SYNC));

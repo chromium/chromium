@@ -56,7 +56,9 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.policy.test.annotations.Policies;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -327,9 +329,21 @@ public class RecentTabsPageTest {
     @Feature({"RecentTabsPage"})
     public void testEmptyStateView() throws ExecutionException {
         // Sign in and enable sync.
-        CoreAccountInfo coreAccountInfo = addAccountWithNonDisplayableEmail(NAME);
+        // TODO(b/343378391) Update accountInfo to use
+        // AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL.
+        AccountInfo accountInfo =
+                new AccountInfo.Builder(EMAIL, FakeAccountManagerFacade.toGaiaId(EMAIL))
+                        .fullName(NAME)
+                        .givenName(NAME)
+                        .accountCapabilities(
+                                new AccountCapabilitiesBuilder()
+                                        .setCanHaveEmailAddressDisplayed(false)
+                                        .setIsSubjectToParentalControls(true)
+                                        .build())
+                        .build();
+        mSigninTestRule.addAccount(accountInfo);
         SigninTestUtil.signinAndEnableSync(
-                coreAccountInfo, SyncTestUtil.getSyncServiceForLastUsedProfile());
+                accountInfo, SyncTestUtil.getSyncServiceForLastUsedProfile());
 
         // Open an empty recent tabs page and confirm empty view shows.
         mPage = loadRecentTabsPage();
@@ -354,14 +368,6 @@ public class RecentTabsPageTest {
                 "Top padding of page view should be updated when tab strip height changes.",
                 newTabStripHeight,
                 mPage.getView().getPaddingTop());
-    }
-
-    private CoreAccountInfo addAccountWithNonDisplayableEmail(String name) {
-        CoreAccountInfo coreAccountInfo =
-                mSigninTestRule.addAccount(
-                        EMAIL, name, SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
-        mSigninTestRule.waitForSeeding();
-        return coreAccountInfo;
     }
 
     /**

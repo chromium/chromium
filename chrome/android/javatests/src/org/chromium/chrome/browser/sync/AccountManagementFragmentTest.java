@@ -162,11 +162,8 @@ public class AccountManagementFragmentTest {
             throws Exception {
         final SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
         AccountInfo accountInfo =
-                signinTestRule.addAccount(
-                        CHILD_ACCOUNT_NAME,
-                        SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
-        signinTestRule.waitForSeeding();
-        signinTestRule.waitForSignin(accountInfo);
+                signinTestRule.addChildTestAccountThenWaitForSignin(
+                        new AccountCapabilitiesBuilder().setCanHaveEmailAddressDisplayed(false));
         mSettingsActivityTestRule.startSettingsActivity();
 
         // Force update the fragment so that NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES is
@@ -177,7 +174,7 @@ public class AccountManagementFragmentTest {
                     return !mSettingsActivityTestRule
                             .getFragment()
                             .getProfileDataCacheForTesting()
-                            .getProfileDataOrDefault(CHILD_ACCOUNT_NAME)
+                            .getProfileDataOrDefault(accountInfo.getEmail())
                             .hasDisplayableEmailAddress();
                 });
         TestThreadUtils.runOnUiThreadBlocking(mSettingsActivityTestRule.getFragment()::update);
@@ -197,22 +194,16 @@ public class AccountManagementFragmentTest {
             testAccountManagementViewForChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName()
                     throws Exception {
         final SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
-        CoreAccountInfo accountInfo =
-                signinTestRule.addAccount(
-                        CHILD_ACCOUNT_NAME,
-                        "",
-                        "",
-                        null,
-                        SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
-        signinTestRule.waitForSeeding();
-        signinTestRule.waitForSignin(accountInfo);
+        AccountInfo accountInfo =
+                AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME;
+        signinTestRule.addAccountThenSignin(accountInfo);
         mSettingsActivityTestRule.startSettingsActivity();
         CriteriaHelper.pollUiThread(
                 () -> {
                     return !mSettingsActivityTestRule
                             .getFragment()
                             .getProfileDataCacheForTesting()
-                            .getProfileDataOrDefault(CHILD_ACCOUNT_NAME)
+                            .getProfileDataOrDefault(accountInfo.getEmail())
                             .hasDisplayableEmailAddress();
                 });
         TestThreadUtils.runOnUiThreadBlocking(mSettingsActivityTestRule.getFragment()::update);

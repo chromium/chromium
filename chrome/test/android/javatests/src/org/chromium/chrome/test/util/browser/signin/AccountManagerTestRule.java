@@ -25,6 +25,7 @@ import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -48,6 +49,32 @@ public class AccountManagerTestRule implements TestRule {
                     .fullName("Test1 Full")
                     .givenName("Test1 Given")
                     .accountImage(createAvatar())
+                    .build();
+
+    public static final AccountInfo TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL =
+            new AccountInfo.Builder(
+                            generateChildEmail("test@gmail.com"),
+                            FakeAccountManagerFacade.toGaiaId("test@gmail.com"))
+                    .fullName("Test1 Full")
+                    .givenName("Test1 Given")
+                    .accountImage(createAvatar())
+                    .accountCapabilities(
+                            new AccountCapabilitiesBuilder()
+                                    .setCanHaveEmailAddressDisplayed(false)
+                                    .setIsSubjectToParentalControls(true)
+                                    .build())
+                    .build();
+
+    public static final AccountInfo TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME =
+            new AccountInfo.Builder(
+                            generateChildEmail("test@gmail.com"),
+                            FakeAccountManagerFacade.toGaiaId("test@gmail.com"))
+                    .accountImage(createAvatar())
+                    .accountCapabilities(
+                            new AccountCapabilitiesBuilder()
+                                    .setCanHaveEmailAddressDisplayed(false)
+                                    .setIsSubjectToParentalControls(true)
+                                    .build())
                     .build();
 
     // TODO(crbug.com/40890215): Use TEST_ACCOUNT_1 instead.
