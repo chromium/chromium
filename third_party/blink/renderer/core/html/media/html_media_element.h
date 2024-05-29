@@ -623,8 +623,7 @@ class CORE_EXPORT HTMLMediaElement
   void FinishSeek();
   void AddPlayedRange(double start, double end);
 
-  // FIXME: Rename to scheduleNamedEvent for clarity.
-  void ScheduleEvent(const AtomicString& event_name);
+  void ScheduleNamedEvent(const AtomicString& event_name);
 
   // loading
   void InvokeLoadAlgorithm();

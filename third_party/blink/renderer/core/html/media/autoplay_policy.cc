@@ -388,7 +388,7 @@ void AutoplayPolicy::OnIntersectionChangedForAutoplay(
     if (self->ShouldAutoplay()) {
       self->element_->paused_ = false;
       self->element_->SetShowPosterFlag(false);
-      self->element_->ScheduleEvent(event_type_names::kPlay);
+      self->element_->ScheduleNamedEvent(event_type_names::kPlay);
       self->element_->ScheduleNotifyPlaying();
 
       self->element_->UpdatePlayState();
