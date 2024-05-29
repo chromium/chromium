@@ -15859,6 +15859,22 @@
             ]
         }
     ],
+    "PrivacyHubAppPermissionsV2": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrosPrivacyHubAppPermissionsV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacyHubGeolocation": [
         {
             "platforms": [

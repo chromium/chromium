@@ -56,6 +56,8 @@ suite('AppManagementPermissionItemTest', function() {
   }
 
   setup(async function() {
+    loadTimeData.overrideValues({'privacyHubAppPermissionsV2Enabled': false});
+
     const permissions: PermissionMap = {};
     const permissionTypes: PermissionTypeIndex[] =
         ['kCamera', 'kMicrophone', 'kLocation'];
