@@ -62,7 +62,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
@@ -2665,7 +2664,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     }
 
     private StripLayoutGroupTitle createGroupTitle(int rootId) {
-        int colorId = TabGroupColorUtils.getTabGroupColor(rootId);
+        int colorId = mTabGroupModelFilter.getTabGroupColor(rootId);
         // If the color is invalid, temporarily assign a default placeholder color.
         if (colorId == INVALID_COLOR_ID) colorId = TabGroupColorId.GREY;
         @ColorInt

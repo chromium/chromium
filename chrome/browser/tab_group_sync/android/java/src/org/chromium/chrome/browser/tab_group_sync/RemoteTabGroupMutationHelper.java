@@ -73,7 +73,7 @@ public class RemoteTabGroupMutationHelper {
         String title = mTabGroupModelFilter.getTabGroupTitle(rootId);
         if (title == null) title = new String();
 
-        int color = TabGroupColorUtils.getTabGroupColor(rootId);
+        int color = mTabGroupModelFilter.getTabGroupColor(rootId);
         if (color == TabGroupColorUtils.INVALID_COLOR_ID) color = TabGroupColorId.GREY;
 
         mTabGroupSyncService.updateVisualData(groupId, title, color);

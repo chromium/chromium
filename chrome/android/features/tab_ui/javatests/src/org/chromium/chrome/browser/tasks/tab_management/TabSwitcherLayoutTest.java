@@ -408,12 +408,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 1);
         // Hardcode TabGroupColorId.GREY as the tab group color for render testing purposes.
         Tab tab = cta.getTabModelSelector().getCurrentTab();
-        TabGroupModelFilter filter =
-                (TabGroupModelFilter)
-                        cta.getTabModelSelectorSupplier()
-                                .get()
-                                .getTabModelFilterProvider()
-                                .getCurrentTabModelFilter();
+        TabGroupModelFilter filter = getTabGroupModelFilter();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> filter.setTabGroupColor(tab.getRootId(), TabGroupColorId.GREY));
         // Leave and re enter GTS to refetch the favicon.
@@ -2131,12 +2126,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 3);
 
         // Get the next suggested color id.
-        TabGroupModelFilter filter =
-                (TabGroupModelFilter)
-                        cta.getTabModelSelectorSupplier()
-                                .get()
-                                .getTabModelFilterProvider()
-                                .getCurrentTabModelFilter();
+        TabGroupModelFilter filter = getTabGroupModelFilter();
         int nextSuggestedColorId = TabGroupColorUtils.getNextSuggestedColorId(filter);
 
         // Merge first two tabs into a group.
@@ -2153,7 +2143,7 @@ public class TabSwitcherLayoutTest {
         // Assert default color was set properly.
         assertEquals(
                 nextSuggestedColorId,
-                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(0).getRootId()));
+                filter.getTabGroupColor(normalTabModel.getTabAt(0).getRootId()));
 
         // Merge tab group of 2 at first index with the 3rd tab.
         mergeAllNormalTabsToAGroup(cta);
@@ -2164,7 +2154,7 @@ public class TabSwitcherLayoutTest {
         // Assert the default color is still the tab group color
         assertEquals(
                 nextSuggestedColorId,
-                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(0).getRootId()));
+                filter.getTabGroupColor(normalTabModel.getTabAt(0).getRootId()));
 
         // Undo merge in tab switcher.
         verifyTabSwitcherCardCount(cta, 1);
@@ -2182,12 +2172,10 @@ public class TabSwitcherLayoutTest {
                                     normalTabModel.getTabAt(2).getRootId()));
                     assertEquals(
                             nextSuggestedColorId,
-                            TabGroupColorUtils.getTabGroupColor(
-                                    normalTabModel.getTabAt(1).getRootId()));
+                            filter.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
                     assertEquals(
                             INVALID_COLOR_ID,
-                            TabGroupColorUtils.getTabGroupColor(
-                                    normalTabModel.getTabAt(2).getRootId()));
+                            filter.getTabGroupColor(normalTabModel.getTabAt(2).getRootId()));
                 });
     }
 
@@ -2254,7 +2242,7 @@ public class TabSwitcherLayoutTest {
         // Assert default color 1 was set properly.
         assertEquals(
                 nextSuggestedColorId1,
-                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(4).getRootId()));
+                filter.getTabGroupColor(normalTabModel.getTabAt(4).getRootId()));
 
         // Get the next suggested color id.
         int nextSuggestedColorId2 =
@@ -2281,7 +2269,7 @@ public class TabSwitcherLayoutTest {
         // Assert default color 2 was set properly.
         assertEquals(
                 nextSuggestedColorId2,
-                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
+                filter.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
 
         // Merge the two tab groups into a group.
         List<Tab> tabGroup3 =
@@ -2295,7 +2283,7 @@ public class TabSwitcherLayoutTest {
         // Assert default color 2 was set as the overall merged group color.
         assertEquals(
                 nextSuggestedColorId2,
-                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(3).getRootId()));
+                filter.getTabGroupColor(normalTabModel.getTabAt(3).getRootId()));
 
         // Undo merge in tab switcher.
         verifyTabSwitcherCardCount(cta, 2);
@@ -2314,12 +2302,10 @@ public class TabSwitcherLayoutTest {
                                     normalTabModel.getTabAt(0).getRootId()));
                     assertEquals(
                             nextSuggestedColorId1,
-                            TabGroupColorUtils.getTabGroupColor(
-                                    normalTabModel.getTabAt(4).getRootId()));
+                            filter.getTabGroupColor(normalTabModel.getTabAt(4).getRootId()));
                     assertEquals(
                             nextSuggestedColorId2,
-                            TabGroupColorUtils.getTabGroupColor(
-                                    normalTabModel.getTabAt(0).getRootId()));
+                            filter.getTabGroupColor(normalTabModel.getTabAt(0).getRootId()));
                 });
     }
 
@@ -2361,7 +2347,7 @@ public class TabSwitcherLayoutTest {
         // Assert default color was set properly.
         assertEquals(
                 nextSuggestedColorId,
-                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
+                filter.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
 
         // Merge tab group of 2 at first index with the 3rd tab.
         mergeAllNormalTabsToAGroup(cta);
@@ -2372,7 +2358,7 @@ public class TabSwitcherLayoutTest {
         // Assert default color was set properly for the overall merged group.
         assertEquals(
                 nextSuggestedColorId,
-                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(2).getRootId()));
+                filter.getTabGroupColor(normalTabModel.getTabAt(2).getRootId()));
 
         // Check that the old group title was handed over when the group merge is committed
         // and no longer exists.
@@ -2389,7 +2375,7 @@ public class TabSwitcherLayoutTest {
         // Assert color still exists post snackbar dismissal.
         assertEquals(
                 nextSuggestedColorId,
-                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
+                filter.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
     }
 
     @Test
@@ -2398,6 +2384,7 @@ public class TabSwitcherLayoutTest {
     public void testUndoClosure_UndoGroupClosure() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
+        TabGroupModelFilter filter = getTabGroupModelFilter();
         createTabs(cta, false, 2);
 
         enterTabSwitcher(cta);
@@ -2425,7 +2412,7 @@ public class TabSwitcherLayoutTest {
         // Assert default color was set properly.
         assertEquals(
                 nextSuggestedColorId,
-                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
+                filter.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
         TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
 
         // Temporarily save the tab to get the rootId later.
@@ -2438,7 +2425,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 0);
 
         // Default color should still persist, though the root id might change.
-        assertEquals(nextSuggestedColorId, TabGroupColorUtils.getTabGroupColor(tab2.getRootId()));
+        assertEquals(nextSuggestedColorId, filter.getTabGroupColor(tab2.getRootId()));
 
         CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
         verifyTabSwitcherCardCount(cta, 1);
@@ -2446,7 +2433,7 @@ public class TabSwitcherLayoutTest {
         // Assert default color still persists.
         assertEquals(
                 nextSuggestedColorId,
-                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
+                filter.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
     }
 
     @Test
@@ -2455,6 +2442,7 @@ public class TabSwitcherLayoutTest {
     public void testUndoClosure_AcceptGroupClosure() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
+        TabGroupModelFilter filter = getTabGroupModelFilter();
         createTabs(cta, false, 2);
 
         enterTabSwitcher(cta);
@@ -2482,7 +2470,7 @@ public class TabSwitcherLayoutTest {
         // Assert default color was set properly.
         assertEquals(
                 nextSuggestedColorId,
-                TabGroupColorUtils.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
+                filter.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
         TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
 
         // Temporarily save the rootID to check during closure.
@@ -2496,18 +2484,15 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 0);
 
         // Default color should still persist, though the root id might change.
-        assertEquals(nextSuggestedColorId, TabGroupColorUtils.getTabGroupColor(tab2.getRootId()));
+        assertEquals(nextSuggestedColorId, filter.getTabGroupColor(tab2.getRootId()));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
 
         // Assert default color is cleared.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assertEquals(
-                            INVALID_COLOR_ID, TabGroupColorUtils.getTabGroupColor(groupRootId));
-                    assertEquals(
-                            INVALID_COLOR_ID,
-                            TabGroupColorUtils.getTabGroupColor(tab2.getRootId()));
+                    assertEquals(INVALID_COLOR_ID, filter.getTabGroupColor(groupRootId));
+                    assertEquals(INVALID_COLOR_ID, filter.getTabGroupColor(tab2.getRootId()));
                 });
     }
 
@@ -2890,5 +2875,15 @@ public class TabSwitcherLayoutTest {
                 () -> {
                     mModalDialogManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
                 });
+    }
+
+    private TabGroupModelFilter getTabGroupModelFilter() {
+        return (TabGroupModelFilter)
+                mActivityTestRule
+                        .getActivity()
+                        .getTabModelSelectorSupplier()
+                        .get()
+                        .getTabModelFilterProvider()
+                        .getCurrentTabModelFilter();
     }
 }

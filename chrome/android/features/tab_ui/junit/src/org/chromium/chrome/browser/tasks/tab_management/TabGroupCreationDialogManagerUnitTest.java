@@ -9,8 +9,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
 
 import org.junit.After;
 import org.junit.Before;
@@ -23,23 +21,23 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Tests for TabGroupCreationDialogManager. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabGroupCreationDialogManagerUnitTest {
-    private static final String TAB_GROUP_COLORS_FILE_NAME = "tab_group_colors";
     private static final String TAB1_TITLE = "Tab1";
     private static final int TAB1_ID = 456;
-    private static final int COLOR_1 = 0;
+    private static final int COLOR_1 = TabGroupColorId.BLUE;
 
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabModelSelector mTabModelSelector;
@@ -77,14 +75,11 @@ public class TabGroupCreationDialogManagerUnitTest {
         mTabGroupCreationDialogManager.destroy();
     }
 
-    private static SharedPreferences getGroupColorSharedPreferences() {
-        return ContextUtils.getApplicationContext()
-                .getSharedPreferences(TAB_GROUP_COLORS_FILE_NAME, Context.MODE_PRIVATE);
-    }
-
     @Test
     public void testShowOnDidCreateGroup() {
         mTabGroupCreationDialogManager.setShowDialogDelegateForTesting(mShowDialogDelegate);
+        when(mRegularTabGroupModelFilter.getTabGroupColor(mTab1.getRootId()))
+                .thenReturn(TabGroupColorUtils.INVALID_COLOR_ID);
 
         verify(mRegularTabGroupModelFilter).addTabGroupObserver(mObserverCaptor.capture());
         TabGroupModelFilterObserver observer = mObserverCaptor.getValue();
@@ -96,12 +91,7 @@ public class TabGroupCreationDialogManagerUnitTest {
     @Test
     public void testNoShowOnDidCreateGroup() {
         mTabGroupCreationDialogManager.setShowDialogDelegateForTesting(mShowDialogDelegate);
-
-        // Mock that we have a stored tab group color with reference to ROOT_ID.
-        getGroupColorSharedPreferences()
-                .edit()
-                .putInt(String.valueOf(mTab1.getRootId()), COLOR_1)
-                .apply();
+        when(mRegularTabGroupModelFilter.getTabGroupColor(mTab1.getRootId())).thenReturn(COLOR_1);
 
         verify(mRegularTabGroupModelFilter).addTabGroupObserver(mObserverCaptor.capture());
         TabGroupModelFilterObserver observer = mObserverCaptor.getValue();

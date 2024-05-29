@@ -77,7 +77,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
@@ -2117,7 +2116,9 @@ class TabListMediator {
                                         title,
                                         numOfRelatedTabs));
             } else {
-                int colorId = TabGroupColorUtils.getTabGroupColor(tab.getRootId());
+                TabGroupModelFilter filter =
+                        (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+                int colorId = filter.getTabGroupColor(tab.getRootId());
                 // This should never be the case in practice, but if the color is invalid then set
                 // it to the first color in the list.
                 if (colorId == INVALID_COLOR_ID) {
@@ -2257,7 +2258,7 @@ class TabListMediator {
                 if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
                     TabGroupModelFilter filter =
                             (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-                    int colorId = TabGroupColorUtils.getTabGroupColor(tab.getRootId());
+                    int colorId = filter.getTabGroupColor(tab.getRootId());
                     faviconFetcher =
                             mTabGroupColorFaviconProvider.getFaviconFromTabGroupColorFetcher(
                                     colorId, filter.getTabModel().isIncognito());
@@ -2860,7 +2861,9 @@ class TabListMediator {
                         R.string.accessibility_open_tab_group_overflow_menu_with_group_name,
                         descriptionTitle);
             } else {
-                int colorId = TabGroupColorUtils.getTabGroupColor(rootId);
+                TabGroupModelFilter filter =
+                        (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+                int colorId = filter.getTabGroupColor(rootId);
                 // This should never be the case in practice, but if the color is invalid
                 // then set it to the first color in the list.
                 if (colorId == INVALID_COLOR_ID) {

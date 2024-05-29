@@ -1457,6 +1457,15 @@ public class TabGroupModelFilter extends TabModelFilter {
     }
 
     /**
+     * This method fetches tab group colors id for the specified tab group. It will be a {@link
+     * TabGroupColorId} if found, otherwise a {@link TabGroupTitleUtils.INVALID_COLOR_ID} if there
+     * is no color entry for the group.
+     */
+    public int getTabGroupColor(int rootId) {
+        return TabGroupColorUtils.getTabGroupColor(rootId);
+    }
+
+    /**
      * This method fetches tab group colors for the related tab group root ID. If the color does not
      * exist, the next suggested color will be fetched, stored and returned for that root ID.
      *

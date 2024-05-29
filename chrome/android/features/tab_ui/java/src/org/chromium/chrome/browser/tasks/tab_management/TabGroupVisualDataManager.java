@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
@@ -104,9 +103,8 @@ public class TabGroupVisualDataManager {
                         }
 
                         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                            int sourceGroupColor =
-                                    TabGroupColorUtils.getTabGroupColor(movedTab.getRootId());
-                            int targetGroupColor = TabGroupColorUtils.getTabGroupColor(newRootId);
+                            int sourceGroupColor = filter.getTabGroupColor(movedTab.getRootId());
+                            int targetGroupColor = filter.getTabGroupColor(newRootId);
                             // If the target group has no color but the source group has a color,
                             // handover the stored color to the group after merge.
                             if (sourceGroupColor != INVALID_COLOR_ID
@@ -177,7 +175,7 @@ public class TabGroupVisualDataManager {
             filter.deleteTabGroupTitle(oldRootId);
         }
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            int colorId = TabGroupColorUtils.getTabGroupColor(oldRootId);
+            int colorId = filter.getTabGroupColor(oldRootId);
             if (colorId != INVALID_COLOR_ID) {
                 filter.setTabGroupColor(newRootId, colorId);
                 filter.deleteTabGroupColor(oldRootId);
