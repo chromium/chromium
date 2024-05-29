@@ -1629,75 +1629,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.{Origin}.FirstContentfulPaint" units="ms"
+<histogram name="PageLoad.Clients.{Origin}.{MetricName}" units="ms"
     expires_after="2024-11-17">
   <owner>chikamune@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
-  <summary>
-    PageLoad.PaintTiming.NavigationToFirstContentfulPaint, but recorded only for
-    {Origin} navigations.
-  </summary>
+  <summary>{MetricName}, but recorded only for {Origin} navigations.</summary>
   <token key="Origin">
     <variant name="CrossOrigin" summary="cross-origin"/>
     <variant name="SameOrigin" summary="same-origin"/>
   </token>
-</histogram>
-
-<histogram name="PageLoad.Clients.{Origin}.InteractiveTiming.FirstInputDelay"
-    units="ms" expires_after="2024-10-06">
-  <owner>chikamune@chromium.org</owner>
-  <owner>loading-dev@chromium.org</owner>
-  <summary>
-    PageLoad.InteractiveTiming.FirstInputDelay4, but recorded only for {Origin}
-    navigations.
-  </summary>
-  <token key="Origin">
-    <variant name="CrossOrigin" summary="cross-origin"/>
-    <variant name="SameOrigin" summary="same-origin"/>
-  </token>
-</histogram>
-
-<histogram name="PageLoad.Clients.{Origin}.LargestContentfulPaint" units="ms"
-    expires_after="2024-11-17">
-  <owner>chikamune@chromium.org</owner>
-  <owner>loading-dev@chromium.org</owner>
-  <summary>
-    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2, but recorded only
-    for {Origin} navigations.
-  </summary>
-  <token key="Origin">
-    <variant name="CrossOrigin" summary="cross-origin"/>
-    <variant name="SameOrigin" summary="same-origin"/>
-  </token>
-</histogram>
-
-<histogram
-    name="PageLoad.Clients.{Origin}.LayoutInstability.CumulativeShiftScore"
-    units="ms" expires_after="2024-07-07">
-  <owner>chikamune@chromium.org</owner>
-  <owner>loading-dev@chromium.org</owner>
-  <summary>
-    PageLoad.LayoutInstability.CumulativeShiftScore, but recorded only for
-    {Origin} navigations.
-  </summary>
-  <token key="Origin">
-    <variant name="CrossOrigin" summary="cross-origin"/>
-    <variant name="SameOrigin" summary="same-origin"/>
-  </token>
-</histogram>
-
-<histogram
-    name="PageLoad.Clients.{Origin}.LayoutInstability.CumulativeShiftScore.MainFrame"
-    units="ms" expires_after="2024-07-07">
-  <owner>chikamune@chromium.org</owner>
-  <owner>loading-dev@chromium.org</owner>
-  <summary>
-    PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame, but recorded only
-    for {Origin} navigations.
-  </summary>
-  <token key="Origin">
-    <variant name="CrossOrigin" summary="cross-origin"/>
-    <variant name="SameOrigin" summary="same-origin"/>
+  <token key="MetricName">
+    <variant name="FirstContentfulPaint"
+        summary="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
+    <variant name="InteractiveTiming.FirstInputDelay"
+        summary="PageLoad.InteractiveTiming.FirstInputDelay4"/>
+    <variant name="LargestContentfulPaint"
+        summary="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2"/>
+    <variant name="LayoutInstability.CumulativeShiftScore"
+        summary="PageLoad.LayoutInstability.CumulativeShiftScore"/>
+    <variant name="LayoutInstability.CumulativeShiftScore.MainFrame"
+        summary="PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame"/>
   </token>
 </histogram>
 
