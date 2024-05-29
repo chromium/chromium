@@ -102,9 +102,9 @@ SchedulerDfs::Sequence::Sequence(
       order_data_(std::move(order_data)) {}
 
 SchedulerDfs::Sequence::~Sequence() {
-  for (auto& kv : wait_fences_) {
+  for (const auto& wait_fence : wait_fences_) {
     Sequence* release_sequence =
-        scheduler_->GetSequence(kv.first.release_sequence_id);
+        scheduler_->GetSequence(wait_fence.release_sequence_id);
     if (release_sequence) {
       scheduler_->TryScheduleSequence(release_sequence);
     }
@@ -116,7 +116,7 @@ SchedulerDfs::Sequence::~Sequence() {
 bool SchedulerDfs::Sequence::IsNextTaskUnblocked() const {
   return !tasks_.empty() &&
          (wait_fences_.empty() ||
-          wait_fences_.begin()->first.order_num > tasks_.front().order_num);
+          wait_fences_.begin()->order_num > tasks_.front().order_num);
 }
 
 bool SchedulerDfs::Sequence::HasTasks() const {
@@ -239,9 +239,7 @@ void SchedulerDfs::Sequence::AddWaitFence(const SyncToken& sync_token,
   if (it != wait_fences_.end())
     return;
 
-  wait_fences_.emplace(
-      std::make_pair(WaitFence(sync_token, order_num, release_sequence_id),
-                     default_priority_));
+  wait_fences_.emplace(sync_token, order_num, release_sequence_id);
 }
 
 void SchedulerDfs::Sequence::RemoveWaitFence(const SyncToken& sync_token,
@@ -265,14 +263,6 @@ void SchedulerDfs::Sequence::RemoveWaitFence(const SyncToken& sync_token,
       }
     }
 
-    Sequence* release_sequence = scheduler_->GetSequence(release_sequence_id);
-    if (release_sequence) {
-      // The release sequence's task runner could potentially need to be waken
-      // up now.
-      // TODO(elgarawany): Really? This doesn't make sense. The release sequence
-      // must have just been running because it released the fence!
-      scheduler_->TryScheduleSequence(release_sequence);
-    }
     scheduler_->TryScheduleSequence(this);
   }
 }
@@ -555,20 +545,18 @@ SchedulerDfs::Sequence* SchedulerDfs::FindNextTaskFromRoot(
 
   for (auto fence_iter = root_sequence->wait_fences_.begin();
        fence_iter != root_sequence->wait_fences_.end() &&
-       fence_iter->first.order_num <= first_task_order_num;
+       fence_iter->order_num <= first_task_order_num;
        ++fence_iter) {
     // Recurse into the dependent sequence. If a subtask was found, then
     // we're done.
     DVLOG(10) << "Recursing into dependency in sequence "
-              << fence_iter->first.release_sequence_id
-              << " (order_num: " << fence_iter->first.order_num << ").";
-    Sequence* release_sequence =
-        GetSequence(fence_iter->first.release_sequence_id);
+              << fence_iter->release_sequence_id
+              << " (order_num: " << fence_iter->order_num << ").";
+    Sequence* release_sequence = GetSequence(fence_iter->release_sequence_id);
     // ShouldYield might be calling this function, and a dependency might depend
     // on the calling sequence, which might have not released its fences yet.
     if (release_sequence && release_sequence->HasTasks() &&
-        release_sequence->tasks_.front().order_num >=
-            fence_iter->first.order_num) {
+        release_sequence->tasks_.front().order_num >= fence_iter->order_num) {
       continue;
     }
     if (Sequence* result = FindNextTaskFromRoot(release_sequence);
@@ -580,8 +568,7 @@ SchedulerDfs::Sequence* SchedulerDfs::FindNextTaskFromRoot(
   // because they are tied to another thread.
   const bool are_dependencies_done =
       root_sequence->wait_fences_.empty() ||
-      root_sequence->wait_fences_.begin()->first.order_num >
-          first_task_order_num;
+      root_sequence->wait_fences_.begin()->order_num > first_task_order_num;
   // Return |root_sequence| only if its dependencies are done, and if it can
   // run on the current thread.
   DVLOG_IF(10, root_sequence->task_runner() !=

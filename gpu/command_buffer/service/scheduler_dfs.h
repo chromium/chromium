@@ -10,6 +10,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -281,7 +282,7 @@ class GPU_EXPORT SchedulerDfs {
     // increasing order number but may be removed out of order. Tasks are
     // blocked if there's a wait fence with order number less than or equal to
     // the task's order number.
-    base::flat_map<WaitFence, SchedulingPriority> wait_fences_;
+    base::flat_set<WaitFence> wait_fences_;
   };
 
   Sequence* GetSequence(SequenceId sequence_id);
