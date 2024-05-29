@@ -5,13 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_OMNIBOX_POSITION_OMNIBOX_POSITION_CHOICE_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_FIRST_RUN_OMNIBOX_POSITION_OMNIBOX_POSITION_CHOICE_COORDINATOR_H_
 
-#import "ios/chrome/browser/ui/first_run/interruptible_chrome_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol FirstRunScreenDelegate;
 @protocol PromosManagerUIHandler;
 
 /// Coordinator for the omnibox position choice screen.
-@interface OmniboxPositionChoiceCoordinator : InterruptibleChromeCoordinator
+@interface OmniboxPositionChoiceCoordinator : ChromeCoordinator
 
 /// Initiates a OmniboxPositionChoiceCoordinator. Used for app-launch promo with
 /// the promos manager.

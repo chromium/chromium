@@ -15,6 +15,7 @@ source_set("omnibox_position") {
     "//components/prefs",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
