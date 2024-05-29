@@ -574,11 +574,24 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
   BOOL tooSmall = _snapshotsContainer.frame.size.height < 60;
   BOOL isVerticallyCompacted =
       self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
+
+  const UIDeviceOrientation deviceOrientation =
+      [[UIDevice currentDevice] orientation];
+  BOOL isInLandscape = deviceOrientation == UIDeviceOrientationLandscapeRight ||
+                       deviceOrientation == UIDeviceOrientationLandscapeLeft;
   BOOL isIpadConfiguration =
       (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) &&
       _keyboardDisplayed;
+  BOOL isIpadInLandscapeWithKeyboard = isIpadConfiguration && isInLandscape;
+
+  // The snapshots container should not be displayed in the following
+  // scenarios:
+  // - When the container lacks sufficient space.
+  // - On devices with a vertically compact form factor.
+  // - iPad in landscape orientation with the virtual keyboard visible.
   CGFloat updatedAlpha =
-      (tooSmall || isVerticallyCompacted || isIpadConfiguration) ? 0 : 1;
+      (tooSmall || isVerticallyCompacted || isIpadInLandscapeWithKeyboard) ? 0
+                                                                           : 1;
   if (_snapshotsContainer.alpha == updatedAlpha) {
     return;
   }
