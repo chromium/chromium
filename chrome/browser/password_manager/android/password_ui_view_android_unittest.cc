@@ -95,10 +95,12 @@ class PasswordUIViewAndroidTest : public ::testing::Test {
   raw_ptr<JNIEnv> env() { return env_; }
   base::ScopedTempDir& temp_dir() { return temp_dir_; }
 
+ protected:
+  raw_ptr<TestingProfile> testing_profile_;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
-  raw_ptr<TestingProfile> testing_profile_;
   scoped_refptr<TestPasswordStore> store_;
   raw_ptr<JNIEnv> env_;
   base::ScopedTempDir temp_dir_;
@@ -119,8 +121,8 @@ TEST_F(PasswordUIViewAndroidTest, GetSerializedPasswords) {
           {password_manager::CredentialUIEntry(form)});
 
   std::unique_ptr<PasswordUIViewAndroid, PasswordUIViewAndroidDestroyDeleter>
-      password_ui_view(
-          new PasswordUIViewAndroid(env(), JavaParamRef<jobject>(nullptr)));
+      password_ui_view(new PasswordUIViewAndroid(
+          env(), JavaParamRef<jobject>(nullptr), testing_profile_));
   // SavedPasswordsPresenter needs time to initialize and fetch passwords.
   RunUntilIdle();
 
@@ -151,8 +153,8 @@ TEST_F(PasswordUIViewAndroidTest, GetSerializedPasswords_Cancelled) {
   AddPasswordEntry("https://example.com", "username", "password");
 
   std::unique_ptr<PasswordUIViewAndroid, PasswordUIViewAndroidDestroyDeleter>
-      password_ui_view(
-          new PasswordUIViewAndroid(env(), JavaParamRef<jobject>(nullptr)));
+      password_ui_view(new PasswordUIViewAndroid(
+          env(), JavaParamRef<jobject>(nullptr), testing_profile_));
   // SavedPasswordsPresenter needs time to initialize and fetch passwords.
   RunUntilIdle();
 
@@ -179,8 +181,8 @@ TEST_F(PasswordUIViewAndroidTest, GetSerializedPasswords_WriteFailed) {
   AddPasswordEntry("https://example.com", "username", "password");
 
   std::unique_ptr<PasswordUIViewAndroid, PasswordUIViewAndroidDestroyDeleter>
-      password_ui_view(
-          new PasswordUIViewAndroid(env(), JavaParamRef<jobject>(nullptr)));
+      password_ui_view(new PasswordUIViewAndroid(
+          env(), JavaParamRef<jobject>(nullptr), testing_profile_));
   // SavedPasswordsPresenter needs time to initialize and fetch passwords.
   RunUntilIdle();
 

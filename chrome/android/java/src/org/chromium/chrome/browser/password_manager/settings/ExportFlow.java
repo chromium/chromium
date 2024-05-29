@@ -279,7 +279,7 @@ public class ExportFlow implements ExportFlowInterface {
         // fails the reauthentication, the serialized passwords will simply get ignored when
         // they arrive.
         mEntriesCount = null;
-        if (!PasswordManagerHandlerProvider.getInstance()
+        if (!PasswordManagerHandlerProvider.getForProfile(mDelegate.getProfile())
                 .getPasswordManagerHandler()
                 .isWaitingForPasswordStore()) {
             serializePasswords();
@@ -312,7 +312,7 @@ public class ExportFlow implements ExportFlowInterface {
     void serializePasswords() {
         if (mPasswordSerializationStarted) return;
         mPasswordSerializationStarted = true;
-        PasswordManagerHandlerProvider.getInstance()
+        PasswordManagerHandlerProvider.getForProfile(mDelegate.getProfile())
                 .getPasswordManagerHandler()
                 .serializePasswords(
                         getTargetDirectory(),

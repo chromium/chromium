@@ -46,6 +46,7 @@ public class PasswordMigrationWarningCoordinator
     private final SyncConsentActivityLauncher mSyncConsentActivityLauncher;
     private final SettingsLauncher mSettingsLauncher;
     private final Context mContext;
+    private final Profile mProfile;
     private final Class<? extends Fragment> mSyncSettingsFragment;
 
     private ExportFlowInterface mExportFlow;
@@ -67,6 +68,7 @@ public class PasswordMigrationWarningCoordinator
             @PasswordMigrationWarningTriggers int referrer,
             Callback<Throwable> exceptionReporter) {
         mContext = context;
+        mProfile = profile;
         mSyncConsentActivityLauncher = syncConsentActivityLauncher;
         mSettingsLauncher = settingsLauncher;
         mSyncSettingsFragment = syncSettingsFragment;
@@ -149,6 +151,11 @@ public class PasswordMigrationWarningCoordinator
                                     startPasswordsDeletion();
                                 });
                         deletionDialogFragment.show(mFragmentManager, null);
+                    }
+
+                    @Override
+                    public Profile getProfile() {
+                        return mProfile;
                     }
                 },
                 PASSWORD_MIGRATION_WARNING_EXPORT_METRICS_ID);

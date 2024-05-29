@@ -105,7 +105,8 @@ public class PasswordMigrationWarningExportFlowTest {
                     mExportFlow = new ExportFlow();
                     mFakePasswordManagerHandler =
                             new FakePasswordManagerHandler(
-                                    PasswordManagerHandlerProvider.getInstance());
+                                    PasswordManagerHandlerProvider.getForProfile(
+                                            mChromeActivityRule.getProfile(false)));
                     // Create a password, otherwise the export will not be allowed when there are
                     // not passwords saved.
                     setPasswordSource("https://example.com", "test user", "password");
@@ -119,12 +120,15 @@ public class PasswordMigrationWarningExportFlowTest {
                                     ManageSyncSettings.class,
                                     mExportFlow,
                                     (PasswordListObserver observer) ->
-                                            PasswordManagerHandlerProvider.getInstance()
+                                            PasswordManagerHandlerProvider.getForProfile(
+                                                            mChromeActivityRule.getProfile(false))
                                                     .addObserver(observer),
                                     mPasswordStoreBridge,
                                     PasswordMigrationWarningTriggers.CHROME_STARTUP,
                                     (Throwable exception) -> fail());
-                    PasswordManagerHandlerProvider.getInstance().passwordListAvailable(1);
+                    PasswordManagerHandlerProvider.getForProfile(
+                                    mChromeActivityRule.getProfile(false))
+                            .passwordListAvailable(1);
                     mCoordinator.showWarning();
                 });
         // Go to the "More options" screen.
@@ -285,7 +289,9 @@ public class PasswordMigrationWarningExportFlowTest {
     private void setPasswordSource(String origin, String username, String password) {
         PasswordManagerHandlerProvider handlerProvider =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
-                        PasswordManagerHandlerProvider::getInstance);
+                        () ->
+                                PasswordManagerHandlerProvider.getForProfile(
+                                        mChromeActivityRule.getProfile(false)));
         mFakePasswordManagerHandler.insertPasswordEntryForTesting(origin, username, password);
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->

@@ -13,6 +13,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntStringCallback;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
@@ -39,10 +40,11 @@ public final class PasswordUIView implements PasswordManagerHandler {
     /**
      * Constructor creates the native object as well. Callers should call destroy() after usage.
      *
-     * @param PasswordListObserver The only observer.
+     * @param observer The only observer.
+     * @param profile The {@link Profile} associated with these passwords.
      */
-    public PasswordUIView(PasswordListObserver observer) {
-        mNativePasswordUIViewAndroid = PasswordUIViewJni.get().init(PasswordUIView.this);
+    public PasswordUIView(PasswordListObserver observer, Profile profile) {
+        mNativePasswordUIViewAndroid = PasswordUIViewJni.get().init(PasswordUIView.this, profile);
         mObserver = observer;
     }
 
@@ -163,10 +165,6 @@ public final class PasswordUIView implements PasswordManagerHandler {
         return PasswordUIViewJni.get().getTrustedVaultLearnMoreURL();
     }
 
-    public static boolean hasAccountForLeakCheckRequest() {
-        return PasswordUIViewJni.get().hasAccountForLeakCheckRequest();
-    }
-
     @Override
     public boolean isWaitingForPasswordStore() {
         return PasswordUIViewJni.get()
@@ -183,7 +181,7 @@ public final class PasswordUIView implements PasswordManagerHandler {
 
     @NativeMethods
     interface Natives {
-        long init(PasswordUIView caller);
+        long init(PasswordUIView caller, @JniType("Profile*") Profile profile);
 
         void insertPasswordEntryForTesting(
                 long nativePasswordUIViewAndroid,
@@ -211,8 +209,6 @@ public final class PasswordUIView implements PasswordManagerHandler {
 
         @JniType("std::string")
         String getTrustedVaultLearnMoreURL();
-
-        boolean hasAccountForLeakCheckRequest();
 
         boolean isWaitingForPasswordStore(long nativePasswordUIViewAndroid, PasswordUIView caller);
 

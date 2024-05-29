@@ -12,6 +12,8 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import org.chromium.chrome.browser.profiles.Profile;
+
 /** An interface for the implementations of {@link ExportFlow}. */
 public interface ExportFlowInterface {
     /** The delegate to provide ExportFlow with essential information from the owning fragment. */
@@ -42,17 +44,19 @@ public interface ExportFlowInterface {
          * Performs the actions that should happen after the export flow has successfully finished.
          */
         default void onExportFlowSucceeded() {}
+
+        /** Return the {@link Profile} associated with the passwords. */
+        Profile getProfile();
     }
 
     /**
      * A hook to be used in the onCreate method of the owning {@link Fragment}. I restores the state
      * of the flow.
      *
-     * @param savedInstanceState The {@link Bundle} passed from the fragment's onCreate
-     * method.
+     * @param savedInstanceState The {@link Bundle} passed from the fragment's onCreate method.
      * @param delegate The {@link Delegate} for this ExportFlow.
      * @param callerMetricsId The unique string, which identifies the caller. This will be used as
-     *         the prefix for metrics histograms names.
+     *     the prefix for metrics histograms names.
      */
     public void onCreate(Bundle savedInstanceState, Delegate delegate, String callerMetricsId);
 

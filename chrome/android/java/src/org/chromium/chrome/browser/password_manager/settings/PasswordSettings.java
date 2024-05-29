@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -162,11 +163,16 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
                     public void runCreateFileOnDiskIntent(Intent intent) {
                         startActivityForResult(intent, PASSWORD_EXPORT_INTENT_REQUEST_CODE);
                     }
+
+                    @Override
+                    public Profile getProfile() {
+                        return PasswordSettings.this.getProfile();
+                    }
                 },
                 PASSWORD_SETTINGS_EXPORT_METRICS_ID);
         getActivity().setTitle(R.string.password_manager_settings_title);
         setPreferenceScreen(getPreferenceManager().createPreferenceScreen(getStyledContext()));
-        PasswordManagerHandlerProvider.getInstance().addObserver(this);
+        PasswordManagerHandlerProvider.getForProfile(getProfile()).addObserver(this);
 
         if (SyncServiceFactory.getForProfile(getProfile()) != null) {
             SyncServiceFactory.getForProfile(getProfile()).addSyncStateChangedListener(this);
@@ -295,7 +301,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         getPreferenceScreen().removeAll();
         if (mSearchQuery != null) {
             // Only the filtered passwords and exceptions should be shown.
-            PasswordManagerHandlerProvider.getInstance()
+            PasswordManagerHandlerProvider.getForProfile(getProfile())
                     .getPasswordManagerHandler()
                     .updatePasswordLists();
             return;
@@ -318,7 +324,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
                     R.string.android_trusted_vault_banner_sub_label_offer_opt_in,
                     this::openTrustedVaultOptInDialog);
         }
-        PasswordManagerHandlerProvider.getInstance()
+        PasswordManagerHandlerProvider.getForProfile(getProfile())
                 .getPasswordManagerHandler()
                 .updatePasswordLists();
     }
@@ -374,7 +380,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         }
         for (int i = 0; i < count; i++) {
             SavedPasswordEntry saved =
-                    PasswordManagerHandlerProvider.getInstance()
+                    PasswordManagerHandlerProvider.getForProfile(getProfile())
                             .getPasswordManagerHandler()
                             .getSavedPasswordEntry(i);
             String url = saved.getUrl();
@@ -413,7 +419,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         }
 
         if (!mNoPasswords) {
-            PasswordManagerHandlerProvider.getInstance()
+            PasswordManagerHandlerProvider.getForProfile(getProfile())
                     .getPasswordManagerHandler()
                     .showMigrationWarning(getActivity(), mBottomSheetController);
         }
@@ -456,7 +462,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         getPreferenceScreen().addPreference(profileCategory);
         for (int i = 0; i < count; i++) {
             String exception =
-                    PasswordManagerHandlerProvider.getInstance()
+                    PasswordManagerHandlerProvider.getForProfile(getProfile())
                             .getPasswordManagerHandler()
                             .getSavedPasswordException(i);
             Preference preference = new Preference(getStyledContext());
@@ -507,7 +513,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         // (e.g. by pressing on the back button) and not when the activity is temporarily destroyed
         // by the system.
         if (getActivity().isFinishing()) {
-            PasswordManagerHandlerProvider.getInstance().removeObserver(this);
+            PasswordManagerHandlerProvider.getForProfile(getProfile()).removeObserver(this);
             if (mPasswordCheck != null
                     && mManagePasswordsReferrer != ManagePasswordsReferrer.CHROME_SETTINGS) {
                 PasswordCheckFactory.destroy();
@@ -530,7 +536,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         } else {
             boolean isBlockedCredential =
                     !preference.getExtras().containsKey(PasswordSettings.PASSWORD_LIST_NAME);
-            PasswordManagerHandlerProvider.getInstance()
+            PasswordManagerHandlerProvider.getForProfile(getProfile())
                     .getPasswordManagerHandler()
                     .showPasswordEntryEditingView(
                             getActivity(),

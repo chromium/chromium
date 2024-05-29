@@ -25,8 +25,8 @@
 #include "base/strings/string_piece.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "chrome/android/chrome_jni_headers/PasswordUIView_jni.h"
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
@@ -39,6 +39,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/PasswordUIView_jni.h"
 
 namespace {
 
@@ -87,8 +90,20 @@ PasswordUIViewAndroid::SerializationResult SerializePasswords(
 
 }  // namespace
 
-PasswordUIViewAndroid::PasswordUIViewAndroid(JNIEnv* env, jobject obj)
-    : weak_java_ui_controller_(env, obj) {
+PasswordUIViewAndroid::PasswordUIViewAndroid(JNIEnv* env,
+                                             jobject obj,
+                                             Profile* profile)
+    : profile_(profile),
+      profile_store_(ProfilePasswordStoreFactory::GetForProfile(
+          profile,
+          ServiceAccessType::EXPLICIT_ACCESS)),
+      saved_passwords_presenter_(
+          AffiliationServiceFactory::GetForProfile(profile),
+          profile_store_,
+          AccountPasswordStoreFactory::GetForProfile(
+              profile,
+              ServiceAccessType::EXPLICIT_ACCESS)),
+      weak_java_ui_controller_(env, obj) {
   saved_passwords_presenter_.AddObserver(this);
   saved_passwords_presenter_.Init();
 }
@@ -278,7 +293,7 @@ void PasswordUIViewAndroid::ShowMigrationWarning(
     const base::android::JavaParamRef<jobject>& activity,
     const base::android::JavaParamRef<jobject>& bottom_sheet_controller) {
   local_password_migration::ShowWarningWithActivity(
-      activity, bottom_sheet_controller, ProfileManager::GetLastUsedProfile(),
+      activity, bottom_sheet_controller, profile_,
       password_manager::metrics_util::PasswordMigrationWarningTriggers::
           kPasswordSettings);
 }
@@ -295,14 +310,6 @@ std::string JNI_PasswordUIView_GetTrustedVaultLearnMoreURL(JNIEnv* env) {
   return chrome::kSyncTrustedVaultLearnMoreURL;
 }
 
-jboolean JNI_PasswordUIView_HasAccountForLeakCheckRequest(JNIEnv* env) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(
-          ProfileManager::GetLastUsedProfile());
-  return password_manager::LeakDetectionCheckImpl::HasAccountForRequest(
-      identity_manager);
-}
-
 jboolean PasswordUIViewAndroid::IsWaitingForPasswordStore(
     JNIEnv* env,
     const base::android::JavaRef<jobject>&) {
@@ -311,8 +318,10 @@ jboolean PasswordUIViewAndroid::IsWaitingForPasswordStore(
 
 // static
 static jlong JNI_PasswordUIView_Init(JNIEnv* env,
-                                     const JavaParamRef<jobject>& obj) {
-  PasswordUIViewAndroid* controller = new PasswordUIViewAndroid(env, obj.obj());
+                                     const JavaParamRef<jobject>& obj,
+                                     Profile* profile) {
+  PasswordUIViewAndroid* controller =
+      new PasswordUIViewAndroid(env, obj.obj(), profile);
   return reinterpret_cast<intptr_t>(controller);
 }
 

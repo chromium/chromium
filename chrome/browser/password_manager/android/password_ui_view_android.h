@@ -18,10 +18,11 @@
 #include "chrome/browser/password_entry_edit/android/credential_edit_bridge.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+
+class Profile;
 
 namespace password_manager {
 class CredentialProviderInterface;
@@ -47,7 +48,7 @@ class PasswordUIViewAndroid
     std::string error;
   };
 
-  PasswordUIViewAndroid(JNIEnv* env, jobject);
+  PasswordUIViewAndroid(JNIEnv* env, jobject obj, Profile* profile);
 
   PasswordUIViewAndroid(const PasswordUIViewAndroid&) = delete;
   PasswordUIViewAndroid& operator=(const PasswordUIViewAndroid&) = delete;
@@ -153,20 +154,13 @@ class PasswordUIViewAndroid
   // remain null in production code.
   raw_ptr<SerializationResult> export_target_for_testing_ = nullptr;
 
+  raw_ptr<Profile> profile_;
+
   // Pointer to the password store, powering |saved_passwords_presenter_|.
-  scoped_refptr<password_manager::PasswordStoreInterface> profile_store_ =
-      ProfilePasswordStoreFactory::GetForProfile(
-          ProfileManager::GetLastUsedProfile(),
-          ServiceAccessType::EXPLICIT_ACCESS);
+  scoped_refptr<password_manager::PasswordStoreInterface> profile_store_;
 
   // Manages the list of saved passwords, including updates.
-  password_manager::SavedPasswordsPresenter saved_passwords_presenter_{
-      AffiliationServiceFactory::GetForProfile(
-          ProfileManager::GetLastUsedProfile()),
-      profile_store_,
-      AccountPasswordStoreFactory::GetForProfile(
-          ProfileManager::GetLastUsedProfile(),
-          ServiceAccessType::EXPLICIT_ACCESS)};
+  password_manager::SavedPasswordsPresenter saved_passwords_presenter_;
 
   // Cached passwords and blocked sites.
   std::vector<password_manager::CredentialUIEntry> passwords_;
