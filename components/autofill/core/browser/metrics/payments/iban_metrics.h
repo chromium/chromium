@@ -178,6 +178,9 @@ void LogServerIbanUnmaskStatus(bool is_successful);
 // Logs that IBAN save was offered for the given country.
 void LogIbanSaveOfferedCountry(std::string_view country_code);
 
+// Logs that IBAN save was accepted for the given country.
+void LogIbanSaveAcceptedCountry(std::string_view country_code);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_IBAN_METRICS_H_

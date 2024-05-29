@@ -2586,6 +2586,18 @@ chromium-metrics-reviews@google.com.
   <token key="AutofillFormType" variants="AutofillFormType"/>
 </histogram>
 
+<histogram name="Autofill.Iban.CountryOfSaveAcceptedIban" enum="IbanCountry"
+    expires_after="2025-07-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The country code of an IBAN that was accepted to be saved. Recorded upon the
+    user deciding to accept the offer to save the IBAN. This metric includes
+    both local and server IBANs.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Iban.CountryOfSaveOfferedIban" enum="IbanCountry"
     expires_after="2025-07-01">
   <owner>qihuizhao@google.com</owner>
