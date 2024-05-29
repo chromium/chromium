@@ -25,6 +25,18 @@
     function click(element) {
       element.click();
     }
+
+    // Waits until the given permission element is granted.
+    function notifyWhenGranted(id) {
+      if (document.getElementById(id).matches(':granted')) {
+        console.log(id + '-granted');
+      } else {
+        window.setTimeout(() => {
+          notifyWhenGranted(id);
+        }, 50);
+      }
+    }
+
   </script>
 </body>
 </html>

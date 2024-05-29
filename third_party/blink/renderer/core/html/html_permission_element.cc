@@ -736,6 +736,7 @@ void HTMLPermissionElement::OnEmbeddedPermissionsDecided(
       return;
     case EmbeddedPermissionControlResult::kGranted:
       permissions_granted_ = true;
+      UpdateAppearance();
       DispatchEvent(*Event::Create(event_type_names::kResolve));
       return;
     case EmbeddedPermissionControlResult::kDenied:
