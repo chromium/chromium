@@ -2319,10 +2319,7 @@ public class CronetUrlRequestTest {
 
     @Test
     @SmallTest
-    @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK},
-            reason = "b/343146969")
-    public void testFailures() throws Exception {
+    public void testThrowOrCancelInOnRedirect() {
         throwOrCancel(FailureType.CANCEL_SYNC, ResponseStep.ON_RECEIVED_REDIRECT, false, false);
         throwOrCancel(FailureType.CANCEL_ASYNC, ResponseStep.ON_RECEIVED_REDIRECT, false, false);
         throwOrCancel(
@@ -2331,7 +2328,11 @@ public class CronetUrlRequestTest {
                 false,
                 false);
         throwOrCancel(FailureType.THROW_SYNC, ResponseStep.ON_RECEIVED_REDIRECT, false, true);
+    }
 
+    @Test
+    @SmallTest
+    public void testThrowOrCancelInOnResponseStarted() {
         throwOrCancel(FailureType.CANCEL_SYNC, ResponseStep.ON_RESPONSE_STARTED, true, false);
         throwOrCancel(FailureType.CANCEL_ASYNC, ResponseStep.ON_RESPONSE_STARTED, true, false);
         throwOrCancel(
@@ -2340,7 +2341,11 @@ public class CronetUrlRequestTest {
                 true,
                 false);
         throwOrCancel(FailureType.THROW_SYNC, ResponseStep.ON_RESPONSE_STARTED, true, true);
+    }
 
+    @Test
+    @SmallTest
+    public void testThrowOrCancelInOnReadCompleted() {
         throwOrCancel(FailureType.CANCEL_SYNC, ResponseStep.ON_READ_COMPLETED, true, false);
         throwOrCancel(FailureType.CANCEL_ASYNC, ResponseStep.ON_READ_COMPLETED, true, false);
         throwOrCancel(
