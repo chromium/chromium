@@ -8,6 +8,8 @@
 
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
+#include "ash/webui/help_app_ui/help_app_manager.h"
+#include "ash/webui/help_app_ui/help_app_manager_factory.h"
 #include "ash/webui/help_app_ui/search/search_handler.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "base/metrics/histogram_functions.h"
@@ -22,6 +24,8 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "url/gurl.h"
@@ -94,12 +98,29 @@ void HelpAppResult::Open(int event_flags) {
       std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
 }
 
-HelpAppProvider::HelpAppProvider(Profile* profile,
-                                 ash::help_app::SearchHandler* search_handler)
-    : SearchProvider(SearchCategory::kHelp),
-      profile_(profile),
-      search_handler_(search_handler) {
-  DCHECK(profile_);
+HelpAppProvider::HelpAppProvider(Profile* profile)
+    : SearchProvider(SearchCategory::kHelp), profile_(profile) {
+  CHECK(profile_);
+
+  auto* session_manager = session_manager::SessionManager::Get();
+  if (session_manager->IsUserSessionStartUpTaskCompleted()) {
+    // If user session start up task has completed, the initialization can
+    // start.
+    Initialize();
+  } else {
+    // Wait for the user session start up task completion to prioritize
+    // resources for them.
+    session_manager_observation_.Observe(session_manager);
+  }
+}
+
+HelpAppProvider::~HelpAppProvider() = default;
+
+void HelpAppProvider::Initialize(
+    ash::help_app::SearchHandler* fake_search_handler) {
+  // Initialization is happening, so we no longer need to wait for user session
+  // start up task completion.
+  session_manager_observation_.Reset();
 
   app_registry_cache_observer_.Observe(
       &apps::AppServiceProxyFactory::GetForProfile(profile_)
@@ -112,15 +133,24 @@ HelpAppProvider::HelpAppProvider(Profile* profile,
   icon_ = ui::ImageModel::FromVectorIcon(
       app_list::kHelpAppIcon, SK_ColorTRANSPARENT, kAppIconDimension);
 
+  // Use fake search handler if provided in tests, or get it from
+  // `help_app_manager`.
+  if (fake_search_handler) {
+    search_handler_ = fake_search_handler;
+  } else {
+    auto* help_app_manager =
+        ash::help_app::HelpAppManagerFactory::GetForBrowserContext(profile_);
+    CHECK(help_app_manager);
+    search_handler_ = help_app_manager->search_handler();
+  }
+
   if (!search_handler_) {
     return;
   }
-  search_handler_->OnProfileDirAvailable(profile->GetPath());
+  search_handler_->OnProfileDirAvailable(profile_->GetPath());
   search_handler_->Observe(
       search_results_observer_receiver_.BindNewPipeAndPassRemote());
 }
-
-HelpAppProvider::~HelpAppProvider() = default;
 
 void HelpAppProvider::Start(const std::u16string& query) {
   if (query.size() < kMinQueryLength) {
@@ -130,10 +160,6 @@ void HelpAppProvider::Start(const std::u16string& query) {
     // search query.
     return;
   }
-
-  // Start a search for list results.
-  const base::TimeTicks start_time = base::TimeTicks::Now();
-  last_query_ = query;
 
   // Stop the search if:
   //  - the search backend isn't available (or the feature is disabled)
@@ -149,6 +175,10 @@ void HelpAppProvider::Start(const std::u16string& query) {
     SwapResults(&search_results);
     return;
   }
+
+  // Start a search for list results.
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  last_query_ = query;
 
   // Invalidate weak pointers to cancel existing searches.
   weak_factory_.InvalidateWeakPtrs();
@@ -208,6 +238,10 @@ void HelpAppProvider::OnSearchResultAvailabilityChanged() {
     return;
   }
   Start(last_query_);
+}
+
+void HelpAppProvider::OnUserSessionStartUpTaskCompleted() {
+  Initialize();
 }
 
 void HelpAppProvider::OnLoadIcon(apps::IconValuePtr icon_value) {

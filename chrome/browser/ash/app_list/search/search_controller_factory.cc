@@ -8,8 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
-#include "ash/webui/help_app_ui/help_app_manager.h"
-#include "ash/webui/help_app_ui/help_app_manager_factory.h"
 #include "base/files/file_enumerator.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
@@ -143,10 +141,7 @@ std::unique_ptr<SearchController> CreateSearchController(
   controller->AddProvider(std::make_unique<KeyboardShortcutProvider>(profile));
 
   if (base::FeatureList::IsEnabled(ash::features::kHelpAppLauncherSearch)) {
-    controller->AddProvider(std::make_unique<HelpAppProvider>(
-        profile,
-        ash::help_app::HelpAppManagerFactory::GetForBrowserContext(profile)
-            ->search_handler()));
+    controller->AddProvider(std::make_unique<HelpAppProvider>(profile));
   }
 
   controller->AddProvider(
