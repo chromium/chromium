@@ -552,6 +552,7 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
           &kOmniboxMatchToolbarAndStatusBarColor,
           &kOmniboxTouchDownTriggerForPrefetch,
           &kOmniboxAsyncViewInflation,
+          &kRichAutocompletion,
           &kUseFusedLocationProvider,
       }});
 

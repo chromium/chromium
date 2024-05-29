@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.util.Locale;
@@ -538,7 +539,9 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
                 editable.append(spanString);
             }
 
-            if (state.getAdditionalText().isPresent()) {
+            if (state.getAdditionalText().isPresent()
+                    && OmniboxFeatures.shouldShowRichInlineAutocompleteUrl(
+                            state.getUserText().length())) {
                 String additionalText = " - " + state.getAdditionalText().get();
                 SpannableString additionalTextSpanString = new SpannableString(additionalText);
                 // TODO(b/341744198) : Update the color for the additional text.

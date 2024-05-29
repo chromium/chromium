@@ -2242,6 +2242,30 @@ const FeatureEntry::FeatureVariation
          std::size(kContextualSearchSuppressShortViewWith600Dp), nullptr},
 };
 
+const FeatureEntry::FeatureParam kRichAutocompletionFullUrlThreeMinChar[] = {
+    {"rich_autocomplete_full_url", "true"},
+    {"rich_autocomplete_minimum_characters", "3"}};
+const FeatureEntry::FeatureParam kRichAutocompletionNoFullUrlThreeMinChar[] = {
+    {"rich_autocomplete_full_url", "false"},
+    {"rich_autocomplete_minimum_characters", "3"}};
+const FeatureEntry::FeatureParam kRichAutocompletionFullUrlFourMinChar[] = {
+    {"rich_autocomplete_full_url", "true"},
+    {"rich_autocomplete_minimum_characters", "4"}};
+const FeatureEntry::FeatureParam kRichAutocompletionNoFullUrlFourMinChar[] = {
+    {"rich_autocomplete_full_url", "false"},
+    {"rich_autocomplete_minimum_characters", "4"}};
+const FeatureEntry::FeatureVariation kRichAutocompletionAndroidVariations[] = {
+    {"(full url, 3 chars at least)", kRichAutocompletionFullUrlThreeMinChar,
+     std::size(kRichAutocompletionFullUrlThreeMinChar), nullptr},
+    {"(no full url, 3 chars at least)",
+     kRichAutocompletionNoFullUrlThreeMinChar,
+     std::size(kRichAutocompletionNoFullUrlThreeMinChar), nullptr},
+    {"(full url, 4 chars at least)", kRichAutocompletionFullUrlFourMinChar,
+     std::size(kRichAutocompletionFullUrlFourMinChar), nullptr},
+    {"(no full url, 4 chars at least)", kRichAutocompletionNoFullUrlFourMinChar,
+     std::size(kRichAutocompletionNoFullUrlFourMinChar), nullptr},
+};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam
@@ -4028,7 +4052,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-rich-autocompletion-android",
      flag_descriptions::kRichAutocompletionAndroidName,
      flag_descriptions::kRichAutocompletionAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kRichAutocompletion)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kRichAutocompletion,
+                                    kRichAutocompletionAndroidVariations,
+                                    "OmniboxRichAutocompletion")},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"show-autofill-type-predictions",
      flag_descriptions::kShowAutofillTypePredictionsName,
