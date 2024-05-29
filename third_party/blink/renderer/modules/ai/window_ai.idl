@@ -1,0 +1,20 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(crbug.com/343126579): Add link to spec/explainer.
+[
+    ImplementedAs=WindowAI,
+    RuntimeEnabled=ModelExecutionAPI
+] partial interface Window {
+    [
+      Replaceable
+    ]
+    readonly attribute AI ai;
+    // TODO(crbug.com/341851444): Remove after confirming there is no usage.
+    [
+      Replaceable,
+      ImplementedAs=ai
+    ]
+    readonly attribute AI model;
+};

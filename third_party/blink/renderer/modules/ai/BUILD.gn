@@ -4,18 +4,18 @@
 
 import("//third_party/blink/renderer/modules/modules.gni")
 
-blink_modules_sources("model_execution") {
+blink_modules_sources("ai") {
   sources = [
+    "ai.cc",
+    "ai.h",
+    "ai_metrics.cc",
+    "ai_metrics.h",
+    "ai_text_session.cc",
+    "ai_text_session.h",
     "exception_helpers.cc",
     "exception_helpers.h",
-    "model_execution_metrics.cc",
-    "model_execution_metrics.h",
-    "model_generic_session.cc",
-    "model_generic_session.h",
-    "model_manager.cc",
-    "model_manager.h",
-    "window_model.cc",
-    "window_model.h",
+    "window_ai.cc",
+    "window_ai.h",
   ]
 
   public_deps = [ "//third_party/blink/public/mojom:mojom_modules_blink" ]

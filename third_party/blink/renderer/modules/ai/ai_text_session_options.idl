@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-dictionary ModelGenericSessionOptions {
+// TODO(crbug.com/343126579): Add link to spec/explainer.
+dictionary AITextSessionOptions {
   [EnforceRange] unsigned long topK;
   float temperature;
 };

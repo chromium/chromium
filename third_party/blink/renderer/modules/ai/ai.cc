@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/model_execution/model_manager.h"
+#include "third_party/blink/renderer/modules/ai/ai.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
@@ -10,12 +10,12 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_generic_model_availability.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_model_generic_session_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_model_availability.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_session_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/modules/model_execution/exception_helpers.h"
-#include "third_party/blink/renderer/modules/model_execution/model_execution_metrics.h"
-#include "third_party/blink/renderer/modules/model_execution/model_generic_session.h"
+#include "third_party/blink/renderer/modules/ai/ai_metrics.h"
+#include "third_party/blink/renderer/modules/ai/ai_text_session.h"
+#include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -25,32 +25,29 @@
 
 namespace blink {
 
-V8GenericModelAvailability AvailabilityToV8(
-    ModelManager::ModelAvailability availability) {
+V8AIModelAvailability AvailabilityToV8(AI::ModelAvailability availability) {
   switch (availability) {
-    case ModelManager::ModelAvailability::kReadily:
-      return V8GenericModelAvailability(
-          V8GenericModelAvailability::Enum::kReadily);
-    case ModelManager::ModelAvailability::kAfterDownload:
-      return V8GenericModelAvailability(
-          V8GenericModelAvailability::Enum::kAfterDownload);
-    case ModelManager::ModelAvailability::kNo:
-      return V8GenericModelAvailability(V8GenericModelAvailability::Enum::kNo);
+    case AI::ModelAvailability::kReadily:
+      return V8AIModelAvailability(V8AIModelAvailability::Enum::kReadily);
+    case AI::ModelAvailability::kAfterDownload:
+      return V8AIModelAvailability(V8AIModelAvailability::Enum::kAfterDownload);
+    case AI::ModelAvailability::kNo:
+      return V8AIModelAvailability(V8AIModelAvailability::Enum::kNo);
   }
 }
 
-ModelManager::ModelManager(LocalDOMWindow* window)
+AI::AI(LocalDOMWindow* window)
     : ExecutionContextClient(window),
       task_runner_(window->GetTaskRunner(TaskType::kInternalDefault)),
       ai_remote_(window) {}
 
-void ModelManager::Trace(Visitor* visitor) const {
+void AI::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(ai_remote_);
 }
 
-HeapMojoRemote<mojom::blink::AIManager>& ModelManager::GetAIRemote() {
+HeapMojoRemote<mojom::blink::AIManager>& AI::GetAIRemote() {
   if (!ai_remote_.is_bound()) {
     if (DomWindow() && DomWindow()->GetFrame()) {
       DomWindow()->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
@@ -60,31 +57,28 @@ HeapMojoRemote<mojom::blink::AIManager>& ModelManager::GetAIRemote() {
   return ai_remote_;
 }
 
-void ResolveAvailability(
-    ScriptPromiseResolver<V8GenericModelAvailability>* resolver,
-    ModelManager::ModelAvailability availability) {
-  base::UmaHistogramEnumeration(
-      ModelExecutionMetrics::GetModelExecutionAvailabilityMetricName(
-          ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
-      availability);
+void ResolveAvailability(ScriptPromiseResolver<V8AIModelAvailability>* resolver,
+                         AI::ModelAvailability availability) {
+  base::UmaHistogramEnumeration(AIMetrics::GetAIModelAvailabilityMetricName(
+                                    AIMetrics::AISessionType::kText),
+                                availability);
   resolver->Resolve(AvailabilityToV8(availability));
 }
 
-ScriptPromise<V8GenericModelAvailability> ModelManager::canCreateGenericSession(
+ScriptPromise<V8AIModelAvailability> AI::canCreateTextSession(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return EmptyPromise();
+    return ScriptPromise<V8AIModelAvailability>();
   }
 
   base::UmaHistogramEnumeration(
-      ModelExecutionMetrics::GetModelExecutionAPIUsageMetricName(
-          ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
-      ModelExecutionMetrics::ModelExecutionAPI::kModelCanCreateSession);
+      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kText),
+      AIMetrics::AIAPI::kCanCreateSession);
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<V8GenericModelAvailability>>(
+      MakeGarbageCollected<ScriptPromiseResolver<V8AIModelAvailability>>(
           script_state);
   auto promise = resolver->Promise();
 
@@ -94,7 +88,7 @@ ScriptPromise<V8GenericModelAvailability> ModelManager::canCreateGenericSession(
   }
 
   GetAIRemote()->CanCreateTextSession(WTF::BindOnce(
-      [](ScriptPromiseResolver<V8GenericModelAvailability>* resolver,
+      [](ScriptPromiseResolver<V8AIModelAvailability>* resolver,
          bool can_create) {
         if (can_create) {
           ResolveAvailability(resolver, ModelAvailability::kReadily);
@@ -107,23 +101,21 @@ ScriptPromise<V8GenericModelAvailability> ModelManager::canCreateGenericSession(
   return promise;
 }
 
-ScriptPromise<ModelGenericSession> ModelManager::createGenericSession(
+ScriptPromise<AITextSession> AI::createTextSession(
     ScriptState* script_state,
-    ModelGenericSessionOptions* options,
+    AITextSessionOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return EmptyPromise();
+    return ScriptPromise<AITextSession>();
   }
 
   base::UmaHistogramEnumeration(
-      ModelExecutionMetrics::GetModelExecutionAPIUsageMetricName(
-          ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
-      ModelExecutionMetrics::ModelExecutionAPI::kModelCreateSession);
+      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kText),
+      AIMetrics::AIAPI::kCreateSession);
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<ModelGenericSession>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<AITextSession>>(script_state);
   auto promise = resolver->Promise();
 
   if (!GetAIRemote().is_connected()) {
@@ -146,14 +138,13 @@ ScriptPromise<ModelGenericSession> ModelManager::createGenericSession(
     }
   }
 
-  ModelGenericSession* generic_session =
-      MakeGarbageCollected<ModelGenericSession>(GetExecutionContext(),
-                                                task_runner_);
+  AITextSession* generic_session =
+      MakeGarbageCollected<AITextSession>(GetExecutionContext(), task_runner_);
   GetAIRemote()->CreateTextSession(
       generic_session->GetModelSessionReceiver(), std::move(sampling_params),
       WTF::BindOnce(
-          [](ScriptPromiseResolver<ModelGenericSession>* resolver,
-             ModelGenericSession* generic_session, bool success) {
+          [](ScriptPromiseResolver<AITextSession>* resolver,
+             AITextSession* generic_session, bool success) {
             if (success) {
               resolver->Resolve(generic_session);
             } else {
@@ -168,22 +159,20 @@ ScriptPromise<ModelGenericSession> ModelManager::createGenericSession(
   return promise;
 }
 
-ScriptPromise<ModelGenericSessionOptions>
-ModelManager::defaultGenericSessionOptions(ScriptState* script_state,
-                                           ExceptionState& exception_state) {
+ScriptPromise<AITextSessionOptions> AI::defaultTextSessionOptions(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return EmptyPromise();
+    return ScriptPromise<AITextSessionOptions>();
   }
 
   base::UmaHistogramEnumeration(
-      ModelExecutionMetrics::GetModelExecutionAPIUsageMetricName(
-          ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
-      ModelExecutionMetrics::ModelExecutionAPI::
-          kModelDefaultGenericSessionOptions);
+      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kText),
+      AIMetrics::AIAPI::kDefaultTextSessionOptions);
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<ModelGenericSessionOptions>>(
+      MakeGarbageCollected<ScriptPromiseResolver<AITextSessionOptions>>(
           script_state);
   auto promise = resolver->Promise();
 
@@ -193,10 +182,9 @@ ModelManager::defaultGenericSessionOptions(ScriptState* script_state,
   }
 
   GetAIRemote()->GetDefaultTextSessionSamplingParams(WTF::BindOnce(
-      [](ScriptPromiseResolver<ModelGenericSessionOptions>* resolver,
+      [](ScriptPromiseResolver<AITextSessionOptions>* resolver,
          mojom::blink::AITextSessionSamplingParamsPtr default_params) {
-        ModelGenericSessionOptions* options =
-            ModelGenericSessionOptions::Create();
+        AITextSessionOptions* options = AITextSessionOptions::Create();
         CHECK(default_params);
         options->setTopK(default_params->top_k);
         options->setTemperature(default_params->temperature);

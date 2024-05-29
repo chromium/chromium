@@ -1,0 +1,60 @@
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(crbug.com/343126579): Add link to spec/explainer.
+enum AIModelAvailability {
+  "readily",
+  "after-download",
+  "no"
+};
+
+[
+  Exposed=Window,
+  RuntimeEnabled=ModelExecutionAPI
+]
+interface AI {
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AIModelAvailability> canCreateTextSession();
+  [
+    Measure,
+    ImplementedAs=canCreateTextSession,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AIModelAvailability> canCreateGenericSession();
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AITextSession> createTextSession(
+    optional AITextSessionOptions options = {}
+  );
+  [
+    Measure,
+    ImplementedAs=createTextSession,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AITextSession> createGenericSession(
+    optional AITextSessionOptions options = {}
+  );
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AITextSessionOptions> defaultTextSessionOptions();
+  [
+    Measure,
+    ImplementedAs=defaultTextSessionOptions,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AITextSessionOptions> defaultGenericSessionOptions();
+};

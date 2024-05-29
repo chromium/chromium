@@ -11526,12 +11526,16 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4919" label="FledgeAuctionReportBuyerDebugModeConfig"/>
   <int value="4920" label="FedCmButtonMode"/>
   <int value="4921" label="HTMLPermissionElement"/>
-  <int value="4922" label="V8ModelGenericSession_Execute_Method"/>
-  <int value="4923" label="V8ModelGenericSession_ExecuteStreaming_Method"/>
-  <int value="4924" label="V8ModelManager_CanCreateGenericSession_Method"/>
-  <int value="4925" label="V8ModelManager_CreateGenericSession_Method"/>
+  <int value="4922" label="OBSOLETE_V8ModelGenericSession_Execute_Method"/>
+  <int value="4923"
+      label="OBSOLETE_V8ModelGenericSession_ExecuteStreaming_Method"/>
+  <int value="4924"
+      label="OBSOLETE_V8ModelManager_CanCreateGenericSession_Method"/>
+  <int value="4925"
+      label="OBSOLETE_V8ModelManager_CreateGenericSession_Method"/>
   <int value="4926" label="V8Animation_Progress_AttributeGetter"/>
-  <int value="4927" label="V8ModelManager_DefaultGenericSessionOptions_Method"/>
+  <int value="4927"
+      label="OBSOLETE_V8ModelManager_DefaultGenericSessionOptions_Method"/>
   <int value="4928" label="QuirksModeCursorHandApplied"/>
   <int value="4929" label="SkippedPreloadScanning"/>
   <int value="4930" label="CSSColor_SpaceRGB"/>
@@ -11584,6 +11588,18 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4975" label="DisableThirdPartyStoragePartitioning2"/>
   <int value="4976" label="LinkRelPayment"/>
   <int value="4977" label="V8GPUAdapter_RequestAdapterInfo_Method"/>
+  <int value="4978" label="OBSOLETE_V8ModelGenericSession_Destroy_Method"/>
+  <int value="4979" label="V8AITextSession_Execute_Method"/>
+  <int value="4980" label="V8AITextSession_ExecuteStreaming_Method"/>
+  <int value="4981" label="V8AI_CanCreateGenericSession_Method"/>
+  <int value="4982" label="V8AI_CreateGenericSession_Method"/>
+  <int value="4983" label="V8AI_DefaultGenericSessionOptions_Method"/>
+  <int value="4984" label="V8AITextSession_Prompt_Method"/>
+  <int value="4985" label="V8AITextSession_PromptStreaming_Method"/>
+  <int value="4986" label="V8AI_CanCreateTextSession_Method"/>
+  <int value="4987" label="V8AI_CreateTextSession_Method"/>
+  <int value="4988" label="V8AI_DefaultTextSessionOptions_Method"/>
+  <int value="4989" label="V8AITextSession_Destroy_Method"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

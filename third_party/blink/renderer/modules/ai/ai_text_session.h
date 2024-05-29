@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MODEL_EXECUTION_MODEL_GENERIC_SESSION_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_MODEL_EXECUTION_MODEL_GENERIC_SESSION_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_TEXT_SESSION_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_TEXT_SESSION_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -17,27 +17,27 @@
 namespace blink {
 
 // The class that represents a session with simple generic model execution.
-class ModelGenericSession final : public ScriptWrappable,
-                                  public ExecutionContextClient {
+class AITextSession final : public ScriptWrappable,
+                            public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  ModelGenericSession(ExecutionContext* context,
-                      scoped_refptr<base::SequencedTaskRunner> task_runner);
-  ~ModelGenericSession() override = default;
+  AITextSession(ExecutionContext* context,
+                scoped_refptr<base::SequencedTaskRunner> task_runner);
+  ~AITextSession() override = default;
 
   void Trace(Visitor* visitor) const override;
 
   mojo::PendingReceiver<blink::mojom::blink::AITextSession>
   GetModelSessionReceiver();
 
-  // model_generic_session.idl implementation.
-  ScriptPromise<IDLString> execute(ScriptState* script_state,
-                                   const WTF::String& input,
-                                   ExceptionState& exception_state);
-  ReadableStream* executeStreaming(ScriptState* script_state,
-                                   const WTF::String& input,
-                                   ExceptionState& exception_state);
+  // ai_text_session.idl implementation.
+  ScriptPromise<IDLString> prompt(ScriptState* script_state,
+                                  const WTF::String& input,
+                                  ExceptionState& exception_state);
+  ReadableStream* promptStreaming(ScriptState* script_state,
+                                  const WTF::String& input,
+                                  ExceptionState& exception_state);
   void destroy(ScriptState* script_state, ExceptionState& exception_state);
 
  private:
@@ -52,4 +52,4 @@ class ModelGenericSession final : public ScriptWrappable,
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MODEL_EXECUTION_MODEL_GENERIC_SESSION_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_TEXT_SESSION_H_

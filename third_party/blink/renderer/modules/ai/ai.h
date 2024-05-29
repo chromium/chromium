@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MODEL_EXECUTION_MODEL_MANAGER_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_MODEL_EXECUTION_MODEL_MANAGER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_model_generic_session_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_session_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -17,13 +17,12 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
-class ModelGenericSession;
-class V8GenericModelAvailability;
+class AITextSession;
+class V8AIModelAvailability;
 
 // The class that manages the exposed model APIs that load model assets and
-// create ModelGenericSession.
-class ModelManager final : public ScriptWrappable,
-                           public ExecutionContextClient {
+// create AITextSession.
+class AI final : public ScriptWrappable, public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -35,20 +34,20 @@ class ModelManager final : public ScriptWrappable,
     kMaxValue = kNo,
   };
 
-  explicit ModelManager(LocalDOMWindow* window);
-  ~ModelManager() override = default;
+  explicit AI(LocalDOMWindow* window);
+  ~AI() override = default;
 
   void Trace(Visitor* visitor) const override;
 
   // model_manager.idl implementation.
-  ScriptPromise<V8GenericModelAvailability> canCreateGenericSession(
+  ScriptPromise<V8AIModelAvailability> canCreateTextSession(
       ScriptState* script_state,
       ExceptionState& exception_state);
-  ScriptPromise<ModelGenericSession> createGenericSession(
+  ScriptPromise<AITextSession> createTextSession(
       ScriptState* script_state,
-      ModelGenericSessionOptions* options,
+      AITextSessionOptions* options,
       ExceptionState& exception_state);
-  ScriptPromise<ModelGenericSessionOptions> defaultGenericSessionOptions(
+  ScriptPromise<AITextSessionOptions> defaultTextSessionOptions(
       ScriptState* script_state,
       ExceptionState& exception_state);
 
@@ -61,4 +60,4 @@ class ModelManager final : public ScriptWrappable,
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MODEL_EXECUTION_MODEL_MANAGER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_H_

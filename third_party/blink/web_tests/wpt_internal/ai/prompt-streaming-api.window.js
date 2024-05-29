@@ -1,13 +1,13 @@
 promise_test(async t => {
-  // Make sure the model api is enabled.
-  assert_true(!!model);
+  // Make sure the prompt api is enabled.
+  assert_true(!!ai);
   // Make sure the session could be created.
-  const status = await model.canCreateGenericSession();
+  const status = await ai.canCreateTextSession();
   assert_true(status === 'readily');
   // Start a new session.
-  const session = await model.createGenericSession();
-  // Test the streaming execute API.
-  const streamingResponse = session.executeStreaming("What is 1+2?");
+  const session = await ai.createTextSession();
+  // Test the streaming prompt API.
+  const streamingResponse = session.promptStreaming("What is 1+2?");
   assert_true(Object.prototype.toString.call(streamingResponse) === "[object ReadableStream]");
   const reader = streamingResponse.getReader();
   let result = "";

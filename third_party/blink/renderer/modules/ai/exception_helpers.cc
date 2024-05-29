@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/model_execution/exception_helpers.h"
+#include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 
 #include "third_party/blink/public/mojom/ai/ai_text_session.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"

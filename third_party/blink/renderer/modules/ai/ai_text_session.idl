@@ -1,0 +1,43 @@
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(crbug.com/343126579): Add link to spec/explainer.
+[
+  Exposed=Window,
+  RuntimeEnabled=ModelExecutionAPI
+]
+interface AITextSession {
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<DOMString> prompt(DOMString input);
+  [
+    Measure,
+    ImplementedAs=prompt,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<DOMString> execute(DOMString input);
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  ReadableStream promptStreaming(DOMString input);
+  [
+    Measure,
+    ImplementedAs=promptStreaming,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<DOMString> executeStreaming(DOMString input);
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  void destroy();
+};

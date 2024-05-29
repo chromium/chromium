@@ -4285,12 +4285,17 @@ enum WebFeature {
   // The items above roughly this point are available in the M124 branch.
 
   kHTMLPermissionElement = 4921,
-  kV8ModelGenericSession_Execute_Method = 4922,
-  kV8ModelGenericSession_ExecuteStreaming_Method = 4923,
-  kV8ModelManager_CanCreateGenericSession_Method = 4924,
-  kV8ModelManager_CreateGenericSession_Method = 4925,
+
+  // Model Execution API:
+  kOBSOLETE_V8ModelGenericSession_Execute_Method = 4922,
+  kOBSOLETE_V8ModelGenericSession_ExecuteStreaming_Method = 4923,
+  kOBSOLETE_V8ModelManager_CanCreateGenericSession_Method = 4924,
+  kOBSOLETE_V8ModelManager_CreateGenericSession_Method = 4925,
+
   kV8Animation_Progress_AttributeGetter = 4926,
-  kV8ModelManager_DefaultGenericSessionOptions_Method = 4927,
+
+  kOBSOLETE_V8ModelManager_DefaultGenericSessionOptions_Method = 4927,
+
   kQuirksModeCursorHandApplied = 4928,
   kSkippedPreloadScanning = 4929,
   kCSSColor_SpaceRGB = 4930,
@@ -4346,6 +4351,22 @@ enum WebFeature {
 
   kLinkRelPayment = 4976,
   kV8GPUAdapter_RequestAdapterInfo_Method = 4977,
+
+  kOBSOLETE_V8ModelGenericSession_Destroy_Method = 4978,
+
+  // Model execution API and Prompt API:
+  kV8AITextSession_Execute_Method = 4979,
+  kV8AITextSession_ExecuteStreaming_Method = 4980,
+  kV8AI_CanCreateGenericSession_Method = 4981,
+  kV8AI_CreateGenericSession_Method = 4982,
+  kV8AI_DefaultGenericSessionOptions_Method = 4983,
+
+  kV8AITextSession_Prompt_Method = 4984,
+  kV8AITextSession_PromptStreaming_Method = 4985,
+  kV8AI_CanCreateTextSession_Method = 4986,
+  kV8AI_CreateTextSession_Method = 4987,
+  kV8AI_DefaultTextSessionOptions_Method = 4988,
+  kV8AITextSession_Destroy_Method = 4989,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

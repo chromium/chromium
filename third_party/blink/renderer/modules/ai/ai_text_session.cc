@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/model_execution/model_generic_session.h"
+#include "third_party/blink/renderer/modules/ai/ai_text_session.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -20,8 +20,8 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
-#include "third_party/blink/renderer/modules/model_execution/exception_helpers.h"
-#include "third_party/blink/renderer/modules/model_execution/model_execution_metrics.h"
+#include "third_party/blink/renderer/modules/ai/ai_metrics.h"
+#include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
@@ -34,8 +34,8 @@ using mojom::blink::ModelStreamingResponseStatus;
 // Implementation of blink::mojom::blink::ModelStreamingResponder that
 // handles the streaming output of the model execution, and returns the full
 // result through a promise.
-class ModelGenericSession::Responder final
-    : public GarbageCollected<ModelGenericSession::Responder>,
+class AITextSession::Responder final
+    : public GarbageCollected<AITextSession::Responder>,
       public blink::mojom::blink::ModelStreamingResponder {
  public:
   explicit Responder(ScriptState* script_state)
@@ -61,8 +61,8 @@ class ModelGenericSession::Responder final
   void OnResponse(ModelStreamingResponseStatus status,
                   const WTF::String& text) override {
     base::UmaHistogramEnumeration(
-        ModelExecutionMetrics::GetModelExecutionSessionResponseStatusMetricName(
-            ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
+        AIMetrics::GetAISessionResponseStatusMetricName(
+            AIMetrics::AISessionType::kText),
         status);
 
     response_callback_count_++;
@@ -77,14 +77,12 @@ class ModelGenericSession::Responder final
             ConvertModelStreamingResponseErrorToDOMException(status));
       }
       // Record the per execution metrics and run the complete callback.
+      base::UmaHistogramCounts1M(AIMetrics::GetAISessionResponseSizeMetricName(
+                                     AIMetrics::AISessionType::kText),
+                                 int(response_.CharactersSizeInBytes()));
       base::UmaHistogramCounts1M(
-          ModelExecutionMetrics::GetModelExecutionSessionResponseSizeMetricName(
-              ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
-          int(response_.CharactersSizeInBytes()));
-      base::UmaHistogramCounts1M(
-          ModelExecutionMetrics::
-              GetModelExecutionSessionResponseCallbackCountMetricName(
-                  ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
+          AIMetrics::GetAISessionResponseCallbackCountMetricName(
+              AIMetrics::AISessionType::kText),
           response_callback_count_);
       keep_alive_.Clear();
       return;
@@ -106,7 +104,7 @@ class ModelGenericSession::Responder final
 // Implementation of blink::mojom::blink::ModelStreamingResponder that
 // handles the streaming output of the model execution, and returns the full
 // result through a ReadableStream.
-class ModelGenericSession::StreamingResponder final
+class AITextSession::StreamingResponder final
     : public UnderlyingSourceBase,
       public blink::mojom::blink::ModelStreamingResponder {
  public:
@@ -144,8 +142,8 @@ class ModelGenericSession::StreamingResponder final
   void OnResponse(ModelStreamingResponseStatus status,
                   const WTF::String& text) override {
     base::UmaHistogramEnumeration(
-        ModelExecutionMetrics::GetModelExecutionSessionResponseStatusMetricName(
-            ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
+        AIMetrics::GetAISessionResponseStatusMetricName(
+            AIMetrics::AISessionType::kText),
         status);
 
     response_callback_count_++;
@@ -160,14 +158,12 @@ class ModelGenericSession::StreamingResponder final
             ConvertModelStreamingResponseErrorToDOMException(status));
       }
       // Record the per execution metrics and run the complete callback.
+      base::UmaHistogramCounts1M(AIMetrics::GetAISessionResponseSizeMetricName(
+                                     AIMetrics::AISessionType::kText),
+                                 response_size_);
       base::UmaHistogramCounts1M(
-          ModelExecutionMetrics::GetModelExecutionSessionResponseSizeMetricName(
-              ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
-          response_size_);
-      base::UmaHistogramCounts1M(
-          ModelExecutionMetrics::
-              GetModelExecutionSessionResponseCallbackCountMetricName(
-                  ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
+          AIMetrics::GetAISessionResponseCallbackCountMetricName(
+              AIMetrics::AISessionType::kText),
           response_callback_count_);
       keep_alive_.Clear();
       return;
@@ -189,42 +185,40 @@ class ModelGenericSession::StreamingResponder final
   SelfKeepAlive<StreamingResponder> keep_alive_;
 };
 
-ModelGenericSession::ModelGenericSession(
+AITextSession::AITextSession(
     ExecutionContext* context,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : ExecutionContextClient(context),
       task_runner_(task_runner),
       text_session_remote_(context) {}
 
-void ModelGenericSession::Trace(Visitor* visitor) const {
+void AITextSession::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(text_session_remote_);
 }
 
 mojo::PendingReceiver<blink::mojom::blink::AITextSession>
-ModelGenericSession::GetModelSessionReceiver() {
+AITextSession::GetModelSessionReceiver() {
   return text_session_remote_.BindNewPipeAndPassReceiver(task_runner_);
 }
 
-ScriptPromise<IDLString> ModelGenericSession::execute(
+ScriptPromise<IDLString> AITextSession::prompt(
     ScriptState* script_state,
     const WTF::String& input,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return EmptyPromise();
+    return ScriptPromise<IDLString>();
   }
 
   base::UmaHistogramEnumeration(
-      ModelExecutionMetrics::GetModelExecutionAPIUsageMetricName(
-          ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
-      ModelExecutionMetrics::ModelExecutionAPI::kSessionExecute);
+      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kText),
+      AIMetrics::AIAPI::kSessionPrompt);
 
-  base::UmaHistogramCounts1M(
-      ModelExecutionMetrics::GetModelExecutionSessionRequestSizeMetricName(
-          ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
-      int(input.CharactersSizeInBytes()));
+  base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
+                                 AIMetrics::AISessionType::kText),
+                             int(input.CharactersSizeInBytes()));
 
   Responder* responder = MakeGarbageCollected<Responder>(script_state);
 
@@ -240,7 +234,7 @@ ScriptPromise<IDLString> ModelGenericSession::execute(
   return responder->GetResolver()->Promise();
 }
 
-ReadableStream* ModelGenericSession::executeStreaming(
+ReadableStream* AITextSession::promptStreaming(
     ScriptState* script_state,
     const WTF::String& input,
     ExceptionState& exception_state) {
@@ -250,14 +244,12 @@ ReadableStream* ModelGenericSession::executeStreaming(
   }
 
   base::UmaHistogramEnumeration(
-      ModelExecutionMetrics::GetModelExecutionAPIUsageMetricName(
-          ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
-      ModelExecutionMetrics::ModelExecutionAPI::kSessionExecuteStreaming);
+      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kText),
+      AIMetrics::AIAPI::kSessionPromptStreaming);
 
-  base::UmaHistogramCounts1M(
-      ModelExecutionMetrics::GetModelExecutionSessionRequestSizeMetricName(
-          ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
-      int(input.CharactersSizeInBytes()));
+  base::UmaHistogramCounts1M(AIMetrics::GetAISessionRequestSizeMetricName(
+                                 AIMetrics::AISessionType::kText),
+                             int(input.CharactersSizeInBytes()));
 
   StreamingResponder* streaming_responder =
       MakeGarbageCollected<StreamingResponder>(script_state);
@@ -277,17 +269,16 @@ ReadableStream* ModelGenericSession::executeStreaming(
       script_state, streaming_responder, 1);
 }
 
-void ModelGenericSession::destroy(ScriptState* script_state,
-                                  ExceptionState& exception_state) {
+void AITextSession::destroy(ScriptState* script_state,
+                            ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
     return;
   }
 
   base::UmaHistogramEnumeration(
-      ModelExecutionMetrics::GetModelExecutionAPIUsageMetricName(
-          ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
-      ModelExecutionMetrics::ModelExecutionAPI::kSessionDestroy);
+      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kText),
+      AIMetrics::AIAPI::kSessionDestroy);
   if (!is_destroyed_) {
     is_destroyed_ = true;
     text_session_remote_->Destroy();
