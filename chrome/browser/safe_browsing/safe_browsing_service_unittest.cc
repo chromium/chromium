@@ -465,6 +465,11 @@ class SendNotificationsAcceptedTest : public SafeBrowsingServiceTest {
         safe_browsing::kCreateNotificationsAcceptedClientSafeBrowsingReports);
   }
 
+  void DisableNotificationsAcceptedFeature() {
+    scoped_feature_list_.InitAndDisableFeature(
+        safe_browsing::kCreateNotificationsAcceptedClientSafeBrowsingReports);
+  }
+
   std::unique_ptr<ClientSafeBrowsingReportRequest> GetActualRequest(
       const network::ResourceRequest& request) {
     std::string request_string = GetUploadData(request);
@@ -547,6 +552,7 @@ TEST_F(SendNotificationsAcceptedTest,
 }
 
 TEST_F(SendNotificationsAcceptedTest, DontSendReportWhenFeatureIsNotEnabled) {
+  DisableNotificationsAcceptedFeature();
   SetUrlIsAllowlistedForTesting();
   SetExtendedReportingPrefForTests(profile_->GetPrefs(), true);
   GURL notification_url1("http://www.notification1.com/");
