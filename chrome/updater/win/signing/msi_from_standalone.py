@@ -13,8 +13,7 @@ For example, to create `GoogleChromeBetaStandaloneEnterprise.msi` from
 `ChromeBetaOfflineSetup.exe`:
 ```
 python3 chrome/updater/win/signing/msi_from_standalone.py
-    --candle_path ../third_party/wix/v3_8_1128/files/candle.exe
-    --light_path ../third_party/wix/v3_8_1128/files/light.exe
+    --wix_path wix.exe
     --product_name "Google Chrome Beta"
     --product_version 110.0.5478.0
     --appid {8237E44A-0054-442C-B6B6-EA0509993955}
@@ -147,64 +146,56 @@ def generate_name_based_guid(namespace, name):
              md5_hex_digits[9], ''.join(md5_hex_digits[10:])))
 
 
-def optional_flag(key, value):
-    return (f'-d{key}={value}', ) if value else ()
-
-
-def get_wix_candle_flags(
-        product_name,
-        product_name_legal_identifier,
-        msi_product_version,
-        product_version,
-        appid,
-        company_name,
-        company_full_name,
-        custom_action_dll_path=None,
-        product_uninstaller_additional_args=None,
-        msi_product_id=None,
-        msi_upgradecode_guid=None,
-        product_installer_path=None,
-        product_installer_data=None,
-        product_icon_path=None,
-        product_installer_install_command=None,
-        product_installer_disable_update_registration_arg=None,
-        product_custom_params=None,
-        standalone_installer_path=None,
-        metainstaller_path=None,
-        architecture=None):
+def get_wix_flags(product_name,
+                  product_name_legal_identifier,
+                  msi_product_version,
+                  product_version,
+                  appid,
+                  company_name,
+                  company_full_name,
+                  custom_action_dll_path=None,
+                  product_uninstaller_additional_args=None,
+                  msi_product_id=None,
+                  msi_upgradecode_guid=None,
+                  product_installer_path=None,
+                  product_installer_data=None,
+                  product_icon_path=None,
+                  product_installer_install_command=None,
+                  product_installer_disable_update_registration_arg=None,
+                  product_custom_params=None,
+                  standalone_installer_path=None,
+                  metainstaller_path=None,
+                  architecture=None):
     """Generate the proper set of defines for WiX Candle usage."""
-    flags = [
-        *optional_flag('ProductName', product_name),
-        *optional_flag('ProductNameLegalIdentifier',
-                       product_name_legal_identifier),
-        *optional_flag('ProductVersion', msi_product_version),
-        *optional_flag('ProductOriginalVersionString', product_version),
-        *optional_flag('ProductBuildYear', str(date.today().year)),
-        *optional_flag('ProductGuid', appid),
-        *optional_flag('CompanyName', company_name),
-        *optional_flag('CompanyFullName', company_full_name),
-        *optional_flag('MsiInstallerCADll', custom_action_dll_path),
-        *optional_flag('ProductUninstallerAdditionalArgs',
-                       product_uninstaller_additional_args),
-        *optional_flag('MsiProductId', msi_product_id),
-        *optional_flag('MsiUpgradeCode', msi_upgradecode_guid),
-        *optional_flag('ProductCustomParams', "%s" % product_custom_params),
-        *optional_flag('StandaloneInstallerPath', standalone_installer_path),
-        *optional_flag('GoogleUpdateMetainstallerPath',
-                       "%s" % metainstaller_path),
-        *optional_flag('ProductInstallerInstallCommand',
-                       product_installer_install_command),
-        *optional_flag('ProductInstallerDisableUpdateRegistrationArg',
-                       product_installer_disable_update_registration_arg),
-        *optional_flag('ProductInstallerPath', product_installer_path),
-        *optional_flag(
-            'ProductInstallerData',
-            product_installer_data.replace('==MSI-PRODUCT-ID==',
-                                           msi_product_id)
-            if product_installer_data else None),
-        *optional_flag('ProductIcon', product_icon_path),
+    defines = [
+        ('ProductName', product_name),
+        ('ProductNameLegalIdentifier', product_name_legal_identifier),
+        ('ProductVersion', msi_product_version),
+        ('ProductOriginalVersionString', product_version),
+        ('ProductBuildYear', str(date.today().year)),
+        ('ProductGuid', appid),
+        ('CompanyName', company_name),
+        ('CompanyFullName', company_full_name),
+        ('MsiInstallerCADll', custom_action_dll_path),
+        ('ProductUninstallerAdditionalArgs',
+         product_uninstaller_additional_args),
+        ('MsiProductId', msi_product_id),
+        ('MsiUpgradeCode', msi_upgradecode_guid),
+        ('ProductCustomParams', "%s" % product_custom_params),
+        ('StandaloneInstallerPath', standalone_installer_path),
+        ('GoogleUpdateMetainstallerPath', "%s" % metainstaller_path),
+        ('ProductInstallerInstallCommand', product_installer_install_command),
+        ('ProductInstallerDisableUpdateRegistrationArg',
+         product_installer_disable_update_registration_arg),
+        ('ProductInstallerPath', product_installer_path),
+        ('ProductInstallerData',
+         product_installer_data.replace('==MSI-PRODUCT-ID==', msi_product_id)),
+        ('ProductIcon', product_icon_path),
     ]
-
+    flags = [
+        f for k, v in defines if v is not None
+        for f in ['-d', '%s=%s' % (k, v)]
+    ]
     if architecture:
         # Translate some common strings, like from platform.machine().
         arch_map = {
@@ -215,21 +206,16 @@ def get_wix_candle_flags(
     return flags
 
 
-def get_wix_light_flags():
-    # Disable warning LGHT1076 and internal check ICE61 on light.exe.
-    return ['-sw1076', '-sice:ICE61']
-
-
 class EnterpriseInstaller:
     """Creates an enterprise installer from a standalone installer."""
-    def __init__(self, candle_path, light_path, product_name, product_version,
-                 appid, product_custom_params,
-                 product_uninstaller_additional_args, product_installer_data,
-                 standalone_installer_path, custom_action_dll_path,
-                 msi_base_name, enterprise_installer_dir, company_name,
-                 company_full_name, output_dir):
-        self._candle_path = candle_path
-        self._light_path = light_path
+
+    def __init__(self, wix_path, product_name, product_version, appid,
+                 product_custom_params, product_uninstaller_additional_args,
+                 product_installer_data, standalone_installer_path,
+                 custom_action_dll_path, msi_base_name,
+                 enterprise_installer_dir, company_name, company_full_name,
+                 output_dir):
+        self._wix_path = wix_path
         self._product_name = product_name
         self._product_version = product_version
         self._appid = appid
@@ -268,17 +254,14 @@ class EnterpriseInstaller:
         # stick output in a subdirectory.
         output_directory_name = os.path.join(
             self._output_dir, self._appid + '.' + self._product_version)
-        if not os.path.exists(output_directory_name):
-            os.makedirs(output_directory_name)
+        os.makedirs(output_directory_name, exist_ok=True)
 
-        target_wxs = os.path.join(output_directory_name,
-                                  self._msi_base_name + '.wxs')
-        shutil.copyfile(
+        subprocess.run([
+            self._wix_path, 'build', '-nologo', '-o',
+            os.path.join(output_directory_name, msi_name),
             os.path.join(self._enterprise_installer_dir,
-                         'enterprise_standalone_installer.wxs.xml'),
-            target_wxs)
-
-        wix_candle_flags = get_wix_candle_flags(
+                         'enterprise_standalone_installer.wxs.xml')
+        ] + get_wix_flags(
             self._product_name,
             product_name_legal_identifier,
             msi_product_version,
@@ -293,33 +276,15 @@ class EnterpriseInstaller:
             _product_uninstaller_additional_args,
             msi_product_id=msi_product_id,
             msi_upgradecode_guid=msi_upgradecode_guid,
-            product_installer_data=self._product_installer_data)
-
-        wix_light_flags = get_wix_light_flags()
-        msi_output_path = os.path.join(output_directory_name, msi_name)
-        msi_output_path_wixobj = os.path.splitext(
-            msi_output_path)[0] + '.wixobj'
-
-        candle_cmd = [self._candle_path] + wix_candle_flags + [
-            '-nologo', '-o', msi_output_path_wixobj, target_wxs
-        ]
-        subprocess.run(candle_cmd, check=True)
-        light_cmd = [self._light_path] + wix_light_flags + [
-            '-nologo', '-out', msi_output_path, msi_output_path_wixobj
-        ]
-        subprocess.run(light_cmd, check=True)
+            product_installer_data=self._product_installer_data),
+                       check=True)
 
 
 def main():
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--candle_path',
-                        required=True,
-                        help='path to the WiX candle.exe')
-    parser.add_argument('--light_path',
-                        required=True,
-                        help='path to the WiX light.exe')
+    parser.add_argument('--wix_path', required=True, help='path to wix.exe')
     parser.add_argument('--product_name',
                         required=True,
                         help='name of the product being built')
@@ -382,11 +347,11 @@ def main():
         help='path to the directory that will contain the resulting MSI')
     args = parser.parse_args()
     EnterpriseInstaller(
-        args.candle_path, args.light_path, args.product_name,
-        args.product_version, args.appid, args.product_custom_params,
-        args.product_uninstaller_additional_args, args.product_installer_data,
-        args.standalone_installer_path, args.custom_action_dll_path,
-        args.msi_base_name, args.enterprise_installer_dir, args.company_name,
+        args.wix_path, args.product_name, args.product_version, args.appid,
+        args.product_custom_params, args.product_uninstaller_additional_args,
+        args.product_installer_data, args.standalone_installer_path,
+        args.custom_action_dll_path, args.msi_base_name,
+        args.enterprise_installer_dir, args.company_name,
         args.company_full_name, args.output_dir).BuildInstaller()
 
 
