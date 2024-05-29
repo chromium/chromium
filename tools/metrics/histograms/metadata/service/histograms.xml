@@ -1225,17 +1225,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.PostMessage.IsExecutionReady" enum="Boolean"
-    expires_after="2024-10-01">
-  <owner>yyanagisawa@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    When PostMessage is used before the ServiceWorker client get execution
-    ready, it gets fails with the bad message. This metric checks the number of
-    the PostMessage calls before the client gets ready.
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorker.PostMessage.QueueSize" units="count"
     expires_after="2024-10-01">
   <owner>yyanagisawa@chromium.org</owner>

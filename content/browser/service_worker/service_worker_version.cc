@@ -1752,8 +1752,6 @@ void ServiceWorkerVersion::PostMessageToClient(
     receiver_.reset();
     return;
   }
-  base::UmaHistogramBoolean("ServiceWorker.PostMessage.IsExecutionReady",
-                            service_worker_client->is_execution_ready());
   if (!service_worker_client->is_execution_ready()) {
     // It's subtle why this ReportBadMessage is correct. Consider the
     // sequence:
