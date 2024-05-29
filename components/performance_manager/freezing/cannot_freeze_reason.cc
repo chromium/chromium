@@ -34,8 +34,6 @@ const char* CannotFreezeReasonToString(CannotFreezeReason reason) {
       return "capturing display";
     case CannotFreezeReason::kLoading:
       return "loading";
-    case CannotFreezeReason::kManyBrowsingInstances:
-      return "page belongs to many browsing instances";
   }
 }
 

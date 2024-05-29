@@ -40,6 +40,9 @@ struct PageFreezingState : public NodeAttachedDataImpl<PageFreezingState> {
     return *PageFreezingState::GetOrCreate(PageNodeImpl::FromNode(page_node));
   }
 
+  // Whether this page is frozen.
+  bool frozen = false;
+
   // Number of votes to freeze the page.
   int num_freeze_votes = 0;
 
@@ -109,8 +112,13 @@ FreezingPolicy::~FreezingPolicy() = default;
 void FreezingPolicy::ToggleFreezingOnBatterySaverMode(bool is_enabled) {
   is_battery_saver_active_ = is_enabled;
 
-  for (auto& [_, browsing_instance_state] : browsing_instances_) {
-    UpdateFrozenState(browsing_instance_state);
+  // Update frozen state for all connected sets of pages (toggling the state of
+  // battery saver mode can affect the frozen state of any connected set).
+  base::flat_set<raw_ptr<const PageNode>> visited_pages;
+  for (auto& [id, state] : browsing_instances_) {
+    if (!base::Contains(visited_pages, *state.pages.begin())) {
+      UpdateFrozenState(*state.pages.begin(), &visited_pages);
+    }
   }
 }
 
@@ -149,60 +157,79 @@ FreezingPolicy::GetBrowsingInstances(const PageNode* page) const {
 }
 
 void FreezingPolicy::UpdateFrozenState(
-    BrowsingInstanceState& browsing_instance_state) {
-  const bool was_frozen = browsing_instance_state.frozen;
+    const PageNode* page,
+    base::flat_set<raw_ptr<const PageNode>>* connected_pages_out) {
+  // Build a set of pages connected to `page` and determine whether:
+  // - Any connected page has a `CannotFreezeReason`.
+  // - Any browsing instance hosting a frame from a connected page was CPU
+  //   intensive in the background and Battery Saver is active and the
+  //   `kFreezingOnBatterySaver` feature is enabled.
+  // - All connected page have a freeze vote.
+  base::flat_set<raw_ptr<const PageNode>> connected_pages;
+  bool has_cannot_freeze_reason = false;
+  bool eligible_for_freezing_on_battery_saver = false;
+  bool all_pages_have_freeze_vote = true;
 
-  bool should_be_frozen;
-  if (HasCannotFreezeReason(browsing_instance_state)) {
-    // Cannot be frozen if a page has a `CannotFreezeReason`.
-    should_be_frozen = false;
-    browsing_instance_state
-        .had_cannot_freeze_reason_since_last_cpu_measurement = true;
-  } else if (is_battery_saver_active_ &&
-             browsing_instance_state.cpu_intensive_in_background &&
-             // Note: Feature state is checked last so that only clients that
-             // have a browsing instance that is CPU intensive in background
-             // while Battery Saver is active are enrolled in the experiment.
-             base::FeatureList::IsEnabled(features::kFreezingOnBatterySaver)) {
-    // Should be frozen if Battery Saver is active and the browsing instance was
-    // CPU-intensive in background.
-    should_be_frozen = true;
-  } else {
-    // Should be frozen if all pages have a freeze vote.
-    should_be_frozen = true;
-    for (const PageNode* page : browsing_instance_state.pages) {
-      auto& page_freezing_state = PageFreezingState::FromPage(page);
-      if (page_freezing_state.num_freeze_votes == 0) {
-        should_be_frozen = false;
-        break;
+  base::flat_set<raw_ptr<const PageNode>> pages_to_visit({page});
+  while (!pages_to_visit.empty()) {
+    // Implementation detail: `pages_to_visit` is a `flat_set`, which is a
+    // sorted vector. Removal is most efficient from the end, so always visit
+    // the last page in the set.
+    auto visited_page_it = pages_to_visit.end() - 1;
+    const PageNode* visited_page = *visited_page_it;
+    pages_to_visit.erase(visited_page_it);
+
+    auto [_, inserted] = connected_pages.insert(visited_page);
+    CHECK(inserted);
+
+    auto& page_freezing_state = PageFreezingState::FromPage(visited_page);
+
+    has_cannot_freeze_reason |=
+        !page_freezing_state.cannot_freeze_reasons.empty();
+    all_pages_have_freeze_vote &= (page_freezing_state.num_freeze_votes > 0);
+
+    for (auto browsing_instance_id : GetBrowsingInstances(visited_page)) {
+      auto it = browsing_instances_.find(browsing_instance_id);
+      CHECK(it != browsing_instances_.end());
+      const BrowsingInstanceState& browsing_instance_state = it->second;
+
+      if (browsing_instance_state.cpu_intensive_in_background &&
+          is_battery_saver_active_ &&
+          // Note: Feature state is checked last so that only clients that
+          // have a browsing instance that is CPU intensive in background
+          // while Battery Saver is active are enrolled in the experiment.
+          base::FeatureList::IsEnabled(features::kFreezingOnBatterySaver)) {
+        eligible_for_freezing_on_battery_saver = true;
+      }
+
+      for (auto* browsing_instance_page : it->second.pages) {
+        if (!base::Contains(connected_pages, browsing_instance_page)) {
+          pages_to_visit.insert(browsing_instance_page);
+        }
       }
     }
   }
 
-  if (was_frozen == should_be_frozen) {
-    return;
+  bool should_be_frozen =
+      !has_cannot_freeze_reason &&
+      (eligible_for_freezing_on_battery_saver || all_pages_have_freeze_vote);
+
+  // Freeze/unfreeze connected pages as needed.
+  for (const PageNode* connected_page : connected_pages) {
+    auto& page_freezing_state = PageFreezingState::FromPage(connected_page);
+    if (page_freezing_state.frozen == should_be_frozen) {
+      continue;
+    }
+    if (should_be_frozen) {
+      freezer_->MaybeFreezePageNode(connected_page);
+    } else {
+      freezer_->UnfreezePageNode(connected_page);
+    }
+    page_freezing_state.frozen = should_be_frozen;
   }
 
-  browsing_instance_state.frozen = should_be_frozen;
-
-  // Apply frozen state change to pages in the browsing instance.
-  if (should_be_frozen) {
-    for (const PageNode* page : browsing_instance_state.pages) {
-      freezer_->MaybeFreezePageNode(page);
-    }
-  } else {
-    for (const PageNode* page : browsing_instance_state.pages) {
-      freezer_->UnfreezePageNode(page);
-    }
-  }
-}
-
-void FreezingPolicy::UpdateFrozenState(const PageNode* page_node) {
-  for (content::BrowsingInstanceId browsing_instance :
-       GetBrowsingInstances(page_node)) {
-    auto it = browsing_instances_.find(browsing_instance);
-    CHECK(it != browsing_instances_.end());
-    UpdateFrozenState(it->second);
+  if (connected_pages_out) {
+    connected_pages_out->insert(connected_pages.begin(), connected_pages.end());
   }
 }
 
@@ -214,6 +241,16 @@ void FreezingPolicy::OnCannotFreezeReasonChange(const PageNode* page_node,
     DCHECK(!base::Contains(page_freezing_state.cannot_freeze_reasons, reason));
     page_freezing_state.cannot_freeze_reasons.push_back(reason);
     if (page_freezing_state.cannot_freeze_reasons.size() == 1U) {
+      // Track that the browsing instance had a `CannotFreezeReason`, so that
+      // the next CPU measurement for it can be ignored (this bit is sticky and
+      // won't be reset if the `CannotFreezeReason` is removed before the next
+      // measurement).
+      for (auto browsing_instance_id : GetBrowsingInstances(page_node)) {
+        auto it = browsing_instances_.find(browsing_instance_id);
+        CHECK(it != browsing_instances_.end());
+        it->second.had_cannot_freeze_reason_since_last_cpu_measurement = true;
+      }
+
       UpdateFrozenState(page_node);
     }
   } else {
@@ -375,22 +412,6 @@ void FreezingPolicy::OnFrameNodeAdded(const FrameNode* frame_node) {
     return;
   }
 
-  // Add `CannotFreezeReason::kManyBrowsingInstances` if the frame's page
-  // becomes associated with more than one browsing instance. As of April 2024,
-  // this may happen momentarily when there are inactive (an inactive frame in
-  // BFCache or prerendering may belong to a different browsing instance than
-  // the corresponding active frame) or when there are fenced frames (a fenced
-  // frame is in a different browsing instance than its parent).
-  if (GetBrowsingInstances(frame_node->GetPageNode()).size() > 1U) {
-    auto& page_freezing_state =
-        PageFreezingState::FromPage(frame_node->GetPageNode());
-    if (!base::Contains(page_freezing_state.cannot_freeze_reasons,
-                        CannotFreezeReason::kManyBrowsingInstances)) {
-      page_freezing_state.cannot_freeze_reasons.push_back(
-          CannotFreezeReason::kManyBrowsingInstances);
-    }
-  }
-
   // Update frozen state for browsing instances associated with the frame's
   // page.
   UpdateFrozenState(frame_node->GetPageNode());
@@ -404,43 +425,33 @@ void FreezingPolicy::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
   // Early exit if another main frame is associated with the same browsing
   // instance (in other words, the set of browsing instances associated with the
   // removed frame's page doesn't change).
-  base::flat_set<content::BrowsingInstanceId> other_browsing_instance_ids;
   for (auto& other_frame_node :
        frame_node->GetPageNode()->GetMainFrameNodes()) {
-    if (other_frame_node != frame_node) {
-      if (other_frame_node->GetBrowsingInstanceId() ==
-          frame_node->GetBrowsingInstanceId()) {
-        return;
-      }
-      other_browsing_instance_ids.insert(
-          other_frame_node->GetBrowsingInstanceId());
+    if (other_frame_node != frame_node &&
+        other_frame_node->GetBrowsingInstanceId() ==
+            frame_node->GetBrowsingInstanceId()) {
+      return;
     }
   }
 
   // Disassociate the frame's page from the frame's browsing instance.
   auto it = browsing_instances_.find(frame_node->GetBrowsingInstanceId());
-  size_t num_browsing_instances_removed =
-      it->second.pages.erase(frame_node->GetPageNode());
-  CHECK_EQ(num_browsing_instances_removed, 1U);
+  size_t num_pages_removed = it->second.pages.erase(frame_node->GetPageNode());
+  CHECK_EQ(num_pages_removed, 1U);
 
-  // Remove `CannotFreezeReason::kManyBrowsingInstances` if the frame's page is
-  // no longer associated with more than one browsing instance.
-  if (other_browsing_instance_ids.size() <= 1U) {
-    auto& page_freezing_state =
-        PageFreezingState::FromPage(frame_node->GetPageNode());
-    size_t num_cannot_freeze_reason_removed =
-        std::erase(page_freezing_state.cannot_freeze_reasons,
-                   CannotFreezeReason::kManyBrowsingInstances);
-    CHECK_LE(num_cannot_freeze_reason_removed, 1U);
+  // Update frozen state for pages connected to the frame's page, if it still
+  // contains at least one frame.
+  if (frame_node->GetPageNode()->GetMainFrameNode()) {
+    UpdateFrozenState(frame_node->GetPageNode());
   }
 
-  // Update frozen state for browsing instances associated with the frame's page
-  // (including the disassociated browsing instance).
-  UpdateFrozenState(frame_node->GetPageNode());
-
-  // Delete the disassociated browsing instance's state if empty.
+  // If pages remain in the deleted frame's browsing instance, update their
+  // frozen state (note: these pages may no longer be connected to the frame's
+  // page). Otherwise, delete the deleted frame's browsing instance state.
   if (it->second.pages.empty()) {
     browsing_instances_.erase(it);
+  } else {
+    UpdateFrozenState(*it->second.pages.begin());
   }
 }
 
@@ -593,7 +604,7 @@ void FreezingPolicy::OnResourceUsageUpdated(
     }
 
     browsing_instance_it->second.cpu_intensive_in_background = true;
-    UpdateFrozenState(browsing_instance_it->second);
+    UpdateFrozenState(*browsing_instance_it->second.pages.begin());
   }
 
   // Update `had_cannot_freeze_reason_since_last_cpu_measurement` for all

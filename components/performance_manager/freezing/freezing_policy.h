@@ -27,11 +27,19 @@
 
 namespace performance_manager {
 
-// Freezes browsing instances with no opted-out pages when:
-// - A group of same-origin frames/workers associated with the browsing instance
-//   used a lot of CPU in background and Battery Saver is active.
-//         or
-// - All pages in the browsing instance have at least one freezing vote.
+// Freezes sets of connected pages when no page in the set is opted-out and:
+// - All pages have at least one freezing vote, or,
+// - A group of same-origin and same-browsing-instance frames/workers associated
+//   with the set of connected pages used a lot of CPU in the background and
+//   Battery Saver is active.
+//
+// Pages are connected if they host frames from the same browsing instance. For
+// example:
+// - Page A hosts frames from browsing instance 1
+// - Page B hosts frames from browsing instances 1 and 2
+// - Page C hosts frames from browsing instance 2
+// - Page D hosts frames from browsing instance 3
+// The sets of connected pages are {A, B, C} and {D}.
 //
 // A page is opted-out from freezing when it is:
 //   - Visible;
@@ -84,8 +92,6 @@ class FreezingPolicy : public GraphOwnedDefaultImpl,
     // but may contain an unbounded amount of pages connected via opener
     // relationship).
     base::flat_set<const PageNode*> pages;
-    // Whether pages in the browsing instance are currently frozen.
-    bool frozen = false;
     // Whether a group of same-origin frames/workers associated with this
     // browsing instance used a lot of CPU in background.
     bool cpu_intensive_in_background = false;
@@ -98,10 +104,11 @@ class FreezingPolicy : public GraphOwnedDefaultImpl,
   base::flat_set<content::BrowsingInstanceId> GetBrowsingInstances(
       const PageNode* page) const;
 
-  // Update frozen state for a browsing instance, or for all browsing instances
-  // associated with a page.
-  void UpdateFrozenState(BrowsingInstanceState& browsing_instance_state);
-  void UpdateFrozenState(const PageNode* page_node);
+  // Update frozen state for all pages connected to `page`. Connected pages
+  // (including `page_node`) are added to `connected_pages_out` if not nullptr.
+  void UpdateFrozenState(
+      const PageNode* page_node,
+      base::flat_set<raw_ptr<const PageNode>>* connected_pages_out = nullptr);
 
   // Helper to add or remove a `CannotFreezeReason` for `page_node`.
   void OnCannotFreezeReasonChange(const PageNode* page_node,
