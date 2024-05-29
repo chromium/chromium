@@ -62,6 +62,12 @@ Status StubWebView::PostBidiCommand(base::Value::Dict command) {
   return Status{kOk};
 }
 
+Status StubWebView::SendBidiCommand(base::Value::Dict command,
+                                    const Timeout& timeout,
+                                    base::Value::Dict& response) {
+  return Status{kOk};
+}
+
 Status StubWebView::SendCommand(const std::string& cmd,
                                 const base::Value::Dict& params) {
   return Status(kOk);

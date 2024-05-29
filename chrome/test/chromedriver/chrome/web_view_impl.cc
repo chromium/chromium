@@ -31,6 +31,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/test/chromedriver/chrome/bidi_tracker.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/cast_tracker.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
@@ -355,6 +356,23 @@ Status ResolveWeakReferences(base::Value::List& nodes) {
   return status;
 }
 
+class BidiTrackerGuard {
+ public:
+  explicit BidiTrackerGuard(DevToolsClient& client) : client_(client) {
+    client_->AddListener(&bidi_tracker_);
+  }
+
+  BidiTracker& Tracker() { return bidi_tracker_; }
+
+  const BidiTracker& Tracker() const { return bidi_tracker_; }
+
+  ~BidiTrackerGuard() { client_->RemoveListener(&bidi_tracker_); }
+
+ private:
+  base::raw_ref<DevToolsClient> client_;
+  BidiTracker bidi_tracker_;
+};
+
 }  // namespace
 
 std::unique_ptr<WebViewImpl> WebViewImpl::CreateServiceWorkerWebView(
@@ -596,6 +614,57 @@ Status WebViewImpl::StartBidiServer(std::string bidi_mapper_script,
 
 Status WebViewImpl::PostBidiCommand(base::Value::Dict command) {
   return client_->PostBidiCommand(std::move(command));
+}
+
+Status WebViewImpl::SendBidiCommand(base::Value::Dict command,
+                                    const Timeout& timeout,
+                                    base::Value::Dict& response) {
+  WebViewImplHolder target_holder(this);
+  Status status{kOk};
+  BidiTrackerGuard bidi_tracker_guard(*client_);
+
+  base::Value* maybe_cmd_id = command.Find("id");
+  if (maybe_cmd_id == nullptr) {
+    return Status{kUnknownError, "BiDi command has no 'id' of type integer"};
+  }
+  base::Value expected_id = maybe_cmd_id->Clone();
+
+  std::string* maybe_channel = command.FindString("channel");
+  if (maybe_channel == nullptr) {
+    return Status{kUnknownError,
+                  "BiDi command has no 'channel' of type string"};
+  }
+  bidi_tracker_guard.Tracker().SetChannelSuffix(*maybe_channel);
+
+  base::Value::Dict tmp;
+  auto on_bidi_message = [](base::Value::Dict& destination,
+                            base::Value::Dict payload) {
+    destination = std::move(payload);
+    return Status{kOk};
+  };
+  bidi_tracker_guard.Tracker().SetBidiCallback(
+      base::BindRepeating(on_bidi_message, std::ref(tmp)));
+  status = client_->PostBidiCommand(std::move(command));
+  if (status.IsError()) {
+    return status;
+  }
+  auto response_is_received = [](const base::Value& expected_id,
+                                 const base::Value::Dict& destionation,
+                                 bool* is_condition_met) {
+    const base::Value* maybe_response_id = destionation.Find("id");
+    *is_condition_met =
+        (maybe_response_id != nullptr) && (expected_id == *maybe_response_id);
+    return Status{kOk};
+  };
+  status = client_->HandleEventsUntil(
+      base::BindRepeating(response_is_received, std::cref(expected_id),
+                          std::cref(tmp)),
+      timeout);
+  if (status.IsError()) {
+    return status;
+  }
+  response = std::move(tmp);
+  return status;
 }
 
 Status WebViewImpl::SendCommand(const std::string& cmd,

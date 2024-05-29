@@ -19,6 +19,7 @@ class WebViewImpl;
 struct InspectorEvent {
   InspectorEvent();
   ~InspectorEvent();
+  InspectorEvent(InspectorEvent&& other);
   std::string method;
   std::optional<base::Value::Dict> params;
 };
@@ -26,6 +27,7 @@ struct InspectorEvent {
 struct InspectorCommandResponse {
   InspectorCommandResponse();
   ~InspectorCommandResponse();
+  InspectorCommandResponse(InspectorCommandResponse&& other);
   int id;
   std::string error;
   std::optional<base::Value::Dict> result;
@@ -34,8 +36,8 @@ struct InspectorCommandResponse {
 // A DevTools client of a single DevTools debugger.
 class DevToolsClient {
  public:
-  typedef base::RepeatingCallback<Status(bool* is_condition_met)>
-      ConditionalFunc;
+  using ConditionalFunc =
+      base::RepeatingCallback<Status(bool* is_condition_met)>;
 
   virtual ~DevToolsClient() = default;
 
@@ -135,10 +137,9 @@ class DevToolsClient {
 
   virtual Status OnConnected() = 0;
 
-  virtual Status ProcessEvent(const InspectorEvent& event) = 0;
+  virtual Status ProcessEvent(InspectorEvent event) = 0;
 
-  virtual Status ProcessCommandResponse(
-      const InspectorCommandResponse& response) = 0;
+  virtual Status ProcessCommandResponse(InspectorCommandResponse response) = 0;
 
   virtual int NextMessageId() const = 0;
 

@@ -74,6 +74,9 @@ class WebViewImpl : public WebView {
   Status StartBidiServer(std::string bidi_mapper_script,
                          const base::Value::Dict& mapper_options) override;
   Status PostBidiCommand(base::Value::Dict command) override;
+  Status SendBidiCommand(base::Value::Dict command,
+                         const Timeout& timeout,
+                         base::Value::Dict& response) override;
   Status SendCommand(const std::string& cmd,
                      const base::Value::Dict& params) override;
   Status SendCommandFromWebSocket(const std::string& cmd,

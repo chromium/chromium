@@ -307,7 +307,7 @@ TEST(ParseBidiCommandTest, NoId) {
   base::Value::Dict parsed;
   Status status = internal::ParseBidiCommand(data, parsed);
   EXPECT_EQ(kInvalidArgument, status.code());
-  EXPECT_THAT(status.message(), ContainsRegex("no\\s+id"));
+  EXPECT_THAT(status.message(), ContainsRegex("no\\s+'id'"));
 }
 
 TEST(ParseBidiCommandTest, WrongIdType) {
@@ -315,7 +315,7 @@ TEST(ParseBidiCommandTest, WrongIdType) {
   base::Value::Dict parsed;
   Status status = internal::ParseBidiCommand(data, parsed);
   EXPECT_EQ(kInvalidArgument, status.code());
-  EXPECT_THAT(status.message(), ContainsRegex("no\\s+id"));
+  EXPECT_THAT(status.message(), ContainsRegex("no\\s+'id'"));
 }
 
 TEST(ParseBidiCommandTest, NoMethod) {
@@ -323,7 +323,7 @@ TEST(ParseBidiCommandTest, NoMethod) {
   base::Value::Dict parsed;
   Status status = internal::ParseBidiCommand(data, parsed);
   EXPECT_EQ(kInvalidArgument, status.code());
-  EXPECT_THAT(status.message(), ContainsRegex("no\\s+method"));
+  EXPECT_THAT(status.message(), ContainsRegex("no\\s+'method'"));
 }
 
 TEST(ParseBidiCommandTest, WrongMethodType) {
@@ -331,7 +331,7 @@ TEST(ParseBidiCommandTest, WrongMethodType) {
   base::Value::Dict parsed;
   Status status = internal::ParseBidiCommand(data, parsed);
   EXPECT_EQ(kInvalidArgument, status.code());
-  EXPECT_THAT(status.message(), ContainsRegex("no\\s+method"));
+  EXPECT_THAT(status.message(), ContainsRegex("no\\s+'method'"));
 }
 
 TEST(ParseBidiCommandTest, NoParams) {
@@ -339,7 +339,7 @@ TEST(ParseBidiCommandTest, NoParams) {
   base::Value::Dict parsed;
   Status status = internal::ParseBidiCommand(data, parsed);
   EXPECT_EQ(kInvalidArgument, status.code());
-  EXPECT_THAT(status.message(), ContainsRegex("no\\s+params"));
+  EXPECT_THAT(status.message(), ContainsRegex("no\\s+'params'"));
 }
 
 TEST(ParseBidiCommandTest, WrongParamsType) {
@@ -347,7 +347,7 @@ TEST(ParseBidiCommandTest, WrongParamsType) {
   base::Value::Dict parsed;
   Status status = internal::ParseBidiCommand(data, parsed);
   EXPECT_EQ(kInvalidArgument, status.code());
-  EXPECT_THAT(status.message(), ContainsRegex("no\\s+params"));
+  EXPECT_THAT(status.message(), ContainsRegex("no\\s+'params'"));
 }
 
 TEST(CreateBidiErrorResponse, WithId) {

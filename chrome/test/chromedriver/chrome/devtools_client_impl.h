@@ -50,10 +50,10 @@ class DevToolsClientImpl : public DevToolsClient {
 
   typedef base::RepeatingCallback<bool(const std::string&,
                                        int,
-                                       std::string*,
-                                       internal::InspectorMessageType*,
-                                       InspectorEvent*,
-                                       InspectorCommandResponse*)>
+                                       std::string&,
+                                       internal::InspectorMessageType&,
+                                       InspectorEvent&,
+                                       InspectorCommandResponse&)>
       ParserFunc;
 
   DevToolsClientImpl(const DevToolsClientImpl&) = delete;
@@ -157,9 +157,8 @@ class DevToolsClientImpl : public DevToolsClient {
                               DevToolsClient* client) override;
   void UnregisterSessionHandler(const std::string& session_id) override;
   Status OnConnected() override;
-  Status ProcessEvent(const InspectorEvent& event) override;
-  Status ProcessCommandResponse(
-      const InspectorCommandResponse& response) override;
+  Status ProcessEvent(InspectorEvent event) override;
+  Status ProcessCommandResponse(InspectorCommandResponse response) override;
   Status ProcessNextMessage(int expected_id,
                             bool log_timeout,
                             const Timeout& timeout,
@@ -257,10 +256,10 @@ namespace internal {
 
 bool ParseInspectorMessage(const std::string& message,
                            int expected_id,
-                           std::string* session_id,
-                           InspectorMessageType* type,
-                           InspectorEvent* event,
-                           InspectorCommandResponse* command_response);
+                           std::string& session_id,
+                           InspectorMessageType& type,
+                           InspectorEvent& event,
+                           InspectorCommandResponse& command_response);
 
 Status ParseInspectorError(const std::string& error_json);
 

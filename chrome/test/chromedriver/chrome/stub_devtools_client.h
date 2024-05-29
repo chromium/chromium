@@ -71,9 +71,8 @@ class StubDevToolsClient : public DevToolsClient {
                               DevToolsClient* client) override;
   void UnregisterSessionHandler(const std::string& session_id) override;
   Status OnConnected() override;
-  Status ProcessEvent(const InspectorEvent& event) override;
-  Status ProcessCommandResponse(
-      const InspectorCommandResponse& response) override;
+  Status ProcessEvent(InspectorEvent event) override;
+  Status ProcessCommandResponse(InspectorCommandResponse response) override;
   int NextMessageId() const override;
   int AdvanceNextMessageId() override;
   Status ProcessNextMessage(int expected_id,

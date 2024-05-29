@@ -2041,17 +2041,17 @@ Status internal::ParseBidiCommand(const std::string& data,
   std::optional<double> maybe_id = parsed.FindDouble("id");
   if (!maybe_id) {
     return Status(kInvalidArgument,
-                  "BiDi command has no id of type integer: " + data);
+                  "BiDi command has no 'id' of type integer: " + data);
   }
   std::string* maybe_method = parsed.FindString("method");
   if (!maybe_method) {
     return Status(kInvalidArgument,
-                  "BiDi command has no method of type string: " + data);
+                  "BiDi command has no 'method' of type string: " + data);
   }
   base::Value::Dict* maybe_params = parsed.FindDict("params");
   if (!maybe_params) {
     return Status(kInvalidArgument,
-                  "BiDi command has no params of type dictionary: " + data);
+                  "BiDi command has no 'params' of type dictionary: " + data);
   }
   return status;
 }

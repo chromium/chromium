@@ -83,6 +83,16 @@ Status EvaluateScriptAndIgnoreResult(Session* session,
   return web_view->EvaluateScript(frame_id, expression, await_promise, &result);
 }
 
+base::RepeatingCallback<Status(bool*)> BidiResponseIsReceivedCallback(
+    Session* session) {
+  return base::BindRepeating(
+      [](Session* session, bool* condition_is_met) {
+        *condition_is_met = !session->awaiting_bidi_response;
+        return Status{kOk};
+      },
+      base::Unretained(session));
+}
+
 }  // namespace
 
 InitSessionParams::InitSessionParams(
@@ -355,7 +365,7 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     session->bidi_mapper_web_view_id = session->window;
 
     // Wait until the default page navigation is over to prevent the mapper
-    // from begin evicted by the navigation.
+    // from being evicted by the navigation.
     status = web_view->WaitForPendingNavigations(
         session->GetCurrentFrameId(), Timeout(session->page_load_timeout),
         true);
@@ -387,7 +397,6 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     if (status.IsError()) {
       return status;
     }
-
     {
       // Create a new tab because the default one is occupied by the BiDiMapper
       std::string web_view_id;
@@ -402,8 +411,35 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
       body.Set("handle", web_view_id);
 
       status = ExecuteSwitchToWindow(session, body, &result);
+      if (status.IsError()) {
+        return status;
+      }
     }
-  }
+    {
+      Timeout timeout{session->page_load_timeout};
+      base::Value::Dict bidi_response;
+      const base::Value::List* context_list = nullptr;
+      do {
+        base::Value::Dict bidi_command;
+        bidi_command.Set("channel", "/init-bidi-session");
+        bidi_command.Set("id", 1);
+        bidi_command.Set("method", "browsingContext.getTree");
+        bidi_command.Set("params", base::Value::Dict());
+        bidi_response.clear();
+        status = web_view->SendBidiCommand(std::move(bidi_command), timeout,
+                                           bidi_response);
+        if (status.IsError()) {
+          return status;
+        }
+        context_list = bidi_response.FindListByDottedPath("result.contexts");
+        if (context_list == nullptr) {
+          return Status{kUnknownError,
+                        "browsingContext.getTree response does not contain "
+                        "'result.contexts' list"};
+        }
+      } while (context_list->empty());
+    }
+  }  // if (session->web_socket_url)
 
   return status;
 }
@@ -1690,20 +1726,14 @@ Status ForwardBidiCommand(Session* session,
     // This simplifies us closing the browser if the last tab was closed.
     session->awaiting_bidi_response = true;
     status = web_view->PostBidiCommand(std::move(bidi_cmd));
-    base::RepeatingCallback<Status(bool*)> bidi_response_is_received =
-        base::BindRepeating(
-            [](Session* session, bool* condition_is_met) {
-              *condition_is_met = !session->awaiting_bidi_response;
-              return Status{kOk};
-            },
-            base::Unretained(session));
     if (status.IsError()) {
       return status;
     }
 
     // The timeout is the same as in ChromeImpl::CloseTarget
-    status = web_view->HandleEventsUntil(std::move(bidi_response_is_received),
-                                         Timeout(base::Seconds(20)));
+    status = web_view->HandleEventsUntil(
+        std::move(BidiResponseIsReceivedCallback(session)),
+        Timeout(base::Seconds(20)));
     if (status.code() == kTimeout) {
       // It looks like something is going wrong with the BiDiMapper.
       // Terminating the session...

@@ -173,12 +173,12 @@ Status StubDevToolsClient::OnConnected() {
   return Status{kOk};
 }
 
-Status StubDevToolsClient::ProcessEvent(const InspectorEvent& event) {
+Status StubDevToolsClient::ProcessEvent(InspectorEvent event) {
   return Status{kOk};
 }
 
 Status StubDevToolsClient::ProcessCommandResponse(
-    const InspectorCommandResponse& response) {
+    InspectorCommandResponse response) {
   return Status{kOk};
 }
 

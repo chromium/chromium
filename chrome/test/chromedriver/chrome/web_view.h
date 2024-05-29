@@ -75,6 +75,11 @@ class WebView {
   // Send the BiDi command to the BiDiMapper
   virtual Status PostBidiCommand(base::Value::Dict command) = 0;
 
+  // Send the BiDi command to the BiDiMapper and receive the response
+  virtual Status SendBidiCommand(base::Value::Dict command,
+                                 const Timeout& timeout,
+                                 base::Value::Dict& response) = 0;
+
   // Send a command to the DevTools debugger
   virtual Status SendCommand(const std::string& cmd,
                              const base::Value::Dict& params) = 0;

@@ -8,6 +8,11 @@ InspectorEvent::InspectorEvent() = default;
 
 InspectorEvent::~InspectorEvent() = default;
 
+InspectorEvent::InspectorEvent(InspectorEvent&& other) = default;
+
 InspectorCommandResponse::InspectorCommandResponse() = default;
 
 InspectorCommandResponse::~InspectorCommandResponse() = default;
+
+InspectorCommandResponse::InspectorCommandResponse(
+    InspectorCommandResponse&& other) = default;
