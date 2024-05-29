@@ -29,4 +29,6 @@ include_rules = [
   "+chrome/common/pref_names.h",
   "+chrome/test/base",
   "+chrome/browser/download/download_dir_util.h",
+  "+chrome/browser/notifications/notification_display_service.h",
+  "+chrome/browser/platform_util.h",
 ]

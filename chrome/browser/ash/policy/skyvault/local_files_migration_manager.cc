@@ -4,16 +4,19 @@
 
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
+#include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,7 +27,8 @@
 
 namespace policy::local_user_files {
 
-LocalFilesMigrationManager::LocalFilesMigrationManager() = default;
+LocalFilesMigrationManager::LocalFilesMigrationManager()
+    : notification_manager_(std::make_unique<MigrationNotificationManager>()) {}
 
 LocalFilesMigrationManager::~LocalFilesMigrationManager() = default;
 
@@ -64,6 +68,7 @@ bool LocalFilesMigrationManager::ShouldStart() {
   const bool download_directory_set =
       defaultLocation == download_dir_util::kLocationGoogleDrive ||
       defaultLocation == download_dir_util::kLocationOneDrive;
+  // Remove this when we can use the new policy?
   if (!download_directory_set) {
     // SkyVault is misconfigured.
     // TODO(aidazolic): Show an error notification if there are any files.
@@ -78,6 +83,7 @@ void LocalFilesMigrationManager::MaybeMigrateFiles(
     return;
   }
   in_progress_ = true;
+  notification_manager_->ShowMigrationProgressNotification();
   // TODO(aidazolic): Upload everything under My files.
   std::move(callback).Run();
 }
@@ -85,14 +91,16 @@ void LocalFilesMigrationManager::MaybeMigrateFiles(
 void LocalFilesMigrationManager::OnMigrationDone() {
   in_progress_ = false;
   if (error_.has_value()) {
-    // TODO(aidazolic): Show an error notification.
+    // TODO(aidazolic): Use error message; add on-click action.
+    notification_manager_->ShowMigrationErrorNotification(error_.value());
     // TODO(aidazolic): UMA.
     LOG(ERROR) << "Local files migration failed: " << error_.value();
   } else {
     for (auto& observer : observers_) {
       observer.OnMigrationSucceeded();
     }
-    // TODO(aidazolic): Show a notification.
+    // TODO(aidazolic): Pass the path of the folder that files are uploaded to.
+    notification_manager_->ShowMigrationCompletedNotification(base::FilePath());
     VLOG(1) << "Local files migration done";
   }
 }

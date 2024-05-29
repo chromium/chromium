@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_SKYVAULT_LOCAL_FILES_MIGRATION_MANAGER_H_
 #define CHROME_BROWSER_ASH_POLICY_SKYVAULT_LOCAL_FILES_MIGRATION_MANAGER_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
+#include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 
 namespace policy::local_user_files {
 
@@ -48,6 +50,7 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver {
   // Handles the completion of the migration process (success or failure).
   void OnMigrationDone();
 
+  std::unique_ptr<MigrationNotificationManager> notification_manager_;
   base::ObserverList<Observer>::Unchecked observers_;
   bool in_progress_ = false;  // Indicates if migration is currently running.
   std::optional<std::string> error_;  // Stores migration error, if any.

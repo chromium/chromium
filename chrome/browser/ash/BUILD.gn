@@ -2897,6 +2897,8 @@ source_set("ash") {
     "policy/skyvault/local_files_migration_manager.h",
     "policy/skyvault/local_user_files_policy_observer.cc",
     "policy/skyvault/local_user_files_policy_observer.h",
+    "policy/skyvault/migration_notification_manager.cc",
+    "policy/skyvault/migration_notification_manager.h",
     "policy/skyvault/odfs_skyvault_uploader.cc",
     "policy/skyvault/odfs_skyvault_uploader.h",
     "policy/skyvault/policy_utils.cc",
