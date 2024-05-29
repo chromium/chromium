@@ -308,6 +308,7 @@ crbug.com/1430357 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/cs
 crbug.com/40283765 [ Mac ] virtual/view-transition-on-navigation/external/wpt/css/css-view-transitions/navigation/transition-to-prerender.html [ Failure ]
 crbug.com/330917526 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/iframe-and-main-frame-transition-new-main-new-iframe.html [ Failure Pass ]
 crbug.com/330917526 [ Mac ] virtual/threaded/external/wpt/css/css-view-transitions/iframe-and-main-frame-transition-new-main-new-iframe.html [ Failure Pass ]
+crbug.com/342554799 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-below-and-on-top-of-viewport-partially-onscreen-new.html [ Failure Pass ]
 crbug.com/330917526 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/iframe-and-main-frame-transition-new-main-new-iframe.html [ Failure Pass ]
 
 crbug.com/333739950 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/clip-path-larger-than-border-box-on-child-of-named-element.html [ Failure Pass ]
