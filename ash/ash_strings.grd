@@ -3305,7 +3305,7 @@ No devices connected.
       <message name="IDS_ASH_AUDIO_SELECTION_SWITCH_INPUT_TITLE" desc="label used for audio selection switch input title">
         Switch audio input?
       </message>
-      <message name="IDS_ASH_AUDIO_SELECTION_SWITCH_OUTPUT_TITLE" desc="label used for audio selection switch output title" translateable="false">
+      <message name="IDS_ASH_AUDIO_SELECTION_SWITCH_OUTPUT_TITLE" desc="label used for audio selection switch output title">
         Switch audio output?
       </message>
       <message name="IDS_ASH_AUDIO_SELECTION_SWITCH_SOURCE_TITLE" desc="label used for audio selection switch audio source title" translateable="false">
@@ -3314,7 +3314,7 @@ No devices connected.
       <message name="IDS_ASH_AUDIO_SELECTION_MULTIPLE_DEVICES_TITLE" desc="label used for audio selection multiple audio sources detected title" translateable="false">
         Multiple audio sources detected
       </message>
-      <message name="IDS_ASH_AUDIO_SELECTION_SWITCH_INPUT_OR_OUTPUT_BODY" desc="body of audio selection notification to select only or output input" translateable="false">
+      <message name="IDS_ASH_AUDIO_SELECTION_SWITCH_INPUT_OR_OUTPUT_BODY" desc="body of audio selection notification to select only or output input">
         Use "<ph name="DEVICE_NAME">$1<ex>Logitech Webcam</ex></ph>"
       </message>
       <message name="IDS_ASH_AUDIO_SELECTION_SWITCH_INPUT_AND_OUTPUT_BODY" desc="body of audio selection notification to select only input and output" translateable="false">
