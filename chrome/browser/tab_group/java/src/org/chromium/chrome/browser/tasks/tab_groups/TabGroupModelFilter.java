@@ -64,7 +64,7 @@ public class TabGroupModelFilter extends TabModelFilter {
 
         public TabGroupMetadata(int rootId) {
             title = getTabGroupTitle(rootId);
-            color = getTabGroupColor(rootId);
+            color = getOrCreateTabGroupColor(rootId);
             isCollapsed = getTabGroupCollapsed(rootId);
         }
     }
@@ -1456,10 +1456,23 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
     }
 
-    /** Returns the current color of the tab group. */
-    public @TabGroupColorId int getTabGroupColor(int rootId) {
-        // TODO(crbug.com/329127327): Refactor and emit an event when this changes the color.
-        return TabGroupColorUtils.getOrCreateTabGroupColor(rootId, this);
+    /**
+     * This method fetches tab group colors for the related tab group root ID. If the color does not
+     * exist, the next suggested color will be fetched, stored and returned for that root ID.
+     *
+     * @param rootId The tab root ID whose related tab group color will be fetched if found.
+     * @return The stored or newly created color for the target tab group.
+     */
+    public @TabGroupColorId int getOrCreateTabGroupColor(int rootId) {
+        assert rootId != Tab.INVALID_TAB_ID;
+        int color = TabGroupColorUtils.getTabGroupColor(rootId);
+
+        if (color == INVALID_COLOR_ID) {
+            color = TabGroupColorUtils.getNextSuggestedColorId(this);
+            setTabGroupColor(rootId, color);
+        }
+
+        return color;
     }
 
     /** Stores the given color for the tab group. */

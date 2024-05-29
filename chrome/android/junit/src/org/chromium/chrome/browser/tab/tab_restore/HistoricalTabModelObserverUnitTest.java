@@ -61,7 +61,6 @@ import java.util.Set;
 })
 public class HistoricalTabModelObserverUnitTest {
     private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
-    private static final String TAB_GROUP_COLORS_FILE_NAME = "tab_group_colors";
     private static final int INVALID_COLOR_ID = -1;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -69,7 +68,6 @@ public class HistoricalTabModelObserverUnitTest {
 
     private Context mContext;
     @Mock private SharedPreferences mSharedPreferencesTitle;
-    @Mock private SharedPreferences mSharedPreferencesColor;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
     @Mock private Profile mProfile;
@@ -91,8 +89,6 @@ public class HistoricalTabModelObserverUnitTest {
         mContext = spy(ContextUtils.getApplicationContext());
         when(mContext.getSharedPreferences(TAB_GROUP_TITLES_FILE_NAME, Context.MODE_PRIVATE))
                 .thenReturn(mSharedPreferencesTitle);
-        when(mContext.getSharedPreferences(TAB_GROUP_COLORS_FILE_NAME, Context.MODE_PRIVATE))
-                .thenReturn(mSharedPreferencesColor);
         ContextUtils.initApplicationContextForTests(mContext);
     }
 
@@ -341,7 +337,7 @@ public class HistoricalTabModelObserverUnitTest {
         createGroup(tabGroupId, title, color, new MockTab[] {mockTab0});
         when(mTabGroupModelFilter.isTabGroupHiding(tabGroupId)).thenReturn(true);
         when(mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(any()))
-                .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<Token>()));
+                .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<>()));
 
         MockTab[] tabList = new MockTab[] {mockTab0};
         mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList), /* canRestore= */ true);
@@ -379,7 +375,7 @@ public class HistoricalTabModelObserverUnitTest {
         tabList = new MockTab[] {mockTab1};
         createGroup(tabGroupId, title, color, tabList);
         when(mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(any()))
-                .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<Token>()));
+                .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<>()));
         mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList), true);
 
         ArgumentCaptor<List<HistoricalEntry>> arg = ArgumentCaptor.forClass((Class) List.class);
@@ -414,7 +410,7 @@ public class HistoricalTabModelObserverUnitTest {
         tabList = new MockTab[] {mockTab1, mockTab2};
         createGroup(tabGroupId, title, color, new MockTab[] {mockTab1, mockTab2});
         when(mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(any()))
-                .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<Token>()));
+                .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<>()));
         mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList), true);
 
         ArgumentCaptor<List<HistoricalEntry>> arg = ArgumentCaptor.forClass((Class) List.class);
@@ -511,8 +507,7 @@ public class HistoricalTabModelObserverUnitTest {
 
         final int rootId = tabList[0].getId();
         when(mSharedPreferencesTitle.getString(String.valueOf(rootId), null)).thenReturn(title);
-        when(mSharedPreferencesColor.getInt(String.valueOf(rootId), INVALID_COLOR_ID))
-                .thenReturn(color);
+        when(mTabGroupModelFilter.getOrCreateTabGroupColor(rootId)).thenReturn(color);
         when(mTabGroupModelFilter.getRelatedTabCountForRootId(rootId)).thenReturn(tabList.length);
         when(mTabGroupModelFilter.tabGroupExistsForRootId(rootId)).thenReturn(true);
         for (MockTab tab : tabList) {

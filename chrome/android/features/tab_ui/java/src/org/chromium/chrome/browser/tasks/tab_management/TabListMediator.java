@@ -901,7 +901,8 @@ class TabListMediator {
                         PropertyModel model = getModelFromId(groupTab.getId());
 
                         if (model != null) {
-                            int colorId = filter.getTabGroupColor(destinationTab.getRootId());
+                            int colorId =
+                                    filter.getOrCreateTabGroupColor(destinationTab.getRootId());
                             model.set(TabProperties.TAB_GROUP_COLOR_ID, colorId);
                         }
                     }
@@ -1631,7 +1632,7 @@ class TabListMediator {
                 if (isInTabGroup) {
                     TabGroupModelFilter filter =
                             (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-                    tabGroupColorId = filter.getTabGroupColor(tab.getRootId());
+                    tabGroupColorId = filter.getOrCreateTabGroupColor(tab.getRootId());
                 }
 
                 PropertyModel model = getModelFromId(tab.getId());
@@ -1934,7 +1935,7 @@ class TabListMediator {
             if (mMode == TabListMode.LIST && isInTabGroup && isParentComponentTabSwitcher()) {
                 TabGroupModelFilter filter =
                         (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-                colorId = filter.getTabGroupColor(tab.getRootId());
+                colorId = filter.getOrCreateTabGroupColor(tab.getRootId());
             }
         }
 

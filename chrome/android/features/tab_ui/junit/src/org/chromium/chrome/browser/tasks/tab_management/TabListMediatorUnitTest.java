@@ -2690,7 +2690,7 @@ public class TabListMediatorUnitTest {
 
         // Fake a different color on the group to check that the color was set properly on group
         // creation.
-        when(mTabGroupModelFilter.getTabGroupColor(mTab1.getRootId())).thenReturn(COLOR_2);
+        when(mTabGroupModelFilter.getOrCreateTabGroupColor(mTab1.getRootId())).thenReturn(COLOR_2);
 
         mTabGroupModelFilterObserverCaptor
                 .getValue()

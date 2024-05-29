@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
@@ -601,7 +600,7 @@ public class TabGridDialogMediator
             TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
             Tab currentTab = TabModelUtils.getTabById(filter.getTabModel(), mCurrentTabId);
             final @TabGroupColorId int color =
-                    TabGroupColorUtils.getOrCreateTabGroupColor(currentTab.getRootId(), filter);
+                    filter.getOrCreateTabGroupColor(currentTab.getRootId());
             mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, color);
         }
         updateTitle(tabsCount);

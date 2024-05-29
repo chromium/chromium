@@ -317,7 +317,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         verify(mTabGroupSyncService, never()).updateVisualData(any(), any(), anyInt());
 
         // Handle updates for non-existing groups.
-        when(mTabGroupModelFilter.getTabGroupColor(12)).thenReturn(TabGroupColorId.BLUE);
+        when(mTabGroupModelFilter.getOrCreateTabGroupColor(12)).thenReturn(TabGroupColorId.BLUE);
         mTabGroupModelFilterObserverCaptor
                 .getValue()
                 .didChangeTabGroupColor(12, TabGroupColorId.BLUE);

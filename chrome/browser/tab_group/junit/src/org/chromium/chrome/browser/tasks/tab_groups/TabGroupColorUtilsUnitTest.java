@@ -104,19 +104,6 @@ public class TabGroupColorUtilsUnitTest {
     }
 
     @Test
-    public void testGetOrCreateTabGroupColor_notExists() {
-        // Mock that we have a missing tab group color with reference to ROOT_ID.
-        when(mSharedPreferences.getInt(String.valueOf(ROOT_ID_1), INVALID_COLOR_ID))
-                .thenReturn(INVALID_COLOR_ID);
-
-        // Mock that no other colors have been used by other tab groups.
-        Set<Integer> rootIdsSet = new ArraySet<>();
-        when(mFilter.getAllTabGroupRootIds()).thenReturn(rootIdsSet);
-        assertThat(
-                TabGroupColorUtils.getOrCreateTabGroupColor(ROOT_ID_1, mFilter), equalTo(COLOR_1));
-    }
-
-    @Test
     public void testStoreTabGroupColor() {
         TabGroupColorUtils.storeTabGroupColor(ROOT_ID_1, COLOR_1);
 

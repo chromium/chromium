@@ -651,7 +651,7 @@ public class TabGroupSyncIntegrationTest {
         TabGroupModelFilter filter = getTabGroupFilter();
         int groupId = getTabGroupAt(index);
         String actualTitle = filter.getTabGroupTitle(groupId);
-        int actualColor = filter.getTabGroupColor(groupId);
+        int actualColor = filter.getOrCreateTabGroupColor(groupId);
         List<Tab> tabs = filter.getRelatedTabList(groupId);
 
         // Assert group details
