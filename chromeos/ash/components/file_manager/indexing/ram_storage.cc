@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/logging.h"
 #include "chromeos/ash/components/file_manager/indexing/match.h"
 
 namespace ash::file_manager {
@@ -127,6 +128,13 @@ int64_t RamStorage::MoveUrl(const GURL& from, const GURL& to) {
   const int64_t url_id = it->second;
   url_to_id_.erase(it);
   url_to_id_.emplace(std::make_pair(to, url_id));
+  // In RAM we store the whole file info object. Thus we have two places
+  // where the URL may be stored; if we have the corresponding file info
+  // correct its URL, too.
+  auto file_info_it = url_id_to_file_info_.find(url_id);
+  if (file_info_it != url_id_to_file_info_.end()) {
+    file_info_it->second.file_url = to;
+  }
   return url_id;
 }
 

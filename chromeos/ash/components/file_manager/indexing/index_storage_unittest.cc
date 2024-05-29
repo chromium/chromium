@@ -127,12 +127,40 @@ TEST_P(IndexStorageTest, DeleteUrl) {
   EXPECT_EQ(storage_->DeleteUrl(foo_url_), 1);
 }
 
+TEST_P(IndexStorageTest, MoveUrl) {
+  // Must initialize before use.
+  ASSERT_TRUE(storage_->Init());
+
+  // Cannot move non-existing URL.
+  EXPECT_EQ(storage_->MoveUrl(foo_url_, bar_url_), -1);
+
+  // Store a URL and a file info connected to it.
+  EXPECT_EQ(storage_->GetOrCreateUrlId(foo_url_), 1);
+  FileInfo foo_file_info(foo_url_, 100, base::Time());
+  EXPECT_EQ(1, storage_->PutFileInfo(foo_file_info));
+
+  // Move foo_url_ to foo_url_.
+  EXPECT_EQ(storage_->MoveUrl(foo_url_, foo_url_), 1);
+
+  // Move foo_url_ to bar_url_.
+  EXPECT_EQ(storage_->MoveUrl(foo_url_, bar_url_), 1);
+
+  // Expect to be able to retrieve foo_file_info by bar_url_.
+  std::optional<FileInfo> file_info = storage_->GetFileInfo(1);
+  EXPECT_TRUE(file_info.has_value());
+  EXPECT_EQ(file_info.value().file_url, bar_url_);
+
+  // Expect that one no longer can find foo_url_.
+  EXPECT_EQ(-1, storage_->GetUrlId(foo_url_));
+}
+
 TEST_P(IndexStorageTest, GetFileInfo) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
   int64_t foo_url_id = storage_->GetOrCreateUrlId(foo_url_);
 
+  EXPECT_FALSE(storage_->GetFileInfo(-1).has_value());
   EXPECT_FALSE(storage_->GetFileInfo(foo_url_id).has_value());
 
   FileInfo put_file_info(foo_url_, 100, base::Time());
@@ -176,6 +204,9 @@ TEST_P(IndexStorageTest, PutFileInfo) {
 TEST_P(IndexStorageTest, DeleteFileInfo) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
+
+  // You cannot delete file info by the invalid URL ID.
+  EXPECT_EQ(-1, storage_->DeleteFileInfo(-1));
 
   int64_t foo_url_id = storage_->GetOrCreateUrlId(foo_url_);
   EXPECT_EQ(foo_url_id, 1);
