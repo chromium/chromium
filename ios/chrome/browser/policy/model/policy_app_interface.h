@@ -14,9 +14,13 @@
 // namespace.
 + (NSString*)valueForPlatformPolicy:(NSString*)policyKey;
 
-// Sets the value of the policy with the `policyKey` key to the given value. The
-// value must be serialized to JSON.
+// Sets the json policy corresponding to `policy_key` to the given json
+// value, and removes previous policies.
 + (void)setPolicyValue:(NSString*)jsonValue forKey:(NSString*)policyKey;
+
+// Merges the json policy corresponding to `policyKey` to the existing
+// policies with its value sets to `jsonValue`.
++ (void)mergePolicyValue:(NSString*)jsonValue forKey:(NSString*)policyKey;
 
 // Clear all policy values.
 + (void)clearPolicies;

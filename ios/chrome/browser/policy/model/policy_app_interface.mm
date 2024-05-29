@@ -112,6 +112,27 @@ std::optional<base::Value> DeserializeValue(NSString* json_value) {
   GetTestPlatformPolicyProvider()->UpdateChromePolicy(values);
 }
 
++ (void)mergePolicyValue:(NSString*)jsonValue forKey:(NSString*)policyKey {
+  // Get the policy bundle.
+  policy::MockConfigurationPolicyProvider* platformProvider =
+      GetTestPlatformPolicyProvider();
+  policy::PolicyBundle mutablePolicyBundle;
+  mutablePolicyBundle.MergeFrom(platformProvider->policies());
+  // Get the policy map.
+  policy::PolicyNamespace chromePolicyNamespace(
+      policy::PolicyDomain::POLICY_DOMAIN_CHROME, std::string());
+  policy::PolicyMap& chromePolicyMap =
+      mutablePolicyBundle.Get(chromePolicyNamespace);
+  // Add the value.
+  std::optional<base::Value> value = DeserializeValue(jsonValue);
+  chromePolicyMap.Set(
+      base::SysNSStringToUTF8(policyKey), policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_PLATFORM,
+      std::move(value), /*external_data_fetcher=*/nullptr);
+  // Update the policy.
+  platformProvider->UpdatePolicy(std::move(mutablePolicyBundle));
+}
+
 + (void)clearPolicies {
   policy::PolicyMap values;
   GetTestPlatformPolicyProvider()->UpdateChromePolicy(values);
