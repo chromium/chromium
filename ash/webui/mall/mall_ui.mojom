@@ -1,0 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.mall.mojom;
+
+import "url/mojom/url.mojom";
+
+// Interface implemented by ash-chrome and called from the chrome://mall page.
+interface PageHandler {
+    // Returns a URL used to embed the Mall website in the WebUI.
+    GetMallEmbedUrl() => (url.mojom.Url url);
+};

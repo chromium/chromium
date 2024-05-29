@@ -2,9 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(b/342057600): Fetch iframe target from the browser process.
-const MALL_ORIGIN = 'https://discover.apps.chrome/';
+import {PageHandler} from './mall_ui.mojom-webui.js';
 
-const mallFrame = document.createElement('iframe');
-mallFrame.src = MALL_ORIGIN;
-document.body.appendChild(mallFrame);
+const pageHandler = PageHandler.getRemote();
+
+async function embedMall() {
+  const mallUrl = (await pageHandler.getMallEmbedUrl()).url;
+
+  const mallFrame = document.createElement('iframe');
+  mallFrame.src = mallUrl.url;
+  document.body.appendChild(mallFrame);
+}
+
+embedMall();

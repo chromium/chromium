@@ -5356,6 +5356,8 @@ static_library("browser") {
       "//ash/webui/help_app_ui",
       "//ash/webui/help_app_ui:mojo_bindings",
       "//ash/webui/help_app_ui/search:mojo_bindings",
+      "//ash/webui/mall",
+      "//ash/webui/mall:mojo_bindings",
       "//ash/webui/media_app_ui",
       "//ash/webui/media_app_ui:mojo_bindings",
       "//ash/webui/media_app_ui:mojo_bindings_untrusted",
