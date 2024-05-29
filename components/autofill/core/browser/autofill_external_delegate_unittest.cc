@@ -302,6 +302,13 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const std::u16string&,
                SuggestionType),
               (override));
+  MOCK_METHOD(void,
+              OnDidFillAddressFormFillingSuggestion,
+              (const AutofillProfile&,
+               const FormData&,
+               const FormFieldData&,
+               AutofillTriggerSource),
+              (override));
 
  private:
   bool should_show_cards_from_account_option_ = false;
@@ -2448,6 +2455,9 @@ TEST_F(AutofillExternalDelegateUnitTest,
           HasQueriedFormId(), HasQueriedFieldId(),
           profile.GetRawInfo(*suggestion.field_by_field_filling_type_used),
           SuggestionType::kAddressFieldByFieldFilling));
+  EXPECT_CALL(manager(), OnDidFillAddressFormFillingSuggestion(
+                             Property(&AutofillProfile::guid, profile.guid()),
+                             HasQueriedFormId(), HasQueriedFieldId(), _));
 
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});

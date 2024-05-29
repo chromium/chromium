@@ -170,6 +170,16 @@ class BrowserAutofillManager : public AutofillManager {
                                   const std::u16string& value,
                                   SuggestionType type);
 
+  // Logs metrics when the user accepts address form filling suggestion. This
+  // happens only for already parsed forms (`FormStructure` and `AutofillField`
+  // are defined).
+  // TODO(b/40227071): Remove when field-filling and form-filling are merged
+  virtual void OnDidFillAddressFormFillingSuggestion(
+      const AutofillProfile& profile,
+      const FormData& form,
+      const FormFieldData& field,
+      AutofillTriggerSource trigger_source);
+
   // Calls UndoAutofillImpl and logs metrics. Virtual for testing.
   virtual void UndoAutofill(mojom::ActionPersistence action_persistence,
                             const FormData& form,

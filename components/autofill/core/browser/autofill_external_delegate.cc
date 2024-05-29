@@ -962,6 +962,9 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
     manager_->FillOrPreviewField(
         mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
         query_form_, query_field_, filling_value, suggestion.type);
+    manager_->OnDidFillAddressFormFillingSuggestion(
+        profile, query_form_, query_field_,
+        TriggerSourceFromSuggestionTriggerSource(trigger_source_));
   }
 }
 

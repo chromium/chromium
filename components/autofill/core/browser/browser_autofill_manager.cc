@@ -1415,6 +1415,22 @@ void BrowserAutofillManager::FillOrPreviewField(
   }
 }
 
+void BrowserAutofillManager::OnDidFillAddressFormFillingSuggestion(
+    const AutofillProfile& profile,
+    const FormData& form,
+    const FormFieldData& field,
+    AutofillTriggerSource trigger_source) {
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  GetCachedFormAndField(form, field, &form_structure, &autofill_field);
+  if (!form_structure || !autofill_field) {
+    return;
+  }
+  address_form_event_logger_->OnDidFillFormFillingSuggestion(
+      profile, *form_structure, *autofill_field, signin_state_for_metrics_,
+      trigger_source);
+}
+
 void BrowserAutofillManager::UndoAutofill(
     mojom::ActionPersistence action_persistence,
     const FormData& form,
