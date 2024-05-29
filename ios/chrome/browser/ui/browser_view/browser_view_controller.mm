@@ -11,7 +11,6 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
-#import "components/enterprise/idle/idle_features.h"
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -1773,12 +1772,10 @@ enum HeaderBehaviour {
   _lastTapPoint = [[view superview] convertPoint:viewCoordinate
                                           toView:self.view];
   _lastTapTime = CACurrentMediaTime();
-  if (base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
-    // Last tap timestamp will be consumed by `IdleService` if IdleTimeout
-    // policy is set.
-    GetApplicationContext()->GetLocalState()->SetTime(
-        enterprise_idle::prefs::kLastActiveTimestamp, base::Time::Now());
-  }
+  // Last tap timestamp will be consumed by `IdleService` if IdleTimeout
+  // policy is set.
+  GetApplicationContext()->GetLocalState()->SetTime(
+      enterprise_idle::prefs::kLastActiveTimestamp, base::Time::Now());
 }
 
 #pragma mark - ** Protocol Implementations and Helpers **

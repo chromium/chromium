@@ -26,7 +26,6 @@
 #import "components/component_updater/installer_policies/safety_tips_component_installer.h"
 #import "components/component_updater/url_param_filter_remover.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
-#import "components/enterprise/idle/idle_features.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/metrics/metrics_pref_names.h"
@@ -670,15 +669,13 @@ SEQUENCE_CHECKER(_sequenceChecker);
   [self scheduleLowPriorityStartupTasks];
 
   // Run after UI created to avoid trying to update UI before it is available.
-  if (base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
-    std::vector<ChromeBrowserState*> loadedBrowserStates =
-        GetApplicationContext()
-            ->GetChromeBrowserStateManager()
-            ->GetLoadedBrowserStates();
-    for (ChromeBrowserState* browserState : loadedBrowserStates) {
-      enterprise_idle::IdleServiceFactory::GetForBrowserState(browserState)
-          ->OnApplicationWillEnterForeground();
-    }
+  std::vector<ChromeBrowserState*> loadedBrowserStates =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
+  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+    enterprise_idle::IdleServiceFactory::GetForBrowserState(browserState)
+        ->OnApplicationWillEnterForeground();
   }
 
   // Now that everything is properly set up, run the tests.

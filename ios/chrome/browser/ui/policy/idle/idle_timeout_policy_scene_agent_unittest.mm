@@ -6,9 +6,7 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
-#import "components/enterprise/idle/idle_features.h"
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
@@ -85,9 +83,6 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
   IdleTimeoutPolicySceneAgentTest() = default;
 
   void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatures({enterprise_idle::kIdleTimeout}, {});
-
     SetUpAppState();
     SetIdleTimeoutPolicies();
     InitIdleService();
@@ -166,7 +161,6 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<enterprise_idle::IdleService> idle_service_;
   FakeStartupInformation* startup_information_;

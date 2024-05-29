@@ -10,7 +10,6 @@
 #import "base/test/mock_callback.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
-#import "components/enterprise/idle/idle_features.h"
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/browsing_data/model/fake_browsing_data_remover.h"
@@ -43,8 +42,6 @@ class IdleActionTest : public PlatformTest {
  protected:
   using ActionQueue = ActionFactory::ActionQueue;
   void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatures({enterprise_idle::kIdleTimeout}, {});
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -146,7 +143,6 @@ class IdleActionTest : public PlatformTest {
   std::unique_ptr<ActionFactory> action_factory_;
   std::unique_ptr<FakeBrowsingDataRemover> main_browsing_data_remover_;
   std::unique_ptr<FakeBrowsingDataRemover> incognito_browsing_data_remover_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TestBrowser> incognito_browser_;

@@ -17,7 +17,6 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/notreached.h"
 #import "base/task/bind_post_task.h"
-#import "components/enterprise/idle/idle_features.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/metrics/metrics_service.h"
@@ -262,15 +261,13 @@ void FlushCookieStoreOnIOThread(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
-    std::vector<ChromeBrowserState*> loadedBrowserStates =
-        GetApplicationContext()
-            ->GetChromeBrowserStateManager()
-            ->GetLoadedBrowserStates();
-    for (ChromeBrowserState* browserState : loadedBrowserStates) {
-      enterprise_idle::IdleServiceFactory::GetForBrowserState(browserState)
-          ->OnApplicationWillEnterBackground();
-    }
+  std::vector<ChromeBrowserState*> loadedBrowserStates =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
+  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+    enterprise_idle::IdleServiceFactory::GetForBrowserState(browserState)
+        ->OnApplicationWillEnterBackground();
   }
 
   [MetricsMediator
@@ -354,11 +351,9 @@ void FlushCookieStoreOnIOThread(
   for (ChromeBrowserState* chromeBrowserState : loadedBrowserStates) {
     AuthenticationServiceFactory::GetForBrowserState(chromeBrowserState)
         ->OnApplicationWillEnterForeground();
-    if (base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
-      enterprise_idle::IdleServiceFactory::GetForBrowserState(
-          chromeBrowserState)
-          ->OnApplicationWillEnterForeground();
-    }
+
+    enterprise_idle::IdleServiceFactory::GetForBrowserState(chromeBrowserState)
+        ->OnApplicationWillEnterForeground();
   }
 
   crash_keys::SetCurrentlyInBackground(false);

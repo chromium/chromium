@@ -19,7 +19,6 @@
 #import "base/time/time.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
-#import "components/enterprise/idle/idle_features.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/infobars/core/infobar_manager.h"
@@ -1042,21 +1041,18 @@ void OnListFamilyMembersResponse(
                               userPolicyManager:userPolicyManager]];
   }
 
-  if (base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
-    enterprise_idle::IdleService* idleService =
-        enterprise_idle::IdleServiceFactory::GetForBrowserState(
-            mainBrowser->GetBrowserState());
-    id<SnackbarCommands> snackbarCommandsHandler =
-        static_cast<id<SnackbarCommands>>(mainCommandDispatcher);
+  enterprise_idle::IdleService* idleService =
+      enterprise_idle::IdleServiceFactory::GetForBrowserState(
+          mainBrowser->GetBrowserState());
+  id<SnackbarCommands> snackbarCommandsHandler =
+      static_cast<id<SnackbarCommands>>(mainCommandDispatcher);
 
-    [sceneState
-        addAgent:[[IdleTimeoutPolicySceneAgent alloc]
-                        initWithSceneUIProvider:self
-                     applicationCommandsHandler:applicationCommandsHandler
-                        snackbarCommandsHandler:snackbarCommandsHandler
-                                    idleService:idleService
-                                    mainBrowser:mainBrowser]];
-  }
+  [sceneState addAgent:[[IdleTimeoutPolicySceneAgent alloc]
+                              initWithSceneUIProvider:self
+                           applicationCommandsHandler:applicationCommandsHandler
+                              snackbarCommandsHandler:snackbarCommandsHandler
+                                          idleService:idleService
+                                          mainBrowser:mainBrowser]];
 
   // Now that the main browser's command dispatcher is created and the newly
   // started UI coordinators have registered with it, inject it into the

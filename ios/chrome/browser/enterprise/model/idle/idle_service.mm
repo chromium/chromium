@@ -7,7 +7,6 @@
 #import <UIKit/UIKit.h>
 
 #import "base/check_is_test.h"
-#import "components/enterprise/idle/idle_features.h"
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/enterprise/idle/metrics.h"
 #import "components/prefs/pref_service.h"
@@ -20,10 +19,6 @@ namespace enterprise_idle {
 IdleService::IdleService(ChromeBrowserState* browser_state)
     : browser_state_(browser_state),
       action_runner_(std::make_unique<ActionRunnerImpl>(browser_state_)) {
-  if (!base::FeatureList::IsEnabled(kIdleTimeout)) {
-    return;
-  }
-
   pref_change_registrar_.Init(browser_state_->GetPrefs());
   pref_change_registrar_.Add(
       enterprise_idle::prefs::kIdleTimeout,
@@ -52,8 +47,6 @@ base::TimeDelta IdleService::GetTimeout() const {
 }
 
 void IdleService::OnApplicationWillEnterForeground() {
-  DCHECK(base::FeatureList::IsEnabled(kIdleTimeout));
-
   base::TimeDelta idle_threshold = GetTimeout();
   base::Time last_active_time = GetLastActiveTime();
 
@@ -122,8 +115,6 @@ void IdleService::PostCheckIdleTask(base::TimeDelta time_from_now) {
 }
 
 void IdleService::CheckIfIdle() {
-  DCHECK(base::FeatureList::IsEnabled(kIdleTimeout));
-
   if (IsIdleAfterPreviouslyBeingActive()) {
     MaybeRunActionsForState(LastState::kIdleOnForeground);
     return;
@@ -173,7 +164,6 @@ void IdleService::RunActionsForStateForTesting(LastState last_state) {
 }
 
 void IdleService::MaybeRunActionsForState(LastState last_state) {
-  DCHECK(base::FeatureList::IsEnabled(kIdleTimeout));
   if (!IsAnyActionNeededToRun()) {
     PostCheckIdleTask(GetTimeout());
     return;
