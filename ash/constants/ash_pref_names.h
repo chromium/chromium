@@ -2091,6 +2091,9 @@ inline constexpr char kFocusModeDoNotDisturb[] =
 // A dictionary pref containing the data pertaining to the task selected by the
 // user for a focus session.
 inline constexpr char kFocusModeSelectedTask[] = "ash.focus_mode.selected_task";
+// A dictionary pref containing the set of sound section settings for the user.
+// This is synced for all user devices.
+inline constexpr char kFocusModeSoundSection[] = "ash.focus_mode.sound_section";
 
 // An integer pref that holds enum value of current demo mode configuration.
 // Values are defined by DemoSession::DemoModeConfig enum.

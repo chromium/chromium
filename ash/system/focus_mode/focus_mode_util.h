@@ -24,13 +24,15 @@ enum class SoundState {
 };
 
 enum class SoundType {
-  kNone,
-  kSoundscape,
-  kYouTubeMusic,
+  kNone = 0,
+  kSoundscape = 1,
+  kYouTubeMusic = 2,
 };
 
 constexpr std::string_view kTaskListIdKey = "taskListId";
 constexpr std::string_view kTaskIdKey = "taskId";
+constexpr std::string_view kSoundTypeKey = "SoundType";
+constexpr std::string_view kPlaylistIdKey = "playlistId";
 
 constexpr base::TimeDelta kMinimumDuration = base::Minutes(1);
 constexpr base::TimeDelta kMaximumDuration = base::Minutes(300);

@@ -133,12 +133,18 @@ FocusModeSoundsView::FocusModeSoundsView(bool is_network_connected) {
 
   CreateTabSliderButtons(is_network_connected);
 
-  // We are currently defaulting to the premium playlists when opening a new
-  // focus mode panel, and this can change based on future policies.
-  youtube_music_button_->SetSelected(true);
-
   auto* sounds_controller =
       FocusModeController::Get()->focus_mode_sounds_controller();
+
+  const bool should_show_soundscapes =
+      focus_mode_util::SoundType::kSoundscape ==
+      sounds_controller->sound_type();
+  if (should_show_soundscapes) {
+    soundscape_button_->SetSelected(true);
+  } else {
+    youtube_music_button_->SetSelected(true);
+  }
+
   if (is_network_connected) {
     CreatesSoundSectionViews();
     sounds_controller->DownloadPlaylistsForType(
@@ -149,7 +155,12 @@ FocusModeSoundsView::FocusModeSoundsView(bool is_network_connected) {
         /*is_soundscape_type=*/false,
         base::BindOnce(&FocusModeSoundsView::UpdateSoundsView,
                        weak_factory_.GetWeakPtr()));
-    OnYouTubeMusicButtonToggled();
+
+    if (should_show_soundscapes) {
+      OnSoundscapeButtonToggled();
+    } else {
+      OnYouTubeMusicButtonToggled();
+    }
   } else {
     AddChildView(CreateOfflineStateView());
   }

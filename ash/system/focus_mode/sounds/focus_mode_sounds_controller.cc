@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/shell.h"
@@ -17,6 +18,7 @@
 #include "ash/system/focus_mode/sounds/playlist_view.h"
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
+#include "components/prefs/pref_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
@@ -187,9 +189,40 @@ void FocusModeSoundsController::DownloadPlaylistsForType(
   }
 }
 
+void FocusModeSoundsController::UpdateFromUserPrefs() {
+  if (PrefService* active_user_prefs =
+          Shell::Get()->session_controller()->GetActivePrefService()) {
+    const auto& dict =
+        active_user_prefs->GetDict(prefs::kFocusModeSoundSection);
+
+    // If the user didn't select any playlist before, we should show the
+    // `Soundscape` sound section as default behavior.
+    if (dict.empty()) {
+      sound_type_ = focus_mode_util::SoundType::kSoundscape;
+    } else {
+      sound_type_ = static_cast<focus_mode_util::SoundType>(
+          dict.FindInt(focus_mode_util::kSoundTypeKey).value());
+    }
+  }
+}
+
+void FocusModeSoundsController::SaveUserPref() {
+  if (PrefService* active_user_prefs =
+          Shell::Get()->session_controller()->GetActivePrefService()) {
+    base::Value::Dict dict;
+    dict.Set(focus_mode_util::kSoundTypeKey, static_cast<int>(sound_type_));
+    dict.Set(focus_mode_util::kPlaylistIdKey, selected_playlist_.id);
+    active_user_prefs->SetDict(prefs::kFocusModeSoundSection, std::move(dict));
+  }
+}
+
 void FocusModeSoundsController::ResetSelectedPlaylist() {
   // TODO: Stop the music for current selected playlist.
   selected_playlist_ = {};
+
+  // We still want to keep the user pref for sound section after deselecting the
+  // selected playlist.
+  SaveUserPref();
   for (auto& observer : observers_) {
     observer.OnSelectedPlaylistChanged();
   }
@@ -212,6 +245,8 @@ void FocusModeSoundsController::SelectPlaylist(
                                           base::BindOnce(&OnTrackFetched));
   }
 
+  sound_type_ = selected_playlist_.type;
+  SaveUserPref();
   for (auto& observer : observers_) {
     observer.OnSelectedPlaylistChanged();
   }

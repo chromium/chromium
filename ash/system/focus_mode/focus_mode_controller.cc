@@ -179,6 +179,9 @@ void FocusModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(
       prefs::kFocusModeSelectedTask,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterDictionaryPref(
+      prefs::kFocusModeSoundSection,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 void FocusModeController::AddObserver(Observer* observer) {
@@ -525,6 +528,7 @@ void FocusModeController::UpdateFromUserPrefs() {
   }
 
   UpdateSelectedTaskFromUserPrefs();
+  focus_mode_sounds_controller_->UpdateFromUserPrefs();
 }
 
 void FocusModeController::UpdateSelectedTaskFromUserPrefs() {

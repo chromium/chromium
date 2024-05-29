@@ -83,6 +83,8 @@ class ASH_EXPORT FocusModeSoundsController {
     return selected_playlist_;
   }
 
+  focus_mode_util::SoundType sound_type() const { return sound_type_; }
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -99,7 +101,10 @@ class ASH_EXPORT FocusModeSoundsController {
       const bool is_soundscape_type,
       UpdateSoundsViewCallback update_sounds_view_callback);
 
+  void UpdateFromUserPrefs();
+
  private:
+  void SaveUserPref();
   void ResetSelectedPlaylist();
   void SelectPlaylist(const SelectedPlaylist& playlist_data);
 
@@ -115,6 +120,8 @@ class ASH_EXPORT FocusModeSoundsController {
   std::vector<std::unique_ptr<Playlist>> youtube_music_playlists_;
 
   SelectedPlaylist selected_playlist_;
+  focus_mode_util::SoundType sound_type_ =
+      focus_mode_util::SoundType::kSoundscape;
 
   base::ObserverList<Observer> observers_;
 

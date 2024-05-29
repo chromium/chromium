@@ -16,6 +16,7 @@
 #include "ash/system/focus_mode/focus_mode_task_test_utils.h"
 #include "ash/system/focus_mode/focus_mode_tray.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
+#include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -128,9 +129,13 @@ class FocusModeControllerMultiUserTest : public NoSessionAshTestBase {
 TEST_F(FocusModeControllerMultiUserTest, LoadUserPrefsAndSwitchUsers) {
   constexpr base::TimeDelta kDefaultSessionDuration = base::Minutes(25);
   constexpr bool kDefaultDNDState = true;
+  const focus_mode_util::SoundType kUser1SoundType =
+      focus_mode_util::SoundType::kSoundscape;
 
   constexpr base::TimeDelta kUser2SessionDuration = base::Minutes(200);
   constexpr bool kUser2DNDState = false;
+  const focus_mode_util::SoundType kUser2SoundType =
+      focus_mode_util::SoundType::kYouTubeMusic;
 
   base::Value::Dict user2_task_dict;
   const std::string task_list_id_2 = "task_list_id_2";
@@ -144,6 +149,18 @@ TEST_F(FocusModeControllerMultiUserTest, LoadUserPrefsAndSwitchUsers) {
   user_2_prefs()->SetBoolean(prefs::kFocusModeDoNotDisturb, kUser2DNDState);
   user_2_prefs()->SetDict(prefs::kFocusModeSelectedTask,
                           user2_task_dict.Clone());
+  base::Value::Dict sound_section_dict;
+  sound_section_dict.Set(focus_mode_util::kSoundTypeKey,
+                         static_cast<int>(kUser2SoundType));
+  user_2_prefs()->SetDict(prefs::kFocusModeSoundSection,
+                          std::move(sound_section_dict));
+
+  // Verify the sound section dictionary values for user2.
+  sound_section_dict =
+      user_2_prefs()->GetDict(prefs::kFocusModeSoundSection).Clone();
+  EXPECT_FALSE(sound_section_dict.empty());
+  EXPECT_EQ(static_cast<int>(kUser2SoundType),
+            sound_section_dict.FindInt(focus_mode_util::kSoundTypeKey).value());
 
   // Log in and check to see that the user1 prefs are the default values, since
   // there should have been nothing previously.
@@ -153,12 +170,15 @@ TEST_F(FocusModeControllerMultiUserTest, LoadUserPrefsAndSwitchUsers) {
   EXPECT_EQ(kDefaultDNDState,
             user_1_prefs()->GetBoolean(prefs::kFocusModeDoNotDisturb));
   EXPECT_TRUE(user_1_prefs()->GetDict(prefs::kFocusModeSelectedTask).empty());
+  EXPECT_TRUE(user_1_prefs()->GetDict(prefs::kFocusModeSoundSection).empty());
 
   // Verify that `FocusModeController` has loaded the user prefs.
   auto* controller = FocusModeController::Get();
+  auto* sounds_controller = controller->focus_mode_sounds_controller();
   EXPECT_EQ(kDefaultSessionDuration, controller->GetSessionDuration());
   EXPECT_EQ(kDefaultDNDState, controller->turn_on_do_not_disturb());
   EXPECT_FALSE(controller->HasSelectedTask());
+  EXPECT_EQ(kUser1SoundType, sounds_controller->sound_type());
 
   // Switch users and verify that `FocusModeController` has loaded the new user
   // prefs.
@@ -167,6 +187,47 @@ TEST_F(FocusModeControllerMultiUserTest, LoadUserPrefsAndSwitchUsers) {
   EXPECT_EQ(kUser2DNDState, controller->turn_on_do_not_disturb());
   EXPECT_EQ(task_list_id_2, controller->selected_task_list_id());
   EXPECT_EQ(task_id_2, controller->selected_task_id());
+  EXPECT_EQ(kUser2SoundType, sounds_controller->sound_type());
+}
+
+// Tests that when the user selects a different type of playlist, the user pref
+// for the sound section will be updated for this change.
+TEST_F(FocusModeControllerMultiUserTest, TogglePlaylistToChangeUserPref) {
+  SimulateUserLogin(GetUser1AccountId());
+  const focus_mode_util::SoundType kUser1SoundType =
+      focus_mode_util::SoundType::kSoundscape;
+  const focus_mode_util::SoundType kUser1NewSoundType =
+      focus_mode_util::SoundType::kYouTubeMusic;
+
+  // Verify that `FocusModeSoundsController` has loaded the user prefs.
+  auto* sounds_controller =
+      FocusModeController::Get()->focus_mode_sounds_controller();
+  EXPECT_EQ(kUser1SoundType, sounds_controller->sound_type());
+
+  FocusModeSoundsController::SelectedPlaylist selected_playlist;
+  selected_playlist.id = "id0";
+  selected_playlist.type = focus_mode_util::SoundType::kYouTubeMusic;
+  selected_playlist.state = focus_mode_util::SoundState::kNone;
+
+  // 1. Toggle a YouTube Music type of playlists and verify the pref.
+  sounds_controller->TogglePlaylist(selected_playlist);
+  EXPECT_EQ(kUser1NewSoundType, sounds_controller->sound_type());
+
+  // The playlist id should be also updated into the user pref.
+  base::Value::Dict dict =
+      user_1_prefs()->GetDict(prefs::kFocusModeSoundSection).Clone();
+  EXPECT_EQ(static_cast<int>(kUser1NewSoundType),
+            dict.FindInt(focus_mode_util::kSoundTypeKey).value());
+  EXPECT_EQ(selected_playlist.id,
+            *(dict.FindString(focus_mode_util::kPlaylistIdKey)));
+
+  // 2. Toggle the selected playlist to deselect it and verify the pref.
+  selected_playlist.state = focus_mode_util::SoundState::kSelected;
+  sounds_controller->TogglePlaylist(selected_playlist);
+  dict = user_1_prefs()->GetDict(prefs::kFocusModeSoundSection).Clone();
+  EXPECT_EQ(static_cast<int>(kUser1NewSoundType),
+            dict.FindInt(focus_mode_util::kSoundTypeKey).value());
+  EXPECT_EQ(std::string(), *(dict.FindString(focus_mode_util::kPlaylistIdKey)));
 }
 
 TEST_F(FocusModeControllerMultiUserTest, ToggleClosesSystemBubble) {
