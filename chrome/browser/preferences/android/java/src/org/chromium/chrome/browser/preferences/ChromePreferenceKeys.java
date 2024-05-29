@@ -810,11 +810,19 @@ public final class ChromePreferenceKeys {
     public static final String TAB_ID_MANAGER_NEXT_ID =
             "org.chromium.chrome.browser.tab.TabIdManager.NEXT_ID";
 
+    // Start timestamp of 1-day period for measuring the number of times the max-instance toast is
+    // shown when tab tearing fails.
+    public static final String TAB_TEARING_MAX_INSTANCES_FAILURE_START_TIME_MS =
+            "Chrome.TabTearing.MaxInstancesFailureStartTimeMs";
+    // Number of times in a day the max-instance toast is shown when tab tearing fails.
+    public static final String TAB_TEARING_MAX_INSTANCES_FAILURE_COUNT =
+            "Chrome.TabTearing.MaxInstancesFailureCount";
+
     public static final String TOS_ACKED_ACCOUNTS = "ToS acknowledged accounts";
 
     /**
-     * Keys for deferred recording of the outcomes of showing the clear data dialog after
-     * Trusted Web Activity client apps are uninstalled or have their data cleared.
+     * Keys for deferred recording of the outcomes of showing the clear data dialog after Trusted
+     * Web Activity client apps are uninstalled or have their data cleared.
      */
     public static final String TWA_DIALOG_NUMBER_OF_DISMISSALS_ON_CLEAR_DATA =
             "twa_dialog_number_of_dismissals_on_clear_data";
@@ -1035,6 +1043,8 @@ public final class ChromePreferenceKeys {
                 TAB_DECLUTTER_ARCHIVE_TIME_DELTA_HOURS,
                 TAB_DECLUTTER_AUTO_DELETE_ENABLED,
                 TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS,
+                TAB_TEARING_MAX_INSTANCES_FAILURE_START_TIME_MS,
+                TAB_TEARING_MAX_INSTANCES_FAILURE_COUNT,
                 TWA_DISCLOSURE_SEEN_PACKAGES,
                 UMA_ON_POSTCREATE_COUNTER,
                 UMA_ON_RESUME_COUNTER,

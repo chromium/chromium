@@ -1352,6 +1352,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.DragDrop.Tab.MaxInstanceFailureCount" units="failures"
+    expires_after="2025-05-17">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    The number of times tab tearing failed for a user, because the maximum
+    number of Chrome instances were open, in a 24-hour period. Recorded when the
+    max-instance toast is shown when a dragged tab drop is unhandled at the max
+    instance limit.
+  </summary>
+</histogram>
+
 <histogram name="Android.DragDrop.Tab.ReorderStripWithDragDrop" enum="Boolean"
     expires_after="2024-10-28">
   <owner>shuyng@google.com</owner>

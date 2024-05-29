@@ -476,6 +476,7 @@ public class TabDragSource implements View.OnDragListener {
                             R.string.max_number_of_windows,
                             Toast.LENGTH_LONG)
                     .show();
+            ChromeDragDropUtils.recordTabTearingFailureCount();
             DragDropMetricUtils.recordTabDragDropResult(DragDropTabResult.IGNORED_MAX_INSTANCES);
         }
 

@@ -32,6 +32,7 @@ import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Build.VERSION_CODES;
+import android.text.format.DateUtils;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
@@ -55,6 +56,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -70,6 +72,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -137,6 +141,7 @@ public class TabDragSourceTest {
     private int mTabStripHeight;
     private final Context mContext = ContextUtils.getApplicationContext();
     private boolean mTabStripVisible;
+    private SharedPreferencesManager mSharedPreferencesManager;
 
     /** Resets the environment before each test. */
     @Before
@@ -201,6 +206,8 @@ public class TabDragSourceTest {
         mDestInstance.setTabModelSelector(mTabModelSelector);
 
         when(mSourceMultiInstanceManager.closeChromeWindowIfEmpty(anyInt())).thenReturn(false);
+
+        mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
     }
 
     @After
@@ -211,6 +218,10 @@ public class TabDragSourceTest {
         mSourceInstance.setManufacturerAllowlistForTesting(null);
         ShadowToast.reset();
         ToastManager.resetForTesting();
+        mSharedPreferencesManager.removeKey(
+                ChromePreferenceKeys.TAB_TEARING_MAX_INSTANCES_FAILURE_START_TIME_MS);
+        mSharedPreferencesManager.removeKey(
+                ChromePreferenceKeys.TAB_TEARING_MAX_INSTANCES_FAILURE_COUNT);
     }
 
     @EnableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
@@ -718,6 +729,57 @@ public class TabDragSourceTest {
                 "Text for toast shown does not match.",
                 ContextUtils.getApplicationContext().getString(R.string.max_number_of_windows),
                 actualText);
+        histogramExpectation.assertExpected();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
+    public void test_onDrag_multipleUnhandledDropsOutside_maxChromeInstances() {
+        MultiWindowUtils.setInstanceCountForTesting(5);
+        MultiWindowUtils.setMaxInstancesForTesting(5);
+
+        // Simulate failures on day 1.
+        doTriggerUnhandledDrop(4);
+
+        // Force update the count start time saved in SharedPreferences for day 1 to restart count
+        // for next day.
+        mSharedPreferencesManager.writeLong(
+                ChromePreferenceKeys.TAB_TEARING_MAX_INSTANCES_FAILURE_START_TIME_MS,
+                System.currentTimeMillis() - DateUtils.DAY_IN_MILLIS - 1);
+
+        // Simulate a failure on day 2.
+        doTriggerUnhandledDrop(1);
+    }
+
+    private void doTriggerUnhandledDrop(int failureCount) {
+        var histogramBuilder =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(
+                                "Android.DragDrop.Tab.FromStrip.Result",
+                                DragDropTabResult.IGNORED_MAX_INSTANCES,
+                                failureCount);
+
+        // Set histogram expectation.
+        for (int i = 0; i < failureCount; i++) {
+            histogramBuilder =
+                    histogramBuilder.expectIntRecord(
+                            "Android.DragDrop.Tab.MaxInstanceFailureCount", i + 1);
+        }
+        var histogramExpectation = histogramBuilder.build();
+
+        // Simulate unhandled tab drops |failureCount| number of times.
+        for (int i = 0; i < failureCount; i++) {
+            new DragEventInvoker().dragExit(mSourceInstance).end(false);
+        }
+
+        // Verify that the count is correctly updated in SharedPreferences and the histogram is
+        // emitted as expected.
+        assertEquals(
+                "Tab tearing max-instance failure count saved in shared prefs is incorrect.",
+                failureCount,
+                mSharedPreferencesManager.readInt(
+                        ChromePreferenceKeys.TAB_TEARING_MAX_INSTANCES_FAILURE_COUNT));
         histogramExpectation.assertExpected();
     }
 
