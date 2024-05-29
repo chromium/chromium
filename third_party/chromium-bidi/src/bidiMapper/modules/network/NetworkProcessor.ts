@@ -85,6 +85,10 @@ export class NetworkProcessor {
       NetworkProcessor.parseUrlString(params.url);
     }
 
+    if (params.headers) {
+      NetworkProcessor.validateHeaders(params.headers);
+    }
+
     const request = this.#getBlockedRequestOrFail(networkId, [
       Network.InterceptPhase.BeforeRequestSent,
     ]);
@@ -94,12 +98,20 @@ export class NetworkProcessor {
 
     // TODO: Set / expand.
     // ; Step 9. cookies
-    await request.continueRequest({
-      url,
-      method,
-      headers,
-      postData: getCdpBodyFromBiDiBytesValue(body),
-    });
+    try {
+      await request.continueRequest({
+        url,
+        method,
+        headers,
+        postData: getCdpBodyFromBiDiBytesValue(body),
+      });
+    } catch (error) {
+      // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/fetch_handler.cc;l=169
+      if ((error as any)?.message.includes('Invalid header')) {
+        throw new InvalidArgumentException('Tried setting invalid header');
+      }
+      throw error;
+    }
 
     return {};
   }
@@ -108,6 +120,10 @@ export class NetworkProcessor {
     params: Network.ContinueResponseParameters
   ): Promise<EmptyResult> {
     const {request: networkId, statusCode, reasonPhrase, headers} = params;
+
+    if (params.headers) {
+      NetworkProcessor.validateHeaders(params.headers);
+    }
 
     const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
       cdpFetchHeadersFromBidiNetworkHeaders(headers);
@@ -212,15 +228,17 @@ export class NetworkProcessor {
       request: networkId,
     } = params;
 
+    if (params.headers) {
+      NetworkProcessor.validateHeaders(params.headers);
+    }
+
     // TODO: Step 6
     // https://w3c.github.io/webdriver-bidi/#command-network-continueResponse
-
     const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
       cdpFetchHeadersFromBidiNetworkHeaders(headers);
 
     // TODO: Set / expand.
     // ; Step 10. cookies
-    // ; Step 11. credentials
     const request = this.#getBlockedRequestOrFail(networkId, [
       Network.InterceptPhase.BeforeRequestSent,
       Network.InterceptPhase.ResponseStarted,
@@ -238,8 +256,8 @@ export class NetworkProcessor {
       return {};
     }
 
-    // If we con't modify the response
-    // Just continue the request
+    // If we don't modify the response
+    // just continue the request
     if (!body && !headers) {
       await request.continueRequest();
       return {};
@@ -247,13 +265,20 @@ export class NetworkProcessor {
 
     const responseCode = statusCode ?? request.statusCode ?? 200;
 
-    await request.provideResponse({
-      responseCode,
-      responsePhrase,
-      responseHeaders,
-      body: getCdpBodyFromBiDiBytesValue(body),
-    });
-
+    try {
+      await request.provideResponse({
+        responseCode,
+        responsePhrase,
+        responseHeaders,
+        body: getCdpBodyFromBiDiBytesValue(body),
+      });
+    } catch (error) {
+      // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/fetch_handler.cc;l=169
+      if ((error as any)?.message.includes('Invalid header')) {
+        throw new InvalidArgumentException('Tried setting invalid header');
+      }
+      throw error;
+    }
     return {};
   }
 
@@ -301,10 +326,34 @@ export class NetworkProcessor {
   }
 
   /**
+   * Validate https://fetch.spec.whatwg.org/#header-value
+   */
+  static validateHeaders(headers: Network.Header[]) {
+    for (const header of headers) {
+      let headerValue: string;
+      if (header.value.type === 'string') {
+        headerValue = header.value.value;
+      } else {
+        headerValue = atob(header.value.value);
+      }
+
+      if (
+        headerValue !== headerValue.trim() ||
+        headerValue.includes('\n') ||
+        headerValue.includes('\0')
+      ) {
+        throw new InvalidArgumentException(
+          `Header value '${headerValue}' is not acceptable value`
+        );
+      }
+    }
+  }
+
+  /**
    * Attempts to parse the given url.
    * Throws an InvalidArgumentException if the url is invalid.
    */
-  static parseUrlString(url: string): URL {
+  static parseUrlString(url: string) {
     try {
       return new URL(url);
     } catch (error) {
