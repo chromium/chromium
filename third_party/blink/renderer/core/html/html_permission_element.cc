@@ -74,6 +74,9 @@ constexpr int kMaxLengthToFontSizeRatio = 3;
 constexpr int kMinLengthToFontSizeRatio = 1;
 constexpr int kMaxVerticalPaddingToFontSizeRatio = 1;
 constexpr int kMaxHorizontalPaddingToFontSizeRatio = 5;
+// Needed to avoid IntersectionObserver false-positives caused by other elements
+// being too close.
+constexpr int kMinMargin = 4;
 
 PermissionDescriptorPtr CreatePermissionDescriptor(PermissionName name) {
   auto descriptor = PermissionDescriptor::New();
@@ -186,19 +189,6 @@ String PermissionNameToString(PermissionName permission_name) {
     default:
       NOTREACHED_NORETURN() << "Not supported permission " << permission_name;
   }
-}
-
-Length AdjustedMargin(const Length& margin) {
-  if (margin.IsCalculated()) {
-    if (margin.GetCalculationValue().IsNonNegative()) {
-      return margin;
-    }
-
-    return Length(CalculationValue::CreateSimplified(
-        margin.GetCalculationValue().GetOrCreateExpression(),
-        Length::ValueRange::kNonNegative));
-  }
-  return (margin.Value() < 0) ? Length::Fixed() : margin;
 }
 
 float ContrastBetweenColorAndBackgroundColor(const ComputedStyle* style) {
@@ -507,10 +497,22 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
 
   builder.SetOutlineOffset(builder.OutlineOffset().ClampNegativeToZero());
 
-  builder.SetMarginLeft(AdjustedMargin(builder.MarginLeft()));
-  builder.SetMarginRight(AdjustedMargin(builder.MarginRight()));
-  builder.SetMarginTop(AdjustedMargin(builder.MarginTop()));
-  builder.SetMarginBottom(AdjustedMargin(builder.MarginBottom()));
+  builder.SetMarginLeft(
+      AdjustedBoundedLength(builder.MarginLeft(), /*lower_bound=*/kMinMargin,
+                            /*upper_bound=*/std::nullopt,
+                            /*should_multiply_by_content_size=*/false));
+  builder.SetMarginRight(
+      AdjustedBoundedLength(builder.MarginRight(), /*lower_bound=*/kMinMargin,
+                            /*upper_bound=*/std::nullopt,
+                            /*should_multiply_by_content_size=*/false));
+  builder.SetMarginTop(
+      AdjustedBoundedLength(builder.MarginTop(), /*lower_bound=*/kMinMargin,
+                            /*upper_bound=*/std::nullopt,
+                            /*should_multiply_by_content_size=*/false));
+  builder.SetMarginBottom(
+      AdjustedBoundedLength(builder.MarginBottom(), /*lower_bound=*/kMinMargin,
+                            /*upper_bound=*/std::nullopt,
+                            /*should_multiply_by_content_size=*/false));
 
   // Check and modify (if needed) properties related to the font.
   std::optional<FontDescription> new_font_description;
