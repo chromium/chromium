@@ -62,6 +62,14 @@ std::string GetNotAValidDocumentErrorMessage() {
   return l10n_util::GetStringUTF8(IDS_OFFICE_UPLOAD_ERROR_NOT_A_VALID_DOCUMENT);
 }
 
+std::string GetAlreadyBeingOpenedMessage() {
+  return l10n_util::GetStringUTF8(IDS_OFFICE_FILE_ALREADY_BEING_OPENED_MESSAGE);
+}
+
+std::string GetAlreadyBeingOpenedTitle() {
+  return l10n_util::GetStringUTF8(IDS_OFFICE_FILE_ALREADY_BEING_OPENED_TITLE);
+}
+
 storage::FileSystemURL FilePathToFileSystemURL(
     Profile* profile,
     scoped_refptr<storage::FileSystemContext> file_system_context,

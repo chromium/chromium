@@ -7366,6 +7366,12 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
       =1 {Can't open file}
       other {Can't open files}}
   </message>
+  <message name="IDS_OFFICE_FILE_ALREADY_BEING_OPENED_MESSAGE" desc="Message for opening office files explaining what to do when the same file is already being opened.">
+    Wait for the file to open before trying again
+  </message>
+  <message name="IDS_OFFICE_FILE_ALREADY_BEING_OPENED_TITLE" desc="Title of notification for opening office files indicating same file is already being opened.">
+    File is already being opened
+  </message>
 
   <!-- security curtain -->
   <message name="IDS_SECURITY_CURTAIN_TITLE" desc="Title text displayed to inform the user a remote admin has taken control of the ChromeOs device.">

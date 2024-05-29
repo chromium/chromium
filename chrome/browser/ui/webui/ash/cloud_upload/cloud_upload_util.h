@@ -308,6 +308,10 @@ std::string GetGenericErrorMessage();
 std::string GetReauthenticationRequiredMessage();
 // Get error message for when the file is not a valid document.
 std::string GetNotAValidDocumentErrorMessage();
+// Get message for when a file is already being opened.
+std::string GetAlreadyBeingOpenedMessage();
+// Get title for when a file is already being opened.
+std::string GetAlreadyBeingOpenedTitle();
 
 // Converts an absolute FilePath into a filesystem URL.
 storage::FileSystemURL FilePathToFileSystemURL(

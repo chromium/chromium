@@ -1939,7 +1939,10 @@ class OneDriveTest : public TestAccountBrowserTest,
   void OnNotificationDisplayed(
       const message_center::Notification& notification,
       const NotificationCommon::Metadata* const metadata) override {
+    notification_title_ = base::UTF16ToUTF8(notification.title());
     notification_message_ = base::UTF16ToUTF8(notification.message());
+    notification_warning_level_ =
+        notification.system_notification_warning_level();
   }
 
   void OnNotificationClosed(const std::string& notification_id) override {}
@@ -1947,7 +1950,9 @@ class OneDriveTest : public TestAccountBrowserTest,
       NotificationDisplayService* service) override {}
 
  protected:
+  std::string notification_title_;
   std::string notification_message_;
+  message_center::SystemNotificationWarningLevel notification_warning_level_;
   FileSystemURL odfs_docx_test_file_url_1_;
   FileSystemURL odfs_pptx_test_file_url_2_;
   std::unique_ptr<FakeWebAppPublisher> web_app_publisher_;
@@ -2360,11 +2365,21 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotShowDuplicateSetupDialogs) {
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
+  NotificationDisplayService::GetForProfile(profile())->AddObserver(this);
+
   // Fails to launch a second setup dialog for the same file.
   base::test::TestFuture<TaskResult, std::string> failed_future;
   ExecuteFileTask(profile(), open_in_office_task, file_urls,
                   failed_future.GetCallback());
   ASSERT_EQ(failed_future.Get<0>(), TaskResult::kFailed);
+
+  // Expect that the file already being opened notification was shown.
+  EXPECT_EQ(notification_title_,
+            ash::cloud_upload::GetAlreadyBeingOpenedTitle());
+  EXPECT_EQ(notification_message_,
+            ash::cloud_upload::GetAlreadyBeingOpenedMessage());
+  EXPECT_EQ(notification_warning_level_,
+            message_center::SystemNotificationWarningLevel::NORMAL);
 
   // Fails to launch a third setup dialog for the same file.
   base::test::TestFuture<TaskResult, std::string> failed_future2;
@@ -2420,11 +2435,21 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotShowDuplicateMoveConfirmation) {
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
+  NotificationDisplayService::GetForProfile(profile())->AddObserver(this);
+
   // Fails to launch a second move confirmation dialog for the same file.
   base::test::TestFuture<TaskResult, std::string> failed_future;
   ExecuteFileTask(profile(), open_in_office_task, file_urls,
                   failed_future.GetCallback());
   ASSERT_EQ(failed_future.Get<0>(), TaskResult::kFailed);
+
+  // Expect that the file already being opened notification was shown.
+  EXPECT_EQ(notification_title_,
+            ash::cloud_upload::GetAlreadyBeingOpenedTitle());
+  EXPECT_EQ(notification_message_,
+            ash::cloud_upload::GetAlreadyBeingOpenedMessage());
+  EXPECT_EQ(notification_warning_level_,
+            message_center::SystemNotificationWarningLevel::NORMAL);
 
   // Only the first file request will log the TransferRequired metric.
   histogram_.ExpectUniqueSample(
@@ -2563,11 +2588,21 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
   ASSERT_TRUE(event_router);
   event_router->AddCloudOpenTask(odfs_docx_test_file_url_1_);
 
+  NotificationDisplayService::GetForProfile(profile())->AddObserver(this);
+
   // Fail to execute a duplicate CloudOpenTask for the file.
   base::test::TestFuture<TaskResult, std::string> failed_future;
   ExecuteFileTask(profile(), open_in_office_task, file_urls,
                   failed_future.GetCallback());
   ASSERT_EQ(failed_future.Get<0>(), TaskResult::kFailed);
+
+  // Expect that the file already being opened notification was shown.
+  EXPECT_EQ(notification_title_,
+            ash::cloud_upload::GetAlreadyBeingOpenedTitle());
+  EXPECT_EQ(notification_message_,
+            ash::cloud_upload::GetAlreadyBeingOpenedMessage());
+  EXPECT_EQ(notification_warning_level_,
+            message_center::SystemNotificationWarningLevel::NORMAL);
 
   // Fail again to execute a duplicate CloudOpenTask for the file.
   base::test::TestFuture<TaskResult, std::string> failed_future2;
@@ -2696,11 +2731,11 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
       ash::cloud_upload::CloudProvider::kOneDrive,
       std::move(cloud_open_metrics_)));
   task->OpenOrMoveFiles();
-  // Expect that there was a notification.
-  EXPECT_FALSE(notification_message_.empty());
   // Expect that the reauthentication required notification was shown.
   EXPECT_EQ(notification_message_,
             ash::cloud_upload::GetReauthenticationRequiredMessage());
+  EXPECT_EQ(notification_warning_level_,
+            message_center::SystemNotificationWarningLevel::WARNING);
 
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveOpenSourceVolumeMetric,
@@ -2744,10 +2779,10 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FailToOpenFileFromODFSOtherAccessError) {
       ash::cloud_upload::CloudProvider::kOneDrive,
       std::move(cloud_open_metrics_)));
   task->OpenOrMoveFiles();
-  // Expect that there was a notification.
-  EXPECT_FALSE(notification_message_.empty());
   // Expect that the reauthentication required notification was shown.
   EXPECT_EQ(notification_message_, ash::cloud_upload::GetGenericErrorMessage());
+  EXPECT_EQ(notification_warning_level_,
+            message_center::SystemNotificationWarningLevel::WARNING);
 
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveOpenSourceVolumeMetric,

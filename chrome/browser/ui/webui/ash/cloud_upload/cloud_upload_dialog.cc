@@ -127,18 +127,24 @@ void HandleSignInClick(Profile* profile, std::optional<int> button_index) {
 }
 
 // TODO(b/288038136): Use a notification manager to handle error notifications.
-// Show system error notification to communicate that their file can't be
-// opened. If the user needs to reauthenticate to OneDrive, prompt the user to
+// TODO(b/242685536) Use "files" in the title for multi-files when support for
+// multi-files is added.
+// Show system notification to communicate that their file can't be opened. If
+// the user needs to reauthenticate to OneDrive, prompt the user to
 // reauthenticate to ODFS via a "Sign in" button.
-void ShowUnableToOpenNotification(Profile* profile,
-                                  bool reauthentication_required = false) {
-  std::string message = GetGenericErrorMessage();
+void ShowUnableToOpenNotification(
+    Profile* profile,
+    std::string message = GetGenericErrorMessage(),
+    std::string title =
+        l10n_util::GetPluralStringFUTF8(IDS_OFFICE_UPLOAD_ERROR_CANT_OPEN_FILE,
+                                        1),
+    message_center::SystemNotificationWarningLevel warning_level =
+        message_center::SystemNotificationWarningLevel::WARNING) {
   std::vector<message_center::ButtonInfo> notification_buttons;
 
-  // Special case of |FILE_ERROR_ACCESS_DENIED| where the user needs to
-  // reauthenticate to OneDrive.
-  if (reauthentication_required) {
-    message = GetReauthenticationRequiredMessage();
+  if (message == GetReauthenticationRequiredMessage()) {
+    // Special case of |FILE_ERROR_ACCESS_DENIED| where the user needs to
+    // reauthenticate to OneDrive.
     //  Add "Sign in" button.
     notification_buttons.emplace_back(
         l10n_util::GetStringUTF16(IDS_OFFICE_NOTIFICATION_SIGN_IN_BUTTON));
@@ -147,11 +153,7 @@ void ShowUnableToOpenNotification(Profile* profile,
   auto notification = ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
       /*id=*/kNotificationId,
-      // TODO(b/242685536) Use "files" for multi-files when support for
-      // multi-files is added.
-      /*title=*/
-      l10n_util::GetPluralStringFUTF16(IDS_OFFICE_UPLOAD_ERROR_CANT_OPEN_FILE,
-                                       1),
+      /*title*/ base::UTF8ToUTF16(title),
       /*message=*/base::UTF8ToUTF16(message),
       /*display_source=*/
       l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES),
@@ -161,12 +163,13 @@ void ShowUnableToOpenNotification(Profile* profile,
       /*delegate=*/
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&HandleSignInClick, profile)),
-      /*small_image=*/ash::kFolderIcon,
-      /*warning_level=*/
-      message_center::SystemNotificationWarningLevel::WARNING);
+      /*small_image=*/ash::kFolderIcon, warning_level);
 
   notification->set_buttons(notification_buttons);
+  // Set never_timeout with the highest priority, SYSTEM_PRIORITY, so that the
+  // notification never times out.
   notification->set_never_timeout(true);
+  notification->SetSystemPriority();
   NotificationDisplayService* notification_service =
       NotificationDisplayServiceFactory::GetForProfile(profile);
   notification_service->Display(NotificationHandler::Type::TRANSIENT,
@@ -188,11 +191,14 @@ void OnGetReauthenticationRequired(
     LOG(ERROR) << "Failed to get reauthentication required state: "
                << metadata.error();
   }
-  ShowUnableToOpenNotification(profile, reauthentication_required);
-  std::move(callback).Run(
-      reauthentication_required
-          ? OfficeOneDriveOpenErrors::kGetActionsReauthRequired
-          : OfficeOneDriveOpenErrors::kGetActionsAccessDenied);
+  if (reauthentication_required) {
+    ShowUnableToOpenNotification(profile, GetReauthenticationRequiredMessage());
+    std::move(callback).Run(
+        OfficeOneDriveOpenErrors::kGetActionsReauthRequired);
+    return;
+  }
+  ShowUnableToOpenNotification(profile);
+  std::move(callback).Run(OfficeOneDriveOpenErrors::kGetActionsAccessDenied);
 }
 
 // Open file with |file_path| from ODFS |file_system|. Open in the OneDrive PWA
@@ -417,6 +423,12 @@ bool CloudOpenTask::Execute(
   if (event_router) {
     if (!event_router->AddCloudOpenTask(file_urls.front())) {
       LOG(ERROR) << "File already being opened";
+      // Nothing is wrong when the file is already being opened, so use a normal
+      // level notification
+      ShowUnableToOpenNotification(
+          profile, GetAlreadyBeingOpenedMessage(), GetAlreadyBeingOpenedTitle(),
+          /*warning_level=*/
+          message_center::SystemNotificationWarningLevel::NORMAL);
       cloud_open_metrics->LogTaskResult(
           OfficeTaskResult::kFileAlreadyBeingOpened);
       return false;
