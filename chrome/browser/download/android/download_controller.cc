@@ -16,6 +16,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "chrome/android/chrome_jni_headers/DownloadController_jni.h"
@@ -38,8 +39,12 @@
 #include "chrome/grit/branded_strings.h"
 #include "components/download/content/public/context_menu_download.h"
 #include "components/download/public/common/android/auto_resumption_handler.h"
+#include "components/download/public/common/download_item.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/pdf/common/constants.h"
+#include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
+#include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -446,7 +451,22 @@ void DownloadController::OnDownloadUpdated(DownloadItem* item) {
   }
 }
 
-void DownloadController::OnDangerousDownload(DownloadItem* item) {
+void DownloadController::OnDangerousDownload(download::DownloadItem* item) {
+  if (has_seen_app_verification_dialog_ ||
+      !base::FeatureList::IsEnabled(safe_browsing::kGooglePlayProtectPrompt)) {
+    ShowDangerousDownloadDialog(item);
+    return;
+  }
+
+  app_verification_requests_.push_back(
+      std::make_unique<DownloadAppVerificationRequest>(
+          item, base::BindOnce(&DownloadController::OnAppVerificationComplete,
+                               // Unretained is safe because this is a singleton
+                               base::Unretained(this))));
+}
+
+void DownloadController::ShowDangerousDownloadDialog(
+    download::DownloadItem* item) {
   WebContents* web_contents = content::DownloadItemUtils::GetWebContents(item);
   if (!web_contents) {
     auto download_manager_getter = std::make_unique<DownloadManagerGetter>(
@@ -498,3 +518,83 @@ ProfileKey* DownloadController::GetProfileKey(DownloadItem* download_item) {
 
   return profile_key;
 }
+
+void DownloadController::OnAppVerificationComplete(
+    DownloadAppVerificationRequest* request,
+    bool showed_app_verification_dialog,
+    download::DownloadItem* item) {
+  const auto it =
+      base::ranges::find(app_verification_requests_, request,
+                         &std::unique_ptr<DownloadAppVerificationRequest>::get);
+  CHECK(it != app_verification_requests_.end());
+  app_verification_requests_.erase(it);
+
+  has_seen_app_verification_dialog_ |= showed_app_verification_dialog;
+
+  if (item) {
+    ShowDangerousDownloadDialog(item);
+  }
+}
+
+// Encapsulates the process of checking whether app verification is
+// enabled and possibly prompting the user to enable app verification.
+class DownloadAppVerificationRequest : public download::DownloadItem::Observer {
+ public:
+  // On request completion, this class calls back with:
+  // - `this` pointer
+  // - Whether a prompt was shown to the user
+  // - The associated `DownloadItem`, if it exists, and `nullptr` otherwise.
+  using AppVerificationCallback = base::OnceCallback<
+      void(DownloadAppVerificationRequest*, bool, download::DownloadItem*)>;
+  DownloadAppVerificationRequest(download::DownloadItem* item,
+                                 AppVerificationCallback callback)
+      : item_(item), callback_(std::move(callback)) {
+    item_->AddObserver(this);
+    safe_browsing::SafeBrowsingApiHandlerBridge::GetInstance()
+        .StartIsVerifyAppsEnabled(
+            base::BindOnce(&DownloadAppVerificationRequest::IsVerifyAppsEnabled,
+                           weak_factory_.GetWeakPtr()));
+  }
+
+  ~DownloadAppVerificationRequest() override {
+    if (item_) {
+      item_->RemoveObserver(this);
+    }
+  }
+
+ private:
+  // DownloadItem::Observer
+  void OnDownloadDestroyed(download::DownloadItem* item) override {
+    item_ = nullptr;
+    std::move(callback_).Run(this, false, nullptr);
+    // Do not add code after this. Callback may delete `this`.
+  }
+
+  void IsVerifyAppsEnabled(safe_browsing::VerifyAppsEnabledResult result) {
+    base::UmaHistogramEnumeration(
+        "SBClientDownload.AndroidAppVerificationResult", result);
+
+    if (result != safe_browsing::VerifyAppsEnabledResult::SUCCESS_NOT_ENABLED) {
+      std::move(callback_).Run(this, false, item_);
+      // Do not add code after this. Callback may delete `this`.
+      return;
+    }
+
+    safe_browsing::SafeBrowsingApiHandlerBridge::GetInstance()
+        .StartEnableVerifyApps(base::BindOnce(
+            &DownloadAppVerificationRequest::EnableVerifyAppsDone,
+            weak_factory_.GetWeakPtr()));
+  }
+
+  void EnableVerifyAppsDone(safe_browsing::VerifyAppsEnabledResult result) {
+    base::UmaHistogramEnumeration(
+        "SBClientDownload.AndroidAppVerificationPromptResult", result);
+
+    std::move(callback_).Run(this, true, item_);
+    // Do not add code after this. Callback may delete `this`.
+  }
+
+  raw_ptr<download::DownloadItem> item_;
+  AppVerificationCallback callback_;
+  base::WeakPtrFactory<DownloadAppVerificationRequest> weak_factory_{this};
+};

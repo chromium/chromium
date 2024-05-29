@@ -127,12 +127,17 @@ enum class UmaRemoteCallResult {
 
 // LINT.IfChange
 // The result of either SafetyNet.isVerifyAppsEnabled or
-// SafetyNet.enableVerifyApps.
+// SafetyNet.enableVerifyApps. These values are persisted to
+// logs. Entries should not be renumbered and numeric values should
+// never be reused. Please update
+// //tools/metrics/histograms/metadata/sb_client/enums.xml:SafeBrowsingVerifyAppsEnabledResult
+// when changing this enum.
 enum class VerifyAppsEnabledResult {
   SUCCESS_ENABLED = 0,
   SUCCESS_NOT_ENABLED = 1,
   TIMEOUT = 2,
   FAILED = 3,
+  kMaxValue = FAILED,
 };
 // LINT.ThenChange(/components/safe_browsing/android/java/src/org/chromium/components/safe_browsing/SafetyNetApiHandler.java)
 

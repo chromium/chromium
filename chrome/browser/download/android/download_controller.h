@@ -31,6 +31,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 
+class DownloadAppVerificationRequest;
+
 class DownloadController : public DownloadControllerBase {
  public:
   static DownloadController* GetInstance();
@@ -98,11 +100,26 @@ class DownloadController : public DownloadControllerBase {
   // Get profile key from download item.
   ProfileKey* GetProfileKey(download::DownloadItem* download_item);
 
+  // Callback for when a DownloadAppVerificationRequest has completed.
+  void OnAppVerificationComplete(DownloadAppVerificationRequest* request,
+                                 bool showed_app_verification_dialog,
+                                 download::DownloadItem* item);
+
+  // Show the "File might be harmful" dialog for this `item`.
+  void ShowDangerousDownloadDialog(download::DownloadItem* item);
+
   std::string default_file_name_;
 
   DownloadCallbackValidator validator_;
 
   std::unique_ptr<DangerousDownloadDialogBridge> dangerous_download_bridge_;
+
+  // Whether the user has been prompted to enable app verification this session.
+  bool has_seen_app_verification_dialog_ = false;
+
+  // Contains all currently active app verification checks
+  std::vector<std::unique_ptr<DownloadAppVerificationRequest>>
+      app_verification_requests_;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_CONTROLLER_H_

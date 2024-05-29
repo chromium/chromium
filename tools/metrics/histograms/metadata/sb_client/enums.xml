@@ -115,6 +115,13 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Visual extraction failed"/>
 </enum>
 
+<enum name="SafeBrowsingVerifyAppsEnabledResult">
+  <int value="0" label="Enabled"/>
+  <int value="1" label="Disabled"/>
+  <int value="2" label="Request timed out"/>
+  <int value="3" label="Request failed"/>
+</enum>
+
 <enum name="SBClientDetectionClassifyThresholdsResult">
   <int value="0" label="Success"/>
   <int value="1" label="Model size was mismatched"/>
