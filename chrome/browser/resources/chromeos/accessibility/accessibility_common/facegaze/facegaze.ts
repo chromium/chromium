@@ -15,13 +15,19 @@ export class FaceGaze {
   private onInitCallbackForTest_: (() => void)|undefined;
   private initialized_ = false;
   declare private cameraStreamReadyPromise_: Promise<void>;
+  declare private cameraStreamClosedPromise_: Promise<void>;
   private cameraStreamReadyResolver_?: () => void;
+  private cameraStreamClosedResolver_?: () => void;
+  private cameraStreamWindowId_ = -1;
 
   constructor() {
     this.mouseController_ = new MouseController();
     this.gestureHandler_ = new GestureHandler(this.mouseController_);
     this.cameraStreamReadyPromise_ = new Promise(resolve => {
       this.cameraStreamReadyResolver_ = resolve;
+    });
+    this.cameraStreamClosedPromise_ = new Promise(resolve => {
+      this.cameraStreamClosedResolver_ = resolve;
     });
     this.init_();
   }
@@ -51,7 +57,12 @@ export class FaceGaze {
           'accessibility_common/facegaze/camera_stream.html'),
       type: chrome.windows.CreateType.PANEL,
     };
-    chrome.windows.create(params, () => {
+    chrome.windows.create(params, (win) => {
+      if (!win || win.id === undefined) {
+        return;
+      }
+
+      this.cameraStreamWindowId_ = win.id;
       chrome.runtime.onMessage.addListener(message => {
         if (message.type === 'faceLandmarkerResult') {
           this.processFaceLandmarkerResult_(message.result);
@@ -97,6 +108,11 @@ export class FaceGaze {
   /** Destructor to remove any listeners. */
   onFaceGazeDisabled(): void {
     this.mouseController_.stopEventListeners();
+    if (this.cameraStreamWindowId_ !== -1) {
+      chrome.windows.remove(this.cameraStreamWindowId_, () => {
+        this.cameraStreamClosedResolver_!();
+      });
+    }
   }
 
   /** Allows tests to wait for FaceGaze to be fully initialized. */
