@@ -21172,8 +21172,13 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "min_gms_version_for_auto": "241512000"
+                    },
                     "enable_features": [
                         "ClearLoginDatabaseForUPMUsers",
+                        "UnifiedPasswordManagerLocalPasswordsAndroidNoMigration",
+                        "UnifiedPasswordManagerLocalPasswordsAndroidWithMigration",
                         "UnifiedPasswordManagerSyncOnlyInGMSCore"
                     ]
                 }
