@@ -260,10 +260,10 @@ INSTANTIATE_TEST_SUITE_P(
     HandwritingLocaleToDlcTest,
     testing::ValuesIn<HandwritingLocaleToDlcTestCase>(
         {{"InvalidEmpty", "", std::nullopt},
-         {"InvalidEn", "en", std::nullopt},
          {"InvalidDeDe", "de-DE", std::nullopt},
          {"InvalidCy", "cy", std::nullopt},
          {"ValidDe", "de", "handwriting-de"},
+         {"ValidEn", "en", "handwriting-en"},
          {"ValidZhHk", "zh-HK", "handwriting-zh-HK"}}),
     [](const testing::TestParamInfo<HandwritingLocaleToDlcTest::ParamType>&
            info) { return info.param.test_name; });
@@ -289,13 +289,13 @@ INSTANTIATE_TEST_SUITE_P(
     DlcToHandwritingLocaleTest,
     testing::ValuesIn<DlcToHandwritingLocaleTestCase>(
         {{"InvalidEmpty", "", std::nullopt},
-         {"InvalidEn", "handwriting-en", std::nullopt},
          {"InvalidCy", "handwriting-cy", std::nullopt},
          {"InvalidDeDe", "handwriting-de-DE", std::nullopt},
          {"InvalidTypoDe", "handwritting-de", std::nullopt},
          {"InvalidTtsEnUs", "tts-en-us", std::nullopt},
          {"InvalidDeWithoutPrefix", "de", std::nullopt},
          {"ValidDe", "handwriting-de", "de"},
+         {"ValidEn", "handwriting-en", "en"},
          {"ValidZhHk", "handwriting-zh-HK", "zh-HK"}}),
     [](const testing::TestParamInfo<DlcToHandwritingLocaleTest::ParamType>&
            info) { return info.param.test_name; });
@@ -321,13 +321,13 @@ INSTANTIATE_TEST_SUITE_P(
     IsHandwritingDlcTest,
     testing::ValuesIn<IsHandwritingDlcTestCase>(
         {{"InvalidEmpty", "", false},
-         {"InvalidEn", "handwriting-en", false},
          {"InvalidCy", "handwriting-cy", false},
          {"InvalidDeDe", "handwriting-de-DE", false},
          {"InvalidTypoDe", "handwritting-de", false},
          {"InvalidTtsEnUs", "tts-en-us", false},
          {"InvalidDeWithoutPrefix", "de", false},
          {"ValidDe", "handwriting-de", true},
+         {"ValidEn", "handwriting-en", true},
          {"ValidZhHk", "handwriting-zh-HK", true}}),
     [](const testing::TestParamInfo<IsHandwritingDlcTest::ParamType>& info) {
       return info.param.test_name;

@@ -276,7 +276,6 @@ const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds() {
   static const base::NoDestructor<base::flat_map<PackSpecPair, std::string>>
       all_dlc_ids({
           // Handwriting Recognition.
-          // Note: English is not included because it's still using LongForm.
           {{kHandwritingFeatureId, "am"}, "handwriting-am"},
           {{kHandwritingFeatureId, "ar"}, "handwriting-ar"},
           {{kHandwritingFeatureId, "be"}, "handwriting-be"},
@@ -287,6 +286,7 @@ const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds() {
           {{kHandwritingFeatureId, "da"}, "handwriting-da"},
           {{kHandwritingFeatureId, "de"}, "handwriting-de"},
           {{kHandwritingFeatureId, "el"}, "handwriting-el"},
+          {{kHandwritingFeatureId, "en"}, "handwriting-en"},
           {{kHandwritingFeatureId, "es"}, "handwriting-es"},
           {{kHandwritingFeatureId, "et"}, "handwriting-et"},
           {{kHandwritingFeatureId, "fa"}, "handwriting-fa"},

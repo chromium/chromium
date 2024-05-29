@@ -481,12 +481,12 @@ TEST_F(LanguagePackManagerTest, RemoveObserverTest) {
 TEST_F(LanguagePackManagerTest, CheckAllLocalesAvailable) {
   // Handwriting Recognition.
   const std::vector<std::string> handwriting({
-      "am", "ar", "be", "bg",  "bn", "ca", "cs", "da", "de", "el",    "es",
-      "et", "fa", "fi", "fil", "fr", "ga", "gu", "hi", "hr", "hu",    "hy",
-      "id", "is", "it", "iw",  "ja", "ka", "kk", "km", "kn", "ko",    "lo",
-      "lt", "lv", "ml", "mn",  "mr", "ms", "mt", "my", "ne", "nl",    "no",
-      "or", "pa", "pl", "pt",  "ro", "ru", "si", "sk", "sl", "sr",    "sv",
-      "ta", "te", "th", "ti",  "tr", "uk", "ur", "vi", "zh", "zh-HK",
+      "am", "ar", "be", "bg", "bn",  "ca", "cs", "da", "de", "el", "en",
+      "es", "et", "fa", "fi", "fil", "fr", "ga", "gu", "hi", "hr", "hu",
+      "hy", "id", "is", "it", "iw",  "ja", "ka", "kk", "km", "kn", "ko",
+      "lo", "lt", "lv", "ml", "mn",  "mr", "ms", "mt", "my", "ne", "nl",
+      "no", "or", "pa", "pl", "pt",  "ro", "ru", "si", "sk", "sl", "sr",
+      "sv", "ta", "te", "th", "ti",  "tr", "uk", "ur", "vi", "zh", "zh-HK",
   });
   for (const auto& locale : handwriting) {
     EXPECT_TRUE(
