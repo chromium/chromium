@@ -2902,6 +2902,17 @@ const char kPrerender2EarlyDocumentLifecycleUpdateDescription[] =
     "Allows prerendering pages to execute more lifecycle updates, such as "
     "prepaint, before activation";
 
+const char kWarmUpCompositorName[] = "Warm up compositor";
+const char kWarmUpCompositorDescription[] =
+    "Allows compositor to start warming up on certain signals";
+
+const char kPrerender2WarmUpCompositorName[] =
+    "Warm up compositor on prerendering";
+const char kPrerender2WarmUpCompositorDescription[] =
+    "Enables compositor warming up on paticular loading events of prerender "
+    "initial navigation. Requires chrome://flags/#compositor-warm-up to be "
+    "enabled";
+
 const char kEnableOmniboxSearchPrefetchName[] = "Omnibox prefetch Search";
 const char kEnableOmniboxSearchPrefetchDescription[] =
     "Allows omnibox to prefetch likely search suggestions provided by the "

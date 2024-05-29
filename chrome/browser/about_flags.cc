@@ -3821,6 +3821,17 @@ const FeatureEntry::FeatureVariation kDefaultBrowserPromptRefreshVariations[] =
       kDefaultBrowserPromptRefreshAppMenuItem,
       std::size(kDefaultBrowserPromptRefreshAppMenuItem), nullptr}};
 
+const FeatureEntry::FeatureParam
+    kPrerender2WarmUpCompositorTriggerPointDidFinishLoad[] = {
+        {"trigger_point", "did_finish_load"}};
+
+const FeatureEntry::FeatureVariation
+    kPrerender2WarmUpCompositorTriggerPointVariations[] = {
+        {"on DidFinishLoad",
+         kPrerender2WarmUpCompositorTriggerPointDidFinishLoad,
+         std::size(kPrerender2WarmUpCompositorTriggerPointDidFinishLoad),
+         nullptr}};
+
 #if BUILDFLAG(ENABLE_COMPOSE)
 // The variations of ComposeProactiveNudge
 const FeatureEntry::FeatureParam kComposeProactiveNudge_CompactUI_50[] = {
@@ -8809,6 +8820,18 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          blink::features::kPrerender2EarlyDocumentLifecycleUpdate)},
+
+    {"warm-up-compositor", flag_descriptions::kWarmUpCompositorName,
+     flag_descriptions::kWarmUpCompositorDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kWarmUpCompositor)},
+
+    {"prerender2-warm-up-compositor",
+     flag_descriptions::kPrerender2WarmUpCompositorName,
+     flag_descriptions::kPrerender2WarmUpCompositorDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         blink::features::kPrerender2WarmUpCompositor,
+         kPrerender2WarmUpCompositorTriggerPointVariations,
+         "Prerender2WarmUpCompositor")},
 
     {"omnibox-search-prefetch",
      flag_descriptions::kEnableOmniboxSearchPrefetchName,

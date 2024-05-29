@@ -1687,6 +1687,12 @@ extern const char kSupportSearchSuggestionForPrerender2Description[];
 extern const char kPrerender2EarlyDocumentLifecycleUpdateName[];
 extern const char kPrerender2EarlyDocumentLifecycleUpdateDescription[];
 
+extern const char kWarmUpCompositorName[];
+extern const char kWarmUpCompositorDescription[];
+
+extern const char kPrerender2WarmUpCompositorName[];
+extern const char kPrerender2WarmUpCompositorDescription[];
+
 extern const char kEnableOmniboxSearchPrefetchName[];
 extern const char kEnableOmniboxSearchPrefetchDescription[];
 

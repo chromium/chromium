@@ -16999,6 +16999,7 @@ from previous Chrome versions.
   <int value="-1812838429" label="DragWindowToNewDesk:disabled"/>
   <int value="-1812736745" label="OverviewDeskNavigation:enabled"/>
   <int value="-1812579951" label="ContentSuggestionsCategoryRanker:enabled"/>
+  <int value="-1812105527" label="WarmUpCompositor:enabled"/>
   <int value="-1811949013" label="SameSiteByDefaultCookies:disabled"/>
   <int value="-1811394154" label="disable-webrtc-hw-vp8-encoding"/>
   <int value="-1810891359" label="SendTabToSelfManageDevicesLink:disabled"/>
@@ -17911,6 +17912,7 @@ from previous Chrome versions.
   <int value="-1410001116"
       label="EnableAmbientAuthenticationInGuestSession:disabled"/>
   <int value="-1409643943" label="enable-child-account-detection"/>
+  <int value="-1409129509" label="WarmUpCompositor:disabled"/>
   <int value="-1408981164"
       label="DesktopPWAsMigrationUserDisplayModeCleanUp:enabled"/>
   <int value="-1408869905"
@@ -21847,6 +21849,7 @@ from previous Chrome versions.
   <int value="310183389" label="AutofillFillIbanFields:enabled"/>
   <int value="310543591" label="PreinstalledWebAppWindowExperiment:enabled"/>
   <int value="310992985" label="AdvancedPeripheralsSupport:enabled"/>
+  <int value="311326992" label="Prerender2WarmUpCompositor:disabled"/>
   <int value="312112911" label="FilesWebDriveOffice:enabled"/>
   <int value="313112736" label="HandwritingLegacyRecognitionAllLang:enabled"/>
   <int value="313253630" label="AutofillRefreshStyleAndroid:enabled"/>
@@ -21862,6 +21865,7 @@ from previous Chrome versions.
   <int value="317889969" label="AutofillAddressProfileSavePrompt:disabled"/>
   <int value="318277328" label="WebViewAppsPackageNamesAllowlist:enabled"/>
   <int value="318704417" label="LensStandalone:enabled"/>
+  <int value="319393766" label="Prerender2WarmUpCompositor:enabled"/>
   <int value="319683583" label="ContentSuggestionsDebugLog:enabled"/>
   <int value="320121752" label="DelegateOverscrollSwipes:disabled"/>
   <int value="321023965" label="IPH_LauncherSearchHelpUi:disabled"/>
