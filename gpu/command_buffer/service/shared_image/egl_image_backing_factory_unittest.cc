@@ -408,7 +408,7 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, OneWriterOneReader) {
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES) && \
     !BUILDFLAG(IS_ANDROID)
 // Test to check interaction between Dawn and skia GL representations.
-TEST_F(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
+TEST_P(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
   // Find a Dawn GLES adapter
   dawn::native::Instance instance;
   wgpu::RequestAdapterOptions adapter_options;

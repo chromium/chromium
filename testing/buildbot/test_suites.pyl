@@ -6806,6 +6806,32 @@
       },
     },
 
+    'dawn_chromeos_release_telemetry_tests_volteer_skylab': {
+      'gpu_dawn_webgpu_cts': {
+        'variants': [
+          'CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM',
+        ],
+      },
+    },
+
+    'dawn_chromeos_release_tests_volteer_skylab': {
+      'gpu_common_gtests_passthrough': {
+        'variants': [
+          'CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM',
+        ],
+      },
+      'gpu_dawn_gtests': {
+        'variants': [
+          'CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM',
+        ],
+      },
+      'gpu_dawn_gtests_with_validation': {
+        'variants': [
+          'CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM',
+        ],
+      },
+    },
+
     'fieldtrial_ios_simulator_tests': {
       'ios_eg2_cq_tests': {
         'mixins': [

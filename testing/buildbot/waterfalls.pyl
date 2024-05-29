@@ -2480,8 +2480,12 @@
         'os_type': 'chromeos',
         'skip_merge_script': True,
         'use_swarming': False,
-        # TODO(crbug.com/340815322): Enable tests.
-        'test_suites': {},
+        'test_suites': {
+          'skylab_tests': 'dawn_chromeos_release_tests_volteer_skylab',
+          'skylab_gpu_telemetry_tests': 'dawn_chromeos_release_telemetry_tests_volteer_skylab',
+          # TODO(crbug.com/340815322): Add isolated_scripts once Skylab
+          # incompatibilities are resolved.
+        },
       },
       'Dawn Linux TSAN Release': {
         # This bot doesn't run any Telemetry-based tests so doesn't
