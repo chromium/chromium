@@ -240,7 +240,7 @@
 
     # Internal codesearch builders.
     'luci.infra-internal.codesearch': {
-      'codesearch-gen-chrome-internal-linux': 'codesearch_gen_chromium_bot_reclient',
+      'codesearch-gen-chrome-internal-linux': 'codesearch_gen_chrome_bot_reclient',
     },
 
     'official.chrome': {
@@ -568,6 +568,10 @@
 
     'clang_tot_win_official_full_symbols_static_x86': [
       'clang_tot', 'official', 'full_symbols', 'static', 'x86', 'win_linker_timing',
+    ],
+
+    'codesearch_gen_chrome_bot_reclient': [
+      'codesearch_reclient', 'chrome_branded',
     ],
 
     'codesearch_gen_chromium_android_bot_reclient': [
