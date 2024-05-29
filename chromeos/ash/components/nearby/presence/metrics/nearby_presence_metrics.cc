@@ -88,4 +88,11 @@ void RecordDeviceFoundLatency(base::TimeDelta device_found_latency) {
                           device_found_latency);
 }
 
+void RecordNearbyProcessShutdownReason(
+    ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+        shutdown_reason) {
+  base::UmaHistogramEnumeration("Nearby.Presence.Process.Shutdown.Reason",
+                                shutdown_reason);
+}
+
 }  // namespace ash::nearby::presence::metrics

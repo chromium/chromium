@@ -524,8 +524,6 @@ TEST_F(NearbyPresenceServiceImplTest, NullProcessReference) {
 
 TEST_F(NearbyPresenceServiceImplTest, Reset) {
   // Test that stopping the Nearby Process does not cause any crashes.
-  // TODO(b/277819923): When metric is added for Nearby Process shutdown
-  // reason, test the metric is correctly recorded here.
   nearby_process_reference_.reset();
 }
 

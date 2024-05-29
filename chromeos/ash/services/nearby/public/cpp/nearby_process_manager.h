@@ -37,7 +37,9 @@ class NearbyProcessManager : public KeyedService {
 
   // These values are used for metrics. Entries should not be renumbered and
   // numeric values should never be reused. If entries are added, kMaxValue
-  // should be updated.
+  // should be updated. Keep in sync with the
+  // `NearbyConnectionsUtilityProcessShutdownReason` enum found at
+  // //tools/metrics/histograms/metadata/nearby/enums.xml
   enum class NearbyProcessShutdownReason {
     kNormal = 0,
     kCrash = 1,

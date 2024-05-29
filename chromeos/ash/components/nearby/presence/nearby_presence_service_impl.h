@@ -92,7 +92,8 @@ class NearbyPresenceServiceImpl
       mojo_base::mojom::AbslStatusCode status);
   void OnScanSessionDisconnect(ScanDelegate* scan_delegate);
   void OnNearbyProcessStopped(
-      ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason);
+      ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+          shutdown_reason);
 
   void OnCredentialManagerInitialized(
       base::OnceClosure on_initialized_callback,

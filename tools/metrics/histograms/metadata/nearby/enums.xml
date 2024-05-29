@@ -79,6 +79,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Mojo pipe disconnection (deprecated)"/>
   <int value="3" label="Utility process disconnected Decoder mojo pipe"/>
   <int value="4" label="Utility process disconnected Connections mojo pipe"/>
+  <int value="5" label="Utility process disconnected Presence mojo pipe"/>
 </enum>
 
 <enum name="NearbyConnectionsWifiLanConnectResult">

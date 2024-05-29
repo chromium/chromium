@@ -16,5 +16,6 @@ static_library("metrics") {
   deps = [
     "//base",
     "//chromeos/ash/components/nearby/common/client",
+    "//chromeos/ash/services/nearby/public/cpp:cpp",
   ]
 }

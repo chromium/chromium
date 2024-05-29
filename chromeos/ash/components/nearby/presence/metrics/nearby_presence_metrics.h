@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
+#include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 
 namespace ash::nearby::presence::metrics {
 
@@ -47,6 +48,9 @@ void RecordFirstTimeServerRegistrationFailureReason(
 void RecordFirstTimeServerRegistrationTotalAttemptsNeededCount(
     int attempt_count);
 void RecordDeviceFoundLatency(base::TimeDelta device_found_latency);
+void RecordNearbyProcessShutdownReason(
+    ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+        shutdown_reason);
 
 }  // namespace ash::nearby::presence::metrics
 

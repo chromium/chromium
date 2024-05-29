@@ -250,10 +250,10 @@ void NearbyPresenceServiceImpl::OnScanSessionDisconnect(
 }
 
 void NearbyPresenceServiceImpl::OnNearbyProcessStopped(
-    ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason) {
-  // TODO(b/277819923): Add metric to record shutdown reason for Nearby
-  // Presence process.
+    ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+        shutdown_reason) {
   LOG(WARNING) << __func__ << ": Nearby process stopped.";
+  metrics::RecordNearbyProcessShutdownReason(shutdown_reason);
   Shutdown();
 }
 
