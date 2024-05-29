@@ -1005,6 +1005,31 @@ public class AwPrerenderTest extends AwParameterizedTest {
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 
+    // Tests manually cancelling the prerendered pages.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testPrerenderingManuallyCancelled() throws Throwable {
+        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+                                /*kAllPrerenderingCanceled*/ 81)
+                        .build();
+
+        // Start prerendering.
+        injectSpeculationRulesAndWait(mPrerenderingUrl);
+        // Manually cancel the prerendered pages.
+        TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.cancelAllPrerendering());
+
+        // Wait until prerendering is canceled.
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})

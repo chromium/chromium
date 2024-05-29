@@ -1396,6 +1396,11 @@ void AwContents::FlushBackForwardCache(JNIEnv* env) {
   web_contents()->GetController().GetBackForwardCache().Flush();
 }
 
+void AwContents::CancelAllPrerendering(JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  web_contents()->CancelAllPrerendering();
+}
+
 void AwContents::ClearView(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   browser_view_renderer_.ClearView();

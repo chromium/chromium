@@ -2123,6 +2123,11 @@ public class AwContents implements SmartClipProvider {
         AwContentsJni.get().flushBackForwardCache(mNativeAwContents);
     }
 
+    public void cancelAllPrerendering() {
+        if (isDestroyed(NO_WARN)) return;
+        AwContentsJni.get().cancelAllPrerendering(mNativeAwContents);
+    }
+
     /** Destroys this object and deletes its native counterpart. */
     public void destroy() {
         if (TRACE) Log.i(TAG, "%s destroy", this);
@@ -5122,5 +5127,7 @@ public class AwContents implements SmartClipProvider {
         void onConfigurationChanged(long nativeAwContents);
 
         void flushBackForwardCache(long nativeAwContents);
+
+        void cancelAllPrerendering(long nativeAwContents);
     }
 }
