@@ -139,6 +139,49 @@ TEST_F(ArcAccessibilityTreeTrackerTest, TaskAndAXTreeLifecycle) {
   ASSERT_EQ(0U, key_to_tree.size());
 }
 
+TEST_F(ArcAccessibilityTreeTrackerTest, ReEnableTree) {
+  auto& tree_tracker = accessibility_tree_tracker();
+  tree_tracker.OnEnabledFeatureChanged(
+      ax::android::mojom::AccessibilityFilterType::ALL);
+
+  std::unique_ptr<aura::Window> test_window = CreateWindow();
+  exo::SetShellApplicationId(test_window.get(), "org.chromium.arc.1");
+  tree_tracker.TrackWindow(test_window.get());
+
+  std::unique_ptr<aura::Window> child_window =
+      CreateWindow(chromeos::AppType::NON_APP);
+  exo::SetShellClientAccessibilityId(child_window.get(), 10);
+  test_window->AddChild(child_window.get());
+
+  const auto& key_to_tree = tree_tracker.trees_for_test();
+  ASSERT_EQ(1U, key_to_tree.size());
+
+  auto event = ax::android::mojom::AccessibilityEventData::New();
+  event->source_id = 1;
+  event->task_id = kNoTaskId;
+  event->window_id = 10;
+
+  // On the event, tree is tracked.
+  ax::android::AXTreeSourceAndroid* tree =
+      tree_tracker.OnAccessibilityEvent(event.Clone().get());
+  ASSERT_NE(nullptr, tree);
+
+  // Disables accessibility, and no tree is tracked.
+  tree_tracker.OnEnabledFeatureChanged(
+      ax::android::mojom::AccessibilityFilterType::OFF);
+
+  ASSERT_EQ(0U, key_to_tree.size());
+
+  // Enables accessibility again, and tree is tracked.
+  tree_tracker.OnEnabledFeatureChanged(
+      ax::android::mojom::AccessibilityFilterType::ALL);
+  tree_tracker.TrackWindow(test_window.get());
+  tree = tree_tracker.OnAccessibilityEvent(event.Clone().get());
+
+  ASSERT_EQ(1U, key_to_tree.size());
+  ASSERT_NE(nullptr, tree);
+}
+
 TEST_F(ArcAccessibilityTreeTrackerTest, WindowIdTaskIdMapping) {
   auto& tree_tracker = accessibility_tree_tracker();
   std::unique_ptr<aura::Window> test_window = CreateWindow();

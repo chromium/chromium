@@ -568,6 +568,7 @@ void ArcAccessibilityTreeTracker::OnEnabledFeatureChanged(
     // No longer need to track windows and trees.
     trees_.clear();
     window_id_to_task_id_.clear();
+    task_id_to_window_.clear();
     focus_change_observer_.reset();
 
     DCHECK(aura::Env::HasInstance());
