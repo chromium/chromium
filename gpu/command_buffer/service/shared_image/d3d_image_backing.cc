@@ -26,6 +26,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_angle_util_win.h"
@@ -135,6 +136,25 @@ bool BindEGLImageToTexture(GLenum texture_target, void* egl_image) {
                << ui::GetLastEGLErrorString();
     return false;
   }
+  return true;
+}
+
+bool CanUseUpdateSubresource(const std::vector<SkPixmap>& pixmaps) {
+  if (pixmaps.size() == 1u) {
+    return true;
+  }
+
+  const uint8_t* addr = static_cast<const uint8_t*>(pixmaps[0].addr());
+  size_t plane_offset = pixmaps[0].computeByteSize();
+  for (size_t i = 1; i < pixmaps.size(); ++i) {
+    // UpdateSubresource() cannot update planes individually, so the planes'
+    // data has to be packed in one memory block.
+    if (static_cast<const uint8_t*>(pixmaps[i].addr()) != addr + plane_offset) {
+      return false;
+    }
+    plane_offset += pixmaps[i].computeByteSize();
+  }
+
   return true;
 }
 
@@ -438,6 +458,23 @@ void D3DImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
 bool D3DImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
   DCHECK_EQ(pixmaps.size(), static_cast<size_t>(format().NumberOfPlanes()));
 
+  if (base::FeatureList::IsEnabled(
+          features::kD3DBackingUploadWithUpdateSubresource) &&
+      CanUseUpdateSubresource(pixmaps)) {
+    CHECK(texture_d3d11_device_);
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext1> device_context_1;
+    texture_d3d11_device_->GetImmediateContext(&device_context);
+    device_context.As(&device_context_1);
+
+    device_context_1->UpdateSubresource1(
+        d3d11_texture_.Get(), /*DstSubresource=*/0, /*pDstBox=*/nullptr,
+        pixmaps[0].addr(), pixmaps[0].rowBytes(), /*SrcDepthPitch=*/0,
+        D3D11_COPY_DISCARD);
+
+    return true;
+  }
+
   ID3D11Texture2D* staging_texture = GetOrCreateStagingTexture();
   if (!staging_texture) {
     return false;
@@ -449,7 +486,7 @@ bool D3DImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
 
   D3D11_MAPPED_SUBRESOURCE mapped_resource = {};
   HRESULT hr = device_context->Map(staging_texture, 0, D3D11_MAP_WRITE, 0,
-                                    &mapped_resource);
+                                   &mapped_resource);
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to map texture for write. hr=" << std::hex << hr;
     return false;
@@ -477,6 +514,7 @@ bool D3DImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
 
   device_context->Unmap(staging_texture, 0);
   device_context->CopyResource(d3d11_texture_.Get(), staging_texture);
+
   return true;
 }
 

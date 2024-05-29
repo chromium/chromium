@@ -18,6 +18,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
@@ -31,6 +32,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -561,6 +563,7 @@ class D3DImageBackingFactoryTest : public D3DImageBackingFactoryTestBase {
                       bool use_factory_multiplanar);
   void RunCreateSharedImageFromHandleTest(DXGI_FORMAT dxgi_format);
   void RunCreateFromSharedMemoryMultiplanarTest(bool use_async_copy);
+  void RunMultiplanarUploadAndReadback(bool use_upload_subresource);
 
   static constexpr wgpu::FeatureName kRequiredFeatures[] = {
       // We need to request internal usage to be able to do operations with
@@ -2307,7 +2310,17 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemoryMultiplanarAsyncCopy) {
 
 // Verifies that a multi-planar NV12 image can be created without DXGI handle
 // for use with software GMBs.
-TEST_F(D3DImageBackingFactoryTest, MultiplanarUploadAndReadback) {
+void D3DImageBackingFactoryTest::RunMultiplanarUploadAndReadback(
+    bool use_update_subresource) {
+  base::test::ScopedFeatureList feature_list;
+  if (use_update_subresource) {
+    feature_list.InitAndEnableFeature(
+        features::kD3DBackingUploadWithUpdateSubresource);
+  } else {
+    feature_list.InitAndDisableFeature(
+        features::kD3DBackingUploadWithUpdateSubresource);
+  }
+
   constexpr gfx::Size size(32, 32);
   constexpr size_t kDataSize = size.width() * size.height() * 3 / 2;
   constexpr SkAlphaType alpha_type = kPremul_SkAlphaType;
@@ -2359,6 +2372,10 @@ TEST_F(D3DImageBackingFactoryTest, MultiplanarUploadAndReadback) {
   // Upload initial data into the image.
   backing->UploadFromMemory(pixmaps);
   backing->SetCleared();
+
+  // If UpdateSubresource() is used, the staging texture shouldn't be created.
+  EXPECT_EQ(!static_cast<D3DImageBacking*>(backing)->has_staging_texture(),
+            use_update_subresource);
 
   auto skia_representation = shared_image_representation_factory_->ProduceSkia(
       mailbox, context_state_);
@@ -2425,6 +2442,15 @@ TEST_F(D3DImageBackingFactoryTest, MultiplanarUploadAndReadback) {
   FillNV12(buffer.data(), size, 0, 0, 0);
   ASSERT_TRUE(backing->ReadbackToMemory(pixmaps));
   CheckNV12(buffer.data(), size.width(), size, kInitialY, kInitialU, kInitialV);
+}
+
+TEST_F(D3DImageBackingFactoryTest, MultiplanarUploadAndReadback) {
+  RunMultiplanarUploadAndReadback(/*use_update_subresource=*/false);
+}
+
+TEST_F(D3DImageBackingFactoryTest,
+       MultiplanarUploadAndReadbackWithUpdateSubresource) {
+  RunMultiplanarUploadAndReadback(/*use_update_subresource=*/true);
 }
 
 }  // namespace gpu

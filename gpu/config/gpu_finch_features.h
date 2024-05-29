@@ -114,6 +114,10 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kGpuCleanupInBackground);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kDeferredOverlaysRelease);
 
+#if BUILDFLAG(IS_WIN)
+GPU_EXPORT BASE_DECLARE_FEATURE(kD3DBackingUploadWithUpdateSubresource);
+#endif
+
 GPU_EXPORT bool UseGles2ForOopR();
 GPU_EXPORT bool IsUsingVulkan();
 GPU_EXPORT bool IsDrDcEnabled();

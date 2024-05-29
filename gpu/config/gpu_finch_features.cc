@@ -453,6 +453,14 @@ BASE_FEATURE(kDeferredOverlaysRelease,
              "DeferredOverlayRelease",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Use d3d11 UpdateSubresource() (instead of a staging texture) to upload pixels
+// to textures.
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kD3DBackingUploadWithUpdateSubresource,
+             "D3DBackingUploadWithUpdateSubresource",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 bool UseGles2ForOopR() {
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
   // GLES3 is not supported on emulators with passthrough. crbug.com/1423712

@@ -140,6 +140,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
     return d3d11_texture_;
   }
 
+  bool has_staging_texture() const { return !!staging_texture_; }
+
   // Holds a gles2::TexturePassthrough and corresponding egl image.
   class GLTextureHolder : public base::RefCounted<GLTextureHolder> {
    public:
