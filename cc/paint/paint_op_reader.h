@@ -140,16 +140,25 @@ class CC_PAINT_EXPORT PaintOpReader {
     *data = !!value;
   }
 
+  // Returns true if there is enough data to read for the specified vector. If
+  // there is not enough data, the PaintOpReader is marked invalid.
+  template <typename T>
+  bool CanReadVector(size_t size, const std::vector<T>& vec) {
+    if (UNLIKELY(size > vec.max_size() ||
+                 remaining_bytes_ < size * sizeof(T))) {
+      SetInvalid(DeserializationError::kInsufficientRemainingBytes_ReadData);
+      return false;
+    }
+    return true;
+  }
+
   template <typename T>
   void Read(std::vector<T>* vec) {
     size_t size = 0;
     ReadSize(&size);
-
-    if (size > vec->max_size() || remaining_bytes_ < size * sizeof(T)) {
-      SetInvalid(DeserializationError::kInsufficientRemainingBytes_ReadData);
+    if (UNLIKELY(!CanReadVector(size, *vec))) {
       return;
     }
-
     ReadVectorContent(size, vec);
   }
 
