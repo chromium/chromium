@@ -5,5 +5,5 @@
 import("//build/config/chrome_build.gni")
 declare_args() {
   # This enables building WebNN with XNNPACK.
-  build_webnn_with_xnnpack = is_mac
+  build_webnn_with_xnnpack = false
 }

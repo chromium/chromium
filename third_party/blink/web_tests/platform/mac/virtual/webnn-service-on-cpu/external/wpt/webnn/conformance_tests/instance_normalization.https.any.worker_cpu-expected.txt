@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] instanceNormalization float32 4D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test instanceNormalization float32 actual 1.5517578125 should be close enough to expected 1.5525832176208496 by the acceptable 840 ULP distance, but they have 6924 ULP distance expected true got false
+[FAIL] instanceNormalization float32 4D tensor options.scale
+  assert_true: assert_array_approx_equals_ulp: test instanceNormalization float32 actual 103.8125 should be close enough to expected 103.8260269165039 by the acceptable 840 ULP distance, but they have 1773 ULP distance expected true got false
+[FAIL] instanceNormalization float32 4D tensor options.bias
+  assert_true: assert_array_approx_equals_ulp: test instanceNormalization float32 actual -34.125 should be close enough to expected -34.148170471191406 by the acceptable 840 ULP distance, but they have 6074 ULP distance expected true got false
+[FAIL] instanceNormalization float32 4D tensor options.epsilon
+  assert_true: assert_array_approx_equals_ulp: test instanceNormalization float32 actual 1.5517578125 should be close enough to expected 1.5525832176208496 by the acceptable 840 ULP distance, but they have 6924 ULP distance expected true got false
+[FAIL] instanceNormalization float32 4D tensor explict options.layout='nchw'
+  assert_true: assert_array_approx_equals_ulp: test instanceNormalization float32 actual 1.5517578125 should be close enough to expected 1.5525832176208496 by the acceptable 840 ULP distance, but they have 6924 ULP distance expected true got false
+[FAIL] instanceNormalization float32 4D tensor options.layout='nhwc'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported input layout."
+[FAIL] instanceNormalization float32 4D tensor all options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported input layout."
+Harness: the test ran to completion.
+

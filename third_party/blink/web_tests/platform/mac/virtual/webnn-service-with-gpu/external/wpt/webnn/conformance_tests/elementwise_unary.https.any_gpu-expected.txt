@@ -75,17 +75,17 @@ Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] log float32 positive 5D tensor
   assert_array_approx_equals: test log float32 property 0, expected 4.15615177154541 +/- 0.0009765625, expected 4.15615177154541 but got 4.15234375
 [FAIL] neg float32 1D constant tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator (neg) is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator neg."
 [FAIL] neg float32 1D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator (neg) is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator neg."
 [FAIL] neg float32 2D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator (neg) is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator neg."
 [FAIL] neg float32 3D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator (neg) is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator neg."
 [FAIL] neg float32 4D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator (neg) is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator neg."
 [FAIL] neg float32 5D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator (neg) is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator neg."
 [FAIL] reciprocal float32 0D scalar
   assert_true: assert_array_approx_equals_ulp: test reciprocal float32 actual -0.1068115234375 should be close enough to expected -0.10679777711629868 by the acceptable 2 ULP distance, but they have 1845 ULP distance expected true got false
 [FAIL] reciprocal float32 1D constant tensor

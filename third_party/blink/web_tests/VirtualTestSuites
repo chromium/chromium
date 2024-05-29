@@ -2638,7 +2638,7 @@
   "Run the WebNN WPTs with a CPU context with the WebNN service enabled.",
   {
     "prefix": "webnn-service-on-cpu",
-    "platforms": ["Linux", "Win"],
+    "platforms": ["Linux","Mac", "Win"],
     "bases": [
       "external/wpt/webnn/validation_tests",
       "external/wpt/webnn/conformance_tests/arg_min_max.https.any.html?cpu",
