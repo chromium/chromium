@@ -1755,7 +1755,10 @@ protocol::Response InspectorDOMAgent::getAnchorElement(
         AtomicString(anchor_specifier.value()),
         &querying_object->GetDocument()));
   } else {
-    target_object = box->AcceptableImplicitAnchor();
+    const ComputedStyle& style = box->StyleRef();
+    target_object = style.PositionAnchor()
+                        ? box->FindTargetAnchor(*style.PositionAnchor())
+                        : box->AcceptableImplicitAnchor();
   }
 
   if (target_object) {
