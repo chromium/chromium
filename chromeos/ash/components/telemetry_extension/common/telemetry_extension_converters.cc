@@ -63,16 +63,21 @@ crosapi::mojom::TelemetryExtensionSupportStatusPtr UncheckedConvertPtr(
 crosapi::mojom::TelemetryExtensionException::Reason Convert(
     cros_healthd::mojom::Exception::Reason input) {
   switch (input) {
-    case cros_healthd::mojom::Exception_Reason::kUnmappedEnumField:
+    case cros_healthd::mojom::Exception::Reason::kUnmappedEnumField:
       return crosapi::mojom::TelemetryExtensionException::Reason::
           kUnmappedEnumField;
-    case cros_healthd::mojom::Exception_Reason::kMojoDisconnectWithoutReason:
+    case cros_healthd::mojom::Exception::Reason::kMojoDisconnectWithoutReason:
       return crosapi::mojom::TelemetryExtensionException::Reason::
           kMojoDisconnectWithoutReason;
-    case cros_healthd::mojom::Exception_Reason::kUnexpected:
+    case cros_healthd::mojom::Exception::Reason::kUnexpected:
       return crosapi::mojom::TelemetryExtensionException::Reason::kUnexpected;
-    case cros_healthd::mojom::Exception_Reason::kUnsupported:
+    case cros_healthd::mojom::Exception::Reason::kUnsupported:
       return crosapi::mojom::TelemetryExtensionException::Reason::kUnsupported;
+    case cros_healthd::mojom::Exception::Reason::kCameraFrontendNotOpened:
+      // TODO(b/342286051): update the converter when `kCameraFrontendNotOpened`
+      // is added to crosapi.
+      return crosapi::mojom::TelemetryExtensionException::Reason::
+          kUnmappedEnumField;
   }
   NOTREACHED_NORETURN();
 }

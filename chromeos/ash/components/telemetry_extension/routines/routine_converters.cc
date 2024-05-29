@@ -140,10 +140,12 @@ crosapi::TelemetryDiagnosticRoutineDetailPtr UncheckedConvertPtr(
     case healthd::RoutineDetail::Tag::kBluetoothScanning:
     case healthd::RoutineDetail::Tag::kBluetoothPairing:
     case healthd::RoutineDetail::Tag::kCameraAvailability:
+    case healthd::RoutineDetail::Tag::kSensitiveSensor:
+    case healthd::RoutineDetail::Tag::kCameraFrameAnalysis:
       // The actual value of unrecognizedArgument should not be used. Assign an
       // arbitrary value to it.
       return crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
-          /*unrecognizedArgument*/ false);
+          /*unrecognizedArgument=*/false);
   }
   NOTREACHED_NORETURN();
 }
@@ -407,7 +409,7 @@ crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason Convert(
       return crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason::
           kWaitingToBeScheduled;
     case healthd::RoutineStateWaiting_Reason::kWaitingInteraction:
-      return crosapi::TelemetryDiagnosticRoutineStateWaiting_Reason::
+      return crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason::
           kWaitingForInteraction;
   }
   NOTREACHED_NORETURN();

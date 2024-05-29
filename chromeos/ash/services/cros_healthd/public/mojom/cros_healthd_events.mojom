@@ -105,7 +105,7 @@ interface CrosHealthdThunderboltObserver {
 struct UsbEventInfo {
   // Vendor name.
   string vendor@0;
-  // Name, model name, product name.
+  // Name, model name or product name.
   string name@1;
   // Vendor ID.
   uint16 vid@2;

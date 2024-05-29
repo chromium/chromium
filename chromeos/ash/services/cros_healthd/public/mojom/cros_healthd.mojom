@@ -547,6 +547,10 @@ interface CrosHealthdDiagnosticsService {
   //
   // The request:
   // * |target_state| - privacy screen target state.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
   [MinVersion=4]
   RunPrivacyScreenRoutine@36(bool target_state)
       => (RunRoutineResponse response);
@@ -634,14 +638,14 @@ interface CrosHealthdDiagnosticsService {
   // * |node_id| - the id of node to be configured.
   // * |gain| - input node target gain in [0, 100], and we use 100 if the target
   //            value is greater than 100.
-  // * |mute_on| - mute the input device or not.
+  // * |deprecated_mute_on| - deprecated parameter.
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   [MinVersion=8]
   DEPRECATED_RunAudioSetGainRoutine@40(
-      uint64 node_id, uint8 gain, bool mute_on)
+      uint64 node_id, uint8 gain, bool deprecated_mute_on)
       => (RunRoutineResponse response);
 
   // Requests that the BluetoothPower routine is created and started on the
@@ -746,9 +750,8 @@ interface CrosHealthdDiagnosticsService {
   [MinVersion=13]
   RunUfsLifetimeRoutine@47() => (RunRoutineResponse response);
 
-  // Requests that the Fan routine is created and started on the
-  // platform. This routine checks whether there is any errors about the audio
-  // driver.
+  // Requests that the Fan routine is created and started on the platform. This
+  // routine checks whether the fan can be controlled.
   // The availability of this routine can be determined by checking that
   // kFan is returned by GetAvailableRoutines.
   //

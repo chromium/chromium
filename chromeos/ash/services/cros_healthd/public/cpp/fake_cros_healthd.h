@@ -301,7 +301,7 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   void DEPRECATED_RunAudioSetGainRoutine(
       uint64_t node_id,
       uint8_t gain,
-      bool mute_on,
+      bool deprecated_mute_on,
       DEPRECATED_RunAudioSetGainRoutineCallback callback) override;
   void RunBluetoothPowerRoutine(
       RunBluetoothPowerRoutineCallback callback) override;

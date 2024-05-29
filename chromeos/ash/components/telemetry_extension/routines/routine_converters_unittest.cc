@@ -392,6 +392,51 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
           healthd::NetworkBandwidthRoutineDetail::New())),
       crosapi::TelemetryDiagnosticRoutineDetail::NewNetworkBandwidth(
           crosapi::TelemetryDiagnosticNetworkBandwidthRoutineDetail::New()));
+
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewAudioDriver(
+                healthd::AudioDriverRoutineDetail::New())),
+            crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
+                false));
+
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewUfsLifetime(
+                healthd::UfsLifetimeRoutineDetail::New())),
+            crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
+                false));
+
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewBluetoothPower(
+                healthd::BluetoothPowerRoutineDetail::New())),
+            crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
+                false));
+
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewBluetoothDiscovery(
+                healthd::BluetoothDiscoveryRoutineDetail::New())),
+            crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
+                false));
+
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewBluetoothScanning(
+                healthd::BluetoothScanningRoutineDetail::New())),
+            crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
+                false));
+
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewBluetoothPairing(
+                healthd::BluetoothPairingRoutineDetail::New())),
+            crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
+                false));
+
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewCameraAvailability(
+                healthd::CameraAvailabilityRoutineDetail::New())),
+            crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
+                false));
+
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewSensitiveSensor(
+                healthd::SensitiveSensorRoutineDetail::New())),
+            crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
+                false));
+
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewCameraFrameAnalysis(
+                healthd::CameraFrameAnalysisRoutineDetail::New())),
+            crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
+                false));
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,
