@@ -153,8 +153,14 @@ interface PermissionService {
   // access to |permission|. Closing the pipe will cancel the subscription.
   AddPermissionObserver(PermissionDescriptor permission,
                         PermissionStatus last_known_status,
-                        bool should_include_device_status,
                         pending_remote<PermissionObserver> observer);
+  // Calling this method indicates that a `HTMLPermissionElement` subscribes
+  // |observer| to updates about changes to the current origin's access to
+  // |permission|. This method is similar to `AddPermissionObserver` except it
+  // also takes into account the device's permission statuses.
+  AddPageEmbeddedPermissionObserver(PermissionDescriptor permission,
+                                    PermissionStatus last_known_status,
+                                    pending_remote<PermissionObserver> observer);
   // Notifies when an event listener with `event_type` was added to
   // PermissionStatus.
   NotifyEventListener(PermissionDescriptor permission, string event_type,

@@ -120,6 +120,11 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
                                                const GURL& requesting_origin,
                                                const GURL& embedding_origin);
 
+  PermissionStatus GetPermissionStatusForCurrentDocumentInternal(
+      PermissionType permission,
+      RenderFrameHost* render_frame_host,
+      bool should_include_device_status = false);
+
   // PermissionController implementation.
   PermissionStatus GetPermissionStatusForWorker(
       PermissionType permission,
@@ -165,6 +170,13 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       blink::PermissionType permission,
       RenderFrameHost* render_frame_host,
       const url::Origin& requesting_origin);
+
+  // The method does the same as `GetPermissionStatusForCurrentDocument` but it
+  // also takes into account the device's status (OS permission status).
+  // Currently, this function is only used for Page Embedded Permission Control.
+  PermissionStatus GetCombinedPermissionAndDeviceStatus(
+      PermissionType permission,
+      RenderFrameHost* render_frame_host);
 
   struct Subscription;
   using SubscriptionsMap =

@@ -344,15 +344,18 @@ PermissionManager::GetPermissionResultForOriginWithoutContext(
 
 PermissionStatus PermissionManager::GetPermissionStatusForCurrentDocument(
     PermissionType permission,
-    content::RenderFrameHost* render_frame_host) {
-  return GetPermissionResultForCurrentDocument(permission, render_frame_host)
+    content::RenderFrameHost* render_frame_host,
+    bool should_include_device_status) {
+  return GetPermissionResultForCurrentDocument(permission, render_frame_host,
+                                               should_include_device_status)
       .status;
 }
 
 content::PermissionResult
 PermissionManager::GetPermissionResultForCurrentDocument(
     blink::PermissionType permission,
-    content::RenderFrameHost* render_frame_host) {
+    content::RenderFrameHost* render_frame_host,
+    bool should_include_device_status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ContentSettingsType type =
       PermissionUtil::PermissionTypeToContentSettingType(permission);
@@ -365,7 +368,7 @@ PermissionManager::GetPermissionResultForCurrentDocument(
   return GetPermissionStatusInternal(
       type,
       /*render_process_host=*/nullptr, render_frame_host, requesting_origin,
-      embedding_origin, /*should_include_device_status=*/false);
+      embedding_origin, should_include_device_status);
 }
 
 PermissionStatus PermissionManager::GetPermissionStatusForWorker(

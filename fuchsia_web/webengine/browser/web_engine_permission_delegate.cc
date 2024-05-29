@@ -80,7 +80,8 @@ WebEnginePermissionDelegate::GetPermissionResultForOriginWithoutContext(
 blink::mojom::PermissionStatus
 WebEnginePermissionDelegate::GetPermissionStatusForCurrentDocument(
     blink::PermissionType permission,
-    content::RenderFrameHost* render_frame_host) {
+    content::RenderFrameHost* render_frame_host,
+    bool should_include_device_status) {
   FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
   DCHECK(frame);
   return frame->permission_controller()->GetPermissionState(

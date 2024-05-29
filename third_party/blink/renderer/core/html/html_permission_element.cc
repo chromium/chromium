@@ -682,9 +682,8 @@ void HTMLPermissionElement::RegisterPermissionObserver(
   mojo::PendingRemote<PermissionObserver> observer;
   permission_observer_receivers_.Add(observer.InitWithNewPipeAndPassReceiver(),
                                      descriptor->name, GetTaskRunner());
-  GetPermissionService()->AddPermissionObserver(
-      descriptor.Clone(), current_status, /*should_include_device_status=*/true,
-      std::move(observer));
+  GetPermissionService()->AddPageEmbeddedPermissionObserver(
+      descriptor.Clone(), current_status, std::move(observer));
 }
 
 void HTMLPermissionElement::OnPermissionStatusChange(

@@ -75,20 +75,27 @@ class CONTENT_EXPORT PermissionControllerDelegate {
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) = 0;
 
-  // Returns the permission status for the current document in the given
-  // RenderFrameHost. Use this over `GetPermissionStatus` whenever possible as
-  // this API takes into account the lifecycle state of a given document (i.e.
-  // whether it's in back-forward cache or being prerendered) in addition to its
-  // origin.
+  // Should return the permission status for the current document in the given
+  // RenderFrameHost. This is used over `GetPermissionStatus` whenever possible
+  // as this API takes into account the lifecycle state of a given document
+  // (i.e. whether it's in back-forward cache or being prerendered) in addition
+  // to its origin.
+  // When called with should_include_device_status set to true, the delegate
+  // should return a combination of the document permission status (site-level)
+  // and the device-level permission status. For example, it should return
+  // PermissionStatus::DENIED in scenarios where the site-level permission is
+  // granted but the device-level permission is not.
   virtual PermissionStatus GetPermissionStatusForCurrentDocument(
       blink::PermissionType permission,
-      RenderFrameHost* render_frame_host) = 0;
+      RenderFrameHost* render_frame_host,
+      bool should_include_device_status) = 0;
 
   // The method does the same as `GetPermissionStatusForCurrentDocument` but
   // additionally returns a source or reason for the permission status.
   virtual PermissionResult GetPermissionResultForCurrentDocument(
       blink::PermissionType permission,
-      RenderFrameHost* render_frame_host);
+      RenderFrameHost* render_frame_host,
+      bool should_include_device_status);
 
   // Returns the status of the given `permission` for a worker on
   // `worker_origin` running in `render_process_host`, also performing

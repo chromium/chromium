@@ -410,7 +410,7 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
 
     ON_CALL(*mock_permission_manager,
             GetPermissionStatusForCurrentDocument(
-                blink::PermissionType::NOTIFICATIONS, _))
+                blink::PermissionType::NOTIFICATIONS, _, _))
         .WillByDefault(Return(permission_status));
     ON_CALL(*mock_permission_manager,
             GetPermissionStatusForWorker(blink::PermissionType::NOTIFICATIONS,

@@ -240,9 +240,11 @@ class TestPermissionService : public PermissionService {
   void AddPermissionObserver(
       PermissionDescriptorPtr permission,
       MojoPermissionStatus last_known_status,
-      bool should_include_device_status,
+      mojo::PendingRemote<PermissionObserver> observer) override {}
+  void AddPageEmbeddedPermissionObserver(
+      PermissionDescriptorPtr permission,
+      MojoPermissionStatus last_known_status,
       mojo::PendingRemote<PermissionObserver> observer) override {
-    EXPECT_TRUE(should_include_device_status);
     observers_.insert(permission->name,
                       mojo::Remote<PermissionObserver>(std::move(observer)));
     if (run_loop_) {

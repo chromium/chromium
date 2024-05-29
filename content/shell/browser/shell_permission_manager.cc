@@ -167,7 +167,8 @@ ShellPermissionManager::GetPermissionResultForOriginWithoutContext(
 blink::mojom::PermissionStatus
 ShellPermissionManager::GetPermissionStatusForCurrentDocument(
     PermissionType permission,
-    content::RenderFrameHost* render_frame_host) {
+    content::RenderFrameHost* render_frame_host,
+    bool should_include_device_status) {
   if (render_frame_host->IsNestedWithinFencedFrame())
     return blink::mojom::PermissionStatus::DENIED;
   return GetPermissionStatus(
