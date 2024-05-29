@@ -114,7 +114,7 @@
         initWithStyle:ChromeTableViewStyle()];
     self.viewController.presentationDelegate = self;
     self.viewController.modelDelegate = self.mediator;
-    self.updatedViewController.isContentNotificationEnabled =
+    self.viewController.isContentNotificationEnabled =
         IsContentNotificationEnabled(self.browser->GetBrowserState());
     self.mediator.consumer = self.viewController;
     [self.baseNavigationController pushViewController:self.viewController
