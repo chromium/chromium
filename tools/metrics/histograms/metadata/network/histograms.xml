@@ -343,6 +343,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Ash.Cellular.ESim.PolicyInstall.NoAvailableProfiles"
+    enum="ESimPolicyInstallMethod" expires_after="2025-02-20">
+  <owner>chadduffin@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the method of installation used to attempt to install an eSIM
+    profile. This is emitted once for each installation attempt of the eSIM
+    profile corresponding to a policy-defined network, and is only emitted if
+    the scan performed to find profiles matching the provided activation code
+    finds no available profiles.
+  </summary>
+</histogram>
+
 <histogram
     name="Network.Ash.Cellular.ESim.PolicyInstall.{UserErrorHandling}.{Method}"
     enum="ESimOperationResult" expires_after="2025-02-20">

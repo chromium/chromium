@@ -140,6 +140,8 @@ class CellularPolicyHandlerTest : public testing::Test {
     size_t hermes_install_failed_retry_count = 0u;
     size_t smds_scan_profile_total_count = 0u;
     size_t smds_scan_profile_sum = 0u;
+    size_t no_available_profiles_via_smdp_count = 0u;
+    size_t no_available_profiles_via_smds_count = 0u;
     size_t install_method_via_smdp_count = 0u;
     size_t install_method_via_smds_count = 0u;
     size_t scan_duration_other_success_count = 0u;
@@ -330,6 +332,14 @@ class CellularPolicyHandlerTest : public testing::Test {
         static_cast<int64_t>(state.smds_scan_profile_sum),
         histogram_tester_.GetTotalSum(
             CellularNetworkMetricsLogger::kSmdsScanViaPolicyProfileCount));
+    histogram_tester_.ExpectBucketCount(
+        CellularNetworkMetricsLogger::kESimPolicyInstallNoAvailableProfiles,
+        CellularNetworkMetricsLogger::ESimPolicyInstallMethod::kViaSmdp,
+        /*expected_count=*/state.no_available_profiles_via_smdp_count);
+    histogram_tester_.ExpectBucketCount(
+        CellularNetworkMetricsLogger::kESimPolicyInstallNoAvailableProfiles,
+        CellularNetworkMetricsLogger::ESimPolicyInstallMethod::kViaSmds,
+        /*expected_count=*/state.no_available_profiles_via_smds_count);
     histogram_tester_.ExpectBucketCount(
         CellularNetworkMetricsLogger::kESimPolicyInstallMethod,
         CellularNetworkMetricsLogger::ESimPolicyInstallMethod::kViaSmdp,
@@ -561,6 +571,7 @@ TEST_F(CellularPolicyHandlerTest, InstallSuccess_DespiteHermesErrors) {
   EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
                                   /*check_for_service=*/true));
   EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  expected_state.no_available_profiles_via_smds_count++;
   expected_state.smds_scan_profile_total_count++;
   expected_state.scan_duration_other_failure_count++;
   expected_state.smds_scan_state.smds_scan_other_user_errors_filtered
@@ -1230,7 +1241,7 @@ TEST_F(CellularPolicyHandlerTest, InstallFailure_UserError) {
   CheckHistogramState(expected_state);
 }
 
-TEST_F(CellularPolicyHandlerTest, InstallSuccess) {
+TEST_F(CellularPolicyHandlerTest, InstallSuccess_SecondEuicc) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(ash::features::kCellularUseSecondEuicc);
   SetupGolden();
@@ -1260,6 +1271,68 @@ TEST_F(CellularPolicyHandlerTest, InstallSuccess) {
   EXPECT_TRUE(HasESimMetadata(activation_code.value()));
   expected_state.success_initial_count++;
   expected_state.install_method_via_smdp_count++;
+  CheckHistogramState(expected_state);
+}
+
+TEST_F(CellularPolicyHandlerTest, NoAvailableProfiles_SMDP) {
+  SetupGolden();
+
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDP,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+  std::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          GenerateCellularPolicy(activation_code));
+  ASSERT_TRUE(onc_config.has_value());
+
+  HermesEuiccClient::Get()
+      ->GetTestInterface()
+      ->SetNextRefreshSmdxProfilesResult({});
+
+  InstallProfile(*onc_config);
+
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  expected_state.no_available_profiles_via_smdp_count++;
+  CheckHistogramState(expected_state);
+}
+
+TEST_F(CellularPolicyHandlerTest, NoAvailableProfiles_SMDS) {
+  SetupGolden();
+
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDS,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+  std::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          GenerateCellularPolicy(activation_code));
+  ASSERT_TRUE(onc_config.has_value());
+
+  HermesEuiccClient::Get()
+      ->GetTestInterface()
+      ->SetNextRefreshSmdxProfilesResult({});
+
+  InstallProfile(*onc_config);
+
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  expected_state.no_available_profiles_via_smds_count++;
+  expected_state.scan_duration_other_success_count++;
+  expected_state.smds_scan_profile_total_count++;
+  expected_state.smds_scan_state.smds_scan_other_user_errors_filtered
+      .success_count++;
+  expected_state.smds_scan_state.smds_scan_other_user_errors_included
+      .success_count++;
   CheckHistogramState(expected_state);
 }
 

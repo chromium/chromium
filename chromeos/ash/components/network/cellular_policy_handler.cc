@@ -465,6 +465,8 @@ void CellularPolicyHandler::CompleteRefreshSmdxProfiles(
   DCHECK(inhibit_lock);
 
   auto& current_request = remaining_install_requests_.front();
+  const bool is_smds = current_request->activation_code.type() ==
+                       policy_util::SmdxActivationCode::Type::SMDS;
 
   // Scanning SM-DP+ or SM-DS servers will return both a result and available
   // profiles, with the number of profiles that can be returned dependent on
@@ -483,20 +485,28 @@ void CellularPolicyHandler::CompleteRefreshSmdxProfiles(
       GetFirstActivationCode(euicc_path, profile_paths);
 
   if (!activation_code.has_value()) {
+    CellularNetworkMetricsLogger::LogESimPolicyInstallNoAvailableProfiles(
+        is_smds
+            ? CellularNetworkMetricsLogger::ESimPolicyInstallMethod::kViaSmds
+            : CellularNetworkMetricsLogger::ESimPolicyInstallMethod::kViaSmdp);
+
     NET_LOG(ERROR) << "Failed to find an available profile that matches the "
                    << "activation code provided by policy: "
                    << current_request->activation_code.ToString();
     auto failed_request = std::move(remaining_install_requests_.front());
     PopRequest();
-    ScheduleRetryAndProcessRequests(std::move(failed_request),
-                                    HermesResponseStatusToRetryReason(status));
+    // Do not retry if there are no profiles available.
+    if (status == HermesResponseStatus::kSuccess) {
+      ProcessRequests();
+    } else {
+      ScheduleRetryAndProcessRequests(
+          std::move(failed_request), HermesResponseStatusToRetryReason(status));
+    }
     return;
   }
 
   const bool is_initial_install =
       current_request->retry_backoff.failure_count() == 0;
-  const bool is_smds = current_request->activation_code.type() ==
-                       policy_util::SmdxActivationCode::Type::SMDS;
   if (is_initial_install) {
     CellularNetworkMetricsLogger::LogESimPolicyInstallMethod(
         is_smds

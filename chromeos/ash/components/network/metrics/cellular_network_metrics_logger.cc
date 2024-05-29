@@ -350,6 +350,12 @@ void CellularNetworkMetricsLogger::LogESimPolicyInstallMethod(
 }
 
 // static
+void CellularNetworkMetricsLogger::LogESimPolicyInstallNoAvailableProfiles(
+    ESimPolicyInstallMethod method) {
+  base::UmaHistogramEnumeration(kESimPolicyInstallNoAvailableProfiles, method);
+}
+
+// static
 void CellularNetworkMetricsLogger::LogESimUserInstallResult(
     ESimUserInstallMethod method,
     ESimOperationResult result,

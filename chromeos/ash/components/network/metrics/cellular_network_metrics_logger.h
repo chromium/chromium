@@ -185,6 +185,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
       "Network.Ash.Cellular.ESim.UserInstall.Method";
   static constexpr char kESimPolicyInstallMethod[] =
       "Network.Ash.Cellular.ESim.PolicyInstall.Method";
+  static constexpr char kESimPolicyInstallNoAvailableProfiles[] =
+      "Network.Ash.Cellular.ESim.PolicyInstall.NoAvailableProfiles";
   static constexpr char kESimPolicyInstallUserErrorsFilteredAll[] =
       "Network.Ash.Cellular.ESim.PolicyInstall.UserErrorsFiltered.All";
   static constexpr char kESimPolicyInstallUserErrorsFilteredViaSmdpInitial[] =
@@ -308,6 +310,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
 
   static void LogESimUserInstallMethod(ESimUserInstallMethod method);
   static void LogESimPolicyInstallMethod(ESimPolicyInstallMethod method);
+  static void LogESimPolicyInstallNoAvailableProfiles(
+      ESimPolicyInstallMethod method);
   // The |is_user_error| parameter is used to indicate that |result| was caused
   // by something outside the control of ChromeOS, e.g. an invalid activation
   // code, and is not actionable. We do not include this category of errors in
