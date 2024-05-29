@@ -4378,6 +4378,19 @@ chromium-metrics-reviews@google.com.
   <token key="FormType" variants="Autofill.Ablation.FormType"/>
 </histogram>
 
+<histogram name="Autofill.Quality.DaysUntilFirstUsage.Profile" units="day"
+    expires_after="2024-12-12">
+  <owner>battre@chromium.org</owner>
+  <owner>bwolfgang@google.com</owner>
+  <owner>mlerman@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the number of days from saving an Autofill profile until using it
+    for the first time before it got purged. Emitted on the first usage of the
+    profile for filling a form.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.QueriedCreditCardFormIsSecure" enum="BooleanSecure"
     expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>
