@@ -33,6 +33,7 @@ class BluetoothAdvertisementServiceProviderImpl
       dbus::Bus* bus,
       const dbus::ObjectPath& object_path,
       Delegate* delegate,
+      bool adapter_support_ext_adv,
       AdvertisementType type,
       std::optional<UUIDList> service_uuids,
       std::optional<ManufacturerData> manufacturer_data,
@@ -42,6 +43,7 @@ class BluetoothAdvertisementServiceProviderImpl
       : origin_thread_id_(base::PlatformThread::CurrentId()),
         bus_(bus),
         delegate_(delegate),
+        adapter_support_ext_adv_(adapter_support_ext_adv),
         type_(type),
         service_uuids_(std::move(service_uuids)),
         manufacturer_data_(std::move(manufacturer_data)),
@@ -440,6 +442,10 @@ class BluetoothAdvertisementServiceProviderImpl
   }
 
   bool UseSecondaryChannel() {
+    if (!adapter_support_ext_adv_) {
+      return false;
+    }
+
     // Don't use secondary channel if we are scannable and have advertising data.
     // This is because according to the spec, if Adv mode is Scannable in the
     // ADV_EXT_IND the Adv data field is reserved for future use.
@@ -459,6 +465,9 @@ class BluetoothAdvertisementServiceProviderImpl
   // passed to generate the reply. |delegate_| is generally the object that
   // owns this one, and must outlive it.
   raw_ptr<Delegate> delegate_;
+
+  // Whether the adapter support extended advertisement or not.
+  bool adapter_support_ext_adv_;
 
   // Advertisement data that needs to be provided to BlueZ when requested.
   AdvertisementType type_;
@@ -491,6 +500,7 @@ BluetoothLEAdvertisementServiceProvider::Create(
     dbus::Bus* bus,
     const dbus::ObjectPath& object_path,
     Delegate* delegate,
+    bool adapter_support_ext_adv,
     AdvertisementType type,
     std::optional<UUIDList> service_uuids,
     std::optional<ManufacturerData> manufacturer_data,
@@ -499,9 +509,10 @@ BluetoothLEAdvertisementServiceProvider::Create(
     std::optional<ScanResponseData> scan_response_data) {
   if (!bluez::BluezDBusManager::Get()->IsUsingFakes()) {
     return std::make_unique<BluetoothAdvertisementServiceProviderImpl>(
-        bus, object_path, delegate, type, std::move(service_uuids),
-        std::move(manufacturer_data), std::move(solicit_uuids),
-        std::move(service_data), std::move(scan_response_data));
+        bus, object_path, delegate, adapter_support_ext_adv, type,
+        std::move(service_uuids), std::move(manufacturer_data),
+        std::move(solicit_uuids), std::move(service_data),
+        std::move(scan_response_data));
   }
 #if defined(USE_REAL_DBUS_CLIENTS)
   LOG(FATAL) << "Fake is unavailable if USE_REAL_DBUS_CLIENTS is defined.";

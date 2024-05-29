@@ -65,6 +65,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLEAdvertisementServiceProvider {
       dbus::Bus* bus,
       const dbus::ObjectPath& object_path,
       Delegate* delegate,
+      bool adapter_support_ext_adv,
       AdvertisementType type,
       std::optional<UUIDList> service_uuids,
       std::optional<ManufacturerData> manufacturer_data,
