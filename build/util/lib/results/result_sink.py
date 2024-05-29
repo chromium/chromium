@@ -55,6 +55,7 @@ class ResultSinkClient(object):
     base_url = 'http://%s/prpc/luci.resultsink.v1.Sink' % context['address']
     self.test_results_url = base_url + '/ReportTestResults'
     self.report_artifacts_url = base_url + '/ReportInvocationLevelArtifacts'
+    self.update_invocation_url = base_url + '/UpdateInvocation'
 
     headers = {
         'Content-Type': 'application/json',
@@ -200,6 +201,45 @@ class ResultSinkClient(object):
     req = {'artifacts': artifacts}
     res = self.session.post(url=self.report_artifacts_url, data=json.dumps(req))
     res.raise_for_status()
+
+  def UpdateInvocation(self, invocation, update_mask):
+    """Update the invocation to the ResultSink server.
+
+    Details can be found in the proto luci.resultsink.v1.UpdateInvocationRequest
+
+    Args:
+      invocation: a dict representation of luci.resultsink.v1.Invocation proto
+      update_mask: a dict representation of google.protobuf.FieldMask proto
+    """
+    req = {
+        'invocation': invocation,
+        'update_mask': update_mask,
+    }
+    res = self.session.post(url=self.update_invocation_url,
+                            data=json.dumps(req))
+    res.raise_for_status()
+
+  def UpdateInvocationExtendedProperties(self, extended_properties, keys=None):
+    """Update the extended_properties field of an invocation.
+
+    Details can be found in the "extended_properties" field of the proto
+    luci.resultdb.v1.Invocation.
+
+    Args:
+      extended_properties: a dict containing the content of extended_properties.
+        The value in the dict shall be a dict containing a "@type" key
+        representing the data schema, and corresponding data.
+      keys: (Optional) a list of keys in extended_properties to add, replace,
+        or remove. If a key exists in "keys", but not in "extended_properties",
+        this is considered as deleting the key from the resultdb record side
+        If None, the keys in "extended_properties" dict will be used.
+    """
+    if not keys:
+      keys = extended_properties.keys()
+    mask_paths = ['extended_properties.%s' % key for key in keys]
+    invocation = {'extended_properties': extended_properties}
+    update_mask = {'paths': mask_paths}
+    self.UpdateInvocation(invocation, update_mask)
 
 
 def _TruncateToUTF8Bytes(s, length):
