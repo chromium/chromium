@@ -648,7 +648,11 @@ public class TabStateFileManager {
                 });
     }
 
-    private static void deleteFlatBufferFiles(File stateDirectory) {
+    @VisibleForTesting
+    protected static void deleteFlatBufferFiles(File stateDirectory) {
+        if (stateDirectory == null || stateDirectory.listFiles() == null) {
+            return;
+        }
         for (File file : stateDirectory.listFiles()) {
             if (file.getName().startsWith(FLATBUFFER_PREFIX) && !file.delete()) {
                 Log.e(TAG, "Failed to delete FlatBuffer TabState: " + file);

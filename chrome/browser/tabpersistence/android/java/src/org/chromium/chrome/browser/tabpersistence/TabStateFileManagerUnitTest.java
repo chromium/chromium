@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.StreamUtil;
@@ -414,6 +415,26 @@ public class TabStateFileManagerUnitTest {
         Assert.assertEquals(
                 UserAgentType.USER_AGENT_SIZE,
                 FlatBufferTabStateSerializer.getUserAgentTypeToFlatBuffer(TabUserAgent.SIZE));
+    }
+
+    @Test
+    public void testNullStateDirectoryDeleteFlatBuffer() {
+        try {
+            TabStateFileManager.deleteFlatBufferFiles(null);
+        } catch (NullPointerException e) {
+            Assert.fail("deleteFlatBufferFiles should not throw NullPointerException");
+        }
+    }
+
+    @Test
+    public void testNullListFilesDeleteFlatBuffer() {
+        try {
+            File stateDirectory = Mockito.mock(File.class);
+            Mockito.doReturn(null).when(stateDirectory).listFiles();
+            TabStateFileManager.deleteFlatBufferFiles(stateDirectory);
+        } catch (NullPointerException e) {
+            Assert.fail("deleteFlatBufferFiles should not throw NullPointerException");
+        }
     }
 
     private TabState createTabStateWithMappedByteBuffer(File file, @Nullable Token tabGroupId)

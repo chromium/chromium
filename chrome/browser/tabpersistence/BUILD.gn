@@ -46,5 +46,6 @@ robolectric_library("junit") {
     "//chrome/test/android:chrome_java_unit_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit",
+    "//third_party/mockito:mockito_java",
   ]
 }
