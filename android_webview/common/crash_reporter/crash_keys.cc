@@ -63,6 +63,8 @@ const char* const kWebViewCrashKeyAllowList[] = {
 
     // content/:
     "bad_message_reason",
+    "can_access_data_failure_reason",
+    "cpspi_can_commit_url_failure_reason",
     "discardable-memory-allocated",
     "discardable-memory-free",
     "mojo-message-error",
