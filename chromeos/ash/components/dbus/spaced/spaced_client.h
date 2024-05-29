@@ -5,6 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_SPACED_SPACED_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_SPACED_SPACED_CLIENT_H_
 
+#include <map>
+#include <vector>
+
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
@@ -28,8 +31,21 @@ class COMPONENT_EXPORT(SPACED_CLIENT) SpacedClient {
     virtual void OnSpaceUpdate(const SpaceEvent& event) = 0;
   };
 
+  struct SpaceMaps {
+    SpaceMaps(std::map<uint32_t, int64_t>&& curspaces_for_uids,
+              std::map<uint32_t, int64_t>&& curspaces_for_gids,
+              std::map<uint32_t, int64_t>&& curspaces_for_project_ids);
+    ~SpaceMaps();
+    SpaceMaps(const SpaceMaps& other);
+
+    std::map<uint32_t, int64_t> curspaces_for_uids;
+    std::map<uint32_t, int64_t> curspaces_for_gids;
+    std::map<uint32_t, int64_t> curspaces_for_project_ids;
+  };
+
   using GetSizeCallback = chromeos::DBusMethodCallback<int64_t>;
   using BoolCallback = chromeos::DBusMethodCallback<bool>;
+  using GetSpacesForIdsCallback = chromeos::DBusMethodCallback<SpaceMaps>;
 
   SpacedClient(const SpacedClient&) = delete;
   SpacedClient& operator=(const SpacedClient&) = delete;
@@ -74,6 +90,15 @@ class COMPONENT_EXPORT(SPACED_CLIENT) SpacedClient {
   virtual void GetQuotaCurrentSpaceForProjectId(const std::string& path,
                                                 uint32_t project_id,
                                                 GetSizeCallback callback) = 0;
+
+  // Gets the current disk spaces used by each of the given UIDs, GIDs, and
+  // project IDs, and returns maps from the IDs to their disk space usages.
+  virtual void GetQuotaCurrentSpacesForIds(
+      const std::string& path,
+      const std::vector<uint32_t>& uids,
+      const std::vector<uint32_t>& gids,
+      const std::vector<uint32_t>& project_ids,
+      GetSpacesForIdsCallback callback) = 0;
 
   // Adds an observer.
   void AddObserver(Observer* const observer) {
