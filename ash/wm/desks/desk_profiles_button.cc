@@ -38,6 +38,8 @@ DeskProfilesButton::DeskProfilesButton(Desk* desk,
                                        bool owner_bar_is_overview)
     : desk_(desk), mini_view_(mini_view) {
   desk_->AddObserver(this);
+  SetCallback(base::BindRepeating(&DeskProfilesButton::OnButtonPressed,
+                                  base::Unretained(this)));
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetPreferredSize(kIconButtonSize);
   SetPaintToLayer();
@@ -49,7 +51,7 @@ DeskProfilesButton::DeskProfilesButton(Desk* desk,
   focus_ring->SetPathGenerator(
       std::make_unique<views::CircleHighlightPathGenerator>(
           -gfx::Insets(focus_ring->GetHaloThickness() / 2)));
-  if (owner_bar_is_overview) {
+  if (owner_bar_is_overview && !features::IsOverviewNewFocusEnabled()) {
     focus_ring->SetHasFocusPredicate(
         base::BindRepeating([](const views::View* view) {
           const auto* v = views::AsViewClass<DeskProfilesButton>(view);
@@ -86,49 +88,7 @@ void DeskProfilesButton::OnDeskProfileChanged(uint64_t new_lacros_profile_id) {
 
 bool DeskProfilesButton::OnMousePressed(const ui::MouseEvent& event) {
   base::UmaHistogramBoolean(kDeskProfilesPressesHistogramName, true);
-  if (event.IsLeftMouseButton()) {
-    gfx::Point location_in_screen(event.location());
-    View::ConvertPointToScreen(this, &location_in_screen);
-    CreateMenu(location_in_screen, ui::MENU_SOURCE_MOUSE);
-  }
   return ImageButton::OnMousePressed(event);
-}
-
-void DeskProfilesButton::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::ET_GESTURE_TAP_DOWN) {
-    gfx::Point location_in_screen(event->location());
-    View::ConvertPointToScreen(this, &location_in_screen);
-    CreateMenu(location_in_screen, ui::MENU_SOURCE_TOUCH);
-  }
-}
-
-void DeskProfilesButton::LoadIconForProfile() {
-  CHECK(desk_);
-
-  auto* delegate = Shell::Get()->GetDeskProfilesDelegate();
-  CHECK(delegate);
-
-  if (auto* summary = delegate->GetProfilesSnapshotByProfileId(
-          desk_->lacros_profile_id())) {
-    SetImageModel(
-        ButtonState::STATE_NORMAL,
-        ui::ImageModel::FromImageSkia(
-            gfx::ImageSkiaOperations::CreateCroppedCenteredRoundRectImage(
-                kIconButtonSize, kIconButtonSize.width() / 2, summary->icon)));
-    SetTooltipText(summary->name);
-  } else {
-    SetImageModel(ButtonState::STATE_NORMAL, ui::ImageModel());
-    SetTooltipText(u"");
-  }
-}
-
-bool DeskProfilesButton::OnKeyPressed(const ui::KeyEvent& event) {
-  if (event.key_code() == ui::VKEY_RETURN ||
-      event.key_code() == ui::VKEY_SPACE) {
-    CreateMenu(GetBoundsInScreen().CenterPoint(), ui::MENU_SOURCE_KEYBOARD);
-  }
-
-  return ImageButton::OnKeyPressed(event);
 }
 
 void DeskProfilesButton::AboutToRequestFocusFromTabTraversal(bool reverse) {
@@ -158,6 +118,38 @@ void DeskProfilesButton::OnFocusableViewBlurred() {
   mini_view_->UpdateDeskButtonVisibility();
   mini_view_->UpdateFocusColor();
   views::FocusRing::Get(this)->SchedulePaint();
+}
+
+void DeskProfilesButton::OnButtonPressed(const ui::Event& event) {
+  if (event.IsSynthesized() || !event.IsLocatedEvent()) {
+    CreateMenu(GetBoundsInScreen().CenterPoint(), ui::MENU_SOURCE_KEYBOARD);
+    return;
+  }
+
+  gfx::Point location_in_screen(event.AsLocatedEvent()->location());
+  views::View::ConvertPointToScreen(this, &location_in_screen);
+  CreateMenu(location_in_screen, event.IsMouseEvent() ? ui::MENU_SOURCE_MOUSE
+                                                      : ui::MENU_SOURCE_TOUCH);
+}
+
+void DeskProfilesButton::LoadIconForProfile() {
+  CHECK(desk_);
+
+  auto* delegate = Shell::Get()->GetDeskProfilesDelegate();
+  CHECK(delegate);
+
+  if (auto* summary = delegate->GetProfilesSnapshotByProfileId(
+          desk_->lacros_profile_id())) {
+    SetImageModel(
+        ButtonState::STATE_NORMAL,
+        ui::ImageModel::FromImageSkia(
+            gfx::ImageSkiaOperations::CreateCroppedCenteredRoundRectImage(
+                kIconButtonSize, kIconButtonSize.width() / 2, summary->icon)));
+    SetTooltipText(summary->name);
+  } else {
+    SetImageModel(ButtonState::STATE_NORMAL, ui::ImageModel());
+    SetTooltipText(std::u16string());
+  }
 }
 
 void DeskProfilesButton::CreateMenu(gfx::Point location_in_screen,

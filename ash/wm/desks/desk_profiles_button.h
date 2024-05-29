@@ -34,7 +34,7 @@ class ASH_EXPORT DeskProfilesButton : public views::ImageButton,
   ~DeskProfilesButton() override;
 
   // This is non-null when the profile menu is visible.
-  DeskActionContextMenu* menu() const { return context_menu_.get(); }
+  DeskActionContextMenu* menu() { return context_menu_.get(); }
 
   // Desk::Observer:
   void OnContentChanged() override {}
@@ -44,8 +44,6 @@ class ASH_EXPORT DeskProfilesButton : public views::ImageButton,
 
   // views::ImageButton:
   bool OnMousePressed(const ui::MouseEvent& event) override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
-  bool OnKeyPressed(const ui::KeyEvent& event) override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
 
   // OverviewFocusableView:
@@ -57,6 +55,8 @@ class ASH_EXPORT DeskProfilesButton : public views::ImageButton,
   void OnFocusableViewBlurred() override;
 
  private:
+  void OnButtonPressed(const ui::Event& event);
+
   // Loads the icon that is currently associated with `desk_`.
   void LoadIconForProfile();
 

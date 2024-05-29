@@ -1440,20 +1440,20 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   // changes.
   const ui::KeyboardCode key_code = event->key_code();
   const bool is_key_press = event->type() == ui::ET_KEY_PRESSED;
-  const bool should_commit_name_changes =
-      is_key_press && key_code == ui::VKEY_TAB;
-  for (auto& grid : grid_list_) {
-    if (grid->IsDeskNameBeingModified() ||
-        grid->IsSavedDeskNameBeingModified()) {
-      if (!should_commit_name_changes) {
-        return;
-      }
+  if (!features::IsOverviewNewFocusEnabled()) {
+    const bool should_commit_name_changes =
+        is_key_press && key_code == ui::VKEY_TAB;
+    for (auto& grid : grid_list_) {
+      if (grid->IsDeskNameBeingModified() ||
+          grid->IsSavedDeskNameBeingModified()) {
+        if (!should_commit_name_changes) {
+          return;
+        }
 
-      // Commit and proceed.
-      if (!features::IsOverviewNewFocusEnabled()) {
+        // Commit and proceed.
         grid->CommitNameChanges();
+        break;
       }
-      break;
     }
   }
 
@@ -1473,45 +1473,48 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
 
   switch (key_code) {
     case ui::VKEY_BROWSER_BACK:
-    case ui::VKEY_ESCAPE:
-      EndOverview(OverviewEndAction::kKeyEscapeOrBack);
-      break;
-    case ui::VKEY_UP:
-      ++num_key_presses_;
-      Move(/*reverse=*/true);
-      break;
-    case ui::VKEY_DOWN:
-      ++num_key_presses_;
-      Move(/*reverse=*/false);
-      break;
-    case ui::VKEY_RIGHT:
-      ++num_key_presses_;
-      if (!focus_cycler_old_) {
+    case ui::VKEY_ESCAPE: {
+      // Let the textfield handle back and escape.
+      views::View* focused_view =
+          focus_cycler_ ? focus_cycler_->GetOverviewFocusedView() : nullptr;
+      if (focused_view && views::IsViewClass<DeskTextfield>(focused_view)) {
         return;
       }
+      EndOverview(OverviewEndAction::kKeyEscapeOrBack);
+      break;
+    }
+    case ui::VKEY_UP:
+    case ui::VKEY_DOWN: {
+      ++num_key_presses_;
+      Move(/*reverse=*/event->key_code() == ui::VKEY_UP);
+      break;
+    }
+    case ui::VKEY_LEFT:
+    case ui::VKEY_RIGHT: {
+      ++num_key_presses_;
+      const bool right = event->key_code() == ui::VKEY_RIGHT;
+      if (!focus_cycler_old_) {
+        // Control + left/right falls through to be handed by the desk preview
+        // to swap desks.
+        if (is_control_down) {
+          return;
+        }
 
-      if (!is_control_down ||
-          !focus_cycler_old_->MaybeSwapFocusedView(/*right=*/true)) {
-        Move(/*reverse=*/false);
+        Move(!right);
+        break;
+      }
+
+      if (!is_control_down || !focus_cycler_old_->MaybeSwapFocusedView(right)) {
+        Move(!right);
       }
       break;
+    }
     case ui::VKEY_TAB: {
       const bool reverse = event->IsShiftDown();
       ++num_key_presses_;
       Move(reverse);
       break;
     }
-    case ui::VKEY_LEFT:
-      ++num_key_presses_;
-      if (!focus_cycler_old_) {
-        return;
-      }
-
-      if (!is_control_down ||
-          !focus_cycler_old_->MaybeSwapFocusedView(/*right=*/false)) {
-        Move(/*reverse=*/true);
-      }
-      break;
     case ui::VKEY_W: {
       if (!is_control_down || !focus_cycler_old_) {
         return;
