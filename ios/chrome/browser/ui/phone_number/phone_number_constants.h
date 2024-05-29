@@ -11,4 +11,4 @@
 extern NSString* const kCountryCodePickerTableViewIdentifier;
 extern NSString* const kPhoneNumberActionsViewIdentifier;
 
-#endif  // IOS_CHROME_BROWSER_UI_UNIT_CONVERSION_UNIT_CONVERSION_CONSTANTS_H_
+#endif  // IOS_CHROME_BROWSER_UI_PHONE_NUMBER_PHONE_NUMBER_CONSTANTS_H_

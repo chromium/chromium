@@ -46,4 +46,4 @@ class IOSWebContentHandlerImpl : public supervised_user::WebContentHandler {
   base::WeakPtrFactory<IOSWebContentHandlerImpl> weak_factory_{this};
 };
 
-#endif  // IOS_CHIOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_IOS_WEB_CONTENT_HANDLER_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_IOS_WEB_CONTENT_HANDLER_IMPL_H_

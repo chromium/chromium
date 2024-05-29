@@ -58,4 +58,4 @@ class WebState;
 
 @end
 
-#endif
+#endif  // IOS_CHROME_BROWSER_UI_MINI_MAP_MINI_MAP_MEDIATOR_H_

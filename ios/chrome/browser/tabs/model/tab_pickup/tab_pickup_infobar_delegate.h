@@ -73,4 +73,4 @@ class TabPickupInfobarDelegate : public ConfirmInfoBarDelegate {
   base::WeakPtrFactory<TabPickupInfobarDelegate> weak_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_PERMISSIONS_PERMISSIONS_INFOBAR_DELEGATE_H_
+#endif  // IOS_CHROME_BROWSER_TABS_MODEL_TAB_PICKUP_TAB_PICKUP_INFOBAR_DELEGATE_H_

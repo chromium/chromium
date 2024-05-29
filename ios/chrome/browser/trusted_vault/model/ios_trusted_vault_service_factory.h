@@ -35,4 +35,4 @@ class IOSTrustedVaultServiceFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
 };
 
-#endif
+#endif  // IOS_CHROME_BROWSER_TRUSTED_VAULT_MODEL_IOS_TRUSTED_VAULT_SERVICE_FACTORY_H_

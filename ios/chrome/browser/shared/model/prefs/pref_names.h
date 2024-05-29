@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PREFS_PREF_NAMES_H_
-#define IOS_CHROME_BROWSER_PREFS_PREF_NAMES_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_
+#define IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_
 
 namespace prefs {
 
@@ -605,4 +605,4 @@ inline constexpr char kChoiceScreenSkippedCount[] =
 
 }  // namespace prefs
 
-#endif  // IOS_CHROME_BROWSER_PREFS_PREF_NAMES_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_
