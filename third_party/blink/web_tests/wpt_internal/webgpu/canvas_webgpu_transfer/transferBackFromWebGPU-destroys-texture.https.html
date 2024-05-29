@@ -6,10 +6,10 @@
 <script src="./webgpu-helpers.js"></script>
 </head>
 
-<h1>Canvas2D WebGPU Transfer: transferFromWebGPU-destroys-texture</h1>
+<h1>Canvas2D WebGPU Transfer: transferBackFromWebGPU-destroys-texture</h1>
 
-<p>transferFromWebGPU() causes the GPUTexture returned by transferToWebGPU() to
-enter a destroyed state.</p>
+<p>transferBackFromWebGPU() causes the GPUTexture returned by transferToWebGPU()
+to enter a destroyed state.</p>
 
 <canvas id="c" width="50" height="50"></canvas>
 
@@ -17,23 +17,23 @@ enter a destroyed state.</p>
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_transferFromWebGPU_destroys_texture(
+      return test_transferBackFromWebGPU_destroys_texture(
                  device,
                  document.getElementById('c'));
     });
   },
-  'transferFromWebGPU() should destroy the associated GPUTexture.'
+  'transferBackFromWebGPU() should destroy the associated GPUTexture.'
 );
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_transferFromWebGPU_destroys_texture(
+      return test_transferBackFromWebGPU_destroys_texture(
                  device,
                  new OffscreenCanvas(50, 50));
     });
   },
-  'transferFromWebGPU() on an offscreen canvas should destroy the associated ' +
-  'GPUTexture.'
+  'transferBackFromWebGPU() on an offscreen canvas should destroy the ' +
+  'associated GPUTexture.'
 );
 
 </script>

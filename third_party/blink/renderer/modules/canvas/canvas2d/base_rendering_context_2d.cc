@@ -3487,7 +3487,9 @@ GPUTexture* BaseRenderingContext2D::transferToWebGPU(
   }
 
   // Prevent unbalanced calls to `transferToWebGPU` without a later call to
-  // `transferFromWebGPU`.
+  // `transferBackFromWebGPU`.
+  // TODO(crbug.com/343211821): instead of raising an exception, we should
+  // destroy the previous WebGPU-access texture and allow this to proceed.
   if (webgpu_access_texture_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -3566,6 +3568,9 @@ GPUTexture* BaseRenderingContext2D::transferToWebGPU(
       blink_device, AsDawnType(image_info.colorType()), tex_usage,
       std::move(texture), access_options->getLabelOr(String()));
 
+  // TODO(crbug.com/343211830): we should take away the canvas' resource
+  // provider here.
+
   return webgpu_access_texture_;
 }
 
@@ -3609,8 +3614,7 @@ bool BaseRenderingContext2D::CopyGPUTextureToResourceProvider(
   return true;
 }
 
-void BaseRenderingContext2D::transferFromWebGPU(
-    blink::GPUTexture* tex,
+void BaseRenderingContext2D::transferBackFromWebGPU(
     ExceptionState& exception_state) {
   // If the context is lost or doesn't exist, this call should be a no-op.
   // We don't want to throw an exception or attempt any changes if
@@ -3620,6 +3624,9 @@ void BaseRenderingContext2D::transferFromWebGPU(
     return;
   }
 
+  // TODO(crbug.com/343211830): if this canvas already has a resource provider,
+  // we should raise an exception and prevent transferring back.
+
   // Get the CanvasResourceProvider of this canvas. As above, if the canvas
   // resource provider doesn't exist, this call becomes a no-op.
   CanvasResourceProvider* resource_provider =
@@ -3628,11 +3635,8 @@ void BaseRenderingContext2D::transferFromWebGPU(
     return;
   }
 
-  // We allow the caller to pass in any reasonable texture.
-  // TODO(crbug.com/339846593): we do not yet honor the passed-in texture.
-  // Below this point, our code is still written in terms of
-  // `webgpu_access_texture_`. This will be fixed in a followup.
-  if (tex->Destroyed()) {
+  // If the texture has been destroyed, stop.
+  if (webgpu_access_texture_->Destroyed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The texture has been destroyed.");
     return;
@@ -3646,7 +3650,7 @@ void BaseRenderingContext2D::transferFromWebGPU(
   }
 
   // Destroy the WebGPU texture to prevent it from being used after
-  // `transferFromWebGPU`.
+  // `transferBackFromWebGPU`.
   webgpu_access_texture_->destroy();
 
   // We are finished with the WebGPU texture and its associated device.

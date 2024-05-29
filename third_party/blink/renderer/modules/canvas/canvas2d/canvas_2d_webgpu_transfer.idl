@@ -9,6 +9,6 @@
     SecureContext
 ] interface mixin Canvas2dWebGPUTransfer {
   [RaisesException] GPUTexture transferToWebGPU(Canvas2dWebGPUTransferOption options);
-  [RaisesException] undefined transferFromWebGPU(GPUTexture tex);
+  [RaisesException] undefined transferBackFromWebGPU();
   GPUTextureFormat getTextureFormat();
 };

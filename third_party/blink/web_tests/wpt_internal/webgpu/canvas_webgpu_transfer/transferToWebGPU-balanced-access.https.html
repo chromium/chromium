@@ -9,7 +9,7 @@
 <h1>Canvas2D WebGPU Transfer: transferToWebGPU-balanced-access</h1>
 
 <p>transferToWebGPU() allows repeated calls after a call to
-transferFromWebGPU().</p>
+transferBackFromWebGPU().</p>
 
 <canvas id="c" width="50" height="50"></canvas>
 
@@ -23,7 +23,7 @@ promise_test(() => {
     });
   },
   'transferToWebGPU() allows repeated calls after a call to ' +
-  'transferFromWebGPU().'
+  'transferBackFromWebGPU().'
 );
 
 promise_test(() => {
@@ -34,7 +34,7 @@ promise_test(() => {
     });
   },
   'transferToWebGPU() on an offscreen context allows repeated calls after a ' +
-  'call to transferFromWebGPU().'
+  'call to transferBackFromWebGPU().'
 );
 
 </script>

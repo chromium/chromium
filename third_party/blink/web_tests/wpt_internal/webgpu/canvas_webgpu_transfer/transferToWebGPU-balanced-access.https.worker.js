@@ -14,7 +14,7 @@ promise_test(() => {
     });
   },
   'transferToWebGPU() in a worker allows repeated calls after a call to ' +
-  'transferFromWebGPU().'
+  'transferBackFromWebGPU().'
 );
 
 done();

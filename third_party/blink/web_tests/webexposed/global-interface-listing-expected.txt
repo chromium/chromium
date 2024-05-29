@@ -1354,7 +1354,7 @@ interface CanvasRenderingContext2D
     method stroke
     method strokeRect
     method strokeText
-    method transferFromWebGPU
+    method transferBackFromWebGPU
     method transferToWebGPU
     method transform
     method translate
@@ -7145,7 +7145,7 @@ interface OffscreenCanvasRenderingContext2D
     method stroke
     method strokeRect
     method strokeText
-    method transferFromWebGPU
+    method transferBackFromWebGPU
     method transferToWebGPU
     method transform
     method translate

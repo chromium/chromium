@@ -289,8 +289,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // The GPUTexture immediately becomes inaccessible to WebGPU.
   // A GPUValidationError will occur if the GPUTexture is used after
   // endWebGPUAccess is called.
-  void transferFromWebGPU(blink::GPUTexture* tex,
-                          ExceptionState& exception_state);
+  void transferBackFromWebGPU(ExceptionState& exception_state);
 
   // Returns the format of the GPUTexture that beginWebGPUAccess will return.
   // This is useful if you need to create the WebGPU render pipeline before

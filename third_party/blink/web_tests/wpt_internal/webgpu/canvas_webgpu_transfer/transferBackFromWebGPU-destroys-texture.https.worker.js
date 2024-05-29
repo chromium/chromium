@@ -5,18 +5,17 @@
 importScripts("/resources/testharness.js");
 importScripts("./webgpu-helpers.js");
 
-// This test parallels transferFromWebGPU-canvas-readback.https.html.
+// This test parallels transferBackFromWebGPU-destroys-texture.https.html.
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_transferFromWebGPU_canvas_readback(
-          adapterInfo,
+      return test_transferBackFromWebGPU_destroys_texture(
           device,
           new OffscreenCanvas(50, 50),
-          {colorSpace: 'srgb', pixelFormat: 'float16'});
+          {});
     });
   },
-  'transferFromWebGPU() should preserve texture changes on an RGBA16F canvas ' +
-  'when called from a worker.'
+  'transferBackFromWebGPU() on a worker should destroy the associated ' +
+  'GPUTexture.'
 );
 
 done();
