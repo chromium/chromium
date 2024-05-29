@@ -333,30 +333,6 @@ class DownloadProtectionService {
 
   void PPAPIDownloadCheckRequestFinished(PPAPIDownloadRequest* request);
 
-  // Identify referrer chain info of a download. This function also records UMA
-  // stats of download attribution result.
-  std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
-      const download::DownloadItem& item);
-
-  // Identify referrer chain info of a File System Access write. This function
-  // also records UMA stats of download attribution result.
-  std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
-      const content::FileSystemAccessWriteItem& item);
-
-  // Identify referrer chain of the PPAPI download based on the frame URL where
-  // the download is initiated. Then add referrer chain info to
-  // ClientDownloadRequest proto. This function also records UMA stats of
-  // download attribution result.
-  void AddReferrerChainToPPAPIClientDownloadRequest(
-      content::WebContents* web_contents,
-      const GURL& initiating_frame_url,
-      const content::GlobalRenderFrameHostId&
-          initiating_outermost_main_frame_id,
-      const GURL& initiating_main_frame_url,
-      SessionID tab_id,
-      bool has_user_gesture,
-      ClientDownloadRequest* out_request);
-
   void OnDangerousDownloadOpened(const download::DownloadItem* item,
                                  Profile* profile);
 

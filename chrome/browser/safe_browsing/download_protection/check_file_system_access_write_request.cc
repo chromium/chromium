@@ -45,7 +45,7 @@ CheckFileSystemAccessWriteRequest::CheckFileSystemAccessWriteRequest(
               service,
               *item)),
       item_(std::move(item)),
-      referrer_chain_data_(service->IdentifyReferrerChain(*item_)) {
+      referrer_chain_data_(IdentifyReferrerChain(*item_)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 

@@ -10,8 +10,10 @@
 #include "base/callback_list.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "content/public/browser/file_system_access_write_item.h"
 #include "net/cert/x509_certificate.h"
 
 namespace safe_browsing {
@@ -153,6 +155,29 @@ GURL GetFileSystemAccessDownloadUrl(const GURL& frame_url);
 google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
 SelectArchiveEntries(const google::protobuf::RepeatedPtrField<
                      ClientDownloadRequest::ArchivedBinary>& src_binaries);
+
+// Identify referrer chain info of a download. This function also records UMA
+// stats of download attribution result.
+std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
+    const download::DownloadItem& item);
+
+// Identify referrer chain info of a File System Access write. This function
+// also records UMA stats of download attribution result.
+std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
+    const content::FileSystemAccessWriteItem& item);
+
+// Identify referrer chain of the PPAPI download based on the frame URL where
+// the download is initiated. Then add referrer chain info to
+// ClientDownloadRequest proto. This function also records UMA stats of
+// download attribution result.
+void AddReferrerChainToPPAPIClientDownloadRequest(
+    content::WebContents* web_contents,
+    const GURL& initiating_frame_url,
+    const content::GlobalRenderFrameHostId& initiating_outermost_main_frame_id,
+    const GURL& initiating_main_frame_url,
+    SessionID tab_id,
+    bool has_user_gesture,
+    ClientDownloadRequest* out_request);
 
 }  // namespace safe_browsing
 

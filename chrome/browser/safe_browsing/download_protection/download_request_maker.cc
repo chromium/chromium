@@ -133,9 +133,8 @@ DownloadRequestMaker::CreateFromFileSystemAccess(
   if (item.frame_url.is_valid())
     resource.set_referrer(ShortURLForReporting(item.frame_url));
 
-  std::unique_ptr<ReferrerChainData> referrer_chain_data;
-  if (service)
-    service->IdentifyReferrerChain(item);
+  std::unique_ptr<ReferrerChainData> referrer_chain_data =
+      IdentifyReferrerChain(item);
 
   return std::make_unique<DownloadRequestMaker>(
       binary_feature_extractor, item.browser_context,
