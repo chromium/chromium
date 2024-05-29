@@ -11,6 +11,11 @@
     padding: 10px;
     width: 200px;
   }
+
+  #pageContainer {
+    flex-grow: 1;
+    padding: 20px;
+  }
 </style>
 
 <div id="container">
@@ -21,9 +26,9 @@
     <cros-sidenav-item id="2" label="settings-dropdown-v2"></cros-sidenav-item>
   </cros-sidenav>
 
-  <iron-pages selected="[[selectedIndex_]]">
+  <iron-pages id="pageContainer" selected="[[selectedIndex_]]">
     <div>settings-toggle-v2</div>
     <div>settings-slider-v2</div>
-    <div>settings-dropdown-v2</div>
+    <settings-dropdown-v2-storybook></settings-dropdown-v2-storybook>
   </iron-pages>
 </div>

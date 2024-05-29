@@ -1,0 +1,38 @@
+<style include="settings-shared">
+  h2 {
+    font: var(--cros-title-1-font);
+  }
+
+  code {
+    background-color: var(--cros-sys-app_base_shaded);
+    border-radius: 10px;
+    display: block;
+    margin-top: 10px;
+    padding: 10px;
+  }
+</style>
+
+<h2>Basic</h2>
+<settings-dropdown-v2
+    value="[[basicDropdownValue_]]"
+    options="[[dropdownOptions_]]"
+    on-change="onBasicDropdownChange_">
+</settings-dropdown-v2>
+
+<code>
+  <div>Value: [[basicDropdownValue_]]</div>
+</code>
+
+<h2>Disabled</h2>
+<settings-dropdown-v2
+    value="[[basicDropdownValue_]]"
+    options="[[dropdownOptions_]]"
+    on-change="onBasicDropdownChange_"
+    disabled>
+</settings-dropdown-v2>
+
+<h2>Managed (via pref)</h2>
+<settings-dropdown-v2
+    pref="[[virtualManagedPref_]]"
+    options="[[dropdownOptions_]]">
+</settings-dropdown-v2>
