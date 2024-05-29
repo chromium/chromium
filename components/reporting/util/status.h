@@ -160,4 +160,4 @@ class Scoped : public base::OnceCallback<void(Failed)> {
 };
 }  // namespace reporting
 
-#endif  // MISSIVE_UTIL_STATUS_H_
+#endif  // COMPONENTS_REPORTING_UTIL_STATUS_H_

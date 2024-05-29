@@ -45,4 +45,4 @@ bool IsInsecureFormAction(const GURL& action_url);
 
 }  // namespace security_interstitials
 
-#endif
+#endif  // COMPONENTS_SECURITY_INTERSTITIALS_CORE_INSECURE_FORM_UTIL_H_

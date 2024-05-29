@@ -25,4 +25,4 @@ class MockDatabaseClient : public DatabaseClient {
 
 }  // namespace segmentation_platform
 
-#endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_TESTING_MOCK_DATABASE_CLIENT_SERVICE_H_
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_TESTING_MOCK_DATABASE_CLIENT_H_

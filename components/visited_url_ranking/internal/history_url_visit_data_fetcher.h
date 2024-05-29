@@ -49,4 +49,4 @@ class HistoryURLVisitDataFetcher : public URLVisitDataFetcher {
 
 }  // namespace visited_url_ranking
 
-#endif  // COMPONENTS_URL_VISIT_HISTORY_URL_VISIT_DATA_FETCHER_H_
+#endif  // COMPONENTS_VISITED_URL_RANKING_INTERNAL_HISTORY_URL_VISIT_DATA_FETCHER_H_

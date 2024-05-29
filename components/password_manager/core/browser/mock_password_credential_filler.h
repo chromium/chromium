@@ -45,4 +45,4 @@ class MockPasswordCredentialFiller final : public PasswordCredentialFiller {
 
 }  // namespace password_manager
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_CREDENTIAL_FILLER_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_PASSWORD_CREDENTIAL_FILLER_H_

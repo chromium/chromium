@@ -42,4 +42,4 @@ const gfx::FontList& WatermarkFontList();
 
 }  // namespace enterprise_watermark
 
-#endif
+#endif  // COMPONENTS_ENTERPRISE_WATERMARKING_WATERMARK_H_

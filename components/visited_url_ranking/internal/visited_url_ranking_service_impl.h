@@ -103,4 +103,4 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
 
 }  // namespace visited_url_ranking
 
-#endif  // COMPONENTS_VISITED_URL_RANKING_INTERNAL_VISITED_URL_RANKING_SERVICE_IMPL_H
+#endif  // COMPONENTS_VISITED_URL_RANKING_INTERNAL_VISITED_URL_RANKING_SERVICE_IMPL_H_
