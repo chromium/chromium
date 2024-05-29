@@ -102,7 +102,7 @@ class MojoDataPipeWriter {
 
   // The current buffer to be written. It is provided by Write() and should be
   // guaranteed to be valid until the current write completes.
-  const uint8_t* current_buffer_ = nullptr;
+  raw_ptr<const uint8_t, AllowPtrArithmetic> current_buffer_ = nullptr;
 
   // The number of bytes to be written for the current write request.
   uint32_t current_buffer_size_ = 0;

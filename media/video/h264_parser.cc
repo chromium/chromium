@@ -39,9 +39,7 @@ bool H264SliceHeader::IsSISlice() const {
   return (slice_type % 5 == kSISlice);
 }
 
-H264NALU::H264NALU() {
-  memset(this, 0, sizeof(*this));
-}
+H264NALU::H264NALU() = default;
 
 // static
 void H264SPS::GetLevelConfigFromProfileLevel(VideoCodecProfile profile,
@@ -289,7 +287,7 @@ void H264Parser::SetEncryptedStream(
 
   encrypted_ranges_.clear();
   const uint8_t* start = stream;
-  const uint8_t* stream_end = stream_ + bytes_left_;
+  const uint8_t* stream_end = stream_ + base::checked_cast<size_t>(bytes_left_);
   for (size_t i = 0; i < subsamples.size() && start < stream_end; ++i) {
     start += subsamples[i].clear_bytes;
 
@@ -387,10 +385,11 @@ bool H264Parser::LocateNALU(off_t* nalu_size, off_t* start_code_size) {
   }
 
   // Move the stream to the beginning of the NALU (pointing at the start code).
-  stream_ += nalu_start_off;
+  stream_ += base::checked_cast<size_t>(nalu_start_off);
   bytes_left_ -= nalu_start_off;
 
-  const uint8_t* nalu_data = stream_ + annexb_start_code_size;
+  const uint8_t* nalu_data =
+      stream_ + base::checked_cast<size_t>(annexb_start_code_size);
   off_t max_nalu_data_size = bytes_left_ - annexb_start_code_size;
   if (max_nalu_data_size <= 0) {
     DVLOG(3) << "End of stream";
@@ -515,7 +514,7 @@ H264Parser::Result H264Parser::AdvanceToNextNALU(H264NALU* nalu) {
     return kEOStream;
   }
 
-  nalu->data = stream_ + start_code_size;
+  nalu->data = stream_ + base::checked_cast<size_t>(start_code_size);
   nalu->size = nalu_size_with_start_code - start_code_size;
   DVLOG(4) << "NALU found: size=" << nalu_size_with_start_code;
 
@@ -530,7 +529,7 @@ H264Parser::Result H264Parser::AdvanceToNextNALU(H264NALU* nalu) {
   // is called, we will effectively be skipping it;
   // other parsing functions will use the position saved
   // in bit reader for parsing, so we don't have to remember it here.
-  stream_ += nalu_size_with_start_code;
+  stream_ += base::checked_cast<size_t>(nalu_size_with_start_code);
   bytes_left_ -= nalu_size_with_start_code;
 
   // Read NALU header, skip the forbidden_zero_bit, but check for it.
@@ -542,12 +541,13 @@ H264Parser::Result H264Parser::AdvanceToNextNALU(H264NALU* nalu) {
   READ_BITS_OR_RETURN(5, &nalu->nal_unit_type);
 
   DVLOG(4) << "NALU type: " << static_cast<int>(nalu->nal_unit_type)
-           << " at: " << reinterpret_cast<const void*>(nalu->data)
+           << " at: " << reinterpret_cast<const void*>(nalu->data.get())
            << " size: " << nalu->size
            << " ref: " << static_cast<int>(nalu->nal_ref_idc);
 
   previous_nalu_range_.clear();
-  previous_nalu_range_.Add(nalu->data, nalu->data + nalu->size);
+  previous_nalu_range_.Add(nalu->data.get(),
+                           nalu->data + base::checked_cast<size_t>(nalu->size));
   return kOk;
 }
 
@@ -1351,11 +1351,11 @@ H264Parser::Result H264Parser::ParseSliceHeader(const H264NALU& nalu,
   const H264PPS* pps;
   Result res;
 
-  memset(shdr, 0, sizeof(*shdr));
+  *shdr = H264SliceHeader();
 
   shdr->idr_pic_flag = (nalu.nal_unit_type == 5);
   shdr->nal_ref_idc = nalu.nal_ref_idc;
-  shdr->nalu_data = nalu.data;
+  shdr->nalu_data = nalu.data.get();
   shdr->nalu_size = nalu.size;
 
   READ_UE_OR_RETURN(&shdr->first_mb_in_slice);

@@ -68,8 +68,10 @@ MP4Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
         if (result != H264Parser::kOk)
           return MP4Status::Codes::kInvalidSPS;
 
-        id2sps_.insert_or_assign(sps_id,
-                                 blob(nalu.data, nalu.data + nalu.size));
+        id2sps_.insert_or_assign(
+            sps_id,
+            blob(nalu.data.get(),
+                 (nalu.data + base::checked_cast<size_t>(nalu.size)).get()));
         id2sps_ext_.erase(sps_id);
         sps_to_include.insert(sps_id);
         config_changed = true;
@@ -83,8 +85,10 @@ MP4Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
           return MP4Status::Codes::kFailedToParse;
         }
 
-        id2sps_ext_.insert_or_assign(sps_id,
-                                     blob(nalu.data, nalu.data + nalu.size));
+        id2sps_ext_.insert_or_assign(
+            sps_id,
+            blob(nalu.data.get(),
+                 (nalu.data + base::checked_cast<size_t>(nalu.size)).get()));
         config_changed = true;
         break;
       }
@@ -95,8 +99,10 @@ MP4Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
         if (result != H264Parser::kOk)
           return MP4Status::Codes::kInvalidPPS;
 
-        id2pps_.insert_or_assign(pps_id,
-                                 blob(nalu.data, nalu.data + nalu.size));
+        id2pps_.insert_or_assign(
+            pps_id,
+            blob(nalu.data.get(),
+                 (nalu.data + base::checked_cast<size_t>(nalu.size)).get()));
         pps_to_include.insert(pps_id);
         if (auto* pps = parser_.GetPPS(pps_id))
           sps_to_include.insert(pps->seq_parameter_set_id);
@@ -164,8 +170,8 @@ MP4Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
             //
             // TODO(crbug.com/40284755): The `unit` should hold a span instead
             // of a pointer.
-            UNSAFE_BUFFERS(
-                base::span(unit.data, base::checked_cast<size_t>(unit.size))));
+            UNSAFE_BUFFERS(base::span(unit.data.get(),
+                                      base::checked_cast<size_t>(unit.size))));
     if (!written_ok) {
       return MP4Status::Codes::kBufferTooSmall;
     }

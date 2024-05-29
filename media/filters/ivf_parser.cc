@@ -33,7 +33,7 @@ bool IvfParser::Initialize(const uint8_t* stream,
   auto input =
       // TODO(crbug.com/40284755): Initialize() should receive a span, not a
       // pointer. IvfParser should hold a span, not a pointer.
-      UNSAFE_BUFFERS(base::span(ptr_, end_));
+      UNSAFE_BUFFERS(base::span(ptr_.get(), end_.get()));
   auto [in_header, in_rem] = input.split_at<sizeof(IvfFileHeader)>();
 
   // The stream is little-endian encoded, so we can just copy it into place.
@@ -70,7 +70,7 @@ bool IvfParser::ParseNextFrame(IvfFrameHeader* frame_header,
 
   auto input =
       // TODO(crbug.com/40284755): IvfParser should hold a span, not a pointer.
-      UNSAFE_BUFFERS(base::span(ptr_, end_));
+      UNSAFE_BUFFERS(base::span(ptr_.get(), end_.get()));
   auto [in_header, in_rem] = input.split_at<sizeof(IvfFrameHeader)>();
 
   // The stream is little-endian encoded, so we can just copy it into place.

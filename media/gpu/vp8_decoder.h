@@ -10,6 +10,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/gpu/accelerated_video_decoder.h"
 #include "media/gpu/vp8_picture.h"
@@ -106,7 +107,7 @@ class MEDIA_GPU_EXPORT VP8Decoder : public AcceleratedVideoDecoder {
   int32_t last_decoded_stream_id_ = kInvalidId;
   size_t size_change_failure_counter_ = 0;
 
-  const uint8_t* curr_frame_start_;
+  raw_ptr<const uint8_t, DanglingUntriaged> curr_frame_start_;
   size_t frame_size_;
 
   gfx::Size pic_size_;

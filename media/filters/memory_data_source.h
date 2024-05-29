@@ -11,6 +11,7 @@
 #include <atomic>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/data_source.h"
 
 namespace media {
@@ -46,7 +47,7 @@ class MEDIA_EXPORT MemoryDataSource final : public DataSource {
 
  private:
   const std::string data_string_;
-  const uint8_t* data_ = nullptr;
+  raw_ptr<const uint8_t, AllowPtrArithmetic> data_ = nullptr;
   const size_t size_ = 0;
 
   // Stop may be called from the render thread while this class is being used by

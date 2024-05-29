@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "services/device/usb/usb_device_handle.h"
 
 namespace device {
@@ -74,7 +75,7 @@ class FakeUsbDeviceHandle : public UsbDeviceHandle {
  private:
   ~FakeUsbDeviceHandle() override;
 
-  const uint8_t* const data_;
+  const raw_ptr<const uint8_t, AllowPtrArithmetic> data_;
   const size_t size_;
   size_t position_;
 };

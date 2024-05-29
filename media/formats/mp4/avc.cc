@@ -118,7 +118,8 @@ bool AVC::InsertParamSetsAnnexB(const AVCDecoderConfigurationRecord& avc_config,
 
   if (nalu.nal_unit_type == H264NALU::kAUD) {
     // Move insert point to just after the AUD.
-    config_insert_point += (nalu.data + nalu.size) - start;
+    config_insert_point +=
+        (nalu.data + base::checked_cast<size_t>(nalu.size)) - start;
   }
 
   // Clear |parser| and |start| since they aren't needed anymore and

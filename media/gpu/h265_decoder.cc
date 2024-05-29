@@ -208,7 +208,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
     // Calling H265Accelerator::SetStream() here instead of when the stream is
     // originally set in case the accelerator needs to return kTryAgain.
     H265Accelerator::Status result = accelerator_->SetStream(
-        base::span<const uint8_t>(current_stream_, current_stream_size_),
+        base::span<const uint8_t>(current_stream_.get(), current_stream_size_),
         current_decrypt_config_.get());
     switch (result) {
       case H265Accelerator::Status::kOk:  // fallthrough
@@ -306,7 +306,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
             accelerator_->ProcessSPS(
                 parser_.GetSPS(sps_id),
                 base::span<const uint8_t>(
-                    curr_nalu_->data,
+                    curr_nalu_->data.get(),
                     base::checked_cast<size_t>(curr_nalu_->size)));
             break;
           }
@@ -319,7 +319,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
             accelerator_->ProcessPPS(
                 parser_.GetPPS(pps_id),
                 base::span<const uint8_t>(
-                    curr_nalu_->data,
+                    curr_nalu_->data.get(),
                     base::checked_cast<size_t>(curr_nalu_->size)));
             break;
           }
@@ -442,7 +442,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         accelerator_->ProcessVPS(
             parser_.GetVPS(vps_id),
             base::span<const uint8_t>(
-                curr_nalu_->data,
+                curr_nalu_->data.get(),
                 base::checked_cast<size_t>(curr_nalu_->size)));
         break;
       case H265NALU::SPS_NUT:
@@ -454,7 +454,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         accelerator_->ProcessSPS(
             parser_.GetSPS(sps_id),
             base::span<const uint8_t>(
-                curr_nalu_->data,
+                curr_nalu_->data.get(),
                 base::checked_cast<size_t>(curr_nalu_->size)));
         break;
       case H265NALU::PPS_NUT:
@@ -466,7 +466,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         accelerator_->ProcessPPS(
             parser_.GetPPS(pps_id),
             base::span<const uint8_t>(
-                curr_nalu_->data,
+                curr_nalu_->data.get(),
                 base::checked_cast<size_t>(curr_nalu_->size)));
 
         // For ARC CTS tests they expect us to request the buffers after only

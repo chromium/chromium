@@ -34,9 +34,7 @@ namespace media {
     }                                                                \
   } while (0)
 
-H265NALU::H265NALU() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265NALU::H265NALU() = default;
 
 H265NaluParser::H265NaluParser() {
   Reset();
@@ -45,7 +43,7 @@ H265NaluParser::H265NaluParser() {
 H265NaluParser::~H265NaluParser() {}
 
 void H265NaluParser::Reset() {
-  stream_ = NULL;
+  stream_ = nullptr;
   bytes_left_ = 0;
   encrypted_ranges_.clear();
   previous_nalu_range_.clear();
@@ -69,7 +67,7 @@ void H265NaluParser::SetEncryptedStream(
 
   encrypted_ranges_.clear();
   const uint8_t* start = stream;
-  const uint8_t* stream_end = stream_ + bytes_left_;
+  const uint8_t* stream_end = stream_ + base::checked_cast<size_t>(bytes_left_);
   for (size_t i = 0; i < subsamples.size() && start < stream_end; ++i) {
     start += subsamples[i].clear_bytes;
 
@@ -93,10 +91,11 @@ bool H265NaluParser::LocateNALU(off_t* nalu_size, off_t* start_code_size) {
   }
 
   // Move the stream to the beginning of the NALU (pointing at the start code).
-  stream_ += nalu_start_off;
+  stream_ += base::checked_cast<size_t>(nalu_start_off);
   bytes_left_ -= nalu_start_off;
 
-  const uint8_t* nalu_data = stream_ + annexb_start_code_size;
+  const uint8_t* nalu_data =
+      stream_ + base::checked_cast<size_t>(annexb_start_code_size);
   off_t max_nalu_data_size = bytes_left_ - annexb_start_code_size;
   if (max_nalu_data_size <= 0) {
     DVLOG(3) << "End of stream";
@@ -131,7 +130,7 @@ H265NaluParser::Result H265NaluParser::AdvanceToNextNALU(H265NALU* nalu) {
   }
 
   DCHECK(nalu);
-  nalu->data = stream_ + start_code_size;
+  nalu->data = (stream_ + base::checked_cast<size_t>(start_code_size)).get();
   nalu->size = nalu_size_with_start_code - start_code_size;
   DVLOG(4) << "NALU found: size=" << nalu_size_with_start_code;
 
@@ -143,7 +142,7 @@ H265NaluParser::Result H265NaluParser::AdvanceToNextNALU(H265NALU* nalu) {
   // is called, we will effectively be skipping it;
   // other parsing functions will use the position saved
   // in bit reader for parsing, so we don't have to remember it here.
-  stream_ += nalu_size_with_start_code;
+  stream_ += base::checked_cast<size_t>(nalu_size_with_start_code);
   bytes_left_ -= nalu_size_with_start_code;
 
   // Read NALU header, skip the forbidden_zero_bit, but check for it.
@@ -156,11 +155,13 @@ H265NaluParser::Result H265NaluParser::AdvanceToNextNALU(H265NALU* nalu) {
   READ_BITS_OR_RETURN(3, &nalu->nuh_temporal_id_plus1);
 
   DVLOG(4) << "NALU type: " << static_cast<int>(nalu->nal_unit_type)
-           << " at: " << reinterpret_cast<const void*>(nalu->data)
+           << " at: " << reinterpret_cast<const void*>(nalu->data.get())
            << " size: " << nalu->size;
 
   previous_nalu_range_.clear();
-  previous_nalu_range_.Add(nalu->data, nalu->data + nalu->size);
+  previous_nalu_range_.Add(
+      nalu->data.get(),
+      (nalu->data + base::checked_cast<size_t>(nalu->size)).get());
   return kOk;
 }
 

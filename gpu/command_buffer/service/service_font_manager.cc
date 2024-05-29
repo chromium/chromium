@@ -12,6 +12,7 @@
 #include "base/bits.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
@@ -35,7 +36,7 @@ class Deserializer {
     if (!AlignMemory(sizeof(T), alignof(T)))
       return false;
 
-    memcpy(val, const_cast<const uint8_t*>(memory_), sizeof(T));
+    memcpy(val, const_cast<const uint8_t*>(memory_.get()), sizeof(T));
 
     memory_ += sizeof(T);
     bytes_read_ += sizeof(T);
@@ -65,7 +66,7 @@ class Deserializer {
     // Due to the math below, alignment must be a power of two.
     DCHECK(std::has_single_bit(alignment));
 
-    size_t padding = base::bits::AlignUp(memory_, alignment) - memory_;
+    size_t padding = base::bits::AlignUp(memory_.get(), alignment) - memory_;
 
     base::CheckedNumeric<uint32_t> checked_padded_size = bytes_read_;
     checked_padded_size += padding;
@@ -81,7 +82,7 @@ class Deserializer {
     return true;
   }
 
-  const volatile uint8_t* memory_;
+  raw_ptr<const volatile uint8_t, AllowPtrArithmetic> memory_;
   uint32_t memory_size_;
   uint32_t bytes_read_ = 0u;
 };

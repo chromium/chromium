@@ -122,7 +122,7 @@ class DisassemblerWin32 : public Disassembler {
   std::vector<RVA> rel32_locations_;
 
   // Location and size of IMAGE_OPTIONAL_HEADER in the buffer.
-  const uint8_t* optional_header_ = nullptr;
+  raw_ptr<const uint8_t, AllowPtrArithmetic> optional_header_ = nullptr;
   uint16_t size_of_optional_header_ = 0;
 
   uint16_t machine_type_ = 0;

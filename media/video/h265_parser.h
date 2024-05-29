@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 #include "media/base/ranges.h"
 #include "media/base/video_color_space.h"
@@ -367,7 +368,7 @@ struct MEDIA_EXPORT H265SliceHeader {
   };
 
   int nal_unit_type;         // from NAL header
-  const uint8_t* nalu_data;  // from NAL header
+  raw_ptr<const uint8_t, AllowPtrArithmetic> nalu_data;  // from NAL header
   size_t nalu_size;          // from NAL header
   size_t header_size;  // calculated, not including emulation prevention bytes
   size_t header_emulation_prevention_bytes;

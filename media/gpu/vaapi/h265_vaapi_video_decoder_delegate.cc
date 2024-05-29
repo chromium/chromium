@@ -604,11 +604,11 @@ bool H265VaapiVideoDecoderDelegate::SubmitPriorSliceDataIfPresent(
         {{VAProtectedSliceDataBufferType, last_transcrypt_params_.length(),
           last_transcrypt_params_.data()},
          {VASliceParameterBufferType, sizeof(slice_param_), &slice_param_},
-         {VASliceDataBufferType, last_slice_size_, last_slice_data_}});
+         {VASliceDataBufferType, last_slice_size_, last_slice_data_.get()}});
   } else {
     success = vaapi_wrapper_->SubmitBuffers(
         {{VASliceParameterBufferType, sizeof(slice_param_), &slice_param_},
-         {VASliceDataBufferType, last_slice_size_, last_slice_data_}});
+         {VASliceDataBufferType, last_slice_size_, last_slice_data_.get()}});
   }
   last_slice_data_ = nullptr;
   last_slice_size_ = 0;

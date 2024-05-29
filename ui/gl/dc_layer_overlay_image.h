@@ -5,11 +5,11 @@
 #ifndef UI_GL_DC_LAYER_OVERLAY_IMAGE_H_
 #define UI_GL_DC_LAYER_OVERLAY_IMAGE_H_
 
-#include "ui/gl/gl_export.h"
-
 #include <wrl/client.h>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gl/dcomp_surface_proxy.h"
+#include "ui/gl/gl_export.h"
 
 class ID3D11Texture2D;
 class IDCompositionSurface;
@@ -86,7 +86,7 @@ class GL_EXPORT DCLayerOverlayImage {
   // Array slice/index if |texture_| is a texture array.
   size_t texture_array_slice_ = 0;
   // Software decoder NV12 frame pixmap.
-  const uint8_t* nv12_pixmap_ = nullptr;
+  raw_ptr<const uint8_t, DanglingUntriaged> nv12_pixmap_ = nullptr;
   // Software video pixmap stride. Y and UV planes have the same stride in NV12.
   size_t pixmap_stride_ = 0;
   // Either an IDCompositionSurface or an IDXGISwapChain1

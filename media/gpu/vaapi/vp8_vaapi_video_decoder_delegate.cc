@@ -101,7 +101,7 @@ bool VP8VaapiVideoDecoderDelegate::SubmitDecode(
        {slice_params_->id(),
         {slice_params_->type(), slice_params_->size(), &slice_param}},
        {encoded_data->id(),
-        {encoded_data->type(), header->frame_size, header->data}}});
+        {encoded_data->type(), header->frame_size, header->data.get()}}});
 }
 
 bool VP8VaapiVideoDecoderDelegate::OutputPicture(

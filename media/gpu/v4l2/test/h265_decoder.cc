@@ -615,8 +615,9 @@ bool H265Decoder::ProcessCurrentSlice() {
   // supported in ChromeOS require the start code prefix.
   std::vector<uint8_t> slice_data = {0x00, 0x00, 0x01};
 
-  slice_data.insert(slice_data.end(), curr_slice_hdr_->nalu_data,
-                    curr_slice_hdr_->nalu_data + curr_slice_hdr_->nalu_size);
+  slice_data.insert(
+      slice_data.end(), curr_slice_hdr_->nalu_data.get(),
+      (curr_slice_hdr_->nalu_data + curr_slice_hdr_->nalu_size).get());
 
   scoped_refptr<MmappedBuffer> OUTPUT_buffer = OUTPUT_queue_->GetBuffer(0);
   OUTPUT_buffer->mmapped_planes()[0].CopyInSlice(

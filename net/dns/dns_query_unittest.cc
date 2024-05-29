@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_names_util.h"
@@ -281,7 +282,7 @@ const uint8_t kQueryInvalidDNSDomainName2[] = {
 
 TEST(DnsQueryParseTest, FailsInvalidQueries) {
   const struct TestCase {
-    const uint8_t* data;
+    raw_ptr<const uint8_t> data;
     size_t size;
   } testcases[] = {
       {kQueryTruncatedQuestion, std::size(kQueryTruncatedQuestion)},

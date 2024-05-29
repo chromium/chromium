@@ -9,6 +9,8 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+
 namespace net::extras {
 
 // Decodes an entry from preloaded data.
@@ -73,7 +75,7 @@ class PreloadDecoder {
     bool Seek(size_t offset);
 
    private:
-    const uint8_t* const bytes_;
+    const raw_ptr<const uint8_t, AllowPtrArithmetic> bytes_;
     const size_t num_bits_;
     const size_t num_bytes_;
     // current_byte_index_ contains the current byte offset in |bytes_|.
@@ -103,7 +105,7 @@ class PreloadDecoder {
     bool Decode(PreloadDecoder::BitReader* reader, char* out) const;
 
    private:
-    const uint8_t* const tree_;
+    const raw_ptr<const uint8_t, AllowPtrArithmetic> tree_;
     const size_t tree_bytes_;
   };
 

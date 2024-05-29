@@ -13,6 +13,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 #include "media/base/ranges.h"
 #include "media/video/h264_bit_reader.h"
@@ -98,12 +99,12 @@ struct MEDIA_EXPORT H265NALU {
 
   // After (without) start code; we don't own the underlying memory
   // and a shallow copy should be made when copying this struct.
-  const uint8_t* data;
-  off_t size;  // From after start code to start code of next NALU (or EOS).
+  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged> data = nullptr;
+  off_t size = 0;  // From after start code to start code of next NALU (or EOS).
 
-  int nal_unit_type;
-  int nuh_layer_id;
-  int nuh_temporal_id_plus1;
+  int nal_unit_type = 0;
+  int nuh_layer_id = 0;
+  int nuh_temporal_id_plus1 = 0;
 };
 
 // Class to parse an Annex-B H.265 stream NALUs.
@@ -162,7 +163,7 @@ class MEDIA_EXPORT H265NaluParser {
   bool LocateNALU(off_t* nalu_size, off_t* start_code_size);
 
   // Pointer to the current NALU in the stream.
-  const uint8_t* stream_;
+  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged> stream_;
 
   // Bytes left in the stream after the current NALU.
   off_t bytes_left_;

@@ -753,7 +753,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
   // Tracing
   std::unique_ptr<GPUTracer> gpu_tracer_;
-  const unsigned char* gpu_decoder_category_ = nullptr;
+  raw_ptr<const unsigned char> gpu_decoder_category_ = nullptr;
   int gpu_trace_level_;
   bool gpu_trace_commands_;
   bool gpu_debug_commands_;

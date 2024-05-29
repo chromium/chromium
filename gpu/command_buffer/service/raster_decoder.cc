@@ -855,7 +855,7 @@ class RasterDecoderImpl final : public RasterDecoder,
   bool lose_context_when_out_of_memory_ = false;
 
   std::unique_ptr<gles2::GPUTracer> gpu_tracer_;
-  const unsigned char* gpu_decoder_category_;
+  raw_ptr<const unsigned char> gpu_decoder_category_;
   static constexpr int gpu_trace_level_ = 2;
   bool gpu_trace_commands_ = false;
   bool gpu_debug_commands_ = false;

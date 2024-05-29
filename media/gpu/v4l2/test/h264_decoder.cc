@@ -482,8 +482,10 @@ VideoDecoder::Result H264Decoder::SubmitSlice() {
   std::vector<uint8_t> slice_data(
       sizeof(V4L2_STATELESS_H264_START_CODE_ANNEX_B) - 1);
   slice_data[2] = V4L2_STATELESS_H264_START_CODE_ANNEX_B;
-  slice_data.insert(slice_data.end(), curr_slice_hdr_->nalu_data,
-                    curr_slice_hdr_->nalu_data + curr_slice_hdr_->nalu_size);
+  slice_data.insert(slice_data.end(), (curr_slice_hdr_->nalu_data).get(),
+                    (curr_slice_hdr_->nalu_data +
+                     base::checked_cast<size_t>(curr_slice_hdr_->nalu_size))
+                        .get());
 
   scoped_refptr<MmappedBuffer> OUTPUT_buffer = OUTPUT_queue_->GetBuffer(0);
   OUTPUT_buffer->mmapped_planes()[0].CopyIn(&slice_data[0], slice_data.size());
