@@ -3486,17 +3486,6 @@ GPUTexture* BaseRenderingContext2D::transferToWebGPU(
     return nullptr;
   }
 
-  // Prevent unbalanced calls to `transferToWebGPU` without a later call to
-  // `transferBackFromWebGPU`.
-  // TODO(crbug.com/343211821): instead of raising an exception, we should
-  // destroy the previous WebGPU-access texture and allow this to proceed.
-  if (webgpu_access_texture_) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "This canvas has already been transferred to WebGPU.");
-    return nullptr;
-  }
-
   // Verify that the usage flags are supported.
   constexpr wgpu::TextureUsage kSupportedUsageFlags =
       wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst |
@@ -3562,6 +3551,13 @@ GPUTexture* BaseRenderingContext2D::transferToWebGPU(
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Unable to transfer canvas to WebGPU.");
     return nullptr;
+  }
+
+  // If `transferToWebGPU` is called twice without an intervening call to
+  // `transferBackFromWebGPU`, the previously-generated texture is immediately
+  // destroyed.
+  if (webgpu_access_texture_) {
+    webgpu_access_texture_->destroy();
   }
 
   webgpu_access_texture_ = MakeGarbageCollected<GPUTexture>(

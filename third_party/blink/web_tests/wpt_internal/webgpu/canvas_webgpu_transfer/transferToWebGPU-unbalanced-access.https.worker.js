@@ -8,13 +8,14 @@ importScripts("./webgpu-helpers.js");
 // This test parallels transferToWebGPU-unbalanced-access.https.html.
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      test_transferToWebGPU_unbalanced_access(
+      return test_transferToWebGPU_unbalanced_access(
+          adapterInfo,
           device,
           new OffscreenCanvas(50, 50));
     });
   },
-  'transferToWebGPU() in a worker disallows repeated calls without a call ' +
-  'to transferBackFromWebGPU().'
+  'Unbalanced calls to transferToWebGPU() in a worker will destroy the old ' +
+  'WebGPU access texture.'
 );
 
 done();

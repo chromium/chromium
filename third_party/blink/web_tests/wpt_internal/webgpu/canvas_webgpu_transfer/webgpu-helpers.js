@@ -97,6 +97,43 @@ function checkCanvasColor(ctx, expectedRGBA) {
 }
 
 /**
+ * Returns true if the texture causes validation errors when it is read-from or
+ * written-to. This is indicative of a destroyed texture.
+ */
+function checkForDestroyedTextures(device, expectations) {
+  // Create a base-case promise that just resolves immediately.
+  let promise = new Promise((resolve, reject) => { resolve(true); });
+
+  // Unfortunately, there isn't a simple way to test if a texture has been
+  // destroyed or not in WebGPU. The best we can do is try to use the texture in
+  // various ways and check for GPUValidationErrors. So we verify whether or not
+  // we are able to read-from or write-to the texture. If we get GPU validation
+  // errors for both, we consider it to be destroyed.
+  for (const expectation of expectations) {
+    promise = promise.then(() => {
+      const tex = expectation[0];
+      const expectDestroyed = expectation[1];
+
+      device.pushErrorScope('validation');
+      copyOnePixelFromTextureAndSubmit(device, tex);
+
+      device.pushErrorScope('validation');
+      copyOnePixelToTextureAndSubmit(device, tex);
+
+      return device.popErrorScope().then((writeError) => {
+        return device.popErrorScope().then((readError) => {
+          const isDestroyed = readError instanceof GPUValidationError &&
+                              writeError instanceof GPUValidationError;
+          assert_equals(expectDestroyed, isDestroyed);
+        });
+      });
+    });
+  }
+
+  return promise;
+}
+
+/**
  * Creates a bind group which uses the passed-in texture as a resource.
  * This will cause a GPUValidationError if TEXTURE_BINDING usage isn't set.
  * The caller is responsible for pushing and popping an error scope.
@@ -199,22 +236,28 @@ function test_transferToWebGPU_texture_readback(device, canvas) {
 };
 
 /**
- * transferToWebGPU() disallows repeated calls without a call to
- * transferBackFromWebGPU().
+ * Unbalanced calls to transferToWebGPU() will destroy the old WebGPU access
+ * texture.
  */
-function test_transferToWebGPU_unbalanced_access(device, canvas) {
+function test_transferToWebGPU_unbalanced_access(adapterInfo, device, canvas) {
+  // Skip this test on Mac Swiftshader.
+  if (isMacSwiftShader(adapterInfo)) {
+    return;
+  }
+
   // Begin a WebGPU access session.
   const ctx = canvas.getContext('2d');
-  const tex = ctx.transferToWebGPU({device: device});
+  const tex1 = ctx.transferToWebGPU({device: device,
+                                      usage: GPUTextureUsage.COPY_DST |
+                                             GPUTextureUsage.COPY_SRC});
 
-  try {
-    // Try to start a second WebGPU access session.
-    tex = ctx.transferToWebGPU({device: device});
-    assert_unreached('InvalidStateError should have been thrown.');
-  } catch (ex) {
-    assert_true(ex instanceof DOMException);
-    assert_equals(ex.name, 'InvalidStateError');
-  }
+  // Start a second WebGPU access session, destroying the first texture.
+  const tex2 = ctx.transferToWebGPU({device: device,
+                                      usage: GPUTextureUsage.COPY_DST |
+                                             GPUTextureUsage.COPY_SRC});
+
+  // Only the second texture should remain in an undestroyed state.
+  return checkForDestroyedTextures(device, [[tex1, true], [tex2, false]]);
 }
 
 /**
@@ -282,25 +325,13 @@ function test_transferBackFromWebGPU_context_lost(device, canvas) {
 function test_transferBackFromWebGPU_destroys_texture(device, canvas) {
   // Briefly begin a WebGPU access session.
   const ctx = canvas.getContext('2d');
-  const tex = ctx.transferToWebGPU({device: device});
+  const tex = ctx.transferToWebGPU({device: device,
+                                     usage: GPUTextureUsage.COPY_SRC |
+                                            GPUTextureUsage.COPY_DST});
   ctx.transferBackFromWebGPU();
 
-  // `tex` should be in a destroyed state. Unfortunately, there isn't a
-  // foolproof way to test for this state in WebGPU. The best we can do is try
-  // to use the texture in various ways and check for GPUValidationErrors.
-  // So we verify that we are not able to read-from or write-to the texture.
-  device.pushErrorScope('validation');
-  copyOnePixelFromTextureAndSubmit(device, tex);
-
-  device.pushErrorScope('validation');
-  copyOnePixelToTextureAndSubmit(device, tex);
-
-  return device.popErrorScope().then((writeError) => {
-    return device.popErrorScope().then((readError) => {
-      assert_true(readError instanceof GPUValidationError);
-      assert_true(writeError instanceof GPUValidationError);
-    });
-  });
+  // `tex` should be in a destroyed state.
+  return checkForDestroyedTextures(device, [[tex, true]]);
 }
 
 /** Resizing a canvas during WebGPU access should orphan the texture. */
@@ -347,7 +378,7 @@ function test_canvas_reset_orphans_texture(adapterInfo, device, canvas,
  * flags.
  */
 function test_transferToWebGPU_usage_flags(adapter, adapterInfo, device,
-                                            canvas) {
+                                           canvas) {
   // Create a base-case promise that just resolves immediately.
   let promise = new Promise((resolve, reject) => { resolve(true); });
 
