@@ -39,7 +39,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -171,19 +170,14 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     public void drawEdgeToEdge_ToNormal() {
-        mEdgeToEdgeControllerImpl.drawToEdge(android.R.id.content, false);
+        mEdgeToEdgeControllerImpl.drawToEdge(false);
+        verify(mOsWrapper, times(0)).setDecorFitsSystemWindows(any(), anyBoolean());
     }
 
     @Test
     public void drawEdgeToEdge_ToEdge() {
-        mEdgeToEdgeControllerImpl.drawToEdge(android.R.id.content, true);
-    }
-
-    @Test
-    public void drawToEdge_assertsBadId() {
-        final int badId = 1234;
-        Assert.assertThrows(
-                AssertionError.class, () -> mEdgeToEdgeControllerImpl.drawToEdge(badId, true));
+        mEdgeToEdgeControllerImpl.drawToEdge(true);
+        verify(mOsWrapper).setDecorFitsSystemWindows(any(), eq(false));
     }
 
     /** Test nothing is done when the Feature is not enabled. */
