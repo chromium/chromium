@@ -314,6 +314,13 @@ Most of the basic boilerplate migration steps can be automated using the
 migration script.
 ***
 
+Prior to running the script, [jscodeshift](https://github.com/facebook/jscodeshift#readme)
+needs to be downloaded and installed as follows:
+
+```
+npm install --prefix ui/webui/resources/tools/codemods jscodeshift
+```
+
 The script can be invoked to begin migrating an element from Polymer to Lit as
 follows (replace the `most_visited.ts` file path with the file being migrated):
 
