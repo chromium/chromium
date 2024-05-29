@@ -70,6 +70,10 @@ class ProactiveNudgeTracker::EngagementTracker {
 ProactiveNudgeTracker::State::State() = default;
 ProactiveNudgeTracker::State::~State() = default;
 
+float ProactiveNudgeTracker::Delegate::SegmentationFallbackShowResult() {
+  return base::RandFloat();
+}
+
 ProactiveNudgeTracker::ProactiveNudgeTracker(
     segmentation_platform::SegmentationPlatformService* segmentation_service,
     Delegate* delegate)
@@ -151,6 +155,7 @@ bool ProactiveNudgeTracker::ShouldShow(const State& state) {
     return true;
   }
   return state.segmentation_result &&
+         !state.segmentation_result->ordered_labels.empty() &&
          state.segmentation_result->ordered_labels[0] ==
              segmentation_platform::kComposePrmotionLabelShow;
 }
@@ -227,13 +232,21 @@ void ProactiveNudgeTracker::GotClassificationResult(
     return;
   }
 
-  if (result.status != segmentation_platform::PredictionStatus::kSucceeded) {
-    // Do not want to continue with proactive nudge if the segmentation platform
-    // had a failure.
-    ResetState();
-    return;
+  state_->segmentation_result = result;
+
+  switch (result.status) {
+    case segmentation_platform::PredictionStatus::kFailed:
+    case segmentation_platform::PredictionStatus::kNotReady:
+      if (delegate_->SegmentationFallbackShowResult() <
+          compose::GetComposeConfig().proactive_nudge_show_probability) {
+        // Override default DontShow decision.
+        state_->segmentation_result->ordered_labels.emplace_back(
+            segmentation_platform::kComposePrmotionLabelShow);
+      }
+      break;
+    case segmentation_platform::PredictionStatus::kSucceeded:
+      break;
   }
-  state->segmentation_result = std::move(result);
 
   MaybeShowProactiveNudge();
 }

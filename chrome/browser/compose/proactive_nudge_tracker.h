@@ -45,10 +45,16 @@ namespace compose {
 //   showing the nudge.
 class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
  public:
+  using FallbackShowResult = base::RepeatingCallback<float()>;
+
   class Delegate {
    public:
     virtual void ShowProactiveNudge(autofill::FormGlobalId form,
                                     autofill::FieldGlobalId field) = 0;
+
+    // Compared with compose's Config random nudge probability to determine if
+    // we should show the nudge if segmentation fails.
+    virtual float SegmentationFallbackShowResult();
   };
 
   enum class ShowState { kWaiting, kCanBeShown, kShown };
