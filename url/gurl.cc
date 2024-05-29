@@ -166,14 +166,6 @@ const std::string& GURL::spec() const {
   return base::EmptyString();
 }
 
-bool GURL::operator<(const GURL& other) const {
-  return spec_ < other.spec_;
-}
-
-bool GURL::operator>(const GURL& other) const {
-  return spec_ > other.spec_;
-}
-
 // Note: code duplicated below (it's inconvenient to use a template here).
 GURL GURL::Resolve(std::string_view relative) const {
   // Not allowed for invalid URLs.
@@ -546,27 +538,11 @@ bool operator==(const GURL& x, const GURL& y) {
   return x.possibly_invalid_spec() == y.possibly_invalid_spec();
 }
 
-bool operator!=(const GURL& x, const GURL& y) {
-  return !(x == y);
-}
-
 bool operator==(const GURL& x, std::string_view spec) {
   DCHECK_EQ(GURL(spec).possibly_invalid_spec(), spec)
       << "Comparisons of GURLs and strings must ensure as a precondition that "
          "the string is fully canonicalized.";
   return x.possibly_invalid_spec() == spec;
-}
-
-bool operator==(std::string_view spec, const GURL& x) {
-  return x == spec;
-}
-
-bool operator!=(const GURL& x, std::string_view spec) {
-  return !(x == spec);
-}
-
-bool operator!=(std::string_view spec, const GURL& x) {
-  return !(x == spec);
 }
 
 namespace url::debug {
