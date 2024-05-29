@@ -113,7 +113,7 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
   NSInteger sectionIdentifier =
       [self.tableViewModel sectionIdentifierForSectionIndex:section];
 
-  if (sectionIdentifier == SignOutSectionIdentifier) {
+  if (sectionIdentifier == ManageAndSignOutSectionIdentifier) {
     TableViewLinkHeaderFooterView* linkView =
         base::apple::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
     linkView.delegate = self;
@@ -237,7 +237,7 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
         return kSyncDataTypeSectionHeaderHeightPointSize;
       case AdvancedSettingsSectionIdentifier:
         return kAdvancedSettingsSectionHeaderHeightPointSize;
-      case SignOutSectionIdentifier:
+      case ManageAndSignOutSectionIdentifier:
         if (![self.tableViewModel hasSectionForSectionIdentifier:
                                       AdvancedSettingsSectionIdentifier]) {
           return kSignOutSectionHeaderHeightPointSize;
@@ -258,7 +258,7 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
         [self.tableViewModel sectionIdentifierForSectionIndex:section];
     switch (sectionIdentifier) {
       case SyncDataTypeSectionIdentifier:
-      case SignOutSectionIdentifier:
+      case ManageAndSignOutSectionIdentifier:
         return UITableViewAutomaticDimension;
       case AdvancedSettingsSectionIdentifier:
       case SyncErrorsSectionIdentifier:

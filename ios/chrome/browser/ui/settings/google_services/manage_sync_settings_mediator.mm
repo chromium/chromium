@@ -568,7 +568,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   NSInteger syncDataTypeSectionIndex =
       [model sectionForSectionIdentifier:SyncDataTypeSectionIdentifier];
   CHECK_NE(NSNotFound, syncDataTypeSectionIndex);
-  [model insertSectionWithIdentifier:SignOutSectionIdentifier
+  [model insertSectionWithIdentifier:ManageAndSignOutSectionIdentifier
                              atIndex:syncDataTypeSectionIndex + 1];
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:SignOutAndTurnOffSyncItemType];
@@ -576,18 +576,18 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   item.textColor = [UIColor colorNamed:kRedColor];
   self.signOutAndTurnOffSyncItem = item;
   [model addItem:self.signOutAndTurnOffSyncItem
-      toSectionWithIdentifier:SignOutSectionIdentifier];
+      toSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
 
   if (self.forcedSigninEnabled) {
     [model setFooter:[self createForcedSigninFooterItem]
-        forSectionWithIdentifier:SignOutSectionIdentifier];
+        forSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
   }
 }
 
 - (void)updateSignOutSection {
   TableViewModel* model = self.consumer.tableViewModel;
   BOOL hasSignOutSection =
-      [model hasSectionForSectionIdentifier:SignOutSectionIdentifier];
+      [model hasSectionForSectionIdentifier:ManageAndSignOutSectionIdentifier];
 
   switch (self.syncAccountState) {
     case SyncSettingsAccountState::kSignedOut:
@@ -596,8 +596,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       // There should be a sign-out section. Load it if it's not there yet.
       if (!hasSignOutSection) {
         [self loadSignOutAndManageAccountsSection];
-        NSUInteger sectionIndex =
-            [model sectionForSectionIdentifier:SignOutSectionIdentifier];
+        NSUInteger sectionIndex = [model
+            sectionForSectionIdentifier:ManageAndSignOutSectionIdentifier];
         [self.consumer
             insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
               rowAnimation:NO];
@@ -608,8 +608,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       if (!hasSignOutSection) {
         [self loadSignOutAndTurnOffSyncSection];
         DCHECK(self.signOutAndTurnOffSyncItem);
-        NSUInteger sectionIndex =
-            [model sectionForSectionIdentifier:SignOutSectionIdentifier];
+        NSUInteger sectionIndex = [model
+            sectionForSectionIdentifier:ManageAndSignOutSectionIdentifier];
         [self.consumer
             insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
               rowAnimation:NO];
@@ -633,7 +633,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
                 sectionForSectionIdentifier:AdvancedSettingsSectionIdentifier]
           : [model sectionForSectionIdentifier:SyncDataTypeSectionIdentifier];
   CHECK_NE(NSNotFound, previousSection);
-  [model insertSectionWithIdentifier:SignOutSectionIdentifier
+  [model insertSectionWithIdentifier:ManageAndSignOutSectionIdentifier
                              atIndex:previousSection + 1];
 
   // Creates items in the manage accounts and sign-out section.
@@ -643,23 +643,26 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   item.text =
       GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_GOOGLE_ACCOUNT_ITEM);
   item.textColor = [UIColor colorNamed:kBlueColor];
-  [model addItem:item toSectionWithIdentifier:SignOutSectionIdentifier];
+  [model addItem:item
+      toSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
 
   // Manage accounts on this device item.
   item = [[TableViewTextItem alloc] initWithType:ManageAccountsItemType];
   item.text = GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_ACCOUNTS_ITEM);
   item.textColor = [UIColor colorNamed:kBlueColor];
-  [model addItem:item toSectionWithIdentifier:SignOutSectionIdentifier];
+  [model addItem:item
+      toSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
 
   // Sign out item.
   item = [[TableViewTextItem alloc] initWithType:SignOutItemType];
   item.text = GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM);
   item.textColor = [UIColor colorNamed:kBlueColor];
-  [model addItem:item toSectionWithIdentifier:SignOutSectionIdentifier];
+  [model addItem:item
+      toSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
 
   if (self.forcedSigninEnabled) {
     [model setFooter:[self createForcedSigninFooterItem]
-        forSectionWithIdentifier:SignOutSectionIdentifier];
+        forSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
   }
 }
 

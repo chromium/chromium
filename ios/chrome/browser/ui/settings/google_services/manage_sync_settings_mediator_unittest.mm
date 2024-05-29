@@ -255,7 +255,7 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceEnabledWithTurnOffSync) {
   // "Turn off Sync" item is shown.
   NSArray* sign_out_items = [mediator_.consumer.tableViewModel
       itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
-                                       SignOutSectionIdentifier];
+                                       ManageAndSignOutSectionIdentifier];
   EXPECT_EQ(1UL, sign_out_items.count);
 }
 
@@ -273,13 +273,13 @@ TEST_F(ManageSyncSettingsMediatorTest,
   // "Turn off Sync" item is shown.
   NSArray* sign_out_items = [mediator_.consumer.tableViewModel
       itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
-                                       SignOutSectionIdentifier];
+                                       ManageAndSignOutSectionIdentifier];
   EXPECT_EQ(1UL, sign_out_items.count);
 
   // The footer below "Turn off Sync" is shown.
   ListItem* footer = [mediator_.consumer.tableViewModel
       footerForSectionWithIdentifier:SyncSettingsSectionIdentifier::
-                                         SignOutSectionIdentifier];
+                                         ManageAndSignOutSectionIdentifier];
   TableViewLinkHeaderFooterItem* footerTextItem =
       base::apple::ObjCCastStrict<TableViewLinkHeaderFooterItem>(footer);
   EXPECT_GT([footerTextItem.text length], 0UL);
@@ -403,8 +403,8 @@ TEST_F(ManageSyncSettingsMediatorTest,
   }
 }
 
-// Tests that the sign out item exists in the SignOutSectionIdentifier for a
-// signed in not syncing account along with manage accounts items.
+// Tests that the sign out item exists in the ManageAndSignOutSectionIdentifier
+// for a signed in not syncing account along with manage accounts items.
 TEST_F(ManageSyncSettingsMediatorTest,
        CheckSignOutSectionItemsForSignedInNotSyncingAccount) {
   CreateManageSyncSettingsMediator(SyncSettingsAccountState::kSignedIn);
@@ -415,7 +415,7 @@ TEST_F(ManageSyncSettingsMediatorTest,
 
   // Get section items.
   NSArray* items = [mediator_.consumer.tableViewModel
-      itemsInSectionWithIdentifier:SignOutSectionIdentifier];
+      itemsInSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
 
   EXPECT_EQ(ManageGoogleAccountItemType,
             base::apple::ObjCCastStrict<TableViewItem>(items[0]).type);
@@ -480,7 +480,7 @@ TEST_F(ManageSyncSettingsMediatorTest, TestAccountStateTransitionOnSignOut) {
   // Verify the sign out section exists.
   ASSERT_TRUE([mediator_.consumer.tableViewModel
       hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
-                                         SignOutSectionIdentifier]);
+                                         ManageAndSignOutSectionIdentifier]);
   // Verify the number of section shown in the kSignedIn state.
   ASSERT_EQ(3, [mediator_.consumer.tableViewModel numberOfSections]);
 
