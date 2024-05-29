@@ -29,7 +29,7 @@
 
 namespace {
 const int kScreenAICleanUpDelayInDays = 30;
-const char kMinExpectedVersion[] = "123.1";
+const char kMinExpectedVersion[] = "124.2";
 
 bool IsDeviceCompatible() {
 #if BUILDFLAG(IS_LINUX)
