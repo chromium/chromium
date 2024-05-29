@@ -57,6 +57,7 @@ constexpr int kSampleMaxSensitivity = 5;
 
 constexpr char kUser1[] = "user1@gmail.com";
 constexpr char kUser2[] = "user2@gmail.com";
+constexpr char kUser3[] = "user3@gmail.com";
 
 constexpr char kKbdTopRowPropertyName[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
 constexpr char kKbdTopRowLayout1Tag[] = "1";
@@ -1212,6 +1213,25 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
       1);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers.Hash", 2u);
+
+  keyboard.modifier_keys = {
+      ui::mojom::ModifierKey::kMeta,      ui::mojom::ModifierKey::kControl,
+      ui::mojom::ModifierKey::kAlt,       ui::mojom::ModifierKey::kCapsLock,
+      ui::mojom::ModifierKey::kEscape,    ui::mojom::ModifierKey::kBackspace,
+      ui::mojom::ModifierKey::kFunction,  ui::mojom::ModifierKey::kRightAlt,
+      ui::mojom::ModifierKey::kAssistant,
+  };
+
+  SimulateUserLogin(kUser3);
+
+  manager_.get()->RecordKeyboardInitialMetrics(keyboard);
+  // Test the hash code is correct with manually computed value.
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.Keyboard.InternalSplitModifier.Modifiers.Hash",
+      0x93747501, 1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.InternalSplitModifier.Modifiers.Hash",
+      1u);
 }
 
 TEST_F(InputDeviceSettingsMetricsManagerTest,

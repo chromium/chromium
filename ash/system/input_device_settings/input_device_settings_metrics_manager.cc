@@ -21,6 +21,7 @@
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/settings_updated_metrics_info.h"
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/json/values_util.h"
@@ -64,6 +65,8 @@ static constexpr struct {
     {"Escape", ui::mojom::ModifierKey::kEscape},
     {"Backspace", ui::mojom::ModifierKey::kBackspace},
     {"Assistant", ui::mojom::ModifierKey::kAssistant},
+    {"Function", ui::mojom::ModifierKey::kFunction},
+    {"RightAlt", ui::mojom::ModifierKey::kRightAlt},
 };
 
 // The modifier hash is made up of `kNumModifiers` blocks of
@@ -83,12 +86,18 @@ static constexpr struct {
 // | 3     | kCapsLock               | [12, 15]  |
 // | 4     | kEscape                 | [16, 19]  |
 // | 5     | kBackspace              | [20, 23]  |
-// | 6     | kAssistant              | [24, 27]  |
+// | 6     | kAssistant | kRightAlt  | [24, 27]  |
+// | 7     | kFunction               | [28, 31]  |
 
 // Each modifier key will have 9 actions which requires 4 bits to encode.
 constexpr int kModifierHashWidth = 4;
 constexpr int kMaxModifierValue = (1 << kModifierHashWidth) - 1;
-constexpr int kNumModifiers = std::size(kModifierNames);
+
+// Remove Function and RightAlt for regular keyboards.
+constexpr int kNumModifiers = std::size(kModifierNames) - 2;
+// Remove RightAlt for split modifier keyboard since it has the same domcode as
+// Assistant.
+constexpr int kSplitModifierNumModifiers = std::size(kModifierNames) - 1;
 
 // Verify that the number of modifiers we are trying to hash together into a
 // 32-bit int will fit without any overflow or UB.
@@ -109,6 +118,21 @@ constexpr int32_t PrecalculateDefaultModifierHash() {
   return hash;
 }
 constexpr int32_t kDefaultModifierHash = PrecalculateDefaultModifierHash();
+
+constexpr uint32_t PrecalculateSplitModifierDefaultModifierHash() {
+  uint32_t hash = 0;
+  for (ssize_t i = kSplitModifierNumModifiers - 1u; i >= 0; i--) {
+    hash <<= kModifierHashWidth;
+    if (kModifierNames[i].modifier_key == ui::mojom::ModifierKey::kAssistant) {
+      hash += static_cast<int>(ui::mojom::ModifierKey::kRightAlt);
+    } else {
+      hash += static_cast<int>(kModifierNames[i].modifier_key);
+    }
+  }
+  return hash;
+}
+constexpr uint32_t kSplitModifierDefaultModifierHash =
+    PrecalculateSplitModifierDefaultModifierHash();
 
 std::string GetKeyboardMetricsPrefix(const mojom::Keyboard& keyboard) {
   if (!keyboard.is_external) {
@@ -133,7 +157,7 @@ ui::mojom::ModifierKey GetModifierRemappingTo(
 
 std::optional<std::string> GetModifierKeyName(
     ui::mojom::ModifierKey modifier_key) {
-  for (ssize_t i = kNumModifiers - 1; i >= 0; i--) {
+  for (ssize_t i = std::size(kModifierNames) - 1; i >= 0; i--) {
     if (kModifierNames[i].modifier_key == modifier_key) {
       return std::make_optional<std::string>(kModifierNames[i].key_name);
     }
@@ -555,11 +579,6 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
 
   // Record metrics for modifier remappings.
   for (const auto modifier_key : keyboard.modifier_keys) {
-    // TODO(b/329330990): Remove after updating modifier names map.
-    if (features::IsModifierSplitEnabled()) {
-      break;
-    }
-
     const auto modifier_name = GetModifierKeyName(modifier_key);
     CHECK(modifier_name.has_value());
     const auto key_remapped_to =
@@ -571,7 +590,12 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
   }
 
   // Record remapping metrics when keyboard is initialized.
-  RecordModifierRemappingHash(keyboard);
+  if (base::Contains(keyboard.modifier_keys,
+                     ui::mojom::ModifierKey::kRightAlt)) {
+    RecordSplitModifierRemappingHash(keyboard);
+  } else {
+    RecordModifierRemappingHash(keyboard);
+  }
   RecordKeyboardNumberOfKeysRemapped(keyboard);
   if (ShouldRecordSixPackKeyMetrics(keyboard)) {
     RecordSixPackKeyInfo(keyboard, ui::VKEY_DELETE, /*is_initial_value=*/true);
@@ -612,11 +636,6 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardChangedMetrics(
 
   // Record metrics for modifier remappings.
   for (const auto modifier_key : keyboard.modifier_keys) {
-    // TODO(b/329330990): Remove after updating modifier names map.
-    if (features::IsModifierSplitEnabled()) {
-      break;
-    }
-
     const auto modifier_name = GetModifierKeyName(modifier_key);
     CHECK(modifier_name.has_value());
     const auto key_remapped_to_before =
@@ -1084,6 +1103,37 @@ void InputDeviceSettingsMetricsManager::RecordModifierRemappingHash(
   if (hash != kDefaultModifierHash) {
     const std::string metrics =
         base::StrCat({GetKeyboardMetricsPrefix(keyboard), "Modifiers.Hash"});
+    base::UmaHistogramSparse(metrics, static_cast<int>(hash));
+  }
+}
+
+void InputDeviceSettingsMetricsManager::RecordSplitModifierRemappingHash(
+    const mojom::Keyboard& keyboard) {
+  // Compute hash by left-shifting by `kModifierHashWidth` and then inserting
+  // the modifier value from prefs at into the lowest `kModifierHashWidth` bits.
+  uint32_t hash = 0;
+  for (ssize_t i = kSplitModifierNumModifiers - 1u; i >= 0; i--) {
+    const auto modifier_key = kModifierNames[i].modifier_key;
+    auto iter = keyboard.settings->modifier_remappings.find(modifier_key);
+    const auto remapped_key_value =
+        iter == keyboard.settings->modifier_remappings.end()
+            ? static_cast<uint32_t>(modifier_key)
+            : static_cast<uint32_t>(iter->second);
+
+    // Check that shifting and adding value will not overflow `hash`.
+    DCHECK(remapped_key_value <= kMaxModifierValue && remapped_key_value >= 0);
+    DCHECK(hash < (1u << ((sizeof(uint32_t) * 8u) - kModifierHashWidth)));
+
+    hash <<= kModifierHashWidth;
+    hash += static_cast<uint32_t>(remapped_key_value);
+  }
+
+  // If the computed hash matches the hash when settings are in a default state,
+  // the metric should not be published.
+  if (hash != kSplitModifierDefaultModifierHash) {
+    const std::string metrics =
+        "ChromeOS.Settings.Device.Keyboard.InternalSplitModifier.Modifiers."
+        "Hash";
     base::UmaHistogramSparse(metrics, static_cast<int>(hash));
   }
 }

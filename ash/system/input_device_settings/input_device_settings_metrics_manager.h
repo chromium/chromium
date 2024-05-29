@@ -31,6 +31,7 @@ class ASH_EXPORT InputDeviceSettingsMetricsManager {
       const mojom::Keyboard& keyboard,
       const mojom::KeyboardSettings& default_settings);
   void RecordModifierRemappingHash(const mojom::Keyboard& keyboard);
+  void RecordSplitModifierRemappingHash(const mojom::Keyboard& keyboard);
   void RecordSixPackKeyInfo(const mojom::Keyboard& keyboard,
                             ui::KeyboardCode key_code,
                             bool is_initial_value);
