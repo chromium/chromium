@@ -151,6 +151,11 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
       has_local_password = auth::IsLocalPassword(
           *auth_config.FindFactorByType(cryptohome::AuthFactorType::kPassword));
     }
+
+    bool has_smart_card =
+        auth_config.HasConfiguredFactor(cryptohome::AuthFactorType::kSmartCard);
+    CHECK(!has_smart_card) << "Recovery for smart card users is not supported!";
+
     // Exactly one of the password should exists.
     CHECK_NE(has_online_password, has_local_password);
 
