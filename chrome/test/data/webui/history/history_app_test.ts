@@ -6,6 +6,7 @@ import 'chrome://history/history.js';
 
 import type {HistoryAppElement} from 'chrome://history/history.js';
 import {BrowserServiceImpl, CrRouter} from 'chrome://history/history.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -18,6 +19,9 @@ suite('HistoryAppTest', function() {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.overrideValues({historyEmbeddingsSearchMinimumWordCount: 2});
+
     browserService = new TestBrowserService();
     BrowserServiceImpl.setInstance(browserService);
     // Some of the tests below assume the query state is fully reset to empty
@@ -213,5 +217,29 @@ suite('HistoryAppTest', function() {
     }));
     await flushTasks();
     assertEquals(undefined, historyEmbeddings.timeRangeStart);
+  });
+
+  test('UsesMinWordCount', async () => {
+    loadTimeData.overrideValues({historyEmbeddingsSearchMinimumWordCount: 4});
+    element.dispatchEvent(new CustomEvent('change-query', {
+      bubbles: true,
+      composed: true,
+      detail: {search: 'two words'},
+    }));
+    await flushTasks();
+
+    let historyEmbeddings =
+        element.shadowRoot!.querySelector('cr-history-embeddings');
+    assertFalse(!!historyEmbeddings);
+
+    element.dispatchEvent(new CustomEvent('change-query', {
+      bubbles: true,
+      composed: true,
+      detail: {search: 'at least four words'},
+    }));
+    await flushTasks();
+    historyEmbeddings =
+        element.shadowRoot!.querySelector('cr-history-embeddings');
+    assertTrue(!!historyEmbeddings);
   });
 });

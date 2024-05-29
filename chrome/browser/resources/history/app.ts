@@ -745,7 +745,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
     return this.queryState_.searchTerm.split(' ')
                .filter(part => part.length > 0)
-               .length > 1;
+               .length >=
+        loadTimeData.getInteger('historyEmbeddingsSearchMinimumWordCount');
   }
 
   private onSelectedSuggestionChanged_(e: CustomEvent<{value: Suggestion}>) {

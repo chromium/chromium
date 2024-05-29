@@ -197,6 +197,8 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
                     l10n_util::GetStringFUTF16(
                         IDS_HISTORY_EMBEDDINGS_PROMO_BODY,
                         base::UTF8ToUTF16(chrome::kChromeUISettingsURL)));
+  // TODO(b/343256907): Get this value from feature params.
+  source->AddInteger("historyEmbeddingsSearchMinimumWordCount", 3);
 
   // History clusters
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);
