@@ -130,14 +130,9 @@ CollaborationGroupSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void CollaborationGroupSyncBridge::GetData(StorageKeyList storage_keys,
-                                           DataCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/301389859): GetData() actually not used for read-only
-  // datatypes and could be NOTREACHED(). However, it is not reflected in the
-  // name/documentation. Rename to something like GetDataForCommit() and replace
-  // NOTIMPLEMENTED() with NOTREACHED().
-  NOTIMPLEMENTED();
+void CollaborationGroupSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                                    DataCallback callback) {
+  NOTREACHED();
 }
 
 void CollaborationGroupSyncBridge::GetAllDataForDebugging(
