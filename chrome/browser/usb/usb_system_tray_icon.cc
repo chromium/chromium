@@ -26,8 +26,9 @@ std::u16string UsbSystemTrayIcon::GetTitleLabel(size_t num_origins,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   return l10n_util::GetPluralStringFUTF16(IDS_WEBUSB_SYSTEM_TRAY_ICON_TITLE,
                                           static_cast<int>(num_connections));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#else
   NOTREACHED_NORETURN();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 // static

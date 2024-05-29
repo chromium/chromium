@@ -1187,8 +1187,6 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
 
     return true;
   }
-
-  NOTREACHED_NORETURN();
 }
 
 }  // namespace media

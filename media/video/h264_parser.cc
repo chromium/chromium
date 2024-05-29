@@ -500,7 +500,6 @@ bool H264Parser::ParseNALUs(const uint8_t* stream,
       return false;
     }
   }
-  NOTREACHED_NORETURN();
 }
 
 H264Parser::Result H264Parser::AdvanceToNextNALU(H264NALU* nalu) {

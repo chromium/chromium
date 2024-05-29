@@ -114,7 +114,6 @@ ui::PlatformWindowType GetPlatformWindowType(
     default:
       return ui::PlatformWindowType::kPopup;
   }
-  NOTREACHED_NORETURN();
 }
 
 ui::PlatformWindowShadowType GetPlatformWindowShadowType(

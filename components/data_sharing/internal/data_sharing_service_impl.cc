@@ -57,7 +57,6 @@ DataSharingService::PeopleGroupActionFailure StatusToPeopleGroupActionFailure(
       // absl::StatusCode should always have "default:" in `switch()`.
       return DataSharingService::PeopleGroupActionFailure::kPersistentFailure;
   }
-  NOTREACHED_NORETURN();
 }
 
 DataSharingService::PeopleGroupActionOutcome StatusToPeopleGroupActionOutcome(
@@ -73,7 +72,6 @@ DataSharingService::PeopleGroupActionOutcome StatusToPeopleGroupActionOutcome(
     case DataSharingService::PeopleGroupActionFailure::kTransientFailure:
       return DataSharingService::PeopleGroupActionOutcome::kTransientFailure;
   }
-  NOTREACHED_NORETURN();
 }
 
 }  // namespace

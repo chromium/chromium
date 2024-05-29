@@ -68,7 +68,6 @@ ImageOrientationEnum ImageOrientationFromEXIFValue(unsigned exif_value) {
       // default.
       return ImageOrientationEnum::kDefault;
   }
-  NOTREACHED_NORETURN();
 }
 
 unsigned ReadUint16(const uint8_t* data, bool is_big_endian) {

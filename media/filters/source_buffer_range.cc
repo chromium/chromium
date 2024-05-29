@@ -595,8 +595,6 @@ base::TimeDelta SourceBufferRange::FindHighestBufferedTimestampAtOrBefore(
     if (cur_frame_time > timestamp)
       return result;
   }
-
-  NOTREACHED_NORETURN();
 }
 
 base::TimeDelta SourceBufferRange::NextKeyframeTimestamp(

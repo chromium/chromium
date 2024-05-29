@@ -43,8 +43,9 @@ class UsbStatusIconTest : public DeviceStatusIconTestBase {
     // the expected string.
     return l10n_util::GetPluralStringFUTF16(IDS_WEBUSB_SYSTEM_TRAY_ICON_TITLE,
                                             static_cast<int>(num_connections));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#else
     NOTREACHED_NORETURN();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
 
   void SetDeviceConnectionTrackerTestingFactory(Profile* profile) override {

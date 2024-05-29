@@ -676,7 +676,6 @@ std::u16string GetGranularFillingLabels(SuggestionType suggestion_type) {
     default:
       NOTREACHED_NORETURN();
   }
-  NOTREACHED_NORETURN();
 }
 
 // Returns whether the `ADDRESS_HOME_LINE1` should be included into the labels

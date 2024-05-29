@@ -513,8 +513,6 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
           CreatePopupRowContentView(suggestion, main_filling_product,
                                     std::move(filter_match)));
   }
-
-  NOTREACHED_NORETURN();
 }
 
 }  // namespace autofill
