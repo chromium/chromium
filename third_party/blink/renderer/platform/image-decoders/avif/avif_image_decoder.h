@@ -165,10 +165,10 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   // cropped_image_.get() depending on whether the image has a 'clap' (clean
   // aperture) property.
   raw_ptr<const avifImage, DanglingUntriaged> decoded_image_ = nullptr;
-  std::unique_ptr<avifDecoder, decltype(&avifDecoderDestroy)> decoder_{
-      nullptr, avifDecoderDestroy};
   avifIO avif_io_ = {};
   AvifIOData avif_io_data_;
+  std::unique_ptr<avifDecoder, decltype(&avifDecoderDestroy)> decoder_{
+      nullptr, avifDecoderDestroy};
 
   const AnimationOption animation_option_;
 
