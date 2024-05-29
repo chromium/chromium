@@ -845,6 +845,8 @@ static_library("test_support") {
     "autofill_suggestion_generator_test_api.h",
     "autofill_test_utils.cc",
     "autofill_test_utils.h",
+    "autofill_testing_pref_service.cc",
+    "autofill_testing_pref_service.h",
     "browser_autofill_manager_test_api.cc",
     "browser_autofill_manager_test_api.h",
     "browser_autofill_manager_test_delegate.cc",

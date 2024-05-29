@@ -8,6 +8,9 @@
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
@@ -22,6 +25,17 @@ class AutofillSettingsMetricsTest : public AutofillMetricsBaseTest,
   void SetUp() override { SetUpHelper(); }
 
   void TearDown() override { TearDownHelper(); }
+
+  void CreateAddressDataManager() {
+    AddressDataManager(/*webdata_service=*/nullptr,
+                       /*pref_service=*/autofill_client_->GetPrefs(),
+                       /*local_state=*/nullptr,
+                       /*sync_service=*/nullptr,
+                       /*identity_manager=*/nullptr,
+                       /*strike_database=*/nullptr,
+                       /*variation_country_code=*/GeoIpCountryCode("US"),
+                       "en-US");
+  }
 
  protected:
   base::HistogramTester histogram_tester_;
@@ -79,16 +93,11 @@ TEST_P(AutofillSettingsMetricsTest,
 TEST_P(AutofillSettingsMetricsTest, AutofillProfileIsEnabledAtStartup) {
   autofill_client_->GetPrefs()->SetBoolean(prefs::kAutofillProfileEnabled,
                                            GetParam());
+
   // The constructor of `AddressDataManager` emits
   // `Autofill.Address.IsEnabled.Startup`. Its instance is created at startup.
-  AddressDataManager(/*webdata_service=*/nullptr,
-                     /*pref_service=*/autofill_client_->GetPrefs(),
-                     /*local_state=*/nullptr,
-                     /*sync_service=*/nullptr,
-                     /*identity_manager=*/nullptr,
-                     /*strike_database=*/nullptr,
-                     /*variation_country_code=*/GeoIpCountryCode("US"),
-                     "en-US");
+  CreateAddressDataManager();
+
   histogram_tester_.ExpectUniqueSample("Autofill.Address.IsEnabled.Startup",
                                        GetParam(), 1);
 }
@@ -112,6 +121,167 @@ TEST_P(AutofillSettingsMetricsTest, AutofillCreditCardIsEnabledAtStartup) {
   histogram_tester_.ExpectUniqueSample("Autofill.CreditCard.IsEnabled.Startup",
                                        GetParam(), 1);
 }
+
+// Tests that Autofill Profile disabled by user setting is logged at startup.
+TEST_P(AutofillSettingsMetricsTest,
+       EmitsAutofillProfileDisabledByUserAtStartup) {
+  autofill_client_->GetPrefs()->SetUserPref(prefs::kAutofillProfileEnabled,
+                                            base::Value(GetParam()));
+
+  // The constructor of `AddressDataManager` emits
+  // `Autofill.Address.DisabledReason.Startup`. Its instance is created at
+  // startup.
+  CreateAddressDataManager();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Address.DisabledReason.Startup",
+      AutofillPreferenceSetter::kUserSetting, !GetParam());
+}
+
+// Tests that Autofill Profile disabled by admin policy is logged at startup.
+TEST_P(AutofillSettingsMetricsTest,
+       EmitsAutofillProfileDisabledByAdminPolicyAtStartup) {
+  autofill_client_->GetPrefs()->SetManagedPref(prefs::kAutofillProfileEnabled,
+                                               base::Value(GetParam()));
+
+  // The constructor of `AddressDataManager` emits
+  // `Autofill.Address.DisabledReason.Startup`. Its instance is created at
+  // startup.
+  CreateAddressDataManager();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Address.DisabledReason.Startup",
+      AutofillPreferenceSetter::kAdminPolicy, !GetParam());
+}
+
+// Tests that Autofill Profile disabled by extension is logged at startup.
+TEST_P(AutofillSettingsMetricsTest,
+       EmitsAutofillProfileDisabledByExtensionAtStartup) {
+  autofill_client_->GetPrefs()->SetExtensionPref(prefs::kAutofillProfileEnabled,
+                                                 base::Value(GetParam()));
+
+  // The constructor of `AddressDataManager` emits
+  // `Autofill.Address.DisabledReason.Startup`. Its instance is created at
+  // startup.
+  CreateAddressDataManager();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Address.DisabledReason.Startup",
+      AutofillPreferenceSetter::kExtension, !GetParam());
+}
+
+// Tests that Autofill Profile disabled by custodian is logged at startup.
+TEST_P(AutofillSettingsMetricsTest,
+       EmitsAutofillProfileDisabledByCustodianAtStartup) {
+  autofill_client_->GetPrefs()->SetSupervisedUserPref(
+      prefs::kAutofillProfileEnabled, base::Value(GetParam()));
+
+  // The constructor of `AddressDataManager` emits
+  // `Autofill.Address.DisabledReason.Startup`. Its instance is created at
+  // startup.
+  CreateAddressDataManager();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Address.DisabledReason.Startup",
+      AutofillPreferenceSetter::kCustodian, !GetParam());
+}
+
+// Tests that Autofill Profile disabled by user setting is logged at page load.
+TEST_P(AutofillSettingsMetricsTest,
+       EmitsAutofillProfileDisabledByUserAtPageLoad) {
+  autofill_manager().SetAutofillProfileEnabled(*autofill_client_, GetParam());
+  autofill_client_->GetPrefs()->SetUserPref(prefs::kAutofillProfileEnabled,
+                                            base::Value(GetParam()));
+
+  autofill_manager().OnFormsSeen(/*updated_forms=*/{},
+                                 /*removed_forms=*/{});
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Address.DisabledReason.PageLoad",
+      AutofillPreferenceSetter::kUserSetting, !GetParam());
+}
+
+// Tests that Autofill Profile disabled by admin policy is logged at page load.
+TEST_P(AutofillSettingsMetricsTest,
+       EmitsAutofillProfileDisabledByAdminPolicyAtPageLoad) {
+  autofill_manager().SetAutofillProfileEnabled(*autofill_client_, GetParam());
+  autofill_client_->GetPrefs()->SetManagedPref(prefs::kAutofillProfileEnabled,
+                                               base::Value(GetParam()));
+
+  autofill_manager().OnFormsSeen(/*updated_forms=*/{},
+                                 /*removed_forms=*/{});
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Address.DisabledReason.PageLoad",
+      AutofillPreferenceSetter::kAdminPolicy, !GetParam());
+}
+
+// Tests that Autofill Profile disabled by extension is logged at page load.
+TEST_P(AutofillSettingsMetricsTest,
+       EmitsAutofillProfileDisabledByExtensionAtPageLoad) {
+  autofill_manager().SetAutofillProfileEnabled(*autofill_client_, GetParam());
+  autofill_client_->GetPrefs()->SetExtensionPref(prefs::kAutofillProfileEnabled,
+                                                 base::Value(GetParam()));
+
+  autofill_manager().OnFormsSeen(/*updated_forms=*/{},
+                                 /*removed_forms=*/{});
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Address.DisabledReason.PageLoad",
+      AutofillPreferenceSetter::kExtension, !GetParam());
+}
+
+// Tests that Autofill Profile disabled by custodian is logged at page load.
+TEST_P(AutofillSettingsMetricsTest,
+       EmitsAutofillProfileDisabledByCustodianAtPageLoad) {
+  autofill_manager().SetAutofillProfileEnabled(*autofill_client_, GetParam());
+  autofill_client_->GetPrefs()->SetSupervisedUserPref(
+      prefs::kAutofillProfileEnabled, base::Value(GetParam()));
+
+  autofill_manager().OnFormsSeen(/*updated_forms=*/{},
+                                 /*removed_forms=*/{});
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Address.DisabledReason.PageLoad",
+      AutofillPreferenceSetter::kCustodian, !GetParam());
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+// [ChromeOS-only] Tests that Autofill Profile disabled by standalone browser is
+// logged at startup.
+TEST_P(AutofillSettingsMetricsTest,
+       EmitsAutofillProfileDisabledByStandaloneBrowserAtStartup) {
+  autofill_client_->GetPrefs()->SetStandaloneBrowserPref(
+      prefs::kAutofillProfileEnabled, base::Value(GetParam()));
+
+  // The constructor of `AddressDataManager` emits
+  // `Autofill.Address.DisabledReason.Startup`. Its instance is created at
+  // startup.
+  CreateAddressDataManager();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Address.DisabledReason.Startup",
+      AutofillPreferenceSetter::kStandaloneBrowser, !GetParam());
+}
+
+// [ChromeOS-only] Tests that Autofill Profile disabled by standalone browser is
+// logged at page load.
+TEST_P(AutofillSettingsMetricsTest,
+       EmitsAutofillProfileDisabledByStandaloneBrowserAtPageLoad) {
+  autofill_manager().SetAutofillProfileEnabled(*autofill_client_, GetParam());
+  autofill_client_->GetPrefs()->SetStandaloneBrowserPref(
+      prefs::kAutofillProfileEnabled, base::Value(GetParam()));
+
+  autofill_manager().OnFormsSeen(/*updated_forms=*/{},
+                                 /*removed_forms=*/{});
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Address.DisabledReason.PageLoad",
+      AutofillPreferenceSetter::kStandaloneBrowser, !GetParam());
+}
+
+#endif
 
 }  // namespace
 

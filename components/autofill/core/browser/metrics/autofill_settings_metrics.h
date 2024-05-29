@@ -9,6 +9,25 @@
 
 namespace autofill::autofill_metrics {
 
+// Sources that set Autofill preferences.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AutofillPreferenceSetter {
+  // The pref was set from an unknown source, e.g. via the command line.
+  kUnknown = 0,
+  // The pref was set by the user.
+  kUserSetting = 1,
+  // ChromeOS only. The pref is set by a standalone browser (lacros).
+  kStandaloneBrowser = 2,
+  // The pref was set by an extension.
+  kExtension = 3,
+  // The pref was set by the custodian of the (supervised) user.
+  kCustodian = 4,
+  // The pref was set by an admin policy.
+  kAdminPolicy = 5,
+  kMaxValue = kAdminPolicy
+};
+
 // This should be called each time a page containing forms is loaded.
 void LogIsAutofillEnabledAtPageLoad(
     bool enabled,
@@ -32,6 +51,15 @@ void LogIsAutofillProfileEnabledAtStartup(bool enabled);
 
 // This should be called each time a new chrome profile is launched.
 void LogIsAutofillCreditCardEnabledAtStartup(bool enabled);
+
+// Logs the source that disabled Autofill Profile, on startup. This should be
+// called each time a new chrome profile is launched.
+void LogAutofillProfileDisabledReasonAtStartup(const PrefService& pref_service);
+
+// Logs the source that disabled Autofill Profile, on page load for a page
+// containing forms.
+void LogAutofillProfileDisabledReasonAtPageLoad(
+    const PrefService& pref_service);
 
 }  // namespace autofill::autofill_metrics
 

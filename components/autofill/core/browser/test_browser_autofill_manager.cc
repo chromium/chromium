@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -239,6 +240,9 @@ void TestBrowserAutofillManager::SetAutofillProfileEnabled(
     TestAutofillClient& client,
     bool autofill_profile_enabled) {
   autofill_profile_enabled_ = autofill_profile_enabled;
+  if (PrefService* prefs = client.GetPrefs()) {
+    prefs->SetBoolean(prefs::kAutofillProfileEnabled, autofill_profile_enabled);
+  }
   if (!autofill_profile_enabled_) {
     // Profile data is refreshed when this pref is changed.
     client.GetPersonalDataManager()

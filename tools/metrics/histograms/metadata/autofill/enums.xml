@@ -3149,6 +3149,15 @@ Called by update_autofill_enums.py.-->
              - Value agrees with both predictions"/>
 </enum>
 
+<enum name="AutofillPreferenceSetter">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="User Setting"/>
+  <int value="2" label="Standalone Browser (ChromeOS-only)"/>
+  <int value="3" label="Extension"/>
+  <int value="4" label="Custodian"/>
+  <int value="5" label="Admin Policy"/>
+</enum>
+
 <enum name="AutofillPreFilledFields">
   <int value="0" label="Pre-filled on page load"/>
   <int value="1" label="Empty on page load"/>

@@ -107,8 +107,12 @@ AddressDataManager::AddressDataManager(
   if (pref_service_) {
     autofill_metrics::LogIsAutofillProfileEnabledAtStartup(
         IsAutofillProfileEnabled());
+    if (!IsAutofillProfileEnabled()) {
+      autofill_metrics::LogAutofillProfileDisabledReasonAtStartup(
+          *pref_service_);
+    }
     address_data_cleaner_ = std::make_unique<AddressDataCleaner>(
-        *this, sync_service, CHECK_DEREF(pref_service),
+        *this, sync_service, *pref_service_,
         alternative_state_name_map_updater_.get());
   }
 }
