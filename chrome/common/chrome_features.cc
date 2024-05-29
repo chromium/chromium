@@ -702,6 +702,16 @@ BASE_FEATURE(kHappinessTrackingOsSettingsSearch,
 BASE_FEATURE(kHappinessTrackingBorealisGames,
              "HappinessTrackingBorealisGames",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables the Happiness Tracking System for ChromeOS Launcher survey. This
+// survey is enabled to 25% of users.
+BASE_FEATURE(kHappinessTrackingLauncherAppsFinding,
+             "HappinessTrackingLauncherAppsFinding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables the Happiness Tracking System for ChromeOS Launcher survey. This
+// survey is enabled to 75% of users.
+BASE_FEATURE(kHappinessTrackingLauncherAppsNeeding,
+             "HappinessTrackingLauncherAppsNeeding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Hides the origin text from showing up briefly in WebApp windows.

@@ -893,6 +893,16 @@ inline constexpr char kHatsBorealisGamesSurveyCycleEndTs[] =
 inline constexpr char kHatsBorealisGamesLastInteractionTimestamp[] =
     "hats_borealis_games_last_interaction_timestamp";
 
+// An int64 pref. This is the timestamp, microseconds after epoch, that
+// indicates the end of the OS Launcher Apps satisfaction survey cycle.
+inline constexpr char kHatsLauncherAppsSurveyCycleEndTs[] =
+    "hats_launcher_apps_cycle_end_timestamp";
+
+// A boolean pref. Indicates if the device is selected for the OS Launcher
+// Apps satisfaction survey.
+inline constexpr char kHatsLauncherAppsSurveyIsSelected[] =
+    "hats_launcher_apps_is_selected";
+
 // A boolean pref. Indicates if we've already shown a notification to inform the
 // current user about the quick unlock feature.
 inline constexpr char kPinUnlockFeatureNotificationShown[] =

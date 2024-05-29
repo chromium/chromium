@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/hats/hats_config.h"
 
+#include "base/time/time.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 
@@ -244,6 +245,24 @@ const HatsConfig kHatsBorealisGamesSurvey = {
     prefs::kHatsBorealisGamesLastInteractionTimestamp,
     // survey_last_interaction_timestamp_pref_name
     base::Days(7),  // threshold_time
+};
+
+// Launcher survey -- Shown after a user opens the launcher for the first time.
+// This survey is enabled for 25% of users.
+const HatsConfig kHatsLauncherAppsFindingSurvey = {
+    ::features::kHappinessTrackingLauncherAppsFinding,  // feature
+    base::Hours(2),                                     // new_device_threshold
+    prefs::kHatsLauncherAppsSurveyCycleEndTs,           // is_selected_pref_name
+    prefs::kHatsLauncherAppsSurveyIsSelected,  // cycle_end_timestamp_pref_name
+};
+
+// Launcher survey -- Shown after a user opens the launcher for the first time.
+// This survey is enabled for 75% of users.
+const HatsConfig kHatsLauncherAppsNeedingSurvey = {
+    ::features::kHappinessTrackingLauncherAppsNeeding,  // feature
+    base::Hours(2),                                     // new_device_threshold
+    prefs::kHatsLauncherAppsSurveyCycleEndTs,           // is_selected_pref_name
+    prefs::kHatsLauncherAppsSurveyIsSelected,  // cycle_end_timestamp_pref_name
 };
 
 }  // namespace ash

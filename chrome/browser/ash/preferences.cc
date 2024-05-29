@@ -621,6 +621,11 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterTimePref(
       ::prefs::kHatsBorealisGamesLastInteractionTimestamp, base::Time());
 
+  // Launcher HaTS survey prefs.
+  registry->RegisterInt64Pref(::prefs::kHatsLauncherAppsSurveyCycleEndTs, 0);
+  registry->RegisterBooleanPref(::prefs::kHatsLauncherAppsSurveyIsSelected,
+                                false);
+
   registry->RegisterBooleanPref(prefs::kShowDisplaySizeScreenEnabled, true);
 
   registry->RegisterDictionaryPref(::prefs::kTotalUniqueOsSettingsChanged);
