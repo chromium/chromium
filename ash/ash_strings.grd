@@ -3302,7 +3302,7 @@ No devices connected.
       </message>
 
       <!-- Strings for audio selection -->
-      <message name="IDS_ASH_AUDIO_SELECTION_SWITCH_INPUT_TITLE" desc="label used for audio selection switch input title" translateable="false">
+      <message name="IDS_ASH_AUDIO_SELECTION_SWITCH_INPUT_TITLE" desc="label used for audio selection switch input title">
         Switch audio input?
       </message>
       <message name="IDS_ASH_AUDIO_SELECTION_SWITCH_OUTPUT_TITLE" desc="label used for audio selection switch output title" translateable="false">
@@ -3326,13 +3326,13 @@ No devices connected.
       <message name="IDS_ASH_AUDIO_SELECTION_MULTIPLE_DEVICES_BODY_WITH_NAME_UNAVAILABLE" desc="body of audio selection notification to inform users multiple devices are detected, used when the current active device name is not available" translateable="false">
         Input and output devices are set. Go to Settings to change.
       </message>
-      <message name="IDS_ASH_AUDIO_SELECTION_BUTTON_SWITCH" desc="label used for audio selection switch button" translateable="false">
+      <message name="IDS_ASH_AUDIO_SELECTION_BUTTON_SWITCH" desc="label used for audio selection switch button">
         Switch
       </message>
       <message name="IDS_ASH_AUDIO_SELECTION_BUTTON_SETTINGS" desc="label used for audio selection settings button" translateable="false">
         Settings
       </message>
-      <message name="IDS_ASH_AUDIO_SELECTION_SOURCE" desc="notification source of audio selection notification" translateable="false">
+      <message name="IDS_ASH_AUDIO_SELECTION_SOURCE" desc="notification source of audio selection notification">
         Audio selection
       </message>
 
