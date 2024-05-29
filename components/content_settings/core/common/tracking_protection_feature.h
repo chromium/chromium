@@ -8,7 +8,7 @@
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 
-namespace privacy_sandbox {
+namespace content_settings {
 
 // Enum to denote the type of an ACT feature.
 enum class TrackingProtectionFeatureType {
@@ -39,6 +39,6 @@ struct TrackingProtectionFeature {
   TrackingProtectionBlockingStatus status;
 };
 
-}  // namespace privacy_sandbox
+}  // namespace content_settings
 
 #endif  // COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_TRACKING_PROTECTION_FEATURE_H_

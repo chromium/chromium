@@ -345,7 +345,7 @@ void PageInfo::OnStatusChanged(
     CookieControlsEnforcement enforcement,
     CookieBlocking3pcdStatus blocking_status,
     base::Time expiration,
-    std::vector<privacy_sandbox::TrackingProtectionFeature> features) {
+    std::vector<content_settings::TrackingProtectionFeature> features) {
   if (controls_visible_ != controls_visible ||
       protections_on_ != protections_on || enforcement != enforcement_ ||
       blocking_status != blocking_status_ ||

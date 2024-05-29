@@ -47,6 +47,9 @@
 
 using base::UserMetricsAction;
 using site_engagement::SiteEngagementService;
+using BlockingStatus = content_settings::TrackingProtectionBlockingStatus;
+using FeatureType = content_settings::TrackingProtectionFeatureType;
+using TrackingProtectionFeature = content_settings::TrackingProtectionFeature;
 
 namespace {
 
@@ -130,7 +133,7 @@ CookieControlsController::Status::Status(
     CookieControlsEnforcement enforcement,
     CookieBlocking3pcdStatus blocking_status,
     base::Time expiration,
-    std::vector<privacy_sandbox::TrackingProtectionFeature> features)
+    std::vector<TrackingProtectionFeature> features)
     : controls_visible(controls_visible),
       protections_on(protections_on),
       enforcement(enforcement),
@@ -222,22 +225,19 @@ CookieControlsController::Status CookieControlsController::GetStatus(
           CreateTrackingProtectionFeatureList(enforcement, is_allowed)};
 }
 
-std::vector<privacy_sandbox::TrackingProtectionFeature>
+std::vector<TrackingProtectionFeature>
 CookieControlsController::CreateTrackingProtectionFeatureList(
     CookieControlsEnforcement enforcement,
     bool are_3pcs_allowed) {
   auto status_label =
-      are_3pcs_allowed
-          ? privacy_sandbox::TrackingProtectionBlockingStatus::kAllowed
-          : privacy_sandbox::TrackingProtectionBlockingStatus::kBlocked;
+      are_3pcs_allowed ? BlockingStatus::kAllowed : BlockingStatus::kBlocked;
   if (!are_3pcs_allowed && tracking_protection_settings_ &&
       tracking_protection_settings_->IsTrackingProtection3pcdEnabled() &&
       !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked()) {
-    status_label = privacy_sandbox::TrackingProtectionBlockingStatus::kLimited;
+    status_label = BlockingStatus::kLimited;
   }
 
-  return {{privacy_sandbox::TrackingProtectionFeatureType::kThirdPartyCookies,
-           enforcement, status_label}};
+  return {{FeatureType::kThirdPartyCookies, enforcement, status_label}};
 }
 
 CookieControlsEnforcement

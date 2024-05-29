@@ -86,14 +86,14 @@ class CookieControlsController final
            CookieControlsEnforcement enforcement,
            CookieBlocking3pcdStatus blocking_status,
            base::Time expiration,
-           std::vector<privacy_sandbox::TrackingProtectionFeature> features);
+           std::vector<TrackingProtectionFeature> features);
     ~Status();
     bool controls_visible;
     bool protections_on;
     CookieControlsEnforcement enforcement;
     CookieBlocking3pcdStatus blocking_status;
     base::Time expiration;
-    std::vector<privacy_sandbox::TrackingProtectionFeature> features;
+    std::vector<TrackingProtectionFeature> features;
   };
 
   // The observed WebContents changes during the lifetime of the
@@ -157,9 +157,9 @@ class CookieControlsController final
 
   Status GetStatus(content::WebContents* web_contents);
 
-  std::vector<privacy_sandbox::TrackingProtectionFeature>
-  CreateTrackingProtectionFeatureList(CookieControlsEnforcement enforcement,
-                                      bool are_3pcs_allowed);
+  std::vector<TrackingProtectionFeature> CreateTrackingProtectionFeatureList(
+      CookieControlsEnforcement enforcement,
+      bool are_3pcs_allowed);
 
   CookieControlsEnforcement GetEnforcementForThirdPartyCookieBlocking(
       CookieBlocking3pcdStatus status,

@@ -181,7 +181,7 @@ void CookieControlsBubbleViewController::OnStatusChanged(
     CookieControlsEnforcement enforcement,
     CookieBlocking3pcdStatus blocking_status,
     base::Time expiration,
-    std::vector<privacy_sandbox::TrackingProtectionFeature> features) {
+    std::vector<content_settings::TrackingProtectionFeature> features) {
   protections_on_ = protections_on;
   blocking_status_ = blocking_status;
 

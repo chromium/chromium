@@ -36,7 +36,7 @@ class CookieControlsObserver : public base::CheckedObserver {
       // within in-context surfaces (user bypass, page info).
       // TODO(https://b/340312239): Remove `enforcement` param once this list
       // is being used.
-      std::vector<privacy_sandbox::TrackingProtectionFeature> features) {}
+      std::vector<TrackingProtectionFeature> features) {}
 
   // Called to update the user bypass entrypoint in the omnibox. This can impact
   // any property of the entrypoint (i.e. the visibility, label, or icon).
