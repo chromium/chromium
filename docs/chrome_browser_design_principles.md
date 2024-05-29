@@ -125,7 +125,7 @@ These design principles make it easier to write, debug, and maintain code in //c
   configuration, not C preprocessor conditionals e.g. `#if
   BUILDFLAG(FEATURE_FOO)`.
     * We ship a single product (Chrome) to multiple platforms. The purpose of
-      proprocessor conditionals is:
+      preprocessor conditionals is:
         * (1) to allow platform-agnostic code to reference platform-specific
           code.
             * e.g. `#if BUILDFLAG(OS_WIN)`
