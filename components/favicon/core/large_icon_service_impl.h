@@ -120,6 +120,7 @@ class LargeIconServiceImpl : public LargeIconService {
       const GURL& page_url,
       int min_source_size_in_pixel,
       std::optional<int> size_in_pixel_to_resize_to,
+      NoBigEnoughIconBehavior no_big_enough_icon_behavior,
       bool should_trim_page_url_path,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       favicon_base::LargeIconCallback callback,

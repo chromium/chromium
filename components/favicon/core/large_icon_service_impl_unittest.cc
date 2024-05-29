@@ -509,9 +509,9 @@ TEST_P(LargeIconServiceGetterTest,
   EXPECT_EQ(std::nullopt, returned_fallback_style_);
 }
 
-// Test that `GetLargeIconFromCacheFallbackToGoogleServer()` queries the Google
-// server if the database icon has a smaller size than the passed-in
-// `min_source_size` and `NoBigEnoughIconBehavior::kReturnEmpty` is used.
+// Test that `GetLargeIconFromCacheFallbackToGoogleServer()` doesn't query the
+// Google server if the database icon has a smaller size than the passed-in
+// `min_source_size`.
 TEST_P(LargeIconServiceGetterTest,
        ShouldReturnResizedIconFromServerIfCachedIconIsTooSmall) {
   // TODO(crbug.com/337714411): Remove
@@ -526,36 +526,9 @@ TEST_P(LargeIconServiceGetterTest,
   // Configure the Google server to return a 64x64 icon.
   const GURL kExpectedOriginalUrl("http://www.example.com/favicon.png");
 
-  EXPECT_CALL(mock_favicon_service_,
-              CanSetOnDemandFavicons(GURL(kDummyPageUrl),
-                                     favicon_base::IconType::kTouchIcon, _))
-      .WillOnce([](auto, auto, base::OnceCallback<void(bool)> callback) {
-        return base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), true));
-      });
-
-  image_fetcher::RequestMetadata expected_metadata;
-  expected_metadata.content_location_header = kExpectedOriginalUrl.spec();
-  EXPECT_CALL(*mock_image_fetcher_,
-              FetchImageAndData_(
-                  Property("spec", &GURL::spec,
-                           StartsWith("https://t0.gstatic.com/faviconV2")),
-                  _, _, _))
-      .WillOnce(PostFetchReplyWithMetadata(
-          gfx::test::CreateImage(/*size=*/64, kTestColor), expected_metadata));
-  EXPECT_CALL(mock_favicon_service_,
-              SetOnDemandFavicons(GURL(kDummyPageUrl), kExpectedOriginalUrl,
-                                  favicon_base::IconType::kTouchIcon, _, _))
-      .WillOnce([this](auto url, auto original_icon_url, auto icon_type,
-                       auto image, base::OnceCallback<void(bool)> callback) {
-        // Simulate persisting the fetched icon in the local cache. Avoid
-        // the complexity of transferring the data from the `image` because
-        // the tests don't care about it.
-        InjectMockResult(url, CreateTestBitmapResult(
-                                  image.Width(), image.Height(), kTestColor));
-        return base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), true));
-      });
+  EXPECT_CALL(mock_favicon_service_, CanSetOnDemandFavicons).Times(0);
+  EXPECT_CALL(*mock_image_fetcher_, FetchImageAndData_).Times(0);
+  EXPECT_CALL(mock_favicon_service_, SetOnDemandFavicons).Times(0);
 
   // Request the icon of size exactly 32x32. The database 16x16 icon should not
   // be returned because `NoBigEnoughIconBehavior::kReturnEmpty` is used.
@@ -570,7 +543,7 @@ TEST_P(LargeIconServiceGetterTest,
       &cancelable_task_tracker_);
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(gfx::Size(32, 32), returned_bitmap_size_);
+  EXPECT_EQ(std::nullopt, returned_bitmap_size_);
   EXPECT_EQ(std::nullopt, returned_fallback_style_);
 }
 
