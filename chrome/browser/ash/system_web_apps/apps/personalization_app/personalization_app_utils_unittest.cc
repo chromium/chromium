@@ -282,6 +282,58 @@ TEST_F(PersonalizationAppUtilsTest,
   ASSERT_TRUE(IsManagedSeaPenVcBackgroundEnabled(googler_profile));
 }
 
+TEST_F(PersonalizationAppUtilsTest,
+       IsManagedSeaPenWallpaperEnabled_PublicAccountDemoMode) {
+  const std::string email = "demo-public-account@example.com";
+  auto* managed_profile = profile_manager().CreateTestingProfile(email);
+  managed_profile->GetPrefs()->SetInteger(ash::prefs::kGenAIWallpaperSettings,
+                                          0);
+  AddAndLoginUser(AccountId::FromUserEmail(email),
+                  user_manager::UserType::kPublicAccount);
+
+  // Force device into demo mode.
+  ASSERT_FALSE(::ash::DemoSession::IsDeviceInDemoMode());
+  managed_profile->ScopedCrosSettingsTestHelper()
+      ->InstallAttributes()
+      ->SetDemoMode();
+  ASSERT_TRUE(::ash::DemoSession::IsDeviceInDemoMode());
+
+  // Force demo mode session to start.
+  ASSERT_FALSE(::ash::DemoSession::Get());
+  auto demo_mode_test_helper = std::make_unique<::ash::DemoModeTestHelper>();
+  demo_mode_test_helper->InitializeSession();
+  ASSERT_TRUE(::ash::DemoSession::Get());
+
+  ASSERT_TRUE(IsManagedSeaPenWallpaperEnabled(managed_profile))
+      << "Demo mode should force enable SeaPen Wallpaper for managed profile";
+}
+
+TEST_F(PersonalizationAppUtilsTest,
+       IsManagedSeaPenVcBackgroundEnabled_PublicAccountDemoMode) {
+  const std::string email = "demo-public-account@example.com";
+  auto* managed_profile = profile_manager().CreateTestingProfile(email);
+  managed_profile->GetPrefs()->SetInteger(
+      ash::prefs::kGenAIVcBackgroundSettings, 0);
+  AddAndLoginUser(AccountId::FromUserEmail(email),
+                  user_manager::UserType::kPublicAccount);
+
+  // Force device into demo mode.
+  ASSERT_FALSE(::ash::DemoSession::IsDeviceInDemoMode());
+  managed_profile->ScopedCrosSettingsTestHelper()
+      ->InstallAttributes()
+      ->SetDemoMode();
+  ASSERT_TRUE(::ash::DemoSession::IsDeviceInDemoMode());
+
+  // Force demo mode session to start.
+  ASSERT_FALSE(::ash::DemoSession::Get());
+  auto demo_mode_test_helper = std::make_unique<::ash::DemoModeTestHelper>();
+  demo_mode_test_helper->InitializeSession();
+  ASSERT_TRUE(::ash::DemoSession::Get());
+
+  ASSERT_TRUE(IsManagedSeaPenVcBackgroundEnabled(managed_profile))
+      << "Demo mode should force enable SeaPen VC Background for managed "
+         "profile";
+}
 }  // namespace
 
 }  // namespace ash::personalization_app

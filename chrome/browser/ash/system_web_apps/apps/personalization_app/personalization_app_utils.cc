@@ -171,6 +171,17 @@ bool IsManagedSeaPenWallpaperEnabled(Profile* profile) {
     return true;
   }
 
+  // Skip policy check for Demo Mode guest session.
+  // TODO(b/343518695): remove this bypass codes once the policy is added into
+  // MGS and Demo Mode admins enable it.
+  if (features::IsSeaPenDemoModeEnabled() &&
+      DemoSession::IsDeviceInDemoMode()) {
+    DVLOG(1) << __func__ << " demo mode";
+    const auto* user = GetUser(profile);
+    return DemoSession::Get() && user &&
+           user->GetType() == user_manager::UserType::kPublicAccount;
+  }
+
   return profile->GetPrefs()->GetInteger(ash::prefs::kGenAIWallpaperSettings) ==
          1;
 }
@@ -182,6 +193,17 @@ bool IsManagedSeaPenVcBackgroundEnabled(Profile* profile) {
   if (gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName())) {
     DVLOG(1) << __func__ << " Google internal account";
     return true;
+  }
+
+  // Skip policy check for Demo Mode guest session.
+  // TODO(b/343518695): remove this bypass codes once the policy is added into
+  // MGS and Demo Mode admins enable it.
+  if (features::IsSeaPenDemoModeEnabled() &&
+      DemoSession::IsDeviceInDemoMode()) {
+    DVLOG(1) << __func__ << " demo mode";
+    const auto* user = GetUser(profile);
+    return DemoSession::Get() && user &&
+           user->GetType() == user_manager::UserType::kPublicAccount;
   }
 
   return profile->GetPrefs()->GetInteger(
