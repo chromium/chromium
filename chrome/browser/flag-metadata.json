@@ -8856,11 +8856,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "web-app-dedupe-install-urls",
-    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "web-app-separate-user-display-mode-for-cros",
     "owners": [ "glenrob@chromium.org", "cros-web-apps-core@google.com" ],
     "expiry_milestone": 130

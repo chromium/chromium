@@ -3070,9 +3070,6 @@ extern const char kIOSPromoBookmarkBubbleName[];
 extern const char kIOSPromoBookmarkBubbleDescription[];
 #endif
 
-extern const char kWebAppDedupeInstallUrlsName[];
-extern const char kWebAppDedupeInstallUrlsDescription[];
-
 extern const char kWebAppSyncGeneratedIconBackgroundFixName[];
 extern const char kWebAppSyncGeneratedIconBackgroundFixDescription[];
 

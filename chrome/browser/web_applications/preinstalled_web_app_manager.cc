@@ -513,13 +513,11 @@ bool ShouldForceReinstall(const ExternalInstallOptions& options,
     return true;
   }
 
-  if (base::FeatureList::IsEnabled(features::kWebAppDedupeInstallUrls)) {
-    // TODO(crbug.com/40261748): Add metrics for this event.
-    const WebApp* app = registrar.LookUpAppByInstallSourceInstallUrl(
-        WebAppManagement::Type::kDefault, options.install_url);
-    if (app && LooksLikePlaceholder(*app)) {
-      return true;
-    }
+  // TODO(crbug.com/40261748): Add metrics for this event.
+  const WebApp* app = registrar.LookUpAppByInstallSourceInstallUrl(
+      WebAppManagement::Type::kDefault, options.install_url);
+  if (app && LooksLikePlaceholder(*app)) {
+    return true;
   }
 
   return false;

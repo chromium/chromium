@@ -653,13 +653,9 @@ void ExternallyManagedAppManager::ContinueSynchronization(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kWebAppDedupeInstallUrls)) {
-    provider_->scheduler().ScheduleDedupeInstallUrls(
-        base::BindOnce(&ExternallyManagedAppManager::CompleteSynchronization,
-                       weak_ptr_factory_.GetWeakPtr(), source));
-  } else {
-    CompleteSynchronization(source);
-  }
+  provider_->scheduler().ScheduleDedupeInstallUrls(
+      base::BindOnce(&ExternallyManagedAppManager::CompleteSynchronization,
+                     weak_ptr_factory_.GetWeakPtr(), source));
 }
 
 void ExternallyManagedAppManager::CompleteSynchronization(
