@@ -95,6 +95,21 @@ export class SettingsSafetyHubPageElement extends
 
       // Whether the data for extensions is ready.
       hasDataForExtensions_: Boolean,
+
+      // String that identifies version card's role announced by accessibility
+      // voiceover.
+      versionCardRole_: {
+        type: String,
+        computed: 'computeVersionCardRole_(versionCardData_)',
+      },
+
+      // String that identifies version card's description announced by
+      // accessibility voiceover.
+      versionCardAriaDescription_: {
+        type: String,
+        computed: 'computeVersionCardAriaDescription_(versionCardData_)',
+      },
+
     };
   }
 
@@ -116,6 +131,8 @@ export class SettingsSafetyHubPageElement extends
   private hasDataForExtensions_: boolean;
   private shouldRecordMetric_: boolean = false;
   private userEducationItemList_: SiteInfo[];
+  private versionCardRole_: string;
+  private versionCardAriaDescription_: string;
   private browserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -326,6 +343,16 @@ export class SettingsSafetyHubPageElement extends
   private onExtensionsChanged_(numberOfExtensions: number) {
     this.showExtensions_ = !!numberOfExtensions;
     this.hasDataForExtensions_ = true;
+  }
+
+  private computeVersionCardRole_(): string {
+    return this.versionCardData_.state === CardState.WARNING ? 'button' : 'link';
+  }
+
+  private computeVersionCardAriaDescription_(): string {
+    return this.versionCardData_.state === CardState.WARNING ?
+        this.i18n('safetyHubVersionRelaunchAriaLabel') :
+        this.i18n('safetyHubVersionNavigationAriaLabel');
   }
 
   private isEnterOrSpaceClicked_(e: KeyboardEvent): boolean {

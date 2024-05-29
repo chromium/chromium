@@ -227,6 +227,12 @@ suite('SafetyHubPage', function() {
         testElement.$.passwords.shadowRoot!.querySelector('#subheader')!
             .textContent!.trim(),
         passwordCardMockData.subheader);
+
+    // Check that the card aria role and description are correct.
+    assertEquals(testElement.$.passwords.getAttribute('role'), 'link');
+    assertEquals(
+        testElement.$.passwords.getAttribute('aria-description'),
+        testElement.i18n('safetyHubPasswordNavigationAriaLabel'));
   });
 
   test('Password Card Clicked', async function() {
@@ -272,6 +278,12 @@ suite('SafetyHubPage', function() {
         testElement.$.version.shadowRoot!.querySelector(
                                              '#subheader')!.textContent!.trim(),
         versionCardMockData.subheader);
+
+    // Check that the card aria role and description are correct.
+    assertEquals(testElement.$.passwords.getAttribute('role'), 'link');
+    assertEquals(
+        testElement.$.version.getAttribute('aria-description'),
+        testElement.i18n('safetyHubVersionNavigationAriaLabel'));
   });
 
   test('Version Card Clicked When No Update Waiting', async function() {
@@ -298,6 +310,12 @@ suite('SafetyHubPage', function() {
     testElement = document.createElement('settings-safety-hub-page');
     document.body.appendChild(testElement);
     await flushTasks();
+
+    // Check that the card aria role and description are correct.
+    assertEquals(testElement.$.version.getAttribute('role'), 'button');
+    assertEquals(
+        testElement.$.version.getAttribute('aria-description'),
+        testElement.i18n('safetyHubVersionRelaunchAriaLabel'));
 
     // <if expr="not chromeos_ash">
     lifetimeBrowserProxy.setShouldShowRelaunchConfirmationDialog(true);
@@ -362,6 +380,12 @@ suite('SafetyHubPage', function() {
         testElement.$.safeBrowsing.shadowRoot!.querySelector('#subheader')!
             .textContent!.trim(),
         safeBrowsingCardMockData.subheader);
+
+    // Check that the card aria role and description are correct.
+    assertEquals(testElement.$.passwords.getAttribute('role'), 'link');
+    assertEquals(
+        testElement.$.safeBrowsing.getAttribute('aria-description'),
+        testElement.i18n('safetyHubSBNavigationAriaLabel'));
   });
 
   test('Safe Browsing Card Clicked', async function() {

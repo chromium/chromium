@@ -53,15 +53,18 @@
 <div class="card-container">
   <settings-safety-hub-card id="passwords" class="card box"
       data="[[passwordCardData_]]" on-click="onPasswordsClick_"
-      tabindex="0" on-keydown="onPasswordsKeyPress_">
+      tabindex="0" on-keydown="onPasswordsKeyPress_" role="link"
+      aria-description="$i18n{safetyHubPasswordNavigationAriaLabel}">
   </settings-safety-hub-card>
   <settings-safety-hub-card id="version" class="card box"
       data="[[versionCardData_]]" on-click="onVersionClick_"
-      tabindex="0" on-keydown="onVersionKeyPress_">
+      tabindex="0" on-keydown="onVersionKeyPress_" role="[[versionCardRole_]]"
+      aria-description="[[versionCardAriaDescription_]]">
   </settings-safety-hub-card>
   <settings-safety-hub-card id="safeBrowsing" class="card box"
       data="[[safeBrowsingCardData_]]" on-click="onSafeBrowsingClick_"
-      tabindex="0" on-keydown="onSafeBrowsingKeyPress_">
+      tabindex="0" on-keydown="onSafeBrowsingKeyPress_" role="link"
+      aria-description="$i18n{safetyHubSBNavigationAriaLabel}">
   </settings-safety-hub-card>
 </div>
 <h2 class="section-header cr-secondary-text">

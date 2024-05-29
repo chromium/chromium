@@ -2235,6 +2235,14 @@ void AddSafetyHubStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SAFETY_HUB_USER_EDU_INCOGNITO_HEADER},
       {"safetyHubUserEduSafeBrowsingHeader",
        IDS_SETTINGS_SAFETY_HUB_USER_EDU_SAFE_BROWSING_HEADER},
+      {"safetyHubPasswordNavigationAriaLabel",
+       IDS_SETTINGS_SAFETY_HUB_PASSWORD_NAVIGATION_ARIA_LABEL},
+      {"safetyHubVersionNavigationAriaLabel",
+       IDS_SETTINGS_SAFETY_HUB_VERSION_NAVIGATION_ARIA_LABEL},
+      {"safetyHubVersionRelaunchAriaLabel",
+       IDS_SETTINGS_SAFETY_HUB_VERSION_RELAUNCH_ARIA_LABEL},
+      {"safetyHubSBNavigationAriaLabel",
+       IDS_SETTINGS_SAFETY_HUB_SB_NAVIGATION_ARIA_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
