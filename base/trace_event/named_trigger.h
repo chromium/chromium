@@ -5,6 +5,8 @@
 #ifndef BASE_TRACE_EVENT_NAMED_TRIGGER_H_
 #define BASE_TRACE_EVENT_NAMED_TRIGGER_H_
 
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 
