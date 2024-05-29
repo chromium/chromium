@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {InfiniteList, TabData, TabItemType, TabSearchItem, TitleItem} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {InfiniteList, TabData, TabItemType, TabSearchItemElement, TitleItem} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -46,7 +46,7 @@ suite('InfiniteListTest', () => {
   let infiniteList: InfiniteList;
 
   disableAnimationBehavior(InfiniteList, 'scrollTo');
-  disableAnimationBehavior(TabSearchItem, 'scrollIntoView');
+  disableAnimationBehavior(TabSearchItemElement, 'scrollIntoView');
 
   async function setupTest(sampleData: Array<TabData|TitleItem>) {
     const testApp = document.createElement('test-app');

@@ -3,82 +3,106 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/mwb_shared_icons.html.js';
-import 'chrome://resources/cr_elements/mwb_shared_vars.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './strings.m.js';
 
-import {MouseHoverableMixin} from 'chrome://resources/cr_elements/mouse_hoverable_mixin.js';
+import {MouseHoverableMixinLit} from 'chrome://resources/cr_elements/mouse_hoverable_mixin_lit.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {get as deepGet, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {ariaLabel, normalizeURL, type TabData, TabItemType} from './tab_data.js';
 import {colorName} from './tab_group_color_helper.js';
 import type {Tab} from './tab_search.mojom-webui.js';
-import {getTemplate} from './tab_search_item.html.js';
+import {getCss} from './tab_search_item.css.js';
+import {getHtml} from './tab_search_item.html.js';
 import {highlightText, tabHasMediaAlerts} from './tab_search_utils.js';
 import {TabAlertState} from './tabs.mojom-webui.js';
 
-export interface TabSearchItem {
+
+function deepGet(obj: Record<string, any>, path: string): any {
+  let value: Record<string, any> = obj;
+
+  const parts = path.split('.');
+  for (const part of parts) {
+    if (value[part] === undefined) {
+      return undefined;
+    }
+    value = value[part];
+  }
+
+  return value;
+}
+
+
+export interface TabSearchItemElement {
   $: {
-    groupTitle: HTMLElement,
     primaryText: HTMLElement,
     secondaryText: HTMLElement,
   };
 }
 
-const TabSearchItemBase = MouseHoverableMixin(PolymerElement);
+const TabSearchItemBase = MouseHoverableMixinLit(CrLitElement);
 
 
-export class TabSearchItem extends TabSearchItemBase {
+export class TabSearchItemElement extends TabSearchItemBase {
   static get is() {
     return 'tab-search-item';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      data: {
-        type: Object,
-        observer: 'dataChanged_',
-      },
-
-      buttonRipples_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('useRipples'),
-      },
-
-      index: Number,
-
-      inSuggestedGroup: {
-        type: Boolean,
-        value: false,
-      },
+      data: {type: Object},
+      buttonRipples_: {type: Boolean},
+      index: {type: Number},
+      inSuggestedGroup: {type: Boolean},
 
       compact: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
 
   data: TabData;
-  private buttonRipples_: boolean;
+  protected buttonRipples_: boolean = loadTimeData.getBoolean('useRipples');
   index: number;
-  inSuggestedGroup: boolean;
-  compact: boolean;
+  inSuggestedGroup: boolean = false;
+  compact: boolean = false;
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('data')) {
+      if (this.data.tabGroup) {
+        this.style.setProperty(
+            '--group-dot-color',
+            `var(--tab-group-color-${colorName(this.data.tabGroup.color)})`);
+      }
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('data')) {
+      this.dataChanged_();
+    }
+  }
 
   /**
    * @return Whether a close action can be performed on the item.
    */
-  private isCloseable_(type: TabItemType): boolean {
-    return type === TabItemType.OPEN_TAB;
+  protected isCloseable_(): boolean {
+    return this.data.type === TabItemType.OPEN_TAB;
   }
 
   /**
@@ -86,40 +110,42 @@ export class TabSearchItem extends TabSearchItemBase {
    *     preallocate space for the close button even while hidden if the tab
    *     will display a media alert.
    */
-  private getButtonContainerStyles_(tabData: TabData): string {
+  protected getButtonContainerStyles_(): string {
     return 'button-container' +
-        (this.isOpenTabAndHasMediaAlert_(tabData) ?
-             ' allocate-space-while-hidden' :
-             '');
+        (this.isOpenTabAndHasMediaAlert_() ? ' allocate-space-while-hidden' :
+                                             '');
   }
 
-  private getCloseButtonRole_(): string {
+  protected getCloseButtonRole_(): string {
     // If this tab search item is an option within a list, the button
     // should also be treated as an option in a list to ensure the correct
     // focus traversal behavior when a screenreader is on.
     return this.role === 'option' ? 'option' : 'button';
   }
 
-  private onItemClose_(e: Event) {
+  protected onItemClose_(e: Event) {
     this.dispatchEvent(new CustomEvent('close'));
     e.stopPropagation();
   }
 
-  private faviconUrl_(tab: Tab): string {
-    return tab.faviconUrl ?
-        `url("${tab.faviconUrl.url}")` :
+  protected faviconUrl_(): string {
+    const tab = this.data.tab;
+    return (tab as Tab).faviconUrl ?
+        `url("${(tab as Tab).faviconUrl!.url}")` :
         getFaviconForPageURL(
-            tab.isDefaultFavicon ? 'chrome://newtab' : tab.url.url, false);
+            (tab as Tab).isDefaultFavicon ? 'chrome://newtab' : tab.url.url,
+            false);
   }
 
   /**
    * Determines the display attribute value for the group SVG element.
    */
-  private groupSvgDisplay_(tabData: TabData): string {
-    return tabData.tabGroup ? 'block' : 'none';
+  protected groupSvgDisplay_(): string {
+    return this.data.tabGroup ? 'block' : 'none';
   }
 
-  private isOpenTabAndHasMediaAlert_(tabData: TabData): boolean {
+  private isOpenTabAndHasMediaAlert_(): boolean {
+    const tabData = this.data;
     return tabData.type === TabItemType.OPEN_TAB &&
         tabHasMediaAlerts(tabData.tab as Tab);
   }
@@ -127,22 +153,22 @@ export class TabSearchItem extends TabSearchItemBase {
   /**
    * Determines the display attribute value for the media indicator.
    */
-  private mediaAlertVisibility_(tabData: TabData): string {
-    return this.isOpenTabAndHasMediaAlert_(tabData) ? 'block' : 'none';
+  protected mediaAlertVisibility_(): string {
+    return this.isOpenTabAndHasMediaAlert_() ? 'block' : 'none';
   }
 
   /**
    * Returns the correct media alert indicator class name.
    */
-  private getMediaAlertImageClass_(tabData: TabData): string {
-    if (!this.isOpenTabAndHasMediaAlert_(tabData)) {
+  protected getMediaAlertImageClass_(): string {
+    if (!this.isOpenTabAndHasMediaAlert_()) {
       return '';
     }
     // GetTabAlertStatesForContents adds alert indicators in the order of their
     // priority. Only relevant media alerts are sent over mojo so the first
     // element in alertStates will be the highest priority media alert to
     // display.
-    const alert = (tabData.tab as Tab).alertStates[0];
+    const alert = (this.data.tab as Tab).alertStates[0];
     switch (alert) {
       case TabAlertState.kMediaRecording:
         return 'media-recording';
@@ -159,16 +185,17 @@ export class TabSearchItem extends TabSearchItemBase {
     }
   }
 
-  private hasTabGroupWithTitle_(tabData: TabData): boolean {
-    return !!(tabData.tabGroup && tabData.tabGroup.title);
+  protected hasTabGroupWithTitle_(): boolean {
+    return !!(this.data.tabGroup && this.data.tabGroup.title);
   }
 
-  private dataChanged_(data: TabData) {
+  private dataChanged_() {
+    const data = this.data;
     ([
       ['tab.title', this.$.primaryText],
       ['hostname', this.$.secondaryText],
-      ['tabGroup.title', this.$.groupTitle],
-    ] as Array<[string, HTMLElement]>)
+      ['tabGroup.title', this.shadowRoot!.querySelector('#groupTitle')],
+    ] as Array<[string, HTMLElement | null]>)
         .forEach(([path, element]) => {
           if (element) {
             const highlightRanges =
@@ -182,26 +209,21 @@ export class TabSearchItem extends TabSearchItemBase {
     if (protocol === 'chrome:') {
       this.$.secondaryText.prepend(document.createTextNode('chrome://'));
     }
-
-    if (data.tabGroup) {
-      this.style.setProperty(
-          '--group-dot-color',
-          `var(--tab-group-color-${colorName(data.tabGroup.color)})`);
-    }
   }
 
-  private ariaLabelForText_(tabData: TabData): string {
-    return ariaLabel(tabData);
+  protected ariaLabelForText_(): string {
+    return ariaLabel(this.data);
   }
 
-  private ariaLabelForButton_(title: string): string {
+  protected ariaLabelForButton_(): string {
+    const title = this.data.tab.title;
     if (this.inSuggestedGroup) {
       return loadTimeData.getStringF('tabOrganizationCloseTabAriaLabel', title);
     }
     return `${loadTimeData.getString('closeTab')} ${title}`;
   }
 
-  private tooltipForButton_(): string {
+  protected tooltipForButton_(): string {
     if (this.inSuggestedGroup) {
       return loadTimeData.getString('tabOrganizationCloseTabTooltip');
     }
@@ -211,8 +233,8 @@ export class TabSearchItem extends TabSearchItemBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'tab-search-item': TabSearchItem;
+    'tab-search-item': TabSearchItemElement;
   }
 }
 
-customElements.define(TabSearchItem.is, TabSearchItem);
+customElements.define(TabSearchItemElement.is, TabSearchItemElement);

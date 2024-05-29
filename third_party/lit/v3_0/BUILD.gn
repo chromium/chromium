@@ -25,6 +25,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/side_panel/history_clusters:build_ts",
     "//chrome/browser/resources/side_panel/reading_list:build_ts",
     "//chrome/browser/resources/side_panel/shared:build_ts",
+    "//chrome/browser/resources/tab_search:build_ts",
     "//chrome/browser/resources/webui_gallery:build_ts",
     "//chrome/browser/resources/welcome:build_ts",
     "//chrome/browser/resources/whats_new:build_ts",

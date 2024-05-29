@@ -24,7 +24,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {normalizeURL, TabData, TabItemType} from './tab_data.js';
 import {getTemplate} from './tab_organization_group.html.js';
 import type {Tab} from './tab_search.mojom-webui.js';
-import type {TabSearchItem} from './tab_search_item.js';
+import type {TabSearchItemElement} from './tab_search_item.js';
 
 export interface TabOrganizationGroupElement {
   $: {
@@ -218,7 +218,7 @@ export class TabOrganizationGroupElement extends PolymerElement {
 
   private onSelectedChanged_() {
     if (this.$.selector.selectedItem) {
-      const selectedItem = this.$.selector.selectedItem as TabSearchItem;
+      const selectedItem = this.$.selector.selectedItem as TabSearchItemElement;
       const selectedItemCloseButton =
           selectedItem.shadowRoot!.querySelector(`cr-icon-button`)!;
       selectedItemCloseButton.focus();
@@ -237,8 +237,8 @@ export class TabOrganizationGroupElement extends PolymerElement {
   }
 
   private onTabFocus_(event: DomRepeatEvent<TabData>) {
-    // Ensure that when a TabSearchItem receives focus, it becomes the selected
-    // item in the list.
+    // Ensure that when a TabSearchItemElement receives focus, it becomes the
+    // selected item in the list.
     this.$.selector.selected = event.model.index;
   }
 

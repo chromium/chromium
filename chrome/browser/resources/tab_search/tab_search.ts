@@ -16,7 +16,7 @@ export {TabOrganizationResultsElement} from './tab_organization_results.js';
 export {PageCallbackRouter, PageRemote, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, SwitchToTabInfo, Tab, TabGroup, TabOrganizationError, TabOrganizationSession, TabOrganizationState, TabsRemovedInfo, TabUpdateInfo, UserFeedback, Window} from './tab_search.mojom-webui.js';
 export {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 export {TabSearchGroupItem} from './tab_search_group_item.js';
-export {TabSearchItem} from './tab_search_item.js';
+export {TabSearchItemElement} from './tab_search_item.js';
 export {TabSearchPageElement} from './tab_search_page.js';
 export {AccountInfo, SyncInfo, TabSearchSyncBrowserProxy, TabSearchSyncBrowserProxyImpl} from './tab_search_sync_browser_proxy.js';
 export {TabAlertState} from './tabs.mojom-webui.js';
