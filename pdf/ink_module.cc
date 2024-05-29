@@ -89,6 +89,8 @@ bool InkModule::OnMessage(const base::Value::Dict& message) {
 
   static constexpr auto kMessageHandlers =
       base::MakeFixedFlatMap<std::string_view, MessageHandler>({
+          {"annotationRedo", &InkModule::HandleAnnotationUndoMessage},
+          {"annotationUndo", &InkModule::HandleAnnotationRedoMessage},
           {"setAnnotationBrush", &InkModule::HandleSetAnnotationBrushMessage},
           {"setAnnotationMode", &InkModule::HandleSetAnnotationModeMessage},
       });
@@ -214,6 +216,16 @@ bool InkModule::FinishEraseInkStroke() {
   CHECK(is_erasing_stroke());
   // TODO(crbug.com/335524381): Implement.
   return false;
+}
+
+void InkModule::HandleAnnotationRedoMessage(const base::Value::Dict& message) {
+  CHECK(enabled_);
+  // TODO(crbug.com/335521182): Implement redo.
+}
+
+void InkModule::HandleAnnotationUndoMessage(const base::Value::Dict& message) {
+  CHECK(enabled_);
+  // TODO(crbug.com/335521182): Implement undo.
 }
 
 void InkModule::HandleSetAnnotationBrushMessage(

@@ -113,12 +113,26 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
   }
 
   private onUndoClick_() {
+    // <if expr="enable_pdf_ink2">
+    if (this.pdfInk2Enabled) {
+      this.pluginController_.undo();
+      return;
+    }
+    // </if>
+
     // <if expr="enable_ink">
     this.inkController_.undo();
     // </if>
   }
 
   private onRedoClick_() {
+    // <if expr="enable_pdf_ink2">
+    if (this.pdfInk2Enabled) {
+      this.pluginController_.redo();
+      return;
+    }
+    // </if>
+
     // <if expr="enable_ink">
     this.inkController_.redo();
     // </if>

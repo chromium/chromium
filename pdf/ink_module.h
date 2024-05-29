@@ -97,6 +97,8 @@ class InkModule {
   bool ContinueEraseInkStroke(const gfx::PointF& position);
   bool FinishEraseInkStroke();
 
+  void HandleAnnotationRedoMessage(const base::Value::Dict& message);
+  void HandleAnnotationUndoMessage(const base::Value::Dict& message);
   void HandleSetAnnotationBrushMessage(const base::Value::Dict& message);
   void HandleSetAnnotationModeMessage(const base::Value::Dict& message);
 

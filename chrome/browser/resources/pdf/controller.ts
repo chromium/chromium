@@ -77,10 +77,10 @@ export interface ContentController {
   /** Triggers printing of the current document. */
   print(): void;
 
-  /** Undo an edit action. */
+  /** Undo an annotation mode edit action. */
   undo(): void;
 
-  /** Redo an edit action. */
+  /** Redo an annotation mode edit action. */
   redo(): void;
 
   /**
@@ -207,9 +207,17 @@ export class PluginController implements ContentController {
   }
   // </if>
 
-  redo() {}
+  redo() {
+    // <if "enable_pdf_ink2">
+    this.postMessage_({type: 'annotationRedo'});
+    // </if>
+  }
 
-  undo() {}
+  undo() {
+    // <if "enable_pdf_ink2">
+    this.postMessage_({type: 'annotationUndo'});
+    // </if>
+  }
 
   /**
    * Notify the plugin to stop reacting to scroll events while zoom is taking

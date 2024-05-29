@@ -189,4 +189,33 @@ chrome.test.runTests([
         {colorR: 209, colorG: 196, colorB: 233, size: 1});
     chrome.test.succeed();
   },
+  // Test the behavior of the undo and redo buttons.
+  function testUndoRedo() {
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') === undefined);
+
+    const annotationBar = getAnnotationsBar();
+    const undoButton = annotationBar.$.undo;
+    const redoButton = annotationBar.$.redo;
+
+    // The buttons should be disabled when there aren't any strokes.
+    chrome.test.assertTrue(undoButton.disabled);
+    chrome.test.assertTrue(redoButton.disabled);
+
+    // TODO(crbug.com/335524383): Simulate drawing a stroke, which will enable
+    // the undo button. For now, just manually enable the button.
+    undoButton.disabled = false;
+    undoButton.click();
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') !== undefined);
+
+    mockPlugin.clearMessages();
+    redoButton.disabled = false;
+    redoButton.click();
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') !== undefined);
+    chrome.test.succeed();
+  },
 ]);
