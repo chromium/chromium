@@ -30,6 +30,7 @@ class HelpAppPageHandler : public help_app::mojom::PageHandler {
 
   // help_app::mojom::PageHandler:
   void OpenFeedbackDialog(OpenFeedbackDialogCallback callback) override;
+  void ShowOnDeviceAppControls() override;
   void ShowParentalControls() override;
   void TriggerWelcomeTipCallToAction(
       help_app::mojom::ActionTypeId action_type_id) override;

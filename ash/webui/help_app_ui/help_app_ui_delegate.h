@@ -26,6 +26,9 @@ class HelpAppUIDelegate {
   // if the dialog was determined to have opened successfully.
   virtual std::optional<std::string> OpenFeedbackDialog() = 0;
 
+  // Opens OS Settings at the on device app controls section.
+  virtual void ShowOnDeviceAppControls() = 0;
+
   // Opens OS Settings at the parental controls section.
   virtual void ShowParentalControls() = 0;
 

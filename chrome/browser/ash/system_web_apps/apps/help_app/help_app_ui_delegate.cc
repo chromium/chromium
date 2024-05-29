@@ -99,6 +99,13 @@ std::optional<std::string> ChromeHelpAppUIDelegate::OpenFeedbackDialog() {
   return std::nullopt;
 }
 
+void ChromeHelpAppUIDelegate::ShowOnDeviceAppControls() {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  // The "Apps" section of OS Settings contains app controls.
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      profile, chromeos::settings::mojom::kAppsSectionPath);
+}
+
 void ChromeHelpAppUIDelegate::ShowParentalControls() {
   Profile* profile = Profile::FromWebUI(web_ui_);
   // The "People" section of OS Settings contains parental controls.

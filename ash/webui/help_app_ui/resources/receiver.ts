@@ -27,6 +27,9 @@ const DELEGATE: ClientApiDelegate = {
         await parentMessagePipe.sendMessage(Message.OPEN_FEEDBACK_DIALOG);
     return response['errorMessage'] as string;
   },
+  showOnDeviceAppControls() {
+    return parentMessagePipe.sendMessage(Message.SHOW_ON_DEVICE_APP_CONTROLS);
+  },
   showParentalControls() {
     return parentMessagePipe.sendMessage(Message.SHOW_PARENTAL_CONTROLS);
   },

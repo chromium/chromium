@@ -35,6 +35,7 @@ class ChromeHelpAppUIDelegate : public HelpAppUIDelegate {
 
   // HelpAppUIDelegate:
   std::optional<std::string> OpenFeedbackDialog() override;
+  void ShowOnDeviceAppControls() override;
   void ShowParentalControls() override;
   void TriggerWelcomeTipCallToAction(
       help_app::mojom::ActionTypeId action_type_id) override;

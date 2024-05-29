@@ -81,6 +81,10 @@ guestMessagePipe.registerHandler(Message.OPEN_FEEDBACK_DIALOG, () => {
   return helpApp.handler.openFeedbackDialog();
 });
 
+guestMessagePipe.registerHandler(
+    Message.SHOW_ON_DEVICE_APP_CONTROLS,
+    () => void helpApp.handler.showOnDeviceAppControls());
+
 guestMessagePipe.registerHandler(Message.SHOW_PARENTAL_CONTROLS, () => void
   helpApp.handler.showParentalControls());
 

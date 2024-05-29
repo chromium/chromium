@@ -33,6 +33,10 @@ void HelpAppPageHandler::OpenFeedbackDialog(
   std::move(callback).Run(std::move(error_message));
 }
 
+void HelpAppPageHandler::ShowOnDeviceAppControls() {
+  help_app_ui_->delegate()->ShowOnDeviceAppControls();
+}
+
 void HelpAppPageHandler::ShowParentalControls() {
   help_app_ui_->delegate()->ShowParentalControls();
 }
