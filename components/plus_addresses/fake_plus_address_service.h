@@ -10,8 +10,10 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace plus_addresses {
 
@@ -54,6 +56,8 @@ class FakePlusAddressService : public PlusAddressService {
 
  private:
   PlusAddressRequestCallback on_confirmed_;
+  testing::NiceMock<affiliations::MockAffiliationService>
+      mock_affiliation_service_;
   bool is_confirmed_ = false;
   bool should_fail_to_confirm_ = false;
   bool should_fail_to_reserve_ = false;

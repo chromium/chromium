@@ -97,12 +97,14 @@ bool ShouldOfferPlusAddressCreation(PasswordFormType form_type) {
 PlusAddressService::PlusAddressService(
     signin::IdentityManager* identity_manager,
     std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
-    scoped_refptr<PlusAddressWebDataService> webdata_service)
+    scoped_refptr<PlusAddressWebDataService> webdata_service,
+    affiliations::AffiliationService* affiliation_service)
     : identity_manager_(identity_manager),
       plus_address_http_client_(std::move(plus_address_http_client)),
       webdata_service_(std::move(webdata_service)),
       plus_address_allocator_(std::make_unique<PlusAddressJitAllocator>(
           plus_address_http_client_.get())),
+      plus_address_match_helper_(this, affiliation_service),
       excluded_sites_(GetAndParseExcludedSites()) {
   if (IsSyncingPlusAddresses()) {
     if (webdata_service_) {

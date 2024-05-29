@@ -2082,6 +2082,12 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="android_asset or android_res"/>
 </enum>
 
+<enum name="WebViewUsedInPopupWindow">
+  <int value="0" label="Not in PopupWindow"/>
+  <int value="1" label="In PopupWindow"/>
+  <int value="2" label="Unknown (likely not attached to window)"/>
+</enum>
+
 <enum name="WebViewVisibility">
   <int value="0" label="Visible"/>
   <int value="1" label="NotVisible"/>

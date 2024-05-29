@@ -6770,6 +6770,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.UsedInPopupWindow"
+    enum="WebViewUsedInPopupWindow" expires_after="2024-12-01">
+  <owner>peconn@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Recorded when a WebView is attached to the window. Records whether the
+    window the WebView is attached to is a PopupWindow.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.UserAgentClientHintsMetadata.AvailableType"
     enum="UserAgentMetadataAvailableType" expires_after="2024-12-01">
   <owner>victortan@chromium.org</owner>

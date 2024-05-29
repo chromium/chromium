@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_testing_pref_service.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
@@ -87,7 +88,7 @@ inline constexpr char kEmptyOrigin[] = "";
 // have to be constructed manually (e.g., in unit tests within Autofill core
 // code). The returned PrefService has had Autofill preferences registered on
 // its associated registry.
-std::unique_ptr<PrefService> PrefServiceForTesting();
+std::unique_ptr<AutofillTestingPrefService> PrefServiceForTesting();
 std::unique_ptr<PrefService> PrefServiceForTesting(
     user_prefs::PrefRegistrySyncable* registry);
 

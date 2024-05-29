@@ -1,5 +1,5 @@
 {% from 'templates/macros.tmpl' import license, print_if, source_files_for_generated_file %}
-{% from 'templates/fields/field.tmpl' import encode, getter_expression, setter_expression, declare_storage, fieldwise_compare, fieldwise_diff, fieldwise_pointer_compare_inherited, fieldwise_pointer_compare_inherited_old, field_group_access_bit_name %}
+{% from 'templates/fields/field.tmpl' import encode, getter_expression, setter_expression, declare_storage, fieldwise_compare, fieldwise_diff, fieldwise_pointer_compare_inherited, field_group_access_bit_name %}
 {% from 'templates/fields/group.tmpl' import declare_field_group_class %}
 {{license()}}
 
@@ -156,15 +156,9 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
   }
 
   inline bool InheritedDataShared(const ComputedStyleBase& o) const {
-    if (RuntimeEnabledFeatures::CSSMPCImprovementsEnabled()) {
-      return (
-          {{fieldwise_pointer_compare_inherited(computed_style)|indent(8)}}
-      );
-    } else {
-      return (
-          {{fieldwise_pointer_compare_inherited_old(computed_style)|indent(8)}}
-      );
-    }
+    return (
+        {{fieldwise_pointer_compare_inherited(computed_style)|indent(8)}}
+    );
   }
 
   {% for name, groups_to_diff in diff_functions_map.items() %}

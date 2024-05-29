@@ -816,8 +816,7 @@
       _accountSwitcherCoordinator = [[AccountSwitcherCoordinator alloc]
           initWithBaseViewController:self.baseViewController
                              browser:self.browser];
-      _accountSwitcherCoordinator.anchorPoint =
-          [identityDisc convertPoint:identityDisc.bounds.origin toView:nil];
+      _accountSwitcherCoordinator.anchorView = identityDisc;
       // TODO(crbug.com/336719423): Record signin metrics based on the selected
       // action from the account switcher.
       [_accountSwitcherCoordinator start];

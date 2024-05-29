@@ -1193,8 +1193,10 @@ void StyleResolver::InitStyle(Element& element,
     // pseudo itself. They may use var() references but those must be resolved
     // against the originating element. Share the variables from the originating
     // style.
-    state.StyleBuilder().CopyInheritedVariablesFrom(state.OriginatingElementStyle());
-    state.StyleBuilder().CopyNonInheritedVariablesFrom(state.OriginatingElementStyle());
+    state.StyleBuilder().CopyInheritedVariablesFrom(
+        state.OriginatingElementStyle());
+    state.StyleBuilder().CopyNonInheritedVariablesFrom(
+        state.OriginatingElementStyle());
   } else {
     state.CreateNewStyle(
         source_for_noninherited, *parent_style,
@@ -2227,14 +2229,9 @@ bool StyleResolver::CacheSuccess::InheritedVariablesChanged(
   if (!cached_matched_properties) {
     return false;
   }
-  if (RuntimeEnabledFeatures::CSSMPCImprovementsEnabled()) {
-    return !base::ValuesEquivalent(
-        cached_matched_properties->computed_style->InheritedVariables(),
-        builder.InheritedVariables());
-  } else {
-    return cached_matched_properties->computed_style->InheritedVariables() !=
-           builder.InheritedVariables();
-  }
+  return !base::ValuesEquivalent(
+      cached_matched_properties->computed_style->InheritedVariables(),
+      builder.InheritedVariables());
 }
 
 bool StyleResolver::CacheSuccess::LineHeightChanged(
@@ -2376,8 +2373,7 @@ void StyleResolver::MaybeAddToMatchedPropertiesCache(
     const MatchResult& match_result) {
   state.LoadPendingResources();
 
-  // NOTE: We replace everything that isn't a full cache hit (unless the
-  // CSSMPCImprovements runtime flag has been disabled). There are cases
+  // NOTE: We replace everything that isn't a full cache hit. There are cases
   // where this would be bad (e.g., every other element we style with the same
   // key has a different parent computed style), but it seems a much more common
   // case, if we don't replace elements giving partial hits, is that a
@@ -2385,9 +2381,7 @@ void StyleResolver::MaybeAddToMatchedPropertiesCache(
   // from there because it's never replaced. (Or, similarly, a partial
   // hit where we have to reapply the inherited properties, or where we trash
   // the “partner cache” in StyleInheritedVariables.)
-  if ((RuntimeEnabledFeatures::CSSMPCImprovementsEnabled() ||
-       !cache_success.cached_matched_properties) &&
-      cache_success.key.IsValid() &&
+  if (cache_success.key.IsValid() &&
       MatchedPropertiesCache::IsCacheable(state)) {
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                   matched_property_cache_added, 1);

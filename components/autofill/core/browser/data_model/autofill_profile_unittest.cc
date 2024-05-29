@@ -13,6 +13,7 @@
 #include "base/format_macros.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -1677,6 +1678,25 @@ TEST(AutofillProfileTest, GetStorableTypeOf) {
   // Test that stored types are returned as-is.
   EXPECT_EQ(profile.GetStorableTypeOf(ADDRESS_HOME_STATE), ADDRESS_HOME_STATE);
   EXPECT_EQ(profile.GetStorableTypeOf(COMPANY_NAME), COMPANY_NAME);
+}
+
+// Tests that `AutofillProfile::RecordUseAndLog()` logs days until first usage.
+TEST(AutofillProfileTest, EmitsDaysUntilFirstUsageProfile) {
+  TestAutofillClock clock;
+  const size_t expect_number_of_days = 237;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+  clock.Advance(base::Days(expect_number_of_days));
+
+  base::HistogramTester histogram_tester;
+  profile.RecordAndLogUse();
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Quality.DaysUntilFirstUsage.Profile", expect_number_of_days, 1);
+
+  profile.RecordAndLogUse();
+  EXPECT_EQ(histogram_tester
+                .GetAllSamples("Autofill.Quality.DaysUntilFirstUsage.Profile")
+                .size(),
+            1UL);
 }
 
 enum Expectation { GREATER, LESS };

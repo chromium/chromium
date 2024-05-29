@@ -436,6 +436,7 @@ class HostGpuMemoryBufferManager;
 class ClientGpuMemoryBufferManager;
 class DisplayCompositorMemoryAndTaskController;
 class SkiaOutputSurfaceImpl;
+class SharedImageInterfaceProvider;
 }  // namespace viz
 namespace vr {
 class VrShell;
@@ -819,6 +820,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
   friend class viz::
       DisplayCompositorMemoryAndTaskController;  // http://crbug.com/341151462
   friend class viz::SkiaOutputSurfaceImpl;       // http://crbug.com/341151462
+  friend class viz::SharedImageInterfaceProvider;  // http://crbug.com/341151462
 
   ScopedAllowBaseSyncPrimitives() DEFAULT_IF_DCHECK_IS_OFF;
   ~ScopedAllowBaseSyncPrimitives() DEFAULT_IF_DCHECK_IS_OFF;

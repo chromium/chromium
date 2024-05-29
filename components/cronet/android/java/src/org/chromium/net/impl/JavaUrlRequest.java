@@ -531,11 +531,11 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                             }
 
                             int responseCode = mCurrentUrlConnection.getResponseCode();
-                            // Important to copy the list here, because although we never
-                            // concurrently modify the list ourselves, user code might iterate
+                            // Important to copy mUrlChain here, because although we never
+                            // concurrently modify mUrlChain ourselves, user code might iterate
                             // over it while we're redirecting, and that would throw
                             // ConcurrentModificationException.
-                            mUrlResponseInfo =
+                            UrlResponseInfoImpl responseInfo =
                                     new UrlResponseInfoImpl(
                                             new ArrayList<>(mUrlChain),
                                             responseCode,
@@ -548,12 +548,15 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                             // TODO(clm) actual redirect handling? post -> get and whatnot?
                             if (responseCode >= 300 && responseCode < 400) {
                                 List<String> locationFields =
-                                        mUrlResponseInfo.getAllHeaders().get("location");
+                                        responseInfo.getAllHeaders().get("location");
                                 if (locationFields != null) {
-                                    fireRedirectReceived(locationFields.get(0));
+                                    fireRedirectReceived(locationFields.get(0), responseInfo);
                                     return;
                                 }
                             }
+                            // Only assign mUrlResponseInfo when response is not a redirect. This
+                            // aligns with CronetUrlRequest's behaviour.
+                            mUrlResponseInfo = responseInfo;
                             fireCloseUploadDataProvider();
                             if (responseCode >= 400) {
                                 InputStream inputStream = mCurrentUrlConnection.getErrorStream();
@@ -583,7 +586,7 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
         }
     }
 
-    private void fireRedirectReceived(final String locationField) {
+    private void fireRedirectReceived(final String locationField, UrlResponseInfo urlResponseInfo) {
         transitionStates(
                 State.STARTED,
                 State.REDIRECT_RECEIVED,
@@ -595,7 +598,7 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                             State.AWAITING_FOLLOW_REDIRECT,
                             () -> {
                                 mCallbackAsync.onRedirectReceived(
-                                        mUrlResponseInfo, mPendingRedirectUrl);
+                                        urlResponseInfo, mPendingRedirectUrl);
                             });
                 });
     }

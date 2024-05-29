@@ -5996,6 +5996,11 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SHOW_DETAILS_ACTION_TITLE" desc="Title of the action used to show the details of a selected item. [iOS only]" meaning="Title-cased">
         Show Details
       </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_PASSWORD_CELL_INDEX" desc="Accessibility label for the password suggestions in the manual fallback view to indicate the position of the password suggestion in the list of password suggestions.">
+      {count, plural,
+           =1 {{position} of {count} password}
+           other {{position} of {count} passwords}}
+      </message>
     </messages>
   </release>
 </grit>

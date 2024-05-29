@@ -179,7 +179,12 @@ class AutofillManager
         absl::variant<const AutofillProfile*, const CreditCard*>
             profile_or_credit_card) {}
 
-    virtual void OnFormSubmitted(AutofillManager& manager, FormGlobalId form) {}
+    // Fired when a form is submitted. A `FormData` is passed instead of a
+    // `FormGlobalId` because the form structure cached inside `AutofillManager`
+    // is not updated at this point yet and thus does not contain, e.g., the
+    // submitted values, that an observer may wish to analyze.
+    virtual void OnFormSubmitted(AutofillManager& manager,
+                                 const FormData& form) {}
   };
 
   // TODO(crbug.com/40733066): Move to anonymous namespace once

@@ -17,11 +17,16 @@
   [super start];
   _viewController = [[AccountSwitcherViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
-  _viewController.modalPresentationStyle = UIModalPresentationCustom;
-  AccountSwitcherTransitioningDelegate* transitioningDelegate =
-      [[AccountSwitcherTransitioningDelegate alloc] init];
-  transitioningDelegate.anchorPoint = self.anchorPoint;
-  _viewController.transitioningDelegate = transitioningDelegate;
+
+  UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
+  if (idiom == UIUserInterfaceIdiomPad) {
+    _viewController.modalPresentationStyle = UIModalPresentationPopover;
+    _viewController.popoverPresentationController.sourceView = self.anchorView;
+    _viewController.popoverPresentationController.permittedArrowDirections =
+        UIPopoverArrowDirectionUp;
+  } else {
+    _viewController.modalPresentationStyle = UIModalPresentationPageSheet;
+  }
 
   [self.baseViewController presentViewController:_viewController
                                         animated:YES

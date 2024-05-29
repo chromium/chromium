@@ -54,7 +54,6 @@ per-file storage_service*=file://components/services/storage/OWNERS
 per-file field_trial_synchronizer.*=file://base/metrics/OWNERS
 
 # Cross origin opener policy.
-per-file cross_origin_opener_policy*=ahemery@chromium.org
 per-file cross_origin_opener_policy*=pmeuleman@chromium.org
 
 # Network Service.

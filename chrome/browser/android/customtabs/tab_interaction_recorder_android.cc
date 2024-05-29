@@ -58,7 +58,7 @@ AutofillObserverImpl::~AutofillObserverImpl() {
 }
 
 void AutofillObserverImpl::OnFormSubmitted(autofill::AutofillManager&,
-                                           autofill::FormGlobalId) {
+                                           const autofill::FormData&) {
   OnFormInteraction();
 }
 

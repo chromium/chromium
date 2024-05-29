@@ -188,7 +188,7 @@ void TestAutofillManagerWaiter::OnAfterJavaScriptChangedAutofilledValue(
 }
 
 void TestAutofillManagerWaiter::OnFormSubmitted(AutofillManager& manager,
-                                                FormGlobalId form) {
+                                                const FormData& form) {
   Increment(Event::kFormSubmitted);
   Decrement(Event::kFormSubmitted);
 }

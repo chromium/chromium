@@ -73,17 +73,21 @@ PlusAddressServiceFactory::BuildServiceInstanceForBrowserContext(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 
+  affiliations::AffiliationService* affiliation_service =
+      AffiliationServiceFactory::GetForProfile(profile);
+
   std::unique_ptr<plus_addresses::PlusAddressService> plus_address_service =
       std::make_unique<plus_addresses::PlusAddressService>(
           identity_manager,
           std::make_unique<plus_addresses::PlusAddressHttpClientImpl>(
               identity_manager, profile->GetURLLoaderFactory()),
           WebDataServiceFactory::GetPlusAddressWebDataForProfile(
-              profile, ServiceAccessType::EXPLICIT_ACCESS));
+              profile, ServiceAccessType::EXPLICIT_ACCESS),
+          affiliation_service);
 
   if (base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressAffiliations)) {
-    AffiliationServiceFactory::GetForProfile(profile)->RegisterSource(
+    affiliation_service->RegisterSource(
         std::make_unique<plus_addresses::PlusAddressAffiliationSourceAdapter>(
             plus_address_service.get()));
   }

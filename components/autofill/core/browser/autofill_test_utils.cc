@@ -121,15 +121,16 @@ void VerifyFormGroupValues(const FormGroup& form_group,
   }
 }
 
-std::unique_ptr<PrefService> PrefServiceForTesting() {
-  scoped_refptr<user_prefs::PrefRegistrySyncable> registry(
-      new user_prefs::PrefRegistrySyncable());
-  signin::IdentityManager::RegisterProfilePrefs(registry.get());
+std::unique_ptr<AutofillTestingPrefService> PrefServiceForTesting() {
+  auto pref_service = std::make_unique<AutofillTestingPrefService>();
+  user_prefs::PrefRegistrySyncable* registry = pref_service->registry();
+  signin::IdentityManager::RegisterProfilePrefs(registry);
   registry->RegisterBooleanPref(
       RandomizedEncoder::kUrlKeyedAnonymizedDataCollectionEnabled, false);
   registry->RegisterBooleanPref(::prefs::kMixedFormsWarningsEnabled, true);
   registry->RegisterStringPref(prefs::kAutofillStatesDataDir, "");
-  return PrefServiceForTesting(registry.get());
+  prefs::RegisterProfilePrefs(registry);
+  return pref_service;
 }
 
 std::unique_ptr<PrefService> PrefServiceForTesting(

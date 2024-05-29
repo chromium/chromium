@@ -548,9 +548,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
     dropSessionDidEnter:(id<UIDropSession>)session {
-  _dropOverlayView.backgroundColor = [UIColor colorNamed:kBlueColor];
-  self.collectionView.backgroundColor = [UIColor colorNamed:kBlueColor];
-  self.collectionView.backgroundView.hidden = YES;
+  if (_dragSessionEnabled) {
+    _dropOverlayView.backgroundColor = [UIColor colorNamed:kBlueColor];
+    self.collectionView.backgroundColor = [UIColor colorNamed:kBlueColor];
+    self.collectionView.backgroundView.hidden = YES;
+  }
 }
 
 - (void)collectionView:(UICollectionView*)collectionView

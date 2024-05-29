@@ -57,9 +57,6 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::Gpu {
   void SetDiskCacheHandle(const gpu::GpuDiskCacheHandle& handle);
   void RemoveDiskCacheHandles();
 
-  void SetConnectionErrorHandler(
-      ConnectionErrorHandlerClosure connection_error_handler);
-
   base::WeakPtr<GpuClient> GetWeakPtr();
 #if !BUILDFLAG(IS_CHROMEOS)
   void BindWebNNContextProvider(
@@ -109,7 +106,6 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::Gpu {
   gpu::GPUInfo gpu_info_;
   gpu::GpuFeatureInfo gpu_feature_info_;
   gpu::SharedImageCapabilities shared_image_capabilities_;
-  ConnectionErrorHandlerClosure connection_error_handler_;
   // |task_runner_| is associated with the thread |gpu_bindings_| is bound
   // on. GpuClient instance is bound to this thread, and must be destroyed on
   // this thread.

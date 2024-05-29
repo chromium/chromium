@@ -205,7 +205,7 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
                                                FormGlobalId form,
                                                FieldGlobalId field) override;
 
-  void OnFormSubmitted(AutofillManager& manager, FormGlobalId form) override;
+  void OnFormSubmitted(AutofillManager& manager, const FormData& form) override;
 
   DenseSet<Event> relevant_events_;
   std::unique_ptr<State> state_ = std::make_unique<State>();
@@ -381,7 +381,8 @@ class AutofillManagerSingleEventWaiter : public AutofillManager::Observer {
     MaybeQuit(&Observer::OnFillOrPreviewDataModelForm, manager, form,
               action_persistence, filled_fields, profile_or_credit_card);
   }
-  void OnFormSubmitted(AutofillManager& manager, FormGlobalId form) override {
+  void OnFormSubmitted(AutofillManager& manager,
+                       const FormData& form) override {
     MaybeQuit(&Observer::OnFormSubmitted, manager, form);
   }
 

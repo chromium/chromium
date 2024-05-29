@@ -418,9 +418,6 @@ public final class ProductionSupportedFlagList {
                 AndroidMetricsFeatures.ANDROID_METRICS_ASYNC_METRIC_LOGGING,
                 "Initiate metric uploading on a background thread."),
         Flag.baseFeature(
-                BlinkFeatures.CSSMPC_IMPROVEMENTS,
-                "Enables CSS matched property cache improvement."),
-        Flag.baseFeature(
                 BlinkFeatures.SET_TIMEOUT_WITHOUT_CLAMP,
                 "Enables faster setTimeout(,0) by removing the 1 ms clamping."),
         Flag.baseFeature(

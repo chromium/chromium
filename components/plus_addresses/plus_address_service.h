@@ -17,6 +17,7 @@
 #include "base/timer/timer.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/plus_addresses/affiliations/plus_address_affiliation_match_helper.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -25,6 +26,10 @@
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "url/origin.h"
+
+namespace affiliations {
+class AffiliationService;
+}
 
 namespace signin {
 class IdentityManager;
@@ -66,7 +71,8 @@ class PlusAddressService : public KeyedService,
   PlusAddressService(
       signin::IdentityManager* identity_manager,
       std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
-      scoped_refptr<PlusAddressWebDataService> webdata_service);
+      scoped_refptr<PlusAddressWebDataService> webdata_service,
+      affiliations::AffiliationService* affiliation_service);
   ~PlusAddressService() override;
 
   void AddObserver(Observer* o) { observers_.AddObserver(o); }
@@ -222,6 +228,10 @@ class PlusAddressService : public KeyedService,
 
   // Responsible for allocating new plus addresses.
   const std::unique_ptr<PlusAddressAllocator> plus_address_allocator_;
+
+  // Responsible for supplying a list of plus profiles with domains affiliated
+  // to the the originally requested facet.
+  PlusAddressAffiliationMatchHelper plus_address_match_helper_;
 
   // Store set of excluded sites ETLD+1 where PlusAddressService is not
   // supported.

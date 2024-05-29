@@ -8,6 +8,7 @@
 
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/affiliations/core/browser/mock_affiliation_source.h"
 #include "components/plus_addresses/mock_plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_http_client.h"
@@ -34,7 +35,8 @@ class PlusAddressAffiliationSourceAdapterTest : public testing::Test {
     service_ = std::make_unique<PlusAddressService>(
         /*identity_manager=*/nullptr,
         std::make_unique<testing::NiceMock<MockPlusAddressHttpClient>>(),
-        /*webdata_service=*/nullptr);
+        /*webdata_service=*/nullptr,
+        /*affiliation_service=*/&mock_affiliation_service_);
     adapter_ =
         std::make_unique<PlusAddressAffiliationSourceAdapter>(service_.get());
   }
@@ -62,6 +64,8 @@ class PlusAddressAffiliationSourceAdapterTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   testing::StrictMock<MockAffiliationSourceObserver> mock_source_observer_;
+  testing::NiceMock<affiliations::MockAffiliationService>
+      mock_affiliation_service_;
   std::unique_ptr<PlusAddressAffiliationSourceAdapter> adapter_;
   std::unique_ptr<PlusAddressService> service_;
 };

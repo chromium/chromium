@@ -20,6 +20,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
 #include "components/autofill/core/common/aliases.h"
@@ -124,13 +125,16 @@ class PlusAddressServiceTest : public ::testing::Test {
     service_.emplace(identity_manager(),
                      std::make_unique<PlusAddressHttpClientImpl>(
                          identity_manager(), shared_loader_factory()),
-                     /*webdata_service=*/nullptr);
+                     /*webdata_service=*/nullptr,
+                     /*affiliation_service=*/&mock_affiliation_service_);
   }
 
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
+  testing::NiceMock<affiliations::MockAffiliationService>
+      mock_affiliation_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   data_decoder::test::InProcessDataDecoder decoder_;
@@ -742,7 +746,8 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
         std::make_unique<PlusAddressHttpClientImpl>(
             /*identity_manager=*/nullptr,
             /*url_loader_factory=*/nullptr),
-        plus_webdata_service_);
+        plus_webdata_service_,
+        /*affiliation_service=*/nullptr);
   }
 
   PlusAddressService& service() { return *service_; }

@@ -606,6 +606,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Address.DisabledReason.PageLoad"
+    enum="AutofillPreferenceSetter" expires_after="2024-12-12">
+  <owner>battre@chromium.org</owner>
+  <owner>bwolfgang@google.com</owner>
+  <owner>mlerman@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    If the pref autofill.profile_enabled is disabled, this metric records the
+    source. Emitted on page load for a page containing forms. The corresponding
+    metric tracking the activation rate of autofill.profile_enabled is
+    Autofill.Address.IsEnabled.PageLoad.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Address.DisabledReason.Startup"
+    enum="AutofillPreferenceSetter" expires_after="2024-12-12">
+  <owner>battre@chromium.org</owner>
+  <owner>bwolfgang@google.com</owner>
+  <owner>mlerman@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    If the pref autofill.profile_enabled is disabled, this metric records the
+    source. Emitted on startup. The corresponding metric tracking the activation
+    rate of autofill.profile_enabled is Autofill.Address.IsEnabled.Startup.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Address.IsEnabled.PageLoad" enum="BooleanEnabled"
     expires_after="2024-11-03">
   <owner>koerber@google.com</owner>
@@ -4349,6 +4376,19 @@ chromium-metrics-reviews@google.com.
     submission.
   </summary>
   <token key="FormType" variants="Autofill.Ablation.FormType"/>
+</histogram>
+
+<histogram name="Autofill.Quality.DaysUntilFirstUsage.Profile" units="day"
+    expires_after="2024-12-12">
+  <owner>battre@chromium.org</owner>
+  <owner>bwolfgang@google.com</owner>
+  <owner>mlerman@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the number of days from saving an Autofill profile until using it
+    for the first time before it got purged. Emitted on the first usage of the
+    profile for filling a form.
+  </summary>
 </histogram>
 
 <histogram name="Autofill.QueriedCreditCardFormIsSecure" enum="BooleanSecure"

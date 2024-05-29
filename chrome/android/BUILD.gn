@@ -1760,6 +1760,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/safety_check/android:java",
       "//chrome/browser/safety_check/android:javatests",
       "//chrome/browser/safety_hub/android:java",
+      "//chrome/browser/safety_hub/android:javatests",
       "//chrome/browser/screenshot_monitor:java",
       "//chrome/browser/search_engines/android:java",
       "//chrome/browser/segmentation_platform:javatests",

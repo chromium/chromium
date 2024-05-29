@@ -995,6 +995,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Gpu.GrShaderCacheEnabled" enum="Boolean"
+    expires_after="2024-10-06">
+  <owner>geofflang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    If the GrShaderCache is in use. Recorded at GPU channel manager creation.
+  </summary>
+</histogram>
+
 <histogram name="Gpu.GrShaderCacheLoadHitInCache" enum="Boolean"
     expires_after="2024-10-06">
   <owner>geofflang@chromium.org</owner>

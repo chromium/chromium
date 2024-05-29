@@ -36,6 +36,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStructure;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeProvider;
 import android.view.animation.AnimationUtils;
 import android.view.autofill.AutofillValue;
@@ -251,6 +252,19 @@ public class AwContents implements SmartClipProvider {
         int INTENT_SCHEME = 12;
         int FILE_ANDROID_ASSET_SCHEME = 13; // Covers android_asset and android_res URLs
         int COUNT = 14;
+    }
+
+    // Used to record Android.WebView.UsedInPopupWindow.
+    @IntDef({
+        UsedInPopupWindow.NOT_IN_POPUP_WINDOW,
+        UsedInPopupWindow.IN_POPUP_WINDOW,
+        UsedInPopupWindow.UNKNOWN,
+    })
+    public @interface UsedInPopupWindow {
+        int NOT_IN_POPUP_WINDOW = 0;
+        int IN_POPUP_WINDOW = 1;
+        int UNKNOWN = 2;
+        int COUNT = 3;
     }
 
     /**
@@ -3565,6 +3579,23 @@ public class AwContents implements SmartClipProvider {
                 mAwFrameMetricsListener = AwFrameMetricsListener.onAttachedToWindow(window, this);
             }
         }
+
+        ViewGroup.LayoutParams viewGroupParams = mContainerView.getRootView().getLayoutParams();
+        if (viewGroupParams instanceof WindowManager.LayoutParams params) {
+            if (params.type == WindowManager.LayoutParams.TYPE_APPLICATION_PANEL
+                    || params.type == WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG) {
+                recordUsedInPopupWindow(UsedInPopupWindow.IN_POPUP_WINDOW);
+            } else {
+                recordUsedInPopupWindow(UsedInPopupWindow.NOT_IN_POPUP_WINDOW);
+            }
+        } else {
+            recordUsedInPopupWindow(UsedInPopupWindow.UNKNOWN);
+        }
+    }
+
+    private static void recordUsedInPopupWindow(@UsedInPopupWindow int value) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.UsedInPopupWindow", value, UsedInPopupWindow.COUNT);
     }
 
     private void detachWindowCoverageTracker() {

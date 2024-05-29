@@ -18,6 +18,7 @@
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -1034,6 +1035,13 @@ void AutofillProfile::RecordAndLogUse() {
   // fill a single field at a time as per
   // `AutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile`.
   if (time_since_last_used.InSeconds() >= 60) {
+    if (use_count() == 1) {
+      // The max is the number of days a profile wasn't used before it gets
+      // deleted (see `kDisusedDataModelDeletionTimeDelta`).
+      base::UmaHistogramCustomCounts(
+          "Autofill.Quality.DaysUntilFirstUsage.Profile",
+          time_since_last_used.InDays(), 1, 395, 100);
+    }
     set_use_count(use_count() + 1);
     UMA_HISTOGRAM_COUNTS_1000("Autofill.DaysSinceLastUse.Profile",
                               time_since_last_used.InDays());

@@ -11,8 +11,12 @@ import org.chromium.chrome.browser.profiles.Profile;
 
 public class UnusedSitePermissionsBridge {
 
-    public static PermissionsData[] getRevokedPermissions(Profile profile) {
+    static PermissionsData[] getRevokedPermissions(Profile profile) {
         return UnusedSitePermissionsBridgeJni.get().getRevokedPermissions(profile);
+    }
+
+    static void regrantPermissions(Profile profile, String primaryPattern) {
+        UnusedSitePermissionsBridgeJni.get().regrantPermissions(profile, primaryPattern);
     }
 
     @NativeMethods
