@@ -369,8 +369,9 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Network.Ash.Cellular.ESim.SmdsScan.ProfileCount" units="units"
-    expires_after="2025-02-20">
+<histogram
+    name="Network.Ash.Cellular.ESim.SmdsScan.{SmdsScanMethod}.ProfileCount"
+    units="units" expires_after="2025-02-20">
   <owner>chadduffin@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -379,6 +380,10 @@ chromium-metrics-reviews@google.com.
     SM-DS servers are scanned for an installation attempt the count emitted will
     be the total number of profiles discovered across all scanned servers.
   </summary>
+  <token key="SmdsScanMethod">
+    <variant name="ViaPolicy"/>
+    <variant name="ViaUser"/>
+  </token>
 </histogram>
 
 <histogram

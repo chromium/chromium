@@ -324,11 +324,12 @@ class CellularPolicyHandlerTest : public testing::Test {
 
   void CheckHistogramState(const ExpectedHistogramState& state) {
     histogram_tester_.ExpectTotalCount(
-        CellularNetworkMetricsLogger::kSmdsScanProfileCount,
+        CellularNetworkMetricsLogger::kSmdsScanViaPolicyProfileCount,
         /*expected_count=*/state.smds_scan_profile_total_count);
-    EXPECT_EQ(static_cast<int64_t>(state.smds_scan_profile_sum),
-              histogram_tester_.GetTotalSum(
-                  CellularNetworkMetricsLogger::kSmdsScanProfileCount));
+    EXPECT_EQ(
+        static_cast<int64_t>(state.smds_scan_profile_sum),
+        histogram_tester_.GetTotalSum(
+            CellularNetworkMetricsLogger::kSmdsScanViaPolicyProfileCount));
     histogram_tester_.ExpectBucketCount(
         CellularNetworkMetricsLogger::kESimPolicyInstallMethod,
         CellularNetworkMetricsLogger::ESimPolicyInstallMethod::kViaSmdp,

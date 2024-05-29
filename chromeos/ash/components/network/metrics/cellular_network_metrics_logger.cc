@@ -303,8 +303,17 @@ void CellularNetworkMetricsLogger::LogManagedCustomApnMigrationType(
 }
 
 // static
-void CellularNetworkMetricsLogger::LogSmdsScanProfileCount(size_t count) {
-  base::UmaHistogramCounts100(kSmdsScanProfileCount, count);
+void CellularNetworkMetricsLogger::LogSmdsScanProfileCount(
+    size_t count,
+    SmdsScanMethod method) {
+  switch (method) {
+    case SmdsScanMethod::kViaPolicy:
+      base::UmaHistogramCounts100(kSmdsScanViaPolicyProfileCount, count);
+      break;
+    case SmdsScanMethod::kViaUser:
+      base::UmaHistogramCounts100(kSmdsScanViaUserProfileCount, count);
+      break;
+  }
 }
 
 // static

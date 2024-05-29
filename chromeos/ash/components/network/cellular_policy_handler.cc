@@ -418,7 +418,9 @@ void CellularPolicyHandler::OnRefreshSmdxProfiles(
   if (is_smds) {
     CellularNetworkMetricsLogger::LogSmdsScanResult(
         current_request->activation_code.value(), status);
-    CellularNetworkMetricsLogger::LogSmdsScanProfileCount(profile_paths.size());
+    CellularNetworkMetricsLogger::LogSmdsScanProfileCount(
+        profile_paths.size(),
+        CellularNetworkMetricsLogger::SmdsScanMethod::kViaPolicy);
     CellularNetworkMetricsLogger::LogSmdsScanDuration(
         base::TimeTicks::Now() - start_time,
         status == HermesResponseStatus::kSuccess,

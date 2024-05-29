@@ -252,7 +252,8 @@ void CellularESimProfileHandler::PerformRequestAvailableProfiles(
   NET_LOG(EVENT) << "Finished requesting available profiles";
 
   CellularNetworkMetricsLogger::LogSmdsScanProfileCount(
-      info->profile_paths.size());
+      info->profile_paths.size(),
+      CellularNetworkMetricsLogger::SmdsScanMethod::kViaUser);
 
   std::unique_ptr<CellularESimProfileWaiter> waiter =
       std::make_unique<CellularESimProfileWaiter>();
