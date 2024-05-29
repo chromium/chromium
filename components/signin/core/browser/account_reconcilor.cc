@@ -593,13 +593,12 @@ void AccountReconcilor::OnAccountsInCookieUpdated(
           << "Error was " << error.ToString();
 
   // If cookies change while the reconcilor is running, ignore the changes and
-  // let it complete. Adding accounts to the cookie will trigger new
-  // notifications anyway, and these will be handled in a new reconciliation
-  // cycle. See https://crbug.com/923716
-  //
-  // TODO(droger): Should we also check if |logout_in_progress_|?
-  if (set_accounts_in_progress_)
+  // let it complete. Adding accounts or removing accounts on the web will
+  // trigger new notifications anyway, and these will be handled in a new
+  // reconciliation cycle. See https://crbug.com/923716
+  if (set_accounts_in_progress_ || log_out_in_progress_) {
     return;
+  }
 
   if (!is_reconcile_started_) {
     StartReconcile(Trigger::kCookieChange);
