@@ -7,7 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "third_party/blink/public/mojom/model_execution/model_session.mojom-blink.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -28,7 +28,7 @@ class ModelGenericSession final : public ScriptWrappable,
 
   void Trace(Visitor* visitor) const override;
 
-  mojo::PendingReceiver<blink::mojom::blink::ModelGenericSession>
+  mojo::PendingReceiver<blink::mojom::blink::AITextSession>
   GetModelSessionReceiver();
 
   // model_generic_session.idl implementation.
@@ -47,8 +47,7 @@ class ModelGenericSession final : public ScriptWrappable,
   bool is_destroyed_ = false;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  HeapMojoRemote<blink::mojom::blink::ModelGenericSession>
-      model_session_remote_;
+  HeapMojoRemote<blink::mojom::blink::AITextSession> text_session_remote_;
 };
 
 }  // namespace blink

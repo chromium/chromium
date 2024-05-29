@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/model_execution/exception_helpers.h"
 
-#include "third_party/blink/public/mojom/model_execution/model_session.mojom-shared.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 

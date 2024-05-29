@@ -8,13 +8,13 @@
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/blink/public/mojom/model_execution/model_session.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session.mojom.h"
 
 namespace content {
 
 // The mock implementation of `blink::mojom::ModelGenericSession` used for
 // testing.
-class MockAITextSession : public blink::mojom::ModelGenericSession {
+class MockAITextSession : public blink::mojom::AITextSession {
  public:
   MockAITextSession();
   MockAITextSession(const MockAITextSession&) = delete;
@@ -23,9 +23,9 @@ class MockAITextSession : public blink::mojom::ModelGenericSession {
   ~MockAITextSession() override;
 
   // `blink::mojom::ModelGenericSession` implementation.
-  void Execute(const std::string& input,
-               mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
-                   pending_responder) override;
+  void Prompt(const std::string& input,
+              mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
+                  pending_responder) override;
   void Destroy() override;
 
  private:

@@ -1744,7 +1744,7 @@ bool ContentBrowserClient::ShouldSuppressAXLoadComplete(RenderFrameHost* rfh) {
 
 void ContentBrowserClient::BindAIManager(
     RenderFrameHost* rfh,
-    mojo::PendingReceiver<blink::mojom::ModelManager> receiver) {
+    mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
   MockAIManagerImpl::Create(rfh, std::move(receiver));
 }
 

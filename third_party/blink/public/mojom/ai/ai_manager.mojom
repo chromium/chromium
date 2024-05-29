@@ -1,0 +1,32 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/ai/ai_text_session.mojom";
+
+struct AITextSessionSamplingParams {
+  uint32 top_k;
+  float temperature;
+};
+
+// The manager that could create a new session for the model.
+interface AIManager {
+  // Returns if it is possible to create a text session. For example, when
+  // the service in charge of model loading and session creation is not
+  // available, this should return false.
+  CanCreateTextSession() => (bool can_create);
+  // Creates a new session and returns if the session is created successfully.
+  // Note that this could return false even if the previous
+  // `CanCreateTextSession()` returns true, because some errors can only
+  // occur when we actually create the text session.
+  CreateTextSession(
+    pending_receiver<blink.mojom.AITextSession> session,
+    AITextSessionSamplingParams? sampling_params
+  ) => (bool success);
+  // Returns the default configuration for `AITextSessionSamplingParams`.
+  GetDefaultTextSessionSamplingParams() => (
+    AITextSessionSamplingParams default_sampling_params
+  );
+};

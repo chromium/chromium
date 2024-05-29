@@ -11,9 +11,9 @@
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
-#include "third_party/blink/public/mojom/model_execution/model_session.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/model_execution/model_session.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -194,17 +194,17 @@ ModelGenericSession::ModelGenericSession(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : ExecutionContextClient(context),
       task_runner_(task_runner),
-      model_session_remote_(context) {}
+      text_session_remote_(context) {}
 
 void ModelGenericSession::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
-  visitor->Trace(model_session_remote_);
+  visitor->Trace(text_session_remote_);
 }
 
-mojo::PendingReceiver<blink::mojom::blink::ModelGenericSession>
+mojo::PendingReceiver<blink::mojom::blink::AITextSession>
 ModelGenericSession::GetModelSessionReceiver() {
-  return model_session_remote_.BindNewPipeAndPassReceiver(task_runner_);
+  return text_session_remote_.BindNewPipeAndPassReceiver(task_runner_);
 }
 
 ScriptPromise<IDLString> ModelGenericSession::execute(
@@ -233,7 +233,7 @@ ScriptPromise<IDLString> ModelGenericSession::execute(
         kExceptionMessageSessionDestroyed,
         DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError)));
   } else {
-    model_session_remote_->Execute(
+    text_session_remote_->Prompt(
         input, responder->BindNewPipeAndPassRemote(task_runner_));
   }
 
@@ -268,7 +268,7 @@ ReadableStream* ModelGenericSession::executeStreaming(
     return nullptr;
   }
 
-  model_session_remote_->Execute(
+  text_session_remote_->Prompt(
       input, streaming_responder->BindNewPipeAndPassRemote(task_runner_));
 
   // Set the high water mark to 1 so the backpressure will be applied on every
@@ -290,7 +290,7 @@ void ModelGenericSession::destroy(ScriptState* script_state,
       ModelExecutionMetrics::ModelExecutionAPI::kSessionDestroy);
   if (!is_destroyed_) {
     is_destroyed_ = true;
-    model_session_remote_->Destroy();
+    text_session_remote_->Destroy();
   }
 }
 

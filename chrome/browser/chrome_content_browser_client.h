@@ -1050,7 +1050,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   void BindAIManager(
       content::RenderFrameHost* rfh,
-      mojo::PendingReceiver<blink::mojom::ModelManager> receiver) override;
+      mojo::PendingReceiver<blink::mojom::AIManager> receiver) override;
 
 #if !BUILDFLAG(IS_ANDROID)
   void QueryInstalledWebAppsByManifestId(

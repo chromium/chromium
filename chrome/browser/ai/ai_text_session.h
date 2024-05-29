@@ -8,11 +8,11 @@
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/blink/public/mojom/model_execution/model_session.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session.mojom.h"
 
 // The implementation of `blink::mojom::ModelGenericSession`, which exposes the
 // single stream-based `Execute()` API for model execution.
-class AITextSession : public blink::mojom::ModelGenericSession {
+class AITextSession : public blink::mojom::AITextSession {
  public:
   explicit AITextSession(
       std::unique_ptr<
@@ -23,9 +23,9 @@ class AITextSession : public blink::mojom::ModelGenericSession {
   ~AITextSession() override;
 
   // `blink::mojom::ModelGenericSession` implementation.
-  void Execute(const std::string& input,
-               mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
-                   pending_responder) override;
+  void Prompt(const std::string& input,
+              mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
+                  pending_responder) override;
   void Destroy() override;
 
  private:

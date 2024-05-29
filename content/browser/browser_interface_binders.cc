@@ -125,6 +125,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
@@ -159,7 +160,6 @@
 #include "third_party/blink/public/mojom/mediasession/media_session.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
-#include "third_party/blink/public/mojom/model_execution/model_manager.mojom.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom.h"
 #include "third_party/blink/public/mojom/origin_trial_state/origin_trial_state_host.mojom.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
@@ -827,7 +827,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
       &BindMediaPlayerObserverClientHandler, base::Unretained(host)));
 
   if (base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI)) {
-    map->Add<blink::mojom::ModelManager>(base::BindRepeating(
+    map->Add<blink::mojom::AIManager>(base::BindRepeating(
         &RenderFrameHostImpl::BindAIManager, base::Unretained(host)));
   }
 
@@ -1148,8 +1148,8 @@ void PopulateBinderMapWithContext(
       &EmptyBinderForFrame<blink::mojom::CredentialManager>));
   map->Add<blink::mojom::LCPCriticalPathPredictorHost>(base::BindRepeating(
       &EmptyBinderForFrame<blink::mojom::LCPCriticalPathPredictorHost>));
-  map->Add<blink::mojom::ModelManager>(
-      base::BindRepeating(&EmptyBinderForFrame<blink::mojom::ModelManager>));
+  map->Add<blink::mojom::AIManager>(
+      base::BindRepeating(&EmptyBinderForFrame<blink::mojom::AIManager>));
   if (base::FeatureList::IsEnabled(blink::features::kBrowsingTopics) &&
       base::FeatureList::IsEnabled(
           blink::features::kBrowsingTopicsDocumentAPI)) {

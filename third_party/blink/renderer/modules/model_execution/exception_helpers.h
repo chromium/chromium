@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MODEL_EXECUTION_EXCEPTION_HELPERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MODEL_EXECUTION_EXCEPTION_HELPERS_H_
 
-#include "third_party/blink/public/mojom/model_execution/model_session.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 

@@ -245,8 +245,8 @@ context_browser_exposed_interfaces = [
     "Remote",
   ],
   [
-    "//third_party/blink/public/mojom/model_execution/model_manager.mojom",
-    "blink.mojom.ModelManager",
+    "//third_party/blink/public/mojom/ai/ai_manager.mojom",
+    "blink.mojom.AIManager",
     "Remote",
   ],
   [
