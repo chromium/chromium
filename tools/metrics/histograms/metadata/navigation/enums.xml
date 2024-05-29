@@ -1564,6 +1564,10 @@ chromium-metrics-reviews@google.com.
   <int value="33554440" label="From address bar | Reload"/>
   <int value="33554441" label="From address bar | Keyword"/>
   <int value="33554442" label="From address bar | Keyword generated"/>
+  <int value="67108864" label="Home page"/>
+  <int value="67108866" label="Home page | Auto bookmark"/>
+  <int value="134217728" label="From API"/>
+  <int value="134217729" label="From API | Typed"/>
 </enum>
 
 <enum name="PrerenderCancelledInterface">
