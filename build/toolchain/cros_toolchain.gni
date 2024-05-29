@@ -21,7 +21,7 @@
 # For example, to compile a Chrome source tree in /g/src for an
 # auron_paine CrOS device with the system root cached in /g/.cros_cache,
 # the following GN arguments must be provided to configure
-# cross-compilation with Goma acceleration. (NB: additional variables
+# cross-compilation with RBE acceleration. (NB: additional variables
 # will be necessary to successfully compile a working CrOS Chrome. See
 # the definition of GYP_DEFINES inside a sysroot shell.)
 #
