@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/arm.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/python.gni")
@@ -98,6 +99,18 @@ declare_args() {
   # Set to true to enable the clang layout plugin that help you to follow the
   # layout-related restrictions during compilation.
   use_layout_plugin = true
+
+  # Use vectorization for fast path HTML parser.
+  enable_vectorized_html_scanning = false
+
+  # Since with currently use -msse3 (not -mssse3), there is no pshufb
+  # instruction, so the generated code on x86 is less optimal and we enable
+  # vectorization only for NEON.
+  if (current_cpu == "arm" || current_cpu == "arm64") {
+    if (arm_use_neon) {
+      enable_vectorized_html_scanning = true
+    }
+  }
 }
 
 # Config for code that builds as part of core.
@@ -426,6 +439,8 @@ blink_core_sources("core_hot") {
   sources += rebase_path(blink_core_hot_sources_layout, "", "layout")
   sources += rebase_path(blink_core_hot_sources_css, "", "css")
 
+  defines = []
+
   # TODO(ajwong) this is of mirror
   # https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/core/core.gni;l=26
   # to undo the configs which is fragile. Find a better way.
@@ -453,6 +468,11 @@ blink_core_sources("core_hot") {
     "//third_party/blink/renderer/core/exported",
     "//third_party/blink/renderer/core/probe:probe",
   ]
+
+  if (enable_vectorized_html_scanning) {
+    deps += [ "//third_party/highway:libhwy" ]
+    defines += [ "BLINK_ENABLE_VECTORIZED_HTML_SCANNING=1" ]
+  }
 
   allow_circular_includes_from = [
     "//third_party/blink/renderer/core/animation",

@@ -45,9 +45,189 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
+#if defined(BLINK_ENABLE_VECTORIZED_HTML_SCANNING)
+#include "third_party/highway/src/hwy/highway.h"
+#define VECTORIZE_SCANNING 1
+#else
+#define VECTORIZE_SCANNING 0
+#endif
+
 namespace blink {
 
 namespace {
+
+#if VECTORIZE_SCANNING
+// We use the vectorized classification trick to scan and classify characters.
+// Instead of checking the string byte-by-byte (or vector-by-vector), the
+// algorithm splits each character of the passed string into two nibbles (4
+// bytes) that are then used as indices in the 2 lookup tables, represented as
+// vectors. The algorithm uses the table lookup instructions (pshufb or vtbl) to
+// get values in those tables and then bit-wise ands the values. The resulting
+// vector consists of the classified values, which are used to dispatch to a
+// proper handler. See more on the idea here: https://arxiv.org/pdf/1902.08318.
+// For relatively short incoming strings (less than 64 characters) it's assumed
+// that byte-by-byte comparison is faster.
+constexpr size_t kVectorizationThreshold = 64;
+// The byte that shall never match any symbol. Using 0xff for it is okay since
+// we only want to match ASCII chars (<=128). This sentinel char is used when
+// matching the tail of a 2-byte string.
+constexpr uint8_t kNeverMatchedChar = 0xff;
+
+// The classified value for a single character. Assumed to be 0 for unmatched
+// characters.
+using ClassifiedValue = uint8_t;
+
+// The result of the TryMatch function (see below). Contains the classified
+// value of the first matched character in the string and the index inside the
+// vector (i.e. lane).
+struct MatchedCharacter {
+  bool Matched() const { return classified_value; }
+
+  size_t index_in_vector = 0;
+  ClassifiedValue classified_value = 0;
+};
+
+// Tries to match the characters for the single vector. If matched, returns the
+// first matched character in the vector.
+template <typename D, typename VectorT>
+HWY_ATTR ALWAYS_INLINE MatchedCharacter TryMatch(D tag,
+                                                 VectorT input,
+                                                 VectorT low_nibble_mask,
+                                                 VectorT high_nibble_mask,
+                                                 VectorT low_nib_and_mask) {
+  namespace hw = hwy::HWY_NAMESPACE;
+
+  const auto nib_lo = input & low_nib_and_mask;
+  const auto nib_hi = hw::ShiftRight<4>(input);
+
+  const auto shuf_lo = hw::TableLookupBytes(low_nibble_mask, nib_lo);
+  const auto shuf_hi = hw::TableLookupBytes(high_nibble_mask, nib_hi);
+
+  const auto classified = shuf_lo & shuf_hi;
+
+  if (const intptr_t index =
+          hw::FindFirstTrue(tag, classified != hw::Zero(tag));
+      index != -1) {
+    return {static_cast<size_t>(index), hw::ExtractLane(classified, index)};
+  }
+
+  return {};
+}
+
+// Scans the 1-byte string and returns the classified value that first matched
+// character.
+template <typename T, typename VectorT>
+  requires(sizeof(T) == 1)
+HWY_ATTR ALWAYS_INLINE ClassifiedValue
+SimdAdvanceAndClassify(const T*& start,
+                       const T* end,
+                       VectorT low_nibble_mask,
+                       VectorT high_nibble_mask) {
+  namespace hw = hwy::HWY_NAMESPACE;
+  DCHECK_GE(static_cast<size_t>(end - start), kVectorizationThreshold);
+
+  hw::FixedTag<uint8_t, 16> tag;
+  static constexpr auto stride = hw::MaxLanes(tag);
+
+  const auto low_nib_and_mask = hw::Set(tag, 0xf);
+
+  // The main scanning loop.
+  for (; start + (stride - 1) < end; start += stride) {
+    const auto input = hw::LoadU(tag, reinterpret_cast<const uint8_t*>(start));
+    if (const auto result = TryMatch(tag, input, low_nibble_mask,
+                                     high_nibble_mask, low_nib_and_mask);
+        result.Matched()) {
+      start = reinterpret_cast<const T*>(start + result.index_in_vector);
+      return result.classified_value;
+    };
+  }
+
+  // Scan the last stride.
+  if (start < end) {
+    const auto input =
+        hw::LoadU(tag, reinterpret_cast<const uint8_t*>(end - stride));
+    if (const auto result = TryMatch(tag, input, low_nibble_mask,
+                                     high_nibble_mask, low_nib_and_mask);
+        result.Matched()) {
+      start = end - stride + result.index_in_vector;
+      return result.classified_value;
+    }
+    start = end;
+  }
+
+  return 0;
+}
+
+// This overload for 2-bytes strings uses the interleaved load to check the
+// lower bytes of the string. We don't use the gather instruction, since it's
+// not available on NEON (as opposed to SVE) and is emulated in Highway.
+template <typename T, typename VectorT>
+  requires(sizeof(T) == 2)
+HWY_ATTR ALWAYS_INLINE ClassifiedValue
+SimdAdvanceAndClassify(const T*& start,
+                       const T* end,
+                       VectorT low_nibble_mask,
+                       VectorT high_nibble_mask) {
+  namespace hw = hwy::HWY_NAMESPACE;
+  DCHECK_GE(static_cast<size_t>(end - start), kVectorizationThreshold);
+
+  hw::FixedTag<uint8_t, 16> tag;
+  static constexpr auto stride = hw::MaxLanes(tag);
+
+  const auto low_nib_and_mask = hw::Set(tag, 0xf);
+
+  // The main scanning loop.
+  while (start + (stride - 1) < end) {
+    VectorT dummy_upper;
+    VectorT input;
+    hw::LoadInterleaved2(tag, reinterpret_cast<const uint8_t*>(start), input,
+                         dummy_upper);
+    if (const auto result = TryMatch(tag, input, low_nibble_mask,
+                                     high_nibble_mask, low_nib_and_mask);
+        result.Matched()) {
+      const auto index = result.index_in_vector;
+      // Check if the upper byte is zero.
+      if (*(start + index) >> 8 == 0) {
+        start = reinterpret_cast<const T*>(start + index);
+        return result.classified_value;
+      }
+
+      start += index + 1;
+      continue;
+    }
+
+    // Otherwise, continue scanning.
+    start += stride;
+  }
+
+  // Scan the last stride.
+  if (start < end) {
+    VectorT dummy_upper;
+    VectorT input;
+    hw::LoadInterleaved2(tag, reinterpret_cast<const uint8_t*>(end - stride),
+                         input, dummy_upper);
+    for (auto result = TryMatch(tag, input, low_nibble_mask, high_nibble_mask,
+                                low_nib_and_mask);
+         result.Matched();
+         result = TryMatch(tag, input, low_nibble_mask, high_nibble_mask,
+                           low_nib_and_mask)) {
+      const auto index = result.index_in_vector;
+      // Check if the upper byte is zero.
+      if (*(end - stride + index) >> 8 == 0) {
+        start = reinterpret_cast<const T*>(end - stride + index);
+        return result.classified_value;
+      }
+
+      // Otherwise, set the corresponding lane to kNeverMatchedChar to never
+      // match it again and continue.
+      input = hw::InsertLane(input, index, kNeverMatchedChar);
+    }
+    start = end;
+  }
+
+  return 0;
+}
+#endif  // VECTORIZE_SCANNING
 
 template <class Char, size_t n>
 bool operator==(base::span<const Char> span, const char (&s)[n]) {
@@ -552,6 +732,63 @@ class HTMLFastPathParser {
     }
   }
 
+#if VECTORIZE_SCANNING
+  ALWAYS_INLINE HWY_ATTR ScanTextResult<Char> ScanTextVectorized(
+      const Char* initial_start) {
+    namespace hw = hwy::HWY_NAMESPACE;
+    DCHECK_GE(static_cast<size_t>(end_ - pos_), kVectorizationThreshold);
+    hw::FixedTag<uint8_t, 16> tag;
+    // ASCII representation of interesting symbols:
+    //   <: 0011 1100
+    //  \r: 0000 1101
+    //  \0: 0000 0000
+    //   &: 0010 0110
+    // We pick the following values for nibbles:
+    // - high nibbles:
+    //   0: 1001
+    //   2: 0100
+    //   3: 0010
+    // - low nibbles:
+    //   0: 0001
+    //   6: 0100
+    //  12: 0010
+    //  13: 1000
+    // Result of anding the nibbles:
+    //  \0: 1
+    //   <: 2
+    //   &: 4
+    //  \r: 8
+    const auto low_nibble_mask =
+        hw::Dup128VecFromValues(tag, 0b0001, 0, 0, 0, 0, 0, 0b0100, 0, 0, 0, 0,
+                                0, 0b0010, 0b1000, 0, 0);
+    const auto high_nibble_mask = hw::Dup128VecFromValues(
+        tag, 0b1001, 0, 0b0100, 0b0010, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    switch (
+        SimdAdvanceAndClassify(pos_, end_, low_nibble_mask, high_nibble_mask)) {
+      case 0:
+        DCHECK_EQ(pos_, end_);
+        return {{initial_start, static_cast<size_t>(pos_ - initial_start)},
+                nullptr};
+      case 1:  // '\0'
+        DCHECK_EQ(*pos_, '\0');
+        return Fail(HtmlFastPathResult::kFailedContainsNull,
+                    ScanTextResult<Char>{Span{}, nullptr});
+      case 2:  // '<'
+        DCHECK_EQ(*pos_, '<');
+        return {{initial_start, static_cast<size_t>(pos_ - initial_start)},
+                nullptr};
+      case 4:  // '&'
+      case 8:  // '\r'
+        DCHECK(*pos_ == '&' || *pos_ == '\r');
+        pos_ = initial_start;
+        return {Span{}, ScanEscapedText()};
+    };
+
+    NOTREACHED_NORETURN();
+    return {};
+  }
+#endif  // VECTORIZE_SCANNING
+
   // We first try to scan text as an unmodified subsequence of the input.
   // However, if there are escape sequences, we have to copy the text to a
   // separate buffer and we might go outside of `Char` range if we are in an
@@ -560,11 +797,24 @@ class HTMLFastPathParser {
   // empty, as only one of them can be non-empty.
   ScanTextResult<Char> ScanText() {
     const Char* start = pos_;
-    bool is_newline_then_whitespace_string = false;
+
+    // First, try to check if the test is a canonical whitespace string.
     if (pos_ != end_ && *pos_ == '\n') {
-      is_newline_then_whitespace_string = true;
-      ++pos_;
+      while (++pos_ != end_ && *pos_ == ' ')
+        ;
+      if (pos_ == end_ || *pos_ == '<') {
+        return {{start, static_cast<size_t>(pos_ - start)},
+                nullptr,
+                /*is_newline_then_whitespace_string=*/true};
+      }
     }
+
+#if VECTORIZE_SCANNING
+    if (static_cast<size_t>(end_ - pos_) >= kVectorizationThreshold) {
+      return ScanTextVectorized(start);
+    }
+#endif  // VECTORIZE_SCANNING
+
     while (pos_ != end_ && *pos_ != '<') {
       // '&' indicates escape sequences, '\r' might require
       // https://infra.spec.whatwg.org/#normalize-newlines
@@ -575,14 +825,10 @@ class HTMLFastPathParser {
         return Fail(HtmlFastPathResult::kFailedContainsNull,
                     ScanTextResult<Char>{Span{}, nullptr});
       }
-      if (*pos_ != ' ') {
-        is_newline_then_whitespace_string = false;
-      }
       ++pos_;
     }
-    return {{start, static_cast<size_t>(pos_ - start)},
-            nullptr,
-            is_newline_then_whitespace_string};
+
+    return {{start, static_cast<size_t>(pos_ - start)}, nullptr};
   }
 
   // Slow-path of `ScanText()`, which supports escape sequences by copying to a
@@ -676,10 +922,112 @@ class HTMLFastPathParser {
                 static_cast<size_t>(attribute_name_buffer_.size()));
   }
 
-  static constexpr int kSingleQuote = 0x27;     // '
-  static constexpr int kDoubleQuote = 0x22;     // "
-  static constexpr int kAmpersand = 0x26;       // &
-  static constexpr int kCarriageReturn = 0x0D;  // \r
+#if VECTORIZE_SCANNING
+  ALWAYS_INLINE ClassifiedValue
+  ScanAttrValueVectorizedWithSingleQuote(const Char* initial_start) {
+    namespace hw = hwy::HWY_NAMESPACE;
+    DCHECK_GE(static_cast<size_t>(end_ - pos_), kVectorizationThreshold);
+    hw::FixedTag<uint8_t, 16> tag;
+    // ASCII representation of interesting symbols:
+    //   ': 0010 0111
+    //  \r: 0000 1101
+    //  \0: 0000 0000
+    //   &: 0010 0110
+    // We pick the following values for nibbles:
+    // - high nibbles:
+    //   0: 1001
+    //   2: 0110
+    // - low nibbles:
+    //   0: 0001
+    //   6: 0100
+    //   7: 0010
+    //  13: 1000
+    // Result of anding the nibbles:
+    //  \0: 1
+    //   ': 2
+    //   &: 4
+    //  \r: 8
+    const auto low_nibble_mask =
+        hw::Dup128VecFromValues(tag, 0b0001, 0, 0, 0, 0, 0, 0b0100, 0b0010, 0,
+                                0, 0, 0, 0, 0b1000, 0, 0);
+    const auto high_nibble_mask = hw::Dup128VecFromValues(
+        tag, 0b1001, 0, 0b0110, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    return SimdAdvanceAndClassify(pos_, end_, low_nibble_mask,
+                                  high_nibble_mask);
+  }
+
+  ALWAYS_INLINE ClassifiedValue
+  ScanAttrValueVectorizedWithDoubleQuote(const Char* initial_start) {
+    namespace hw = hwy::HWY_NAMESPACE;
+    DCHECK_GE(static_cast<size_t>(end_ - pos_), kVectorizationThreshold);
+    hw::FixedTag<uint8_t, 16> tag;
+    // ASCII representation of interesting symbols:
+    //   ": 0010 0010
+    //  \r: 0000 1101
+    //  \0: 0000 0000
+    //   &: 0010 0110
+    // We pick the following values for nibbles:
+    // - high nibbles:
+    //   0: 1001
+    //   2: 0110
+    // - low nibbles:
+    //   0: 0001
+    //   2: 0010
+    //   6: 0100
+    //  13: 1000
+    // Result of anding the nibbles:
+    //  \0: 1
+    //   ": 2
+    //   &: 4
+    //  \r: 8
+    const auto low_nibble_mask =
+        hw::Dup128VecFromValues(tag, 0b0001, 0, 0b0010, 0, 0, 0, 0b0100, 0, 0,
+                                0, 0, 0, 0, 0b1000, 0, 0);
+    const auto high_nibble_mask = hw::Dup128VecFromValues(
+        tag, 0b1001, 0, 0b0110, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    return SimdAdvanceAndClassify(pos_, end_, low_nibble_mask,
+                                  high_nibble_mask);
+  }
+
+  ALWAYS_INLINE std::pair<Span, USpan> ScanAttrValueVectorized(
+      Char quote_symbol,
+      const Char* initial_start) {
+    DCHECK(quote_symbol == '\'' || quote_symbol == '\"');
+    const ClassifiedValue classified_value =
+        quote_symbol == '\''
+            ? ScanAttrValueVectorizedWithSingleQuote(initial_start)
+            : ScanAttrValueVectorizedWithDoubleQuote(initial_start);
+
+    switch (classified_value) {
+      case 0:
+        DCHECK_EQ(pos_, end_);
+        return Fail(HtmlFastPathResult::kFailedParsingQuotedAttributeValue,
+                    std::pair{Span{}, USpan{}});
+      case 1:  // '\0'
+        DCHECK_EQ(*pos_, '\0');
+        // \0 is generally mapped to \uFFFD (but there are exceptions).
+        // Fallback to normal path as this generally does not happen often.
+        return Fail(HtmlFastPathResult::kFailedParsingQuotedAttributeValue,
+                    std::pair{Span{}, USpan{}});
+      case 2: {  // ''', '\"'
+        DCHECK(*pos_ == '\'' || *pos_ == '\"');
+        Span result =
+            Span{initial_start, static_cast<size_t>(pos_ - initial_start)};
+        // Consume quote.
+        ConsumeNext();
+        return {result, USpan{}};
+      }
+      case 4:  // '&'
+      case 8:  // '\r'
+        DCHECK(*pos_ == '&' || *pos_ == '\r');
+        pos_ = initial_start - 1;
+        return {Span{}, ScanEscapedAttrValue()};
+    };
+
+    NOTREACHED_IN_MIGRATION();
+    return {};
+  }
+#endif  // VECTORIZE_SCANNING
 
   std::pair<Span, USpan> ScanAttrValue() {
     Span result;
@@ -690,18 +1038,23 @@ class HTMLFastPathParser {
         quote_char == '"' || quote_char == '\'') {
       // clang-format on
       start = ++pos_;
+#if VECTORIZE_SCANNING
+      if (static_cast<size_t>(end_ - pos_) >= kVectorizationThreshold) {
+        return ScanAttrValueVectorized(quote_char, start);
+      }
+#endif  // VECTORIZE_SCANNING
       while (pos_ != end_) {
         uint16_t c = GetNext();
-        static_assert(kSingleQuote > kDoubleQuote);
+        static_assert('\'' > '\"');
         // The c is mostly like to be a~z or A~Z, the ASCII code value of a~z
         // and A~Z is greater than kSingleQuote, so we just need to compare
         // kSingleQuote here.
-        if (LIKELY(c > kSingleQuote)) {
+        if (LIKELY(c > '\'')) {
           ++pos_;
-        } else if (c == kAmpersand || c == kCarriageReturn) {
+        } else if (c == '&' || c == '\r') {
           pos_ = start - 1;
           return {Span{}, ScanEscapedAttrValue()};
-        } else if (c == kDoubleQuote || c == kSingleQuote) {
+        } else if (c == '\'' || c == '\"') {
           break;
         } else if (UNLIKELY(c == '\0')) {
           // \0 is generally mapped to \uFFFD (but there are exceptions).

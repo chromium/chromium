@@ -772,6 +772,10 @@ _CONFIG = [
             # Protected memory
             'base::ProtectedMemory',
             'base::AutoWritableMemory',
+
+            # Allow Highway SIMD Library and the possible namespace aliases.
+            'hwy::HWY_NAMESPACE.*',
+            'hw::.+',
         ],
         'disallowed': [
             ('base::Bind(Once|Repeating)',
