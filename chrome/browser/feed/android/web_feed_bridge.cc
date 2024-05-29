@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/feed/android/jni_headers/WebFeedBridge_jni.h"
 #include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/feed/web_feed_page_information_fetcher.h"
@@ -33,6 +34,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/android/gurl_android.h"
 
 class Profile;
@@ -222,13 +224,14 @@ static void JNI_WebFeedBridge_FollowWebFeed(
 }
 
 static jboolean JNI_WebFeedBridge_IsCormorantEnabledForLocale(JNIEnv* env) {
-  return feed::IsCormorantEnabledForLocale(
-      country_codes::GetCurrentCountryCode());
+  return JNI_WebFeedBridge_IsWebFeedEnabled(env);
 }
 
 static jboolean JNI_WebFeedBridge_IsWebFeedEnabled(JNIEnv* env) {
-  return feed::IsWebFeedEnabledForLocale(
-      country_codes::GetCurrentCountryCode());
+  return l10n_util::GetLanguage(g_browser_process->GetApplicationLocale()) ==
+             "en" &&
+         feed::IsWebFeedEnabledForLocale(
+             country_codes::GetCurrentCountryCode());
 }
 
 static void JNI_WebFeedBridge_FollowWebFeedById(
