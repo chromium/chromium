@@ -6,9 +6,11 @@
 #define MEDIA_GPU_VAAPI_AV1_VAAPI_VIDEO_ENCODER_DELEGATE_H_
 
 #include <stdint.h>
+
 #include <vector>
 
 #include "media/base/video_bitrate_allocation.h"
+#include "media/gpu/av1_builder.h"
 #include "media/gpu/av1_picture.h"
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
 
@@ -72,7 +74,6 @@ class AV1VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   bool SubmitSequenceHeader(size_t& sequence_header_obu_size);
   bool SubmitSequenceParam();
   bool SubmitSequenceHeaderOBU(size_t& sequence_header_obu_size);
-  std::vector<uint8_t> PackSequenceHeader() const;
   bool SubmitFrame(const EncodeJob& job, size_t frame_header_obu_offset);
   bool FillPictureParam(VAEncPictureParameterBufferAV1& pic_param,
                         VAEncSegMapBufferAV1& segment_map_param,
@@ -80,8 +81,6 @@ class AV1VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
                         const AV1Picture& pic);
   bool SubmitFrameOBU(const VAEncPictureParameterBufferAV1& pic_param,
                       size_t& frame_header_obu_size_offset);
-  std::vector<uint8_t> PackFrameHeader(
-      const VAEncPictureParameterBufferAV1& pic_param) const;
   bool SubmitPictureParam(const VAEncPictureParameterBufferAV1& pic_param);
   bool SubmitSegmentMap(const VAEncSegMapBufferAV1& segment_map_param);
   bool SubmitTileGroup();
@@ -95,7 +94,7 @@ class AV1VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   // TODO(b:274756117): In tuning this encoder, we may decide we want multiple
   // reference frames, not just the most recent.
   scoped_refptr<AV1Picture> last_frame_ = nullptr;
-  VAEncSequenceParameterBufferAV1 seq_param_;
+  AV1BitstreamBuilder::SequenceHeader sequence_header_;
   std::unique_ptr<aom::AV1RateControlRTC> rate_ctrl_;
   std::vector<uint8_t> segmentation_map_{};
   uint32_t seg_size_;
