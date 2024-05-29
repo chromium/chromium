@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_AGENT_GROUP_SCHEDULER_H_
 
 #include "base/task/single_thread_task_runner.h"
+#include "ipc/urgent_message_observer.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -21,14 +22,15 @@ class WebThreadScheduler;
 // AgentGroupScheduler schedules per-AgentSchedulingGroup tasks.
 // AgentSchedulingGroup is Blink's unit of scheduling and performance isolation.
 class BLINK_PLATFORM_EXPORT AgentGroupScheduler
-    : public GarbageCollected<AgentGroupScheduler> {
+    : public GarbageCollected<AgentGroupScheduler>,
+      public IPC::UrgentMessageObserver {
  public:
   class Agent : public GarbageCollectedMixin {
    public:
     virtual void PerformMicrotaskCheckpoint() = 0;
   };
 
-  virtual ~AgentGroupScheduler() = default;
+  ~AgentGroupScheduler() override = default;
 
   // Creates a new PageScheduler for a given Page. Must be called from the
   // associated WebThread.
@@ -49,6 +51,10 @@ class BLINK_PLATFORM_EXPORT AgentGroupScheduler
   CompositorTaskRunner() = 0;
   virtual scheduler::WebThreadScheduler& GetMainThreadScheduler() = 0;
   virtual v8::Isolate* Isolate() = 0;
+
+  // IPC::Channel::UrgentMessageDelegate implementation:
+  void OnUrgentMessageReceived() override = 0;
+  void OnUrgentMessageProcessed() override = 0;
 };
 
 }  // namespace blink

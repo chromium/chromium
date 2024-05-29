@@ -138,11 +138,6 @@ class CONTENT_EXPORT AgentSchedulingGroup
   RenderFrameImpl* GetListener(int32_t routing_id);
 #endif
 
-  // This AgentSchedulingGroup's legacy IPC channel. Will only be used in
-  // `features::MBIMode::kEnabledPerRenderProcessHost` or
-  // `features::MBIMode::kEnabledPerSiteInstance` mode.
-  std::unique_ptr<IPC::SyncChannel> channel_;
-
   // Map of registered RenderFrames.
   std::map<blink::LocalFrameToken, RenderFrameImpl*> listener_map_;
 
@@ -153,6 +148,11 @@ class CONTENT_EXPORT AgentSchedulingGroup
   // A dedicated scheduler for this AgentSchedulingGroup.
   std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
       agent_group_scheduler_;
+
+  // This AgentSchedulingGroup's legacy IPC channel. Will only be used in
+  // `features::MBIMode::kEnabledPerRenderProcessHost` or
+  // `features::MBIMode::kEnabledPerSiteInstance` mode.
+  std::unique_ptr<IPC::SyncChannel> channel_;
 
   const raw_ref<RenderThread> render_thread_;
 

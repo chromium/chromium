@@ -389,6 +389,8 @@ class DummyAgentGroupScheduler : public AgentGroupScheduler {
   }
   v8::Isolate* Isolate() override { return main_thread_scheduler_->Isolate(); }
   void AddAgent(Agent* agent) override {}
+  void OnUrgentMessageReceived() override {}
+  void OnUrgentMessageProcessed() override {}
 
  private:
   std::unique_ptr<DummyWebMainThreadScheduler> main_thread_scheduler_;

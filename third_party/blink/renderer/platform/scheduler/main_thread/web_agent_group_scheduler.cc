@@ -40,4 +40,12 @@ v8::Isolate* WebAgentGroupScheduler::Isolate() {
   return private_->Isolate();
 }
 
+void WebAgentGroupScheduler::OnUrgentMessageReceived() {
+  private_->OnUrgentMessageReceived();
+}
+
+void WebAgentGroupScheduler::OnUrgentMessageProcessed() {
+  private_->OnUrgentMessageProcessed();
+}
+
 }  // namespace blink::scheduler

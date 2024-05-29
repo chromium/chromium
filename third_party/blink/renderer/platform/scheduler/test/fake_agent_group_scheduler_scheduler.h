@@ -52,6 +52,10 @@ class FakeAgentGroupScheduler : public AgentGroupScheduler {
 
   void AddAgent(Agent* agent) override {}
 
+  void OnUrgentMessageReceived() override {}
+
+  void OnUrgentMessageProcessed() override {}
+
  private:
   const raw_ref<WebThreadScheduler> web_thread_scheduler_;
 };

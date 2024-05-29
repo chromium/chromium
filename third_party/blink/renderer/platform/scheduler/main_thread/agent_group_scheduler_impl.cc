@@ -202,5 +202,18 @@ void AgentGroupSchedulerImpl::UpdatePolicy() {
   }
 }
 
+void AgentGroupSchedulerImpl::OnUrgentMessageReceived() {
+  // TODO(crbug.com/40114705): This forwards to `main_thread_scheduler_`, which
+  // will prioritize all default task queues until the urgent messages are
+  // handled. It might be better to only prioritize `default_task_queue_`, which
+  // depends on MBIMode being non-legacy and MbiOverrideTaskRunnerHandle being
+  // enabled (because of crbug.com/40182014).
+  main_thread_scheduler_->OnUrgentMessageReceived();
+}
+
+void AgentGroupSchedulerImpl::OnUrgentMessageProcessed() {
+  main_thread_scheduler_->OnUrgentMessageProcessed();
+}
+
 }  // namespace scheduler
 }  // namespace blink

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SCHEDULER_WEB_AGENT_GROUP_SCHEDULER_H_
 
 #include "base/task/single_thread_task_runner.h"
+#include "ipc/urgent_message_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -24,14 +25,15 @@ namespace scheduler {
 // And WebAgentGroupScheduler is a dedicated scheduler for each
 // AgentSchedulingGroup. Any task posted on WebAgentGroupScheduler shouldn’t be
 // run on a different WebAgentGroupScheduler.
-class BLINK_PLATFORM_EXPORT WebAgentGroupScheduler {
+class BLINK_PLATFORM_EXPORT WebAgentGroupScheduler
+    : public IPC::UrgentMessageObserver {
  public:
   // Create a dummy AgentGroupScheduler only for testing
   static std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
   CreateForTesting();
 
   WebAgentGroupScheduler() = delete;
-  ~WebAgentGroupScheduler();
+  ~WebAgentGroupScheduler() override;
 
   // Bind this AgentSchedulingGroup's BrowserInterfaceBroker.
   void BindInterfaceBroker(
@@ -54,6 +56,10 @@ class BLINK_PLATFORM_EXPORT WebAgentGroupScheduler {
   explicit WebAgentGroupScheduler(AgentGroupScheduler*);
   AgentGroupScheduler& GetAgentGroupScheduler();
 #endif
+
+  // IPC::Channel::UrgentMessageDelegate implementation:
+  void OnUrgentMessageReceived() override;
+  void OnUrgentMessageProcessed() override;
 
  protected:
   WebPrivatePtrForGC<AgentGroupScheduler> private_;

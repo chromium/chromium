@@ -131,6 +131,11 @@ AgentSchedulingGroup::AgentSchedulingGroup(
       /*listener_task_runner=*/agent_group_scheduler_->DefaultTaskRunner(),
       render_thread_->GetShutdownEvent());
 
+  if (base::FeatureList::IsEnabled(
+          blink::features::kBlinkSchedulerPrioritizeNavigationIPCs)) {
+    channel_->SetUrgentMessageObserver(agent_group_scheduler_.get());
+  }
+
   // TODO(crbug.com/40142495): Add necessary filters.
   // Currently, the renderer process has these filters:
   // 1. `UnfreezableMessageFilter` - in the process of being removed,
