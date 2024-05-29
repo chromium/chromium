@@ -2978,7 +2978,7 @@ TEST_F(SnapGroupDividerTest, DividerStackingOrderWithTwoTransientWindows) {
   ASSERT_TRUE(window_util::IsStackedBelow(w2.get(), divider_window));
 
   // By default `w1_transient` is `MODAL_TYPE_NONE`, meaning that the associated
-  // `w1` interactable.
+  // `w1` is interactable.
   std::unique_ptr<aura::Window> w1_transient(
       CreateTransientChildWindow(w1.get(), gfx::Rect(10, 20, 20, 30)));
 
@@ -3005,6 +3005,45 @@ TEST_F(SnapGroupDividerTest, DividerStackingOrderWithTwoTransientWindows) {
   EXPECT_TRUE(
       window_util::IsStackedBelow(w1_transient.get(), w2_transient.get()));
   EXPECT_TRUE(window_util::IsStackedBelow(w1_transient.get(), divider_window));
+}
+
+// Verifies that if the stacking order of the divider window is altered by
+// another transient window, `SplitViewDivider` is able to correct it, placing
+// the divider below the transient window. See http://b/341332379 for more
+// details.
+TEST_F(SnapGroupDividerTest, DividerStackingOrderWithTransientUndoStacking) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  ASSERT_TRUE(window_util::IsStackedBelow(w1.get(), w2.get()));
+  aura::Window* top_window = w2.get();
+  aura::Window* top_window_parent = top_window->parent();
+
+  SplitViewDivider* divider = snap_group_divider();
+  ASSERT_TRUE(divider);
+  auto* divider_widget = divider->divider_widget();
+  ASSERT_TRUE(divider_widget);
+  aura::Window* divider_window = divider_widget->GetNativeWindow();
+  ASSERT_TRUE(wm::HasTransientAncestor(divider_window, w2.get()));
+  ASSERT_EQ(top_window_parent, divider_window->parent());
+
+  ASSERT_TRUE(window_util::IsStackedBelow(w1.get(), w2.get()));
+  ASSERT_TRUE(window_util::IsStackedBelow(w1.get(), divider_window));
+  ASSERT_TRUE(window_util::IsStackedBelow(w2.get(), divider_window));
+
+  std::unique_ptr<aura::Window> w2_transient(
+      CreateTransientChildWindow(w2.get(), gfx::Rect(10, 20, 20, 30)));
+  ASSERT_TRUE(wm::HasTransientAncestor(w2_transient.get(), w2.get()));
+  ASSERT_EQ(top_window_parent, w2_transient->parent());
+
+  // When stacking a child window relative to a target, only the child is
+  // notified of stacking order changes (see `Window::StackChildRelativeTo()`).
+  // Since `SplitViewDivider` doesn't observe the divider window, we use
+  // `StackChildBelow` to ensure the transient window (`w2_transient`) receives
+  // this notification, correcting the stacking order so that the divider stays
+  // below it.
+  top_window_parent->StackChildBelow(w2_transient.get(), divider_window);
+  EXPECT_TRUE(window_util::IsStackedBelow(divider_window, w2_transient.get()));
 }
 
 // Tests that the union bounds of the primary window, secondary window in a snap
