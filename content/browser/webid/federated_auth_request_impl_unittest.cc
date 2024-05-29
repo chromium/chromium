@@ -42,6 +42,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -105,7 +106,7 @@ constexpr char kAccountIdPeter[] = "peter_id";
 constexpr char kAccountIdZach[] = "zach_id";
 constexpr char kAccountPicture[] = "https://idp.example/profilepic";
 constexpr char kAccountPicture404[] = "https://idp.example/404";
-constexpr char kAccountPictureData[] = "picture";
+constexpr int kAccountPictureSize = 10;
 constexpr char kEmail[] = "ken@idp.example";
 constexpr char kDomainHint[] = "domain@corp.com";
 constexpr char kOtherDomainHint[] = "other_domain@corp.com";
@@ -603,17 +604,15 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     }
   }
 
-  void DownloadUncredentialedUrl(const GURL& url,
-                                 DownloadCallback callback) override {
+  void DownloadAndDecodeImage(const GURL& url,
+                              ImageCallback callback) override {
     EXPECT_TRUE(url == GURL(kAccountPicture) || url == GURL(kAccountPicture404))
         << url;
     ++num_fetched_[FetchedEndpoint::PICTURE];
     if (url == GURL(kAccountPicture404)) {
-      std::move(callback).Run(nullptr, 404, "");
+      std::move(callback).Run(gfx::Image());
     } else {
-      std::move(callback).Run(
-          std::make_unique<std::string>(kAccountPictureData), 200,
-          "image/jpeg");
+      std::move(callback).Run(gfx::test::CreateImage(kAccountPictureSize));
     }
   }
 
@@ -5530,7 +5529,11 @@ TEST_F(FederatedAuthRequestImplTest, PictureFetch) {
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
   ASSERT_EQ(displayed_accounts().size(), 1u);
   EXPECT_EQ(displayed_accounts()[0].id, kAccountId);
-  EXPECT_EQ(displayed_accounts()[0].picture_data, kAccountPictureData);
+  EXPECT_FALSE(displayed_accounts()[0].decoded_picture.IsEmpty());
+  EXPECT_EQ(kAccountPictureSize,
+            displayed_accounts()[0].decoded_picture.Width());
+  EXPECT_EQ(kAccountPictureSize,
+            displayed_accounts()[0].decoded_picture.Height());
 }
 
 TEST_F(FederatedAuthRequestImplTest, PictureFetchMultipleAccounts) {
@@ -5545,9 +5548,17 @@ TEST_F(FederatedAuthRequestImplTest, PictureFetchMultipleAccounts) {
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
   ASSERT_EQ(displayed_accounts().size(), 3u);
-  EXPECT_EQ(displayed_accounts()[0].picture_data, kAccountPictureData);
-  EXPECT_EQ(displayed_accounts()[1].picture_data, kAccountPictureData);
-  EXPECT_EQ(displayed_accounts()[2].picture_data, "");
+  EXPECT_FALSE(displayed_accounts()[0].decoded_picture.IsEmpty());
+  EXPECT_EQ(kAccountPictureSize,
+            displayed_accounts()[0].decoded_picture.Width());
+  EXPECT_EQ(kAccountPictureSize,
+            displayed_accounts()[0].decoded_picture.Height());
+  EXPECT_FALSE(displayed_accounts()[1].decoded_picture.IsEmpty());
+  EXPECT_EQ(kAccountPictureSize,
+            displayed_accounts()[1].decoded_picture.Width());
+  EXPECT_EQ(kAccountPictureSize,
+            displayed_accounts()[1].decoded_picture.Height());
+  EXPECT_TRUE(displayed_accounts()[2].decoded_picture.IsEmpty());
 }
 
 // Test that when FedCmRpContext flag is enabled and rp_context is specified,

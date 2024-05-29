@@ -60,8 +60,7 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                              const std::string& client_id,
                              DisconnectCallback callback) override;
 
-  void DownloadUncredentialedUrl(const GURL& url,
-                                 DownloadCallback callback) override;
+  void DownloadAndDecodeImage(const GURL& url, ImageCallback callback) override;
 
  private:
   raw_ptr<IdpNetworkRequestManager, DanglingUntriaged> delegate_;

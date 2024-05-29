@@ -182,44 +182,27 @@ class AccountImageView : public views::ImageView {
   AccountImageView& operator=(const AccountImageView&) = delete;
   ~AccountImageView() override = default;
 
-  // Decode image and set it on AccountImageView.
-  void DecodeAccountImage(const content::IdentityRequestAccount& account,
-                          image_fetcher::ImageFetcher& image_fetcher,
-                          int image_size) {
-    if (account.picture_data.empty()) {
-      OnImageDecoded(base::UTF8ToUTF16(account.name), image_size, gfx::Image());
-    } else {
-      // OnImageDecoded() is a member of AccountImageView so that the callback
-      // is cancelled in the case that AccountImageView is destroyed prior to
-      // the callback returning.
-      image_fetcher.GetImageDecoder()->DecodeImage(
-          account.picture_data, gfx::Size(image_size, image_size), nullptr,
-          base::BindOnce(&AccountImageView::OnImageDecoded,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         base::UTF8ToUTF16(account.name), image_size));
-    }
-  }
-
- private:
-  void OnImageDecoded(const std::u16string& account_name,
-                      int image_size,
-                      const gfx::Image& image) {
+  // Check image and set it on AccountImageView.
+  void SetAccountImage(const content::IdentityRequestAccount& account,
+                       image_fetcher::ImageFetcher& image_fetcher,
+                       int image_size) {
     gfx::ImageSkia avatar;
-    if (image.IsEmpty()) {
-      std::u16string letter = account_name;
+    if (account.decoded_picture.IsEmpty()) {
+      std::u16string letter = base::UTF8ToUTF16(account.name);
       if (letter.length() > 0) {
-        letter = base::i18n::ToUpper(account_name.substr(0, 1));
+        letter = base::i18n::ToUpper(letter.substr(0, 1));
       }
       avatar = gfx::CanvasImageSource::MakeImageSkia<
           LetterCircleCroppedImageSkiaSource>(letter, image_size);
     } else {
       avatar =
           gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
-              image.AsImageSkia(), std::nullopt, image_size);
+              account.decoded_picture.AsImageSkia(), std::nullopt, image_size);
     }
     SetImage(ui::ImageModel::FromImageSkia(avatar));
   }
 
+ private:
   base::WeakPtrFactory<AccountImageView> weak_ptr_factory_{this};
 };
 
@@ -273,8 +256,8 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   CHECK(should_hover || !should_include_idp);
   if (should_hover) {
     if (should_include_idp) {
-      account_image_view->DecodeAccountImage(account, *image_fetcher_,
-                                             avatar_size);
+      account_image_view->SetAccountImage(account, *image_fetcher_,
+                                          avatar_size);
       // Introduce a border so that the IDP image is a bit past the account
       // image.
       account_image_view->SetBorder(views::CreateEmptyBorder(
@@ -314,8 +297,8 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
 
       avatar_view = std::move(background_container);
     } else {
-      account_image_view->DecodeAccountImage(account, *image_fetcher_,
-                                             avatar_size);
+      account_image_view->SetAccountImage(account, *image_fetcher_,
+                                          avatar_size);
       avatar_view = std::move(account_image_view);
     }
     std::unique_ptr<views::ImageView> arrow_icon_view = nullptr;
@@ -355,7 +338,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     }
     return row;
   }
-  account_image_view->DecodeAccountImage(account, *image_fetcher_, avatar_size);
+  account_image_view->SetAccountImage(account, *image_fetcher_, avatar_size);
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,

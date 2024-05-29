@@ -2109,7 +2109,7 @@ void FederatedAuthRequestImpl::FetchAccountPictures(
                      accounts, client_metadata));
   for (const auto& account : accounts) {
     if (account.picture.is_valid()) {
-      network_manager_->DownloadUncredentialedUrl(
+      network_manager_->DownloadAndDecodeImage(
           account.picture,
           base::BindOnce(&FederatedAuthRequestImpl::OnAccountPictureReceived,
                          weak_ptr_factory_.GetWeakPtr(), callback,
@@ -2125,12 +2125,8 @@ void FederatedAuthRequestImpl::FetchAccountPictures(
 void FederatedAuthRequestImpl::OnAccountPictureReceived(
     base::RepeatingClosure cb,
     GURL url,
-    std::unique_ptr<std::string> response_body,
-    int response_code,
-    const std::string& mime_type) {
-  if (response_body) {
-    downloaded_images_[url] = std::move(response_body);
-  }
+    const gfx::Image& image) {
+  downloaded_images_[url] = image;
   cb.Run();
 }
 
@@ -2141,10 +2137,9 @@ void FederatedAuthRequestImpl::OnAllAccountPicturesReceived(
   for (auto& account : accounts) {
     auto it = downloaded_images_.find(account.picture);
     if (it != downloaded_images_.end()) {
-      // We do not use std::move here in case multiple accounts use the
-      // same picture URL.
-      DCHECK(it->second);
-      account.picture_data = *it->second;
+      // We do not use std::move here in case multiple accounts use the same
+      // picture URL, and the underlying gfx::Image data is refcounted anyway.
+      account.decoded_picture = it->second;
     }
   }
   downloaded_images_.clear();

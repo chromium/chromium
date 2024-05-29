@@ -46,7 +46,7 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
   MOCK_METHOD2(SendFailedTokenRequestMetrics,
                void(const GURL&, MetricsEndpointErrorCode code));
   MOCK_METHOD2(SendLogout, void(const GURL& logout_url, LogoutCallback));
-  MOCK_METHOD2(DownloadUncredentialedUrl, void(const GURL&, DownloadCallback));
+  MOCK_METHOD2(DownloadAndDecodeImage, void(const GURL&, ImageCallback));
 };
 
 }  // namespace content
