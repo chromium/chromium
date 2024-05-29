@@ -512,7 +512,7 @@ suite('ComposeApp', () => {
     await testProxy.whenCalled('openComposeLearnMorePage');
   });
 
-  test('UnsupportedLanguageErrorClickable', async () => {
+  test('PermissionDeniedErrorClickable', async () => {
     const errorMessage = `some error ${'errorPermissionDenied'}`;
     loadTimeData.overrideValues({['errorPermissionDenied']: errorMessage});
 
@@ -979,5 +979,28 @@ suite('ComposeAppRefinedUi', () => {
     await whenCheck(
         app.$.resultTextContainer,
         () => !app.$.resultTextContainer.classList.contains('can-scroll'));
+  });
+
+  test('ComposeWithModifierResult', async () => {
+    // Submit the input once so that modifier menu is visible.
+    mockInput('Input to refresh.');
+    app.$.submitButton.click();
+    await mockResponse();
+
+    testProxy.resetResolver('rewrite');
+
+    assertTrue(
+        isVisible(app.$.modifierMenu), 'Modifier menu should be visible.');
+    assertEquals(
+        5,
+        app.$.modifierMenu.querySelectorAll('option:not([disabled])').length);
+
+    app.$.modifierMenu.value = `${StyleModifier.kShorter}`;
+    app.$.modifierMenu.dispatchEvent(new CustomEvent('change'));
+
+    const args = await testProxy.whenCalled('rewrite');
+    await mockResponse();
+
+    assertEquals(StyleModifier.kShorter, args);
   });
 });
