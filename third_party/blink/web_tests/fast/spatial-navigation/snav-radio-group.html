@@ -1,108 +1,80 @@
-<html>
-  <!--
-    This test ensures the correctness of Spatial Navigation (SNav) algorithm over single select element.
+<!DOCTYPE html>
+<table style="text-align: left; width: 100%; margin-left: auto; margin-right: auto;" border="1" cellpadding="2" cellspacing="1">
+  <tbody>
+    <tr>
+      <td style="vertical-align: center; text-align: center;"></td>
+      <td style="vertical-align: center; text-align: center;"><a id="2" href="a">2</a></td>
+      <td style="vertical-align: center; text-align: center;"></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: center; text-align: center;"><a id="4" href="a">4</a></td>
+      <td style="vertical-align: center; text-align: center;">
+        <table style="text-align: center; width: 100%; margin-left: auto; margin-right: auto;" border="1" cellpadding="2" cellspacing="1">
+          <tbody>
+            <tr>
+              <td style="vertical-align: center; text-align: center;"></td>
+              <td style="vertical-align: center; text-align: center;"><input type="radio" name="group" id="up" ></td>
+              <td style="vertical-align: center; text-align: center;"></td>
+            </tr>
+            <tr>
+              <td style="vertical-align: center; text-align: center;"><input type="radio" name="group" id="left" ></td>
+              <td style="vertical-align: center; text-align: center;">
+                <input type="radio" name="group" id="start" >
+              </td>
+              <td style="vertical-align: center; text-align: center;"><input type="radio" name="group" id="right" ></td>
+            </tr>
+            <tr>
+              <td style="vertical-align: center; text-align: center;"></td>
+              <td style="vertical-align: center; text-align: center;"><input type="radio" name="group" id="down" checked ></td>
+              <td style="vertical-align: center; text-align: center;"></td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+      <td style="vertical-align: center; text-align: center;"><a id="6" href="a">6</a></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: center; text-align: center;"></td>
+      <td style="vertical-align: center; text-align: center;"><a id="8" href="a">8</a></td>
+      <td style="vertical-align: center; text-align: center;"></td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  This test ensures the correctness of Spatial Navigation (SNav) algorithm over single select element.<br>
+  * Navigation steps:<br>
+  1) Loads this page, focus goes to "start" automatically.<br>
+  2) Focus moves away from select in 4 different directions to neighbor nodes and back.<br>
+</p>
 
-    * Pre-conditions:
-    1) DRT support for SNav enable/disable.
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  var resultMap = [
+    ["Down", "down"],
+    ["Down", "8"],
+    ["Up", "down"],
+    ["Up", "start"],
+    ["Up", "up"],
+    ["Up", "2"],
+    ["Down", "up"],
+    ["Down", "start"],
+    ["Right", "right"],
+    ["Right", "6"],
+    ["Left", "right"],
+    ["Left", "start"],
+    ["Left", "left"],
+    ["Left", "4"],
+    ["Right", "left"],
+    ["Right", "start"]
+  ];
 
-    * Navigation steps:
-    1) Loads this page, focus goes to "start" automatically.
-    2) Focus moves away from select in 4 different directions to neighbor nodes and back.
-  -->
-  <head>
-    <script src="../../resources/js-test.js"></script>
-    <script src="resources/spatial-navigation-utils.js"></script>
-    <script type="application/javascript">
+  // Start at a known place.
+  document.getElementById("start").focus();
+  snav.assertFocusMoves(resultMap, true, postFocusMoveCheck);
 
-    var resultMap = [
-      ["Down", "down"],
-      ["Down", "8"],
-      ["Up", "down"],
-      ["Up", "start"],
-      ["Up", "up"],
-      ["Up", "2"],
-      ["Down", "up"],
-      ["Down", "start"],
-      ["Right", "right"],
-      ["Right", "6"],
-      ["Left", "right"],
-      ["Left", "start"],
-      ["Left", "left"],
-      ["Left", "4"],
-      ["Right", "left"],
-      ["Right", "start"],
-      ["DONE", "DONE"]
-    ];
-
-    if (window.testRunner) {
-      testRunner.dumpAsText();
-      testRunner.overridePreference("WebKitTabToLinksPreferenceKey", 1);
-      testRunner.overridePreference("WebKitSpatialNavigationEnabled", 1);
-      testRunner.waitUntilDone();
-    }
-
-    function runTest()
-    {
-      // starting the test itself: get to a known place.
-      document.getElementById("start").focus();
-
-      initTest(resultMap, testCompleted);
-    }
-
-    function testCompleted()
-    {
-      if (window.testRunner)
-        shouldBe("document.getElementById('down').checked", "true");            
-        testRunner.notifyDone();
-    }
-
-    window.onload = runTest;
-
-    </script>
-  </head>
-  <body id="some-content" xmlns="http://www.w3.org/1999/xhtml">
-    <table style="text-align: left; width: 100%; margin-left: auto; margin-right: auto;" border="1" cellpadding="2" cellspacing="1">
-      <tbody>
-        <tr>
-          <td style="vertical-align: center; text-align: center;"></td>
-          <td style="vertical-align: center; text-align: center;"><a id="2" href="a">2</a></td>
-          <td style="vertical-align: center; text-align: center;"></td>
-        </tr>
-        <tr>
-          <td style="vertical-align: center; text-align: center;"><a id="4" href="a">4</a></td>
-          <td style="vertical-align: center; text-align: center;">
-            <table style="text-align: center; width: 100%; margin-left: auto; margin-right: auto;" border="1" cellpadding="2" cellspacing="1">
-              <tbody>
-                <tr>
-                  <td style="vertical-align: center; text-align: center;"></td>
-                  <td style="vertical-align: center; text-align: center;"><input type="radio" name="group" id="up" ></td>
-                  <td style="vertical-align: center; text-align: center;"></td>
-                </tr>
-                <tr>
-                  <td style="vertical-align: center; text-align: center;"><input type="radio" name="group" id="left" ></td>
-                  <td style="vertical-align: center; text-align: center;">
-                    <input type="radio" name="group" id="start" >
-                  </td>
-                  <td style="vertical-align: center; text-align: center;"><input type="radio" name="group" id="right" ></td>
-                </tr>
-                <tr>
-                  <td style="vertical-align: center; text-align: center;"></td>
-                  <td style="vertical-align: center; text-align: center;"><input type="radio" name="group" id="down" checked ></td>
-                  <td style="vertical-align: center; text-align: center;"></td>
-                </tr>
-              </tbody>
-            </table>
-          </td>
-          <td style="vertical-align: center; text-align: center;"><a id="6" href="a">6</a></td>
-        </tr>
-        <tr>
-          <td style="vertical-align: center; text-align: center;"></td>
-          <td style="vertical-align: center; text-align: center;"><a id="8" href="a">8</a></td>
-          <td style="vertical-align: center; text-align: center;"></td>
-        </tr>
-      </tbody>
-    </table>
-    <div id="console"></div>
-  </body>
-</html>
-
+  function postFocusMoveCheck() {
+    assert_equals(document.getElementById("down").checked, true);
+  }
+</script>

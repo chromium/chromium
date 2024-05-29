@@ -27,6 +27,9 @@
       case 'Backward':
         eventSender.keyDown('Tab', ['shiftKey']);
         break;
+      case 'Space':
+        eventSender.keyDown(' ');
+        break;
     }
   }
 

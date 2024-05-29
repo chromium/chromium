@@ -1,101 +1,47 @@
-<html>
-  <!--
-    This test ensures the correctness the following Spatial Navigation
-    (SNav) algorithm features.
+<!DOCTYPE html>
+<a id="start" href="a">Start</a>
+<div style='margin-top:100000px'>
+  <a id="end" href="a">End</a>
+</div>
+<p>
+  This test ensures the correctness the following Spatial Navigation (SNav) algorithm features.<br>
+  <br>
+  1) There is no unit overflow in the Spatial Navigation algorithm while calculating the best node candidate<br>
+     to move focus to. To test that this page positions some elements 10000000 pixels far from each other<br>
+     (distance that can considered large enough for most of the Web Pages on the Internet).<br>
+  <br>
+  2) Make sure that a best focusable candidate only gets focused if it is visible in the current Viewport.<br>
+     Scroll-in-direction is performed otherwise.<br>
+  <br>
+  * Navigation steps:<br>
+  1) Loads this page, focus goes to "start" automatically.<br>
+  2) Attempt to move focus down to "end". As it is too far and out of viewport, focus change will not happen<br>
+     and page will be scrolled a step down.<br>
+  3) By sending an "End" keypress, page gets scrolled down to a place where the "end" node gets visible in the viewport.<br>
+  4) Step _1_ is ran again, and "end" gets focused.<br>
+</p>
 
-    1) There is no unit overflow in the Spatial Navigation algorithm while
-       calculating the best node candidate to move focus to. To test that this
-       page positions some elements 10000000 pixels far from each other (distance
-       that can considered large enough for most of the Web Pages on the
-       Internet).
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  snav.assertSnavEnabledAndTestable();
 
-    2) Make sure that a best focusable candidate only gets focused
-       if it is visible in the current Viewport. Scroll-in-direction
-       is performed otherwise.
+  // Start at a known place.
+  document.getElementById("start").focus();
 
-    * Pre-conditions:
-    1) DRT support for SNav enable/disable.
+  snav.triggerMove("Down");
+  test(function() {
+    assert_equals(document.activeElement, document.getElementById("start"));
+    assert_true(document.scrollingElement.scrollTop != 0);
+  }, "Focus change will not happen and page will be scrolled a step down.")
 
-    * Navigation steps:
-    1) Loads this page, focus goes to "start" automatically.
-    2) Attempt to move focus down to "end. As it is too far and out of
-       viewport, focus change will not happen and page will be scrolled
-       a step down.
-    3) By sending an "End" keypress, page gets scrolled down to a place
-       where the "end" node gets visible in the viewport.
-    4) Step _1_ is ran again, and "end" gets focused. -->
-  <head>
-    <script src="../../resources/js-test.js"></script>
-    <script src="resources/spatial-navigation-utils.js"></script>
-    <script type="application/javascript">
+  internals.settings.setScrollAnimatorEnabled(false);
+  eventSender.keyDown("End");
 
-    var resultMap1 = [
-      ["Down", "start"],
-      ["DONE", "DONE"]
-    ];
+  snav.triggerMove("Down");
+  test(function() {
+    assert_equals(document.activeElement, document.getElementById("end"));
+  }, "'end' element should get focused.")
 
-    var resultMap2 = [
-      ["Down", "end"],
-      ["DONE", "DONE"]
-    ];
-
-    if (window.testRunner) {
-      testRunner.dumpAsText();
-      testRunner.overridePreference("WebKitTabToLinksPreferenceKey", 1);
-      testRunner.overridePreference("WebKitSpatialNavigationEnabled", 1);
-      testRunner.waitUntilDone();
-    }
-
-    function runTest()
-    {
-      // starting the test itself: get to a known place.
-      document.getElementById("start").focus();
-
-      requestAnimationFrame(step1);
-    }
-
-    function step1()
-    {
-      // Actions in 'resultMap1' should keep the focus in the currently
-      // focused element ('start') once the best candidate ('end') is not
-      // visible in current viewport.
-      initTest(resultMap1, step1Completed);
-    }
-
-    function step2()
-    {
-      shouldBeTrue(String(document.scrollingElement.scrollTop != 0));
-
-      // Then it scrolls down to the end of the page ...
-      if (window.eventSender) {
-        internals.settings.setScrollAnimatorEnabled(false);
-        eventSender.keyDown("End");
-      }
-
-      // And 'resultMap2' re-tries to move focus down.
-      initTest(resultMap2, step2Completed);
-    }
-
-    function step1Completed()
-    {
-      requestAnimationFrame(step2);
-    }
-
-    function step2Completed()
-    {
-      if (window.testRunner)
-        testRunner.notifyDone();
-    }
-
-    window.onload = runTest;
-
-    </script>
-  </head>
-  <body id="some-content" xmlns="http://www.w3.org/1999/xhtml">
-    <a id="start" href="a">Start</a>
-    <div style='margin-top:100000px'>
-        <a id="end" href="a">End</a>
-    </div>
-    <div id="console"></div>
-  </body>
-</html>
+</script>

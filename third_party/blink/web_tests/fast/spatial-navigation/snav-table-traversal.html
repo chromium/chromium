@@ -1,85 +1,53 @@
-<html>
-  <!--
-    This test ensures the basic table traversal correctness of
-    Spatial Navigation (SNav) algorithm: focusable elements in a
-    <table> should be accessible.
+<!DOCTYPE html>
+<table style="text-align: left; width: 100%; margin-left: auto; margin-right: auto;" border="1" cellpadding="2" cellspacing="1">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; text-align: center;"><a id="start" href="a">a</a></td>
+      <td style="vertical-align: top; text-align: center;"><a id="2" href="a">a</a></td>
+      <td style="vertical-align: top; text-align: center;"><a id="3" href="a">a</a></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: center;"><a id="4" href="a">a</a></td>
+      <td style="vertical-align: top; text-align: center;"><a id="5" href="a">a</a></td>
+      <td style="vertical-align: top; text-align: center;"><a id="6" href="a">a</a></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: center;"><a id="7" href="a">a</a></td>
+      <td style="vertical-align: top; text-align: center;"><a id="8" href="a">a</a></td>
+      <td style="vertical-align: top; text-align: center;"><a id="9" href="a">a</a></td>
+    </tr>
+  </tbody>
+</table>
+<div style='margin-top:100px'>
+  <a id="end" href="a">End of table traversal test</a>
+</div>
+<p>
+  This test ensures the basic table traversal correctness of Spatial Navigation (SNav) algorithm:<br>
+  focusable elements in a table element should be accessible.<br>
+  * Navigation steps:<br>
+  1) Loads this page, focus goes to "start" automatically.<br>
+  2) Focus moves along through the sparsely positioned elements in the table, eventually going to an outer southward link,<br>
+     but going back inside the table later on.<br>
+</p>
 
-    * Pre-conditions:
-    1) DRT support for SNav enable/disable.
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  var resultMap = [
+    ["Down", "4"],
+    ["Down", "7"],
+    ["Down", "end"],
+    ["Up", "7"],
+    ["Right", "8"],
+    ["Right", "9"],
+    ["Up", "6"],
+    ["Up", "3"],
+    ["Left", "2"],
+    ["Left", "start"]
+  ];
 
-    * Navigation steps:
-    1) Loads this page, focus goes to "start" automatically.
-    2) Focus moves along through the sparsely positioned elements
-       in the table, eventually going to an outer southward link,
-       but going back inside the table later on.
-  -->
-  <head>
-    <script src="../../resources/js-test.js"></script>
-    <script src="resources/spatial-navigation-utils.js"></script>
-    <script type="application/javascript">
-
-    var resultMap = [
-      ["Down", "4"],
-      ["Down", "7"],
-      ["Down", "end"],
-      ["Up", "7"],
-      ["Right", "8"],
-      ["Right", "9"],
-      ["Up", "6"],
-      ["Up", "3"],
-      ["Left", "2"],
-      ["Left", "start"],
-      ["DONE", "DONE"]
-    ];
-
-    if (window.testRunner) {
-      testRunner.dumpAsText();
-      testRunner.overridePreference("WebKitTabToLinksPreferenceKey", 1);
-      testRunner.overridePreference("WebKitSpatialNavigationEnabled", 1);
-      testRunner.waitUntilDone();
-    }
-
-    function runTest()
-    {
-      // starting the test itself: get to a known place.
-      document.getElementById("start").focus();
-
-      initTest(resultMap, testCompleted);
-    }
-
-    function testCompleted()
-    {
-      if (window.testRunner)
-        testRunner.notifyDone();
-    }
-
-    window.onload = runTest;
-
-    </script>
-  </head>
-  <body id="some-content" xmlns="http://www.w3.org/1999/xhtml">
-    <table style="text-align: left; width: 100%; margin-left: auto; margin-right: auto;" border="1" cellpadding="2" cellspacing="1">
-      <tbody>
-        <tr>
-          <td style="vertical-align: top; text-align: center;"><a id="start" href="a">a</a></td>
-          <td style="vertical-align: top; text-align: center;"><a id="2" href="a">a</a></td>
-          <td style="vertical-align: top; text-align: center;"><a id="3" href="a">a</a></td>
-        </tr>
-        <tr>
-          <td style="vertical-align: top; text-align: center;"><a id="4" href="a">a</a></td>
-          <td style="vertical-align: top; text-align: center;"><a id="5" href="a">a</a></td>
-          <td style="vertical-align: top; text-align: center;"><a id="6" href="a">a</a></td>
-        </tr>
-        <tr>
-          <td style="vertical-align: top; text-align: center;"><a id="7" href="a">a</a></td>
-          <td style="vertical-align: top; text-align: center;"><a id="8" href="a">a</a></td>
-          <td style="vertical-align: top; text-align: center;"><a id="9" href="a">a</a></td>
-        </tr>
-      </tbody>
-    </table>
-    <div style='margin-top:100px'>
-      <a id="end" href="a">End of table traversal test</a>
-    </div>
-    <div id="console"></div>
-  </body>
-</html>
+  // Start at a known place.
+  document.getElementById("start").focus();
+  snav.assertFocusMoves(resultMap);
+</script>

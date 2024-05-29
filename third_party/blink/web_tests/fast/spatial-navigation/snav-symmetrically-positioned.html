@@ -1,52 +1,49 @@
 <!DOCTYPE html>
-<head>
-<script src="../../resources/js-test.js"></script>
-<script src="resources/spatial-navigation-utils.js"></script>
-</head>
 <style>
 body a {
-    position: absolute;
-    height: 40px;
-    width: 80px;
-    border: 1px solid black;
+  position: absolute;
+  height: 40px;
+  width: 80px;
+  border: 1px solid black;
 }
 #e1 {
-    left: calc(100px - 100px / 2);
-    top: calc(150px - 100px / 2);
+  left: calc(100px - 100px / 2);
+  top: calc(150px - 100px / 2);
 }
 #e2 {
-    left: calc(400px - 100px / 2);
-    top: calc(150px - 100px / 2);
+  left: calc(400px - 100px / 2);
+  top: calc(150px - 100px / 2);
 }
 #e3 {
-    left: calc((400px + 100px) / 2 - 100px / 2);
-    top: calc((450px + 150px) / 2 - 100px / 2);
+  left: calc((400px + 100px) / 2 - 100px / 2);
+  top: calc((450px + 150px) / 2 - 100px / 2);
 }
 #e4 {
-    left: calc(100px - 100px / 2);
-    top: calc(450px - 100px / 2);
+  left: calc(100px - 100px / 2);
+  top: calc(450px - 100px / 2);
 }
 #e5 {
-    left: calc(400px - 100px / 2);
-    top: calc(450px - 100px / 2);
+  left: calc(400px - 100px / 2);
+  top: calc(450px - 100px / 2);
 }
 </style>
-<body id="some-content" onload="runTest()">
-<p id="description"></p>
+
 <div id="elements">
-<a id="e1" href="#e1">E1</a>
-<a id="e2" href="#e2">E2</a>
-<a id="e3" href="#e3">E3</a>
-<a id="e4" href="#e4">E4</a>
-<a id="e5" href="#e5">E5</a>
+  <a id="e1" href="#e1">E1</a>
+  <a id="e2" href="#e2">E2</a>
+  <a id="e3" href="#e3">E3</a>
+  <a id="e4" href="#e4">E4</a>
+  <a id="e5" href="#e5">E5</a>
 </div>
-<div id="console"></div>
-<script type="application/javascript">
-description('This test ensures that Spatial Navigation works with symmetrically positoned rects');
+<p>
+  This test ensures that Spatial Navigation works with symmetrically positoned rects.<br>
+</p>
 
-jsTestIsAsync = true;
-
-var resultMap = [
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  var resultMap = [
     ["Down", "e3"],
     ["Down", "e4"],
     ["Up", "e3"],
@@ -54,22 +51,10 @@ var resultMap = [
     ["Right", "e2"],
     ["Down", "e3"],
     ["Down", "e4"],
-    ["Right", "e5"],
-    ["DONE", "DONE"]
-];
+    ["Right", "e5"]
+  ];
 
-if (window.testRunner) {
-    testRunner.overridePreference("WebKitTabToLinksPreferenceKey", 1);
-    testRunner.overridePreference("WebKitSpatialNavigationEnabled", 1);
-}
-
-function runTest()
-{
-    // starting the test itself: get to a known place.
-    document.getElementById("e1").focus();
-
-    initTest(resultMap, finishJSTest);
-}
+  // Start at a known place.
+  document.getElementById("e1").focus();
+  snav.assertFocusMoves(resultMap);
 </script>
-</body>
-</html>
