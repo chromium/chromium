@@ -28,11 +28,11 @@ enum RedactResult {
 // Used to redact (or reject) text.
 class Redactor final {
  public:
+  Redactor(Redactor&& rules);
   ~Redactor();
 
   // Construct a Redactor that implements the RedactRules.
-  static std::unique_ptr<Redactor> FromProto(
-      const proto::RedactRules& proto_rules);
+  static Redactor FromProto(const proto::RedactRules& proto_rules);
 
   // Redacts (or rejects) the applicable text in`output`. `input` is the string
   // regexes of type REDACT_IF_ONLY_IN_OUTPUT checks.

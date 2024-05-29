@@ -64,7 +64,7 @@ class OnDeviceModelFeatureAdapter final
       const google::protobuf::MessageLite& message) const;
 
   proto::OnDeviceModelExecutionFeatureConfig config_;
-  std::unique_ptr<Redactor> redactor_;
+  Redactor redactor_;
 };
 
 }  // namespace optimization_guide

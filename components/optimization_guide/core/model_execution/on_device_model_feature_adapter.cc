@@ -20,14 +20,8 @@ namespace optimization_guide {
 
 OnDeviceModelFeatureAdapter::OnDeviceModelFeatureAdapter(
     proto::OnDeviceModelExecutionFeatureConfig&& config)
-    : config_(config) {
-  if (config_.has_output_config() &&
-      config_.output_config().has_redact_rules() &&
-      config_.output_config().redact_rules().fields_to_check_size() &&
-      !config_.output_config().redact_rules().rules().empty()) {
-    redactor_ = Redactor::FromProto(config.output_config().redact_rules());
-  }
-}
+    : config_(config),
+      redactor_(Redactor::FromProto(config.output_config().redact_rules())) {}
 
 OnDeviceModelFeatureAdapter::~OnDeviceModelFeatureAdapter() = default;
 
@@ -76,12 +70,9 @@ std::optional<proto::Any> OnDeviceModelFeatureAdapter::ConstructOutputMetadata(
 RedactResult OnDeviceModelFeatureAdapter::Redact(
     const google::protobuf::MessageLite& last_message,
     std::string& current_response) const {
-  if (!redactor_) {
-    return RedactResult::kContinue;
-  }
   auto redact_string_input = GetStringToCheckForRedacting(last_message);
   base::ElapsedTimer elapsed_timer;
-  auto redact_result = redactor_->Redact(redact_string_input, current_response);
+  auto redact_result = redactor_.Redact(redact_string_input, current_response);
   base::UmaHistogramMicrosecondsTimes(
       base::StrCat({"OptimizationGuide.ModelExecution.TimeToProcessRedactions.",
                     GetStringNameForModelExecutionFeature(config_.feature())}),

@@ -37,8 +37,7 @@ Redactor::Redactor(std::vector<Rule>&& rules) {
 Redactor::~Redactor() = default;
 
 // static
-std::unique_ptr<Redactor> Redactor::FromProto(
-    const proto::RedactRules& proto_rules) {
+Redactor Redactor::FromProto(const proto::RedactRules& proto_rules) {
   std::vector<Redactor::Rule> rules;
   for (const auto& proto_rule : proto_rules.rules()) {
     if (proto_rule.regex().empty() ||
@@ -72,7 +71,7 @@ std::unique_ptr<Redactor> Redactor::FromProto(
                        proto_rule.min_pattern_length(),
                        proto_rule.max_pattern_length());
   }
-  return base::WrapUnique(new Redactor(std::move(rules)));
+  return Redactor(std::move(rules));
 }
 
 RedactResult Redactor::Redact(const std::string& input,
