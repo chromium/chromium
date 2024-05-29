@@ -95,6 +95,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
       return FillingProduct::kNone;
   }
+  NOTREACHED_NORETURN();
 }
 
 FillingProduct GetFillingProductFromFieldTypeGroup(
