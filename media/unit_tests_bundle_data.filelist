@@ -290,15 +290,10 @@
 //media/test/data/bear_audio_longer_than_video_vp8.ogv
 //media/test/data/bear_audio_shorter_than_video.ogv
 //media/test/data/bear_audio_shorter_than_video_vp8.ogv
-//media/test/data/bear_divx_mp3.avi
 //media/test/data/bear_dtsc.mp4
 //media/test/data/bear_dtse.mp4
 //media/test/data/bear_dtsx.mp4
-//media/test/data/bear_gsm_ms.wav
 //media/test/data/bear_h264_aac.3gp
-//media/test/data/bear_mpeg4_amrnb.3gp
-//media/test/data/bear_mpeg4_mp3.avi
-//media/test/data/bear_mpeg4asp_mp3.avi
 //media/test/data/bear_mulaw.wav
 //media/test/data/bear_pcm.wav
 //media/test/data/bear_pcm_s16be.mov
@@ -312,7 +307,6 @@
 //media/test/data/bear_silent.webm
 //media/test/data/blackwhite.html
 //media/test/data/blackwhite.png
-//media/test/data/blackwhite_yuv420p.avi
 //media/test/data/blackwhite_yuv420p.mp4
 //media/test/data/blackwhite_yuv420p.ogv
 //media/test/data/blackwhite_yuv420p.webm
@@ -411,7 +405,6 @@
 //media/test/data/multiple_cdm_types.html
 //media/test/data/multitrack-3video-2audio.webm
 //media/test/data/multitrack-disabled.mp4
-//media/test/data/negative-audio-timestamps.avi
 //media/test/data/negative_ts.flac
 //media/test/data/no_audio_video.webm
 //media/test/data/no_streams.webm

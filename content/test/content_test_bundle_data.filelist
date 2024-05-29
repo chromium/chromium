@@ -6839,12 +6839,7 @@ data/media/bear_corp.flac
 data/media/bear_corp.flac.mock-http-headers
 data/media/bear_corp.webm
 data/media/bear_corp.webm.mock-http-headers
-data/media/bear_divx_mp3.avi
-data/media/bear_gsm_ms.wav
 data/media/bear_h264_aac.3gp
-data/media/bear_mpeg4_amrnb.3gp
-data/media/bear_mpeg4_mp3.avi
-data/media/bear_mpeg4asp_mp3.avi
 data/media/bear_mulaw.wav
 data/media/bear_pcm.wav
 data/media/bear_pcm_s16be.mov
@@ -6853,7 +6848,6 @@ data/media/bear_silent.mp4
 data/media/bear_silent.ogv
 data/media/bear_silent.webm
 data/media/blackwhite.png
-data/media/blackwhite_yuv420p.avi
 data/media/blackwhite_yuv420p.mp4
 data/media/blackwhite_yuv420p.ogv
 data/media/blackwhite_yuv420p.webm

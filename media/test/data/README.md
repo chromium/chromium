@@ -50,9 +50,6 @@ have the mvhd version 0 32-bit duration field set to all 1's.
 
 VP8 video stream from bear-1280x720.mp4 in ivf container.
 
-#### negative-audio-timestamps.avi
-A truncated audio/video file with audio packet timestamps of -1. We need to ensure that these packets aren't dropped.
-
 #### noise-xhe-aac.mp4
 #### noise-xhe-aac-mono.mp4
 Fragmented mp4 of noise encoded with xHE-AAC, from xHE-AAC samples in [Android
