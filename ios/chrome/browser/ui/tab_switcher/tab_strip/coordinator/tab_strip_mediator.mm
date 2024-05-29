@@ -1154,6 +1154,9 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 // Reconfigures the item associated with `webState`.
 - (void)reconfigureItemForWebState:(web::WebState*)webState {
   const int webStateIndex = _webStateList->GetIndexOfWebState(webState);
+  if (!_webStateList->ContainsIndex(webStateIndex)) {
+    return;
+  }
   const TabGroup* group = _webStateList->GetGroupOfWebStateAt(webStateIndex);
   if (group && group->visual_data().is_collapsed()) {
     // If group is collapsed then tab cells cannot be reconfigured.
