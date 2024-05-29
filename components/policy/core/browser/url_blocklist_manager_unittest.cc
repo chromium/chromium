@@ -177,11 +177,10 @@ TEST_F(URLBlocklistManagerTest, SingleUpdateForTwoPrefChanges) {
 // Non-special URLs behavior is affected by the
 // StandardCompliantNonSpecialSchemeURLParsing feature.
 // See https://crbug.com/40063064 for details.
-class URLBlocklistManagerParamTest
-    : public URLBlocklistManagerTest,
-      public ::testing::WithParamInterface<bool> {
+class URLBlocklistParamTest : public ::testing::Test,
+                              public ::testing::WithParamInterface<bool> {
  public:
-  URLBlocklistManagerParamTest()
+  URLBlocklistParamTest()
       : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
     if (use_standard_compliant_non_special_scheme_url_parsing_) {
       scoped_feature_list_.InitAndEnableFeature(
@@ -193,13 +192,17 @@ class URLBlocklistManagerParamTest
   }
 
  protected:
-  bool use_standard_compliant_non_special_scheme_url_parsing_;
+  bool use_standard_compliant_non_special_scheme_url_parsing() const {
+    return use_standard_compliant_non_special_scheme_url_parsing_;
+  }
 
  private:
+  bool use_standard_compliant_non_special_scheme_url_parsing_;
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(URLBlocklistManagerParamTest, Filtering) {
+TEST_P(URLBlocklistParamTest, Filtering) {
   URLBlocklist blocklist;
 
   // Block domain and all subdomains, for any filtered scheme.
@@ -207,7 +210,7 @@ TEST_P(URLBlocklistManagerParamTest, Filtering) {
   EXPECT_TRUE(MatchesPattern("google.com", "http://google.com/"));
   EXPECT_TRUE(MatchesPattern("google.com", "http://google.com/whatever"));
   EXPECT_TRUE(MatchesPattern("google.com", "https://google.com/"));
-  if (use_standard_compliant_non_special_scheme_url_parsing_) {
+  if (use_standard_compliant_non_special_scheme_url_parsing()) {
     // When the feature is enabled, the host part in non-special URLs can be
     // recognized.
     EXPECT_TRUE(MatchesPattern("google.com", "bogus://google.com/"));
@@ -519,7 +522,7 @@ TEST_F(URLBlocklistManagerTest, BlockAllWithExceptions) {
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("https://very.safe/path")));
 }
 
-TEST_P(URLBlocklistManagerParamTest, DefaultBlocklistExceptions) {
+TEST_P(URLBlocklistParamTest, DefaultBlocklistExceptions) {
   URLBlocklist blocklist;
   base::Value::List blocked;
 
@@ -541,7 +544,7 @@ TEST_P(URLBlocklistManagerParamTest, DefaultBlocklistExceptions) {
   // URLBlocklist code.
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("about:newtab")));
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("chrome://newtab")));
-  if (use_standard_compliant_non_special_scheme_url_parsing_) {
+  if (use_standard_compliant_non_special_scheme_url_parsing()) {
     // When the feature is enabled, the host part in non-special URLs can be
     // recognized.
     EXPECT_TRUE(blocklist.IsURLBlocked(GURL("about://newtab/")));
@@ -565,7 +568,7 @@ TEST_P(URLBlocklistManagerParamTest, DefaultBlocklistExceptions) {
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("chrome-native://ntp")));
 }
 
-TEST_P(URLBlocklistManagerParamTest, BlocklistBasicCoverage) {
+TEST_P(URLBlocklistParamTest, BlocklistBasicCoverage) {
   // Tests to cover the documentation from
   // http://www.chromium.org/administrators/url-blocklist-filter-format
 
@@ -603,7 +606,7 @@ TEST_P(URLBlocklistManagerParamTest, BlocklistBasicCoverage) {
   // Some schemes are not matched when the scheme is omitted.
   EXPECT_FALSE(MatchesPattern("example.com", "about:example.com"));
   EXPECT_FALSE(MatchesPattern("example.com/*", "filesystem:///something"));
-  if (use_standard_compliant_non_special_scheme_url_parsing_) {
+  if (use_standard_compliant_non_special_scheme_url_parsing()) {
     // When the feature is enabled, the host part in non-special URLs can be
     // recognized.
     EXPECT_TRUE(MatchesPattern("example.com", "about://example.com"));
@@ -693,7 +696,7 @@ TEST_P(URLBlocklistManagerParamTest, BlocklistBasicCoverage) {
   EXPECT_FALSE(MatchesPattern("host/path?Query=1", "http://host/path?query=1"));
 }
 
-INSTANTIATE_TEST_SUITE_P(All, URLBlocklistManagerParamTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, URLBlocklistParamTest, ::testing::Bool());
 
 // Test for GetURLBlocklistState method.
 TEST_F(URLBlocklistManagerTest, UseBlocklistState) {
