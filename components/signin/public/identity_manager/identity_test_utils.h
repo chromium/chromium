@@ -306,6 +306,11 @@ void SetCookieAccounts(IdentityManager* identity_manager,
                        network::TestURLLoaderFactory* test_url_loader_factory,
                        const std::vector<CookieParamsForTest>& cookie_accounts);
 
+// Triggers a fake /ListAccount call with the current accounts in the cookie
+// jar. It will notify all observers.
+void TriggerListAccount(IdentityManager* identity_manager,
+                        network::TestURLLoaderFactory* test_url_loader_factory);
+
 // Updates the info for |account_info.account_id|, which must be a known
 // account.
 void UpdateAccountInfoForAccount(IdentityManager* identity_manager,

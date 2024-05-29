@@ -561,6 +561,26 @@ void SetCookieAccounts(
   run_loop.Run();
 }
 
+void TriggerListAccount(
+    IdentityManager* identity_manager,
+    network::TestURLLoaderFactory* test_url_loader_factory) {
+  const AccountsInCookieJarInfo& cookie_jar =
+      identity_manager->GetAccountsInCookieJar();
+  // Construct the cookie params with the actual cookies in the cookie jar.
+  std::vector<CookieParamsForTest> cookie_params;
+  for (auto& account : cookie_jar.signed_in_accounts) {
+    cookie_params.emplace_back(account.email, account.gaia_id,
+                               /*signed_out=*/false);
+  }
+  for (auto& account : cookie_jar.signed_out_accounts) {
+    cookie_params.emplace_back(account.email, account.gaia_id,
+                               /*signed_out=*/true);
+  }
+
+  // Trigger the /ListAccount with the current cookie information.
+  SetCookieAccounts(identity_manager, test_url_loader_factory, cookie_params);
+}
+
 AccountInfo WithGeneratedUserInfo(const AccountInfo& base_account_info,
                                   std::string_view given_name) {
   CHECK(!given_name.empty())
