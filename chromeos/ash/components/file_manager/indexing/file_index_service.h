@@ -96,25 +96,24 @@ class COMPONENT_EXPORT(FILE_MANAGER) FileIndexService {
                 const GURL& new_url,
                 IndexingOperationCallback callback);
 
-  // Updates terms associated with the file. If the term vector is empty
-  // this removes the file info from the index. Otherwise, the given `file_info`
-  // is associated with the specified terms. Please note that only the passed
-  // terms are associated with the file. Thus if you call this method first
-  // with, say Term("label", "downloaded"), and then call this method with,
+  // Sets terms associated with the file. You may not set an empty set of terms
+  // on the file. Please note that only the passed terms remains associated with
+  // the file. Thus if you call this method first with, say,
+  // Term("label", "downloaded"), and then call this method with,
   // say, Term("label", "pinned") only the "pinned" label is associated with
   // the given `file_info`. If you want both terms to be associated you must
-  // pass both terms in a single call.
-  void UpdateTerms(const std::vector<Term>& terms,
-                   const GURL& url,
-                   IndexingOperationCallback callback);
+  // pass both terms in a single call or use the AddTerms() method.
+  void SetTerms(const std::vector<Term>& terms,
+                const GURL& url,
+                IndexingOperationCallback callback);
 
-  // Augments terms associated with the file with the `terms` given as the first
+  // Adds terms associated with the file with the `terms` given as the first
   // argument. Once this operation is finished, the file can be retrieved by any
   // existing terms that were associated with it, or any new terms this call
   // added.
-  void AugmentTerms(const std::vector<Term>& terms,
-                    const GURL& url,
-                    IndexingOperationCallback callback);
+  void AddTerms(const std::vector<Term>& terms,
+                const GURL& url,
+                IndexingOperationCallback callback);
 
   // Removes the specified terms from list of terms associated with the given
   // `url`.

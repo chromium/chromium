@@ -21,12 +21,32 @@ OpResults FileIndex::PutFileInfo(const FileInfo& file_info) {
                                                 : OpResults::kSuccess;
 }
 
-OpResults FileIndex::UpdateTerms(const std::vector<Term>& terms,
-                                 const GURL& url) {
+OpResults FileIndex::SetTerms(const std::vector<Term>& terms, const GURL& url) {
   if (terms.empty()) {
     return OpResults::kArgumentError;
   }
-  return SetFileTerms(terms, url);
+  // Arrange terms by field and remove duplicates and convert to internal IDs.
+  int64_t url_id = storage_->GetUrlId(url);
+  if (url_id == -1) {
+    return OpResults::kFileMissing;
+  }
+  std::set<int64_t> term_id_set = ConvertToTermIds(terms);
+
+  // If the given url_id already had some terms associated with it, remove terms
+  // not specified in terms vector. Say, if url_id had terms {t1, t3, t8}
+  // associated with it, and terms was {t1, t2}, we would compute {t3, t8} as
+  // the difference between two collections and remove those.
+  std::set<int64_t> url_term_ids = storage_->GetTermIdsForUrl(url_id);
+  if (!url_term_ids.empty()) {
+    std::set<int64_t> to_remove_terms;
+    std::set_difference(
+        url_term_ids.begin(), url_term_ids.end(), term_id_set.begin(),
+        term_id_set.end(),
+        std::inserter(to_remove_terms, to_remove_terms.begin()));
+    storage_->DeleteTermIdsForUrl(to_remove_terms, url_id);
+  }
+  storage_->AddTermIdsForUrl(term_id_set, url_id);
+  return OpResults::kSuccess;
 }
 
 OpResults FileIndex::MoveFile(const GURL& old_url, const GURL& new_url) {
@@ -93,8 +113,7 @@ OpResults FileIndex::RemoveTerms(const std::vector<Term>& terms,
   return OpResults::kSuccess;
 }
 
-OpResults FileIndex::AugmentTerms(const std::vector<Term>& terms,
-                                  const GURL& url) {
+OpResults FileIndex::AddTerms(const std::vector<Term>& terms, const GURL& url) {
   if (terms.empty()) {
     return OpResults::kSuccess;
   }
@@ -165,34 +184,6 @@ std::set<int64_t> FileIndex::ConvertToTermIds(const std::vector<Term>& terms) {
     term_ids.emplace(storage_->GetOrCreateTermId(Term("", term.token())));
   }
   return term_ids;
-}
-
-OpResults FileIndex::SetFileTerms(const std::vector<Term>& terms,
-                                  const GURL& url) {
-  DCHECK(!terms.empty());
-
-  // Arrange terms by field and remove duplicates and convert to internal IDs.
-  int64_t url_id = storage_->GetUrlId(url);
-  if (url_id == -1) {
-    return OpResults::kFileMissing;
-  }
-  std::set<int64_t> term_id_set = ConvertToTermIds(terms);
-
-  // If the given url_id already had some terms associated with it, remove terms
-  // not specified in terms vector. Say, if url_id had terms {t1, t3, t8}
-  // associated with it, and terms was {t1, t2}, we would compute {t3, t8} as
-  // the difference between two collections and remove those.
-  std::set<int64_t> url_term_ids = storage_->GetTermIdsForUrl(url_id);
-  if (!url_term_ids.empty()) {
-    std::set<int64_t> to_remove_terms;
-    std::set_difference(
-        url_term_ids.begin(), url_term_ids.end(), term_id_set.begin(),
-        term_id_set.end(),
-        std::inserter(to_remove_terms, to_remove_terms.begin()));
-    storage_->DeleteTermIdsForUrl(to_remove_terms, url_id);
-  }
-  storage_->AddTermIdsForUrl(term_id_set, url_id);
-  return OpResults::kSuccess;
 }
 
 }  // namespace ash::file_manager

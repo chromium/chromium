@@ -69,26 +69,26 @@ void FileIndexService::PutFileInfo(const FileInfo& file_info,
       .Then(std::move(callback));
 }
 
-void FileIndexService::UpdateTerms(const std::vector<Term>& terms,
-                                   const GURL& url,
-                                   IndexingOperationCallback callback) {
+void FileIndexService::SetTerms(const std::vector<Term>& terms,
+                                const GURL& url,
+                                IndexingOperationCallback callback) {
   if (inited_ != OpResults::kSuccess) {
     std::move(callback).Run(kUninitialized);
     return;
   }
-  file_index_.AsyncCall(&FileIndex::UpdateTerms)
+  file_index_.AsyncCall(&FileIndex::SetTerms)
       .WithArgs(terms, url)
       .Then(std::move(callback));
 }
 
-void FileIndexService::AugmentTerms(const std::vector<Term>& terms,
-                                    const GURL& url,
-                                    IndexingOperationCallback callback) {
+void FileIndexService::AddTerms(const std::vector<Term>& terms,
+                                const GURL& url,
+                                IndexingOperationCallback callback) {
   if (inited_ != OpResults::kSuccess) {
     std::move(callback).Run(kUninitialized);
     return;
   }
-  file_index_.AsyncCall(&FileIndex::AugmentTerms)
+  file_index_.AsyncCall(&FileIndex::AddTerms)
       .WithArgs(terms, url)
       .Then(std::move(callback));
 }

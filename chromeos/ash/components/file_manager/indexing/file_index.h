@@ -82,27 +82,27 @@ class FileIndex {
   // Moves the file that was put under the `old_url` to the `new_url`.
   OpResults MoveFile(const GURL& old_url, const GURL& new_url);
 
-  // Updates terms associated with the file. The `url` must be of a FileInfo
+  // Sets terms associated with the file. The `url` must be of a FileInfo
   // previously put in the index. Please note that only the passed terms are
   // associated with the file. Thus if you call this method first with, say
   // Term("label", "downloaded"), and then call this method with, say,
   // Term("label", "pinned") only the "pinned" label is associated with
   // the given `file_info`. If you want both terms to be associated you must
-  // pass both terms in a single call or use the AugmentTerms() method.
+  // pass both terms in a single call or use the AddTerms() method.
   //
   // It is an error to pass an empty term vector. Use the RemoveFile() method
   // instead.
-  OpResults UpdateTerms(const std::vector<Term>& terms, const GURL& url);
+  OpResults SetTerms(const std::vector<Term>& terms, const GURL& url);
 
-  // Augments terms associated with the file with the specified `url` with
+  // Adds terms associated with the file with the specified `url` with
   // the `terms` given as the first argument. Once this operation is finished,
   // the file can be retrieved by any existing terms that were associated with
   // it, or any new terms this call added. For example, if you first call the
-  // UpdateTerms() method with Term("label", "downloaded") and then call
-  // AugmentTerms() method with Term("label", "starred") you can retrieve the
+  // SetTerms() method with Term("label", "downloaded") and then call
+  // AddTerms() method with Term("label", "starred") you can retrieve the
   // file with the matching `url` (specified in both of these calls) by either
   // or both of the terms.
-  OpResults AugmentTerms(const std::vector<Term>& terms, const GURL& url);
+  OpResults AddTerms(const std::vector<Term>& terms, const GURL& url);
 
   // Removes the specified term from terms associated with the file with the
   // given URL.
@@ -112,8 +112,6 @@ class FileIndex {
   SearchResults Search(const Query& query);
 
  private:
-  OpResults SetFileTerms(const std::vector<Term>& terms, const GURL& url);
-
   // Does a bulk conversion of given terms to term IDs.
   std::set<int64_t> ConvertToTermIds(const std::vector<Term>& terms);
 
@@ -123,4 +121,4 @@ class FileIndex {
 
 }  // namespace ash::file_manager
 
-#endif  // CHROMEOS_ASH_COMPONENTS_FILE_MANAGER_INDEXING_FILE_INDEX_IMPL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_FILE_MANAGER_INDEXING_FILE_INDEX_H_

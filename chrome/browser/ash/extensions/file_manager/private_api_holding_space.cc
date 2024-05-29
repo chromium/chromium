@@ -107,7 +107,7 @@ FileManagerPrivateInternalToggleAddedToHoldingSpaceFunction::Run() {
                      const storage::FileSystemURL& url,
                      const ::ash::file_manager::Term& term,
                      ::ash::file_manager::OpResults r) {
-                    index->AugmentTerms(
+                    index->AddTerms(
                         {term}, url.ToGURL(),
                         base::BindOnce([](::ash::file_manager::OpResults r) {
                           LOG(ERROR) << "result: " << r;
