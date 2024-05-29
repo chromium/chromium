@@ -10,6 +10,7 @@
 #import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -82,6 +83,17 @@
   // Make sure we use the original browser state (non-incognito).
   ChromeBrowserState* originalBrowserState =
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  const search_engines::ChoicePromo choicePromo =
+      _firstRun ? search_engines::ChoicePromo::kFre
+                : search_engines::ChoicePromo::kDialog;
+  if (!ShouldDisplaySearchEngineChoiceScreen(
+          *originalBrowserState, choicePromo,
+          /*app_started_via_external_intent=*/false)) {
+    // If the search engine enterprise pocliy has been loaded, just before to
+    // open the Search Engine Choice dialog, it should be skipped.
+    [self dismissChoiceScreen];
+    return;
+  }
   _viewController =
       [[SearchEngineChoiceViewController alloc] initWithFirstRunMode:_firstRun];
   _viewController.actionDelegate = self;
