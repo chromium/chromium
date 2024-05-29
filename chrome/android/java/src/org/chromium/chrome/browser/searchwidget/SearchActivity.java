@@ -20,6 +20,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityOptionsCompat;
 
+import org.jni_zero.CheckDiscard;
+
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -847,5 +849,25 @@ public class SearchActivity extends AsyncInitializationActivity
 
     /* package */ void setUmaActivityObserverForTesting(UmaActivityObserver observer) {
         mUmaActivityObserver = observer;
+    }
+
+    @Override
+    @SuppressWarnings("MissingSuperCall")
+    public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
+        super_onTopResumedActivityChanged(isTopResumedActivity);
+
+        // TODO(crbug.com/329702834): Ensure showing Suggestions when activity resumes.
+        // This may only happen when user enters tab switcher, and immediately returns to the
+        // SearchActivity.
+        if (!isTopResumedActivity) {
+            mSearchBox.clearOmniboxFocus();
+        } else {
+            mSearchBox.requestOmniboxFocus();
+        }
+    }
+
+    @CheckDiscard("Isolated for testing; should be inlined by Proguard")
+    /* package */ void super_onTopResumedActivityChanged(boolean isTopResumedActivity) {
+        super.onTopResumedActivityChanged(isTopResumedActivity);
     }
 }

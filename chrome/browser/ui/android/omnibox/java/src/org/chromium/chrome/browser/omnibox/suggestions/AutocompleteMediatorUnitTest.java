@@ -738,6 +738,7 @@ public class AutocompleteMediatorUnitTest {
     @SmallTest
     public void setLayoutDirection_beforeInitialization() {
         mMediator.onNativeInitialized();
+        mMediator.onOmniboxSessionStateChange(true);
         mMediator.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         mMediator.onSuggestionDropdownHeightChanged(Integer.MAX_VALUE);
         mMediator.onSuggestionsReceived(
@@ -758,6 +759,7 @@ public class AutocompleteMediatorUnitTest {
     @SmallTest
     public void setLayoutDirection_afterInitialization() {
         mMediator.onNativeInitialized();
+        mMediator.onOmniboxSessionStateChange(true);
         mMediator.onSuggestionDropdownHeightChanged(Integer.MAX_VALUE);
         mMediator.onSuggestionsReceived(
                 AutocompleteResult.fromCache(mSuggestionsList, null), /* isFinal= */ true);
@@ -1418,6 +1420,7 @@ public class AutocompleteMediatorUnitTest {
     public void onTextChanged_cacheZpsFromEligiblePageClasses() {
         Set<Integer> eligibleClasses = Set.of(PageClassification.ANDROID_SEARCH_WIDGET_VALUE);
 
+        mMediator.onOmniboxSessionStateChange(true);
         doReturn(mAutocompleteResult).when(ShadowCachedSuggestionsManager.mock).readFromCache();
         doReturn(false).when(mAutocompleteResult).isFromCachedResult();
 

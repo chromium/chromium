@@ -829,6 +829,9 @@ class AutocompleteMediator
     @Override
     public void onSuggestionsReceived(
             @NonNull AutocompleteResult autocompleteResult, boolean isFinal) {
+        // Reject results if the current session is inactive.
+        if (!mIsActive) return;
+
         maybeCacheResult(autocompleteResult);
 
         @Nullable AutocompleteMatch defaultMatch = autocompleteResult.getDefaultMatch();

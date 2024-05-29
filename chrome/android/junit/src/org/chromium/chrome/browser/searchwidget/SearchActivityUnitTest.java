@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
@@ -1020,5 +1021,21 @@ public class SearchActivityUnitTest {
                 mActivity.recordNavigationTargetType(entry.getKey());
             }
         }
+    }
+
+    @Test
+    public void onTopResumedActivityChanged_clearOmniboxFocusIfNotActive() {
+        doNothing().when(mActivity).super_onTopResumedActivityChanged(anyBoolean());
+        mActivity.onTopResumedActivityChanged(false);
+        verify(mLocationBar).clearOmniboxFocus();
+        verify(mActivity).super_onTopResumedActivityChanged(false);
+    }
+
+    @Test
+    public void onTopResumedActivityChanged_requestOmniboxFocusIfActive() {
+        doNothing().when(mActivity).super_onTopResumedActivityChanged(anyBoolean());
+        mActivity.onTopResumedActivityChanged(true);
+        verify(mLocationBar).requestOmniboxFocus();
+        verify(mActivity).super_onTopResumedActivityChanged(true);
     }
 }

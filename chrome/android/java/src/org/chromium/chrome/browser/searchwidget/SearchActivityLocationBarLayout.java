@@ -149,7 +149,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         } else if (searchType == SearchType.LENS) {
             runGoogleLens();
         }
-        focusTextBox();
+        requestOmniboxFocus();
         mInteractionFromWidget = false;
     }
 
@@ -180,7 +180,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     }
 
     /** Focus the Omnibox and present the cached suggestions. */
-    void focusTextBox() {
+    void requestOmniboxFocus() {
         mUrlBar.post(
                 () -> {
                     if (mUrlCoordinator == null || mAutocompleteCoordinator == null) {
@@ -190,6 +190,10 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
                     mUrlBar.requestFocus();
                     mUrlCoordinator.setKeyboardVisibility(true, false);
                 });
+    }
+
+    void clearOmniboxFocus() {
+        mUrlBar.post(() -> mUrlBar.clearFocus());
     }
 
     @Override
