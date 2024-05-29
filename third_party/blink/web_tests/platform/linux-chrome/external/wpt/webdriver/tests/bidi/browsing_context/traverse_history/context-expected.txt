@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_iframe[cross_origin]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Command can only be executed on top-level targets)
+Harness: the test ran to completion.

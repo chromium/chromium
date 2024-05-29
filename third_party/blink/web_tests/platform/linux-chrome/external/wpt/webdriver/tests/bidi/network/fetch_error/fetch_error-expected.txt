@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_navigation_id
+  webdriver.bidi.error.UnknownErrorException: unknown error (net::ERR_CONNECTION_REFUSED)
+[FAIL] test_redirect_navigation
+  webdriver.bidi.error.UnknownErrorException: unknown error (net::ERR_CONNECTION_REFUSED)
+Harness: the test ran to completion.
