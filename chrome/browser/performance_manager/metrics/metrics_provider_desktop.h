@@ -79,10 +79,9 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
   void RecordAvailableMemoryMetrics();
   void ResetTrackers();
 
-  void RecordCpuFrequencyMetrics(base::TimeTicks should_run_at);
-
-  void ScheduleCpuFrequencyTask();
-  void PostCpuFrequencyEstimation();
+  static void RecordCpuFrequencyMetrics(base::TimeTicks should_run_at);
+  static void ScheduleCpuFrequencyTask();
+  static void PostCpuFrequencyEstimation();
 
   struct DiskMetrics {
     int64_t free_bytes;
@@ -110,8 +109,6 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
   std::optional<DiskMetrics> pending_disk_metrics_;
 
   base::RepeatingTimer available_memory_metrics_timer_;
-
-  scoped_refptr<base::SequencedTaskRunner> cpu_frequency_metrics_runner_;
 
   std::unique_ptr<ScopedTimeInModeTracker> battery_saver_mode_tracker_;
   std::unique_ptr<ScopedTimeInModeTracker> memory_saver_mode_tracker_;

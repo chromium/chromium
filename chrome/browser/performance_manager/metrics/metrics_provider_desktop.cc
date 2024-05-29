@@ -196,8 +196,6 @@ MetricsProviderDesktop::MetricsProviderDesktop(PrefService* local_state)
                           base::Unretained(this)));
 
   if constexpr (ShouldCollectCpuFrequencyMetrics()) {
-    cpu_frequency_metrics_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::TaskPriority::USER_VISIBLE});
     ScheduleCpuFrequencyTask();
   }
 }
@@ -293,6 +291,7 @@ void MetricsProviderDesktop::ResetTrackers() {
       "PerformanceManager.UserTuning.MemorySaverModeEnabledPercent");
 }
 
+// static
 void MetricsProviderDesktop::RecordCpuFrequencyMetrics(
     base::TimeTicks posted_at_time) {
   CHECK(ShouldCollectCpuFrequencyMetrics());
@@ -381,19 +380,24 @@ void MetricsProviderDesktop::RecordCpuFrequencyMetrics(
   ScheduleCpuFrequencyTask();
 }
 
+// static
 void MetricsProviderDesktop::ScheduleCpuFrequencyTask() {
-  cpu_frequency_metrics_runner_->PostDelayedTask(
+  base::ThreadPool::PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&MetricsProviderDesktop::PostCpuFrequencyEstimation,
-                     base::Unretained(this)),
+      {base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&MetricsProviderDesktop::PostCpuFrequencyEstimation),
       kCpuThroughputSamplingInterval);
 }
 
+// static
 void MetricsProviderDesktop::PostCpuFrequencyEstimation() {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+  base::ThreadPool::PostTask(
       FROM_HERE,
+      {base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&MetricsProviderDesktop::RecordCpuFrequencyMetrics,
-                     base::Unretained(this), base::TimeTicks::Now()));
+                     base::TimeTicks::Now()));
 }
 
 void MetricsProviderDesktop::RecordDiskMetrics() {
