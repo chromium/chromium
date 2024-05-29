@@ -80,6 +80,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     private static final int POSITION3 = 2;
     private static final int POSITION4 = 3;
     private static final float THRESHOLD = 2f;
+    private static final float MERGE_AREA_THRESHOLD = 0.5f;
 
     @Mock Canvas mCanvas;
     @Mock RecyclerView mRecyclerView;
@@ -189,7 +190,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                         TabListMode.GRID);
         mItemTouchHelperCallback.setOnLongPressTabItemEventListener(
                 mOnLongPressTabItemEventListener);
-        mItemTouchHelperCallback.setupCallback(THRESHOLD, THRESHOLD, THRESHOLD);
+        mItemTouchHelperCallback.setupCallback(THRESHOLD, MERGE_AREA_THRESHOLD, THRESHOLD);
         mItemTouchHelperCallback.getMovementFlags(mRecyclerView, mMockViewHolder1);
     }
 
@@ -501,12 +502,12 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     public void onDragTab_NotHovered_GTS_Horizontal() {
         initAndAssertAllProperties();
 
-        // With merge threshold equal to 2, any horizontal drag with |dX| <= (5 - threshold) should
-        // never trigger hovering.
+        // With merge threshold equal to 50% of the overlapped area, the following dX should never
+        // trigger hovering.
         verifyDrag(mFakeViewHolder1, 3, 0, POSITION2, TabGridView.AnimationStatus.CARD_RESTORE);
         verifyDrag(mFakeViewHolder2, -3, 0, POSITION1, TabGridView.AnimationStatus.CARD_RESTORE);
-        // With merge threshold equal to 2, any horizontal drag with |dX| >= (5 + threshold) should
-        // never trigger hovering.
+        // With merge threshold equal to 50% of the overlapped area, the following dX should never
+        // trigger hovering.
         verifyDrag(mFakeViewHolder1, 7, 0, POSITION2, TabGridView.AnimationStatus.CARD_RESTORE);
         verifyDrag(mFakeViewHolder2, -7, 0, POSITION1, TabGridView.AnimationStatus.CARD_RESTORE);
     }
@@ -515,12 +516,12 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     public void onDragTab_NotHovered_GTS_Vertical() {
         initAndAssertAllProperties();
 
-        // With merge threshold equal to 2, any vertical drag with |dY| <= (5 - threshold) should
-        // never trigger hovering.
+        // With merge threshold equal to 50% of the overlapped area, the following dX should never
+        // trigger hovering.
         verifyDrag(mFakeViewHolder1, 0, 3, POSITION3, TabGridView.AnimationStatus.CARD_RESTORE);
         verifyDrag(mFakeViewHolder3, 0, -3, POSITION1, TabGridView.AnimationStatus.CARD_RESTORE);
-        // With merge threshold equal to 2, any vertical drag with |dY| >= (5 + threshold) should
-        // never trigger hovering.
+        // With merge threshold equal to 50% of the overlapped area, the following dX should never
+        // trigger hovering.
         verifyDrag(mFakeViewHolder1, 0, 7, POSITION3, TabGridView.AnimationStatus.CARD_RESTORE);
         verifyDrag(mFakeViewHolder3, 0, -7, POSITION1, TabGridView.AnimationStatus.CARD_RESTORE);
     }
@@ -529,14 +530,14 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     public void onDragTab_NotHovered_GTS_Diagonal() {
         initAndAssertAllProperties();
 
-        // With merge threshold equal to 2, any diagonal drag with |dX| <= (5 - threshold) or |dY|
-        // <= (5 - threshold) should never trigger hovering.
+        // With merge threshold equal to 50% of the overlapped area, the following dX should never
+        // trigger hovering.
         verifyDrag(mFakeViewHolder1, 3, 4, POSITION4, TabGridView.AnimationStatus.CARD_RESTORE);
         verifyDrag(mFakeViewHolder1, 4, 3, POSITION4, TabGridView.AnimationStatus.CARD_RESTORE);
         verifyDrag(mFakeViewHolder4, -4, -3, POSITION1, TabGridView.AnimationStatus.CARD_RESTORE);
         verifyDrag(mFakeViewHolder4, -3, -4, POSITION1, TabGridView.AnimationStatus.CARD_RESTORE);
-        // With merge threshold equal to 2, any vertical drag with |dX| >= (5 + threshold) or |dY|
-        // >= (5 + threshold) should never trigger hovering.
+        // With merge threshold equal to 50% of the overlapped area, the following dX should never
+        // trigger hovering.
         verifyDrag(mFakeViewHolder1, 7, 6, POSITION4, TabGridView.AnimationStatus.CARD_RESTORE);
         verifyDrag(mFakeViewHolder1, 6, 7, POSITION4, TabGridView.AnimationStatus.CARD_RESTORE);
         verifyDrag(mFakeViewHolder4, -6, -7, POSITION1, TabGridView.AnimationStatus.CARD_RESTORE);
@@ -951,6 +952,8 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         doReturn(top).when(view).getTop();
         doReturn(right).when(view).getRight();
         doReturn(bottom).when(view).getBottom();
+        doReturn(right - left).when(view).getWidth();
+        doReturn(bottom - top).when(view).getHeight();
         return view;
     }
 

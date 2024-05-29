@@ -127,10 +127,11 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     /**
      * This method sets up parameters that are used by the {@link ItemTouchHelper} to make decisions
      * about user actions.
-     * @param swipeToDismissThreshold          Defines the threshold that user needs to swipe in
-     *         order to be considered as a remove operation.
-     * @param mergeThreshold                   Defines the threshold of how much two items need to
-     *         be overlapped in order to be considered as a merge operation.
+     *
+     * @param swipeToDismissThreshold Defines the threshold that user needs to swipe in order to be
+     *     considered as a remove operation.
+     * @param mergeThreshold Defines the percentage threshold as a decimal of how much area of the
+     *     two items need to be overlapped in order to be considered as a merge operation.
      */
     void setupCallback(
             float swipeToDismissThreshold, float mergeThreshold, float ungroupThreshold) {

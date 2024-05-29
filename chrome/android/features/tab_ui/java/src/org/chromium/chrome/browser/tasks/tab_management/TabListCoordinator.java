@@ -87,6 +87,7 @@ public class TabListCoordinator
     static final int GRID_LAYOUT_SPAN_COUNT_LARGE = 4;
     static final int MAX_SCREEN_WIDTH_COMPACT_DP = 600;
     static final int MAX_SCREEN_WIDTH_MEDIUM_DP = 800;
+    static final float PERCENTAGE_AREA_OVERLAP_MERGE_THRESHOLD = 0.5f;
 
     private final TabListMediator mMediator;
     private final TabListRecyclerView mRecyclerView;
@@ -511,8 +512,7 @@ public class TabListCoordinator
                                 mMediator.getItemTouchHelperCallback(
                                         mContext.getResources()
                                                 .getDimension(R.dimen.swipe_to_dismiss_threshold),
-                                        mContext.getResources()
-                                                .getDimension(R.dimen.tab_grid_merge_threshold),
+                                        PERCENTAGE_AREA_OVERLAP_MERGE_THRESHOLD,
                                         mContext.getResources()
                                                 .getDimension(R.dimen.bottom_sheet_peek_height));
 
