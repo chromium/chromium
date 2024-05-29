@@ -25,6 +25,11 @@ class PlusAddressSettingSyncBridge : public syncer::ModelTypeSyncBridge {
       syncer::OnceModelTypeStoreFactory store_factory);
   ~PlusAddressSettingSyncBridge() override;
 
+  // Returns the specifics for the setting of the given `name` if the bridge
+  // is aware of any such setting. Otherwise, nullopt is returned.
+  std::optional<sync_pb::PlusAddressSettingSpecifics> GetSetting(
+      std::string_view name) const;
+
   // syncer::ModelTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
@@ -49,6 +54,7 @@ class PlusAddressSettingSyncBridge : public syncer::ModelTypeSyncBridge {
       std::unique_ptr<syncer::ModelTypeStore::RecordList> data,
       const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+  void ReportErrorIfSet(const std::optional<syncer::ModelError>& error);
 
   // Storage layer used by this sync bridge. Asynchronously created through the
   // `store_factory` injected through the constructor. Non-null if creation

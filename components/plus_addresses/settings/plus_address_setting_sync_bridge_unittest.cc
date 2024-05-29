@@ -29,6 +29,7 @@ namespace plus_addresses {
 namespace {
 
 using SettingSpecifics = sync_pb::PlusAddressSettingSpecifics;
+using ::testing::Optional;
 
 SettingSpecifics CreateSettingSpecifics(
     const std::string& name,
@@ -56,6 +57,12 @@ MATCHER_P2(HasIntSetting, name, value, "") {
   return arg.name() == name && arg.has_int_value() && arg.int_value() == value;
 }
 
+syncer::EntityData EntityFromSpecifics(const SettingSpecifics& specifics) {
+  syncer::EntityData entity;
+  *entity.specifics.mutable_plus_address_setting() = specifics;
+  return entity;
+}
+
 class PlusAddressSettingSyncBridgeTest : public testing::Test {
  public:
   PlusAddressSettingSyncBridgeTest()
@@ -79,6 +86,19 @@ class PlusAddressSettingSyncBridgeTest : public testing::Test {
 
   syncer::MockModelTypeChangeProcessor& mock_processor() {
     return mock_processor_;
+  }
+
+  // Simulates starting to sync with `remote_specifics` pre-existing on the
+  // server-side. Returns true if syncing started successfully.
+  bool StartSyncingWithServerData(
+      const std::vector<SettingSpecifics>& remote_specifics) {
+    syncer::EntityChangeList change_list;
+    for (const SettingSpecifics& specifics : remote_specifics) {
+      change_list.push_back(syncer::EntityChange::CreateAdd(
+          specifics.name(), EntityFromSpecifics(specifics)));
+    }
+    return !bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
+                                       std::move(change_list));
   }
 
   // Adds the `specifics` to the `store()`, returning true if it succeeded.
@@ -124,12 +144,71 @@ TEST_F(PlusAddressSettingSyncBridgeTest, ModelReadyToSync_ExistingMetadata) {
 }
 
 TEST_F(PlusAddressSettingSyncBridgeTest, GetStorageKey) {
-  syncer::EntityData entity;
-  *entity.specifics.mutable_plus_address_setting() =
-      CreateSettingSpecifics("name", "value");
+  syncer::EntityData entity =
+      EntityFromSpecifics(CreateSettingSpecifics("name", "value"));
   EXPECT_EQ(bridge().GetStorageKey(entity), "name");
   // `GetClientTag()` is implemented using `GetStorageKey()`.
   EXPECT_EQ(bridge().GetClientTag(entity), "name");
+}
+
+TEST_F(PlusAddressSettingSyncBridgeTest, MergeFullSyncData) {
+  EXPECT_TRUE(
+      StartSyncingWithServerData({CreateSettingSpecifics("name", "value")}));
+  // Expect that the setting is available immediately.
+  EXPECT_THAT(bridge().GetSetting("name"),
+              Optional(HasStringSetting("name", "value")));
+  // Recreate the bridge, reloading from the `store()`.
+  RecreateBridge();
+  EXPECT_THAT(bridge().GetSetting("name"),
+              Optional(HasStringSetting("name", "value")));
+}
+
+TEST_F(PlusAddressSettingSyncBridgeTest,
+       ApplyIncrementalSyncChanges_AddUpdate) {
+  ASSERT_TRUE(
+      StartSyncingWithServerData({CreateSettingSpecifics("name1", "string")}));
+
+  // Simulate receiving an incremental add and an update to the existing entity.
+  syncer::EntityChangeList change_list;
+  change_list.push_back(syncer::EntityChange::CreateAdd(
+      "name2", EntityFromSpecifics(CreateSettingSpecifics("name2", 123))));
+  change_list.push_back(syncer::EntityChange::CreateUpdate(
+      "name1",
+      EntityFromSpecifics(CreateSettingSpecifics("name1", "new-string"))));
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(change_list)));
+
+  // Expect that the setting is available immediately.
+  EXPECT_THAT(bridge().GetSetting("name1"),
+              Optional(HasStringSetting("name1", "new-string")));
+  EXPECT_THAT(bridge().GetSetting("name2"),
+              Optional(HasIntSetting("name2", 123)));
+  // Recreate the bridge, reloading from the `store()`.
+  RecreateBridge();
+  EXPECT_THAT(bridge().GetSetting("name1"),
+              Optional(HasStringSetting("name1", "new-string")));
+  EXPECT_THAT(bridge().GetSetting("name2"),
+              Optional(HasIntSetting("name2", 123)));
+}
+
+TEST_F(PlusAddressSettingSyncBridgeTest, ApplyIncrementalSyncChanges_Remove) {
+  ASSERT_TRUE(
+      StartSyncingWithServerData({CreateSettingSpecifics("name", true),
+                                  CreateSettingSpecifics("name2", "string")}));
+
+  syncer::EntityChangeList change_list;
+  change_list.push_back(syncer::EntityChange::CreateDelete("name1"));
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(change_list)));
+  // Expect that the change was applied immediately.
+  EXPECT_FALSE(bridge().GetSetting("name1"));
+  EXPECT_THAT(bridge().GetSetting("name2"),
+              Optional(HasStringSetting("name2", "string")));
+  // Recreate the bridge, reloading from the `store()`.
+  RecreateBridge();
+  EXPECT_FALSE(bridge().GetSetting("name1"));
+  EXPECT_THAT(bridge().GetSetting("name2"),
+              Optional(HasStringSetting("name2", "string")));
 }
 
 TEST_F(PlusAddressSettingSyncBridgeTest, GetAllDataForDebugging) {
