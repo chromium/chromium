@@ -3614,6 +3614,9 @@ crbug.com/1267867 [ Mac ] external/wpt/pointerlock/* [ Failure Skip ]
 crbug.com/1267867 [ Mac ] http/tests/pointer-lock/* [ Failure Skip ]
 crbug.com/1267867 [ Mac ] pointer-lock/* [ Failure Skip ]
 
+# Temporarily disable to land https://crrev.com/c/5580039
+crbug.com/342529015 http/tests/devtools/sources/debugger-ui/ui-source-code.js [ Failure Pass Timeout ]
+
 # Feature Policy changes fullscreen behaviour, tests need updating
 crbug.com/718155 fullscreen/full-screen-restrictions.html [ Failure Timeout ]
 
