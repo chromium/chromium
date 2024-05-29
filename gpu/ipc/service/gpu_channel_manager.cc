@@ -379,10 +379,10 @@ GpuChannelManager::GpuChannelManager(
   const bool enable_gr_shader_cache =
       (gpu_feature_info_
            .status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] ==
-       gpu::kGpuFeatureStatusEnabled);
-  const bool disable_disk_cache =
-      gpu_preferences_.disable_gpu_shader_disk_cache;
-  if (enable_gr_shader_cache && !disable_disk_cache) {
+       gpu::kGpuFeatureStatusEnabled) &&
+      !gpu_preferences_.disable_gpu_shader_disk_cache;
+  UMA_HISTOGRAM_BOOLEAN("Gpu.GrShaderCacheEnabled", enable_gr_shader_cache);
+  if (enable_gr_shader_cache) {
     gr_shader_cache_.emplace(gpu_preferences.gpu_program_cache_size, this);
     gr_shader_cache_->CacheClientIdOnDisk(gpu::kDisplayCompositorClientId);
   }
