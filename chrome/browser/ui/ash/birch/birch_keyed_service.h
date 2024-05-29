@@ -63,6 +63,9 @@ class BirchKeyedService : public KeyedService,
   void set_calendar_provider_for_test(BirchDataProvider* provider) {
     calendar_provider_for_test_ = provider;
   }
+  void set_file_suggest_provider_for_test(BirchDataProvider* provider) {
+    file_suggest_provider_for_test_ = provider;
+  }
 
  private:
   void ShutdownBirch();
@@ -94,6 +97,9 @@ class BirchKeyedService : public KeyedService,
   // generic BirchDataProvider and `calendar_provider_` cannot be changed to
   // that type.
   raw_ptr<BirchDataProvider> calendar_provider_for_test_;
+
+  // This is a member for consistency with `calendar_provider_for_test`.
+  raw_ptr<BirchDataProvider> file_suggest_provider_for_test_;
 };
 
 }  // namespace ash

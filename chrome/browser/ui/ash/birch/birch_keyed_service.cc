@@ -68,6 +68,9 @@ BirchDataProvider* BirchKeyedService::GetCalendarProvider() {
 }
 
 BirchDataProvider* BirchKeyedService::GetFileSuggestProvider() {
+  if (file_suggest_provider_for_test_) {
+    return file_suggest_provider_for_test_;
+  }
   return file_suggest_provider_.get();
 }
 

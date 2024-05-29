@@ -508,6 +508,10 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   arc_window_watcher_.reset();
 }
 
+void ChromeBrowserMainExtraPartsAsh::ResetNewWindowDelegateProviderForTest() {
+  new_window_delegate_provider_.reset();
+}
+
 class ChromeBrowserMainExtraPartsAsh::UserProfileLoadedObserver
     : public session_manager::SessionManagerObserver {
  public:

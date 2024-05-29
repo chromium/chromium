@@ -108,6 +108,8 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
 
   bool did_post_browser_start() const { return did_post_browser_start_; }
 
+  void ResetNewWindowDelegateProviderForTest();
+
  private:
   class UserProfileLoadedObserver;
 
