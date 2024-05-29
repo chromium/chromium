@@ -261,6 +261,7 @@ bool HEVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
         const H265SPS* sps = parser.GetSPS(sps_id);
         DCHECK(sps);
         color_space = sps->GetColorSpace();
+        chroma_sampling = sps->GetChromaSampling();
         break;
       }
       case H265NALU::PREFIX_SEI_NUT: {
@@ -327,6 +328,10 @@ VideoCodecProfile HEVCDecoderConfigurationRecord::GetVideoProfile() const {
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 VideoColorSpace HEVCDecoderConfigurationRecord::GetColorSpace() {
   return color_space;
+}
+
+VideoChromaSampling HEVCDecoderConfigurationRecord::GetChromaSampling() {
+  return chroma_sampling;
 }
 
 gfx::HDRMetadata HEVCDecoderConfigurationRecord::GetHDRMetadata() {

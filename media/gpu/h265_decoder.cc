@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/gpu/h265_decoder.h"
+
 #include <algorithm>
 
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
-#include "media/gpu/h265_decoder.h"
+#include "media/base/video_types.h"
 
 namespace media {
 
@@ -638,6 +640,15 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
     new_color_space = sps->GetColorSpace();
   } else if (container_color_space_.IsSpecified()) {
     new_color_space = container_color_space_;
+  }
+
+  if (new_color_space.matrix == VideoColorSpace::MatrixID::RGB &&
+      new_chroma_sampling != VideoChromaSampling::k444) {
+    // Some H.265 videos contain a VUI that specifies a color matrix of GBR,
+    // when they are actually ordinary YUV. Default to BT.709 if the format is
+    // not 4:4:4 as GBR is reasonable for 4:4:4 content. See
+    // crbug.com/342003180, and crbug.com/343014700.
+    new_color_space = VideoColorSpace::REC709();
   }
 
   bool is_color_space_change = false;

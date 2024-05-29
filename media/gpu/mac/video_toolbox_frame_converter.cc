@@ -258,7 +258,10 @@ void VideoToolboxFrameConverter::Convert(
   if (metadata->duration != kNoTimestamp && !metadata->duration.is_zero()) {
     frame->metadata().frame_duration = metadata->duration;
   }
-  frame->metadata().allow_overlay = true;
+  // CVImageBuffer doesn't support the GBR matrix, disabling overlay could
+  // resolve the wrong color issue. See: crbug.com/343014700.
+  frame->metadata().allow_overlay =
+      metadata->color_space.GetMatrixID() != gfx::ColorSpace::MatrixID::GBR;
   // Releasing |image| must happen after command buffer commands are complete
   // (not just submitted).
   frame->metadata().read_lock_fences_enabled = true;

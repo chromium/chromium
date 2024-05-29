@@ -521,8 +521,11 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
                       codec_context->color_range == AVCOL_RANGE_JPEG
                           ? gfx::ColorSpace::RangeID::FULL
                           : gfx::ColorSpace::RangeID::LIMITED);
-
+  VideoPixelFormat pixel_format =
+      AVPixelFormatToVideoPixelFormat(codec_context->pix_fmt);
   VideoDecoderConfig::AlphaMode alpha_mode = GetAlphaMode(stream);
+  VideoChromaSampling chroma_sampling =
+      VideoPixelFormatToChromaSampling(pixel_format);
 
   switch (codec) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -564,6 +567,7 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
           }
           hdr_metadata = hevc_config.GetHDRMetadata();
           alpha_mode = hevc_config.GetAlphaMode();
+          chroma_sampling = hevc_config.GetChromaSampling();
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
         }
       }
@@ -655,9 +659,6 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
       profile = ProfileIDToVideoCodecProfile(codec_context->profile);
   }
 
-  VideoPixelFormat video_pixel_format =
-      AVPixelFormatToVideoPixelFormat(codec_context->pix_fmt);
-
   if (!color_space.IsSpecified()) {
     // VP9 frames may have color information, but that information cannot
     // express new color spaces, like HDR. For that reason, color space
@@ -677,20 +678,21 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
       color_space = (natural_size.height() < 720) ? VideoColorSpace::REC601()
                                                   : VideoColorSpace::REC709();
     }
-  } else if (codec_context->codec_id == AV_CODEC_ID_H264 &&
+  } else if ((codec_context->codec_id == AV_CODEC_ID_HEVC ||
+              codec_context->codec_id == AV_CODEC_ID_H264) &&
              codec_context->colorspace == AVCOL_SPC_RGB &&
-             VideoPixelFormatToChromaSampling(video_pixel_format) !=
-                 VideoChromaSampling::k444) {
-    // Some H.264 videos contain a VUI that specifies a color matrix of GBR,
-    // when they are actually ordinary YUV. Default to BT.709 if the format is
-    // not 4:4:4 as GBR is reasonable for 4:4:4 content. See crbug.com/1067377
-    // and crbug.com/341266991.
+             chroma_sampling != VideoChromaSampling::k444) {
+    // Some H.264/H.265 videos contain a VUI that specifies a color matrix of
+    // GBR, when they are actually ordinary YUV. Default to BT.709 if the format
+    // is not 4:4:4 as GBR is only reasonable for 4:4:4 content. See
+    // crbug.com/40682932, crbug.com/341266991, crbug.com/342003180, and
+    // crbug.com/343014700.
     color_space = VideoColorSpace::REC709();
   } else if (codec_context->codec_id == AV_CODEC_ID_HEVC &&
              (color_space.primaries == VideoColorSpace::PrimaryID::INVALID ||
               color_space.transfer == VideoColorSpace::TransferID::INVALID ||
               color_space.matrix == VideoColorSpace::MatrixID::INVALID) &&
-             video_pixel_format == PIXEL_FORMAT_I420) {
+             pixel_format == PIXEL_FORMAT_I420) {
     // Some HEVC SDR content encoded by the Adobe Premiere HW HEVC encoder has
     // invalid primaries but valid transfer and matrix, and some HEVC SDR
     // content encoded by web camera has invalid primaries and transfer, this
