@@ -21,4 +21,15 @@
         select.showPicker();
         select.blur();
     }, `select showPicker() does not throw when user activation is active`);
+
+    promise_test(async t => {
+        const select = document.createElement("select");
+        document.body.append(select)
+
+        await test_driver.bless('show picker');
+        select.showPicker();
+        select.blur();
+
+        assert_false(navigator.userActivation.isActive);
+    }, `select showPicker() consumes user activation`);
 </script>

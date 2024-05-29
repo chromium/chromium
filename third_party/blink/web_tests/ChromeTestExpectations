@@ -30,6 +30,7 @@ crbug.com/1512119 external/wpt/webdriver/tests/classic/perform_actions/pointer_t
 
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/webdriver/tests/bidi/input/perform_actions/invalid.py [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/classic/element_clear/clear.py [ Failure Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/classic/perform_actions/invalid.py [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/classic/element_send_keys/send_keys.py [ Failure ]
@@ -74,5 +75,5 @@ external/wpt/secure-payment-confirmation/* [ Pass ]
 crbug.com/336866579 external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure ]
 
 # 23-05-2024 Remove BiDi expectations
-external/wpt/webdriver/tests/bidi/network/response_completed/response_completed.py [ Pass Failure ]  # Flaky output
-external/wpt/webdriver/tests/bidi/network/remove_intercept/remove_intercept.py [ Pass Failure ]
+external/wpt/webdriver/tests/bidi/network/response_completed/response_completed.py [ Failure Pass ]  # Flaky output
+external/wpt/webdriver/tests/bidi/network/remove_intercept/remove_intercept.py [ Failure Pass ]

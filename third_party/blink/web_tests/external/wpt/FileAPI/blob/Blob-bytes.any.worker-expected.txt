@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Blob.bytes()
+  promise_test: Unhandled rejection with value: object "TypeError: blob.bytes is not a function"
+[FAIL] Blob.bytes() empty Blob data
+  promise_test: Unhandled rejection with value: object "TypeError: blob.bytes is not a function"
+[FAIL] Blob.bytes() non-ascii input
+  promise_test: Unhandled rejection with value: object "TypeError: blob.bytes is not a function"
+[FAIL] Blob.bytes() non-unicode input
+  promise_test: Unhandled rejection with value: object "TypeError: blob.bytes is not a function"
+[FAIL] Blob.bytes() concurrent reads
+  promise_test: Unhandled rejection with value: object "TypeError: blob.bytes is not a function"
+Harness: the test ran to completion.
+
