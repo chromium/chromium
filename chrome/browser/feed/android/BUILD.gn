@@ -169,6 +169,7 @@ android_resources("feed_java_resources") {
     "java/res/drawable/header_title_section_tab_background_v2.xml",
     "java/res/drawable/header_title_tab_selected_background.xml",
     "java/res/drawable/header_title_tab_selected_ripple.xml",
+    "java/res/drawable/home_surface_background_rounded.xml",
     "java/res/drawable/home_surface_ui_background_bottom_rounded.xml",
     "java/res/drawable/home_surface_ui_background_bottomleft_rounded.xml",
     "java/res/drawable/home_surface_ui_background_bottomright_rounded.xml",

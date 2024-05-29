@@ -975,6 +975,7 @@ public class FeedSurfaceCoordinator
     private void setHeaders(List<View> headerViews) {
         // Build the list of headers we want, and then replace existing headers.
         List<FeedListContentManager.FeedContent> headerList = new ArrayList<>();
+        boolean hasSigninPromoView = false;
         for (View header : headerViews) {
             // Feed header view in multi does not need padding added.
             int lateralPaddingsPx = getLateralPaddingsPx();
@@ -989,12 +990,16 @@ public class FeedSurfaceCoordinator
                                     mActivity, R.drawable.home_surface_background));
                 }
             } else if (header == mSigninPromoView) {
+                hasSigninPromoView = true;
                 lateralPaddingsPx =
                         mActivity
                                 .getResources()
                                 .getDimensionPixelSize(R.dimen.signin_promo_lateral_paddings);
                 ((PersonalizedSigninPromoView) mSigninPromoView)
-                        .setCardBackgroundResource(R.drawable.home_surface_ui_background);
+                        .setCardBackgroundResource(
+                                ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)
+                                        ? R.drawable.home_surface_background_rounded
+                                        : R.drawable.home_surface_ui_background);
             }
 
             FeedListContentManager.NativeViewContent content =
@@ -1006,14 +1011,9 @@ public class FeedSurfaceCoordinator
             mHeaderCount = headerList.size();
             mMediator.notifyHeadersChanged(mHeaderCount);
         }
-        // The section header is the last header to be added, excluding sign-in promo if it is
-        // visible, save its index.
-        mSectionHeaderIndex =
-                headerViews.size()
-                        - (mSigninPromoView != null
-                                        && mSigninPromoView.getVisibility() == View.VISIBLE
-                                ? 2
-                                : 1);
+        // The section header is the last header to be added, excluding sign-in promo, save its
+        // index.
+        mSectionHeaderIndex = headerViews.size() - (hasSigninPromoView ? 2 : 1);
     }
 
     /**
