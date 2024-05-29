@@ -88,6 +88,10 @@ class WebTestBuilders(builders.Builders):
                 'DevTools Linux Fastbuild',
                 # Could be used in the future, but has never run any builds.
                 'linux-exp-code-coverage',
+                # Does use the Chromium recipe, but is in the "build" bucket
+                # instead of the "ci" bucket, which breaks some assumptions
+                # we have.
+                'Mac13 Tests Siso FYI',
                 'ToTMacOfficial',
                 'V8 Blink Linux',
                 'V8 Blink Linux Debug',
