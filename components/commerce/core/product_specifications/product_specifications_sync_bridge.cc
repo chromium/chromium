@@ -276,6 +276,11 @@ void ProductSpecificationsSyncBridge::OnReadAllMetadata(
   }
 
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
+
+  DCHECK(init_callback_);
+  if (init_callback_) {
+    std::move(init_callback_).Run();
+  }
 }
 
 void ProductSpecificationsSyncBridge::Commit(
