@@ -237,8 +237,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_DONT_PAD_LAYER_IMAGES
 
-#define SK_DISABLE_MAD_IN_RASTER_PIPELINE
-
 #define GRAPHITE_USE_APPROX_FIT_FOR_FILTERS
 
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
