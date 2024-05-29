@@ -1145,16 +1145,15 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
 
     case GpuVideoAcceleratorFactories::OutputFormat::YV12: {
       DCHECK(video_frame->format() == PIXEL_FORMAT_I420 ||
-             video_frame->format() == PIXEL_FORMAT_YUV420P10 ||
-             video_frame->format() == PIXEL_FORMAT_YV12)
+             video_frame->format() == PIXEL_FORMAT_YUV420P10)
           << VideoPixelFormatToString(video_frame->format());
 
-      // YUV formats need be put into YVU order.
-      bool needs_uv_swap = video_frame->format() != PIXEL_FORMAT_YV12;
       VideoPixelFormat pixel_format = VideoFormat(output_format);
-      for (int src_plane = 0; src_plane < 3; ++src_plane) {
-        static constexpr int kDstPlane[3] = {0, 2, 1};
-        int dst_plane = needs_uv_swap ? kDstPlane[src_plane] : src_plane;
+      for (int dst_plane = 0; dst_plane < 3; ++dst_plane) {
+        static constexpr VideoFrame::Plane kSrcPlanes[3] = {
+            VideoFrame::Plane::kY, VideoFrame::Plane::kV,
+            VideoFrame::Plane::kU};
+        VideoFrame::Plane src_plane = kSrcPlanes[dst_plane];
 
         const size_t plane_row_start =
             row / VideoFrame::SampleSize(pixel_format, src_plane).height();
