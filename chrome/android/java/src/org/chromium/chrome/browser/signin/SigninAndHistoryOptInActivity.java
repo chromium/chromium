@@ -92,6 +92,7 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
 
         Intent intent = getIntent();
         if (intent.getBooleanExtra(ARGUMENT_IS_UPGRADE_PROMO, false)) {
+            setTheme(org.chromium.chrome.R.style.Theme_Chromium_DialogWhenLarge);
             mUpgradePromoCoordinator =
                     new UpgradePromoCoordinator(
                             this,
