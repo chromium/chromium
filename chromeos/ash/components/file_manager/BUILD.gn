@@ -11,6 +11,7 @@ component("file_manager") {
   defines = [ "IS_FILE_MANAGER_IMPL" ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/ash/components/browser_context_helper",
     "//components/account_id",
@@ -63,6 +64,7 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":file_manager",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/browser_context_helper",

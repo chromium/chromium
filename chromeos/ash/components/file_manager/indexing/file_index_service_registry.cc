@@ -4,10 +4,14 @@
 
 #include "chromeos/ash/components/file_manager/indexing/file_index_service_registry.h"
 
-#include <cstddef>
 #include <memory>
 
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/logging.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/file_manager/indexing/file_index.h"
 #include "chromeos/ash/components/file_manager/indexing/file_index_service.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
@@ -65,10 +69,22 @@ void FileIndexServiceRegistry::OnUserProfileCreated(
   if (it != map_.end()) {
     return;
   }
+
+  if (!base::FeatureList::IsEnabled(::ash::features::kFilesMaterializedViews)) {
+    return;
+  }
   base::FilePath ash_home_dir =
       ash::BrowserContextHelper::Get()->GetBrowserContextPathByUserIdHash(
           user.username_hash());
 
-  map_.emplace(account_id, ash_home_dir);
+  auto r = map_.emplace(account_id, ash_home_dir);
+  if (r.second) {
+    auto& index = r.first->second;
+    index.Init(base::BindOnce([](OpResults result) {
+      if (result != OpResults::kSuccess) {
+        LOG(ERROR) << "Failed to initialize the file index: " << result;
+      }
+    }));
+  }
 }
 }  // namespace ash::file_manager
