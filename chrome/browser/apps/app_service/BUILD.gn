@@ -379,7 +379,6 @@ source_set("unit_tests") {
       "promise_apps/promise_app_update_unittest.cc",
       "promise_apps/promise_app_wrapper_unittest.cc",
       "publishers/arc_apps_unittest.cc",
-      "publishers/browser_shortcuts_crosapi_publisher_unittest.cc",
       "publishers/bruschetta_apps_unittest.cc",
       "publishers/crostini_apps_unittest.cc",
       "publishers/guest_os_apps_unittest.cc",

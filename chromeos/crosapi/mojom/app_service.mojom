@@ -253,6 +253,7 @@ interface AppServiceSubscriber {
 // This is a generic app-shortcut-publisher interface that is used by the
 // implementation for browser shortcuts and other future lacros based shortcut
 // (e.g. shortcut to a web app).
+// Deprecated in M127, reason: moving shortcuts storage from Lacros to Ash.
 [Stable, Uuid="f46f05bb-218e-4370-ad07-f2f0dfef0298"]
 interface AppShortcutPublisher {
   // Publish a stream of app shortcuts from lacros-chrome.
@@ -275,6 +276,7 @@ interface AppShortcutPublisher {
 
 // Interacts with shortcuts that run in Lacros. Implemented in lacros-chrome
 // and called in ash-chrome.
+// Deprecated in M127, reason: moving shortcuts storage from Lacros to Ash.
 [Stable, Uuid="aa20b7ea-e177-4e14-b30e-cf54d9cde94c"]
 interface AppShortcutController {
 

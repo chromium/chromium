@@ -40,14 +40,8 @@ class BrowserShortcutsCrosapiPublisher
   void RegisterCrosapiHost(
       mojo::PendingReceiver<crosapi::mojom::AppShortcutPublisher> receiver);
 
-  void SetLaunchShortcutCallbackForTesting(
-      crosapi::mojom::AppShortcutController::LaunchShortcutCallback callback);
-
-  void SetRemoveShortcutCallbackForTesting(
-      crosapi::mojom::AppShortcutController::RemoveShortcutCallback callback);
-
  private:
-  // crosapi::mojom::AppShortcutPublisher overrides.
+  // crosapi::mojom::AppShortcutPublisher overrides - DEPRECATED.
   void PublishShortcuts(std::vector<apps::ShortcutPtr> deltas,
                         PublishShortcutsCallback callback) override;
   void RegisterAppShortcutController(
@@ -69,16 +63,9 @@ class BrowserShortcutsCrosapiPublisher
                              apps::LoadIconCallback callback) override;
 
   void OnCrosapiDisconnected();
-  void OnControllerDisconnected();
 
   mojo::Receiver<crosapi::mojom::AppShortcutPublisher> receiver_{this};
-  mojo::Remote<crosapi::mojom::AppShortcutController> controller_;
   const raw_ptr<apps::AppServiceProxy> proxy_;
-
-  crosapi::mojom::AppShortcutController::LaunchShortcutCallback
-      launch_shortcut_callback_for_testing_;
-  crosapi::mojom::AppShortcutController::RemoveShortcutCallback
-      remove_shortcut_callback_for_testing_;
 
   base::WeakPtrFactory<BrowserShortcutsCrosapiPublisher> weak_factory_{this};
 };

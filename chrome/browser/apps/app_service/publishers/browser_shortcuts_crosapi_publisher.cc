@@ -42,50 +42,25 @@ void BrowserShortcutsCrosapiPublisher::RegisterCrosapiHost(
   RegisterShortcutPublisher(apps::AppType::kStandaloneBrowser);
 }
 
-void BrowserShortcutsCrosapiPublisher::SetLaunchShortcutCallbackForTesting(
-    crosapi::mojom::AppShortcutController::LaunchShortcutCallback callback) {
-  launch_shortcut_callback_for_testing_ = std::move(callback);
-}
-
-void BrowserShortcutsCrosapiPublisher::SetRemoveShortcutCallbackForTesting(
-    crosapi::mojom::AppShortcutController::RemoveShortcutCallback callback) {
-  remove_shortcut_callback_for_testing_ = std::move(callback);
-}
-
 void BrowserShortcutsCrosapiPublisher::PublishShortcuts(
     std::vector<apps::ShortcutPtr> deltas,
     PublishShortcutsCallback callback) {
-  if (!chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
-    std::move(callback).Run();
-    return;
-  }
-
-  for (auto& delta : deltas) {
-    apps::ShortcutPublisher::PublishShortcut(std::move(delta));
-  }
+  // Deprecated
   std::move(callback).Run();
 }
 
 void BrowserShortcutsCrosapiPublisher::RegisterAppShortcutController(
     mojo::PendingRemote<crosapi::mojom::AppShortcutController> controller,
     RegisterAppShortcutControllerCallback callback) {
-  if (controller_.is_bound()) {
-    std::move(callback).Run(
-        crosapi::mojom::ControllerRegistrationResult::kFailed);
-    return;
-  }
-  controller_.Bind(std::move(controller));
-  controller_.set_disconnect_handler(base::BindOnce(
-      &BrowserShortcutsCrosapiPublisher::OnControllerDisconnected,
-      base::Unretained(this)));
+  // Deprecated
   std::move(callback).Run(
-      crosapi::mojom::ControllerRegistrationResult::kSuccess);
+      crosapi::mojom::ControllerRegistrationResult::kFailed);
 }
 
 void BrowserShortcutsCrosapiPublisher::ShortcutRemoved(
     const std::string& shortcut_id,
     ShortcutRemovedCallback callback) {
-  apps::ShortcutPublisher::ShortcutRemoved(apps::ShortcutId(shortcut_id));
+  // Deprecated
   std::move(callback).Run();
 }
 
@@ -93,34 +68,14 @@ void BrowserShortcutsCrosapiPublisher::LaunchShortcut(
     const std::string& host_app_id,
     const std::string& local_shortcut_id,
     int64_t display_id) {
-  if (!controller_.is_bound()) {
-    LOG(WARNING) << "Controller not connected: " << FROM_HERE.ToString();
-    return;
-  }
-
-  // TODO(b/308879297): Make launch shortcut async in the publisher interface.
-  controller_->LaunchShortcut(
-      host_app_id, local_shortcut_id, display_id,
-      launch_shortcut_callback_for_testing_
-          ? std::move(launch_shortcut_callback_for_testing_)
-          : base::DoNothing());
+  // TODO(b/341640372)
 }
 
 void BrowserShortcutsCrosapiPublisher::RemoveShortcut(
     const std::string& host_app_id,
     const std::string& local_shortcut_id,
     apps::UninstallSource uninstall_source) {
-  if (!controller_.is_bound()) {
-    LOG(WARNING) << "Controller not connected: " << FROM_HERE.ToString();
-    return;
-  }
-
-  // TODO(b/308879297): Make remove shortcut async in the publisher interface.
-  controller_->RemoveShortcut(
-      host_app_id, local_shortcut_id, uninstall_source,
-      remove_shortcut_callback_for_testing_
-          ? std::move(remove_shortcut_callback_for_testing_)
-          : base::DoNothing());
+  // TODO(b/341640372)
 }
 
 void BrowserShortcutsCrosapiPublisher::GetCompressedIconData(
@@ -128,31 +83,11 @@ void BrowserShortcutsCrosapiPublisher::GetCompressedIconData(
     int32_t size_in_dip,
     ui::ResourceScaleFactor scale_factor,
     apps::LoadIconCallback callback) {
-  if (!controller_.is_bound()) {
-    LOG(WARNING) << "Controller not connected: " << FROM_HERE.ToString();
-    return;
-  }
-
-  apps::ShortcutId strong_typed_shortcut_id = apps::ShortcutId(shortcut_id);
-
-  std::string host_app_id =
-      proxy_->ShortcutRegistryCache()->GetShortcutHostAppId(
-          strong_typed_shortcut_id);
-  std::string local_shortcut_id =
-      proxy_->ShortcutRegistryCache()->GetShortcutLocalId(
-          strong_typed_shortcut_id);
-
-  controller_->GetCompressedIcon(host_app_id, local_shortcut_id, size_in_dip,
-                                 scale_factor, std::move(callback));
+  // TODO(b/341640372)
 }
 
 void BrowserShortcutsCrosapiPublisher::OnCrosapiDisconnected() {
   receiver_.reset();
-  controller_.reset();
-}
-
-void BrowserShortcutsCrosapiPublisher::OnControllerDisconnected() {
-  controller_.reset();
 }
 
 }  // namespace apps

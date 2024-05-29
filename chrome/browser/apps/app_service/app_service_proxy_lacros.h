@@ -49,7 +49,6 @@ class Profile;
 
 namespace web_app {
 class LacrosWebAppsController;
-class LacrosBrowserShortcutsController;
 }  // namespace web_app
 
 namespace apps {
@@ -349,9 +348,6 @@ class AppServiceProxyLacros : public KeyedService,
   base::OnceClosure dialog_created_callback_;
 
   std::unique_ptr<web_app::LacrosWebAppsController> lacros_web_apps_controller_;
-
-  std::unique_ptr<web_app::LacrosBrowserShortcutsController>
-      lacros_browser_shortcuts_controller_;
   mojo::Receiver<crosapi::mojom::AppServiceSubscriber> crosapi_receiver_{this};
   raw_ptr<crosapi::mojom::AppServiceProxy> remote_crosapi_app_service_proxy_ =
       nullptr;
