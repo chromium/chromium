@@ -110,4 +110,4 @@ class OSDevToolsSession : public blink::mojom::DevToolsSession,
 };
 }  // namespace ax
 
-#endif
+#endif  // SERVICES_ACCESSIBILITY_FEATURES_DEVTOOLS_OS_DEVTOOLS_SESSION_H_

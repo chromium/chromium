@@ -60,4 +60,4 @@ class DebugCommandQueue : public base::RefCountedThreadSafe<DebugCommandQueue> {
 
 }  // namespace ax
 
-#endif
+#endif  // SERVICES_ACCESSIBILITY_FEATURES_DEVTOOLS_DEBUG_COMMAND_QUEUE_H_

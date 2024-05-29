@@ -90,4 +90,4 @@ DEF_SET_PROP(mojom::AccessibilityWindowInfoData,
 
 }  // namespace ax::android
 
-#endif
+#endif  // SERVICES_ACCESSIBILITY_ANDROID_TEST_ANDROID_ACCESSIBILITY_TEST_UTIL_H_

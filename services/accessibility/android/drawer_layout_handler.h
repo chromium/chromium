@@ -42,4 +42,4 @@ class DrawerLayoutHandler : public AXTreeSourceAndroid::Hook {
 
 }  // namespace ax::android
 
-#endif
+#endif  // SERVICES_ACCESSIBILITY_ANDROID_DRAWER_LAYOUT_HANDLER_H_

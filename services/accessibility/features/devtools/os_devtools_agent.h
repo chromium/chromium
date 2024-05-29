@@ -94,4 +94,4 @@ class OSDevToolsAgent : public blink::mojom::DevToolsAgent,
 };
 
 }  // namespace ax
-#endif
+#endif  // SERVICES_ACCESSIBILITY_FEATURES_DEVTOOLS_OS_DEVTOOLS_AGENT_H_

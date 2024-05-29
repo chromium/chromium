@@ -47,4 +47,4 @@ class AutoCompleteHandler : public AXTreeSourceAndroid::Hook {
 
 }  // namespace ax::android
 
-#endif
+#endif  // SERVICES_ACCESSIBILITY_ANDROID_AUTO_COMPLETE_HANDLER_H_

@@ -40,4 +40,4 @@ class ContextImplTflite final : public WebNNContextImpl {
 
 }  // namespace webnn::tflite
 
-#endif  // SERVICES_WEBNN_DML_CONTEXT_IMPL_TFLITE_H_
+#endif  // SERVICES_WEBNN_TFLITE_CONTEXT_IMPL_TFLITE_H_

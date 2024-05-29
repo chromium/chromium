@@ -65,4 +65,4 @@ class AccessibilityWindowInfoDataWrapper : public AccessibilityInfoDataWrapper {
 
 }  // namespace ax::android
 
-#endif
+#endif  // SERVICES_ACCESSIBILITY_ANDROID_ACCESSIBILITY_WINDOW_INFO_DATA_WRAPPER_H_

@@ -186,4 +186,4 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_STORAGE_H_
+#endif  // SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_STORAGE_IN_MEMORY_H_

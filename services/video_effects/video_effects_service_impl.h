@@ -69,4 +69,4 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService {
 
 }  // namespace video_effects
 
-#endif
+#endif  // SERVICES_VIDEO_EFFECTS_VIDEO_EFFECTS_SERVICE_IMPL_H_

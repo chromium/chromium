@@ -69,4 +69,4 @@ class FakeAccessibilityHelperInstance
 
 }  // namespace arc
 
-#endif
+#endif  // SERVICES_ACCESSIBILITY_ANDROID_TEST_FAKE_ACCESSIBILITY_HELPER_INSTANCE_H_

@@ -40,4 +40,4 @@ class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
 
 }  // namespace webnn::coreml
 
-#endif  // SERVICES_WEBNN_DML_CONTEXT_IMPL_COREML_H_
+#endif  // SERVICES_WEBNN_COREML_CONTEXT_IMPL_COREML_H_
