@@ -35,6 +35,15 @@ namespace extensions {
 // The component of the Storage API which runs on the UI thread.
 class StorageFrontend : public BrowserContextKeyedAPI {
  public:
+  struct ResultStatus {
+    ResultStatus();
+    ResultStatus(const ResultStatus&);
+    ~ResultStatus();
+
+    bool success = true;
+    std::optional<std::string> error;
+  };
+
   // Returns the current instance for |context|.
   static StorageFrontend* Get(content::BrowserContext* context);
 
@@ -76,6 +85,12 @@ class StorageFrontend : public BrowserContextKeyedAPI {
                      std::optional<std::vector<std::string>> keys,
                      base::OnceCallback<void(size_t)> callback);
 
+  // For a given `extension` and `storage_area`, clears the storage and fires
+  // `callback`.
+  void Clear(scoped_refptr<const Extension> extension,
+             StorageAreaNamespace storage_area,
+             base::OnceCallback<void(ResultStatus)> callback);
+
   // Gets the Settings change callback.
   SettingsChangedCallback GetObserver();
 
@@ -104,6 +119,14 @@ class StorageFrontend : public BrowserContextKeyedAPI {
                   content::BrowserContext* context);
 
   void Init(scoped_refptr<value_store::ValueStoreFactory> storage_factory);
+
+  // Should be called on the UI thread after a write has been performed in
+  // `storage_area`. Fires events if any values were changed and then runs
+  // `callback` with the `result` from the write operation.
+  void OnWriteFinished(const ExtensionId& extension_id,
+                       StorageAreaNamespace storage_area,
+                       base::OnceCallback<void(ResultStatus)> callback,
+                       value_store::ValueStore::WriteResult result);
 
   // Called when storage with `storage_area` for `extension_id` is updated with
   // `changes`. Must include `session_access_level` iff `storage_area` is

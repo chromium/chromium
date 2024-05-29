@@ -45,6 +45,8 @@ source_set("storage") {
     "storage_area_namespace.h",
     "storage_frontend.cc",
     "storage_frontend.h",
+    "storage_utils.cc",
+    "storage_utils.h",
     "value_store_cache.cc",
     "value_store_cache.h",
     "value_store_util.cc",

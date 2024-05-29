@@ -123,11 +123,13 @@ class StorageStorageAreaClearFunction : public SettingsFunction {
   ~StorageStorageAreaClearFunction() override {}
 
   // SettingsFunction:
-  ResponseValue RunWithStorage(value_store::ValueStore* storage) override;
-  ResponseValue RunInSession() override;
+  ResponseAction Run() override;
 
   // ExtensionFunction:
   void GetQuotaLimitHeuristics(QuotaLimitHeuristics* heuristics) const override;
+
+  // Called after clearing storage.
+  void OnClearOperationFinished(StorageFrontend::ResultStatus status);
 };
 
 class StorageStorageAreaGetBytesInUseFunction : public SettingsFunction {

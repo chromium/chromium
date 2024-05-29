@@ -19,7 +19,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/value_store/value_store_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -27,6 +26,7 @@
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/local_value_store_cache.h"
 #include "extensions/browser/api/storage/storage_area_namespace.h"
+#include "extensions/browser/api/storage/storage_utils.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -71,6 +71,14 @@ void GetBytesInUseWithValueStore(std::optional<std::vector<std::string>> keys,
       FROM_HERE, base::BindOnce(std::move(callback), size));
 }
 
+void ClearWithValueStore(
+    base::OnceCallback<void(ValueStore::WriteResult)> callback,
+    ValueStore* store) {
+  ValueStore::WriteResult result = store->Clear();
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+}
+
 }  // namespace
 
 // static
@@ -85,6 +93,16 @@ std::unique_ptr<StorageFrontend> StorageFrontend::CreateForTesting(
   return base::WrapUnique(
       new StorageFrontend(std::move(storage_factory), context));
 }
+
+// Implementation of ResultStatus.
+
+StorageFrontend::ResultStatus::ResultStatus() = default;
+
+StorageFrontend::ResultStatus::ResultStatus(const ResultStatus&) = default;
+
+StorageFrontend::ResultStatus::~ResultStatus() = default;
+
+// Implementation of StorageFrontend.
 
 StorageFrontend::StorageFrontend(BrowserContext* context)
     : StorageFrontend(ExtensionSystem::Get(context)->store_factory(), context) {
@@ -121,6 +139,26 @@ StorageFrontend::~StorageFrontend() {
   }
 }
 
+void StorageFrontend::OnWriteFinished(
+    const ExtensionId& extension_id,
+    StorageAreaNamespace storage_area,
+    base::OnceCallback<void(StorageFrontend::ResultStatus)> callback,
+    ValueStore::WriteResult result) {
+  bool success = result.status().ok();
+
+  if (success && !result.changes().empty()) {
+    OnSettingsChanged(
+        extension_id, storage_area, std::nullopt,
+        value_store::ValueStoreChange::ToValue(result.PassChanges()));
+  }
+
+  ResultStatus status;
+  status.success = success;
+  status.error =
+      success ? std::nullopt : std::optional(result.status().message);
+  std::move(callback).Run(status);
+}
+
 void StorageFrontend::GetBytesInUse(
     scoped_refptr<const Extension> extension,
     StorageAreaNamespace storage_area,
@@ -152,6 +190,47 @@ void StorageFrontend::GetBytesInUse(
   RunWithStorage(extension, settings_namespace,
                  base::BindOnce(&GetBytesInUseWithValueStore, std::move(keys),
                                 std::move(callback)));
+}
+
+void StorageFrontend::Clear(
+    scoped_refptr<const Extension> extension,
+    StorageAreaNamespace storage_area,
+    base::OnceCallback<void(StorageFrontend::ResultStatus)> callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (storage_area == StorageAreaNamespace::kSession) {
+    SessionStorageManager* storage_manager =
+        SessionStorageManager::GetForBrowserContext(browser_context_);
+
+    std::vector<SessionStorageManager::ValueChange> changes;
+    storage_manager->Clear(extension->id(), changes);
+
+    if (!changes.empty()) {
+      OnSettingsChanged(extension->id(), storage_area,
+                        storage_utils::GetSessionAccessLevel(extension->id(),
+                                                             *browser_context_),
+                        storage_utils::ValueChangeToValue(std::move(changes)));
+    }
+
+    // Using a task here is important since we want to consistently fire the
+    // callback asynchronously.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), StorageFrontend::ResultStatus()));
+    return;
+  }
+
+  settings_namespace::Namespace settings_namespace =
+      StorageAreaToSettingsNamespace(storage_area);
+
+  CHECK(StorageFrontend::IsStorageEnabled(settings_namespace));
+
+  RunWithStorage(
+      extension, settings_namespace,
+      base::BindOnce(&ClearWithValueStore,
+                     base::BindOnce(&StorageFrontend::OnWriteFinished,
+                                    weak_factory_.GetWeakPtr(), extension->id(),
+                                    storage_area, std::move(callback))));
 }
 
 ValueStoreCache* StorageFrontend::GetValueStoreCache(
