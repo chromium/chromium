@@ -742,7 +742,7 @@
 <translation id="1563702743503072935">로그인한 상태라면 이 기기에서도 Google 계정의 비밀번호를 사용할 수 있습니다.</translation>
 <translation id="1566049601598938765">웹사이트</translation>
 <translation id="15662109988763471">선택한 프린터가 사용 불가능하거나 올바르게 설치되어 있지 않습니다. 프린터를 확인하거나 다른 프린터를 선택해 보세요.</translation>
-<translation id="1566329594234563241">비활성화 상태이며 전원에 연결되어 있는 동안</translation>
+<translation id="1566329594234563241">비활성 상태이며 전원에 연결되어 있는 동안</translation>
 <translation id="1567135437923613642">추천 실험 기능 사용</translation>
 <translation id="1567387640189251553">마지막으로 비밀번호를 입력한 후 다른 키보드가 연결되었습니다. 키 입력 내용을 도용하려는 시도일 수 있습니다.</translation>
 <translation id="1567579616025300478">이 사이트에서는 기기에 데이터를 저장할 수 없습니다.</translation>
@@ -10587,7 +10587,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9095364055741191097">로컬 데이터 복구 실패</translation>
 <translation id="909554839118732438">시크릿 창 닫기</translation>
 <translation id="9095819602391364796">사이트에서 MIDI 기기를 제어하고 다시 프로그래밍하도록 허용하지 않음</translation>
-<translation id="9096053102600371572">스크롤 제어됨 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="9096053102600371572">스크롤 제어 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="9096776523567481218">로컬에 설치되지 않음</translation>
 <translation id="9098860402274800697">Google Play 및 Android 앱 삭제</translation>
 <translation id="9099220545925418560">방문 기록을 기반으로 추천됩니다. 설정이 사용 중지되어 있습니다.</translation>

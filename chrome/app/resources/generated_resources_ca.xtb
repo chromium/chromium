@@ -2901,7 +2901,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="31774765611822736">Pestanya nova a l'esquerra</translation>
 <translation id="3177909033752230686">Idioma de la pàgina:</translation>
 <translation id="3177914167275935955">El teu dispositiu inclou una Llicència de Chrome Education, però el teu nom d'usuari no està associat a cap compte de Google for Education. Ves a g.co/workspace/edusignup des d'un dispositiu secundari i crea un compte de Google for Education.</translation>
-<translation id="3179982752812949580">Tipus de lletra del text</translation>
+<translation id="3179982752812949580">Font del text</translation>
 <translation id="3180284704187420717">Desa les adreces d'interès, les contrasenyes i altres dades amb la sincronització</translation>
 <translation id="3181954750937456830">Navegació segura (us protegeix a tu i al teu dispositiu de llocs web perillosos)</translation>
 <translation id="3182749001423093222">Corrector ortogràfic</translation>
@@ -6007,7 +6007,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5605758115928394442">S'ha enviat una notificació al teu telèfon per confirmar la teva identitat.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Aquesta extensió està bloquejada}other{Aquestes extensions estan bloquejades}}</translation>
 <translation id="560834977503641186">Sincronització Wi‑Fi, més informació</translation>
-<translation id="5608580678041221894">Toca aquestes tecles per ajustar o moure l'àrea per retallar</translation>
+<translation id="5608580678041221894">Toca aquestes tecles per ajustar o moure l'àrea que vols retallar</translation>
 <translation id="5609231933459083978">Sembla que l'aplicació no és vàlida.</translation>
 <translation id="5610867721023328944">Torna-ho a provar o selecciona un dels temes disponibles més avall.</translation>
 <translation id="5611398002774823980">Desa al compte</translation>

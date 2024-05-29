@@ -323,7 +323,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1569487616857761740">Inserisci data di scadenza</translation>
 <translation id="1569694109004336106">Google Chrome sta tentando di attivare Windows Hello per inserire le password.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> in</translation>
-<translation id="1574714699824202614">Verifica del metodo di pagamento in corso…</translation>
+<translation id="1574714699824202614">Verifica del metodo di pagamento</translation>
 <translation id="1576277203042721907">Shopping Insights</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">Non ha scadenza</translation>
@@ -920,7 +920,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2725927759457695883">Inserisci il nome completo</translation>
 <translation id="2726001110728089263">Vassoio laterale</translation>
 <translation id="2728127805433021124">Il certificato del server è stato firmato utilizzando un algoritmo di firma debole.</translation>
-<translation id="272937284275742856">Verifica dei dati di pagamento in sicurezza in corso…</translation>
+<translation id="272937284275742856">Verifica sicura dei dati di pagamento…</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Eseguire lo strumento Diagnostica della connettività<ph name="END_LINK" /></translation>
 <translation id="2731220418440848219">Scopri di più sul tuo motore di ricerca in Chromium</translation>
 <translation id="2731382536835015353">111,7 × 172,7 cm</translation>
@@ -2522,7 +2522,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5921639886840618607">Vuoi salvare la carta nell'Account Google?</translation>
 <translation id="5921952831792678223">Furgoni pick-up</translation>
 <translation id="5922853866070715753">Hai quasi finito.</translation>
-<translation id="5923492272538889093">Vuoi usare lo sblocco con il dispositivo anziché CVC?</translation>
+<translation id="5923492272538889093">Usare lo sblocco del dispositivo anziché il CVC?</translation>
 <translation id="5924510104057992926">La revisione è obbligatoria prima dell'apertura</translation>
 <translation id="5924782825030413055">Origine dell'ultimo aggiornamento del consenso:</translation>
 <translation id="5925040402342933574">Disco ottico (semilucido)</translation>
