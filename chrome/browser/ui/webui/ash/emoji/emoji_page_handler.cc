@@ -32,6 +32,8 @@ namespace ash {
 namespace {
 
 constexpr char kEmojiPickerToastId[] = "emoji_picker_toast";
+constexpr char kPrefsHistoryTextFieldName[] = "text";
+constexpr char kPrefsPreferredVariantsFieldName[] = "preferred_variants";
 
 // Keep in sync with entry in enums.xml.
 enum class EmojiVariantType {
@@ -438,11 +440,10 @@ void EmojiPageHandler::GetInitialQuery(GetInitialQueryCallback callback) {
 void EmojiPageHandler::UpdateHistoryInPrefs(
     emoji_picker::mojom::Category category,
     const std::vector<std::string>& history) {
-  static constexpr std::string_view kTextFieldName = "text";
-
   base::Value::List history_value;
   for (const std::string& text : history) {
-    history_value.Append(base::Value::Dict().Set(kTextFieldName, text));
+    history_value.Append(
+        base::Value::Dict().Set(kPrefsHistoryTextFieldName, text));
   }
   ScopedDictPrefUpdate update(profile_->GetPrefs(), prefs::kEmojiPickerHistory);
   update->Set(ConvertCategoryToPrefString(category), std::move(history_value));
@@ -450,16 +451,39 @@ void EmojiPageHandler::UpdateHistoryInPrefs(
 
 void EmojiPageHandler::UpdatePreferredVariantsInPrefs(
     std::vector<emoji_picker::mojom::EmojiVariantPtr> preferred_variants) {
-  static constexpr std::string_view kPreferredVariantsName =
-      "preferred_variants";
-
   base::Value::Dict value;
   for (const auto& variant : preferred_variants) {
     value.Set(variant->base, variant->variant);
   }
   ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kEmojiPickerPreferences);
-  update->Set(kPreferredVariantsName, std::move(value));
+  update->Set(kPrefsPreferredVariantsFieldName, std::move(value));
+}
+
+void EmojiPageHandler::GetHistoryFromPrefs(
+    emoji_picker::mojom::Category category,
+    GetHistoryFromPrefsCallback callback) {
+  const base::Value::List* history =
+      profile_->GetPrefs()
+          ->GetDict(prefs::kEmojiPickerHistory)
+          .FindList(ConvertCategoryToPrefString(category));
+  if (!history) {
+    std::move(callback).Run({});
+    return;
+  }
+  std::vector<std::string> results;
+  for (const auto& it : *history) {
+    const base::Value::Dict* value_dict = it.GetIfDict();
+    if (!value_dict) {
+      continue;
+    }
+    const std::string* text =
+        value_dict->FindString(kPrefsHistoryTextFieldName);
+    if (text) {
+      results.push_back(*text);
+    }
+  }
+  std::move(callback).Run(results);
 }
 
 }  // namespace ash

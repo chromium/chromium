@@ -137,4 +137,7 @@ interface PageHandler {
 
   // Update preferred emoji variants in chrome prefs.
   UpdatePreferredVariantsInPrefs(array<EmojiVariant> preferred_variants);
+
+  // Gets the emoji picker history from chrome prefs.
+  GetHistoryFromPrefs(Category category) => (array<string> history);
 };

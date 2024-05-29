@@ -56,6 +56,8 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
   void UpdatePreferredVariantsInPrefs(
       std::vector<emoji_picker::mojom::EmojiVariantPtr> preferred_variants)
       override;
+  void GetHistoryFromPrefs(emoji_picker::mojom::Category category,
+                           GetHistoryFromPrefsCallback callback) override;
 
  private:
   mojo::Receiver<emoji_picker::mojom::PageHandler> receiver_;

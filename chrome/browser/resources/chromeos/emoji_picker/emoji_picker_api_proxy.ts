@@ -125,6 +125,10 @@ export class EmojiPickerApiProxy {
                                            })));
   }
 
+  getHistoryFromPrefs(category: Category): Promise<{history: string[]}> {
+    return this.handler.getHistoryFromPrefs(category);
+  }
+
   onUiFullyLoaded(): void {
     this.handler.onUiFullyLoaded();
   }
