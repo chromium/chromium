@@ -18,8 +18,6 @@
 @property(nonatomic, weak) id<IncognitoGridMediatorDelegate> incognitoDelegate;
 // The reauth scene agent to handle the button enabled state.
 @property(nonatomic, weak) IncognitoReauthSceneAgent* reauthSceneAgent;
-// The command handler for groups.
-@property(nonatomic, weak) id<TabGroupsCommands> tabGroupsHandler;
 
 @end
 

@@ -189,6 +189,14 @@ const CGFloat kSymbolSearchImagePointSize = 22;
       l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_ALL_BUTTON);
 }
 
+- (void)highlightLastPageControl {
+  [self.pageControl highlightLastPageControl];
+}
+
+- (void)resetLastPageControlHighlight {
+  [self.pageControl resetLastPageControlHighlight];
+}
+
 - (void)hide {
   self.backgroundColor = UIColor.blackColor;
   self.pageControl.alpha = 0.0;

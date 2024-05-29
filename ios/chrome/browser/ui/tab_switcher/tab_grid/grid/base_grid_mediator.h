@@ -25,6 +25,7 @@ class Browser;
 @protocol TabGridIdleStatusHandler;
 @class TabGridToolbarsConfiguration;
 @protocol TabGridToolbarsMainTabGridDelegate;
+@protocol TabGridToolbarCommands;
 @protocol TabGroupsCommands;
 @protocol TabPresentationDelegate;
 class WebStateList;
@@ -61,8 +62,10 @@ class WebState;
 @property(nonatomic, weak) id<GridConsumer> gridConsumer;
 // Delegate to handle presenting tab UI.
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;
-// Tab Groups Dispatcher.
-@property(nonatomic, weak) id<TabGroupsCommands> dispatcher;
+// Tab Groups handler.
+@property(nonatomic, weak) id<TabGroupsCommands> tabGroupsHandler;
+// Handler for tab grid toolbar commands.
+@property(nonatomic, weak) id<TabGridToolbarCommands> tabGridToolbarHandler;
 // Tab grid idle status handler.
 @property(nonatomic, weak) id<TabGridIdleStatusHandler>
     tabGridIdleStatusHandler;

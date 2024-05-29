@@ -5118,6 +5118,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_GRID_REMOTE_TABS_TITLE" desc="The accessibility label of the Remote Tabs page in the tab grid UI. [iOS only]">
         Tabs from other devices
       </message>
+      <message name="IDS_IOS_TAB_GRID_SAVED_TAB_GROUPS" desc="Explanation text letting the user know that even if they close a tab group, it would still be saved on their device.">
+        Your tab groups are saved here
+      </message>
       <message name="IDS_IOS_TAB_GRID_SEARCHBAR_PLACEHOLDER" desc="Placeholder text for the search bar used to search tabs on the tab grid. [iOS only]">
         Search Tabs...
       </message>

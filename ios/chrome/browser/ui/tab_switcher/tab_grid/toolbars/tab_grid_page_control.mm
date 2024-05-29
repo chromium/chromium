@@ -111,6 +111,9 @@ const CGFloat kScrolledToTopBackgroundAlpha = 0.25;
 const CGFloat kUnselectedSymbolSize = 22.;
 const CGFloat kSelectedSymbolSize = 24.;
 
+// The animation timing for the highlight background.
+const CGFloat kHighlightAnimationDuration = 0.15;
+
 // Returns the point that's at the center of `rect`.
 CGPoint RectCenter(CGRect rect) {
   return CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect));
@@ -136,11 +139,7 @@ TabGridPage ThirdTabGridPage() {
 }  // namespace
 
 @interface TabGridPageControl () <UIGestureRecognizerDelegate,
-                                  UIPointerInteractionDelegate> {
-  UIAccessibilityElement* _incognitoAccessibilityElement;
-  UIAccessibilityElement* _regularAccessibilityElement;
-  UIAccessibilityElement* _thirdPanelAccessibilityElement;
-}
+                                  UIPointerInteractionDelegate>
 
 // The grey background for all the segments.
 @property(nonatomic, weak) UIView* background;
@@ -199,7 +198,14 @@ TabGridPage ThirdTabGridPage() {
 
 @end
 
-@implementation TabGridPageControl
+@implementation TabGridPageControl {
+  UIAccessibilityElement* _incognitoAccessibilityElement;
+  UIAccessibilityElement* _regularAccessibilityElement;
+  UIAccessibilityElement* _thirdPanelAccessibilityElement;
+
+  // Highlight view for the last control.
+  UIView* _highlightView;
+}
 
 + (instancetype)pageControl {
   return [[TabGridPageControl alloc] init];
@@ -360,6 +366,56 @@ TabGridPage ThirdTabGridPage() {
   } else {
     self.sliderPosition = newPosition;
   }
+}
+
+- (void)highlightLastPageControl {
+  UIView* highlightBackground = [[UIView alloc] init];
+  highlightBackground.translatesAutoresizingMaskIntoConstraints = NO;
+  highlightBackground.backgroundColor = [UIColor colorNamed:kBlueColor];
+  highlightBackground.layer.cornerRadius = kSliderCornerRadius;
+
+  [self insertSubview:highlightBackground aboveSubview:self.background];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [highlightBackground.trailingAnchor
+        constraintEqualToAnchor:self.thirdPanelGuide.trailingAnchor],
+    [highlightBackground.topAnchor
+        constraintEqualToAnchor:self.sliderView.topAnchor],
+    [highlightBackground.bottomAnchor
+        constraintEqualToAnchor:self.sliderView.bottomAnchor],
+    [highlightBackground.leadingAnchor
+        constraintEqualToAnchor:self.regularGuide.centerXAnchor],
+  ]];
+
+  highlightBackground.alpha = 0;
+  [UIView animateWithDuration:kHighlightAnimationDuration
+                   animations:^{
+                     highlightBackground.alpha = 1;
+                   }];
+
+  self.thirdPanelNotSelectedIcon.tintColor = UIColor.blackColor;
+
+  _highlightView = highlightBackground;
+}
+
+- (void)resetLastPageControlHighlight {
+  UIView* highlightView = _highlightView;
+  [UIView animateWithDuration:kHighlightAnimationDuration
+      animations:^{
+        highlightView.alpha = 0;
+      }
+      completion:^(BOOL finished) {
+        [highlightView removeFromSuperview];
+      }];
+  _highlightView = nil;
+  self.thirdPanelNotSelectedIcon.tintColor =
+      [UIColor colorNamed:kStaticGrey300Color];
+}
+
+- (CGRect)lastSegmentFrame {
+  return [self.thirdPanelGuide.owningView
+      convertRect:self.thirdPanelGuide.layoutFrame
+           toView:nil];
 }
 
 #pragma mark - UIResponder

@@ -64,6 +64,11 @@
 // Sets the title of the Select All button to "Select All".
 - (void)configureSelectAllButtonTitle;
 
+// Highlights (put a blue background) the last element of the page control.
+- (void)highlightLastPageControl;
+// Removes the highlight on the last page control, if there is one.
+- (void)resetLastPageControlHighlight;
+
 // Hides components and uses a black background color for tab grid transition
 // animation.
 - (void)hide;

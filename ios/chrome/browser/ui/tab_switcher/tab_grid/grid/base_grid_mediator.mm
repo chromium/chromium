@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
@@ -858,7 +859,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   WebStateList* webStateList = self.webStateList;
 
   if (webStateList->ContainsGroup(tabGroup)) {
-    [self.dispatcher showTabGroup:tabGroup];
+    [self.tabGroupsHandler showTabGroup:tabGroup];
     return;
   }
 
@@ -1491,7 +1492,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 - (void)addSelectedElementsToGroup:(const TabGroup*)group {
   std::set<web::WebStateID> selectedTabs = [_selectedEditingItems allTabs];
   if (group == nullptr) {
-    [self.dispatcher showTabGroupCreationForTabs:selectedTabs];
+    [self.tabGroupsHandler showTabGroupCreationForTabs:selectedTabs];
   } else {
     WebStateList::ScopedBatchOperation lock =
         self.webStateList->StartBatchOperation();
@@ -1504,6 +1505,11 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 // Closes all the tabs (webStates) in a given `group` and deletes the `group`
 // from the `webStateList`.
 - (void)closeTabsAndDeleteGroup:(const TabGroup*)group {
+  if (IsTabGroupSyncEnabled()) {
+    // TODO(crbug.com/329627077): Add a mechanism to show it only once.
+    [self.tabGridToolbarHandler showSavedTabGroupIPH];
+  }
+
   [self.tabGridIdleStatusHandler
       tabGridDidPerformAction:TabGridActionType::kInPageAction];
   if (_webStateList->ContainsGroup(group)) {

@@ -762,7 +762,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   _mediator.consumer = _baseViewController;
 
   _toolbarsCoordinator = [[TabGridToolbarsCoordinator alloc]
-      initWithBaseViewController:nil
+      initWithBaseViewController:baseViewController
                          browser:_regularBrowser];
   _toolbarsCoordinator.searchDelegate = self.baseViewController;
   _toolbarsCoordinator.toolbarTabGridDelegate = self.baseViewController;

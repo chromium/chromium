@@ -733,6 +733,11 @@ id<GREYMatcher> TabGridCloseButtonForCellAtIndex(unsigned int index) {
   return [ChromeMatchersAppInterface tabGridCloseButtonForCellAtIndex:index];
 }
 
+id<GREYMatcher> TabGridCloseButtonForGroupCellAtIndex(unsigned int index) {
+  return
+      [ChromeMatchersAppInterface tabGridCloseButtonForGroupCellAtIndex:index];
+}
+
 id<GREYMatcher> SettingsPasswordMatcher() {
   return [ChromeMatchersAppInterface settingsPasswordMatcher];
 }

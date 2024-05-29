@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
@@ -119,7 +120,6 @@
   _mediator = [[IncognitoGridMediator alloc] init];
   _mediator.incognitoDelegate = self;
   _mediator.reauthSceneAgent = _reauthAgent;
-  _mediator.tabGroupsHandler = self;
 
   GridContainerViewController* container =
       [[GridContainerViewController alloc] init];
@@ -166,6 +166,8 @@
     [incognitoBrowser->GetCommandDispatcher()
         startDispatchingToTarget:self
                      forProtocol:@protocol(TabGroupsCommands)];
+
+    _mediator.tabGroupsHandler = self;
   } else {
     _tabContextMenuHelper.browserState = nullptr;
   }

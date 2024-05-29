@@ -1203,6 +1203,13 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_sufficientlyVisible(), nil);
 }
 
++ (id<GREYMatcher>)tabGridCloseButtonForGroupCellAtIndex:(unsigned int)index {
+  return grey_allOf(grey_ancestor(grey_accessibilityID(
+                        IdentifierForGridGroupCellAtIndex(index))),
+                    grey_accessibilityID(kGridCellCloseButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
 + (id<GREYMatcher>)settingsPasswordMatcher {
   return grey_accessibilityID(kPasswordsSettingsTableViewId);
 }

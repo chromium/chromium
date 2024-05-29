@@ -569,6 +569,10 @@
 // tab grid.
 + (id<GREYMatcher>)tabGridCloseButtonForCellAtIndex:(unsigned int)index;
 
+// Returns the GREYMatcher for the button to close the tab group cell at `index`
+// in the tab grid.
++ (id<GREYMatcher>)tabGridCloseButtonForGroupCellAtIndex:(unsigned int)index;
+
 // Returns a matcher for the password settings collection view.
 + (id<GREYMatcher>)settingsPasswordMatcher;
 

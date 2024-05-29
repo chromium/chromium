@@ -20,9 +20,6 @@ class WebStateList;
 // Tab group mediator in charge to handle model update for one group.
 @interface TabGroupMediator : BaseGridMediator <TabGroupMutator>
 
-// Handler for the tab group commands.
-@property(nonatomic, weak) id<TabGroupsCommands> tabGroupsHandler;
-
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                             tabGroup:(base::WeakPtr<const TabGroup>)tabGroup
                             consumer:(id<TabGroupConsumer>)consumer

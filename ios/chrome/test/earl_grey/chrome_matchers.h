@@ -603,6 +603,10 @@ id<GREYMatcher> IncognitoTabGrid();
 // tab grid.
 id<GREYMatcher> TabGridCloseButtonForCellAtIndex(unsigned int index);
 
+// Returns a matcher for the button to close the group cell at `index` in the
+// tab grid.
+id<GREYMatcher> TabGridCloseButtonForGroupCellAtIndex(unsigned int index);
+
 // Returns a matcher for the password settings collection view.
 id<GREYMatcher> SettingsPasswordMatcher();
 
