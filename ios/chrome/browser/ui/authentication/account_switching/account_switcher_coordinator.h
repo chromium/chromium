@@ -12,8 +12,9 @@
 // Coordinator to display the fast account switcher view controller.
 @interface AccountSwitcherCoordinator : ChromeCoordinator
 
-// Click point to anchor the menu.
-@property(nonatomic, assign) CGPoint anchorPoint;
+// Clicked view, used to anchor the menu to it when using
+// UIModalPresentationPopover mode.
+@property(nonatomic, strong) UIView* anchorView;
 
 @end
 
