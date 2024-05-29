@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/json/json_string_value_serializer.h"
@@ -63,7 +64,7 @@ void PrintJava(const char* name, base::span<const uint8_t> data) {
   fprintf(stderr, "};\n");
 }
 
-std::vector<uint8_t> ToByteVector(base::StringPiece in) {
+std::vector<uint8_t> ToByteVector(std::string_view in) {
   const uint8_t* in_ptr = reinterpret_cast<const uint8_t*>(in.data());
   return std::vector<uint8_t>(in_ptr, in_ptr + in.size());
 }

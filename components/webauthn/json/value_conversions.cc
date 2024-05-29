@@ -6,11 +6,11 @@
 
 #include <iterator>
 #include <optional>
+#include <string_view>
 
 #include "base/base64url.h"
 #include "base/feature_list.h"
 #include "base/ranges/ranges.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "device/fido/attestation_object.h"
 #include "device/fido/authenticator_selection_criteria.h"
@@ -34,13 +34,13 @@ std::string Base64UrlEncode(base::span<const uint8_t> input) {
   // ByteSource, are base64url-encoded without trailing '=' padding.
   std::string output;
   base::Base64UrlEncode(
-      base::StringPiece(reinterpret_cast<const char*>(input.data()),
-                        input.size()),
+      std::string_view(reinterpret_cast<const char*>(input.data()),
+                       input.size()),
       base::Base64UrlEncodePolicy::OMIT_PADDING, &output);
   return output;
 }
 
-bool Base64UrlDecode(base::StringPiece input, std::string* output) {
+bool Base64UrlDecode(std::string_view input, std::string* output) {
   return base::Base64UrlDecode(
       input, base::Base64UrlDecodePolicy::DISALLOW_PADDING, output);
 }
