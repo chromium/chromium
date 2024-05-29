@@ -14,7 +14,7 @@
     numeric-checked-value="[[numericCheckedValue_]]">
 </settings-toggle-button>
 <template is="dom-if" if="[[isMemorySaverModeAggressivenessEnabled_]]">
-  <iron-collapse id="radioGroupCollapse"
+  <cr-collapse id="radioGroupCollapse"
       opened="[[isMemorySaverModeEnabled_(
           prefs.performance_tuning.high_efficiency_mode.state.value)]]">
     <div class="high-efficiency-radio-group">
@@ -52,7 +52,7 @@
         </controlled-radio-button>
       </settings-radio-group>
     </div>
-  </iron-collapse>
+  </cr-collapse>
 </template>
 <template is="dom-if" if="[[isDiscardRingImprovementsEnabled_]]">
   <settings-toggle-button id="discardRingTreatmentToggleButton"

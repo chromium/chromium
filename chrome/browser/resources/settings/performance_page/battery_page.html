@@ -20,7 +20,7 @@
       numeric-unchecked-values="[[numericUncheckedValues_]]"
       numeric-checked-value="[[batterySaverModeStateEnum_.ENABLED_BELOW_THRESHOLD]]">
   </settings-toggle-button>
-  <iron-collapse id="radioGroupCollapse"
+  <cr-collapse id="radioGroupCollapse"
       opened="[[isBatterySaverModeEnabled_(prefs.performance_tuning.battery_saver_mode.state.value)]]">
     <div class="cr-row continuation battery-saver-radio-group">
       <settings-radio-group id="radioGroup" on-change="onChange_"
@@ -38,5 +38,5 @@
         </controlled-radio-button>
       </settings-radio-group>
     </div>
-  </iron-collapse>
+  </cr-collapse>
 </template>

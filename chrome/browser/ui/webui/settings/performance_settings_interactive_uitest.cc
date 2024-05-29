@@ -424,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
 
   const DeepQuery iron_collapse = {
       "settings-ui", "settings-main", "settings-basic-page",
-      "settings-battery-page", "iron-collapse#radioGroupCollapse"};
+      "settings-battery-page", "cr-collapse#radioGroupCollapse"};
 
   const DeepQuery turn_on_at_threshold_button = {
       "settings-ui", "settings-main", "settings-basic-page",
@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
       CheckBatteryStateLogged(histogram_tester,
                               BatterySaverModeState::kEnabledBelowThreshold, 1),
 
-      // Wait for the iron-collapse animation to finish so that the battery
+      // Wait for the cr-collapse animation to finish so that the battery
       // saver radio buttons will show on screen
       WaitForIronListCollapseStateChange(kPerformanceSettingsPage,
                                          iron_collapse),

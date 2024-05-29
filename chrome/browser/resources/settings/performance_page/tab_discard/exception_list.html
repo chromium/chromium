@@ -43,7 +43,7 @@
       expanded="{{overflowSiteListExpanded}}">
     <div>$i18n{tabDiscardingExceptionsAdditionalSites}</div>
   </cr-expand-button>
-  <iron-collapse id="collapse" hidden$="[[!hasOverflowSites_(siteList_.*)]]"
+  <cr-collapse id="collapse" hidden$="[[!hasOverflowSites_(siteList_.*)]]"
       opened="[[overflowSiteListExpanded]]">
     <template is="dom-repeat" id="overflowList"
         items="[[getOverflowSiteList_(siteList_.*)]]">
@@ -54,7 +54,7 @@
         </tab-discard-exception-entry>
       </div>
     </template>
-  </iron-collapse>
+  </cr-collapse>
 </div>
 <cr-tooltip id="tooltip"
     fit-to-visible-bounds manual-mode position="top">

@@ -11,6 +11,7 @@
  */
 
 import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '../controls/settings_dropdown_menu.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';

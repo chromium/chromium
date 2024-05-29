@@ -34,7 +34,7 @@
         sub-label="[[enableLiveCaptionSubtitle_]]">
     </settings-toggle-button>
   </div>
-  <iron-collapse
+  <cr-collapse
       opened="[[prefs.accessibility.captions.live_caption_enabled.value]]">
     <settings-toggle-button id="maskOffensiveWordsToggleButton"
         pref=
@@ -42,7 +42,7 @@
         on-change="onLiveCaptionMaskOffensiveWordsChanged_"
         label="$i18n{captionsMaskOffensiveWordsTitle}">
     </settings-toggle-button>
-  </iron-collapse>
+  </cr-collapse>
 </template>
 <if expr="not is_chromeos">
 <template is="dom-if" if="[[enableLiveCaptionMultiLanguage_]]">
