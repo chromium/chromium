@@ -104,13 +104,7 @@ void PrefsPinEngine::UpdateObserver(FactorEngineObserver* observer) {
   observer_ = observer;
 }
 
-void PrefsPinEngine::CleanUp(CleanupCallback callback) {
-  // By default, the cleanup phase is no-op because the majority
-  // of the auth factors do not need to do anything for cleaning up.
-  // Simply run the callback with the factor type to indicate
-  // the end of clean-up.
-  std::move(callback).Run(GetFactor());
-}
+void PrefsPinEngine::CleanUp(CleanupCallback callback) {}
 
 void PrefsPinEngine::StopAuthFlow(ShutdownCallback callback) {
   observer_ = nullptr;
@@ -146,21 +140,9 @@ void PrefsPinEngine::OnCryptohomeAuthSessionStarted() {
   // If cryptohome does not support PINs, then this engine is supported.
   const AuthFactorsConfiguration& config =
       core_->GetCurrentContext()->GetAuthFactorsConfiguration();
-
-  // The following signals to `CryptohomeCore` the end of communication with
-  // `PrefsPinEngine`. We now know if cryptohome pins are supported or not.
-  // This will remove `PrefsPinEngine` from the list of `CryptohomeCore`
-  // clients, thus allowing `CryptohomeCore` to proceed with auth session
-  // invalidation when the remaining `CryptohomeBasedEngines`s trigger
-  // `StopAuthFlow`.
-  core_->EndAuthSession(this);
-
   if (!config.get_supported_factors().Has(cryptohome::AuthFactorType::kPin)) {
     is_supported_ = true;
-    observer_->OnFactorPresenceChecked(GetFactor(), true);
-    return;
   }
-  observer_->OnFactorPresenceChecked(GetFactor(), false);
 }
 
 void PrefsPinEngine::OnAuthSessionStartFailure() {}
