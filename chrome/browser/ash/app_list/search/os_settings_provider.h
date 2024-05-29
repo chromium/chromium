@@ -18,6 +18,8 @@
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/search.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 class Profile;
@@ -58,15 +60,20 @@ class OsSettingsResult : public ChromeSearchResult {
 // provided for zero-state.
 class OsSettingsProvider : public SearchProvider,
                            public apps::AppRegistryCache::Observer,
-                           public ash::settings::mojom::SearchResultsObserver {
+                           public ash::settings::mojom::SearchResultsObserver,
+                           public session_manager::SessionManagerObserver {
  public:
-  OsSettingsProvider(Profile* profile,
-                     ash::settings::SearchHandler* search_handler,
-                     const ash::settings::Hierarchy* hierarchy);
+  explicit OsSettingsProvider(Profile* profile);
   ~OsSettingsProvider() override;
 
   OsSettingsProvider(const OsSettingsProvider&) = delete;
   OsSettingsProvider& operator=(const OsSettingsProvider&) = delete;
+
+  // Initialize the provider. It should be called when:
+  //    1. User session start up tasks has completed.
+  //    2. In tests with fake search handler and hierarchy provided.
+  void Initialize(ash::settings::SearchHandler* fake_search_handler = nullptr,
+                  const ash::settings::Hierarchy* fake_hierarchy = nullptr);
 
   // SearchProvider:
   void Start(const std::u16string& query) override;
@@ -80,6 +87,9 @@ class OsSettingsProvider : public SearchProvider,
 
   // mojom::SearchResultsObserver:
   void OnSearchResultsChanged() override;
+
+  // session_manager::SessionManagerObserver:
+  void OnUserSessionStartUpTaskCompleted() override;
 
  private:
   void OnSearchReturned(
@@ -119,8 +129,8 @@ class OsSettingsProvider : public SearchProvider,
   float min_score_for_alternates_ = 0.4f;
 
   const raw_ptr<Profile> profile_;
-  raw_ptr<ash::settings::SearchHandler> search_handler_;
-  raw_ptr<const ash::settings::Hierarchy> hierarchy_;
+  raw_ptr<ash::settings::SearchHandler> search_handler_ = nullptr;
+  raw_ptr<const ash::settings::Hierarchy> hierarchy_ = nullptr;
   ui::ImageModel icon_;
 
   // Last query. It is reset when view is closed.
@@ -131,6 +141,10 @@ class OsSettingsProvider : public SearchProvider,
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};
+
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_manager_observation_{this};
 
   base::WeakPtrFactory<OsSettingsProvider> weak_factory_{this};
 };

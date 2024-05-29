@@ -42,8 +42,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager.h"
-#include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager_factory.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/session_manager/core/session_manager.h"
@@ -128,15 +126,7 @@ std::unique_ptr<SearchController> CreateSearchController(
         session_manager::SessionManager::Get()));
   }
 
-  auto* os_settings_manager =
-      ash::settings::OsSettingsManagerFactory::GetForProfile(profile);
-  auto* app_service_proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  if (os_settings_manager && app_service_proxy) {
-    controller->AddProvider(std::make_unique<OsSettingsProvider>(
-        profile, os_settings_manager->search_handler(),
-        os_settings_manager->hierarchy()));
-  }
+  controller->AddProvider(std::make_unique<OsSettingsProvider>(profile));
 
   controller->AddProvider(std::make_unique<KeyboardShortcutProvider>(profile));
 

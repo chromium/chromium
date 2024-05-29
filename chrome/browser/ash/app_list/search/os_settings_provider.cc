@@ -19,9 +19,13 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/settings/search/hierarchy.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager.h"
+#include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager_factory.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -107,8 +111,9 @@ bool ContainsBetterAncestor(Subpage subpage,
     const auto it = subpages.find(metadata.parent_subpage);
     if ((it != subpages.end() && it->second >= score) ||
         ContainsBetterAncestor(metadata.parent_subpage.value(), score,
-                               hierarchy, subpages, sections))
+                               hierarchy, subpages, sections)) {
       return true;
+    }
   }
 
   // Check section.
@@ -132,8 +137,9 @@ bool ContainsBetterAncestor(Setting setting,
     const auto it = subpages.find(parent_subpage);
     if ((it != subpages.end() && it->second >= score) ||
         ContainsBetterAncestor(parent_subpage, score, hierarchy, subpages,
-                               sections))
+                               sections)) {
       return true;
+    }
   }
 
   // Check section.
@@ -192,17 +198,49 @@ void OsSettingsResult::Open(int event_flags) {
                                                                url_path_);
 }
 
-OsSettingsProvider::OsSettingsProvider(
-    Profile* profile,
-    ash::settings::SearchHandler* search_handler,
-    const ash::settings::Hierarchy* hierarchy)
-    : SearchProvider(SearchCategory::kSettings),
-      profile_(profile),
-      search_handler_(search_handler),
-      hierarchy_(hierarchy) {
-  DCHECK(profile_);
+OsSettingsProvider::OsSettingsProvider(Profile* profile)
+    : SearchProvider(SearchCategory::kSettings), profile_(profile) {
+  CHECK(profile_);
 
-  // |search_handler_| can be nullptr in the case that the new OS settings
+  auto* session_manager = session_manager::SessionManager::Get();
+  if (session_manager->IsUserSessionStartUpTaskCompleted()) {
+    // If user session start up task has completed, the initialization can
+    // start.
+    Initialize();
+  } else {
+    // Wait for the user session start up task completion to prioritize
+    // resources for them.
+    session_manager_observation_.Observe(session_manager);
+  }
+}
+
+OsSettingsProvider::~OsSettingsProvider() = default;
+
+void OsSettingsProvider::Initialize(
+    ash::settings::SearchHandler* fake_search_handler,
+    const ash::settings::Hierarchy* fake_hierarchy) {
+  // Initialization is happening, so we no longer need to wait for user session
+  // start up task completion.
+  session_manager_observation_.Reset();
+
+  // Use fake search handler and hierarchy if provided in tests, or get it from
+  // `os_settings_manager`.
+  if (fake_search_handler) {
+    search_handler_ = fake_search_handler;
+    hierarchy_ = fake_hierarchy;
+  } else {
+    auto* os_settings_manager =
+        ash::settings::OsSettingsManagerFactory::GetForProfile(profile_);
+    auto* app_service_proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile_);
+    if (!os_settings_manager || !app_service_proxy) {
+      return;
+    }
+    search_handler_ = os_settings_manager->search_handler();
+    hierarchy_ = os_settings_manager->hierarchy();
+  }
+
+  // `search_handler_` can be nullptr in the case that the new OS settings
   // search chrome flag is disabled. If it is, we should effectively disable the
   // search provider.
   if (!search_handler_) {
@@ -224,7 +262,7 @@ OsSettingsProvider::OsSettingsProvider(
       app_list::kOsSettingsIcon, SK_ColorTRANSPARENT, kAppIconDimension);
 
   app_registry_cache_observer_.Observe(
-      &apps::AppServiceProxyFactory::GetForProfile(profile)
+      &apps::AppServiceProxyFactory::GetForProfile(profile_)
            ->AppRegistryCache());
 
   // TODO(b/261867385): `LoadIcon()` from constructor is removed as it never
@@ -234,15 +272,7 @@ OsSettingsProvider::OsSettingsProvider(
   LogIconLoadStatus(IconLoadStatus::kBindOnLoadIconFromConstructor);
 }
 
-OsSettingsProvider::~OsSettingsProvider() = default;
-
-ash::AppListSearchResultType OsSettingsProvider::ResultType() const {
-  return ash::AppListSearchResultType::kOsSettings;
-}
-
 void OsSettingsProvider::Start(const std::u16string& query) {
-  const base::TimeTicks start_time = base::TimeTicks::Now();
-  last_query_ = query;
   // Disable the provider if:
   //  - the search backend isn't available
   //  - the settings app isn't ready
@@ -257,8 +287,12 @@ void OsSettingsProvider::Start(const std::u16string& query) {
   // Do not return results for queries that are too short, as the results
   // generally aren't meaningful. Note this provider never provides zero-state
   // results.
-  if (query.size() < min_query_length_)
+  if (query.size() < min_query_length_) {
     return;
+  }
+
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  last_query_ = query;
 
   // Invalidate weak pointers to cancel existing searches.
   weak_factory_.InvalidateWeakPtrs();
@@ -275,29 +309,14 @@ void OsSettingsProvider::StopQuery() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-void OsSettingsProvider::OnSearchReturned(
-    const std::u16string& query,
-    const base::TimeTicks& start_time,
-    std::vector<SettingsResultPtr> sorted_results) {
-  DCHECK_LE(sorted_results.size(), kNumRequestedResults);
-
-  SearchProvider::Results search_results;
-
-  for (const auto& result : FilterResults(query, sorted_results, hierarchy_)) {
-    search_results.emplace_back(std::make_unique<OsSettingsResult>(
-        profile_, result, result->relevance_score, icon_, last_query_));
-  }
-
-  UMA_HISTOGRAM_TIMES("Apps.AppList.OsSettingsProvider.QueryTime",
-                      base::TimeTicks::Now() - start_time);
-  // Log the OS setting search has been successfully proceeded.
-  LogStatus(Status::kOk);
-  SwapResults(&search_results);
+ash::AppListSearchResultType OsSettingsProvider::ResultType() const {
+  return ash::AppListSearchResultType::kOsSettings;
 }
 
 void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
-  if (update.AppId() != web_app::kOsSettingsAppId)
+  if (update.AppId() != web_app::kOsSettingsAppId) {
     return;
+  }
 
   LogIconLoadStatus(IconLoadStatus::kOnAppUpdateGetCalled);
 
@@ -338,10 +357,35 @@ void OsSettingsProvider::OnAppRegistryCacheWillBeDestroyed(
 }
 
 void OsSettingsProvider::OnSearchResultsChanged() {
-  if (last_query_.empty())
+  if (last_query_.empty()) {
     return;
+  }
 
   Start(last_query_);
+}
+
+void OsSettingsProvider::OnUserSessionStartUpTaskCompleted() {
+  Initialize();
+}
+
+void OsSettingsProvider::OnSearchReturned(
+    const std::u16string& query,
+    const base::TimeTicks& start_time,
+    std::vector<SettingsResultPtr> sorted_results) {
+  DCHECK_LE(sorted_results.size(), kNumRequestedResults);
+
+  SearchProvider::Results search_results;
+
+  for (const auto& result : FilterResults(query, sorted_results, hierarchy_)) {
+    search_results.emplace_back(std::make_unique<OsSettingsResult>(
+        profile_, result, result->relevance_score, icon_, last_query_));
+  }
+
+  UMA_HISTOGRAM_TIMES("Apps.AppList.OsSettingsProvider.QueryTime",
+                      base::TimeTicks::Now() - start_time);
+  // Log the OS setting search has been successfully proceeded.
+  LogStatus(Status::kOk);
+  SwapResults(&search_results);
 }
 
 std::vector<SettingsResultPtr> OsSettingsProvider::FilterResults(
@@ -373,17 +417,20 @@ std::vector<SettingsResultPtr> OsSettingsProvider::FilterResults(
     // Check if URL has been seen.
     const std::string url = result->url_path_with_parameters;
     const auto it = seen_urls.find(url);
-    if (it != seen_urls.end())
+    if (it != seen_urls.end()) {
       continue;
+    }
 
     seen_urls.insert(url);
     clean_results.push_back(result.Clone());
-    if (result->type == SettingsResultType::kSubpage)
+    if (result->type == SettingsResultType::kSubpage) {
       seen_subpages.insert(
           std::make_pair(result->id->get_subpage(), result->relevance_score));
-    if (result->type == SettingsResultType::kSection)
+    }
+    if (result->type == SettingsResultType::kSection) {
       seen_sections.insert(
           std::make_pair(result->id->get_section(), result->relevance_score));
+    }
   }
 
   // Iterate through the clean results a second time. Remove subpage or setting
