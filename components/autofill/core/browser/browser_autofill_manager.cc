@@ -2680,6 +2680,30 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
   bool with_cvc = false;
   bool is_virtual_card_standalone_cvc_field = false;
   autofill_metrics::CardMetadataLoggingContext context;
+
+  // If credit card number field is not empty and is not autofilled, do not
+  // offer suggestions for expiration type field.
+  auto ShouldOfferSuggestionsForExpirationTypeField = [&] {
+    FormStructure* cached_form = FindCachedFormById(form.global_id());
+    if (!cached_form) {
+      return true;
+    }
+    for (const FormFieldData& field : form.fields) {
+      AutofillField* autofill_field =
+          cached_form->GetFieldById(field.global_id());
+      if (autofill_field && autofill_field->Type().GetStorableType() ==
+                                autofill::CREDIT_CARD_NUMBER) {
+        return SanitizedFieldIsEmpty(field.value()) || field.is_autofilled();
+      }
+    }
+    return true;
+  };
+
+  if (data_util::IsCreditCardExpirationType(trigger_field_type) &&
+      !ShouldOfferSuggestionsForExpirationTypeField()) {
+    return {};
+  }
+
   if (!IsInAutofillSuggestionsDisabledExperiment()) {
     if (trigger_field_type == CREDIT_CARD_STANDALONE_VERIFICATION_CODE &&
         !four_digit_combinations_in_dom_.empty()) {

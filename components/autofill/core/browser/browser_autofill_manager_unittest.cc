@@ -3084,6 +3084,58 @@ TEST_F(BrowserAutofillManagerTest,
   external_delegate()->CheckNoSuggestions(form.fields[0].global_id());
 }
 
+// Test that credit card suggestions are shown for expiry type field when
+// credit card number field is empty.
+TEST_F(BrowserAutofillManagerTest,
+       ShowCreditCardSuggestions_ForExpirationTypeField_IfEmptyCCNumber) {
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+  FormsSeen({form});
+
+  // Expect that suggestions are returned for the expiry type field.
+  const FormFieldData& expiry_type_field = form.fields[2];
+  GetAutofillSuggestions(form, expiry_type_field);
+  EXPECT_FALSE(external_delegate()->suggestions().empty());
+}
+
+// Test that credit card suggestions are shown for expiry type field when
+// credit card number field is not empty and has been autofilled.
+TEST_F(
+    BrowserAutofillManagerTest,
+    ShowCreditCardSuggestions_ForExpirationTypeField_IfNonEmptyAutofilledCCNumber) {
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+  FormsSeen({form});
+
+  // Fill data in CC Number field and set it as autofilled.
+  form.fields[1].set_value(u"4444 4444 4444 4444");
+  form.fields[1].set_is_autofilled(true);
+
+  // Expect that suggestions are returned for the expiry type field.
+  const FormFieldData& expiry_type_field = form.fields[2];
+  GetAutofillSuggestions(form, expiry_type_field);
+  EXPECT_FALSE(external_delegate()->suggestions().empty());
+}
+
+// Test that credit card suggestions are not shown for expiry type field when
+// credit card number field is not empty and has not been autofilled.
+TEST_F(
+    BrowserAutofillManagerTest,
+    DoNotShowCreditCardSuggestions_ForExpirationTypeField_IfNonEmptyNonAutofilledCCNumber) {
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+  FormsSeen({form});
+
+  // Fill data in CC Number field and set it as not autofilled.
+  form.fields[1].set_value(u"4444 4444 4444 4444");
+  form.fields[1].set_is_autofilled(false);
+
+  // Expect no suggestions are returned for the expiry type field.
+  const FormFieldData& expiry_type_field = form.fields[2];
+  GetAutofillSuggestions(form, expiry_type_field);
+  external_delegate()->CheckNoSuggestions(expiry_type_field.global_id());
+}
+
 TEST_F(BrowserAutofillManagerTest,
        ShouldNotShowAddressSuggestionsIfAddressAutofillDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
