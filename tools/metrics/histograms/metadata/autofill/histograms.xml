@@ -4203,8 +4203,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProfileImport.UpdateProfileEditedType"
-    enum="AutofillSettingsVisibleTypes" expires_after="2024-05-26">
-  <owner>koerber@google.com</owner>
+    enum="AutofillSettingsVisibleTypes" expires_after="2024-12-12">
+  <owner>battre@chromium.org</owner>
   <owner>src/components/autofill/OWNERS</owner>
   <summary>
     Logs that a specific type was edited in a profile update prompt that was
