@@ -1581,51 +1581,10 @@ void SplitViewController::StartResizeWithDivider(
         kTabletSplitViewResizeMultiMaxLatencyHistogram);
     return;
   }
-  // TODO(b/337283677): Remove these crash logs when the crash is fixed.
-  SCOPED_CRASH_KEY_NUMBER("b337283677", "state", base::to_underlying(state_));
-  SCOPED_CRASH_KEY_BOOL("b337283677", "in_overview_session",
-                        IsInOverviewSession());
-  SCOPED_CRASH_KEY_BOOL(
-      "b337283677", "is_overview_shutting_down",
-      GetOverviewSession() && GetOverviewSession()->is_shutting_down());
-  SCOPED_CRASH_KEY_BOOL("b337283677", "is_divider_animating",
-                        IsDividerAnimating());
-
-  std::string primary_title =
-      primary_window_ ? base::UTF16ToUTF8(primary_window_->GetTitle())
-                      : std::string();
-  std::string secondary_title =
-      secondary_window_ ? base::UTF16ToUTF8(secondary_window_->GetTitle())
-                        : std::string();
-  SCOPED_CRASH_KEY_STRING256("b337283677", "primary_title", primary_title);
-  SCOPED_CRASH_KEY_STRING256("b337283677", "secondary_title", secondary_title);
-
-  auto primary_state_type =
-      primary_window_ ? base::to_underlying(
-                            WindowState::Get(primary_window_)->GetStateType())
-                      : -1;
-  auto secondary_state_type =
-      secondary_window_
-          ? base::to_underlying(
-                WindowState::Get(secondary_window_)->GetStateType())
-          : -1;
-  SCOPED_CRASH_KEY_NUMBER("b337283677", "primary_state_type",
-                          primary_state_type);
-  SCOPED_CRASH_KEY_NUMBER("b337283677", "secondary_state_type",
-                          secondary_state_type);
-
-  chromeos::AppType primary_window_type =
-      primary_window_ ? primary_window_->GetProperty(chromeos::kAppTypeKey)
-                      : chromeos::AppType::NON_APP;
-  chromeos::AppType secondary_window_type =
-      secondary_window_ ? secondary_window_->GetProperty(chromeos::kAppTypeKey)
-                        : chromeos::AppType::NON_APP;
-  SCOPED_CRASH_KEY_NUMBER("b337283677", "primary_window_type",
-                          static_cast<int>(primary_window_type));
-  SCOPED_CRASH_KEY_NUMBER("b337283677", "secondary_window_type",
-                          static_cast<int>(secondary_window_type));
-
-  CHECK(IsInOverviewSession());
+  // An ARC++ window may have snapped window state but not started overview yet.
+  if (!IsInOverviewSession()) {
+    return;
+  }
   if (GetOverviewSession()->GetGridWithRootWindow(root_window_)->empty()) {
     presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
         split_view_divider_.divider_widget()->GetCompositor(),
