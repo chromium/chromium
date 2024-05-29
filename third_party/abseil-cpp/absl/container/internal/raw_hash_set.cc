@@ -23,6 +23,7 @@
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/dynamic_annotations.h"
+#include "absl/base/internal/endian.h"
 #include "absl/base/optimization.h"
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hashtablez_sampler.h"
@@ -342,77 +343,126 @@ void ClearBackingArray(CommonFields& c, const PolicyFunctions& policy,
 }
 
 void HashSetResizeHelper::GrowIntoSingleGroupShuffleControlBytes(
-    ctrl_t* new_ctrl, size_t new_capacity) const {
+    ctrl_t* __restrict new_ctrl, size_t new_capacity) const {
   assert(is_single_group(new_capacity));
   constexpr size_t kHalfWidth = Group::kWidth / 2;
+  constexpr size_t kQuarterWidth = Group::kWidth / 4;
   assert(old_capacity_ < kHalfWidth);
+  static_assert(sizeof(uint64_t) >= kHalfWidth,
+                "Group size is too large. The ctrl bytes for half a group must "
+                "fit into a uint64_t for this implementation.");
+  static_assert(sizeof(uint64_t) <= Group::kWidth,
+                "Group size is too small. The ctrl bytes for a group must "
+                "cover a uint64_t for this implementation.");
 
   const size_t half_old_capacity = old_capacity_ / 2;
 
   // NOTE: operations are done with compile time known size = kHalfWidth.
   // Compiler optimizes that into single ASM operation.
 
-  // Copy second half of bytes to the beginning.
-  // We potentially copy more bytes in order to have compile time known size.
-  // Mirrored bytes from the old_ctrl() will also be copied.
-  // In case of old_capacity_ == 3, we will copy 1st element twice.
+  // Load the bytes from half_old_capacity + 1. This contains the last half of
+  // old_ctrl bytes, followed by the sentinel byte, and then the first half of
+  // the cloned bytes. This effectively shuffles the control bytes.
+  uint64_t copied_bytes = 0;
+  copied_bytes =
+      absl::little_endian::Load64(old_ctrl() + half_old_capacity + 1);
+
+  // We change the sentinel byte to kEmpty before storing to both the start of
+  // the new_ctrl, and past the end of the new_ctrl later for the new cloned
+  // bytes. Note that this is faster than setting the sentinel byte to kEmpty
+  // after the copy directly in new_ctrl because we are limited on store
+  // bandwidth.
+  constexpr uint64_t kEmptyXorSentinel =
+      static_cast<uint8_t>(ctrl_t::kEmpty) ^
+      static_cast<uint8_t>(ctrl_t::kSentinel);
+  const uint64_t mask_convert_old_sentinel_to_empty =
+      kEmptyXorSentinel << (half_old_capacity * 8);
+  copied_bytes ^= mask_convert_old_sentinel_to_empty;
+
+  // Copy second half of bytes to the beginning. This correctly sets the bytes
+  // [0, old_capacity]. We potentially copy more bytes in order to have compile
+  // time known size. Mirrored bytes from the old_ctrl() will also be copied. In
+  // case of old_capacity_ == 3, we will copy 1st element twice.
   // Examples:
+  // (old capacity = 1)
   // old_ctrl = 0S0EEEEEEE...
-  // new_ctrl = S0EEEEEEEE...
+  // new_ctrl = E0EEEEEE??...
   //
-  // old_ctrl = 01S01EEEEE...
-  // new_ctrl = 1S01EEEEEE...
+  // (old capacity = 3)
+  // old_ctrl = 012S012EEEEE...
+  // new_ctrl = 12E012EE????...
   //
+  // (old capacity = 7)
   // old_ctrl = 0123456S0123456EE...
-  // new_ctrl = 456S0123?????????...
-  std::memcpy(new_ctrl, old_ctrl() + half_old_capacity + 1, kHalfWidth);
-  // Clean up copied kSentinel from old_ctrl.
-  new_ctrl[half_old_capacity] = ctrl_t::kEmpty;
+  // new_ctrl = 456E0123?????????...
+  absl::little_endian::Store64(new_ctrl, copied_bytes);
 
-  // Clean up damaged or uninitialized bytes.
-
-  // Clean bytes after the intended size of the copy.
-  // Example:
-  // new_ctrl = 1E01EEEEEEE????
-  // *new_ctrl= 1E0EEEEEEEE????
-  // position      /
+  // Set the space [old_capacity + 1, new_capacity] to empty as these bytes will
+  // not be written again. This is safe because
+  // NumControlBytes = new_capacity + kWidth and new_capacity >=
+  // old_capacity+1.
+  // Examples:
+  // (old_capacity = 3, new_capacity = 15)
+  // new_ctrl  = 12E012EE?????????????...??
+  // *new_ctrl = 12E0EEEEEEEEEEEEEEEE?...??
+  // position        /          S
+  //
+  // (old_capacity = 7, new_capacity = 15)
+  // new_ctrl  = 456E0123?????????????????...??
+  // *new_ctrl = 456E0123EEEEEEEEEEEEEEEE?...??
+  // position            /      S
   std::memset(new_ctrl + old_capacity_ + 1, static_cast<int8_t>(ctrl_t::kEmpty),
-              kHalfWidth);
-  // Clean non-mirrored bytes that are not initialized.
-  // For small old_capacity that may be inside of mirrored bytes zone.
+              Group::kWidth);
+
+  // Set the last kHalfWidth bytes to empty, to ensure the bytes all the way to
+  // the end are initialized.
   // Examples:
-  // new_ctrl = 1E0EEEEEEEE??????????....
-  // *new_ctrl= 1E0EEEEEEEEEEEEE?????....
-  // position           /
+  // new_ctrl  = 12E0EEEEEEEEEEEEEEEE?...???????
+  // *new_ctrl = 12E0EEEEEEEEEEEEEEEE???EEEEEEEE
+  // position                   S       /
   //
-  // new_ctrl = 456E0123???????????...
-  // *new_ctrl= 456E0123EEEEEEEE???...
-  // position           /
-  std::memset(new_ctrl + kHalfWidth, static_cast<int8_t>(ctrl_t::kEmpty),
-              kHalfWidth);
-  // Clean last mirrored bytes that are not initialized
-  // and will not be overwritten by mirroring.
-  // Examples:
-  // new_ctrl = 1E0EEEEEEEEEEEEE????????
-  // *new_ctrl= 1E0EEEEEEEEEEEEEEEEEEEEE
-  // position           S       /
-  //
-  // new_ctrl = 456E0123EEEEEEEE???????????????
-  // *new_ctrl= 456E0123EEEEEEEE???????EEEEEEEE
-  // position                  S       /
-  std::memset(new_ctrl + new_capacity + kHalfWidth,
+  // new_ctrl  = 456E0123EEEEEEEEEEEEEEEE???????
+  // *new_ctrl = 456E0123EEEEEEEEEEEEEEEEEEEEEEE
+  // position                   S       /
+  std::memset(new_ctrl + NumControlBytes(new_capacity) - kHalfWidth,
               static_cast<int8_t>(ctrl_t::kEmpty), kHalfWidth);
 
-  // Create mirrored bytes. old_capacity_ < kHalfWidth
-  // Example:
-  // new_ctrl = 456E0123EEEEEEEE???????EEEEEEEE
-  // *new_ctrl= 456E0123EEEEEEEE456E0123EEEEEEE
-  // position                  S/
-  ctrl_t g[kHalfWidth];
-  std::memcpy(g, new_ctrl, kHalfWidth);
-  std::memcpy(new_ctrl + new_capacity + 1, g, kHalfWidth);
+  // Copy the first bytes to the end (starting at new_capacity +1) to set the
+  // cloned bytes. Note that we use the already copied bytes from old_ctrl here
+  // rather than copying from new_ctrl to avoid a Read-after-Write hazard, since
+  // new_ctrl was just written to. The first old_capacity-1 bytes are set
+  // correctly. Then there may be up to old_capacity bytes that need to be
+  // overwritten, and any remaining bytes will be correctly set to empty. This
+  // sets [new_capacity + 1, new_capacity +1 + old_capacity] correctly.
+  // Examples:
+  // new_ctrl  = 12E0EEEEEEEEEEEEEEEE?...???????
+  // *new_ctrl = 12E0EEEEEEEEEEEE12E012EEEEEEEEE
+  // position                   S/
+  //
+  // new_ctrl  = 456E0123EEEEEEEE?...???EEEEEEEE
+  // *new_ctrl = 456E0123EEEEEEEE456E0123EEEEEEE
+  // position                   S/
+  absl::little_endian::Store64(new_ctrl + new_capacity + 1, copied_bytes);
 
-  // Finally set sentinel to its place.
+  // Set The remaining bytes at the end past the cloned bytes to empty. The
+  // incorrectly set bytes are [new_capacity + old_capacity + 2,
+  // min(new_capacity + 1 + kHalfWidth, new_capacity + old_capacity + 2 +
+  // half_old_capacity)]. Taking the difference, we need to set min(kHalfWidth -
+  // (old_capacity + 1), half_old_capacity)]. Since old_capacity < kHalfWidth,
+  // half_old_capacity < kQuarterWidth, so we set kQuarterWidth beginning at
+  // new_capacity + old_capacity + 2 to kEmpty.
+  // Examples:
+  // new_ctrl  = 12E0EEEEEEEEEEEE12E012EEEEEEEEE
+  // *new_ctrl = 12E0EEEEEEEEEEEE12E0EEEEEEEEEEE
+  // position                   S    /
+  //
+  // new_ctrl  = 456E0123EEEEEEEE456E0123EEEEEEE
+  // *new_ctrl = 456E0123EEEEEEEE456E0123EEEEEEE (no change)
+  // position                   S        /
+  std::memset(new_ctrl + new_capacity + old_capacity_ + 2,
+              static_cast<int8_t>(ctrl_t::kEmpty), kQuarterWidth);
+
+  // Finally, we set the new sentinel byte.
   new_ctrl[new_capacity] = ctrl_t::kSentinel;
 }
 

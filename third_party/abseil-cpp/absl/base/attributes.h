@@ -821,6 +821,32 @@
 #define ABSL_ATTRIBUTE_LIFETIME_BOUND
 #endif
 
+// ABSL_INTERNAL_ATTRIBUTE_VIEW indicates that a type acts like a view i.e. a
+// raw (non-owning) pointer. This enables diagnoses similar to those enabled by
+// ABSL_ATTRIBUTE_LIFETIME_BOUND.
+//
+// See the following links for details:
+// https://reviews.llvm.org/D64448
+// https://lists.llvm.org/pipermail/cfe-dev/2018-November/060355.html
+#if ABSL_HAVE_CPP_ATTRIBUTE(gsl::Pointer)
+#define ABSL_INTERNAL_ATTRIBUTE_VIEW [[gsl::Pointer]]
+#else
+#define ABSL_INTERNAL_ATTRIBUTE_VIEW
+#endif
+
+// ABSL_INTERNAL_ATTRIBUTE_OWNER indicates that a type acts like a smart
+// (owning) pointer. This enables diagnoses similar to those enabled by
+// ABSL_ATTRIBUTE_LIFETIME_BOUND.
+//
+// See the following links for details:
+// https://reviews.llvm.org/D64448
+// https://lists.llvm.org/pipermail/cfe-dev/2018-November/060355.html
+#if ABSL_HAVE_CPP_ATTRIBUTE(gsl::Owner)
+#define ABSL_INTERNAL_ATTRIBUTE_OWNER [[gsl::Owner]]
+#else
+#define ABSL_INTERNAL_ATTRIBUTE_OWNER
+#endif
+
 // ABSL_ATTRIBUTE_TRIVIAL_ABI
 // Indicates that a type is "trivially relocatable" -- meaning it can be
 // relocated without invoking the constructor/destructor, using a form of move

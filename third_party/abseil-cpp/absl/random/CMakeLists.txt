@@ -288,6 +288,8 @@ absl_cc_test(
   DEPS
     absl::random_distributions
     absl::random_random
+    absl::type_traits
+    absl::int128
     absl::random_internal_distribution_test_util
     GTest::gmock
     GTest::gtest_main

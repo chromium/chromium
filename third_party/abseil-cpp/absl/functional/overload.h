@@ -62,7 +62,7 @@ struct Overload final : T... {
   // aggregate initialization. Before then we must provide a constructor that
   // makes this work.
   //
-  explicit Overload(T... ts) : T(std::move(ts))... {}
+  constexpr explicit Overload(T... ts) : T(std::move(ts))... {}
 };
 
 // Before C++20, which added support for CTAD for aggregate types, we must also

@@ -32,12 +32,10 @@ namespace {
 
 TEST(OverloadTest, DispatchConsidersTypeWithAutoFallback) {
   auto overloaded = absl::Overload{
-      [](int v) -> std::string { return absl::StrCat("int ", v); },
-      [](double v) -> std::string { return absl::StrCat("double ", v); },
-      [](const char* v) -> std::string {
-        return absl::StrCat("const char* ", v);
-      },
-      [](auto v) -> std::string { return absl::StrCat("auto ", v); },
+      [](int v) { return absl::StrCat("int ", v); },
+      [](double v) { return absl::StrCat("double ", v); },
+      [](const char* v) { return absl::StrCat("const char* ", v); },
+      [](auto v) { return absl::StrCat("auto ", v); },
   };
 
   EXPECT_EQ("int 1", overloaded(1));
@@ -194,6 +192,20 @@ TEST(OverloadTest, UseWithParentheses) {
 
   v = std::string("hello");
   EXPECT_EQ(5, absl::visit(overloaded, v));
+}
+
+TEST(OverloadTest, HasConstexprConstructor) {
+  constexpr auto overloaded = absl::Overload{
+      [](int v) { return absl::StrCat("int ", v); },
+      [](double v) { return absl::StrCat("double ", v); },
+      [](const char* v) { return absl::StrCat("const char* ", v); },
+      [](auto v) { return absl::StrCat("auto ", v); },
+  };
+
+  EXPECT_EQ("int 1", overloaded(1));
+  EXPECT_EQ("double 2.5", overloaded(2.5));
+  EXPECT_EQ("const char* hello", overloaded("hello"));
+  EXPECT_EQ("auto 1.5", overloaded(1.5f));
 }
 
 }  // namespace

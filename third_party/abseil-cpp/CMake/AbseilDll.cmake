@@ -507,6 +507,7 @@ set(ABSL_INTERNAL_DLL_TARGETS
   "log_internal_check_op"
   "log_internal_conditions"
   "log_internal_config"
+  "log_internal_fnmatch"
   "log_internal_format"
   "log_internal_globals"
   "log_internal_log_impl"
@@ -586,6 +587,7 @@ set(ABSL_INTERNAL_DLL_TARGETS
   "strerror"
   "strings"
   "strings_internal"
+  "string_view"
   "symbolize"
   "synchronization"
   "thread_pool"
@@ -596,6 +598,7 @@ set(ABSL_INTERNAL_DLL_TARGETS
   "type_traits"
   "utility"
   "variant"
+  "vlog_config_internal"
 )
 
 set(ABSL_INTERNAL_TEST_DLL_FILES
@@ -674,12 +677,7 @@ function(absl_internal_dll_contains)
 
   STRING(REGEX REPLACE "^absl::" "" _target ${ABSL_INTERNAL_DLL_TARGET})
 
-  list(FIND
-    ABSL_INTERNAL_DLL_TARGETS
-    "${_target}"
-    _index)
-
-  if (${_index} GREATER -1)
+  if (_target IN_LIST ABSL_INTERNAL_DLL_TARGETS)
     set(${ABSL_INTERNAL_DLL_OUTPUT} 1 PARENT_SCOPE)
   else()
     set(${ABSL_INTERNAL_DLL_OUTPUT} 0 PARENT_SCOPE)
@@ -696,12 +694,7 @@ function(absl_internal_test_dll_contains)
 
   STRING(REGEX REPLACE "^absl::" "" _target ${ABSL_INTERNAL_TEST_DLL_TARGET})
 
-  list(FIND
-    ABSL_INTERNAL_TEST_DLL_TARGETS
-    "${_target}"
-    _index)
-
-  if (${_index} GREATER -1)
+  if (_target IN_LIST ABSL_INTERNAL_TEST_DLL_TARGETS)
     set(${ABSL_INTERNAL_TEST_DLL_OUTPUT} 1 PARENT_SCOPE)
   else()
     set(${ABSL_INTERNAL_TEST_DLL_OUTPUT} 0 PARENT_SCOPE)

@@ -221,6 +221,8 @@ cc_test(
     deps = [
         ":distributions",
         ":random",
+        "//absl/meta:type_traits",
+        "//absl/numeric:int128",
         "//absl/random/internal:distribution_test_util",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",

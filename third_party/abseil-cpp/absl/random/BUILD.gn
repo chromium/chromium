@@ -113,6 +113,17 @@ absl_source_set("mocking_bit_gen") {
   ]
 }
 
+absl_test("distributions_test") {
+  sources = [ "distributions_test.cc" ]
+  deps = [
+    ":distributions",
+    ":random",
+    "//third_party/abseil-cpp/absl/meta:type_traits",
+    "//third_party/abseil-cpp/absl/numeric:int128",
+    "//third_party/abseil-cpp/absl/random/internal:distribution_test_util",
+  ]
+}
+
 absl_test("mock_distributions_test") {
   sources = [ "mock_distributions_test.cc" ]
   deps = [
