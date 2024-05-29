@@ -383,14 +383,14 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
   const auto profile_as_v4l2_fourcc =
       VideoCodecProfileToV4L2PixFmt(config.profile(), /*slice_based=*/false);
 
-  // In legacy code this was good for up to 1080p.
-  // TODO(mcasas): Increase this by 4x to support 4K decoding, if needed.
-  // Input buffer size is increased from 1024 * 1024 to accommodate bistreams
-  // with big data size (CAPCM1_Sand_E.h264, CAPCMNL1_Sand_E.h264).
+  // Allocate larger |OUTPUT_queue_| buffers for resolutions above 1080p.
   // TODO(hnt): Investigate ways to reduce this size.
-  constexpr size_t kInputBufferMaxSize = 1024 * 1024 * 2;
+  constexpr size_t kMiB = 1024 * 1024;
+  constexpr int kFullHDNumPixels = 1920 * 1080;
+  const size_t kInputBufferInMBs =
+      (config.coded_size().GetArea() <= kFullHDNumPixels) ? 2 : 4;
   const auto v4l2_format = OUTPUT_queue_->SetFormat(
-      profile_as_v4l2_fourcc, gfx::Size(), kInputBufferMaxSize);
+      profile_as_v4l2_fourcc, gfx::Size(), kInputBufferInMBs * kMiB);
   if (!v4l2_format) {
     std::move(init_cb).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
     return;
