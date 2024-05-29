@@ -231,7 +231,8 @@ class AutofillProfile : public AutofillDataModel {
       FieldTypeSet excluded_fields,
       size_t minimal_fields_shown,
       const std::string& app_locale,
-      std::vector<std::u16string>* labels);
+      std::vector<std::u16string>* labels,
+      bool use_improved_labels_order = false);
 
   // Builds inferred label from the first |num_fields_to_include| non-empty
   // fields in |label_fields|. Uses as many fields as possible if there are not

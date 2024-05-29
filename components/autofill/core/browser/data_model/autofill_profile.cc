@@ -117,13 +117,13 @@ FieldType GetStorableTypeCollapsingGroupsForPartialType(FieldType type) {
 // This does not apply to `ADDRESS_HOME_LINE1`, because if a field is
 // `ADDRESS_HOME_STREET_ADDRESS` and we don't want to accidentally include back
 // `ADDRESS_HOME_LINE1` in the label candidates.
-FieldType GetStorableTypeCollapsingGroups(FieldType type) {
+FieldType GetStorableTypeCollapsingGroups(FieldType type,
+                                          bool use_improved_labels_order) {
   FieldType storable_type = AutofillType(type).GetStorableType();
   if ((storable_type == ADDRESS_HOME_LINE1 ||
        storable_type == ADDRESS_HOME_LINE2 ||
        storable_type == ADDRESS_HOME_STREET_ADDRESS) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillGranularFillingAvailable)) {
+      use_improved_labels_order) {
     return ADDRESS_HOME_LINE1;
   }
   return GetStorableTypeCollapsingGroupsForPartialType(type);
@@ -133,10 +133,9 @@ FieldType GetStorableTypeCollapsingGroups(FieldType type) {
 // is used for prioritizing which data types are shown in inferred labels. For
 // example, if the profile is going to fill ADDRESS_HOME_ZIP, it should
 // prioritize showing that over ADDRESS_HOME_STATE in the suggestion sublabel.
-int SpecificityForType(FieldType type) {
+int SpecificityForType(FieldType type, bool use_improved_labels_order) {
   // TODO(crbug.com/40274514): Clean up after launch.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillGranularFillingAvailable)) {
+  if (!use_improved_labels_order) {
     switch (type) {
       case ADDRESS_HOME_LINE1:
         return 1;
@@ -225,7 +224,8 @@ int SpecificityForType(FieldType type) {
 void GetFieldsForDistinguishingProfiles(
     const std::vector<FieldType>* suggested_fields,
     FieldTypeSet excluded_fields,
-    std::vector<FieldType>* distinguishing_fields) {
+    std::vector<FieldType>* distinguishing_fields,
+    bool use_improved_labels_order) {
   std::vector<FieldType> default_fields;
   if (!suggested_fields) {
     default_fields.assign(
@@ -244,18 +244,21 @@ void GetFieldsForDistinguishingProfiles(
   FieldTypeSet seen_fields;
   seen_fields.insert(UNKNOWN_TYPE);
   for (FieldType excluded_field : excluded_fields) {
-    seen_fields.insert(GetStorableTypeCollapsingGroups(excluded_field));
+    seen_fields.insert(GetStorableTypeCollapsingGroups(
+        excluded_field, use_improved_labels_order));
   }
 
   distinguishing_fields->clear();
   for (const FieldType& it : *suggested_fields) {
-    FieldType suggested_type = GetStorableTypeCollapsingGroups(it);
+    FieldType suggested_type =
+        GetStorableTypeCollapsingGroups(it, use_improved_labels_order);
     if (seen_fields.insert(suggested_type).second)
       distinguishing_fields->push_back(suggested_type);
   }
   std::sort(distinguishing_fields->begin(), distinguishing_fields->end(),
-            [](FieldType type1, FieldType type2) {
-              return SpecificityForType(type1) < SpecificityForType(type2);
+            [use_improved_labels_order](FieldType type1, FieldType type2) {
+              return SpecificityForType(type1, use_improved_labels_order) <
+                     SpecificityForType(type2, use_improved_labels_order);
             });
 
   // Special case: If one of the excluded fields is a partial name (e.g.
@@ -895,7 +898,16 @@ void AutofillProfile::CreateInferredLabels(
     FieldTypeSet excluded_fields,
     size_t minimal_fields_shown,
     const std::string& app_locale,
-    std::vector<std::u16string>* labels) {
+    std::vector<std::u16string>* labels,
+    bool use_improved_labels_order) {
+  // TODO(crbug.com/40274514): Clean up after launch.
+  CHECK(!triggering_field_type ||
+        base::FeatureList::IsEnabled(
+            features::kAutofillGranularFillingAvailable));
+  CHECK(!use_improved_labels_order ||
+        base::FeatureList::IsEnabled(
+            features::kAutofillGranularFillingAvailable));
+
   std::vector<FieldType> fields_to_use;
   std::vector<FieldType> suggested_fields_types =
       suggested_fields
@@ -903,12 +915,8 @@ void AutofillProfile::CreateInferredLabels(
           : std::vector<FieldType>();
   GetFieldsForDistinguishingProfiles(
       suggested_fields ? &suggested_fields_types : nullptr, excluded_fields,
-      &fields_to_use);
+      &fields_to_use, use_improved_labels_order);
 
-  // TODO(crbug.com/40274514): Clean up after launch.
-  CHECK(base::FeatureList::IsEnabled(
-            features::kAutofillGranularFillingAvailable) ||
-        !triggering_field_type);
   // Construct the default label for each profile. Also construct a map that
   // associates each (main_text, label) pair with the profiles that have this
   // info. This map is then used to detect which labels need further

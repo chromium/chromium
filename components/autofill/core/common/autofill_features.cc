@@ -608,6 +608,17 @@ BASE_FEATURE(kAutofillGranularFillingAvailable,
              "AutofillGranularFillingAvailable",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This variation controls whether more suggestive suggestion labels are shown
+// or not.
+// The feature variation exists to separate the granular filling feature into
+// multiple sub-features. Thus, metrics can be evaluated separately for each
+// sub-feature.
+// TODO(crbug.com/40274514): Clean up when launched.
+const base::FeatureParam<bool>
+    kAutofillGranularFillingAvailableWithImprovedLabelsParam{
+        &kAutofillGranularFillingAvailable,
+        "autofill_granular_filling_with_improved_labels", true};
+
 // Controls whether field filling through the context menu will be available for
 // the unclassified fields.
 // TODO(crbug.com/40285811): Clean up when launched.

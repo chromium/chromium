@@ -3776,6 +3776,19 @@ const FeatureEntry::FeatureVariation kLinkPreviewTriggerTypeVariations[] = {
      std::size(kLinkPreviewTriggerTypeLongPress), nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+const FeatureEntry::FeatureParam
+    kAutofillGranularFillingAvailableVariationWithoutImprovedLabels[] = {
+        {"autofill_granular_filling_with_improved_labels", "false"}};
+
+const FeatureEntry::FeatureVariation
+    kAutofillGranularFillingAvailableVariations[] = {
+        {"Without improved labels",
+         kAutofillGranularFillingAvailableVariationWithoutImprovedLabels,
+         std::size(
+             kAutofillGranularFillingAvailableVariationWithoutImprovedLabels),
+         nullptr},
+};
+
 #if BUILDFLAG(IS_ANDROID)
 inline constexpr flags_ui::FeatureEntry::FeatureParam
     kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheckParam = {
@@ -8306,7 +8319,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"autofill-granular-filling-available",
      flag_descriptions::kAutofillGranularFillingAvailableName,
      flag_descriptions::kAutofillGranularFillingAvailableDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillGranularFillingAvailable)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         autofill::features::kAutofillGranularFillingAvailable,
+         kAutofillGranularFillingAvailableVariations,
+         "AutofillGranularFillingAndManualFallbackForUnclassifiedFieldsAvailabl"
+         "e")},
 
     {"autofill-for-unclassified-fields-available",
      flag_descriptions::kAutofillForUnclassifiedFieldsAvailableName,

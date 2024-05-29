@@ -724,18 +724,28 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
     const std::string& app_locale) {
   // Generate disambiguating labels based on the list of matches.
   std::vector<std::u16string> differentiating_labels;
+  const bool is_in_full_form_filling_mode =
+      suggestion_type == SuggestionType::kAddressEntry;
   if (!IsAddressType(trigger_field_type) &&
       base::FeatureList::IsEnabled(
           features::kAutofillForUnclassifiedFieldsAvailable)) {
     differentiating_labels =
         GetProfileSuggestionLabelForNonAddressField(profiles, app_locale);
-  } else if (base::FeatureList::IsEnabled(
+  } else if ((!is_in_full_form_filling_mode ||
+              features::kAutofillGranularFillingAvailableWithImprovedLabelsParam
+                  .Get()) &&
+             base::FeatureList::IsEnabled(
                  features::kAutofillGranularFillingAvailable)) {
+    // When in full form filling mode, this flow should only be used if
+    // `features::kAutofillGranularFillingAvailableWithImprovedLabelsParam` of
+    // the feature is enabled.
+    // All other granular filling modes should always use this flow.
     AutofillProfile::CreateInferredLabels(
         profiles, /*suggested_fields=*/std::nullopt, trigger_field_type,
         {trigger_field_type},
         GetNumberOfMinimalFieldsToShow(trigger_field_type, suggestion_type),
-        app_locale, &differentiating_labels);
+        app_locale, &differentiating_labels,
+        /*use_improved_labels_order=*/true);
   } else {
     AutofillProfile::CreateInferredLabels(
         profiles, field_types, /*triggering_field_type=*/std::nullopt,
@@ -1112,13 +1122,17 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
       }) > 1;
   FieldTypeGroup trigger_field_type_group =
       GroupTypeOfFieldType(trigger_field_type);
-  // Name fields should have `NAME_FULL` as main text, unless in field by
-  // field filling mode.
+  // If `features::kAutofillGranularFillingAvailableWithImprovedLabelsParam` of
+  // the `kAutofillGranularFillingAvailable` feature is enabled, name fields
+  // should have `NAME_FULL` as main text, unless in field by field filling
+  // mode.
   FieldType main_text_field_type =
       GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kName &&
               suggestion_type != SuggestionType::kAddressFieldByFieldFilling &&
               base::FeatureList::IsEnabled(
-                  features::kAutofillGranularFillingAvailable)
+                  features::kAutofillGranularFillingAvailable) &&
+              features::kAutofillGranularFillingAvailableWithImprovedLabelsParam
+                  .Get()
           ? NAME_FULL
           : trigger_field_type;
   for (size_t i = 0; i < profiles.size(); ++i) {
