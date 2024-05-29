@@ -83,8 +83,7 @@ void MediaEffectsService::BindVideoEffectsProcessor(
       gpu_remote.InitWithNewPipeAndPassReceiver();
 
   if (!gpu_client_) {
-    gpu_client_ =
-        content::CreateGpuClient(std::move(gpu_receiver), base::DoNothing());
+    gpu_client_ = content::CreateGpuClient(std::move(gpu_receiver));
   } else {
     auto task_runner = content::GetUIThreadTaskRunner({});
     task_runner->PostTask(FROM_HERE, base::BindOnce(&viz::GpuClient::Add,
