@@ -18,14 +18,6 @@ BASE_FEATURE(kEnableOverwritingPlaceholderUsernames,
              "EnableOverwritingPlaceholderUsernames",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// When enabled, initial sync will be forced during startup if the password
-// store has encryption service failures.
-BASE_FEATURE(kForceInitialSyncWhenDecryptionFails,
-             "ForceInitialSyncWhenDecryptionFails",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // When enabled, username fields for forgot password flows are recognized
 // and filled.
 BASE_FEATURE(kForgotPasswordFormSupport,

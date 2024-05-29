@@ -187,6 +187,12 @@ class PasswordStoreSync {
 
   virtual bool DeleteAndRecreateDatabaseFile() = 0;
 
+  virtual bool WereUndecryptableLoginsDeleted() const = 0;
+  // Called after all sync metadata was deleted as a result of deleting
+  // undecryptable passwords. Used to avoid unnecessary sync by clearing
+  // LoginDatabase member responsible for triggering them.
+  virtual void ClearWereUndecryptableLoginsDeleted() = 0;
+
  protected:
   virtual ~PasswordStoreSync();
 };

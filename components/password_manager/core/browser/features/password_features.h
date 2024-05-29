@@ -112,6 +112,10 @@ BASE_DECLARE_FEATURE(kSharedPasswordNotificationUI);
 // manager
 BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 
+// Starts passwords resync after undecryptable passwords were removed. This flag
+// is enabled by default and should be treaded as a killswitch.
+BASE_DECLARE_FEATURE(kTriggerPasswordResyncAfterDeletingUndecryptablePasswords);
+
 #if BUILDFLAG(IS_ANDROID)
 
 // Enables showing various warnings for password manager users not yet enrolled

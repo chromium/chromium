@@ -108,6 +108,8 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
   bool IsAccountStore() const override;
   bool DeleteAndRecreateDatabaseFile() override;
   DatabaseCleanupResult DeleteUndecryptableCredentials() override;
+  bool WereUndecryptableLoginsDeleted() const override;
+  void ClearWereUndecryptableLoginsDeleted() override;
 
   PasswordStoreChangeList AddLoginImpl(const PasswordForm& form,
                                        AddCredentialError* error);

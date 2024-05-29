@@ -2307,9 +2307,11 @@ FormRetrievalResult LoginDatabase::StatementToForms(
   if (failed) {
     if (ShouldDeleteUndecryptablePasswords()) {
       DatabaseCleanupResult result = DeleteUndecryptableLogins();
-      return result == DatabaseCleanupResult::kSuccess
-                 ? FormRetrievalResult::kSuccess
-                 : FormRetrievalResult::kEncryptionServiceFailure;
+      if (result == DatabaseCleanupResult::kSuccess) {
+        were_undecryptable_logins_deleted_ = true;
+        return FormRetrievalResult::kSuccess;
+      }
+      return FormRetrievalResult::kEncryptionServiceFailure;
     }
     if (ShouldReturnPartialPasswords()) {
       return FormRetrievalResult::kEncryptionServiceFailureWithPartialData;

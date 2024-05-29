@@ -195,26 +195,21 @@ bool ShouldRecoverPasswordsDuringMerge() {
       features::kClearUndecryptablePasswordsOnSync);
 }
 
-bool ShouldCleanSyncMetadataDuringStartupWhenDecryptionFails() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  return ShouldRecoverPasswordsDuringMerge() &&
-         base::FeatureList::IsEnabled(
-             features::kForceInitialSyncWhenDecryptionFails);
-#else
-  return false;
-#endif
-}
-
-bool DoesPasswordStoreHaveEncryptionServiceFailures(
-    PasswordStoreSync* password_store_sync) {
-  PrimaryKeyToPasswordSpecificsDataMap key_to_specifics_map;
-  FormRetrievalResult result =
-      password_store_sync->ReadAllCredentials(&key_to_specifics_map);
-  if (result == FormRetrievalResult::kEncryptionServiceFailure ||
-      result == FormRetrievalResult::kEncryptionServiceFailureWithPartialData) {
+bool WereUndecryptablePasswordsDeleted(PasswordStoreSync* password_store_sync) {
+  // This check is needed in case, someone read passwords before password
+  // sync init was started.
+  if (password_store_sync->WereUndecryptableLoginsDeleted()) {
     return true;
   }
-  return false;
+
+  // In case nothing was deleted before sync init started, try to read passwords
+  // and delete undecryptable ones. If anything was deleted then resync should
+  // happen.
+  PrimaryKeyToPasswordSpecificsDataMap key_to_specifics_map;
+  const bool read_success =
+      password_store_sync->ReadAllCredentials(&key_to_specifics_map) ==
+      FormRetrievalResult::kSuccess;
+  return read_success && password_store_sync->WereUndecryptableLoginsDeleted();
 }
 
 bool DoesPasswordStoreContainAccidentalBatchDeletions(
@@ -339,15 +334,18 @@ PasswordSyncBridge::PasswordSyncBridge(
           syncer::PASSWORDS);
       batch = std::make_unique<syncer::MetadataBatch>();
       sync_metadata_read_error = SyncMetadataReadError::kReadFailed;
-    } else if (DoesPasswordStoreHaveEncryptionServiceFailures(
-                   password_store_sync_) &&
-               ShouldCleanSyncMetadataDuringStartupWhenDecryptionFails()) {
-      // Some Credentials in the passwords store cannot be read, force initial
-      // sync by dropping the metadata.
+    } else if (
+        base::FeatureList::IsEnabled(
+            features::
+                kTriggerPasswordResyncAfterDeletingUndecryptablePasswords) &&
+        WereUndecryptablePasswordsDeleted(password_store_sync_)) {
+      // Some locally undecryptable credentials were deleted, force initial sync
+      // by dropping the sync metadata.
       password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata(
           syncer::PASSWORDS);
       batch = std::make_unique<syncer::MetadataBatch>();
       sync_metadata_read_error = SyncMetadataReadError::kReadSuccessButCleared;
+      password_store_sync_->ClearWereUndecryptableLoginsDeleted();
     } else if (SyncMetadataCacheContainsSupportedFields(
                    batch->GetAllMetadata())) {
       // Caching entity specifics is meant to preserve fields not supported in a

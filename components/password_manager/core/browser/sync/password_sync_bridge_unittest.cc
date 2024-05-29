@@ -391,6 +391,8 @@ class MockPasswordStoreSync : public PasswordStoreSync {
               (override));
   MOCK_METHOD(bool, IsAccountStore, (), (const override));
   MOCK_METHOD(bool, DeleteAndRecreateDatabaseFile, (), (override));
+  MOCK_METHOD(bool, WereUndecryptableLoginsDeleted, (), (const override));
+  MOCK_METHOD(void, ClearWereUndecryptableLoginsDeleted, (), (override));
 };
 
 }  // namespace
@@ -931,33 +933,6 @@ TEST_F(PasswordSyncBridgeTest, ShouldNotDeleteSyncMetadataWhenDoesNotExist) {
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-TEST_F(PasswordSyncBridgeTest, ShouldRemoveSyncMetadataWhenReadAllLoginsFails) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {
-          features::kForceInitialSyncWhenDecryptionFails,
-      },
-      {});
-  ON_CALL(*mock_password_store_sync(), ReadAllCredentials)
-      .WillByDefault(
-          testing::Return(FormRetrievalResult::kEncryptionServiceFailure));
-
-  EXPECT_CALL(*mock_sync_metadata_store_sync(),
-              GetAllSyncMetadata(syncer::PASSWORDS));
-  EXPECT_CALL(*mock_password_store_sync(), ReadAllCredentials)
-      .WillOnce(Return(FormRetrievalResult::kEncryptionServiceFailure));
-  EXPECT_CALL(*mock_sync_metadata_store_sync(),
-              DeleteAllSyncMetadata(syncer::PASSWORDS));
-
-  auto bridge = PasswordSyncBridge(
-      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
-      syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
-
-  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
-                                      3, 1);
-}
-
 TEST_F(PasswordSyncBridgeTest,
        ShouldRemoveSyncMetadataWhenSpecificsCacheContainsSupportedFields) {
   base::HistogramTester histogram_tester;
@@ -1106,27 +1081,80 @@ TEST_F(PasswordSyncBridgeTest,
       mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
       syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
 }
+#endif
 
 TEST_F(PasswordSyncBridgeTest,
-       ShouldNotRemoveSyncMetadataWhenReadAllLoginsSucceeds) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {
-          features::kForceInitialSyncWhenDecryptionFails,
-      },
-      {});
+       ShouldRemoveSyncMetadataWhenUndecryptablePasswordsWereDeleted) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list{};
+  feature_list.InitAndEnableFeature(features::kClearUndecryptablePasswords);
 
+  EXPECT_CALL(*mock_password_store_sync(), WereUndecryptableLoginsDeleted)
+      .WillOnce(Return(false))
+      .WillOnce(Return(true));
   EXPECT_CALL(*mock_sync_metadata_store_sync(),
               GetAllSyncMetadata(syncer::PASSWORDS));
   EXPECT_CALL(*mock_password_store_sync(), ReadAllCredentials)
       .WillOnce(Return(FormRetrievalResult::kSuccess));
-  EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata).Times(0);
+  EXPECT_CALL(*mock_sync_metadata_store_sync(),
+              DeleteAllSyncMetadata(syncer::PASSWORDS));
 
-  PasswordSyncBridge(
+  auto bridge = PasswordSyncBridge(
       mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
       syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
+                                      3, 1);
 }
-#endif
+
+TEST_F(PasswordSyncBridgeTest,
+       ShouldRemoveSyncMetadataWhenUndecryptablePasswordsWereDeletedEarlier) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list{};
+  feature_list.InitAndEnableFeature(features::kClearUndecryptablePasswords);
+
+  EXPECT_CALL(*mock_password_store_sync(), WereUndecryptableLoginsDeleted)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_sync_metadata_store_sync(),
+              GetAllSyncMetadata(syncer::PASSWORDS));
+  EXPECT_CALL(*mock_password_store_sync(), ReadAllCredentials).Times(0);
+  EXPECT_CALL(*mock_sync_metadata_store_sync(),
+              DeleteAllSyncMetadata(syncer::PASSWORDS));
+
+  auto bridge = PasswordSyncBridge(
+      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
+      syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
+                                      3, 1);
+}
+
+TEST_F(
+    PasswordSyncBridgeTest,
+    ShouldNotRemoveSyncMetadataWhenUndecryptablePasswordsWereDeletedButKillswitchWasUsed) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureStates(
+      {{features::kClearUndecryptablePasswords, true},
+       {features::kTriggerPasswordResyncAfterDeletingUndecryptablePasswords,
+        false}});
+  ON_CALL(*mock_password_store_sync(), ReadAllCredentials)
+      .WillByDefault(testing::Return(FormRetrievalResult::kSuccess));
+
+  EXPECT_CALL(*mock_sync_metadata_store_sync(),
+              GetAllSyncMetadata(syncer::PASSWORDS));
+  EXPECT_CALL(*mock_password_store_sync(), ReadAllCredentials).Times(0);
+  EXPECT_CALL(*mock_sync_metadata_store_sync(),
+              DeleteAllSyncMetadata(syncer::PASSWORDS))
+      .Times(0);
+
+  auto bridge = PasswordSyncBridge(
+      mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
+      syncer::WipeModelUponSyncDisabledBehavior::kNever, base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
+                                      0, 1);
+}
 
 // This tests that if adding logins to the store fails,
 // ShouldMergeSync() would return an error without crashing.

@@ -4595,9 +4595,6 @@ extern const char kWebBluetoothConfirmPairingSupportDescription[];
 extern const char kSkipUndecryptablePasswordsName[];
 extern const char kSkipUndecryptablePasswordsDescription[];
 
-extern const char kForcePasswordInitialSyncWhenDecryptionFailsName[];
-extern const char kForcePasswordInitialSyncWhenDecryptionFailsDescription[];
-
 extern const char kRestartToGainAccessToKeychainName[];
 extern const char kRestartToGainAccessToKeychainDescription[];
 

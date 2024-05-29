@@ -506,6 +506,22 @@ LoginDatabaseAsyncHelper::DeleteUndecryptableCredentials() {
   return login_db_->DeleteUndecryptableLogins();
 }
 
+bool LoginDatabaseAsyncHelper::WereUndecryptableLoginsDeleted() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!login_db_) {
+    return false;
+  }
+  return login_db_->were_undecryptable_logins_deleted();
+}
+
+void LoginDatabaseAsyncHelper::ClearWereUndecryptableLoginsDeleted() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!login_db_) {
+    return;
+  }
+  login_db_->clear_were_undecryptable_logins_deleted();
+}
+
 PasswordStoreChangeList LoginDatabaseAsyncHelper::AddLoginImpl(
     const PasswordForm& form,
     AddCredentialError* error) {

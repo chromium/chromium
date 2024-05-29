@@ -235,6 +235,18 @@ class LoginDatabase {
       const std::string& cipher_text,
       std::u16string* plain_text);
 
+  // After `were_undecryptable_logins_deleted_` is used by the
+  // `PasswordSyncBridge` it should be cleared to avoid unnecessary sync calls.
+  void clear_were_undecryptable_logins_deleted() {
+    were_undecryptable_logins_deleted_ = false;
+  }
+
+  // Returns whether there were undecryptable logins present in the login db and
+  // if they were successfully removed.
+  bool were_undecryptable_logins_deleted() const {
+    return were_undecryptable_logins_deleted_;
+  }
+
  private:
   struct PrimaryKeyAndPassword;
   class SyncMetadataStore : public PasswordStoreSync::MetadataStore {
@@ -379,6 +391,8 @@ class LoginDatabase {
   InsecureCredentialsTable insecure_credentials_table_;
   PasswordNotesTable password_notes_table_;
   SyncMetadataStore password_sync_metadata_store_{&db_};
+
+  bool were_undecryptable_logins_deleted_ = false;
 
   // These cached strings are used to build SQL statements.
   std::string add_statement_;

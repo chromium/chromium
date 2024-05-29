@@ -137,6 +137,10 @@ BASE_FEATURE(kSkipUndecryptablePasswords,
 #endif
 );
 
+BASE_FEATURE(kTriggerPasswordResyncAfterDeletingUndecryptablePasswords,
+             "TriggerPasswordResyncAfterDeletingUndecryptablePasswords",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning,
              "UnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning",
