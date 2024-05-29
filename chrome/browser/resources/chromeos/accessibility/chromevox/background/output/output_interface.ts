@@ -21,6 +21,8 @@ export interface AnnotationOptions {
 
 export interface RenderArgs {
   suppressStartEndAncestry?: boolean;
+  preferStart?: boolean;
+  preferEnd?: boolean;
 }
 
 // These functions are public only to output/ classes.

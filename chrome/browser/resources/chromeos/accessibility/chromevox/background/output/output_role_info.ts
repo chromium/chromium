@@ -14,7 +14,7 @@ import {OutputContextOrder} from './output_types.js';
 
 import RoleType = chrome.automation.RoleType;
 
-interface Info {
+export interface Info {
   contextOrder?: OutputContextOrder;
   earcon?: EarconId;
   ignoreAncestry?: boolean;

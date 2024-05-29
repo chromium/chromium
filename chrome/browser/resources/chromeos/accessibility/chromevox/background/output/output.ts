@@ -8,17 +8,15 @@
 import {AutomationPredicate} from '/common/automation_predicate.js';
 import {AutomationUtil} from '/common/automation_util.js';
 import {constants} from '/common/constants.js';
-import {Cursor, CURSOR_NODE_INDEX} from '/common/cursors/cursor.js';
+import {Cursor} from '/common/cursors/cursor.js';
 import {CursorRange} from '/common/cursors/range.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {NavBraille} from '../../common/braille/nav_braille.js';
-import {EarconId} from '../../common/earcon_id.js';
 import {EventSourceType} from '../../common/event_source_type.js';
 import {LocaleOutputHelper} from '../../common/locale_output_helper.js';
 import {LogType} from '../../common/log_types.js';
 import {Msgs} from '../../common/msgs.js';
-import {CustomRole} from '../../common/role_type.js';
 import {SettingsManager} from '../../common/settings_manager.js';
 import {Spannable} from '../../common/spannable.js';
 import {QueueMode, TtsCategory, TtsSpeechProperties} from '../../common/tts_types.js';
@@ -28,24 +26,39 @@ import {EventSource} from '../event_source.js';
 import {FocusBounds} from '../focus_bounds.js';
 
 import {OutputAncestryInfo} from './output_ancestry_info.js';
-import {OutputFormatParser, OutputFormatParserObserver} from './output_format_parser.js';
-import {OutputFormatTree} from './output_format_tree.js';
 import {OutputFormatter} from './output_formatter.js';
-import {OutputInterface} from './output_interface.js';
+import {AnnotationOptions, OutputInterface, RenderArgs} from './output_interface.js';
 import {OutputFormatLogger} from './output_logger.js';
-import {OutputRoleInfo} from './output_role_info.js';
-import {AncestryOutputRule, OutputRule, OutputRuleSpecifier} from './output_rules.js';
+import {Info, OutputRoleInfo} from './output_role_info.js';
+import {AncestryOutputRule, OutputRule} from './output_rules.js';
 import * as outputTypes from './output_types.js';
 
-const AriaCurrentState = chrome.automation.AriaCurrentState;
-const AutomationNode = chrome.automation.AutomationNode;
-const DescriptionFromType = chrome.automation.DescriptionFromType;
-const Dir = constants.Dir;
-const EventType = chrome.automation.EventType;
-const NameFromType = chrome.automation.NameFromType;
-const Restriction = chrome.automation.Restriction;
-const RoleType = chrome.automation.RoleType;
-const StateType = chrome.automation.StateType;
+import ScreenRect = chrome.accessibilityPrivate.ScreenRect;
+import AutomationNode = chrome.automation.AutomationNode;
+import EventType = chrome.automation.EventType;
+import RoleType = chrome.automation.RoleType;
+import StateType = chrome.automation.StateType;
+import Dir = constants.Dir;
+
+interface AncestryArgs {
+  node: AutomationNode;
+  prevNode?: AutomationNode;
+  buff: Spannable[];
+  formatLog: OutputFormatLogger;
+  type: outputTypes.OutputEventType;
+  ancestors: AutomationNode[];
+  navigationType: outputTypes.OutputNavigationType;
+  exclude?: AutomationNode[]|undefined;
+  excludePreviousAncestors?: boolean|undefined;
+}
+
+interface MessageHint {
+  outputFormat?: string;
+  msgId?: string;
+  subs?: string[];
+  props?: outputTypes.OutputSpeechProperties;
+  text?: string|Spannable;
+}
 
 /**
  * An Output object formats a CursorRange into speech, braille, or both
@@ -73,78 +86,73 @@ const StateType = chrome.automation.StateType;
  * = suffix: used to specify substitution only if not previously appended.
  *     For example, $name= would insert the name attribute only if no name
  * attribute had been inserted previously.
+ *
+ * TODO(b/314204374): Eliminate instances of null.
  * @implements {OutputInterface}
  */
-export class Output {
-  constructor() {
-    // TODO(dtseng): Include braille specific rules.
-    /** @private {!Array<!Spannable>} */
-    this.speechBuffer_ = [];
-    /** @private {!Array<!Spannable>} */
-    this.brailleBuffer_ = [];
-    /** @private {!Array<!Object>} */
-    this.locations_ = [];
-    /** @private {function(boolean=)} */
-    this.speechEndCallback_;
+export class Output extends OutputInterface {
+  /**
+   * If set, the next speech utterance will use this value instead of the normal
+   * queueing mode.
+   */
+  private static forceModeForNextSpeechUtterance_?: QueueMode;
 
-    // Store output rules.
-    /** @private {!OutputFormatLogger} */
+  private speechBuffer_: Spannable[] = [];
+  private brailleBuffer_: Spannable[] = [];
+  private locations_: ScreenRect[] = [];
+  private speechEndCallback_: (optCleanupOnly?: boolean) => void;
+
+  // Store output rules.
+  private speechFormatLog_: OutputFormatLogger;
+  private brailleFormatLog_: OutputFormatLogger;
+
+  private formatOptions_:
+      {speech: boolean, braille: boolean, auralStyle: boolean};
+
+  // The speech category for the generated speech utterance.
+  private speechCategory_: TtsCategory;
+
+  // The speech queue mode for the generated speech utterance.
+  private queueMode_?: QueueMode;
+
+  private contextOrder_: outputTypes.OutputContextOrder;
+  private suppressions_: {[token: string]: boolean} = {};
+  private enableHints_: boolean = true;
+  private initialSpeechProps_: TtsSpeechProperties;
+  private drawFocusRing_: boolean = true;
+
+  /**
+   * Tracks all ancestors which have received primary formatting in
+   * |ancestryHelper_|.
+   */
+  private formattedAncestors_: WeakSet<AutomationNode>;
+  private replacements_: {[text: string]: string} = {};
+
+  constructor() {
+    super();
+    // TODO(dtseng): Include braille specific rules.
+    this.speechEndCallback_ = (() => {});
+
     this.speechFormatLog_ =
         new OutputFormatLogger('enableSpeechLogging', LogType.SPEECH_RULE);
-    /** @private {!OutputFormatLogger} */
     this.brailleFormatLog_ =
         new OutputFormatLogger('enableBrailleLogging', LogType.BRAILLE_RULE);
 
-    /**
-     * Current global options.
-     * @private {{speech: boolean, braille: boolean, auralStyle: boolean}}
-     */
+    // Current global options.
     this.formatOptions_ = {speech: true, braille: false, auralStyle: false};
 
-    /**
-     * The speech category for the generated speech utterance.
-     * @private {TtsCategory}
-     */
     this.speechCategory_ = TtsCategory.NAV;
-
-    /**
-     * The speech queue mode for the generated speech utterance.
-     * @private {QueueMode}
-     */
-    this.queueMode_;
-
-    /** @private {!outputTypes.OutputContextOrder} */
     this.contextOrder_ = outputTypes.OutputContextOrder.LAST;
-
-    /** @private {!Object<string, boolean>} */
-    this.suppressions_ = {};
-
-    /** @private {boolean} */
-    this.enableHints_ = true;
-
-    /** @private {!TtsSpeechProperties} */
     this.initialSpeechProps_ = new TtsSpeechProperties();
-
-    /** @private {boolean} */
-    this.drawFocusRing_ = true;
-
-    /**
-     * Tracks all ancestors which have received primary formatting in
-     * |ancestryHelper_|.
-     * @private {!WeakSet<!AutomationNode>}
-     */
     this.formattedAncestors_ = new WeakSet();
-    /** @private {!Object<string, string>} */
-    this.replacements_ = {};
   }
 
   /**
    * Calling this will make the next speech utterance use |mode| even if it
    * would normally queue or do a category flush. This differs from the
    * |withQueueMode| instance method as it can apply to future output.
-   * @param {QueueMode|undefined} mode
    */
-  static forceModeForNextSpeechUtterance(mode) {
+  static forceModeForNextSpeechUtterance(mode?: QueueMode): void {
     if (Output.forceModeForNextSpeechUtterance_ === undefined ||
         mode === undefined ||
         // Only allow setting to higher queue modes.
@@ -153,29 +161,28 @@ export class Output {
     }
   }
 
-  /** @return {boolean} True if there's any speech that will be output. */
-  get hasSpeech() {
+  /** @return True if there is any speech that will be output. */
+  get hasSpeech(): boolean {
     return this.speechBuffer_.some(speech => speech.length);
   }
 
-  /** @return {boolean} True if there is only whitespace in this output. */
-  get isOnlyWhitespace() {
+  /** @return True if there is only whitespace in this output. */
+  get isOnlyWhitespace(): boolean {
     return this.speechBuffer_.every(buff => !/\S+/.test(buff.toString()));
   }
 
-  /** @return {Spannable} */
-  get braille() {
+  /** @return Spannable representing the braille output. */
+  get braille(): Spannable {
     return this.mergeBraille_(this.brailleBuffer_);
   }
 
   /**
    * Specify ranges for speech.
-   * @param {!CursorRange} range
-   * @param {CursorRange} prevRange
-   * @param {!outputTypes.OutputEventType} type
-   * @return {!Output}
+   * @return |this| instance of Output for chaining.
    */
-  withSpeech(range, prevRange, type) {
+  withSpeech(
+      range: CursorRange, prevRange: CursorRange|undefined,
+      type: outputTypes.OutputEventType): this {
     this.formatOptions_ = {speech: true, braille: false, auralStyle: false};
     this.formattedAncestors_ = new WeakSet();
     this.render(
@@ -185,12 +192,11 @@ export class Output {
 
   /**
    * Specify ranges for aurally styled speech.
-   * @param {!CursorRange} range
-   * @param {CursorRange} prevRange
-   * @param {!outputTypes.OutputEventType} type
-   * @return {!Output}
+   * @return |this| instance of Output for chaining.
    */
-  withRichSpeech(range, prevRange, type) {
+  withRichSpeech(
+      range: CursorRange, prevRange: CursorRange|undefined,
+      type: outputTypes.OutputEventType): this {
     this.formatOptions_ = {speech: true, braille: false, auralStyle: true};
     this.formattedAncestors_ = new WeakSet();
     this.render(
@@ -200,12 +206,11 @@ export class Output {
 
   /**
    * Specify ranges for braille.
-   * @param {!CursorRange} range
-   * @param {CursorRange} prevRange
-   * @param {!outputTypes.OutputEventType} type
-   * @return {!Output}
+   * @return |this| instance of Output for chaining.
    */
-  withBraille(range, prevRange, type) {
+  withBraille(
+      range: CursorRange, prevRange: CursorRange|undefined,
+      type: outputTypes.OutputEventType): this {
     this.formatOptions_ = {speech: false, braille: true, auralStyle: false};
     this.formattedAncestors_ = new WeakSet();
 
@@ -231,12 +236,11 @@ export class Output {
 
   /**
    * Specify ranges for location.
-   * @param {!CursorRange} range
-   * @param {CursorRange} prevRange
-   * @param {!outputTypes.OutputEventType} type
-   * @return {!Output}
+   *  @return |this| instance of Output for chaining.
    */
-  withLocation(range, prevRange, type) {
+  withLocation(
+      range: CursorRange, prevRange: CursorRange|undefined,
+      type: outputTypes.OutputEventType): this {
     this.formatOptions_ = {speech: false, braille: false, auralStyle: false};
     this.formattedAncestors_ = new WeakSet();
     this.render(
@@ -247,12 +251,11 @@ export class Output {
 
   /**
    * Specify the same ranges for speech and braille.
-   * @param {!CursorRange} range
-   * @param {CursorRange} prevRange
-   * @param {!outputTypes.OutputEventType} type
-   * @return {!Output}
+   * @return |this| instance of Output for chaining.
    */
-  withSpeechAndBraille(range, prevRange, type) {
+  withSpeechAndBraille(
+      range: CursorRange, prevRange: CursorRange|undefined,
+      type: outputTypes.OutputEventType): this {
     this.withSpeech(range, prevRange, type);
     this.withBraille(range, prevRange, type);
     return this;
@@ -260,12 +263,11 @@ export class Output {
 
   /**
    * Specify the same ranges for aurally styled speech and braille.
-   * @param {!CursorRange} range
-   * @param {CursorRange} prevRange
-   * @param {!outputTypes.OutputEventType} type
-   * @return {!Output}
+   * @return |this| instance of Output for chaining.
    */
-  withRichSpeechAndBraille(range, prevRange, type) {
+  withRichSpeechAndBraille(
+      range: CursorRange, prevRange: CursorRange|undefined,
+      type: outputTypes.OutputEventType): this {
     this.withRichSpeech(range, prevRange, type);
     this.withBraille(range, prevRange, type);
     return this;
@@ -273,30 +275,27 @@ export class Output {
 
   /**
    * Applies the given speech category to the output.
-   * @param {TtsCategory} category
-   * @return {!Output}
+   * @return |this| instance of Output for chaining.
    */
-  withSpeechCategory(category) {
+  withSpeechCategory(category: TtsCategory): this {
     this.speechCategory_ = category;
     return this;
   }
 
   /**
    * Applies the given speech queue mode to the output.
-   * @param {QueueMode} queueMode The queueMode for the speech.
-   * @return {!Output}
+   * @return |this| instance of Output for chaining.
    */
-  withQueueMode(queueMode) {
+  withQueueMode(queueMode: QueueMode|undefined): this {
     this.queueMode_ = queueMode;
     return this;
   }
 
   /**
-   * Output a string literal.
-   * @param {string} value
-   * @return {!Output}
+   * Outputs a string literal.
+   * @return |this| instance of Output for chaining.
    */
-  withString(value) {
+  withString(value: string): this {
     this.append(this.speechBuffer_, value);
     this.append(this.brailleBuffer_, value);
     this.speechFormatLog_.write('withString: ' + value + '\n');
@@ -306,56 +305,55 @@ export class Output {
 
   /**
    * Outputs formatting nodes after this will contain context first.
-   * @return {!Output}
+   * @return |this| instance of Output for chaining.
    */
-  withContextFirst() {
+  withContextFirst(): this {
     this.contextOrder_ = outputTypes.OutputContextOrder.FIRST;
     return this;
   }
 
   /**
    * Don't include hints in subsequent output.
-   * @return {!Output}
+   * @return |this| instance of Output for chaining.
    */
-  withoutHints() {
+  withoutHints(): this {
     this.enableHints_ = false;
     return this;
   }
 
   /**
    * Don't draw a focus ring based on this output.
-   * @return {!Output}
+   * @return |this| instance of Output for chaining.
    */
-  withoutFocusRing() {
+  withoutFocusRing(): this {
     this.drawFocusRing_ = false;
     return this;
   }
 
   /**
-   * Supply initial speech properties that will be applied to all output.
-   * @param {!TtsSpeechProperties} speechProps
-   * @return {!Output}
+   * Applies given initial speech properties to all output.
+   * @return |this| instance of Output for chaining.
    */
-  withInitialSpeechProperties(speechProps) {
+  withInitialSpeechProperties(speechProps: TtsSpeechProperties): this {
     this.initialSpeechProps_ = speechProps;
     return this;
   }
 
   /**
-   * Causes any speech output to apply the replacement.
-   * @param {string} text The text to be replaced.
-   * @param {string} replace What to replace |text| with.
+   * Given a string of text and a string to replace |text| with,
+   * causes any speech output to apply the replacement.
+   * @param text The text to be replaced.
+   * @param replace The string to replace |text| with.
    */
-  withSpeechTextReplacement(text, replace) {
+  withSpeechTextReplacement(text: string, replace: string): void {
     this.replacements_[text] = replace;
   }
 
   /**
    * Suppresses processing of a token for subsequent formatting commands.
-   * @param {string} token
-   * @return {!Output}
+   * @return |this| instance of Output for chaining.
    */
-  suppress(token) {
+  suppress(token: string): this {
     this.suppressions_[token] = true;
     return this;
   }
@@ -363,26 +361,24 @@ export class Output {
   /**
    * Apply a format string directly to the output buffer. This lets you
    * output a message directly to the buffer using the format syntax.
-   * @param {string} formatStr
-   * @param {!AutomationNode=} opt_node An optional node to apply the
-   *     formatting to.
-   * @return {!Output} |this| for chaining
+   * @param formatStr The format string to apply.
+   * @param optNode Optional node to apply the formatting to.
+   * @return |this| instance of Output for chaining.
    */
-  format(formatStr, opt_node) {
-    return this.formatForSpeech(formatStr, opt_node)
-        .formatForBraille(formatStr, opt_node);
+  format(formatStr: string, optNode?: AutomationNode): this {
+    return this.formatForSpeech(formatStr, optNode)
+        .formatForBraille(formatStr, optNode);
   }
 
   /**
    * Apply a format string directly to the speech output buffer. This lets you
    * output a message directly to the buffer using the format syntax.
-   * @param {string} formatStr
-   * @param {!AutomationNode=} opt_node An optional node to apply the
-   *     formatting to.
-   * @return {!Output} |this| for chaining
+   * @param formatStr The format string to apply.
+   * @param optNode Optional node to apply the formatting to.
+   * @return |this| instance of Output for chaining.
    */
-  formatForSpeech(formatStr, opt_node) {
-    const node = opt_node || null;
+  formatForSpeech(formatStr: string, optNode?: AutomationNode): this {
+    const node = optNode || undefined;
 
     this.formatOptions_ = {speech: true, braille: false, auralStyle: false};
     this.formattedAncestors_ = new WeakSet();
@@ -399,13 +395,12 @@ export class Output {
   /**
    * Apply a format string directly to the braille output buffer. This lets you
    * output a message directly to the buffer using the format syntax.
-   * @param {string} formatStr
-   * @param {!AutomationNode=} opt_node An optional node to apply the
-   *     formatting to.
-   * @return {!Output} |this| for chaining
+   * @param formatStr The format string to apply.
+   * @param optNode Optional node to apply the formatting to.
+   * @return |this| instance of Output for chaining.
    */
-  formatForBraille(formatStr, opt_node) {
-    const node = opt_node || null;
+  formatForBraille(formatStr: string, optNode?: AutomationNode): this {
+    const node = optNode || undefined;
 
     this.formatOptions_ = {speech: false, braille: true, auralStyle: false};
     this.formattedAncestors_ = new WeakSet();
@@ -420,21 +415,21 @@ export class Output {
 
   /**
    * Triggers callback for a speech event.
-   * @param {function()} callback
-   * @return {!Output}
+   * @param callback Callback function that takes in an optional boolean and has
+   *     a void return.
+   * @return |this| instance of Output for chaining.
    */
-  onSpeechEnd(callback) {
-    this.speechEndCallback_ =
-        /** @type {function(boolean=)} */ (opt_cleanupOnly => {
-          if (!opt_cleanupOnly) {
-            callback();
-          }
-        });
+  onSpeechEnd(callback: (optCleanupOnly?: boolean) => void): this {
+    this.speechEndCallback_ = (optCleanupOnly => {
+      if (!optCleanupOnly) {
+        callback();
+      }
+    });
     return this;
   }
 
   /** Executes all specified output. */
-  go() {
+  go(): void {
     // Speech.
     let queueMode = this.determineQueueMode_();
 
@@ -505,8 +500,7 @@ export class Output {
     }
   }
 
-  /** @return {QueueMode} */
-  determineQueueMode_() {
+  private determineQueueMode_(): QueueMode {
     if (Output.forceModeForNextSpeechUtterance_ !== undefined) {
       const result = Output.forceModeForNextSpeechUtterance_;
       if (this.speechBuffer_.length > 0) {
@@ -521,14 +515,12 @@ export class Output {
   }
 
   /**
-   * @param {!Spannable} buff
-   * @return {!TtsSpeechProperties}
+   * @return speech properties for given buffer.
    */
-  getSpeechPropsForBuff_(buff) {
+  private getSpeechPropsForBuff_(buff: Spannable): TtsSpeechProperties {
     let speechProps;
     const speechPropsInstance =
-        /** @type {outputTypes.OutputSpeechProperties} */ (
-            buff.getSpanInstanceOf(outputTypes.OutputSpeechProperties));
+        (buff.getSpanInstanceOf(outputTypes.OutputSpeechProperties));
 
     if (!speechPropsInstance) {
       speechProps = this.initialSpeechProps_;
@@ -553,9 +545,10 @@ export class Output {
   }
 
   /**
-   * @return {boolean} True if this object is equal to |rhs|.
+   * @param rhs Object to compare.
+   * @return True if this object is equal to |rhs|.
    */
-  equals(rhs) {
+  equals(rhs: Output): boolean {
     if (this.speechBuffer_.length !== rhs.speechBuffer_.length ||
         this.brailleBuffer_.length !== rhs.brailleBuffer_.length) {
       return false;
@@ -578,27 +571,32 @@ export class Output {
     return true;
   }
 
-  /** @override */
-  render(range, prevRange, type, buff, formatLog, optionalArgs = {}) {
+  override render(
+      range: CursorRange, prevRange: CursorRange|undefined,
+      type: outputTypes.OutputEventType, buff: Spannable[],
+      formatLog: OutputFormatLogger, _optionalArgs?: {}): void {
     if (prevRange && !prevRange.isValid()) {
-      prevRange = null;
+      prevRange = undefined;
     }
 
     // Scan all ancestors to get the value of |contextOrder|.
-    let parent = range.start.node;
+    let parent: AutomationNode|undefined = range.start.node;
     const prevParent = prevRange ? prevRange.start.node : parent;
     if (!parent || !prevParent) {
       return;
     }
 
     while (parent) {
-      if (parent.role === RoleType.WINDOW) {
+      // TODO(b/314203187): Determine if not null assertion is acceptable.
+      if (parent.role! === RoleType.WINDOW) {
         break;
       }
-      if (OutputRoleInfo[parent.role] &&
-          OutputRoleInfo[parent.role].contextOrder) {
+      // TODO(b/314203187): Determine if not null assertion is acceptable.
+      if (OutputRoleInfo[parent.role!] &&
+          OutputRoleInfo[parent.role!]?.contextOrder) {
+        // TODO(b/314203187): Determine if not null assertion is acceptable.
         this.contextOrder_ =
-            OutputRoleInfo[parent.role].contextOrder || this.contextOrder_;
+            OutputRoleInfo[parent.role!]?.contextOrder || this.contextOrder_;
         break;
       }
 
@@ -608,7 +606,7 @@ export class Output {
     if (range.isSubNode()) {
       this.subNode_(range, prevRange, type, buff, formatLog);
     } else {
-      this.range_(range, prevRange, type, buff, formatLog, optionalArgs);
+      this.range_(range, prevRange, type, buff, formatLog, _optionalArgs);
     }
 
     this.hint_(
@@ -616,16 +614,10 @@ export class Output {
         type, buff, formatLog);
   }
 
-  /**
-   * @param {!CursorRange} range
-   * @param {CursorRange} prevRange
-   * @param {!outputTypes.OutputEventType} type
-   * @param {!Array<Spannable>} rangeBuff
-   * @param {!OutputFormatLogger} formatLog
-   * @param {{suppressStartEndAncestry: (boolean|undefined)}} optionalArgs
-   * @private
-   */
-  range_(range, prevRange, type, rangeBuff, formatLog, optionalArgs = {}) {
+  private range_(
+      range: CursorRange, prevRange: CursorRange|undefined,
+      type: outputTypes.OutputEventType, rangeBuff: Spannable[],
+      formatLog: OutputFormatLogger, _optionalArgs?: {}): void {
     if (!range.start.node || !range.end.node) {
       return;
     }
@@ -651,27 +643,28 @@ export class Output {
     let prevNode = prevRange.start.node;
     let node = range.start.node;
 
-    const formatNodeAndAncestors = (node, prevNode) => {
-      const buff = [];
+    const formatNodeAndAncestors =
+        (node: AutomationNode, prevNode: AutomationNode): Spannable[] => {
+          const buff: Spannable[] = [];
 
-      if (addContextBefore) {
-        this.ancestry_(
-            node, prevNode, type, buff, formatLog,
-            {preferStart: preferStartOrEndAncestry});
-      }
-      this.formatNode(node, prevNode, type, buff, formatLog);
-      if (addContextAfter) {
-        this.ancestry_(
-            node, prevNode, type, buff, formatLog,
-            {preferEnd: preferStartOrEndAncestry});
-      }
-      if (node.location) {
-        this.locations_.push(node.location);
-      }
-      return buff;
-    };
+          if (addContextBefore) {
+            this.ancestry_(
+                node, prevNode, type, buff, formatLog,
+                {preferStart: preferStartOrEndAncestry});
+          }
+          this.formatNode(node, prevNode, type, buff, formatLog);
+          if (addContextAfter) {
+            this.ancestry_(
+                node, prevNode, type, buff, formatLog,
+                {preferEnd: preferStartOrEndAncestry});
+          }
+          if (node.location) {
+            this.locations_.push(node.location);
+          }
+          return buff;
+        };
 
-    let lca = null;
+    let lca: AutomationNode|undefined|null = null;
     if (range.start.node !== range.end.node) {
       lca = AutomationUtil.getLeastCommonAncestor(
           range.end.node, range.start.node);
@@ -689,8 +682,9 @@ export class Output {
       hasPartialNodeStart = true;
     }
 
+    // TODO(b/314203187): Determine if not null assertion is acceptable.
     if (AutomationPredicate.selectableText(range.end.node) &&
-        range.end.index >= 0 && range.end.index < range.end.node.name.length) {
+        range.end.index >= 0 && range.end.index < range.end.node.name!.length) {
       hasPartialNodeEnd = true;
     }
 
@@ -708,11 +702,15 @@ export class Output {
     while (node && range.end.node &&
            AutomationUtil.getDirection(node, range.end.node) === Dir.FORWARD) {
       if (hasPartialNodeStart && node === range.start.node) {
-        if (range.start.index !== range.start.node.name.length) {
+        const rangeStartNodeName: string|undefined = range.start.node.name;
+        const nodeName: string|undefined = node.name;
+        if (range.start.index !== rangeStartNodeName?.length) {
           const partialRange = new CursorRange(
               new Cursor(node, range.start.index),
+              // TODO(b/314203187): Determine if not null assertion is
+              // acceptable.
               new Cursor(
-                  node, node.name.length, {preferNodeStartEquivalent: true}));
+                  node, nodeName?.length!, {preferNodeStartEquivalent: true}));
           this.subNode_(partialRange, prevRange, type, rangeBuff, formatLog);
         }
       } else if (hasPartialNodeEnd && node === range.end.node) {
@@ -755,29 +753,21 @@ export class Output {
     }
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @param {!AutomationNode} prevNode
-   * @param {!outputTypes.OutputEventType} type
-   * @param {!Array<Spannable>} buff
-   * @param {!OutputFormatLogger} formatLog
-   * @param {{suppressStartEndAncestry: (boolean|undefined),
-   *         preferStart: (boolean|undefined),
-   *         preferEnd: (boolean|undefined)
-   *        }} optionalArgs
-   * @private
-   */
-  ancestry_(node, prevNode, type, buff, formatLog, optionalArgs = {}) {
+  private ancestry_(
+      node: AutomationNode, prevNode: AutomationNode,
+      type: outputTypes.OutputEventType, buff: Spannable[],
+      formatLog: OutputFormatLogger, optionalArgs?: RenderArgs): void {
     if (!SettingsManager.get('useVerboseMode')) {
       return;
     }
 
-    if (OutputRoleInfo[node.role] && OutputRoleInfo[node.role].ignoreAncestry) {
+    if (node.role && OutputRoleInfo[node.role] &&
+        OutputRoleInfo[node.role]?.ignoreAncestry) {
       return;
     }
 
     const info = new OutputAncestryInfo(
-        node, prevNode, Boolean(optionalArgs.suppressStartEndAncestry));
+        node, prevNode, Boolean(optionalArgs?.suppressStartEndAncestry));
 
     // Enter, leave ancestry.
     this.ancestryHelper_({
@@ -801,12 +791,12 @@ export class Output {
       excludePreviousAncestors: true,
     });
 
-    if (optionalArgs.suppressStartEndAncestry) {
+    if (optionalArgs?.suppressStartEndAncestry) {
       return;
     }
 
     // Start of, end of ancestry.
-    if (!optionalArgs.preferEnd) {
+    if (!optionalArgs?.preferEnd) {
       this.ancestryHelper_({
         node,
         prevNode,
@@ -819,7 +809,7 @@ export class Output {
       });
     }
 
-    if (!optionalArgs.preferStart) {
+    if (!optionalArgs?.preferStart) {
       this.ancestryHelper_({
         node,
         prevNode,
@@ -833,23 +823,8 @@ export class Output {
     }
   }
 
-  /**
-   * @param {{
-   * node: !AutomationNode,
-   * prevNode: !AutomationNode,
-   * type: !outputTypes.OutputEventType,
-   * buff: !Array<Spannable>,
-   * formatLog: !OutputFormatLogger,
-   * ancestors: !Array<!AutomationNode>,
-   * navigationType: !outputTypes.OutputNavigationType,
-   * exclude: (!Array<!AutomationNode>|undefined),
-   * excludePreviousAncestors: (boolean|undefined)
-   * }} args
-   * @private
-   */
-  ancestryHelper_(args) {
-    let {node, prevNode, buff, formatLog, type, ancestors, navigationType} =
-        args;
+  private ancestryHelper_(args: AncestryArgs): void {
+    let {prevNode, buff, formatLog, type, ancestors, navigationType} = args;
 
     const excludeRoles =
         args.exclude ? new Set(args.exclude.map(node => node.role)) : new Set();
@@ -858,8 +833,9 @@ export class Output {
     const originalBuff = buff;
     for (let j = ancestors.length - 1, formatNode; (formatNode = ancestors[j]);
          j--) {
-      const roleInfo = OutputRoleInfo[formatNode.role] || {};
-      if (!roleInfo.verboseAncestry &&
+      // TODO(b/314203187): Determine if not null assertion is acceptable.
+      const roleInfo: Info|undefined = OutputRoleInfo[formatNode.role!] || {};
+      if (!roleInfo?.verboseAncestry &&
           (excludeRoles.has(formatNode.role) ||
            (args.excludePreviousAncestors &&
             this.formattedAncestors_.has(formatNode)))) {
@@ -873,7 +849,7 @@ export class Output {
       }
 
       if (this.formatAsBraille) {
-        buff = /** @type {!Array<Spannable>} */ ([]);
+        buff = [];
         formatLog.bufferClear();
       }
 
@@ -897,15 +873,10 @@ export class Output {
     }
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @param {!AutomationNode} prevNode
-   * @param {!outputTypes.OutputEventType} type
-   * @param {!Array<Spannable>} buff
-   * @param {!OutputFormatLogger} formatLog
-   * @override
-   */
-  formatNode(node, prevNode, type, buff, formatLog) {
+  override formatNode(
+      node: AutomationNode, prevNode: AutomationNode,
+      type: outputTypes.OutputEventType, buff: Spannable[],
+      formatLog: OutputFormatLogger): void {
     const originalBuff = buff;
 
     if (this.formatOptions_.braille) {
@@ -940,14 +911,10 @@ export class Output {
     }
   }
 
-  /**
-   * @param {!CursorRange} range
-   * @param {CursorRange} prevRange
-   * @param {!outputTypes.OutputEventType} type
-   * @param {!Array<Spannable>} buff
-   * @private
-   */
-  subNode_(range, prevRange, type, buff, formatLog) {
+  private subNode_(
+      range: CursorRange, prevRange: CursorRange|undefined,
+      type: outputTypes.OutputEventType, buff: Spannable[],
+      formatLog: OutputFormatLogger): void {
     if (!prevRange) {
       prevRange = range;
     }
@@ -958,7 +925,12 @@ export class Output {
       return;
     }
 
-    const options = {annotation: ['name'], isUnique: true};
+    const options: {
+      annotation: Array<(
+          string | outputTypes.OutputNodeSpan |
+          outputTypes.OutputSelectionSpan | outputTypes.OutputAction)>,
+      isUnique: boolean,
+    } = {annotation: ['name'], isUnique: true};
     const rangeStart = range.start.index;
     const rangeEnd = range.end.index;
     if (this.formatOptions_.braille) {
@@ -966,8 +938,9 @@ export class Output {
       const selStart = node.textSelStart;
       const selEnd = node.textSelEnd;
 
-      if (selStart !== undefined && selEnd >= rangeStart &&
-          selStart <= rangeEnd) {
+      if (selStart !== undefined &&
+          // TODO(b/314203187): Determine if not null assertion is acceptable.
+          selEnd! >= rangeStart && selStart <= rangeEnd) {
         // Editable text selection.
 
         // |rangeStart| and |rangeEnd| are indices set by the caller and are
@@ -980,7 +953,8 @@ export class Output {
         // just the difference between |selStart|, |selEnd| with |rangeStart|.
         // See editing_test.js for examples.
         options.annotation.push(new outputTypes.OutputSelectionSpan(
-            selStart - rangeStart, selEnd - rangeStart));
+            // TODO(b/314203187): Determine if not null assertion is acceptable.
+            selStart - rangeStart, selEnd! - rangeStart));
       } else if (
           rangeStart !== 0 || rangeEnd !== range.start.getText().length) {
         // Non-editable text selection over less than the full contents
@@ -1006,7 +980,8 @@ export class Output {
     }
     let text = '';
 
-    if (this.formatOptions_.braille && !node.state[StateType.EDITABLE]) {
+    // TODO(b/314203187): Determine if not null assertion is acceptable.
+    if (this.formatOptions_.braille && !node.state![StateType.EDITABLE]) {
       // In braille, we almost always want to show the entire contents and
       // simply place the cursor under the SelectionSpan we set above.
       text = range.start.getText();
@@ -1043,14 +1018,13 @@ export class Output {
    * additions. Rendering processes these two methods in order. The only
    * distinction is a small delay gets introduced before the first hint in
    * |computeDelayedHints_|.
-   * @param {!CursorRange} range
-   * @param {!Array<AutomationNode>} uniqueAncestors
-   * @param {!outputTypes.OutputEventType} type
-   * @param {!Array<Spannable>} buff Buffer to receive rendered output.
-   * @param {!OutputFormatLogger} formatLog
-   * @private
+   *
+   * @param buff receives the rendered output.
    */
-  hint_(range, uniqueAncestors, type, buff, formatLog) {
+  private hint_(
+      range: CursorRange, uniqueAncestors: AutomationNode[],
+      type: outputTypes.OutputEventType, buff: Spannable[],
+      formatLog: OutputFormatLogger): void {
     if (!this.enableHints_ || !SettingsManager.get('useVerboseMode')) {
       return;
     }
@@ -1071,8 +1045,7 @@ export class Output {
     }
 
     const msgs = Output.computeHints_(node, uniqueAncestors);
-    const delayedMsgs =
-        Output.computeDelayedHints_(node, uniqueAncestors, type);
+    const delayedMsgs = Output.computeDelayedHints_(node, uniqueAncestors);
     if (delayedMsgs.length > 0) {
       delayedMsgs[0].props = new outputTypes.OutputSpeechProperties();
       delayedMsgs[0].props.properties['delay'] = true;
@@ -1104,22 +1077,19 @@ export class Output {
 
   /**
    * Internal helper to |hint_|. Returns a list of message hints.
-   * @param {!AutomationNode} node
-   * @param {!Array<AutomationNode>} uniqueAncestors
-   * @return {!Array<{text: (string|undefined),
-   *           msgId: (string|undefined),
-   *           outputFormat: (string|undefined)}>} Note that the above caller
+   * Note that the above caller
    * expects one and only one key be set.
-   * @private
+   * @return a list of message hints.
    */
-  static computeHints_(node, uniqueAncestors) {
-    const ret = [];
-    if (node.errorMessage) {
+  private static computeHints_(
+      node: AutomationNode, uniqueAncestors: AutomationNode[]): MessageHint[] {
+    const ret: MessageHint[] = [];
+    if (node['errorMessage']) {
       ret.push({outputFormat: '$node(errorMessage)'});
     }
 
     // Provide a hint for sort direction.
-    let sortDirectionNode = node;
+    let sortDirectionNode: AutomationNode|undefined = node;
     while (sortDirectionNode && sortDirectionNode !== sortDirectionNode.root) {
       if (!sortDirectionNode.sortDirection) {
         sortDirectionNode = sortDirectionNode.parent;
@@ -1140,10 +1110,11 @@ export class Output {
     let ancestorIndex = 0;
     do {
       if (currentNode.ariaCurrentState &&
-          outputTypes.OutputPropertyMap.STATE[currentNode.ariaCurrentState]) {
+          outputTypes
+              .OutputPropertyMap['STATE'][currentNode.ariaCurrentState]) {
         ret.push({
-          msgId:
-              outputTypes.OutputPropertyMap.STATE[currentNode.ariaCurrentState],
+          msgId: outputTypes
+                     .OutputPropertyMap['STATE'][currentNode.ariaCurrentState],
         });
         break;
       }
@@ -1155,23 +1126,20 @@ export class Output {
 
   /**
    * Internal helper to |hint_|. Returns a list of message hints.
-   * @param {!AutomationNode} node
-   * @param {!Array<AutomationNode>} uniqueAncestors
-   * @param {!outputTypes.OutputEventType} type
-   * @return {!Array<{text: (string|undefined),
-   *           msgId: (string|undefined),
-   *           subs: (Array<string>|undefined),
-   *           outputFormat: (string|undefined)}>} Note that the above caller
+   * Note that the above caller
    * expects one and only one key be set.
-   * @private
+   * @return a list of message hints.
    */
-  static computeDelayedHints_(node, uniqueAncestors, type) {
-    const ret = [];
+  private static computeDelayedHints_(
+      node: AutomationNode, uniqueAncestors: AutomationNode[]): MessageHint[] {
+    const ret: MessageHint[] = [];
+    // TODO(b/314203187): Determine if not null assertion is acceptable.
+    const nodeState: Partial<Record<StateType, boolean>> = node.state!;
     if (EventSource.get() === EventSourceType.TOUCH_GESTURE) {
-      if (node.state[StateType.EDITABLE]) {
+      if (nodeState[StateType.EDITABLE]) {
         ret.push({
-          msgId: node.state[StateType.FOCUSED] ? 'hint_is_editing' :
-                                                 'hint_double_tap_to_edit',
+          msgId: nodeState[StateType.FOCUSED] ? 'hint_is_editing' :
+                                                'hint_double_tap_to_edit',
         });
         return ret;
       }
@@ -1197,9 +1165,9 @@ export class Output {
       return ret;
     }
 
-    if (node.state[StateType.EDITABLE] && node.state[StateType.FOCUSED] &&
-        (node.state[StateType.MULTILINE] ||
-         node.state[StateType.RICHLY_EDITABLE])) {
+    if (nodeState[StateType.EDITABLE] && nodeState[StateType.FOCUSED] &&
+        (nodeState[StateType.MULTILINE] ||
+         nodeState[StateType.RICHLY_EDITABLE])) {
       ret.push({msgId: 'hint_search_within_text_field'});
     }
 
@@ -1208,16 +1176,12 @@ export class Output {
     }
 
     // Invalid Grammar text.
-    if (uniqueAncestors.find(
-            /** @type {function(?) : boolean} */
-            (AutomationPredicate.hasInvalidGrammarMarker))) {
+    if (uniqueAncestors.find(AutomationPredicate.hasInvalidGrammarMarker)) {
       ret.push({msgId: 'hint_invalid_grammar'});
     }
 
     // Invalid Spelling text.
-    if (uniqueAncestors.find(
-            /** @type {function(?) : boolean} */
-            (AutomationPredicate.hasInvalidSpellingMarker))) {
+    if (uniqueAncestors.find(AutomationPredicate.hasInvalidSpellingMarker)) {
       ret.push({msgId: 'hint_invalid_spelling'});
     }
 
@@ -1253,7 +1217,7 @@ export class Output {
     }
 
     if (node.autoComplete === 'list' || node.autoComplete === 'both' ||
-        node.state[StateType.AUTOFILL_AVAILABLE]) {
+        nodeState[StateType.AUTOFILL_AVAILABLE]) {
       ret.push({msgId: 'hint_autocomplete_list'});
     }
     if (node.autoComplete === 'inline' || node.autoComplete === 'both') {
@@ -1267,56 +1231,54 @@ export class Output {
     }
 
     // Ancestry based hints.
-    /** @type {AutomationNode|undefined} */
-    let foundAncestor;
-    if (uniqueAncestors.find(
-            /** @type {function(?) : boolean} */ (AutomationPredicate.table))) {
+    let foundAncestor: AutomationNode|undefined;
+    if (uniqueAncestors.find(AutomationPredicate.table)) {
       ret.push({msgId: 'hint_table'});
     }
 
     // This hint is not based on the role (it uses state), so we need to care
     // about ordering; prefer deepest ancestor first.
-    if ((foundAncestor = uniqueAncestors.reverse().find(
-             /** @type {function(?) : boolean} */ (AutomationPredicate.roles(
-                 [RoleType.MENU, RoleType.MENU_BAR]))))) {
-      ret.push({
-        msgId: foundAncestor.state.horizontal ? 'hint_menu_horizontal' :
-                                                'hint_menu',
-      });
+    if (foundAncestor = uniqueAncestors.reverse().find(
+            (AutomationPredicate.roles([RoleType.MENU, RoleType.MENU_BAR])))) {
+      if (foundAncestor.state && foundAncestor.state['horizontal']) {
+        ret.push({msgId: 'hint_menu_horizontal'});
+      } else {
+        ret.push({msgId: 'hint_menu'});
+      }
     }
-    if (uniqueAncestors.find(
-            /** @type {function(?) : boolean} */ (function(n) {
-              return Boolean(n.details);
-            }))) {
+    if (uniqueAncestors.find(function(n) {
+          return Boolean(n.details);
+        })) {
       ret.push({msgId: 'hint_details'});
     }
 
     return ret;
   }
 
-  /** @override */
-  append(buff, value, opt_options) {
-    opt_options = opt_options || {isUnique: false, annotation: []};
+  override append(
+      buff: Spannable[], value?: string|Spannable,
+      optOptions?: AnnotationOptions): void {
+    optOptions = optOptions || {isUnique: false, annotation: []};
 
     // Reject empty values without meaningful annotations.
     if ((!value || value.length === 0) &&
-        opt_options.annotation.every(
+        optOptions.annotation.every(
             annotation => !(annotation instanceof outputTypes.OutputAction) &&
                 !(annotation instanceof outputTypes.OutputSelectionSpan))) {
       return;
     }
 
     const spannableToAdd = new Spannable(value);
-    opt_options.annotation.forEach(
+    optOptions.annotation.forEach(
         annotation =>
             spannableToAdd.setSpan(annotation, 0, spannableToAdd.length));
 
     // |isUnique| specifies an annotation that cannot be duplicated.
-    if (opt_options.isUnique) {
-      const annotationSansNodes = opt_options.annotation.filter(
+    if (optOptions.isUnique) {
+      const annotationSansNodes = optOptions.annotation.filter(
           annotation => !(annotation instanceof outputTypes.OutputNodeSpan));
 
-      const alreadyAnnotated = buff.some(spannable => {
+      const alreadyAnnotated = buff.some((spannable: Spannable) => {
         annotationSansNodes.some(annotation => {
           if (!spannable.hasSpan(annotation)) {
             return false;
@@ -1341,11 +1303,10 @@ export class Output {
 
   /**
    * Converts the braille |spans| buffer to a single spannable.
-   * @param {!Array<Spannable>} spans
-   * @return {!Spannable}
-   * @private
+   * @param spans The spans to merge.
+   * @return the merged braille spannable.
    */
-  mergeBraille_(spans) {
+  private mergeBraille_(spans: Spannable[]): Spannable {
     let separator = '';  // Changes to space as appropriate.
     let prevHasInlineNode = false;
     let prevIsName = false;
@@ -1407,65 +1368,78 @@ export class Output {
     }, new Spannable());
   }
 
-  /** @override */
-  findEarcon(node, opt_prevNode) {
-    if (node === opt_prevNode) {
-      return null;
+  /**
+   * @return found OutputAction or if not found, undefined/null.
+   */
+  override findEarcon(node: AutomationNode, optPrevNode?: AutomationNode):
+      outputTypes.OutputAction|undefined {
+    if (node === optPrevNode) {
+      // TODO(b/314203187): Determine if not null assertion is acceptable.
+      return null!;
     }
 
     if (this.formatOptions_.speech) {
-      let earconFinder = node;
+      let earconFinder: AutomationNode|undefined = node;
       let ancestors;
-      if (opt_prevNode) {
-        ancestors = AutomationUtil.getUniqueAncestors(opt_prevNode, node);
+      if (optPrevNode) {
+        ancestors = AutomationUtil.getUniqueAncestors(optPrevNode, node);
       } else {
         ancestors = AutomationUtil.getAncestors(node);
       }
 
       while (earconFinder = ancestors.pop()) {
-        const info = OutputRoleInfo[earconFinder.role];
+        // TODO(b/314203187): Determine if not null assertion is acceptable.
+        const role: chrome.automation.RoleType = earconFinder.role!;
+        const info = OutputRoleInfo[role];
         if (info && info.earcon) {
           return new outputTypes.OutputEarconAction(
               info.earcon, node.location || undefined);
-          break;
         }
         earconFinder = earconFinder.parent;
       }
     }
-    return null;
+    // TODO(b/314203187): Determine if not null assertion is acceptable.
+    return null!;
   }
 
   /**
-   * Gets a human friendly string with the contents of output.
-   * @return {string}
+   * @returns a human friendly string with the contents of output.
    */
-  toString() {
-    return this.speechBuffer_.reduce((prev, cur) => {
-      if (prev === null || prev === '') {
-        return cur.toString();
-      }
-      prev += ' ' + cur.toString();
-      return prev;
-    }, null);
+  override toString(): string {
+    return this.speechBuffer_
+        .reduce((prev: Spannable|null, cur: Spannable|null) => {
+          if (prev === null || prev.toString() === '') {
+            // TODO(b/314203187): Determine if not null assertion is acceptable.
+            return cur!;
+          }
+          // TODO(b/314203187): Determine if not null assertion is acceptable.
+          prev.append(' ' + cur!.toString());
+          return prev;
+          // TODO(b/314203187): Determine if not null assertion is acceptable.
+        }, null)!.toString();
   }
 
   /**
    * Gets the spoken output with separator '|'.
-   * @return {!Spannable}
+   * @return Spannable containing spoken output with separator '|'.
    */
-  get speechOutputForTest() {
-    return this.speechBuffer_.reduce((prev, cur) => {
-      if (prev === null) {
-        return cur;
-      }
-      prev.append('|');
-      prev.append(cur);
-      return prev;
-    }, null);
+  get speechOutputForTest(): Spannable {
+    return this.speechBuffer_.reduce(
+        (prev: Spannable|null, cur: Spannable|null) => {
+          if (prev === null) {
+            return cur;
+          }
+          prev.append('|');
+          prev.append(cur!);
+          return prev;
+          // TODO(b/314203187): Determine if not null assertion is acceptable.
+        },
+        null)!;
   }
 
-  /** @override */
-  assignLocaleAndAppend(text, contextNode, buff, options) {
+  override assignLocaleAndAppend(
+      text: string, contextNode: AutomationNode, buff: Spannable[],
+      options?: AnnotationOptions): void {
     const data =
         LocaleOutputHelper.instance.computeTextAndLocale(text, contextNode);
     const speechProps = new outputTypes.OutputSpeechProperties();
@@ -1478,39 +1452,28 @@ export class Output {
     }
   }
 
-  /** @override */
-  shouldSuppress(token) {
+  override shouldSuppress(token: string): boolean {
     return this.suppressions_[token];
   }
 
-  /** @override */
-  get useAuralStyle() {
+  override get useAuralStyle(): boolean {
     return this.formatOptions_.auralStyle;
   }
 
-  /** @override */
-  get formatAsBraille() {
+  override get formatAsBraille(): boolean {
     return this.formatOptions_.braille;
   }
 
-  /** @override */
-  get formatAsSpeech() {
+  override get formatAsSpeech(): boolean {
     return this.formatOptions_.speech;
   }
 }
 
-/**
- * Delimiter to use between output values.
- * @type {string}
- */
-Output.SPACE = ' ';
-
-/**
- * If set, the next speech utterance will use this value instead of the normal
- * queueing mode.
- * @type {QueueMode|undefined}
- * @private
- */
-Output.forceModeForNextSpeechUtterance_;
+export namespace Output {
+  /**
+   * Delimiter to use between output values.
+   */
+  export const SPACE: string = ' ';
+}
 
 TestImportManager.exportForTesting(Output);
