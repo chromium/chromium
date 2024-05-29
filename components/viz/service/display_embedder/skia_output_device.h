@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -27,10 +26,6 @@
 
 class GrDirectContext;
 class SkSurface;
-
-namespace base {
-class SequencedTaskRunner;
-}  // namespace base
 
 namespace gfx {
 class Rect;
@@ -277,8 +272,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
 
  private:
   std::unique_ptr<ui::LatencyTracker> latency_tracker_;
-  // task runner for latency tracker.
-  scoped_refptr<base::SequencedTaskRunner> latency_tracker_runner_;
   // A mapping from skipped swap ID to its corresponding OutputSurfaceFrame.
   base::flat_map<uint64_t, OutputSurfaceFrame> skipped_swap_info_;
 };

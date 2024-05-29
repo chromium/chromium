@@ -8,14 +8,8 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/feature_list.h"
-#include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/task_features.h"
 #include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
@@ -35,25 +29,6 @@
 
 namespace viz {
 namespace {
-
-// TODO(crbug.com/40699456): Clean up the feature in M117.
-BASE_FEATURE(kAsyncGpuLatencyReporting,
-             "AsyncGpuLatencyReporting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-using ::perfetto::protos::pbzero::ChromeLatencyInfo;
-
-scoped_refptr<base::SequencedTaskRunner> CreateLatencyTracerRunner() {
-  if (!base::ThreadPoolInstance::Get())
-    return nullptr;
-
-  if (!base::FeatureList::IsEnabled(kAsyncGpuLatencyReporting))
-    return nullptr;
-
-  return base::ThreadPool::CreateSequencedTaskRunner(
-      {base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-}
 
 void ReportLatency(const gfx::SwapTimings& timings,
                    ui::LatencyTracker* tracker,
@@ -127,8 +102,7 @@ SkiaOutputDevice::SkiaOutputDevice(
       release_overlays_callback_(std::move(release_overlays_callback)),
       memory_type_tracker_(
           std::make_unique<gpu::MemoryTypeTracker>(memory_tracker)),
-      latency_tracker_(std::make_unique<ui::LatencyTracker>()),
-      latency_tracker_runner_(CreateLatencyTracerRunner()) {
+      latency_tracker_(std::make_unique<ui::LatencyTracker>()) {
   if (gr_context_) {
     CHECK(!graphite_context_);
     capabilities_.max_render_target_size = gr_context->maxRenderTargetSize();
@@ -142,10 +116,7 @@ SkiaOutputDevice::SkiaOutputDevice(
   }
 }
 
-SkiaOutputDevice::~SkiaOutputDevice() {
-  if (latency_tracker_runner_)
-    latency_tracker_runner_->DeleteSoon(FROM_HERE, std::move(latency_tracker_));
-}
+SkiaOutputDevice::~SkiaOutputDevice() = default;
 
 std::unique_ptr<SkiaOutputDevice::ScopedPaint>
 SkiaOutputDevice::BeginScopedPaint() {
@@ -247,19 +218,8 @@ void SkiaOutputDevice::FinishSwapBuffers(
 
   pending_swaps_.front().CallFeedback();
 
-  if (latency_tracker_runner_) {
-    // Report latency off GPU main thread, but we still want this to be counted
-    // as part of the critical flow so emit a flow step.
-    ui::LatencyInfo::TraceIntermediateFlowEvents(
-        frame.latency_info, ChromeLatencyInfo::STEP_FINISHED_SWAP_BUFFERS);
-    latency_tracker_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ReportLatency, params.swap_response.timings,
-                       latency_tracker_.get(), std::move(frame.latency_info)));
-  } else {
-    ReportLatency(params.swap_response.timings, latency_tracker_.get(),
-                  std::move(frame.latency_info));
-  }
+  ReportLatency(params.swap_response.timings, latency_tracker_.get(),
+                std::move(frame.latency_info));
 
   pending_swaps_.pop();
 
