@@ -671,6 +671,30 @@ void DeleteGroupAtIndex(int group_cell_index) {
       assertWithMatcher:grey_notNil()];
 }
 
+// Tests opening a tab group after resetting the incognito browser (i.e. closing
+// all incognito tabs).
+- (void)testOpenTabGroupAfterBrowserReset {
+  // Create one incognito tab then close all of them to reset the browser.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey waitForIncognitoTabCount:1];
+  [ChromeEarlGrey closeAllIncognitoTabs];
+  [ChromeEarlGrey waitForIncognitoTabCount:0];
+
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  OpenTabGroupAtIndex(0);
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_notNil()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridCloseButtonForCellAtIndex(0)]
+      performAction:grey_tap()];
+}
+
 // Tests re-opening a group from Search in another window.
 // TODO:(crbug.com/339415297) Test fails on some iPad devices. Re-enable test
 // once fixed.

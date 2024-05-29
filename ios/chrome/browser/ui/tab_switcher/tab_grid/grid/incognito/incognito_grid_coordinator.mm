@@ -155,11 +155,17 @@
 #pragma mark - Public
 
 - (void)setIncognitoBrowser:(Browser*)incognitoBrowser {
+  if (_browser) {
+    [_browser->GetCommandDispatcher() stopDispatchingToTarget:self];
+  }
   _mediator.browser = incognitoBrowser;
   _browser.reset();
   if (incognitoBrowser) {
     _browser = incognitoBrowser->AsWeakPtr();
     _tabContextMenuHelper.browserState = incognitoBrowser->GetBrowserState();
+    [incognitoBrowser->GetCommandDispatcher()
+        startDispatchingToTarget:self
+                     forProtocol:@protocol(TabGroupsCommands)];
   } else {
     _tabContextMenuHelper.browserState = nullptr;
   }
