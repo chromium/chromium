@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_JOBS_UNINSTALL_WEB_APP_UNINSTALL_AND_REPLACE_JOB_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_JOBS_UNINSTALL_WEB_APP_UNINSTALL_AND_REPLACE_JOB_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/webapps/common/web_app_id.h"

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
+
 #include "base/strings/escape.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/custom_handlers/protocol_handler.h"
 
 using custom_handlers::ProtocolHandler;

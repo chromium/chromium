@@ -4,9 +4,15 @@
 
 #include "chrome/browser/web_applications/jobs/uninstall/web_app_uninstall_and_replace_job.h"
 
+#include <string>
+#include <string_view>
+#include <type_traits>
 #include <utility>
 
+#include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/launch_util.h"
@@ -16,17 +22,25 @@
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_set.h"
 
 namespace web_app {
 

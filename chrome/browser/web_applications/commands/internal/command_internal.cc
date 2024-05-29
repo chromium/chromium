@@ -4,9 +4,13 @@
 
 #include "chrome/browser/web_applications/commands/internal/command_internal.h"
 
+#include <string_view>
+#include <type_traits>
+#include <utility>
+
 #include "base/atomic_sequence_num.h"
 #include "base/check.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"

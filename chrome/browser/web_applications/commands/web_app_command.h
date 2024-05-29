@@ -21,6 +21,7 @@
 #include "base/strings/to_string.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
+#include "chrome/browser/web_applications/commands/command_result.h"
 #include "chrome/browser/web_applications/commands/internal/command_internal.h"
 #include "components/webapps/common/web_app_id.h"
 

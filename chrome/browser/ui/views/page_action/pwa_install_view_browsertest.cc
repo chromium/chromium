@@ -2,77 +2,115 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/page_action/pwa_install_view.h"
+#include <stddef.h>
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
+
+#include "base/check.h"
+#include "base/command_line.h"
+#include "base/containers/extend.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/clamped_math.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
+#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
-#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
+#include "components/webapps/browser/banners/installable_web_app_check_result.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/page_navigator.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/extension.h"
+#include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/network_switches.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/session/connection_holder.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+namespace webapps {
+enum class InstallResultCode;
+}
 
 namespace {
 
@@ -134,11 +172,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
       disabled_features.push_back(features::kWebAppUniversalInstall);
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    const std::vector<base::test::FeatureRef> lacros_disable_flags =
-        ash::standalone_browser::GetFeatureRefs();
-    disabled_features.insert(disabled_features.end(),
-                             lacros_disable_flags.begin(),
-                             lacros_disable_flags.end());
+    base::Extend(disabled_features, ash::standalone_browser::GetFeatureRefs());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     features_.InitWithFeaturesAndParameters(enabled_features,

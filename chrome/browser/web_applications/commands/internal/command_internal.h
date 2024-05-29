@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INTERNAL_COMMAND_INTERNAL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -13,8 +14,17 @@
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/commands/command_result.h"
-#include "components/webapps/common/web_app_id.h"
+#include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/locks/noop_lock.h"
+#include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
+#include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
+
+enum class CommandResult;
+
+namespace base {
+class Location;
+}
 
 namespace content {
 class WebContents;
@@ -22,7 +32,6 @@ class WebContents;
 
 namespace web_app {
 
-class LockDescription;
 class WebAppCommandManager;
 class WebAppLockManager;
 

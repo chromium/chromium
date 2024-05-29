@@ -36,6 +36,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/test_utils.h"

@@ -49,6 +49,7 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/message_center/public/cpp/notification.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
