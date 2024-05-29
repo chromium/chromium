@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/vulkan/init/gr_vk_memory_allocator_impl.h"
+#include "gpu/vulkan/init/skia_vk_memory_allocator_impl.h"
 
 #include <vk_mem_alloc.h>
 #include <vulkan/vulkan_core.h>
@@ -13,28 +13,28 @@
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_util.h"
-#include "third_party/skia/include/gpu/vk/GrVkMemoryAllocator.h"
-#include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+#include "third_party/skia/include/gpu/vk/VulkanTypes.h"
+#include "third_party/skia/include/gpu/vk/VulkanMemoryAllocator.h"
 
 namespace gpu {
 
 namespace {
 
-class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
+class SkiaVulkanMemoryAllocator : public skgpu::VulkanMemoryAllocator {
  public:
-  explicit GrVkMemoryAllocatorImpl(VmaAllocator allocator)
+  explicit SkiaVulkanMemoryAllocator(VmaAllocator allocator)
       : allocator_(allocator) {}
-  ~GrVkMemoryAllocatorImpl() override = default;
+  ~SkiaVulkanMemoryAllocator() override = default;
 
-  GrVkMemoryAllocatorImpl(const GrVkMemoryAllocatorImpl&) = delete;
-  GrVkMemoryAllocatorImpl& operator=(const GrVkMemoryAllocatorImpl&) = delete;
+  SkiaVulkanMemoryAllocator(const SkiaVulkanMemoryAllocator&) = delete;
+  SkiaVulkanMemoryAllocator& operator=(const SkiaVulkanMemoryAllocator&) = delete;
 
  private:
   VkResult allocateImageMemory(VkImage image,
                                uint32_t flags,
-                               GrVkBackendMemory* backend_memory) override {
+                               skgpu::VulkanBackendMemory* backend_memory) override {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("gpu.vulkan.vma"),
-                 "GrVkMemoryAllocatorImpl::allocateMemoryForImage");
+                 "SkiaVulkanMemoryAllocator::allocateMemoryForImage");
     VmaAllocationCreateInfo info = {
         .flags = 0,
         .usage = VMA_MEMORY_USAGE_UNKNOWN,
@@ -63,16 +63,16 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
     VkResult result = vma::AllocateMemoryForImage(allocator_, image, &info,
                                                   &allocation, nullptr);
     if (VK_SUCCESS == result)
-      *backend_memory = reinterpret_cast<GrVkBackendMemory>(allocation);
+      *backend_memory = reinterpret_cast<skgpu::VulkanBackendMemory>(allocation);
     return result;
   }
 
   VkResult allocateBufferMemory(VkBuffer buffer,
                                 BufferUsage usage,
                                 uint32_t flags,
-                                GrVkBackendMemory* backend_memory) override {
+                                skgpu::VulkanBackendMemory* backend_memory) override {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("gpu.vulkan.vma"),
-                 "GrVkMemoryAllocatorImpl::allocateMemoryForBuffer");
+                 "SkiaVulkanMemoryAllocator::allocateMemoryForBuffer");
     VmaAllocationCreateInfo info = {
         .flags = 0,
         .usage = VMA_MEMORY_USAGE_UNKNOWN,
@@ -120,21 +120,21 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
     VkResult result = vma::AllocateMemoryForBuffer(allocator_, buffer, &info,
                                                    &allocation, nullptr);
     if (VK_SUCCESS == result)
-      *backend_memory = reinterpret_cast<GrVkBackendMemory>(allocation);
+      *backend_memory = reinterpret_cast<skgpu::VulkanBackendMemory>(allocation);
 
     return result;
   }
 
-  void freeMemory(const GrVkBackendMemory& memory) override {
+  void freeMemory(const skgpu::VulkanBackendMemory& memory) override {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("gpu.vulkan.vma"),
-                 "GrVkMemoryAllocatorImpl::freeMemory");
+                 "SkiaVulkanMemoryAllocator::freeMemory");
     vma::FreeMemory(allocator_, reinterpret_cast<const VmaAllocation>(memory));
   }
 
-  void getAllocInfo(const GrVkBackendMemory& memory,
-                    GrVkAlloc* alloc) const override {
+  void getAllocInfo(const skgpu::VulkanBackendMemory& memory,
+                    skgpu::VulkanAlloc* alloc) const override {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("gpu.vulkan.vma"),
-                 "GrVkMemoryAllocatorImpl::getAllocInfo");
+                 "SkiaVulkanMemoryAllocator::getAllocInfo");
     const VmaAllocation allocation =
         reinterpret_cast<const VmaAllocation>(memory);
     VmaAllocationInfo vma_info;
@@ -145,13 +145,13 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
 
     uint32_t flags = 0;
     if (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT & mem_flags) {
-      flags |= GrVkAlloc::kMappable_Flag;
+      flags |= skgpu::VulkanAlloc::kMappable_Flag;
     }
     if (!(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT & mem_flags)) {
-      flags |= GrVkAlloc::kNoncoherent_Flag;
+      flags |= skgpu::VulkanAlloc::kNoncoherent_Flag;
     }
     if (VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT & mem_flags) {
-      flags |= GrVkAlloc::kLazilyAllocated_Flag;
+      flags |= skgpu::VulkanAlloc::kLazilyAllocated_Flag;
     }
 
     alloc->fMemory = vma_info.deviceMemory;
@@ -161,37 +161,37 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
     alloc->fBackendMemory = memory;
   }
 
-  VkResult mapMemory(const GrVkBackendMemory& memory, void** data) override {
+  VkResult mapMemory(const skgpu::VulkanBackendMemory& memory, void** data) override {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("gpu.vulkan.vma"),
-                 "GrVkMemoryAllocatorImpl::mapMemory");
+                 "SkiaVulkanMemoryAllocator::mapMemory");
     const VmaAllocation allocation =
         reinterpret_cast<const VmaAllocation>(memory);
     return vma::MapMemory(allocator_, allocation, data);
   }
 
-  void unmapMemory(const GrVkBackendMemory& memory) override {
+  void unmapMemory(const skgpu::VulkanBackendMemory& memory) override {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("gpu.vulkan.vma"),
-                 "GrVkMemoryAllocatorImpl::unmapMemory");
+                 "SkiaVulkanMemoryAllocator::unmapMemory");
     const VmaAllocation allocation =
         reinterpret_cast<const VmaAllocation>(memory);
     vma::UnmapMemory(allocator_, allocation);
   }
 
-  VkResult flushMemory(const GrVkBackendMemory& memory,
+  VkResult flushMemory(const skgpu::VulkanBackendMemory& memory,
                        VkDeviceSize offset,
                        VkDeviceSize size) override {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("gpu.vulkan.vma"),
-                 "GrVkMemoryAllocatorImpl::flushMappedMemory");
+                 "SkiaVulkanMemoryAllocator::flushMappedMemory");
     const VmaAllocation allocation =
         reinterpret_cast<const VmaAllocation>(memory);
     return vma::FlushAllocation(allocator_, allocation, offset, size);
   }
 
-  VkResult invalidateMemory(const GrVkBackendMemory& memory,
+  VkResult invalidateMemory(const skgpu::VulkanBackendMemory& memory,
                             VkDeviceSize offset,
                             VkDeviceSize size) override {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("gpu.vulkan.vma"),
-                 "GrVkMemoryAllocatorImpl::invalidateMappedMemory");
+                 "SkiaVulkanMemoryAllocator::invalidateMappedMemory");
     const VmaAllocation allocation =
         reinterpret_cast<const VmaAllocation>(memory);
     return vma::InvalidateAllocation(allocator_, allocation, offset, size);
@@ -217,9 +217,9 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
 
 }  // namespace
 
-sk_sp<GrVkMemoryAllocator> CreateGrVkMemoryAllocator(
+sk_sp<skgpu::VulkanMemoryAllocator> CreateSkiaVulkanMemoryAllocator(
     VulkanDeviceQueue* device_queue) {
-  return sk_make_sp<GrVkMemoryAllocatorImpl>(device_queue->vma_allocator());
+  return sk_make_sp<SkiaVulkanMemoryAllocator>(device_queue->vma_allocator());
 }
 
 }  // namespace gpu

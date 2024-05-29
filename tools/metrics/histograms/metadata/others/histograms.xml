@@ -10426,24 +10426,11 @@ should be kept until we remove incident reporting. -->
   <owner>egdaniel@google.com</owner>
   <owner>bsalomon@google.com</owner>
   <summary>
-    The total amount of memory that the GrVkMemoryAllocator used by Skia's
+    The total amount of memory that the VulkanMemoryAllocator used by Skia's
     Vulkan backend has allocated. This is GPU memory for VkImages and VkBuffers.
     Note that the allocator may be shared with other users outside of Skia and
     this amount includes their uses as well. This is collected each time we
     request an allocation from Skia.
-  </summary>
-</histogram>
-
-<histogram name="Skia.VulkanMemoryAllocator.PercentUsed" units="%"
-    expires_after="2021-09-05">
-  <owner>egdaniel@google.com</owner>
-  <owner>bsalomon@google.com</owner>
-  <summary>
-    The percent of allocated memory that is in use by the GrVkMemoryAllocator
-    used by Skia's Vulkan backend. This is GPU memory for VkImages and
-    VkBuffers. Note that the allocator may be shared with other users outside of
-    Skia and this includes their allocations as well. This is collected each
-    time we request an allocation from Skia.
   </summary>
 </histogram>
 

@@ -14,7 +14,7 @@
 #include "base/native_library.h"
 #include "base/ranges/algorithm.h"
 #include "gpu/config/skia_limits.h"
-#include "gpu/vulkan/init/gr_vk_memory_allocator_impl.h"
+#include "gpu/vulkan/init/skia_vk_memory_allocator_impl.h"
 #include "gpu/vulkan/init/vulkan_factory.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
@@ -151,7 +151,8 @@ bool AwVulkanContextProvider::Globals::Initialize(
       .fVkExtensions = &vk_extensions,
       .fDeviceFeatures = params->device_features,
       .fDeviceFeatures2 = params->device_features_2,
-      .fMemoryAllocator = gpu::CreateGrVkMemoryAllocator(device_queue.get()),
+      .fMemoryAllocator =
+          gpu::CreateSkiaVulkanMemoryAllocator(device_queue.get()),
       .fGetProc = get_proc,
   };
   gr_context = GrDirectContexts::MakeVulkan(backend_context);
