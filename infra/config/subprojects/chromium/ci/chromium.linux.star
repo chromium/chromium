@@ -654,7 +654,7 @@ ci.builder(
             ],
         ),
         chromium_config = builder_config.chromium_config(
-            config = "chromium_no_goma",
+            config = "chromium",
             apply_configs = [
                 "mb",
             ],
