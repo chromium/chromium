@@ -31,6 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CRYPTO_ALGORITHM_PARAMS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CRYPTO_ALGORITHM_PARAMS_H_
 
+#include <cstdint>
+#include <optional>
+
 #include "base/check.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
@@ -246,18 +249,18 @@ class WebCryptoRsaHashedKeyGenParams : public WebCryptoAlgorithmParams {
   const WebCryptoAlgorithm& GetHash() const { return hash_; }
 
   // Converts the public exponent (big-endian WebCrypto BigInteger),
-  // with or without leading zeros, to unsigned int. Returns true on success.
-  bool ConvertPublicExponentToUnsigned(unsigned& result) const {
-    result = 0;
-    for (size_t i = 0; i < public_exponent_.size(); ++i) {
-      size_t i_reversed = public_exponent_.size() - i - 1;
-
-      if (i_reversed >= sizeof(result) && public_exponent_[i])
-        return false;  // Too large for unsigned int.
-
-      result |= public_exponent_[i] << 8 * i_reversed;
+  // with or without leading zeros, to uint32_t. Returns true on success and
+  // false on overflow.
+  std::optional<uint32_t> PublicExponentAsU32() const {
+    uint32_t result = 0;
+    for (unsigned char byte : public_exponent_) {
+      if (result > UINT32_MAX >> 8) {
+        return std::nullopt;  // Overflow.
+      }
+      result <<= 8;
+      result |= byte;
     }
-    return true;
+    return result;
   }
 
  private:

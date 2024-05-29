@@ -1329,24 +1329,29 @@ ScriptPromise<RTCCertificate> RTCPeerConnection::generateCertificate(
       "algorithm name, but the parameters are not supported.";
   std::optional<rtc::KeyParams> key_params;
   switch (crypto_algorithm.Id()) {
-    case kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5:
+    case kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5: {
       // name: "RSASSA-PKCS1-v1_5"
-      unsigned public_exponent;
-      // "publicExponent" must fit in an unsigned int. The only recognized
-      // "hash" is "SHA-256".
-      if (crypto_algorithm.RsaHashedKeyGenParams()
-              ->ConvertPublicExponentToUnsigned(public_exponent) &&
+      std::optional<uint32_t> public_exponent =
+          crypto_algorithm.RsaHashedKeyGenParams()->PublicExponentAsU32();
+      unsigned modulus_length =
+          crypto_algorithm.RsaHashedKeyGenParams()->ModulusLengthBits();
+      // Parameters must fit in int to be passed to rtc::KeyParams::RSA. The
+      // only recognized "hash" is "SHA-256".
+      if (public_exponent &&
+          base::IsValueInRangeForNumericType<int>(*public_exponent) &&
+          base::IsValueInRangeForNumericType<int>(modulus_length) &&
           crypto_algorithm.RsaHashedKeyGenParams()->GetHash().Id() ==
               kWebCryptoAlgorithmIdSha256) {
-        unsigned modulus_length =
-            crypto_algorithm.RsaHashedKeyGenParams()->ModulusLengthBits();
-        key_params = rtc::KeyParams::RSA(modulus_length, public_exponent);
+        key_params =
+            rtc::KeyParams::RSA(base::checked_cast<int>(modulus_length),
+                                base::checked_cast<int>(*public_exponent));
       } else {
         exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                           unsupported_params_string);
         return EmptyPromise();
       }
       break;
+    }
     case kWebCryptoAlgorithmIdEcdsa:
       // name: "ECDSA"
       // The only recognized "namedCurve" is "P-256".
