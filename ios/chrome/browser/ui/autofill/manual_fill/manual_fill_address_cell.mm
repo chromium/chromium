@@ -25,16 +25,21 @@
 // The address/profile for this item.
 @property(nonatomic, readonly) ManualFillAddress* address;
 
+// The UIActions that should be available from the cell's overflow menu button.
+@property(nonatomic, strong) NSArray<UIAction*>* menuActions;
+
 @end
 
 @implementation ManualFillAddressItem
 
 - (instancetype)initWithAddress:(ManualFillAddress*)address
-                contentInjector:(id<ManualFillContentInjector>)contentInjector {
+                contentInjector:(id<ManualFillContentInjector>)contentInjector
+                    menuActions:(NSArray<UIAction*>*)menuActions {
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
     _contentInjector = contentInjector;
     _address = address;
+    _menuActions = menuActions;
     self.cellClass = [ManualFillAddressCell class];
   }
   return self;
@@ -43,7 +48,9 @@
 - (void)configureCell:(ManualFillAddressCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
-  [cell setUpWithAddress:self.address contentInjector:self.contentInjector];
+  [cell setUpWithAddress:self.address
+         contentInjector:self.contentInjector
+             menuActions:self.menuActions];
 }
 
 @end
@@ -147,12 +154,20 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 }
 
 - (void)setUpWithAddress:(ManualFillAddress*)address
-         contentInjector:(id<ManualFillContentInjector>)contentInjector {
+         contentInjector:(id<ManualFillContentInjector>)contentInjector
+             menuActions:(NSArray<UIAction*>*)menuActions {
   if (self.contentView.subviews.count == 0) {
     [self createViewHierarchy];
   }
   self.contentInjector = contentInjector;
   self.address = address;
+
+  if (menuActions && menuActions.count) {
+    self.overflowMenuButton.menu = [UIMenu menuWithChildren:menuActions];
+    self.overflowMenuButton.hidden = NO;
+  } else {
+    self.overflowMenuButton.hidden = YES;
+  }
 
   // Holds the views whose leading anchor is constrained relative to the cell's
   // leading anchor.

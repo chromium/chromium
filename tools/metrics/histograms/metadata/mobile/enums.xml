@@ -248,6 +248,7 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="Autofill Manual Fallback All Passwords Entry"/>
   <int value="24" label="Autofill Manual Fallback Password Entry"/>
   <int value="25" label="Autofill Manual Fallback Payment Entry"/>
+  <int value="26" label="Autofill Manual Fallback Address Entry"/>
 </enum>
 
 <enum name="IOSShareAction">

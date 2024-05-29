@@ -100,6 +100,13 @@ id<GREYMatcher> OverflowMenuButton() {
       grey_interactable(), nullptr);
 }
 
+// Matcher for the "Edit" action made available by the overflow menu button.
+id<GREYMatcher> OverflowMenuEditAction() {
+  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                        IDS_IOS_EDIT_ACTION_TITLE),
+                    grey_interactable(), nullptr);
+}
+
 // Matcher for the "Autofill Form" button shown in the address cells.
 id<GREYMatcher> AutofillFormButton() {
   return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
@@ -436,6 +443,33 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
     [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
         assertWithMatcher:grey_notVisible()];
   }
+}
+
+// Tests the "Edit" action of the overflow menu button displays the address's
+// details in edit mode.
+- (void)testEditAddressFromOverflowMenu {
+  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_DISABLED(@"This test is not relevant when the Keyboard "
+                            @"Accessory Upgrade feature is disabled.")
+  }
+
+  // Bring up the keyboard
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementName)];
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
+                 @"Keyboard Should be Shown");
+
+  // Open the address manual fill view.
+  OpenAddressManualFillView();
+
+  // Tap the overflow menu button and select the "Edit" action.
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:OverflowMenuEditAction()]
+      performAction:grey_tap()];
+
+  // TODO(crbug.com/326413640): Check that the details page was opened in edit
+  // mode.
 }
 
 #pragma mark - Private

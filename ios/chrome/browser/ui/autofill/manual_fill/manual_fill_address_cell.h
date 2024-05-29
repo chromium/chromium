@@ -17,9 +17,11 @@
 // Wrapper to show address cells in a LegacyChromeTableViewController.
 @interface ManualFillAddressItem : TableViewItem
 
-// Inits an address with a `profile` and the `delegate` for user selection.
+// Inits an address with an `address`, a `contentInjector` and `menuActions` for
+// user selection.
 - (instancetype)initWithAddress:(ManualFillAddress*)address
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
+                    menuActions:(NSArray<UIAction*>*)menuActions
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithType:(NSInteger)type NS_UNAVAILABLE;
@@ -30,9 +32,11 @@
 // and sendable the data to the delegate.
 @interface ManualFillAddressCell : TableViewCell
 
-// Updates the cell with address and the `delegate` to be notified.
-- (void)setUpWithAddress:(ManualFillAddress*)profile
-         contentInjector:(id<ManualFillContentInjector>)contentInjector;
+// Updates the cell with an `address`, a `contentInjector` to be notified and
+// `menuActions` to set up an overflow menu.
+- (void)setUpWithAddress:(ManualFillAddress*)address
+         contentInjector:(id<ManualFillContentInjector>)contentInjector
+             menuActions:(NSArray<UIAction*>*)menuActions;
 
 @end
 

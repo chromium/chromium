@@ -6,6 +6,7 @@
 
 #import "base/metrics/user_metrics.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -16,6 +17,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_address.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_address_cell.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_injector.h"
+#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -74,9 +76,15 @@ NSString* const ManageAddressAccessibilityIdentifier =
     ManualFillAddress* manualFillAddress =
         [[ManualFillAddress alloc] initWithProfile:*address];
 
+    NSArray<UIAction*>* menuActions =
+        IsKeyboardAccessoryUpgradeEnabled()
+            ? @[ [self createMenuEditActionForAddress:address] ]
+            : @[];
+
     auto item =
         [[ManualFillAddressItem alloc] initWithAddress:manualFillAddress
-                                       contentInjector:self.contentInjector];
+                                       contentInjector:self.contentInjector
+                                           menuActions:menuActions];
     [items addObject:item];
   }
 
@@ -101,6 +109,19 @@ NSString* const ManageAddressAccessibilityIdentifier =
   manageAddressesItem.accessibilityIdentifier =
       manual_fill::ManageAddressAccessibilityIdentifier;
   [self.consumer presentActions:@[ manageAddressesItem ]];
+}
+
+// Creates a UIAction to edit an address from a UIMenu.
+- (UIAction*)createMenuEditActionForAddress:(const AutofillProfile*)address {
+  ActionFactory* actionFactory = [[ActionFactory alloc]
+      initWithScenario:
+          kMenuScenarioHistogramAutofillManualFallbackAddressEntry];
+
+  UIAction* editAction = [actionFactory actionToEditWithBlock:^{
+      // TODO(crbug.com/326413640): Handle tap.
+  }];
+
+  return editAction;
 }
 
 @end
