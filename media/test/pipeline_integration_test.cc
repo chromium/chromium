@@ -1829,6 +1829,23 @@ TEST_F(PipelineIntegrationTest, MSE_FlacInMp4_Hashed) {
   EXPECT_AUDIO_HASH(kSfxLosslessHash);
 }
 
+TEST_F(PipelineIntegrationTest, MSE_fLaCInMp4_Hashed) {
+  TestMediaSource source("sfx-flac_frag.mp4", "audio/mp4; codecs=\"fLaC\"",
+                         kAppendWholeFile);
+  EXPECT_EQ(PIPELINE_OK,
+            StartPipelineWithMediaSource(&source, kHashed, nullptr));
+  source.EndOfStream();
+
+  EXPECT_EQ(1u, pipeline_->GetBufferedTimeRanges().size());
+  EXPECT_EQ(0, pipeline_->GetBufferedTimeRanges().start(0).InMilliseconds());
+  EXPECT_EQ(288, pipeline_->GetBufferedTimeRanges().end(0).InMilliseconds());
+
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_EQ(kNullVideoHash, GetVideoHash());
+  EXPECT_AUDIO_HASH(kSfxLosslessHash);
+}
+
 TEST_F(PipelineIntegrationTest, BasicPlaybackHashed_MP3) {
   ASSERT_EQ(PIPELINE_OK, Start("sfx.mp3", kHashed));
 

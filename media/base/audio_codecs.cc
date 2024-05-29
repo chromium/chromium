@@ -100,8 +100,9 @@ AudioCodec StringToAudioCodec(const std::string& codec_id) {
     return AudioCodec::kMP3;
   if (codec_id == "alac")
     return AudioCodec::kALAC;
-  if (codec_id == "flac")
+  if (codec_id == "flac" || codec_id == "fLaC") {
     return AudioCodec::kFLAC;
+  }
   if (base::StartsWith(codec_id, "mhm1.", base::CompareCase::SENSITIVE) ||
       base::StartsWith(codec_id, "mha1.", base::CompareCase::SENSITIVE)) {
     return AudioCodec::kMpegHAudio;
