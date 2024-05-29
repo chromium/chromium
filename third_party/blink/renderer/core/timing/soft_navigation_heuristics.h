@@ -70,7 +70,14 @@ class CORE_EXPORT SoftNavigationHeuristics
     STACK_ALLOCATED();
 
    public:
-    enum class Type { kKeyboard, kClick, kNavigate };
+    enum class Type {
+      kKeydown,
+      kKeypress,
+      kKeyup,
+      kClick,
+      kNavigate,
+      kLast = kNavigate
+    };
 
     ~EventScope();
 
@@ -85,11 +92,15 @@ class CORE_EXPORT SoftNavigationHeuristics
 
     EventScope(SoftNavigationHeuristics*,
                std::optional<ObserverScope>,
-               std::optional<TaskScope>);
+               std::optional<TaskScope>,
+               Type,
+               bool is_nested);
 
     SoftNavigationHeuristics* heuristics_;
     std::optional<ObserverScope> observer_scope_;
     std::optional<TaskScope> task_scope_;
+    Type type_;
+    bool is_nested_;
   };
 
   // Supplement boilerplate.
@@ -123,9 +134,15 @@ class CORE_EXPORT SoftNavigationHeuristics
                    uint64_t painted_area,
                    bool is_modified_by_soft_navigation);
 
-  EventScope CreateEventScope(EventScope::Type type,
-                              bool is_new_interaction,
-                              ScriptState*);
+  // Returns an `EventScope` suitable for navigation. Used for navigations not
+  // yet associated with an event.
+  EventScope CreateNavigationEventScope(ScriptState* script_state) {
+    return CreateEventScope(EventScope::Type::kNavigate, script_state);
+  }
+
+  // Returns an `EventScope` for the given `Event` if the event is relevant to
+  // soft navigation tracking, otherwise it returns nullopt.
+  std::optional<EventScope> MaybeCreateEventScopeForEvent(const Event&);
 
   // This method is called during the weakness processing stage of garbage
   // collection to remove items from `potential_soft_navigations_` and to detect
@@ -137,15 +154,6 @@ class CORE_EXPORT SoftNavigationHeuristics
   }
 
  private:
-  struct EventParameters {
-    explicit EventParameters() = default;
-    EventParameters(bool is_new_interaction, EventScope::Type type)
-        : is_new_interaction(is_new_interaction), type(type) {}
-
-    bool is_new_interaction = false;
-    EventScope::Type type = EventScope::Type::kClick;
-  };
-
   void RecordUmaForNonSoftNavigationInteraction(
       const SoftNavigationContext&) const;
   void ReportSoftNavigationToMetrics(LocalFrame*, SoftNavigationContext*) const;
@@ -157,12 +165,8 @@ class CORE_EXPORT SoftNavigationHeuristics
   void CommitPreviousPaints(LocalFrame*);
   void EmitSoftNavigationEntryIfAllConditionsMet(SoftNavigationContext*);
   LocalFrame* GetLocalFrameIfNotDetached() const;
-  void OnSoftNavigationEventScopeDestroyed();
-
-  // This must only be called when `all_event_parameters_` is non-empty.
-  const EventParameters& CurrentEventParameters() {
-    return all_event_parameters_.back();
-  }
+  void OnSoftNavigationEventScopeDestroyed(const EventScope&);
+  EventScope CreateEventScope(EventScope::Type type, ScriptState*);
 
   // The set of ongoing potential soft navigations. `SoftNavigationContext`
   // objects are added when they are the active context during an event handler
@@ -206,11 +210,7 @@ class CORE_EXPORT SoftNavigationHeuristics
   bool did_commit_previous_paints_ = false;
   bool paint_conditions_met_ = false;
   bool initial_interaction_encountered_ = false;
-
-  // `SoftNavigationEventScope`s can be nested in case a click/keyboard event
-  // synchronously initiates a navigation. `all_event_parameters_` stores one
-  // `EventParameters` per scope, with the most recent one in the back.
-  WTF::Deque<EventParameters> all_event_parameters_;
+  bool has_active_event_scope_ = false;
 };
 
 }  // namespace blink

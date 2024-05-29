@@ -8,7 +8,11 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -68,6 +72,48 @@ void LogAndTraceDetectedSoftNavigation(LocalFrame* frame,
                       GetFrameIdForTracing(frame), "url", context.Url(),
                       "navigationId", window->GetNavigationId());
 }
+
+constexpr bool IsInteractionStart(
+    SoftNavigationHeuristics::EventScope::Type type) {
+  return (type == SoftNavigationHeuristics::EventScope::Type::kClick ||
+          type == SoftNavigationHeuristics::EventScope::Type::kKeydown ||
+          type == SoftNavigationHeuristics::EventScope::Type::kNavigate);
+}
+
+constexpr bool IsInteractionEnd(
+    SoftNavigationHeuristics::EventScope::Type type) {
+  return (type == SoftNavigationHeuristics::EventScope::Type::kClick ||
+          type == SoftNavigationHeuristics::EventScope::Type::kKeyup ||
+          type == SoftNavigationHeuristics::EventScope::Type::kNavigate);
+}
+
+std::optional<SoftNavigationHeuristics::EventScope::Type>
+EventScopeTypeFromEvent(const Event& event) {
+  if (!event.isTrusted()) {
+    return std::nullopt;
+  }
+  if (event.IsMouseEvent() && event.type() == event_type_names::kClick) {
+    return SoftNavigationHeuristics::EventScope::Type::kClick;
+  }
+  if (event.type() == event_type_names::kNavigate) {
+    return SoftNavigationHeuristics::EventScope::Type::kNavigate;
+  }
+  if (event.IsKeyboardEvent()) {
+    Node* target_node = event.target() ? event.target()->ToNode() : nullptr;
+    if (target_node && target_node->IsHTMLElement() &&
+        DynamicTo<HTMLElement>(target_node)->IsHTMLBodyElement()) {
+      if (event.type() == event_type_names::kKeydown) {
+        return SoftNavigationHeuristics::EventScope::Type::kKeydown;
+      } else if (event.type() == event_type_names::kKeypress) {
+        return SoftNavigationHeuristics::EventScope::Type::kKeypress;
+      } else if (event.type() == event_type_names::kKeyup) {
+        return SoftNavigationHeuristics::EventScope::Type::kKeyup;
+      }
+    }
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 namespace internal {
@@ -118,6 +164,9 @@ SoftNavigationHeuristics::SoftNavigationHeuristics(LocalDOMWindow& window)
 
 SoftNavigationHeuristics* SoftNavigationHeuristics::From(
     LocalDOMWindow& window) {
+  if (!base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
+    return nullptr;
+  }
   if (!window.GetFrame()->IsMainFrame()) {
     return nullptr;
   }
@@ -266,7 +315,7 @@ void SoftNavigationHeuristics::EmitSoftNavigationEntryIfAllConditionsMet(
     SoftNavigationContext* context) {
   // If there's an `EventScope` on the stack, hold off checking to avoid
   // clearing state while it's in use.
-  if (!all_event_parameters_.empty()) {
+  if (has_active_event_scope_) {
     return;
   }
 
@@ -516,13 +565,8 @@ LocalFrame* SoftNavigationHeuristics::GetLocalFrameIfNotDetached() const {
 
 SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
     EventScope::Type type,
-    bool is_new_interaction,
     ScriptState* script_state) {
-  // Even for nested event scopes, we need to set these parameters, to ensure
-  // that created tasks know they were initiated by the correct event type.
-  all_event_parameters_.push_back(EventParameters(is_new_interaction, type));
-
-  if (all_event_parameters_.size() == 1) {
+  if (!has_active_event_scope_) {
     // Create a new `SoftNavigationContext`, which represents a candidate soft
     // navigation interaction. This context is propagated to all descendant
     // tasks created within this or any nested `EventScope`.
@@ -530,7 +574,7 @@ SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
     // For non-"new interactions", we want to reuse the context from the initial
     // "new interaction" (i.e. keydown), but will create a new one if that has
     // been cleared, which can happen in tests.
-    if (is_new_interaction || !active_interaction_context_) {
+    if (IsInteractionStart(type) || !active_interaction_context_) {
       active_interaction_context_ =
           MakeGarbageCollected<SoftNavigationContext>();
       potential_soft_navigations_.insert(active_interaction_context_.Get());
@@ -544,20 +588,36 @@ SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
 
   auto* tracker = scheduler::TaskAttributionTracker::From(
       GetSupplementable()->GetIsolate());
+  bool is_nested = std::exchange(has_active_event_scope_, true);
   // `tracker` will be null if TaskAttributionInfrastructureDisabledForTesting
   // is enabled.
   if (!tracker) {
     return SoftNavigationHeuristics::EventScope(this,
                                                 /*observer_scope=*/std::nullopt,
-                                                /*task_scope=*/std::nullopt);
+                                                /*task_scope=*/std::nullopt,
+                                                type, is_nested);
   }
   return SoftNavigationHeuristics::EventScope(
       this, tracker->RegisterObserver(this),
-      tracker->CreateTaskScope(script_state,
-                               active_interaction_context_.Get()));
+      tracker->CreateTaskScope(script_state, active_interaction_context_.Get()),
+      type, is_nested);
 }
 
-void SoftNavigationHeuristics::OnSoftNavigationEventScopeDestroyed() {
+std::optional<SoftNavigationHeuristics::EventScope>
+SoftNavigationHeuristics::MaybeCreateEventScopeForEvent(const Event& event) {
+  std::optional<EventScope::Type> type = EventScopeTypeFromEvent(event);
+  if (!type) {
+    return std::nullopt;
+  }
+  auto* script_state = ToScriptStateForMainWorld(GetSupplementable());
+  if (!script_state) {
+    return std::nullopt;
+  }
+  return CreateEventScope(*type, script_state);
+}
+
+void SoftNavigationHeuristics::OnSoftNavigationEventScopeDestroyed(
+    const EventScope& event_scope) {
   // Set the start time to the end of event processing. In case of nested event
   // scopes, we want this to be the end of the nested `navigate()` event
   // handler.
@@ -567,16 +627,15 @@ void SoftNavigationHeuristics::OnSoftNavigationEventScopeDestroyed() {
         base::TimeTicks::Now());
   }
 
-  EventScope::Type type = CurrentEventParameters().type;
-  all_event_parameters_.pop_back();
-  if (!all_event_parameters_.empty()) {
+  has_active_event_scope_ = event_scope.is_nested_;
+  if (has_active_event_scope_) {
     return;
   }
 
-  EmitSoftNavigationEntryIfAllConditionsMet(active_interaction_context_);
-  // We can't clear `active_interaction_context_` for keyboard scopes because
-  // subsequent non-new interaction scopes need to reuse the context.
-  if (type == EventScope::Type::kNavigate || type == EventScope::Type::kClick) {
+  EmitSoftNavigationEntryIfAllConditionsMet(active_interaction_context_.Get());
+  // For keyboard events, we can't clear `active_interaction_context_` until
+  // keyup because keypress and keyup need to reuse the keydown context.
+  if (IsInteractionEnd(event_scope.type_)) {
     active_interaction_context_ = nullptr;
   }
 
@@ -589,23 +648,31 @@ void SoftNavigationHeuristics::OnSoftNavigationEventScopeDestroyed() {
 SoftNavigationHeuristics::EventScope::EventScope(
     SoftNavigationHeuristics* heuristics,
     std::optional<ObserverScope> observer_scope,
-    std::optional<TaskScope> task_scope)
+    std::optional<TaskScope> task_scope,
+    Type type,
+    bool is_nested)
     : heuristics_(heuristics),
       observer_scope_(std::move(observer_scope)),
-      task_scope_(std::move(task_scope)) {
+      task_scope_(std::move(task_scope)),
+      type_(type),
+      is_nested_(is_nested) {
   CHECK(heuristics_);
 }
 
 SoftNavigationHeuristics::EventScope::EventScope(EventScope&& other)
     : heuristics_(std::exchange(other.heuristics_, nullptr)),
       observer_scope_(std::move(other.observer_scope_)),
-      task_scope_(std::move(other.task_scope_)) {}
+      task_scope_(std::move(other.task_scope_)),
+      type_(other.type_),
+      is_nested_(other.is_nested_) {}
 
 SoftNavigationHeuristics::EventScope&
 SoftNavigationHeuristics::EventScope::operator=(EventScope&& other) {
   heuristics_ = std::exchange(other.heuristics_, nullptr);
   observer_scope_ = std::move(other.observer_scope_);
   task_scope_ = std::move(other.task_scope_);
+  type_ = other.type_;
+  is_nested_ = other.is_nested_;
   return *this;
 }
 
@@ -613,7 +680,7 @@ SoftNavigationHeuristics::EventScope::~EventScope() {
   if (!heuristics_) {
     return;
   }
-  heuristics_->OnSoftNavigationEventScopeDestroyed();
+  heuristics_->OnSoftNavigationEventScopeDestroyed(*this);
 }
 
 }  // namespace blink

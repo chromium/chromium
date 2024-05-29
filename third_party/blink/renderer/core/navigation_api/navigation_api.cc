@@ -9,7 +9,6 @@
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
@@ -842,24 +841,22 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     init->setSourceElement(params->source_element);
   }
 
-  std::optional<SoftNavigationHeuristics::EventScope> soft_navigation_scope;
-  if (params->frame_load_type != WebFrameLoadType::kReplaceCurrentItem &&
-      base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
-    if (auto* heuristics = SoftNavigationHeuristics::From(*window_)) {
-      if (init->userInitiated() && !init->downloadRequest() &&
-          init->canIntercept()) {
-        // If these conditions are met, create a SoftNavigationEventScope to
-        // consider this a "user initiated click", and the dispatched event
-        // handlers as potential soft navigation tasks.
-        soft_navigation_scope = heuristics->CreateEventScope(
-            SoftNavigationHeuristics::EventScope::Type::kNavigate,
-            /*is_new_interaction=*/true, script_state);
-      }
-    }
-  }
   auto* navigate_event = NavigateEvent::Create(
       window_, event_type_names::kNavigate, init, controller);
   navigate_event->SetDispatchParams(params);
+
+  std::optional<SoftNavigationHeuristics::EventScope> soft_navigation_scope;
+  if (params->frame_load_type != WebFrameLoadType::kReplaceCurrentItem &&
+      init->userInitiated() && !init->downloadRequest() &&
+      init->canIntercept()) {
+    if (auto* heuristics = SoftNavigationHeuristics::From(*window_)) {
+      // If these conditions are met, create a SoftNavigationEventScope to
+      // consider this a "user initiated click", and the dispatched event
+      // handlers as potential soft navigation tasks.
+      soft_navigation_scope =
+          heuristics->MaybeCreateEventScopeForEvent(*navigate_event);
+    }
+  }
 
   CHECK(!ongoing_navigate_event_);
   ongoing_navigate_event_ = navigate_event;

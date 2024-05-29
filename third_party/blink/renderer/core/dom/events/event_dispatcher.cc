@@ -213,41 +213,20 @@ DispatchEventResult EventDispatcher::Dispatch() {
   const bool is_click =
       event_->IsMouseEvent() && event_->type() == event_type_names::kClick;
 
-  Node* target_node = event_->target() ? event_->target()->ToNode() : nullptr;
-  const bool is_target_body_element =
-      target_node && target_node->IsHTMLElement() &&
-      DynamicTo<HTMLElement>(target_node)->IsHTMLBodyElement();
-  const bool is_unfocused_keyboard_event =
-      event_->IsKeyboardEvent() &&
-      (event_->type() == event_type_names::kKeydown ||
-       event_->type() == event_type_names::kKeypress ||
-       event_->type() == event_type_names::kKeyup) &&
-      is_target_body_element;
-
   std::optional<SoftNavigationHeuristics::EventScope> soft_navigation_scope;
-  if ((is_click || is_unfocused_keyboard_event) && event_->isTrusted() &&
-      frame) {
-    if (window &&
-        base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
-      if (SoftNavigationHeuristics* heuristics =
-              SoftNavigationHeuristics::From(*window)) {
-        bool is_new_interaction =
-            is_click || (event_->type() == event_type_names::kKeydown);
-        if (auto* script_state = ToScriptStateForMainWorld(window)) {
-          soft_navigation_scope = heuristics->CreateEventScope(
-              is_unfocused_keyboard_event
-                  ? SoftNavigationHeuristics::EventScope::Type::kKeyboard
-                  : SoftNavigationHeuristics::EventScope::Type::kClick,
-              is_new_interaction, script_state);
-        }
-      }
+  if (window) {
+    if (auto* heuristics = SoftNavigationHeuristics::From(*window)) {
+      soft_navigation_scope =
+          heuristics->MaybeCreateEventScopeForEvent(*event_);
     }
+  }
+
+  if (is_click && event_->isTrusted() && frame) {
     // A genuine mouse click cannot be triggered by script so we don't expect
     // there are any script in the stack.
-    DCHECK(!is_click || !frame->GetAdTracker() ||
-           !frame->GetAdTracker()->IsAdScriptInStack(
-               AdTracker::StackType::kBottomAndTop));
-    if (is_click && frame->IsAdFrame()) {
+    DCHECK(!frame->GetAdTracker() || !frame->GetAdTracker()->IsAdScriptInStack(
+                                         AdTracker::StackType::kBottomAndTop));
+    if (frame->IsAdFrame()) {
       UseCounter::Count(document, WebFeature::kAdClick);
     }
   }
