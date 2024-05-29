@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.ui.base.WindowDelegate;
 
 import java.util.Objects;
 
@@ -109,10 +108,6 @@ public interface OmniboxSuggestionsDropdownEmbedder {
      */
     @NonNull
     OmniboxAlignment getCurrentAlignment();
-
-    /** Return the delegate used to interact with the Window. */
-    @NonNull
-    WindowDelegate getWindowDelegate();
 
     /** Return whether the suggestions are being rendered in the tablet UI. */
     boolean isTablet();

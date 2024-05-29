@@ -78,7 +78,7 @@ import java.util.function.BooleanSupplier;
  */
 public class LocationBarCoordinator
         implements LocationBar, NativeInitObserver, AutocompleteDelegate {
-    private final OmniboxSuggestionsDropdownEmbedderImpl mOmniboxDropdownEmbedderImpl;
+    private OmniboxSuggestionsDropdownEmbedderImpl mOmniboxDropdownEmbedderImpl;
 
     /** Identifies coordinators with methods specific to a device type. */
     public interface SubCoordinator {
@@ -194,14 +194,17 @@ public class LocationBarCoordinator
         Context context = mLocationBarLayout.getContext();
         OneshotSupplierImpl<TemplateUrlService> templateUrlServiceSupplier =
                 new OneshotSupplierImpl<>();
+        DeferredIMEWindowInsetApplicationCallback deferredIMEWindowInsetApplicationCallback =
+                new DeferredIMEWindowInsetApplicationCallback(
+                        () -> mOmniboxDropdownEmbedderImpl.recalculateOmniboxAlignment());
         mOmniboxDropdownEmbedderImpl =
                 new OmniboxSuggestionsDropdownEmbedderImpl(
                         mWindowAndroid,
-                        mWindowDelegate,
                         autocompleteAnchorView,
                         mLocationBarLayout,
                         uiOverrides.isForcedPhoneStyleOmnibox(),
-                        baseChromeLayout);
+                        baseChromeLayout,
+                        deferredIMEWindowInsetApplicationCallback::getCurrentKeyboardHeight);
 
         mUrlBar = mLocationBarLayout.findViewById(R.id.url_bar);
         // TODO(crbug.com/40733049): Inject LocaleManager instance to LocationBarCoordinator instead
@@ -261,7 +264,8 @@ public class LocationBarCoordinator
                         omniboxSuggestionsDropdownScrollListener,
                         mActivityLifecycleDispatcher,
                         uiOverrides.isForcedPhoneStyleOmnibox(),
-                        windowAndroid);
+                        windowAndroid,
+                        deferredIMEWindowInsetApplicationCallback);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator =
                 new StatusCoordinator(

@@ -59,6 +59,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCallback;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
@@ -142,6 +143,7 @@ public class AutocompleteMediatorUnitTest {
     private @Mock InsetObserver mInsetObserver;
     private @Mock AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver
             mVisualStateObserver;
+    private @Mock DeferredIMEWindowInsetApplicationCallback mDeferredImeCallback;
     private @Captor ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
     private @Captor ArgumentCaptor<SuggestionsListAnimationDriver> mDriverCaptor;
 
@@ -211,7 +213,8 @@ public class AutocompleteMediatorUnitTest {
                         mOmniboxActionDelegate,
                         mActivityLifecycleDispatcher,
                         mEmbedder,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mDeferredImeCallback);
         mMediator
                 .getDropdownItemViewInfoListBuilderForTest()
                 .registerSuggestionProcessor(mMockProcessor);
@@ -1496,5 +1499,18 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.propagateOmniboxSessionStateChange(false);
         verify(mVisualStateObserver, atLeastOnce()).onOmniboxSessionStateChange(eq(false));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE)
+    public void onOmniboxSessionStateChange_attachesImeCallback() {
+        mMediator.onNativeInitialized();
+
+        mMediator.onOmniboxSessionStateChange(true);
+        verify(mDeferredImeCallback).attach(mWindowAndroid);
+
+        mMediator.onOmniboxSessionStateChange(false);
+        verify(mDeferredImeCallback).detach();
     }
 }

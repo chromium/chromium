@@ -20,12 +20,12 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.display.DisplayUtil;
 
 /**
@@ -40,10 +40,10 @@ class OmniboxSuggestionsDropdownEmbedderImpl
     private final ObservableSupplierImpl<OmniboxAlignment> mOmniboxAlignmentSupplier =
             new ObservableSupplierImpl<>();
     private final @NonNull WindowAndroid mWindowAndroid;
-    private final @NonNull WindowDelegate mWindowDelegate;
     private final @NonNull View mAnchorView;
     private final @NonNull View mAlignmentView;
     private final boolean mForcePhoneStyleOmnibox;
+    private final Supplier<Integer> mKeyboardHeightSupplier;
     private final @NonNull Context mContext;
     // Reusable int array to pass to positioning methods that operate on a two element int array.
     // Keeping it as a member lets us avoid allocating a temp array every time.
@@ -52,12 +52,10 @@ class OmniboxSuggestionsDropdownEmbedderImpl
     private int mWindowWidthDp;
     private int mWindowHeightDp;
     private WindowInsetsCompat mWindowInsetsCompat;
-    private DeferredIMEWindowInsetApplicationCallback mDeferredIMEWindowInsetApplicationCallback;
     private @Nullable View mBaseChromeLayout;
 
     /**
      * @param windowAndroid Window object in which the dropdown will be displayed.
-     * @param windowDelegate Delegate object for performing window operations.
      * @param anchorView View to which the dropdown should be "anchored" i.e. vertically positioned
      *     next to and matching the width of. This must be a descendant of the top-level content
      *     (android.R.id.content) view.
@@ -70,16 +68,16 @@ class OmniboxSuggestionsDropdownEmbedderImpl
      */
     OmniboxSuggestionsDropdownEmbedderImpl(
             @NonNull WindowAndroid windowAndroid,
-            @NonNull WindowDelegate windowDelegate,
             @NonNull View anchorView,
             @NonNull View alignmentView,
             boolean forcePhoneStyleOmnibox,
-            @Nullable View baseChromeLayout) {
+            @Nullable View baseChromeLayout,
+            Supplier<Integer> keyboardHeightSupplier) {
         mWindowAndroid = windowAndroid;
-        mWindowDelegate = windowDelegate;
         mAnchorView = anchorView;
         mAlignmentView = alignmentView;
         mForcePhoneStyleOmnibox = forcePhoneStyleOmnibox;
+        mKeyboardHeightSupplier = keyboardHeightSupplier;
         mContext = mAnchorView.getContext();
         mContext.registerComponentCallbacks(this);
         Configuration configuration = mContext.getResources().getConfiguration();
@@ -117,9 +115,6 @@ class OmniboxSuggestionsDropdownEmbedderImpl
         mAnchorView.addOnLayoutChangeListener(this);
         mAlignmentView.addOnLayoutChangeListener(this);
         mAnchorView.getViewTreeObserver().addOnGlobalLayoutListener(this);
-        mDeferredIMEWindowInsetApplicationCallback =
-                new DeferredIMEWindowInsetApplicationCallback(this::recalculateOmniboxAlignment);
-        mDeferredIMEWindowInsetApplicationCallback.attach(mWindowAndroid);
         onConfigurationChanged(mContext.getResources().getConfiguration());
         recalculateOmniboxAlignment();
     }
@@ -129,15 +124,6 @@ class OmniboxSuggestionsDropdownEmbedderImpl
         mAnchorView.removeOnLayoutChangeListener(this);
         mAlignmentView.removeOnLayoutChangeListener(this);
         mAnchorView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        if (mDeferredIMEWindowInsetApplicationCallback != null) {
-            mDeferredIMEWindowInsetApplicationCallback.detach();
-            mDeferredIMEWindowInsetApplicationCallback = null;
-        }
-    }
-
-    @Override
-    public @NonNull WindowDelegate getWindowDelegate() {
-        return mWindowDelegate;
     }
 
     // View.OnLayoutChangeListener
@@ -256,10 +242,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
             paddingRight = 0;
         }
 
-        int keyboardHeight =
-                mDeferredIMEWindowInsetApplicationCallback != null
-                        ? mDeferredIMEWindowInsetApplicationCallback.getCurrentKeyboardHeight()
-                        : 0;
+        int keyboardHeight = mKeyboardHeightSupplier.get();
 
         int windowHeight;
         if (BuildInfo.getInstance().isAutomotive

@@ -24,7 +24,6 @@ import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView.LayoutParams;
 import androidx.test.core.app.ApplicationProvider;
@@ -78,12 +77,6 @@ public class OmniboxSuggestionsDropdownUnitTest {
     private boolean mAttachedToWindow;
     private OmniboxSuggestionsDropdownEmbedder mEmbedder =
             new OmniboxSuggestionsDropdownEmbedder() {
-                @NonNull
-                @Override
-                public WindowDelegate getWindowDelegate() {
-                    return mWindowDelegate;
-                }
-
                 @Override
                 public boolean isTablet() {
                     return mIsTablet;

@@ -21,6 +21,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCallback;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
@@ -108,7 +109,10 @@ public class AutocompleteCoordinator
             @Nullable OmniboxSuggestionsDropdownScrollListener scrollListener,
             @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
             boolean forcePhoneStyleOmnibox,
-            @NonNull WindowAndroid windowAndroid) {
+            @NonNull WindowAndroid windowAndroid,
+            @NonNull
+                    DeferredIMEWindowInsetApplicationCallback
+                            deferredIMEWindowInsetApplicationCallback) {
         mParent = parent;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         Context context = parent.getContext();
@@ -139,7 +143,8 @@ public class AutocompleteCoordinator
                         omniboxActionDelegate,
                         lifecycleDispatcher,
                         dropdownEmbedder,
-                        windowAndroid);
+                        windowAndroid,
+                        deferredIMEWindowInsetApplicationCallback);
         mMediator.initDefaultProcessors();
 
         if (scrollListener != null) {

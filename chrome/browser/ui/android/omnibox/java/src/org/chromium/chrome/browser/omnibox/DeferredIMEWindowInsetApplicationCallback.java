@@ -27,7 +27,7 @@ import java.util.List;
  * isn't guaranteed to occur in practice, deferred application is only practiced when an animation
  * is known to be running.
  */
-class DeferredIMEWindowInsetApplicationCallback
+public class DeferredIMEWindowInsetApplicationCallback
         implements WindowInsetsConsumer, WindowInsetsAnimationListener {
     private static final int NO_DEFERRED_KEYBOARD_HEIGHT = -1;
     private int mDeferredKeyboardHeight = NO_DEFERRED_KEYBOARD_HEIGHT;
