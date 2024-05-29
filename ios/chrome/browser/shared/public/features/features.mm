@@ -742,6 +742,15 @@ const base::TimeDelta TabResumptionForXDevicesTimeThreshold() {
   return base::Hours(12);
 }
 
+BASE_FEATURE(kTabResumption1_5,
+             "TabResumption1_5",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsTabResumption1_5Enabled() {
+  return IsTabResumptionEnabled() &&
+         base::FeatureList::IsEnabled(kTabResumption1_5);
+}
+
 bool ShouldPutMostVisitedSitesInMagicStack() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kMagicStack, kMagicStackMostVisitedModuleParam, false);

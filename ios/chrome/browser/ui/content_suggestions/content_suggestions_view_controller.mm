@@ -512,6 +512,9 @@ const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
     case ContentSuggestionsModuleType::kParcelTracking:
       [self.audience showMagicStackParcelList];
       break;
+    case ContentSuggestionsModuleType::kTabResumption:
+      [self.audience showMagicStackRecentTabs];
+      break;
     default:
       break;
   }

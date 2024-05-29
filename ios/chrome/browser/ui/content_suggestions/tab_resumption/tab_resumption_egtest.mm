@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/new_tab_page_app_interface.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_constants.h"
+#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/tabs/tests/distant_tabs_app_interface.h"
 #import "ios/chrome/browser/ui/tabs/tests/fake_distant_tab.h"
@@ -90,6 +91,10 @@ NSString* HostnameFromGURL(GURL URL) {
 
 @implementation TabResumptionTestCase
 
+- (BOOL)isUsingTabResumption15 {
+  return [self.name containsString:@"TR15"];
+}
+
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.additional_args.push_back(
@@ -97,13 +102,18 @@ NSString* HostnameFromGURL(GURL URL) {
       kTabResumptionParameterName + "/" + kTabResumptionAllTabsParam + "," +
       syncer::kSyncSessionOnVisibilityChanged.name);
   config.features_enabled.push_back(kIOSMagicStackCollectionView);
+  if ([self isUsingTabResumption15]) {
+    config.features_enabled.push_back(kTabResumption1_5);
+  } else {
+    config.features_disabled.push_back(kTabResumption1_5);
+  }
   config.additional_args.push_back("--test-ios-module-ranker=tab_resumption");
   return config;
 }
 
 // Relaunches the app with start surface enabled.
 - (void)relaunchAppWithStartSurfaceEnabled {
-  AppLaunchConfiguration config;
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back(
       "--enable-features=" + std::string(kStartSurface.name) + "<" +
@@ -114,7 +124,6 @@ NSString* HostnameFromGURL(GURL URL) {
       "--force-fieldtrial-params=" + std::string(kStartSurface.name) +
       ".Test:" + std::string(kReturnToStartSurfaceInactiveDurationInSeconds) +
       "/" + "0");
-  config.additional_args.push_back("--test-ios-module-ranker=tab_resumption");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
@@ -286,6 +295,51 @@ NSString* HostnameFromGURL(GURL URL) {
 
   // Check that the tile is hidden.
   WaitUntilTabResumptionTileVisibleOrTimeout(false);
+}
+
+- (void)testShowMoreVisibleTR15 {
+  // Check that the tile is not displayed when there is no local tab.
+  WaitUntilTabResumptionTileVisibleOrTimeout(false);
+
+  const GURL destinationUrl = self.testServer->GetURL("/pony.html");
+  [ChromeEarlGrey loadURL:destinationUrl];
+
+  // Relaunch the app.
+  [self relaunchAppWithStartSurfaceEnabled];
+
+  // Check that the tile is displayed when there is a local tab.
+  WaitUntilTabResumptionTileVisibleOrTimeout(true);
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"See More"),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kRecentTabsTableViewControllerAccessibilityIdentifier),
+                     grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+- (void)testShowMoreNotVisible {
+  // Check that the tile is not displayed when there is no local tab.
+  WaitUntilTabResumptionTileVisibleOrTimeout(false);
+
+  const GURL destinationUrl = self.testServer->GetURL("/pony.html");
+  [ChromeEarlGrey loadURL:destinationUrl];
+
+  // Relaunch the app.
+  [self relaunchAppWithStartSurfaceEnabled];
+
+  // Check that the tile is displayed when there is a local tab.
+  WaitUntilTabResumptionTileVisibleOrTimeout(true);
+  NSError* error = nil;
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"See More"),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_sufficientlyVisible()
+                  error:&error];
+  GREYAssertTrue(error, @"See more button is visible.");
 }
 
 @end

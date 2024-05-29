@@ -1135,6 +1135,11 @@ const char kTabResumptionDescription[] =
     "When enabled, offer users with a quick shortcut to resume the last synced "
     "tab from another device.";
 
+const char kTabResumption1_5Name[] = "Enable Tab Resumption Enhancements";
+const char kTabResumption1_5Description[] =
+    "When enabled, add some improvements to Tab Resumption UI: Add a See more "
+    "button to the cards and show better thumbnails. Requires #tab-resumption.";
+
 const char kUndoMigrationOfSyncingUserToSignedInName[] =
     "Undo the migration of syncing users to signed-in";
 const char kUndoMigrationOfSyncingUserToSignedInDescription[] =

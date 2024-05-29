@@ -36,6 +36,9 @@ enum class SafetyCheckItemType;
 // Notifies the audience to show the list of parcels.
 - (void)showMagicStackParcelList;
 
+// Notifies the audience to show the recent tabs panel.
+- (void)showMagicStackRecentTabs;
+
 // Called when a Safety Check item is selected by the user.
 - (void)didSelectSafetyCheckItem:(SafetyCheckItemType)type;
 

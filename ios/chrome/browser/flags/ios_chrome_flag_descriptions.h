@@ -997,6 +997,10 @@ extern const char kTabPickupThresholdDescription[];
 extern const char kTabResumptionName[];
 extern const char kTabResumptionDescription[];
 
+// Title and description for the flag to enable tab resumption enhancements.
+extern const char kTabResumption1_5Name[];
+extern const char kTabResumption1_5Description[];
+
 // Title and description for the flag to undo the migration of syncing users to
 // the signed-in non-syncing state.
 extern const char kUndoMigrationOfSyncingUserToSignedInName[];

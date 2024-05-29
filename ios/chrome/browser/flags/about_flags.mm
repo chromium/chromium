@@ -1661,7 +1661,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxSuggestionAnswerMigrationDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(omnibox_feature_configs::SuggestionAnswerMigration::
-                            kOmniboxSuggestionAnswerMigration)}};
+                            kOmniboxSuggestionAnswerMigration)},
+    {"tab-resumption1-5", flag_descriptions::kTabResumption1_5Name,
+     flag_descriptions::kTabResumption1_5Description, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabResumption1_5)},
+};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

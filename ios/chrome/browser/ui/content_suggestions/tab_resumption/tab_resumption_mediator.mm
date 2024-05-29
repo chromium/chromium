@@ -411,6 +411,7 @@ NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
   item.tabURL = tab->virtual_url;
   item.commandHandler = self;
   item.delegate = self;
+  item.shouldShowSeeMore = IsTabResumption1_5Enabled();
 
   // Fetch the favicon.
   [self fetchFaviconForItem:item];
@@ -427,6 +428,7 @@ NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
   item.tabURL = webState->GetLastCommittedURL();
   item.commandHandler = self;
   item.delegate = self;
+  item.shouldShowSeeMore = IsTabResumption1_5Enabled();
 
   // Fetch the favicon.
   [self fetchFaviconForItem:item];

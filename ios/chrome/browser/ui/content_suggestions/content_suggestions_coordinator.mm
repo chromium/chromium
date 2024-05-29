@@ -506,6 +506,13 @@
   [self didSelectSetUpListItem:view.type];
 }
 
+- (void)showMagicStackRecentTabs {
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  id<BrowserCoordinatorCommands> browserCoordinatorCommands =
+      HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+  [browserCoordinatorCommands showRecentTabs];
+}
+
 #pragma mark - MagicStackModuleContainerDelegate
 
 - (void)seeMoreWasTappedForModuleType:(ContentSuggestionsModuleType)type {
@@ -518,6 +525,9 @@
       break;
     case ContentSuggestionsModuleType::kParcelTracking:
       [self showMagicStackParcelList];
+      break;
+    case ContentSuggestionsModuleType::kTabResumption:
+      [self showMagicStackRecentTabs];
       break;
     default:
       break;
