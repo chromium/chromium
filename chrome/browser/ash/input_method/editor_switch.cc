@@ -156,6 +156,10 @@ bool IsInputMethodEngineAllowed(const std::vector<std::string>& allowlist,
 }
 
 bool IsAppTypeAllowed(chromeos::AppType app_type) {
+  if (base::FeatureList::IsEnabled(features::kOrcaArc) &&
+      app_type == chromeos::AppType::ARC_APP) {
+    return true;
+  }
   return !base::Contains(kAppTypeDenylist, app_type);
 }
 
