@@ -38,7 +38,7 @@ std::optional<base::Value::Dict> LoadManifestOnFileThread(
                 << error;
     LOG(ERROR) << errorStream.str();
     static auto* const crash_key = base::debug::AllocateCrashKeyString(
-        "helper_extension_failure", base::debug::CrashKeySize::Size64);
+        "helper_extension_failure", base::debug::CrashKeySize::Size1024);
     base::debug::SetCrashKeyString(crash_key, errorStream.str());
     base::debug::DumpWithoutCrashing();
     return std::nullopt;
