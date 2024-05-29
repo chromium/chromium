@@ -61,7 +61,7 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   // thread).
   HostGpuMemoryBufferManager(
       GpuServiceProvider gpu_service_provider,
-      int client_id,
+      int gpu_service_client_id,
       std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
@@ -163,7 +163,7 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   // whether a buffer is allocated by the most current GPU service or not.
   int gpu_service_version_ = 0;
 
-  const int client_id_;
+  const int gpu_service_client_id_;
   int next_gpu_memory_id_ = 1;
 
   // Used to cancel pending requests on shutdown.

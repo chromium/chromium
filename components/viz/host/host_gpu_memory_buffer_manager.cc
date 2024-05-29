@@ -64,11 +64,11 @@ HostGpuMemoryBufferManager::PendingBufferInfo::~PendingBufferInfo() = default;
 
 HostGpuMemoryBufferManager::HostGpuMemoryBufferManager(
     GpuServiceProvider gpu_service_provider,
-    int client_id,
+    int gpu_service_client_id,
     std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : gpu_service_provider_(gpu_service_provider),
-      client_id_(client_id),
+      gpu_service_client_id_(gpu_service_client_id),
       gpu_memory_buffer_support_(std::move(gpu_memory_buffer_support)),
       pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()),
       task_runner_(std::move(task_runner)) {
@@ -113,7 +113,7 @@ void HostGpuMemoryBufferManager::DestroyGpuMemoryBuffer(
   if (buffer_iter->second.type() != gfx::SHARED_MEMORY_BUFFER) {
     auto* gpu_service = GetGpuService();
     DCHECK(gpu_service);
-    gpu_service->DestroyGpuMemoryBuffer(id, client_id_);
+    gpu_service->DestroyGpuMemoryBuffer(id, gpu_service_client_id_);
   }
   allocated_buffers_.erase(buffer_iter);
 }
@@ -140,13 +140,14 @@ void HostGpuMemoryBufferManager::AllocateGpuMemoryBuffer(
         gfx::GpuMemoryBufferHandle handle;
         {
           mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow;
-          gpu_service->CreateGpuMemoryBuffer(
-              id, size, format, usage, client_id_, surface_handle, &handle);
+          gpu_service->CreateGpuMemoryBuffer(id, size, format, usage,
+                                             gpu_service_client_id_,
+                                             surface_handle, &handle);
         }
         OnGpuMemoryBufferAllocated(gpu_service_version_, id, std::move(handle));
       } else {
         gpu_service->CreateGpuMemoryBuffer(
-            id, size, format, usage, client_id_, surface_handle,
+            id, size, format, usage, gpu_service_client_id_, surface_handle,
             base::BindOnce(
                 &HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated,
                 weak_ptr_, gpu_service_version_, id));
@@ -325,7 +326,8 @@ bool HostGpuMemoryBufferManager::OnMemoryDump(
           ->GetTracingProcessId();
   for (const auto& buffer_pair : allocated_buffers_) {
     auto& buffer_info = buffer_pair.second;
-    if (!buffer_info.OnMemoryDump(pmd, client_id_, client_tracing_process_id)) {
+    if (!buffer_info.OnMemoryDump(pmd, gpu_service_client_id_,
+                                  client_tracing_process_id)) {
       return false;
     }
   }
@@ -369,7 +371,8 @@ void HostGpuMemoryBufferManager::OnConnectionError() {
   for (auto& buffer_pair : pending_buffers) {
     auto& buffer = buffer_pair.second;
     LOG(WARNING) << "Retrying allocation of GpuMemoryBuffer with id = "
-                 << buffer_pair.first.id << ", client_id = " << client_id_
+                 << buffer_pair.first.id
+                 << ", client_id = " << gpu_service_client_id_
                  << ", size = " << buffer.size.ToString()
                  << ", format = " << gfx::BufferFormatToString(buffer.format)
                  << ", usage = " << gfx::BufferUsageToString(buffer.usage)
