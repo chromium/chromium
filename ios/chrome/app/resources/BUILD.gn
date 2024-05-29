@@ -107,7 +107,6 @@ repack("repack_unscaled_resources") {
       "$root_gen_dir/third_party/blink/public/resources/inspector_overlay_resources.pak",
       "$root_gen_dir/third_party/blink/public/strings/blink_accessibility_strings_en-US.pak",
       "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
-      "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
     ]
     deps += [
       "//base/tracing/protos:chrome_track_event_resources",
