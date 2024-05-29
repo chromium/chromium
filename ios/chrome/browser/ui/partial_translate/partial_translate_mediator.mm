@@ -87,7 +87,7 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
 
 @interface PartialTranslateMediator ()
 
-// Whether the mediator is handling partial translate for an incognito tab.
+// The base view controller to present UI.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
 // Whether the mediator is handling partial translate for an incognito tab.
