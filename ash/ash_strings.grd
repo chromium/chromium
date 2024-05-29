@@ -3323,7 +3323,7 @@ No devices connected.
       <message name="IDS_ASH_AUDIO_SELECTION_MULTIPLE_DEVICES_BODY" desc="body of audio selection notification to inform users multiple devices are detected">
         Input audio is "<ph name="INPUT_DEVICE_NAME">$1<ex>Logitech Webcam</ex></ph>" and output audio is "<ph name="OUTPUT_DEVICE_NAME">$2<ex>USB Speaker</ex></ph>". Go to Settings to change.
       </message>
-      <message name="IDS_ASH_AUDIO_SELECTION_MULTIPLE_DEVICES_BODY_WITH_NAME_UNAVAILABLE" desc="body of audio selection notification to inform users multiple devices are detected, used when the current active device name is not available" translateable="false">
+      <message name="IDS_ASH_AUDIO_SELECTION_MULTIPLE_DEVICES_BODY_WITH_NAME_UNAVAILABLE" desc="body of audio selection notification to inform users multiple devices are detected, used when the current active device name is not available">
         Input and output devices are set. Go to Settings to change.
       </message>
       <message name="IDS_ASH_AUDIO_SELECTION_BUTTON_SWITCH" desc="label used for audio selection switch button">
