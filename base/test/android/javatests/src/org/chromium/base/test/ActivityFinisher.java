@@ -80,13 +80,23 @@ public class ActivityFinisher {
                                 Context.ACTIVITY_SERVICE);
         try {
             // Use multiple rounds in case new activities are started.
-            for (int attempt = 0; attempt < 3; ++attempt) {
+            int numTries = 5;
+            for (int attempt = 0; attempt < numTries + 1; ++attempt) {
+                if (attempt == numTries) {
+                    Log.e(
+                            TAG,
+                            "Giving up after %d attempts. These still remain: %s",
+                            attempt,
+                            snapshotActivities());
+                    break;
+                }
                 if (!finishHelper(activityManager)) {
                     if (attempt > 0) {
                         Log.i(
                                 TAG,
-                                "Finishing tasks took %d milliseconds",
-                                timer.getElapsedMillis());
+                                "Finishing activities took %dms and %d iterations",
+                                timer.getElapsedMillis(),
+                                attempt);
                     }
                     break;
                 }
@@ -105,11 +115,10 @@ public class ActivityFinisher {
                 new ActivityLifecycleCallbacksAdapter() {
                     @Override
                     public void onStateChanged(Activity activity, @ActivityState int newState) {
+                        // We are not guaranteed to have more than one activity be finished, so wait
+                        // for only the first one.
                         if (newState == ActivityState.DESTROYED && remaining.contains(activity)) {
-                            remaining.remove(activity);
-                            if (remaining.isEmpty()) {
-                                doneCallback.notifyCalled();
-                            }
+                            doneCallback.notifyCalled();
                         }
                     }
                 };
@@ -121,29 +130,34 @@ public class ActivityFinisher {
                     // activities do not change before installing the lifecycle listener.
                     List<AppTask> tasks = activityManager.getAppTasks();
                     List<Activity> activities = snapshotActivities();
-                    if (!tasks.isEmpty()) {
-                        didWorkHolder.set(true);
+                    if (!tasks.isEmpty() || !activities.isEmpty()) {
                         Log.i(
                                 TAG,
-                                "Finishing %d leftover tasks with Activities: %s",
+                                "Finishing %d leftover tasks and these activities: %s",
                                 tasks.size(),
                                 activities);
+                    }
+                    if (!tasks.isEmpty()) {
+                        didWorkHolder.set(true);
+                        // It's possible to have tasks but no activities when the test starts.
                         for (ActivityManager.AppTask task : tasks) {
                             task.finishAndRemoveTask();
                         }
-                    } else if (!activities.isEmpty()) {
+                    }
+                    if (!activities.isEmpty()) {
+                        // Even if we don't actually call .finish(), we still need to wait for
+                        // already-finishing activities to be destroyed.
                         didWorkHolder.set(true);
-                        Log.i(
-                                TAG,
-                                "No tasks, yet these Activities exist: %s",
-                                activities);
                         for (Activity activity : activities) {
                             if (!activity.isFinishing()) {
-                                activity.finish();
+                                activity.finishAndRemoveTask();
                             }
                         }
                     }
-                    if (!activities.isEmpty()) {
+
+                    if (activities.isEmpty()) {
+                        doneCallback.notifyCalled();
+                    } else {
                         remaining.addAll(activities);
                         BaseChromiumAndroidJUnitRunner.sApplication
                                 .registerActivityLifecycleCallbacks(lifecycleCallbacks);
@@ -154,11 +168,7 @@ public class ActivityFinisher {
         }
 
         try {
-            if (!remaining.isEmpty()) {
-                doneCallback.waitForFirst();
-            }
-            // Ensure that all onDestroy() callbacks are dispatched before returning.
-            BaseChromiumAndroidJUnitRunner.sInstance.runOnMainSync(() -> {});
+            doneCallback.waitForFirst();
             return true;
         } catch (TimeoutException e) {
             Log.w(TAG, "Timed out trying to close leftover activities: %s", remaining);
