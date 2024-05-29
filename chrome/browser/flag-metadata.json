@@ -9081,6 +9081,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "wifi-concurrency",
+    "owners": [ "jiajunz@google.com", "cros-connectivity@google.com" ],
+    "expiry_milestone": 137
+  },
+  {
     "name": "wifi-connect-mac-address-randomization",
     "owners": [ "jsiuda@chromium.org", "chromeos-wifi-team@chromium.org" ],
     "expiry_milestone": 130

@@ -3053,6 +3053,12 @@ BASE_FEATURE(kWifiConnectMacAddressRandomization,
              "WifiConnectMacAddressRandomization",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Control whether the Wi-Fi concurrency Shill API is used when enable station
+// Wi-Fi or tethering in Chrome Ash.
+BASE_FEATURE(kWifiConcurrency,
+             "WifiConcurrency",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Control whether the WiFi Direct is enabled. When enabled, it will allow
 // the nearby share feature to utilize WiFi P2P for sharing data.
 BASE_FEATURE(kWifiDirect, "WiFiDirect", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -4648,6 +4654,10 @@ bool IsWelcomeTourForceUserEligibilityEnabled() {
 
 bool IsWelcomeTourV2Enabled() {
   return IsWelcomeTourEnabled() && base::FeatureList::IsEnabled(kWelcomeTourV2);
+}
+
+bool IsWifiConcurrencyEnabled() {
+  return base::FeatureList::IsEnabled(kWifiConcurrency);
 }
 
 bool IsWifiDirectEnabled() {

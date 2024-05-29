@@ -7441,6 +7441,11 @@ const char kWifiConnectMacAddressRandomizationDescription[] =
     "Randomize MAC address when connecting to unmanaged (non-enterprise) "
     "WiFi networks.";
 
+const char kWifiConcurrencyName[] = "WiFi Concurrency";
+const char kWifiConcurrencyDescription[] =
+    "When enabled, it uses new WiFi concurrency Shill APIs to start station "
+    "WiFi and tethering.";
+
 const char kWifiDirectName[] = "Wifi Direct";
 const char kWifiDirectDescription[] =
     "Enables the WiFi direct functionalities in ChromeOS";
