@@ -76,6 +76,13 @@ class ComposeSession
   // form field on which it was triggered.
   using ComposeCallback = base::OnceCallback<void(const std::u16string&)>;
 
+  class Observer {
+   public:
+    virtual void OnSessionComplete(
+        autofill::FieldRendererId node_id,
+        compose::ComposeSessionCloseReason close_reason,
+        const compose::ComposeSessionEvents& events) = 0;
+  };
   ComposeSession(
       content::WebContents* web_contents,
       optimization_guide::OptimizationGuideModelExecutor* executor,
@@ -83,6 +90,7 @@ class ComposeSession
       base::Token session_id,
       InnerTextProvider* inner_text,
       autofill::FieldRendererId node_id,
+      Observer* observer,
       ComposeCallback callback = base::NullCallback());
   ~ComposeSession() override;
 
@@ -337,6 +345,8 @@ class ComposeSession
   // ComposeSession is owned by WebContentsUserData, so `web_contents_` outlives
   // `this`.
   raw_ptr<content::WebContents> web_contents_;
+
+  raw_ptr<Observer> observer_;
 
   // A callback to Autofill that triggers filling the field.
   ComposeCallback callback_;

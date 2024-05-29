@@ -50,6 +50,7 @@ class ChromeComposeClient
       public autofill::AutofillManager::Observer,
       public compose::mojom::ComposeClientUntrustedPageHandler,
       public compose::ProactiveNudgeTracker::Delegate,
+      public ComposeSession::Observer,
       public InnerTextProvider {
  public:
   using EntryPoint = autofill::AutofillComposeDelegate::UiEntryPoint;
@@ -73,6 +74,11 @@ class ChromeComposeClient
   void DisableProactiveNudge() override;
   void OpenProactiveNudgeSettings() override;
   void AddSiteToNeverPromptList(const url::Origin& origin) override;
+
+  // ComposeSession::Observer:
+  void OnSessionComplete(autofill::FieldRendererId field_renderer_id,
+                         compose::ComposeSessionCloseReason close_reason,
+                         const compose::ComposeSessionEvents& events) override;
 
   // autofill::AutofillManager::Observer:
   // Used to observe field focus changes so that the saved state notification

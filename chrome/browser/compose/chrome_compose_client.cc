@@ -112,7 +112,12 @@ ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
   nudge_tracker_.StartObserving(web_contents);
 }
 
-ChromeComposeClient::~ChromeComposeClient() = default;
+ChromeComposeClient::~ChromeComposeClient() {
+  // Sessions may call back during destruction through ComposeSession::Observer.
+  // Let's ensure that happens before destroying anything else.
+  sessions_.clear();
+  debug_session_.reset();
+}
 
 void ChromeComposeClient::BindComposeDialog(
     mojo::PendingReceiver<compose::mojom::ComposeClientUntrustedPageHandler>
@@ -129,7 +134,8 @@ void ChromeComposeClient::BindComposeDialog(
       url::Origin::Create(GURL(chrome::kChromeUIUntrustedComposeUrl))) {
     debug_session_ = std::make_unique<ComposeSession>(
         &GetWebContents(), GetModelExecutor(), GetModelQualityLogsUploader(),
-        GetSessionId(), GetInnerTextProvider(), autofill::FieldRendererId(-1));
+        GetSessionId(), GetInnerTextProvider(), autofill::FieldRendererId(-1),
+        this);
     debug_session_->set_collect_inner_text(false);
     debug_session_->set_fre_complete(
         pref_service_->GetBoolean(prefs::kPrefHasCompletedComposeFRE));
@@ -328,7 +334,7 @@ void ChromeComposeClient::CreateOrUpdateSession(
     auto new_session = std::make_unique<ComposeSession>(
         &GetWebContents(), GetModelExecutor(), GetModelQualityLogsUploader(),
         GetSessionId(), GetInnerTextProvider(),
-        trigger_field.global_id().renderer_id, std::move(callback));
+        trigger_field.global_id().renderer_id, this, std::move(callback));
     current_session = new_session.get();
     sessions_.insert_or_assign(active_compose_ids_.value().first,
                                std::move(new_session));
@@ -544,6 +550,7 @@ bool ChromeComposeClient::ShouldTriggerPopup(
 }
 
 void ChromeComposeClient::DisableProactiveNudge() {
+  nudge_tracker_.OnUserDisabledNudge(/*single_site_only=*/false);
   proactive_nudge_enabled_.SetValue(false);
 }
 
@@ -559,6 +566,7 @@ void ChromeComposeClient::OpenProactiveNudgeSettings() {
 }
 
 void ChromeComposeClient::AddSiteToNeverPromptList(const url::Origin& origin) {
+  nudge_tracker_.OnUserDisabledNudge(/*single_site_only=*/true);
   ScopedDictPrefUpdate update(pref_service_,
                               prefs::kProactiveNudgeDisabledSitesWithTime);
   update->Set(origin.Serialize(), base::TimeToValue(base::Time::Now()));
@@ -575,6 +583,14 @@ bool ChromeComposeClient::ShouldTriggerContextMenu(
     page_ukm_tracker_->MenuItemShown();
   }
   return allow_context_menu;
+}
+
+void ChromeComposeClient::OnSessionComplete(
+    autofill::FieldRendererId field_renderer_id,
+    compose::ComposeSessionCloseReason close_reason,
+    const compose::ComposeSessionEvents& events) {
+  nudge_tracker_.ComposeSessionCompleted(field_renderer_id, close_reason,
+                                         events);
 }
 
 void ChromeComposeClient::OnAfterFocusOnFormField(
@@ -658,6 +674,8 @@ void ChromeComposeClient::PrimaryPageChanged(content::Page& page) {
 
   page_ukm_tracker_ = std::make_unique<compose::PageUkmTracker>(
       page.GetMainDocument().GetPageUkmSourceId());
+
+  nudge_tracker_.Clear();
 
   compose::ComposeTextUsageLogger::GetOrCreateForCurrentDocument(
       &page.GetMainDocument());

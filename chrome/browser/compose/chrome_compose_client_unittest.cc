@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -19,7 +20,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/compose/compose_enabling.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -38,6 +41,8 @@
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
+#include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/unified_consent/pref_names.h"
 #include "content/public/browser/navigation_entry.h"
@@ -61,11 +66,14 @@ using optimization_guide::
     OptimizationGuideModelExecutionResultStreamingCallback;
 using optimization_guide::OptimizationGuideModelStreamingExecutionResult;
 using optimization_guide::StreamingResponse;
+using segmentation_platform::MockSegmentationPlatformService;
 
 namespace {
 
 const uint64_t kSessionIdHigh = 1234;
 const uint64_t kSessionIdLow = 5678;
+const segmentation_platform::TrainingRequestId kTrainingRequestId =
+    segmentation_platform::TrainingRequestId(456);
 constexpr char kTypeURL[] =
     "type.googleapis.com/optimization_guide.proto.ComposeResponse";
 
@@ -161,6 +169,15 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     scoped_compose_enabled_ = ComposeEnabling::ScopedEnableComposeForTesting();
     BrowserWithTestWindowTest::SetUp();
 
+    segmentation_platform::SegmentationPlatformServiceFactory::GetInstance()
+        ->SetTestingFactory(
+            GetProfile(),
+            base::BindLambdaForTesting([](content::BrowserContext* context) {
+              std::unique_ptr<KeyedService> result =
+                  std::make_unique<MockSegmentationPlatformService>();
+              return result;
+            }));
+
     scoped_feature_list_.InitWithFeatures(
         {compose::features::kEnableCompose,
          optimization_guide::features::kOptimizationGuideModelExecution},
@@ -211,10 +228,25 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
                                                    LogAiDataRequest>(),
                               nullptr))));
             })));
+
+    ON_CALL(GetSegmentationPlatformService(),
+            GetClassificationResult(_, _, _, _))
+        .WillByDefault(testing::WithArg<3>(testing::Invoke(
+            [](segmentation_platform::ClassificationResultCallback callback) {
+              auto result = segmentation_platform::ClassificationResult(
+                  segmentation_platform::PredictionStatus::kSucceeded);
+              result.request_id = kTrainingRequestId;
+              result.ordered_labels = {
+                  segmentation_platform::kComposePrmotionLabelShow};
+              std::move(callback).Run(result);
+            })));
+
     test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
   void TearDown() override {
+    // Clear default actions for safe teardown.
+    testing::Mock::VerifyAndClear(&GetSegmentationPlatformService());
     client_ = nullptr;
     scoped_feature_list_.Reset();
     ukm_recorder_.reset();
@@ -325,6 +357,12 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   void SetSelectionWithTruncation(const std::u16string& selection,
                                   size_t max_length) {
     field_data().set_selected_text(selection.substr(0, max_length));
+  }
+
+  MockSegmentationPlatformService& GetSegmentationPlatformService() {
+    return *static_cast<MockSegmentationPlatformService*>(
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetForProfile(GetProfile()));
   }
 
  protected:
@@ -731,6 +769,55 @@ TEST_F(ChromeComposeClientTest, TestComposeShowContextMenuAndDialog) {
                         1),
           testing::Pair(
               ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0)));
+}
+
+TEST_F(ChromeComposeClientTest, TestProactiveNudgeEngagementIsRecorded) {
+  // Enable and trigger the proactive nudge.
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  config.proactive_nudge_enabled = true;
+  config.proactive_nudge_show_probability = 1.0;
+  config.proactive_nudge_delay = base::Microseconds(1);
+  config.proactive_nudge_segmentation = true;
+
+  autofill::FormData form_data;
+  form_data.url = web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL();
+  form_data.fields = {autofill::test::CreateTestFormField(
+      "label0", "name0", "value0", autofill::FormControlType::kTextArea)};
+
+  autofill::FormFieldData selected_field_data = form_data.fields[0];
+  selected_field_data.set_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  const autofill::AutofillSuggestionTriggerSource trigger_source =
+      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange;
+
+  while (!client().ShouldTriggerPopup(selected_field_data, trigger_source)) {
+    task_environment()->RunUntilIdle();
+  }
+
+  // Simulate clicking on the nudge to open compose.
+  ShowDialogAndBindMojoWithFieldData(
+      selected_field_data, base::NullCallback(),
+      autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup);
+
+  base::test::TestFuture<segmentation_platform::TrainingLabels> training_labels;
+  EXPECT_CALL(GetSegmentationPlatformService(),
+              CollectTrainingData(
+                  segmentation_platform::proto::SegmentId::
+                      OPTIMIZATION_TARGET_SEGMENTATION_COMPOSE_PROMOTION,
+                  kTrainingRequestId, _, _))
+      .Times(1)
+      .WillOnce(testing::WithArg<2>(testing::Invoke(
+          [&](auto labels) { training_labels.SetValue(labels); })));
+
+  client().CloseUI(compose::mojom::CloseReason::kInsertButton);
+
+  // Trigger session deletion and verify that the engagement is recorded.
+  NavigateAndCommitActiveTab(GURL("about:blank"));
+  EXPECT_EQ(training_labels.Get().output_metric,
+            std::make_pair("Compose.ProactiveNudge.DerivedEngagement",
+                           static_cast<base::HistogramBase::Sample>(
+                               compose::ProactiveNudgeDerivedEngagement::
+                                   kAcceptedComposeSuggestion)));
 }
 
 TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeDisabledUKM) {
