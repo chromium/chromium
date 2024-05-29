@@ -395,17 +395,13 @@ void HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated(
 
   auto buffer_iter = pending_buffers_.find(id);
 
-  // TODO(crbug.com/342905184): This conditional should be removed as it will
-  // never fire.
-  if (buffer_iter == pending_buffers_.end()) {
-    if (!handle.is_null() && handle.type != gfx::SHARED_MEMORY_BUFFER) {
-      // DestroyGpuMemoryBuffer for client_id was called followed by an
-      // AllocateGpuMemoryBuffer for a new id.
-      auto* gpu_service = GetGpuService();
-      gpu_service->DestroyGpuMemoryBuffer(handle.id, client_id_);
-    }
-    return;
-  }
+  // Pending allocations are added in AllocateGpuMemoryBuffer() and removed only
+  // (a) just below in this callback or (b) in OnConnectionError(), in which
+  // case `gpu_service_version_` is updated and any callbacks that subsequently
+  // come in from prior AllocateGpuMemoryBuffer() requests will early-out in the
+  // above version check. Hence, it is not possible to reach this point without
+  // the allocation for `id` being pending.
+  CHECK(buffer_iter != pending_buffers_.end());
 
   PendingBufferInfo pending_buffer = std::move(buffer_iter->second);
   pending_buffers_.erase(buffer_iter);
