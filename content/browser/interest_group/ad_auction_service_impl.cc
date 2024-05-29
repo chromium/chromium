@@ -582,17 +582,20 @@ void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
     }
   }
 
-  // If the interest group API is not allowed for this origin do nothing.
-  if (!IsInterestGroupAPIAllowed(
-          ContentBrowserClient::InterestGroupApiOperation::kSell, seller)) {
-    std::move(callback).Run({}, {}, "API not allowed for this origin");
-    return;
-  }
-
   if (!IsPermissionPolicyEnabledAndWarnIfNeeded(
           blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
           "getInterestGroupAdAuctionData")) {
     ReportBadMessageAndDeleteThis("Unexpected request");
+    return;
+  }
+
+  // If the interest group API is not allowed for this origin do nothing.
+  bool api_allowed = IsInterestGroupAPIAllowed(
+      ContentBrowserClient::InterestGroupApiOperation::kSell, seller);
+  base::UmaHistogramBoolean(
+      "Ads.InterestGroup.ServerAuction.Request.APIAllowed", api_allowed);
+  if (!api_allowed) {
+    std::move(callback).Run({}, {}, "API not allowed for this origin");
     return;
   }
 

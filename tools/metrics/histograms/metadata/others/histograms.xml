@@ -1641,6 +1641,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.ServerAuction.Request.APIAllowed"
+    enum="Boolean" expires_after="M129">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The return value of `IsInterestGroupAPIAllowed()` while processing a call to
+    `navigator.getInterestGroupAdAuctionData()`. Recorded after checking the
+    involved origins are HTTPS and before loading data or fetching the key.
+
+    See
+    https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
+    for the latest version of the Protected Audience Bidding &amp; Auction
+    Services explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.ServerAuction.Request.NumGroups"
     units="count" expires_after="M129">
   <owner>behamilton@google.com</owner>
