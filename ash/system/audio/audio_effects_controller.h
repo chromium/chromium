@@ -48,21 +48,25 @@ class ASH_EXPORT AudioEffectsController
   void OnAudioNodesChanged() override;
   void OnActiveOutputNodeChanged() override;
   void OnNoiseCancellationStateChanged() override;
+  void OnStyleTransferStateChanged() override;
 
   // Refresh noise cancellation supported status.
-  void RefreshNoiseCancellationSupported();
+  void RefreshNoiseCancellationOrStyleTransferSupported();
 
   // Construct effect for noise cancellation.
   void AddNoiseCancellationEffect();
 
+  // Construct effect for style transfer.
+  void AddStyleTransferEffect();
+
   // Construct effect for live caption.
   void AddLiveCaptionEffect();
 
+  // Whether the effects is added already to effects manager.
+  bool IsEffectsAdded(VcEffectId id);
+
   base::ScopedObservation<SessionController, SessionObserver>
       session_observation_{this};
-
-  // Indicates if noise cancellation is supported for the current input device.
-  bool noise_cancellation_supported_ = false;
 
   base::WeakPtrFactory<AudioEffectsController> weak_factory_{this};
 };

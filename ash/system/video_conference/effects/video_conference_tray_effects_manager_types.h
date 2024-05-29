@@ -102,7 +102,8 @@ enum class VcEffectId {
   kNoiseCancellation = 2,
   kLiveCaption = 3,
   kCameraFraming = 4,
-  kMaxValue = kCameraFraming,
+  kStyleTransfer = 5,
+  kMaxValue = kStyleTransfer,
 };
 
 // Represents a single video conference effect that's being "hosted" by an

@@ -180,6 +180,7 @@ VideoConferenceTrayEffectsManager::GetDlcIdsForEffectId(VcEffectId effect_id) {
     case VcEffectId::kBackgroundBlur:
     case VcEffectId::kPortraitRelighting:
     case VcEffectId::kNoiseCancellation:
+    case VcEffectId::kStyleTransfer:
     case VcEffectId::kCameraFraming:
       return {};
   }

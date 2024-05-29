@@ -26,6 +26,8 @@ std::string GetEffectHistogramNameBase(VcEffectId effect_id) {
       return "Ash.VideoConferenceTray.PortraitRelighting";
     case VcEffectId::kNoiseCancellation:
       return "Ash.VideoConferenceTray.NoiseCancellation";
+    case VcEffectId::kStyleTransfer:
+      return "Ash.VideoConferenceTray.StudioMic";
     case VcEffectId::kLiveCaption:
       return "Ash.VideoConferenceTray.LiveCaption";
     case VcEffectId::kCameraFraming:

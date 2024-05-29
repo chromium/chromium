@@ -629,6 +629,7 @@ std::optional<int> CameraEffectsController::GetEffectState(
       return Shell::Get()->autozoom_controller()->GetState() !=
              cros::mojom::CameraAutoFramingState::OFF;
     case VcEffectId::kNoiseCancellation:
+    case VcEffectId::kStyleTransfer:
     case VcEffectId::kLiveCaption:
     case VcEffectId::kTestEffect:
       NOTREACHED_IN_MIGRATION();
@@ -685,6 +686,7 @@ void CameraEffectsController::OnEffectControlActivated(
       break;
     }
     case VcEffectId::kNoiseCancellation:
+    case VcEffectId::kStyleTransfer:
     case VcEffectId::kLiveCaption:
     case VcEffectId::kTestEffect:
       NOTREACHED_IN_MIGRATION();
