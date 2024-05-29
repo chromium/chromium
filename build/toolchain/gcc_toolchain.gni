@@ -140,6 +140,11 @@ template("single_gcc_toolchain") {
     assert(defined(invoker_toolchain_args.current_os),
            "toolchain_args must specify a current_os")
 
+    # use_reclient is default to use_remoteexec
+    if (!defined(invoker_toolchain_args.use_reclient) && defined(invoker_toolchain_args.use_remoteexec)) {
+      invoker_toolchain_args.use_reclient = invoker_toolchain_args.use_remoteexec
+    }
+
     # When invoking this toolchain not as the default one, these args will be
     # passed to the build. They are ignored when this is the default toolchain.
     toolchain_args = {
