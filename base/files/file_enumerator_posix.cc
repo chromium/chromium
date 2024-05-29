@@ -17,7 +17,7 @@
 namespace base {
 namespace {
 
-void GetStat(const FilePath& path, bool show_links, stat_wrapper_t* st) {
+bool GetStat(const FilePath& path, bool show_links, stat_wrapper_t* st) {
   DCHECK(st);
   const int res = show_links ? File::Lstat(path, st) : File::Stat(path, st);
   if (res < 0) {
@@ -26,7 +26,10 @@ void GetStat(const FilePath& path, bool show_links, stat_wrapper_t* st) {
     DPLOG_IF(ERROR, errno != ENOENT || show_links)
         << "Cannot stat '" << path << "'";
     memset(st, 0, sizeof(*st));
+    return false;
   }
+
+  return true;
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -130,9 +133,9 @@ FileEnumerator::FileEnumerator(const FilePath& root_path,
   }
 
   if (recursive && ShouldTrackVisitedDirectories(file_type_)) {
-    stat_wrapper_t st;
-    GetStat(root_path, false, &st);
-    visited_directories_.insert(st.st_ino);
+    if (stat_wrapper_t st; GetStat(root_path, false, &st)) {
+      MarkVisited(st);
+    }
   }
 
   pending_paths_.push(root_path);
@@ -214,8 +217,10 @@ FilePath FileEnumerator::Next() {
         continue;
       }
 
-      const FilePath full_path = root_path_.Append(info.filename_);
-      GetStat(full_path, ShouldShowSymLinks(file_type_), &info.stat_);
+      FilePath full_path = root_path_.Append(info.filename_);
+      if (!GetStat(full_path, ShouldShowSymLinks(file_type_), &info.stat_)) {
+        continue;
+      }
 
       const bool is_dir = info.IsDirectory();
 
@@ -223,8 +228,8 @@ FilePath FileEnumerator::Next() {
       // SHOW_SYM_LINKS is on or we haven't visited the directory yet.
       if (recursive_ && is_dir &&
           (!ShouldTrackVisitedDirectories(file_type_) ||
-           visited_directories_.insert(info.stat_.st_ino).second)) {
-        pending_paths_.push(full_path);
+           MarkVisited(info.stat_))) {
+        pending_paths_.push(std::move(full_path));
       }
 
       if (is_pattern_matched && IsTypeMatched(is_dir))

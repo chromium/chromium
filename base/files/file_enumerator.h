@@ -23,6 +23,8 @@
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include <unordered_map>
 #include <unordered_set>
 #endif
 
@@ -215,15 +217,27 @@ class BASE_EXPORT FileEnumerator {
   bool has_find_data_ = false;
   CHROME_WIN32_FIND_DATA find_data_;
   HANDLE find_handle_ = INVALID_HANDLE_VALUE;
+
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  // Marks the given inode as visited. Returns true if it is the first time that
+  // it got marked as visited.
+  bool MarkVisited(const stat_wrapper_t& st) {
+    return visited_[st.st_dev].insert(st.st_ino).second;
+  }
+
   // The files in the current directory
   std::vector<FileInfo> directory_entries_;
 
-  // Set of visited directories. Used to prevent infinite looping along
-  // circular symlinks.
-  // The Android NDK (r23) does not declare `st_ino` as an `ino_t`, hence the
-  // need for the ugly decltype.
-  std::unordered_set<decltype(stat_wrapper_t::st_ino)> visited_directories_;
+#if BUILDFLAG(IS_ANDROID)
+  // The Android NDK (r23) does not declare `st_dev` as a `dev_t`, nor `st_ino`
+  // as an `ino_t`, hence the need for these decltypes.
+  using dev_t = decltype(stat_wrapper_t::st_dev);
+  using ino_t = decltype(stat_wrapper_t::st_ino);
+#endif
+
+  // Set of visited directories. Used to prevent infinite looping along circular
+  // symlinks and bind-mounts.
+  std::unordered_map<dev_t, std::unordered_set<ino_t>> visited_;
 
   // The next entry to use from the directory_entries_ vector
   size_t current_directory_entry_;
