@@ -6,7 +6,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/authentication/account_switching/account_switcher_transition_delegate.h"
+#import "ios/chrome/browser/ui/authentication/account_switching/account_switcher_transitioning_delegate.h"
 #import "ios/chrome/browser/ui/authentication/account_switching/account_switcher_view_controller.h"
 
 @implementation AccountSwitcherCoordinator {
@@ -18,10 +18,10 @@
   _viewController = [[AccountSwitcherViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   _viewController.modalPresentationStyle = UIModalPresentationCustom;
-  AccountSwitcherTransitionDelegate* transitionController =
-      [[AccountSwitcherTransitionDelegate alloc] init];
-  transitionController.anchorPoint = self.anchorPoint;
-  _viewController.transitioningDelegate = transitionController;
+  AccountSwitcherTransitioningDelegate* transitioningDelegate =
+      [[AccountSwitcherTransitioningDelegate alloc] init];
+  transitioningDelegate.anchorPoint = self.anchorPoint;
+  _viewController.transitioningDelegate = transitioningDelegate;
 
   [self.baseViewController presentViewController:_viewController
                                         animated:YES

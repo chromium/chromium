@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/account_switching/account_switcher_transition_delegate.h"
+#import "ios/chrome/browser/ui/authentication/account_switching/account_switcher_transitioning_delegate.h"
 
 #import "ios/chrome/browser/ui/authentication/account_switching/account_switcher_presentation_controller.h"
 
-@implementation AccountSwitcherTransitionDelegate
+@implementation AccountSwitcherTransitioningDelegate
 
 #pragma mark - UIViewControllerTransitioningDelegate
 

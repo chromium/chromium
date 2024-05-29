@@ -21,8 +21,8 @@ source_set("account_switching_ui") {
   sources = [
     "account_switcher_presentation_controller.h",
     "account_switcher_presentation_controller.mm",
-    "account_switcher_transition_delegate.h",
-    "account_switcher_transition_delegate.mm",
+    "account_switcher_transitioning_delegate.h",
+    "account_switcher_transitioning_delegate.mm",
     "account_switcher_view_controller.h",
     "account_switcher_view_controller.mm",
   ]
