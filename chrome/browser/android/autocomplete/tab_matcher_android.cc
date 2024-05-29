@@ -10,7 +10,6 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_android_user_data.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
-#include "chrome/browser/ui/android/omnibox/jni_headers/ChromeAutocompleteProviderClient_jni.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -20,6 +19,9 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/ui/android/omnibox/jni_headers/ChromeAutocompleteProviderClient_jni.h"
 
 namespace {
 class AutocompleteClientTabAndroidUserData

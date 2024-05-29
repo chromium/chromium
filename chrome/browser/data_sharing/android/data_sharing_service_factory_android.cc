@@ -8,7 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/data_sharing/jni_headers/DataSharingServiceFactory_jni.h"
 
 static base::android::ScopedJavaLocalRef<jobject>

@@ -6,12 +6,14 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "chrome/browser/language/android/jni_headers/LanguageBridge_jni.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/browser/language_prefs.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/language/android/jni_headers/LanguageBridge_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;

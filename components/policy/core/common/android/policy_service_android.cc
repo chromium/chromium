@@ -5,6 +5,8 @@
 #include "components/policy/core/common/android/policy_service_android.h"
 
 #include "base/android/jni_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/policy/android/jni_headers/PolicyService_jni.h"
 
 namespace policy {

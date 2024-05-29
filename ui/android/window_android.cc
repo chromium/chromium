@@ -14,11 +14,13 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/observer_list.h"
 #include "ui/android/display_android_manager.h"
-#include "ui/android/ui_android_jni_headers/WindowAndroid_jni.h"
 #include "ui/android/window_android_compositor.h"
 #include "ui/android/window_android_observer.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/display_color_spaces.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "ui/android/ui_android_jni_headers/WindowAndroid_jni.h"
 
 namespace ui {
 

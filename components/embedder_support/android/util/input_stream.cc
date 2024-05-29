@@ -12,9 +12,11 @@
 // even if they're unused.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-function"
-#include "components/embedder_support/android/util_jni_headers/InputStreamUtil_jni.h"
 #pragma GCC diagnostic pop
 #include "net/base/io_buffer.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/embedder_support/android/util_jni_headers/InputStreamUtil_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ClearException;

@@ -9,8 +9,10 @@
 #include "base/android/jni_android.h"
 #include "base/functional/callback.h"
 #include "components/webauthn/android/cred_man_support.h"
-#include "components/webauthn/android/jni_headers/CredManSupportProvider_jni.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/webauthn/android/jni_headers/CredManSupportProvider_jni.h"
 
 namespace content {
 class WebContents;

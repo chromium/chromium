@@ -8,11 +8,13 @@
 
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
-#include "chrome/browser/password_manager/android/jni_headers/PasswordManagerUtilBridge_jni.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/prefs/android/pref_service_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/password_manager/android/jni_headers/PasswordManagerUtilBridge_jni.h"
 
 using password_manager::IsGmsCoreUpdateRequired;
 using password_manager::UsesSplitStoresAndUPMForLocal;

@@ -17,7 +17,6 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/android/event_forwarder.h"
-#include "ui/android/ui_android_jni_headers/ViewAndroidDelegate_jni.h"
 #include "ui/android/window_android.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -30,6 +29,9 @@
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/geometry/point.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "ui/android/ui_android_jni_headers/ViewAndroidDelegate_jni.h"
 
 namespace ui {
 

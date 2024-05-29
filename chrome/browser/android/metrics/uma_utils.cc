@@ -6,10 +6,12 @@
 
 #include <stdint.h>
 
-#include "chrome/android/base_module_jni/UmaUtils_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "components/metrics/metrics_reporting_default_state.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/base_module_jni/UmaUtils_jni.h"
 
 using jni_zero::JavaParamRef;
 

@@ -8,12 +8,14 @@
 #include "content/browser/android/gesture_listener_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
-#include "content/public/android/content_jni_headers/GestureListenerManagerImpl_jni.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/android/gesture_event_type.h"
 #include "ui/gfx/geometry/size_f.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/GestureListenerManagerImpl_jni.h"
 
 using blink::WebGestureEvent;
 using blink::WebInputEvent;

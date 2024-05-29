@@ -4,6 +4,8 @@
 
 #include "base/android/jni_android.h"
 #include "content/public/browser/render_process_host.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/test/android/content_test_jni/RenderProcessHostUtils_jni.h"
 
 namespace content {

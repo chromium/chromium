@@ -9,8 +9,10 @@
 #include "base/android/scoped_java_ref.h"
 #include "url/android/gurl_android.h"
 
-#include "android_webview/browser_jni_headers/AwSupervisedUserUrlClassifier_jni.h"
 #include "content/public/browser/browser_thread.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwSupervisedUserUrlClassifier_jni.h"
 
 using base::android::AttachCurrentThread;
 

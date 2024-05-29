@@ -25,10 +25,12 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "ui/android/resources/ui_resource_provider.h"
-#include "ui/android/ui_android_jni_headers/ResourceManager_jni.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/geometry/rect.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "ui/android/ui_android_jni_headers/ResourceManager_jni.h"
 
 using base::android::JavaArrayOfIntArrayToIntVector;
 using base::android::JavaParamRef;

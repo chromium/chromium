@@ -6,8 +6,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "components/autofill/android/payments_jni_headers/LegalMessageLine_jni.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/autofill/android/payments_jni_headers/LegalMessageLine_jni.h"
 
 namespace autofill {
 

@@ -10,9 +10,11 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
-#include "components/saved_tab_groups/native_j_unittests_jni_headers/TabGroupStoreDelegateTestSupport_jni.h"
 #include "components/saved_tab_groups/tab_group_store_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/saved_tab_groups/native_j_unittests_jni_headers/TabGroupStoreDelegateTestSupport_jni.h"
 
 namespace tab_groups {
 

@@ -22,13 +22,15 @@
 #include "base/strings/string_util.h"
 #include "media/base/android/jni_hdr_metadata.h"
 #include "media/base/android/media_codec_util.h"
-#include "media/base/android/media_jni_headers/MediaCodecBridgeBuilder_jni.h"
-#include "media/base/android/media_jni_headers/MediaCodecBridge_jni.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/media_switches.h"
 #include "media/base/subsample_entry.h"
 #include "media/base/video_codecs.h"
 #include "media_codec_bridge.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "media/base/android/media_jni_headers/MediaCodecBridgeBuilder_jni.h"
+#include "media/base/android/media_jni_headers/MediaCodecBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;

@@ -9,12 +9,14 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "components/content_relationship_verification/digital_asset_links_handler.h"
-#include "components/installedapp/android/jni_headers/InstalledAppProviderImpl_jni.h"
 #include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/installedapp/android/jni_headers/InstalledAppProviderImpl_jni.h"
 
 namespace {
 

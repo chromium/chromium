@@ -10,6 +10,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "url/url_canon_internal.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "url/url_jni_headers/IDNStringUtil_jni.h"
 
 using base::android::ScopedJavaLocalRef;

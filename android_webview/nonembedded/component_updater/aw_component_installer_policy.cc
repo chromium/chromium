@@ -12,7 +12,6 @@
 
 #include "android_webview/common/aw_paths.h"
 #include "android_webview/nonembedded/component_updater/aw_component_update_service.h"
-#include "android_webview/nonembedded/nonembedded_jni_headers/ComponentsProviderPathUtil_jni.h"
 #include "base/android/jni_string.h"
 #include "base/android/path_utils.h"
 #include "base/files/file_path.h"
@@ -25,6 +24,9 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "components/update_client/utils.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/nonembedded/nonembedded_jni_headers/ComponentsProviderPathUtil_jni.h"
 
 namespace android_webview {
 

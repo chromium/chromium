@@ -19,7 +19,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "components/browser_ui/client_certificate/android/jni_headers/SSLClientCertificateRequest_jni.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
@@ -34,6 +33,9 @@
 #include "net/ssl/ssl_private_key.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/browser_ui/client_certificate/android/jni_headers/SSLClientCertificateRequest_jni.h"
 
 namespace browser_ui {
 namespace {

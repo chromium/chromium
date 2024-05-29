@@ -8,9 +8,11 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "base/supports_user_data.h"
-#include "content/public/android/content_jni_headers/SmartSelectionClient_jni.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/SmartSelectionClient_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;

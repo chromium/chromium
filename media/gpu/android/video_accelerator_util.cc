@@ -7,6 +7,8 @@
 #include "base/android/build_info.h"
 #include "base/android/jni_string.h"
 #include "base/no_destructor.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "media/base/android/media_jni_headers/VideoAcceleratorUtil_jni.h"
 
 namespace media {

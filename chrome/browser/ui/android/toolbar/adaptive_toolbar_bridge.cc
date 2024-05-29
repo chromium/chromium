@@ -13,7 +13,7 @@
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/toolbar/jni_headers/AdaptiveToolbarBridge_jni.h"
 
 using base::android::AttachCurrentThread;

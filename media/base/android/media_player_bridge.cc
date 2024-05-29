@@ -17,10 +17,12 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/android/media_common_android.h"
-#include "media/base/android/media_jni_headers/MediaPlayerBridge_jni.h"
 #include "media/base/android/media_resource_getter.h"
 #include "media/base/android/media_url_interceptor.h"
 #include "media/base/timestamp_constants.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "media/base/android/media_jni_headers/MediaPlayerBridge_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;

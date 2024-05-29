@@ -22,9 +22,11 @@
 #include "media/audio/audio_features.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/fake_audio_input_stream.h"
-#include "media/base/android/media_jni_headers/AudioManagerAndroid_jni.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "media/base/android/media_jni_headers/AudioManagerAndroid_jni.h"
 
 using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;

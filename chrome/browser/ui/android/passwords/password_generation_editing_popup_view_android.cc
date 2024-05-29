@@ -10,12 +10,14 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/i18n/rtl.h"
-#include "chrome/android/chrome_jni_headers/PasswordGenerationPopupBridge_jni.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/range/range.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/PasswordGenerationPopupBridge_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

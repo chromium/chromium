@@ -8,9 +8,11 @@
 #include "base/android/build_info.h"
 #include "base/android/jni_string.h"
 #include "base/strings/string_util.h"
-#include "chrome/android/chrome_jni_headers/AboutSettingsBridge_jni.h"
 #include "chrome/browser/ui/android/android_about_app_info.h"
 #include "components/version_info/version_info.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/AboutSettingsBridge_jni.h"
 
 const char kSeparator[] = " ";
 

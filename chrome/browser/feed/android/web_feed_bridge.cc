@@ -17,7 +17,6 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/feed/android/jni_headers/WebFeedBridge_jni.h"
 #include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/feed/web_feed_page_information_fetcher.h"
 #include "chrome/browser/feed/web_feed_util.h"
@@ -36,6 +35,9 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/feed/android/jni_headers/WebFeedBridge_jni.h"
 
 class Profile;
 

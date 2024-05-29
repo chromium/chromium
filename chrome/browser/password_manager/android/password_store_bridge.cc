@@ -14,10 +14,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/ranges/algorithm.h"
-#include "chrome/browser/password_manager/android/jni_headers/PasswordStoreBridge_jni.h"
-#include "chrome/browser/password_manager/android/jni_headers/PasswordStoreCredential_jni.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/password_manager/android/jni_headers/PasswordStoreBridge_jni.h"
+#include "chrome/browser/password_manager/android/jni_headers/PasswordStoreCredential_jni.h"
 
 namespace {
 using password_manager::PasswordForm;

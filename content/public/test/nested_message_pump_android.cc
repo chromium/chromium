@@ -6,6 +6,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/auto_reset.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/test/android/test_support_content_jni_headers/NestedSystemMessageHandler_jni.h"
 
 namespace content {

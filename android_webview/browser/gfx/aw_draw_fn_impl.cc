@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
-#include "android_webview/browser_jni_headers/AwDrawFnImpl_jni.h"
 #include "base/android/build_info.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_event.h"
@@ -19,6 +18,9 @@
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
 #include "third_party/skia/include/private/chromium/GrVkSecondaryCBDrawContext.h"
 #include "ui/gfx/color_space.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwDrawFnImpl_jni.h"
 
 using base::android::JavaParamRef;
 using content::BrowserThread;

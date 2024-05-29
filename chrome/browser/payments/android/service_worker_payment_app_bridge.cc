@@ -12,7 +12,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
-#include "chrome/android/chrome_jni_headers/ServiceWorkerPaymentAppBridge_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
@@ -33,6 +32,9 @@
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/ServiceWorkerPaymentAppBridge_jni.h"
 
 namespace {
 

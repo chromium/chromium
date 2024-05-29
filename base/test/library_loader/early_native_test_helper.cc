@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/base_javatests_jni/EarlyNativeTest_jni.h"
 #include "base/command_line.h"
 #include "base/process/current_process.h"
 #include "base/trace_event/trace_log.h"
 #include "base/tracing_buildflags.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/base_javatests_jni/EarlyNativeTest_jni.h"
 
 namespace base {
 

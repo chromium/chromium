@@ -23,6 +23,8 @@
 #include "base/no_destructor.h"
 #include "chromecast/base/init_command_line_shlib.h"
 #include "chromecast/chromecast_buildflags.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chromecast/media/cma/backend/android/audio_track_jni_headers/VolumeControl_jni.h"
 #include "chromecast/media/cma/backend/android/audio_track_jni_headers/VolumeMap_jni.h"
 

@@ -19,8 +19,10 @@
 #include "base/trace_event/trace_event.h"
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/haptic_gamepad_android.h"
-#include "device/gamepad/jni_headers/GamepadList_jni.h"
 #include "device/gamepad/public/cpp/gamepad_features.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "device/gamepad/jni_headers/GamepadList_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::CheckException;

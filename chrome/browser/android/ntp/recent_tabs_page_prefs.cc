@@ -13,7 +13,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/RecentTabsPagePrefs_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;

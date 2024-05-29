@@ -18,12 +18,14 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
-#include "components/policy/android/jni_headers/PolicyConverter_jni.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/policy/android/jni_headers/PolicyConverter_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaRef;

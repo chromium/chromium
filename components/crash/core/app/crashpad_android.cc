@@ -34,7 +34,6 @@
 #include "base/synchronization/lock.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "components/crash/android/package_paths_jni/PackagePaths_jni.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "content/public/common/content_descriptors.h"
 #include "sandbox/linux/services/syscall_wrappers.h"
@@ -49,6 +48,9 @@
 #include "third_party/crashpad/crashpad/util/linux/scoped_pr_set_dumpable.h"
 #include "third_party/crashpad/crashpad/util/misc/from_pointer_cast.h"
 #include "third_party/crashpad/crashpad/util/posix/signals.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/crash/android/package_paths_jni/PackagePaths_jni.h"
 
 namespace crashpad {
 namespace {

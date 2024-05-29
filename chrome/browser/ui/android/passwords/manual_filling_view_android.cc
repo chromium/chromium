@@ -18,8 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/android/features/keyboard_accessory/internal/jni/ManualFillingComponentBridge_jni.h"
-#include "chrome/android/features/keyboard_accessory/public/jni/UserInfoField_jni.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
@@ -32,6 +30,10 @@
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/features/keyboard_accessory/internal/jni/ManualFillingComponentBridge_jni.h"
+#include "chrome/android/features/keyboard_accessory/public/jni/UserInfoField_jni.h"
 
 using autofill::AccessorySheetData;
 using autofill::AccessorySheetField;

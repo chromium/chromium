@@ -18,7 +18,6 @@
 #include "content/browser/closewatcher/close_listener_host.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/public/android/content_jni_headers/RenderFrameHostImpl_jni.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
@@ -28,6 +27,9 @@
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/android/gurl_android.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/RenderFrameHostImpl_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;

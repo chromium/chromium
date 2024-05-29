@@ -5,6 +5,8 @@
 #include "chrome/browser/android/customtabs/custom_tab_session_state_tracker.h"
 
 #include "base/android/jni_string.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/CustomTabsOpenTimeRecorder_jni.h"
 
 namespace chrome {

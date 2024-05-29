@@ -5,9 +5,11 @@
 #include "components/payments/core/url_util.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "components/payments/content/android/jni_headers/UrlUtil_jni.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/payments/content/android/jni_headers/UrlUtil_jni.h"
 
 namespace payments {
 namespace android {

@@ -23,7 +23,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ConnectivityChecker_jni.h"
 
 using base::android::JavaParamRef;

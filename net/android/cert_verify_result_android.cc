@@ -6,6 +6,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "net/net_jni_headers/AndroidCertVerifyResult_jni.h"
 
 using base::android::AttachCurrentThread;

@@ -14,7 +14,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "components/cronet/android/cronet_context_adapter.h"
-#include "components/cronet/android/cronet_test_apk_jni/CronetTestUtil_jni.h"
 #include "components/cronet/android/cronet_url_request_adapter.h"
 #include "components/cronet/cronet_context.h"
 #include "components/cronet/cronet_url_request.h"
@@ -22,6 +21,9 @@
 #include "net/socket/socket_test_util.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/cronet/android/cronet_test_apk_jni/CronetTestUtil_jni.h"
 
 namespace cronet {
 namespace {

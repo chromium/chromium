@@ -11,7 +11,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/segmentation_platform/internal/jni_headers/SegmentationPlatformServiceImpl_jni.h"
 #include "components/segmentation_platform/public/android/input_context_android.h"
 #include "components/segmentation_platform/public/android/prediction_options_android.h"
 #include "components/segmentation_platform/public/android/segmentation_platform_conversion_bridge.h"
@@ -20,6 +19,9 @@
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/segmentation_platform/internal/jni_headers/SegmentationPlatformServiceImpl_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;

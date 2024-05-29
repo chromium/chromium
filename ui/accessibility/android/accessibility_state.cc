@@ -7,6 +7,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/no_destructor.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/accessibility/ax_jni_headers/AccessibilityAutofillHelper_jni.h"
 #include "ui/accessibility/ax_jni_headers/AccessibilityState_jni.h"
 

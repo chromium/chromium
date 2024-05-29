@@ -5,10 +5,12 @@
 #include <string>
 
 #include "components/prefs/pref_service.h"
-#include "components/user_prefs/android/jni_headers/UserPrefs_jni.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/user_prefs/android/jni_headers/UserPrefs_jni.h"
 
 namespace user_prefs {
 

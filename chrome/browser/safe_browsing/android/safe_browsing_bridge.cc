@@ -4,7 +4,6 @@
 
 #include "base/android/jni_string.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/safe_browsing/android/jni_headers/SafeBrowsingBridge_jni.h"
 // NOTE: This target is transitively depended on by //chrome/browser and thus
 // can't depend on it.
 #include "chrome/browser/profiles/profile.h"
@@ -16,6 +15,9 @@
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/safe_browsing/android/jni_headers/SafeBrowsingBridge_jni.h"
 
 using base::android::JavaParamRef;
 

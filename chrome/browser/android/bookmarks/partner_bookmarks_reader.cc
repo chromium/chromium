@@ -13,7 +13,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/uuid.h"
-#include "chrome/android/chrome_jni_headers/PartnerBookmarksReader_jni.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_shim.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -28,6 +27,9 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/favicon_size.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/PartnerBookmarksReader_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::CheckException;

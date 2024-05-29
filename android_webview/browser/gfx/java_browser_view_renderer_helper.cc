@@ -7,7 +7,6 @@
 #include <android/bitmap.h>
 #include <memory>
 
-#include "android_webview/browser_jni_headers/JavaBrowserViewRendererHelper_jni.h"
 #include "android_webview/public/browser/draw_sw.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/logging.h"
@@ -17,6 +16,9 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/utils/SkCanvasStateUtils.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/JavaBrowserViewRendererHelper_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 

@@ -16,9 +16,11 @@
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
-#include "components/saved_tab_groups/jni_headers/TabGroupStoreDelegate_jni.h"
 #include "components/saved_tab_groups/tab_group_store_delegate.h"
 #include "components/saved_tab_groups/tab_group_store_id.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/saved_tab_groups/jni_headers/TabGroupStoreDelegate_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;

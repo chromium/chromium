@@ -15,7 +15,6 @@
 #include "content/child/child_thread_impl.h"
 #include "content/common/android/surface_wrapper.h"
 #include "content/common/shared_file_util.h"
-#include "content/public/android/content_app_jni/ContentChildProcessServiceDelegate_jni.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_switches.h"
 #include "gpu/command_buffer/service/texture_owner.h"
@@ -24,6 +23,9 @@
 #include "ui/gl/android/scoped_java_surface.h"
 #include "ui/gl/android/scoped_java_surface_control.h"
 #include "ui/gl/android/surface_texture.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_app_jni/ContentChildProcessServiceDelegate_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

@@ -6,6 +6,8 @@
 
 #include "base/android/pre_freeze_background_memory_trimmer.h"
 #include "base/memory/memory_pressure_listener.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/memory_jni/MemoryPressureListener_jni.h"
 
 using base::android::JavaParamRef;

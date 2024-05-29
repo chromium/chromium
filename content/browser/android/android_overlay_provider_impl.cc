@@ -4,6 +4,7 @@
 
 #include "content/browser/android/android_overlay_provider_impl.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/AndroidOverlayProviderImpl_jni.h"
 
 using base::android::AttachCurrentThread;

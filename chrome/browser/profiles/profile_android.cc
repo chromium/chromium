@@ -8,11 +8,13 @@
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/profiles/android/jni_headers/Profile_jni.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_key_android.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/profiles/android/jni_headers/Profile_jni.h"
 
 using jni_zero::AttachCurrentThread;
 using jni_zero::JavaParamRef;

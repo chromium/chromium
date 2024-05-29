@@ -12,10 +12,12 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
-#include "components/android_autofill/browser/jni_headers/FormFieldData_jni.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/android_autofill/browser/jni_headers/FormFieldData_jni.h"
 
 namespace autofill {
 

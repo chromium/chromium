@@ -6,9 +6,11 @@
 
 #include "base/android/jni_android.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/profiles/android/jni_headers/ProfileKey_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/profiles/android/jni_headers/ProfileKey_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

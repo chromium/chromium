@@ -18,7 +18,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/android/chrome_jni_headers/WebApkUpdateDataFetcher_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/webapps/browser/android/webapp_icon.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
@@ -36,6 +35,9 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/WebApkUpdateDataFetcher_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

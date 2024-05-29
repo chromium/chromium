@@ -20,12 +20,14 @@
 #include "base/time/time.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/android/jni_headers/SyncServiceImpl_jni.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/sync/android/jni_headers/SyncServiceImpl_jni.h"
 
 using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;

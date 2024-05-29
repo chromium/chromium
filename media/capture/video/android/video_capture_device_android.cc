@@ -17,11 +17,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/capture/mojom/image_capture_types.h"
-#include "media/capture/video/android/capture_jni_headers/VideoCapture_jni.h"
 #include "media/capture/video/android/photo_capabilities.h"
 #include "media/capture/video/android/video_capture_device_factory_android.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/geometry/point_f.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "media/capture/video/android/capture_jni_headers/VideoCapture_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::CheckException;

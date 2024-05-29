@@ -5,8 +5,10 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/time/time.h"
-#include "chrome/android/chrome_jni_headers/MetricsRecorder_jni.h"
 #include "components/send_tab_to_self/metrics_util.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/MetricsRecorder_jni.h"
 
 namespace send_tab_to_self {
 

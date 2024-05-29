@@ -7,6 +7,8 @@
 #include "base/android/java_handler_thread.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/test/base_unittests_jni_headers/JavaHandlerThreadHelpers_jni.h"
 
 namespace base {

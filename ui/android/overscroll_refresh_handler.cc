@@ -5,6 +5,8 @@
 #include "ui/android/overscroll_refresh_handler.h"
 
 #include "base/android/jni_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/android/ui_android_jni_headers/OverscrollRefreshHandler_jni.h"
 
 using base::android::AttachCurrentThread;

@@ -12,9 +12,11 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "components/data_sharing/internal/jni_headers/DataSharingNetworkLoaderImpl_jni.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/data_sharing/internal/jni_headers/DataSharingNetworkLoaderImpl_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaRef;

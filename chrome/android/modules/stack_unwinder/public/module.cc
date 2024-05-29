@@ -6,6 +6,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/memory/ptr_util.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/modules/stack_unwinder/provider/jni_headers/StackUnwinderModuleProvider_jni.h"
 
 namespace stack_unwinder {

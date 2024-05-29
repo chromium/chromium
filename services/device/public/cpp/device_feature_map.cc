@@ -7,6 +7,8 @@
 #include "base/no_destructor.h"
 #include "device/fido/features.h"
 #include "services/device/public/cpp/device_features.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "services/device/public/java/device_feature_list_jni/DeviceFeatureMap_jni.h"
 
 namespace features {

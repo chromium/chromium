@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/metrics/system_state_util.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/SystemStateUtil_jni.h"
 
 namespace android_webview {

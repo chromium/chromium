@@ -12,6 +12,8 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros_local.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/MinidumpUploadServiceImpl_jni.h"
 
 namespace {

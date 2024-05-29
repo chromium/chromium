@@ -7,13 +7,15 @@
 #include "base/android/jni_android.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/android/chrome_jni_headers/InfoBarContainer_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "components/infobars/android/infobar_android.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/InfoBarContainer_jni.h"
 
 using base::android::JavaParamRef;
 

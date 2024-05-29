@@ -8,7 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/tab_group_sync/jni_headers/TabGroupSyncServiceFactory_jni.h"
 
 static base::android::ScopedJavaLocalRef<jobject>

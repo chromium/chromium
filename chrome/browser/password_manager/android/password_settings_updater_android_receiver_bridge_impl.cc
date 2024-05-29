@@ -5,9 +5,11 @@
 #include "chrome/browser/password_manager/android/password_settings_updater_android_receiver_bridge_impl.h"
 
 #include "base/android/jni_android.h"
-#include "chrome/browser/password_manager/android/jni_headers/PasswordSettingsUpdaterReceiverBridge_jni.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_receiver_bridge.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/password_manager/android/jni_headers/PasswordSettingsUpdaterReceiverBridge_jni.h"
 
 namespace password_manager {
 

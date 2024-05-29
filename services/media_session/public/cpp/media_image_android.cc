@@ -8,8 +8,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "services/media_session/public/cpp/android/media_session_jni_headers/MediaImage_jni.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "services/media_session/public/cpp/android/media_session_jni_headers/MediaImage_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 

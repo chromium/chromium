@@ -11,9 +11,11 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "components/webauthn/android/jni_headers/Fido2CredentialRequest_jni.h"
 #include "components/webauthn/json/value_conversions.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/webauthn/android/jni_headers/Fido2CredentialRequest_jni.h"
 
 namespace webauthn {
 namespace {

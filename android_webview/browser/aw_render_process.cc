@@ -4,13 +4,15 @@
 
 #include "android_webview/browser/aw_render_process.h"
 
-#include "android_webview/browser_jni_headers/AwRenderProcess_jni.h"
 #include "android_webview/common/aw_features.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "ipc/ipc_channel_proxy.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwRenderProcess_jni.h"
 
 using base::android::AttachCurrentThread;
 using content::BrowserThread;

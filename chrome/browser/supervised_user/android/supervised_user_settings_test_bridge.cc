@@ -25,7 +25,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/supervised_user/test_support_jni_headers/SupervisedUserSettingsTestBridge_jni.h"
 
 using base::android::JavaParamRef;

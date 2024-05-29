@@ -9,11 +9,13 @@
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/android/fast_checkout/jni_headers/FastCheckoutAutofillProfile_jni.h"
-#include "chrome/browser/ui/android/fast_checkout/jni_headers/FastCheckoutCreditCard_jni.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/ui/android/fast_checkout/jni_headers/FastCheckoutAutofillProfile_jni.h"
+#include "chrome/browser/ui/android/fast_checkout/jni_headers/FastCheckoutCreditCard_jni.h"
 
 namespace {
 using ::base::android::ConvertJavaStringToUTF16;

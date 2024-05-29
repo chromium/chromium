@@ -7,6 +7,8 @@
 #include "base/android/jni_android.h"
 #include "base/memory/singleton.h"
 #include "base/task/single_thread_task_runner.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "media/base/android/media_jni_headers/MediaServerCrashListener_jni.h"
 
 namespace media {

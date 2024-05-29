@@ -29,7 +29,7 @@
 #include "ui/gfx/android/java_bitmap.h"
 #include "url/android/gurl_android.h"
 
-// Must appear after gurl_android.h and profile.h.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/MostVisitedSitesBridge_jni.h"
 #include "chrome/android/chrome_jni_headers/MostVisitedSites_jni.h"
 

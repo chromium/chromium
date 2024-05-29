@@ -20,7 +20,6 @@
 #include "content/browser/renderer_host/compositor_dependencies_android.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/android/content_jni_headers/MagnifierSurfaceControl_jni.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/gpu_stream_constants.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
@@ -39,6 +38,9 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gl/android/scoped_java_surface_control.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/MagnifierSurfaceControl_jni.h"
 
 namespace content {
 

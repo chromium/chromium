@@ -16,7 +16,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
-#include "chrome/android/chrome_jni_headers/OfflinePageDownloadBridge_jni.h"
 #include "chrome/browser/android/profile_key_util.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/download/android/download_controller_base.h"
@@ -57,6 +56,9 @@
 #include "net/base/filename_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/OfflinePageDownloadBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;

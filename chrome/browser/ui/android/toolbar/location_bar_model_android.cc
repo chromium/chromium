@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/android/toolbar/location_bar_model_android.h"
 
 #include "base/android/jni_string.h"
-#include "chrome/browser/ui/android/toolbar/jni_headers/LocationBarModel_jni.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
@@ -15,6 +14,9 @@
 #include "content/public/common/content_constants.h"
 #include "ui/base/device_form_factor.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/ui/android/toolbar/jni_headers/LocationBarModel_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

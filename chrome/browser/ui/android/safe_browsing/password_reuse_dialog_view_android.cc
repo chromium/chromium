@@ -10,9 +10,11 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/android/chrome_jni_headers/SafeBrowsingPasswordReuseDialogBridge_jni.h"
 #include "chrome/browser/safe_browsing/android/password_reuse_controller_android.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/SafeBrowsingPasswordReuseDialogBridge_jni.h"
 
 namespace safe_browsing {
 

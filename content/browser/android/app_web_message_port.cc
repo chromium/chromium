@@ -10,7 +10,6 @@
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "content/public/android/content_jni_headers/AppWebMessagePort_jni.h"
 #include "content/public/browser/android/message_payload.h"
 #include "content/public/browser/android/message_port_helper.h"
 #include "content/public/browser/browser_thread.h"
@@ -23,6 +22,9 @@
 #include "third_party/blink/public/common/messaging/transferable_message_mojom_traits.h"
 #include "third_party/blink/public/common/messaging/web_message_port.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/AppWebMessagePort_jni.h"
 
 namespace content::android {
 

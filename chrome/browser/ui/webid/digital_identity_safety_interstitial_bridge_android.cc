@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/webid/digital_identity_safety_interstitial_bridge_android.h"
 
 #include "base/android/jni_android.h"
-#include "chrome/browser/ui/android/webid/jni_headers/DigitalIdentitySafetyInterstitialBridge_jni.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/ui/android/webid/jni_headers/DigitalIdentitySafetyInterstitialBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;

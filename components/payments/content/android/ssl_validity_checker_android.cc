@@ -4,9 +4,11 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "components/payments/content/android/jni_headers/SslValidityChecker_jni.h"
 #include "components/payments/content/ssl_validity_checker.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/payments/content/android/jni_headers/SslValidityChecker_jni.h"
 
 namespace payments {
 

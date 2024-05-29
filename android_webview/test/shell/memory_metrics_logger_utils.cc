@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/test/webview_instrumentation_test_native_jni/MemoryMetricsLoggerUtils_jni.h"
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "components/embedder_support/android/metrics/memory_metrics_logger.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/test/webview_instrumentation_test_native_jni/MemoryMetricsLoggerUtils_jni.h"
 
 namespace android_webview {
 

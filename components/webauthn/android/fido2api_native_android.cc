@@ -6,10 +6,12 @@
 
 #include "base/android/jni_array.h"
 #include "components/cbor/values.h"
-#include "components/webauthn/android/jni_headers/Fido2Api_jni.h"
 #include "device/fido/attestation_object.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_constants.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/webauthn/android/jni_headers/Fido2Api_jni.h"
 
 using base::android::JavaByteArrayToByteVector;
 using base::android::JavaParamRef;

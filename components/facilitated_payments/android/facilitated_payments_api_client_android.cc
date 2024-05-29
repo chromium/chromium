@@ -10,9 +10,11 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/check.h"
-#include "components/facilitated_payments/android/java/jni_headers/FacilitatedPaymentsApiClientBridge_jni.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/render_frame_host.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/facilitated_payments/android/java/jni_headers/FacilitatedPaymentsApiClientBridge_jni.h"
 
 namespace payments::facilitated {
 

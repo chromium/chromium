@@ -20,6 +20,8 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_device_android.h"
 #include "device/bluetooth/bluetooth_discovery_session_outcome.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "device/bluetooth/jni_headers/ChromeBluetoothAdapter_jni.h"
 #include "device/bluetooth/jni_headers/ChromeBluetoothScanFilterBuilder_jni.h"
 #include "device/bluetooth/jni_headers/ChromeBluetoothScanFilterList_jni.h"

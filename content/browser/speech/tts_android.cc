@@ -13,9 +13,11 @@
 #include "content/browser/speech/tts_controller_impl.h"
 #include "content/browser/speech/tts_environment_android_impl.h"
 #include "content/common/buildflags.h"
-#include "content/public/android/content_jni_headers/TtsPlatformImpl_jni.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/TtsPlatformImpl_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

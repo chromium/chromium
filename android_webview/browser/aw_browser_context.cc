@@ -23,7 +23,6 @@
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/network_service/net_helpers.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_allowlist_manager.h"
-#include "android_webview/browser_jni_headers/AwBrowserContext_jni.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/common/crash_reporter/crash_keys.h"
@@ -81,6 +80,9 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwBrowserContext_jni.h"
 
 using base::FilePath;
 using content::BrowserThread;

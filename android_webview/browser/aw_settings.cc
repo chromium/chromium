@@ -15,7 +15,6 @@
 #include "android_webview/browser/aw_dark_mode.h"
 #include "android_webview/browser/aw_user_agent_metadata.h"
 #include "android_webview/browser/renderer_host/aw_render_view_host_ext.h"
-#include "android_webview/browser_jni_headers/AwSettings_jni.h"
 #include "android_webview/common/aw_content_client.h"
 #include "android_webview/common/aw_features.h"
 #include "base/android/jni_android.h"
@@ -40,6 +39,9 @@
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwSettings_jni.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;

@@ -9,7 +9,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/incognito/jni_headers/IncognitoUtils_jni.h"
 
 static jboolean JNI_IncognitoUtils_GetIncognitoModeEnabled(JNIEnv* env,

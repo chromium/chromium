@@ -9,7 +9,7 @@
 #include "components/commerce/core/android/shopping_service_android.h"
 #include "components/commerce/core/shopping_service.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/commerce/android/shopping_service_jni/ShoppingServiceFactory_jni.h"
 
 using base::android::JavaParamRef;

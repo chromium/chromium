@@ -4,11 +4,13 @@
 
 #include "android_webview/browser/gfx/begin_frame_source_webview.h"
 
-#include "android_webview/browser_jni_headers/RootBeginFrameSourceWebView_jni.h"
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/RootBeginFrameSourceWebView_jni.h"
 
 namespace android_webview {
 

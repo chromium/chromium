@@ -18,7 +18,7 @@
 #include "components/segmentation_platform/public/types/processed_value.h"
 #include "url/android/gurl_android.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ContextualPageActionController_jni.h"
 
 using base::android::JavaParamRef;

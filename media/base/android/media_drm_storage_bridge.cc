@@ -17,8 +17,10 @@
 #include "base/unguessable_token.h"
 #include "media/base/android/android_util.h"
 #include "media/base/android/media_drm_bridge.h"
-#include "media/base/android/media_jni_headers/MediaDrmStorageBridge_jni.h"
 #include "media/base/media_drm_key_type.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "media/base/android/media_jni_headers/MediaDrmStorageBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;

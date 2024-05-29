@@ -10,6 +10,8 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "services/data_decoder/public/cpp/android/safe_json_jni_headers/JsonSanitizer_jni.h"
 
 using base::android::JavaParamRef;

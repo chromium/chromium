@@ -19,7 +19,6 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
-#include "chrome/android/chrome_jni_headers/CompositorView_jni.h"
 #include "chrome/browser/android/compositor/layer/toolbar_layer.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
@@ -35,6 +34,9 @@
 #include "ui/android/window_android.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/geometry/rect.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/CompositorView_jni.h"
 
 using base::android::JavaParamRef;
 

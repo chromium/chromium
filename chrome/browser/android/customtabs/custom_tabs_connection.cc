@@ -18,7 +18,7 @@
 #include "net/url_request/referrer_policy.h"
 #include "url/gurl.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/CustomTabsConnection_jni.h"
 
 namespace customtabs {

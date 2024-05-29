@@ -11,10 +11,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/thumbnail/generator/android/thumbnail_media_parser.h"
-#include "chrome/browser/thumbnail/generator/jni_headers/ThumbnailGenerator_jni.h"
 #include "chrome/browser/thumbnail/generator/thumbnail_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/gfx/android/java_bitmap.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/thumbnail/generator/jni_headers/ThumbnailGenerator_jni.h"
 
 class SkBitmap;
 

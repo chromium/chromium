@@ -5,6 +5,8 @@
 #include "chrome/browser/android/ssl/mock_cert_verifier_rule_android.h"
 
 #include "base/command_line.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/test_support_jni_headers/MockCertVerifierRuleAndroid_jni.h"
 
 jlong JNI_MockCertVerifierRuleAndroid_Init(JNIEnv* env) {

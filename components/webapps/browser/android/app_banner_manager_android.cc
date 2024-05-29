@@ -29,7 +29,6 @@
 #include "components/webapps/browser/android/bottomsheet/pwa_bottom_sheet_controller.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
-#include "components/webapps/browser/android/webapps_jni_headers/AppBannerManager_jni.h"
 #include "components/webapps/browser/android/webapps_utils.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
@@ -49,6 +48,9 @@
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/webapps/browser/android/webapps_jni_headers/AppBannerManager_jni.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;

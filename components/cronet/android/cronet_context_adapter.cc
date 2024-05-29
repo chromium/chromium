@@ -32,7 +32,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h"
 #include "components/cronet/android/cronet_library_loader.h"
 #include "components/cronet/cronet_prefs_manager.h"
 #include "components/cronet/host_cache_persistence_manager.h"
@@ -56,6 +55,9 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_interceptor.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

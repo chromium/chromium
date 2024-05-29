@@ -10,9 +10,11 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "chrome/android/chrome_jni_headers/TrustedVaultClient_jni.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "content/public/browser/browser_thread.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/TrustedVaultClient_jni.h"
 
 TrustedVaultClientAndroid::OngoingFetchKeys::OngoingFetchKeys(
     const CoreAccountInfo& account_info,

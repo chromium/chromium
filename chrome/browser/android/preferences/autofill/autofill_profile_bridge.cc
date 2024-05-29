@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/autofill/android/jni_headers/AutofillProfileBridge_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
@@ -21,6 +20,9 @@
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui_component.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/localization.h"
 #include "ui/base/l10n/l10n_util.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/autofill/android/jni_headers/AutofillProfileBridge_jni.h"
 
 namespace autofill {
 

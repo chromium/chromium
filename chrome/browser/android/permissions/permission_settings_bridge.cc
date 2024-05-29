@@ -8,7 +8,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_request_manager.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/PermissionSettingsBridge_jni.h"
 
 using base::android::JavaParamRef;

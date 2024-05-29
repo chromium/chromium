@@ -14,14 +14,17 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
-#include "chromecast/media/cma/backend/android/audio_track_jni_headers/AudioSinkAudioTrackImpl_jni.h"
 #include "media/base/audio_bus.h"
 
-#define RUN_ON_FEEDER_THREAD(callback, ...)                               \
-  if (!feeder_task_runner_->BelongsToCurrentThread()) {                   \
-    POST_TASK_TO_FEEDER_THREAD(&AudioSinkAndroidAudioTrackImpl::callback, \
-                               ##__VA_ARGS__);                            \
-    return;                                                               \
+#define RUN_ON_FEEDER_THREAD(callback, ...)
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chromecast/media/cma/backend/android/audio_track_jni_headers/AudioSinkAudioTrackImpl_jni.h"
+
+if (!feeder_task_runner_->BelongsToCurrentThread()) {
+  POST_TASK_TO_FEEDER_THREAD(&AudioSinkAndroidAudioTrackImpl::callback,
+                             ##__VA_ARGS__);
+  return;                                                               \
   }
 
 #define POST_TASK_TO_FEEDER_THREAD(task, ...) \

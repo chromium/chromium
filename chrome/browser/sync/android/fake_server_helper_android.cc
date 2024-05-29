@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
-#include "chrome/android/test_support_jni_headers/FakeServerHelper_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -34,6 +33,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/test_support_jni_headers/FakeServerHelper_jni.h"
 
 using base::android::JavaParamRef;
 

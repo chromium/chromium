@@ -9,11 +9,13 @@
 #include "base/android/jni_android.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/android/chrome_jni_headers/SettingsLauncherImpl_jni.h"
-#include "chrome/browser/password_manager/android/account_storage_notice/jni/AccountStorageNoticeCoordinator_jni.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/SettingsLauncherImpl_jni.h"
+#include "chrome/browser/password_manager/android/account_storage_notice/jni/AccountStorageNoticeCoordinator_jni.h"
 
 using base::android::AttachCurrentThread;
 

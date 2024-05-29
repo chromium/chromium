@@ -24,7 +24,6 @@
 #include "chrome/browser/net/secure_dns_util.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/privacy/jni_headers/SecureDnsBridge_jni.h"
 #include "chrome/common/pref_names.h"
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
@@ -33,6 +32,9 @@
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/privacy/jni_headers/SecureDnsBridge_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

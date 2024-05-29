@@ -5,13 +5,15 @@
 #include "chrome/browser/ui/android/autofill/virtual_card_utils.h"
 
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/VirtualCardEnrollmentFields_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/VirtualCardEnrollmentFields_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;

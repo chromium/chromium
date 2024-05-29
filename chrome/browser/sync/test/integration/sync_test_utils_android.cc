@@ -10,6 +10,8 @@
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/test/sync_integration_test_support_jni_headers/SyncTestSigninUtils_jni.h"
 
 namespace sync_test_utils_android {

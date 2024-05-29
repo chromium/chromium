@@ -14,6 +14,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/base/ui_base_jni_headers/LocalizationUtils_jni.h"
 
 using base::android::JavaParamRef;

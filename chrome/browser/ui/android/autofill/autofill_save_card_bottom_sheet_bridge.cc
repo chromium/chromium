@@ -9,16 +9,18 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "chrome/android/chrome_jni_headers/AutofillSaveCardBottomSheetBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "components/autofill/android/payments/legal_message_line_android.h"
-#include "components/autofill/android/payments_jni_headers/AutofillSaveCardUiInfo_jni.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/AutofillSaveCardBottomSheetBridge_jni.h"
+#include "components/autofill/android/payments_jni_headers/AutofillSaveCardUiInfo_jni.h"
 
 namespace autofill {
 

@@ -23,7 +23,7 @@
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "url/android/gurl_android.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/tab_resumption/jni_headers/VisitedUrlRankingBackend_jni.h"
 
 namespace {

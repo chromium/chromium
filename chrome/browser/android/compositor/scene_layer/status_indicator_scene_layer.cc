@@ -6,6 +6,8 @@
 
 #include "cc/slim/layer.h"
 #include "cc/slim/ui_resource_layer.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/StatusIndicatorSceneLayer_jni.h"
 
 using base::android::JavaParamRef;

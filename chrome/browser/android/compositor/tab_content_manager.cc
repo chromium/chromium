@@ -25,7 +25,6 @@
 #include "cc/slim/layer.h"
 #include "chrome/browser/android/compositor/layer/thumbnail_layer.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/tab_ui/android/jni_headers/TabContentManager_jni.h"
 #include "chrome/browser/thumbnail/cc/thumbnail.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -41,6 +40,9 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/tab_ui/android/jni_headers/TabContentManager_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

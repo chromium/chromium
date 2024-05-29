@@ -11,13 +11,15 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
-#include "components/webapps/browser/android/webapps_jni_headers/AddToHomescreenMediator_jni.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/android/java_bitmap.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/webapps/browser/android/webapps_jni_headers/AddToHomescreenMediator_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

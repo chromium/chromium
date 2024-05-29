@@ -5,6 +5,8 @@
 #include "toolbar_manager_test_helper_android.h"
 
 #include "base/android/jni_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/test/test_support_jni_headers/ToolbarManagerTestHelper_jni.h"
 
 namespace toolbar_manager {

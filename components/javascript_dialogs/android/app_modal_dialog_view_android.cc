@@ -8,7 +8,6 @@
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/javascript_dialogs/android/jni_headers/JavascriptAppModalDialog_jni.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
@@ -17,6 +16,9 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/javascript_dialog_type.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/javascript_dialogs/android/jni_headers/JavascriptAppModalDialog_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;

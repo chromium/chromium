@@ -9,7 +9,7 @@
 #include "chrome/browser/android/metrics/android_session_durations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/android/metrics/jni_headers/AndroidSessionDurationsServiceState_jni.h"
 
 namespace {

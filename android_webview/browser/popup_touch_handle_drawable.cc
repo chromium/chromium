@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/popup_touch_handle_drawable.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/PopupTouchHandleDrawable_jni.h"
 
 using base::android::JavaParamRef;

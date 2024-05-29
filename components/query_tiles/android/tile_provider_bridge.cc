@@ -12,9 +12,11 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "components/query_tiles/android/tile_conversion_bridge.h"
-#include "components/query_tiles/jni_headers/TileProviderBridge_jni.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/query_tiles/jni_headers/TileProviderBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 

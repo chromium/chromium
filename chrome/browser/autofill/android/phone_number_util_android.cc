@@ -4,10 +4,12 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "chrome/browser/autofill/android/jni_headers/PhoneNumberUtil_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "third_party/libphonenumber/phonenumber_api.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/autofill/android/jni_headers/PhoneNumberUtil_jni.h"
 
 namespace autofill {
 

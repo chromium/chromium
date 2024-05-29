@@ -4,8 +4,10 @@
 
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper_impl.h"
 
-#include "chrome/android/chrome_jni_headers/PasswordCheckupLauncher_jni.h"
 #include "chrome/browser/profiles/profile.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/PasswordCheckupLauncher_jni.h"
 
 PasswordCheckupLauncherHelperImpl::~PasswordCheckupLauncherHelperImpl() =
     default;

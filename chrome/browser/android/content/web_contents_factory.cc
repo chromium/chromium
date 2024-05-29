@@ -10,7 +10,7 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/android/content/jni_headers/WebContentsFactory_jni.h"
 
 using base::android::JavaParamRef;

@@ -9,7 +9,6 @@
 
 #include "base/android/jni_string.h"
 #include "components/webxr/android/webxr_utils.h"
-#include "components/webxr/android/xr_jni_headers/XrSessionCoordinator_jni.h"
 #include "device/vr/android/compositor_delegate_provider.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "gpu/ipc/common/gpu_surface_tracker.h"
@@ -21,6 +20,9 @@
 #include "base/android/bundle_utils.h"
 #include "device/vr/android/arcore/arcore_shim.h"
 #endif
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/webxr/android/xr_jni_headers/XrSessionCoordinator_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;

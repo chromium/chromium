@@ -35,7 +35,7 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "url/android/gurl_android.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/favicon/jni_headers/FaviconHelper_jni.h"
 
 using base::android::AttachCurrentThread;

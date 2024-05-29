@@ -5,7 +5,6 @@
 #include "android_webview/browser/aw_dark_mode.h"
 
 #include "android_webview/browser/aw_contents.h"
-#include "android_webview/browser_jni_headers/AwDarkMode_jni.h"
 #include "android_webview/common/aw_features.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ptr_util.h"
@@ -14,6 +13,9 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwDarkMode_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

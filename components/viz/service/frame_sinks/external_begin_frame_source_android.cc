@@ -12,9 +12,11 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
-#include "components/viz/service/service_jni_headers/ExternalBeginFrameSourceAndroid_jni.h"
 #include "ui/gfx/android/achoreographer_compat.h"
 #include "ui/gl/gl_features.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/viz/service/service_jni_headers/ExternalBeginFrameSourceAndroid_jni.h"
 
 namespace {
 

@@ -8,12 +8,14 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/page_image_service/android/jni_headers/ImageServiceBridge_jni.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/page_image_service/metrics_util.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/page_image_service/android/jni_headers/ImageServiceBridge_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaGlobalRef;

@@ -4,8 +4,10 @@
 
 #include "services/device/usb/usb_configuration_android.h"
 
-#include "services/device/usb/jni_headers/ChromeUsbConfiguration_jni.h"
 #include "services/device/usb/usb_interface_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "services/device/usb/jni_headers/ChromeUsbConfiguration_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 

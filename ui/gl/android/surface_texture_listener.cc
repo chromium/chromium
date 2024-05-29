@@ -8,6 +8,8 @@
 
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/gl/gl_jni_headers/SurfaceTextureListener_jni.h"
 
 using base::android::JavaParamRef;

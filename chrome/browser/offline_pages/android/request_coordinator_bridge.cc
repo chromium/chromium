@@ -10,13 +10,13 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/SavePageRequest_jni.h"
 #include "chrome/browser/offline_pages/request_coordinator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/offline_pages/core/background/request_coordinator.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/RequestCoordinatorBridge_jni.h"
+#include "chrome/android/chrome_jni_headers/SavePageRequest_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

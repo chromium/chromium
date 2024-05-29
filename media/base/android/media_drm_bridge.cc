@@ -29,7 +29,6 @@
 #include "media/base/android/media_codec_util.h"
 #include "media/base/android/media_drm_bridge_client.h"
 #include "media/base/android/media_drm_bridge_delegate.h"
-#include "media/base/android/media_jni_headers/MediaDrmBridge_jni.h"
 #include "media/base/cdm_key_information.h"
 #include "media/base/logging_override_if_enabled.h"
 #include "media/base/media_drm_key_type.h"
@@ -37,6 +36,9 @@
 #include "media/base/provision_fetcher.h"
 #include "media/cdm/clear_key_cdm_common.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "media/base/android/media_jni_headers/MediaDrmBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;

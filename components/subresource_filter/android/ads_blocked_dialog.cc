@@ -13,9 +13,11 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/not_fatal_until.h"
-#include "components/subresource_filter/android/subresource_filter_jni_headers/AdsBlockedDialog_jni.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/subresource_filter/android/subresource_filter_jni_headers/AdsBlockedDialog_jni.h"
 
 AdsBlockedDialogBase::~AdsBlockedDialogBase() = default;
 

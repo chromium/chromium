@@ -13,6 +13,8 @@
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/test/test_support_jni_headers/MainReturnCodeResult_jni.h"
 #include "base/test/test_support_jni_headers/MultiprocessTestClientLauncher_jni.h"
 

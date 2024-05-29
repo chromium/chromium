@@ -7,13 +7,15 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/values.h"
-#include "chrome/browser/readaloud/android/jni_headers/ReadAloudPrefs_jni.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/android/pref_service_android.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/readaloud/android/jni_headers/ReadAloudPrefs_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;

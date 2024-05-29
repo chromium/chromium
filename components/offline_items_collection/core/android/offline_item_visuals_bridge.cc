@@ -4,10 +4,12 @@
 
 #include "components/offline_items_collection/core/android/offline_item_visuals_bridge.h"
 
-#include "components/offline_items_collection/core/jni_headers/OfflineItemVisualsBridge_jni.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/offline_items_collection/core/jni_headers/OfflineItemVisualsBridge_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 

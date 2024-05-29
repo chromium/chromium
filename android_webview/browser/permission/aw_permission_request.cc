@@ -7,8 +7,10 @@
 #include <utility>
 
 #include "android_webview/browser/permission/aw_permission_request_delegate.h"
-#include "android_webview/browser_jni_headers/AwPermissionRequest_jni.h"
 #include "base/android/jni_string.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwPermissionRequest_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;

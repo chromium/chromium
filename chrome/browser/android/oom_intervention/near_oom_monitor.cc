@@ -8,8 +8,10 @@
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/android/chrome_jni_headers/NearOomMonitor_jni.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_config.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/NearOomMonitor_jni.h"
 
 namespace {
 

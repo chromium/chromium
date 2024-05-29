@@ -23,7 +23,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/android/gurl_android.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/TabModelJniBridge_jni.h"
 
 using base::android::AttachCurrentThread;

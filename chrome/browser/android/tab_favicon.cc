@@ -4,7 +4,6 @@
 
 #include "chrome/browser/android/tab_favicon.h"
 
-#include "chrome/android/chrome_jni_headers/TabFavicon_jni.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "content/public/browser/web_contents.h"
 #include "skia/ext/image_operations.h"
@@ -15,6 +14,9 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/TabFavicon_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

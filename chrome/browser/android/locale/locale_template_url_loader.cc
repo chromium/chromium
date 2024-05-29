@@ -8,7 +8,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/check_deref.h"
 #include "base/debug/dump_without_crashing.h"
-#include "chrome/browser/locale/jni_headers/LocaleTemplateUrlLoader_jni.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/search_engines/prepopulated_engines.h"
@@ -16,6 +15,9 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/util.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/locale/jni_headers/LocaleTemplateUrlLoader_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaGlobalRef;

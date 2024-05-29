@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_observer_jni_bridge.h"
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/android/chrome_jni_headers/TabModelObserverJniBridge_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/TabModelObserverJniBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaObjectArrayReader;

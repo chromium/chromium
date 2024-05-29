@@ -18,7 +18,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
-#include "chrome/android/chrome_jni_headers/DownloadController_jni.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/profile_key_startup_accessor.h"
 #include "chrome/browser/android/profile_key_util.h"
@@ -56,6 +55,9 @@
 #include "ui/base/device_form_factor.h"
 #include "ui/base/page_transition_types.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/DownloadController_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;

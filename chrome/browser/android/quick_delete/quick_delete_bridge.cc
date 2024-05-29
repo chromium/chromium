@@ -11,7 +11,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/quick_delete/jni_headers/QuickDeleteBridge_jni.h"
 
 using base::android::AttachCurrentThread;

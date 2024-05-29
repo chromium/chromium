@@ -16,7 +16,6 @@
 #include "base/android/token_android.h"
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
-#include "chrome/android/chrome_jni_headers/HistoricalTabSaverImpl_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -29,6 +28,9 @@
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/HistoricalTabSaverImpl_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

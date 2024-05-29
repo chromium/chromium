@@ -8,9 +8,11 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "components/embedder_support/android/web_contents_delegate_jni_headers/ColorPickerBridge_jni.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/embedder_support/android/web_contents_delegate_jni_headers/ColorPickerBridge_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;

@@ -8,11 +8,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "chrome/browser/ui/android/webid/internal/jni/AccountSelectionBridge_jni.h"
-#include "chrome/browser/ui/android/webid/jni_headers/Account_jni.h"
-#include "chrome/browser/ui/android/webid/jni_headers/ClientIdMetadata_jni.h"
-#include "chrome/browser/ui/android/webid/jni_headers/IdentityCredentialTokenError_jni.h"
-#include "chrome/browser/ui/android/webid/jni_headers/IdentityProviderMetadata_jni.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
@@ -20,6 +15,13 @@
 #include "ui/android/window_android.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/ui/android/webid/internal/jni/AccountSelectionBridge_jni.h"
+#include "chrome/browser/ui/android/webid/jni_headers/Account_jni.h"
+#include "chrome/browser/ui/android/webid/jni_headers/ClientIdMetadata_jni.h"
+#include "chrome/browser/ui/android/webid/jni_headers/IdentityCredentialTokenError_jni.h"
+#include "chrome/browser/ui/android/webid/jni_headers/IdentityProviderMetadata_jni.h"
 
 using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;

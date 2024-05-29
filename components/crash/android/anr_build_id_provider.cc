@@ -9,6 +9,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/debug/elf_reader.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/crash/android/anr_collector_jni_headers/AnrCollector_jni.h"
 
 extern char __executable_start;

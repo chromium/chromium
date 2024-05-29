@@ -7,10 +7,12 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/flags/jni_headers/ChromeSessionState_jni.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/flags/jni_headers/ChromeSessionState_jni.h"
 
 using chrome::android::ActivityType;
 using chrome::android::DarkModeState;

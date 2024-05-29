@@ -4,9 +4,11 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ptr_util.h"
-#include "components/webauthn/android/jni_headers/WebauthnModeProvider_jni.h"
 #include "components/webauthn/android/webauthn_mode.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/webauthn/android/jni_headers/WebauthnModeProvider_jni.h"
 
 namespace webauthn {
 

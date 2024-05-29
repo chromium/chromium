@@ -7,7 +7,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/android/content_jni_headers/DialogOverlayImpl_jni.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -19,6 +18,9 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/android/view_android_observer.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/DialogOverlayImpl_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

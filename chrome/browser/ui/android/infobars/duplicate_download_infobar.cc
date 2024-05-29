@@ -9,8 +9,10 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/android/chrome_jni_headers/DuplicateDownloadInfoBar_jni.h"
 #include "chrome/browser/download/android/duplicate_download_infobar_delegate.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/DuplicateDownloadInfoBar_jni.h"
 
 using android::DuplicateDownloadInfoBarDelegate;
 

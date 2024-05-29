@@ -7,8 +7,10 @@
 #include "base/android/build_info.h"
 #include "base/android/pre_freeze_background_memory_trimmer.h"
 #include "base/functional/bind.h"
-#include "base/memory_jni/MemoryPurgeManager_jni.h"
 #include "third_party/jni_zero/jni_zero.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/memory_jni/MemoryPurgeManager_jni.h"
 
 static void JNI_MemoryPurgeManager_PostDelayedPurgeTaskOnUiThread(JNIEnv* env,
                                                                   jlong delay) {

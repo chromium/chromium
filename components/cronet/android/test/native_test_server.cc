@@ -12,9 +12,11 @@
 #include "base/android/jni_string.h"
 #include "base/files/file_path.h"
 #include "base/test/test_support_android.h"
-#include "components/cronet/android/cronet_test_apk_jni/NativeTestServer_jni.h"
 #include "components/cronet/testing/test_server/test_server.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/cronet/android/cronet_test_apk_jni/NativeTestServer_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

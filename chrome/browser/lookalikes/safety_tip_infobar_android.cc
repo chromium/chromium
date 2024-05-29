@@ -9,13 +9,15 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/android/chrome_jni_headers/SafetyTipInfoBar_jni.h"
 #include "chrome/browser/lookalikes/safety_tip_infobar_delegate_android.h"
 #include "chrome/browser/lookalikes/safety_tip_ui.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/SafetyTipInfoBar_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 

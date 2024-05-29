@@ -14,7 +14,6 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/feed/android/jni_headers/FeedServiceBridge_jni.h"
 #include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -25,6 +24,9 @@
 #include "components/feed/feed_feature_list.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/feed/android/jni_headers/FeedServiceBridge_jni.h"
 
 namespace feed {
 namespace {

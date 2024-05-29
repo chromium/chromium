@@ -8,11 +8,13 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "components/data_sharing/internal/jni_headers/DataSharingConversionBridge_jni.h"
 #include "components/data_sharing/public/group_data.h"
+#include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/data_sharing/internal/jni_headers/DataSharingConversionBridge_jni.h"
 #include "components/data_sharing/public/jni_headers/GroupData_jni.h"
 #include "components/data_sharing/public/jni_headers/GroupMember_jni.h"
-#include "url/android/gurl_android.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;

@@ -7,10 +7,12 @@
 #include <string>
 
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/ContextualSearchContext_jni.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/language_detection/language_detection_util.h"
 #include "content/public/browser/browser_thread.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/ContextualSearchContext_jni.h"
 
 NativeContextualSearchContext::NativeContextualSearchContext(JNIEnv* env,
                                                              jobject obj) {

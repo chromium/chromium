@@ -10,7 +10,6 @@
 
 #include "android_webview/browser/variations/variations_seed_loader.h"
 
-#include "android_webview/browser_jni_headers/VariationsSeedLoader_jni.h"
 #include "android_webview/proto/aw_variations_seed.pb.h"
 #include "base/android/jni_string.h"
 #include "base/files/file_path.h"
@@ -18,6 +17,9 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/VariationsSeedLoader_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;

@@ -10,7 +10,6 @@
 #include "android_webview/common/aw_resource.h"
 #include "android_webview/common/crash_reporter/crash_keys.h"
 #include "android_webview/common/url_constants.h"
-#include "android_webview/common_jni/DisableOriginTrialsSafeModeUtils_jni.h"
 #include "base/android/jni_android.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
@@ -30,6 +29,9 @@
 #include "third_party/widevine/cdm/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/common_jni/DisableOriginTrialsSafeModeUtils_jni.h"
 
 namespace android_webview {
 

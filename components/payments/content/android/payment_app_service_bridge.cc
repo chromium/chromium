@@ -19,7 +19,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/payments/content/android/byte_buffer_helper.h"
 #include "components/payments/content/android/csp_checker_android.h"
-#include "components/payments/content/android/jni_headers/PaymentAppServiceBridge_jni.h"
 #include "components/payments/content/android/jni_payment_app.h"
 #include "components/payments/content/android/payment_request_spec.h"
 #include "components/payments/content/payment_app_service.h"
@@ -38,6 +37,9 @@
 #include "ui/gfx/android/java_bitmap.h"
 #include "url/android/gurl_android.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/payments/content/android/jni_headers/PaymentAppServiceBridge_jni.h"
 
 namespace {
 using ::base::android::AttachCurrentThread;

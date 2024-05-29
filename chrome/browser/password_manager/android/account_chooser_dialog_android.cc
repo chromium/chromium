@@ -9,7 +9,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "chrome/android/chrome_jni_headers/AccountChooserDialog_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/password_manager/android/credential_android.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -24,6 +23,9 @@
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/android/java_bitmap.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/AccountChooserDialog_jni.h"
 
 namespace {
 

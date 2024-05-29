@@ -7,6 +7,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/hats/jni_headers/SurveyConfig_jni.h"
 
 using base::android::AttachCurrentThread;

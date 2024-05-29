@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_string.h"
-#include "chrome/browser/android/content/jni_headers/ContentUtils_jni.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/android/content/jni_headers/ContentUtils_jni.h"
 
 static base::android::ScopedJavaLocalRef<jstring>
 JNI_ContentUtils_GetBrowserUserAgent(JNIEnv* env) {

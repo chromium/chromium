@@ -12,8 +12,10 @@
 #include "content/browser/renderer_host/render_frame_host_android.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/android/content_test_jni/RenderFrameHostTestExt_jni.h"
 #include "ui/gfx/geometry/rect.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/test/android/content_test_jni/RenderFrameHostTestExt_jni.h"
 
 using base::android::JavaParamRef;
 

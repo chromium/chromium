@@ -10,10 +10,12 @@
 #include "base/logging.h"
 #include "content/browser/android/scoped_surface_request_manager.h"
 #include "content/common/android/surface_wrapper.h"
-#include "content/public/android/content_jni_headers/GpuProcessCallback_jni.h"
 #include "content/public/browser/browser_thread.h"
 #include "gpu/ipc/common/gpu_surface_tracker.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/GpuProcessCallback_jni.h"
 
 namespace content {
 

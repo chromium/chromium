@@ -4,6 +4,7 @@
 
 #include "base/version_info/android/channel_getter.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h"
 
 namespace version_info {

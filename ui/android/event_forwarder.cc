@@ -9,7 +9,6 @@
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "ui/android/ui_android_features.h"
-#include "ui/android/ui_android_jni_headers/EventForwarder_jni.h"
 #include "ui/android/window_android.h"
 #include "ui/base/ui_base_switches_util.h"
 #include "ui/events/android/drag_event_android.h"
@@ -17,6 +16,9 @@
 #include "ui/events/android/gesture_event_type.h"
 #include "ui/events/android/key_event_android.h"
 #include "ui/events/android/motion_event_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "ui/android/ui_android_jni_headers/EventForwarder_jni.h"
 
 namespace ui {
 namespace {

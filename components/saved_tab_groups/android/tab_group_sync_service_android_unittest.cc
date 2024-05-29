@@ -11,12 +11,14 @@
 #include "base/test/task_environment.h"
 #include "components/saved_tab_groups/android/tab_group_sync_conversions_bridge.h"
 #include "components/saved_tab_groups/android/tab_group_sync_conversions_utils.h"
-#include "components/saved_tab_groups/native_j_unittests_jni_headers/TabGroupSyncServiceAndroidUnitTest_jni.h"
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
 #include "components/sync/test/test_matchers.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/saved_tab_groups/native_j_unittests_jni_headers/TabGroupSyncServiceAndroidUnitTest_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

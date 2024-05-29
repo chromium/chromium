@@ -5,6 +5,8 @@
 #include <cpu-features.h>
 
 #include "base/android/jni_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/base_jni/CpuFeatures_jni.h"
 
 namespace base {

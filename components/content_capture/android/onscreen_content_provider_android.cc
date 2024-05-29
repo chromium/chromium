@@ -9,11 +9,13 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "components/content_capture/common/content_capture_features.h"
+#include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/content_capture/android/jni_headers/ContentCaptureData_jni.h"
 #include "components/content_capture/android/jni_headers/ContentCaptureFrame_jni.h"
 #include "components/content_capture/android/jni_headers/OnscreenContentProvider_jni.h"
-#include "components/content_capture/common/content_capture_features.h"
-#include "content/public/browser/web_contents.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;

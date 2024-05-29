@@ -5,6 +5,8 @@
 #include "ui/gfx/animation/animation.h"
 
 #include "base/android/jni_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/gfx/gfx_jni_headers/Animation_jni.h"
 
 using base::android::AttachCurrentThread;

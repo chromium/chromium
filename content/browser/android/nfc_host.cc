@@ -8,7 +8,6 @@
 
 #include "base/atomic_sequence_num.h"
 #include "content/browser/permissions/permission_controller_impl.h"
-#include "content/public/android/content_jni_headers/NfcHost_jni.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/navigation_handle.h"
@@ -17,6 +16,9 @@
 #include "services/device/public/mojom/nfc.mojom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/NfcHost_jni.h"
 
 namespace content {
 

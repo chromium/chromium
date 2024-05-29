@@ -10,8 +10,6 @@
 #include "base/containers/adapters.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/language/android/jni_headers/TranslateBridge_jni.h"
-#include "chrome/browser/language/android/jni_headers/TranslationObserver_jni.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -30,6 +28,10 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "ui/base/l10n/l10n_util.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/language/android/jni_headers/TranslateBridge_jni.h"
+#include "chrome/browser/language/android/jni_headers/TranslationObserver_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;

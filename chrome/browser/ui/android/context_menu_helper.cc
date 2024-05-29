@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
-#include "chrome/android/chrome_jni_headers/ContextMenuHelper_jni.h"
 #include "components/embedder_support/android/contextmenu/context_menu_builder.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
@@ -23,6 +22,9 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/ContextMenuHelper_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

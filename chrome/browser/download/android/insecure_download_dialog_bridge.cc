@@ -15,12 +15,14 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/download/android/download_dialog_utils.h"
-#include "chrome/browser/download/android/jni_headers/InsecureDownloadDialogBridge_jni.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/download/android/jni_headers/InsecureDownloadDialogBridge_jni.h"
 
 using base::android::JavaParamRef;
 using InsecureDownloadStatus = download::DownloadItem::InsecureDownloadStatus;

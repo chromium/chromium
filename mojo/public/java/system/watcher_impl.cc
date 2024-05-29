@@ -11,6 +11,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "mojo/public/java/system/system_impl_java_jni_headers/WatcherImpl_jni.h"
 
 namespace mojo {

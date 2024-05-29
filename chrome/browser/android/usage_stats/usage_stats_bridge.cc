@@ -18,7 +18,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/UsageStatsBridge_jni.h"
 
 using base::android::AppendJavaStringArrayToStringVector;

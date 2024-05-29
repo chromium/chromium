@@ -16,11 +16,13 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "media/base/android/media_codec_bridge.h"
-#include "media/base/android/media_jni_headers/CodecProfileLevelList_jni.h"
-#include "media/base/android/media_jni_headers/MediaCodecUtil_jni.h"
 #include "media/base/video_codecs.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "media/base/android/media_jni_headers/CodecProfileLevelList_jni.h"
+#include "media/base/android/media_jni_headers/MediaCodecUtil_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;

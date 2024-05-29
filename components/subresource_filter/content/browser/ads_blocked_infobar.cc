@@ -8,6 +8,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/subresource_filter/android/subresource_filter_jni_headers/AdsBlockedInfoBar_jni.h"
 
 namespace subresource_filter {

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "android_webview/browser/aw_contents.h"
-#include "android_webview/browser_jni_headers/AwHttpAuthHandler_jni.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
@@ -16,6 +15,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/auth.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwHttpAuthHandler_jni.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::JavaParamRef;

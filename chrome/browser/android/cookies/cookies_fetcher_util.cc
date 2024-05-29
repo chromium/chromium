@@ -8,7 +8,6 @@
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/cookies/cookies_fetcher_restore_util.h"
-#include "chrome/browser/profiles/android/jni_headers/CookiesFetcher_jni.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -17,6 +16,9 @@
 #include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/profiles/android/jni_headers/CookiesFetcher_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "android_webview/browser/network_service/net_helpers.h"
-#include "android_webview/browser_jni_headers/AwContentsClientBridge_jni.h"
 #include "android_webview/common/devtools_instrumentation.h"
 #include "android_webview/grit/components_strings.h"
 #include "base/android/jni_android.h"
@@ -33,6 +32,9 @@
 #include "net/ssl/ssl_private_key.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwContentsClientBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;

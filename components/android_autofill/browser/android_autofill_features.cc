@@ -7,6 +7,8 @@
 #include <jni.h>
 
 #include "base/feature_list.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/android_autofill/browser/jni_headers_features/AndroidAutofillFeatures_jni.h"
 
 namespace autofill::features {

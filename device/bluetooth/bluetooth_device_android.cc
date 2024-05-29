@@ -9,6 +9,8 @@
 #include "base/containers/contains.h"
 #include "device/bluetooth/bluetooth_adapter_android.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "device/bluetooth/jni_headers/ChromeBluetoothDevice_jni.h"
 
 using base::android::AttachCurrentThread;

@@ -11,9 +11,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
-#include "chrome/browser/tab/jni_headers/LevelDBPersistedDataStorage_jni.h"
 #include "components/commerce/core/proto/persisted_state_db_content.pb.h"
 #include "content/public/browser/android/browser_context_handle.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/tab/jni_headers/LevelDBPersistedDataStorage_jni.h"
 
 namespace {
 

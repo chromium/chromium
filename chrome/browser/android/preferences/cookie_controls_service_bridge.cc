@@ -5,12 +5,14 @@
 #include "chrome/browser/android/preferences/cookie_controls_service_bridge.h"
 
 #include <memory>
-#include "chrome/android/chrome_jni_headers/CookieControlsServiceBridge_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service_factory.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/CookieControlsServiceBridge_jni.h"
 
 using base::android::JavaParamRef;
 

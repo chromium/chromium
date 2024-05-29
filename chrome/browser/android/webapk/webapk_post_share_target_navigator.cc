@@ -12,12 +12,14 @@
 #include "base/android/jni_string.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversion_utils.h"
-#include "chrome/android/chrome_jni_headers/WebApkPostShareTargetNavigator_jni.h"
 #include "chrome/browser/web_share_target/target_util.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/mime_util.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/WebApkPostShareTargetNavigator_jni.h"
 
 using base::android::JavaParamRef;
 

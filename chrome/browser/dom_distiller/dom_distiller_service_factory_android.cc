@@ -9,7 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/dom_distiller/core/dom_distiller_service_android.h"
 
-// Must come after other includes, because FromJniType() uses Profile.
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/DomDistillerServiceFactory_jni.h"
 
 using base::android::JavaParamRef;

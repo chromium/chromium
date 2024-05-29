@@ -18,12 +18,14 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/android/content_jni_headers/LoadCommittedDetails_jni.h"
-#include "content/public/android/content_jni_headers/WebContentsObserverProxy_jni.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/LoadCommittedDetails_jni.h"
+#include "content/public/android/content_jni_headers/WebContentsObserverProxy_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

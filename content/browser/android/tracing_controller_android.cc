@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
-#include "content/public/android/content_main_dex_jni/TracingControllerAndroidImpl_jni.h"
 #include "content/public/browser/tracing_controller.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"
@@ -22,6 +21,9 @@
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_packet.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #include "third_party/perfetto/protos/perfetto/common/trace_stats.gen.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_main_dex_jni/TracingControllerAndroidImpl_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

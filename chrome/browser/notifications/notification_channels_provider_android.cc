@@ -19,7 +19,6 @@
 #include "base/strings/string_util.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
-#include "chrome/browser/notifications/jni_headers/NotificationSettingsBridge_jni.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/content_settings_pref_provider.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
@@ -37,6 +36,9 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/notifications/jni_headers/NotificationSettingsBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::BuildInfo;

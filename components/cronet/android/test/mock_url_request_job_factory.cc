@@ -6,7 +6,6 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "components/cronet/android/cronet_test_apk_jni/MockUrlRequestJobFactory_jni.h"
 #include "components/cronet/android/test/cronet_test_util.h"
 #include "components/cronet/android/test/url_request_intercepting_job_factory.h"
 #include "net/test/url_request/ssl_certificate_error_job.h"
@@ -16,6 +15,9 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_filter.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/cronet/android/cronet_test_apk_jni/MockUrlRequestJobFactory_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
