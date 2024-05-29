@@ -143,7 +143,10 @@ void LensOverlaySidePanelCoordinator::WebViewClosing() {
 
 content::WebContents*
 LensOverlaySidePanelCoordinator::GetSidePanelWebContents() {
-  return side_panel_web_view_->GetWebContents();
+  if (side_panel_web_view_) {
+    return side_panel_web_view_->GetWebContents();
+  }
+  return nullptr;
 }
 
 bool LensOverlaySidePanelCoordinator::IsEntryShowing() {

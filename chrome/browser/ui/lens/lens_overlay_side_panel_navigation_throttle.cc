@@ -35,10 +35,12 @@ LensOverlaySidePanelNavigationThrottle::MaybeCreateFor(
   auto* controller = LensOverlayController::GetControllerFromWebViewWebContents(
       handle->GetWebContents());
   // Only create the navigation throttle for this handle if it equals the side
-  // panel web contents and the side panel is showing the lens overlay results
-  // entry.
+  // panel web contents and the side panel web contents is not null. The entry
+  // does not need to be showing as it's possible a new tab was opened that hid
+  // the side panel. In that case, we still want to be able to show the correct
+  // URL in the side panel should the user return.
   if (controller && controller->results_side_panel_coordinator() &&
-      controller->results_side_panel_coordinator()->IsEntryShowing() &&
+      controller->results_side_panel_coordinator()->GetSidePanelWebContents() &&
       (handle->GetWebContents() == controller->results_side_panel_coordinator()
                                        ->GetSidePanelWebContents())) {
     return base::WrapUnique(
