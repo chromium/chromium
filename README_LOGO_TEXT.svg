@@ -1,16 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg">
+<svg xmlns="http://www.w3.org/2000/svg" height="64" width="140">
     <style>
         .text {
-            color: #333;
             font-family: Helvetica, sans-serif;
             text-anchor: middle;
             dominant-baseline: middle;
             font-size: 24px;
+            color: #1F2328;
+            font-weight: bold;
         }
 
     </style>
 
     <g class="text">
-        <text x="50%" y="50%" font-weight="bold" fill="#1F2328">Chromium</text>
+        <text x="50%" y="50%">Chromium</text>
     </g>
 </svg>
