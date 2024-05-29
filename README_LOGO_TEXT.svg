@@ -4,7 +4,7 @@
             font-family: Helvetica, sans-serif;
             text-anchor: middle;
             dominant-baseline: middle;
-            font-size: 24px;
+            font-size: 32px;
             color: #1F2328;
             font-weight: bold;
         }
