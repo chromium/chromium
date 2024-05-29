@@ -8,6 +8,7 @@ import("//testing/test.gni")
 
 mojom("mojom") {
   sources = [
+    "debug_types.mojom",
     "os_registration_error.mojom",
     "registration_eligibility.mojom",
     "source_registration_error.mojom",
@@ -53,6 +54,8 @@ component("attribution_reporting") {
     "aggregation_keys.cc",
     "aggregation_keys.h",
     "constants.h",
+    "debug_types.cc",
+    "debug_types.h",
     "destination_set.cc",
     "destination_set.h",
     "eligibility.cc",

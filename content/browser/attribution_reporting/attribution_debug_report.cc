@@ -21,6 +21,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/debug_types.h"
+#include "components/attribution_reporting/debug_types.mojom.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration_header_error.h"
@@ -45,49 +47,11 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::mojom::DebugDataType;
 using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
 using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
 
 constexpr char kAttributionDestination[] = "attribution_destination";
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class DebugDataType {
-  kSourceDestinationLimit = 0,
-  kSourceNoised = 1,
-  kSourceStorageLimit = 2,
-  kSourceSuccess = 3,
-  kSourceUnknownError = 4,
-  kSourceDestinationRateLimit = 5,
-  kTriggerNoMatchingSource = 6,
-  kTriggerNoMatchingFilterData = 8,
-  kTriggerReportingOriginLimit = 9,
-  kTriggerEventDeduplicated = 10,
-  kTriggerEventNoMatchingConfigurations = 11,
-  kTriggerEventNoise = 12,
-  kTriggerEventLowPriority = 13,
-  kTriggerEventExcessiveReports = 14,
-  kTriggerEventStorageLimit = 15,
-  kTriggerEventReportWindowPassed = 16,
-  kTriggerAggregateDeduplicated = 17,
-  kTriggerAggregateNoContributions = 18,
-  kTriggerAggregateInsufficientBudget = 19,
-  kTriggerAggregateStorageLimit = 20,
-  kTriggerAggregateReportWindowPassed = 21,
-  kTriggerAggregateExcessiveReports = 22,
-  kTriggerUnknownError = 23,
-  kOsSourceDelegated = 24,
-  kOsTriggerDelegated = 25,
-  kTriggerEventReportWindowNotStarted = 26,
-  kTriggerEventNoMatchingTriggerData = 27,
-  kHeaderParsingError = 28,
-  kSourceReportingOriginPerSiteLimit = 29,
-  kTriggerEventAttributionsPerSourceDestinationLimit = 30,
-  kTriggerAggregateAttributionsPerSourceDestinationLimit = 31,
-  kSourceMaxChannelCapacityReached = 32,
-  kSourceMaxTriggerDataCardinalityReached = 33,
-  kMaxValue = kSourceMaxTriggerDataCardinalityReached,
-};
 
 struct DebugDataTypeAndBody {
   DebugDataType debug_data_type;
@@ -160,12 +124,12 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
           },
           [](StoreSourceResult::ExceedsMaxChannelCapacity v) {
             return std::make_optional<DebugDataTypeAndBody>(
-                DebugDataType::kSourceMaxChannelCapacityReached,
+                DebugDataType::kSourceChannelCapacityLimit,
                 base::Value(v.limit));
           },
           [](StoreSourceResult::ExceedsMaxTriggerStateCardinality v) {
             return std::make_optional<DebugDataTypeAndBody>(
-                DebugDataType::kSourceMaxTriggerDataCardinalityReached,
+                DebugDataType::kSourceTriggerStateCardinalityLimit,
                 GetLimit(v.limit));
           },
       },
@@ -270,77 +234,6 @@ std::optional<DebugDataTypeAndBody> GetReportDataTypeAndLimit(
   }
 }
 
-std::string_view SerializeReportDataType(DebugDataType data_type) {
-  switch (data_type) {
-    case DebugDataType::kSourceDestinationLimit:
-      return "source-destination-limit";
-    case DebugDataType::kSourceNoised:
-      return "source-noised";
-    case DebugDataType::kSourceStorageLimit:
-      return "source-storage-limit";
-    case DebugDataType::kSourceSuccess:
-      return "source-success";
-    case DebugDataType::kSourceDestinationRateLimit:
-      return "source-destination-rate-limit";
-    case DebugDataType::kSourceUnknownError:
-      return "source-unknown-error";
-    case DebugDataType::kTriggerNoMatchingSource:
-      return "trigger-no-matching-source";
-    case DebugDataType::kTriggerEventAttributionsPerSourceDestinationLimit:
-      return "trigger-event-attributions-per-source-destination-limit";
-    case DebugDataType::kTriggerAggregateAttributionsPerSourceDestinationLimit:
-      return "trigger-aggregate-attributions-per-source-destination-limit";
-    case DebugDataType::kTriggerNoMatchingFilterData:
-      return "trigger-no-matching-filter-data";
-    case DebugDataType::kTriggerReportingOriginLimit:
-      return "trigger-reporting-origin-limit";
-    case DebugDataType::kTriggerEventDeduplicated:
-      return "trigger-event-deduplicated";
-    case DebugDataType::kTriggerEventNoMatchingConfigurations:
-      return "trigger-event-no-matching-configurations";
-    case DebugDataType::kTriggerEventNoise:
-      return "trigger-event-noise";
-    case DebugDataType::kTriggerEventLowPriority:
-      return "trigger-event-low-priority";
-    case DebugDataType::kTriggerEventExcessiveReports:
-      return "trigger-event-excessive-reports";
-    case DebugDataType::kTriggerEventStorageLimit:
-      return "trigger-event-storage-limit";
-    case DebugDataType::kTriggerEventReportWindowNotStarted:
-      return "trigger-event-report-window-not-started";
-    case DebugDataType::kTriggerEventReportWindowPassed:
-      return "trigger-event-report-window-passed";
-    case DebugDataType::kTriggerEventNoMatchingTriggerData:
-      return "trigger-event-no-matching-trigger-data";
-    case DebugDataType::kTriggerAggregateDeduplicated:
-      return "trigger-aggregate-deduplicated";
-    case DebugDataType::kTriggerAggregateNoContributions:
-      return "trigger-aggregate-no-contributions";
-    case DebugDataType::kTriggerAggregateInsufficientBudget:
-      return "trigger-aggregate-insufficient-budget";
-    case DebugDataType::kTriggerAggregateStorageLimit:
-      return "trigger-aggregate-storage-limit";
-    case DebugDataType::kTriggerAggregateReportWindowPassed:
-      return "trigger-aggregate-report-window-passed";
-    case DebugDataType::kTriggerAggregateExcessiveReports:
-      return "trigger-aggregate-excessive-reports";
-    case DebugDataType::kTriggerUnknownError:
-      return "trigger-unknown-error";
-    case DebugDataType::kOsSourceDelegated:
-      return "os-source-delegated";
-    case DebugDataType::kOsTriggerDelegated:
-      return "os-trigger-delegated";
-    case DebugDataType::kHeaderParsingError:
-      return "header-parsing-error";
-    case DebugDataType::kSourceReportingOriginPerSiteLimit:
-      return "source-reporting-origin-per-site-limit";
-    case DebugDataType::kSourceMaxChannelCapacityReached:
-      return "source-channel-capacity-limit";
-    case DebugDataType::kSourceMaxTriggerDataCardinalityReached:
-      return "source-trigger-state-cardinality-limit";
-  }
-}
-
 void SetSourceData(base::Value::Dict& data_body,
                    uint64_t source_event_id,
                    const net::SchemefulSite& source_site,
@@ -387,14 +280,14 @@ base::Value::Dict GetReportDataBody(DebugDataTypeAndBody data,
 
 base::Value::Dict GetReportData(DebugDataType type, base::Value::Dict body) {
   base::Value::Dict dict;
-  dict.Set("type", SerializeReportDataType(type));
+  dict.Set("type", attribution_reporting::SerializeDebugDataType(type));
   dict.Set("body", std::move(body));
   return dict;
 }
 
 void RecordVerboseDebugReportType(DebugDataType type) {
   static_assert(DebugDataType::kMaxValue ==
-                    DebugDataType::kSourceMaxTriggerDataCardinalityReached,
+                    DebugDataType::kSourceTriggerStateCardinalityLimit,
                 "Update ConversionVerboseDebugReportType enum.");
   base::UmaHistogramEnumeration("Conversions.SentVerboseDebugReportType4",
                                 type);
