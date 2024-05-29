@@ -131,7 +131,8 @@ class CORE_EXPORT InspectorPageAgent final
       const String& identifier) override;
   protocol::Response setLifecycleEventsEnabled(bool) override;
   protocol::Response reload(Maybe<bool> bypass_cache,
-                            Maybe<String> script_to_evaluate_on_load) override;
+                            Maybe<String> script_to_evaluate_on_load,
+                            Maybe<String> loader_id) override;
   protocol::Response stopLoading() override;
   protocol::Response setAdBlockingEnabled(bool) override;
   protocol::Response getResourceTree(

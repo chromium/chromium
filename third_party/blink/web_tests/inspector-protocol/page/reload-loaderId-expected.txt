@@ -1,0 +1,22 @@
+Tests that reloading pages respects loaderId.
+loaderId: <string>
+Querying window.foo after reload (expect "undefined"): undefined
+Now trying a reload with an incorrect loaderId
+{
+    error : {
+        code : -32602
+        message : Reload was discarded because the page already navigated
+    }
+    id : <number>
+    sessionId : <string>
+}
+Now trying a reload with an outdated loaderId
+{
+    error : {
+        code : -32602
+        message : Reload was discarded because the page already navigated
+    }
+    id : <number>
+    sessionId : <string>
+}
+
