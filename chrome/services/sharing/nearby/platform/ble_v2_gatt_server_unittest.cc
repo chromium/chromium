@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -129,6 +130,7 @@ class BleV2GattServerTest : public testing::Test {
   mojo::SharedRemote<bluetooth::mojom::Adapter> remote_adapter_;
   std::unique_ptr<BleV2GattServer> ble_v2_gatt_server_;
   raw_ptr<FakeGattServiceFactory> fake_gatt_service_factory_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(BleV2GattServerTest, GetBlePeripheral) {
@@ -342,6 +344,9 @@ TEST_F(BleV2GattServerTest, Register_Success) {
   base::test::TestFuture<bool> future;
   ble_v2_gatt_server_->RegisterGattServices(future.GetCallback());
   EXPECT_TRUE(future.Take());
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.GattServer.RegisterGattServices.Result",
+      /*bucket: success=*/1, 1);
 }
 
 TEST_F(BleV2GattServerTest, Register_Failure) {
@@ -357,6 +362,12 @@ TEST_F(BleV2GattServerTest, Register_Failure) {
   base::test::TestFuture<bool> future;
   ble_v2_gatt_server_->RegisterGattServices(future.GetCallback());
   EXPECT_FALSE(future.Take());
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.GattServer.RegisterGattServices.Result",
+      /*bucket: failure=*/0, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.GattServer.RegisterGattService.FailureReason",
+      /*bucket: Failed=*/1, 1);
 }
 
 TEST_F(BleV2GattServerTest, MojoGattServiceDisconnect) {

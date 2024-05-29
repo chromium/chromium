@@ -5,6 +5,8 @@
 #ifndef CHROME_SERVICES_SHARING_NEARBY_PLATFORM_NEARBY_PLATFORM_METRICS_H_
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_NEARBY_PLATFORM_METRICS_H_
 
+#include "device/bluetooth/bluetooth_gatt_service.h"
+
 namespace nearby::chrome::metrics {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -33,6 +35,9 @@ enum class StartScanningFailureReason {
 };
 
 void RecordGattServerScatternetDualRoleSupported(bool is_dual_role_supported);
+void RecordGattServiceRegistrationResult(bool success);
+void RecordGattServiceRegistrationErrorReason(
+    device::BluetoothGattService::GattErrorCode error_code);
 void RecordStartAdvertisingFailureReason(StartAdvertisingFailureReason reason,
                                          bool is_extended_advertisement);
 void RecordStartAdvertisingResult(bool success, bool is_extended_advertisement);

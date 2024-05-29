@@ -30,6 +30,38 @@ chromium-metrics-reviews@google.com.
   <variant name=".WifiLan" summary="Wi-Fi LAN"/>
 </variants>
 
+<histogram
+    name="Nearby.Connections.BleV2.GattServer.RegisterGattService.FailureReason"
+    enum="BluetoothGattServiceGattErrorCode" expires_after="2025-04-30">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the failure reason for registering a single GATT service. Emitted
+    when registration of the GATT services is triggered by BLE V2 Medium when
+    advertising is requested; BLE V2 Medium attempts to register the GATT
+    services before advertising.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Connections.BleV2.GattServer.RegisterGattServices.Result"
+    enum="BooleanSuccess" expires_after="2025-04-30">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of registering all of the GATT Services that
+    are part of the BLE V2 GATT Server. Success is indicating by the success of
+    registering all of the GATT services with the local Bluetooth Adapter, which
+    makes all the service data and characteristics available. Failure is
+    indicated by any one GATT service failing to be registered - see metric
+    &quot;Nearby.Connections.BleV2.GattServer.RegisterGattService.ErrorReason&quot;
+    for insights on the failure reasons. Emitted when registration of the GATT
+    services is triggered by BLE V2 Medium when advertising is requested; BLE V2
+    Medium attempts to register the GATT services before advertising, and only
+    begins advertising on success.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Connections.BleV2.ScatternetDualRoleSupported"
     enum="Boolean" expires_after="2025-04-30">
   <owner>julietlevesque@google.com</owner>

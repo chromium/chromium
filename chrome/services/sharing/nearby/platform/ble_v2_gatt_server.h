@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/nearby/src/internal/platform/implementation/ble_v2.h"
+
 namespace nearby::chrome {
 
 class BleV2GattServer : public ::nearby::api::ble_v2::GattServer,

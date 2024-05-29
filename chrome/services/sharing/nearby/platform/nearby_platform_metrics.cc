@@ -14,6 +14,19 @@ void RecordGattServerScatternetDualRoleSupported(bool is_dual_role_supported) {
       is_dual_role_supported);
 }
 
+void RecordGattServiceRegistrationResult(bool success) {
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.BleV2.GattServer.RegisterGattServices.Result",
+      success);
+}
+
+void RecordGattServiceRegistrationErrorReason(
+    device::BluetoothGattService::GattErrorCode error_code) {
+  base::UmaHistogramEnumeration(
+      "Nearby.Connections.BleV2.GattServer.RegisterGattService.FailureReason",
+      error_code);
+}
+
 void RecordStartAdvertisingFailureReason(StartAdvertisingFailureReason reason,
                                          bool is_extended_advertisement) {
   // Record the overall StartAdvertising failure reason.

@@ -12,6 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_utils.h"
 #include "chrome/services/sharing/nearby/platform/count_down_latch.h"
+#include "chrome/services/sharing/nearby/platform/nearby_platform_metrics.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -303,12 +304,15 @@ void BleV2GattServer::OnRegisterGattService(
     LOG(WARNING) << __func__ << ": failed due to error = "
                  << GattErrorCodeToString(*error_code);
     did_any_gatt_services_fail_to_register_ = true;
+    metrics::RecordGattServiceRegistrationErrorReason(error_code.value());
   }
 
   if (!registration_barrier_->Decrement()) {
     VLOG(1) << __func__ << ": registration result = "
             << (!did_any_gatt_services_fail_to_register_ ? "success"
                                                          : "failure");
+    metrics::RecordGattServiceRegistrationResult(
+        /*success=*/!did_any_gatt_services_fail_to_register_);
     CHECK(on_registration_complete_callback_);
     std::move(on_registration_complete_callback_)
         .Run(/*success=*/!did_any_gatt_services_fail_to_register_);
