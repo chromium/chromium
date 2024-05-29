@@ -59,7 +59,6 @@ namespace plus_addresses {
 namespace {
 const float kDescriptionWidthPercent = 0.8;
 const int kGoogleGLogoWidth = 50;
-const int kPlusAddressLabelVerticalMargin = 10;
 const int kPlusAddressLogoWidth = 100;
 const int kPlusAddressRefreshColumnWidth = 48;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -70,6 +69,11 @@ const gfx::VectorIcon& kPlusAddressLogoIcon =
 const gfx::VectorIcon& kGoogleGLogoIcon = vector_icons::kProductIcon;
 const gfx::VectorIcon& kPlusAddressLogoIcon = vector_icons::kProductIcon;
 #endif
+
+int GetPlusAddressLabelVerticalMargin() {
+  return base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign) ? 24
+                                                                        : 10;
+}
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
@@ -119,6 +123,9 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
                      .SetImage(ui::ImageModel::FromVectorIcon(
                          kGoogleGLogoIcon, ui::kColorIcon, kGoogleGLogoWidth))
                      .Build();
+    logo_image->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::VH(GetPlusAddressLabelVerticalMargin(), 0));
   } else {
     logo_image =
         views::Builder<views::ImageView>()
@@ -212,7 +219,8 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
                                      .SetBackground(std::move(background))
                                      .Build());
   label_container->SetProperty(
-      views::kMarginsKey, gfx::Insets::VH(kPlusAddressLabelVerticalMargin, 0));
+      views::kMarginsKey,
+      gfx::Insets::VH(GetPlusAddressLabelVerticalMargin(), 0));
   if (offer_refresh) {
     label_container->AddPaddingColumn(views::TableLayout::kFixedSize,
                                       kPlusAddressRefreshColumnWidth);
@@ -279,8 +287,7 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
           .Build());
   error_report_label_->SetProperty(
       views::kMarginsKey,
-      gfx::Insets::TLBR(kPlusAddressLabelVerticalMargin, 0,
-                        kPlusAddressLabelVerticalMargin, 0));
+      gfx::Insets::VH(GetPlusAddressLabelVerticalMargin(), 0));
   error_report_label_->SetProperty(views::kElementIdentifierKey,
                                    kPlusAddressErrorTextElementId);
   // Update style for error link.
