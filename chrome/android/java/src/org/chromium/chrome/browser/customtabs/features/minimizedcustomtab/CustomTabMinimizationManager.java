@@ -48,10 +48,6 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /** Class that manages minimizing a Custom Tab into picture-in-picture. */
@@ -89,8 +85,6 @@ public class CustomTabMinimizationManager
 
     // --- For debugging
     private static final String TAG = "CTMinimizationMgr";
-    private static final String SUCCESS_AFTER_EXCEPTION_HISTOGRAM_NAME =
-            "CustomTabs.MinimizeSuccessAfterException.";
     private static final String TASK_DISPLAY_AREA_NPE_STR =
             "com.android.server.wm.TaskDisplayArea.positionStackAtTop";
     private static final String DEVICE_DOES_NOT_SUPPORT_ISE_STR =
@@ -98,9 +92,6 @@ public class CustomTabMinimizationManager
     private static final String ACTIVITY_DOES_NOT_SUPPORT_ISE_STR =
             "Current activity does not support picture-in-picture";
     private static final String ROOT_TASK_IAE_STR = "addRootTaskReferenceIfNeeded: root pinned";
-
-    private final Map<String, Integer> mExceptionImpressions = new HashMap<>();
-    private final Set<String> mMinimizeSuccessAfterException = new HashSet<>();
     // ---
 
     private final AppCompatActivity mActivity;
@@ -183,26 +174,26 @@ public class CustomTabMinimizationManager
         } catch (NullPointerException e) {
             if (doesExceptionMatch(e, TASK_DISPLAY_AREA_NPE_STR)) {
                 String msg = "NullPointerException";
-                incrementExceptionImpressionAndReport(TASK_DISPLAY_AREA_NPE_STR, msg, e);
+                reportException(TASK_DISPLAY_AREA_NPE_STR, msg, e);
             } else {
                 throw e;
             }
         } catch (IllegalStateException e) {
             if (doesExceptionMatch(e, DEVICE_DOES_NOT_SUPPORT_ISE_STR)) {
                 String msg = "Device doesn't support picture-in-picture mode.";
-                incrementExceptionImpressionAndReport(DEVICE_DOES_NOT_SUPPORT_ISE_STR, msg, e);
+                reportException(DEVICE_DOES_NOT_SUPPORT_ISE_STR, msg, e);
             } else if (doesExceptionMatch(e, ACTIVITY_DOES_NOT_SUPPORT_ISE_STR)) {
                 String msg =
                         "Current activity does not support picture-in-picture. Activity class: "
                                 + mActivity.getLocalClassName();
-                incrementExceptionImpressionAndReport(ACTIVITY_DOES_NOT_SUPPORT_ISE_STR, msg, e);
+                reportException(ACTIVITY_DOES_NOT_SUPPORT_ISE_STR, msg, e);
             } else {
                 throw e;
             }
         } catch (IllegalArgumentException e) {
             if (doesExceptionMatch(e, ROOT_TASK_IAE_STR)) {
                 String msg = "IllegalArgumentException";
-                incrementExceptionImpressionAndReport(ROOT_TASK_IAE_STR, msg, e);
+                reportException(ROOT_TASK_IAE_STR, msg, e);
             } else {
                 throw e;
             }
@@ -212,7 +203,6 @@ public class CustomTabMinimizationManager
             Toast.makeText(mActivity, R.string.minimize_failure_toast, Toast.LENGTH_SHORT).show();
             return;
         }
-        recordMinimizeSuccessAfterException();
 
         maybeSaveLastMinimizeDelegate();
 
@@ -450,63 +440,11 @@ public class CustomTabMinimizationManager
         return e.getMessage() != null && e.getMessage().contains(subString);
     }
 
-    private void incrementExceptionImpression(String key) {
-        mExceptionImpressions.compute(key, (k, v) -> v == null ? 1 : v + 1);
-    }
-
-    private void incrementExceptionImpressionAndReport(String key, String msg, Exception e) {
-        incrementExceptionImpression(key);
+    private void reportException(String key, String msg, Exception e) {
         String msgWithState =
                 msg + " -- ActivityState: " + mLifecycleDispatcher.getCurrentActivityState();
         Log.e(TAG, msgWithState, e);
         reportJavaException(new Exception(msg, e));
-    }
-
-    private void recordMinimizeSuccessAfterException() {
-        if (shouldRecordSuccessAfterException(TASK_DISPLAY_AREA_NPE_STR)) {
-            mMinimizeSuccessAfterException.add(TASK_DISPLAY_AREA_NPE_STR);
-            RecordHistogram.recordCustomCountHistogram(
-                    SUCCESS_AFTER_EXCEPTION_HISTOGRAM_NAME + "NPE",
-                    mExceptionImpressions.get(TASK_DISPLAY_AREA_NPE_STR),
-                    1,
-                    10,
-                    10);
-        }
-        if (shouldRecordSuccessAfterException(DEVICE_DOES_NOT_SUPPORT_ISE_STR)) {
-            mMinimizeSuccessAfterException.add(DEVICE_DOES_NOT_SUPPORT_ISE_STR);
-            RecordHistogram.recordCustomCountHistogram(
-                    SUCCESS_AFTER_EXCEPTION_HISTOGRAM_NAME + "ISE_DEVICE",
-                    mExceptionImpressions.get(DEVICE_DOES_NOT_SUPPORT_ISE_STR),
-                    1,
-                    10,
-                    10);
-        }
-        if (shouldRecordSuccessAfterException(ACTIVITY_DOES_NOT_SUPPORT_ISE_STR)) {
-            mMinimizeSuccessAfterException.add(ACTIVITY_DOES_NOT_SUPPORT_ISE_STR);
-            RecordHistogram.recordCustomCountHistogram(
-                    SUCCESS_AFTER_EXCEPTION_HISTOGRAM_NAME + "ISE_ACTIVITY",
-                    mExceptionImpressions.get(ACTIVITY_DOES_NOT_SUPPORT_ISE_STR),
-                    1,
-                    10,
-                    10);
-        }
-        if (shouldRecordSuccessAfterException(ROOT_TASK_IAE_STR)) {
-            mMinimizeSuccessAfterException.add(ROOT_TASK_IAE_STR);
-            RecordHistogram.recordCustomCountHistogram(
-                    SUCCESS_AFTER_EXCEPTION_HISTOGRAM_NAME + "IAE",
-                    mExceptionImpressions.get(ROOT_TASK_IAE_STR),
-                    1,
-                    10,
-                    10);
-        }
-
-        // We should count the exceptions since the last successful minimize event.
-        mExceptionImpressions.clear();
-    }
-
-    private boolean shouldRecordSuccessAfterException(String key) {
-        return !mMinimizeSuccessAfterException.contains(key)
-                && mExceptionImpressions.containsKey(key);
     }
 
     private void recordMinimizeSuccess(boolean success) {
