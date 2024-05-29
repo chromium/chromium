@@ -227,6 +227,8 @@ class ClankCompiler:
     self._webview_target, webview_apk = self._GetWebViewTargetAndApk(
         native_library_build_variant, options.public, options.arch)
     self.webview_apk_path = str(out_dir / 'apks' / webview_apk)
+    self.webview_installer_path = str(self._out_dir / 'bin' /
+                                      self._webview_target)
 
     # Chrome targets
     self._chrome_target, chrome_apk = self._GetChromeTargetAndApk(
@@ -639,6 +641,8 @@ class OrderfileGenerator:
     files = self._profiler.CollectSystemHealthProfile(
         self._compiler.chrome_apk_path)
     if self._options.profile_webview_startup:
+      self._profiler.InstallAndSetWebViewProvider(
+          self._compiler.webview_installer_path)
       files += self._profiler.CollectWebViewStartupProfile(
           self._compiler.webview_apk_path)
     self._MaybeSaveProfile()
@@ -946,6 +950,8 @@ class OrderfileGenerator:
       if self._options.profile_webview_startup:
         self._compiler.CompileWebViewApk(instrumented=False,
                                          force_relink=True)
+        self._profiler.InstallAndSetWebViewProvider(
+            self._compiler.webview_installer_path)
         benchmark_results[
             'system_health.webview_startup'] = self._WebViewStartupBenchmark(
                 self._compiler.webview_apk_path)

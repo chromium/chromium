@@ -282,6 +282,16 @@ class AndroidProfileTool:
     self._DeleteDeviceData()
     return data
 
+  def InstallAndSetWebViewProvider(self, installer_path: str):
+    """Installs the built WebView on the device and set it as the WebView
+    provider.
+    public instructions: https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/build-instructions.md#installing-webview-and-switching-provider # pylint: disable=line-too-long
+    """
+    # Uninstall the existing WebView package to avoid signatures issues.
+    self._device.Uninstall('com.google.android.webview.debug')
+    self._RunCommand([installer_path, 'install'])
+    self._RunCommand([installer_path, 'set-webview-provider'])
+
   @staticmethod
   def _GetBrowserFromApk(apk: str):
     browser = 'android-webview'
