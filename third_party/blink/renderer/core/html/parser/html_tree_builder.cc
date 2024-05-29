@@ -1533,9 +1533,6 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
           tree_.InsertHTMLElement(token);
           return;
         case HTMLTag::kHr:
-          if (!RuntimeEnabledFeatures::SelectHrEnabled()) {
-            break;
-          }
           if (tree_.CurrentStackItem()->MatchesHTMLTag(HTMLTag::kOption)) {
             AtomicHTMLToken end_option(HTMLToken::kEndTag, HTMLTag::kOption);
             ProcessEndTag(&end_option);
