@@ -924,7 +924,7 @@
 <translation id="2725927759457695883">Заполнить поля для имени и фамилии</translation>
 <translation id="2726001110728089263">Боковой лоток</translation>
 <translation id="2728127805433021124">Сертификат сервера подписан с использованием ненадежного алгоритма.</translation>
-<translation id="272937284275742856">Безопасная проверка ваших сведений о способе оплаты…</translation>
+<translation id="272937284275742856">Безопасная проверка ваших платежных данных…</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Выполните диагностику подключения<ph name="END_LINK" /></translation>
 <translation id="2731220418440848219">Узнать больше о выборе поисковой системы в Chromium</translation>
 <translation id="2731382536835015353">44 x 68 дюймов</translation>
@@ -1397,7 +1397,7 @@
 <translation id="3646643500201740985">Оценка эффективности рекламы</translation>
 <translation id="3647286794400715637">Каждая запись должна содержать 1–2 URL.</translation>
 <translation id="3650584904733503804">Проверка выполнена успешно</translation>
-<translation id="3650594806107685466">Мы защищаем данные банковских карт. Чтобы подтвердить свою личность, введите CVC-код (<ph name="SIDE_OF_CARD" />).</translation>
+<translation id="3650594806107685466">Чтобы получить доступ к данным банковской карты, введите CVC-код (<ph name="SIDE_OF_CARD" />).</translation>
 <translation id="3650917416636556301">Пеший туризм и кемпинг</translation>
 <translation id="3655241534245626312">Перейти в настройки разрешений</translation>
 <translation id="3655670868607891010">Если эта проблема возникает часто, изучите <ph name="HELP_LINK" />.</translation>
