@@ -14,6 +14,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('mapping_file',
                         help='Path to .mapping file within out/Release/apks.')
+    parser.add_argument('--build',
+                        action='store_true',
+                        help='Whether to try compiling the mapping file first.')
     args = parser.parse_args()
 
     if not args.mapping_file.endswith('.mapping'):
@@ -28,6 +31,12 @@ def main():
         build_dir = os.path.dirname(build_dir) or '.'
 
     mapping_file = os.path.relpath(args.mapping_file, build_dir)
+
+    if args.build:
+        # autoninja so it builds under RBE
+        build_cmd = ['autoninja', '-C', build_dir, mapping_file]
+        print('Running:', ' '.join(build_cmd))
+        subprocess.run(build_cmd)
 
     command = subprocess.check_output(
         ['ninja', '-C', build_dir, '-t', 'commands', '-s', mapping_file],
