@@ -23,6 +23,8 @@ class MockExtendedUpdatesController : public ExtendedUpdatesController {
               (content::BrowserContext*, const Params&),
               (override));
 
+  MOCK_METHOD(bool, IsOptInEligible, (content::BrowserContext*), (override));
+
   MOCK_METHOD(bool, IsOptedIn, (), (override));
 
   MOCK_METHOD(void,

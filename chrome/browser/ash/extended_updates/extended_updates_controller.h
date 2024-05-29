@@ -70,7 +70,7 @@ class ExtendedUpdatesController {
   // Whether the device is eligible to opt-in for extended updates.
   // This version assumes the values in Params are eligible.
   // TODO(b/330230644): Consolidate with above function.
-  bool IsOptInEligible(content::BrowserContext* context);
+  virtual bool IsOptInEligible(content::BrowserContext* context);
 
   // Whether the device is opted in for receiving extended updates.
   virtual bool IsOptedIn();

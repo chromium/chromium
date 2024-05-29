@@ -4,17 +4,22 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/system/extended_updates/extended_updates_metrics.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "chrome/browser/ash/extended_updates/test/mock_extended_updates_controller.h"
+#include "chrome/browser/ash/extended_updates/test/scoped_extended_updates_controller.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_dialog.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
 
@@ -74,7 +79,9 @@ IN_PROC_BROWSER_TEST_F(ExtendedUpdatesBrowserTest, AppTest) {
 
 IN_PROC_BROWSER_TEST_F(ExtendedUpdatesBrowserTest, DialogMetricsTest) {
   base::HistogramTester histogram_tester;
+  EXPECT_FALSE(ash::extended_updates::ExtendedUpdatesDialog::Get());
   ash::extended_updates::ExtendedUpdatesDialog::Show();
+  EXPECT_TRUE(ash::extended_updates::ExtendedUpdatesDialog::Get());
   histogram_tester.ExpectBucketCount(
       ash::kExtendedUpdatesDialogEventMetric,
       ash::ExtendedUpdatesDialogEvent::kDialogShown, 1);
@@ -84,4 +91,38 @@ IN_PROC_BROWSER_TEST_F(ExtendedUpdatesBrowserTest, DialogMetricsTest) {
   histogram_tester.ExpectBucketCount(
       ash::kExtendedUpdatesDialogEventMetric,
       ash::ExtendedUpdatesDialogEvent::kOptInConfirmed, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtendedUpdatesBrowserTest, NoShowDialogIfNotEligible) {
+  ash::MockExtendedUpdatesController mock_controller;
+  ash::ScopedExtendedUpdatesController scoped_controller(&mock_controller);
+  EXPECT_CALL(mock_controller, IsOptInEligible(browser()->profile()))
+      .WillOnce(testing::Return(false));
+
+  EXPECT_FALSE(ash::extended_updates::ExtendedUpdatesDialog::Get());
+  ash::extended_updates::ExtendedUpdatesDialog::Show();
+  EXPECT_FALSE(ash::extended_updates::ExtendedUpdatesDialog::Get());
+}
+
+IN_PROC_BROWSER_TEST_F(ExtendedUpdatesBrowserTest, CloseDialogIfNotEligible) {
+  ash::MockExtendedUpdatesController mock_controller;
+  ash::ScopedExtendedUpdatesController scoped_controller(&mock_controller);
+  EXPECT_CALL(mock_controller, IsOptInEligible(browser()->profile()))
+      .WillRepeatedly(testing::Return(true));
+
+  EXPECT_FALSE(ash::extended_updates::ExtendedUpdatesDialog::Get());
+  ash::extended_updates::ExtendedUpdatesDialog::Show();
+  EXPECT_TRUE(ash::extended_updates::ExtendedUpdatesDialog::Get());
+
+  EXPECT_CALL(mock_controller, IsOptInEligible(browser()->profile()))
+      .WillOnce(testing::Return(false));
+  ash::extended_updates::ExtendedUpdatesDialog::Show();
+
+  ui_test_utils::CheckWaiter(
+      base::BindRepeating([] {
+        return bool(ash::extended_updates::ExtendedUpdatesDialog::Get());
+      }),
+      false, base::Milliseconds(1000))
+      .Wait();
+  EXPECT_FALSE(ash::extended_updates::ExtendedUpdatesDialog::Get());
 }
