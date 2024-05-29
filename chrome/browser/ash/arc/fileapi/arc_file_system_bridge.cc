@@ -416,7 +416,6 @@ void ArcFileSystemBridge::OnMediaStoreUriAdded(
 
   if (!is_valid) {
     LOG(ERROR) << "`OnMediaStoreUriAdded()` called with invalid payload.";
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
     return;
   }
 
