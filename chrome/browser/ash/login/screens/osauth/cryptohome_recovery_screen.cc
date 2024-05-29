@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/reauth_reason.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -142,11 +143,17 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
     const auto& auth_config = user_context->GetAuthFactorsConfiguration();
 
     bool has_online_password = false;
+    bool has_local_password = false;
     if (auth_config.HasConfiguredFactor(
             cryptohome::AuthFactorType::kPassword)) {
       has_online_password = auth::IsGaiaPassword(
           *auth_config.FindFactorByType(cryptohome::AuthFactorType::kPassword));
+      has_local_password = auth::IsLocalPassword(
+          *auth_config.FindFactorByType(cryptohome::AuthFactorType::kPassword));
     }
+    // Exactly one of the password should exists.
+    CHECK_NE(has_online_password, has_local_password);
+
     context()->user_context = std::move(user_context);
     if (has_online_password) {
       exit_callback_.Run(Result::kFallbackOnline);
