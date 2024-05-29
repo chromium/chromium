@@ -1601,6 +1601,30 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram
+    name="IOS.MagicStack.Module.{Event}.TabResumption.{Surface}.{Source}"
+    units="index" expires_after="2024-09-01">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records the rank index of the Tab Resumption module displaying a {Source}
+    tab, if it is displaying on {Surface} on {Event} event.
+    &quot;IOS.MagicStack.Module.Click.TabResumption&quot; is also recorded.
+  </summary>
+  <token key="Event">
+    <variant name="Click" summary="a click"/>
+    <variant name="Impression" summary="an impression"/>
+  </token>
+  <token key="Surface">
+    <variant name="OnNTP" summary="NTP"/>
+    <variant name="OnStart" summary="start"/>
+  </token>
+  <token key="Source">
+    <variant name="Recent" summary="local recent"/>
+    <variant name="Sync" summary="distant synced"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.MagicStack.NTP.SegmentationRankingFetchTime" units="ms"
     expires_after="2024-11-03">
   <owner>thegreenfrog@chromium.org</owner>

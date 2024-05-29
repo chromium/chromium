@@ -93,6 +93,11 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   if ([items count] > 0) {
     LogTopModuleImpressionForType(items[0].type);
   }
+
+  for (NSUInteger index = 0; index < [items count]; index++) {
+    [items[index].delegate magicStackModule:items[index]
+                        wasDisplayedAtIndex:index];
+  }
   [self populateItems:items arePlaceholders:NO];
 }
 
@@ -100,6 +105,8 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   if (index == 0) {
     LogTopModuleImpressionForType(item.type);
   }
+  [item.delegate magicStackModule:item wasDisplayedAtIndex:index];
+
   MagicStackSnapshot* snapshot = [self.diffableDataSource snapshot];
   NSInteger section =
       [snapshot indexOfSectionIdentifier:kMagicStackSectionIdentifier];
@@ -150,6 +157,8 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
     // updates directly to the cell.
     return;
   }
+  [item.delegate magicStackModule:item
+              wasDisplayedAtIndex:existingItemIndexPath.item];
 
   MagicStackSnapshot* snapshot = [self.diffableDataSource snapshot];
   // Add the new item before the existing item.

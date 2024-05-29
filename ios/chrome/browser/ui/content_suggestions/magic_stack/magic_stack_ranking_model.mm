@@ -290,6 +290,11 @@
   }
 }
 
+- (NSUInteger)indexForMagicStackModule:
+    (ContentSuggestionsModuleType)moduleType {
+  return [_latestMagicStackOrder indexOfObject:@(int(moduleType))];
+}
+
 #pragma mark - Private
 
 // Adds the correct Set Up List module type to the Magic Stack `order`.
@@ -597,14 +602,6 @@
     [self.consumer updateMagicStackOrder:change];
   }
   [self.consumer showTabResumptionWithItem:item];
-}
-
-// Returns the index rank of `moduleType`.
-// Callers of this need to handle a NSNotFound return case and do nothing in
-// that case.
-- (NSUInteger)indexForMagicStackModule:
-    (ContentSuggestionsModuleType)moduleType {
-  return [_latestMagicStackOrder indexOfObject:@(int(moduleType))];
 }
 
 // Returns YES if the tab resumption module should added into the Magic Stack.

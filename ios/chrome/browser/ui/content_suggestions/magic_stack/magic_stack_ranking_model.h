@@ -54,6 +54,9 @@ class PrefService;
 // Logs engagement with a module of `type`.
 - (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type;
 
+// Returns the index rank of `moduleType` or NSNotFound if not found.
+- (NSUInteger)indexForMagicStackModule:(ContentSuggestionsModuleType)moduleType;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MAGIC_STACK_RANKING_MODEL_H_

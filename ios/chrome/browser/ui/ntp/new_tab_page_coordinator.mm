@@ -1201,18 +1201,28 @@
 
 #pragma mark - NewTabPageMetricsDelegate
 
-- (void)recentTabTileOpened {
+- (void)recentTabTileOpenedAtIndex:(NSUInteger)index {
   RecordMagicStackClick(ContentSuggestionsModuleType::kTabResumption,
                         [self isStartSurface]);
   RecordHomeAction(IOSHomeActionType::kReturnToRecentTab,
                    [self isStartSurface]);
+  RecordMagicStackTabResumptionClick(true, [self isStartSurface], index);
 }
 
-- (void)distantTabResumptionOpened {
+- (void)distantTabResumptionOpenedAtIndex:(NSUInteger)index {
   RecordMagicStackClick(ContentSuggestionsModuleType::kTabResumption,
                         [self isStartSurface]);
   RecordHomeAction(IOSHomeActionType::kOpenDistantTabResumption,
                    [self isStartSurface]);
+  RecordMagicStackTabResumptionClick(false, [self isStartSurface], index);
+}
+
+- (void)recentTabTileDisplayedAtIndex:(NSUInteger)index {
+  LogTabResumptionImpression(true, [self isStartSurface], index);
+}
+
+- (void)distantTabResumptionDisplayedAtIndex:(NSUInteger)index {
+  LogTabResumptionImpression(false, [self isStartSurface], index);
 }
 
 - (void)feedArticleOpened {
