@@ -39,7 +39,7 @@ class PermissionElementBrowserTest : public InProcessBrowserTest {
   PermissionElementBrowserTest() {
     feature_list_.InitWithFeatures(
         {blink::features::kPermissionElement,
-         blink::features::kDisablePepcSecurityForTesting},
+         blink::features::kBypassPepcSecurityForTesting},
         {});
   }
 

@@ -199,7 +199,7 @@ static const base::Feature* kBadFeatureFlagsInAboutFlags[] = {
 
     // This flag disables security for the Page Embedded Permission Control, for
     // testing purposes. Can only be enabled via the command line.
-    &blink::features::kDisablePepcSecurityForTesting,
+    &blink::features::kBypassPepcSecurityForTesting,
 };
 
 void ShowBadFlagsInfoBarHelper(content::WebContents* web_contents,
