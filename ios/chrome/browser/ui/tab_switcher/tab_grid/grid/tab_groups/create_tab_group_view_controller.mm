@@ -665,6 +665,7 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
   _snapshotsViewDisplayedConstraint = [_colorsScrollView.topAnchor
       constraintEqualToAnchor:snapshotsContainerLayoutGuide.bottomAnchor
                      constant:kSnapshotViewVerticalMargin];
+  _snapshotsViewDisplayedConstraint.priority = UILayoutPriorityRequired - 1;
   _snapshotsViewHiddenConstraint = [_colorsScrollView.topAnchor
       constraintEqualToAnchor:dotAndFieldContainer.bottomAnchor
                      constant:kSnapshotViewVerticalMargin];
@@ -759,11 +760,9 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
     [container.topAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
     [container.leadingAnchor
-        constraintGreaterThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
-                                                 .leadingAnchor],
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
     [container.trailingAnchor
-        constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
-                                              .trailingAnchor],
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
     [container.heightAnchor constraintLessThanOrEqualToConstant:kMaxHeight],
     keyboardConstraint,
   ]];
