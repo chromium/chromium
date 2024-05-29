@@ -119,6 +119,7 @@
   _mediator = [[IncognitoGridMediator alloc] init];
   _mediator.incognitoDelegate = self;
   _mediator.reauthSceneAgent = _reauthAgent;
+  _mediator.tabGroupsHandler = self;
 
   GridContainerViewController* container =
       [[GridContainerViewController alloc] init];

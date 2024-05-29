@@ -4,7 +4,9 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/query_title_server_util.h"
@@ -143,7 +145,7 @@ void CreateDefaultFirstGroupFromTabCellAtIndex(int tab_cell_index) {
 
 // Creates a group with default title from a tab cell at index `tab_cell_index`
 // when the grid contains groups.
-void CreateDefaultGroupFromTabCellAtIndex(int tab_cell_index) {
+void CreateAdditionalDefaultGroupFromTabCellAtIndex(int tab_cell_index) {
   DisplayContextMenuForTabCellAtIndex(tab_cell_index);
   [[EarlGrey
       selectElementWithMatcher:ContextMenuItemWithAccessibilityLabel(
@@ -272,6 +274,14 @@ void DeleteGroupAtIndex(int group_cell_index) {
   [super setUp];
   RegisterQueryTitleHandler(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start");
+  [ChromeEarlGrey
+      resetDataForLocalStatePref:prefs::kIncognitoAuthenticationSetting];
+}
+
+- (void)tearDown {
+  [ChromeEarlGrey
+      resetDataForLocalStatePref:prefs::kIncognitoAuthenticationSetting];
+  [super tearDown];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -355,7 +365,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab2Title)];
   [ChromeEarlGreyUI openTabGrid];
 
-  CreateDefaultGroupFromTabCellAtIndex(1);
+  CreateAdditionalDefaultGroupFromTabCellAtIndex(1);
 
   // `Tab 2` tab cell no longer present in the grid.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
@@ -751,6 +761,47 @@ void DeleteGroupAtIndex(int group_cell_index) {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:GroupViewMatcher()];
   [[EarlGrey selectElementWithMatcher:GroupViewTitle(@"Second group")]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests that the TabGrid is correctly updated when it was presenting a group
+// before being backgrounded while incognito reauth is enabled.
+- (void)testIncognitoReauth {
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  OpenTabGroupAtIndex(0);
+
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:prefs::kIncognitoAuthenticationSetting];
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridNewIncognitoTabButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridEditButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Label of the button used to reauth.
+  NSString* buttonLabel = l10n_util::GetNSStringF(
+      IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON_VOICEOVER_LABEL,
+      base::SysNSStringToUTF16(BiometricAuthenticationTypeString()));
+  [[EarlGrey selectElementWithMatcher:testing::ButtonWithAccessibilityLabel(
+                                          buttonLabel)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [ChromeEarlGrey
+      resetDataForLocalStatePref:prefs::kIncognitoAuthenticationSetting];
+
+  // Reset the app to make sure the incognito shield is removed.
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
 @end
