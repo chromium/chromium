@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.google.flatbuffers.FlatBufferBuilder;
 
+import org.chromium.base.Log;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -27,6 +28,7 @@ import java.nio.ByteBuffer;
 
 /** {@link TabStateSerializer} backed by a FlatBuffer */
 public class FlatBufferTabStateSerializer implements TabStateSerializer {
+    private static final String TAG = "FBTSS";
     private static final String NULL_OPENER_APP_ID = " ";
     private static final long NO_TAB_GROUP_ID = 0L;
 
@@ -142,6 +144,7 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                     "Tabs.TabState.FlatBufferDeserializeResult",
                     TabStateFlatBufferDeserializeResult.FAILURE_UNKNOWN_REASON,
                     TabStateFlatBufferDeserializeResult.NUM_ENTRIES);
+            Log.e(TAG, "Error deserializing tabState FlatBuffer", e);
             assert false : e.getMessage();
         }
         return null;
