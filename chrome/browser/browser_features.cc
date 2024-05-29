@@ -206,12 +206,6 @@ BASE_FEATURE(kKeyPinningComponentUpdater,
              "KeyPinningComponentUpdater",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLargeFaviconFromGoogle,
-             "LargeFaviconFromGoogle",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<int> kLargeFaviconFromGoogleSizeInDip{
-    &kLargeFaviconFromGoogle, "favicon_size_in_dip", 128};
-
 #if BUILDFLAG(IS_WIN)
 // Enables locking the cookie database for profiles.
 // TODO(crbug.com/40901624): Remove after fully launched.

@@ -14,8 +14,7 @@ class LargeIconServiceFactoryTest : public testing::Test {};
 
 TEST_F(LargeIconServiceFactoryTest, LargeFaviconFromGoogleDisabled) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({}, {features::kLargeFaviconFromGoogle,
-                                 switches::kSearchEngineChoiceTrigger});
+  features.InitAndDisableFeature(switches::kSearchEngineChoiceTrigger);
 
 #if BUILDFLAG(IS_ANDROID)
   const int expected = 24;
@@ -25,15 +24,6 @@ TEST_F(LargeIconServiceFactoryTest, LargeFaviconFromGoogleDisabled) {
 
   EXPECT_EQ(LargeIconServiceFactory::desired_size_in_dip_for_server_requests(),
             expected);
-}
-
-TEST_F(LargeIconServiceFactoryTest, LargeFaviconFromGoogleEnabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(features::kLargeFaviconFromGoogle,
-                                              {{"favicon_size_in_dip", "256"}});
-
-  EXPECT_EQ(LargeIconServiceFactory::desired_size_in_dip_for_server_requests(),
-            256);
 }
 
 TEST_F(LargeIconServiceFactoryTest, SearchEngineChoiceEnabled) {

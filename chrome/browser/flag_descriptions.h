@@ -1267,9 +1267,6 @@ extern const char kExtractRelatedSearchesFromPrefetchedZPSResponseDescription[];
 extern const char kLacrosExtensionPrintingName[];
 extern const char kLacrosExtensionPrintingDescription[];
 
-extern const char kLargeFaviconFromGoogleName[];
-extern const char kLargeFaviconFromGoogleDescription[];
-
 extern const char kLegacyTechReportEnableCookieIssueReportsName[];
 extern const char kLegacyTechReportEnableCookieIssueReportsDescription[];
 

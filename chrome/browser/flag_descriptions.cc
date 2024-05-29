@@ -2216,10 +2216,6 @@ const char kExtractRelatedSearchesFromPrefetchedZPSResponseDescription[] =
     "Enables page annotation logic to source related searches data from "
     "prefetched ZPS responses";
 
-const char kLargeFaviconFromGoogleName[] = "Large favicons from Google";
-const char kLargeFaviconFromGoogleDescription[] =
-    "Request large favicons from Google's favicon service";
-
 const char kLacrosExtensionPrintingName[] =
     "Enable lacros extension printing on ash";
 const char kLacrosExtensionPrintingDescription[] =
