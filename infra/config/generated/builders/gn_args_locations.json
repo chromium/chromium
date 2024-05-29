@@ -323,7 +323,6 @@
     "win-fieldtrial-rel": "ci/win-fieldtrial-rel/gn-args.json",
     "win-perfetto-rel": "ci/win-perfetto-rel/gn-args.json",
     "win-upload-perfetto": "ci/win-upload-perfetto/gn-args.json",
-    "win10-multiscreen-fyi-rel": "ci/win10-multiscreen-fyi-rel/gn-args.json",
     "win10-rel-no-external-ip": "ci/win10-rel-no-external-ip/gn-args.json",
     "win10-wpt-chromium-rel": "ci/win10-wpt-chromium-rel/gn-args.json",
     "win32-arm64-rel": "ci/win32-arm64-rel/gn-args.json"
@@ -943,7 +942,6 @@
     "win-rel": "try/win-rel/gn-args.json",
     "win10-code-coverage": "try/win10-code-coverage/gn-args.json",
     "win10-dbg": "try/win10-dbg/gn-args.json",
-    "win10-multiscreen-fyi-rel": "try/win10-multiscreen-fyi-rel/gn-args.json",
     "win11-rel": "try/win11-rel/gn-args.json",
     "win32-clobber-rel": "try/win32-clobber-rel/gn-args.json",
     "win_chromium_compile_dbg_ng": "try/win_chromium_compile_dbg_ng/gn-args.json",

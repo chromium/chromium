@@ -50129,30 +50129,6 @@
       }
     ]
   },
-  "win10-multiscreen-fyi-rel": {
-    "gtest_tests": [
-      {
-        "args": [
-          "--windows-virtual-display-driver",
-          "--gtest_filter=*MultiScreen*:*VirtualDisplayUtilWin*"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "multiscreen_interactive_ui_tests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Windows-10-19045",
-            "pool": "chromium.tests.multiscreen"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "interactive_ui_tests",
-        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
-      }
-    ]
-  },
   "win10-rel-no-external-ip": {
     "gtest_tests": [
       {

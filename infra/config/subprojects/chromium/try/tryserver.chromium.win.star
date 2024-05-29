@@ -266,21 +266,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "win10-multiscreen-fyi-rel",
-    description_html = (
-        "This builder is intended to run tests related to multiscreen " +
-        "functionality on Windows. For more info, see " +
-        "<a href=\"http://shortn/_4L6uYvA1xU\">http://shortn/_4L6uYvA1xU</a>."
-    ),
-    mirrors = [
-        "ci/win10-multiscreen-fyi-rel",
-    ],
-    gn_args = "ci/win10-multiscreen-fyi-rel",
-    os = os.WINDOWS_10,
-    contact_team_email = "web-windowing-team@google.com",
-)
-
-try_.builder(
     name = "win11-rel",
     description_html = "This builder run tests for Windows 11 release build.",
     mirrors = [

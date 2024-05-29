@@ -1065,24 +1065,6 @@ targets.legacy_basic_suite(
     },
 )
 
-# Multiscreen tests for desktop platform (Windows).
-targets.legacy_basic_suite(
-    name = "chromium_gtests_for_windows_multiscreen",
-    tests = {
-        "multiscreen_interactive_ui_tests": targets.legacy_test_config(
-            args = [
-                "--windows-virtual-display-driver",
-                "--gtest_filter=*MultiScreen*:*VirtualDisplayUtilWin*",
-            ],
-            swarming = targets.swarming(
-                dimensions = {
-                    "pool": "chromium.tests.multiscreen",
-                },
-            ),
-        ),
-    },
-)
-
 targets.legacy_basic_suite(
     name = "chromium_ios_scripts",
     tests = {

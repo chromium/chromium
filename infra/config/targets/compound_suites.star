@@ -463,13 +463,6 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
-    name = "chromium_win10_gtests_multiscreen_fyi",
-    basic_suites = [
-        "chromium_gtests_for_windows_multiscreen",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "chromium_win_dbg_isolated_scripts",
     basic_suites = [
         "chromedriver_py_tests_isolated_scripts",
