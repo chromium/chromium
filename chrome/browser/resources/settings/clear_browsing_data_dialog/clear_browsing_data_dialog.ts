@@ -263,6 +263,13 @@ export class SettingsClearBrowsingDataDialogElement extends
       },
 
       // <if expr="not is_chromeos">
+      isClearPrimaryAccountAllowed_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isClearPrimaryAccountAllowed');
+        },
+      },
+
       isSyncPaused_: {
         type: Boolean,
         value: false,
@@ -336,6 +343,7 @@ export class SettingsClearBrowsingDataDialogElement extends
   private isSyncingHistory_: boolean;
   private shouldShowCookieException_: boolean;
   // <if expr="not is_chromeos">
+  private isClearPrimaryAccountAllowed_: boolean;
   private isSyncPaused_: boolean;
   private hasPassphraseError_: boolean;
   private hasOtherSyncError_: boolean;
@@ -779,14 +787,12 @@ export class SettingsClearBrowsingDataDialogElement extends
 
   // <if expr="not is_chromeos">
   private shouldShowFooter_(): boolean {
-    let showFooter = false;
-    if (this.unoDesktopEnabled_) {
-      showFooter = this.isSignedIn_;
-    } else {
-      showFooter = !!this.syncStatus &&
-          this.syncStatus.signedInState === SignedInState.SYNCING;
+    if (!!this.syncStatus &&
+        this.syncStatus.signedInState === SignedInState.SYNCING) {
+      return true;
     }
-    return showFooter;
+    return this.unoDesktopEnabled_ && this.isClearPrimaryAccountAllowed_ &&
+        this.isSignedIn_;
   }
 
   /**
@@ -794,6 +800,7 @@ export class SettingsClearBrowsingDataDialogElement extends
    */
   private showSigninInfo_(): boolean {
     return this.unoDesktopEnabled_ && this.isSignedIn_ &&
+        this.isClearPrimaryAccountAllowed_ &&
         (!this.syncStatus ||
          this.syncStatus.signedInState !== SignedInState.SYNCING);
   }

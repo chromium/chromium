@@ -343,7 +343,8 @@
       </div>
 <if expr="not is_chromeos">
       <template is="dom-if"
-          if="[[shouldShowFooter_(isSignedIn_, syncStatus.signedInState)]]"
+          if="[[shouldShowFooter_(isSignedIn_, syncStatus.signedInState,
+              isClearPrimaryAccountAllowed_)]]"
           restamp>
         <div slot="footer">
           <settings-sync-account-control sync-status="[[syncStatus]]"
@@ -353,7 +354,7 @@
           <div id="footer-description" on-click="onSyncDescriptionLinkClicked_">
             <span id="signin-info"
                 hidden="[[!showSigninInfo_(isSignedIn_,
-                    syncStatus.signedInState)]]">
+                    syncStatus.signedInState, isClearPrimaryAccountAllowed_)]]">
               $i18nRaw{clearBrowsingDataSignedIn}
             </span>
             <span id="sync-info"

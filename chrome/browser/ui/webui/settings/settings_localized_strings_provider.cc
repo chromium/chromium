@@ -32,6 +32,7 @@
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/managed_ui.h"
@@ -539,6 +540,12 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "unoDesktopEnabled",
       switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
+#if !BUILDFLAG(IS_CHROMEOS)
+  html_source->AddBoolean(
+      "isClearPrimaryAccountAllowed",
+      ChromeSigninClientFactory::GetForProfile(profile)
+          ->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
