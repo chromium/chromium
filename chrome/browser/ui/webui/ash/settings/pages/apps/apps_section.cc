@@ -228,7 +228,9 @@ const std::vector<SearchConcept>& GetParentalControlsSearchConcepts() {
         mojom::SearchResultIcon::kAppsParentalControls,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSubpage,
-        {.subpage = mojom::Subpage::kAppParentalControls}}});
+        {.subpage = mojom::Subpage::kAppParentalControls},
+        {IDS_OS_SETTINGS_TAG_APPS_PARENTAL_CONTROLS_ALT1,
+         SearchConcept::kAltTagEnd}}});
   return *tags;
 }
 

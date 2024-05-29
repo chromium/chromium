@@ -959,7 +959,10 @@
     Enable isolated web apps
   </message>
   <message name="IDS_OS_SETTINGS_TAG_APPS_PARENTAL_CONTROLS" desc="Text for search result item which when clicked, navigates the user to the app parental controls settings subpage.">
-    App parental controls
+    Parental controls for apps
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_APPS_PARENTAL_CONTROLS_ALT1" desc="Text for search result item which when clicked, navigates the user to the app parental controls settings subpage.">
+    Block apps
   </message>
 
   <!-- Crostini section. -->
