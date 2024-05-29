@@ -429,7 +429,7 @@ class CORE_EXPORT FragmentItem final {
   unsigned StartOffsetInContainer(const InlineCursor& container) const;
 
   StringView Text(const FragmentItems& items) const;
-  String GeneratedText() const {
+  StringView GeneratedText() const {
     DCHECK_EQ(Type(), kGeneratedText);
     return generated_text_.text;
   }

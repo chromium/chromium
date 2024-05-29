@@ -230,8 +230,10 @@ StringView ToBlinkStringView(v8::Isolate* isolate,
   // into GetExternalizedString() as it becomes impossible for the calling code
   // to satisfy all RVO constraints.
   StringResourceBase* string_resource = GetExternalizedString(v8_string);
-  if (string_resource)
-    return StringTraits<AtomicString>::FromStringResource(string_resource);
+  if (string_resource) {
+    return StringTraits<AtomicString>::FromStringResource(string_resource)
+        .Impl();
+  }
 
   int length = v8_string->Length();
   if (UNLIKELY(!length))
@@ -264,8 +266,9 @@ StringView ToBlinkStringView(v8::Isolate* isolate,
     // StringView::StackBackingStore yields the most efficient code.
     AtomicString blink_string = ConvertAndExternalizeString<AtomicString>(
         isolate, v8_string, can_externalize, is_one_byte, &was_externalized);
-    if (was_externalized)
-      return StringView(blink_string);
+    if (was_externalized) {
+      return StringView(blink_string.Impl());
+    }
   }
 
   // The string has not been externalized. Serialize into `backing_store` and

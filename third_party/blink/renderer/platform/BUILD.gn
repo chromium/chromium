@@ -2082,7 +2082,10 @@ test("blink_platform_unittests") {
 
 if (enable_nocompile_tests) {
   nocompile_source_set("blink_platform_nocompile_tests") {
-    sources = [ "wtf/functional_nocompile.nc" ]
+    sources = [
+      "wtf/functional_nocompile.nc",
+      "wtf/text/string_view_nocompile.nc",
+    ]
 
     deps = [
       ":platform",

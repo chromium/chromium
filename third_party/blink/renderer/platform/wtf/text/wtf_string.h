@@ -32,6 +32,7 @@
 
 #include "base/containers/span.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
@@ -715,13 +716,17 @@ class WTF_EXPORT NewlineThenWhitespaceStringsTable {
 // double-quotes, and escapes characters other than ASCII printables.
 WTF_EXPORT std::ostream& operator<<(std::ostream&, const String&);
 
-inline StringView::StringView(const String& string,
+inline StringView::StringView(const String& string
+                                  ABSL_ATTRIBUTE_LIFETIME_BOUND,
                               unsigned offset,
                               unsigned length)
     : StringView(string.Impl(), offset, length) {}
-inline StringView::StringView(const String& string, unsigned offset)
+inline StringView::StringView(const String& string
+                                  ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                              unsigned offset)
     : StringView(string.Impl(), offset) {}
-inline StringView::StringView(const String& string)
+inline StringView::StringView(
+    const String& string ABSL_ATTRIBUTE_LIFETIME_BOUND)
     : StringView(string.Impl()) {}
 
 }  // namespace WTF

@@ -26,6 +26,7 @@
 #include <type_traits>
 
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -295,13 +296,17 @@ struct HashTraits<AtomicString>;
 // double-quotes, and escapes characters other than ASCII printables.
 WTF_EXPORT std::ostream& operator<<(std::ostream&, const AtomicString&);
 
-inline StringView::StringView(const AtomicString& string,
+inline StringView::StringView(const AtomicString& string
+                                  ABSL_ATTRIBUTE_LIFETIME_BOUND,
                               unsigned offset,
                               unsigned length)
     : StringView(string.Impl(), offset, length) {}
-inline StringView::StringView(const AtomicString& string, unsigned offset)
+inline StringView::StringView(const AtomicString& string
+                                  ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                              unsigned offset)
     : StringView(string.Impl(), offset) {}
-inline StringView::StringView(const AtomicString& string)
+inline StringView::StringView(
+    const AtomicString& string ABSL_ATTRIBUTE_LIFETIME_BOUND)
     : StringView(string.Impl()) {}
 
 }  // namespace WTF
