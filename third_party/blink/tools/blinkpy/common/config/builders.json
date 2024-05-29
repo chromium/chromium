@@ -218,8 +218,7 @@
         "steps": {
             "blink_web_tests": {},
             "blink_wpt_tests": {}
-        },
-        "is_try_builder": true
+        }
     },
     "win11-blink-rel": {
         "main": "tryserver.blink",
