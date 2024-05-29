@@ -20,8 +20,10 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
+#include "content/shell/browser/shell_paths.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/test/test_content_client.h"
 #include "ui/events/platform/platform_event_source.h"
@@ -205,6 +207,18 @@ Shell* ContentBrowserTest::CreateOffTheRecordBrowser() {
   return Shell::CreateNewWindow(
       ShellContentBrowserClient::Get()->off_the_record_browser_context(),
       GURL(url::kAboutBlankURL), nullptr, gfx::Size());
+}
+
+std::unique_ptr<TestBrowserContext>
+ContentBrowserTest::CreateTestBrowserContext() {
+  base::FilePath user_data_path;
+  EXPECT_TRUE(base::PathService::Get(SHELL_DIR_USER_DATA, &user_data_path));
+  base::FilePath browser_context_dir_path;
+  EXPECT_TRUE(base::CreateTemporaryDirInDir(
+      /*base_dir=*/user_data_path,
+      /*prefix=*/FILE_PATH_LITERAL("test_browser_context_"),
+      /*new_dir=*/&browser_context_dir_path));
+  return std::make_unique<TestBrowserContext>(browser_context_dir_path);
 }
 
 base::FilePath ContentBrowserTest::GetTestDataFilePath() {

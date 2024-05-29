@@ -43,6 +43,7 @@
 
 namespace content {
 class Shell;
+class TestBrowserContext;
 
 // Base class for browser tests which use content_shell.
 class ContentBrowserTest : public BrowserTestBase {
@@ -67,6 +68,10 @@ class ContentBrowserTest : public BrowserTestBase {
 
   // Returns the window for the test.
   Shell* shell() const { return shell_; }
+
+  // Creates a test browser context with a file path that's appropriate for
+  // browser tests.
+  std::unique_ptr<TestBrowserContext> CreateTestBrowserContext();
 
   // File path to test data, relative to DIR_SRC_TEST_DATA_ROOT.
   base::FilePath GetTestDataFilePath();

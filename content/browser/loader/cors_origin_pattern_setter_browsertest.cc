@@ -262,7 +262,7 @@ class NewContextCorsOriginPatternSetterBrowserTest
     : public CorsOriginPatternSetterBrowserTest {
  protected:
   void SetUpOnMainThread() override {
-    browser_context_ = std::make_unique<TestBrowserContext>();
+    browser_context_ = CreateTestBrowserContext();
     CorsOriginPatternSetterBrowserTest::SetUpOnMainThread();
   }
 
