@@ -159,7 +159,10 @@ void WebRtcVideoTrackSource::SendFeedback() {
 void WebRtcVideoTrackSource::OnFrameCaptured(
     scoped_refptr<media::VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  TRACE_EVENT0("media", "WebRtcVideoSource::OnFrameCaptured");
+  TRACE_EVENT(
+      "media", "WebRtcVideoSource::OnFrameCaptured", "ts", frame->timestamp(),
+      "rt", frame->metadata().reference_time.value_or(base::TimeTicks()), "cbt",
+      frame->metadata().capture_begin_time.value_or(base::TimeTicks()));
   if (!CanConvertToWebRtcVideoFrameBuffer(frame.get())) {
     // Since connecting sources and sinks do not check the format, we need to
     // just ignore formats that we can not handle.

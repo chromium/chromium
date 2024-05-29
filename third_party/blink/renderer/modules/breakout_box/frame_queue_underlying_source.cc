@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/task/bind_post_task.h"
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -436,6 +437,11 @@ ScriptWrappable*
 FrameQueueUnderlyingSource<scoped_refptr<media::VideoFrame>>::MakeBlinkFrame(
     scoped_refptr<media::VideoFrame> media_frame) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
+  TRACE_EVENT(
+      "media", "FrameQueueUnderlyingSource::MakeBlinkFrame", "ts",
+      media_frame->timestamp(), "rt",
+      media_frame->metadata().reference_time.value_or(base::TimeTicks()), "cbt",
+      media_frame->metadata().capture_begin_time.value_or(base::TimeTicks()));
   return MakeGarbageCollected<VideoFrame>(
       std::move(media_frame), GetExecutionContext(), device_id_,
       /*sk_image=*/nullptr,
