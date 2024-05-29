@@ -403,7 +403,10 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 - (void)updateConsumerItemForWebState:(web::WebState*)webState {
   WebStateList* webStateList = self.webStateList;
   int index = webStateList->GetIndexOfWebState(webState);
-  const TabGroup* group = webStateList->GetGroupOfWebStateAt(index);
+  const TabGroup* group = nullptr;
+  if (webStateList->ContainsIndex(index)) {
+    group = webStateList->GetGroupOfWebStateAt(index);
+  }
   GridItemIdentifier* item;
   if (group) {
     item = [GridItemIdentifier groupIdentifier:group
