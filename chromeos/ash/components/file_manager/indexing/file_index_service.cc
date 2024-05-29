@@ -104,6 +104,18 @@ void FileIndexService::RemoveFile(const GURL& url,
       .Then(std::move(callback));
 }
 
+void FileIndexService::MoveFile(const GURL& old_url,
+                                const GURL& new_url,
+                                IndexingOperationCallback callback) {
+  if (inited_ != OpResults::kSuccess) {
+    std::move(callback).Run(kUninitialized);
+    return;
+  }
+  file_index_.AsyncCall(&FileIndex::MoveFile)
+      .WithArgs(old_url, new_url)
+      .Then(std::move(callback));
+}
+
 void FileIndexService::RemoveTerms(const std::vector<Term>& terms,
                                    const GURL& url,
                                    IndexingOperationCallback callback) {

@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_FILE_MANAGER_INDEXING_FILE_INFO_TABLE_H_
 #define CHROMEOS_ASH_COMPONENTS_FILE_MANAGER_INDEXING_FILE_INFO_TABLE_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/file_manager/indexing/file_info.h"
 #include "sql/database.h"
@@ -29,11 +31,10 @@ class FileInfoTable {
   bool Init();
 
   // Attempts to retrieve the unique FileInfo associated with the given URL.
-  // Returns -1, if the file info was not found. Otherwise, returns URL ID and
-  // the FileInfo object is populated with the retrieved data.
+  // Returns it as the value of the optional, if found.
   // NO CHECK is performed whether the url_id corresponds to the `file_url`
   // field in the `info` object.
-  int64_t GetFileInfo(int64_t url_id, FileInfo* info) const;
+  std::optional<FileInfo> GetFileInfo(int64_t url_id) const;
 
   // Attempts to store the given `info` in the table. If successful, it returns
   // the ID of the URL from the `info` object that was used to store the `info`

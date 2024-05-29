@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -51,11 +52,12 @@ class COMPONENT_EXPORT(FILE_MANAGER) RamStorage : public IndexStorage {
   // URL ID management.
   int64_t GetUrlId(const GURL& url) const override;
   int64_t GetOrCreateUrlId(const GURL& url) override;
+  int64_t MoveUrl(const GURL& from, const GURL& to) override;
   int64_t DeleteUrl(const GURL& url) override;
 
   // FileInfo management.
   int64_t PutFileInfo(const FileInfo& file_info) override;
-  int64_t GetFileInfo(int64_t url_id, FileInfo* info) const override;
+  std::optional<FileInfo> GetFileInfo(int64_t url_id) const override;
   int64_t DeleteFileInfo(int64_t url_id) override;
 
   // Miscellaneous.

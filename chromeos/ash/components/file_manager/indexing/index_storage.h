@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_FILE_MANAGER_INDEXING_INDEX_STORAGE_H_
 #define CHROMEOS_ASH_COMPONENTS_FILE_MANAGER_INDEXING_INDEX_STORAGE_H_
 
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -91,6 +92,10 @@ class IndexStorage {
   // time we see this file URL, we return -1.
   virtual int64_t GetUrlId(const GURL& url) const = 0;
 
+  // Changes URL from `from` URL to `to` URL. This keeps the same URL ID, just
+  // changes the string associated with it.
+  virtual int64_t MoveUrl(const GURL& from, const GURL& to) = 0;
+
   // Returns the ID corresponding to the given GURL. If this is the first
   // time we see this URL, a new ID is created and returned.
   virtual int64_t GetOrCreateUrlId(const GURL& url) = 0;
@@ -104,11 +109,10 @@ class IndexStorage {
   virtual int64_t PutFileInfo(const FileInfo& file_info) = 0;
 
   // Attempts to retrieve the unique FileInfo associated with the given URL.
-  // Returns -1, if the file info was not found. Otherwise, returns URL ID and
-  // the FileInfo object is populated with the retrieved data.
+  // If found, it is returned as the value of the optional object.
   // NO CHECK is performed whether the url_id corresponds to the `file_url`
   // field in the `info` object.
-  virtual int64_t GetFileInfo(int64_t url_id, FileInfo* info) const = 0;
+  virtual std::optional<FileInfo> GetFileInfo(int64_t url_id) const = 0;
 
   // Removes the given file info from the storage. If it was not stored, this
   // method returns -1. Otherwise, it returns the ID of the `url` parameter.

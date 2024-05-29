@@ -29,6 +29,33 @@ OpResults FileIndex::UpdateTerms(const std::vector<Term>& terms,
   return SetFileTerms(terms, url);
 }
 
+OpResults FileIndex::MoveFile(const GURL& old_url, const GURL& new_url) {
+  DCHECK(old_url.is_valid());
+  DCHECK(new_url.is_valid());
+  // Check for no-op.
+  if (old_url == new_url) {
+    return OpResults::kSuccess;
+  }
+  // Phase 1: Run some diagnostics; not strictly necessary but it gives more
+  // accurate error reporting.
+  int64_t old_url_id = storage_->GetUrlId(old_url);
+  if (old_url_id < 0) {
+    return OpResults::kFileMissing;
+  }
+  int64_t new_url_id = storage_->GetUrlId(new_url);
+  if (new_url_id != -1) {
+    return OpResults::kFileExists;
+  }
+  std::optional<FileInfo> file_info = storage_->GetFileInfo(old_url_id);
+  if (!file_info.has_value()) {
+    return OpResults::kFileMissing;
+  }
+
+  // Phase 2: Just make the move by updating URL.
+  return storage_->MoveUrl(old_url, new_url) == -1 ? OpResults::kGenericError
+                                                   : OpResults::kSuccess;
+}
+
 OpResults FileIndex::RemoveFile(const GURL& url) {
   int64_t url_id = storage_->GetUrlId(url);
   if (url_id < 0) {
@@ -120,11 +147,10 @@ SearchResults FileIndex::Search(const Query& query) {
     return results;
   }
   for (const int64_t url_id : matched_url_ids) {
-    FileInfo file_info(GURL(""), 0u, base::Time());
-    int64_t found_url_id = storage_->GetFileInfo(url_id, &file_info);
-    DCHECK(found_url_id == url_id);
+    std::optional<FileInfo> file_info = storage_->GetFileInfo(url_id);
+    DCHECK(file_info.has_value());
     // TODO(b:327535200): Add true score.
-    results.matches.emplace_back(Match(1, file_info));
+    results.matches.emplace_back(Match(1, file_info.value()));
   }
   // TODO(b:327535200): Correctly compute total_matches.
   results.total_matches = results.matches.size();

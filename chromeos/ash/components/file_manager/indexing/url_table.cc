@@ -52,6 +52,13 @@ static constexpr char kCreateUrlIndexQuery[] =
     "(" URL_SPEC ")";
 // clang-format on
 
+// The statement that changes URL from one string to another
+static constexpr char kChangeUrlSpecQuery[] =
+    // clang-format off
+   "UPDATE OR ROLLBACK " URL_TABLE " SET " URL_SPEC "=? WHERE "
+   URL_SPEC "=? RETURNING " URL_ID;
+// clang-format on
+
 }  // namespace
 
 UrlTable::UrlTable(sql::Database* db) : TextTable(db, "" URL_TABLE "") {}
@@ -74,6 +81,12 @@ int64_t UrlTable::GetUrlSpec(int64_t url_id, std::string* url_spec) const {
 int64_t UrlTable::GetOrCreateUrlId(const GURL& url) {
   DCHECK(url.is_valid());
   return GetOrCreateValueId(url.spec());
+}
+
+int64_t UrlTable::ChangeUrl(const GURL& from, const GURL& to) {
+  DCHECK(from.is_valid());
+  DCHECK(to.is_valid());
+  return ChangeValue(from.spec(), to.spec());
 }
 
 std::unique_ptr<sql::Statement> UrlTable::MakeGetValueIdStatement() const {
@@ -104,6 +117,11 @@ std::unique_ptr<sql::Statement> UrlTable::MakeCreateTableStatement() const {
 std::unique_ptr<sql::Statement> UrlTable::MakeCreateIndexStatement() const {
   return std::make_unique<sql::Statement>(
       db_->GetCachedStatement(SQL_FROM_HERE, kCreateUrlIndexQuery));
+}
+
+std::unique_ptr<sql::Statement> UrlTable::MakeChangeValueStatement() const {
+  return std::make_unique<sql::Statement>(
+      db_->GetCachedStatement(SQL_FROM_HERE, kChangeUrlSpecQuery));
 }
 
 }  // namespace ash::file_manager

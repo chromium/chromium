@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/file_manager/indexing/index_storage.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -130,31 +131,34 @@ TEST_P(IndexStorageTest, GetFileInfo) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
-  FileInfo got_file_info(GURL(""), 0, base::Time::Now());
   int64_t foo_url_id = storage_->GetOrCreateUrlId(foo_url_);
 
-  EXPECT_EQ(-1, storage_->GetFileInfo(foo_url_id, &got_file_info));
+  EXPECT_FALSE(storage_->GetFileInfo(foo_url_id).has_value());
 
   FileInfo put_file_info(foo_url_, 100, base::Time());
   EXPECT_FALSE(put_file_info.remote_id.has_value());
   EXPECT_EQ(foo_url_id, storage_->PutFileInfo(put_file_info));
-  EXPECT_EQ(foo_url_id, storage_->GetFileInfo(foo_url_id, &got_file_info));
-  EXPECT_EQ(put_file_info.file_url, got_file_info.file_url);
-  EXPECT_EQ(put_file_info.last_modified, got_file_info.last_modified);
-  EXPECT_EQ(put_file_info.size, got_file_info.size);
-  EXPECT_FALSE(got_file_info.remote_id.has_value());
+  std::optional<FileInfo> file_info = storage_->GetFileInfo(foo_url_id);
+  EXPECT_TRUE(file_info.has_value());
+  EXPECT_EQ(put_file_info.file_url, file_info.value().file_url);
+  EXPECT_EQ(put_file_info.last_modified, file_info.value().last_modified);
+  EXPECT_EQ(put_file_info.size, file_info.value().size);
+  EXPECT_FALSE(file_info.value().remote_id.has_value());
 
   put_file_info.size = put_file_info.size + 100;
   EXPECT_EQ(foo_url_id, storage_->PutFileInfo(put_file_info));
-  EXPECT_EQ(foo_url_id, storage_->GetFileInfo(foo_url_id, &got_file_info));
-  EXPECT_EQ(put_file_info.size, got_file_info.size);
+  file_info = storage_->GetFileInfo(foo_url_id);
+  EXPECT_TRUE(file_info.has_value());
+  EXPECT_EQ(put_file_info.size, file_info.value().size);
 
   const std::string remote_id = "i-am-a-remote-id";
   put_file_info.remote_id = remote_id;
   EXPECT_EQ(foo_url_id, storage_->PutFileInfo(put_file_info));
-  EXPECT_EQ(foo_url_id, storage_->GetFileInfo(foo_url_id, &got_file_info));
-  EXPECT_EQ(put_file_info.remote_id, got_file_info.remote_id);
-  EXPECT_EQ(remote_id, got_file_info.remote_id);
+
+  file_info = storage_->GetFileInfo(foo_url_id);
+  EXPECT_TRUE(file_info.has_value());
+  EXPECT_EQ(put_file_info.remote_id, file_info.value().remote_id);
+  EXPECT_EQ(remote_id, file_info.value().remote_id);
 }
 
 TEST_P(IndexStorageTest, PutFileInfo) {

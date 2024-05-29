@@ -46,6 +46,11 @@ class COMPONENT_EXPORT(FILE_MANAGER) TokenTable : public TextTable {
   // Gets or creates the unique token ID for the given token bytes.
   int64_t GetOrCreateTokenId(const std::string& token_bytes);
 
+  // Changes the token value from the `from` value to the `to` value, if the
+  // `from` value exists. Returns the ID of the changed token if the operation
+  // was successful, or -1 otherwise.
+  int64_t ChangeToken(const std::string& from, const std::string& to);
+
  protected:
   std::unique_ptr<sql::Statement> MakeGetValueIdStatement() const override;
   std::unique_ptr<sql::Statement> MakeGetValueStatement() const override;
@@ -53,6 +58,7 @@ class COMPONENT_EXPORT(FILE_MANAGER) TokenTable : public TextTable {
   std::unique_ptr<sql::Statement> MakeDeleteStatement() const override;
   std::unique_ptr<sql::Statement> MakeCreateTableStatement() const override;
   std::unique_ptr<sql::Statement> MakeCreateIndexStatement() const override;
+  std::unique_ptr<sql::Statement> MakeChangeValueStatement() const override;
 };
 
 }  // namespace ash::file_manager

@@ -87,6 +87,15 @@ class COMPONENT_EXPORT(FILE_MANAGER) FileIndexService {
   // empty terms vector. Returns true if the file was found and removed.
   void RemoveFile(const GURL& url, IndexingOperationCallback callback);
 
+  // Moves the the file that was put under the `old_url` to be associated with
+  // the `new_url`. If the file with the `old_url` is not found, the callback
+  // is called with kFileMissing error. If the association with the `new_url`
+  // fails the callback is called with kGenericError. Otherwise, it is called
+  // with kSuccess.
+  void MoveFile(const GURL& old_url,
+                const GURL& new_url,
+                IndexingOperationCallback callback);
+
   // Updates terms associated with the file. If the term vector is empty
   // this removes the file info from the index. Otherwise, the given `file_info`
   // is associated with the specified terms. Please note that only the passed

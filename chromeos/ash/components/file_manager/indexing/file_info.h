@@ -18,6 +18,7 @@ namespace ash::file_manager {
 // Represents information about the file. Both local and remote (cloud based)
 // files can be represented by this structure.
 struct COMPONENT_EXPORT(FILE_MANAGER) FileInfo {
+  // Creates a file info object with the specified values.
   FileInfo(const GURL& file_url, int64_t size, base::Time last_modified);
   ~FileInfo();
 

@@ -167,6 +167,18 @@ class FileIndexServiceTest : public testing::Test {
     return outcome;
   }
 
+  OpResults MoveFile(const GURL& old_url, const GURL& new_url) {
+    base::RunLoop run_loop;
+    OpResults outcome;
+    index_service_->MoveFile(old_url, new_url,
+                             base::BindLambdaForTesting([&](OpResults results) {
+                               outcome = results;
+                               run_loop.Quit();
+                             }));
+    run_loop.Run();
+    return outcome;
+  }
+
   Term pinned_;
   Term downloaded_;
   Term starred_;
@@ -405,6 +417,45 @@ TEST_F(FileIndexServiceTest, MixedSearch) {
   // has "tax" as a label.
   EXPECT_THAT(Search(Query({starred_, tax_label_term})),
               ContainsFiles(FileInfoList{tax_label_info}));
+}
+
+TEST_F(FileIndexServiceTest, MoveFile) {
+  // Test 1: Move non-existing file.
+  EXPECT_EQ(MoveFile(foo_url_, bar_url_), OpResults::kFileMissing);
+
+  // Test 2: Move file to itself.
+  FileInfo foo_info(foo_url_, 1024, base::Time());
+  EXPECT_EQ(PutFileInfo(foo_info), OpResults::kSuccess);
+  EXPECT_EQ(MoveFile(foo_info.file_url, foo_info.file_url),
+            OpResults::kSuccess);
+
+  // Test 3: Move file onto existing file.
+  FileInfo bar_info(bar_url_, 1024, base::Time());
+  EXPECT_EQ(PutFileInfo(bar_info), OpResults::kSuccess);
+  EXPECT_EQ(MoveFile(foo_info.file_url, bar_info.file_url),
+            OpResults::kFileExists);
+
+  // Test 4: Actually move the file to the new URL.
+  // First setup terms and make sure we can find the file by those terms.
+  EXPECT_EQ(UpdateTerms({starred_, downloaded_}, foo_info.file_url),
+            OpResults::kSuccess);
+  EXPECT_THAT(Search(Query({starred_})), ContainsFiles(FileInfoList{foo_info}));
+  EXPECT_THAT(Search(Query({downloaded_})),
+              ContainsFiles(FileInfoList{foo_info}));
+
+  // Now actually move the file and verify that we cannot match the old foo_info
+  // but can match foo_info_new.
+  GURL new_foo_url = MakeLocalURL("foo2.txt");
+  FileInfo new_foo_info(new_foo_url, foo_info.size, foo_info.last_modified);
+  EXPECT_EQ(MoveFile(foo_info.file_url, new_foo_url), OpResults::kSuccess);
+  EXPECT_THAT(Search(Query({starred_})),
+              ContainsFiles(FileInfoList{new_foo_info}));
+  EXPECT_THAT(Search(Query({downloaded_})),
+              ContainsFiles(FileInfoList{new_foo_info}));
+  // We cannot directly check if a given URL exists in the system, but we
+  // can try to update terms using old URL and expect a kFileMissing error.
+  EXPECT_EQ(UpdateTerms({starred_}, foo_info.file_url),
+            OpResults::kFileMissing);
 }
 
 TEST_F(FileIndexServiceTest, RemoveFile) {

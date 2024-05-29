@@ -71,6 +71,21 @@ int64_t TextTable::GetValue(int64_t value_id, std::string* value) const {
   return -1;
 }
 
+int64_t TextTable::ChangeValue(const std::string& from, const std::string& to) {
+  if (from == to) {
+    return GetValueId(from);
+  }
+  auto change_value = MakeChangeValueStatement();
+  DCHECK(change_value->is_valid()) << "Invalid change value statement: \""
+                                   << change_value->GetSQLStatement() << "\"";
+  change_value->BindString(0, to);
+  change_value->BindString(1, from);
+  if (change_value->Step()) {
+    return change_value->ColumnInt64(0);
+  }
+  return -1;
+}
+
 int64_t TextTable::GetValueId(const std::string& value) const {
   auto get_value_id = MakeGetValueIdStatement();
   DCHECK(get_value_id->is_valid()) << "Invalid get value ID statement: \""

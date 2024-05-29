@@ -34,6 +34,8 @@ enum OpResults {
   kUninitialized,
   // Returned by operations that manipulate file terms if file is unknown.
   kFileMissing,
+  // Returned by the move operation if the "new" file already exists.
+  kFileExists,
 };
 
 // Abstract class that defines the interface of the file index. Typical index
@@ -76,6 +78,9 @@ class FileIndex {
   // preferred way of removing files over calling the UpdateFile method with an
   // empty terms vector. Returns true if the file was found and removed.
   OpResults RemoveFile(const GURL& url);
+
+  // Moves the file that was put under the `old_url` to the `new_url`.
+  OpResults MoveFile(const GURL& old_url, const GURL& new_url);
 
   // Updates terms associated with the file. The `url` must be of a FileInfo
   // previously put in the index. Please note that only the passed terms are

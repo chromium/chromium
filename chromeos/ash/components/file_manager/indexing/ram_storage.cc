@@ -119,6 +119,17 @@ int64_t RamStorage::GetOrCreateUrlId(const GURL& url) {
   return this_url_id;
 }
 
+int64_t RamStorage::MoveUrl(const GURL& from, const GURL& to) {
+  auto it = url_to_id_.find(from);
+  if (it == url_to_id_.end()) {
+    return -1;
+  }
+  const int64_t url_id = it->second;
+  url_to_id_.erase(it);
+  url_to_id_.emplace(std::make_pair(to, url_id));
+  return url_id;
+}
+
 int64_t RamStorage::DeleteUrl(const GURL& url) {
   auto it = url_to_id_.find(url);
   if (it == url_to_id_.end()) {
@@ -143,13 +154,12 @@ int64_t RamStorage::PutFileInfo(const FileInfo& file_info) {
   return url_id;
 }
 
-int64_t RamStorage::GetFileInfo(int64_t url_id, FileInfo* file_info) const {
+std::optional<FileInfo> RamStorage::GetFileInfo(int64_t url_id) const {
   auto file_info_it = url_id_to_file_info_.find(url_id);
   if (file_info_it == url_id_to_file_info_.end()) {
-    return -1;
+    return std::nullopt;
   }
-  *file_info = file_info_it->second;
-  return url_id;
+  return file_info_it->second;
 }
 
 int64_t RamStorage::DeleteFileInfo(int64_t url_id) {

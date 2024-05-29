@@ -50,6 +50,10 @@ class COMPONENT_EXPORT(FILE_MANAGER) TextTable {
   // found, returns -1 and leaves `value` unchanged.
   int64_t GetValue(int64_t value_id, std::string* value) const;
 
+  // Without changing the ID associated with the value, it changes it from
+  // from string, to to string.
+  int64_t ChangeValue(const std::string& from, const std::string& to);
+
   // To be overridden by the extending classes.
 
   // Returns a statement that gets text ID by value.
@@ -64,6 +68,8 @@ class COMPONENT_EXPORT(FILE_MANAGER) TextTable {
   virtual std::unique_ptr<sql::Statement> MakeCreateTableStatement() const = 0;
   // Returns a statement that creates an index for the table; may return null.
   virtual std::unique_ptr<sql::Statement> MakeCreateIndexStatement() const = 0;
+  // Returns a statement that changes a value to a new value.
+  virtual std::unique_ptr<sql::Statement> MakeChangeValueStatement() const = 0;
 
   // The name of the concrete table built on top of this class.
   const std::string table_name_;

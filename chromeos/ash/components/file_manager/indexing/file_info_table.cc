@@ -68,24 +68,23 @@ bool FileInfoTable::Init() {
   return true;
 }
 
-int64_t FileInfoTable::GetFileInfo(int64_t url_id, FileInfo* info) const {
-  DCHECK(info);
+std::optional<FileInfo> FileInfoTable::GetFileInfo(int64_t url_id) const {
   sql::Statement get_file_info(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetFileInfoQuery));
   DCHECK(get_file_info.is_valid()) << "Invalid get file info statement: \""
                                    << get_file_info.GetSQLStatement() << "\"";
   get_file_info.BindInt64(0, url_id);
   if (!get_file_info.Step()) {
-    return -1;
+    return std::nullopt;
   }
-  info->last_modified = get_file_info.ColumnTime(0);
-  info->size = get_file_info.ColumnInt64(1);
-  if (get_file_info.GetColumnType(2) == sql::ColumnType::kNull) {
-    info->remote_id.reset();
-  } else {
-    info->remote_id = get_file_info.ColumnString(2);
+  base::Time last_modified = get_file_info.ColumnTime(0);
+  int64_t size = get_file_info.ColumnInt64(1);
+  FileInfo file_info(GURL(), size, last_modified);
+
+  if (get_file_info.GetColumnType(2) != sql::ColumnType::kNull) {
+    file_info.remote_id = get_file_info.ColumnString(2);
   }
-  return url_id;
+  return file_info;
 }
 
 int64_t FileInfoTable::DeleteFileInfo(int64_t url_id) {

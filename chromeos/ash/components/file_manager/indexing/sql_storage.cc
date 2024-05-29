@@ -220,6 +220,22 @@ int64_t SqlStorage::GetUrlId(const GURL& url) const {
   return url_table_.GetUrlId(url);
 }
 
+int64_t SqlStorage::MoveUrl(const GURL& from, const GURL& to) {
+  int64_t url_id = GetUrlId(from);
+  if (url_id == -1) {
+    return -1;
+  }
+  if (from == to) {
+    return url_id;
+  }
+  if (GetUrlId(to) != -1) {
+    return -1;
+  }
+  int64_t moved_url_id = url_table_.ChangeUrl(from, to);
+  DCHECK(moved_url_id == url_id);
+  return moved_url_id;
+}
+
 int64_t SqlStorage::DeleteUrl(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return url_table_.DeleteUrl(url);
@@ -234,26 +250,25 @@ int64_t SqlStorage::PutFileInfo(const FileInfo& file_info) {
   return file_info_table_.PutFileInfo(url_id, file_info);
 }
 
-int64_t SqlStorage::GetFileInfo(int64_t url_id, FileInfo* file_info) const {
+std::optional<FileInfo> SqlStorage::GetFileInfo(int64_t url_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (url_id == -1) {
-    return -1;
+    return std::nullopt;
   }
   std::string url_spec;
   if (url_table_.GetUrlSpec(url_id, &url_spec) == -1) {
-    return -1;
+    return std::nullopt;
   }
   GURL url(url_spec);
   if (!url.is_valid()) {
-    return -1;
+    return std::nullopt;
   }
-  int64_t gotten_url_id = file_info_table_.GetFileInfo(url_id, file_info);
-  if (gotten_url_id == -1) {
-    return -1;
+  std::optional<FileInfo> file_info = file_info_table_.GetFileInfo(url_id);
+  if (!file_info.has_value()) {
+    return std::nullopt;
   }
-  DCHECK(gotten_url_id == url_id);
-  file_info->file_url = url;
-  return url_id;
+  file_info.value().file_url = url;
+  return file_info;
 }
 
 int64_t SqlStorage::DeleteFileInfo(int64_t url_id) {

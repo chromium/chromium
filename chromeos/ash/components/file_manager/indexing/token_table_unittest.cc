@@ -89,5 +89,25 @@ TEST_F(TokenTableTest, GetToken) {
   EXPECT_TRUE(token.empty());
 }
 
+TEST_F(TokenTableTest, ChangeToken) {
+  TokenTable table(db_.get());
+  EXPECT_TRUE(table.Init());
+
+  // Test 1: Cannot change a non-existing token.
+  std::string token;
+  EXPECT_EQ(table.ChangeToken("foo", "bar"), -1);
+
+  // Test 2: Change an existing token to a unique token.
+  EXPECT_EQ(table.GetOrCreateTokenId("foo"), 1);
+  EXPECT_EQ(table.ChangeToken("foo", "bar"), 1);
+
+  // Test 3: Change token to itself
+  EXPECT_EQ(table.ChangeToken("bar", "bar"), 1);
+
+  // Test 4: It is invalid to change token to be the same as another token
+  EXPECT_EQ(table.GetOrCreateTokenId("baz"), 2);
+  EXPECT_EQ(table.ChangeToken("bar", "baz"), -1);
+}
+
 }  // namespace
 }  // namespace ash::file_manager

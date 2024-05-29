@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_FILE_MANAGER_INDEXING_SQL_STORAGE_H_
 #define CHROMEOS_ASH_COMPONENTS_FILE_MANAGER_INDEXING_SQL_STORAGE_H_
 
+#include <optional>
 #include <set>
 #include <string>
 
@@ -103,6 +104,10 @@ class COMPONENT_EXPORT(FILE_MANAGER) SqlStorage : public IndexStorage {
   // seen before, this method returns -1.
   int64_t DeleteUrl(const GURL& url) override;
 
+  // Renames URL from `from` URL to `to` URL. This keeps the same URL ID, just
+  // changes the string associated with it.
+  int64_t MoveUrl(const GURL& from, const GURL& to) override;
+
   // Stores the file info. The file info is stored using the ID generated from
   // the file_url. This ID is returned when the `file_info` is stored
   // successfully. Otherwise this method returns -1.
@@ -111,7 +116,7 @@ class COMPONENT_EXPORT(FILE_MANAGER) SqlStorage : public IndexStorage {
   // Retrieves a FileInfo object for the give URL ID. The method returns -1,
   // if the FileInfo could not be found. Otherwise, it returns the URL ID, and
   // populates the object pointed to by the `file_info`.
-  int64_t GetFileInfo(int64_t url_id, FileInfo* file_info) const override;
+  std::optional<FileInfo> GetFileInfo(int64_t url_id) const override;
 
   // Removes the given file info from the storage. If it was not stored, this
   // method returns -1. Otherwise, it returns the `url_id`.

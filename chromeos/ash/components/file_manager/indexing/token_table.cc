@@ -56,6 +56,13 @@ static constexpr char kCreateTokenIndexQuery[] =
     "(" TOKEN_BYTES ")";
 // clang-format on
 
+// The statement that changes token value from one string to another
+static constexpr char kChangeTokenValueQuery[] =
+    // clang-format off
+   "UPDATE OR ROLLBACK " TOKEN_TABLE " SET " TOKEN_BYTES "=? WHERE "
+   TOKEN_BYTES "=? RETURNING " TOKEN_ID;
+// clang-format on
+
 }  // namespace
 
 TokenTable::TokenTable(sql::Database* db) : TextTable(db, "" TOKEN_TABLE "") {}
@@ -75,6 +82,11 @@ int64_t TokenTable::GetTokenId(const std::string& token_bytes) const {
 
 int64_t TokenTable::GetOrCreateTokenId(const std::string& token_bytes) {
   return GetOrCreateValueId(token_bytes);
+}
+
+int64_t TokenTable::ChangeToken(const std::string& from,
+                                const std::string& to) {
+  return ChangeValue(from, to);
 }
 
 std::unique_ptr<sql::Statement> TokenTable::MakeGetValueIdStatement() const {
@@ -106,4 +118,10 @@ std::unique_ptr<sql::Statement> TokenTable::MakeCreateIndexStatement() const {
   return std::make_unique<sql::Statement>(
       db_->GetCachedStatement(SQL_FROM_HERE, kCreateTokenIndexQuery));
 }
+
+std::unique_ptr<sql::Statement> TokenTable::MakeChangeValueStatement() const {
+  return std::make_unique<sql::Statement>(
+      db_->GetCachedStatement(SQL_FROM_HERE, kChangeTokenValueQuery));
+}
+
 }  // namespace ash::file_manager
