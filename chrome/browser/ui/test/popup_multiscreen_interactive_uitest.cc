@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, Basic) {
       display::Screen::GetScreen()->GetAllDisplays();
   for (const display::Display& opener_display : displays) {
     browser()->window()->SetBounds(opener_display.work_area());
-    ASSERT_EQ(opener_display, GetDisplayNearestBrowser(browser()));
+    ASSERT_EQ(opener_display.id(), GetDisplayNearestBrowser(browser()).id());
     for (const char* url : {"/simple.html", "about:blank"}) {
       const std::string open_script =
           content::JsReplace("open($1, '', 'popup');", url);
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, OpenOnAnotherScreen) {
       display::Screen::GetScreen()->GetAllDisplays();
   for (const display::Display& opener_display : displays) {
     browser()->window()->SetBounds(opener_display.work_area());
-    ASSERT_EQ(opener_display, GetDisplayNearestBrowser(browser()));
+    ASSERT_EQ(opener_display.id(), GetDisplayNearestBrowser(browser()).id());
     for (const display::Display& target_display : displays) {
       for (const char* url : {"/simple.html", "about:blank"}) {
         const std::string open_script = content::JsReplace(
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, MoveToAnotherScreen) {
   std::vector<display::Display> displays = screen->GetAllDisplays();
   for (const display::Display& opener_display : displays) {
     browser()->window()->SetBounds(opener_display.work_area());
-    ASSERT_EQ(opener_display, GetDisplayNearestBrowser(browser()));
+    ASSERT_EQ(opener_display.id(), GetDisplayNearestBrowser(browser()).id());
     gfx::Point opener_display_center = opener_display.work_area().CenterPoint();
     for (const display::Display& target_display : displays) {
       for (const char* url : {"/simple.html", "about:blank"}) {
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, CrossOriginIFrame) {
       display::Screen::GetScreen()->GetAllDisplays();
   for (const display::Display& opener_display : displays) {
     browser()->window()->SetBounds(opener_display.work_area());
-    ASSERT_EQ(opener_display, GetDisplayNearestBrowser(browser()));
+    ASSERT_EQ(opener_display.id(), GetDisplayNearestBrowser(browser()).id());
     for (const bool iframe_policy_granted : {true, false}) {
       content::RenderFrameHost* cross_origin_iframe =
           ChildFrameAt(web_contents, iframe_policy_granted ? 1 : 0);
