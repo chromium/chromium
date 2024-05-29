@@ -6,6 +6,7 @@ package org.chromium.ui.test.util;
 
 import android.os.Build;
 import android.os.IBinder;
+import android.os.ParcelFileDescriptor;
 import android.provider.Settings;
 
 import androidx.test.InstrumentationRegistry;
@@ -119,9 +120,12 @@ public class DisableAnimationsTestRule implements TestRule {
                             "settings put global transition_animation_scale " + scaleFactor,
                             "settings put global window_animation_scale " + scaleFactor);
             for (String command : commandToRuns) {
-                InstrumentationRegistry.getInstrumentation()
-                        .getUiAutomation()
-                        .executeShellCommand(command);
+                try (ParcelFileDescriptor parcelFileDescriptor =
+                        InstrumentationRegistry.getInstrumentation()
+                                .getUiAutomation()
+                                .executeShellCommand(command)) {
+                    parcelFileDescriptor.checkError();
+                }
             }
         } else {
             // Set animation scales through reflection in R-.
