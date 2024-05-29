@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/core/browser/geo/autofill_country.h"
+
 #include <set>
 #include <string>
 
@@ -10,7 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
-#include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -161,8 +162,9 @@ TEST(AutofillCountryTest, AllCountryCodesHaveCountryName) {
   const std::vector<std::string>& country_codes =
       CountryDataMap::GetInstance()->country_codes();
   for (const std::string& country_code : country_codes) {
-    if (base::Contains(expected_failures, country_code))
+    if (base::Contains(expected_failures, country_code)) {
       continue;
+    }
     SCOPED_TRACE("Country code '" + country_code + "' should have a name.");
     EXPECT_NE(ASCIIToUTF16(country_code),
               AutofillCountry(country_code, "en").name());
@@ -221,6 +223,16 @@ TEST(AutofillCountryTest, VerifyAddressFormatExtensions) {
       EXPECT_TRUE(country.IsAddressFieldSettingAccessible(rule.type));
     }
   }
+}
+
+// Test the address requirement method for Poland.
+TEST(AutofillCountryTest, PLAddressRequirements) {
+  AutofillCountry country("PL", "pl_PL");
+  base::test::ScopedFeatureList enabled{features::kAutofillUsePLAddressModel};
+
+  EXPECT_FALSE(country.requires_state());
+  EXPECT_TRUE(
+      country.IsAddressFieldSettingAccessible(FieldType::ADDRESS_HOME_STATE));
 }
 
 }  // namespace autofill
