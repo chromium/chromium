@@ -1703,6 +1703,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2234827758954819389">Ghid privind confidențialitatea</translation>
 <translation id="2234876718134438132">Sincronizarea și serviciile Google</translation>
 <translation id="2235344399760031203">Cookie-urile terță parte sunt blocate</translation>
+<translation id="2236949375853147973">Activitatea mea</translation>
 <translation id="2238379619048995541">Date pentru starea activă</translation>
 <translation id="2241053333139545397">Citește și modifică datele de pe o serie de site-uri</translation>
 <translation id="2241634353105152135">Numai o singură dată</translation>
@@ -2310,6 +2311,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2666247341166669829">Nivelul bateriei din stânga: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Alte aplicații sunt setate să deschidă aceleași linkuri ca <ph name="APP_NAME" />. Astfel, <ph name="APP_NAME_2" /> și <ph name="APP_NAME_3" /> vor fi setate să nu mai deschidă linkurile acceptate.</translation>
 <translation id="2667463864537187133">Gestionează verificarea ortografiei</translation>
+<translation id="2668094785979141847">Dă clic pentru a ieși din Google Lens</translation>
 <translation id="2668604389652548400">Elimin-o sau înlocuiește-o cu extensii similare din <ph name="BEGIN_LINK" />Magazinul web Chrome<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Nu s-a putut deschide <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Oricine folosește acest dispozitiv poate să vadă fișierele descărcate</translation>
@@ -2360,6 +2362,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2710101514844343743">Date de utilizare și diagnosticare</translation>
 <translation id="271033894570825754">Nou</translation>
 <translation id="2710507903599773521">Dispozitivul <ph name="DEVICE_TYPE" /> este acum deblocat</translation>
+<translation id="2712141162840347885">Selectează orice vrei să cauți cu Google Lens sau apasă Escape pentru a ieși din Google Lens</translation>
 <translation id="2713106313042589954">Dezactivează camera foto</translation>
 <translation id="2713444072780614174">Alb</translation>
 <translation id="2714180132046334502">Fundal întunecat</translation>
@@ -2430,6 +2433,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2749881179542288782">Verificare gramaticală și ortografică</translation>
 <translation id="2750020734439919571">Mai multe setări și permisiuni pentru aplicația Chrome</translation>
 <translation id="2750602041558385535">Descărcarea neconfirmată a fost blocată</translation>
+<translation id="2753623023919742414">Dă clic pentru a căuta</translation>
 <translation id="2754226775788136540">Se caută dispozitive Fast Pair salvate în <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Găsește aplicațiile de care ai nevoie, de la productivitate la divertisment, în Magazinul Google Play. Poți instala aplicații oricând.</translation>
 <translation id="2755349111255270002">Resetează <ph name="DEVICE_TYPE" /></translation>
@@ -2937,6 +2941,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3132996321662585180">Actualizează zilnic</translation>
 <translation id="3133184011320864289">Activează sincronizarea pentru a permite browserului Chrome să sugereze grupuri de file și să-ți păstreze filele organizate</translation>
 <translation id="3134393957315651797">Selectează starea experimentului pentru experimentul <ph name="EXPERIMENT_NAME" />. Descrierea experimentului: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Trage pentru a căuta</translation>
 <translation id="3139925690611372679">Avatar galben prestabilit</translation>
 <translation id="3141093262818886744">Deschide oricum</translation>
 <translation id="3141318088920353606">Se ascultă...</translation>
@@ -4078,7 +4083,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="3983586614702900908">dispozitive de la producător necunoscut</translation>
 <translation id="3983764759749072418">Aplicațiile din Magazinul Play au acces la acest dispozitiv.</translation>
 <translation id="3983769721878416534">Întârziere înainte de clic</translation>
-<translation id="3983793589497399077">Dă clic sau trage oriunde pentru a căuta cu Lens</translation>
 <translation id="3984135167056005094">Nu include adresa de e-mail</translation>
 <translation id="3984159763196946143">Modul demonstrativ nu a pornit</translation>
 <translation id="3984431586879874039">Permiți site-ului să vadă cheia de securitate?</translation>
@@ -8529,6 +8533,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="741906494724992817">Această aplicație nu solicită nicio permisiune specială.</translation>
 <translation id="7419142833919893307">Nu s-a adăugat niciun nume de utilizator</translation>
 <translation id="7419565702166471774">Folosește întotdeauna conexiuni securizate</translation>
+<translation id="7419819959108735624">Selectează orice vrei să cauți cu Google Lens</translation>
 <translation id="742130257665691897">Marcajele au fost eliminate</translation>
 <translation id="7421925624202799674">&amp;Afișează sursa paginii</translation>
 <translation id="7422192691352527311">Preferințe...</translation>
@@ -10853,6 +10858,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="9102610709270966160">Activează extensia</translation>
 <translation id="9102864637938129124">Site-urile și advertiserii pot să afle despre performanța anunțurilor. Setarea este activată.</translation>
 <translation id="9103868373786083162">Apasă pentru a naviga înapoi sau folosește meniul contextual pentru a vedea istoricul</translation>
+<translation id="9106236359747881194">Selectează text pentru a căuta</translation>
 <translation id="9107096627210171112">T&amp;radu...</translation>
 <translation id="9108035152087032312">Denumește fereastra...</translation>
 <translation id="9108072915170399168">Setarea actuală pentru utilizarea datelor este „Fără internet”</translation>

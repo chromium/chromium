@@ -26,7 +26,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="108486256082349153">Mobilné zariadenie: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Dobré popoludnie, <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Hľadajte <ph name="CATEGORY" />, súbory, aplikácie a ďalší obsah. Medzi aplikáciami prechádzajte klávesmi so šípkami.</translation>
-<translation id="1093645050124056515">Ctrl + Alt + šípka nadol</translation>
+<translation id="1093645050124056515">ctrl + alt + šípka nadol</translation>
 <translation id="1094756674036064790">Chcete vypnúť Bluetooth?</translation>
 <translation id="109942774857561566">Nudím sa</translation>
 <translation id="1104084341931202936">Zobraziť nastavenia dostupnosti</translation>
@@ -50,7 +50,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1178581264944972037">Pozastaviť</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="1182225749592316782">Týmto povolíte prístup všetkým aplikáciám a webom s povoleniami používať kameru a mikrofón</translation>
-<translation id="1182876754474670069">domov</translation>
+<translation id="1182876754474670069">home (na začiatok)</translation>
 <translation id="1183863904939664422">Tento návrh ma nezaujíma</translation>
 <translation id="1184126796192815024">Táto sieť nepodporuje streamovanie aplikácií z telefónu. Skúste v telefóne použiť hotspot. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Zadajte heslo alebo PIN, zvýšite tým zabezpečenie</translation>
@@ -713,7 +713,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="3781910048497807059">Presunutie označenia na predchádzajúci panel</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Uzamknúť</translation>
-<translation id="3796215473395753611">Alt + šípka nahor</translation>
+<translation id="3796215473395753611">alt + šípka nahor</translation>
 <translation id="3798670284305777884">Reproduktor (vnútorný)</translation>
 <translation id="3799080171973636491">Stlačili ste klávesovú skratku lupy na celú obrazovku. Chcete ju zapnúť?</translation>
 <translation id="380165613292957338">Ako vám môžem pomôcť?</translation>
@@ -1060,7 +1060,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="5077416371682039027">Nastaviť zobrazovanie nedávnych fotiek, médií, upozornení a aplikácií z telefónu</translation>
 <translation id="5077936103761694531">Chcete potvrdiť rozlíšenie?</translation>
 <translation id="5078796286268621944">Nesprávny kód PIN</translation>
-<translation id="5083035541015925118">Ctrl + Alt + šípka nahor</translation>
+<translation id="5083035541015925118">ctrl + alt + šípka nahor</translation>
 <translation id="5083553833479578423">Odblokujte ďalšie funkcie Asistenta.</translation>
 <translation id="5092436659250499817">Zapnutie alebo vypnutie podsvietenia klávesnice</translation>
 <translation id="5094577350232361255">informácie</translation>
@@ -1221,7 +1221,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="5679050765726761783">Bola pripojená nabíjačka s nízkym napätím</translation>
 <translation id="5682642926269496722">Asistent Google nie je k dispozícii pre aktuálny používateľský účet.</translation>
 <translation id="5682844616152977671"><ph name="RELATIVE_DATE" /> <ph name="TIME" /></translation>
-<translation id="5689233503102158537">Alt + Backspace</translation>
+<translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689633613396158040">Vďaka nočnému režimu bude vaša obrazovka pri tlmenom osvetlení menej rušivá a čitateľnejšia. Klepnutím môžete zmeniť čas zapnutia nočného režimu, prípadne ho môžete úplne vypnúť.</translation>
 <translation id="5691772641933328258">Odtlačok prsta nebol rozpoznaný</translation>
 <translation id="5693255400847650006">Mikrofón sa používa</translation>
@@ -1405,7 +1405,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="639644700271529076">CAPS LOCK je vypnutý</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Asistent Google</translation>
-<translation id="641817663353603351">o stránku nahor</translation>
+<translation id="641817663353603351">page up (o stránku nahor)</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Vymazanie všetkých upozornení</translation>
 <translation id="643147933154517414">Všetko je hotové</translation>
@@ -1540,7 +1540,7 @@ Nová inštalácia</translation>
 <translation id="6912901278692845878">Rýchla prehliadka</translation>
 <translation id="6917259695595127329">Úlohy boli naposledy aktualizované o <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Inteligentnú kartu sa nepodarilo rozpoznať. Skúste to znova.</translation>
-<translation id="692135145298539227">odstrániť</translation>
+<translation id="692135145298539227">delete (vymazať)</translation>
 <translation id="6929081673585394903">Zobraziť ovládanie</translation>
 <translation id="6931576957638141829">Uložiť do</translation>
 <translation id="6942518653766415536">Ponuka formátu nahrávky</translation>
@@ -1554,7 +1554,7 @@ Nová inštalácia</translation>
 <translation id="6972629891077993081">Zariadenia HID</translation>
 <translation id="6972754398087986839">Začať</translation>
 <translation id="6979158407327259162">Disk Google</translation>
-<translation id="6980402667292348590">vložiť</translation>
+<translation id="6980402667292348590">insert (vložiť)</translation>
 <translation id="6981291220124935078">Zapnúť prístup</translation>
 <translation id="6981982820502123353">Dostupnosť</translation>
 <translation id="698231206551913481">Všetky súbory a miestne údaje priradené k tomuto používateľovi budú po jeho odobratí natrvalo vymazané.</translation>
@@ -1628,7 +1628,7 @@ Nová inštalácia</translation>
 <translation id="7312210124139670355">Správca resetuje vašu eSIM kartu. Môže trvať niekoľko minút.</translation>
 <translation id="7313193732017069507">Rozbaliť kameru</translation>
 <translation id="7330397557116570022">Ak chcete použiť diktovanie, prejdite do textového poľa</translation>
-<translation id="7331646370422660166">Alt + šípka nadol</translation>
+<translation id="7331646370422660166">alt + šípka nadol</translation>
 <translation id="7340731148882810149">Ponuka automatických kliknutí</translation>
 <translation id="7346909386216857016">Dobre</translation>
 <translation id="7348093485538360975">Klávesnica na obrazovke</translation>
@@ -1677,7 +1677,7 @@ Nová inštalácia</translation>
 <translation id="7513922695575567867">Kalendár, týždeň s dátumom <ph name="DATE" />, momentálne je vybraný dátum <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Stiahnuť</translation>
 <translation id="7515998400212163428">Android</translation>
-<translation id="7516641972665276706">o stránku nadol</translation>
+<translation id="7516641972665276706">page down (o stránku nadol)</translation>
 <translation id="7519206258459640379">Centrovanie kamery je zapnuté.</translation>
 <translation id="7519649142417630956">Po vypnutí bude správca odhlásený a nebude môcť ovládať vaše zariadenie.
 
@@ -2098,7 +2098,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="9133335900048457298">Nie je možné nahrať chránený obsah</translation>
 <translation id="9139720510312328767">Odstránenie nasledujúceho písmena</translation>
 <translation id="9148058034647219655">Ukončiť</translation>
-<translation id="9151906066336345901">ukončiť</translation>
+<translation id="9151906066336345901">end (na koniec)</translation>
 <translation id="9161053988251441839">ODPORÚČANÉ APLIKÁCIE</translation>
 <translation id="9168436347345867845">Neskôr</translation>
 <translation id="9178475906033259337">Zobrazuje sa jeden výsledok pre <ph name="QUERY" /></translation>

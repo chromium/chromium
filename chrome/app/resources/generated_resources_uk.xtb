@@ -841,6 +841,7 @@
 <translation id="1607139524282324606">Очистити введені дані</translation>
 <translation id="1607499585984539560">Користувач не зв’язаний із цим доменом</translation>
 <translation id="1608668830839595724">Додаткові дії для вибраних елементів</translation>
+<translation id="1608698493373028805">Незабаром підтримку цього розширення може бути припинено</translation>
 <translation id="1610272688494140697">Налаштування додатка</translation>
 <translation id="161042844686301425">Бірюзовий</translation>
 <translation id="1611432201750675208">Пристрій заблоковано</translation>
@@ -2326,6 +2327,8 @@
 <translation id="2666247341166669829">Рівень заряду акумулятора лівого навушника – <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Зараз їх можна відкривати не лише в додатку <ph name="APP_NAME" />. Після зміни додатки <ph name="APP_NAME_2" /> та <ph name="APP_NAME_3" /> більше не зможуть відкривати підтримувані посилання.</translation>
 <translation id="2667463864537187133">Керувати перевіркою орфографії</translation>
+<translation id="2668094785979141847">Натисніть, щоб вийти з Google Об’єктива</translation>
+<translation id="2668604389652548400">Видаліть або замініть його схожим розширенням із <ph name="BEGIN_LINK" />Вебмагазину Chrome<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Не вдалося відкрити додаток <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Усі користувачі цього пристрою можуть бачити завантажені файли</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> транслює вкладку Chrome.</translation>
@@ -2375,6 +2378,7 @@
 <translation id="2710101514844343743">Дані про використання й діагностику</translation>
 <translation id="271033894570825754">Новий</translation>
 <translation id="2710507903599773521">Ваш пристрій <ph name="DEVICE_TYPE" /> розблоковано</translation>
+<translation id="2712141162840347885">Виберіть об’єкт, за яким хочете виконати пошук через Google Об’єктив, або натисніть клавішу Escape, щоб вийти</translation>
 <translation id="2713106313042589954">Вимкнути камеру</translation>
 <translation id="2713444072780614174">Білий</translation>
 <translation id="2714180132046334502">Темний фон</translation>
@@ -2445,6 +2449,7 @@
 <translation id="2749881179542288782">Перевірити граматику та правопис</translation>
 <translation id="2750020734439919571">Інші налаштування й дозволи для додатків Chrome</translation>
 <translation id="2750602041558385535">Неперевірене завантаження заблоковано</translation>
+<translation id="2753623023919742414">Натисніть, щоб шукати</translation>
 <translation id="2754226775788136540">Пошук пристроїв для швидкої пари, збережених в обліковому записі <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Знаходьте потрібні додатки (зокрема для роботи, розваг тощо) у магазині Google Play. Ви можете встановлювати додатки будь-коли.</translation>
 <translation id="2755349111255270002">Скинути налаштування цього пристрою <ph name="DEVICE_TYPE" /></translation>
@@ -2952,6 +2957,7 @@
 <translation id="3132996321662585180">Оновлювати щодня</translation>
 <translation id="3133184011320864289">Увімкніть синхронізацію, щоб дозволити Chrome упорядковувати вкладки й пропонувати для них групи</translation>
 <translation id="3134393957315651797">Виберіть статус експерименту "<ph name="EXPERIMENT_NAME" />". Опис експерименту: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Перетягніть, щоб вибрати область для пошуку</translation>
 <translation id="3139925690611372679">Стандартний жовтий аватар</translation>
 <translation id="3141093262818886744">Усе одно відкрити</translation>
 <translation id="3141318088920353606">Говоріть…</translation>
@@ -4093,7 +4099,6 @@
 <translation id="3983586614702900908">пристрої від невідомого постачальника</translation>
 <translation id="3983764759749072418">Додатки з Play Маркету мають доступ до цього пристрою.</translation>
 <translation id="3983769721878416534">Затримка перед кліком</translation>
-<translation id="3983793589497399077">Натисніть об’єкт або виділіть область екрана, щоб виконати пошук за допомогою Об’єктива</translation>
 <translation id="3984135167056005094">Не включати електронну адресу</translation>
 <translation id="3984159763196946143">Не вдалося запустити демонстраційний режим</translation>
 <translation id="3984431586879874039">Показувати цьому сайту ваш ключ безпеки?</translation>
@@ -8546,6 +8551,7 @@
 <translation id="741906494724992817">Цьому додатку не потрібні спеціальні дозволи.</translation>
 <translation id="7419142833919893307">Не вказано імені користувача</translation>
 <translation id="7419565702166471774">Завжди використовувати надійні з’єднання</translation>
+<translation id="7419819959108735624">Виберіть об’єкт, за яким хочете виконати пошук через Google Об’єктив</translation>
 <translation id="742130257665691897">Закладки видалено</translation>
 <translation id="7421925624202799674">&amp;Переглянути джерело сторінки</translation>
 <translation id="7422192691352527311">Налаштування...</translation>
@@ -10871,6 +10877,7 @@
 <translation id="9102610709270966160">Увімкнути розширення</translation>
 <translation id="9102864637938129124">Власники сайтів і рекламодавці можуть оцінювати ефективність своїх оголошень. Це налаштування ввімкнено.</translation>
 <translation id="9103868373786083162">Натисніть, щоб повернутись, або відкрийте контекстне меню, щоб переглянути історію</translation>
+<translation id="9106236359747881194">Виберіть текст, щоб шукати</translation>
 <translation id="9107096627210171112">П&amp;ерекласти…</translation>
 <translation id="9108035152087032312">Додати &amp;назву вікна…</translation>
 <translation id="9108072915170399168">Поточне налаштування використання трафіку: "Без Інтернету"</translation>

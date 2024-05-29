@@ -833,6 +833,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1607139524282324606">Tozalash</translation>
 <translation id="1607499585984539560">Bu domendan tashqari foydalanuvchi</translation>
 <translation id="1608668830839595724">Tanlangan elementlar uchun yana boshqa amallar</translation>
+<translation id="1608698493373028805">Bu kengaytma tez orada ishlamay qoladi</translation>
 <translation id="1610272688494140697">Ilova sozlamalari</translation>
 <translation id="161042844686301425">Havorang</translation>
 <translation id="1611432201750675208">Qurilmangiz qulflangan</translation>
@@ -1700,6 +1701,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2234827758954819389">Maxfiylik qoʻllanmasi</translation>
 <translation id="2234876718134438132">Sinxronizatsiya va Google xizmatlari</translation>
 <translation id="2235344399760031203">Tashqi cookie fayllar bloklandi</translation>
+<translation id="2236949375853147973">Harakatlarim</translation>
 <translation id="2238379619048995541">Protsessorning turli chastotadagi faoliyati ma’lumotlari</translation>
 <translation id="2241053333139545397">Bir nechta saytlardagi ma’lumotlarni ko‘rish va o‘zgartirish</translation>
 <translation id="2241634353105152135">Bir marta</translation>
@@ -2310,6 +2312,8 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2666247341166669829"><ph name="PERCENTAGE" />% quvvat qoldi.</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" /> ilovasini standart ilova sifatida oʻrnatishni istaysizmi? Bu havola oʻzgartirilgandan keyin <ph name="APP_NAME_2" /> va <ph name="APP_NAME_3" /> ilovalari ochilmay qoladi.</translation>
 <translation id="2667463864537187133">Imlo tekshirgichni boshqarish</translation>
+<translation id="2668094785979141847">Google Lensni yopish uchun bosing</translation>
+<translation id="2668604389652548400">Uni olib tashlang yoki <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> orqali unga oʻxshash kengaytmalar bilan almashtiring.</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> ochilmadi</translation>
 <translation id="2669454659051515572">Bu qurilmaning barcha foydalanuvchilar yuklab olingan fayllarni koʻra oladi</translation>
 <translation id="2670102641511624474">“<ph name="APP_NAME" />” ilovasi Chrome sahifasini translatsiya qilmoqda.</translation>
@@ -2359,6 +2363,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2710101514844343743">Foydalanish va diagnostika axboroti</translation>
 <translation id="271033894570825754">Yangi</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> qurilmangiz qulflanmagan</translation>
+<translation id="2712141162840347885">Google Lens bilan qidirish uchun istalgan obyektni tanlang yoki Google Lens panelidan chiqish uchun Escape tugmasini bosing</translation>
 <translation id="2713106313042589954">Kamerani faolsizlantirish</translation>
 <translation id="2713444072780614174">Oq</translation>
 <translation id="2714180132046334502">Qorong‘i fon</translation>
@@ -2429,6 +2434,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2749881179542288782">Grammatikani imlo bilan tekshirish</translation>
 <translation id="2750020734439919571">Boshqa Chrome ilovasi sozlamalari va ruxsatlari</translation>
 <translation id="2750602041558385535">Tekshirilmagan yuklanma bloklandi</translation>
+<translation id="2753623023919742414">Qidirish uchun bosing</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" /> hisobiga saqlangan Tezkor ulanish qurilmalari qidirilmoqda</translation>
 <translation id="2754825024506485820">Google Play Market orqali unumdorlikdan hordiqqacha kerakli ilovalarni toping. Ilovalarni istalgan vaqt oʻrnatish mumkin.</translation>
 <translation id="2755349111255270002">Bu <ph name="DEVICE_TYPE" /> qurilmasini tiklash</translation>
@@ -2936,6 +2942,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3132996321662585180">Kunlik yangilash</translation>
 <translation id="3133184011320864289">Chrome varaqlar guruhini taklif qilishi va varaqlarni tartiblab turishi uchun sinxronizatsiyani yoqing</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> tajribaviy funksiyasi holatini tanlang. Tajriba tavsifi: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Qidirish uchun obyektni torting</translation>
 <translation id="3139925690611372679">Standart sariq avatar</translation>
 <translation id="3141093262818886744">Baribir ochilsin</translation>
 <translation id="3141318088920353606">Gapiring...</translation>
@@ -4077,7 +4084,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="3983586614702900908">noma’lum ishlab chiqaruvchining qurilmalari</translation>
 <translation id="3983764759749072418">Play Market ilovalari bu qurilma bilan ishlay oladi.</translation>
 <translation id="3983769721878416534">Bosishdan avvalgi kutish vaqti</translation>
-<translation id="3983793589497399077">Lens bilan qidirish uchun istalgan joyni bosing yoki torting</translation>
 <translation id="3984135167056005094">Email manzil biriktirilmasin</translation>
 <translation id="3984159763196946143">Demo rejimi ishga tushmadi</translation>
 <translation id="3984431586879874039">Bu sayt uchun elektron kalit axborotlariga ruxsat berilsinmi?</translation>
@@ -8526,6 +8532,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="741906494724992817">Bu ilova hech qanday maxsus ruxsat talab qilmaydi.</translation>
 <translation id="7419142833919893307">Foydalanuvchi nomi kiritilmagan</translation>
 <translation id="7419565702166471774">Doim xavfsiz ulanish ishlatilsin</translation>
+<translation id="7419819959108735624">Google Lens bilan qidirish uchun istalgan obyektni tanlang</translation>
 <translation id="742130257665691897">Bukmarklar olib tashlandi</translation>
 <translation id="7421925624202799674">&amp;Sahifa kodini ko‘rish</translation>
 <translation id="7422192691352527311">Sozlamalar...</translation>
@@ -10847,6 +10854,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="9102610709270966160">Kengaytmani yoqish</translation>
 <translation id="9102864637938129124">Saytlar va reklama beruvchilar reklamalar qanday chiqishini oʻrganishi mumkin. Bu sozlama yoniq.</translation>
 <translation id="9103868373786083162">Ortga qaytish uchun bosing, brauzer tarixini ko‘rish uchun kontekst menyusini tanlang</translation>
+<translation id="9106236359747881194">Qidirish uchun matnni belgilang</translation>
 <translation id="9107096627210171112">&amp;Tarjima...</translation>
 <translation id="9108035152087032312">Oynani &amp;nomlash...</translation>
 <translation id="9108072915170399168">Hozir internetsiz trafik sarflanishi sozlangan</translation>

@@ -838,6 +838,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1607139524282324606">Vee inskrywing uit</translation>
 <translation id="1607499585984539560">Gebruik word nie met domein geaffilieer nie</translation>
 <translation id="1608668830839595724">Meer handelinge vir geselekteerde items</translation>
+<translation id="1608698493373028805">Hierdie uitbreiding sal dalk binnekort nie meer gesteun word nie</translation>
 <translation id="1610272688494140697">Programinstellings</translation>
 <translation id="161042844686301425">Siaanblou</translation>
 <translation id="1611432201750675208">Jou toestel is gesluit</translation>
@@ -2323,6 +2324,8 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2666247341166669829">Linkerbatteryvlak <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Ander programme is gestel om dieselfde skakels oop te maak as <ph name="APP_NAME" />. Dit sal <ph name="APP_NAME_2" /> en <ph name="APP_NAME_3" /> deaktiveer sodat hulle nie gesteunde skakels kan oopmaak nie.</translation>
 <translation id="2667463864537187133">Bestuur speltoets</translation>
+<translation id="2668094785979141847">Klik om uit Google Lens te gaan</translation>
+<translation id="2668604389652548400">Verwyder of vervang dit met soortgelyke uitbreidings van die <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> af</translation>
 <translation id="2669241540496514785">Kon nie "<ph name="APP_NAME" />" oopmaak nie</translation>
 <translation id="2669454659051515572">Enigiemand wat hierdie toestel gebruik, kan afgelaaide lêers sien</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> deel tans 'n Chrome-oortjie.</translation>
@@ -2372,6 +2375,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2710101514844343743">Gebruik- en diagnostiese data</translation>
 <translation id="271033894570825754">Nuut</translation>
 <translation id="2710507903599773521">Jou <ph name="DEVICE_TYPE" /> is nou ontsluit</translation>
+<translation id="2712141162840347885">Kies enigiets om met Google Lens te soek of druk Escape om uit Google Lens te gaan</translation>
 <translation id="2713106313042589954">Skakel kamera af</translation>
 <translation id="2713444072780614174">Wit</translation>
 <translation id="2714180132046334502">Donker agtergrond</translation>
@@ -2442,6 +2446,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2749881179542288782">Gaan grammatika saam met spelling na</translation>
 <translation id="2750020734439919571">Meer instellings en toestemmings vir die Chrome-app</translation>
 <translation id="2750602041558385535">Ongeverifieerde aflaai is geblokkeer</translation>
+<translation id="2753623023919742414">Klik om te soek</translation>
 <translation id="2754226775788136540">Kyk tans vir Kitsbind-toestelle wat in <ph name="PRIMARY_EMAIL" /> gestoor is</translation>
 <translation id="2754825024506485820">Kry die programme wat jy wil hê, van produktiwiteit tot vermaak, in die Google Play Winkel. Jy kan enige tyd programme installeer.</translation>
 <translation id="2755349111255270002">Stel hierdie <ph name="DEVICE_TYPE" /> terug</translation>
@@ -2949,6 +2954,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3132996321662585180">Herlaai daagliks</translation>
 <translation id="3133184011320864289">Skakel sinkronisering aan om Chrome toe te laat om oortjiegroepe voor te stel en jou oortjies georganiseer te hou</translation>
 <translation id="3134393957315651797">Kies eksperimenttoestand vir die <ph name="EXPERIMENT_NAME" />-eksperiment. Eksperimentbeskrywing: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Sleep om te soek</translation>
 <translation id="3139925690611372679">Verstek- geel avatar</translation>
 <translation id="3141093262818886744">Maak nogtans oop</translation>
 <translation id="3141318088920353606">Luister tans …</translation>
@@ -4090,7 +4096,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="3983586614702900908">toestelle van 'n onbekende verskaffer</translation>
 <translation id="3983764759749072418">Play Winkel-programme het toegang tot hierdie toestel.</translation>
 <translation id="3983769721878416534">Vertraging voor klik</translation>
-<translation id="3983793589497399077">Klik of sleep enige plek om met Lens te soek</translation>
 <translation id="3984135167056005094">Moenie e-posadres insluit nie</translation>
 <translation id="3984159763196946143">Kon nie demonstrasiemodus begin nie</translation>
 <translation id="3984431586879874039">Laat hierdie werf toe om jou sekuriteitsleutel te sien?</translation>
@@ -8540,6 +8545,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="741906494724992817">Hierdie program vereis geen spesiale toestemmings nie.</translation>
 <translation id="7419142833919893307">Geen gebruikernaam is bygevoeg nie</translation>
 <translation id="7419565702166471774">Gebruik altyd veilige verbindings</translation>
+<translation id="7419819959108735624">Kies enigiets om met Google Lens te soek</translation>
 <translation id="742130257665691897">Boekmerke is verwyder</translation>
 <translation id="7421925624202799674">Bekyk bladsybron</translation>
 <translation id="7422192691352527311">Voorkeure …</translation>
@@ -10862,6 +10868,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="9102610709270966160">Aktiveer uitbreiding</translation>
 <translation id="9102864637938129124">Werwe en adverteerders kan verstaan hoe advertensies vaar. Hierdie instelling is aan.</translation>
 <translation id="9103868373786083162">Druk om terug te gaan, kontekskieslys om geskiedenis te sien</translation>
+<translation id="9106236359747881194">Kies teks om te soek</translation>
 <translation id="9107096627210171112">Vertaal …</translation>
 <translation id="9108035152087032312">Naam en venster</translation>
 <translation id="9108072915170399168">Huidige datagebruikinstelling is Sonder Internet</translation>

@@ -837,6 +837,7 @@
 <translation id="1607139524282324606">Очистить запись</translation>
 <translation id="1607499585984539560">Пользователь не связан с доменом.</translation>
 <translation id="1608668830839595724">Другие действия с выбранными закладками</translation>
+<translation id="1608698493373028805">Скоро мы можем прекратить поддержку этого расширения</translation>
 <translation id="1610272688494140697">Настройки приложения</translation>
 <translation id="161042844686301425">Голубой</translation>
 <translation id="1611432201750675208">Ваше устройство заблокировано</translation>
@@ -2310,6 +2311,8 @@
 <translation id="2666247341166669829">Левый наушник заряжен на <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Вы хотите установить "<ph name="APP_NAME" />" в качестве приложения по умолчанию? После изменения эти ссылки больше не будут открываться в приложениях "<ph name="APP_NAME_2" />" и "<ph name="APP_NAME_3" />".</translation>
 <translation id="2667463864537187133">Настроить проверку орфографии</translation>
+<translation id="2668094785979141847">Нажмите, чтобы закрыть Google Объектив</translation>
+<translation id="2668604389652548400">Удалите его или замените другим расширением из <ph name="BEGIN_LINK" />интернет-магазина Chrome<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Не удалось запустить <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Скачанные файлы будут доступны всем пользователям этого устройства.</translation>
 <translation id="2670102641511624474">Приложение "<ph name="APP_NAME" />" предоставило доступ к вкладке Chrome.</translation>
@@ -2359,6 +2362,7 @@
 <translation id="2710101514844343743">Данные о работе устройства</translation>
 <translation id="271033894570825754">Новое</translation>
 <translation id="2710507903599773521">Устройство <ph name="DEVICE_TYPE" /> разблокировано</translation>
+<translation id="2712141162840347885">Выберите что-нибудь для поиска с помощью Google Объектива. Что закрыть его, нажмите клавишу Esc.</translation>
 <translation id="2713106313042589954">Выключить камеру</translation>
 <translation id="2713444072780614174">Белый</translation>
 <translation id="2714180132046334502">Темный фон</translation>
@@ -2429,6 +2433,7 @@
 <translation id="2749881179542288782">Проверять грамматику и правописание</translation>
 <translation id="2750020734439919571">Дополнительные настройки и разрешения приложений Chrome</translation>
 <translation id="2750602041558385535">Скачивание непроверенного файла заблокировано.</translation>
+<translation id="2753623023919742414">Нажмите на объект для поиска</translation>
 <translation id="2754226775788136540">Выполняется поиск устройств с Быстрым подключением, сохраненных в аккаунте <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="2754825024506485820">В Google Play вы найдете любые интересующие вас приложения. Их можно установить в любое время.</translation>
 <translation id="2755349111255270002">Сбросьте настройки устройства <ph name="DEVICE_TYPE" /></translation>
@@ -2936,6 +2941,7 @@
 <translation id="3132996321662585180">Обновлять ежедневно</translation>
 <translation id="3133184011320864289">Включите синхронизацию, чтобы получать рекомендации Chrome по группировке вкладок.</translation>
 <translation id="3134393957315651797">Выберите состояние для эксперимента "<ph name="EXPERIMENT_NAME" />". Описание эксперимента: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
+<translation id="3137969841538672700">Перетащите область для поиска</translation>
 <translation id="3139925690611372679">Аватар по умолчанию (желтый)</translation>
 <translation id="3141093262818886744">Все равно открыть</translation>
 <translation id="3141318088920353606">Говорите</translation>
@@ -4077,7 +4083,6 @@
 <translation id="3983586614702900908">устройства от неизвестного поставщика</translation>
 <translation id="3983764759749072418">Приложениям из Play Маркета разрешен доступ к этому устройству.</translation>
 <translation id="3983769721878416534">Задержка перед нажатием</translation>
-<translation id="3983793589497399077">Нажмите на объект или выделите область для поиска с помощью Объектива.</translation>
 <translation id="3984135167056005094">Не указывать адрес электронной почты</translation>
 <translation id="3984159763196946143">Не удалось запустить демонстрационный режим</translation>
 <translation id="3984431586879874039">Разрешить этому сайту просматривать данные вашего электронного ключа?</translation>
@@ -8532,6 +8537,7 @@
 <translation id="741906494724992817">Приложению не требуются особые разрешения.</translation>
 <translation id="7419142833919893307">Имя пользователя не указано</translation>
 <translation id="7419565702166471774">Всегда использовать безопасные соединения</translation>
+<translation id="7419819959108735624">Выберите что-нибудь для поиска через Google Объектив.</translation>
 <translation id="742130257665691897">Закладки удалены</translation>
 <translation id="7421925624202799674">Просмотр кода страницы</translation>
 <translation id="7422192691352527311">Настройки...</translation>
@@ -10857,6 +10863,7 @@
 <translation id="9102610709270966160">Включить расширение</translation>
 <translation id="9102864637938129124">Сайты и рекламодатели могут оценивать эффективность рекламы. Параметр включен.</translation>
 <translation id="9103868373786083162">Нажмите, чтобы вернуться, используйте контекстное меню, чтобы открыть историю</translation>
+<translation id="9106236359747881194">Выберите текст для поиска</translation>
 <translation id="9107096627210171112">П&amp;еревести</translation>
 <translation id="9108035152087032312">Добавить название окна</translation>
 <translation id="9108072915170399168">Выбран режим передачи данных "Без подключения к Интернету".</translation>

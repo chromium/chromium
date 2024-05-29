@@ -1703,6 +1703,7 @@
 <translation id="2234827758954819389">رازداری کی گائیڈ</translation>
 <translation id="2234876718134438132">‏مطابقت پذیری اور Google سروسز</translation>
 <translation id="2235344399760031203">فریق ثالث کوکیز مسدود ہیں</translation>
+<translation id="2236949375853147973">میری سرگرمی</translation>
 <translation id="2238379619048995541">فریکوینسی صورت حال کا ڈیٹا</translation>
 <translation id="2241053333139545397">متعدد ویب سائٹس پر اپنا ڈیٹا پڑھیں اور تبدیل کریں</translation>
 <translation id="2241634353105152135">بس ایک بار</translation>
@@ -2311,6 +2312,7 @@
 <translation id="2666247341166669829">بائیں بیٹری کا لیول <ph name="PERCENTAGE" />% ہے۔</translation>
 <translation id="2667144577800272420">دیگر ایپس کو <ph name="APP_NAME" /> کی طرح لنکس کو کھولنے کے لیے سیٹ کیا گیا ہے۔ یہ <ph name="APP_NAME_2" /> <ph name="APP_NAME_3" /> تعاون یافتہ لنکس کھولنے سے غیر فعال کر دیں گی۔</translation>
 <translation id="2667463864537187133">املا کی جانچ کا نظم کریں</translation>
+<translation id="2668094785979141847">‏‫Google لینز سے باہر نکلنے کے لیے کلک کریں</translation>
 <translation id="2668604389652548400">‏<ph name="BEGIN_LINK" />Chrome ویب اسٹور<ph name="END_LINK" /> سے ملتے جلتے ایکسٹینشنز کے ساتھ اسے ہٹائیں یا تبدیل کریں</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> کھولی نہیں جا سکی</translation>
 <translation id="2669454659051515572">اس آلے کا استعمال کرنے والا کوئی بھی شخص ڈاؤن لوڈ کردہ فائلز کو دیکھ سکتا ہے</translation>
@@ -2361,6 +2363,7 @@
 <translation id="2710101514844343743">استعمال اور ڈائیگناسٹکس کا ڈیٹا</translation>
 <translation id="271033894570825754">نیا</translation>
 <translation id="2710507903599773521">آپ کا <ph name="DEVICE_TYPE" /> اب غیر مقفل ہے</translation>
+<translation id="2712141162840347885">‏‫Google لینز کے ساتھ تلاش کرنے کے لیے کچھ بھی منتخب کریں یا Google لینز سے باہر نکلنے کے لیے Escape کو دبائیں</translation>
 <translation id="2713106313042589954">کیمرا آف کریں</translation>
 <translation id="2713444072780614174">سفید</translation>
 <translation id="2714180132046334502">گہرا پس منظر</translation>
@@ -2431,6 +2434,7 @@
 <translation id="2749881179542288782">ہجے کے ساتھ گرامر چیک کریں</translation>
 <translation id="2750020734439919571">‏مزید Chrome ایپ کی ترتیبات اور اجازتیں</translation>
 <translation id="2750602041558385535">غیر تصدیق شدہ ڈاؤن لوڈ مسدود ہے</translation>
+<translation id="2753623023919742414">تلاش کرنے کیلئے کلک کریں</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" /> پر محفوظ کردہ فاسٹ پئیر آلات کی تلاش کر رہے ہیں</translation>
 <translation id="2754825024506485820">‏Google Play اسٹور پر پروڈکٹیوٹی سے لے کر تفریح تک اپنی ضرورت کی ایپس تلاش کریں۔ آپ کسی بھی وقت ایپس انسٹال کر سکتے ہیں۔</translation>
 <translation id="2755349111255270002">اس <ph name="DEVICE_TYPE" /> کو ری سیٹ کریں</translation>
@@ -2938,6 +2942,7 @@
 <translation id="3132996321662585180">روزانہ ریفریش کریں</translation>
 <translation id="3133184011320864289">‏Chrome کو ٹیب گروپس کی تجویز کرنے اور اپنے ٹیبز کو منظم رکھنے کی اجازت دینے کیلئے مطابقت پذیری کو آن کریں</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> تجربے کیلئے تجربے کی حالت منتخب کریں۔ تجربے کی تفصیل: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">تلاش کرنے کے لیے گھسیٹیں</translation>
 <translation id="3139925690611372679">ڈیفالٹ زرد اوتار</translation>
 <translation id="3141093262818886744">بہر صورت کھولیں</translation>
 <translation id="3141318088920353606">سنا جا رہا ہے…</translation>
@@ -4079,7 +4084,6 @@
 <translation id="3983586614702900908">ایک نامعلوم وینڈر کی جانب سے آلات</translation>
 <translation id="3983764759749072418">‏Play اسٹور ایپلیکیشنز کو اس آلہ تک رسائی حاصل ہے۔</translation>
 <translation id="3983769721878416534">کلک سے قبل تاخیر</translation>
-<translation id="3983793589497399077">لینز کا استعمال کر کے تلاش کرنے کے لیے کہیں بھی کلک کریں یا گھسیٹیں</translation>
 <translation id="3984135167056005094">ای میل پتہ شامل نہ کریں</translation>
 <translation id="3984159763196946143">ڈیمو وضع کو شروع نہیں کیا جا سکا</translation>
 <translation id="3984431586879874039">اس سائٹ کو آپ کی سیکیورٹی کلید دیکھنے کی اجازت دیں؟</translation>
@@ -8526,6 +8530,7 @@
 <translation id="741906494724992817">اس ایپ کیلئے کوئی خصوصی اجازتیں درکار نہیں ہیں۔</translation>
 <translation id="7419142833919893307">کوئی صارف نام شامل نہیں کیا گیا</translation>
 <translation id="7419565702166471774">ہمیشہ محفوظ کنکشنز کا استعمال کریں</translation>
+<translation id="7419819959108735624">‏‫Google لینز کے ساتھ تلاش کرنے کے لیے کچھ بھی منتخب کریں</translation>
 <translation id="742130257665691897">بُک مارکس ہٹا دیے گئے</translation>
 <translation id="7421925624202799674">صفحہ کا ماخذ &amp;دیکھیں</translation>
 <translation id="7422192691352527311">ترجیحات…</translation>
@@ -10848,6 +10853,7 @@
 <translation id="9102610709270966160">ایکسٹینشن کو فعال کریں</translation>
 <translation id="9102864637938129124">سائٹس اور مشتہرین اشتہارات کی کارکردگی کا طریقہ سمجھ سکتے ہیں۔ یہ ترتیب آن ہے۔</translation>
 <translation id="9103868373786083162">پیچھے جانے کیلئے دبائیں، سرگزشت دیکھنے کیلئے سیاق وسباق کا مینیو</translation>
+<translation id="9106236359747881194">تلاش کرنے کے لیے ٹیکسٹ منتخب کریں</translation>
 <translation id="9107096627210171112">ترجمہ...</translation>
 <translation id="9108035152087032312">ونڈو کا نام رکھیں...</translation>
 <translation id="9108072915170399168">موجودہ ڈیٹا استعمال کی ترتیب بغیر انٹرنیٹ کے ہے</translation>

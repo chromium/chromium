@@ -1707,6 +1707,7 @@
 <translation id="2234827758954819389">دليل الخصوصية</translation>
 <translation id="2234876718134438132">‏خدمات Google والمزامنة</translation>
 <translation id="2235344399760031203">تم حظر ملفات تعريف الارتباط التابعة لجهات خارجية.</translation>
+<translation id="2236949375853147973">نشاطي</translation>
 <translation id="2238379619048995541">بيانات حالة التردد</translation>
 <translation id="2241053333139545397">قراءة بياناتك وتغييرها على عدد من المواقع</translation>
 <translation id="2241634353105152135">مرة واحدة فقط</translation>
@@ -2314,6 +2315,7 @@
 <translation id="2666247341166669829">مستوى شحن بطارية السماعة اليسرى %<ph name="PERCENTAGE" />.</translation>
 <translation id="2667144577800272420">تم ضبط تطبيقات أخرى لفتح الروابط نفسها مثل <ph name="APP_NAME" />. وسيؤدي هذا الإجراء إلى منع <ph name="APP_NAME_2" /> و<ph name="APP_NAME_3" /> من فتح الروابط المتوافقة.</translation>
 <translation id="2667463864537187133">إدارة التدقيق الإملائي</translation>
+<translation id="2668094785979141847">‏انقر للخروج من "عدسة Google"</translation>
 <translation id="2668604389652548400">‏يمكنك إزالتها أو استبدالها بإضافات مشابهة من <ph name="BEGIN_LINK" />سوق Chrome الإلكتروني<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">تعذّر فتح <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">يمكن لأي شخص يستخدم هذا الجهاز الاطّلاع على الملفات التي تم تنزيلها.</translation>
@@ -2364,6 +2366,7 @@
 <translation id="2710101514844343743">بيانات الاستخدام والتشخيص</translation>
 <translation id="271033894570825754">جديد</translation>
 <translation id="2710507903599773521">تم فتح قفل "<ph name="DEVICE_TYPE" />" الآن.</translation>
+<translation id="2712141162840347885">‏حدِّد أي محتوى للبحث عنه باستخدام "عدسة Google" أو اضغط على مفتاح Escape للخروج من "عدسة Google"</translation>
 <translation id="2713106313042589954">إيقاف الكاميرا</translation>
 <translation id="2713444072780614174">أبيض</translation>
 <translation id="2714180132046334502">خلفية معتمة</translation>
@@ -2434,6 +2437,7 @@
 <translation id="2749881179542288782">تحقق من التدقيق النحوي مع التدقيق الإملائي</translation>
 <translation id="2750020734439919571">‏المزيد من إعدادات وأذونات تطبيق Chrome</translation>
 <translation id="2750602041558385535">تم حظر عملية تنزيل لم يتم التحقّق منها.</translation>
+<translation id="2753623023919742414">انقر للبحث</translation>
 <translation id="2754226775788136540">جارٍ البحث عن أجهزة تستخدم ميزة "الإقران السريع" ومحفوظة في <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">‏يمكنك العثور على التطبيقات التي تحتاجها، بدايةً من التطبيقات المخصَّصة للإنتاجية إلى التطبيقات الترفيهية، وذلك من خلال "متجر Google Play". ويمكنك تثبيت أي تطبيقات متى تشاء.</translation>
 <translation id="2755349111255270002">إعادة ضبط جهاز <ph name="DEVICE_TYPE" /> هذا</translation>
@@ -2941,6 +2945,7 @@
 <translation id="3132996321662585180">إعادة التحميل يوميًا</translation>
 <translation id="3133184011320864289">‏يجب تفعيل المزامنة للسماح لمتصفِّح Chrome باقتراح مجموعات لإضافة علامات تبويب إليها وتنظيمها.</translation>
 <translation id="3134393957315651797">يمكنك اختيار حالة للتجربة <ph name="EXPERIMENT_NAME" />. وصف التجربة: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">اسحب للبحث</translation>
 <translation id="3139925690611372679">الصورة الرمزية التلقائية الصفراء</translation>
 <translation id="3141093262818886744">الفتح على أي حال</translation>
 <translation id="3141318088920353606">جارٍ الاستماع…</translation>
@@ -4080,7 +4085,6 @@
 <translation id="3983586614702900908">أجهزة من مورد غير معروف</translation>
 <translation id="3983764759749072418">‏يمكن لتطبيقات "متجر Play" الوصول إلى هذا الجهاز.</translation>
 <translation id="3983769721878416534">مهلة قبل النقر</translation>
-<translation id="3983793589497399077">‏انقر على أي عنصر أو اسحبه للبحث عنه باستخدام "عدسة Google"</translation>
 <translation id="3984135167056005094">عدم تضمين عنوان البريد الإلكتروني</translation>
 <translation id="3984159763196946143">تعذَّر بدء الوضع التجريبي</translation>
 <translation id="3984431586879874039">هل تريد السماح لهذا الموقع الإلكتروني بالاطّلاع على مفتاح الأمان؟</translation>
@@ -8538,6 +8542,7 @@
 <translation id="741906494724992817">لا يتطلب هذا التطبيق أذونات خاصة.</translation>
 <translation id="7419142833919893307">لم تتم إضافة اسم المستخدم.</translation>
 <translation id="7419565702166471774">استخدام الاتصالات الآمنة دائمًا</translation>
+<translation id="7419819959108735624">‏حدِّد أي محتوى للبحث عنه باستخدام "عدسة Google"</translation>
 <translation id="742130257665691897">تمت إزالة الإشارات المرجعية</translation>
 <translation id="7421925624202799674">عرض م&amp;صدر الصفحة</translation>
 <translation id="7422192691352527311">الإعدادات المفضّلة...</translation>
@@ -10865,6 +10870,7 @@
 <translation id="9102610709270966160">تفعيل الإضافة</translation>
 <translation id="9102864637938129124">يمكن للمواقع الإلكترونية والمعلنين الاطّلاع على أداء إعلاناتهم. هذا الإعداد مفعَّل.</translation>
 <translation id="9103868373786083162">اضغط للرجوع، وقائمة السياقات لمشاهدة السجلّ.</translation>
+<translation id="9106236359747881194">حدِّد نصًا للبحث عنه</translation>
 <translation id="9107096627210171112">ترجمة…</translation>
 <translation id="9108035152087032312">‏تسمية &amp;window...</translation>
 <translation id="9108072915170399168">إعداد استخدام البيانات الحالي هو "بدون إنترنت"</translation>

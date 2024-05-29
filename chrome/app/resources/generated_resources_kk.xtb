@@ -832,6 +832,7 @@
 <translation id="1607139524282324606">Жазбаны өшіру</translation>
 <translation id="1607499585984539560">Пайдаланушы доменмен байланыстырылмаған.</translation>
 <translation id="1608668830839595724">Таңдалған бетбелгілерге арналған басқа әрекеттер</translation>
+<translation id="1608698493373028805">Бұл кеңейтімге жақында қолдау көрсетілмеуі мүмкін</translation>
 <translation id="1610272688494140697">Қолданба параметрлері</translation>
 <translation id="161042844686301425">Көгілдір</translation>
 <translation id="1611432201750675208">Құрылғыңыз құлыпталған</translation>
@@ -2305,6 +2306,8 @@
 <translation id="2666247341166669829">Сол құлақаспаптың батарея деңгейі: <ph name="PERCENTAGE" />%</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" /> ашқан сілтемелерді басқа қолданбалар да аша алатын болып реттелді. <ph name="APP_NAME_2" /> және <ph name="APP_NAME_3" /> қолдау көрсету сілтемелерін аша алмай қалады.</translation>
 <translation id="2667463864537187133">Орфографиялық сөздікті басқару</translation>
+<translation id="2668094785979141847">Google Lens-ден шығу үшін басыңыз.</translation>
+<translation id="2668604389652548400">Оны өшіріңіз немесе <ph name="BEGIN_LINK" />Chrome Web Store-дағы<ph name="END_LINK" /> ұқсас кеңейтімдермен ауыстырыңыз.</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> ашылмады</translation>
 <translation id="2669454659051515572">Осы құрылғыны пайдаланатын кез келген адам жүктеп алынған файлдарды көре алады.</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> қолданбасы Chrome қойындысын бөлісуде.</translation>
@@ -2354,6 +2357,7 @@
 <translation id="2710101514844343743">Пайдалану және диагностика деректері</translation>
 <translation id="271033894570825754">Жаңа</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> құлпы ашылды</translation>
+<translation id="2712141162840347885">Google Lens-бен іздеу үшін кез келген нәрсені таңдаңыз немесе Google Lens-ден шығу үшін Escape пернесін басыңыз.</translation>
 <translation id="2713106313042589954">Камераны өшіру</translation>
 <translation id="2713444072780614174">Ақ</translation>
 <translation id="2714180132046334502">Қараңғы фон</translation>
@@ -2424,6 +2428,7 @@
 <translation id="2749881179542288782">Емлемен грамматиканы тексеру</translation>
 <translation id="2750020734439919571">Chrome қолданбасының басқа параметрлері мен рұқсаттары</translation>
 <translation id="2750602041558385535">Тексерілмеген жүктеп алу блокталды</translation>
+<translation id="2753623023919742414">Іздеу үшін басыңыз.</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" /> аккаунтына сақталған Fast Pair құрылғылары ізделуде</translation>
 <translation id="2754825024506485820">Google Play Store-дан қажетті қолданбаны (өнімділіктен ойын-сауыққа дейінгі) табыңыз. Қолданбаларды кез келген уақытта орната аласыз.</translation>
 <translation id="2755349111255270002">Осы <ph name="DEVICE_TYPE" /> құрылғысын қалпына келтіру</translation>
@@ -2931,6 +2936,7 @@
 <translation id="3132996321662585180">Күнделікті жаңарту</translation>
 <translation id="3133184011320864289">Chrome қойындылар топтарын ұсынып, қойындыларыңызды реттеп отыруы үшін, синхрондауды қосыңыз.</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> экспериментінің күйін таңдаңыз. Эксперименттің сипаттамасы: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
+<translation id="3137969841538672700">Іздеу үшін курсорды жүргізіңіз.</translation>
 <translation id="3139925690611372679">Әдепкі сары түсті аватар</translation>
 <translation id="3141093262818886744">Бәрібір ашу</translation>
 <translation id="3141318088920353606">Айта беріңіз…</translation>
@@ -4072,7 +4078,6 @@
 <translation id="3983586614702900908">белгісіз жеткізушінің құрылғылары</translation>
 <translation id="3983764759749072418">Play Store қолданбалары осы құрылғыға кіре алады.</translation>
 <translation id="3983769721878416534">Басу алдындағы кідіріс</translation>
-<translation id="3983793589497399077">Lens көмегімен іздеу үшін кез келген жерді басыңыз не сүйреңіз.</translation>
 <translation id="3984135167056005094">Электрондық мекенжайды қамтымау</translation>
 <translation id="3984159763196946143">Демо режимі іске қосылмады</translation>
 <translation id="3984431586879874039">Бұл сайтқа қауіпсіздік кілтін көруге рұқсат етілсін бе?</translation>
@@ -8517,6 +8522,7 @@
 <translation id="741906494724992817">Бұл қолданба арнайы рұқсаттарды қажет етпейді.</translation>
 <translation id="7419142833919893307">Пайдаланушы аты қосылмады</translation>
 <translation id="7419565702166471774">Әрдайым қауіпсіз байланысты пайдалану</translation>
+<translation id="7419819959108735624">Google Lens-бен іздеу үшін кез келген нәрсені таңдаңыз.</translation>
 <translation id="742130257665691897">Бетбелгілер өшірілді</translation>
 <translation id="7421925624202799674">&amp;Бет дереккөзін көру</translation>
 <translation id="7422192691352527311">Реттеулер…</translation>
@@ -10838,6 +10844,7 @@
 <translation id="9102610709270966160">Кеңейтімді қосу</translation>
 <translation id="9102864637938129124">Сайттар мен жарнама берушілер жарнамалардың тиімділігін түсіне алады. Бұл параметр қосулы.</translation>
 <translation id="9103868373786083162">Журналды көру үшін, оралу, контекстік мәзір түймесін басыңыз</translation>
+<translation id="9106236359747881194">Іздеу үшін мәтін таңдаңыз.</translation>
 <translation id="9107096627210171112">А&amp;удару...</translation>
 <translation id="9108035152087032312">Терезеге ат қою…</translation>
 <translation id="9108072915170399168">Қазіргі дерек трафигінің параметрі: "Интернетсіз"</translation>

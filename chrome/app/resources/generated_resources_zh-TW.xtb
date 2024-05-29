@@ -1702,6 +1702,7 @@
 <translation id="2234827758954819389">隱私權指南</translation>
 <translation id="2234876718134438132">同步處理和 Google 服務</translation>
 <translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
+<translation id="2236949375853147973">我的活動</translation>
 <translation id="2238379619048995541">頻率狀態資料</translation>
 <translation id="2241053333139545397">讀取及變更你在多個網站上的資料</translation>
 <translation id="2241634353105152135">只有這一次</translation>
@@ -2309,6 +2310,7 @@
 <translation id="2666247341166669829">左側耳機電量為 <ph name="PERCENTAGE" />%。</translation>
 <translation id="2667144577800272420">其他應用程式所設定會開啟的連結與「<ph name="APP_NAME" />」的設定相同，這會導致「<ph name="APP_NAME_2" />」和「<ph name="APP_NAME_3" />」無法開啟支援的連結。</translation>
 <translation id="2667463864537187133">管理拼字檢查</translation>
+<translation id="2668094785979141847">按一下即可退出 Google 智慧鏡頭</translation>
 <translation id="2668604389652548400">請移除這項擴充功能，或前往 <ph name="BEGIN_LINK" />Chrome 線上應用程式商店<ph name="END_LINK" />尋找可替代的類似擴充功能</translation>
 <translation id="2669241540496514785">無法開啟「<ph name="APP_NAME" />」</translation>
 <translation id="2669454659051515572">這部裝置的任何使用者都可以看到已下載的檔案</translation>
@@ -2359,6 +2361,7 @@
 <translation id="2710101514844343743">使用狀況與診斷資料</translation>
 <translation id="271033894570825754">全新</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> 目前未綁定電信業者</translation>
+<translation id="2712141162840347885">選取任何要使用 Google 智慧鏡頭搜尋的內容，按下 Esc 鍵即可退出 Google 智慧鏡頭</translation>
 <translation id="2713106313042589954">關閉攝影機</translation>
 <translation id="2713444072780614174">白色</translation>
 <translation id="2714180132046334502">深色背景</translation>
@@ -2429,6 +2432,7 @@
 <translation id="2749881179542288782">檢查拼字及文法</translation>
 <translation id="2750020734439919571">更多 Chrome 應用程式設定和權限</translation>
 <translation id="2750602041558385535">已封鎖未經驗證的下載內容</translation>
+<translation id="2753623023919742414">按一下即可搜尋</translation>
 <translation id="2754226775788136540">正在尋找已儲存到 <ph name="PRIMARY_EMAIL" /> 的快速配對裝置</translation>
 <translation id="2754825024506485820">Google Play 商店提供各種應用程式，從提升工作效率到生活娛樂都能滿足所需，而且隨時都能安裝。</translation>
 <translation id="2755349111255270002">重設這部 <ph name="DEVICE_TYPE" /></translation>
@@ -2936,6 +2940,7 @@
 <translation id="3132996321662585180">每天更新</translation>
 <translation id="3133184011320864289">開啟同步功能，允許 Chrome 提供分頁群組建議及整理分頁</translation>
 <translation id="3134393957315651797">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態。實驗說明：<ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">拖曳即可搜尋</translation>
 <translation id="3139925690611372679">預設的黃色顯示圖片</translation>
 <translation id="3141093262818886744">仍要開啟</translation>
 <translation id="3141318088920353606">聽取中…</translation>
@@ -4076,7 +4081,6 @@
 <translation id="3983586614702900908">製造商不明的裝置</translation>
 <translation id="3983764759749072418">Play 商店應用程式可以存取這個裝置。</translation>
 <translation id="3983769721878416534">點擊前延遲</translation>
-<translation id="3983793589497399077">在任何位置點選或拖曳，即可使用智慧鏡頭搜尋</translation>
 <translation id="3984135167056005094">不包含電子郵件地址</translation>
 <translation id="3984159763196946143">無法啟動展示模式</translation>
 <translation id="3984431586879874039">要允許這個網站查看你的安全金鑰嗎？</translation>
@@ -8521,6 +8525,7 @@
 <translation id="741906494724992817">這個應用程式不需要任何特殊權限。</translation>
 <translation id="7419142833919893307">未新增使用者名稱</translation>
 <translation id="7419565702166471774">一律使用安全連線</translation>
+<translation id="7419819959108735624">選取要使用 Google 智慧鏡頭搜尋的內容</translation>
 <translation id="742130257665691897">已移除書籤</translation>
 <translation id="7421925624202799674">檢視網頁原始碼(&amp;V)</translation>
 <translation id="7422192691352527311">偏好設定...</translation>
@@ -10844,6 +10849,7 @@
 <translation id="9102610709270966160">啟用擴充功能</translation>
 <translation id="9102864637938129124">網站和廣告主可以瞭解廣告成效。這項設定已開啟。</translation>
 <translation id="9103868373786083162">按下即可返回，內容選單會顯示歷史記錄</translation>
+<translation id="9106236359747881194">選取要搜尋的文字</translation>
 <translation id="9107096627210171112">翻譯(&amp;R)...</translation>
 <translation id="9108035152087032312">命名視窗...(&amp;W)</translation>
 <translation id="9108072915170399168">目前的數據用量設定是不使用網際網路</translation>

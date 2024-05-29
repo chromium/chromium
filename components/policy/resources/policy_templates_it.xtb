@@ -467,6 +467,7 @@ Se impostato su ChiediInUnaScheda, quando l'autenticazione dell'utente scade, ap
       Viene eseguito l'unload della pagina ignorata e le risorse della pagina vengono recuperate completamente. La scheda a cui è associata la pagina rimane nella tabstrip, ma se viene resa visibile viene attivato un ricaricamento completo.
       </translation>
 <translation id="138847842893090358">Indica lo stato di aggiornamento del sistema operativo</translation>
+<translation id="1389138080311956934">Risparmio di memoria massimo.</translation>
 <translation id="1390529781843037070">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti possono stampare con <ph name="CLOUD_PRINT_NAME" /> dalla finestra di dialogo di stampa di <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> può inviare documenti da stampare a <ph name="CLOUD_PRINT_NAME" />. Questo non impedisce agli utenti di inviare processi di stampa su siti web.
 
       Se il criterio viene impostato su Disattivato, gli utenti non possono stampare con <ph name="CLOUD_PRINT_NAME" /> dalla finestra di dialogo di stampa di <ph name="PRODUCT_NAME" />.
@@ -3919,6 +3920,7 @@ Per <ph name="PRODUCT_OS_NAME" />, questo criterio è correlato all'attestazione
 Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4070039109671307724">Varie</translation>
 <translation id="4072225853834793549">Disattiva le scorciatoie di accessibilità nella schermata di accesso</translation>
+<translation id="4074922053013383215">Risparmio di memoria moderato.</translation>
 <translation id="4075675819066819571">Posiziona la barra delle app sul lato sinistro dello schermo</translation>
 <translation id="4079306023113982053">Consente di gestire la disponibilità di <ph name="BOREALIS_NAME" /> per questo utente.
 
@@ -8678,6 +8680,7 @@ Per maggiori informazioni sul criterio <ph name="IEEM_SITELIST_POLICY" /> di Int
       Se il criterio viene impostato su Falso o se non viene configurato, i contenuti <ph name="FLASH_PLUGIN_NAME" /> di altre origini o i contenuti ridotti potrebbero essere bloccati.
 
       Nota: per stabilire quali siti web possono eseguire <ph name="FLASH_PLUGIN_NAME" />, controlla questi criteri: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7801163363326128751">Modifica il risparmio della modalità Risparmio memoria</translation>
 <translation id="7804859754080118507">Segnala gli eventi di intensità del segnale e di connessione di rete sui dispositivi registrati.
 
       Se il criterio viene impostato su Falso o se non viene configurato, le informazioni non vengono segnalate.
@@ -9260,6 +9263,7 @@ Per maggiori informazioni sulle tecnologie precedenti, visita la pagina all'indi
 <translation id="8274926413890711289">Attiva i controlli di reporting granulare</translation>
 <translation id="8275103737670730746">Consenti di chiamare le API del selettore file o della directory senza un gesto precedente dell'utente.</translation>
 <translation id="8278133379873210419">Elimina le finestre di dialogo JavaScript attivate da frame secondari di origine diversa</translation>
+<translation id="8284028944941138279">Risparmio di memoria bilanciato.</translation>
 <translation id="8284296539558710573">Prompt di autenticazione HTTP multiorigine</translation>
 <translation id="8284527236880877730">Se il criterio <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> è impostato su Disattivato, la configurazione del criterio <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> consente di specificare la percentuale di regolazione del ritardo di oscuramento dello schermo quando il dispositivo è in modalità di presentazione. Quando il ritardo di oscuramento dello schermo viene regolato, i ritardi di spegnimento, blocco e inattività dello schermo vengono regolati per mantenere gli stessi distacchi dal ritardo di oscuramento dello schermo impostato in origine.
 
@@ -9934,6 +9938,17 @@ Questo criterio non si applica se la tastiera virtuale viene disattivata (ad ese
 <translation id="8835322836315560274">La configurazione del criterio consente di stabilire il comando da usare per aprire gli URL in un browser alternativo. Per il criterio è possibile impostare i valori <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> oppure un percorso file. Se per questo criterio viene impostato un percorso file, tale file viene usato come eseguibile. Il valore <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> è disponibile soltanto su <ph name="MS_WIN_NAME" />. I valori <ph name="SAFARI_VALUE_PLACEHOLDER" /> e <ph name="EDGE_VALUE_PLACEHOLDER" /> sono disponibili soltanto su <ph name="MS_WIN_NAME" /> e <ph name="MAC_OS_NAME" />.
 
       Se il criterio non viene configurato, viene usato un valore predefinito specifico della piattaforma: <ph name="IE_PRODUCT_NAME" /> per <ph name="MS_WIN_NAME" /> oppure <ph name="SAFARI_PRODUCT_NAME" /> per <ph name="MAC_OS_NAME" />. Su <ph name="LINUX_OS_NAME" /> non è possibile aprire un browser alternativo.</translation>
+<translation id="8836227957461360521">Questo criterio modifica il livello di risparmio del Risparmio memoria.
+
+Questo criterio viene applicato soltanto quando il Risparmio memoria viene attivato tramite le impostazioni o mediante il criterio <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" /> e inciderà sul modo in cui vengono utilizzate le euristiche per stabilire quando eliminare le schede. Ad esempio, ridurre la durata di una scheda inattiva prima di scartarla può far risparmiare memoria, ma significa anche che le schede verranno ricaricate più di frequente, il che può comportare un'esperienza utente scadente e un maggiore traffico di rete.
+
+Se imposti il criterio su 0, il Risparmio memoria offrirà un risparmio di memoria moderato. Le schede diventano inattive dopo un periodo di tempo più lungo
+
+Se imposti il criterio su 1, il Risparmio memoria offrirà un risparmio di memoria bilanciato. Le schede diventano inattive dopo un periodo di tempo ottimale.
+
+Se imposti il criterio su 2, il Risparmio memoria offrirà un risparmio di memoria massimo. Le schede diventano inattive dopo un periodo di tempo più breve.
+
+Se questo criterio non è impostato, l'utente finale può controllare questa impostazione all'indirizzo chrome://settings/performance.</translation>
 <translation id="8836975838488342340">La durata della validità del codice di accesso (in secondi).</translation>
 <translation id="883744045558067826">È possibile utilizzare Chrome Root Store, a seconda del processo di implementazione della funzionalità.</translation>
 <translation id="8837957135252624017">Mantieni aperta almeno una scheda di Chrome</translation>

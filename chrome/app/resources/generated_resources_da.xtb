@@ -839,6 +839,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1607139524282324606">Ryd indtastning</translation>
 <translation id="1607499585984539560">Brugeren er ikke tilknyttet domænet</translation>
 <translation id="1608668830839595724">Flere handlinger for de valgte elementer</translation>
+<translation id="1608698493373028805">Denne udvidelse understøttes muligvis snart ikke længere</translation>
 <translation id="1610272688494140697">Appindstillinger</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Din enhed er låst</translation>
@@ -1714,6 +1715,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2234827758954819389">Privatlivsguide</translation>
 <translation id="2234876718134438132">Synkronisering og Google-tjenester</translation>
 <translation id="2235344399760031203">Tredjepartscookies er blokeret</translation>
+<translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="2238379619048995541">Data for frekvenstilstand</translation>
 <translation id="2241053333139545397">Læse og redigere dine data på en række websites</translation>
 <translation id="2241634353105152135">Kun én gang</translation>
@@ -2324,6 +2326,8 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2666247341166669829">Batteriniveau på <ph name="PERCENTAGE" /> % for venstre.</translation>
 <translation id="2667144577800272420">Andre apps er konfigureret til at åbne de samme links som <ph name="APP_NAME" />. Dette gør, at <ph name="APP_NAME_2" /> og <ph name="APP_NAME_3" /> ikke kan åbne understøttede links.</translation>
 <translation id="2667463864537187133">Administrer stavekontrollen</translation>
+<translation id="2668094785979141847">Klik for at lukke Google Lens</translation>
+<translation id="2668604389652548400">Fjern eller erstat den med lignende udvidelser fra <ph name="BEGIN_LINK" />Chrome Webshop<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> kunne ikke åbnes.</translation>
 <translation id="2669454659051515572">Alle, der bruger denne enhed, kan se downloadede filer</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> deler en Chrome-fane.</translation>
@@ -2373,6 +2377,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2710101514844343743">Brugs- og diagnostikdata</translation>
 <translation id="271033894570825754">Nyt</translation>
 <translation id="2710507903599773521">Din <ph name="DEVICE_TYPE" /> er nu låst op</translation>
+<translation id="2712141162840347885">Vælg det, du vil søge efter med Google Lens, eller tryk på Escape for at lukke Google Lens</translation>
 <translation id="2713106313042589954">Slå kamera fra</translation>
 <translation id="2713444072780614174">Hvid</translation>
 <translation id="2714180132046334502">Mørk baggrund</translation>
@@ -2443,6 +2448,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2749881179542288782">Kontrollér grammatik med stavning</translation>
 <translation id="2750020734439919571">Flere indstillinger og tilladelser for Chrome-appen</translation>
 <translation id="2750602041558385535">En uverificeret download er blokeret</translation>
+<translation id="2753623023919742414">Klik for at søge</translation>
 <translation id="2754226775788136540">Søger efter enheder med Hurtig parring, der er gemt på <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Find de apps, du skal bruge, f.eks. produktivitetsapps eller apps til underholdning, i Google Play Butik. Du kan til enhver tid installere apps.</translation>
 <translation id="2755349111255270002">Nulstil denne <ph name="DEVICE_TYPE" /></translation>
@@ -2950,6 +2956,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3132996321662585180">Opdater dagligt</translation>
 <translation id="3133184011320864289">Aktivér synkronisering for at få Chrome til at foreslå fanegrupper og holde dine faner organiseret</translation>
 <translation id="3134393957315651797">Vælg eksperimenttilstand for eksperimentet <ph name="EXPERIMENT_NAME" />. Beskrivelse af eksperiment: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Træk for at søge</translation>
 <translation id="3139925690611372679">Gul standardavatar</translation>
 <translation id="3141093262818886744">Åbn alligevel</translation>
 <translation id="3141318088920353606">Lytter...</translation>
@@ -4091,7 +4098,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3983586614702900908">enheder fra en ukendt leverandør</translation>
 <translation id="3983764759749072418">Apps i Play Butik har adgang til denne enhed.</translation>
 <translation id="3983769721878416534">Forsinkelse forud for klik</translation>
-<translation id="3983793589497399077">Klik eller træk et vilkårligt sted for at søge med Lens</translation>
 <translation id="3984135167056005094">Angiv ikke mailadresse</translation>
 <translation id="3984159763196946143">Demotilstand kunne ikke startes</translation>
 <translation id="3984431586879874039">Vil du tillade, at dette website ser din sikkerhedsnøgle?</translation>
@@ -8543,6 +8549,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="741906494724992817">Denne app kræver ingen særlige tilladelser.</translation>
 <translation id="7419142833919893307">Brugernavn er ikke tilføjet</translation>
 <translation id="7419565702166471774">Brug altid sikre forbindelser</translation>
+<translation id="7419819959108735624">Vælg det, du vil søge efter med Google Lens</translation>
 <translation id="742130257665691897">Bogmærkerne blev fjernet</translation>
 <translation id="7421925624202799674">&amp;Vis sidens kilde</translation>
 <translation id="7422192691352527311">Indstillinger...</translation>
@@ -10867,6 +10874,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="9102610709270966160">Aktivér udvidelse</translation>
 <translation id="9102864637938129124">Websites og annoncører kan få indblik i, hvordan annoncer klarer sig. Denne indstilling er aktiveret.</translation>
 <translation id="9103868373786083162">Tryk for at gå tilbage til genvejsmenuen for at se historik</translation>
+<translation id="9106236359747881194">Markér den tekst, du vil søge efter</translation>
 <translation id="9107096627210171112">Oversæt…</translation>
 <translation id="9108035152087032312">Navngiv vindue...</translation>
 <translation id="9108072915170399168">Den aktuelle indstilling for dataforbrug er Uden internet</translation>

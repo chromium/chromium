@@ -835,6 +835,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1607139524282324606">Borrar entrada</translation>
 <translation id="1607499585984539560">El usuario no está asociado a un dominio</translation>
 <translation id="1608668830839595724">Más acciones para los elementos seleccionados</translation>
+<translation id="1608698493373028805">Es posible que esta extensión deje de admitirse próximamente</translation>
 <translation id="1610272688494140697">Configuración de la aplicación</translation>
 <translation id="161042844686301425">Cian</translation>
 <translation id="1611432201750675208">Tu dispositivo está bloqueado</translation>
@@ -1701,6 +1702,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2234827758954819389">Guía de privacidad</translation>
 <translation id="2234876718134438132">Sincronización y servicios de Google</translation>
 <translation id="2235344399760031203">Se han bloqueado las cookies de terceros</translation>
+<translation id="2236949375853147973">Mi Actividad</translation>
 <translation id="2238379619048995541">Datos de estado de frecuencia</translation>
 <translation id="2241053333139545397">Leer y modificar tus datos en una serie de sitios web</translation>
 <translation id="2241634353105152135">Solo una vez</translation>
@@ -2309,6 +2311,8 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2666247341166669829">Nivel de batería del auricular izquierdo: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Se han configurado otras aplicaciones para abrir los mismos enlaces que <ph name="APP_NAME" />. Se inhabilitará la apertura de enlaces compatibles desde <ph name="APP_NAME_2" /> y <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Gestionar el corrector ortográfico</translation>
+<translation id="2668094785979141847">Haz clic para salir de Google Lens</translation>
+<translation id="2668604389652548400">Quítala o sustitúyela por extensiones similares de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">No se ha podido abrir el archivo <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Cualquier persona que use este dispositivo puede ver los archivos descargados</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> está compartiendo una pestaña de Chrome.</translation>
@@ -2358,6 +2362,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2710101514844343743">Datos de uso y diagnóstico</translation>
 <translation id="271033894570825754">Nuevo</translation>
 <translation id="2710507903599773521">Tu <ph name="DEVICE_TYPE" /> ahora está desbloqueado</translation>
+<translation id="2712141162840347885">Selecciona cualquier cosa para buscarla con Google Lens o pulsa la tecla Esc para salir de Google Lens</translation>
 <translation id="2713106313042589954">Desactivar cámara</translation>
 <translation id="2713444072780614174">Blanco</translation>
 <translation id="2714180132046334502">Fondo oscuro</translation>
@@ -2428,6 +2433,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2749881179542288782">Comprobar la ortografía y la gramática</translation>
 <translation id="2750020734439919571">Más ajustes y permisos de la aplicación Chrome</translation>
 <translation id="2750602041558385535">Descarga no verificada bloqueada</translation>
+<translation id="2753623023919742414">Haz clic para buscar</translation>
 <translation id="2754226775788136540">Buscando dispositivos de Emparejamiento rápido guardados en <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Encuentra las aplicaciones que necesitas, como de productividad o de entretenimiento, en Google Play Store. Puedes descargarlas en cualquier momento.</translation>
 <translation id="2755349111255270002">Restablecer <ph name="DEVICE_TYPE" /></translation>
@@ -2934,6 +2940,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3132996321662585180">Actualizar todos los días</translation>
 <translation id="3133184011320864289">Activa la sincronización para que Chrome pueda sugerir grupos de pestañas y mantener tus pestañas organizadas</translation>
 <translation id="3134393957315651797">Selecciona el estado del experimento <ph name="EXPERIMENT_NAME" />. Descripción del experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Arrastra para buscar</translation>
 <translation id="3139925690611372679">Avatar amarillo predeterminado</translation>
 <translation id="3141093262818886744">Abrir de todos modos</translation>
 <translation id="3141318088920353606">Escuchando...</translation>
@@ -4074,7 +4081,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="3983586614702900908">dispositivos de un proveedor desconocido</translation>
 <translation id="3983764759749072418">Las aplicaciones de Play Store tienen acceso a este dispositivo.</translation>
 <translation id="3983769721878416534">Retraso antes del clic</translation>
-<translation id="3983793589497399077">Haz clic o arrastra el dedo para buscar con Lens</translation>
 <translation id="3984135167056005094">No incluir dirección de correo electrónico</translation>
 <translation id="3984159763196946143">No se ha podido iniciar el modo Demo</translation>
 <translation id="3984431586879874039">¿Permitir que este sitio web vea tu llave de seguridad?</translation>
@@ -8523,6 +8529,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="741906494724992817">Esta aplicación no requiere permisos especiales.</translation>
 <translation id="7419142833919893307">No hay nombres de usuario añadidos</translation>
 <translation id="7419565702166471774">Usar siempre conexiones seguras</translation>
+<translation id="7419819959108735624">Selecciona lo que quieras para buscarlo con Google Lens</translation>
 <translation id="742130257665691897">Se han eliminado marcadores</translation>
 <translation id="7421925624202799674">&amp;Ver código fuente de la página</translation>
 <translation id="7422192691352527311">Preferencias...</translation>
@@ -10846,6 +10853,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="9102610709270966160">Habilitar extensión</translation>
 <translation id="9102864637938129124">Los sitios y los anunciantes pueden comprender el rendimiento de los anuncios. Esta opción está activada.</translation>
 <translation id="9103868373786083162">Pulsa para ir hacia atrás y acceder al menú contextual para ver el historial</translation>
+<translation id="9106236359747881194">Seleccionar texto para buscarlo</translation>
 <translation id="9107096627210171112">T&amp;raducir...</translation>
 <translation id="9108035152087032312">Asignar nombre a &amp;ventana...</translation>
 <translation id="9108072915170399168">La configuración actual de uso de datos es Sin Internet</translation>

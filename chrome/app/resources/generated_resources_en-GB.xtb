@@ -1714,6 +1714,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2234827758954819389">Privacy guide</translation>
 <translation id="2234876718134438132">Sync and Google services</translation>
 <translation id="2235344399760031203">Third-party cookies are blocked</translation>
+<translation id="2236949375853147973">My Activity</translation>
 <translation id="2238379619048995541">Frequency State Data</translation>
 <translation id="2241053333139545397">Read and change your data on a number of websites</translation>
 <translation id="2241634353105152135">Just once</translation>
@@ -2324,6 +2325,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2666247341166669829">Left battery level <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Other apps are set to open the same links as <ph name="APP_NAME" />. This will disable <ph name="APP_NAME_2" /> and <ph name="APP_NAME_3" /> from opening supported links.</translation>
 <translation id="2667463864537187133">Manage spell check</translation>
+<translation id="2668094785979141847">Click to exit Google Lens</translation>
 <translation id="2668604389652548400">Remove or replace it with similar extensions from the <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Couldn't open <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Anyone using this device can see downloaded files</translation>
@@ -2374,6 +2376,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2710101514844343743">Usage and diagnostic data</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2710507903599773521">Your <ph name="DEVICE_TYPE" /> is now unlocked</translation>
+<translation id="2712141162840347885">Select anything to search with Google Lens or press escape to exit Google Lens</translation>
 <translation id="2713106313042589954">Turn off camera</translation>
 <translation id="2713444072780614174">White</translation>
 <translation id="2714180132046334502">Dark background</translation>
@@ -2444,6 +2447,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2749881179542288782">Check Grammar With Spelling</translation>
 <translation id="2750020734439919571">More Chrome app settings and permissions</translation>
 <translation id="2750602041558385535">Unverified download blocked</translation>
+<translation id="2753623023919742414">Click to search</translation>
 <translation id="2754226775788136540">Looking for Fast Pair devices saved to <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Find the apps that you need, from productivity to entertainment, on the Google Play Store. You can install apps anytime.</translation>
 <translation id="2755349111255270002">Reset this <ph name="DEVICE_TYPE" /></translation>
@@ -2951,6 +2955,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3132996321662585180">Refresh daily</translation>
 <translation id="3133184011320864289">Turn on sync to let Chrome suggest tab groups and keep your tabs organised</translation>
 <translation id="3134393957315651797">Select experiment state for the <ph name="EXPERIMENT_NAME" /> experiment. Experiment description: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Drag to search</translation>
 <translation id="3139925690611372679">Default yellow avatar</translation>
 <translation id="3141093262818886744">Open anyway</translation>
 <translation id="3141318088920353606">Listening...</translation>
@@ -4092,7 +4097,6 @@ This can include information about installed software, files, your browser and t
 <translation id="3983586614702900908">devices from an unknown vendor</translation>
 <translation id="3983764759749072418">Play Store applications have access to this device.</translation>
 <translation id="3983769721878416534">Delay before click</translation>
-<translation id="3983793589497399077">Click or drag anywhere to search with Lens</translation>
 <translation id="3984135167056005094">Do not include email address</translation>
 <translation id="3984159763196946143">Couldn't start demo mode</translation>
 <translation id="3984431586879874039">Allow this site to see your security key?</translation>
@@ -8542,6 +8546,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="741906494724992817">This app requires no special permissions.</translation>
 <translation id="7419142833919893307">No username added</translation>
 <translation id="7419565702166471774">Always use secure connections</translation>
+<translation id="7419819959108735624">Select anything to search with Google Lens</translation>
 <translation id="742130257665691897">Bookmarks removed</translation>
 <translation id="7421925624202799674">&amp;View Page Source</translation>
 <translation id="7422192691352527311">Preferences...</translation>
@@ -10865,6 +10870,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9102610709270966160">Enable Extension</translation>
 <translation id="9102864637938129124">Sites and advertisers can understand how ads perform. This setting is on.</translation>
 <translation id="9103868373786083162">Press to go back, context menu to see history</translation>
+<translation id="9106236359747881194">Select text to search</translation>
 <translation id="9107096627210171112">Translate...</translation>
 <translation id="9108035152087032312">Name &amp;window…</translation>
 <translation id="9108072915170399168">Current data usage setting is Without Internet</translation>

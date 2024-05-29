@@ -1713,6 +1713,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2234827758954819389">Yksityisyysopas</translation>
 <translation id="2234876718134438132">Synkronointi ja Googlen palvelut</translation>
 <translation id="2235344399760031203">Kolmannen osapuolen evästeet on estetty</translation>
+<translation id="2236949375853147973">Omat tapahtumat</translation>
 <translation id="2238379619048995541">Kellotaajuuden tilan tiedot</translation>
 <translation id="2241053333139545397">lukea ja muuttaa tietojasi useilla eri sivustoilla</translation>
 <translation id="2241634353105152135">Vain kerran</translation>
@@ -2323,6 +2324,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2666247341166669829">Vasemmanpuoleisen akun varaus <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Muut sovellukset on asetettu avaamaan samat linkit kuin <ph name="APP_NAME" />. Muutoksen jälkeen <ph name="APP_NAME_2" /> ja <ph name="APP_NAME_3" /> eivät enää voi avata tuettuja linkkejä.</translation>
 <translation id="2667463864537187133">Hallitse oikeinkirjoituksen tarkistusta</translation>
+<translation id="2668094785979141847">Poistu Google Lensistä klikkaamalla</translation>
 <translation id="2668604389652548400">Poista se tai korvaa se samanlaisilla laajennuksilla <ph name="BEGIN_LINK" />Chrome Web Storesta<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" />:n avaus ei onnistunut</translation>
 <translation id="2669454659051515572">Kaikki tämän laitteen käyttäjät voivat nähdä ladatut tiedostot</translation>
@@ -2373,6 +2375,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2710101514844343743">Käyttö- ja diagnostiikkadata</translation>
 <translation id="271033894570825754">Uusi</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> on nyt avattu</translation>
+<translation id="2712141162840347885">Valitse, mitä haluat hakea Google Lensilla, tai poistu Google Lensista painamalla Escape</translation>
 <translation id="2713106313042589954">Sammuta kamera</translation>
 <translation id="2713444072780614174">Valkoinen</translation>
 <translation id="2714180132046334502">Tumma tausta</translation>
@@ -2443,6 +2446,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2749881179542288782">Tarkista kielioppi oikeinkirjoituksen yhteydessä</translation>
 <translation id="2750020734439919571">Lisää Chrome-sovelluksen asetuksia ja lupia</translation>
 <translation id="2750602041558385535">Vahvistamaton lataus estetty</translation>
+<translation id="2753623023919742414">Hae klikkaamalla</translation>
 <translation id="2754226775788136540">Etsitään tilille <ph name="PRIMARY_EMAIL" /> tallennettuja pikaparilaitteita</translation>
 <translation id="2754825024506485820">Löydä tarvitsemasi sovellukset, esim. tuottavuus- ja viihdesovellukset, Google Play Kaupasta. Voit asentaa sovelluksia milloin tahansa.</translation>
 <translation id="2755349111255270002">Nollaa tämä <ph name="DEVICE_TYPE" /></translation>
@@ -2950,6 +2954,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3132996321662585180">Päivitä päivittäin</translation>
 <translation id="3133184011320864289">Laita synkronointi päälle, niin Chrome voi ehdottaa välilehtiryhmiä ja pitää välilehdet järjestyksessä</translation>
 <translation id="3134393957315651797">Valitse kokeilutila tälle kokeilulle: <ph name="EXPERIMENT_NAME" />. Kokeilun kuvaus: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Hae vetämällä</translation>
 <translation id="3139925690611372679">Keltainen oletusavatar</translation>
 <translation id="3141093262818886744">Avaa silti</translation>
 <translation id="3141318088920353606">Kuunnellaan…</translation>
@@ -4088,7 +4093,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="3983586614702900908">tuntemattoman myyjän laitteet</translation>
 <translation id="3983764759749072418">Play Kaupan sovellukset voivat käyttää tätä laitetta.</translation>
 <translation id="3983769721878416534">Viive ennen klikkausta</translation>
-<translation id="3983793589497399077">Hae Lensillä klikkaamalla tai vetämällä</translation>
 <translation id="3984135167056005094">Älä lisää sähköpostiosoitteita</translation>
 <translation id="3984159763196946143">Demotilan käynnistys epäonnistui</translation>
 <translation id="3984431586879874039">Saako tämä sivusto nähdä suojausavaimesi?</translation>
@@ -8538,6 +8542,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="741906494724992817">Tämä sovellus ei tarvitse erityisiä käyttöoikeuksia.</translation>
 <translation id="7419142833919893307">Käyttäjätunnusta ei vielä lisätty</translation>
 <translation id="7419565702166471774">Käytä aina suojattuja yhteyksiä</translation>
+<translation id="7419819959108735624">Valitse, mitä haluat hakea Google Lensilla</translation>
 <translation id="742130257665691897">Kirjanmerkit poistettu</translation>
 <translation id="7421925624202799674">&amp;Näytä sivun lähdekoodi</translation>
 <translation id="7422192691352527311">Asetukset...</translation>
@@ -10860,6 +10865,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="9102610709270966160">Ota laajennus käyttöön</translation>
 <translation id="9102864637938129124">Sivustot ja mainostajat saavat tietoa mainostuloksista. Tämä asetus on päällä.</translation>
 <translation id="9103868373786083162">Siirry taaksepäin painamalla tai avaa historia kontekstivalikon kautta.</translation>
+<translation id="9106236359747881194">Valitse haettavaa tekstiä</translation>
 <translation id="9107096627210171112">K&amp;äännä…</translation>
 <translation id="9108035152087032312">Nimeä &amp;ikkuna…</translation>
 <translation id="9108072915170399168">Nykyinen datankäyttöasetus on Ilman internetyhteyttä</translation>

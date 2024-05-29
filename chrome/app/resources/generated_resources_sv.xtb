@@ -838,6 +838,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1607139524282324606">Rensa post</translation>
 <translation id="1607499585984539560">Användaren saknar koppling till domänen</translation>
 <translation id="1608668830839595724">Fler åtgärder för valda objekt</translation>
+<translation id="1608698493373028805">Det här tillägget stöds snart kanske inte längre</translation>
 <translation id="1610272688494140697">Appinställningar</translation>
 <translation id="161042844686301425">Cyanblå</translation>
 <translation id="1611432201750675208">Enheten är låst</translation>
@@ -1188,7 +1189,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1850145825777333687">Användaruppgifter för enheten</translation>
 <translation id="1850508293116537636">Rotera &amp;medurs</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Innan du registrerar dig måste du rensa TPM så att <ph name="DEVICE_OS" /> kan ta ägarskap över enheten.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Du kan även stänga av TPM-enheten helt. Din data lagras fortfarande säkert med mjukvarukryptering, men vissa säkerhetsfunktioner, till exempel maskinvarustödda certifikat, inaktiveras.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH2" />Du kan även stänga av TPM-enheten helt. Din data lagras fortfarande säkert med mjukvarukryptering, men vissa säkerhetsfunktioner, till exempel hårdvarustödda certifikat, inaktiveras.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Du kan ändra TPM-inställningarna genom att starta om och öppna systeminställningarna för BIOS/UEFI. Stegen varierar beroende på enhetsmodell. Om du vill läsa mer kan du öppna dokumentationen för <ph name="DEVICE_OS" /> på en separat enhet innan du startar om: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852799913675865625">Ett fel uppstod när följande fil skulle läsas: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">Fortsätt där du slutade. Du kan ställa in att appar alltid ska återställas vid start eller inaktivera återställning i inställningarna.</translation>
@@ -2323,6 +2324,8 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2666247341166669829">Vänster batterinivå är <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Andra appar är inställda på att öppna samma länkar som <ph name="APP_NAME" />. Detta inaktiverar att <ph name="APP_NAME_2" /> och <ph name="APP_NAME_3" /> öppnar länkar som stöds.</translation>
 <translation id="2667463864537187133">Hantera stavningskontrollen</translation>
+<translation id="2668094785979141847">Klicka för att avsluta Google Lens</translation>
+<translation id="2668604389652548400">Ta bort eller ersätt det med liknande tillägg från <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Det gick inte att öppna <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Alla som använder enheten kan se nedladdade filer</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> delar en Chrome-flik.</translation>
@@ -2372,6 +2375,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2710101514844343743">Diagnostik- och användningsdata</translation>
 <translation id="271033894570825754">Ny</translation>
 <translation id="2710507903599773521">Din <ph name="DEVICE_TYPE" /> är nu upplåst</translation>
+<translation id="2712141162840347885">Välj vad du vill söka efter med Google Lens eller tryck på Escape för att avsluta Google Lens</translation>
 <translation id="2713106313042589954">Stäng av kameran</translation>
 <translation id="2713444072780614174">Vit</translation>
 <translation id="2714180132046334502">Mörk bakgrund</translation>
@@ -2442,6 +2446,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2749881179542288782">Kontrollera grammatik och stavning</translation>
 <translation id="2750020734439919571">Fler inställningar och behörigheter för Chrome-appen</translation>
 <translation id="2750602041558385535">Overifierad nedladdning har blockerats</translation>
+<translation id="2753623023919742414">Klicka för att söka</translation>
 <translation id="2754226775788136540">Söker efter enheter med snabb parkoppling som sparats i <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Google Play Butik har alla appar du behöver – från produktivitet till underhållning. Du kan installera appar när som helst.</translation>
 <translation id="2755349111255270002">Återställ denna <ph name="DEVICE_TYPE" /></translation>
@@ -2949,6 +2954,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3132996321662585180">Uppdatera dagligen</translation>
 <translation id="3133184011320864289">Aktivera synkronisering om du vill låta Chrome föreslå flikgrupper och organisera dina flikar</translation>
 <translation id="3134393957315651797">Välj experimentstatus för experimentet <ph name="EXPERIMENT_NAME" />. Beskrivning av experimentet: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Dra för att söka</translation>
 <translation id="3139925690611372679">Gul standardavatar</translation>
 <translation id="3141093262818886744">Öppna ändå</translation>
 <translation id="3141318088920353606">Lyssnar …</translation>
@@ -4090,7 +4096,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="3983586614702900908">enheter från en okänd leverantör</translation>
 <translation id="3983764759749072418">Appar i Play Butik har åtkomst till enheten.</translation>
 <translation id="3983769721878416534">Fördröjning före klick</translation>
-<translation id="3983793589497399077">Klicka eller dra var som helst för att söka med Lens</translation>
 <translation id="3984135167056005094">Ange inga e-postadresser</translation>
 <translation id="3984159763196946143">Det gick inte att starta demoläget</translation>
 <translation id="3984431586879874039">Vill du tillåta att webbplatsen ser din säkerhetsnyckel?</translation>
@@ -6359,7 +6364,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5739458112391494395">Mycket stor</translation>
 <translation id="5740126560802162366">Webbplatser kan spara data på enheten</translation>
 <translation id="5740328398383587084">Närdelning</translation>
-<translation id="5740709157181662145">Maskinvarustöd och stabilitet för <ph name="DEVICE_OS" /></translation>
+<translation id="5740709157181662145">Hårdvarustöd och stabilitet för <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Skärmspegling</translation>
 <translation id="574209121243317957">Ton</translation>
 <translation id="5742787970423162234">Paketerade webbappar med förbättrade funktioner. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -8540,6 +8545,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="741906494724992817">Appen kräver inga särskilda behörigheter.</translation>
 <translation id="7419142833919893307">Inget användarnamn har lagts till</translation>
 <translation id="7419565702166471774">Använd alltid en säker anslutning</translation>
+<translation id="7419819959108735624">Välj vad du vill söka efter med Google Lens</translation>
 <translation id="742130257665691897">Bokmärkena har tagits bort</translation>
 <translation id="7421925624202799674">Visa &amp;sidkälla</translation>
 <translation id="7422192691352527311">Inställningar...</translation>
@@ -10863,6 +10869,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="9102610709270966160">Aktivera tillägget</translation>
 <translation id="9102864637938129124">Webbplatser och annonsörer kan mäta annonsernas resultat. Inställningen är aktiverad.</translation>
 <translation id="9103868373786083162">Tryck här om du vill återgå till föregående, visa historiken med snabbmenyn</translation>
+<translation id="9106236359747881194">Markera text för att söka</translation>
 <translation id="9107096627210171112">Ö&amp;versätt …</translation>
 <translation id="9108035152087032312">Namnge fönstret …</translation>
 <translation id="9108072915170399168">Den aktuella inställningen för dataanvändning är Utan internet</translation>

@@ -465,6 +465,7 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
       系统会卸载已舍弃的页面并完全回收其资源。与该页面关联的标签页会保留在标签栏中，但切换到它会触发完全重新加载。
       </translation>
 <translation id="138847842893090358">报告操作系统更新状态</translation>
+<translation id="1389138080311956934">尽可能节省内存。</translation>
 <translation id="1390529781843037070">如果此政策已启用或未设置，用户便可通过 <ph name="PRODUCT_NAME" /> 的打印对话框使用 <ph name="CLOUD_PRINT_NAME" />进行打印<ph name="PRODUCT_NAME" /> 可以将文档提交到 <ph name="CLOUD_PRINT_NAME" />进行打印。这不会妨碍用户在网站上提交打印任务。
 
       如果此政策已停用，用户将无法通过 <ph name="PRODUCT_NAME" /> 的打印对话框使用 <ph name="CLOUD_PRINT_NAME" />进行打印。
@@ -3865,6 +3866,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 如需详细了解有效<ph name="URL_LABEL" />格式，请访问 https://support.google.com/chrome/a?p=url_blocklist_filter_format。</translation>
 <translation id="4070039109671307724">其他</translation>
 <translation id="4072225853834793549">为登录屏幕停用无障碍快捷方式</translation>
+<translation id="4074922053013383215">适中节省内存。</translation>
 <translation id="4075675819066819571">将文件架放置到屏幕左侧</translation>
 <translation id="4079306023113982053">控制该用户能否使用 <ph name="BOREALIS_NAME" />。
 
@@ -8539,6 +8541,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策设为 False 或未设置，系统可能会屏蔽其他来源的或不重要的 <ph name="FLASH_PLUGIN_NAME" /> 内容。
 
       注意：如需控制哪些网站可以运行 <ph name="FLASH_PLUGIN_NAME" />，请参阅 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />、<ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> 和 <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策。</translation>
+<translation id="7801163363326128751">更改省内存模式的节省量</translation>
 <translation id="7804859754080118507">报告已注册的设备上的网络连接和信号强度事件。
 
       如果此政策设为 false 或未设置，系统不会报告这些信息。
@@ -9112,6 +9115,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8274926413890711289">启用精细报告控件</translation>
 <translation id="8275103737670730746">允许在不使用以往用户手势的情况下调用文件或目录选择器 API</translation>
 <translation id="8278133379873210419">禁止显示从其他来源的子框架触发的 JavaScript 对话框</translation>
+<translation id="8284028944941138279">均衡节省内存。</translation>
 <translation id="8284296539558710573">跨域 HTTP 身份验证提示</translation>
 <translation id="8284527236880877730">如果 <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> 已停用，您可以通过设置 <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> 来指定：当设备处于演示模式时，系统应该对屏幕变暗延迟时间采取的调整幅度（百分比）。调整屏幕变暗延迟时间时，系统会随之调整屏幕关闭延迟时间、屏幕锁定延迟时间和闲置延迟时间，以使它们保持在原有设置下与屏幕变暗延迟时间的间隔。
 
@@ -9770,6 +9774,17 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8835322836315560274">通过设置此政策，您可以控制应使用哪个命令在备用浏览器中打开网址。此政策可以设为下列任一值：<ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />、<ph name="FIREFOX_VALUE_PLACEHOLDER" />、<ph name="SAFARI_VALUE_PLACEHOLDER" />、<ph name="OPERA_VALUE_PLACEHOLDER" />、<ph name="EDGE_VALUE_PLACEHOLDER" /> 或文件路径。如果此政策设为文件路径，系统会将相应文件用作可执行文件。<ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> 仅适用于 <ph name="MS_WIN_NAME" />。<ph name="SAFARI_VALUE_PLACEHOLDER" /> 和 <ph name="EDGE_VALUE_PLACEHOLDER" /> 仅适用于 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" />。
 
       如果您未设置此政策，系统会使用相应的平台专用默认浏览器：在 <ph name="MS_WIN_NAME" /> 上使用 <ph name="IE_PRODUCT_NAME" />，在 <ph name="MAC_OS_NAME" /> 上使用 <ph name="SAFARI_PRODUCT_NAME" />。在 <ph name="LINUX_OS_NAME" /> 上，无法启动备用浏览器。</translation>
+<translation id="8836227957461360521">此政策会更改省内存模式的节省级别。
+
+此政策仅在通过设置或 <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" /> 政策启用省内存模式后才会生效，并且会影响系统如何使用启发法来确定何时舍弃标签页。例如，在舍弃之前缩短非活动标签页的生命周期可以节省内存，但这也意味着标签页会更频繁地重新加载，从而导致用户体验不佳并消耗更多网络流量。
+
+如果将此政策设为 0，省内存模式将适中地节省内存。标签页会在较长的一段时间后变为非活跃状态
+
+如果将此政策设为 1，省内存模式将均衡地节省内存。标签页会在最适宜的一段时间后变为非活跃状态。
+
+如果将此政策设为 2，省内存模式将尽可能节省内存。标签页会在更短的一段时间后变为非活跃状态。
+
+如果此政策未设置，最终用户可在 chrome://settings/performance 上控制这项设置。</translation>
 <translation id="8836975838488342340">访问代码的有效时长（以秒为单位）。</translation>
 <translation id="883744045558067826">可能会使用 Chrome 根存储区，具体取决于功能启动流程。</translation>
 <translation id="8837957135252624017">保留至少一个打开的 Chrome 标签页</translation>

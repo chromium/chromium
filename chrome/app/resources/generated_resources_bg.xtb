@@ -835,6 +835,7 @@
 <translation id="1607139524282324606">Изчистване на записа</translation>
 <translation id="1607499585984539560">Потребителят не е свързан с домейна</translation>
 <translation id="1608668830839595724">Още действия за избраните елементи</translation>
+<translation id="1608698493373028805">Възможно е това разширение скоро да спре да се поддържа</translation>
 <translation id="1610272688494140697">Настройки за приложението</translation>
 <translation id="161042844686301425">синьозелено</translation>
 <translation id="1611432201750675208">Устройството ви е заключено</translation>
@@ -1709,6 +1710,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2234827758954819389">Ръководство за поверителност</translation>
 <translation id="2234876718134438132">Синхронизиране и услуги на Google</translation>
 <translation id="2235344399760031203">„Бисквитките“ на трети страни са блокирани</translation>
+<translation id="2236949375853147973">Моята активност</translation>
 <translation id="2238379619048995541">Данни за състоянието на активност</translation>
 <translation id="2241053333139545397">Четене и промяна на данните ви в няколко уебсайта.</translation>
 <translation id="2241634353105152135">Само веднъж</translation>
@@ -2319,6 +2321,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2666247341166669829">Нивото на батерията на лявата слушалка е <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">За другите приложения е зададено да отварят същите връзки като <ph name="APP_NAME" />. Това действие ще деактивира отварянето на поддържаните връзки от <ph name="APP_NAME_2" /> и <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Управление на проверката на правописа</translation>
+<translation id="2668094785979141847">Кликнете, за да излезете от Google Обектив</translation>
+<translation id="2668604389652548400">Премахнете го или го заменете с подобни разширения от <ph name="BEGIN_LINK" />уеб магазина на Chrome<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Отварянето на <ph name="APP_NAME" /> не бе успешно</translation>
 <translation id="2669454659051515572">Всеки, който използва това устройство, може да преглежда изтеглените файлове</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> споделя раздел в Chrome.</translation>
@@ -2368,6 +2372,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2710101514844343743">Данни за употребата и диагностиката</translation>
 <translation id="271033894570825754">Създаване</translation>
 <translation id="2710507903599773521">Устройството ви <ph name="DEVICE_TYPE" /> вече е отключено</translation>
+<translation id="2712141162840347885">Изберете каквото и да е, за да търсите с Google Обектив, или натиснете Escape за изход</translation>
 <translation id="2713106313042589954">Изключване на камерата</translation>
 <translation id="2713444072780614174">бяло</translation>
 <translation id="2714180132046334502">Тъмен фон</translation>
@@ -2438,6 +2443,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2749881179542288782">Проверка на граматиката заедно с правописа</translation>
 <translation id="2750020734439919571">Още настройки и разрешения за приложението Chrome</translation>
 <translation id="2750602041558385535">Непотвърденото изтегляне е блокирано</translation>
+<translation id="2753623023919742414">Кликнете, за да търсите</translation>
 <translation id="2754226775788136540">Търсят се устройства за бързо сдвояване, запазени в(ъв) <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">От приложения за продуктивност до такива за развлечение – намерете тези, от които имате нужда, в Google Play Магазин. Можете да инсталирате приложения по всяко време.</translation>
 <translation id="2755349111255270002">Нулирайте настройките на <ph name="DEVICE_TYPE" /></translation>
@@ -2945,6 +2951,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3132996321662585180">Ежедневно опресняване</translation>
 <translation id="3133184011320864289">Включете синхронизирането, за да позволите на Chrome да предлага групи раздели и да поддържа разделите ви организирани</translation>
 <translation id="3134393957315651797">Изберете състояние за експеримента „<ph name="EXPERIMENT_NAME" />“. Описание на експеримента: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Плъзнете, за да търсите</translation>
 <translation id="3139925690611372679">Стандартен жълт аватар</translation>
 <translation id="3141093262818886744">Отваряне въпреки това</translation>
 <translation id="3141318088920353606">Слушаме ви...</translation>
@@ -4087,7 +4094,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3983586614702900908">устройства от неизвестен доставчик</translation>
 <translation id="3983764759749072418">Приложенията от Google Play Магазин имат достъп до това устройство.</translation>
 <translation id="3983769721878416534">Забавяне преди кликване</translation>
-<translation id="3983793589497399077">Кликнете или плъзнете на произволно място, за да търсите с Обектив</translation>
 <translation id="3984135167056005094">Без включване на имейл адреса</translation>
 <translation id="3984159763196946143">Демонстрационният режим не можа да стартира</translation>
 <translation id="3984431586879874039">Да се разреши ли на сайта достъп до данни за ключа ви за сигурност?</translation>
@@ -8538,6 +8544,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="741906494724992817">Това приложение не изисква специални разрешения.</translation>
 <translation id="7419142833919893307">Няма добавено потребителско име</translation>
 <translation id="7419565702166471774">Винаги да се използват сигурни връзки</translation>
+<translation id="7419819959108735624">Изберете каквото и да е, за да търсите с Google Обектив</translation>
 <translation id="742130257665691897">Отметките бяха премахнати</translation>
 <translation id="7421925624202799674">&amp;Преглед на изходния код на страницата</translation>
 <translation id="7422192691352527311">Предпочитания...</translation>
@@ -10861,6 +10868,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9102610709270966160">Активиране на разширението</translation>
 <translation id="9102864637938129124">Сайтовете и рекламодателите могат да разберат ефективността на рекламите. Тази настройка е включена.</translation>
 <translation id="9103868373786083162">Натиснете, за да се върнете назад. Използвайте контекстното меню, за да видите историята</translation>
+<translation id="9106236359747881194">Избиране на текст за търсене</translation>
 <translation id="9107096627210171112">&amp;Превод...</translation>
 <translation id="9108035152087032312">Наименуване на &amp;прозореца...</translation>
 <translation id="9108072915170399168">Текущата настройка за преноса на данни е „Без интернет“</translation>

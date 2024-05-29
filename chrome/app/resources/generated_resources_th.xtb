@@ -1702,6 +1702,7 @@
 <translation id="2234827758954819389">คู่มือความเป็นส่วนตัว</translation>
 <translation id="2234876718134438132">การซิงค์และบริการของ Google</translation>
 <translation id="2235344399760031203">บล็อกคุกกี้ของบุคคลที่สามอยู่</translation>
+<translation id="2236949375853147973">กิจกรรมของฉัน</translation>
 <translation id="2238379619048995541">ข้อมูลสถานะความถี่</translation>
 <translation id="2241053333139545397">อ่านและเปลี่ยนแปลงข้อมูลของคุณในหลายเว็บไซต์</translation>
 <translation id="2241634353105152135">เพียงครั้งเดียว</translation>
@@ -2309,6 +2310,7 @@
 <translation id="2666247341166669829">ระดับแบตเตอรี่ข้างซ้าย <ph name="PERCENTAGE" />%</translation>
 <translation id="2667144577800272420">มีแอปอื่นได้รับการตั้งค่าให้เปิดลิงก์เดียวกับ <ph name="APP_NAME" /> การดำเนินการนี้จะทำให้ <ph name="APP_NAME_2" /> และ <ph name="APP_NAME_3" /> ไม่สามารถเปิดลิงก์ที่รองรับ</translation>
 <translation id="2667463864537187133">จัดการการตรวจตัวสะกด</translation>
+<translation id="2668094785979141847">คลิกเพื่อออกจาก Google Lens</translation>
 <translation id="2668604389652548400">นำออกหรือแทนที่ด้วยส่วนขยายที่คล้ายกันจาก <ph name="BEGIN_LINK" />Chrome เว็บสโตร์<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">เปิด <ph name="APP_NAME" /> ไม่ได้</translation>
 <translation id="2669454659051515572">ใครก็ตามที่ใช้อุปกรณ์นี้จะเห็นไฟล์ที่ดาวน์โหลด</translation>
@@ -2359,6 +2361,7 @@
 <translation id="2710101514844343743">ข้อมูลการใช้งานและการวินิจฉัย</translation>
 <translation id="271033894570825754">ใหม่</translation>
 <translation id="2710507903599773521">ปลดล็อก <ph name="DEVICE_TYPE" /> ของคุณแล้ว</translation>
+<translation id="2712141162840347885">เลือกอะไรก็ได้เพื่อค้นหาด้วย Google Lens หรือกด Escape เพื่อออกจาก Google Lens</translation>
 <translation id="2713106313042589954">ปิดกล้อง</translation>
 <translation id="2713444072780614174">สีขาว</translation>
 <translation id="2714180132046334502">พื้นหลังสีเข้ม</translation>
@@ -2429,6 +2432,7 @@
 <translation id="2749881179542288782">ตรวจสอบไวยากรณ์และตัวสะกด</translation>
 <translation id="2750020734439919571">การตั้งค่าและสิทธิ์เพิ่มเติมสำหรับแอป Chrome</translation>
 <translation id="2750602041558385535">บล็อกการดาวน์โหลดที่ไม่ได้รับการยืนยันแล้ว</translation>
+<translation id="2753623023919742414">คลิกเพื่อค้นหา</translation>
 <translation id="2754226775788136540">กำลังค้นหาอุปกรณ์จับคู่ด่วนที่บันทึกไว้ใน <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">ค้นหาแอปที่ต้องการใน Google Play Store ไม่ว่าจะเป็นแอปเพื่อประสิทธิภาพการทำงานหรือความบันเทิง และติดตั้งแอปได้ทุกเมื่อ</translation>
 <translation id="2755349111255270002">รีเซ็ต <ph name="DEVICE_TYPE" /> เครื่องนี้</translation>
@@ -2936,6 +2940,7 @@
 <translation id="3132996321662585180">รีเฟรชทุกวัน</translation>
 <translation id="3133184011320864289">เปิดการซิงค์เพื่อให้ Chrome แนะนำกลุ่มแท็บและจัดระเบียบแท็บ</translation>
 <translation id="3134393957315651797">เลือกสถานะการทดสอบสำหรับการทดสอบ <ph name="EXPERIMENT_NAME" /> คำอธิบายการทดสอบ: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">ลากเพื่อค้นหา</translation>
 <translation id="3139925690611372679">รูปโปรไฟล์เริ่มต้นสีเหลือง</translation>
 <translation id="3141093262818886744">เปิดต่อไป</translation>
 <translation id="3141318088920353606">กำลังฟัง...</translation>
@@ -4077,7 +4082,6 @@
 <translation id="3983586614702900908">อุปกรณ์จากผู้ขายที่ไม่รู้จัก</translation>
 <translation id="3983764759749072418">แอปพลิเคชัน Play Store มีสิทธิ์เข้าถึงอุปกรณ์นี้</translation>
 <translation id="3983769721878416534">หน่วงเวลาก่อนคลิก</translation>
-<translation id="3983793589497399077">คลิกหรือลากตรงไหนก็ได้เพื่อค้นหาด้วย Lens</translation>
 <translation id="3984135167056005094">ไม่รวมอีเมล</translation>
 <translation id="3984159763196946143">เริ่มโหมดสาธิตไม่ได้</translation>
 <translation id="3984431586879874039">อนุญาตให้เว็บไซต์นี้ดูคีย์ความปลอดภัยของคุณไหม</translation>
@@ -8523,6 +8527,7 @@
 <translation id="741906494724992817">แอปนี้ไม่ต้องการสิทธิ์พิเศษ</translation>
 <translation id="7419142833919893307">ไม่ได้เพิ่มชื่อผู้ใช้</translation>
 <translation id="7419565702166471774">ใช้การเชื่อมต่อที่ปลอดภัยทุกครั้ง</translation>
+<translation id="7419819959108735624">เลือกอะไรก็ได้เพื่อค้นหาด้วย Google Lens</translation>
 <translation id="742130257665691897">นำบุ๊กมาร์กออกแล้ว</translation>
 <translation id="7421925624202799674">&amp;ดูแหล่งที่มาของหน้า</translation>
 <translation id="7422192691352527311">ค่ากำหนด...</translation>
@@ -10845,6 +10850,7 @@
 <translation id="9102610709270966160">เปิดใช้ส่วนขยาย</translation>
 <translation id="9102864637938129124">เว็บไซต์และผู้ลงโฆษณาจะรู้ได้ว่าโฆษณามีประสิทธิภาพเพียงใด การตั้งค่านี้เปิดอยู่</translation>
 <translation id="9103868373786083162">กดเพื่อย้อนกลับไปที่เมนูตามบริบทเพื่อดูประวัติ</translation>
+<translation id="9106236359747881194">เลือกข้อความที่จะค้นหา</translation>
 <translation id="9107096627210171112">แปลภาษา...</translation>
 <translation id="9108035152087032312">ตั้งชื่อ&amp;หน้าต่าง...</translation>
 <translation id="9108072915170399168">การตั้งค่าการใช้อินเทอร์เน็ตในปัจจุบันคือ "ไม่ใช้อินเทอร์เน็ต"</translation>

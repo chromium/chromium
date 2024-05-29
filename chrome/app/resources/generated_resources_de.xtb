@@ -832,6 +832,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1607139524282324606">Eintrag löschen</translation>
 <translation id="1607499585984539560">Nutzer ist nicht mit Domain verbunden</translation>
 <translation id="1608668830839595724">Weitere Aktionen für ausgewählte Elemente</translation>
+<translation id="1608698493373028805">Diese Erweiterung wird möglicherweise bald nicht mehr unterstützt</translation>
 <translation id="1610272688494140697">App-Einstellungen</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Gerät gesperrt</translation>
@@ -2305,6 +2306,8 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2666247341166669829">Akkustand des linken Kopfhörers bei <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Für andere Apps ist festgelegt, dass bei ihnen die gleichen Links wie bei <ph name="APP_NAME" /> geöffnet werden. Dadurch wird deaktiviert, dass bei <ph name="APP_NAME_2" /> und <ph name="APP_NAME_3" /> unterstützte Links geöffnet werden.</translation>
 <translation id="2667463864537187133">Rechtschreibprüfung verwalten</translation>
+<translation id="2668094785979141847">Klicke, um Google Lens zu beenden</translation>
+<translation id="2668604389652548400">Entferne sie oder ersetze sie durch ähnliche Erweiterungen aus dem <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> konnte nicht geöffnet werden</translation>
 <translation id="2669454659051515572">Alle Personen, die dieses Gerät nutzen, können heruntergeladene Dateien sehen</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> hat einen Chrome-Tab freigegeben.</translation>
@@ -2354,6 +2357,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2710101514844343743">Nutzungsdaten &amp; Fehlerberichte</translation>
 <translation id="271033894570825754">Neu</translation>
 <translation id="2710507903599773521">Dein <ph name="DEVICE_TYPE" /> ist jetzt entsperrt</translation>
+<translation id="2712141162840347885">Wähle einen beliebigen Gegenstand für die Suche mit Google Lens aus oder drücke die Esc-Taste, um Google Lens zu beenden</translation>
 <translation id="2713106313042589954">Kamera ausschalten</translation>
 <translation id="2713444072780614174">Weiß</translation>
 <translation id="2714180132046334502">Dunkler Hintergrund</translation>
@@ -2424,6 +2428,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2749881179542288782">Grammatik zusammen mit Rechtschreibung prüfen</translation>
 <translation id="2750020734439919571">Weitere Einstellungen und Berechtigungen für die Chrome App</translation>
 <translation id="2750602041558385535">Ungeprüfter Download blockiert</translation>
+<translation id="2753623023919742414">Zum Suchen klicken</translation>
 <translation id="2754226775788136540">Suche nach für <ph name="PRIMARY_EMAIL" /> gespeicherte Geräte mit Unterstützung der Funktion „Schnelles Pairing“</translation>
 <translation id="2754825024506485820">Im Google Play Store findest du alle Apps, die du brauchst – so kannst du deine Produktivität steigern und dich unterhalten lassen. Du kannst Apps jederzeit installieren.</translation>
 <translation id="2755349111255270002">Dieses <ph name="DEVICE_TYPE" /> zurücksetzen</translation>
@@ -2931,6 +2936,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3132996321662585180">Täglich aktualisieren</translation>
 <translation id="3133184011320864289">Aktiviere die Synchronisierung, damit Chrome Tabgruppen vorschlagen kann und deine Tabs organisiert bleiben</translation>
 <translation id="3134393957315651797">Wähle den Teststatus für den Test „<ph name="EXPERIMENT_NAME" />“ aus. Testbeschreibung: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Zum Suchen ziehen</translation>
 <translation id="3139925690611372679">Gelber Standardavatar</translation>
 <translation id="3141093262818886744">Trotzdem öffnen</translation>
 <translation id="3141318088920353606">Jetzt sprechen…</translation>
@@ -4072,7 +4078,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3983586614702900908">Geräte von einem unbekannten Anbieter</translation>
 <translation id="3983764759749072418">Play Store-Apps haben Zugriff auf dieses Gerät.</translation>
 <translation id="3983769721878416534">Verzögerung vor Klick</translation>
-<translation id="3983793589497399077">Wähle durch Klicken oder Ziehen einen Bereich aus, um mit Lens zu suchen</translation>
 <translation id="3984135167056005094">E-Mail-Adresse nicht angeben</translation>
 <translation id="3984159763196946143">Demomodus konnte nicht gestartet werden</translation>
 <translation id="3984431586879874039">Zulassen, dass diese Website deinen Sicherheitsschlüssel ausliest?</translation>
@@ -8518,6 +8523,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="741906494724992817">Diese App erfordert keine speziellen Berechtigungen.</translation>
 <translation id="7419142833919893307">Kein Nutzername hinzugefügt</translation>
 <translation id="7419565702166471774">Immer verschlüsselte Verbindungen verwenden</translation>
+<translation id="7419819959108735624">Wähle einen beliebigen Gegenstand für die Suche mit Google Lens aus</translation>
 <translation id="742130257665691897">Lesezeichen entfernt</translation>
 <translation id="7421925624202799674">Seitenquelltext &amp;anzeigen</translation>
 <translation id="7422192691352527311">Einstellungen...</translation>
@@ -10841,6 +10847,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9102610709270966160">Erweiterung aktivieren</translation>
 <translation id="9102864637938129124">Websites und Werbetreibende können die Leistung ihrer Werbung analysieren. Diese Einstellung ist aktiviert.</translation>
 <translation id="9103868373786083162">Drücken, um zurückzugehen. Kontextmenü, um Verlauf aufzurufen</translation>
+<translation id="9106236359747881194">Einen Text für die Suche auswählen</translation>
 <translation id="9107096627210171112">Übe&amp;rsetzen…</translation>
 <translation id="9108035152087032312">Fenster &amp;benennen…</translation>
 <translation id="9108072915170399168">Aktuelle Einstellung für Datennutzung ist "Ohne Internet"</translation>

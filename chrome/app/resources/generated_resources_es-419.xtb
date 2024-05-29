@@ -832,6 +832,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1607139524282324606">Borrar entrada</translation>
 <translation id="1607499585984539560">El usuario no está afiliado al dominio</translation>
 <translation id="1608668830839595724">Más acciones para los elementos seleccionados</translation>
+<translation id="1608698493373028805">Es posible que esta extensión pronto deje de ser compatible</translation>
 <translation id="1610272688494140697">Configuración de la app</translation>
 <translation id="161042844686301425">Cian</translation>
 <translation id="1611432201750675208">Tu dispositivo está bloqueado</translation>
@@ -2305,6 +2306,8 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2666247341166669829">Nivel de batería del Pixel Bud izquierdo <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Se configuraron otras apps para abrir los mismos vínculos que <ph name="APP_NAME" />. Esta acción impedirá que <ph name="APP_NAME_2" /> y <ph name="APP_NAME_3" /> abran los vínculos compatibles.</translation>
 <translation id="2667463864537187133">Administrar el corrector ortográfico</translation>
+<translation id="2668094785979141847">Hacer clic para salir de Google Lens</translation>
+<translation id="2668604389652548400">Quítala o reemplázala por extensiones similares de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">No se pudo abrir <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Cualquier persona que use este dispositivo puede ver los archivos descargados</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> comparte una pestaña de Chrome.</translation>
@@ -2354,6 +2357,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2710101514844343743">Datos de uso y diagnóstico</translation>
 <translation id="271033894570825754">Nuevo</translation>
 <translation id="2710507903599773521">Tu <ph name="DEVICE_TYPE" /> se desbloqueó</translation>
+<translation id="2712141162840347885">Selecciona cualquier elemento para buscar con Google Lens o presiona Escape para salir de Google Lens</translation>
 <translation id="2713106313042589954">Desactivar la cámara</translation>
 <translation id="2713444072780614174">Blanco</translation>
 <translation id="2714180132046334502">Fondo oscuro</translation>
@@ -2406,7 +2410,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2739191690716947896">Depurar</translation>
 <translation id="2739240477418971307">Cambiar la configuración de accesibilidad</translation>
 <translation id="2739331588276254426">Se estableció conexión a Internet a través de <ph name="HOST_DEVICE_NAME" /></translation>
-<translation id="274029851662193272">Disminuida</translation>
+<translation id="274029851662193272">Hundido</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2740876196999178364">Estas llaves de acceso solo se guardan en este dispositivo. No se guardan en tu Cuenta de Google.</translation>
 <translation id="2741713322780029189">Abrir terminal de recuperación</translation>
@@ -2424,6 +2428,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2749881179542288782">Controlar la gramática con la ortografía</translation>
 <translation id="2750020734439919571">Más parámetros de configuración y permisos de las apps de Chrome</translation>
 <translation id="2750602041558385535">Se bloqueó una descarga no verificada</translation>
+<translation id="2753623023919742414">Hacer clic para buscar</translation>
 <translation id="2754226775788136540">Buscando dispositivos de Vinculación rápida guardados en <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Encuentra las apps que necesites, tanto para la productividad como para el entretenimiento, en Google Play Store. Puedes instalar apps en cualquier momento.</translation>
 <translation id="2755349111255270002">Restablecer este dispositivo <ph name="DEVICE_TYPE" /></translation>
@@ -2931,6 +2936,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3132996321662585180">Actualizar todos los días</translation>
 <translation id="3133184011320864289">Activa la sincronización para que Chrome te sugiera grupos de pestañas y las mantenga organizadas</translation>
 <translation id="3134393957315651797">Selecciona el estado del experimento <ph name="EXPERIMENT_NAME" />. Descripción del experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Arrastrar para buscar</translation>
 <translation id="3139925690611372679">Avatar amarillo predeterminado</translation>
 <translation id="3141093262818886744">Abrir de todos modos</translation>
 <translation id="3141318088920353606">Escuchando…</translation>
@@ -3504,7 +3510,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3593965109698325041">Restricciones para el nombre del certificado</translation>
 <translation id="3596012367874587041">Configuración de la app</translation>
 <translation id="3596414637720633074">Bloquear cookies de terceros en modo Incógnito</translation>
-<translation id="3599221874935822507">Elevada</translation>
+<translation id="3599221874935822507">En relieve</translation>
 <translation id="3600051066689725006">Información de solicitud web</translation>
 <translation id="3601374594714740284">Para obtener voces de mejor calidad, libera espacio en tu dispositivo</translation>
 <translation id="360180734785106144">Ofrecer funciones nuevas cuando estén disponibles</translation>
@@ -4072,7 +4078,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="3983586614702900908">dispositivos de un proveedor desconocido</translation>
 <translation id="3983764759749072418">Las apps de Play Store tienen acceso a este dispositivo.</translation>
 <translation id="3983769721878416534">Tiempo de espera antes del clic</translation>
-<translation id="3983793589497399077">Haz clic o arrastra en cualquier parte para buscar con Lens</translation>
 <translation id="3984135167056005094">No incluir direcciones de correo electrónico</translation>
 <translation id="3984159763196946143">No se pudo iniciar el modo de demostración</translation>
 <translation id="3984431586879874039">¿Quieres permitir que este sitio vea tu llave de seguridad?</translation>
@@ -8521,6 +8526,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="741906494724992817">Esta aplicación no requiere ningún permiso especial.</translation>
 <translation id="7419142833919893307">No se agregó ningún nombre de usuario</translation>
 <translation id="7419565702166471774">Usar siempre conexiones seguras</translation>
+<translation id="7419819959108735624">Selecciona cualquier elemento para realizar una búsqueda con Google Lens</translation>
 <translation id="742130257665691897">Se quitaron favoritos</translation>
 <translation id="7421925624202799674">&amp;Ver el código fuente de la página</translation>
 <translation id="7422192691352527311">Preferencias...</translation>
@@ -10844,6 +10850,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="9102610709270966160">Habilitar extensión</translation>
 <translation id="9102864637938129124">Los sitios y anunciantes pueden entender el rendimiento de los anuncios. Este parámetro de configuración está activado.</translation>
 <translation id="9103868373786083162">Presiona para retroceder; usa el menú contextual para consultar el historial</translation>
+<translation id="9106236359747881194">Seleccionar texto para buscarlo</translation>
 <translation id="9107096627210171112">T&amp;raducir…</translation>
 <translation id="9108035152087032312">Nombrar la &amp;ventana…</translation>
 <translation id="9108072915170399168">La configuración de uso de datos actual es Sin Internet</translation>

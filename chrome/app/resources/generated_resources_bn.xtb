@@ -839,6 +839,7 @@
 <translation id="1607139524282324606">এন্ট্রি মুছে দিন</translation>
 <translation id="1607499585984539560">ডোমেনে ব্যবহারকারীর অনুমোদন নেই</translation>
 <translation id="1608668830839595724">বেছে নেওয়া আইটেমগুলির সাথে আরও কাজ করতে হবে</translation>
+<translation id="1608698493373028805">এই এক্সটেনশন হয়ত শীঘ্রই কাজ করা বন্ধ হয়ে যাবে</translation>
 <translation id="1610272688494140697">অ্যাপ সেটিংস</translation>
 <translation id="161042844686301425">নীলাভ</translation>
 <translation id="1611432201750675208">আপনার ডিভাইস লক করা আছে</translation>
@@ -2324,6 +2325,8 @@
 <translation id="2666247341166669829">বাঁদিকের ব্যাটারি লেভেল <ph name="PERCENTAGE" />%।</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" />-এর মতো অন্যান্য অ্যাপ একই লিঙ্ক খোলার জন্য সেট করা আছে। এটি <ph name="APP_NAME_2" /> এবং <ph name="APP_NAME_3" />-এর সহায়ক লিঙ্ক খুলতে দেবে না।</translation>
 <translation id="2667463864537187133">বানান পরিক্ষক পরিচালনা করুন</translation>
+<translation id="2668094785979141847">Google Lens ছেড়ে বেরিয়ে আসতে ক্লিক করুন</translation>
+<translation id="2668604389652548400"><ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> থেকে একই ধরনের এক্সটেনশন দিয়ে এটি সরান অথবা বদল করুন</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> খোলা যায়নি</translation>
 <translation id="2669454659051515572">এই ডিভাইস ব্যবহার করছেন এমন যেকেউ ডাউনলোড করা ফাইলগুলি দেখতে পারবেন</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> একটি Chrome ট্যাব শেয়ার করছে।</translation>
@@ -2373,6 +2376,7 @@
 <translation id="2710101514844343743">ব্যবহার এবং ডায়াগনস্টিক সংক্রান্ত ডেটা</translation>
 <translation id="271033894570825754">নতুন</translation>
 <translation id="2710507903599773521">আপনার <ph name="DEVICE_TYPE" /> এখন আনলক করা হয়েছে</translation>
+<translation id="2712141162840347885">Google Lens ব্যবহার করে সার্চ করার জন্য যেকোনও কিছু বেছে নিন অথবা Google Lens থেকে বেরিয়ে যেতে Escape বোতাম প্রেস করুন</translation>
 <translation id="2713106313042589954">ক্যামেরা বন্ধ করুন</translation>
 <translation id="2713444072780614174">সাদা</translation>
 <translation id="2714180132046334502">গাঢ় ব্যাকগ্রাউন্ড</translation>
@@ -2443,6 +2447,7 @@
 <translation id="2749881179542288782">বানান সহ ব্যাকরণ চেক করুন</translation>
 <translation id="2750020734439919571">Chrome অ্যাপের আরও সেটিংস ও অনুমতি</translation>
 <translation id="2750602041558385535">যাচাই না করা ডাউনলোড ব্লক করা হয়েছে</translation>
+<translation id="2753623023919742414">সার্চ করার জন্য ক্লিক করুন</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" />-এ সেভ করা 'দ্রুত পেয়ার' ডিভাইস খুঁজছেন</translation>
 <translation id="2754825024506485820">Google Play Store-এ, প্রোডাক্টিভিটি থেকে বিনোদন, আপনার প্রয়োজনের বিভিন্ন অ্যাপ ডাউনলোড করুন। আপনি যেকোনও সময় অ্যাপ ইনস্টল করতে পারবেন।</translation>
 <translation id="2755349111255270002">এই <ph name="DEVICE_TYPE" /> রিসেট করুন</translation>
@@ -2950,6 +2955,7 @@
 <translation id="3132996321662585180">প্রতিদিন রিফ্রেশ করুন</translation>
 <translation id="3133184011320864289">Chrome যাতে ট্যাব গ্রুপ সাজেস্ট করতে পারে এবং আপনার ট্যাবগুলি সাজিয়ে রাখতে পারে সেজন্য সিঙ্ক চালু করুন</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> পরীক্ষার জন্য স্ট্যাটাস বেছে নিন। পরীক্ষার বিবরণ: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">সার্চ করতে টেনে আনুন</translation>
 <translation id="3139925690611372679">ডিফল্ট হলুদ রঙের অবতার</translation>
 <translation id="3141093262818886744">যাই হোক, খুলতে চাই</translation>
 <translation id="3141318088920353606">শুনছি...</translation>
@@ -4090,7 +4096,6 @@
 <translation id="3983586614702900908">একটি অজানা বিক্রেতা থেকে ডিভাইসগুলি</translation>
 <translation id="3983764759749072418">Play Store অ্যাপ্লিকেশন এই ডিভাইস অ্যাক্সেস করতে পারে।</translation>
 <translation id="3983769721878416534">ক্লিক করার আগে বিলম্ব</translation>
-<translation id="3983793589497399077">Lens ব্যবহার করে সার্চ করার জন্য যেকোনও জায়গাতে ক্লিক করুন অথবা টেনে আনুন</translation>
 <translation id="3984135167056005094">ইমেল আইডি দেবেন না</translation>
 <translation id="3984159763196946143">ডেমো মোড শুরু করা যায়নি</translation>
 <translation id="3984431586879874039">এই সাইটকে আপনার নিরাপত্তা কী দেখতে দিতে চান?</translation>
@@ -8546,6 +8551,7 @@
 <translation id="741906494724992817">এই অ্যাপ্লিকেশানটির জন্য কোনো বিশেষ অনুমতির প্রয়োজন নেই।</translation>
 <translation id="7419142833919893307">কোনও ইউজারনেম যোগ করা হয়নি</translation>
 <translation id="7419565702166471774">সবসময় সুরক্ষিত কানেকশন ব্যবহার করুন</translation>
+<translation id="7419819959108735624">Google Lens-এর মাধ্যমে সার্চ করতে যেকোনও কিছু বেছে নিন</translation>
 <translation id="742130257665691897">বুকমার্ক সরানো হয়েছে</translation>
 <translation id="7421925624202799674">পৃষ্ঠা উৎস &amp;দেখুন</translation>
 <translation id="7422192691352527311">অভিরুচিসমূহ...</translation>
@@ -10869,6 +10875,7 @@
 <translation id="9102610709270966160">এক্সটেনশন চালু করুন</translation>
 <translation id="9102864637938129124">বিজ্ঞাপনগুলি কীভাবে কাজ করে তা সাইট এবং বিজ্ঞাপনদাতারা বুঝতে পারেন। এই সেটিংটি চালু করা আছে।</translation>
 <translation id="9103868373786083162">ইতিহাস দেখার জন্য ফিরে গিয়ে সংশ্লিষ্ট মেনুতে যেতে টিপুন</translation>
+<translation id="9106236359747881194">সার্চ করার জন্য টেক্সট বেছে নিন</translation>
 <translation id="9107096627210171112">অনুবাদ...</translation>
 <translation id="9108035152087032312">নাম ও উইন্ডো...</translation>
 <translation id="9108072915170399168">বর্তমান ডেটা ব্যবহারের সেটিংয়ে, ইন্টারনেটের কানেকশন ছাড়াই ডেটা ট্রান্সফার করা যাবে</translation>

@@ -837,6 +837,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1607139524282324606">Brisanje unosa</translation>
 <translation id="1607499585984539560">Korisnik nije povezan s domenom</translation>
 <translation id="1608668830839595724">Više radnji za odabrane stavke</translation>
+<translation id="1608698493373028805">Ovo proširenje uskoro možda više neće biti podržano</translation>
 <translation id="1610272688494140697">Postavke aplikacije</translation>
 <translation id="161042844686301425">Cijan</translation>
 <translation id="1611432201750675208">Uređaj je zaključan</translation>
@@ -1703,6 +1704,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2234827758954819389">Vodič za privatnost</translation>
 <translation id="2234876718134438132">Sinkronizacija i Googleove usluge</translation>
 <translation id="2235344399760031203">Blokirani su kolačići treće strane</translation>
+<translation id="2236949375853147973">Moja aktivnost</translation>
 <translation id="2238379619048995541">Podaci o stanju učestalosti</translation>
 <translation id="2241053333139545397">čitati i mijenjati vaše podatke na više web-lokacija</translation>
 <translation id="2241634353105152135">Samo jednom</translation>
@@ -2311,6 +2313,8 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2666247341166669829">Razina baterije lijeve slušalice: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Druge aplikacije postavljene su tako da otvaraju iste veze kao <ph name="APP_NAME" />. Time će se aplikacijama <ph name="APP_NAME_2" /> i <ph name="APP_NAME_3" /> onemogućiti da otvaraju podržane veze.</translation>
 <translation id="2667463864537187133">Upravljanje provjerom pravopisa</translation>
+<translation id="2668094785979141847">Kliknite za zatvaranje Google objektiva</translation>
+<translation id="2668604389652548400">Uklonite ga ili zamijenite sličnim proširenjima iz <ph name="BEGIN_LINK" />Chrome Web Storea<ph name="END_LINK" />.</translation>
 <translation id="2669241540496514785">Aplikaciju <ph name="APP_NAME" /> nije moguće otvoriti</translation>
 <translation id="2669454659051515572">Svi koji upotrebljavaju ovaj uređaj mogu vidjeti preuzete datoteke</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> dijeli Chromeovu karticu.</translation>
@@ -2360,6 +2364,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2710101514844343743">Podaci o upotrebi i dijagnostici</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2710507903599773521">Vaš je uređaj <ph name="DEVICE_TYPE" /> sada otključan</translation>
+<translation id="2712141162840347885">Odaberite bilo što za pretraživanje pomoću Google objektiva ili pritisnite Escape da biste zatvorili Google objektiv</translation>
 <translation id="2713106313042589954">Isključi kameru</translation>
 <translation id="2713444072780614174">Bijela</translation>
 <translation id="2714180132046334502">Tamna pozadina</translation>
@@ -2430,6 +2435,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2749881179542288782">Uz pravopis provjeri i gramatiku</translation>
 <translation id="2750020734439919571">Više postavki i dopuštenja Chrome aplikacija</translation>
 <translation id="2750602041558385535">Blokirano je nepotvrđeno preuzimanje</translation>
+<translation id="2753623023919742414">Kliknite za pretraživanje</translation>
 <translation id="2754226775788136540">Traženje uređaja za brzo uparivanje spremljenih na e-adresi <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Pronađite aplikacije koje su vam potrebne, za sve od rada do zabave, u Trgovini Google Play. Aplikacije možete instalirati kad god želite.</translation>
 <translation id="2755349111255270002">Vratite <ph name="DEVICE_TYPE" /> na zadano</translation>
@@ -2937,6 +2943,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3132996321662585180">Osvježi svaki dan</translation>
 <translation id="3133184011320864289">uključiti sinkronizaciju da bi Chrome mogao predlagati grupe kartica i organizirati vaše kartice</translation>
 <translation id="3134393957315651797">Odaberite stanje za eksperiment <ph name="EXPERIMENT_NAME" />. Opis eksperimenta: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Povucite za pretraživanje</translation>
 <translation id="3139925690611372679">Zadani žuti avatar</translation>
 <translation id="3141093262818886744">Ipak otvori</translation>
 <translation id="3141318088920353606">Slušanje...</translation>
@@ -4078,7 +4085,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="3983586614702900908">uređaji nepoznatog dobavljača</translation>
 <translation id="3983764759749072418">Aplikacije Trgovine Play imaju pristup ovom uređaju.</translation>
 <translation id="3983769721878416534">Odgoda prije klika</translation>
-<translation id="3983793589497399077">Kliknite ili povucite na bilo koje mjesto za pretraživanje pomoću Objektiva</translation>
 <translation id="3984135167056005094">Nemojte uključiti e-adresu</translation>
 <translation id="3984159763196946143">Pokretanje demo-načina nije uspjelo</translation>
 <translation id="3984431586879874039">Želite li dopustiti web-lokaciji prikaz vašeg sigurnosnog ključa?</translation>
@@ -8528,6 +8534,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="741906494724992817">Aplikaciji nisu potrebna nikakva posebna dopuštenja.</translation>
 <translation id="7419142833919893307">Nije dodano korisničko ime</translation>
 <translation id="7419565702166471774">Uvijek upotrebljavaj sigurne veze</translation>
+<translation id="7419819959108735624">Odaberite bilo što za pretraživanje pomoću Google objektiva</translation>
 <translation id="742130257665691897">Oznake su uklonjene</translation>
 <translation id="7421925624202799674">&amp;Prikaži izvor stranice</translation>
 <translation id="7422192691352527311">Postavke...</translation>
@@ -10853,6 +10860,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="9102610709270966160">Omogući proširenje</translation>
 <translation id="9102864637938129124">Web-lokacije i oglašivači mogu razumjeti izvedbu oglasa. Postavka je uključena.</translation>
 <translation id="9103868373786083162">Pritisnite za povratak, kontekstni izbornik za prikaz povijesti</translation>
+<translation id="9106236359747881194">Odabir teksta za pretraživanje</translation>
 <translation id="9107096627210171112">Prevedi...</translation>
 <translation id="9108035152087032312">Dodijeli &amp;prozoru naziv...</translation>
 <translation id="9108072915170399168">Za potrošnju podatkovnog prometa trenutačno je odabrana postavka Bez interneta</translation>

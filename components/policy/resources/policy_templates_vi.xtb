@@ -476,6 +476,7 @@ Nếu bạn đặt chính sách này thành PromptInTab, thì khi phiên xác th
       Trang bị loại bỏ sẽ bị huỷ tải và tài nguyên của trang được thu hồi hoàn toàn. Thẻ được liên kết với trang vẫn hiển thị trên dải thẻ, nhưng việc chuyển sang thẻ đó sẽ kích hoạt quá trình tải lại đầy đủ.
       </translation>
 <translation id="138847842893090358">Báo cáo trạng thái cập nhật hệ điều hành</translation>
+<translation id="1389138080311956934">Tiết kiệm bộ nhớ ở mức tối đa.</translation>
 <translation id="1390529781843037070">Nếu bạn đặt thành Bật hoặc không đặt chính sách này, thì người dùng sẽ có thể in bằng <ph name="CLOUD_PRINT_NAME" /> từ hộp thoại in trên <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> có thể gửi các tài liệu tới <ph name="CLOUD_PRINT_NAME" /> để in. Điều này không ngăn người dùng gửi lệnh in trên các trang web.
 
       Nếu bạn đặt chính sách này thành Tắt, người dùng sẽ không thể in bằng <ph name="CLOUD_PRINT_NAME" /> từ hộp thoại in trên <ph name="PRODUCT_NAME" />.
@@ -3939,6 +3940,7 @@ Nếu bạn không đặt hoặc để trống chính sách này thì sẽ khôn
 Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4070039109671307724">Khác</translation>
 <translation id="4072225853834793549">Tắt lối tắt hỗ trợ tiếp cận trên màn hình đăng nhập</translation>
+<translation id="4074922053013383215">Tiết kiệm bộ nhớ ở mức trung bình.</translation>
 <translation id="4075675819066819571">Đặt giá ở bên trái màn hình</translation>
 <translation id="4079306023113982053">Kiểm soát khả năng sử dụng <ph name="BOREALIS_NAME" /> đối với người dùng này.
 
@@ -8762,6 +8764,7 @@ Khi bạn đặt chính sách này thành false hoặc không đặt, <ph name="
       Nếu bạn không đặt hoặc đặt chính sách này thành Tắt, thì hệ thống có thể chặn nội dung <ph name="FLASH_PLUGIN_NAME" /> của các nguồn khác hoặc nội dung nhỏ.
 
       Lưu ý: Để kiểm soát những trang web có thể chạy <ph name="FLASH_PLUGIN_NAME" />, hãy xem các chính sách sau: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> và <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7801163363326128751">Thay đổi mức tiết kiệm của chế độ Trình tiết kiệm bộ nhớ</translation>
 <translation id="7804859754080118507">Báo cáo các sự kiện kết nối mạng và cường độ tín hiệu trên các thiết bị đã đăng ký.
 
       Nếu bạn đặt chính sách này thành false hoặc không đặt chính sách này, thì thông tin đó sẽ không được báo cáo.
@@ -9340,6 +9343,7 @@ Bạn có thể xem thêm thông tin về công nghệ cũ tại https://chromes
 <translation id="8274926413890711289">Bật các biện pháp kiểm soát báo cáo chi tiết</translation>
 <translation id="8275103737670730746">Cho phép gọi các API bộ chọn thư mục hoặc tệp mà không cần cử chỉ trước đó của người dùng</translation>
 <translation id="8278133379873210419">Ngăn các Hộp thoại JavaScript được kích hoạt từ một khung phụ có nguồn gốc khác</translation>
+<translation id="8284028944941138279">Tiết kiệm bộ nhớ ở mức cân bằng.</translation>
 <translation id="8284296539558710573">Lời nhắc xác thực HTTP trên nhiều nguồn gốc</translation>
 <translation id="8284527236880877730">Nếu bạn đặt <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> thành Tắt, việc đặt <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> sẽ chỉ định tỷ lệ phần trăm mà theo đó thời gian trì hoãn giảm độ sáng màn hình sẽ thay đổi khi thiết bị đang trình chiếu. Khi thời gian trì hoãn giảm độ sáng thay đổi, thời gian trì hoãn tắt màn hình, thời gian trì hoãn khóa màn hình và thời gian trì hoãn khi ở chế độ tạm vắng sẽ điều chỉnh để duy trì cùng khoảng thời gian với thời gian trì hoãn giảm độ sáng màn hình như được đặt ban đầu.
 
@@ -10017,6 +10021,17 @@ Chính sách này không áp dụng nếu bàn phím ảo đang tắt (ví dụ:
 <translation id="8835322836315560274">Nếu bạn đặt chính sách này, hệ thống sẽ kiểm soát lệnh nào dùng để mở URL trong trình duyệt thay thế. Bạn có thể đặt chính sách này thành một trong các giá trị <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> hoặc một đường dẫn tệp. Khi bạn đặt chính sách này thành một đường dẫn tệp, tệp đó sẽ được dùng làm tệp thực thi. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> chỉ có trên <ph name="MS_WIN_NAME" />. <ph name="SAFARI_VALUE_PLACEHOLDER" /> và <ph name="EDGE_VALUE_PLACEHOLDER" /> chỉ có trên <ph name="MS_WIN_NAME" /> và <ph name="MAC_OS_NAME" />.
 
       Nếu bạn không đặt chính sách này, một giá trị mặc định dành riêng cho nền tảng sẽ được đưa vào sử dụng là: <ph name="IE_PRODUCT_NAME" /> đối với <ph name="MS_WIN_NAME" /> hoặc <ph name="SAFARI_PRODUCT_NAME" /> đối với <ph name="MAC_OS_NAME" />. Trên <ph name="LINUX_OS_NAME" />, trình duyệt thay thế sẽ không chạy được.</translation>
+<translation id="8836227957461360521">Chính sách này thay đổi mức tiết kiệm của Trình tiết kiệm bộ nhớ.
+
+Chính sách này chỉ có hiệu lực khi Trình tiết kiệm bộ nhớ được bật qua phần cài đặt hoặc qua chính sách <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" />. Đồng thời, chính sách này sẽ ảnh hưởng đến cách dùng thông tin suy đoán để xác định thời điểm loại bỏ thẻ. Ví dụ: Việc giảm vòng đời của một thẻ không hoạt động trước khi loại bỏ thẻ đó có thể giúp tiết kiệm bộ nhớ, nhưng cũng có nghĩa là các thẻ sẽ được tải lại thường xuyên hơn, từ đó có thể gây ra trải nghiệm không tốt cho người dùng và tốn thêm lưu lượng truy cập mạng.
+
+Nếu bạn đặt chính sách này thành 0 thì Trình tiết kiệm bộ nhớ sẽ giúp tiết kiệm bộ nhớ ở mức trung bình. Các thẻ sẽ ngừng hoạt động sau một khoảng thời gian dài hơn
+
+Nếu bạn đặt chính sách này thành 1 thì Trình tiết kiệm bộ nhớ sẽ giúp tiết kiệm bộ nhớ ở mức cân bằng. Các thẻ sẽ ngừng hoạt động sau một khoảng thời gian phù hợp.
+
+Nếu bạn đặt chính sách này thành 2 thì Trình tiết kiệm bộ nhớ sẽ giúp tiết kiệm bộ nhớ ở mức tối đa. Các thẻ sẽ ngừng hoạt động sau một khoảng thời gian ngắn.
+
+Nếu bạn không đặt chính sách này thì người dùng cuối có thể kiểm soát chế độ cài đặt này trong chrome://settings/performance.</translation>
 <translation id="8836975838488342340">Thời gian hiệu lực của mã truy cập (tính bằng giây).</translation>
 <translation id="883744045558067826">Chrome Root Store có thể được sử dụng tuỳ thuộc vào quá trình ra mắt tính năng.</translation>
 <translation id="8837957135252624017">Luôn mở ít nhất 1 thẻ Chrome</translation>

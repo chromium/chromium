@@ -837,6 +837,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1607139524282324606">Notīrīt ierakstu</translation>
 <translation id="1607499585984539560">Lietotājs nav saistīts ar domēnu</translation>
 <translation id="1608668830839595724">Citas darbības ar atlasītajiem vienumiem</translation>
+<translation id="1608698493373028805">Iespējams, šis paplašinājums drīzumā vairs netiks atbalstīts</translation>
 <translation id="1610272688494140697">Lietotnes iestatījumi</translation>
 <translation id="161042844686301425">Ciānzila</translation>
 <translation id="1611432201750675208">Jūsu ierīce ir bloķēta</translation>
@@ -2310,6 +2311,8 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2666247341166669829">Kreisās austiņas akumulatora uzlādes līmenis ir <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Citas lietotnes ir iestatītas to pašu saišu atvēršanai, ko var atvērt, izmantojot lietotni <ph name="APP_NAME" />. Atbalstītās saites vairs nevarēs atvērt, izmantojot lietotnes <ph name="APP_NAME_2" /> un <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Pareizrakstības pārbaudes pārvaldība</translation>
+<translation id="2668094785979141847">Noklikšķiniet, lai izietu no Google Lens</translation>
+<translation id="2668604389652548400">Noņemiet paplašinājumu vai aizstājiet to ar līdzīgiem paplašinājumiem no <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.</translation>
 <translation id="2669241540496514785">Nevarēja atvērt lietotni <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Lejupielādētie faili ir redzami visiem šīs ierīces lietotājiem.</translation>
 <translation id="2670102641511624474">Lietotne <ph name="APP_NAME" /> koplieto Chrome cilni.</translation>
@@ -2359,6 +2362,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2710101514844343743">Lietojuma un diagnostikas dati</translation>
 <translation id="271033894570825754">Jauns</translation>
 <translation id="2710507903599773521">Ierīce (<ph name="DEVICE_TYPE" />) vairs nav piesaistīta konkrētam operatoram</translation>
+<translation id="2712141162840347885">Atlasiet jebko, lai meklētu ar Google Lens, vai nospiediet atsoļa taustiņu, lai izietu no Google Lens</translation>
 <translation id="2713106313042589954">Izslēgt kameru</translation>
 <translation id="2713444072780614174">Balta</translation>
 <translation id="2714180132046334502">Tumšs fons</translation>
@@ -2429,6 +2433,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2749881179542288782">Pārbaudīt gramatiku un pareizrakstību</translation>
 <translation id="2750020734439919571">Citi Chrome lietotņu iestatījumi un atļaujas</translation>
 <translation id="2750602041558385535">Bloķēta neverificēta lejupielāde</translation>
+<translation id="2753623023919742414">Noklikšķiniet, lai meklētu</translation>
 <translation id="2754226775788136540">Tiek meklētas kontā <ph name="PRIMARY_EMAIL" /> saglabātās ātrās savienošanas pārī ierīces.</translation>
 <translation id="2754825024506485820">Google Play veikalā varat atrast nepieciešamās lietotnes — sākot no produktivitātes un beidzot ar izklaidi. Varat instalēt lietotnes jebkurā brīdī.</translation>
 <translation id="2755349111255270002">Atiestatiet šo <ph name="DEVICE_TYPE" /> ierīci</translation>
@@ -2936,6 +2941,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3132996321662585180">Atsvaidzināt katru dienu</translation>
 <translation id="3133184011320864289">Ieslēdziet sinhronizāciju, lai varētu saņemt automātiskus ciļņu grupu ieteikumus pārlūkā Chrome un tādējādi kārtot cilnes.</translation>
 <translation id="3134393957315651797">Atlasiet eksperimenta <ph name="EXPERIMENT_NAME" /> statusu. Eksperimenta apraksts: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Velciet, lai meklētu</translation>
 <translation id="3139925690611372679">Noklusējuma iemiesojums dzeltenā krāsā</translation>
 <translation id="3141093262818886744">Tomēr atvērt</translation>
 <translation id="3141318088920353606">Notiek klausīšanās…</translation>
@@ -4077,7 +4083,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="3983586614702900908">ierīces, ko piedāvā nezināms ražotājs</translation>
 <translation id="3983764759749072418">Play veikala lietojumprogrammām ir piekļuve šai ierīcei.</translation>
 <translation id="3983769721878416534">Aizkave pirms klikšķa</translation>
-<translation id="3983793589497399077">Noklikšķiniet vai velciet jebkurā vietā, lai meklētu, izmantojot Lens</translation>
 <translation id="3984135167056005094">Neiekļaut e-pasta adresi</translation>
 <translation id="3984159763196946143">Nevarēja sākt demonstrācijas režīmu</translation>
 <translation id="3984431586879874039">Vai atļaut šai vietnei skatīt jūsu drošības atslēgu?</translation>
@@ -8527,6 +8532,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="741906494724992817">Šai lietotnei nav nepieciešamas īpašas atļaujas.</translation>
 <translation id="7419142833919893307">Nav pievienots neviens lietotājvārds</translation>
 <translation id="7419565702166471774">Vienmēr izmantot drošus savienojumus</translation>
+<translation id="7419819959108735624">Atlasiet jebko, lai meklētu, izmantojot Google Lens</translation>
 <translation id="742130257665691897">Grāmatzīmes tika noņemtas</translation>
 <translation id="7421925624202799674">Skatīt lapas a&amp;votu</translation>
 <translation id="7422192691352527311">Preferences...</translation>
@@ -10851,6 +10857,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="9102610709270966160">Iespējot paplašinājumu</translation>
 <translation id="9102864637938129124">Vietnes un reklāmdevēji var izprast reklāmu veiktspēju. Šis iestatījums ir ieslēgts.</translation>
 <translation id="9103868373786083162">Nospiediet, lai pārietu atpakaļ; atveriet kontekstizvēlni, lai skatītu vēsturi</translation>
+<translation id="9106236359747881194">Atlasiet tekstu, ko meklēt</translation>
 <translation id="9107096627210171112">Tulkot…</translation>
 <translation id="9108035152087032312">Piešķirt nosaukumu &amp;logam...</translation>
 <translation id="9108072915170399168">Pašreizējais datu lietojuma iestatījums ir “Bez interneta savienojuma”.</translation>

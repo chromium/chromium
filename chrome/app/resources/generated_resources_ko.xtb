@@ -760,7 +760,7 @@
 <translation id="1563702743503072935">로그인한 상태라면 이 기기에서도 Google 계정의 비밀번호를 사용할 수 있습니다.</translation>
 <translation id="1566049601598938765">웹사이트</translation>
 <translation id="15662109988763471">선택한 프린터가 사용 불가능하거나 올바르게 설치되어 있지 않습니다. 프린터를 확인하거나 다른 프린터를 선택해 보세요.</translation>
-<translation id="1566329594234563241">비활성화 상태이며 전원에 연결되어 있는 동안</translation>
+<translation id="1566329594234563241">비활성 상태이며 전원에 연결되어 있는 동안</translation>
 <translation id="1567135437923613642">추천 실험 기능 사용</translation>
 <translation id="1567387640189251553">마지막으로 비밀번호를 입력한 후 다른 키보드가 연결되었습니다. 키 입력 내용을 도용하려는 시도일 수 있습니다.</translation>
 <translation id="1567579616025300478">이 사이트에서는 기기에 데이터를 저장할 수 없습니다.</translation>
@@ -1715,6 +1715,7 @@
 <translation id="2234827758954819389">개인 정보 보호 가이드</translation>
 <translation id="2234876718134438132">동기화 및 Google 서비스</translation>
 <translation id="2235344399760031203">타사 쿠키가 차단됨</translation>
+<translation id="2236949375853147973">내 활동</translation>
 <translation id="2238379619048995541">주파수 상태 데이터</translation>
 <translation id="2241053333139545397">여러 웹사이트의 데이터를 읽고 변경</translation>
 <translation id="2241634353105152135">한 번만</translation>
@@ -2326,6 +2327,7 @@
 <translation id="2666247341166669829">왼쪽 배터리 잔량 <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">다른 앱이 <ph name="APP_NAME" /> 앱과 같은 링크를 열도록 설정되었습니다. <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> 앱은 지원되는 링크를 열지 못하게 됩니다.</translation>
 <translation id="2667463864537187133">맞춤법 검사 관리</translation>
+<translation id="2668094785979141847">클릭하여 Google 렌즈 종료</translation>
 <translation id="2668604389652548400"><ph name="BEGIN_LINK" />Chrome 웹 스토어<ph name="END_LINK" />의 유사한 확장 프로그램으로 대체하거나 삭제하세요</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> 앱을 열 수 없음</translation>
 <translation id="2669454659051515572">이 기기를 사용하는 누구나 다운로드된 파일을 볼 수 있습니다.</translation>
@@ -2376,6 +2378,7 @@
 <translation id="2710101514844343743">사용 및 진단 데이터</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> 기기가 잠금 해제됨</translation>
+<translation id="2712141162840347885">Google 렌즈로 검색할 항목을 선택하거나 Esc 키를 눌러 Google 렌즈를 종료하세요</translation>
 <translation id="2713106313042589954">카메라 끄기</translation>
 <translation id="2713444072780614174">흰색</translation>
 <translation id="2714180132046334502">어두운 배경</translation>
@@ -2446,6 +2449,7 @@
 <translation id="2749881179542288782">영문 철자 및 문법 검사</translation>
 <translation id="2750020734439919571">Chrome 앱 설정 및 권한 더보기</translation>
 <translation id="2750602041558385535">확인되지 않은 다운로드 차단됨</translation>
+<translation id="2753623023919742414">클릭하여 검색</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" />에 저장된 빠른 페어링 기기를 찾는 중</translation>
 <translation id="2754825024506485820">Google Play 스토어에서 생산성, 엔터테인먼트 등 나에게 필요한 다양한 앱을 찾아보세요. 언제든지 앱을 설치할 수 있습니다.</translation>
 <translation id="2755349111255270002"><ph name="DEVICE_TYPE" /> 초기화</translation>
@@ -2953,6 +2957,7 @@
 <translation id="3132996321662585180">매일 새로고침</translation>
 <translation id="3133184011320864289">동기화를 사용 설정하면 Chrome에서 탭 그룹을 추천하고 탭을 깔끔하게 정리할 수 있습니다.</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> 실험의 상태를 선택하세요. 실험 설명: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">드래그하여 검색</translation>
 <translation id="3139925690611372679">기본 노란색 아바타</translation>
 <translation id="3141093262818886744">무시하고 열기</translation>
 <translation id="3141318088920353606">듣는 중...</translation>
@@ -4094,7 +4099,6 @@
 <translation id="3983586614702900908">알 수 없는 공급업체의 기기</translation>
 <translation id="3983764759749072418">Play 스토어 애플리케이션이 이 기기에 액세스할 수 있습니다.</translation>
 <translation id="3983769721878416534">지연 후 클릭</translation>
-<translation id="3983793589497399077">아무 곳이나 클릭하거나 드래그하여 렌즈로 검색</translation>
 <translation id="3984135167056005094">이메일 주소를 포함하지 않음</translation>
 <translation id="3984159763196946143">데모 모드를 시작할 수 없음</translation>
 <translation id="3984431586879874039">이 사이트에서 보안 키를 보도록 허용할까요?</translation>
@@ -8542,6 +8546,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="741906494724992817">이 앱에는 특별한 권한이 필요하지 않습니다.</translation>
 <translation id="7419142833919893307">추가된 사용자 이름 없음</translation>
 <translation id="7419565702166471774">항상 보안 연결 사용</translation>
+<translation id="7419819959108735624">Google 렌즈로 검색할 항목을 선택하세요</translation>
 <translation id="742130257665691897">북마크 삭제됨</translation>
 <translation id="7421925624202799674">페이지 소스 보기(&amp;V)</translation>
 <translation id="7422192691352527311">환경설정...</translation>
@@ -10855,7 +10860,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9094859731829297286">Linux에 사용할 고정된 크기의 디스크를 예약하시겠습니까?</translation>
 <translation id="909554839118732438">시크릿 창 닫기</translation>
 <translation id="9095819602391364796">사이트에서 MIDI 기기를 제어하고 다시 프로그래밍하도록 허용하지 않음</translation>
-<translation id="9096053102600371572">스크롤 제어됨 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="9096053102600371572">스크롤 제어 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="9096776523567481218">로컬에 설치되지 않음</translation>
 <translation id="9098860402274800697">Google Play 및 Android 앱 삭제</translation>
 <translation id="9099220545925418560">방문 기록을 기반으로 추천됩니다. 설정이 사용 중지되어 있습니다.</translation>
@@ -10865,6 +10870,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9102610709270966160">확장 프로그램 사용</translation>
 <translation id="9102864637938129124">사이트 및 광고주가 광고 실적을 파악할 수 있습니다. 이 설정을 사용하고 있습니다.</translation>
 <translation id="9103868373786083162">돌아가려면 뒤로 버튼을 누르고, 방문 기록을 보려면 컨텍스트 메뉴 키를 누릅니다.</translation>
+<translation id="9106236359747881194">검색할 텍스트 선택</translation>
 <translation id="9107096627210171112">번역…</translation>
 <translation id="9108035152087032312">창 이름 지정...</translation>
 <translation id="9108072915170399168">현재 데이터 사용 설정은 인터넷 사용 안함입니다</translation>

@@ -1714,6 +1714,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2234827758954819389">Panduan Privasi</translation>
 <translation id="2234876718134438132">Sinkronisasi dan layanan Google</translation>
 <translation id="2235344399760031203">Cookie pihak ketiga diblokir</translation>
+<translation id="2236949375853147973">Aktivitas Saya</translation>
 <translation id="2238379619048995541">Data Status Frekuensi</translation>
 <translation id="2241053333139545397">Membaca dan mengubah data Anda di sejumlah situs web</translation>
 <translation id="2241634353105152135">Sekali ini saja</translation>
@@ -2324,6 +2325,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2666247341166669829">Tingkat daya baterai kiri <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Aplikasi lain disetel untuk membuka link yang sama dengan <ph name="APP_NAME" />. Penyetelan ini akan membuat <ph name="APP_NAME_2" /> dan <ph name="APP_NAME_3" /> tidak dapat membuka link yang didukung.</translation>
 <translation id="2667463864537187133">Kelola pemeriksa ejaan</translation>
+<translation id="2668094785979141847">Klik untuk keluar dari Google Lens</translation>
 <translation id="2668604389652548400">Hapus atau ganti dengan ekstensi serupa dari <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Tidak dapat membuka <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Siapa pun yang menggunakan perangkat ini dapat melihat file yang didownload</translation>
@@ -2374,6 +2376,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2710101514844343743">Data penggunaan dan diagnostik</translation>
 <translation id="271033894570825754">Baru</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> dibuka kuncinya</translation>
+<translation id="2712141162840347885">Pilih item untuk ditelusuri dengan Google Lens atau tekan escape untuk keluar dari Google Lens</translation>
 <translation id="2713106313042589954">Nonaktifkan kamera</translation>
 <translation id="2713444072780614174">Putih</translation>
 <translation id="2714180132046334502">Latar belakang gelap</translation>
@@ -2444,6 +2447,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2749881179542288782">Periksa Grammar Dengan Ejaaan</translation>
 <translation id="2750020734439919571">Setelan dan izin lainnya untuk aplikasi Chrome</translation>
 <translation id="2750602041558385535">Download yang belum terverifikasi diblokir</translation>
+<translation id="2753623023919742414">Klik untuk menelusuri</translation>
 <translation id="2754226775788136540">Mencari perangkat Sambungan Cepat yang disimpan ke <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Mulai dari produktivitas hingga hiburan, temukan berbagai aplikasi yang Anda butuhkan di Google Play Store. Anda dapat menginstal aplikasi kapan saja.</translation>
 <translation id="2755349111255270002">Reset <ph name="DEVICE_TYPE" /> ini</translation>
@@ -2951,6 +2955,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3132996321662585180">Perbarui tiap hari</translation>
 <translation id="3133184011320864289">Aktifkan sinkronisasi untuk mengizinkan Chrome menyarankan grup tab dan menjaga tab Anda tetap teratur</translation>
 <translation id="3134393957315651797">Pilih status eksperimen untuk eksperimen <ph name="EXPERIMENT_NAME" />. Deskripsi eksperimen: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Tarik untuk menelusuri</translation>
 <translation id="3139925690611372679">Avatar kuning default</translation>
 <translation id="3141093262818886744">Tetap buka</translation>
 <translation id="3141318088920353606">Mendengarkan...</translation>
@@ -4092,7 +4097,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="3983586614702900908">perangkat dari vendor tak dikenal</translation>
 <translation id="3983764759749072418">Aplikasi Play Store memiliki akses ke perangkat ini.</translation>
 <translation id="3983769721878416534">Penundaan sebelum klik</translation>
-<translation id="3983793589497399077">Klik atau tarik di mana saja untuk menelusuri dengan Lens</translation>
 <translation id="3984135167056005094">Jangan sertakan alamat email</translation>
 <translation id="3984159763196946143">Tidak dapat memulai mode demo</translation>
 <translation id="3984431586879874039">Izinkan situs ini melihat kunci keamanan Anda?</translation>
@@ -8542,6 +8546,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="741906494724992817">Aplikasi ini tidak memerlukan izin khusus.</translation>
 <translation id="7419142833919893307">Tidak ada nama pengguna yang ditambahkan</translation>
 <translation id="7419565702166471774">Selalu gunakan koneksi aman</translation>
+<translation id="7419819959108735624">Pilih apa saja untuk ditelusuri dengan Google Lens</translation>
 <translation id="742130257665691897">Bookmark dihapus</translation>
 <translation id="7421925624202799674">&amp;Lihat Sumber Halaman</translation>
 <translation id="7422192691352527311">Preferensi...</translation>
@@ -10864,6 +10869,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="9102610709270966160">Aktifkan Ekstensi</translation>
 <translation id="9102864637938129124">Situs dan pengiklan dapat memahami performa iklan. Setelan ini aktif.</translation>
 <translation id="9103868373786083162">Tekan untuk kembali ke menu konteks guna melihat histori</translation>
+<translation id="9106236359747881194">Pilih teks untuk menelusuri</translation>
 <translation id="9107096627210171112">T&amp;erjemahkan...</translation>
 <translation id="9108035152087032312">Namai Jendela ...</translation>
 <translation id="9108072915170399168">Setelan penggunaan data saat ini adalah Tanpa internet</translation>

@@ -1702,6 +1702,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2234827758954819389">Privacygids</translation>
 <translation id="2234876718134438132">Synchronisatie en Google-services</translation>
 <translation id="2235344399760031203">Cookies van derden worden geblokkeerd</translation>
+<translation id="2236949375853147973">Mijn activiteit</translation>
 <translation id="2238379619048995541">Gegevens van frequentiestatus</translation>
 <translation id="2241053333139545397">Je gegevens lezen en wijzigen op een aantal websites</translation>
 <translation id="2241634353105152135">Slechts één keer</translation>
@@ -2309,6 +2310,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2666247341166669829">Batterijniveau links: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Andere apps zijn ingesteld om dezelfde links te openen als <ph name="APP_NAME" />. Hiermee zet je uit dat <ph name="APP_NAME_2" /> en <ph name="APP_NAME_3" /> ondersteunde links openen.</translation>
 <translation id="2667463864537187133">Spellingcontrole beheren</translation>
+<translation id="2668094785979141847">Klik om Google Lens af te sluiten</translation>
 <translation id="2668604389652548400">Verwijder de extensie of vervang deze door een vergelijkbare extensie uit de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Kan <ph name="APP_NAME" /> niet openen</translation>
 <translation id="2669454659051515572">Iedereen die dit apparaat gebruikt, kan gedownloade bestanden zien</translation>
@@ -2359,6 +2361,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2710101514844343743">Gebruiks- en diagnostische gegevens</translation>
 <translation id="271033894570825754">Nieuw</translation>
 <translation id="2710507903599773521">Je <ph name="DEVICE_TYPE" /> is nu ontgrendeld</translation>
+<translation id="2712141162840347885">Selecteer iets om te zoeken met Google Lens of druk op Escape om Google Lens te sluiten</translation>
 <translation id="2713106313042589954">Camera uitzetten</translation>
 <translation id="2713444072780614174">Wit</translation>
 <translation id="2714180132046334502">Donkere achtergrond</translation>
@@ -2429,6 +2432,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2749881179542288782">Controleer grammatica met spelling</translation>
 <translation id="2750020734439919571">Meer instellingen en rechten voor de Chrome-app</translation>
 <translation id="2750602041558385535">Niet-geverifieerde download geblokkeerd</translation>
+<translation id="2753623023919742414">Klik om te zoeken</translation>
 <translation id="2754226775788136540">Zoeken naar apparaten met Snel koppelen die zijn opgeslagen in <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Vind de apps die je nodig hebt, van productiviteit tot entertainment, in de Google Play Store. Je kunt apps op elk moment installeren.</translation>
 <translation id="2755349111255270002">Deze <ph name="DEVICE_TYPE" /> resetten</translation>
@@ -2936,6 +2940,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3132996321662585180">Dagelijks vernieuwen</translation>
 <translation id="3133184011320864289">Zet synchronisatie aan zodat Chrome tabbladgroepen kan voorstellen en je tabbladen overzichtelijk blijven</translation>
 <translation id="3134393957315651797">Selecteer de experimentstatus voor het experiment <ph name="EXPERIMENT_NAME" />. Beschrijving experiment: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Sleep om te zoeken</translation>
 <translation id="3139925690611372679">Standaard gele avatar</translation>
 <translation id="3141093262818886744">Toch openen</translation>
 <translation id="3141318088920353606">Luisteren...</translation>
@@ -4077,7 +4082,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="3983586614702900908">apparaten van een onbekende leverancier</translation>
 <translation id="3983764759749072418">Play Store-apps hebben toegang tot dit apparaat.</translation>
 <translation id="3983769721878416534">Vertraging vóór klikken</translation>
-<translation id="3983793589497399077">Klik of sleep ergens om te zoeken met Lens</translation>
 <translation id="3984135167056005094">E-mailadres niet opnemen</translation>
 <translation id="3984159763196946143">Kan demomodus niet starten</translation>
 <translation id="3984431586879874039">Deze site toestaan je beveiligingssleutel te bekijken?</translation>
@@ -8519,6 +8523,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="741906494724992817">Voor deze app zijn geen speciale rechten vereist.</translation>
 <translation id="7419142833919893307">Geen gebruikersnaam toegevoegd</translation>
 <translation id="7419565702166471774">Altijd beveiligde verbindingen gebruiken</translation>
+<translation id="7419819959108735624">Selecteer iets om te zoeken met Google Lens</translation>
 <translation id="742130257665691897">Bookmarks verwijderd</translation>
 <translation id="7421925624202799674">Paginabron &amp;weergeven</translation>
 <translation id="7422192691352527311">Voorkeuren...</translation>
@@ -10840,6 +10845,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9102610709270966160">Extensie aanzetten</translation>
 <translation id="9102864637938129124">Sites en adverteerders krijgen inzicht in de prestaties van advertenties. Deze instelling staat aan.</translation>
 <translation id="9103868373786083162">Druk op Terug &gt; contextmenu om de geschiedenis te bekijken</translation>
+<translation id="9106236359747881194">Selecteer tekst om te zoeken</translation>
 <translation id="9107096627210171112">Ve&amp;rtalen...</translation>
 <translation id="9108035152087032312">&amp;Venster een naam geven...</translation>
 <translation id="9108072915170399168">De huidige instelling voor datagebruik is 'Zonder internet'</translation>

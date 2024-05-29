@@ -835,6 +835,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1607139524282324606">Futa kipengele</translation>
 <translation id="1607499585984539560">Mtumiaji si mshirika wa kikoa hiki</translation>
 <translation id="1608668830839595724">Vitendo zaidi kwenye vipengee vilivyochaguliwa</translation>
+<translation id="1608698493373028805">Huenda kiendelezi hiki kikaacha kutumika hivi karibuni</translation>
 <translation id="1610272688494140697">Mipangilio ya Programu</translation>
 <translation id="161042844686301425">Samawati-Kijani</translation>
 <translation id="1611432201750675208">Kifaa chako kimefungwa</translation>
@@ -2320,6 +2321,8 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2666247341166669829">Kiwango cha betri ya upande wa kushoto <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Programu zingine zimeruhusiwa kufungua viungo vinavyofunguliwa na <ph name="APP_NAME" />. Hatua hii itazuia <ph name="APP_NAME_2" /> na <ph name="APP_NAME_3" /> zisifungue viungo vinavyoweza kutumika.</translation>
 <translation id="2667463864537187133">Dhibiti kikagua maendelezo</translation>
+<translation id="2668094785979141847">Bofya ili uondoke kwenye Lenzi ya Google</translation>
+<translation id="2668604389652548400">Kiondoe au utumie viendelezi vinavyofanana vilivyo katika <ph name="BEGIN_LINK" />Duka la Chrome kwenye Wavuti<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Imeshindwa kufungua <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Mtu yeyote anayetumia kifaa hiki anaweza kuona faili zilizopakuliwa</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> inashiriki kichupo cha Chrome.</translation>
@@ -2369,6 +2372,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2710101514844343743">Data ya matumizi na uchanganuzi</translation>
 <translation id="271033894570825754">Mpya</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> yako sasa imefunguliwa</translation>
+<translation id="2712141162840347885">Chagua chochote unachotaka kutafuta ukitumia Lenzi ya Google au ubonyeze "escape" ili ufunge Lenzi ya Google</translation>
 <translation id="2713106313042589954">Zima kamera</translation>
 <translation id="2713444072780614174">Nyeupe</translation>
 <translation id="2714180132046334502">Mandhari-nyuma meusi</translation>
@@ -2439,6 +2443,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2749881179542288782">Kagua Sarufi Pamoja na Tahajia</translation>
 <translation id="2750020734439919571">Mipangilio na ruhusa zaidi za programu ya Chrome</translation>
 <translation id="2750602041558385535">Kipakuliwa ambacho hakijathibitishwa kimezuiwa</translation>
+<translation id="2753623023919742414">Bofya ili utafute</translation>
 <translation id="2754226775788136540">Inatafuta vifaa vya Kuoanisha Haraka vilivyohifadhiwa katika <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Pata programu unazohitaji iwe zinazohusu tija au zinazohusu burudani, kwenye Duka la Google Play. Unaweza kusakinisha programu wakati wowote.</translation>
 <translation id="2755349111255270002">Weka <ph name="DEVICE_TYPE" /> hii upya</translation>
@@ -2946,6 +2951,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3132996321662585180">Onyesha upya kila siku</translation>
 <translation id="3133184011320864289">Washa usawazishaji ili uruhusu Chrome ipendekeze vikundi vya vichupo na ipange vichupo vyako</translation>
 <translation id="3134393957315651797">Chagua hali ya jaribio la <ph name="EXPERIMENT_NAME" />. Maelezo ya jaribio: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Buruta ili utafute</translation>
 <translation id="3139925690611372679">Ishara chaguomsingi manjano</translation>
 <translation id="3141093262818886744">Fungua licha ya hilo</translation>
 <translation id="3141318088920353606">Inasikiliza...</translation>
@@ -4087,7 +4093,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3983586614702900908">vifaa kutoka kwa mchuuzi asiyejulikana</translation>
 <translation id="3983764759749072418">Programu za Duka la Google zina ufikiaji wa kifaa hiki.</translation>
 <translation id="3983769721878416534">Muda wa kusubiri kabla ya kubofya</translation>
-<translation id="3983793589497399077">Bofya au uburute popote ili utafute ukitumia Lenzi</translation>
 <translation id="3984135167056005094">Usiweke anwani ya barua pepe</translation>
 <translation id="3984159763196946143">Imeshindwa kuanzisha hali ya onyesho</translation>
 <translation id="3984431586879874039">Ungependa kuruhusu tovuti hii kuona ufunguo wako wa usalama?</translation>
@@ -8535,6 +8540,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="741906494724992817">Programu hii haihitaji ruhusa maalum.</translation>
 <translation id="7419142833919893307">Hujaweka jina la mtumiaji</translation>
 <translation id="7419565702166471774">Tumia miunganisho salama kila wakati</translation>
+<translation id="7419819959108735624">Chagua chochote cha kutafuta kwa kutumia Lenzi ya Google</translation>
 <translation id="742130257665691897">Imeondoa alamisho</translation>
 <translation id="7421925624202799674">&amp;Tazama Asili ya Ukurasa</translation>
 <translation id="7422192691352527311">Mapendeleo...</translation>
@@ -10859,6 +10865,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="9102610709270966160">Ruhusu Kiendelezi</translation>
 <translation id="9102864637938129124">Tovuti na watangazaji wanaweza kuelewa utendaji wa matangazo. Mipangilio hii imewashwa.</translation>
 <translation id="9103868373786083162">Bonyeza ili kurudi nyuma, bonyeza menyu ili uone historia</translation>
+<translation id="9106236359747881194">Chagua maandishi ya kutafuta</translation>
 <translation id="9107096627210171112">Tafsiri...</translation>
 <translation id="9108035152087032312">Lipe &amp;dirisha jina...</translation>
 <translation id="9108072915170399168">Mipangilio ya sasa ya matumizi ya data ni 'Bila Intaneti'</translation>

@@ -837,6 +837,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1607139524282324606">Vymazat položku</translation>
 <translation id="1607499585984539560">Uživatel není přidružen k doméně</translation>
 <translation id="1608668830839595724">Další akce s vybranými položkami</translation>
+<translation id="1608698493373028805">Toto rozšíření pravděpodobně již brzy nebude podporováno</translation>
 <translation id="1610272688494140697">Nastavení aplikací</translation>
 <translation id="161042844686301425">Azurová</translation>
 <translation id="1611432201750675208">Zařízení je zamknuté</translation>
@@ -2310,6 +2311,8 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2666247341166669829">Stav levé baterie: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Ostatní aplikace jsou nastaveny, aby otevíraly stejné odkazy jako aplikace <ph name="APP_NAME" />. Aplikace <ph name="APP_NAME_2" /> a <ph name="APP_NAME_3" /> tak nebudou moci otevírat podporované odkazy.</translation>
 <translation id="2667463864537187133">Správa kontroly pravopisu</translation>
+<translation id="2668094785979141847">Kliknutím ukončíte Google Lens</translation>
+<translation id="2668604389652548400">Odstraňte ho nebo ho nahraďte podobnými rozšířeními z <ph name="BEGIN_LINK" />Internetového obchodu Chrome<ph name="END_LINK" />.</translation>
 <translation id="2669241540496514785">Aplikaci <ph name="APP_NAME" /> nelze otevřít</translation>
 <translation id="2669454659051515572">Stažené soubory může vidět kdokoli, kdo používá tohle zařízení</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> sdílí kartu Chrome.</translation>
@@ -2359,6 +2362,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2710101514844343743">Údaje o využití a diagnostice</translation>
 <translation id="271033894570825754">Nové</translation>
 <translation id="2710507903599773521">Vaše zařízení <ph name="DEVICE_TYPE" /> je teď odemknuté</translation>
+<translation id="2712141162840347885">Vyberte cokoli, co chcete vyhledat pomocí Google Lens, nebo Google Lens stisknutím klávesy Escape ukončete</translation>
 <translation id="2713106313042589954">Vypnout kameru</translation>
 <translation id="2713444072780614174">Bílá</translation>
 <translation id="2714180132046334502">Tmavé pozadí</translation>
@@ -2429,6 +2433,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2749881179542288782">Zkontrolovat pravopis a gramatiku</translation>
 <translation id="2750020734439919571">Další nastavení a oprávnění aplikace Chrome</translation>
 <translation id="2750602041558385535">Bylo zablokováno stažení neověřeného souboru</translation>
+<translation id="2753623023919742414">Kliknutím spustíte hledání</translation>
 <translation id="2754226775788136540">Vyhledávání zařízení s rychlým párováním uložených do účtu <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">V Obchodě Google Play najdete aplikace, které potřebujete, od produktivity po zábavu. Aplikace můžete nainstalovat kdykoliv.</translation>
 <translation id="2755349111255270002">Resetujte toto zařízení <ph name="DEVICE_TYPE" /></translation>
@@ -2936,6 +2941,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3132996321662585180">Každý den obnovit</translation>
 <translation id="3133184011320864289">Pokud chcete, aby vám Chrome navrhoval skupiny karet a uspořádával karty, zapněte synchronizaci</translation>
 <translation id="3134393957315651797">Vyberte stav experimentální funkce <ph name="EXPERIMENT_NAME" />. Popis experimentální funkce: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Přetažením vyhledáte</translation>
 <translation id="3139925690611372679">Výchozí žlutý avatar</translation>
 <translation id="3141093262818886744">Přesto otevřít</translation>
 <translation id="3141318088920353606">Poslouchám…</translation>
@@ -4076,7 +4082,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="3983586614702900908">zařízení od neznámého dodavatele</translation>
 <translation id="3983764759749072418">K tomuto zařízení mají přístup aplikace z Obchodu Play.</translation>
 <translation id="3983769721878416534">Prodleva před kliknutím</translation>
-<translation id="3983793589497399077">Pokud chcete hledat pomocí Lens, někam klikněte nebo něco vyberte tažením</translation>
 <translation id="3984135167056005094">E-mailovou adresu neuvádět</translation>
 <translation id="3984159763196946143">Ukázkový režim nelze spustit</translation>
 <translation id="3984431586879874039">Povolit tomuto webu přístup k vašemu bezpečnostnímu klíči?</translation>
@@ -6379,7 +6384,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5774295353725270860">Do aplikace Soubory</translation>
 <translation id="5775777649329475570">Odebrat Google Play a aplikace pro Android?</translation>
 <translation id="5775863968701268310">Spravovat předvolby Google Play</translation>
-<translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (výchozí nastavení systému)</translation>
+<translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (předvoleno systémem)</translation>
 <translation id="5776450228446082914">Seznam webů, které lze otevřít v obou prohlížečích.</translation>
 <translation id="5776571780337000608">Pomocí této aplikace můžete otevírat a upravovat podporované soubory z prohlížeče souborů nebo jiných aplikací. Pokud chcete určit, které soubory se ve výchozím nastavení otevírají v této aplikaci, přečtěte si, <ph name="BEGIN_LINK" />jak na zařízení nastavit výchozí aplikace<ph name="END_LINK" />.</translation>
 <translation id="5776884611062957102">Služby určování polohy Google zlepšují přesnost určování polohy na základě sítí Wi-Fi, mobilních sítí a senzorů, pomocí kterých se snaží odhadnout vaši polohu. Google může pravidelně shromažďovat údaje o poloze a anonymně je používat ke zlepšování přesnosti polohy a služeb založených na poloze.
@@ -8526,6 +8531,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="741906494724992817">Tato aplikace nevyžaduje žádná speciální oprávnění.</translation>
 <translation id="7419142833919893307">Nebylo přidáno žádné uživatelské jméno</translation>
 <translation id="7419565702166471774">Vždy používat zabezpečená připojení</translation>
+<translation id="7419819959108735624">Vyberte cokoli, co chcete vyhledat pomocí Google Lens</translation>
 <translation id="742130257665691897">Záložky byly odstraněny</translation>
 <translation id="7421925624202799674">Zobrazit zdrojo&amp;vý kód stránky</translation>
 <translation id="7422192691352527311">Nastavení...</translation>
@@ -10849,6 +10855,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9102610709270966160">Aktivovat rozšíření</translation>
 <translation id="9102864637938129124">Weby a inzerenti se mohou dozvědět, jak si reklamy vedou. Toto nastavení je zapnuté.</translation>
 <translation id="9103868373786083162">Stisknutím přejdete zpět. V kontextové nabídce můžete zobrazit historii</translation>
+<translation id="9106236359747881194">Vyberte text, který chcete vyhledat</translation>
 <translation id="9107096627210171112">&amp;Přeložit…</translation>
 <translation id="9108035152087032312">Název &amp;okna…</translation>
 <translation id="9108072915170399168">Využívání dat je aktuálně nastaveno na možnost Bez internetu</translation>

@@ -837,6 +837,7 @@
 <translation id="1607139524282324606">ထည့်သွင်းမှု ဖယ်ရှားရန်</translation>
 <translation id="1607499585984539560">အသုံးပြုသူကို ဒိုမိန်းနှင့် ချိတ်ဆက်မထားပါ</translation>
 <translation id="1608668830839595724">ရွေးထားသောအရာများအတွက် နောက်ထပ် လုပ်ဆောင်ချက်များ</translation>
+<translation id="1608698493373028805">ယင်းနောက်ဆက်တွဲကို မကြာမီ ပံ့ပိုးတော့မည်မဟုတ်ပါ</translation>
 <translation id="1610272688494140697">အက်ပ်ဆက်တင်များ</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">သင့်စက်ကို လော့ခ်ချထားပါသည်</translation>
@@ -1711,6 +1712,7 @@
 <translation id="2234827758954819389">ကိုယ်ရေးအချက်အလက်လုံခြုံမှုလမ်းညွှန်</translation>
 <translation id="2234876718134438132">စင့်ခ်နှင့် Google ဝန်ဆောင်မှု</translation>
 <translation id="2235344399760031203">ပြင်ပအဖွဲ့အစည်း၏ ကွတ်ကီးများကို ပိတ်ထားသည်</translation>
+<translation id="2236949375853147973">ကျွန်ုပ်၏လုပ်ဆောင်ချက်</translation>
 <translation id="2238379619048995541">ကြိမ်ရေ အခြေအနေ ဒေတာ</translation>
 <translation id="2241053333139545397">သင်၏ ဒေတာကို ဆိုက် တသီကြီးမှာ ဖတ်ပါ ပြောင်းလဲပါ</translation>
 <translation id="2241634353105152135">တစ်ကြိမ်သာ</translation>
@@ -2321,6 +2323,8 @@
 <translation id="2666247341166669829">ဘယ်ဘက် ဘက်ထရီအား <ph name="PERCENTAGE" />%။</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" /> ကဲ့သို့ အခြားအက်ပ်များကိုလည်း တူညီသောလင့်ခ်များဖွင့်ရန် သတ်မှတ်ထားသည်။ ဤပြောင်းလဲခြင်းက <ph name="APP_NAME_2" /> နှင့် <ph name="APP_NAME_3" /> ကို ပံ့ပိုးထားသောလင့်ခ်များ ပေးဖွင့်မည်မဟုတ်ပါ။</translation>
 <translation id="2667463864537187133">စာလုံးပေါင်းသတ်ပုံ စီမံခန့်ခွဲခြင်း</translation>
+<translation id="2668094785979141847">Google Lens မှထွက်ရန် နှိပ်ပါ</translation>
+<translation id="2668604389652548400">၎င်းကို ဖယ်ရှားပါ (သို့) <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> မှ အလားတူ နောက်ဆက်တွဲများဖြင့် အစားထိုးပါ</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> ကို ဖွင့်၍မရပါ</translation>
 <translation id="2669454659051515572">ဒေါင်းလုဒ်လုပ်သည့်ဖိုင်များကို ဤစက်အသုံးပြုသူတိုင်း တွေ့နိုင်သည်</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> သည် Chrome တဘ်ကိုမျှဝေနေသည်။</translation>
@@ -2370,6 +2374,7 @@
 <translation id="2710101514844343743">အသုံးပြုမှုနှင့် အမှားရှာဖွေမှု ဒေတာများ</translation>
 <translation id="271033894570825754">အသစသ်</translation>
 <translation id="2710507903599773521">သင့် <ph name="DEVICE_TYPE" /> ကို ယခု လော့ခ်ဖြေထားသည်</translation>
+<translation id="2712141162840347885">Google Lens ဖြင့် ရှာရန် တစ်ခုခုရွေးပါ (သို့) Google Lens မှ ထွက်ရန် Escape နှိပ်ပါ</translation>
 <translation id="2713106313042589954">ကင်မရာပိတ်ရန်</translation>
 <translation id="2713444072780614174">အဖြူ</translation>
 <translation id="2714180132046334502">မှောင်သည့်နောက်ခံ</translation>
@@ -2440,6 +2445,7 @@
 <translation id="2749881179542288782">သဒ္ဒါကို စာလုံးပေါင်းနှင့်အတူ စစ်ကြည့်ရန်</translation>
 <translation id="2750020734439919571">နောက်ထပ် Chrome အက်ပ် ဆက်တင်နှင့် ခွင့်ပြုချက်များ</translation>
 <translation id="2750602041558385535">အတည်ပြုမထားသော ဒေါင်းလုဒ်ကို ပိတ်ထားသည်</translation>
+<translation id="2753623023919742414">ရှာဖွေရန် နှိပ်ပါ</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" /> တွင် သိမ်းထားသော ‘အမြန်တွဲချိတ်ခြင်း’ စက်များကို ရှာနေသည်</translation>
 <translation id="2754825024506485820">အလုပ်ပြီးမြောက်မှုမှ ဖျော်ဖြေရေးအထိ လိုအပ်သောအက်ပ်များကို Google Play Store တွင် ရှာနိုင်သည်။ အက်ပ်များကို အချိန်မရွေး ထည့်သွင်းနိုင်သည်။</translation>
 <translation id="2755349111255270002">ဤ <ph name="DEVICE_TYPE" /> ကို ပြင်ဆင်သတ်မှတ်ပါ</translation>
@@ -2948,6 +2954,7 @@
 <translation id="3132996321662585180">နေ့စဉ် ပြန်လည် စတင်ရန်</translation>
 <translation id="3133184011320864289">Chrome ကို တဘ်အုပ်စုများ အကြံပြုခွင့်ပေးရန်နှင့် သင့်တဘ်များ အစီအစဉ်တကျထားခွင့်ပြုရန်အတွက် စင့်ခ်လုပ်ခြင်းကို ဖွင့်ပါ</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> စမ်းသပ်မှုအတွက် စမ်းသပ်မှုအခြေအနေကို ရွေးပါ။ စမ်းသပ်မှု ဖော်ပြချက်- <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">ရှာရန် ဖိဆွဲပါ</translation>
 <translation id="3139925690611372679">မူရင်းအဝါရောင်ချန်နယ်ပုံ</translation>
 <translation id="3141093262818886744">မည်သို့ပင်ဖြစ်စေ ဖွင့်ရန်</translation>
 <translation id="3141318088920353606">နားထောင်နေသည်…</translation>
@@ -4088,7 +4095,6 @@
 <translation id="3983586614702900908">အမည်မသိ ပစ္စည်းရောင်းသူထံမှ စက်ပစ္စည်းများ</translation>
 <translation id="3983764759749072418">'Play စတိုး' အပလီကေးရှင်းများက ဤကိရိယာကို ဝင်သုံးခွင့်ရှိပါသည်။</translation>
 <translation id="3983769721878416534">မနှိပ်မီ ကြန့်ကြာချိန်</translation>
-<translation id="3983793589497399077">Lens ဖြင့်ရှာရန် တစ်နေရာရာကို နှိပ်ပါ (သို့) ဖိဆွဲပါ</translation>
 <translation id="3984135167056005094">အီးမေးလ်လိပ်စာ မထည့်ပါနှင့်</translation>
 <translation id="3984159763196946143">သရုပ်ပြမုဒ်ကို စတင်၍မရပါ</translation>
 <translation id="3984431586879874039">ဤဝဘ်ဆိုက်ကို သင့်လုံခြုံရေးကီး ကြည့်ခွင့်ပြုလိုသလား။</translation>
@@ -8535,6 +8541,7 @@
 <translation id="741906494724992817">ဤ အက်ပ် သည် မည်သည့် အထူးခွင့်ပြုချက်များမှ မလိုအပ်ပါ။</translation>
 <translation id="7419142833919893307">အသုံးပြုသူအမည် ထည့်မထားပါ</translation>
 <translation id="7419565702166471774">လုံခြုံသော ချိတ်ဆက်မှုများ အမြဲသုံးရန်</translation>
+<translation id="7419819959108735624">Google Lens ဖြင့် ရှာရန် တစ်ခုခုရွေးပါ</translation>
 <translation id="742130257665691897">ဝဘ်လိပ်စာကို ဖယ်ရှားပြီးပါပြီ</translation>
 <translation id="7421925624202799674">&amp;စာမျက်နှာ အရင်းမြစ်အား ကြည့်ရန်</translation>
 <translation id="7422192691352527311">ဦးစားပေးမှုများ...</translation>
@@ -10857,6 +10864,7 @@
 <translation id="9102610709270966160">နောက်ဆက်တွဲကို အသုံးပြုရန်</translation>
 <translation id="9102864637938129124">ဝဘ်ဆိုက်နှင့် ကြော်ငြာရှင်များက ကြော်ငြာလုပ်ဆောင်ပုံကို နားလည်နိုင်သည်။ ဤဆက်တင်ကို ဖွင့်ထားသည်။</translation>
 <translation id="9103868373786083162">မှတ်တမ်းကို ကြည့်ရန် နောက်ကိုသွား၊ ဆက်စပ် မီနူးကို နှိပ်ပါ</translation>
+<translation id="9106236359747881194">ရှာဖွေရန် စာသားရွေးပါ</translation>
 <translation id="9107096627210171112">ဘာသာပြန်ရန်...</translation>
 <translation id="9108035152087032312">ဝင်းဒိုး အမည်ပေးရန်...</translation>
 <translation id="9108072915170399168">လက်ရှိဒေတာသုံးစွဲမှုဆက်တင်သည် အင်တာနက်မရှိဘဲသုံးရန်ဖြစ်သည်</translation>

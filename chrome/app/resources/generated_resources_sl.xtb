@@ -2327,6 +2327,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2666247341166669829">Raven napolnjenosti leve baterije: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Druge aplikacije so nastavljene tako, da odpirajo iste povezave kot aplikacija <ph name="APP_NAME" />. S tem bo aplikacijama <ph name="APP_NAME_2" /> in <ph name="APP_NAME_3" /> onemogočeno odpiranje podprtih povezav.</translation>
 <translation id="2667463864537187133">Upravljanje preverjanja črkovanja</translation>
+<translation id="2668094785979141847">Kliknite, če želite zapreti Google Lens</translation>
 <translation id="2668604389652548400">Odstranite ali zamenjajte s podobnimi razširitvami iz <ph name="BEGIN_LINK" />Spletne trgovine Chrome<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Datoteke »<ph name="APP_NAME" />« ni bilo mogoče odpreti</translation>
 <translation id="2669454659051515572">Prenesene datoteke lahko vidijo vsi, ki uporabljajo to napravo.</translation>
@@ -2377,6 +2378,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2710101514844343743">Podatki o uporabi in diagnostični podatki</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2710507903599773521">Naprava <ph name="DEVICE_TYPE" /> je zdaj odklenjena</translation>
+<translation id="2712141162840347885">Izberite kar koli za iskanje z Googlom Lens ali pritisnite tipko Esc, če želite zapreti Google Lens</translation>
 <translation id="2713106313042589954">Izklopi kamero</translation>
 <translation id="2713444072780614174">Bela</translation>
 <translation id="2714180132046334502">Temno ozadje</translation>
@@ -2447,6 +2449,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2749881179542288782">Preverjanje slovnice in črkovanja</translation>
 <translation id="2750020734439919571">Več nastavitev in dovoljenj za aplikacije za Chrome</translation>
 <translation id="2750602041558385535">Nepreverjen prenos je blokiran</translation>
+<translation id="2753623023919742414">Kliknite, če želite iskati</translation>
 <translation id="2754226775788136540">Iskanje naprav za hitro seznanitev, shranjenih v računu <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">V Trgovini Google Play najdite aplikacije, ki jih potrebujete, od aplikacij za storilnost do razvedrila. Aplikacije lahko namestite kadar koli.</translation>
 <translation id="2755349111255270002">Ponastavite to napravo <ph name="DEVICE_TYPE" />.</translation>
@@ -2954,6 +2957,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3132996321662585180">Dnevno osveževanje</translation>
 <translation id="3133184011320864289">Vklopite sinhronizacijo, če želite, da Chrome predlaga skupine zavihkov in skrbi za organizacijo zavihkov</translation>
 <translation id="3134393957315651797">Izberite stanje preizkusa za preizkus <ph name="EXPERIMENT_NAME" />. Opis preizkusa: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
+<translation id="3137969841538672700">Povlecite, če želite iskati</translation>
 <translation id="3139925690611372679">Privzeti rumeni avatar</translation>
 <translation id="3141093262818886744">Vseeno odpri</translation>
 <translation id="3141318088920353606">Poslušanje ...</translation>
@@ -4095,7 +4099,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="3983586614702900908">naprave neznanega prodajalca</translation>
 <translation id="3983764759749072418">Aplikacije iz Trgovine Play imajo dostop do te naprave.</translation>
 <translation id="3983769721878416534">Zakasnitev pred klikom</translation>
-<translation id="3983793589497399077">Kliknite ali povlecite kjer koli, če želite iskati z Googlom Lens</translation>
 <translation id="3984135167056005094">Ne vključi e-poštnega naslova</translation>
 <translation id="3984159763196946143">Ni bilo mogoče zagnati predstavitvenega načina</translation>
 <translation id="3984431586879874039">Dovolite, da si to spletno mesto ogleda vaš varnostni ključ?</translation>
@@ -8553,6 +8556,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="741906494724992817">Ta aplikacija ne zahteva posebnih dovoljenj.</translation>
 <translation id="7419142833919893307">Ni vnesenega uporabniškega imena</translation>
 <translation id="7419565702166471774">Vedno dovoli varne povezave</translation>
+<translation id="7419819959108735624">Izberite kar koli za iskanje z Googlom Lens</translation>
 <translation id="742130257665691897">Odstranjeni zaznamki</translation>
 <translation id="7421925624202799674">&amp;Prikaz izvorne kode strani</translation>
 <translation id="7422192691352527311">Nastavitve ...</translation>
@@ -10879,6 +10883,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="9102610709270966160">Omogoči razširitev</translation>
 <translation id="9102864637938129124">Spletna mesta in oglaševalci lahko razumejo, kako delujejo oglasi. Ta nastavitev je vklopljena.</translation>
 <translation id="9103868373786083162">Pritisnite, če želite nazaj, s kontekstnim menijem pa prikažete zgodovino</translation>
+<translation id="9106236359747881194">Izberite besedilo, če želite iskati</translation>
 <translation id="9107096627210171112">P&amp;revedi …</translation>
 <translation id="9108035152087032312">Poimenuj &amp;okno …</translation>
 <translation id="9108072915170399168">Trenutna nastavitev za preneseno količino podatkov je »Brez interneta«</translation>

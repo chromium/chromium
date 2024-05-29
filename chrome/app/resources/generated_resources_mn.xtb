@@ -1710,6 +1710,7 @@
 <translation id="2234827758954819389">Нууцлалын хөтөч</translation>
 <translation id="2234876718134438132">Синк болон Google-н үйлчилгээ</translation>
 <translation id="2235344399760031203">Гуравдагч талын күүкиг блоклосон</translation>
+<translation id="2236949375853147973">Миний үйл ажиллагаа</translation>
 <translation id="2238379619048995541">Хадгалагдсан мэдээллийн давтамж</translation>
 <translation id="2241053333139545397">Хэд хэдэн веб хуудсанд байгаа мэдээллээ унших, өөрчлөх</translation>
 <translation id="2241634353105152135">Ганц удаа</translation>
@@ -2320,6 +2321,7 @@
 <translation id="2666247341166669829">Зүүн талын батарейн түвшин <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Бусад аппыг <ph name="APP_NAME" />-тай ижил холбоосыг нээхээр тохируулсан. Энэ нь <ph name="APP_NAME_2" /> болон <ph name="APP_NAME_3" />-н тусламж дэмжлэгийн холбоос нээхийг идэвхгүй болгоно.</translation>
 <translation id="2667463864537187133">Алдаа шалгахыг удирдах</translation>
+<translation id="2668094785979141847">Google Lens-с гарахын тулд товшино уу</translation>
 <translation id="2668604389652548400">Тус өргөтгөлийг хасах эсвэл <ph name="BEGIN_LINK" />Chrome Веб дэлгүүрээс<ph name="END_LINK" /> төстэй өргөтгөлөөр солино уу.</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" />-г нээж чадсангүй</translation>
 <translation id="2669454659051515572">Энэ төхөөрөмжийг ашиглаж байгаа дурын хүн татсан файлуудыг харах боломжтой</translation>
@@ -2370,6 +2372,7 @@
 <translation id="2710101514844343743">Ашиглалт болон оношилгооны өгөгдөл</translation>
 <translation id="271033894570825754">Шинэ</translation>
 <translation id="2710507903599773521">Таны <ph name="DEVICE_TYPE" />-н түгжээг одоо тайлсан</translation>
+<translation id="2712141162840347885">Google Lens-р хайхыг хүссэн зүйлээ сонгох эсвэл Google Lens-с гарахын тулд escape дээр дарна уу</translation>
 <translation id="2713106313042589954">Камерыг унтраах</translation>
 <translation id="2713444072780614174">Цагаан</translation>
 <translation id="2714180132046334502">Бараан дэвсгэр</translation>
@@ -2440,6 +2443,7 @@
 <translation id="2749881179542288782">Зөв бичих дүрмийн алдааг шалгах</translation>
 <translation id="2750020734439919571">Chrome аппын бусад тохиргоо болон зөвшөөрөл</translation>
 <translation id="2750602041558385535">Баталгаажуулаагүй таталтыг блоклосон</translation>
+<translation id="2753623023919742414">Хайхын тулд товшино уу</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" />-д хадгалсан Хурдан холбох төхөөрөмжүүдийг хүлээж байна</translation>
 <translation id="2754825024506485820">Бүтээмжээс эхлээд энтертэйнмент хүртэлх хэрэгтэй аппуудаа Google Play Дэлгүүрээс олоорой. Та аппуудыг хүссэн үедээ суулгах боломжтой.</translation>
 <translation id="2755349111255270002">Энэ <ph name="DEVICE_TYPE" />-г шинэчлэх</translation>
@@ -2947,6 +2951,7 @@
 <translation id="3132996321662585180">Өдөр бүр сэргээх</translation>
 <translation id="3133184011320864289">Chrome-д табын бүлгүүдийг санал болгож, таны табуудыг цэгцтэй байлгахыг зөвшөөрөхийн тулд синк хийхийг асаана уу</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> туршилтад туршилтын төлөвийг сонгоно уу. Туршилтын тайлбар: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Хайхын тулд чирнэ үү</translation>
 <translation id="3139925690611372679">Өгөгдмөл шар аватар</translation>
 <translation id="3141093262818886744">Ямар ч байсан нээх</translation>
 <translation id="3141318088920353606">Сонсож байна...</translation>
@@ -4087,7 +4092,6 @@
 <translation id="3983586614702900908">Үл таних vendor-н төхөөрөмж</translation>
 <translation id="3983764759749072418">Play Store аппууд нь энэ төхөөрөмжид хандалт хийх эрхтэй байна.</translation>
 <translation id="3983769721878416534">Товшихоос өмнөх сааталт</translation>
-<translation id="3983793589497399077">Lens-р хайхын тулд дурын газар товших эсвэл чирнэ үү</translation>
 <translation id="3984135167056005094">Имэйл хаяг оруулахгүй байх</translation>
 <translation id="3984159763196946143">Туршилтын горимыг эхлүүлж чадсангүй</translation>
 <translation id="3984431586879874039">Энэ сайтад аюулгүй байдлын түлхүүрээ харуулахыг зөвшөөрөх үү?</translation>
@@ -8536,6 +8540,7 @@
 <translation id="741906494724992817">Энэхүү апп нь ямар ч тусгай зөвшөөрөл шаарддаггүй.</translation>
 <translation id="7419142833919893307">Ямар ч хэрэглэгчийн нэр нэмээгүй</translation>
 <translation id="7419565702166471774">Үргэлж аюулгүй холболт ашиглана</translation>
+<translation id="7419819959108735624">Google Lens-р хайх хүссэн зүйлээ сонгоно уу</translation>
 <translation id="742130257665691897">Хавчуургыг устгасан</translation>
 <translation id="7421925624202799674">&amp; Хуудасны эх сурвалжийг харах</translation>
 <translation id="7422192691352527311">Тусдаа тохиргоо...</translation>
@@ -10854,6 +10859,7 @@
 <translation id="9102610709270966160">Өргөтгөлийг идэвхжүүлэх</translation>
 <translation id="9102864637938129124">Сайтууд болон сурталчлагчид зарын гүйцэтгэлийг ойлгох боломжтой. Энэ тохиргоо асаалттай байна.</translation>
 <translation id="9103868373786083162">Буцах бол back, түүх харах бол хулганын баруун товчлуурыг дарна уу</translation>
+<translation id="9106236359747881194">Хайх текстийг сонгоно уу</translation>
 <translation id="9107096627210171112">Орчуулах..</translation>
 <translation id="9108035152087032312">Цонхыг &amp;нэрлэх...</translation>
 <translation id="9108072915170399168">Дата ашиглах одоогийн тохиргоо нь Интернэтгүй үед байна</translation>

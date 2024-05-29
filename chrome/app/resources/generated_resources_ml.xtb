@@ -834,6 +834,7 @@
 <translation id="1607139524282324606">എൻട്രി മായ്‌ക്കുക</translation>
 <translation id="1607499585984539560">ഉപയോക്താവിന് ഡൊമെയ്‌നുമായി ബന്ധമില്ല</translation>
 <translation id="1608668830839595724">തിരഞ്ഞെടുത്ത ഇനങ്ങൾക്കുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ</translation>
+<translation id="1608698493373028805">ഈ വിപുലീകരണത്തിന് ഉടൻ തന്നെ പിന്തുണയില്ലാതായേക്കാം</translation>
 <translation id="1610272688494140697">ആപ്പ് ക്രമീകരണം</translation>
 <translation id="161042844686301425">സിയാൻ</translation>
 <translation id="1611432201750675208">നിങ്ങളുടെ ഉപകരണം ലോക്ക് ചെയ്‌തിരിക്കുന്നു</translation>
@@ -1700,6 +1701,7 @@
 <translation id="2234827758954819389">സ്വകാര്യതാ ഗൈഡ്</translation>
 <translation id="2234876718134438132">സമന്വയവും Google സേവനങ്ങളും</translation>
 <translation id="2235344399760031203">മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്‍തു</translation>
+<translation id="2236949375853147973">എന്റെ ആക്റ്റിവിറ്റി</translation>
 <translation id="2238379619048995541">ആവൃത്തി നില ഡാറ്റ</translation>
 <translation id="2241053333139545397">നിരവധി വെബ്‌സൈറ്റുകളിലെ നിങ്ങളുടെ ഡാറ്റ വായിക്കുക, മാറ്റുക</translation>
 <translation id="2241634353105152135">ഒരിക്കൽ മാത്രം</translation>
@@ -2307,6 +2309,8 @@
 <translation id="2666247341166669829">ഇടത് ബാറ്ററി നില <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" /> പോലെ മറ്റ് ആപ്പുകളും ഇതേ ലിങ്കുകൾ തുറക്കാൻ സജ്ജീകരിച്ചിരിക്കുന്നു. ഇത് <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> എന്നിവയെ പിന്തുണാ ലിങ്കുകൾ തുറക്കുന്നതിൽ നിന്ന് പ്രവർത്തനരഹിതമാക്കും.</translation>
 <translation id="2667463864537187133">സ്പെൽ ചെക്ക് മാനേജ് ചെയ്യുക</translation>
+<translation id="2668094785979141847">Google Lens-ൽ നിന്ന് പുറത്തുകടക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
+<translation id="2668604389652548400">അത് നീക്കം ചെയ്യുക അല്ലെങ്കിൽ അത് മാറ്റി പകരം <ph name="BEGIN_LINK" />Chrome വെബ് സ്റ്റോറിൽ<ph name="END_LINK" /> നിന്നുള്ള സമാനമായ വിപുലീകരണങ്ങൾ നൽകുക</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> തുറക്കാനായില്ല</translation>
 <translation id="2669454659051515572">ഡൗൺലോഡ് ചെയ്യുന്ന ഫയലുകൾ ഈ ഉപകരണം ഉപയോഗിക്കുന്ന എല്ലാവർക്കും കാണാനാകും</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" />, Chrome ടാബ് പങ്കിടുന്നു.</translation>
@@ -2356,6 +2360,7 @@
 <translation id="2710101514844343743">ഉപയോഗവും പ്രശ്‌നനിർണ്ണയവുമായും ബന്ധപ്പെട്ട ഡാറ്റ</translation>
 <translation id="271033894570825754">പുതിയത്</translation>
 <translation id="2710507903599773521">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഇപ്പോൾ അൺലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
+<translation id="2712141162840347885">Google Lens ഉപയോഗിച്ച് തിരയാൻ എന്തെങ്കിലും തിരഞ്ഞെടുക്കുക അല്ലെങ്കിൽ Google Lens-ൽ നിന്ന് പുറത്ത് കടക്കാൻ 'Escape' അമർത്തുക</translation>
 <translation id="2713106313042589954">ക്യാമറ ഓഫാക്കുക</translation>
 <translation id="2713444072780614174">വെള്ള</translation>
 <translation id="2714180132046334502">ഇരുണ്ട പശ്ചാത്തലം</translation>
@@ -2426,6 +2431,7 @@
 <translation id="2749881179542288782">സ്‌പെല്ലിംഗിനൊപ്പം വ്യാകരണവും പരിശോധിക്കുക</translation>
 <translation id="2750020734439919571">കൂടുതൽ Chrome ആപ്പ് ക്രമീകരണവും അനുമതികളും</translation>
 <translation id="2750602041558385535">പരിശോധിച്ചുറപ്പിക്കാത്ത ഡൗൺലോഡ് ബ്ലോക്ക് ചെയ്തു</translation>
+<translation id="2753623023919742414">തിരയാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" /> -ൽ സംരക്ഷിച്ച ഫാസ്റ്റ് പെയർ ഉപകരണങ്ങൾ തിരയുന്നു</translation>
 <translation id="2754825024506485820">ഉൽപ്പാദനക്ഷമത മുതൽ വിനോദം വരെ, നിങ്ങൾക്ക് ആവശ്യമുള്ള ആപ്പുകൾ Google Play Store-ൽ നിന്ന് കണ്ടെത്തുക. നിങ്ങൾക്ക് ഏതുസമയത്തും ആപ്പുകൾ ഇൻസ്റ്റാൾ ചെയ്യാം.</translation>
 <translation id="2755349111255270002">ഈ <ph name="DEVICE_TYPE" /> റീസെറ്റ് ചെയ്യുക</translation>
@@ -2933,6 +2939,7 @@
 <translation id="3132996321662585180">പ്രതിദിനം റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="3133184011320864289">ടാബ് ഗ്രൂപ്പുകൾ നിർദ്ദേശിക്കാനും നിങ്ങളുടെ ടാബുകൾ ഓർഗനൈസ് ചെയ്‌ത് നിലനിർത്താനും Chrome-നെ അനുവദിക്കുന്നതിന് സമന്വയം ഓണാക്കുക</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> പരീക്ഷണത്തിന്റെ പരീക്ഷണ നില തിരഞ്ഞെടുക്കുക. പരീക്ഷണത്തിന്റെ വിവരണം: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">തിരയാൻ വലിച്ചിടുക</translation>
 <translation id="3139925690611372679">ഡിഫോൾട്ടായ മഞ്ഞ അവതാർ</translation>
 <translation id="3141093262818886744">എന്തായാലും തുറക്കുക</translation>
 <translation id="3141318088920353606">കേൾക്കുന്നു...</translation>
@@ -4073,7 +4080,6 @@
 <translation id="3983586614702900908">അജ്ഞാത വെണ്ടറിൽ നിന്നുള്ള ഉപകരണങ്ങൾ</translation>
 <translation id="3983764759749072418">ഈ ഉപകരണത്തിലേക്ക് Play Store ആപ്പുകൾക്ക് ആക്‌സസുണ്ട്.</translation>
 <translation id="3983769721878416534">ക്ലിക്കിന് മുമ്പുള്ള കാലതാമസം</translation>
-<translation id="3983793589497399077">Lens ഉപയോഗിച്ച് തിരയാൻ, ക്ലിക്ക് ചെയ്യുകയോ വലിച്ചിടുകയോ ചെയ്യുക</translation>
 <translation id="3984135167056005094">ഇമെയിൽ വിലാസം ഉൾപ്പെടുത്തരുത്</translation>
 <translation id="3984159763196946143">ഡെമോ മോഡ് ആരംഭിക്കാനായില്ല</translation>
 <translation id="3984431586879874039">നിങ്ങളുടെ സുരക്ഷാ കീ കാണാൻ ഈ സൈറ്റിനെ അനുവദിക്കണോ?</translation>
@@ -8523,6 +8529,7 @@
 <translation id="741906494724992817">ഈ ആപ്പിന് പ്രത്യേക അനുമതികളൊന്നും ആവശ്യമില്ല.</translation>
 <translation id="7419142833919893307">ഉപയോക്തൃനാമമൊന്നും ചേർത്തിട്ടില്ല</translation>
 <translation id="7419565702166471774">എല്ലായ്‌പ്പോഴും സുരക്ഷിതമായ കണക്ഷനുകൾ ഉപയോഗിക്കുക</translation>
+<translation id="7419819959108735624">Google Lens ഉപയോഗിച്ച് തിരയാൻ എന്തെങ്കിലും തിരഞ്ഞെടുക്കുക</translation>
 <translation id="742130257665691897">ബുക്ക്‌മാര്‍ക്കുകള്‍ നീക്കംചെയ്‌തു</translation>
 <translation id="7421925624202799674">&amp;പേജ് ഉറവിടം കാണുക</translation>
 <translation id="7422192691352527311">മുൻഗണനകൾ...</translation>
@@ -10844,6 +10851,7 @@
 <translation id="9102610709270966160">വിപുലീകരണം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="9102864637938129124">പരസ്യങ്ങളുടെ പ്രകടനം എങ്ങനെയുണ്ടെന്ന് സൈറ്റുകൾക്കും പരസ്യദാതാക്കൾക്കും മനസ്സിലാക്കാനാകും. ഈ ക്രമീകരണം ഓണാണ്.</translation>
 <translation id="9103868373786083162">ചരിത്രം കാണാൻ തിരികെ പോകുന്നതിന് സന്ദർഭ മെനു അമർത്തുക</translation>
+<translation id="9106236359747881194">തിരയാൻ ടെക്സ്റ്റ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="9107096627210171112">വിവർത്തനം ചെയ്യൂ...</translation>
 <translation id="9108035152087032312">&amp;വിൻഡോയ്ക്ക് പേര് നൽകുക...</translation>
 <translation id="9108072915170399168">നിലവിലെ ഡാറ്റ ഉപയോഗ ക്രമീകരണം "ഇന്റർനെറ്റ് ഇല്ലാതെ" ആണ്</translation>

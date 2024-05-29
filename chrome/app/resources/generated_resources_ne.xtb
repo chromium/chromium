@@ -1699,6 +1699,7 @@
 <translation id="2234827758954819389">गोपनीयतासम्बन्धी मार्गदर्शन</translation>
 <translation id="2234876718134438132">सिंक तथा Google सेवाहरू</translation>
 <translation id="2235344399760031203">तेस्रो पक्षीय कुकीहरूमाथि रोक लगाइएको छ</translation>
+<translation id="2236949375853147973">मेरो गतिविधि</translation>
 <translation id="2238379619048995541">फ्रिक्वेन्सी स्थिति डाटा</translation>
 <translation id="2241053333139545397">पढ्नुहोस् र वेबसाइटहरूमा डाटा परिवर्तन गर्नुहोस्</translation>
 <translation id="2241634353105152135">एकपटक मात्र</translation>
@@ -2306,6 +2307,7 @@
 <translation id="2666247341166669829">बायाँपट्टिको बडमा <ph name="PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="2667144577800272420">अन्य एपले पनि <ph name="APP_NAME" /> ले झैँ उही लिंकहरू खोल्ने सेटिङ लागू गरिएको छ। तपाईंले डिफल्ट एप बदल्नुभयो भने <ph name="APP_NAME_2" /> र <ph name="APP_NAME_3" /> ले खोल्न मिल्ने लिंकहरू खोल्न सक्ने छैनन्।</translation>
 <translation id="2667463864537187133">हिज्जे जाँचको व्यवस्थापन गर्नुहोस्</translation>
+<translation id="2668094785979141847">Google लेन्सबाट बाहिरिन क्लिक गर्नुहोस्</translation>
 <translation id="2668604389652548400">यो एक्स्टेन्सन हटाउनुहोस् वा यसलाई <ph name="BEGIN_LINK" />Chrome वेब स्टोर<ph name="END_LINK" />मा उपलब्ध उस्तै एक्स्टेन्सनले प्रतिस्थापन गर्नुहोस्</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> खोल्न सकिएन</translation>
 <translation id="2669454659051515572">यो डिभाइस प्रयोग गर्ने सबै जना डाउनलोड गरिएका फाइलहरू देख्न सक्छन्</translation>
@@ -2356,6 +2358,7 @@
 <translation id="2710101514844343743">प्रयोग तथा निदानसम्बन्धी डेटा</translation>
 <translation id="271033894570825754">नयाँ</translation>
 <translation id="2710507903599773521">तपाईंको <ph name="DEVICE_TYPE" /> अब अनलक गरिएको छ</translation>
+<translation id="2712141162840347885">Google लेन्स प्रयोग गरी खोज्नका निम्ति जुनसुकै कुरा चयन गर्नुहोस् वा Google लेन्सबाट बाहिरिन इस्केप की थिच्नुहोस्</translation>
 <translation id="2713106313042589954">क्यामेरा अफ गर्नुहोस्</translation>
 <translation id="2713444072780614174">सेतो</translation>
 <translation id="2714180132046334502">गाढा पृष्ठभूमि</translation>
@@ -2426,6 +2429,7 @@
 <translation id="2749881179542288782">व्याकरणसँगै हिज्जे पनि जाँच्नुहोस्</translation>
 <translation id="2750020734439919571">Chrome एपसम्बन्धी अन्य सेटिङ तथा अनुमति</translation>
 <translation id="2750602041558385535">पुष्टि नगरिएको फाइल डाउनलोड गर्न ब्लक गरिएको छ</translation>
+<translation id="2753623023919742414">खोज्न क्लिक गर्नुहोस्</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" /> मा सेभ गरिएका फास्ट पेयर डिभाइसहरू खोज्नुहोस्</translation>
 <translation id="2754825024506485820">Google Play स्टोरमा उत्पादकत्वदेखि मनोरञ्‍जनलगायतका कुरासँग सम्बन्धित आफूलाई चाहिएका एपहरू भेट्टाउनुहोस्। तपाईं जुनसुकै बेला एपहरू इन्स्टल गर्न सक्नुहुन्छ।</translation>
 <translation id="2755349111255270002">यो <ph name="DEVICE_TYPE" /> रिसेट गर्नुहोस्</translation>
@@ -2934,6 +2938,7 @@
 <translation id="3132996321662585180">दैनिक रूपमा पुनः ताजा गर्नुहोस्</translation>
 <translation id="3133184011320864289">Chrome लाई ट्याब समूहहरूका बारेमा सुझाव दिन र तपाईंका ट्याबहरू व्यवस्थित गर्न दिन सिंक गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="3134393957315651797">परीक्षणको चरणमा रहेको <ph name="EXPERIMENT_NAME" /> नामक सुविधाको स्थिति चयन गर्नुहोस्। परीक्षणको चरणमा रहेको सुविधाको विवरण: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">खोज्न ड्र्याग गर्नुहोस्</translation>
 <translation id="3139925690611372679">डिफल्ट पहेँलो अवतार</translation>
 <translation id="3141093262818886744">जे भए पनि खोल्नुहोस्</translation>
 <translation id="3141318088920353606">सुन्दै...</translation>
@@ -4074,7 +4079,6 @@
 <translation id="3983586614702900908">एक अज्ञात विक्रेता देखि उपकरणहरू</translation>
 <translation id="3983764759749072418">Play स्टोरका एपहरूले यस यन्त्रमाथि पहुँच राख्न सक्छन्।</translation>
 <translation id="3983769721878416534">क्लिक गर्नुभन्दा अघिको ढिलाइ</translation>
-<translation id="3983793589497399077">Lens मार्फत खोज्न जुनसुकै क्षेत्रमा क्लिक गर्नुहोस् वा जुनसुकै क्षेत्र चयन गर्नुहोस्</translation>
 <translation id="3984135167056005094">इमेल ठेगाना नहाल्नुहोस्</translation>
 <translation id="3984159763196946143">डेमो मोड सुरु गर्न सकिएन</translation>
 <translation id="3984431586879874039">यस साइटलाई तपाईंको सुरक्षा साँचो हेर्न दिने हो?</translation>
@@ -8521,6 +8525,7 @@
 <translation id="741906494724992817">यो एपको लागि कुनैपनि विशेष अनुमतिहरू आवश्यक छैन।</translation>
 <translation id="7419142833919893307">कुनै पनि युजरनेम हालिएको छैन</translation>
 <translation id="7419565702166471774">सधैँ सुरक्षित कनेक्सन प्रयोग गर्नुहोस्</translation>
+<translation id="7419819959108735624">Google लेन्समार्फत खोज्नका लागि जुनसुकै कुरा चयन गर्नुहोस्</translation>
 <translation id="742130257665691897">पुस्तक चिन्हहरू हटाइए</translation>
 <translation id="7421925624202799674">पृष्ठ स्रोत &amp;हेर्नुहोस्</translation>
 <translation id="7422192691352527311">प्राथमिकताहरू...</translation>
@@ -10843,6 +10848,7 @@
 <translation id="9102610709270966160">विस्तारलाई सक्षम पार्नुहोस्</translation>
 <translation id="9102864637938129124">साइट तथा विज्ञापनदाताहरू विज्ञापनको पर्फर्मेन्स कस्तो छ भन्ने कुरा बुझ्न सक्छन्। यो सेटिङ अन छ।</translation>
 <translation id="9103868373786083162">इतिहास हेर्न सन्दर्भ मेनु, पछाडि जान प्रेस गर्नुहोस्</translation>
+<translation id="9106236359747881194">खोज्नु पर्ने टेक्स्ट चयन गर्नुहोस्</translation>
 <translation id="9107096627210171112">अनुवाद गर्नुहोस्...</translation>
 <translation id="9108035152087032312">यो &amp;विन्डोको नाम राख्नुहोस्...</translation>
 <translation id="9108072915170399168">हाल डेटा प्रयोगसम्बन्धी सेटिङअन्तर्गत 'इन्टरनेट प्रयोग नगरिकन' नामक विकल्प चयन गरिएको छ</translation>

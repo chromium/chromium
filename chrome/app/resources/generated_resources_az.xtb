@@ -1698,6 +1698,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2234827758954819389">Məxfilik Bələdçisi</translation>
 <translation id="2234876718134438132">Sinxronizasiya və Google xidmətləri</translation>
 <translation id="2235344399760031203">Üçüncü tərəf kukiləri bloklanıb</translation>
+<translation id="2236949375853147973">Fəaliyyətim</translation>
 <translation id="2238379619048995541">Tezlik Statusu Datası</translation>
 <translation id="2241053333139545397">Datanızı çoxsaylı cihazlarda oxuyun və dəyişin</translation>
 <translation id="2241634353105152135">Sadəcə bir dəfə</translation>
@@ -2308,6 +2309,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2666247341166669829">Sol qulaqlığın batareya səviyyəsi: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Digər tətbiqlər <ph name="APP_NAME" /> ilə eyni keçidləri açmaq üçün ayarlanıb. Bununla <ph name="APP_NAME_2" /> və <ph name="APP_NAME_3" /> tətbiqinin dəstəklənən keçidləri açması deaktiv ediləcək.</translation>
 <translation id="2667463864537187133">Orfoqrafik yoxlanışı idarə edin</translation>
+<translation id="2668094785979141847">Klikləyərək Google Linzadan çıxın</translation>
 <translation id="2668604389652548400">Onu silin və ya <ph name="BEGIN_LINK" />Chrome Veb Marketdən<ph name="END_LINK" /> bənzər artırmalar ilə əvəz edin</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> açılmadı</translation>
 <translation id="2669454659051515572">Bu cihazdan istifadə edən hər kəs endirilmiş faylları görə bilər</translation>
@@ -2358,6 +2360,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2710101514844343743">İstifadə və diaqnostika datası</translation>
 <translation id="271033894570825754">Yeni</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> kilidi açılıb</translation>
+<translation id="2712141162840347885">Google Linza ilə axtarış etmək üçün istədiyinizi seçin və ya Google Linzadan çıxmaq üçün "escape" düyməsinə basın</translation>
 <translation id="2713106313042589954">Kameranı deaktiv edin</translation>
 <translation id="2713444072780614174">Ağ</translation>
 <translation id="2714180132046334502">Tünd arxa fon</translation>
@@ -2428,6 +2431,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2749881179542288782">Qrammatikanı Orfoqrafiya ilə yoxlayın</translation>
 <translation id="2750020734439919571">Chrome tətbiqi üzrə digər ayar və icazələr</translation>
 <translation id="2750602041558385535">Doğrulanmamış endirmə bloklandı</translation>
+<translation id="2753623023919742414">Klikləyərək axtarın</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" /> hesabında saxlanmış Sürətli Birləşdirmə cihazları axtarılır</translation>
 <translation id="2754825024506485820">Məhsuldarlıqdan tutmuş əyləncəyə qədər sizə lazım olan tətbiqləri Google Play Marketdə tapa bilərsiniz. İstənilən vaxt tətbiqləri quraşdıra bilərsiniz.</translation>
 <translation id="2755349111255270002">Bu <ph name="DEVICE_TYPE" /> cihazını sıfırlayın</translation>
@@ -2935,6 +2939,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3132996321662585180">Gündəlik yeniləyin</translation>
 <translation id="3133184011320864289">Chrome-un tab qrupları təklif etməsi və tabları nizamlı saxlaması üçün sinxronlaşdırmanı aktiv edin</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> təcrübəsi üçün təcrübə vəziyyətini seçin. Təcrübə təsviri: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Sürüşdürərək axtarın</translation>
 <translation id="3139925690611372679">Defolt sarı avatar</translation>
 <translation id="3141093262818886744">Hər halda açın</translation>
 <translation id="3141318088920353606">Dinlənilir...</translation>
@@ -4076,7 +4081,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="3983586614702900908">naməlum vendordan cihazlar</translation>
 <translation id="3983764759749072418">Play Market tətbiqlərinin bu cihaza girişi var.</translation>
 <translation id="3983769721878416534">Klikləmədən öncə gecikmə</translation>
-<translation id="3983793589497399077">Linza ilə axtarmaq üçün istənilən yerə klikləyin və ya sürükləyin</translation>
 <translation id="3984135167056005094">E-poçt ünvanını daxil etməyin</translation>
 <translation id="3984159763196946143">Demo rejimini başlatmaq mümkün olmadı</translation>
 <translation id="3984431586879874039">Bu saytın təhlüksizlik açarınıza baxmasına icazə verilsin?</translation>
@@ -8520,6 +8524,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="741906494724992817">Bu tətbiq xüsusi icazə tələb etmir.</translation>
 <translation id="7419142833919893307">İstifadəçi adı əlavə edilməyib</translation>
 <translation id="7419565702166471774">Həmişə güvənli bağlantılardan istifadə edin</translation>
+<translation id="7419819959108735624">Google Linza ilə axtarmaq üçün istədiyinizi seçin</translation>
 <translation id="742130257665691897">Əlfəcinlər silindi</translation>
 <translation id="7421925624202799674">&amp;Səhifə Mənbəsinə Baxın</translation>
 <translation id="7422192691352527311">Seçimlər...</translation>
@@ -10840,6 +10845,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="9102610709270966160">Artırmanı Aktiv Edin</translation>
 <translation id="9102864637938129124">Saytlar və reklamçılar reklamların necə işlədiyini başa düşə bilər. Bu ayar aktivdir.</translation>
 <translation id="9103868373786083162">Geri qayıtmaq üçün basın və tarixməni görmək üçün kontekst menyuya basın</translation>
+<translation id="9106236359747881194">Axtarmaq üçün mətn seçin</translation>
 <translation id="9107096627210171112">Tərcümə edin...</translation>
 <translation id="9108035152087032312">&amp;Pəncərəyə ad verin...</translation>
 <translation id="9108072915170399168">Cari data istifadəsi ayarı: İnternet olmadan</translation>

@@ -1702,6 +1702,7 @@
 <translation id="2234827758954819389">კონფიდენციალურობის სახელმძღვანელო</translation>
 <translation id="2234876718134438132">სინქრონიზაციის/Google სერვისები</translation>
 <translation id="2235344399760031203">მესამე მხარის ქუქი-ჩანაწერები დაბლოკილია</translation>
+<translation id="2236949375853147973">ჩემი აქტივობა</translation>
 <translation id="2238379619048995541">სიხშირის მდგომარეობის მონაცემები</translation>
 <translation id="2241053333139545397">წაიკითხეთ და შეცვალეთ თქცენი მონაცემები ვებგვერდის ნომერზე</translation>
 <translation id="2241634353105152135">მხოლოდ ერთხელ</translation>
@@ -2309,6 +2310,7 @@
 <translation id="2666247341166669829">მარცხენა ბატარეის დონეა <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">იმ ბმულების გასახსნელად, რომლებსაც <ph name="APP_NAME" /> ხსნის, დაყენებულია სხვა აპები. ამ ქმედების შედეგად, <ph name="APP_NAME_2" /> და <ph name="APP_NAME_3" /> აღარ გახსნის მხარდაჭერილ ბმულებს.</translation>
 <translation id="2667463864537187133">მართლწერის შემოწმების მართვა</translation>
+<translation id="2668094785979141847">დააწკაპუნეთ Google Lens-იდან გასასვლელად</translation>
 <translation id="2668604389652548400">ამოშალეთ ან ჩაანაცვლეთ ის მსგავსი გაფართოებით <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />-იდან</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" />-ის გახსნა ვერ მოხერხდა</translation>
 <translation id="2669454659051515572">ჩამოტვირთული ფაილების ნახვას შეძლებს ამ მოწყობილობის ნებისმიერი მომხმარებელი</translation>
@@ -2359,6 +2361,7 @@
 <translation id="2710101514844343743">გამოყენებისა და დიაგნოსტიკის მონაცემები</translation>
 <translation id="271033894570825754">ახალი</translation>
 <translation id="2710507903599773521">თქვენი <ph name="DEVICE_TYPE" /> ახლა განბლოკილია</translation>
+<translation id="2712141162840347885">აირჩიეთ ის, რისი მოძებნაც გსურთ Google Lens-ით, ან დააჭირეთ Escape-ს Google Lens-იდან გასასვლელად</translation>
 <translation id="2713106313042589954">კამერის გამორთვა</translation>
 <translation id="2713444072780614174">თეთრი</translation>
 <translation id="2714180132046334502">მუქი ფონი</translation>
@@ -2429,6 +2432,7 @@
 <translation id="2749881179542288782">გრამატიკისა და მართლწერის შემოწმება</translation>
 <translation id="2750020734439919571">Chrome-ის აპის მეტი პარამეტრი და ნებართვა</translation>
 <translation id="2750602041558385535">დაუდასტურებელი ჩამოტვირთვა დაიბლოკა</translation>
+<translation id="2753623023919742414">დააწკაპუნეთ ძიებისთვის</translation>
 <translation id="2754226775788136540">მიმდინარეობს <ph name="PRIMARY_EMAIL" />-ში შენახული სწრაფი დაწყვილების მოწყობილობების ძიება</translation>
 <translation id="2754825024506485820">მოძებნეთ, მაგალითად, სამუშაოსთან ან გართობასთან დაკავშირებული, თქვენთვის საჭირო აპები Google Play Store-ში. აპების დაინსტალირება ნებისმიერ დროს შეგიძლიათ.</translation>
 <translation id="2755349111255270002">გადააყენეთ ეს <ph name="DEVICE_TYPE" /></translation>
@@ -2936,6 +2940,7 @@
 <translation id="3132996321662585180">ყოველდღიურად განახლება</translation>
 <translation id="3133184011320864289">ჩართეთ სინქრონიზაცია, რომ საშუალება მისცეთ Chrome-ს, ჩანართების ორგანიზების მიზნით შემოგთავაზოთ მათი დაჯგუფება</translation>
 <translation id="3134393957315651797">აირჩიეთ მდგომარეობა ექსპერიმენტისთვის „<ph name="EXPERIMENT_NAME" />“. ექსპერიმენტის აღწერილობა: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">გადაათრიეთ მოსაძებნად</translation>
 <translation id="3139925690611372679">ნაგულისხმევი ყვითელი ავატარი</translation>
 <translation id="3141093262818886744">მაინც გახსნა</translation>
 <translation id="3141318088920353606">მიმდინარეობს მოსმენა…</translation>
@@ -4077,7 +4082,6 @@
 <translation id="3983586614702900908">მოწყობილობები უცნობი ვენდორისაგან</translation>
 <translation id="3983764759749072418">Play Store აპლიკაციებს აქვს წვდომა ამ მოწყობილობაზე.</translation>
 <translation id="3983769721878416534">დაყოვნება დაწკაპუნებამდე</translation>
-<translation id="3983793589497399077">დააწკაპუნეთ ან გადაათრიეთ ნებისმიერ ადგილას Lens-ით მოსაძებნად</translation>
 <translation id="3984135167056005094">არ დაერთოს ელფოსტის მისამართი</translation>
 <translation id="3984159763196946143">დემო-რეჟიმის გაშვება ვერ მოხერხდა</translation>
 <translation id="3984431586879874039">გსურთ, ამ საიტმა ნახოს თქვენი უსაფრთხოების გასაღები?</translation>
@@ -8525,6 +8529,7 @@
 <translation id="741906494724992817">ეს პროგრამა არ ითხოვს სპეციალურ ნებართვებს.</translation>
 <translation id="7419142833919893307">მომხმარებლის სახელი დამატებული არ არის</translation>
 <translation id="7419565702166471774">ყოველთვის დაცული კავშირების გამოყენება</translation>
+<translation id="7419819959108735624">მონიშნეთ სასურველი რამ Google Lens-ით მოსაძებნად</translation>
 <translation id="742130257665691897">სანიშნეები ამოიშალა</translation>
 <translation id="7421925624202799674">გვერდის წყაროს &amp;ნახვა</translation>
 <translation id="7422192691352527311">პარამეტრები…</translation>
@@ -10846,6 +10851,7 @@
 <translation id="9102610709270966160">გაფართოების ჩართვა</translation>
 <translation id="9102864637938129124">საიტებსა და რეკლამის განმთავსებლებს შეუძლიათ რეკლამის ეფექტურობის გარკვევა. ეს პარამეტრი ჩართულია.</translation>
 <translation id="9103868373786083162">დააჭირეთ უკან გასასვლელად, კონტექსტურ მენიუს ისტორიის სანახავად.</translation>
+<translation id="9106236359747881194">მონიშნეთ ტექსტი მოსაძებნად</translation>
 <translation id="9107096627210171112">თა&amp;რგმნა...</translation>
 <translation id="9108035152087032312">&amp;ფანჯრის დასათაურება...</translation>
 <translation id="9108072915170399168">მონაცემთა გადაცემისთვის ამჟამად არჩეული გაქვთ „ინტერნეტის გარეშე“</translation>

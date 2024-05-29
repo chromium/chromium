@@ -830,6 +830,7 @@
 <translation id="1607139524282324606">清除此条目</translation>
 <translation id="1607499585984539560">此用户未与网域关联</translation>
 <translation id="1608668830839595724">可对所选项执行的更多操作</translation>
+<translation id="1608698493373028805">此扩展程序可能很快将不再受支持</translation>
 <translation id="1610272688494140697">应用设置</translation>
 <translation id="161042844686301425">青色</translation>
 <translation id="1611432201750675208">您的设备已锁定</translation>
@@ -2300,6 +2301,8 @@
 <translation id="2666247341166669829">左侧耳机的电池电量为 <ph name="PERCENTAGE" />%。</translation>
 <translation id="2667144577800272420">其他应用已设为与<ph name="APP_NAME" />打开同样的链接。此操作会阻止<ph name="APP_NAME_2" />和<ph name="APP_NAME_3" />打开受支持的链接。</translation>
 <translation id="2667463864537187133">管理拼写检查</translation>
+<translation id="2668094785979141847">点击即可退出 Google 智能镜头</translation>
+<translation id="2668604389652548400">请移除此扩展程序，或将其替换为 <ph name="BEGIN_LINK" />Chrome 应用商店<ph name="END_LINK" />中的类似扩展程序</translation>
 <translation id="2669241540496514785">无法打开 <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">任何使用此设备的用户都能看到已下载的文件</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> 正在共享 Chrome 标签页。</translation>
@@ -2349,6 +2352,7 @@
 <translation id="2710101514844343743">使用情况和诊断数据</translation>
 <translation id="271033894570825754">新</translation>
 <translation id="2710507903599773521">您的 <ph name="DEVICE_TYPE" /> 现已解锁</translation>
+<translation id="2712141162840347885">选择任意内容即可使用 Google 智能镜头进行搜索，按 Esc 键可退出 Google 智能镜头</translation>
 <translation id="2713106313042589954">关闭摄像头</translation>
 <translation id="2713444072780614174">白色</translation>
 <translation id="2714180132046334502">深色背景</translation>
@@ -2419,6 +2423,7 @@
 <translation id="2749881179542288782">检查拼写和语法</translation>
 <translation id="2750020734439919571">更多 Chrome 应用设置和权限</translation>
 <translation id="2750602041558385535">已拦截未经验证的下载内容</translation>
+<translation id="2753623023919742414">点击即可搜索</translation>
 <translation id="2754226775788136540">正在查找已保存到 <ph name="PRIMARY_EMAIL" /> 的快速配对设备</translation>
 <translation id="2754825024506485820">查找您所需的应用 - 从办公类应用到娱乐类应用，Google Play 商店应有尽有。您随时可安装应用。</translation>
 <translation id="2755349111255270002">重置此 <ph name="DEVICE_TYPE" /></translation>
@@ -2926,6 +2931,7 @@
 <translation id="3132996321662585180">每日刷新</translation>
 <translation id="3133184011320864289">开启同步功能，以便 Chrome 提供标签页分组建议并使标签页井然有序</translation>
 <translation id="3134393957315651797">请为实验“<ph name="EXPERIMENT_NAME" />”选择实验状态。实验说明：<ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">拖动即可搜索</translation>
 <translation id="3139925690611372679">默认的黄色头像</translation>
 <translation id="3141093262818886744">仍然打开</translation>
 <translation id="3141318088920353606">正在听取…</translation>
@@ -4066,7 +4072,6 @@
 <translation id="3983586614702900908">来自未知供应商的设备</translation>
 <translation id="3983764759749072418">Play 商店中的应用有权访问此设备。</translation>
 <translation id="3983769721878416534">点击前延迟</translation>
-<translation id="3983793589497399077">点击或拖动任意位置即可使用智能镜头搜索</translation>
 <translation id="3984135167056005094">不附带电子邮件地址</translation>
 <translation id="3984159763196946143">无法启动演示模式</translation>
 <translation id="3984431586879874039">允许此网站查看您的安全密钥？</translation>
@@ -8512,6 +8517,7 @@
 <translation id="741906494724992817">此应用不需要任何特殊权限。</translation>
 <translation id="7419142833919893307">未添加用户名</translation>
 <translation id="7419565702166471774">一律使用安全连接</translation>
+<translation id="7419819959108735624">选择任何内容即可使用 Google 智能镜头进行搜索</translation>
 <translation id="742130257665691897">书签已移除</translation>
 <translation id="7421925624202799674">显示网页源代码(&amp;V)</translation>
 <translation id="7422192691352527311">偏好设置...</translation>
@@ -10835,6 +10841,7 @@
 <translation id="9102610709270966160">启用扩展程序</translation>
 <translation id="9102864637938129124">网站和广告主可以了解广告效果。此设置已开启。</translation>
 <translation id="9103868373786083162">点按该按钮可后退，点按上下文菜单可查看历史记录</translation>
+<translation id="9106236359747881194">选择文字即可搜索</translation>
 <translation id="9107096627210171112">翻译(&amp;R)…</translation>
 <translation id="9108035152087032312">为窗口命名(&amp;W)…</translation>
 <translation id="9108072915170399168">当前的流量使用设置是“不使用互联网”</translation>

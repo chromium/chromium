@@ -2309,6 +2309,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2666247341166669829">Ezkerreko aurikularraren bateria: % <ph name="PERCENTAGE" />.</translation>
 <translation id="2667144577800272420">Esteka berak <ph name="APP_NAME" /> aplikazioarekin irekitzeko konfiguratuta daude beste aplikazio batzuk. <ph name="APP_NAME_2" /> eta <ph name="APP_NAME_3" /> aplikazioek ezingo dute ireki onartzen den estekarik.</translation>
 <translation id="2667463864537187133">Kudeatu ortografia-zuzentzailea</translation>
+<translation id="2668094785979141847">Google Lens-etik irteteko, sakatu hau</translation>
 <translation id="2668604389652548400">Ken ezazu edo ordez ezazu <ph name="BEGIN_LINK" />Chrome Web Store-ko<ph name="END_LINK" /> antzeko luzapenekin</translation>
 <translation id="2669241540496514785">Ezin izan da ireki <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Gailu hau darabilen edonork ikus ditzake deskargatutako fitxategiak</translation>
@@ -2359,6 +2360,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2710101514844343743">Erabilera- eta diagnostiko-datuak</translation>
 <translation id="271033894570825754">Berria</translation>
 <translation id="2710507903599773521">Orain, <ph name="DEVICE_TYPE" /> gailua desblokeatuta dago</translation>
+<translation id="2712141162840347885">Hautatu edozer, Google Lens-ekin bilatzeko. Google Lens-etik irteteko, sakatu Ihes.</translation>
 <translation id="2713106313042589954">Desaktibatu kamera</translation>
 <translation id="2713444072780614174">Zuria</translation>
 <translation id="2714180132046334502">Atzeko plano iluna</translation>
@@ -2429,6 +2431,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2749881179542288782">Zuzendu gramatika eta ortografia</translation>
 <translation id="2750020734439919571">Chrome-ren aplikazioaren ezarpen eta baimen gehiago</translation>
 <translation id="2750602041558385535">Egiaztatu gabeko deskarga blokeatu da</translation>
+<translation id="2753623023919742414">Sakatu bilatzeko</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" /> kontuan gordeta dauden Parekatze bizkorra darabilten gailuak bilatzen</translation>
 <translation id="2754825024506485820">Bilatu behar dituzun aplikazioak (direla produktibitaterako, direla aisiarako) Google Play Store-n. Edonoiz instala ditzakezu aplikazioak.</translation>
 <translation id="2755349111255270002">Berrezarri <ph name="DEVICE_TYPE" /></translation>
@@ -2936,6 +2939,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3132996321662585180">Freskatu egunero</translation>
 <translation id="3133184011320864289">Aktibatu sinkronizazioa Chrome-ri fitxa taldeak iradokitzeko eta fitxak antolatzeko baimena emateko</translation>
 <translation id="3134393957315651797">Hautatu <ph name="EXPERIMENT_NAME" /> probaren egoera. Probaren azalpena: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Arrastatu bilatzeko</translation>
 <translation id="3139925690611372679">Abatar hori lehenetsia</translation>
 <translation id="3141093262818886744">Ireki halere</translation>
 <translation id="3141318088920353606">Entzuten…</translation>
@@ -4077,7 +4081,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="3983586614702900908">saltzaile ezezagunaren gailuak</translation>
 <translation id="3983764759749072418">Play Store-ko aplikazioek gailu hau erabiltzeko baimena dute.</translation>
 <translation id="3983769721878416534">Klik egin aurretiko atzerapena</translation>
-<translation id="3983793589497399077">Sakatu edo arrastatu edozein tokitan Lens-ekin bilatzeko</translation>
 <translation id="3984135167056005094">Ez adierazi helbide elektronikoa</translation>
 <translation id="3984159763196946143">Ezin izan da abiarazi demo modua</translation>
 <translation id="3984431586879874039">Zure segurtasun-giltza ikusteko baimena eman nahi diozu webgune honi?</translation>
@@ -8522,6 +8525,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="741906494724992817">Aplikazio honek ez du baimen berezirik eskatzen.</translation>
 <translation id="7419142833919893307">Ez da gehitu erabiltzaile-izenik</translation>
 <translation id="7419565702166471774">Erabili beti konexio seguruak</translation>
+<translation id="7419819959108735624">Hautatu edozer, Google Lens-ekin bilatzeko</translation>
 <translation id="742130257665691897">Laster-markak kendu dira</translation>
 <translation id="7421925624202799674">&amp;Ikusi orriaren iturburua</translation>
 <translation id="7422192691352527311">Hobespenak…</translation>
@@ -10843,6 +10847,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="9102610709270966160">Gaitu luzapena</translation>
 <translation id="9102864637938129124">Webguneek eta iragarleek iragarkien errendimendua uler dezakete. Aktibatuta dago ezarpena.</translation>
 <translation id="9103868373786083162">Sakatu itzultzeko, laster-menua historia ikusteko</translation>
+<translation id="9106236359747881194">Hautatu bilatu beharreko testua</translation>
 <translation id="9107096627210171112">Itzuli…</translation>
 <translation id="9108035152087032312">Eman izena &amp;leihoari…</translation>
 <translation id="9108072915170399168">Oraingo datu-erabileraren ezarpena "Internetera konektatu gabe" da</translation>

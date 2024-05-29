@@ -1699,6 +1699,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2234827758954819389">Przewodnik po prywatności</translation>
 <translation id="2234876718134438132">Synchronizacja i usługi Google</translation>
 <translation id="2235344399760031203">Pliki cookie innych firm są blokowane</translation>
+<translation id="2236949375853147973">Moja aktywność</translation>
 <translation id="2238379619048995541">Dane o stanie częstotliwości</translation>
 <translation id="2241053333139545397">Odczytywanie i modyfikowanie Twoich danych na wielu stronach</translation>
 <translation id="2241634353105152135">Tylko raz</translation>
@@ -2293,6 +2294,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2666247341166669829">Poziom naładowania lewej baterii to <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Inne aplikacje zostały ustawione na otwieranie tych samych linków co <ph name="APP_NAME" />. Ta czynność spowoduje, że aplikacje <ph name="APP_NAME_2" /> i <ph name="APP_NAME_3" /> przestaną otwierać obsługiwane linki.</translation>
 <translation id="2667463864537187133">Zarządzanie sprawdzaniem pisowni</translation>
+<translation id="2668094785979141847">Kliknij, aby zamknąć Obiektyw Google</translation>
 <translation id="2668604389652548400">Usuń je lub zastąp podobnymi rozszerzeniami z <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Nie udało się otworzyć <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Pobrane pliki może zobaczyć każdy użytkownik tego urządzenia</translation>
@@ -2343,6 +2345,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2710101514844343743">Dane diagnostyczne i informacje o użytkowaniu</translation>
 <translation id="271033894570825754">Nowy</translation>
 <translation id="2710507903599773521">Urządzenie <ph name="DEVICE_TYPE" /> jest teraz odblokowane</translation>
+<translation id="2712141162840347885">Wybierz, co chcesz wyszukać go za pomocą Obiektywu Google, lub naciśnij Escape, aby zamknąć Obiektyw</translation>
 <translation id="2713106313042589954">Wyłącz kamerę</translation>
 <translation id="2713444072780614174">Biały</translation>
 <translation id="2714180132046334502">Ciemne tło</translation>
@@ -2413,6 +2416,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2749881179542288782">Sprawdzaj gramatykę razem z pisownią</translation>
 <translation id="2750020734439919571">Więcej ustawień i uprawnień aplikacji Chrome</translation>
 <translation id="2750602041558385535">Pobieranie niezweryfikowanych plików zablokowane</translation>
+<translation id="2753623023919742414">Kliknij, aby wyszukać</translation>
 <translation id="2754226775788136540">Szukam urządzeń obsługujących Szybkie parowanie zapisanych na koncie <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Znajdź w Sklepie Google Play aplikacje, których potrzebujesz – od zwiększających produktywność po rozrywkowe. Możesz je zainstalować w dowolnym momencie.</translation>
 <translation id="2755349111255270002">Zresetuj to urządzenie <ph name="DEVICE_TYPE" /></translation>
@@ -2920,6 +2924,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3132996321662585180">Odświeżaj codziennie</translation>
 <translation id="3133184011320864289">Włącz synchronizację, aby umożliwić Chrome sugerowanie grup kart i porządkowanie kart</translation>
 <translation id="3134393957315651797">Wybierz stan eksperymentu <ph name="EXPERIMENT_NAME" />. Opis eksperymentu: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Przeciągnij, aby wyszukać</translation>
 <translation id="3139925690611372679">Domyślny żółty awatar</translation>
 <translation id="3141093262818886744">Otwórz mimo to</translation>
 <translation id="3141318088920353606">Słucham…</translation>
@@ -4059,7 +4064,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="3983586614702900908">urządzenia od nieznanego dostawcy</translation>
 <translation id="3983764759749072418">Aplikacje ze Sklepu Play mają dostęp do tego urządzenia.</translation>
 <translation id="3983769721878416534">Opóźnienie przed kliknięciem</translation>
-<translation id="3983793589497399077">Kliknij lub przeciągnij w dowolne miejsce, aby wyszukać za pomocą Obiektywu</translation>
 <translation id="3984135167056005094">Nie uwzględniaj adresu e-mail</translation>
 <translation id="3984159763196946143">Nie udało się uruchomić trybu demonstracyjnego</translation>
 <translation id="3984431586879874039">Zezwolić tej stronie na odczytywanie danych klucza bezpieczeństwa?</translation>
@@ -8508,6 +8512,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="741906494724992817">Ta aplikacja nie wymaga specjalnych uprawnień.</translation>
 <translation id="7419142833919893307">Nie dodano nazwy użytkownika</translation>
 <translation id="7419565702166471774">Zawsze używaj bezpiecznych połączeń</translation>
+<translation id="7419819959108735624">Wybierz, co chcesz wyszukać za pomocą Obiektywu Google</translation>
 <translation id="742130257665691897">Usunięto zakładki</translation>
 <translation id="7421925624202799674">&amp;Wyświetl źródło strony</translation>
 <translation id="7422192691352527311">Ustawienia...</translation>
@@ -10827,6 +10832,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="9102610709270966160">Włącz rozszerzenie</translation>
 <translation id="9102864637938129124">Witryny i reklamodawcy mogą poznać skuteczność reklam. To ustawienie jest włączone.</translation>
 <translation id="9103868373786083162">Naciśnij, by wrócić, lub otwórz menu kontekstowe, by wyświetlić historię</translation>
+<translation id="9106236359747881194">Zaznacz tekst, aby wyszukać</translation>
 <translation id="9107096627210171112">Tłu&amp;macz…</translation>
 <translation id="9108035152087032312">Dodaj nazwę &amp;okna…</translation>
 <translation id="9108072915170399168">Bieżące ustawienie transmisji danych: Bez internetu</translation>

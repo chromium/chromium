@@ -1717,6 +1717,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2234827758954819389">Privatumo vadovas</translation>
 <translation id="2234876718134438132">Sinchron. ir „Google“ paslaugos</translation>
 <translation id="2235344399760031203">Trečiųjų šalių slapukai užblokuoti</translation>
+<translation id="2236949375853147973">Mano veikla</translation>
 <translation id="2238379619048995541">Dažnumo būsenos duomenys</translation>
 <translation id="2241053333139545397">Skaityti ir keisti duomenis keliose svetainėse</translation>
 <translation id="2241634353105152135">Tik vieną kartą</translation>
@@ -2327,6 +2328,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2666247341166669829">Kairiosios akumuliatoriaus energijos lygis: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Kitos programos nustatytos atidaryti tas pačias nuorodas kaip ir „<ph name="APP_NAME" />“. Tai atllikus „<ph name="APP_NAME_2" />“ ir „<ph name="APP_NAME_3" />“ negalės atidaryti palaikomų nuorodų.</translation>
 <translation id="2667463864537187133">Rašybos tikrinimo tvarkymas</translation>
+<translation id="2668094785979141847">Spustelėkite, kad išeitumėte iš „Google Lens“</translation>
 <translation id="2668604389652548400">Pašalinkite arba pakeiskite panašiais plėtiniais iš <ph name="BEGIN_LINK" />„Chrome“ internetinės parduotuvės<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Nepavyko atidaryti programos „<ph name="APP_NAME" />“</translation>
 <translation id="2669454659051515572">Visi šį įrenginį naudojantys asmenys gali peržiūrėti atsisiųstus failus</translation>
@@ -2377,6 +2379,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2710101514844343743">Naudojimo ir diagnostikos duomenys</translation>
 <translation id="271033894570825754">Naujiena</translation>
 <translation id="2710507903599773521">Jūsų „<ph name="DEVICE_TYPE" />“ dabar atrakintas</translation>
+<translation id="2712141162840347885">Pasirinkite bet kąbet ką, ko norite ieškoti naudodami „Google Lens“, arba paspauskite „Escape“, kad išeitumėte iš „Google Lens“</translation>
 <translation id="2713106313042589954">Išjungti fotoaparatą</translation>
 <translation id="2713444072780614174">Balta</translation>
 <translation id="2714180132046334502">Tamsus fonas</translation>
@@ -2447,6 +2450,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2749881179542288782">Tikrinti gramatiką ir rašybą</translation>
 <translation id="2750020734439919571">Daugiau „Chrome“ programos nustatymų ir leidimų</translation>
 <translation id="2750602041558385535">Nepatvirtintas atsisiuntimas užblokuotas</translation>
+<translation id="2753623023919742414">Spustelėkite, jei norite ieškoti</translation>
 <translation id="2754226775788136540">Ieškoma sparčiojo susiejimo įrenginių, išsaugotų paskyroje <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Raskite reikalingas programas „Google Play“ parduotuvėje – nuo produktyvumo iki pramogų Programas galite įdiegti bet kuriuo metu.</translation>
 <translation id="2755349111255270002">Nustatykite iš naujo šį „<ph name="DEVICE_TYPE" />“ įrenginį</translation>
@@ -2954,6 +2958,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3132996321662585180">Atnaujinti kasdien</translation>
 <translation id="3133184011320864289">Įjunkite sinchronizavimą, kad „Chrome“ galėtų siūlyti skirtukų grupes ir tvarkyti skirtukus</translation>
 <translation id="3134393957315651797">Pasirinkite eksperimento būseną, skirtą eksperimentui „<ph name="EXPERIMENT_NAME" />“. Eksperimento aprašas: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Nuvilkite, jei norite ieškoti</translation>
 <translation id="3139925690611372679">Numatytasis geltonas pseudoportretas</translation>
 <translation id="3141093262818886744">Vis tiek atidaryti</translation>
 <translation id="3141318088920353606">Klausoma…</translation>
@@ -4095,7 +4100,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="3983586614702900908">nežinomų tiekėjų įrenginiai</translation>
 <translation id="3983764759749072418">„Play“ parduotuvės programos turi prieigą prie šio įrenginio.</translation>
 <translation id="3983769721878416534">Delsa prieš paspaudimą</translation>
-<translation id="3983793589497399077">Spustelėkite arba vilkite bet kur ir ieškokite naudodami „Lens“</translation>
 <translation id="3984135167056005094">Neįtraukti el. pašto adreso</translation>
 <translation id="3984159763196946143">Nepavyko paleisti demonstracinės būsenos</translation>
 <translation id="3984431586879874039">Leisti šiai svetainei peržiūrėti jūsų saugos raktą?</translation>
@@ -8552,6 +8556,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="741906494724992817">Norint naudoti šią programą nebūtini jokie specialūs leidimai.</translation>
 <translation id="7419142833919893307">Naudotojo vardas nepridėtas</translation>
 <translation id="7419565702166471774">Visada naudoti saugų ryšį</translation>
+<translation id="7419819959108735624">Pasirinkite bet ką, ko norite ieškoti naudodami „Google Lens“</translation>
 <translation id="742130257665691897">Žymės pašalintos</translation>
 <translation id="7421925624202799674">&amp;Žiūrėti puslapio šaltinį</translation>
 <translation id="7422192691352527311">Nuostatos...</translation>
@@ -10878,6 +10883,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="9102610709270966160">Įgalinti plėtinį</translation>
 <translation id="9102864637938129124">Svetainės ir reklamuotojai gali geriau suprasti skelbimų našumą. Šis nustatymas įjungtas.</translation>
 <translation id="9103868373786083162">Paspauskite, kad eitumėte atgal į kontekstinį meniu ir peržiūrėtumėte istoriją</translation>
+<translation id="9106236359747881194">Pasirinkite tekstą, pagal kurį norite ieškoti</translation>
 <translation id="9107096627210171112">V&amp;ertėjas...</translation>
 <translation id="9108035152087032312">Pavadinti &amp;langą...</translation>
 <translation id="9108072915170399168">Dabartinis duomenų naudojimo nustatymas yra „Be interneto“</translation>

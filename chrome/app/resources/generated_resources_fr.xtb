@@ -836,6 +836,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1607139524282324606">Effacer l'entrée</translation>
 <translation id="1607499585984539560">Utilisateur non affilié au domaine</translation>
 <translation id="1608668830839595724">Autres actions pour les éléments sélectionnés</translation>
+<translation id="1608698493373028805">Cette extension ne sera peut-être bientôt plus disponible</translation>
 <translation id="1610272688494140697">Paramètres des applications</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Votre appareil est verrouillé</translation>
@@ -1702,6 +1703,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2234827758954819389">Guide sur la confidentialité</translation>
 <translation id="2234876718134438132">Services Google/Synchronisation</translation>
 <translation id="2235344399760031203">Cookies tiers bloqués</translation>
+<translation id="2236949375853147973">Mon activité</translation>
 <translation id="2238379619048995541">Données sur l'état de fréquence</translation>
 <translation id="2241053333139545397">Accéder aux données de plusieurs sites et les modifier</translation>
 <translation id="2241634353105152135">Une seule fois</translation>
@@ -2309,6 +2311,8 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2666247341166669829">Niveau de batterie côté gauche (<ph name="PERCENTAGE" /> %).</translation>
 <translation id="2667144577800272420">D'autres applis sont définies pour ouvrir les mêmes liens que <ph name="APP_NAME" />. Cela empêchera <ph name="APP_NAME_2" /> et <ph name="APP_NAME_3" /> d'ouvrir les liens compatibles.</translation>
 <translation id="2667463864537187133">Gérer le correcteur orthographique</translation>
+<translation id="2668094785979141847">Cliquer pour quitter Google Lens</translation>
+<translation id="2668604389652548400">Supprimez-la ou remplacez-la par des extensions similaires du <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Impossible d'ouvrir <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> partage un onglet Chrome.</translation>
@@ -2358,6 +2362,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2710101514844343743">Données d'utilisation et de diagnostic</translation>
 <translation id="271033894570825754">Nouveau</translation>
 <translation id="2710507903599773521">Votre <ph name="DEVICE_TYPE" /> est désormais déverrouillé</translation>
+<translation id="2712141162840347885">Sélectionnez quelque chose à rechercher avec Google Lens ou appuyez sur Échap pour quitter Google Lens</translation>
 <translation id="2713106313042589954">Désactiver la caméra</translation>
 <translation id="2713444072780614174">Blanc</translation>
 <translation id="2714180132046334502">Arrière-plan sombre</translation>
@@ -2428,6 +2433,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2749881179542288782">Vérifier la grammaire et l'orthographe</translation>
 <translation id="2750020734439919571">Autres paramètres et autorisations de l'application Chrome</translation>
 <translation id="2750602041558385535">Téléchargement non validé bloqué</translation>
+<translation id="2753623023919742414">Cliquer pour rechercher</translation>
 <translation id="2754226775788136540">Recherche d'appareils Association express enregistrés dans <ph name="PRIMARY_EMAIL" />…</translation>
 <translation id="2754825024506485820">Productivité ou divertissement : trouvez l'appli qu'il vous faut sur le Google Play Store. Vous pouvez installer des applis à tout moment.</translation>
 <translation id="2755349111255270002">Rétablir la configuration d'usine de votre <ph name="DEVICE_TYPE" /></translation>
@@ -2935,6 +2941,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3132996321662585180">Actualiser quotidiennement</translation>
 <translation id="3133184011320864289">Activez la synchronisation pour permettre à Chrome de vous suggérer des groupes d'onglets et d'organiser vos onglets</translation>
 <translation id="3134393957315651797">Sélectionnez l'état du test pour <ph name="EXPERIMENT_NAME" />. Description du test : <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Faire glisser pour rechercher</translation>
 <translation id="3139925690611372679">Avatar jaune par défaut</translation>
 <translation id="3141093262818886744">Ouvrir quand même</translation>
 <translation id="3141318088920353606">Écoute…</translation>
@@ -4076,7 +4083,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="3983586614702900908">appareils d'un fournisseur inconnu</translation>
 <translation id="3983764759749072418">Les applications Play Store ont accès à cet appareil.</translation>
 <translation id="3983769721878416534">Délai précédant le clic</translation>
-<translation id="3983793589497399077">Cliquez ou faites glisser le pointeur n'importe où pour rechercher avec Lens</translation>
 <translation id="3984135167056005094">Ne pas inclure l'adresse e-mail</translation>
 <translation id="3984159763196946143">Impossible de démarrer le mode démonstration</translation>
 <translation id="3984431586879874039">Autoriser ce site à lire les informations de votre clé de sécurité ?</translation>
@@ -8528,6 +8534,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="741906494724992817">Cette application fonctionne sans autorisation spéciale.</translation>
 <translation id="7419142833919893307">Aucun nom d'utilisateur ajouté</translation>
 <translation id="7419565702166471774">Toujours utiliser une connexion sécurisée</translation>
+<translation id="7419819959108735624">Sélectionnez quelque chose à rechercher avec Google Lens</translation>
 <translation id="742130257665691897">Favoris supprimés</translation>
 <translation id="7421925624202799674">&amp;Afficher le code source de la page</translation>
 <translation id="7422192691352527311">Préférences...</translation>
@@ -10852,6 +10859,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="9102610709270966160">Activer l'extension</translation>
 <translation id="9102864637938129124">Les sites et les annonceurs peuvent analyser les performances des annonces. Ce paramètre est activé.</translation>
 <translation id="9103868373786083162">Appuyer pour revenir en arrière, menu contextuel pour afficher l'historique</translation>
+<translation id="9106236359747881194">Sélectionner le texte à rechercher</translation>
 <translation id="9107096627210171112">Traduire</translation>
 <translation id="9108035152087032312">Nommer la &amp;fenêtre</translation>
 <translation id="9108072915170399168">Le paramètre de consommation des données est actuellement défini sur "Sans Internet"</translation>

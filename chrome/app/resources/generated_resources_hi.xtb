@@ -839,6 +839,7 @@
 <translation id="1607139524282324606">प्रविष्टि हटाएं</translation>
 <translation id="1607499585984539560">उपयोगकर्ता, एंटरप्राइज़ डोमेन के साथ जुड़ा हुआ नहीं है</translation>
 <translation id="1608668830839595724">चुने गए आइटम के लिए और कार्रवाई</translation>
+<translation id="1608698493373028805">ऐसा हो सकता है कि यह एक्सटेंशन जल्द ही काम करना बंद कर दे</translation>
 <translation id="1610272688494140697">ऐप्लिकेशन की सेटिंग</translation>
 <translation id="161042844686301425">स्यान</translation>
 <translation id="1611432201750675208">आपका डिवाइस लॉक कर दिया गया है</translation>
@@ -2324,6 +2325,8 @@
 <translation id="2666247341166669829">बाएं वायरलेस बड में <ph name="PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="2667144577800272420">अन्य ऐप्लिकेशन, <ph name="APP_NAME" /> की तरह उन लिंक को खोलने के लिए तैयार हैं. यह <ph name="APP_NAME_2" /> और <ph name="APP_NAME_3" /> को सहायता लिंक खोलने से रोकता है.</translation>
 <translation id="2667463864537187133">स्पेलिंग जाँच प्रबंधित करें</translation>
+<translation id="2668094785979141847">Google Lens से बाहर निकलने के लिए क्लिक करें</translation>
+<translation id="2668604389652548400">इस एक्सटेंशन को हटाएं या इसे <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> पर मौजूद मिलते-जुलते एक्सटेंशन से बदलें</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> नहीं खोला जा सका</translation>
 <translation id="2669454659051515572">इस डिवाइस का इस्तेमाल करने वाले लोग, गुप्त मोड में डाउनलोड की गई फ़ाइलें देख सकते हैं</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" />, Chrome टैब को शेयर कर रहा है.</translation>
@@ -2373,6 +2376,7 @@
 <translation id="2710101514844343743">इस्तेमाल और निदान से जुड़ा डेटा</translation>
 <translation id="271033894570825754">नया</translation>
 <translation id="2710507903599773521">आपका <ph name="DEVICE_TYPE" /> अब अनलॉक हो गया है</translation>
+<translation id="2712141162840347885">Google Lens की मदद से जानकारी खोजने के लिए, कोई भी एलिमेंट चुनें. Google Lens को बंद करने के लिए Escape दबाएं</translation>
 <translation id="2713106313042589954">कैमरा बंद करें</translation>
 <translation id="2713444072780614174">सफ़ेद</translation>
 <translation id="2714180132046334502">गहरा बैकग्राउंड</translation>
@@ -2443,6 +2447,7 @@
 <translation id="2749881179542288782">स्पेलिंग के साथ व्याकरण की जाँच करें</translation>
 <translation id="2750020734439919571">Chrome ऐप की ज़्यादा सेटिंग और अनुमतियां</translation>
 <translation id="2750602041558385535">बिना पुष्टि वाले डाउनलोड को ब्लॉक किया गया</translation>
+<translation id="2753623023919742414">खोजने के लिए क्लिक करें</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" /> में सेव किए गए, फ़ास्ट पेयर की सुविधा वाले डिवाइसों को ढूंढा जा रहा है</translation>
 <translation id="2754825024506485820">Google Play Store पर, उत्पादकता से लेकर मनोरंजन तक, अपनी ज़रूरत के हिसाब से ऐप्लिकेशन खोजें. किसी भी समय ऐप्लिकेशन को इंस्टॉल किया जा सकता है.</translation>
 <translation id="2755349111255270002">इस <ph name="DEVICE_TYPE" /> को रीसेट करें</translation>
@@ -2950,6 +2955,7 @@
 <translation id="3132996321662585180">हर रोज़ रीफ्रेश करें</translation>
 <translation id="3133184011320864289">Chrome को टैब ग्रुप के सुझाव देने और अपने टैब व्यवस्थित रखने की अनुमति देने के लिए, सिंक करने की सुविधा चालू करें</translation>
 <translation id="3134393957315651797">एक्सपेरिमेंट <ph name="EXPERIMENT_NAME" /> के लिए, एक्सपेरिमेंट की स्थिति चुनें. एक्सपेरिमेंट का ब्यौरा: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">खोजने के लिए खींचें और छोड़ें</translation>
 <translation id="3139925690611372679">डिफ़ॉल्ट पीला अवतार</translation>
 <translation id="3141093262818886744">फिर भी खोलें</translation>
 <translation id="3141318088920353606">सुन रही है...</translation>
@@ -4090,7 +4096,6 @@
 <translation id="3983586614702900908">किसी अज्ञात विक्रेता के डिवाइस</translation>
 <translation id="3983764759749072418">'Play Store' के ऐप्लिकेशन इस डिवाइस पर काम करते हैं.</translation>
 <translation id="3983769721878416534">क्‍लिक से पहले देरी</translation>
-<translation id="3983793589497399077">Lens की मदद से खोजने के लिए, स्क्रीन पर कहीं भी क्लिक करें या किसी हिस्से को क्रॉप करें</translation>
 <translation id="3984135167056005094">ईमेल पता न डालें</translation>
 <translation id="3984159763196946143">डेमो मोड शुरू नहीं किया जा सका</translation>
 <translation id="3984431586879874039">इस साइट को अपनी सुरक्षा कुंजी देखने देना चाहते हैं?</translation>
@@ -8542,6 +8547,7 @@
 <translation id="741906494724992817">इस ऐप्लिकेशन के लिए किसी विशेष अनुमति की ज़रूरत नहीं है.</translation>
 <translation id="7419142833919893307">कोई उपयोगकर्ता नाम नहीं जोड़ा गया</translation>
 <translation id="7419565702166471774">हमेशा सुरक्षित कनेक्शन इस्तेमाल करें</translation>
+<translation id="7419819959108735624">Google Lens की मदद से खोजने के लिए, कोई भी देश/इलाका चुनें</translation>
 <translation id="742130257665691897">बुकमार्क हटाए गए</translation>
 <translation id="7421925624202799674">पेज का स्रोत &amp;देखें</translation>
 <translation id="7422192691352527311">प्राथमिकताएं...</translation>
@@ -10864,6 +10870,7 @@
 <translation id="9102610709270966160">एक्‍सटेंशन चालू करें</translation>
 <translation id="9102864637938129124">साइटें और विज्ञापन देने वाले यह पता कर सकते हैं कि विज्ञापनों की परफ़ॉर्मेंस कैसी है. यह सेटिंग चालू है.</translation>
 <translation id="9103868373786083162">वापस जाने के लिए इसे दबाएं, इतिहास देखने के लिए संदर्भ मेन्यू पर जाएं</translation>
+<translation id="9106236359747881194">खोजने के लिए कोई टेक्स्ट चुनें</translation>
 <translation id="9107096627210171112">अनुवाद करें...</translation>
 <translation id="9108035152087032312">&amp;विंडो को कोई नाम दें...</translation>
 <translation id="9108072915170399168">मौजूदा डेटा खर्च सेटिंग में इंटरनेट का इस्तेमाल नहीं होगा</translation>

@@ -837,6 +837,7 @@
 <translation id="1607139524282324606">Մաքրել հաղորդագրությունը</translation>
 <translation id="1607499585984539560">Օգտատերը կապված չէ տիրույթի հետ</translation>
 <translation id="1608668830839595724">Այլ գործողություններ ընտրված տարրերի համար</translation>
+<translation id="1608698493373028805">Շուտով այս ընդլայնումը կարող է այլևս չաջակցվել</translation>
 <translation id="1610272688494140697">Հավելվածի կարգավորումներ</translation>
 <translation id="161042844686301425">Երկնագույն</translation>
 <translation id="1611432201750675208">Ձեր սարքը կողպված է</translation>
@@ -1703,6 +1704,7 @@
 <translation id="2234827758954819389">Տվյալների պաշտպանության ուղեցույց</translation>
 <translation id="2234876718134438132">Համաժամացում և Google-ի ծառայություններ</translation>
 <translation id="2235344399760031203">Երրորդ կողմի քուքիներն արգելափակված են</translation>
+<translation id="2236949375853147973">Իմ գործողությունները</translation>
 <translation id="2238379619048995541">Տվյալներ հաճախականության վիճակի մասին</translation>
 <translation id="2241053333139545397">Կարդալ և փոխել ձեր տվյալները մի շարք վեբկայքերում</translation>
 <translation id="2241634353105152135">Միայն այս անգամ</translation>
@@ -2308,6 +2310,8 @@
 <translation id="2666247341166669829">Ձախ մարտկոցի լիցքի մակարդակը՝ <ph name="PERCENTAGE" />%։</translation>
 <translation id="2667144577800272420">Կան այլ հավելվածներ, որոնք կարգավորված են այնպես, որ կարողանան բացել նույն հղումները, ինչ <ph name="APP_NAME" /> հավելվածը։ Դա նշանակում է, որ <ph name="APP_NAME_2" /> և <ph name="APP_NAME_3" /> հավելվածները չեն կարողանա բացել աջակցվող հղումներ։</translation>
 <translation id="2667463864537187133">Կառավարել ուղղագրության ստուգումը</translation>
+<translation id="2668094785979141847">Հպեք՝ Google Տեսապակուց դուրս գալու համար</translation>
+<translation id="2668604389652548400">Հեռացրեք այն կամ փոխարինեք նմանատիպ ընդլայնումներով <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />-ից</translation>
 <translation id="2669241540496514785">Չհաջողվեց բացել <ph name="APP_NAME" /> հավելվածը</translation>
 <translation id="2669454659051515572">Այս սարքն օգտագործող ցանկացած օգտատեր կարող է տեսնել ներբեռնված ֆայլերը</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> հավելվածը կիսվում է Chrome-ի ներդիրով:</translation>
@@ -2357,6 +2361,7 @@
 <translation id="2710101514844343743">Օգտագործման և դիագնոստիկ տվյալներ</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2710507903599773521">Ձեր <ph name="DEVICE_TYPE" />-ն այժմ ապակողպված է</translation>
+<translation id="2712141162840347885">Ընտրեք ցանկացած բան՝ Google Տեսապակու միջոցով որոնելու համար, կամ սեղմեք Escape՝ Google Տեսապակին փակելու համար</translation>
 <translation id="2713106313042589954">Անջատել տեսախցիկը</translation>
 <translation id="2713444072780614174">Սպիտակ</translation>
 <translation id="2714180132046334502">Մուգ ֆոն</translation>
@@ -2427,6 +2432,7 @@
 <translation id="2749881179542288782">Check Grammar With Spelling</translation>
 <translation id="2750020734439919571">Chrome հավելվածի այլ կարգավորումներ և թույլտվություններ</translation>
 <translation id="2750602041558385535">Չստուգված ներբեռնումն արգելափակվել է</translation>
+<translation id="2753623023919742414">Սեղմեք որոնելու համար</translation>
 <translation id="2754226775788136540">Որոնվում են <ph name="PRIMARY_EMAIL" /> հաշվում պահված արագ զուգակցման սարքեր</translation>
 <translation id="2754825024506485820">Google Play Խանութում գտեք ձեզ անհրաժեշտ հավելվածներ տարբեր նկատակների համար։ Հավելվածները կարող եք տեղադրել ցանկացած ժամանակ։</translation>
 <translation id="2755349111255270002">Վերակայեք <ph name="DEVICE_TYPE" /> սարքը</translation>
@@ -2934,6 +2940,7 @@
 <translation id="3132996321662585180">Թարմացնել ամեն օր</translation>
 <translation id="3133184011320864289">Միացրեք համաժամացումը, որպեսզի թույլատրեք Chrome-ին առաջարկել ներդիրների խմբեր և դասավորված պահել ձեր ներդիրները</translation>
 <translation id="3134393957315651797">Ընտրեք «<ph name="EXPERIMENT_NAME" />» փորձարկման կարգավիճակը։ Փորձարկման նկարագրությունը՝ <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Քաշեք որոնելու համար</translation>
 <translation id="3139925690611372679">Կանխադրված դեղին ավատար</translation>
 <translation id="3141093262818886744">Բացել</translation>
 <translation id="3141318088920353606">Խոսեք...</translation>
@@ -4073,7 +4080,6 @@
 <translation id="3983586614702900908">սարքեր անհայտ վաճառողից</translation>
 <translation id="3983764759749072418">Այս սարքը հասանելի է Play Խանութի հավելվածներին:</translation>
 <translation id="3983769721878416534">Հապաղումը սեղմելուց առաջ</translation>
-<translation id="3983793589497399077">Սեղմեք օբյեկտի վրա կամ քաշեք այն ցանկացած տեղ՝ Տեսապակու միջոցով որոնելու համար</translation>
 <translation id="3984135167056005094">Չներառել էլ․ հասցե</translation>
 <translation id="3984159763196946143">Չհաջողվեց գործարկել ցուցադրական ռեժիմը</translation>
 <translation id="3984431586879874039">Թույլատրե՞լ, որ այս կայքը տեսնի անվտանգության բանալին</translation>
@@ -8521,6 +8527,7 @@
 <translation id="741906494724992817">Այս հավելվածի համար հատուկ թույլտվություններ պետք չեն:</translation>
 <translation id="7419142833919893307">Օգտանուն չի ավելացվել</translation>
 <translation id="7419565702166471774">Միշտ օգտագործել անվտանգ միացումներ</translation>
+<translation id="7419819959108735624">Ընտրեք ցանկացած բան՝ Google Տեսապակու միջոցով որոնելու համար</translation>
 <translation id="742130257665691897">Էջանիշները հեռացվեցին</translation>
 <translation id="7421925624202799674">&amp;Դիտել էջի կոդը</translation>
 <translation id="7422192691352527311">Preferences...</translation>
@@ -10843,6 +10850,7 @@
 <translation id="9102610709270966160">Միացնել ընդլայնումը</translation>
 <translation id="9102864637938129124">Կայքերն ու գովազդատուները կարող են գնահատել իրենց գովազդի արդյունավետությունը։ Այս կարգավորումը միացված է։</translation>
 <translation id="9103868373786083162">Սեղմեք՝ հետ գնալու համար, բացեք տեղային ընտրացանկը՝ պատմությունը տեսնելու համար</translation>
+<translation id="9106236359747881194">Ընտրեք տեքստը՝ որոնելու համար</translation>
 <translation id="9107096627210171112">Թարգմանել...</translation>
 <translation id="9108035152087032312">Անվանել պատուհանը…</translation>
 <translation id="9108072915170399168">Տվյալների փոխանցման ընթացիկ կարգավորումը՝ «Առանց ինտերնետի»</translation>

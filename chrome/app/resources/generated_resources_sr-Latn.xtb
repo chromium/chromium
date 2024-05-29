@@ -1700,6 +1700,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2234827758954819389">Vodič za privatnost</translation>
 <translation id="2234876718134438132">Sinhronizacija i Google usluge</translation>
 <translation id="2235344399760031203">Kolačići treće strane su blokirani</translation>
+<translation id="2236949375853147973">Moje aktivnosti</translation>
 <translation id="2238379619048995541">Podaci o stanju frekvencije</translation>
 <translation id="2241053333139545397">Čitanje i menjanje podataka na više veb-sajtova</translation>
 <translation id="2241634353105152135">Samo jednom</translation>
@@ -2307,6 +2308,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2666247341166669829">Nivo napunjenosti baterije za levu <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Druge aplikacije su podešene da otvaraju iste linkove kao aplikacija <ph name="APP_NAME" />. Ovim se aplikacije <ph name="APP_NAME_2" /> i <ph name="APP_NAME_3" /> onemogućavaju da otvaraju podržane linkove.</translation>
 <translation id="2667463864537187133">Upravljanje proverom pravopisa</translation>
+<translation id="2668094785979141847">Kliknite da biste izašli iz Google objektiva</translation>
 <translation id="2668604389652548400">Uklonite ga ili zamenite sličnim dodacima iz <ph name="BEGIN_LINK" />Chrome veb-prodavnice<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Otvaranje aplikacije <ph name="APP_NAME" /> nije uspelo</translation>
 <translation id="2669454659051515572">Svako ko koristi ovaj uređaj može da vidi preuzete fajlove</translation>
@@ -2357,6 +2359,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2710101514844343743">Podaci o korišćenju i dijagnostički podaci</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> je sada otključan</translation>
+<translation id="2712141162840347885">Izaberite bilo šta za pretragu pomoću Google objektiva ili pritisnite Escape da biste izašli iz Google objektiva</translation>
 <translation id="2713106313042589954">Isključi kameru</translation>
 <translation id="2713444072780614174">Bela</translation>
 <translation id="2714180132046334502">Tamna pozadina</translation>
@@ -2427,6 +2430,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2749881179542288782">Proveri gramatiku i pravopis</translation>
 <translation id="2750020734439919571">Još podešavanja i dozvola za Chrome aplikacije</translation>
 <translation id="2750602041558385535">Neverifikovano preuzimanje je blokirano</translation>
+<translation id="2753623023919742414">Kliknite da biste pretražili</translation>
 <translation id="2754226775788136540">Tražimo uređaje za brzo uparivanje sačuvane na <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Pronađite potrebne aplikacije, od aplikacija za produktivnost do aplikacija za zabavu, u Google Play prodavnici. Aplikacije možete da instalirate bilo kada.</translation>
 <translation id="2755349111255270002">Resetujte ovaj <ph name="DEVICE_TYPE" /></translation>
@@ -2934,6 +2938,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3132996321662585180">Osvežavaj dnevno</translation>
 <translation id="3133184011320864289">Uključite sinhronizaciju da biste omogućili Chrome-u da predlaže grupe kartica i organizuje kartice</translation>
 <translation id="3134393957315651797">Izaberite stanje za eksperiment <ph name="EXPERIMENT_NAME" />. Opis eksperimenta: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Prevucite da biste pretražili</translation>
 <translation id="3139925690611372679">Podrazumevani žuti avatar</translation>
 <translation id="3141093262818886744">Ipak otvori</translation>
 <translation id="3141318088920353606">Sluša se...</translation>
@@ -4075,7 +4080,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="3983586614702900908">uređaji nepoznatog prodavca</translation>
 <translation id="3983764759749072418">Aplikacije iz Play prodavnice imaju pristup ovom uređaju.</translation>
 <translation id="3983769721878416534">Odlaganje pre klika</translation>
-<translation id="3983793589497399077">Kliknite bilo gde ili prevucite da biste pretraživali pomoću Objektiva</translation>
 <translation id="3984135167056005094">Ne uključuj imejl adresu</translation>
 <translation id="3984159763196946143">Pokretanje režima demonstracije nije uspelo</translation>
 <translation id="3984431586879874039">Želite li da dozvolite ovom sajtu da vidi bezbednosni ključ?</translation>
@@ -8528,6 +8532,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="741906494724992817">Za ovu aplikaciju nisu potrebne nikakve posebne dozvole.</translation>
 <translation id="7419142833919893307">Nije dodato nijedno korisničko ime</translation>
 <translation id="7419565702166471774">Uvek koristi bezbedne veze</translation>
+<translation id="7419819959108735624">Izaberite bilo šta za pretragu pomoću Google objektiva</translation>
 <translation id="742130257665691897">Obeleživači su uklonjeni</translation>
 <translation id="7421925624202799674">&amp;Prikaži izvor stranice</translation>
 <translation id="7422192691352527311">Podešavanja...</translation>
@@ -10853,6 +10858,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="9102610709270966160">Omogući dodatak</translation>
 <translation id="9102864637938129124">Sajtovi i oglašavači mogu da razumeju učinak oglasa. Ovo podešavanje je uključeno.</translation>
 <translation id="9103868373786083162">Pritisnite da biste se vratili ili otvorite kontekstualni meni da biste videli istoriju</translation>
+<translation id="9106236359747881194">Izaberite tekst za pretragu</translation>
 <translation id="9107096627210171112">Prevedi...</translation>
 <translation id="9108035152087032312">Daj naziv prozoru...</translation>
 <translation id="9108072915170399168">Aktuelno podešavanje potrošnje podataka je „Bez interneta“</translation>

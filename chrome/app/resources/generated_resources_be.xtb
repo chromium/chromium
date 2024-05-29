@@ -838,6 +838,7 @@
 <translation id="1607139524282324606">Выдаліць запіс</translation>
 <translation id="1607499585984539560">Карыстальнік не звязаны з даменам</translation>
 <translation id="1608668830839595724">Іншыя дзеянні для выбраных элементаў</translation>
+<translation id="1608698493373028805">Гэта пашырэнне можа неўзабаве перастаць падтрымлівацца</translation>
 <translation id="1610272688494140697">Налады праграмы</translation>
 <translation id="161042844686301425">Блакітны</translation>
 <translation id="1611432201750675208">Прылада заблакіравана</translation>
@@ -2309,6 +2310,8 @@
 <translation id="2666247341166669829">Зарад акумулятара ў левым навушніку: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Іншыя праграмы наладжаны адкрываць такія ж спасылкі, што і <ph name="APP_NAME" />. Праграмы "<ph name="APP_NAME_2" />" і "<ph name="APP_NAME_3" />" перастануць адкрываць адпаведныя спасылкі.</translation>
 <translation id="2667463864537187133">Кіраванне праверкай правапісу</translation>
+<translation id="2668094785979141847">Націсніце, каб выйсці з Google Аб’ектыва</translation>
+<translation id="2668604389652548400">Выдаліце яго або замяніце аналагічнымі пашырэннямі з <ph name="BEGIN_LINK" />Вэб-крамы Chrome<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Немагчыма адкрыць праграму <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Усе, хто карыстаецца гэтай прыладай, могуць бачыць спампаваныя файлы</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> абагульвае ўкладку Chrome.</translation>
@@ -2358,6 +2361,7 @@
 <translation id="2710101514844343743">Даныя пра выкарыстанне і дыягностыку</translation>
 <translation id="271033894570825754">Новае</translation>
 <translation id="2710507903599773521">Ваша прылада (<ph name="DEVICE_TYPE" />) больш не прымацавана да аператара</translation>
+<translation id="2712141162840347885">Паспрабуйце знайсці што-небудзь з дапамогай Google Аб’ектыва або націсніце Esc, каб закрыць яго</translation>
 <translation id="2713106313042589954">Выключыць камеру</translation>
 <translation id="2713444072780614174">Белы</translation>
 <translation id="2714180132046334502">Цёмны фон</translation>
@@ -2428,6 +2432,7 @@
 <translation id="2749881179542288782">Праверыць граматыку і правапіс</translation>
 <translation id="2750020734439919571">Дадатковыя налады і дазволы праграмы Chrome</translation>
 <translation id="2750602041558385535">Неправераная спампоўка заблакіравана</translation>
+<translation id="2753623023919742414">Націсніце для пошуку</translation>
 <translation id="2754226775788136540">Ідзе пошук прылад з хуткім спалучэннем, захаваных ва ўліковым запісе <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Патрэбныя вам праграмы, як для працы, так і для забаў, можна знайсці ў Краме Google Play. Іх можна ўсталяваць у любы час.</translation>
 <translation id="2755349111255270002">Скіньце гэту прыладу <ph name="DEVICE_TYPE" /></translation>
@@ -2935,6 +2940,7 @@
 <translation id="3132996321662585180">Абнаўляць штодзень</translation>
 <translation id="3133184011320864289">Уключыце сінхранізацыю, каб Chrome мог упарадкаваць укладкі і даваць прапановы па іх групаванні</translation>
 <translation id="3134393957315651797">Выберыце стан для эксперымента "<ph name="EXPERIMENT_NAME" />". Апісанне эксперымента: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Перацягніце для пошуку</translation>
 <translation id="3139925690611372679">Стандартны жоўты аватар</translation>
 <translation id="3141093262818886744">Усё роўна адкрыць</translation>
 <translation id="3141318088920353606">Гаварыце...</translation>
@@ -4074,7 +4080,6 @@
 <translation id="3983586614702900908">прылады ад невядомага пастаўшчыка</translation>
 <translation id="3983764759749072418">Праграмы з Крамы Play маюць доступ да гэтай прылады.</translation>
 <translation id="3983769721878416534">Затрымка перад націсканнем</translation>
-<translation id="3983793589497399077">Націсніце на аб’ект або вылучыце вобласць для пошуку з дапамогай Аб’ектыва</translation>
 <translation id="3984135167056005094">Не ўключаць адрас электроннай пошты</translation>
 <translation id="3984159763196946143">Не ўдалося запусціць дэманстрацыйны рэжым</translation>
 <translation id="3984431586879874039">Дазволіць гэтаму сайту бачыць ключ бяспекі?</translation>
@@ -8527,6 +8532,7 @@
 <translation id="741906494724992817">Гэта праграма не патрабуе спецыяльных дазволаў.</translation>
 <translation id="7419142833919893307">Імёны карыстальніка не дадаваліся</translation>
 <translation id="7419565702166471774">Заўсёды выкарыстоўваць бяспечнае падключэнне</translation>
+<translation id="7419819959108735624">Выберыце што-небудзь для пошуку з дапамогай Google Аб’ектыва</translation>
 <translation id="742130257665691897">Закладкі выдалены</translation>
 <translation id="7421925624202799674">&amp;Прагляд зыходнага тэксту старонкі</translation>
 <translation id="7422192691352527311">Параметры...</translation>
@@ -10849,6 +10855,7 @@
 <translation id="9102610709270966160">Уключыць пашырэнне</translation>
 <translation id="9102864637938129124">Сайты і рэкламадаўцы могуць ацэньваць эфектыўнасць рэкламы. Гэта налада ўключана.</translation>
 <translation id="9103868373786083162">Націсніце гэту кнопку, каб перайсці назад, кантэкстнае меню – для прагляду гісторыі</translation>
+<translation id="9106236359747881194">Выберыце тэкст для пошуку</translation>
 <translation id="9107096627210171112">&amp;Перакласці</translation>
 <translation id="9108035152087032312">Дадаць назву &amp;акна...</translation>
 <translation id="9108072915170399168">Бягучая налада выкарыстання трафіка: без падключэння да інтэрнэту</translation>

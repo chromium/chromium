@@ -2325,6 +2325,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2666247341166669829">Staða rafhlöðu vinstra megin <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Önnur forrit eru stillt á að opna sömu tengla og <ph name="APP_NAME" />. Þetta slekkur á því að <ph name="APP_NAME_2" /> og <ph name="APP_NAME_3" /> opni studda tengla.</translation>
 <translation id="2667463864537187133">Stjórna ritvilluleit</translation>
+<translation id="2668094785979141847">Smelltu til að loka Google-linsu</translation>
 <translation id="2668604389652548400">Fjarlægðu hana eða skiptu henni út fyrir svipaðar viðbætur úr <ph name="BEGIN_LINK" />Vefverslun Chrome<ph name="END_LINK" />.</translation>
 <translation id="2669241540496514785">Ekki tókst að opna <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Allir sem nota þetta tæki geta séð sóttar skrár</translation>
@@ -2375,6 +2376,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2710101514844343743">Notkunar- og greiningargögn</translation>
 <translation id="271033894570825754">Nýtt</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" />-tækið var tekið úr lás</translation>
+<translation id="2712141162840347885">Veldu hvað sem er til að leita með Google-linsu eða ýttu á Esc til að loka Linsunni</translation>
 <translation id="2713106313042589954">Slökkva á myndavél</translation>
 <translation id="2713444072780614174">Hvítur</translation>
 <translation id="2714180132046334502">Dökkur bakgrunnur</translation>
@@ -2445,6 +2447,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2749881179542288782">Athuga málfræði og stafsetningu</translation>
 <translation id="2750020734439919571">Fleiri stillingar og heimildir Chrome-forrits</translation>
 <translation id="2750602041558385535">Lokað á óstaðfest niðurhal</translation>
+<translation id="2753623023919742414">Smelltu til að leita</translation>
 <translation id="2754226775788136540">Leitar að hraðpörunartækjum sem eru vistuð á <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Öll forrit sem þú þarft á að halda til að auka afköst og til afþreyingar er að finna í Google Play Store. Þú getur sett upp forrit hvenær sem er.</translation>
 <translation id="2755349111255270002">Endurstilla þetta <ph name="DEVICE_TYPE" /></translation>
@@ -2952,6 +2955,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3132996321662585180">Uppfæra daglega</translation>
 <translation id="3133184011320864289">Kveiktu á samstillingu til að láta Chrome stinga upp á flipahópum og flokka flipa</translation>
 <translation id="3134393957315651797">Veldu ástand tilraunar fyrir <ph name="EXPERIMENT_NAME" /> tilraunina. Lýsing á tilraun: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Dragðu til að leita</translation>
 <translation id="3139925690611372679">Sjálfgefin gul notandamynd</translation>
 <translation id="3141093262818886744">Opna samt</translation>
 <translation id="3141318088920353606">Hlustar...</translation>
@@ -4093,7 +4097,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3983586614702900908">tæki frá óþekktum framleiðanda</translation>
 <translation id="3983764759749072418">Play Store forrit hafa aðgang að þessu tæki.</translation>
 <translation id="3983769721878416534">Bið á undan smelli</translation>
-<translation id="3983793589497399077">Smelltu eða dragðu hvert sem er til að leita með Linsu</translation>
 <translation id="3984135167056005094">Ekki taka netfang með</translation>
 <translation id="3984159763196946143">Ekki tókst að setja upp prufustillingu</translation>
 <translation id="3984431586879874039">Viltu leyfa þessu vefsvæði að sjá öryggislykilinn þinn?</translation>
@@ -8544,6 +8547,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="741906494724992817">Þetta forrit þarf engar sérstakar heimildir.</translation>
 <translation id="7419142833919893307">Engu notandanafni bætt við</translation>
 <translation id="7419565702166471774">Nota ávallt öruggar tengingar</translation>
+<translation id="7419819959108735624">Veldu hvað sem er til að leita með Google-linsu</translation>
 <translation id="742130257665691897">Bókamerki fjarlægð</translation>
 <translation id="7421925624202799674">Skoða frumkóða síðu</translation>
 <translation id="7422192691352527311">Kjörstillingar...</translation>
@@ -10867,6 +10871,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="9102610709270966160">Virkja viðbót</translation>
 <translation id="9102864637938129124">Vefsvæði og auglýsendur geta greint árangur auglýsinga. Kveikt er á þessari stillingu.</translation>
 <translation id="9103868373786083162">Ýttu til að fara til baka, farðu í efnisvalmyndina til að sjá ferilinn</translation>
+<translation id="9106236359747881194">Veldu texta til að leita</translation>
 <translation id="9107096627210171112">Þýða...</translation>
 <translation id="9108035152087032312">Nefna &amp;glugga...</translation>
 <translation id="9108072915170399168">Núverandi stilling gagnanotkunar er „Án nettengingar“</translation>

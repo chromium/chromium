@@ -1714,6 +1714,7 @@
 <translation id="2234827758954819389">Οδηγός απορρήτου</translation>
 <translation id="2234876718134438132">Συγχρονισμός και υπηρ. Google</translation>
 <translation id="2235344399760031203">Τα cookie τρίτου μέρους αποκλείστηκαν.</translation>
+<translation id="2236949375853147973">Η δραστηριότητά μου</translation>
 <translation id="2238379619048995541">Δεδομένα κατάστασης συχνότητας</translation>
 <translation id="2241053333139545397">Διαβάστε και αλλάξτε τα δεδομένα σας σε διάφορους ιστότοπους</translation>
 <translation id="2241634353105152135">Μόνο μία φορά</translation>
@@ -2324,6 +2325,7 @@
 <translation id="2666247341166669829">Επίπεδο μπαταρίας αριστερού ακουστικού <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Άλλες εφαρμογές έχουν ρυθμιστεί να ανοίγουν τους ίδιους συνδέσμους με την εφαρμογή <ph name="APP_NAME" />. Με αυτή την ενέργεια, οι εφαρμογές <ph name="APP_NAME_2" /> και <ph name="APP_NAME_3" /> δεν θα μπορούν να ανοίγουν τους υποστηριζόμενους συνδέσμους.</translation>
 <translation id="2667463864537187133">Διαχείριση ορθογραφικού ελέγχου</translation>
+<translation id="2668094785979141847">Κάντε κλικ για έξοδο από το Google Lens</translation>
 <translation id="2668604389652548400">Καταργήστε ή αντικαταστήστε τη με παρόμοιες επεκτάσεις από το <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Δεν ήταν δυνατό το άνοιγμα της εφαρμογής <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Όλοι όσοι χρησιμοποιούν αυτήν τη συσκευή θα μπορούν να βλέπουν τα αρχεία που έχετε κατεβάσει</translation>
@@ -2374,6 +2376,7 @@
 <translation id="2710101514844343743">Δεδομένα χρήσης και διαγνωστικών</translation>
 <translation id="271033894570825754">Νέο</translation>
 <translation id="2710507903599773521">Η συσκευή <ph name="DEVICE_TYPE" /> έχει πλέον ξεκλειδωθεί</translation>
+<translation id="2712141162840347885">Επιλέξτε οτιδήποτε για αναζήτηση με το Google Lens ή πατήστε Escape για έξοδο από το Google Lens</translation>
 <translation id="2713106313042589954">Απενεργοποίηση κάμερας</translation>
 <translation id="2713444072780614174">Λευκό</translation>
 <translation id="2714180132046334502">Σκούρο φόντο</translation>
@@ -2444,6 +2447,7 @@
 <translation id="2749881179542288782">Γραμματικός Έλεγχος Μαζί με τον Ορθογραφικό</translation>
 <translation id="2750020734439919571">Περισσότερες ρυθμίσεις και άδειες εφαρμογών Chrome</translation>
 <translation id="2750602041558385535">Αποκλείστηκε μη επαληθευμένη λήψη</translation>
+<translation id="2753623023919742414">Κάντε κλικ για αναζήτηση</translation>
 <translation id="2754226775788136540">Αναζήτηση συσκευών Γρήγορης σύζευξης που είναι αποθηκευμένες στη διεύθυνση <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Βρείτε τις εφαρμογές που χρειάζεστε, τόσο για παραγωγικότητα όσο και ψυχαγωγία, στο Google Play Store. Μπορείτε να εγκαταστήσετε εφαρμογές ανά πάσα στιγμή.</translation>
 <translation id="2755349111255270002">Επαναφορά της συσκευής <ph name="DEVICE_TYPE" /></translation>
@@ -2951,6 +2955,7 @@
 <translation id="3132996321662585180">Ανανέωση καθημερινά</translation>
 <translation id="3133184011320864289">Ενεργοποιήστε τον συγχρονισμό για να επιτρέψετε στο Chrome να προτείνει ομάδες καρτελών και να διατηρεί τις καρτέλες σας οργανωμένες</translation>
 <translation id="3134393957315651797">Επιλέξτε κατάσταση πειράματος για το πείραμα <ph name="EXPERIMENT_NAME" />. Περιγραφή πειράματος: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Σύρετε για αναζήτηση</translation>
 <translation id="3139925690611372679">Προεπιλεγμένο κίτρινο avatar</translation>
 <translation id="3141093262818886744">Άνοιγμα ούτως ή άλλως</translation>
 <translation id="3141318088920353606">Ακρόαση…</translation>
@@ -4092,7 +4097,6 @@
 <translation id="3983586614702900908">συσκευές από έναν άγνωστο πάροχο υπηρεσιών</translation>
 <translation id="3983764759749072418">Οι εφαρμογές του Play Store έχουν πρόσβαση σε αυτήν τη συσκευή.</translation>
 <translation id="3983769721878416534">Καθυστέρηση πριν από το κλικ</translation>
-<translation id="3983793589497399077">Κάντε κλικ ή σύρετε οπουδήποτε για αναζήτηση με το Lens</translation>
 <translation id="3984135167056005094">Να μην συμπεριληφθεί διεύθυνση ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="3984159763196946143">Δεν ήταν δυνατή η έναρξη της λειτουργίας επίδειξης</translation>
 <translation id="3984431586879874039">Να επιτραπεί σε αυτόν τον ιστότοπο να δει το κλειδί ασφαλείας σας;</translation>
@@ -8543,6 +8547,7 @@
 <translation id="741906494724992817">Αυτή η εφαρμογή δεν απαιτεί ειδικές άδειες.</translation>
 <translation id="7419142833919893307">Δεν προστέθηκε όνομα χρήστη</translation>
 <translation id="7419565702166471774">Να χρησιμοποιούνται πάντα ασφαλείς συνδέσεις</translation>
+<translation id="7419819959108735624">Επιλέξτε οτιδήποτε για αναζήτηση με το Google Lens</translation>
 <translation id="742130257665691897">Καταργήθηκαν σελιδοδείκτες</translation>
 <translation id="7421925624202799674">&amp;Προβολή Πηγαίου Κώδικα Σελίδας</translation>
 <translation id="7422192691352527311">Προτιμήσεις</translation>
@@ -10864,6 +10869,7 @@
 <translation id="9102610709270966160">Ενεργοποίηση επέκτασης</translation>
 <translation id="9102864637938129124">Οι ιστότοποι και οι διαφημιζόμενοι μπορούν να κατανοούν την απόδοση των διαφημίσεων. Αυτή η ρύθμιση είναι ενεργοποιημένη.</translation>
 <translation id="9103868373786083162">Πατήστε για να επιστρέψετε στο μενού περιβάλλοντος για να δείτε το ιστορικό</translation>
+<translation id="9106236359747881194">Επιλογή κειμένου για αναζήτηση</translation>
 <translation id="9107096627210171112">Μ&amp;ετάφραση…</translation>
 <translation id="9108035152087032312">Όνομα και παράθυρο…</translation>
 <translation id="9108072915170399168">Η τρέχουσα ρύθμιση χρήσης δεδομένων είναι Χωρίς διαδίκτυο.</translation>

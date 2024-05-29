@@ -1714,6 +1714,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2234827758954819389">Panduan Privasi</translation>
 <translation id="2234876718134438132">Segerak dan perkhidmatan Google</translation>
 <translation id="2235344399760031203">Kuki pihak ketiga disekat</translation>
+<translation id="2236949375853147973">Aktiviti Saya</translation>
 <translation id="2238379619048995541">Data Keadaan Kekerapan</translation>
 <translation id="2241053333139545397">Baca dan tukar data anda pada beberapa laman web</translation>
 <translation id="2241634353105152135">Hanya sekali</translation>
@@ -2324,6 +2325,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2666247341166669829">Paras bateri kiri <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Apl lain ditetapkan untuk membuka pautan yang sama sebagai <ph name="APP_NAME" />. Tindakan ini akan melumpuhkan <ph name="APP_NAME_2" /> dan <ph name="APP_NAME_3" /> daripada membuka pautan yang disokong.</translation>
 <translation id="2667463864537187133">Urus semakan ejaan</translation>
+<translation id="2668094785979141847">Klik untuk keluar daripada Google Lens</translation>
 <translation id="2668604389652548400">Alih keluar atau gantikan dengan sambungan yang serupa daripada <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Tidak dapat membuka <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Sesiapa sahaja yang menggunakan peranti ini dapat melihat fail yang dimuat turun</translation>
@@ -2374,6 +2376,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2710101514844343743">Data penggunaan dan diagnostik</translation>
 <translation id="271033894570825754">Baharu</translation>
 <translation id="2710507903599773521">Kini <ph name="DEVICE_TYPE" /> anda tidak berkunci</translation>
+<translation id="2712141162840347885">Pilih apa-apa sahaja untuk mencari dengan Google Lens atau tekan kekunci Esc untuk keluar daripada Google Lens</translation>
 <translation id="2713106313042589954">Matikan kamera</translation>
 <translation id="2713444072780614174">Putih</translation>
 <translation id="2714180132046334502">Latar belakang gelap</translation>
@@ -2444,6 +2447,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2749881179542288782">Periksa Tatabahasa Dengan Ejaan</translation>
 <translation id="2750020734439919571">Lagi tetapan dan kebenaran apl Chrome</translation>
 <translation id="2750602041558385535">Muat turun yang tidak disahkan disekat</translation>
+<translation id="2753623023919742414">Klik untuk mencari</translation>
 <translation id="2754226775788136540">Mencari peranti Ganding Pantas yang disimpan pada <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Cari apl yang anda perlukan, daripada produktiviti kepada hiburan di Google Play Store. Anda boleh memasang apl pada bila-bila masa.</translation>
 <translation id="2755349111255270002">Tetapkan semula <ph name="DEVICE_TYPE" /> ini</translation>
@@ -2951,6 +2955,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3132996321662585180">Muat semula setiap hari</translation>
 <translation id="3133184011320864289">Hidupkan penyegerakan untuk membolehkan Chrome mencadangkan kumpulan tab dan memastikan tab anda tersusun</translation>
 <translation id="3134393957315651797">Pilih status percubaan untuk percubaan <ph name="EXPERIMENT_NAME" />. Perihalan percubaan: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Seret untuk mencari</translation>
 <translation id="3139925690611372679">Avatar kuning lalai</translation>
 <translation id="3141093262818886744">Buka juga</translation>
 <translation id="3141318088920353606">Mendengar...</translation>
@@ -4092,7 +4097,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="3983586614702900908">peranti daripada vendor yang tidak diketahui</translation>
 <translation id="3983764759749072418">Aplikasi Gedung Play mempunyai akses kepada peranti ini.</translation>
 <translation id="3983769721878416534">Lengah sebelum klik</translation>
-<translation id="3983793589497399077">Klik atau seret pada mana-mana bahagian untuk mencari dengan Lens</translation>
 <translation id="3984135167056005094">Jangan sertakan alamat e-mel</translation>
 <translation id="3984159763196946143">Tidak dapat memulakan mod tunjuk cara</translation>
 <translation id="3984431586879874039">Benarkan tapak ini melihat kunci keselamatan anda?</translation>
@@ -8542,6 +8546,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="741906494724992817">Apl ini tidak memerlukan kebenaran khas.</translation>
 <translation id="7419142833919893307">Tiada nama pengguna yang ditambahkan</translation>
 <translation id="7419565702166471774">Sentiasa gunakan sambungan selamat</translation>
+<translation id="7419819959108735624">Pilih apa-apa sahaja untuk mencari dengan Google Lens</translation>
 <translation id="742130257665691897">Penanda halaman dialih keluar</translation>
 <translation id="7421925624202799674">&amp;Lihat Sumber Halaman</translation>
 <translation id="7422192691352527311">Keutamaan...</translation>
@@ -10866,6 +10871,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="9102610709270966160">Dayakan Sambungan</translation>
 <translation id="9102864637938129124">Laman dan pengiklan boleh mengetahui prestasi iklan. Tetapan ini dihidupkan.</translation>
 <translation id="9103868373786083162">Tekan untuk kembali, menu konteks untuk melihat sejarah</translation>
+<translation id="9106236359747881194">Pilih teks untuk dicari</translation>
 <translation id="9107096627210171112">Terjemah...</translation>
 <translation id="9108035152087032312">Namakan &amp;tetingkap...</translation>
 <translation id="9108072915170399168">Tetapan penggunaan data semasa ialah Tanpa internet</translation>

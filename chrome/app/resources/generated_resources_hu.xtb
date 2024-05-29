@@ -838,6 +838,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1607139524282324606">Bejegyzés törlése</translation>
 <translation id="1607499585984539560">A felhasználó nem tartozik domainhez</translation>
 <translation id="1608668830839595724">További műveletek a kiválasztott elemeknél</translation>
+<translation id="1608698493373028805">Előfordulhat, hogy ennek a bővítménynek a támogatása hamarosan megszűnik</translation>
 <translation id="1610272688494140697">Alkalmazásbeállítások</translation>
 <translation id="161042844686301425">Cián</translation>
 <translation id="1611432201750675208">Eszköze zárolva van</translation>
@@ -2322,6 +2323,8 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2666247341166669829">Bal akkumulátorszint: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Más alkalmazásoknál is be van állítva, hogy megnyissák ugyanazokat a linkeket, mint a(z) <ph name="APP_NAME" />. Ezzel a művelettel letiltja a következők számára a támogatott linkek megnyitását: <ph name="APP_NAME_2" /> és <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Helyesírás-ellenőrzés kezelése</translation>
+<translation id="2668094785979141847">Kattintson a Google Lensből való kilépéshez</translation>
+<translation id="2668604389652548400">Távolítsa el, vagy cserélje le hasonló bővítményre a <ph name="BEGIN_LINK" />Chrome Webáruházban<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Nem sikerült megnyitni a következőt: <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">A letöltött fájlokat bárki láthatja, aki az eszközt használja</translation>
 <translation id="2670102641511624474">A(z) <ph name="APP_NAME" /> megosztja a Chrome egy lapját.</translation>
@@ -2371,6 +2374,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2710101514844343743">Használati és diagnosztikai adatok</translation>
 <translation id="271033894570825754">Új</translation>
 <translation id="2710507903599773521">A(z) <ph name="DEVICE_TYPE" /> fel van oldva</translation>
+<translation id="2712141162840347885">Válasszon ki bármit a Google Lens segítségével való kereséshez, vagy nyomja meg az Esc billentyűt a Google Lensből való kilépéshez</translation>
 <translation id="2713106313042589954">Kamera kikapcsolása</translation>
 <translation id="2713444072780614174">Fehér</translation>
 <translation id="2714180132046334502">Sötét háttér</translation>
@@ -2441,6 +2445,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2749881179542288782">Nyelvhelyesség és helyesírás ellenőrzése</translation>
 <translation id="2750020734439919571">A Chrome alkalmazás további beállításai és engedélyei</translation>
 <translation id="2750602041558385535">Nem ellenőrzött letöltés letiltva</translation>
+<translation id="2753623023919742414">Kattintson a kereséshez</translation>
 <translation id="2754226775788136540">A(z) <ph name="PRIMARY_EMAIL" /> fiókba mentett gyors párosítású eszközök keresése</translation>
 <translation id="2754825024506485820">A Google Play Áruházban megtalálhatja kívánt alkalmazásokat, legyen szó irodai alkalmazásokról vagy akár szórakozásról. Bármikor telepíthet alkalmazást.</translation>
 <translation id="2755349111255270002"><ph name="DEVICE_TYPE" /> alaphelyzetbe állítása</translation>
@@ -2948,6 +2953,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3132996321662585180">Frissítés naponta</translation>
 <translation id="3133184011320864289">Kapcsolja be a szinkronizálást, hogy a Chrome lapcsoportokat javasolhasson, és rendezetten tarthassa a lapokat.</translation>
 <translation id="3134393957315651797">Válasszon ki kísérleti állapotot a(z) <ph name="EXPERIMENT_NAME" /> kísérlethez. Kísérlet leírása: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Húzza a kereséshez</translation>
 <translation id="3139925690611372679">Alapértelmezett sárga avatar</translation>
 <translation id="3141093262818886744">Megnyitás mindenképpen</translation>
 <translation id="3141318088920353606">Figyelek…</translation>
@@ -4088,7 +4094,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="3983586614702900908">ismeretlen szolgáltatótól származó eszközök</translation>
 <translation id="3983764759749072418">A Play Áruház alkalmazásai hozzáférhetnek ehhez az eszközhöz.</translation>
 <translation id="3983769721878416534">Késleltetés kattintás előtt</translation>
-<translation id="3983793589497399077">Kattintson bárhová, vagy húzással jelölje ki a kívánt részt a Lens segítségével való kereséshez</translation>
 <translation id="3984135167056005094">Ne tartalmazza az e-mail-címet</translation>
 <translation id="3984159763196946143">Nem sikerült elindítani a demó módot</translation>
 <translation id="3984431586879874039">Engedélyezi a webhelynek, hogy lássa a biztonsági hardverkulcsot?</translation>
@@ -8539,6 +8544,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="741906494724992817">Az alkalmazás nem igényel speciális engedélyeket.</translation>
 <translation id="7419142833919893307">Nincs megadva felhasználónév</translation>
 <translation id="7419565702166471774">Mindig használjon biztonságos kapcsolatokat</translation>
+<translation id="7419819959108735624">Válasszon ki bármit a Google Lens segítségével való kereséshez</translation>
 <translation id="742130257665691897">Könyvjelzők eltávolítva</translation>
 <translation id="7421925624202799674">&amp;Oldal forrásának megtekintése</translation>
 <translation id="7422192691352527311">Beállítások...</translation>
@@ -10861,6 +10867,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="9102610709270966160">Bővítmény engedélyezése</translation>
 <translation id="9102864637938129124">A webhelyek és a hirdetők megismerhetik a hirdetések teljesítményét. Ez a beállítás be van kapcsolva.</translation>
 <translation id="9103868373786083162">Nyomja meg a visszalépéshez, illetve választhatja a helyi menüt az előzmények megtekintéséshez</translation>
+<translation id="9106236359747881194">Jelöljön ki szöveget a kereséshez</translation>
 <translation id="9107096627210171112">Fordítás…</translation>
 <translation id="9108035152087032312">Ablak elnevezése…</translation>
 <translation id="9108072915170399168">A jelenlegi adathasználati beállítás: Internet nélkül</translation>

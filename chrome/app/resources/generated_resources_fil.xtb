@@ -1715,6 +1715,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2234827758954819389">Gabay sa Privacy</translation>
 <translation id="2234876718134438132">Sync at mga serbisyo ng Google</translation>
 <translation id="2235344399760031203">Bina-block ang third-party na cookies</translation>
+<translation id="2236949375853147973">Aking Aktibidad</translation>
 <translation id="2238379619048995541">Data ng Estado ng Dalas</translation>
 <translation id="2241053333139545397">Basahin at baguhin ang iyong data sa ilang website</translation>
 <translation id="2241634353105152135">Isang beses lang</translation>
@@ -2325,6 +2326,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2666247341166669829"><ph name="PERCENTAGE" />% antas ng baterya ng kaliwa.</translation>
 <translation id="2667144577800272420">May iba pang app na nakatakdang buksan ang mga link na kapareho ng sa <ph name="APP_NAME" />. Idi-disable nito ang kakayahan ng <ph name="APP_NAME_2" /> at <ph name="APP_NAME_3" /> na buksan ang mga sinusuportahang link.</translation>
 <translation id="2667463864537187133">Pamahalaan ang pang-check ng pagbabaybay</translation>
+<translation id="2668094785979141847">I-click para lumabas sa Google Lens</translation>
 <translation id="2668604389652548400">Alisin o palitan ito ng mga katulad na extension mula sa <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Hindi mabuksan ang <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Makikita ng sinumang gumagamit ng device na ito ang mga na-download na file</translation>
@@ -2375,6 +2377,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2710101514844343743">Data ng paggamit at mga diagnostic</translation>
 <translation id="271033894570825754">Bago</translation>
 <translation id="2710507903599773521">Naka-unlock na ngayon ang iyong <ph name="DEVICE_TYPE" /></translation>
+<translation id="2712141162840347885">Pumili ng kahit anong bagay na hahanapin gamit ang Google Lens o pindutin ang escape para lumabas sa Google Lens</translation>
 <translation id="2713106313042589954">I-off ang camera</translation>
 <translation id="2713444072780614174">Puti</translation>
 <translation id="2714180132046334502">Madilim na background</translation>
@@ -2445,6 +2448,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2749881179542288782">Check Grammar With Spelling</translation>
 <translation id="2750020734439919571">Higit pang setting at pahintulot ng Chrome app</translation>
 <translation id="2750602041558385535">Na-block ang hindi na-verify na pag-download</translation>
+<translation id="2753623023919742414">I-click para maghanap</translation>
 <translation id="2754226775788136540">Naghahanap ng device ng Mabilis na Pagpares na naka-save sa <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Hanapin ang mga app na kailangan mo, mula sa pagiging produktibo hanggang entertainment, sa Google Play Store. Puwede kang mag-install ng mga app anumang oras.</translation>
 <translation id="2755349111255270002">I-reset ang <ph name="DEVICE_TYPE" /> na ito</translation>
@@ -2952,6 +2956,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3132996321662585180">I-refresh araw-araw</translation>
 <translation id="3133184011320864289">I-on ang pag-sync para payagan ang Chrome na magmungkahi ng mga grupo ng tab at panatilihing nakaayos ang iyong mga tab</translation>
 <translation id="3134393957315651797">Pumili ng status ng eksperimento para sa eksperimentong <ph name="EXPERIMENT_NAME" />. Paglalarawan ng eksperimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Mag-drag para maghanap</translation>
 <translation id="3139925690611372679">Default na dilaw na avatar</translation>
 <translation id="3141093262818886744">Buksan pa rin</translation>
 <translation id="3141318088920353606">Nakikinig...</translation>
@@ -4093,7 +4098,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="3983586614702900908">mga device mula sa isang hindi kilalang vendor</translation>
 <translation id="3983764759749072418">May access sa device na ito ang mga application sa Play Store.</translation>
 <translation id="3983769721878416534">Pagkaantala bago ang pag-click</translation>
-<translation id="3983793589497399077">Mag-click o mag-drag sa kahit saan para maghanap gamit ang Lens</translation>
 <translation id="3984135167056005094">Huwag isama ang email address</translation>
 <translation id="3984159763196946143">Hindi masimulan ang demo mode</translation>
 <translation id="3984431586879874039">Payagan ang site na ito na makita ang iyong security key?</translation>
@@ -8545,6 +8549,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="741906494724992817">Hindi nangangailangan ng mga espesyal na pahintulot ang app na ito.</translation>
 <translation id="7419142833919893307">Walang idinagdag na username</translation>
 <translation id="7419565702166471774">Palaging gumamit ng mga secure na koneksyon</translation>
+<translation id="7419819959108735624">Pumili ng kahit ano para maghanap sa Google Lens</translation>
 <translation id="742130257665691897">Naalis ang mga bookmark</translation>
 <translation id="7421925624202799674">&amp;Tingnan ang Pinagmulan ng Pahina</translation>
 <translation id="7422192691352527311">Preferences...</translation>
@@ -10871,6 +10876,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="9102610709270966160">I-enable ang Extension</translation>
 <translation id="9102864637938129124">Mauunawaan ng mga site at advertiser ang performance ng mga ad. Naka-on ang setting na ito.</translation>
 <translation id="9103868373786083162">Pindutin upang bumalik, gamitin ang menu ng konteksto upang makita ang history</translation>
+<translation id="9106236359747881194">Piliin ang text para maghanap</translation>
 <translation id="9107096627210171112">I&amp;salin...</translation>
 <translation id="9108035152087032312">Pangalanan ang &amp;window...</translation>
 <translation id="9108072915170399168">Walang internet ang kasalukuyang setting ng paggamit ng data</translation>

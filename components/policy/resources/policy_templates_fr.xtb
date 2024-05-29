@@ -467,6 +467,7 @@ Si elle est définie sur "PromptInTab", lorsque l'authentification de l'utilisat
       Une page supprimée est déchargée et ses ressources entièrement récupérées. L'onglet auquel elle est associée reste dans la barre d'onglets, mais son affichage déclenche une actualisation complète.
       </translation>
 <translation id="138847842893090358">Indiquer l'état de la mise à jour du système</translation>
+<translation id="1389138080311956934">Économies de mémoire maximales.</translation>
 <translation id="1390529781843037070">Si vous activez cette règle, ou si vous ne la configurez pas, les utilisateurs peuvent imprimer sur <ph name="CLOUD_PRINT_NAME" /> à partir de la boîte de dialogue d'impression de <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> peut envoyer des documents à <ph name="CLOUD_PRINT_NAME" /> pour impression. Cela n'empêche pas les utilisateurs d'envoyer des tâches d'impression sur des sites Web.
 
       Si vous désactivez cette règle, les utilisateurs ne peuvent pas imprimer sur <ph name="CLOUD_PRINT_NAME" /> à partir de la boîte de dialogue d'impression de <ph name="PRODUCT_NAME" />.
@@ -3879,6 +3880,7 @@ Pour <ph name="PRODUCT_OS_NAME" />, cette règle est liée à l'attestation à d
 Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4070039109671307724">Divers</translation>
 <translation id="4072225853834793549">Désactiver les raccourcis d'accessibilité sur l'écran de connexion</translation>
+<translation id="4074922053013383215">Économies de mémoire modérées.</translation>
 <translation id="4075675819066819571">Placer l'étagère sur le côté gauche de l'écran</translation>
 <translation id="4079306023113982053">Contrôle la disponibilité de <ph name="BOREALIS_NAME" /> pour cet utilisateur.
 
@@ -8586,6 +8588,7 @@ Pour en savoir plus sur la règle <ph name="IEEM_SITELIST_POLICY" /> d'Internet�
       Si cette règle est définie sur "False" ou si elle n'est pas configurée, les contenus <ph name="FLASH_PLUGIN_NAME" /> de provenance différente ou de petite taille peuvent être bloqués.
 
       Remarque : pour contrôler les sites autorisés à exécuter <ph name="FLASH_PLUGIN_NAME" />, reportez-vous aux règles <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> et <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7801163363326128751">Modifier le niveau d'économies de l'économiseur de mémoire</translation>
 <translation id="7804859754080118507">Signalez les événements liés à la connexion réseau et la puissance du signal sur les appareils enregistrés.
 
       Si la règle est définie sur "False" ou si elle n'est pas configurée, ces informations ne seront pas transmises.
@@ -9166,6 +9169,7 @@ Pour en savoir plus sur les anciennes technologies, consultez https://chromestat
 <translation id="8274926413890711289">Activer les contrôles de rapports précis</translation>
 <translation id="8275103737670730746">Autoriser l'appel d'API de sélection de fichiers ou répertoires sans geste préalable de l'utilisateur</translation>
 <translation id="8278133379873210419">Supprimer les boîtes de dialogue JavaScript déclenchées depuis des sous-frames d'une autre origine</translation>
+<translation id="8284028944941138279">Économies de mémoire équilibrées.</translation>
 <translation id="8284296539558710573">Commandes d'authentification HTTP multi-domaines</translation>
 <translation id="8284527236880877730">Si la règle <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> est désactivée, la règle <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> permet de définir le pourcentage de scaling du délai d'assombrissement lorsque l'appareil effectue la présentation. Le scaling de ce délai décale d'autant le moment où l'écran doit s'éteindre, se verrouiller et se mettre en veille, ceci afin de maintenir l'intervalle initialement configuré.
 
@@ -9828,6 +9832,17 @@ Cette règle ne s'applique pas si le clavier virtuel est désactivé (par exempl
 <translation id="8835322836315560274">Permet de spécifier la commande à utiliser pour ouvrir les URL dans un navigateur secondaire. Cette règle peut être définie sur le navigateur <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" /> ou <ph name="EDGE_VALUE_PLACEHOLDER" />, ou sur le chemin d'accès à un fichier. Si elle est définie sur le chemin d'accès à un fichier, celui-ci est utilisé comme fichier exécutable. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> n'est disponible que sur <ph name="MS_WIN_NAME" />. <ph name="SAFARI_VALUE_PLACEHOLDER" /> et <ph name="EDGE_VALUE_PLACEHOLDER" /> ne sont disponibles que sur <ph name="MS_WIN_NAME" /> et <ph name="MAC_OS_NAME" />.
 
       Si cette règle n'est pas définie, l'URL s'ouvre par défaut dans un navigateur spécifique à la plate-forme : <ph name="IE_PRODUCT_NAME" /> sous <ph name="MS_WIN_NAME" /> ou <ph name="SAFARI_PRODUCT_NAME" /> sous <ph name="MAC_OS_NAME" />. Sous <ph name="LINUX_OS_NAME" />, le lancement d'un navigateur secondaire entraîne une erreur.</translation>
+<translation id="8836227957461360521">Cette règle modifie le niveau d'économies de l'économiseur de mémoire.
+
+Cela n'est appliqué que lorsque l'économiseur de mémoire est activé via les paramètres ou la règle <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" />. Cela affecte aussi la façon dont les heuristiques sont utilisées pour déterminer quand supprimer les onglets. Par exemple, réduire la durée de vie d'un onglet inactif avant de le supprimer peut permettre d'économiser de la mémoire, mais cela signifie aussi que les onglets seront actualisés plus fréquemment, ce qui peut entraîner une mauvaise expérience utilisateur et un trafic réseau plus élevé.
+
+Si cette règle est définie sur 0, l'économiseur de mémoire permet d'obtenir des économies de mémoire modérées. Les onglets deviennent inactifs après une longue période.
+
+Si vous définissez la règle sur 1, l'économiseur de mémoire permet d'obtenir des économies de mémoire équilibrées. Les onglets deviennent inactifs après une période optimale.
+
+Si vous définissez la règle sur 2, l'économiseur de mémoire permet d'obtenir des économies de mémoire maximales. Les onglets deviennent inactifs après une courte période.
+
+Si cette règle n'est pas configurée, l'utilisateur final peut contrôler ce paramètre dans chrome://settings/performance.</translation>
 <translation id="8836975838488342340">Durée de validité du code d'accès (en secondes).</translation>
 <translation id="883744045558067826">Le Chrome Root Store peut être utilisé, selon le processus employé pour son lancement.</translation>
 <translation id="8837957135252624017">Conserver au moins un onglet Chrome ouvert</translation>

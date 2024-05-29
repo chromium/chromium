@@ -1712,6 +1712,7 @@
 <translation id="2234827758954819389">ຄູ່ມືຄວາມເປັນສ່ວນຕົວ</translation>
 <translation id="2234876718134438132">ການບໍລິການຊິ້ງຂໍ້ມູນ ແລະ Google</translation>
 <translation id="2235344399760031203">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມໄວ້</translation>
+<translation id="2236949375853147973">ການເຄື່ອນໄຫວຂອງຂ້ອຍ</translation>
 <translation id="2238379619048995541">ຂໍ້ມູນສະພາບຄວາມຖີ່</translation>
 <translation id="2241053333139545397">ອ່ານ​ ແລະ​ປ່ຽນແປງ​ຂໍ້​ມູນ​ຂອງ​ທ່ານຢູ່ເທິງເວັບໄຊທ໌ຈຳ​ນວນ​ໜຶ່ງ</translation>
 <translation id="2241634353105152135">ຄັ້ງ​ດຽວ​ເທົ່າ​ນັ້ນ</translation>
@@ -2323,6 +2324,7 @@
 <translation id="2666247341166669829">ລະດັບແບັດເຕີຣີຂ້າງຊ້າຍ <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">ແອັບອື່ນໆຖືກຕັ້ງໃຫ້ເປີດລິ້ງດຽວກັນເປັນ <ph name="APP_NAME" />. ນີ້ຈະປິດການນຳໃຊ້ <ph name="APP_NAME_2" /> ແລະ <ph name="APP_NAME_3" /> ບໍ່ໃຫ້ເປີດລິ້ງທີ່ຮອງຮັບ.</translation>
 <translation id="2667463864537187133">ຈດການການກວດການສະກົດຄຳ</translation>
+<translation id="2668094785979141847">ຄລິກເພື່ອອອກຈາກ Google Lens</translation>
 <translation id="2668604389652548400">ລຶບອອກ ຫຼື ປ່ຽນແທນດ້ວຍສ່ວນຂະຫຍາຍທີ່ຄ້າຍກັນຈາກ <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">ບໍ່ສາມາດເປີດ <ph name="APP_NAME" /> ໄດ້</translation>
 <translation id="2669454659051515572">ໃຜກໍຕາມທີ່ໃຊ້ອຸປະກອນນີ້ຈະສາມາດເບິ່ງເຫັນໄຟລ໌ທີ່ດາວໂຫຼດແລ້ວໄດ້</translation>
@@ -2373,6 +2375,7 @@
 <translation id="2710101514844343743">ຂໍ້ມູນການນຳໃຊ້ ແລະ ການວິນິໄສ</translation>
 <translation id="271033894570825754">ໃຫມ່</translation>
 <translation id="2710507903599773521">ປົດລັອກ <ph name="DEVICE_TYPE" /> ຂອງທ່ານແລ້ວ</translation>
+<translation id="2712141162840347885">ເລືອກຫຍັງກໍໄດ້ເພື່ອຊອກຫາດ້ວຍ Google Lens ຫຼື ກົດ Escape ເພື່ອອອກຈາກ Google Lens</translation>
 <translation id="2713106313042589954">ປິດກ້ອງຖ່າຍຮູບ</translation>
 <translation id="2713444072780614174">ສີ​ຂາວ</translation>
 <translation id="2714180132046334502">ພື້ນຫຼັງມືດ</translation>
@@ -2443,6 +2446,7 @@
 <translation id="2749881179542288782">ກວດເບິ່ງໄວຍະກອນກັບການສະກົດຄໍາ</translation>
 <translation id="2750020734439919571">ການຕັ້ງຄ່າ ແລະ ການອະນຸຍາດແອັບ Chrome ເພີ່ມເຕີມ</translation>
 <translation id="2750602041558385535">ບລັອກການດາວໂຫຼດທີ່ບໍ່ໄດ້ຮັບການຢັ້ງຢືນແລ້ວ</translation>
+<translation id="2753623023919742414">ຄລິກເພື່ອຊອກຫາ</translation>
 <translation id="2754226775788136540">ກຳລັງຊອກຫາອຸປະກອນຈັບຄູ່ດ່ວນທີ່ບັນທຶກໄວ້ໃນ <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">ຊອກຫາແອັບທີ່ທ່ານຕ້ອງການ, ບໍ່ວ່າຈະເປັນແອັບເຮັດວຽກໄປຈົນຮອດແອັບບັນເທີງ, ຢູ່ Google Play Store. ທ່ານສາມາດຕິດຕັ້ງແອັບຕ່າງໆຕອນໃດກໍໄດ້.</translation>
 <translation id="2755349111255270002">ຣີເຊັດ <ph name="DEVICE_TYPE" /> ນີ້</translation>
@@ -2950,6 +2954,7 @@
 <translation id="3132996321662585180">ໂຫຼດຂໍ້ມູນໃໝ່ທຸກມື້</translation>
 <translation id="3133184011320864289">ເປີດການຊິ້ງເພື່ອໃຫ້ Chrome ແນະນຳກຸ່ມແຖບ ແລະ ຈັດລະບຽບແຖບຂອງທ່ານ</translation>
 <translation id="3134393957315651797">ເລືອກສະຖານະການທົດລອງສຳລັບການທົດລອງ <ph name="EXPERIMENT_NAME" />. ຄຳອະທິບາຍການທົດລອງ: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">ລາກເພື່ອຊອກຫາ</translation>
 <translation id="3139925690611372679">ຮູບແທນຕົວສີເຫຼືອງຕາມຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="3141093262818886744">ຢືນຢັນການເປີດ</translation>
 <translation id="3141318088920353606">ກຳລັງຟັງ...</translation>
@@ -4091,7 +4096,6 @@
 <translation id="3983586614702900908">ອຸ​ປະ​ກອນ​ຈາກ​ຜູ້​ຂາຍ​ທີ່​ບໍ່​ຮູ້​ຈັກ</translation>
 <translation id="3983764759749072418">ແອັບພລິເຄຊັນໃນ Play Store ມີສິດເຂົ້າເຖິງອຸປະກອນນີ້.</translation>
 <translation id="3983769721878416534">ໜ່ວງເວລາກ່ອນຄລິກ</translation>
-<translation id="3983793589497399077">ຄລິກ ຫຼື ລາກບ່ອນໃດກໍໄດ້ເພື່ອຊອກຫາດ້ວຍ Lens</translation>
 <translation id="3984135167056005094">ຢ່າຮວມເອົາທີ່ຢູ່ອີເມວ</translation>
 <translation id="3984159763196946143">ບໍ່ສາມາດເລີ່ມໂໝດສາທິດໄດ້</translation>
 <translation id="3984431586879874039">ອະນຸຍາດໃຫ້ເວັບໄຊນີ້ເຫັນກະແຈຄວາມປອດໄພຂອງທ່ານບໍ?</translation>
@@ -8539,6 +8543,7 @@
 <translation id="741906494724992817">ແອັບນີ້ບໍ່​ຕ້ອງມີ​ການ​ອະ​ນຸ​ຍາດ​ເປັນ​ພິ​ເສດ​.</translation>
 <translation id="7419142833919893307">ບໍ່ມີການເພີ່ມຊື່ຜູ້ໃຊ້</translation>
 <translation id="7419565702166471774">ໃຊ້ການເຊື່ອມຕໍ່ທີ່ປອດໄພທຸກເທື່ອ</translation>
+<translation id="7419819959108735624">ເລືອກຫຍັງກໍໄດ້ເພື່ອຊອກຫາດ້ວຍ Google Lens</translation>
 <translation id="742130257665691897">ລຶບບຸກມາກອອກແລ້ວ</translation>
 <translation id="7421925624202799674">ເບິ່ງແຫຼ່ງທີ່ມາຂອງໜ້າ</translation>
 <translation id="7422192691352527311">ຄວາມມັກ...</translation>
@@ -10859,6 +10864,7 @@
 <translation id="9102610709270966160">ເປີດນຳໃຊ້ນສ່ວນຂະຫຍາຍ</translation>
 <translation id="9102864637938129124">ເວັບໄຊ ແລະ ຜູ້ລົງໂຄສະນາສາມາດຮູ້ໄດ້ວ່າໂຄສະນາມີປະສິດທິພາບແນວໃດ. ການຕັ້ງຄ່ານີ້ເປີດຢູ່.</translation>
 <translation id="9103868373786083162">ກົດ​ເພື່ອ​ກັບ​ຄືນ, ເມ​ນູ​ເນື້ອ​ໃນ​ເພື່ອ​ເບິ່ງ​ປະ​ຫວັດ</translation>
+<translation id="9106236359747881194">ເລືອກຂໍ້ຄວາມທີ່ຈະຊອກຫາ</translation>
 <translation id="9107096627210171112">ແປພາສາ...</translation>
 <translation id="9108035152087032312">ຊື່ ແລະ ໜ້າຈໍ...</translation>
 <translation id="9108072915170399168">ການຕັ້ງຄ່າການນຳໃຊ້ອິນເຕີເນັດປັດຈຸບັນແມ່ນບໍ່ໃຊ້ອິນເຕີເນັດເລີຍ</translation>

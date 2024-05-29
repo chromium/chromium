@@ -1711,6 +1711,7 @@
 <translation id="2234827758954819389">راهنمای حریم خصوصی</translation>
 <translation id="2234876718134438132">‏همگام‌سازی و سرویس‌های Google</translation>
 <translation id="2235344399760031203">کوکی‌های شخص ثالث مسدود شده‌اند</translation>
+<translation id="2236949375853147973">فعالیت من</translation>
 <translation id="2238379619048995541">داده‌های حالت فرکانس</translation>
 <translation id="2241053333139545397">خواندن و تغییر داده‌هایتان در تعدادی از وب‌سایت‌ها</translation>
 <translation id="2241634353105152135">فقط یک بار</translation>
@@ -2321,6 +2322,7 @@
 <translation id="2666247341166669829">سطح باتری سمت چپ <ph name="PERCENTAGE" />٪.</translation>
 <translation id="2667144577800272420">برنامه‌های دیگری تنظیم شده‌اند تا همان پیوندها را مثل <ph name="APP_NAME" /> باز کنند. با این کار <ph name="APP_NAME_2" /> و <ph name="APP_NAME_3" /> غیرفعال خواهند شد تا پیوندهای پشتیبانی‌شده را باز نکنند.</translation>
 <translation id="2667463864537187133">مدیریت غلط‌یاب املایی</translation>
+<translation id="2668094785979141847">‏برای خروج از «لنز Google»، کلیک کنید</translation>
 <translation id="2668604389652548400">‏این افزونه را بردارید یا آن را با افزونه‌های مشابه در <ph name="BEGIN_LINK" />نت‌بازار Chrome<ph name="END_LINK" /> جایگزین کنید</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> باز نشد</translation>
 <translation id="2669454659051515572">همه افرادی که از این دستگاه استفاده می‌کنند می‌توانند فایل‌های بارگیری‌شده را ببینند</translation>
@@ -2371,6 +2373,7 @@
 <translation id="2710101514844343743">داده‌های استفاده و عیب‌یابی</translation>
 <translation id="271033894570825754">جدید</translation>
 <translation id="2710507903599773521">اکنون <ph name="DEVICE_TYPE" /> شما قفل شده است</translation>
+<translation id="2712141162840347885">‏هرچیزی را که می‌خواهید برای جستجو با «لنز Google» انتخاب کنید یا کلید «گریز» را فشار دهید تا از «لنز Google» خارج شوید</translation>
 <translation id="2713106313042589954">خاموش کردن دوربین</translation>
 <translation id="2713444072780614174">سفید</translation>
 <translation id="2714180132046334502">پس‌زمینه تاریک</translation>
@@ -2441,6 +2444,7 @@
 <translation id="2749881179542288782">بررسی گرامر با املا</translation>
 <translation id="2750020734439919571">‏دیگر تنظیمات و اجازه‌های برنامه Chrome</translation>
 <translation id="2750602041558385535">بارگیری تأییدنشده مسدود است</translation>
+<translation id="2753623023919742414">برای جستجو، کلیک کنید</translation>
 <translation id="2754226775788136540">درحال جستجوی دستگاه‌های مجهز به «جفت‌سازی سریع» که در <ph name="PRIMARY_EMAIL" /> ذخیره شده است</translation>
 <translation id="2754825024506485820">‏برنامه‌های موردنیازتان را، از بهره‌وری گرفته تا سرگرمی، در «فروشگاه Google Play» پیدا کنید. هر زمانی بخواهید می‌توانید برنامه‌ها را نصب کنید.</translation>
 <translation id="2755349111255270002">بازنشانی این <ph name="DEVICE_TYPE" /></translation>
@@ -2948,6 +2952,7 @@
 <translation id="3132996321662585180">بازآوری روزانه</translation>
 <translation id="3133184011320864289">‏همگام‌سازی را روشن کنید تا به Chrome اجازه دهید گروه‌های برگه پیشنهاد دهد و برگه‌های شما را مرتب نگه دارد</translation>
 <translation id="3134393957315651797">وضعیت آزمایش را برای آزمایش <ph name="EXPERIMENT_NAME" /> انتخاب کنید. شرح آزمایش: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">برای جستجو، بخش موردنظر را بکشید</translation>
 <translation id="3139925690611372679">چهرک پیش‌فرض زرد</translation>
 <translation id="3141093262818886744">درهرصورت باز شود</translation>
 <translation id="3141318088920353606">درحال گوش کردن...</translation>
@@ -4089,7 +4094,6 @@
 <translation id="3983586614702900908">دستگاه‌های ارائه‌دهنده ناشناس</translation>
 <translation id="3983764759749072418">‏برنامه‌های «فروشگاه Play» به این دستگاه دسترسی دارند.</translation>
 <translation id="3983769721878416534">تأخیر قبل از کلیک</translation>
-<translation id="3983793589497399077">برای جستجو با «لنز»، روی هر جایی از صفحه کلیک کنید یا بکشید</translation>
 <translation id="3984135167056005094">بدون درج نشانی ایمیل</translation>
 <translation id="3984159763196946143">حالت نمایشی شروع نشد</translation>
 <translation id="3984431586879874039">به این سایت اجازه می‌دهید کلید امنیتی‌تان را ببیند؟</translation>
@@ -8541,6 +8545,7 @@
 <translation id="741906494724992817">این برنامه به مجوز خاصی نیاز ندارد.</translation>
 <translation id="7419142833919893307">نام کاربری اضافه نشده است</translation>
 <translation id="7419565702166471774">همیشه از اتصال‌های امن استفاده شود</translation>
+<translation id="7419819959108735624">‏هرچیزی را می‌خواهید انتخاب کنید تا با «لنز Google» جستجو شود</translation>
 <translation id="742130257665691897">نشانک‌ها برداشته شد</translation>
 <translation id="7421925624202799674">&amp;مشاهده منبع صفحه</translation>
 <translation id="7422192691352527311">موارد برگزیده...</translation>
@@ -10864,6 +10869,7 @@
 <translation id="9102610709270966160">فعال کردن افزونه</translation>
 <translation id="9102864637938129124">سایت‌ها و تبلیغ‌کنندگان می‌توانند نحوه عملکرد آگهی‌ها را درک کنند. این تنظیم روشن است.</translation>
 <translation id="9103868373786083162">برای دیدن سابقه، دکمه را فشار دهید تا به عقب، و به منوی بافت برگردید</translation>
+<translation id="9106236359747881194">نوشتاری را برای جستجو انتخاب کنید</translation>
 <translation id="9107096627210171112">ترجمه...</translation>
 <translation id="9108035152087032312">نام‌گذاری پنجره…</translation>
 <translation id="9108072915170399168">تنظیم کنونی مصرف داده روی «بدون اینترنت» است</translation>

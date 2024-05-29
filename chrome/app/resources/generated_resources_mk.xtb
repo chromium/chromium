@@ -839,6 +839,7 @@
 <translation id="1607139524282324606">Исчисти го записот</translation>
 <translation id="1607499585984539560">Корисникот не е поврзан со доменот</translation>
 <translation id="1608668830839595724">Повеќе дејства за избраните ставки</translation>
+<translation id="1608698493373028805">Наскоро екстензијава можеби веќе нема да се поддржува</translation>
 <translation id="1610272688494140697">Поставки за апликацијата</translation>
 <translation id="161042844686301425">Тиркизна</translation>
 <translation id="1611432201750675208">Уредот е заклучен</translation>
@@ -2324,6 +2325,8 @@
 <translation id="2666247341166669829">Ниво на батерија на левата <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Поставени се други апликации да ги отвораат истите линкови како <ph name="APP_NAME" />. Со ова ќе се оневозможи <ph name="APP_NAME_2" /> и <ph name="APP_NAME_3" /> да ги отвораат линковите за поддршка.</translation>
 <translation id="2667463864537187133">Управувајте со проверката на правописот</translation>
+<translation id="2668094785979141847">Кликнете за да излезете од Google Lens</translation>
+<translation id="2668604389652548400">Отстранете ја или заменете ја со слични екстензии од <ph name="BEGIN_LINK" />Веб-продавницата на Chrome<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Не може да се отвори <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Сите кои го користат уредов може да ги видат преземените датотеки</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> споделува картичка на Chrome.</translation>
@@ -2373,6 +2376,7 @@
 <translation id="2710101514844343743">Податоци за користење и дијагностика</translation>
 <translation id="271033894570825754">Ново</translation>
 <translation id="2710507903599773521">Вашиот <ph name="DEVICE_TYPE" /> сега е отклучен</translation>
+<translation id="2712141162840347885">Изберете што било за да пребарате со Google Lens или притиснете го копчето Escape за да излезете од Google Lens</translation>
 <translation id="2713106313042589954">Исклучи ја камерата</translation>
 <translation id="2713444072780614174">Бела</translation>
 <translation id="2714180132046334502">Темна заднина</translation>
@@ -2443,6 +2447,7 @@
 <translation id="2749881179542288782">Провери граматика со правопис</translation>
 <translation id="2750020734439919571">Повеќе поставки и дозволи за апликацијата Chrome</translation>
 <translation id="2750602041558385535">Непотврденото преземање е блокирано</translation>
+<translation id="2753623023919742414">Кликнете за да пребарате</translation>
 <translation id="2754226775788136540">Се бараат уреди со „Брзо спарување“ зачувани на <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Најдете ги потребните апликации на Google Play Store, од апликации за продуктивност до апликации за забава. Можете да инсталирате апликации во секое време.</translation>
 <translation id="2755349111255270002">Ресетирајте го овој <ph name="DEVICE_TYPE" /></translation>
@@ -2950,6 +2955,7 @@
 <translation id="3132996321662585180">Освежувај дневно</translation>
 <translation id="3133184011320864289">Вклучете синхронизација за да овозможите Chrome да предлага групи картички и да ги организира вашите картички</translation>
 <translation id="3134393957315651797">Изберете состојба на експериментот за <ph name="EXPERIMENT_NAME" />. Опис на експериментот: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Повлечете за да пребарате</translation>
 <translation id="3139925690611372679">Стандарден жолт аватар</translation>
 <translation id="3141093262818886744">Сепак отвори</translation>
 <translation id="3141318088920353606">Се слуша…</translation>
@@ -4091,7 +4097,6 @@
 <translation id="3983586614702900908">уреди од непознат продавач</translation>
 <translation id="3983764759749072418">Апликации од Play Store имаат пристап до уредов</translation>
 <translation id="3983769721878416534">Одложување пред кликнување</translation>
-<translation id="3983793589497399077">Кликнете или повлечете каде било за да пребарувате со Lens</translation>
 <translation id="3984135167056005094">Не внесувајте адреса на е-пошта</translation>
 <translation id="3984159763196946143">Не може да се стартува демо-режимот</translation>
 <translation id="3984431586879874039">Дали дозволувате сајтов да го види вашиот безбедносен клуч?</translation>
@@ -8542,6 +8547,7 @@
 <translation id="741906494724992817">Апликацијата не бара посебни дозволи.</translation>
 <translation id="7419142833919893307">Не е додадено корисничко име</translation>
 <translation id="7419565702166471774">Секогаш користи безбедни врски</translation>
+<translation id="7419819959108735624">Изберете што било за да пребарате со Google Lens</translation>
 <translation id="742130257665691897">Обележувачите се отстранети</translation>
 <translation id="7421925624202799674">&amp;Прикажи извор на страница</translation>
 <translation id="7422192691352527311">Претпочитани вредности…</translation>
@@ -10868,6 +10874,7 @@
 <translation id="9102610709270966160">Овозможи екстензија</translation>
 <translation id="9102864637938129124">Сајтовите и огласувачите може да ја разберат изведбата на рекламите. Оваа поставка е вклучена.</translation>
 <translation id="9103868373786083162">Притиснете за да се вратите назад, контекстуално мени за да ја видите историјата</translation>
+<translation id="9106236359747881194">Изберете текст за да пребарате</translation>
 <translation id="9107096627210171112">Преведи…</translation>
 <translation id="9108035152087032312">Именувајте го &amp;прозорецот…</translation>
 <translation id="9108072915170399168">Моменталната поставка за користење интернет е „Без интернет“</translation>

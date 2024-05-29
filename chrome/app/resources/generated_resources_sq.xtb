@@ -2307,6 +2307,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2666247341166669829">Niveli i baterisë majtas - <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Aplikacione të tjera janë caktuar për të hapur të njëjtat lidhje si <ph name="APP_NAME" />. Kjo do të çaktivizojë hapjen e lidhjeve të mbështetura nga <ph name="APP_NAME_2" /> dhe <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Menaxho kontrollin ortografik</translation>
+<translation id="2668094785979141847">Kliko për të dalë nga "Lentja e Google"</translation>
 <translation id="2668604389652548400">Hiqe ose zëvendësoje atë me shtesa të ngjashme nga <ph name="BEGIN_LINK" />Dyqani i uebit i Chrome<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> nuk mund të hapej</translation>
 <translation id="2669454659051515572">Çdo person që e përdor këtë pajisje mund t'i shikojë skedarët e shkarkuar</translation>
@@ -2357,6 +2358,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2710101514844343743">Të dhënat e përdorimit dhe të diagnostikimit</translation>
 <translation id="271033894570825754">E re</translation>
 <translation id="2710507903599773521">Pajisja jote <ph name="DEVICE_TYPE" /> është shkyçur tani</translation>
+<translation id="2712141162840347885">Zgjidh çdo gjë për të kërkuar me "Lenten e Google" ose shtyp butonin "Escape" për të dalë nga "Lentja e Google"</translation>
 <translation id="2713106313042589954">Çaktivizo kamerën</translation>
 <translation id="2713444072780614174">E bardhë</translation>
 <translation id="2714180132046334502">Sfondi i errët</translation>
@@ -2427,6 +2429,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2749881179542288782">Kontrollo gramatikën me drejtshkrimin</translation>
 <translation id="2750020734439919571">Cilësime dhe leje të tjera të aplikacionit të Chrome</translation>
 <translation id="2750602041558385535">Shkarkimi i paverifikuar u bllokua</translation>
+<translation id="2753623023919742414">Kliko për të kërkuar</translation>
 <translation id="2754226775788136540">Po kërkon për pajisjet me "Çiftimin e shpejtë" që janë të ruajtura te <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Gjej aplikacionet që të nevojiten, nga produktiviteti e deri tek argëtimi, në "Dyqanin e Google Play". Mund të instalosh aplikacione në çdo kohë.</translation>
 <translation id="2755349111255270002">Rivendose këtë <ph name="DEVICE_TYPE" /></translation>
@@ -2934,6 +2937,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3132996321662585180">Rifresko çdo ditë</translation>
 <translation id="3133184011320864289">Aktivizo sinkronizimin për të lejuar që Chrome të sugjerojë grupet e skedave dhe t'i mbajë skedat e tua të organizuara</translation>
 <translation id="3134393957315651797">Zgjidh gjendjen e eksperimentit për eksperimentin <ph name="EXPERIMENT_NAME" />. Përshkrimi i eksperimentit: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Zvarrit për të kërkuar</translation>
 <translation id="3139925690611372679">Avatari i parazgjedhur i verdhë</translation>
 <translation id="3141093262818886744">Hape sidoqoftë</translation>
 <translation id="3141318088920353606">Po dëgjon…</translation>
@@ -4075,7 +4079,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="3983586614702900908">pajisjet nga një shitës i panjohur</translation>
 <translation id="3983764759749072418">Aplikacionet e "Dyqanit të Play" kanë qasje në këtë pajisje.</translation>
 <translation id="3983769721878416534">Vonesa përpara klikimit</translation>
-<translation id="3983793589497399077">Kliko ose zvarrit kudo për të kërkuar me "Lenten"</translation>
 <translation id="3984135167056005094">Mos e përfshi adresën e email-it</translation>
 <translation id="3984159763196946143">Nuk mund të hapej modaliteti i demonstrimit</translation>
 <translation id="3984431586879874039">Dëshiron që ky sajt të shikojë çelësin tënd të sigurisë?</translation>
@@ -8523,6 +8526,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="741906494724992817">Ky aplikacion nuk kërkon leje të veçanta.</translation>
 <translation id="7419142833919893307">Nuk është shtuar asnjë emër përdoruesi</translation>
 <translation id="7419565702166471774">Përdor gjithmonë lidhje të sigurta</translation>
+<translation id="7419819959108735624">Zgjidh çdo gjë për të kërkuar me "Lenten e Google"</translation>
 <translation id="742130257665691897">Faqeshënuesit u hoqën</translation>
 <translation id="7421925624202799674">&amp;Shiko burimin e faqes</translation>
 <translation id="7422192691352527311">Preferencat...</translation>
@@ -10844,6 +10848,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="9102610709270966160">Aktivizo shtesën</translation>
 <translation id="9102864637938129124">Sajtet dhe reklamuesit mund të kuptojnë se si funksionojnë reklamat. Ky cilësim është aktiv.</translation>
 <translation id="9103868373786083162">Shtyp për t'u kthyer prapa. Historiku mund të shihet nga menyja kontekstuale.</translation>
+<translation id="9106236359747881194">Zgjidh tekstin për të kërkuar</translation>
 <translation id="9107096627210171112">&amp;Përkthe...</translation>
 <translation id="9108035152087032312">Dritarja e &amp;emrit...</translation>
 <translation id="9108072915170399168">Cilësimi aktual i përdorimit të të dhënave është "Pa internet"</translation>

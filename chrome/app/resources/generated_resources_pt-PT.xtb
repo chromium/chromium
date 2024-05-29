@@ -1702,6 +1702,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2234827758954819389">Guia de privacidade</translation>
 <translation id="2234876718134438132">Sincronização e serviços Google</translation>
 <translation id="2235344399760031203">Os cookies de terceiros estão bloqueados</translation>
+<translation id="2236949375853147973">A minha atividade</translation>
 <translation id="2238379619048995541">Dados do estado de frequência</translation>
 <translation id="2241053333139545397">Ler e alterar os seus dados em vários Sites</translation>
 <translation id="2241634353105152135">Apenas uma vez</translation>
@@ -2309,6 +2310,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2666247341166669829">Nível da bateria do esquerdo: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Outras apps estão definidas para abrir os mesmos links que a app <ph name="APP_NAME" />. Isto irá impedir que as apps <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" /> abram links suportados.</translation>
 <translation id="2667463864537187133">Gerir verificação ortográfica</translation>
+<translation id="2668094785979141847">Clique para sair do Google Lens</translation>
 <translation id="2668604389652548400">Remova-a ou substitua-a por extensões semelhantes da <ph name="BEGIN_LINK" />Web Store do Chrome<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Não foi possível abrir a app <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os ficheiros transferidos</translation>
@@ -2359,6 +2361,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2710101514844343743">Dados de utilização e diagnósticos</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2710507903599773521">O <ph name="DEVICE_TYPE" /> já está desbloqueado</translation>
+<translation id="2712141162840347885">Selecione o que quer pesquisar com o Google Lens ou prima a tecla Escape para sair do Google Lens</translation>
 <translation id="2713106313042589954">Desligar câmara</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2714180132046334502">Fundo escuro</translation>
@@ -2429,6 +2432,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2749881179542288782">Rever gramática com a ortografia</translation>
 <translation id="2750020734439919571">Mais definições e autorizações da app Chrome</translation>
 <translation id="2750602041558385535">Transferência não validada bloqueada</translation>
+<translation id="2753623023919742414">Clique para pesquisar</translation>
 <translation id="2754226775788136540">A procurar dispositivos com o Fast Pair guardados em <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Encontre as apps de que precisa, desde produtividade a entretenimento, na Google Play Store. Pode instalar apps em qualquer altura.</translation>
 <translation id="2755349111255270002">Reponha este <ph name="DEVICE_TYPE" /></translation>
@@ -2937,6 +2941,7 @@ Quer pará-lo?</translation>
 <translation id="3132996321662585180">Atualizar diariamente</translation>
 <translation id="3133184011320864289">Ative a sincronização para permitir que o Chrome sugira grupos de separadores e mantenha os seus separadores organizados</translation>
 <translation id="3134393957315651797">Selecione o estado da experiência <ph name="EXPERIMENT_NAME" />. Descrição da experiência: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Arraste para pesquisar</translation>
 <translation id="3139925690611372679">Avatar amarelo predefinido</translation>
 <translation id="3141093262818886744">Abrir mesmo assim</translation>
 <translation id="3141318088920353606">A ouvir…</translation>
@@ -4078,7 +4083,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3983586614702900908">dispositivos de um fornecedor desconhecido</translation>
 <translation id="3983764759749072418">As aplicações da Play Store têm acesso a este dispositivo.</translation>
 <translation id="3983769721878416534">Atraso antes de clicar</translation>
-<translation id="3983793589497399077">Clique ou arraste em qualquer lugar para pesquisar com o Lens</translation>
 <translation id="3984135167056005094">Não incluir endereço de email</translation>
 <translation id="3984159763196946143">Não foi possível iniciar o modo de demonstração</translation>
 <translation id="3984431586879874039">Permitir que este site veja a sua chave de segurança?</translation>
@@ -8528,6 +8532,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="741906494724992817">Esta aplicação não necessita de permissões especiais.</translation>
 <translation id="7419142833919893307">Nenhum nome de utilizador adicionado</translation>
 <translation id="7419565702166471774">Usar sempre ligações seguras</translation>
+<translation id="7419819959108735624">Selecione o que quer pesquisar com o Google Lens</translation>
 <translation id="742130257665691897">Marcadores removidos</translation>
 <translation id="7421925624202799674">&amp;Ver Origem da Página</translation>
 <translation id="7422192691352527311">Preferências...</translation>
@@ -10851,6 +10856,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9102610709270966160">Ativar extensão</translation>
 <translation id="9102864637938129124">Os sites e os anunciantes podem compreender o desempenho dos anúncios. Esta definição está ativada.</translation>
 <translation id="9103868373786083162">Premir para voltar, menu de contexto para ver o histórico</translation>
+<translation id="9106236359747881194">Selecione o texto a pesquisar</translation>
 <translation id="9107096627210171112">T&amp;raduzir…</translation>
 <translation id="9108035152087032312">Nome da &amp;janela…</translation>
 <translation id="9108072915170399168">A definição de utilização de dados atual é Sem Internet.</translation>

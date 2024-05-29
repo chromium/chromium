@@ -479,6 +479,7 @@ Cuando la estableces como PromptInTab, cuando vence la autenticación del usuari
       Si se descarta una página, se descargará y se recuperarán todos sus recursos. La pestaña a la que está asociada permanece en la barra de pestañas, pero se activa una recarga completa si la haces visible.
       </translation>
 <translation id="138847842893090358">Informa el estado de la actualización del SO</translation>
+<translation id="1389138080311956934">Ahorro de memoria máximo.</translation>
 <translation id="1390529781843037070">Si habilitas la política o no la estableces, los usuarios podrán realizar impresiones en <ph name="CLOUD_PRINT_NAME" /> desde el diálogo de impresión de <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> puede enviar documentos a <ph name="CLOUD_PRINT_NAME" /> para imprimirlos. Esto no impide que los usuarios envíen trabajos de impresión en sitios web.
 
       Si inhabilitas la política, los usuarios no podrán realizar impresiones en <ph name="CLOUD_PRINT_NAME" /> desde el diálogo de impresión de <ph name="PRODUCT_NAME" />.
@@ -4009,6 +4010,7 @@ En <ph name="PRODUCT_OS_NAME" />, esta política está relacionada con la certif
 Para obtener información detallada sobre los patrones válidos de <ph name="URL_LABEL" />, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4070039109671307724">Varios</translation>
 <translation id="4072225853834793549">Inhabilitar las combinaciones de accesibilidad en la pantalla de acceso</translation>
+<translation id="4074922053013383215">Ahorro de memoria moderado.</translation>
 <translation id="4075675819066819571">Ubicar la biblioteca en el lado izquierdo de la pantalla</translation>
 <translation id="4079306023113982053">Controla la disponibilidad de <ph name="BOREALIS_NAME" /> para este usuario.
 
@@ -8917,6 +8919,7 @@ Para obtener más información sobre la política <ph name="IEEM_SITELIST_POLICY
       Si estableces la política como falsa o no la estableces, podría bloquearse el contenido <ph name="FLASH_PLUGIN_NAME" /> de otros orígenes o pequeño.
 
       Nota: Para controlar qué sitios web pueden ejecutar <ph name="FLASH_PLUGIN_NAME" />, consulta las siguientes políticas: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7801163363326128751">Cambiar el ahorro del modo de Ahorro de memoria</translation>
 <translation id="7804859754080118507">Informa eventos de conexión de red y de intensidad de la señal en dispositivos inscriptos.
 
       Si estableces la política como falsa o no la estableces, no se informarán los eventos.
@@ -9526,6 +9529,7 @@ Para obtener más información sobre las tecnologías heredadas, visita https://
 <translation id="8274926413890711289">Habilitar los controles de informes detallados</translation>
 <translation id="8275103737670730746">Permitir que se llame a las APIs del selector de directorios o archivos sin gestos previos del usuario</translation>
 <translation id="8278133379873210419">Suprime los diálogos de JavaScript que se envían desde submarcos de otro origen</translation>
+<translation id="8284028944941138279">Ahorro de memoria equilibrado.</translation>
 <translation id="8284296539558710573">Solicitudes de autenticación HTTP de origen cruzado</translation>
 <translation id="8284527236880877730">Si inhabilitas <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" />, la configuración <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> especificará el porcentaje en el que debe escalarse el tiempo de espera de atenuación de la pantalla cuando el dispositivo está en el modo de presentación. Cuando se escala el tiempo de espera de atenuación de la pantalla, se modifican el apagado de la pantalla, el bloqueo de pantalla y los tiempos de espera de inactividad a fin de mantener las mismas distancias con respecto al tiempo de espera para la atenuación de la pantalla según la configuración original.
 
@@ -10224,6 +10228,17 @@ Esta política no se aplica si el teclado virtual está inhabilitado (p. ej., me
 <translation id="8835322836315560274">Si estableces la política, controlarás el comando que se utilizará para abrir las URL en un navegador alternativo. La política puede establecerse como una ruta de archivo o uno de estos valores: <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" /> o <ph name="EDGE_VALUE_PLACEHOLDER" />. Si la estableces como una ruta de archivo, ese archivo se usará como ejecutable. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> solo está disponible en <ph name="MS_WIN_NAME" />. <ph name="SAFARI_VALUE_PLACEHOLDER" /> y <ph name="EDGE_VALUE_PLACEHOLDER" /> solo están disponibles en <ph name="MS_WIN_NAME" /> y <ph name="MAC_OS_NAME" />.
 
       Si no estableces la política, se utilizará la configuración predeterminada específica de la plataforma: <ph name="IE_PRODUCT_NAME" /> para <ph name="MS_WIN_NAME" /> o <ph name="SAFARI_PRODUCT_NAME" /> para <ph name="MAC_OS_NAME" />. En <ph name="LINUX_OS_NAME" />, se producirá un error al intentar ejecutar un navegador alternativo.</translation>
+<translation id="8836227957461360521">Esta política cambia el nivel de ahorro del Ahorro de memoria.
+
+Esto solo se aplica cuando el Ahorro de memoria está habilitado en la configuración o mediante la política <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" />, y afectará la forma en que se usan las heurísticas para determinar cuándo descartar las pestañas. Por ejemplo, reducir la vida útil de una pestaña inactiva antes de descartarla puede ahorrar memoria, pero también significa que las pestañas se volverán a cargar con más frecuencia, lo que puede generar una mala experiencia del usuario y generar más tráfico de red.
+
+Si estableces la política con el valor "0", el Ahorro de memoria obtendrá un ahorro de memoria moderado. Las pestañas se vuelven inactivas después de un período más largo.
+
+Si estableces la política con el valor "1", el Ahorro de memoria obtendrá un ahorro de memoria equilibrado. Las pestañas se vuelven inactivas después de un período óptimo.
+
+Si estableces la política con el valor "2", el Ahorro de memoria obtendrá el ahorro de memoria máximo. Las pestañas se vuelven inactivas después de un período más corto.
+
+Si no estableces esta política, el usuario final podrá controlar esta configuración en chrome://settings/performance.</translation>
 <translation id="8836975838488342340">El período durante el cual es válido el código de acceso (en segundos).</translation>
 <translation id="883744045558067826">Chrome Root Store se puede usar según el proceso de lanzamiento de funciones</translation>
 <translation id="8837957135252624017">Mantener al menos una pestaña de Chrome abierta</translation>

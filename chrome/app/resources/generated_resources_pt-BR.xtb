@@ -2325,6 +2325,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2666247341166669829">Nível da bateria do lado esquerdo: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Outros apps estão configurados para abrir os mesmos links que <ph name="APP_NAME" />. Esta ação impedirá que <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" /> abram links compatíveis.</translation>
 <translation id="2667463864537187133">Gerenciar a verificação ortográfica</translation>
+<translation id="2668094785979141847">Clique para sair do Google Lens</translation>
 <translation id="2668604389652548400">Remova ou substitua por extensões semelhantes da <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.</translation>
 <translation id="2669241540496514785">Não foi possível abrir o app <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os arquivos baixados</translation>
@@ -2375,6 +2376,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2710101514844343743">Dados de uso e diagnóstico</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2710507903599773521">Seu <ph name="DEVICE_TYPE" /> está desbloqueado</translation>
+<translation id="2712141162840347885">Selecione o que quiser para pesquisar com o Google Lens ou pressione "Esc" para sair</translation>
 <translation id="2713106313042589954">Desativar câmera</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2714180132046334502">Plano de fundo escuro</translation>
@@ -2445,6 +2447,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2749881179542288782">Verificar a gramática com a ortografia</translation>
 <translation id="2750020734439919571">Mais configurações e permissões de apps do Chrome</translation>
 <translation id="2750602041558385535">Download não verificado bloqueado</translation>
+<translation id="2753623023919742414">Clique para pesquisar</translation>
 <translation id="2754226775788136540">Procurando dispositivos com Pareamento rápido salvos em <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Encontre os apps de que você precisa, de produtividade a entretenimento, na Google Play Store. É possível instalar apps a qualquer momento.</translation>
 <translation id="2755349111255270002">Redefinir este <ph name="DEVICE_TYPE" /></translation>
@@ -2951,6 +2954,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3132996321662585180">Atualizar diariamente</translation>
 <translation id="3133184011320864289">Ative a sincronização para que o Chrome possa sugerir grupos de guias e manter suas guias organizadas</translation>
 <translation id="3134393957315651797">Selecione um estado para o experimento <ph name="EXPERIMENT_NAME" />. Descrição do experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Arraste para pesquisar</translation>
 <translation id="3139925690611372679">Avatar amarelo padrão</translation>
 <translation id="3141093262818886744">Abrir mesmo assim</translation>
 <translation id="3141318088920353606">Ouvindo...</translation>
@@ -4093,7 +4097,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3983586614702900908">dispositivos de um fornecedor desconhecido</translation>
 <translation id="3983764759749072418">Os aplicativos da Play Store têm acesso a este dispositivo.</translation>
 <translation id="3983769721878416534">Atraso antes do clique</translation>
-<translation id="3983793589497399077">Clique ou arraste para qualquer lugar para pesquisar com o Lens</translation>
 <translation id="3984135167056005094">Não incluir endereço de e-mail</translation>
 <translation id="3984159763196946143">Não foi possível iniciar o modo de demonstração</translation>
 <translation id="3984431586879874039">Permitir que este site veja sua chave de segurança?</translation>
@@ -8546,6 +8549,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="741906494724992817">Este aplicativo não requer permissões especiais.</translation>
 <translation id="7419142833919893307">Nenhum nome de usuário foi adicionado</translation>
 <translation id="7419565702166471774">Sempre usar conexões seguras</translation>
+<translation id="7419819959108735624">Selecione qualquer coisa para pesquisar com o Google Lens</translation>
 <translation id="742130257665691897">Favoritos removidos</translation>
 <translation id="7421925624202799674">&amp;Exibir código fonte da página</translation>
 <translation id="7422192691352527311">Preferências...</translation>
@@ -10870,6 +10874,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9102610709270966160">Ativar extensão</translation>
 <translation id="9102864637938129124">Sites e anunciantes podem medir a performance dos anúncios. Esta configuração está ativada.</translation>
 <translation id="9103868373786083162">Pressione para voltar ao menu de contexto e ver o histórico</translation>
+<translation id="9106236359747881194">Selecione texto para pesquisar</translation>
 <translation id="9107096627210171112">Traduzir...</translation>
 <translation id="9108035152087032312">Nomear a janela…</translation>
 <translation id="9108072915170399168">A configuração atual de uso de dados é "Sem Internet"</translation>

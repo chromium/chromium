@@ -841,6 +841,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1607139524282324606">Clirio'r cofnod</translation>
 <translation id="1607499585984539560">Nid yw'r defnyddiwr yn gysylltiedig â pharth</translation>
 <translation id="1608668830839595724">Rhagor o gamau ar gyfer yr eitemau a ddewisir</translation>
+<translation id="1608698493373028805">Mae'n bosib na fydd yr estyniad hwn yn cael ei gefnogi mwyach</translation>
 <translation id="1610272688494140697">Gosodiadau Ap</translation>
 <translation id="161042844686301425">Gwyrddlas</translation>
 <translation id="1611432201750675208">Mae'ch dyfais wedi'i chloi</translation>
@@ -1716,6 +1717,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2234827758954819389">Canllaw Preifatrwydd</translation>
 <translation id="2234876718134438132">Cysoni a gwasanaethau Google</translation>
 <translation id="2235344399760031203">Mae cwcis trydydd parti yn cael eu rhwystro</translation>
+<translation id="2236949375853147973">Fy Ngweithgarwch</translation>
 <translation id="2238379619048995541">Data Cyflwr Amlder</translation>
 <translation id="2241053333139545397">Darllen a newid eich data ar nifer o wefannau</translation>
 <translation id="2241634353105152135">Unwaith yn unig</translation>
@@ -2326,6 +2328,8 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2666247341166669829">Lefel batri chwith <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Mae apiau eraill wedi'u gosod i agor yr un dolenni â <ph name="APP_NAME" />. Bydd hyn yn analluogi <ph name="APP_NAME_2" /> a <ph name="APP_NAME_3" /> rhag agor dolenni a gefnogir.</translation>
 <translation id="2667463864537187133">Rheoli gwirio sillafu</translation>
+<translation id="2668094785979141847">Cliciwch i adael Google Lens</translation>
+<translation id="2668604389652548400">Tynnwch neu amnewidiwch ef gydag estyniadau tebyg o <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Methu ag agor "<ph name="APP_NAME" />"</translation>
 <translation id="2669454659051515572">Gall unrhyw un sy'n defnyddio'r ddyfais hon weld ffeiliau sydd wedi'u lawrlwytho</translation>
 <translation id="2670102641511624474">Mae <ph name="APP_NAME" /> yn rhannu tab Chrome.</translation>
@@ -2375,6 +2379,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2710101514844343743">Data defnydd a diagnostig</translation>
 <translation id="271033894570825754">Newydd</translation>
 <translation id="2710507903599773521">Mae'ch dyfais <ph name="DEVICE_TYPE" /> bellach wedi'i datgloi</translation>
+<translation id="2712141162840347885">Dewiswch unrhyw beth i'w chwilio gyda Google Lens neu pwyswch Escape i adael Google Lens</translation>
 <translation id="2713106313042589954">Diffodd y camera</translation>
 <translation id="2713444072780614174">Gwyn</translation>
 <translation id="2714180132046334502">Cefndir tywyll</translation>
@@ -2445,6 +2450,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2749881179542288782">Gwirio Gramadeg Gyda Sillafu</translation>
 <translation id="2750020734439919571">Rhagor o osodiadau a chaniatadau ap Chrome</translation>
 <translation id="2750602041558385535">Lawrlwythiad sydd heb ei gadarnhau wedi'i rwystro</translation>
+<translation id="2753623023919742414">Cliciwch i chwilio</translation>
 <translation id="2754226775788136540">Chwilio am ddyfeisiau Paru Cyflym sydd wedi'u cadw i <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Dewch o hyd i'r apiau sydd eu hangen arnoch, o gynhyrchiant i adloniant, ar y Google Play Store. Gallwch osod apiau unrhyw bryd.</translation>
 <translation id="2755349111255270002">Ailosod y <ph name="DEVICE_TYPE" /> hwn</translation>
@@ -2952,6 +2958,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3132996321662585180">Adnewyddu'n ddyddiol</translation>
 <translation id="3133184011320864289">Trowch gysoni ymlaen i adael i Chrome awgrymu grwpiau tabiau a chadw'ch tabiau'n drefnus</translation>
 <translation id="3134393957315651797">Dewiswch gyflwr arbrofi ar gyfer yr arbrawf <ph name="EXPERIMENT_NAME" />. Disgrifiad arbrawf: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Llusgwch i chwilio</translation>
 <translation id="3139925690611372679">Rhithffurf melyn diofyn</translation>
 <translation id="3141093262818886744">Agor beth bynnag</translation>
 <translation id="3141318088920353606">Wrthi'n gwrando…</translation>
@@ -4093,7 +4100,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="3983586614702900908">dyfeisiau gan werthwr anhysbys</translation>
 <translation id="3983764759749072418">Mae gan apiau o Play Store fynediad at y ddyfais hon.</translation>
 <translation id="3983769721878416534">Oedi cyn clicio</translation>
-<translation id="3983793589497399077">Cliciwch neu llusgwch unrhyw le i chwilio gyda Lens</translation>
 <translation id="3984135167056005094">Peidio â chynnwys cyfeiriadau e-bost</translation>
 <translation id="3984159763196946143">Methu â dechrau'r modd demo</translation>
 <translation id="3984431586879874039">Ydych chi am ganiatáu i'r wefan hon weld eich allwedd ddiogelwch?</translation>
@@ -8550,6 +8556,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="741906494724992817">Nid oes angen unrhyw ganiatadau arbennig ar gyfer yr ap hwn.</translation>
 <translation id="7419142833919893307">Dim enw defnyddiwr wedi'i ychwanegu</translation>
 <translation id="7419565702166471774">Defnyddio cysylltiadau diogel bob tro</translation>
+<translation id="7419819959108735624">Dewiswch unrhyw beth i'w chwilio gyda Google Lens</translation>
 <translation id="742130257665691897">Tynnwyd nodau tudalen</translation>
 <translation id="7421925624202799674">&amp;Gweld Ffynhonnell y Dudalen</translation>
 <translation id="7422192691352527311">Dewisiadau...</translation>
@@ -10876,6 +10883,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="9102610709270966160">Galluogi Estyniad</translation>
 <translation id="9102864637938129124">Gall gwefannau a hysbysebwyr ddeall sut mae hysbysebion yn perfformio. Mae'r gosodiad hwn wedi'i droi ymlaen.</translation>
 <translation id="9103868373786083162">Pwyswch i fynd yn ôl, dewislen gyd-destunol i weld hanes</translation>
+<translation id="9106236359747881194">Dewiswch destun i'w chwilio</translation>
 <translation id="9107096627210171112">Cyfieithu...</translation>
 <translation id="9108035152087032312">Enw &amp;ffenestr...</translation>
 <translation id="9108072915170399168">Y gosodiad defnyddio data presennol yw Heb y rhyngrwyd</translation>

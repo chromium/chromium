@@ -1699,6 +1699,7 @@
 <translation id="2234827758954819389">プライバシー ガイド</translation>
 <translation id="2234876718134438132">同期と Google サービス</translation>
 <translation id="2235344399760031203">サードパーティの Cookie がブロックされています</translation>
+<translation id="2236949375853147973">マイ アクティビティ</translation>
 <translation id="2238379619048995541">周波数状態データ</translation>
 <translation id="2241053333139545397">多数のウェブサイト上にある自分のデータの読み取りと変更</translation>
 <translation id="2241634353105152135">一回限り</translation>
@@ -2303,6 +2304,7 @@
 <translation id="2666247341166669829">左のバッテリー残量は <ph name="PERCENTAGE" />% です。</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" /> と同じリンクを開くよう設定されているアプリが複数あります。設定を変更すると、<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" /> で対応リンクを開けなくなります。</translation>
 <translation id="2667463864537187133">スペルチェックの管理</translation>
+<translation id="2668094785979141847">クリックして Google レンズを終了</translation>
 <translation id="2668604389652548400">削除するか、<ph name="BEGIN_LINK" />Chrome ウェブストア<ph name="END_LINK" />にある同様の拡張機能に置き換えてください。</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> を開けませんでした</translation>
 <translation id="2669454659051515572">ダウンロードしたファイルは、このデバイスを使用するすべてのユーザーが確認できます</translation>
@@ -2353,6 +2355,7 @@
 <translation id="2710101514844343743">使用状況データと診断データ</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> のロックが解除されました</translation>
+<translation id="2712141162840347885">Google レンズで検索する範囲を選択してください。Esc キーを押すと Google レンズを終了します</translation>
 <translation id="2713106313042589954">カメラをオフにする</translation>
 <translation id="2713444072780614174">白</translation>
 <translation id="2714180132046334502">暗い背景</translation>
@@ -2423,6 +2426,7 @@
 <translation id="2749881179542288782">スペルと一緒に文法をチェック</translation>
 <translation id="2750020734439919571">その他の Chrome アプリの設定と権限</translation>
 <translation id="2750602041558385535">未確認のダウンロードをブロックしました</translation>
+<translation id="2753623023919742414">クリックして検索</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" /> に保存されているファスト ペアリング デバイスを検出しています</translation>
 <translation id="2754825024506485820">仕事効率化からエンタメまで、Google Play ストアで必要なアプリを探しましょう。アプリはいつでもインストールできます。</translation>
 <translation id="2755349111255270002">この <ph name="DEVICE_TYPE" /> をリセットします</translation>
@@ -2930,6 +2934,7 @@
 <translation id="3132996321662585180">毎日更新する</translation>
 <translation id="3133184011320864289">タブグループの提案機能を使ってタブを整理するには、同期をオンにしてください</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> テストの試験運用機能の状態を選択します。テストの説明: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">ドラッグして検索</translation>
 <translation id="3139925690611372679">デフォルトの黄のアバター</translation>
 <translation id="3141093262818886744">開く</translation>
 <translation id="3141318088920353606">お話しください...</translation>
@@ -4069,7 +4074,6 @@
 <translation id="3983586614702900908">不明なベンダーのデバイス</translation>
 <translation id="3983764759749072418">Play ストアのアプリはこのデバイスにアクセスできます。</translation>
 <translation id="3983769721878416534">クリックまでの時間</translation>
-<translation id="3983793589497399077">レンズで検索する場所をクリックまたはドラッグします</translation>
 <translation id="3984135167056005094">メールアドレスを含めない</translation>
 <translation id="3984159763196946143">デモモードを開始できませんでした</translation>
 <translation id="3984431586879874039">このサイトによるセキュリティ キーへのアクセスを許可しますか？</translation>
@@ -8511,6 +8515,7 @@
 <translation id="741906494724992817">このアプリの使用に特別な権限は必要ありません。</translation>
 <translation id="7419142833919893307">ユーザー名は追加されていません</translation>
 <translation id="7419565702166471774">常に安全な接続を使用する</translation>
+<translation id="7419819959108735624">Google レンズで検索する範囲を選択</translation>
 <translation id="742130257665691897">ブックマークを削除しました</translation>
 <translation id="7421925624202799674">ページのソースを表示(&amp;V)</translation>
 <translation id="7422192691352527311">環境設定...</translation>
@@ -10832,6 +10837,7 @@
 <translation id="9102610709270966160">拡張機能を有効にする</translation>
 <translation id="9102864637938129124">ウェブサイトと広告主は表示された広告の効果を確認できます。この設定は有効になっています。</translation>
 <translation id="9103868373786083162">ボタンを押して前に戻ります。履歴を表示するにはコンテキスト メニューを選択します</translation>
+<translation id="9106236359747881194">検索するテキストを選択</translation>
 <translation id="9107096627210171112">翻訳(&amp;R)...</translation>
 <translation id="9108035152087032312">ウィンドウに名前を付ける(&amp;W)...</translation>
 <translation id="9108072915170399168">現在のデータ使用設定は「インターネットを使用しない」です</translation>

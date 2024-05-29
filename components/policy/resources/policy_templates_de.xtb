@@ -467,6 +467,7 @@ Wenn „PromptInTab“ festgelegt ist und die Authentifizierung des Nutzers abl�
       Verworfene Seiten werden entfernt und die zugehörigen Ressourcen vollständig freigegeben. Der Tab, mit dem sie verknüpft sind, bleibt im Tabstreifen. Wird er jedoch sichtbar, wird eine vollständige Aktualisierung ausgelöst.
       </translation>
 <translation id="138847842893090358">Update-Status des Betriebssystems melden</translation>
+<translation id="1389138080311956934">Maximale Arbeitsspeichereinsparungen.</translation>
 <translation id="1390529781843037070">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer im <ph name="PRODUCT_NAME" />-Druckdialogfeld über <ph name="CLOUD_PRINT_NAME" /> drucken. <ph name="PRODUCT_NAME" /> kann Dokumente zum Drucken an <ph name="CLOUD_PRINT_NAME" /> senden. Dies verhindert nicht, dass Nutzer Druckaufträge an Websites senden können.
 
       Ist die Richtlinie deaktiviert, können Nutzer im <ph name="PRODUCT_NAME" />-Druckdialogfeld nicht über <ph name="CLOUD_PRINT_NAME" /> drucken.
@@ -3879,6 +3880,7 @@ Bei <ph name="PRODUCT_OS_NAME" /> bezieht sich diese Richtlinie auf die Remoteat
 Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4070039109671307724">Sonstiges</translation>
 <translation id="4072225853834793549">Kurzbefehle für Bedienungshilfen auf dem Anmeldebildschirm deaktivieren</translation>
+<translation id="4074922053013383215">Moderate Arbeitsspeichereinsparungen.</translation>
 <translation id="4075675819066819571">Ablage auf der linken Seite des Bildschirms anzeigen</translation>
 <translation id="4079306023113982053">Steuert die Verfügbarkeit von <ph name="BOREALIS_NAME" /> für diesen Nutzer.
 
@@ -8561,6 +8563,7 @@ Weitere Informationen zur Richtlinie <ph name="IEEM_SITELIST_POLICY" /> von Inte
       Ist die Richtlinie auf „False“ festgelegt oder nicht konfiguriert, werden <ph name="FLASH_PLUGIN_NAME" />-Inhalte anderer Herkunft oder kleine Inhalte ggf. blockiert.
 
       Hinweis: Wenn du konfigurieren möchtest, welche Websites <ph name="FLASH_PLUGIN_NAME" /> ausführen dürfen, findest du unter den folgenden Richtlinien weitere Informationen: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> und <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7801163363326128751">Einsparungen im Arbeitsspeicher-Sparmodus ändern</translation>
 <translation id="7804859754080118507">Ereignisse zu Netzwerkverbindung und Signalstärke auf registrierten Geräten melden.
 
       Wenn die Richtlinie auf „false“ gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
@@ -9134,6 +9137,7 @@ Weitere Informationen zu Legacy-Technologien findest du unter https://chromestat
 <translation id="8274926413890711289">Steuerelemente für detailliertes Reporting aktivieren</translation>
 <translation id="8275103737670730746">Aufrufen von APIs für Datei- oder Verzeichnisauswahl ohne vorherige Nutzergeste zulassen</translation>
 <translation id="8278133379873210419">JavaScript-Dialogfelder unterdrücken, die von anderen Quell-Subframes ausgelöst wurden</translation>
+<translation id="8284028944941138279">Ausgewogene Arbeitsspeichereinsparungen.</translation>
 <translation id="8284296539558710573">Ursprungsübergreifende HTTP-Authentifizierungsaufforderungen</translation>
 <translation id="8284527236880877730">Wenn <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> deaktiviert ist, wird mit <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> der Prozentsatz angegeben, um den die Verzögerung für das Dimmen des Bildschirms skaliert wird, wenn sich das Gerät im Präsentationsmodus befindet. Wenn die Verzögerung für das Dimmen skaliert wird, werden die Verzögerung für die Abschaltung und Sperre des Bildschirms sowie die Inaktivität so angepasst, dass die Abstände der ursprünglichen Konfiguration proportional beibehalten werden.
 
@@ -9801,6 +9805,17 @@ Diese Richtlinie ist nicht anwendbar, wenn die Bildschirmtastatur deaktiviert is
 <translation id="8835322836315560274">Mit dieser Richtlinie wird festgelegt, welcher Befehl zum Öffnen von URLs in einem alternativen Browser verwendet werden soll. Die Richtlinie kann mit <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> oder einem Dateipfad konfiguriert werden. Wenn für die Richtlinie ein Dateipfad festgelegt ist, wird diese Datei als ausführbare Datei verwendet. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> ist nur für <ph name="MS_WIN_NAME" /> verfügbar. <ph name="SAFARI_VALUE_PLACEHOLDER" /> und <ph name="EDGE_VALUE_PLACEHOLDER" /> sind nur für <ph name="MS_WIN_NAME" /> und <ph name="MAC_OS_NAME" /> verfügbar.
 
       Ist die Richtlinie nicht konfiguriert, wird eine plattformspezifische Standardeinstellung verwendet: <ph name="IE_PRODUCT_NAME" /> für <ph name="MS_WIN_NAME" /> oder <ph name="SAFARI_PRODUCT_NAME" /> für <ph name="MAC_OS_NAME" />. Unter <ph name="LINUX_OS_NAME" /> wird kein alternativer Browser geöffnet.</translation>
+<translation id="8836227957461360521">Mit dieser Richtlinie wird das Einsparungsniveau des Arbeitsspeicher-Sparmodus geändert.
+
+Sie ist nur wirksam, wenn der Arbeitsspeicher-Sparmodus über die Einstellungen oder die Richtlinie „<ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" />“ aktiviert ist. Außerdem wirkt sie sich darauf aus, wie anhand von Heuristiken bestimmt wird, wann Tabs verworfen werden. Wenn du beispielsweise die Lebensdauer eines inaktiven Tabs vor dem Verwerfen verkürzt, kannst du damit Arbeitsspeicher sparen. Allerdings werden Tabs dann auch häufiger neu geladen, was die Nutzerfreundlichkeit beeinträchtigen und zu mehr Netzwerkverkehr führen kann.
+
+Wenn du die Richtlinie auf „0“ setzt, werden über den Arbeitsspeicher-Sparmodus moderate Arbeitsspeichereinsparungen erzielt. Tabs werden nach längerer Zeit inaktiv.
+
+Wenn du die Richtlinie auf „1“ setzt, werden über den Arbeitsspeicher-Sparmodus ausgewogene Arbeitsspeichereinsparungen erzielt. Tabs werden nach einem optimalen Zeitraum inaktiv.
+
+Wenn du die Richtlinie auf „2“ setzt, werden über den Arbeitsspeicher-Sparmodus maximale Arbeitsspeichereinsparungen erzielt. Tabs werden nach kürzerer Zeit inaktiv.
+
+Wenn die Richtlinie nicht konfiguriert ist, kann der Endnutzer diese Einstellung unter chrome://settings/performance verwalten.</translation>
 <translation id="8836975838488342340">Dauer in Sekunden, für die der Zugriffscode gültig ist.</translation>
 <translation id="883744045558067826">Die Verfügbarkeit des Chrome Root Stores hängt vom Einführungsprozess dieser Funktion ab.</translation>
 <translation id="8837957135252624017">Mindestens einen Chrome-Tab geöffnet lassen</translation>

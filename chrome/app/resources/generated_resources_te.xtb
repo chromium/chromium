@@ -1712,6 +1712,7 @@
 <translation id="2234827758954819389">గోప్యతా గైడ్</translation>
 <translation id="2234876718134438132">సింక్, Google సర్వీసులు</translation>
 <translation id="2235344399760031203">థర్డ్-పార్టీ కుక్కీలు బ్లాక్ చేయబడ్డాయి</translation>
+<translation id="2236949375853147973">నా యాక్టివిటీ</translation>
 <translation id="2238379619048995541">తరచుదనం స్థితి డేటా</translation>
 <translation id="2241053333139545397">అనేక వెబ్‌సైట్‌ల్లో ఉన్న మీ డేటాను చదవడం మరియు మార్చడం</translation>
 <translation id="2241634353105152135">ఒకసారి మాత్రమే</translation>
@@ -2322,6 +2323,7 @@
 <translation id="2666247341166669829">ఎడమ వైపు వైర్‌లెస్ బడ్ బ్యాటరీ స్థాయి <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">ఇతర యాప్‌లు, <ph name="APP_NAME" /> తెరిచిన అవే లింక్‌లను తెరవడానికి సిద్ధంగా ఉన్నాయి. ఇది సపోర్ట్ చేయబడిన లింక్‌లను తెరవకుండా <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />ను డిజేబుల్ చేస్తుంది.</translation>
 <translation id="2667463864537187133">స్పెల్ చెక్‌ను మేనేజ్ చేయండి</translation>
+<translation id="2668094785979141847">Google Lens నుండి నిష్క్రమించడానికి క్లిక్ చేయండి</translation>
 <translation id="2668604389652548400"><ph name="BEGIN_LINK" />Chrome వెబ్ స్టోర్<ph name="END_LINK" /> నుండి ఒకే రకమైన ఎక్స్‌టెన్షన్‌లతో దాన్ని తీసివేయండి లేదా రీప్లేస్ చేయండి</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" />ను తెరవడం సాధ్యపడలేదు</translation>
 <translation id="2669454659051515572">డౌన్‌లోడ్ చేసిన ఫైల్స్‌ను ఈ పరికరాన్ని ఉపయోగించే ఎవరైనా చూడగలరు</translation>
@@ -2372,6 +2374,7 @@
 <translation id="2710101514844343743">వినియోగం &amp; విశ్లేషణల డేటా</translation>
 <translation id="271033894570825754">కొత్తది</translation>
 <translation id="2710507903599773521">మీ <ph name="DEVICE_TYPE" /> ఇప్పుడు అన్‌లాక్ చేయబడింది</translation>
+<translation id="2712141162840347885">Google Lensతో సెర్చ్ చేయడానికి ఏదైనా ఎంచుకోండి లేదా Google Lens నుండి ఎగ్జిట్ అవ్వడానికి ఎస్కేప్ బటన్‌ను నొక్కండి</translation>
 <translation id="2713106313042589954">కెమెరాను ఆఫ్ చేయి</translation>
 <translation id="2713444072780614174">తెలుపు</translation>
 <translation id="2714180132046334502">ముదురు నేపథ్యం</translation>
@@ -2442,6 +2445,7 @@
 <translation id="2749881179542288782">స్పెల్ చెక్‌తో పాటు వ్యాకరణాన్ని కూడా చెక్ చేయండి</translation>
 <translation id="2750020734439919571">మరిన్ని Chrome యాప్ సెట్టింగ్‌లు, అనుమతులు</translation>
 <translation id="2750602041558385535">వెరిఫై కాని డౌన్‌లోడ్ బ్లాక్ చేయబడింది</translation>
+<translation id="2753623023919742414">సెర్చ్ చేయడానికి క్లిక్ చేయండి</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" />‌కు సేవ్ చేసిన ఫాస్ట్ పెయిర్ పరికరాల కోసం వెతుకుతున్నారా</translation>
 <translation id="2754825024506485820">పని చేసే సామర్థ్యాన్ని పెంచడం దగ్గర నుండి వినోదం దాకా మీకు అవసరమైన యాప్‌లను Google Play Storeలో కనుగొనండి. యాప్‌లను మీరు ఎప్పుడైనా ఇన్‌స్టాల్ చేయవచ్చు.</translation>
 <translation id="2755349111255270002">ఈ <ph name="DEVICE_TYPE" />ను రీసెట్ చేయండి</translation>
@@ -2949,6 +2953,7 @@
 <translation id="3132996321662585180">ప్రతిరోజూ రిఫ్రెష్ చేయండి</translation>
 <translation id="3133184011320864289">ట్యాబ్ గ్రూప్‌లను సూచించడానికి, మీ ట్యాబ్‌లను ఆర్గనైజ్ చేయడానికి Chromeను అనుమతించడానికి సింక్‌ను ఆన్ చేయండి</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> ప్రయోగానికి ప్రయోగ స్థితిని ఎంచుకోండి. ప్రయోగ వివరణ: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">సెర్చ్ చేయడానికి ఇమేజ్‌లో కొంత భాగాన్ని ఎంచుకోండి</translation>
 <translation id="3139925690611372679">డిఫాల్ట్ పసుపు రంగు అవతార్</translation>
 <translation id="3141093262818886744">ఏదేమైనా తెరవండి</translation>
 <translation id="3141318088920353606">వింటోంది...</translation>
@@ -4090,7 +4095,6 @@
 <translation id="3983586614702900908">తెలియని విక్రేత అందించిన పరికరాలు</translation>
 <translation id="3983764759749072418">Play Store అప్లికేషన్‌లు ఈ పరికరానికి యాక్సెస్‌ను కలిగి ఉన్నాయి.</translation>
 <translation id="3983769721878416534">క్లిక్ చర్యను అమలు చేసే ముందు వేచి ఉండాల్సిన జాప్యం</translation>
-<translation id="3983793589497399077">Lensతో సెర్చ్ చేయడానికి ఎక్కడైనా క్లిక్ చేయండి లేదా లాగండి</translation>
 <translation id="3984135167056005094">ఈమెయిల్‌ అడ్రస్‌ని జోడించవద్దు</translation>
 <translation id="3984159763196946143">డెమో మోడ్‌ను ప్రారంభించలేకపోయాము</translation>
 <translation id="3984431586879874039">మీ సెక్యూరిటీ కీని చూడటానికి ఈ సైట్‌ను అనుమతించాలా?</translation>
@@ -8540,6 +8544,7 @@
 <translation id="741906494724992817">ఈ యాప్‌న‌కు ప్రత్యేక అనుమతులు ఏవీ అవసరం లేదు.</translation>
 <translation id="7419142833919893307">యూజర్‌నేమ్ ఏదీ జోడించబడలేదు</translation>
 <translation id="7419565702166471774">ఎల్లప్పుడూ సురక్షిత కనెక్షన్‌లను ఉపయోగించండి</translation>
+<translation id="7419819959108735624">Google Lensతో సెర్చ్ చేయడానికి ఏదైనా ఎంచుకోండి</translation>
 <translation id="742130257665691897">బుక్‌మార్క్‌లు తీసివేయబడ్డాయి</translation>
 <translation id="7421925624202799674">పేజీ మూలాన్ని &amp;వీక్షించండి</translation>
 <translation id="7422192691352527311">ప్రాధాన్యతలు...</translation>
@@ -10859,6 +10864,7 @@
 <translation id="9102610709270966160">ఎక్స్‌టెన్ష‌న్‌ను ప్రారంభించండి</translation>
 <translation id="9102864637938129124">యాడ్‌ల పనితీరు ఎలా ఉంది అనేది సైట్‌లు, అడ్వర్టయిజర్‌లు అర్థం చేసుకోగలరు. ఈ సెట్టింగ్ ఆన్ చేయబడింది.</translation>
 <translation id="9103868373786083162">హిస్టరీని చూసేందుకు వెనుకకు వెళ్లు, సందర్భ మెనూ నొక్కండి</translation>
+<translation id="9106236359747881194">సెర్చ్ చేయడానికి టెక్స్ట్‌ను ఎంచుకోండి</translation>
 <translation id="9107096627210171112">అనువదించండి...</translation>
 <translation id="9108035152087032312">పేరు &amp;విండో...</translation>
 <translation id="9108072915170399168">ప్రస్తుతం డేటా వినియోగం ఇంటర్నెట్ లేనప్పుడు జరిగేలా సెట్ చేయబడి ఉంది</translation>

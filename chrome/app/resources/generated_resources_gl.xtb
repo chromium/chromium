@@ -834,6 +834,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1607139524282324606">Borrar entrada</translation>
 <translation id="1607499585984539560">O usuario non está vinculado ao dominio</translation>
 <translation id="1608668830839595724">Máis accións para os elementos seleccionados</translation>
+<translation id="1608698493373028805">Pode que esta extensión deixe de estar dispoñible dentro de pouco</translation>
 <translation id="1610272688494140697">Configuración da aplicación</translation>
 <translation id="161042844686301425">Ciano</translation>
 <translation id="1611432201750675208">O dispositivo está bloqueado</translation>
@@ -2307,6 +2308,8 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2666247341166669829">Nivel de batería do dispositivo esquerdo: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Hai outras aplicacións configuradas para abrir as mesmas ligazóns que <ph name="APP_NAME" />. Con esta acción, <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" /> deixarán de ser as aplicacións predeterminadas para abrir as ligazóns compatibles.</translation>
 <translation id="2667463864537187133">Xestionar corrector ortográfico</translation>
+<translation id="2668094785979141847">Fai clic para saír de Google Lens</translation>
+<translation id="2668604389652548400">Quítaa ou substitúea por outra similar de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Non se puido abrir <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Calquera que use este dispositivo pode ver os ficheiros descargados</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> está compartindo unha pestana de Chrome.</translation>
@@ -2356,6 +2359,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2710101514844343743">Datos de uso e diagnóstico</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2710507903599773521">O teu dispositivo <ph name="DEVICE_TYPE" /> agora está desbloqueado</translation>
+<translation id="2712141162840347885">Selecciona o que queiras buscar con Google Lens ou preme Escape para saír da función</translation>
 <translation id="2713106313042589954">Apagar cámara</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2714180132046334502">Fondo escuro</translation>
@@ -2426,6 +2430,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2749881179542288782">Comprobar a gramática e a ortografía</translation>
 <translation id="2750020734439919571">Máis opcións de configuración e permisos da aplicación Chrome</translation>
 <translation id="2750602041558385535">Carga non verificada bloqueada</translation>
+<translation id="2753623023919742414">Fai clic nun obxecto para buscalo</translation>
 <translation id="2754226775788136540">Buscando dispositivos de Vinculación rápida gardados en <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">En Google Play Store, atopa as aplicacións que necesitas: tes desde material relacionado coa produtividade ata contido para entreterte. Podes instalar aplicacións cando queiras.</translation>
 <translation id="2755349111255270002">Restablecer este dispositivo (<ph name="DEVICE_TYPE" />)</translation>
@@ -2933,6 +2938,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3132996321662585180">Actualizar diariamente</translation>
 <translation id="3133184011320864289">Se activas a sincronización, Chrome pode suxerir grupos de pestanas para ter as pestanas organizadas</translation>
 <translation id="3134393957315651797">Seleccionar estado do experimento <ph name="EXPERIMENT_NAME" />. Descrición do experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Arrastra o recadro para facer buscas</translation>
 <translation id="3139925690611372679">Avatar amarelo predeterminado</translation>
 <translation id="3141093262818886744">Abrir de todas formas</translation>
 <translation id="3141318088920353606">Escoitando…</translation>
@@ -4077,7 +4083,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="3983586614702900908">dispositivos dun provedor descoñecido</translation>
 <translation id="3983764759749072418">As aplicacións de Play Store teñen acceso a este dispositivo.</translation>
 <translation id="3983769721878416534">Atraso antes de facer clic</translation>
-<translation id="3983793589497399077">Fai clic onde queiras ou arrastra o recadro para facer buscas con Lens</translation>
 <translation id="3984135167056005094">Non incluír enderezo de correo electrónico</translation>
 <translation id="3984159763196946143">Non se puido iniciar o modo de demostración</translation>
 <translation id="3984431586879874039">Queres permitir que este sitio vexa a túa chave de seguranza?</translation>
@@ -8522,6 +8527,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="741906494724992817">Esta aplicación non require permisos especiais.</translation>
 <translation id="7419142833919893307">Non se engadiu ningún nome de usuario</translation>
 <translation id="7419565702166471774">Usar sempre conexións seguras</translation>
+<translation id="7419819959108735624">Selecciona o que queiras buscar con Google Lens</translation>
 <translation id="742130257665691897">Quitáronse os marcadores</translation>
 <translation id="7421925624202799674">&amp;Ver fonte da páxina</translation>
 <translation id="7422192691352527311">Preferencias...</translation>
@@ -10844,6 +10850,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9102610709270966160">Activar extensión</translation>
 <translation id="9102864637938129124">Os sitios e os anunciantes poden comprender o rendemento dos anuncios. Esta opción de configuración está activada.</translation>
 <translation id="9103868373786083162">Preme para retroceder e acceder ao menú contextual para ver o historial</translation>
+<translation id="9106236359747881194">Selecciona un texto para buscalo</translation>
 <translation id="9107096627210171112">T&amp;raducir...</translation>
 <translation id="9108035152087032312">Nome da &amp;ventá...</translation>
 <translation id="9108072915170399168">A configuración de uso de datos actual é Sen Internet</translation>

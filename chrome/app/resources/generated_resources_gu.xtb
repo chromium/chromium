@@ -832,6 +832,7 @@
 <translation id="1607139524282324606">એન્ટ્રી સાફ કરો</translation>
 <translation id="1607499585984539560">વપરાશકર્તા આ ડોમેન સાથે સંકળાયેલા નથી</translation>
 <translation id="1608668830839595724">પસંદ કરેલી આઇટમ માટે વધુ ક્રિયાઓ</translation>
+<translation id="1608698493373028805">આ એક્સ્ટેન્શનને ટૂંક સમયમાં હવેથી સપોર્ટ આપવામાં આવશે નહીં</translation>
 <translation id="1610272688494140697">ઍપના સેટિંગ</translation>
 <translation id="161042844686301425">સ્યાન</translation>
 <translation id="1611432201750675208">તમારું ડિવાઇસ લૉક કરેલું છે</translation>
@@ -1698,6 +1699,7 @@
 <translation id="2234827758954819389">પ્રાઇવસી સંબંધિત માર્ગદર્શિકા</translation>
 <translation id="2234876718134438132">સિંક અને Google સેવાઓ</translation>
 <translation id="2235344399760031203">ત્રીજા પક્ષની કુકી બ્લૉક કરવામાં આવી છે</translation>
+<translation id="2236949375853147973">મારી ઍક્ટિવિટી</translation>
 <translation id="2238379619048995541">ફ્રીક્વેંસી સ્થિતિ ડેટા</translation>
 <translation id="2241053333139545397">ઘણી બધી વેબસાઇટ્સ પર તમારો ડેટા વાંચો અને બદલો</translation>
 <translation id="2241634353105152135">માત્ર એક વખત</translation>
@@ -2306,6 +2308,8 @@
 <translation id="2666247341166669829">ડાબા વાયરલેસ ઇયરબડમાં બૅટરીનું લેવલ <ph name="PERCENTAGE" />% છે.</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" />ની જેમજ અન્ય ઍપ પણ આ બધી લિંક ખોલવા માટે સેટ કરવામાં આવી છે. આમ કરવાથી <ph name="APP_NAME_2" /> અને <ph name="APP_NAME_3" /> સપોર્ટેડ લિંક ખોલી શકશે નહીં.</translation>
 <translation id="2667463864537187133">જોડણીની તપાસ મેનેજ કરો</translation>
+<translation id="2668094785979141847">Google Lensમાંથી બહાર નીકળવા માટે ક્લિક કરો</translation>
+<translation id="2668604389652548400"><ph name="BEGIN_LINK" />Chrome વેબ સ્ટોર<ph name="END_LINK" />માંથી કાઢી નાખો અથવા તેના બદલે સમાન એક્સ્ટેન્શનનો ઉપયોગ કરો</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> ખોલી શક્યાં નહીં</translation>
 <translation id="2669454659051515572">આ ડિવાઇસનો ઉપયોગ કરનારી કોઈપણ વ્યક્તિ ડાઉનલોડ કરેલી ફાઇલો જોઈ શકે છે</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" />, Chrome ટૅબને શેર કરી રહી છે.</translation>
@@ -2355,6 +2359,7 @@
 <translation id="2710101514844343743">વપરાશ અને નિદાનનો ડેટા</translation>
 <translation id="271033894570825754">નવું</translation>
 <translation id="2710507903599773521">તમારું <ph name="DEVICE_TYPE" /> હવે અનલૉક કરેલું છે</translation>
+<translation id="2712141162840347885">Google Lens વડે શોધવા માટે કંઈપણ પસંદ કરો અથવા Google Lensમાંથી બહાર નીકળવા માટે Esc કી દબાવો</translation>
 <translation id="2713106313042589954">કૅમેરા બંધ કરો</translation>
 <translation id="2713444072780614174">શ્વેત</translation>
 <translation id="2714180132046334502">ઘાટું બૅકગ્રાઉન્ડ</translation>
@@ -2425,6 +2430,7 @@
 <translation id="2749881179542288782">જોડણી સાથે વ્યાકરણ તપાસો</translation>
 <translation id="2750020734439919571">Chrome ઍપના વધુ સેટિંગ અને પરવાનગીઓ</translation>
 <translation id="2750602041558385535">ચકાસણી વિનાના ડાઉનલોડને બ્લૉક કરવામાં આવ્યા</translation>
+<translation id="2753623023919742414">શોધવા માટે ક્લિક કરો</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" />માં સાચવેલા ઝડપી જોડાણવાળા ડિવાઇસ શોધી રહ્યાં છીએ</translation>
 <translation id="2754825024506485820">Google Play Store પર પ્રૉડક્ટિવિટીથી લઈને મનોરંજન સુધીની તમને જોઈતી ઍપ શોધો. તમે કોઈપણ સમયે ઍપ ઇન્સ્ટૉલ કરી શકો છો.</translation>
 <translation id="2755349111255270002">આ <ph name="DEVICE_TYPE" />ને રીસેટ કરો</translation>
@@ -2932,6 +2938,7 @@
 <translation id="3132996321662585180">દરરોજ રિફ્રેશ કરો</translation>
 <translation id="3133184011320864289">Chrome તમને ટૅબના ગ્રૂપ સૂચવી શકે અને તમારા ટૅબને ગોઠવેલા રાખી શકે તે માટે સિંક ચાલુ કરો</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> પ્રયોગ માટે પ્રયોગનું સ્ટેટસ પસંદ કરો. પ્રયોગનું વર્ણન: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">શોધવા માટે ખેંચો</translation>
 <translation id="3139925690611372679">ડિફોલ્ટ પીળો અવતાર</translation>
 <translation id="3141093262818886744">તેમ છતાં ખોલો</translation>
 <translation id="3141318088920353606">સાંભળી રહ્યાં છીએ...</translation>
@@ -4073,7 +4080,6 @@
 <translation id="3983586614702900908">અજાણ્યા વિક્રેતા પાસેથી ઉપકરણો</translation>
 <translation id="3983764759749072418">Play Store ઍપ્લિકેશનોને આ ડિવાઇસ માટે ઍક્સેસ છે.</translation>
 <translation id="3983769721878416534">ક્લિક કરતાં પહેલાં વિલંબ</translation>
-<translation id="3983793589497399077">લેન્સ વડે શોધવા માટે ગમે ત્યાં ક્લિક કરો અને ખેંચો</translation>
 <translation id="3984135167056005094">ઇમેઇલ ઍડ્રેસનો સમાવેશ કરશો નહીં</translation>
 <translation id="3984159763196946143">ડેમો મોડ શરૂ કરી શકાયો નથી</translation>
 <translation id="3984431586879874039">આ સાઇટને તમારો સુરક્ષા કોડ જોવાની મંજૂરી આપીએ?</translation>
@@ -8526,6 +8532,7 @@ USB ડિવાઇસ</translation>
 <translation id="741906494724992817">આ એપ્લિકેશનને કોઈ ખાસ પરવાનગીઓની જરૂર નથી.</translation>
 <translation id="7419142833919893307">કોઈ વપરાશકર્તાનું નામ ઉમેરવામાં આવ્યું નથી</translation>
 <translation id="7419565702166471774">હંમેશાં સુરક્ષિત કનેક્શનનો ઉપયોગ કરો</translation>
+<translation id="7419819959108735624">Google Lens વડે શોધવા માટે કંઈપણ પસંદ કરો</translation>
 <translation id="742130257665691897">બુકમાર્ક કાઢી નાખ્યા</translation>
 <translation id="7421925624202799674">પેજ સૉર્સ &amp;જુઓ</translation>
 <translation id="7422192691352527311">પસંદગીઓ...</translation>
@@ -10844,6 +10851,7 @@ USB ડિવાઇસ</translation>
 <translation id="9102610709270966160">એક્સ્ટેંશન ચાલુ કરો</translation>
 <translation id="9102864637938129124">જાહેરાતોના પર્ફોર્મન્સ સંબંધી બાબતો સાઇટ અને જાહેરાતકર્તાઓ સમજી શકે છે. આ સેટિંગ ચાલુ છે.</translation>
 <translation id="9103868373786083162">પાછા જવા માટે દબાવો, ઇતિહાસ જોવા માટે સંદર્ભ મેનૂ પર જાઓ</translation>
+<translation id="9106236359747881194">શોધવા માટે ટેક્સ્ટ પસંદ કરો</translation>
 <translation id="9107096627210171112">અનુવાદ કરો...</translation>
 <translation id="9108035152087032312">નામ અને વિંડો…</translation>
 <translation id="9108072915170399168">ડેટા વપરાશના હાલના સેટિંગ ઇન્ટરનેટ વિના માટે સેટ છે</translation>

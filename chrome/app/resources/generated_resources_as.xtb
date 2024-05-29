@@ -1712,6 +1712,7 @@
 <translation id="2234827758954819389">গোপনীয়তা সম্পৰ্কীয় নিৰ্দেশনা</translation>
 <translation id="2234876718134438132">ছিংক আৰু Google সেৱা</translation>
 <translation id="2235344399760031203">তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰা হৈছে</translation>
+<translation id="2236949375853147973">মোৰ কাৰ্যকলাপ</translation>
 <translation id="2238379619048995541">সঘনতাৰ স্থিতি ডেটা</translation>
 <translation id="2241053333139545397">আপোনাৰ ডেটা ৱেবছাইটসমূহত পঢ়ে আৰু সলনি কৰে</translation>
 <translation id="2241634353105152135">মাত্ৰ এবাৰ</translation>
@@ -2322,6 +2323,7 @@
 <translation id="2666247341166669829">বাওঁফালৰ বেটাৰীৰ স্তৰ <ph name="PERCENTAGE" />%।</translation>
 <translation id="2667144577800272420">অন্য এপ্‌সমূহ <ph name="APP_NAME" />ৰ দৰে একেই লিংকসমূহ খুলিবলৈ সাজু আছে। এইটোৱে <ph name="APP_NAME_2" /> আৰু <ph name="APP_NAME_3" />ক সমৰ্থিত লিংকসমূহ খুলিবলৈ নিদিয়ে।</translation>
 <translation id="2667463864537187133">বানান পৰীক্ষক পৰিচালনা কৰক</translation>
+<translation id="2668094785979141847">Google Lensৰ পৰা বাহিৰ ওলাবলৈ ক্লিক কৰক</translation>
 <translation id="2668604389652548400">এইটো আঁতৰাওক বা <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />ত পোৱা একেধৰণৰ এক্সটেনশ্বনৰ সৈতে এইটো সলনাসলনি কৰক</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> খুলিব পৰা নগ’ল</translation>
 <translation id="2669454659051515572">এই ডিভাইচটো ব্যৱহাৰ কৰা যিকোনো লোকে ডাউনল’ড কৰা ফাইল চাব পাৰে</translation>
@@ -2372,6 +2374,7 @@
 <translation id="2710101514844343743">ব্যৱহাৰ আৰু ডায়েগন’ষ্টিক ডেটা</translation>
 <translation id="271033894570825754">নতুন</translation>
 <translation id="2710507903599773521">আপোনাৰ <ph name="DEVICE_TYPE" />টো এতিয়া আনলক কৰা হৈছে</translation>
+<translation id="2712141162840347885">Google Lensৰ জৰিয়তে সন্ধান কৰিবলৈ যিকোনো বস্তু বাছনি কৰক বা Google Lensৰ পৰা বাহিৰ ওলাবলৈ এস্কে’প টিপক</translation>
 <translation id="2713106313042589954">কেমেৰা অফ কৰক</translation>
 <translation id="2713444072780614174">বগা</translation>
 <translation id="2714180132046334502">নেপথ্য ৰং গাঢ়</translation>
@@ -2442,6 +2445,7 @@
 <translation id="2749881179542288782">বানান আৰু ব্যাকৰণত থকা ভুলবোৰ চাওক</translation>
 <translation id="2750020734439919571">Chrome এপৰ অধিক ছেটিং আৰু অনুমতি</translation>
 <translation id="2750602041558385535">সত্যাপন নকৰা ডাউনল’ড অৱৰোধ কৰা হৈছে</translation>
+<translation id="2753623023919742414">সন্ধান কৰিবলৈ ক্লিক কৰক</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" />ত ছেভ কৰি থোৱা দ্ৰুতভাৱে পেয়াৰ হোৱা কোনো ডিভাইচ বিচাৰি থকা হৈছে</translation>
 <translation id="2754825024506485820">Google Play Storeত উৎপাদনশীলতাৰ পৰা আৰম্ভ কৰি বিনোদনলৈকে আপোনাক প্ৰয়োজন হোৱা এপ্‌সমূহ বিচাৰি পাওক। আপুনি যিকোনো সময়তে এপ্‌ ইনষ্টল কৰিব পাৰে।</translation>
 <translation id="2755349111255270002">এই <ph name="DEVICE_TYPE" />টো ৰিছেট কৰক</translation>
@@ -2949,6 +2953,7 @@
 <translation id="3132996321662585180">দৈনিক ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="3133184011320864289">টেবৰ গোটৰ পৰামৰ্শ দিবলৈ আৰু আপোনাৰ টেবসমূহ সংগঠিত কৰি ৰাখিবলৈ Chromeক অনুমতি দিবলৈ ছিংক অন কৰক</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> পৰীক্ষণৰ বাবে পৰীক্ষণৰ স্থিতি বাছনি কৰক। পৰীক্ষণৰ বিৱৰণ: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">সন্ধান কৰিবলৈ টানি আনি এৰক</translation>
 <translation id="3139925690611372679">ডিফ’ল্ট হালধীয়া অৱতাৰ</translation>
 <translation id="3141093262818886744">তথাপি খোলক</translation>
 <translation id="3141318088920353606">শুনি আছে…</translation>
@@ -4089,7 +4094,6 @@
 <translation id="3983586614702900908">কোনো অজ্ঞাত বিক্ৰেতাৰ পৰা পোৱা ডিভাইচ</translation>
 <translation id="3983764759749072418">Play Storeৰ এপ্লিকেশ্বনবোৰৰ এই ডিভাইচটোৰ এক্সেছ আছে।</translation>
 <translation id="3983769721878416534">ক্লিক কৰাৰ আগত বিলম্ব</translation>
-<translation id="3983793589497399077">Lensৰ জৰিয়তে সন্ধান কৰিবলৈ ক্লিক কৰক বা টানি আনি এৰক</translation>
 <translation id="3984135167056005094">ইমেইল ঠিকনা অন্তৰ্ভুক্ত নকৰিব</translation>
 <translation id="3984159763196946143">ডেম' ম'ড আৰম্ভ কৰিব পৰা নগ'ল</translation>
 <translation id="3984431586879874039">এই ছাইটটোক আপোনাৰ সুৰক্ষা সম্পৰ্কীয় চাবিটো চাবলৈ অনুমতি দিবনে?</translation>
@@ -8540,6 +8544,7 @@
 <translation id="741906494724992817">এই এপ্‌টোক কোনো বিশেষ অনুমতিৰ প্ৰয়োজন নাই।</translation>
 <translation id="7419142833919893307">কোনো ব্যৱহাৰকাৰীৰ নাম যোগ দিয়া হোৱা নাই</translation>
 <translation id="7419565702166471774">সদায় সুৰক্ষিত সংযোগ ব্যৱহাৰ কৰক</translation>
+<translation id="7419819959108735624">Google Lensৰ জৰিয়তে সন্ধান কৰিবলৈ যিকোনো বস্তু বাছনি কৰক</translation>
 <translation id="742130257665691897">বুকমাৰ্ক মচা হ’ল</translation>
 <translation id="7421925624202799674">পৃষ্ঠাৰ উৎস &amp;চাওক</translation>
 <translation id="7422192691352527311">অগ্ৰাধিকাৰসমূহ...</translation>
@@ -10863,6 +10868,7 @@
 <translation id="9102610709270966160">এক্সটেনশ্বন সক্ষম কৰক</translation>
 <translation id="9102864637938129124">বিজ্ঞাপনে কেনেকৈ কাম কৰে সেয়া ছাইট বিজ্ঞাপনদাতাসকলে বুজি পাব পাৰে। এই ছেটিংটো অন হৈ আছে।</translation>
 <translation id="9103868373786083162">উভতি যাবলৈ টিপক, ইতিহাস চাবলৈ প্ৰসংগ মেনুলৈ যাওক</translation>
+<translation id="9106236359747881194">সন্ধান কৰিবলৈ পাঠ বাছনি কৰক</translation>
 <translation id="9107096627210171112">অনুবাদ কৰক...</translation>
 <translation id="9108035152087032312">ৱিণ্ডৰ নাম দিয়ক...</translation>
 <translation id="9108072915170399168">বৰ্তমানৰ ডেটাৰ ব্যৱহাৰৰ ছেটিংটো হৈছে ইণ্টাৰনেটৰ অবিহনে</translation>

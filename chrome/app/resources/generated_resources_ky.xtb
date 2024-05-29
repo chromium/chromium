@@ -1714,6 +1714,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2234827758954819389">Купуялык жетектемеси</translation>
 <translation id="2234876718134438132">Google кызматтарын шайкештирүү</translation>
 <translation id="2235344399760031203">Үчүнчү тараптын cookie файлдары бөгөттөлдү</translation>
+<translation id="2236949375853147973">Менин аракеттерим</translation>
 <translation id="2238379619048995541">Жыштык абалынын дайындары</translation>
 <translation id="2241053333139545397">Дайын-даректериңизди бир нече вебсайттан окуңуз жана өзгөртүңүз</translation>
 <translation id="2241634353105152135">Бир гана жлу</translation>
@@ -2324,6 +2325,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2666247341166669829">Сол кулакчындын батареясынын деңгээли: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" /> ачкан шилтемелерди башка колдонмолор да ача алышат. Колдоого алынган шилтемелерди <ph name="APP_NAME_2" /> жана <ph name="APP_NAME_3" /> ача албай калат.</translation>
 <translation id="2667463864537187133">Орфографиялык текшерүүнү башкаруу</translation>
+<translation id="2668094785979141847">Google Lens'тен чыгуу үчүн чыкылдатыңыз</translation>
 <translation id="2668604389652548400">Аны <ph name="BEGIN_LINK" />Chrome Интернет дүкөнүнөн<ph name="END_LINK" /> өчүрүңүз же окшош кеңейтүүлөр менен алмаштырыңыз</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> ачылбай жатат</translation>
 <translation id="2669454659051515572">Бул түзмөктү колдонгондордун баары жүктөлүп алынган файлдарды көрө алышат</translation>
@@ -2374,6 +2376,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2710101514844343743">Колдонулушу жана мүчүлүштүктөрүн аныктоо жөнүндө маалымат</translation>
 <translation id="271033894570825754">Жаңы</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> түзмөгүңүздүн кулпусу ачылды</translation>
+<translation id="2712141162840347885">Google Lens менен издөө үчүн каалаган нерсени тандаңыз же Google Lens кызматынан чыгуу үчүн Escape баскычын басыңыз.</translation>
 <translation id="2713106313042589954">Камераны өчүрүү</translation>
 <translation id="2713444072780614174">Ак</translation>
 <translation id="2714180132046334502">Күңүрт фон</translation>
@@ -2444,6 +2447,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2749881179542288782">Орфография менен грамматиканы айкалыштырып текшерүү</translation>
 <translation id="2750020734439919571">Chrome колдонмосунун дагы башка параметрлери жана уруксаттары</translation>
 <translation id="2750602041558385535">Ырасталбаган жүктөп алуу аракети бөгөттөлдү</translation>
+<translation id="2753623023919742414">Издөө үчүн чыкылдатыңыз</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" /> аккаунтуна сакталган Fast Pair түзмөктөрү изделүүдө</translation>
 <translation id="2754825024506485820">Google Play Store'дон керектүү колдонмолорду (иштин майнаптуулугун арттыруучу, көңүл ачуучу, ж.б.) табыңыз. Колдонмолорду каалаган убакта орното аласыз.</translation>
 <translation id="2755349111255270002"><ph name="DEVICE_TYPE" /> түзмөгүн баштапкы абалга келтириңиз</translation>
@@ -2951,6 +2955,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3132996321662585180">Күндө жаңыртылсын</translation>
 <translation id="3133184011320864289">Chrome'го өтмөк топторун сунуштап, өтмөктөрүңүздү иретке келтирүүгө уруксат берүү үчүн шайкештирүүнү күйгүзүңүз</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> тажрыйбасы үчүн абалды тандаңыз. Тажрыйбанын сүрөттөмөсү: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">Издөө үчүн сүйрөңүз</translation>
 <translation id="3139925690611372679">Демейки сары аватар</translation>
 <translation id="3141093262818886744">Баары бир ачылсын</translation>
 <translation id="3141318088920353606">Угуп жатат…</translation>
@@ -4092,7 +4097,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3983586614702900908">белгисиз жөнөтүүчүнүн түзмөктөрү</translation>
 <translation id="3983764759749072418">Play Store колдонмолору бул түзмөккө кире алышат.</translation>
 <translation id="3983769721878416534">Баскыч басылганга чейин кармалган убакыт</translation>
-<translation id="3983793589497399077">Lens менен издөө үчүн чыкылдатып же каалаган жерге сүйрөп барыңыз</translation>
 <translation id="3984135167056005094">Электрондук почта дареги камтылбасын</translation>
 <translation id="3984159763196946143">Демо режими иштетилип башталбай калды</translation>
 <translation id="3984431586879874039">Бул сайтка коопсуздук ачкычтарыңызды көрүүгө уруксат бересизби?</translation>
@@ -8541,6 +8545,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="741906494724992817">Бул колдонмого атайын уруксаттардын кереги жок.</translation>
 <translation id="7419142833919893307">Колдонуучунун аты кошулган жок</translation>
 <translation id="7419565702166471774">Ар дайым коопсуз туташуулар колдонулсун</translation>
+<translation id="7419819959108735624">Google Lens менен издөө үчүн каалаган нерсени тандаңыз</translation>
 <translation id="742130257665691897">Кыстармалар өчүрүлдү</translation>
 <translation id="7421925624202799674">Барак булагын карап &amp;көрүү</translation>
 <translation id="7422192691352527311">Жеке параметрлер…</translation>
@@ -10863,6 +10868,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="9102610709270966160">Кеңейтүүнү иштетүү</translation>
 <translation id="9102864637938129124">Сайттар менен жарнамачылар жарнамалардын майнаптуулугун талдай алышат. Бул параметр күйүк.</translation>
 <translation id="9103868373786083162">Артка кайрылуу үчүн басыңыз, таржымалды көрүү үчүн мазмундук меню</translation>
+<translation id="9106236359747881194">Издөө үчүн текстти тандаңыз</translation>
 <translation id="9107096627210171112">Которуу…</translation>
 <translation id="9108035152087032312">&amp;Терезенин аталышын коюңуз...</translation>
 <translation id="9108072915170399168">Учурда дайын-даректердин өткөрүлүшү "Интернетсиз" деп коюлган</translation>

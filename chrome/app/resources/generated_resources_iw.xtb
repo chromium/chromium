@@ -837,6 +837,7 @@
 <translation id="1607139524282324606">ניקוי רשומה</translation>
 <translation id="1607499585984539560">המשתמש לא משויך לדומיין</translation>
 <translation id="1608668830839595724">פעולות נוספות שאפשר לבצע בפריטים שנבחרו</translation>
+<translation id="1608698493373028805">יכול להיות שבקרוב תופסק התמיכה בתוסף הזה</translation>
 <translation id="1610272688494140697">הגדרות של אפליקציות</translation>
 <translation id="161042844686301425">ציאן</translation>
 <translation id="1611432201750675208">המכשיר שלך נעול</translation>
@@ -1712,6 +1713,7 @@
 <translation id="2234827758954819389">המדריך בנושא פרטיות</translation>
 <translation id="2234876718134438132">‏סנכרון ושירותי Google</translation>
 <translation id="2235344399760031203">‏קובצי cookie של צד שלישי חסומים</translation>
+<translation id="2236949375853147973">הפעילות שלי</translation>
 <translation id="2238379619048995541">נתוני מצב תדירות</translation>
 <translation id="2241053333139545397">לקרוא ולשנות את הנתונים שלך במספר אתרים</translation>
 <translation id="2241634353105152135">פעם אחת בלבד</translation>
@@ -2322,6 +2324,8 @@
 <translation id="2666247341166669829">רמת הטעינה של הסוללה השמאלית %<ph name="PERCENTAGE" />.</translation>
 <translation id="2667144577800272420">אפליקציות אחרות מוגדרות לפתוח את אותם קישורים כמו <ph name="APP_NAME" />. כתוצאה מכך, <ph name="APP_NAME_2" /> וגם <ph name="APP_NAME_3" /> לא יפתחו קישורים נתמכים.</translation>
 <translation id="2667463864537187133">ניהול בדיקת איות</translation>
+<translation id="2668094785979141847">‏צריך ללחוץ כדי לצאת מ-Google Lens</translation>
+<translation id="2668604389652548400">‏אפשר להסיר את התוסף או להחליף אותו בתוספים דומים מ<ph name="BEGIN_LINK" />חנות האינטרנט של Chrome<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">אי אפשר לפתוח את <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">כל מי שמשתמש במכשיר הזה יכול לראות את הקבצים שהורדו</translation>
 <translation id="2670102641511624474">‏<ph name="APP_NAME" /> משתף כרטיסיית Chrome.</translation>
@@ -2371,6 +2375,7 @@
 <translation id="2710101514844343743">מידע על אופן השימוש בנתונים וניתוח הביצועים</translation>
 <translation id="271033894570825754">חדש</translation>
 <translation id="2710507903599773521">הנעילה של <ph name="DEVICE_TYPE" /> בוטלה</translation>
+<translation id="2712141162840347885">‏אפשר לבחור משהו לחיפוש באמצעות Google Lens או ללחוץ על Escape כדי לצאת מ-Google Lens</translation>
 <translation id="2713106313042589954">השבתת המצלמה</translation>
 <translation id="2713444072780614174">לבן</translation>
 <translation id="2714180132046334502">רקע כהה</translation>
@@ -2441,6 +2446,7 @@
 <translation id="2749881179542288782">בדיקת דקדוק עם איות</translation>
 <translation id="2750020734439919571">‏הרשאות והגדרות נוספות של אפליקציית Chrome</translation>
 <translation id="2750602041558385535">הורדה לא מאומתת נחסמה</translation>
+<translation id="2753623023919742414">צריך ללחוץ כדי לחפש</translation>
 <translation id="2754226775788136540">מתבצע חיפוש של מכשירים להתאמה מהירה שנשמרו בחשבון <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">‏בחנות Google Play ניתן למצוא את כל האפליקציות שצריכים, בכל התחומים – מפרודוקטיביות ועד בידור אפשר להתקין אפליקציות בכל שלב.</translation>
 <translation id="2755349111255270002">אתחול של מכשיר <ph name="DEVICE_TYPE" /> זה</translation>
@@ -2948,6 +2954,7 @@
 <translation id="3132996321662585180">רענון מדי יום</translation>
 <translation id="3133184011320864289">‏כדי לאפשר ל-Chrome לארגן כרטיסיות ולהציע קבוצות של כרטיסיות, עליך להפעיל את הסנכרון</translation>
 <translation id="3134393957315651797">יש לבחור מצב לניסוי <ph name="EXPERIMENT_NAME" />. תיאור הניסוי: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3137969841538672700">צריך לגרור כדי לחפש</translation>
 <translation id="3139925690611372679">דמות ברירת מחדל צהובה</translation>
 <translation id="3141093262818886744">אני רוצה לפתוח בכל זאת</translation>
 <translation id="3141318088920353606">המערכת מקשיבה...</translation>
@@ -4089,7 +4096,6 @@
 <translation id="3983586614702900908">מכשירים מספק לא ידוע</translation>
 <translation id="3983764759749072418">‏לאפליקציות מחנות Play יש גישה למכשיר הזה.</translation>
 <translation id="3983769721878416534">השהייה לפני לחיצה</translation>
-<translation id="3983793589497399077">‏כדי לחפש באמצעות Lens, לוחצים או גוררים במקום כלשהו</translation>
 <translation id="3984135167056005094">אין לכלול כתובת אימייל</translation>
 <translation id="3984159763196946143">לא ניתן היה להתחיל מצב הדגמה</translation>
 <translation id="3984431586879874039">האם לאפשר לאתר לראות את מפתח האבטחה שלך?</translation>
@@ -5962,7 +5968,7 @@
 <translation id="544083962418256601">יצירת קיצורי דרך...</translation>
 <translation id="5441133529460183413">‏אפליקציית האינטרנט הותקנה דרך דפדפן Chrome</translation>
 <translation id="5441292787273562014">טען דף מחדש</translation>
-<translation id="5441466871879044658">תרגום לשפה זו</translation>
+<translation id="5441466871879044658">תרגום לשפה הזו</translation>
 <translation id="5442228125690314719">קרתה שגיאה ביצירת תמונת הדיסק. צריך לנסות שוב.</translation>
 <translation id="5442550868130618860">הפעלת עדכון אוטומטי</translation>
 <translation id="5444281205834970653">מחיקה והמשך</translation>
@@ -8544,6 +8550,7 @@
 <translation id="741906494724992817">אין צורך בהרשאות מיוחדות עבור האפליקציה הזו.</translation>
 <translation id="7419142833919893307">לא נוסף שם משתמש</translation>
 <translation id="7419565702166471774">להשתמש תמיד בחיבורים מאובטחים</translation>
+<translation id="7419819959108735624">‏אפשר לבחור משהו לחיפוש באמצעות Google Lens</translation>
 <translation id="742130257665691897">סימניות הוסרו</translation>
 <translation id="7421925624202799674">&amp;הצגת מקור הדף</translation>
 <translation id="7422192691352527311">העדפות...</translation>
@@ -9226,7 +9233,7 @@
 <translation id="7915457674565721553">יש להתחבר לאינטרנט כדי להגדיר בקרת הורים</translation>
 <translation id="7916364730877325865">בהתאם למדיניות הארגון שלך, אי אפשר להפעיל סנכרון עם החשבון הזה</translation>
 <translation id="7918257978052780342">הרשמה</translation>
-<translation id="7919123827536834358">תרגום אוטומטי של שפות אלה</translation>
+<translation id="7919123827536834358">תרגום אוטומטי של השפות האלה</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> שנ'</translation>
 <translation id="7920363873148656176">ל-<ph name="ORIGIN" /> יש אפשרות להציג את <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">הוספת מילים שיש לדלג עליהן בבדיקות איות</translation>
@@ -10870,6 +10877,7 @@
 <translation id="9102610709270966160">הפעלת התוסף</translation>
 <translation id="9102864637938129124">האתרים והמפרסמים יכולים להבין את רמת הביצועים של המודעות. ההגדרה הזו פועלת.</translation>
 <translation id="9103868373786083162">יש ללחוץ כדי לחזור אחורה, תפריט הקשר להצגת ההיסטוריה</translation>
+<translation id="9106236359747881194">אפשר לבחור טקסט לחיפוש</translation>
 <translation id="9107096627210171112">Translate…</translation>
 <translation id="9108035152087032312">מתן &amp;שם לחלון…</translation>
 <translation id="9108072915170399168">ההגדרה הנוכחית של השימוש בחבילת הגלישה היא 'ללא אינטרנט'</translation>
