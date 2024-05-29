@@ -6,7 +6,6 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/authentication/account_switching/account_switcher_transitioning_delegate.h"
 #import "ios/chrome/browser/ui/authentication/account_switching/account_switcher_view_controller.h"
 
 @implementation AccountSwitcherCoordinator {
