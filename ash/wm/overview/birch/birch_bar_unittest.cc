@@ -506,11 +506,11 @@ TEST_P(BirchBarTest, RecordsHistogramWhenChipsShown) {
 
   // Two rankings were recorded for the current time slot histogram.
   histograms.ExpectBucketCount("Ash.Birch.Ranking.1200to1700", 1, 1);
-  histograms.ExpectBucketCount("Ash.Birch.Ranking.1200to1700", 9, 1);
+  histograms.ExpectBucketCount("Ash.Birch.Ranking.1200to1700", 12, 1);
 
   // The same ranking were recorded for the all-day total histogram.
   histograms.ExpectBucketCount("Ash.Birch.Ranking.Total", 1, 1);
-  histograms.ExpectBucketCount("Ash.Birch.Ranking.Total", 9, 1);
+  histograms.ExpectBucketCount("Ash.Birch.Ranking.Total", 12, 1);
 }
 
 // Tests that the birch bar will be hidden in the partial Overview with a split

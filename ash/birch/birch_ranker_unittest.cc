@@ -149,13 +149,13 @@ TEST(BirchRankerTest, RankCalendarItems_Evening) {
   ASSERT_EQ(3u, items.size());
 
   // The soon event has a ranking.
-  EXPECT_FLOAT_EQ(items[0].ranking(), 12.f);
+  EXPECT_FLOAT_EQ(items[0].ranking(), 15.f);
 
   // The later event has no ranking, it was too far in the future.
   EXPECT_FLOAT_EQ(items[1].ranking(), std::numeric_limits<float>::max());
 
   // The tomorrow event has a ranking.
-  EXPECT_FLOAT_EQ(items[2].ranking(), 25.f);
+  EXPECT_FLOAT_EQ(items[2].ranking(), 28.f);
 }
 
 TEST(BirchRankerTest, RankCalendarItems_OngoingInAfternoon) {
@@ -180,7 +180,7 @@ TEST(BirchRankerTest, RankCalendarItems_OngoingInAfternoon) {
   ASSERT_EQ(1u, items.size());
 
   // The ongoing event has a ranking.
-  EXPECT_FLOAT_EQ(items[0].ranking(), 9.f);
+  EXPECT_FLOAT_EQ(items[0].ranking(), 12.f);
 }
 
 TEST(BirchRankerTest, RankCalendarItems_AllDayEvent) {
@@ -227,10 +227,10 @@ TEST(BirchRankerTest, RankCalendarItems_AllDayEvent) {
 
   // The events are sorted by start time so today's all day event is first. It
   // has low priority.
-  EXPECT_FLOAT_EQ(items[0].ranking(), 36.f);
+  EXPECT_FLOAT_EQ(items[0].ranking(), 39.f);
 
   // The non-all-day ongoing event has higher priority.
-  EXPECT_FLOAT_EQ(items[1].ranking(), 9.f);
+  EXPECT_FLOAT_EQ(items[1].ranking(), 12.f);
 
   // The all-day event for tomorrow is not ranked.
   EXPECT_FLOAT_EQ(items[2].ranking(), std::numeric_limits<float>::max());
@@ -283,7 +283,7 @@ TEST(BirchRankerTest, RankAttachmentItems_Morning) {
   EXPECT_FLOAT_EQ(items[0].ranking(), 7.f);
 
   // The upcoming event's item has a medium priority.
-  EXPECT_FLOAT_EQ(items[1].ranking(), 13.f);
+  EXPECT_FLOAT_EQ(items[1].ranking(), 16.f);
 
   // The later event's item wasn't ranked, so has the default value.
   EXPECT_FLOAT_EQ(items[2].ranking(), std::numeric_limits<float>::max());
@@ -333,10 +333,10 @@ TEST(BirchRankerTest, RankAttachmentItems_Evening) {
   ASSERT_EQ(3u, items.size());
 
   // The ongoing event's item has a medium priority.
-  EXPECT_FLOAT_EQ(items[0].ranking(), 10.f);
+  EXPECT_FLOAT_EQ(items[0].ranking(), 13.f);
 
   // The upcoming event's item has a lower priority.
-  EXPECT_FLOAT_EQ(items[1].ranking(), 13.f);
+  EXPECT_FLOAT_EQ(items[1].ranking(), 16.f);
 
   // The later event's item wasn't ranked, so has the default value.
   EXPECT_FLOAT_EQ(items[2].ranking(), std::numeric_limits<float>::max());
@@ -379,15 +379,15 @@ TEST(BirchRankerTest, RankFileSuggestItems) {
 
   // The file shared in the last hour has high priority.
   EXPECT_EQ(items[0].title(), u"item0");
-  EXPECT_FLOAT_EQ(items[0].ranking(), 19.f);
+  EXPECT_FLOAT_EQ(items[0].ranking(), 22.f);
 
   // The file shared in the last day has medium priority.
   EXPECT_EQ(items[1].title(), u"item1");
-  EXPECT_FLOAT_EQ(items[1].ranking(), 32.f);
+  EXPECT_FLOAT_EQ(items[1].ranking(), 35.f);
 
   // The file shared in the last week has low priority.
   EXPECT_EQ(items[2].title(), u"item2");
-  EXPECT_FLOAT_EQ(items[2].ranking(), 40.f);
+  EXPECT_FLOAT_EQ(items[2].ranking(), 43.f);
 
   // The file shared more than a week ago wasn't ranked.
   EXPECT_EQ(items[3].title(), u"item3");
@@ -435,9 +435,9 @@ TEST(BirchRankerTest, RankRecentTabItems) {
 
   // The mobile tabs with a timestamp in the last 5 minutes has high priority.
   EXPECT_EQ(items[0].title(), u"item0");
-  EXPECT_FLOAT_EQ(items[0].ranking(), 14.f);
+  EXPECT_FLOAT_EQ(items[0].ranking(), 17.f);
   EXPECT_EQ(items[1].title(), u"item1");
-  EXPECT_FLOAT_EQ(items[1].ranking(), 14.f);
+  EXPECT_FLOAT_EQ(items[1].ranking(), 17.f);
 
   // The mobile tab with a timestamp in the last hour is unranked.
   EXPECT_EQ(items[2].title(), u"item2");
@@ -445,11 +445,11 @@ TEST(BirchRankerTest, RankRecentTabItems) {
 
   // The desktop tab with a timestamp in the last hour has medium priority.
   EXPECT_EQ(items[3].title(), u"item3");
-  EXPECT_FLOAT_EQ(items[3].ranking(), 17.f);
+  EXPECT_FLOAT_EQ(items[3].ranking(), 20.f);
 
   // The desktop tab with a timestamp in the last day has low priority.
   EXPECT_EQ(items[4].title(), u"item4");
-  EXPECT_FLOAT_EQ(items[4].ranking(), 30.f);
+  EXPECT_FLOAT_EQ(items[4].ranking(), 33.f);
 
   // The tab with a timestamp more than a day ago wasn't ranked.
   EXPECT_EQ(items[5].title(), u"item5");
@@ -493,7 +493,7 @@ TEST(BirchRankerTest, RankWeatherItems_Afternoon) {
   ASSERT_EQ(1u, items.size());
 
   // The item had a lower priority ranking assigned.
-  EXPECT_FLOAT_EQ(items[0].ranking(), 36.f);
+  EXPECT_FLOAT_EQ(items[0].ranking(), 39.f);
 }
 
 }  // namespace

@@ -40,7 +40,7 @@ void BirchRanker::RankCalendarItems(std::vector<BirchCalendarItem>* items) {
     // All-day events have low priority. We only show all-day events from today
     // (e.g. ongoing all-day events).
     if (item.all_day_event() && IsOngoingEvent(item)) {
-      item.set_ranking(36.f);
+      item.set_ranking(39.f);
       continue;
     }
 
@@ -59,21 +59,21 @@ void BirchRanker::RankCalendarItems(std::vector<BirchCalendarItem>* items) {
 
     // Non-all-day ongoing events have medium priority all day.
     if (IsOngoingEvent(item)) {
-      item.set_ranking(9.f);
+      item.set_ranking(12.f);
       continue;
     }
 
     // Events starting in the next 30 minutes has medium priority all day.
     if (now_ <= item.start_time() &&
         item.start_time() < now_ + base::Minutes(30)) {
-      item.set_ranking(12.f);
+      item.set_ranking(15.f);
       continue;
     }
 
     // In the evening, the first event from tomorrow has low priority.
     if (is_evening && IsTomorrowEvent(item) && !found_tomorrow_event) {
       found_tomorrow_event = true;
-      item.set_ranking(25.f);
+      item.set_ranking(28.f);
       continue;
     }
   }
@@ -95,7 +95,7 @@ void BirchRanker::RankAttachmentItems(std::vector<BirchAttachmentItem>* items) {
     // medium priority the rest of the day.
     const bool is_ongoing = item.start_time() <= now_ && now_ < item.end_time();
     if (is_ongoing) {
-      item.set_ranking(is_morning ? 7.f : 10.f);
+      item.set_ranking(is_morning ? 7.f : 13.f);
       continue;
     }
 
@@ -103,7 +103,7 @@ void BirchRanker::RankAttachmentItems(std::vector<BirchAttachmentItem>* items) {
     // priority.
     if (now_ <= item.start_time() &&
         item.start_time() < now_ + base::Minutes(30)) {
-      item.set_ranking(13.f);
+      item.set_ranking(16.f);
       continue;
     }
   }
@@ -123,17 +123,17 @@ void BirchRanker::RankFileSuggestItems(std::vector<BirchFileItem>* items) {
   for (BirchFileItem& item : *items) {
     // Items modified/shared recently have high priority.
     if (now_ - base::Hours(1) < item.timestamp()) {
-      item.set_ranking(19.f);
+      item.set_ranking(22.f);
       continue;
     }
     // Items modified/shared today have medium priority.
     if (now_ - base::Days(1) < item.timestamp()) {
-      item.set_ranking(32.f);
+      item.set_ranking(35.f);
       continue;
     }
     // Items modified/shared this week have low priority.
     if (now_ - base::Days(7) < item.timestamp()) {
-      item.set_ranking(40.f);
+      item.set_ranking(43.f);
       continue;
     }
   }
@@ -154,19 +154,19 @@ void BirchRanker::RankRecentTabItems(std::vector<BirchTabItem>* items) {
         item.form_factor() == BirchTabItem::DeviceFormFactor::kTablet;
     // Very recent mobile items have high priority.
     if (is_mobile && now_ - base::Minutes(5) < item.timestamp()) {
-      item.set_ranking(14.f);
+      item.set_ranking(17.f);
       continue;
     }
     const bool is_desktop =
         item.form_factor() == BirchTabItem::DeviceFormFactor::kDesktop;
     // Desktop items from the last hour have medium priority.
     if (is_desktop && now_ - base::Hours(1) < item.timestamp()) {
-      item.set_ranking(17.f);
+      item.set_ranking(20.f);
       continue;
     }
     // Desktop items from the last day have low priority.
     if (is_desktop && now_ - base::Days(1) < item.timestamp()) {
-      item.set_ranking(30.f);
+      item.set_ranking(33.f);
       continue;
     }
   }
@@ -195,15 +195,15 @@ void BirchRanker::RankSelfShareItems(std::vector<BirchSelfShareItem>* items) {
 
   for (BirchSelfShareItem& item : *items) {
     if (now_ - base::Hours(1) < item.shared_time()) {
-      item.set_ranking(11.f);
+      item.set_ranking(14.f);
       continue;
     }
     if (now_ - base::Days(1) < item.shared_time()) {
-      item.set_ranking(27.f);
+      item.set_ranking(30.f);
       continue;
     }
     if (now_ - base::Days(2) < item.shared_time()) {
-      item.set_ranking(37.f);
+      item.set_ranking(40.f);
       continue;
     }
   }
@@ -214,7 +214,7 @@ void BirchRanker::RankWeatherItems(std::vector<BirchWeatherItem>* items) {
   // lower priority during non-morning hours as this helps with debugging and
   // dogfooding.
   if (!items->empty()) {
-    (*items)[0].set_ranking(IsMorning() ? 5.f : 36.f);
+    (*items)[0].set_ranking(IsMorning() ? 5.f : 39.f);
   }
 
   // TODO(b/305094126): Figure out how to query the next day's weather and show
@@ -235,12 +235,12 @@ float BirchRanker::GetReleaseNotesItemRanking(
     return 3.0f;
   }
   if (elapsed_time <= base::Hours(1)) {
-    return 13.0f;
+    return 18.0f;
   }
   if (elapsed_time <= base::Hours(24)) {
-    return 26.0f;
+    return 31.0f;
   }
-  return 42.0f;
+  return 47.0f;
 }
 
 bool BirchRanker::IsMorning() const {
