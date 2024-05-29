@@ -52,9 +52,7 @@ RichControlsContainerView::RichControlsContainerView() {
   labels_wrapper_ = AddChildView(CreateLabelWrapper());
   title_ = labels_wrapper_->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT));
-  if (features::IsChromeRefresh2023()) {
-    title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
-  }
+  title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // Calculate difference between label height and icon size to align icons
@@ -106,11 +104,8 @@ views::StyledLabel* RichControlsContainerView::AddSecondaryStyledLabel(
       views::kBoxLayoutFlexKey,
       views::BoxLayoutFlexSpecification().WithWeight(1));
 
-  if (features::IsChromeRefresh2023()) {
-    secondary_label->SetDefaultTextStyle(views::style::STYLE_BODY_5);
-    secondary_label->SetDefaultEnabledColorId(
-        ui::kColorLabelForegroundSecondary);
-  }
+  secondary_label->SetDefaultTextStyle(views::style::STYLE_BODY_5);
+  secondary_label->SetDefaultEnabledColorId(ui::kColorLabelForegroundSecondary);
   return labels_wrapper_->AddChildView(std::move(secondary_label));
 }
 

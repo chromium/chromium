@@ -50,10 +50,7 @@ void MdTextButtonWithDownArrow::StateChanged(ButtonState old_state) {
 }
 
 void MdTextButtonWithDownArrow::SetDropArrowImage() {
-  SkColor drop_arrow_color =
-      features::IsChromeRefresh2023()
-          ? label()->GetEnabledColor()
-          : color_utils::DeriveDefaultIconColor(label()->GetEnabledColor());
+  SkColor drop_arrow_color = label()->GetEnabledColor();
   auto drop_arrow_image =
       ui::ImageModel::FromVectorIcon(kMenuDropArrowIcon, drop_arrow_color);
   SetImageModel(Button::STATE_NORMAL, drop_arrow_image);
