@@ -13844,6 +13844,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.Omnibox.AcceptDefaultSuggestion">
+  <owner>christianxu@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Recorded when the user accept the default suggestion in the omnibox by
+    pressing go or enter.
+  </description>
+</action>
+
 <action name="IOS.Omnibox.Promo.PositionDiscarded">
   <owner>christianxu@chromium.org</owner>
   <owner>bling-team@google.com</owner>
