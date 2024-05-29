@@ -14,6 +14,14 @@
     visibility: hidden;
   }
 
+  #errorIcon {
+    --iron-icon-height: var(--cr-icon-size);
+    --iron-icon-width: var(--cr-icon-size);
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
+    display: inline-block;
+    margin-inline-start: 8px;
+  }
+
   #forgotPinLink {
     margin-inline-start: 12px;
     margin-top: 6px;
@@ -46,11 +54,15 @@
   <div slot="title">$i18n{appParentalControlsAccessDialogTitle}</div>
   <div slot="body">
     <div id="pinKeyboardDiv" class="settings-box continuation">
-      <pin-keyboard id="pinKeyboard"
+      <pin-keyboard id="pinKeyboard" on-pin-change="onPinChange_"
           on-submit="onPinSubmit_" value="{{pinValue_}}"
-          enable-placeholder>
-        <!-- TODO(b/332936223): Add PIN error message here. -->
-        <div id="errorDiv" invisible$="[[!error_]]"></div>
+          disabled="[[isVerificationPending_]]">
+        <div id="errorDiv" invisible$="[[!showError_]]">
+          <iron-icon id="errorIcon" icon="cr:error-outline"></iron-icon>
+          <span id="errorMessage">
+            $i18n{appParentalControlsPinIncorrectErrorText}
+          </span>
+        </div>
       </pin-keyboard>
     </div>
   </div>

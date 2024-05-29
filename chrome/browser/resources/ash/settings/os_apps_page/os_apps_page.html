@@ -72,27 +72,31 @@
                 on-change="disableParentalControls_">
             </cr-toggle>
           </template>
-          <template is="dom-if" if="[[showParentalControlsSetupPinDialog_]]"
-              restamp>
-            <app-setup-pin-dialog id="setupPin"
-                on-close="onSetupPinDialogClose_"
-                on-success="onSetupPinSuccess_"
-                prefs="{{prefs}}">
-            </app-setup-pin-dialog>
-          </template>
-          <template is="dom-if" if="[[showParentalControlsVerifyPinDialog_]]"
-              restamp>
-            <app-verify-pin-dialog id="verifyPin"
-                on-close="onVerifyPinDialogClose_">
-            </app-verify-pin-dialog>
-          </template>
-          <template is="dom-if" if="[[showParentalControlsDisablePinDialog_]]"
-              restamp>
-            <app-verify-pin-dialog id="disableDialog"
-                on-close="onDisablePinDialogClose_">
-            </app-verify-pin-dialog>
-          </template>
         </div>
+        <template is="dom-if" if="[[showParentalControlsSetupPinDialog_]]"
+            restamp>
+          <app-setup-pin-dialog id="setupPin"
+              on-close="onSetupPinDialogClose_"
+              on-success="onSetupPinSuccess_"
+              prefs="{{prefs}}">
+          </app-setup-pin-dialog>
+        </template>
+        <template is="dom-if" if="[[showParentalControlsVerifyPinDialog_]]"
+            restamp>
+          <app-verify-pin-dialog id="verifyPin"
+              on-close="onVerifyPinDialogClose_"
+              on-pin-verified="onAccessPinVerified_"
+              prefs="{{prefs}}">
+          </app-verify-pin-dialog>
+        </template>
+        <template is="dom-if" if="[[showParentalControlsDisablePinDialog_]]"
+            restamp>
+          <app-verify-pin-dialog id="disableDialog"
+              on-close="onDisablePinDialogClose_"
+              on-pin-verified="onDisablePinVerified_"
+              prefs="{{prefs}}">
+          </app-verify-pin-dialog>
+        </template>
       </template>
       <template is="dom-if" if="[[showAndroidApps_]]">
         <template is="dom-if" if="[[isPlayStoreAvailable_]]" restamp>

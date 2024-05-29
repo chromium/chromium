@@ -85,8 +85,8 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
       },
 
       /**
-       * Whether the pin is currently being set as a pref.
-       * If true, the pin keyboard input should be disabled.
+       * Whether the PIN is currently being set as a pref.
+       * If true, the PIN keyboard input should be disabled.
        */
       isSetPinCallPending_: {
         notify: true,

@@ -6274,11 +6274,14 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_FORGOT_PIN_LINK_NAME" desc="The name of the link which sends the user to an article with instructions to follow in the case of a forgotten App Parental Controls PIN.">
     Forgot PIN?
   </message>
+  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_PIN_INCORRECT_ERROR_TEXT" desc="The text displayed under the PIN input section that notifies the user that the PIN they entered is incorrect.">
+    Incorrect PIN. Try again
+  </message>
   <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_PIN_MISMATCH_ERROR_TEXT" desc="The text displayed under the PIN input section that notifies the user that the re-entered PIN does not match the first PIN entered.">
     PINs do not match
   </message>
   <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_PIN_WRONG_LENGTH_ERROR_TEXT" desc="The text displayed under the PIN input section that notifies the user that the PIN should not be shorter than 6 digits">
-     PIN must be 6 digits
+    PIN must be 6 digits
   </message>
   <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_PIN_NUMERIC_ERROR_TEXT" desc="The text displayed under the PIN input section that notifies the user that the PIN should only consist of digits">
     PIN must use numbers only

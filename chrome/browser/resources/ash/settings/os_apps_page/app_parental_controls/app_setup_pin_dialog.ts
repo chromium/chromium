@@ -78,15 +78,11 @@ export class AppSetupPinDialogElement extends AppSetupPinDialogElementBase {
     this.$.setupPinKeyboard.resetState();
   }
 
-  private onCancelClick_(e: Event): void {
-    // Stop propagation to keep the subpage from opening.
-    e.stopPropagation();
+  private onCancelClick_(): void {
     this.close();
   }
 
-  private onPinSubmit_(e: Event): void {
-    // Stop propagation to keep the subpage from opening.
-    e.stopPropagation();
+  private onPinSubmit_(): void {
     this.$.setupPinKeyboard.doSubmit();
   }
 

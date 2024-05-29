@@ -29,6 +29,7 @@ import './app_parental_controls/app_setup_pin_dialog.js';
 import './app_parental_controls/app_verify_pin_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName} from 'chrome://resources/cr_components/app_management/constants.js';
@@ -138,7 +139,7 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
       },
 
       /**
-       * Whether the Disable Parental Controls dialog should be shown.
+       * Whether the Disable Parental Controls PIN dialog should be shown.
        */
       showParentalControlsDisablePinDialog_: {
         type: Boolean,
@@ -364,10 +365,12 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     Router.getInstance().navigateTo(routes.APP_NOTIFICATIONS);
   }
 
+  private isParentalControlsSetupCompleted_(): boolean {
+    return this.getPref('on_device_app_controls.setup_completed').value;
+  }
+
   private onClickParentalControls_(): void {
-    const isParentalControlsSetupCompleted =
-        this.getPref('on_device_app_controls.setup_completed').value;
-    if (isParentalControlsSetupCompleted) {
+    if (this.isParentalControlsSetupCompleted_()) {
       this.showParentalControlsVerifyPinDialog_ = true;
     }
   }
@@ -384,26 +387,34 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     e.stopPropagation();
   }
 
-  private onVerifyPinDialogClose_(): void {
-    this.showParentalControlsVerifyPinDialog_ = false;
-    // TODO(b/332936481): Only navigate to the subpage on successful PIN
-    // verification.
+  private onAccessPinVerified_(): void {
     this.navigateToParentalControls_();
   }
 
-  private onDisablePinDialogClose_(): void {
-    this.showParentalControlsDisablePinDialog_ = false;
-    // TODO(b/334102223): Only set setup pref to false on successful PIN
-    // verification.
+  private onSetupPinSuccess_(): void {
+    this.navigateToParentalControls_();
+  }
+
+  private onDisablePinVerified_(): void {
     this.setPrefValue('on_device_app_controls.setup_completed', false);
+    this.setPrefValue('on_device_app_controls.pin', '');
+  }
+
+  private onVerifyPinDialogClose_(): void {
+    this.showParentalControlsVerifyPinDialog_ = false;
   }
 
   private onSetupPinDialogClose_(): void {
     this.showParentalControlsSetupPinDialog_ = false;
   }
 
-  private onSetupPinSuccess_(): void {
-    this.navigateToParentalControls_();
+  private onDisablePinDialogClose_(): void {
+    this.showParentalControlsDisablePinDialog_ = false;
+    // Reset toggle in case the disable flow was cancelled prior to completion.
+    const toggle =
+        this.shadowRoot!.querySelector<HTMLElement>('#appParentalControls')!
+            .querySelector<CrToggleElement>('#toggle')!;
+    toggle.checked = this.isParentalControlsSetupCompleted_();
   }
 
   private onClickManageIsolatedWebApps_(): void {
@@ -414,7 +425,6 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     this.setPrefValue('arc.enabled', true);
     event.stopPropagation();
   }
-
 
   private isEnforced_(pref: chrome.settingsPrivate.PrefObject): boolean {
     return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;

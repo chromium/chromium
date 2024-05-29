@@ -433,6 +433,8 @@ void AddAppParentalControlsStrings(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_FORGOT_PIN_LINK_NAME},
       {"appParentalControlsNoAppsText",
        IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_NO_APPS_FOUND_TEXT},
+      {"appParentalControlsPinIncorrectErrorText",
+       IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_PIN_INCORRECT_ERROR_TEXT},
       {"appParentalControlsPinMismatchErrorText",
        IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_PIN_MISMATCH_ERROR_TEXT},
       {"appParentalControlsSearchPrompt",

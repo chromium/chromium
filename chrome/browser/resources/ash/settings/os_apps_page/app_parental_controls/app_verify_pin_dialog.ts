@@ -14,6 +14,7 @@ import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import '../../settings_shared.css.js';
 import './app_setup_pin_keyboard.js';
 
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PinKeyboardElement} from 'chrome://resources/ash/common/quick_unlock/pin_keyboard.js';
@@ -21,7 +22,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './app_verify_pin_dialog.html.js';
 
-const AppVerifyPinDialogElementBase = I18nMixin(PolymerElement);
+const AppVerifyPinDialogElementBase = PrefsMixin(I18nMixin(PolymerElement));
 
 interface AppVerifyPinDialogElement {
   $: {
@@ -42,15 +43,34 @@ class AppVerifyPinDialogElement extends AppVerifyPinDialogElementBase {
   static get properties() {
     return {
       /**
+       * Whether verification of the entered PIN is in progress.
+       * If true, the PIN keyboard input should be disabled.
+       */
+      isVerificationPending_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * The current PIN keyboard value.
        */
       pinValue_: {
         type: String,
       },
+
+      /**
+       * Whether the incorrect PIN error message should be displayed.
+       */
+      showError_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
+  private isVerificationPending_: boolean;
   private pinValue_: string;
+  private showError_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -68,7 +88,9 @@ class AppVerifyPinDialogElement extends AppVerifyPinDialogElementBase {
   }
 
   resetState(): void {
+    this.isVerificationPending_ = false;
     this.pinValue_ = '';
+    this.showError_ = false;
   }
 
   private onCancelClick_(e: Event): void {
@@ -77,9 +99,39 @@ class AppVerifyPinDialogElement extends AppVerifyPinDialogElementBase {
     this.close();
   }
 
+  /**
+   * Save the most recently typed PIN when the user types or deletes a digit,
+   * and hide a pre-existing error message if present.
+   */
+  private onPinChange_(event: CustomEvent<{pin: string}>): void {
+    if (event && event.detail && event.detail.pin) {
+      this.pinValue_ = event.detail.pin;
+    }
+
+    this.showError_ = false;
+  }
+
+  /**
+   * Checks whether the PIN entered matches the saved PIN when the user presses
+   * enter.
+   */
   private onPinSubmit_(): void {
-    // TODO(b/332936481): Implement pin submission logic.
-    return;
+    this.isVerificationPending_ = true;
+
+    if (this.pinValue_ &&
+        this.pinValue_ === this.getPref('on_device_app_controls.pin').value) {
+      // Trigger the method set in `on-pin-verified` by the containing dialog.
+      this.dispatchEvent(new CustomEvent('pin-verified'));
+      this.close();
+    } else {
+      // Focus the PIN keyboard so the user can re-attempt PIN entry.
+      // Highlight the entire pin unless it is empty.
+      this.showError_ = true;
+      const length = this.pinValue_ ? this.pinValue_.length : 0;
+      this.$.pinKeyboard.focusInput(0, length + 1);
+    }
+
+    this.isVerificationPending_ = false;
   }
 }
 
