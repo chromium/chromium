@@ -2,68 +2,75 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/mwb_shared_icons.html.js';
-import 'chrome://resources/cr_elements/mwb_shared_vars.css.js';
-
-import {MouseHoverableMixin} from 'chrome://resources/cr_elements/mouse_hoverable_mixin.js';
+import {MouseHoverableMixinLit} from 'chrome://resources/cr_elements/mouse_hoverable_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {TabGroupData} from './tab_data.js';
 import {ariaLabel} from './tab_data.js';
 import {colorName} from './tab_group_color_helper.js';
-import {getTemplate} from './tab_search_group_item.html.js';
+import {getCss} from './tab_search_group_item.css.js';
+import {getHtml} from './tab_search_group_item.html.js';
 import {highlightText} from './tab_search_utils.js';
 
-const TabSearchGroupItemBase = MouseHoverableMixin(PolymerElement);
+const TabSearchGroupItemBase = MouseHoverableMixinLit(CrLitElement);
 
-export interface TabSearchGroupItem {
+export interface TabSearchGroupItemElement {
   $: {
     primaryText: HTMLElement,
   };
 }
 
-export class TabSearchGroupItem extends TabSearchGroupItemBase {
+export class TabSearchGroupItemElement extends TabSearchGroupItemBase {
   static get is() {
     return 'tab-search-group-item';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      id: String,
-      index: Number,
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      data: {
-        type: Object,
-        observer: 'dataChanged_',
-      },
+  static override get properties() {
+    return {
+      index: {type: Number},
+      data: {type: Object},
     };
   }
 
-  index: string;
+  index: number;
   data: TabGroupData;
 
-  private ariaLabelForText_(tabGroupData: TabGroupData): string {
-    return ariaLabel(tabGroupData);
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('data')) {
+      this.style.setProperty(
+          '--group-dot-color',
+          `var(--tab-group-color-${colorName(this.data.tabGroup.color)})`);
+    }
   }
 
-  private dataChanged_(data: TabGroupData) {
-    highlightText(
-        this.$.primaryText, data.tabGroup!.title,
-        data.highlightRanges['tabGroup.title']);
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
 
-    this.style.setProperty(
-        '--group-dot-color',
-        `var(--tab-group-color-${colorName(data.tabGroup!.color)})`);
+    if (changedProperties.has('data')) {
+      highlightText(
+          this.$.primaryText, this.data.tabGroup.title,
+          this.data.highlightRanges['tabGroup.title']);
+    }
   }
 
-  private tabCountText_(tabCount: number): string {
+  protected ariaLabelForText_(): string {
+    return ariaLabel(this.data);
+  }
+
+  protected tabCountText_(): string {
+    const tabCount = this.data.tabGroup.tabCount;
     return loadTimeData.getStringF(
         tabCount === 1 ? 'oneTab' : 'tabCount', tabCount);
   }
@@ -71,8 +78,8 @@ export class TabSearchGroupItem extends TabSearchGroupItemBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'tab-search-group-item': TabSearchGroupItem;
+    'tab-search-group-item': TabSearchGroupItemElement;
   }
 }
 
-customElements.define(TabSearchGroupItem.is, TabSearchGroupItem);
+customElements.define(TabSearchGroupItemElement.is, TabSearchGroupItemElement);

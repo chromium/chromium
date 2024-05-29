@@ -53,9 +53,10 @@ build_webui("build") {
   ]
 
   css_files = [
-    "tab_search_item.css",
     "tab_group_shared_vars.css",
     "tab_organization_shared_style.css",
+    "tab_search_group_item.css",
+    "tab_search_item.css",
   ]
 
   mojo_files_deps = [

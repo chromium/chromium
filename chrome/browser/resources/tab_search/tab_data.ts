@@ -41,7 +41,9 @@ export class TabData extends ItemData {
 }
 
 export class TabGroupData extends ItemData {
-  constructor(tabGroup: TabGroup|RecentlyClosedTabGroup) {
+  override tabGroup: RecentlyClosedTabGroup;
+
+  constructor(tabGroup: RecentlyClosedTabGroup) {
     super();
     this.tabGroup = tabGroup;
     this.type = TabItemType.RECENTLY_CLOSED_TAB_GROUP;

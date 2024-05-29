@@ -34,10 +34,10 @@ const LISTENER_BINDING_REGEX =
 const LISTENER_BIDNING_TWO_WAY_REGEX =
     /(?<childProp>[a-z-]+)="\{\{(?<parentProp>[a-zA-Z0-9_]+)\}\}"/g;
 
-// Regular expression to extract any "${this.foo}" ocurrences in the HTML
-// template, referring to TS methods or member variables.
-const TS_REFERENCE_REGEX =
-    /"\$\{this\.(?<reference>[a-zA-Z0-9_]+)\}"/g;
+// Regular expression to extract a references to TS methods or member variables
+// in HTML templates. For example 'foo' will be extracted from ${this.foo} or
+// ${this.foo_(abc)}.
+const TS_REFERENCE_REGEX = /\$\{this\.(?<reference>[^(}]+)(\([^)]*\)){0,1}}/g;
 
 // Replaces part of a string with a the provided replacement string.
 function replaceRange(string, start, end, replacement) {

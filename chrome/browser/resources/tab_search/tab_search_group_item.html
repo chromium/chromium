@@ -1,84 +1,3 @@
-<style>
-  :host(:focus) {
-    outline: none;
-  }
-
-  #icon {
-    flex-shrink: 0;
-    height: var(--mwb-icon-size);
-    width: var(--mwb-icon-size);
-  }
-
-  #primaryText,
-  #secondaryText {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  #primaryText {
-    color: var(--cr-primary-text-color);
-    font-size: var(--mwb-primary-text-font-size);
-    font-weight: var(--mwb-primary-text-font-weight);
-    margin-bottom: 3px;
-  }
-
-  #secondaryTextContainer {
-    align-items: center;
-    color: var(--cr-secondary-text-color);
-    display: flex;
-    font-size: var(--mwb-secondary-text-font-size);
-    font-weight: var(--mwb-secondary-text-font-weight);
-  }
-
-  #textAriaLabel {
-    clip: rect(0,0,0,0);
-    display: inline-block;
-    position: fixed;
-  }
-
-  #groupSvg {
-    flex-shrink: 0;
-    height: 8px;
-    margin-inline-end: 6px;
-    width: 8px;
-  }
-
-  #groupDot {
-    fill: var(--group-dot-color);
-  }
-
-  .text-container {
-    flex-grow: 1;
-    overflow: hidden;
-    user-select: none;
-  }
-
-  .search-highlight-hit {
-    --search-highlight-hit-background-color: none;
-    --search-highlight-hit-color: none;
-    font-weight: bold;
-  }
-
-  .separator {
-    margin-inline-end: 4px;
-    margin-inline-start: 4px;
-  }
-
-  #iconContainer {
-    align-items: center;
-    background: var(--color-list-item-url-favicon-background);
-    border-radius: 8px;
-    display: flex;
-    flex-shrink: 0;
-    height: 40px;
-    justify-content: center;
-    overflow: hidden;
-    margin-inline-end: 16px;
-    width: 40px;
-  }
-</style>
-
 <div id="iconContainer">
   <!-- TODO(romanarora): Replace with a 16x16 SVG. -->
   <svg id="icon" width="32" height="32" viewBox="0 0 32 32" fill="none"
@@ -94,17 +13,15 @@
     </g>
   </svg>
 </div>
-<div id="textAriaLabel" title="[[ariaLabelForText_(data)]]"></div>
+<div id="textAriaLabel" title="${this.ariaLabelForText_()}"></div>
 <div class="text-container" aria-hidden="true">
-  <div id="primaryText" title="[[data.tabGroup.title]]"></div>
+  <div id="primaryText" title="${this.data.tabGroup.title}"></div>
   <div id="secondaryTextContainer">
     <svg id="groupSvg" viewBox="-5 -5 10 10" xmlns="http://www.w3.org/2000/svg">
       <circle id= "groupDot" cx="0" cy="0" r="4">
     </svg>
-    <div id="secondaryText">[[tabCountText_(data.tabGroup.tabCount)]]</div>
+    <div id="secondaryText">${this.tabCountText_()}</div>
     <div class="separator">•</div>
-    <div id="timestamp">
-      [[data.tabGroup.lastActiveElapsedText]]
-    </div>
+    <div id="timestamp">${this.data.tabGroup.lastActiveElapsedText}</div>
   </div>
 </div>
