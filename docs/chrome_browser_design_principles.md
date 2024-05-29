@@ -8,22 +8,27 @@ These design principles make it easier to write, debug, and maintain code in //c
   existing features to be refactored, except as need arises.
 
 ## Structure, modularity:
-* Features should be modular with no dependency cycles.
-    * This is a provisional design principle. We are currently investigating
-      feasibility. TODO: canonical example
+* Features should be modular.
     * For most features, all business logic should live in some combination of
       //chrome/browser/<feature>, //chrome/browser/ui/<feature> or
       //component/<feature>.
     * WebUI resources are the only exception. They will continue to live in
       //chrome/browser/resources/<feature> alongside standalone BUILD.gn files.
     * This directory should have a standalone BUILD.gn and OWNERs file.
+    * All files in the directory should belong to targets in the BUILD.gn.
+        * Do NOT add to `//chrome/browser/BUILD.gn:browser` or
+          `//chrome/browser/ui/BUILD.gn:ui`.
+    * Circular dependencies are allowed (for legacy reasons) but discouraged.
+        * Do not add a circular dependency onto
+          `//chrome/browser/BUILD.gn:browser` or
+          `//chrome/browser/ui/BUILD.gn:ui`.
     * This directory may have its own namespace.
-    * This directory should have a public/ subdirectory to enforce further
-      encapsulation.
+    * The BUILD.gn should use public/sources separation.
         * The main reason for this is to guard against future, unexpected usage
           of parts of the code that were intended to be private. This makes it
           difficult to change implementation details in the future.
-        * The BUILD.gn should use public/sources separation.
+        * This directory may have a public/ subdirectory to enforce further
+          encapsulation.
     * Corollary: There are several global functions that facilitate dependency
       inversion. It will not be possible to call them from modularized features
       (no dependency cycles), and their usage in non-modularized features is
@@ -31,6 +36,19 @@ These design principles make it easier to write, debug, and maintain code in //c
         * `chrome::FindBrowserWithTab` (and everything in browser_finder.h)
         * `GetBrowserViewForNativeWindow`  (via browser_view.h)
         * `FindBrowserWindowWithWebContents` (via browser_window.h)
+    * Rationale: Modularity enforces the creation of API surfaces and explicit
+      dependencies. This has several positive externalities:
+        * Separation of interface from implementation prevents unnecessarly
+          tight coupling between features. This in turn reduces spooky action at
+          a distance, where seemingly innocuous changes break a distant,
+          supposedly unrelated feature.
+        * Explicit listing of circular dependencies exposes the likely fragile
+          areas of code.
+        * Alongside the later guidance of global functions must be pure,
+          modularity adds the requirement that test-code perform dependency
+          injection. This eliminates a common bug where test behavior diverges
+          from production behavior, and logic is added to production code to
+          work around test-only behaviors.
 
 * Features should have a core controller with precise lifetime semantics. The
   core controller for most desktop features should be owned and instantiated by
