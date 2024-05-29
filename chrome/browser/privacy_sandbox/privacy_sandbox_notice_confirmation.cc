@@ -7,7 +7,9 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
+#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/variations/pref_names.h"
 #include "components/variations/service/variations_service.h"
 
 namespace privacy_sandbox {
@@ -68,26 +70,35 @@ bool IsConfirmationRequired(ConfirmationType confirmation_type,
   return is_confirmation_required;
 }
 
+std::string GetCountry(variations::VariationsService* variations_service) {
+  return variations_service->GetStoredPermanentCountry();
+}
+
 }  // namespace
 
 bool IsConsentRequired() {
   CHECK(g_browser_process);
   return IsConfirmationRequired(ConfirmationType::Consent, []() {
     return g_browser_process->variations_service() &&
-           kConsentCountries.contains(g_browser_process->variations_service()
-                                          ->GetStoredPermanentCountry());
+           kConsentCountries.contains(
+               GetCountry(g_browser_process->variations_service()));
   });
 }
 
 bool IsNoticeRequired() {
   CHECK(g_browser_process);
   return IsConfirmationRequired(ConfirmationType::Notice, []() {
-    return g_browser_process->variations_service() &&
-           !g_browser_process->variations_service()
-                ->GetStoredPermanentCountry()
-                .empty() &&
-           !kConsentCountries.contains(g_browser_process->variations_service()
-                                           ->GetStoredPermanentCountry());
+    base::UmaHistogramBoolean(
+        "PrivacySandbox.NoticeRequirement.IsVariationServiceReady",
+        g_browser_process->variations_service() != nullptr);
+    if (!g_browser_process->variations_service()) {
+      return false;
+    }
+    std::string country = GetCountry(g_browser_process->variations_service());
+    base::UmaHistogramBoolean(
+        "PrivacySandbox.NoticeRequirement.IsVariationCountryEmpty",
+        country.empty());
+    return !country.empty() && !kConsentCountries.contains(country);
   });
 }
 

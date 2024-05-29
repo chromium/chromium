@@ -25,6 +25,8 @@ struct PrivacySandboxConfirmationTestData {
   bool expect_mismatch_histogram_false;
 };
 
+// TODO(b/342221188): Add histogram tests for PrivacySandbox.NoticeRequirement.*
+// histograms.
 class PrivacySandboxConfirmationTestBase
     : public InProcessBrowserTest,
       public testing::WithParamInterface<PrivacySandboxConfirmationTestData> {
