@@ -48,7 +48,7 @@ public class ScrollingStripStacker extends StripStacker {
             float width;
             if (view instanceof StripLayoutGroupTitle groupTitle) {
                 drawX = groupTitle.getPaddedX();
-                width = groupTitle.getBottomIndicatorWidth();
+                width = Math.max(groupTitle.getBottomIndicatorWidth(), groupTitle.getPaddedWidth());
             } else {
                 drawX = view.getDrawX();
                 width = view.getWidth();
