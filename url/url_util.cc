@@ -128,6 +128,9 @@ struct SchemeRegistry {
       kCrosApps,
       // Temporarily opted-out. See https://crrev.com/c/5569365.
       kDrivefs,
+      // Temporarily opted-out. See https://crrev.com/c/5568919.
+      kChromeosSteam,
+      kSteam,
   };
 
   // Schemes with a predefined default custom handler.
