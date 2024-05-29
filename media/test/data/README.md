@@ -556,6 +556,34 @@ bear-320x180-10bit-frame-1.h264: B
 bear-320x180-10bit-frame-2.h264: B
 bear-320x180-10bit-frame-3.h264: P
 
+#### gbr-h264.mp4
+
+H.264 encoded video with GBR colorspace matrix and 4:4:4 chroma sampling.
+```
+ffmpeg -f lavfi -i testsrc=s=320x240:r=1:d=1 -pix_fmt gbrp -color_range 2 -colorspace 0 -color_primaries 1 -color_trc 13 -c:v libx264rgb gbrp-h264.mp4
+```
+
+#### gbr-h265.mp4
+
+H.265 encoded video with GBR colorspace matrix and 4:4:4 chroma sampling.
+```
+ffmpeg -f lavfi -i testsrc=s=320x240:r=1:d=1 -pix_fmt gbrp -color_range 2 -colorspace 0 -color_primaries 1 -color_trc 13 -c:v libx265 gbrp-h265.mp4
+```
+
+#### gbr-vp9.mp4
+
+VP9 encoded video with GBR colorspace matrix and 4:4:4 chroma sampling.
+```
+ffmpeg -f lavfi -i testsrc=s=320x240:r=1:d=1 -pix_fmt gbrp -color_range 2 -colorspace 0 -color_primaries 1 -color_trc 13 -c:v vp9 gbrp-vp9.mp4
+```
+
+#### gbr-av1.mp4
+
+AV1 encoded video with GBR colorspace matrix and 4:4:4 chroma sampling.
+```
+ffmpeg -f lavfi -i testsrc=s=320x240:r=1:d=1 -pix_fmt gbrp -color_range 2 -colorspace 0 -color_primaries 1 -color_trc 13 -c:v av1 gbrp-av1.mp4
+```
+
 ### AAC test data from MPEG-DASH demoplayer (44100 Hz, stereo)
 Duration of each packet is (1024/44100 Hz), approximately 23.22 ms.
 

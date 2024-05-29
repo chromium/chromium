@@ -920,6 +920,7 @@ VideoPixelFormat AVPixelFormatToVideoPixelFormat(AVPixelFormat pixel_format) {
   switch (pixel_format) {
     case AV_PIX_FMT_YUV444P:
     case AV_PIX_FMT_YUVJ444P:
+    case AV_PIX_FMT_GBRP:
       return PIXEL_FORMAT_I444;
 
     case AV_PIX_FMT_YUV420P:
@@ -948,10 +949,13 @@ VideoPixelFormat AVPixelFormatToVideoPixelFormat(AVPixelFormat pixel_format) {
       return PIXEL_FORMAT_YUV422P12;
 
     case AV_PIX_FMT_YUV444P9LE:
+    case AV_PIX_FMT_GBRP9LE:
       return PIXEL_FORMAT_YUV444P9;
     case AV_PIX_FMT_YUV444P10LE:
+    case AV_PIX_FMT_GBRP10LE:
       return PIXEL_FORMAT_YUV444P10;
     case AV_PIX_FMT_YUV444P12LE:
+    case AV_PIX_FMT_GBRP12LE:
       return PIXEL_FORMAT_YUV444P12;
 
     default:
