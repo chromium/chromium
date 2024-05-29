@@ -43,7 +43,6 @@ export class SettingsBluetoothChangeDeviceNameDialogElement extends
     return {
       device: {
         type: Object,
-        observer: 'onDeviceChanged_',
       },
 
       /** Used to reference the maxInputLength constant in HTML. */
@@ -75,7 +74,8 @@ export class SettingsBluetoothChangeDeviceNameDialogElement extends
   private deviceName_: string;
   private isInputInvalid_: boolean;
 
-  private onDeviceChanged_(): void {
+  override ready(): void {
+    super.ready();
     this.deviceName_ = getDeviceNameUnsafe(this.device);
   }
 
