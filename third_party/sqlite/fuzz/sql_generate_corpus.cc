@@ -88,8 +88,9 @@ std::string RandBytesAsString(size_t length) {
 }
 
 uint64_t RandUint64() {
-  if (sizeof(size_t) == sizeof(uint64_t))
+  if (sizeof(size_t) == sizeof(uint64_t)) {
     return GetRandom()();
+  }
 
   CHECK(sizeof(size_t) == sizeof(uint32_t));
   uint64_t rand = GetRandom()();
@@ -128,8 +129,9 @@ int GetRandomEnum(T is_valid_fn, int min, int max) {
 
 std::set<uint32_t> GetRandomNums(size_t size, uint32_t max_num) {
   std::set<unsigned int> ret;
-  while (ret.size() < size)
+  while (ret.size() < size) {
     ret.insert(RandInt(0, max_num));
+  }
   return ret;
 }
 
@@ -175,8 +177,9 @@ inline void CreateColumnExpr(Expr* e, uint32_t col, i::Table* table) {
   ExprSchemaTableColumn* stc =
       CreateDefaultCompExpr(e->mutable_comp_expr())->mutable_expr_stc();
   CreateColumn(stc->mutable_col(), col);
-  if (table)
+  if (table) {
     CreateTableFromUint32(stc->mutable_table(), table->table_num);
+  }
 }
 
 std::set<uint32_t> GenerateColumnList(ColumnList* ret, i::Table* table) {
@@ -214,22 +217,25 @@ void GenerateLiteralValue(LiteralValue* ret,
 
   if (type == CastTypeName::INTEGER ||
       (type == CastTypeName::NUMERIC && RandInt(1, 2) == 1)) {
-    if (RandInt(1, 3) == 1)
+    if (RandInt(1, 3) == 1) {
       ret->set_num_lit((int64_t)RandInt(1, 3));
-    else
+    } else {
       ret->set_num_lit((int64_t)RandUint64());
+    }
   } else if (type == CastTypeName::TEXT) {
-    if (RandInt(1, 3) == 1)
+    if (RandInt(1, 3) == 1) {
       ret->set_string_lit("a");
-    else
+    } else {
       // string literals too often have unreadable chars, so instead of rand
       // bytes just use a couple extra #'s
       ret->set_string_lit("#####");
+    }
   } else if (type == CastTypeName::BLOB) {
-    if (RandInt(1, 3) == 1)
+    if (RandInt(1, 3) == 1) {
       ret->set_blob_lit("a");
-    else
+    } else {
       ret->set_blob_lit(RandBytesAsString(5));
+    }
   } else if (type == CastTypeName::REAL) {
     GenerateNumericLit(ret->mutable_numeric_lit());
   } else {
@@ -241,8 +247,9 @@ void GenerateValuesStatement(ValuesStatement* v,
                              i::Table* table,
                              std::set<uint32_t> cols) {
   int rand_num_values = RandInt(1, 10);
-  if (rand_num_values > 1)
+  if (rand_num_values > 1) {
     v->mutable_extra_expr_lists()->Reserve(rand_num_values - 1);
+  }
   for (int i = 0; i < rand_num_values; i++) {
     ExprList* el;
     if (i == 0) {
@@ -288,8 +295,9 @@ void GenerateWhereStatement(WhereStatement* where,
   ExprSchemaTableColumn* stc =
       we->mutable_lhs()->mutable_comp_expr()->mutable_expr_stc();
   CreateColumn(stc->mutable_col(), col);
-  if (join)
+  if (join) {
     CreateTableFromUint32(stc->mutable_table(), table->table_num);
+  }
   if (table->col_types[col] == CastTypeName::BLOB) {
     we->set_op(BINOP_NOTEQ);
     we->mutable_rhs()->mutable_lit_val()->set_special_val(
@@ -307,10 +315,11 @@ void GenerateInsertion(Insert* i, i::Schema* schema, i::Table* table) {
   // TODO(mpdenton) generate With statement
   // i->set_insert_type(RANDOM_ENUM(Insert, InsertType));
 
-  if (RandInt(1, 2) == 1)
+  if (RandInt(1, 2) == 1) {
     i->set_insert_type(Insert::INSERT);
-  else
+  } else {
     i->set_insert_type(Insert::REPLACE);
+  }
 
   SchemaTableAsAlias* staa = i->mutable_staa();
   CreateSchemaTable(staa->mutable_schema_table(), table);
@@ -331,17 +340,19 @@ void GenerateUpdate(Update* u, i::Schema* schema, i::Table* table) {
   GenerateLiteralValue(cee->mutable_expr()->mutable_lit_val(),
                        table->col_types[col]);
 
-  if (RandInt(1, 10) >= 2)
+  if (RandInt(1, 10) >= 2) {
     GenerateWhereStatement(u->mutable_ucp2()->mutable_where_stmt(), schema,
                            table);
+  }
 }
 
 void GenerateDelete(Delete* d, i::Schema* schema, i::Table* table) {
   SchemaTableAsAlias* staa = d->mutable_qtn()->mutable_staa();
   CreateSchemaTable(staa->mutable_schema_table(), table);
 
-  if (RandInt(1, 20) >= 2)
+  if (RandInt(1, 20) >= 2) {
     GenerateWhereStatement(d->mutable_where(), schema, table);
+  }
 }
 
 void GenerateCreateTable(CreateTable* ct, i::Schema* schema, i::Table* table) {
@@ -352,16 +363,18 @@ void GenerateCreateTable(CreateTable* ct, i::Schema* schema, i::Table* table) {
 
   CreateSchemaTable(ct->mutable_schema_table(), table);
 
-  if (table->num_columns > 1)
+  if (table->num_columns > 1) {
     ct->mutable_op1()->mutable_extra_col_defs()->Reserve(table->num_columns -
                                                          1);
+  }
 
   for (int i = 0; i < table->num_columns; i++) {
     ColumnDef* col_def;
-    if (i == 0)
+    if (i == 0) {
       col_def = ct->mutable_op1()->mutable_col_def();
-    else
+    } else {
       col_def = ct->mutable_op1()->mutable_extra_col_defs()->Add();
+    }
     CreateColumn(col_def->mutable_col(), i);
     col_def->mutable_type_name()->mutable_ctn()->set_type_enum(
         table->col_types[i]);
@@ -410,10 +423,11 @@ Expr* GenerateJoinConstaints(i::Table* table,
     // instead.
     if (IsNumeric(all_tables[table_index_a]->col_types[col_a]) &&
         IsNumeric(all_tables[table_index_b]->col_types[col_b]) &&
-        RandInt(1, 2) == 1)
+        RandInt(1, 2) == 1) {
       comparison_ops.push_back(BINOP_LEQ);
-    else
+    } else {
       comparison_ops.push_back(BINOP_EQ);
+    }
   } while (RandInt(1, 3) >= 2);
 
   // Actually generate the expressions.
@@ -430,10 +444,11 @@ Expr* GenerateJoinConstaints(i::Table* table,
     lhs_bin_expr->mutable_rhs()->mutable_comp_expr()->set_allocated_expr_stc(
         equal_cols[i].second);
 
-    if (RandInt(1, 2) == 1)
+    if (RandInt(1, 2) == 1) {
       bin_expr->set_op(BINOP_AND);
-    else
+    } else {
       bin_expr->set_op(BINOP_OR);
+    }
 
     curr_expr = bin_expr->mutable_rhs();
   }
@@ -505,8 +520,9 @@ void GenerateGroupByStatement(GroupByStatement* gbs,
                                    ->mutable_expr_stc();
   // fine to just pick a single random column.
   CreateColumn(stc->mutable_col(), RandInt(0, table->num_columns - 1));
-  if (join)
+  if (join) {
     CreateTableFromUint32(stc->mutable_table(), table->table_num);
+  }
 }
 
 std::set<uint32_t> GenerateSelectStatementCore(
@@ -525,10 +541,11 @@ std::set<uint32_t> GenerateSelectStatementCore(
     // This is a join. Add columns from all the tables and include the table.
     for (size_t i = 0; i <= join_tables.size(); i++) {
       i::Table* table2;
-      if (i == join_tables.size())
+      if (i == join_tables.size()) {
         table2 = table;
-      else
+      } else {
         table2 = join_tables[i];
+      }
 
       cols = GetRandomNums(RandInt(1, table2->num_columns - 1),
                            table2->num_columns - 1);
@@ -682,10 +699,11 @@ Expr* GenerateCreateIndex(CreateIndex* ci,
       // for CREATE INDEX, but MUST be set for JOINs to avoid ambiguous columns.
       // Does it still count as the same expression if the table is included in
       // the JOIN but not the CREATE INDEX?
-      if (RandInt(1, 2) == 1)
+      if (RandInt(1, 2) == 1) {
         bin_expr->set_op(BINOP_PLUS);
-      else
+      } else {
         bin_expr->set_op(BINOP_MINUS);
+      }
     } else if (expr_type == 2) {
       // Or, apply abs to a single column.
       OneArgFn* oaf = CreateDefaultCompExpr(expr->mutable_comp_expr())
@@ -756,8 +774,9 @@ void GenQueries(SQLQueries& queries,
       GenQueryInstr success = gen(q, i);
       // Try again
       if (success != GenQueryInstr::SUCCESS) {
-        if (success == GenQueryInstr::TRY_AGAIN)
+        if (success == GenQueryInstr::TRY_AGAIN) {
           j--;
+        }
         delete q;
         continue;
       }
@@ -821,14 +840,16 @@ SQLQueries GenCorpusEntry() {
 
   GenQueries(queries, kMinNumIndexes, kMaxNumIndexes, false,
              main_schema.num_tables, [&](SQLQuery* q, int i) {
-               if (free_index_nums.size() == 0)
+               if (free_index_nums.size() == 0) {
                  return GenQueryInstr::MOVE_ON;
+               }
 
                Expr* index_expr =
                    GenerateCreateIndex(q->mutable_create_index(), &main_schema,
                                        &main_schema.tables[i], free_index_nums);
-               if (index_expr)
+               if (index_expr) {
                  main_schema.tables[i].index_exprs.emplace_back(index_expr);
+               }
                return GenQueryInstr::SUCCESS;
              });
 
@@ -901,10 +922,12 @@ int main(int argc, char** argv) {
   base::CommandLine cl(argc, argv);
 
   int num_entries;
-  if (!cl.HasSwitch("num_entries"))
+  if (!cl.HasSwitch("num_entries")) {
     LOG(FATAL) << "num_entries not specified.";
-  if (!base::StringToInt(cl.GetSwitchValueASCII("num_entries"), &num_entries))
+  }
+  if (!base::StringToInt(cl.GetSwitchValueASCII("num_entries"), &num_entries)) {
     LOG(FATAL) << "num_entries not parseable as an int.";
+  }
 
   bool to_stdout = true;
   base::FilePath dir_path;
@@ -913,14 +936,17 @@ int main(int argc, char** argv) {
 
     dir_path = cl.GetSwitchValuePath("corpus_dir");
     base::File dir(dir_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-    if (!dir.IsValid())
+    if (!dir.IsValid()) {
       LOG(FATAL) << "corpus_dir " << dir_path << " could not be opened.";
+    }
 
     base::File::Info dir_info;
-    if (!dir.GetInfo(&dir_info))
+    if (!dir.GetInfo(&dir_info)) {
       LOG(FATAL) << "Could not get corpus_dir " << dir_path << " file info.";
-    if (!dir_info.is_directory)
+    }
+    if (!dir_info.is_directory) {
       LOG(FATAL) << "corpus_dir " << dir_path << " is not a directory.";
+    }
   } else {
     LOG(INFO) << "corpus_dir not specified, writing serialized output to "
                  "stdout instead.";
@@ -933,22 +959,26 @@ int main(int argc, char** argv) {
     for (int i = 0; i < queries.extra_queries_size(); i++) {
       queries_str.push_back(
           sql_fuzzer::SQLQueryToString(queries.extra_queries(i)));
-      if (to_stdout || ::getenv("LPM_DUMP_NATIVE_INPUT"))
+      if (to_stdout || ::getenv("LPM_DUMP_NATIVE_INPUT")) {
         std::cout << queries_str[i] << std::endl;
+      }
     }
 
-    if (getenv("PRINT_SQLITE_ERRORS"))
+    if (getenv("PRINT_SQLITE_ERRORS")) {
       sql_fuzzer::RunSqlQueries(queries_str, ::getenv("LPM_SQLITE_TRACE"));
+    }
 
     // If we just want to print to stdout, skip the directory stuff below.
-    if (to_stdout)
+    if (to_stdout) {
       continue;
+    }
 
     // It's okay to serialize without all required fields, as LPM uses
     // ParsePartial* as well.
     std::string proto_text;
-    if (!queries.SerializePartialToString(&proto_text))
+    if (!queries.SerializePartialToString(&proto_text)) {
       LOG(FATAL) << "Could not serialize queries to string.";
+    }
 
     bool found_file = false;
     while (!found_file) {
