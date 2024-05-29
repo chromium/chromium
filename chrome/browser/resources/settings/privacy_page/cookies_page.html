@@ -246,8 +246,9 @@
         id="ipProtectionToggle"
         pref="{{prefs.tracking_protection.ip_protection_enabled}}"
         label="$i18n{trackingProtectionIpProtectionToggleLabel}"
-        sub-label="
+        sub-label-with-link="
           $i18n{trackingProtectionIpProtectionToggleSubLabel}"
+        on-sub-label-link-clicked="onIpProtectionLearnMoreClicked_"
         on-settings-boolean-control-change="onIpProtectionChanged_"
         hidden="[[!isIpProtectionAvailable_]]"
         icon="settings:location-disabled">
