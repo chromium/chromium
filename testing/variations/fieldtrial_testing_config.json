@@ -17711,6 +17711,21 @@
             ]
         }
     ],
+    "SafeBrowsingGooglePlayProtectPrompt": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "SafeBrowsingGooglePlayProtectPrompt",
+                    "enable_features": [
+                        "SafeBrowsingGooglePlayProtectPrompt"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingHashPrefixRealTimeLookups": [
         {
             "platforms": [
