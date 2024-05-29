@@ -320,7 +320,9 @@ bool HostGpuMemoryBufferManager::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  uint64_t client_tracing_process_id = ClientIdToTracingId(client_id_);
+  uint64_t client_tracing_process_id =
+      base::trace_event::MemoryDumpManager::GetInstance()
+          ->GetTracingProcessId();
   for (const auto& buffer_pair : allocated_buffers_) {
     auto& buffer_info = buffer_pair.second;
     if (!buffer_info.OnMemoryDump(pmd, client_id_, client_tracing_process_id)) {
@@ -377,19 +379,6 @@ void HostGpuMemoryBufferManager::OnConnectionError() {
                             buffer.usage, buffer.surface_handle,
                             std::move(buffer.callback));
   }
-}
-
-uint64_t HostGpuMemoryBufferManager::ClientIdToTracingId(int client_id) const {
-  if (client_id == client_id_) {
-    return base::trace_event::MemoryDumpManager::GetInstance()
-        ->GetTracingProcessId();
-  }
-  // TODO(sad|ssid): Find a better way once https://crbug.com/661257 is
-  // resolved.  The hash value is incremented so that the tracing id is never
-  // equal to MemoryDumpManager::kInvalidTracingProcessId.
-  return static_cast<uint64_t>(base::PersistentHash(
-             base::as_bytes(base::make_span(&client_id, 1u)))) +
-         1;
 }
 
 void HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated(

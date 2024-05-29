@@ -149,7 +149,6 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   // allocation requests for pending memory buffers.
   void OnConnectionError();
 
-  uint64_t ClientIdToTracingId(int client_id) const;
   void OnGpuMemoryBufferAllocated(int gpu_service_version,
                                   gfx::GpuMemoryBufferId id,
                                   gfx::GpuMemoryBufferHandle handle);
