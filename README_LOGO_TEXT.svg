@@ -1,10 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" height="80">
+<svg xmlns="http://www.w3.org/2000/svg">
     <style>
-        body {
-	        padding: 0 20px 20px 20px;
-	        width: 722px;
-	        -webkit-font-smoothing: antialiased;
-	    }
         .text {
             color: #333;
             font-family: Helvetica, sans-serif;
