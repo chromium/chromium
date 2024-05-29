@@ -2238,7 +2238,7 @@ BASE_FEATURE(kOsSyncConsentRevamp,
 // screeen.
 BASE_FEATURE(kOsFeedbackDialog,
              "OsFeedbackDialog",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether the DNS dialog in should be deprecated in Security and Privacy
 // Settings page when the user toggles off the DNS button.
