@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+ruby::before {
+  content: '';
+  float: right;
+}
+</style>
+<ruby></ruby>
+<script>
+test(() => {
+  document.querySelector('ruby').getBoundingClientRect();
+}, 'crbug.com/343069826: Float in a pseudo element should not cause a crash');
+</script>

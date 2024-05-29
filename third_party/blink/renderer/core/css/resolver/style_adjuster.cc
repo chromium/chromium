@@ -646,12 +646,15 @@ static void AdjustStyleForDisplay(ComputedStyleBuilder& builder,
     if (RuntimeEnabledFeatures::RubyLineBreakableEnabled() &&
         builder.IsFloating()) {
       builder.SetFloating(EFloat::kNone);
-      element->GetDocument().AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              ConsoleMessage::Source::kRendering, ConsoleMessage::Level::kInfo,
-              "`float` property is not supported correctly inside an element "
-              "with `display: ruby` or `display: ruby-text`."),
-          true);
+      if (document) {
+        document->AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                ConsoleMessage::Source::kRendering,
+                ConsoleMessage::Level::kInfo,
+                "`float` property is not supported correctly inside an element "
+                "with `display: ruby` or `display: ruby-text`."),
+            true);
+      }
     }
     if (!builder.IsFloating()) {
       builder.SetIsInInlinifyingDisplay();
