@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "content/public/browser/web_contents.h"
 
 namespace {
 int kNextSessionID = 1;
@@ -26,10 +27,12 @@ TabOrganizationSession::TabOrganizationSession()
 
 TabOrganizationSession::TabOrganizationSession(
     std::unique_ptr<TabOrganizationRequest> request,
-    TabOrganizationEntryPoint entrypoint)
+    TabOrganizationEntryPoint entrypoint,
+    const content::WebContents* base_session_webcontents)
     : request_(std::move(request)),
       session_id_(kNextSessionID),
-      entrypoint_(entrypoint) {
+      entrypoint_(entrypoint),
+      base_session_webcontents_(base_session_webcontents) {
   kNextSessionID++;
 }
 
@@ -157,8 +160,8 @@ TabOrganizationSession::CreateSessionForBrowser(
     request->AddGroupData(group_id, title, std::move(tabs));
   }
 
-  return std::make_unique<TabOrganizationSession>(std::move(request),
-                                                  entrypoint);
+  return std::make_unique<TabOrganizationSession>(
+      std::move(request), entrypoint, base_session_webcontents);
 }
 
 const TabOrganization* TabOrganizationSession::GetNextTabOrganization() const {
@@ -247,20 +250,10 @@ void TabOrganizationSession::PopulateAndCreate(
 void TabOrganizationSession::PopulateOrganizations(
     TabOrganizationResponse* response) {
   feedback_id_ = response->feedback_id;
-  const std::optional<TabData::TabID> base_tab_id = request()->base_tab_id();
   // for each of the organizations, make sure that the TabData is valid for
   // grouping.
   for (TabOrganizationResponse::Organization& response_organization :
        response->organizations) {
-    // Don't include organizations that don't involve the base tab, if one
-    // exists.
-    const std::vector<TabData::TabID> tab_ids = response_organization.tab_ids;
-    if (base_tab_id.has_value() &&
-        std::find(tab_ids.begin(), tab_ids.end(), base_tab_id.value()) ==
-            tab_ids.end()) {
-      continue;
-    }
-
     std::vector<std::unique_ptr<TabData>> tab_datas_for_org;
 
     // Add grouped tabs
@@ -301,7 +294,7 @@ void TabOrganizationSession::PopulateOrganizations(
     const int first_new_tab_index = tab_datas_for_org.size();
 
     // Add ungrouped tabs
-    for (const TabData::TabID& tab_id : tab_ids) {
+    for (const TabData::TabID& tab_id : response_organization.tab_ids) {
       // TODO for now we can't use the TabID directly, we instead need to use
       // the webcontents ptr to refer to the tab.
       const auto matching_tab = std::find_if(

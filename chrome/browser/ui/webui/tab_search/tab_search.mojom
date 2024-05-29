@@ -172,6 +172,7 @@ struct TabOrganizationSession {
   TabOrganizationState state;
   array<TabOrganization> organizations;
   TabOrganizationError error;
+  int32 active_tab_id;
 };
 
 // Information about a tab update.

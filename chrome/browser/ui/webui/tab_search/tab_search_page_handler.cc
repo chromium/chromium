@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
@@ -516,11 +517,15 @@ void TabSearchPageHandler::RestartSession() {
   }
 
   restarting_ = true;
-
+  TabOrganizationSession* current_session =
+      organization_service_->GetSessionForBrowser(browser);
+  const auto* base_session_webcontents =
+      current_session ? current_session->base_session_webcontents() : nullptr;
   // Don't notify observers to avoid a repaint
   TabOrganizationSession* session =
       organization_service_->ResetSessionForBrowser(
-          browser, TabOrganizationEntryPoint::kTabSearch, nullptr);
+          browser, TabOrganizationEntryPoint::kTabSearch,
+          base_session_webcontents);
   if (!base::Contains(listened_sessions_, session)) {
     session->AddObserver(this);
     listened_sessions_.emplace_back(session);
@@ -1139,6 +1144,10 @@ TabSearchPageHandler::GetMojoForTabOrganizationSession(
 
   mojo_session->session_id = session->session_id();
   mojo_session->error = tab_search::mojom::TabOrganizationError::kNone;
+  mojo_session->active_tab_id = session->base_session_webcontents()
+                                    ? extensions::ExtensionTabUtil::GetTabId(
+                                          session->base_session_webcontents())
+                                    : -1;
   std::vector<tab_search::mojom::TabOrganizationPtr> organizations;
 
   TabOrganizationRequest::State state = session->request()->state();

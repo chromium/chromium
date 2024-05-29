@@ -100,6 +100,25 @@ export class TabOrganizationResultsElement extends PolymerElement {
             scrollable.scrollHeight);
   }
 
+  private getErrorTitle_(): string {
+    const id = this.session.activeTabId;
+    if (id === -1) {
+      return '';
+    }
+    let foundTab = false;
+    this.getOrganizations_().forEach(organization => {
+      organization.tabs.forEach((tab) => {
+        if (tab.tabId === id) {
+          foundTab = true;
+        }
+      });
+    });
+    if (foundTab) {
+      return '';
+    }
+    return loadTimeData.getString('successMissingActiveTabTitle');
+  }
+
   private getTitle_(): string {
     if (this.multiTabOrganization) {
       if (this.hasMultipleOrganizations_()) {

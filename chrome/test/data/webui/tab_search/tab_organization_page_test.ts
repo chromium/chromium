@@ -84,6 +84,7 @@ suite('TabOrganizationPageTest', () => {
       TabOrganizationSession {
     return Object.assign(
         {
+          activeTabId: -1,
           sessionId: 1,
           state: TabOrganizationState.kNotStarted,
           organizations: [{
@@ -128,6 +129,7 @@ suite('TabOrganizationPageTest', () => {
 
     return Object.assign(
         {
+          activeTabId: -1,
           sessionId: 1,
           state: TabOrganizationState.kSuccess,
           organizations: organizations,
@@ -546,5 +548,57 @@ suite('TabOrganizationPageTest', () => {
     await flushTasks();
 
     assertEquals(1, testApiProxy.getCallCount('startTabGroupTutorial'));
+  });
+
+  test('Active tab missing from organization shows error', async () => {
+    await tabOrganizationResultsSetup();
+    tabOrganizationResults.session = createSession({
+      activeTabId: 4,
+      organizations: [{
+        organizationId: 1,
+        name: stringToMojoString16('foo'),
+        firstNewTabIndex: 0,
+        tabs: [
+          createTab(
+              {title: 'Tab 1', url: {url: 'https://tab-1.com/'}, tabId: 1}),
+          createTab(
+              {title: 'Tab 2', url: {url: 'https://tab-2.com/'}, tabId: 2}),
+          createTab(
+              {title: 'Tab 3', url: {url: 'https://tab-3.com/'}, tabId: 3}),
+        ],
+      }],
+    });
+    await flushTasks();
+
+    const errorElement =
+        tabOrganizationResults.shadowRoot!.querySelector('#error');
+    assertTrue(!!errorElement);
+    assertTrue(isVisible(errorElement));
+  });
+
+  test('Active tab present in organization does not show error', async () => {
+    await tabOrganizationResultsSetup();
+    tabOrganizationResults.session = createSession({
+      activeTabId: 2,
+      organizations: [{
+        organizationId: 1,
+        name: stringToMojoString16('foo'),
+        firstNewTabIndex: 0,
+        tabs: [
+          createTab(
+              {title: 'Tab 1', url: {url: 'https://tab-1.com/'}, tabId: 1}),
+          createTab(
+              {title: 'Tab 2', url: {url: 'https://tab-2.com/'}, tabId: 2}),
+          createTab(
+              {title: 'Tab 3', url: {url: 'https://tab-3.com/'}, tabId: 3}),
+        ],
+      }],
+    });
+    await flushTasks();
+
+    const errorElement =
+        tabOrganizationResults.shadowRoot!.querySelector('#error');
+    assertTrue(!!errorElement);
+    assertFalse(isVisible(errorElement));
   });
 });
