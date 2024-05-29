@@ -8161,48 +8161,48 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_PINE_EDUCATION_NUDGE" translateable="false" desc="Text of the Pine education nudge.">
         You can go back to Overview at anytime to get back to suggestions
       </message>
-      <message name="IDS_ASH_BIRCH_CALENDAR_ONGOING_SUBTITLE" translateable="false" desc="Subtitle for the suggestion chip for an ongoing calendar event (e.g. a meeting that is happening right now)">
+      <message name="IDS_ASH_BIRCH_CALENDAR_ONGOING_SUBTITLE" desc="Subtitle for the suggestion chip for an ongoing calendar event (e.g. a meeting that is happening right now)">
         Now · Ends <ph name="END_TIME">$1<ex>11:20 AM</ex></ph>
       </message>
-      <message name="IDS_ASH_BIRCH_CALENDAR_MINUTES" translateable="false" desc="Brief description of the number of minutes until an upcoming calendar event">
+      <message name="IDS_ASH_BIRCH_CALENDAR_MINUTES" desc="Brief description of the number of minutes until an upcoming calendar event">
         {MINUTES, plural,
          =1 {In 1 min}
          other {In # mins}}
       </message>
-      <message name="IDS_ASH_BIRCH_CALENDAR_TOMORROW" translateable="false" desc="Subtitle text for a calendar event that occurs tomorrow">
+      <message name="IDS_ASH_BIRCH_CALENDAR_TOMORROW" desc="Subtitle text for a calendar event that occurs tomorrow">
         Tomorrow
       </message>
-      <message name="IDS_ASH_BIRCH_CALENDAR_ALL_DAY" translateable="false" desc="Subtitle text for a calendar event that occurs all day">
+      <message name="IDS_ASH_BIRCH_CALENDAR_ALL_DAY" desc="Subtitle text for a calendar event that occurs all day">
         All Day
       </message>
-      <message name="IDS_ASH_BIRCH_CALENDAR_ATTACHMENT_UPCOMING_SUBTITLE" translateable="false" desc="Subtitle for a suggestion chip for a file attached to a calendar event in the future">
+      <message name="IDS_ASH_BIRCH_CALENDAR_ATTACHMENT_UPCOMING_SUBTITLE" desc="Subtitle for a suggestion chip for a file attached to a calendar event in the future">
         From upcoming calendar event
       </message>
-      <message name="IDS_ASH_BIRCH_CALENDAR_ATTACHMENT_NOW_SUBTITLE" translateable="false" desc="Subtitle for a suggestion chip for a file attached to a calendar event happening now">
+      <message name="IDS_ASH_BIRCH_CALENDAR_ATTACHMENT_NOW_SUBTITLE" desc="Subtitle for a suggestion chip for a file attached to a calendar event happening now">
         From event happening now
       </message>
-      <message name="IDS_ASH_BIRCH_CALENDAR_JOIN_BUTTON" translateable="false" desc="Button label for joining a meeting associated with a calendar event">
+      <message name="IDS_ASH_BIRCH_CALENDAR_JOIN_BUTTON" desc="Button label for joining a meeting associated with a calendar event">
         Join
       </message>
-      <message name="IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE_YESTERDAY" translateable="false" desc="Subtitle for the suggestion chip with recent tabs from other devices shared yesterday">
+      <message name="IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE_YESTERDAY" desc="Subtitle for the suggestion chip with recent tabs from other devices shared yesterday">
         Yesterday
       </message>
-      <message name="IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE_PREFIX" translateable="false" desc="Start of the subtitle for the suggestion chip with recent tabs from other devices">
+      <message name="IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE_PREFIX" desc="Start of the subtitle for the suggestion chip with recent tabs from other devices">
         {HOURS, plural,
          =0 {&lt; 1 hour ago}
          =1 {1 hour ago}
          other {# hours ago}}
       </message>
-      <message name="IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE_SUFFIX" translateable="false" desc="End of the subtitle for the suggestion chip with recent tabs from other devices">
+      <message name="IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE_SUFFIX" desc="End of the subtitle for the suggestion chip with recent tabs from other devices">
         From <ph name="SESSION_NAME">$1<ex>Chromebook</ex></ph>
       </message>
-      <message name="IDS_ASH_BIRCH_MOST_VISITED_SUBTITLE" translateable="false" desc="The subtitle for a suggestion chip for a web site that is frequently visited">
+      <message name="IDS_ASH_BIRCH_MOST_VISITED_SUBTITLE" desc="The subtitle for a suggestion chip for a web site that is frequently visited">
         Frequently visited
       </message>
-      <message name="IDS_ASH_BIRCH_RELEASE_NOTES_TITLE" translateable="false" desc="Title for the suggestion chip that links to release notes">
+      <message name="IDS_ASH_BIRCH_RELEASE_NOTES_TITLE" desc="Title for the suggestion chip that links to release notes">
         See what's new
       </message>
-      <message name="IDS_ASH_BIRCH_RELEASE_NOTES_SUBTITLE" translateable="false" desc="Subtitle for the suggestion chip that links to release notes">
+      <message name="IDS_ASH_BIRCH_RELEASE_NOTES_SUBTITLE" desc="Subtitle for the suggestion chip that links to release notes">
         Explore the latest features
       </message>
      </messages>
