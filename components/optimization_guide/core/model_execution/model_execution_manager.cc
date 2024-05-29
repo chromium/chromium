@@ -399,9 +399,9 @@ void ModelExecutionManager::OnModelExecuteResponse(
             execute_response->response_metadata());
         message += "Response: [";
         int group_cnt = 0;
-        for (const auto& tab_organization : tab_response->tab_organizations()) {
+        for (const auto& tab_group : tab_response->tab_groups()) {
           std::string tab_titles = "";
-          for (const auto& tab : tab_organization.tabs()) {
+          for (const auto& tab : tab_group.tabs()) {
             tab_titles +=
                 base::StringPrintf("%s\" %s \"", tab_titles.empty() ? "" : ",",
                                    tab.title().c_str());
@@ -410,7 +410,7 @@ void ModelExecutionManager::OnModelExecuteResponse(
               "%s{"
               "\"label\": \"%s\", "
               "\"tabs\": [%s] }",
-              group_cnt > 0 ? "," : "", tab_organization.label().c_str(),
+              group_cnt > 0 ? "," : "", tab_group.label().c_str(),
               tab_titles.c_str());
           group_cnt += 1;
         }

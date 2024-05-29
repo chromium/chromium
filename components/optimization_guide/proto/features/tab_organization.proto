@@ -30,7 +30,7 @@ message TabOrganizationRequest {
   int64 active_tab_id = 2;
 
   // All pre-existing tab groups.
-  repeated TabOrganization pre_existing_tab_groups = 3;
+  repeated TabGroup pre_existing_tab_groups = 3;
 
   // Whether or not the tab organization response can include reorganizing
   // existing tab groups.
@@ -50,7 +50,7 @@ message Tab {
 }
 
 // Next ID: 4
-message TabOrganization {
+message TabGroup {
   // The label that describes this tab group.
   string label = 1;
 
@@ -70,7 +70,7 @@ message TabOrganizationResponse {
   //
   // Note that not all requested tabs are guaranteed to be present in at least
   // one group.
-  repeated TabOrganization tab_organizations = 1;
+  repeated TabGroup tab_groups = 1;
 }
 
 // Next ID: 3

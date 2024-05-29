@@ -108,19 +108,19 @@ void OnTabOrganizationModelExecutionResult(
   }
 
   std::vector<TabOrganizationResponse::Organization> organizations;
-  for (const auto& tab_organization : response->tab_organizations()) {
+  for (const auto& tab_group : response->tab_groups()) {
     std::vector<TabData::TabID> response_tab_ids;
-    for (const auto& tab : tab_organization.tabs()) {
+    for (const auto& tab : tab_group.tabs()) {
       response_tab_ids.emplace_back(tab.tab_id());
     }
     std::optional<tab_groups::TabGroupId> group_id;
     const std::optional<base::Token> group_id_token =
-        base::Token::FromString(tab_organization.group_id());
+        base::Token::FromString(tab_group.group_id());
     if (group_id_token.has_value()) {
       group_id = std::make_optional(
           tab_groups::TabGroupId::FromRawToken(group_id_token.value()));
     }
-    organizations.emplace_back(base::UTF8ToUTF16(tab_organization.label()),
+    organizations.emplace_back(base::UTF8ToUTF16(tab_group.label()),
                                std::move(response_tab_ids), group_id);
   }
 
