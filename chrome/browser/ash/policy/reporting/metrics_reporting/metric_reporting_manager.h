@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_reporting_settings.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/chromeos/reporting/local_state_reporting_settings.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_manager_delegate_base.h"
 #include "chrome/browser/chromeos/reporting/user_reporting_settings.h"
 #include "chrome/browser/chromeos/reporting/websites/website_usage_observer.h"
@@ -42,6 +43,7 @@ BASE_DECLARE_FEATURE(kEnableAppEventsObserver);
 BASE_DECLARE_FEATURE(kEnableFatalCrashEventsObserver);
 BASE_DECLARE_FEATURE(kEnableChromeFatalCrashEventsObserver);
 BASE_DECLARE_FEATURE(kEnableRuntimeCountersTelemetry);
+BASE_DECLARE_FEATURE(kEnableKioskVisionTelemetry);
 
 // Class to initialize and start info, event, and telemetry collection and
 // reporting.
@@ -287,12 +289,17 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   // Initializes a periodic collector that sends out heartbeat signals.
   void InitKioskHeartbeatTelemetryCollector();
 
+  // Initializes a periodic collector that sends the audience telemetry data
+  // from the Kiosk vision framework.
+  void InitKioskVisionTelemetryCollector();
+
   base::TimeDelta GetUploadDelay() const;
 
   std::vector<raw_ptr<CollectorBase, VectorExperimental>>
   GetTelemetryCollectorsFromSetting(std::string_view setting_name);
 
   CrosReportingSettings reporting_settings_;
+  LocalStateReportingSettings local_state_reporting_settings_;
   std::unique_ptr<UserReportingSettings> user_reporting_settings_;
 
   SEQUENCE_CHECKER(sequence_checker_);

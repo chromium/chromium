@@ -106,6 +106,8 @@ const CameraServiceConnector* KioskVision::GetCameraConnectorForTesting()
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kKioskVisionTelemetryEnabled,
                                 /*default_value=*/false);
+  registry->RegisterTimeDeltaPref(prefs::kKioskVisionTelemetryFrequency,
+                                  /*default_value=*/base::Minutes(2));
 }
 
 }  // namespace ash::kiosk_vision

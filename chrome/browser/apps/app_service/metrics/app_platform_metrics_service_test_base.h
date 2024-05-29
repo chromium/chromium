@@ -13,6 +13,8 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance.h"
@@ -141,6 +143,7 @@ class AppPlatformMetricsServiceTestBase : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
 
  private:
   std::unique_ptr<TestingProfile> testing_profile_;

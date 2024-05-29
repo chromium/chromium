@@ -19,6 +19,8 @@
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -195,6 +197,7 @@ class HttpsLatencyEventsTest : public ::testing::Test {
 
   ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
 
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;

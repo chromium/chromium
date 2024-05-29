@@ -11,6 +11,10 @@ namespace ash::prefs {
 inline constexpr char kKioskVisionTelemetryEnabled[] =
     "kiosk_vision_telemetry_enabled";
 
+// Determines the reporting frequency of Kiosk Vision's telemetry.
+inline constexpr char kKioskVisionTelemetryFrequency[] =
+    "kiosk_vision_telemetry_frequency";
+
 }  // namespace ash::prefs
 
 #endif  // CHROMEOS_ASH_COMPONENTS_KIOSK_VISION_PREF_NAMES_H_
