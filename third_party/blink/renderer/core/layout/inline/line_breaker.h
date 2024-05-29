@@ -275,7 +275,8 @@ class CORE_EXPORT LineBreaker {
   void HandleCloseTag(const InlineItem&, LineInfo*);
 
   bool HandleOverflowIfNeeded(LineInfo*);
-  void HandleOverflow(LineInfo*);
+  // NOINLINE prevents a compiler for Android 64bit from code size bloat.
+  NOINLINE void HandleOverflow(LineInfo*);
   void RetryAfterOverflow(LineInfo*, InlineItemResults*);
   void RewindOverflow(unsigned new_end, LineInfo*);
   void Rewind(unsigned new_end, LineInfo*);

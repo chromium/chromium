@@ -921,13 +921,13 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
           : LineBreakState::kContinue;
   trailing_whitespace_ = initial_whitespace_;
 
-  if (ruby_break_token_) {
-    HandleRuby(ruby_break_token_, line_info);
-    ruby_break_token_ = nullptr;
-    HandleOverflowIfNeeded(line_info);
-  }
-
   while (state_ != LineBreakState::kDone) {
+    if (ruby_break_token_) {
+      HandleRuby(ruby_break_token_, line_info);
+      HandleOverflowIfNeeded(line_info);
+      continue;
+    }
+
     // If we reach at the end of the block, this is the last line.
     DCHECK_LE(current_.item_index, items.size());
     if (IsAtEnd()) {
@@ -3216,6 +3216,9 @@ void LineBreaker::HandleBlockInInline(const InlineItem& item,
 bool LineBreaker::HandleRuby(const RubyBreakTokenData* ruby_token,
                              LineInfo* line_info,
                              LayoutUnit retry_size) {
+  // Clear ruby_break_token_ first because HandleRuby() might set it again due
+  // to rewinding.
+  ruby_break_token_ = nullptr;
   InlineItemTextIndex base_start = current_;
   wtf_size_t base_end_index;
   Vector<AnnotationBreakTokenData, 1> annotation_data;
@@ -3350,7 +3353,9 @@ bool LineBreaker::HandleRuby(const RubyBreakTokenData* ruby_token,
     // We can't continue to handle following InlineItems if we break inside a
     // ruby column. So we try to rewind if necessary, then finish this line.
     HandleOverflowIfNeeded(line_info);
-    state_ = LineBreakState::kDone;
+    if (!line_info->Results().empty()) {
+      state_ = LineBreakState::kDone;
+    }
   }
   return true;
 }
@@ -4290,6 +4295,10 @@ void LineBreaker::Rewind(unsigned new_end, LineInfo* line_info) {
   } else {
     // Rewinding all items.
     current_ = line_info->Start();
+    if (!item_results.empty() && item_results.front().IsRubyColumn()) {
+      ruby_break_token_ =
+          item_results.front().ruby_column->start_ruby_break_token;
+    }
     trailing_whitespace_ = WhitespaceState::kLeading;
     maybe_have_end_overhang_ = false;
   }
