@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './header_menu.js';
 
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -17,7 +18,7 @@ import type {HeaderMenuElement} from './header_menu.js';
 
 export interface HeaderElement {
   $: {
-    menuButton: HTMLElement,
+    menuButton: CrIconButtonElement,
     menu: HeaderMenuElement,
   };
 }
@@ -33,6 +34,11 @@ export class HeaderElement extends PolymerElement {
 
   static get properties() {
     return {
+      menuButtonDisabled: {
+        type: Boolean,
+        value: false,
+      },
+
       subtitle: {
         type: String,
         reflectToAttribute: true,
@@ -51,6 +57,7 @@ export class HeaderElement extends PolymerElement {
     };
   }
 
+  menuButtonDisabled: boolean;
   subtitle: string|null = null;
 
   private showingMenu_: boolean;

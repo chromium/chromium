@@ -44,6 +44,7 @@ function aggregateProductDataByClusterId(
 export interface ProductSpecificationsElement {
   $: {
     header: HeaderElement,
+    loading: HTMLElement,
     productSelector: ProductSelectorElement,
     summaryTable: TableElement,
   };
@@ -60,6 +61,11 @@ export class ProductSpecificationsElement extends PolymerElement {
 
   static get properties() {
     return {
+      loading_: {
+        type: Boolean,
+        value: false,
+      },
+
       setName_: String,
 
       showEmptyState_: {
@@ -78,6 +84,8 @@ export class ProductSpecificationsElement extends PolymerElement {
     };
   }
 
+  private minLoadingAnimationMs_: number = 500;
+  private loading_: boolean;
   private setName_: string;
   private showEmptyState_: boolean;
   private specsTable_: {columns: TableColumn[], rows: TableRow[]};
@@ -141,7 +149,15 @@ export class ProductSpecificationsElement extends PolymerElement {
     this.populateTable_(urls);
   }
 
+  resetMinLoadingAnimationMsForTesting(newValue = 0) {
+    this.minLoadingAnimationMs_ = newValue;
+  }
+
   private async populateTable_(urls: string[]) {
+    const start = Date.now();
+    this.showEmptyState_ = false;
+    this.loading_ = true;
+
     let aggregatedDatas: Record<string, AggregatedProductData> = {};
     const rows: TableRow[] = [];
     if (urls.length) {
@@ -161,6 +177,14 @@ export class ProductSpecificationsElement extends PolymerElement {
           aggregateProductDataByClusterId(infos, productSpecs.products);
     }
 
+    // Enforce a minimum amount of time in the loading state to avoid it
+    // appearing like an unintentional flash.
+    const delta = Date.now() - start;
+    if (delta < this.minLoadingAnimationMs_) {
+      await new Promise(
+          res => setTimeout(res, this.minLoadingAnimationMs_ - delta));
+    }
+
     this.specsTable_ = {
       columns:
           Object.values(aggregatedDatas).map((data: AggregatedProductData) => {
@@ -175,6 +199,7 @@ export class ProductSpecificationsElement extends PolymerElement {
       rows,
     };
     this.showEmptyState_ = this.specsTable_.columns.length === 0;
+    this.loading_ = false;
   }
 
   override disconnectedCallback() {
@@ -191,6 +216,10 @@ export class ProductSpecificationsElement extends PolymerElement {
       }
     }
     return infos;
+  }
+
+  private showTable_(): boolean {
+    return !this.loading_ && !this.showEmptyState_;
   }
 
   private addToNewGroup_() {

@@ -10,9 +10,10 @@ import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct, P
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {PageCallbackRouter} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
-import {assertArrayEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {$$, assertNotStyle, assertStyle} from './test_support.js';
 
@@ -281,6 +282,7 @@ suite('AppTest', () => {
       infos: [info1, info2, createInfo({clusterId: BigInt(0)})],
     });
     createAppElementWithPromiseValues(promiseValues);
+    appElement.resetMinLoadingAnimationMsForTesting();
     await flushTasks();
 
     const columns = appElement.$.summaryTable.columns;
@@ -309,6 +311,34 @@ suite('AppTest', () => {
     assertEquals(1, rows.length);
     assertArrayEquals(
         [{title: rowTitle, values: [dimensionValues.join(',')]}], rows);
+  });
+
+  test('shows full table loading state', async () => {
+    const minLoadingAnimationMs = 10;
+    const promiseValues = createAppPromiseValues({
+      urlsParam: ['https://example.com/'],
+    });
+    createAppElementWithPromiseValues(promiseValues);
+    appElement.resetMinLoadingAnimationMsForTesting(minLoadingAnimationMs);
+    await flushTasks();
+
+    assertTrue(isVisible(appElement.$.loading));
+    assertFalse(isVisible(appElement.$.summaryTable));
+
+    // Wait for the loading animation to finish.
+    await new Promise(res => setTimeout(res, minLoadingAnimationMs));
+
+    assertFalse(isVisible(appElement.$.loading));
+  });
+
+  test('disables menu button while loading', async () => {
+    const promiseValues = createAppPromiseValues({
+      urlsParam: ['https://example.com/'],
+    });
+    createAppElementWithPromiseValues(promiseValues);
+    await flushTasks();
+
+    assertTrue(appElement.$.header.$.menuButton.disabled);
   });
 
   test('updates on selection change', async () => {
@@ -488,6 +518,7 @@ suite('AppTest', () => {
         })],
       });
       createAppElementWithPromiseValues(promiseValues);
+      appElement.resetMinLoadingAnimationMsForTesting();
 
       assertEquals(0, appElement.$.summaryTable.columns.length);
 
