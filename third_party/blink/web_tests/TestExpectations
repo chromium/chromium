@@ -2535,6 +2535,8 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/focus/focus-event-after-switching-iframes.sub.html [ Timeout ]
+[ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/reduction.https.any.worker.html?cpu [ Skip Timeout ]
 crbug.com/343338109 external/wpt/css/css-borders/tentative/border-radius-side-shorthands/border-radius-side-shorthands-001.html [ Failure ]
 crbug.com/343338109 external/wpt/css/css-borders/tentative/border-radius-side-shorthands/border-radius-side-shorthands-002.html [ Failure ]
 crbug.com/343338109 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-angle-001.html [ Failure ]
@@ -2665,7 +2667,6 @@ crbug.com/331851044 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/
 crbug.com/331851044 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/elementwise_binary.https.any.html?cpu [ Skip Timeout ]
 crbug.com/331851044 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/elementwise_binary.https.any.worker.html?gpu [ Skip Timeout ]
 crbug.com/331851044 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/elementwise_binary.https.any.worker.html?cpu [ Skip Timeout ]
-crbug.com/331851044 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/reduction.https.any.worker.html?cpu [ Failure Pass ]
 crbug.com/331851044 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/conv_transpose2d.https.any.worker.html?gpu [ Failure ]
 crbug.com/331711029 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/notify-event-success.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/view-transition-on-navigation/external/wpt/css/css-view-transitions/navigation/chromium-paint-holding-timeout.html [ Timeout ]
@@ -7505,6 +7506,6 @@ fast/events/scroll-event-handler-reused-window.html [ Failure Pass ]
 
 # Gardener 2024-05-29
 crbug.com/343473478 external/wpt/html/semantics/forms/the-input-element/click-user-gesture.html [ Failure Pass ]
-crbug.com/343473478 external/wpt/html/semantics/forms/the-input-element/show-picker-disabled-readonly.html [ Failure Timeout Pass ]
-crbug.com/343473478 external/wpt/html/semantics/forms/the-input-element/show-picker-user-gesture.html [ Skip Failure Timeout Pass ]
+crbug.com/343473478 external/wpt/html/semantics/forms/the-input-element/show-picker-disabled-readonly.html [ Failure Pass Timeout ]
+crbug.com/343473478 external/wpt/html/semantics/forms/the-input-element/show-picker-user-gesture.html [ Failure Pass Skip Timeout ]
 crbug.com/343473478 external/wpt/html/semantics/forms/the-select-element/show-picker-user-gesture.html [ Failure Pass ]

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] role: sectionheader
+  assert_equals: <div role="sectionheader">x</div> expected "sectionheader" but got "generic"
+[FAIL] role: sectionfooter
+  assert_equals: <div role="sectionfooter">x</div> expected "sectionfooter" but got "generic"
+Harness: the test ran to completion.
+

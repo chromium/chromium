@@ -1,0 +1,26 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Error: assert_implements: Unable to create context for gpu variant undefined
+[NOTRUN] expand float32 0D scalar to 1D
+[NOTRUN] expand float32 0D scalar to 2D
+[NOTRUN] expand float32 0D scalar to 3D
+[NOTRUN] expand float32 0D scalar to 4D
+[NOTRUN] expand float32 0D scalar to 5D
+[NOTRUN] expand float32 1D constant tensor to 1D
+[NOTRUN] expand float32 1D tensor to 1D
+[NOTRUN] expand float32 1D tensor to 2D
+[NOTRUN] expand float32 1D tensor to 3D
+[NOTRUN] expand float32 1D tensor to 4D
+[NOTRUN] expand float32 1D tensor to 5D
+[NOTRUN] expand float32 2D tensor to 2D (1st dimension)
+[NOTRUN] expand float32 2D tensor to 2D (2nd dimension)
+[NOTRUN] expand float32 2D tensor to 2D (all dimensions)
+[NOTRUN] expand float32 2D tensor to 3D
+[NOTRUN] expand float32 2D tensor to 4D
+[NOTRUN] expand float32 2D tensor to 5D
+[NOTRUN] expand float32 3D tensor to 3D
+[NOTRUN] expand float32 3D tensor to 4D
+[NOTRUN] expand float32 3D tensor to 5D
+[NOTRUN] expand float32 4D tensor to 4D
+[NOTRUN] expand float32 4D tensor to 5D
+Harness: the test ran to completion.
+

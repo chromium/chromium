@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] setCodecPreferences should accept audio codecs regardless of mimeType case
+  promise_test: Unhandled rejection with value: object "InvalidModificationError: Failed to execute 'setCodecPreferences' on 'RTCRtpTransceiver': Invalid codec"
+[FAIL] setCodecPreferences should accept video codecs regardless of mimeType case
+  promise_test: Unhandled rejection with value: object "InvalidModificationError: Failed to execute 'setCodecPreferences' on 'RTCRtpTransceiver': Invalid codec"
+Harness: the test ran to completion.
+
