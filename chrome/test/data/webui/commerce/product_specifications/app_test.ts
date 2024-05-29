@@ -6,7 +6,7 @@ import 'chrome://compare/app.js';
 
 import type {ProductSpecificationsElement} from 'chrome://compare/app.js';
 import {Router} from 'chrome://compare/router.js';
-import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct, ProductSpecificationsSet} from 'chrome://compare/shopping_service.mojom-webui.js';
+import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct, ProductSpecificationsSet, ProductSpecificationsValue} from 'chrome://compare/shopping_service.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {PageCallbackRouter} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
@@ -252,9 +252,29 @@ suite('AppTest', () => {
 
   test('populates specs table', async () => {
     const rowTitle = 'foo';
-    const dimensionValues = ['bar', 'baz'];
-    const dimensionValuesMap = new Map<bigint, string[]>(
-        [[BigInt(2), dimensionValues], [BigInt(0), []]]);
+    const dimensionValues = {
+      summary: [],
+      specificationDescriptions: [
+        {
+          label: '',
+          altText: '',
+          options: [
+            {
+              descriptions: [
+                {text: 'bar', url: {url: ''}},
+                {
+                  text: 'baz',
+                  url: {url: ''},
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const emptyValue = {summary: [], specificationDescriptions: []};
+    const dimensionValuesMap = new Map<bigint, ProductSpecificationsValue>(
+        [[BigInt(2), dimensionValues], [BigInt(0), emptyValue]]);
     const specsProduct1 = createSpecsProduct({
       productClusterId: BigInt(123),
       title: 'qux',
@@ -309,8 +329,7 @@ suite('AppTest', () => {
     // one row should be created.
     const rows = appElement.$.summaryTable.rows;
     assertEquals(1, rows.length);
-    assertArrayEquals(
-        [{title: rowTitle, values: [dimensionValues.join(',')]}], rows);
+    assertArrayEquals([{title: rowTitle, values: ['bar, baz']}], rows);
   });
 
   test('shows full table loading state', async () => {

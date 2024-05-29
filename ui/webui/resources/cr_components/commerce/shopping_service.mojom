@@ -89,6 +89,38 @@ struct PriceInsightsInfo {
   string currency_code;
 };
 
+struct ProductSpecificationsDescriptionText {
+  // The actual text for the description.
+  string text;
+
+  // A context URL for the description if available.
+  url.mojom.Url url;
+};
+
+struct ProductSpecificationsOption {
+  // The descriptions for this particular option of a product.
+  array<ProductSpecificationsDescriptionText> descriptions;
+};
+
+struct ProductSpecificationsDescription {
+  // The possible options for a feature of a product.
+  array<ProductSpecificationsOption> options;
+
+  // The label for the contained description texts.
+  string label;
+
+  // Alternative text with additional context for this description.
+  string alt_text;
+};
+
+struct ProductSpecificationsValue {
+  // One or more descriptions about the feature being described by this value.
+  array<ProductSpecificationsDescription> specification_descriptions;
+
+  // Summaries describing the collective list of descriptions.
+  array<ProductSpecificationsDescriptionText> summary;
+};
+
 struct ProductSpecificationsProduct {
   // The GPC ID for this product.
   uint64 product_cluster_id;
@@ -100,10 +132,10 @@ struct ProductSpecificationsProduct {
   url.mojom.Url image_url;
 
   // A map of dimension IDs to the string value as it relates to this product.
-  map<uint64, array<string>> product_dimension_values;
+  map<uint64, ProductSpecificationsValue> product_dimension_values;
 
-  // A brief summary of the product.
-  string summary;
+  // A list of summaries about the product.
+  array<ProductSpecificationsDescriptionText> summary;
 };
 
 // This struct represents information acquired from the product specifications

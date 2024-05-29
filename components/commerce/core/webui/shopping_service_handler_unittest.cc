@@ -798,10 +798,14 @@ TEST_F(ShoppingServiceHandlerTest, TestGetProductSpecifications) {
             ASSERT_EQ("color", specs_ptr->product_dimension_map[1]);
 
             ASSERT_EQ(12345u, specs_ptr->products[0]->product_cluster_id);
-            ASSERT_EQ("red",
-                      specs_ptr->products[0]->product_dimension_values[1][0]);
+            ASSERT_EQ("red", specs_ptr->products[0]
+                                 ->product_dimension_values[1]
+                                 ->specification_descriptions[0]
+                                 ->options[0]
+                                 ->descriptions[0]
+                                 ->text);
             ASSERT_EQ("title", specs_ptr->products[0]->title);
-            ASSERT_EQ("summary", specs_ptr->products[0]->summary);
+            ASSERT_EQ("summary", specs_ptr->products[0]->summary[0]->text);
 
             run_loop->Quit();
           },

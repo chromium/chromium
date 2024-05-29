@@ -167,9 +167,15 @@ export class ProductSpecificationsElement extends PolymerElement {
       productSpecs.productDimensionMap.forEach((value: string, key: bigint) => {
         rows.push({
           title: value,
-          values: productSpecs.products.map(
-              (p: ProductSpecificationsProduct) =>
-                  p.productDimensionValues.get(key)!.join(',')),
+          values:
+              productSpecs.products.map((p: ProductSpecificationsProduct) => {
+                const value = p.productDimensionValues.get(key);
+                return (value?.specificationDescriptions || [])
+                    .flatMap(description => description.options)
+                    .flatMap(option => option.descriptions)
+                    .map(descText => descText.text)
+                    .join(', ');
+              }),
         });
       });
       const infos = await this.getInfoForUrls_(urls);

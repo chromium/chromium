@@ -191,22 +191,55 @@ shopping_service::mojom::ProductSpecificationsPtr ProductSpecsToMojo(
     product_ptr->product_cluster_id = product.product_cluster_id;
     product_ptr->title = product.title;
     product_ptr->image_url = product.image_url;
-    if (product.summary.size() > 0) {
-      product_ptr->summary = product.summary[0].text;
+
+    // Top-level product summaries.
+    for (const auto& summary : product.summary) {
+      auto desc_text_ptr =
+          shopping_service::mojom::ProductSpecificationsDescriptionText::New();
+      desc_text_ptr->text = summary.text;
+      desc_text_ptr->url = summary.url;
+      product_ptr->summary.push_back(std::move(desc_text_ptr));
     }
 
     for (const auto& [dimen_id, value] : product.product_dimension_values) {
-      std::vector<std::string> descriptions;
+      auto value_ptr =
+          shopping_service::mojom::ProductSpecificationsValue::New();
 
-      for (const auto& description : value.descriptions) {
-        for (const auto& option : description.options) {
-          for (const auto& description_text : option.descriptions) {
-            descriptions.push_back(description_text.text);
-          }
-        }
+      // Summaries for the dimension as a whole.
+      for (const auto& summary : value.summary) {
+        auto desc_text_ptr = shopping_service::mojom::
+            ProductSpecificationsDescriptionText::New();
+        desc_text_ptr->text = summary.text;
+        desc_text_ptr->url = summary.url;
+        value_ptr->summary.push_back(std::move(desc_text_ptr));
       }
 
-      product_ptr->product_dimension_values[dimen_id] = descriptions;
+      for (const auto& description : value.descriptions) {
+        auto desc_ptr =
+            shopping_service::mojom::ProductSpecificationsDescription::New();
+        desc_ptr->label = description.label;
+        desc_ptr->alt_text = description.alt_text;
+
+        for (const auto& option : description.options) {
+          auto option_ptr =
+              shopping_service::mojom::ProductSpecificationsOption::New();
+
+          for (const auto& description_text : option.descriptions) {
+            auto desc_text_ptr = shopping_service::mojom::
+                ProductSpecificationsDescriptionText::New();
+            desc_text_ptr->text = description_text.text;
+            desc_text_ptr->url = description_text.url;
+            option_ptr->descriptions.push_back(std::move(desc_text_ptr));
+          }
+
+          desc_ptr->options.push_back(std::move(option_ptr));
+        }
+
+        value_ptr->specification_descriptions.push_back(std::move(desc_ptr));
+      }
+
+      product_ptr->product_dimension_values.insert_or_assign(
+          dimen_id, std::move(value_ptr));
     }
 
     specs_ptr->products.push_back(std::move(product_ptr));
