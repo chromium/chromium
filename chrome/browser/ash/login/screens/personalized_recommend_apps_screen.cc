@@ -47,6 +47,16 @@ constexpr const base::TimeDelta kDelaySetCategoriesAppsMapTime =
     base::Seconds(2);
 constexpr const base::TimeDelta kDelayOverviewStepTime = base::Seconds(3);
 
+void WebAppInstallCallback(const std::string& package_id, bool success) {
+  if (success) {
+    LOG(WARNING) << "Web application '" << package_id
+                 << "' installed successfully";
+  } else {
+    LOG(WARNING) << "Web application '" << package_id
+                 << "' installation failed";
+  }
+}
+
 }  // namespace
 
 // static
@@ -338,9 +348,7 @@ void PersonalizedRecommendAppsScreen::OnInstall(
     for (const auto& selected_web_app : selected_web_apps) {
       install_service.InstallAppHeadless(
           apps::AppInstallSurface::kOobeAppRecommendations, selected_web_app,
-          // TODO(b/341305093): Implement callback that will log whether
-          // installation successful or not.
-          base::DoNothing());
+          base::BindOnce(&WebAppInstallCallback, selected_web_app.ToString()));
     }
   }
 }
