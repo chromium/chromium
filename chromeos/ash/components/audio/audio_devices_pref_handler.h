@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/audio_pref_observer.h"
 
@@ -85,6 +86,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
   virtual void UpdateDevicePreferenceSet(
       const AudioDeviceList& devices,
       const AudioDevice& preferred_device) = 0;
+
+  // Gets the preferred device stable id given a set of devices from prefs.
+  virtual const base::Value::List& GetMostRecentActivatedDeviceIdList(
+      bool is_input) = 0;
+
+  virtual void UpdateMostRecentActivatedDeviceIdList(
+      const AudioDevice& device) = 0;
 
   // Reads the audio output allowed value from prefs.
   virtual bool GetAudioOutputAllowedValue() const = 0;

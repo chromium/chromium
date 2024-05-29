@@ -1226,7 +1226,7 @@ void CrasAudioHandler::SetActiveDevice(const AudioDevice& active_device,
   // most recently activated device list.
   if (features::IsAudioSelectionImprovementEnabled()) {
     SyncDevicePrefSetMap(active_device.is_input);
-    AddDeviceToMostRecentActivatedList(active_device);
+    audio_pref_handler_->UpdateMostRecentActivatedDeviceIdList(active_device);
   }
 
   // Save active state for the nodes.
@@ -2281,30 +2281,12 @@ void CrasAudioHandler::HandleSystemBoots(bool is_input,
   should_show_notification_ = true;
 }
 
-void CrasAudioHandler::AddDeviceToMostRecentActivatedList(
-    const AudioDevice& device) {
-  std::vector<std::string>& ids =
-      device.is_input ? most_recent_activated_input_device_ids_
-                      : most_recent_activated_output_device_ids_;
-  std::string target_device_id = GetDeviceIdString(device);
-  // Find if this device is already in the list, remove it if so.
-  for (auto it = ids.begin(); it != ids.end(); it++) {
-    if (target_device_id == *it) {
-      ids.erase(it);
-      break;
-    }
-  }
-
-  // Add this device to the end of the list.
-  ids.push_back(target_device_id);
-}
-
 bool CrasAudioHandler::ActivateMostRecentActiveDevice(bool is_input) {
-  const std::vector<std::string>& ids =
-      is_input ? most_recent_activated_input_device_ids_
-               : most_recent_activated_output_device_ids_;
+  const base::Value::List& ids =
+      audio_pref_handler_->GetMostRecentActivatedDeviceIdList(is_input);
   for (int i = ids.size() - 1; i >= 0; i--) {
-    std::optional<uint64_t> device_stable_id = ParseDeviceId(ids[i]);
+    std::optional<uint64_t> device_stable_id =
+        ParseDeviceId(ids[i].GetString());
     if (!device_stable_id.has_value()) {
       continue;
     }

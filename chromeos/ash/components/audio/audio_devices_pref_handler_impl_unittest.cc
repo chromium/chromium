@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time_override.h"
 #include "chromeos/ash/components/audio/audio_device.h"
+#include "chromeos/ash/components/audio/audio_device_id.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -658,6 +659,48 @@ TEST_P(AudioDevicesPrefHandlerTest, PreferredDeviceNotExist) {
   EXPECT_EQ(std::nullopt,
             audio_pref_handler_->GetPreferredDeviceFromPreferenceSet(
                 device.is_input, devices));
+}
+
+// Tests read and write most recent activated device id list pref.
+TEST_P(AudioDevicesPrefHandlerTest, MostRecentActivatedDeviceIdList) {
+  AudioDevice device = GetDeviceWithVersion(2);
+  AudioDevice device2 = GetSecondaryDeviceWithVersion(2);
+
+  // No activated device yet.
+  EXPECT_TRUE(
+      audio_pref_handler_->GetMostRecentActivatedDeviceIdList(device.is_input)
+          .empty());
+
+  // Activate first device.
+  audio_pref_handler_->UpdateMostRecentActivatedDeviceIdList(device);
+  EXPECT_EQ(1u, audio_pref_handler_
+                    ->GetMostRecentActivatedDeviceIdList(device.is_input)
+                    .size());
+  EXPECT_EQ(
+      GetDeviceIdString(device),
+      audio_pref_handler_->GetMostRecentActivatedDeviceIdList(device.is_input)
+          .back());
+
+  // Activate second device.
+  audio_pref_handler_->UpdateMostRecentActivatedDeviceIdList(device2);
+  EXPECT_EQ(2u, audio_pref_handler_
+                    ->GetMostRecentActivatedDeviceIdList(device2.is_input)
+                    .size());
+  EXPECT_EQ(
+      GetDeviceIdString(device2),
+      audio_pref_handler_->GetMostRecentActivatedDeviceIdList(device2.is_input)
+          .back());
+
+  // Activate the first device again. Expect there are still two devices in the
+  // list. Expect this device is now in the end of the list.
+  audio_pref_handler_->UpdateMostRecentActivatedDeviceIdList(device);
+  EXPECT_EQ(2u, audio_pref_handler_
+                    ->GetMostRecentActivatedDeviceIdList(device.is_input)
+                    .size());
+  EXPECT_EQ(
+      GetDeviceIdString(device),
+      audio_pref_handler_->GetMostRecentActivatedDeviceIdList(device.is_input)
+          .back());
 }
 
 }  // namespace ash

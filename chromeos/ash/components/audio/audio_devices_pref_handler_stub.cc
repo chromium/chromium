@@ -201,4 +201,25 @@ AudioDevicesPrefHandlerStub::GetDevicePreferenceSetMap() {
   return device_preference_set_map_;
 }
 
+const base::Value::List&
+AudioDevicesPrefHandlerStub::GetMostRecentActivatedDeviceIdList(bool is_input) {
+  return most_recent_activated_device_id_list;
+}
+
+void AudioDevicesPrefHandlerStub::UpdateMostRecentActivatedDeviceIdList(
+    const AudioDevice& device) {
+  std::string target_device_id = GetDeviceIdString(device);
+  // Find if this device is already in the list, remove it if so.
+  for (auto it = most_recent_activated_device_id_list.begin();
+       it != most_recent_activated_device_id_list.end(); it++) {
+    if (target_device_id == *it) {
+      most_recent_activated_device_id_list.erase(it);
+      break;
+    }
+  }
+
+  // Add this device to the end of the list.
+  most_recent_activated_device_id_list.Append(target_device_id);
+}
+
 }  // namespace ash

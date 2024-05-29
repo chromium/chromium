@@ -1022,9 +1022,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // pre-determined priority list and show notification.
   void HandleSystemBoots(bool is_input, const AudioDeviceList& devices);
 
-  // Adds a device to most recently activated device list.
-  void AddDeviceToMostRecentActivatedList(const AudioDevice& device);
-
   // Activates the most recently active device. Return false if no device in the
   // most recently active device list is currently connected, otherwise
   // return true.
@@ -1117,12 +1114,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Whether the speak-on-mute detection is enabled in CRAS.
   bool speak_on_mute_detection_on_ = false;
-
-  // Stores a list of most recently activated devices' stable id. Most recent
-  // device on the end.
-  // TODO(zhangwenyu): To be replaced by real interaction with Pref service.
-  std::vector<std::string> most_recent_activated_input_device_ids_;
-  std::vector<std::string> most_recent_activated_output_device_ids_;
 
   // Indicates whether the audio selection notification should be displayed.
   bool should_show_notification_ = false;

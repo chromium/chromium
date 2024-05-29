@@ -188,6 +188,16 @@ inline constexpr char kAudioInputDevicePreferenceSet[] =
 inline constexpr char kAudioOutputDevicePreferenceSet[] =
     "settings.audio.output_preference_set";
 
+// A list pref containing most recently activated input device id list, most
+// recent in the back of the list. E.g {0xab,0xbc,0xcd}.
+inline constexpr char kAudioMostRecentActivatedInputDeviceIds[] =
+    "settings.audio.most_recent_activated_input_device_ids";
+
+// A list pref containing most recently activated output devices id list, most
+// recent in the back of the list. E.g {0xab,0xbc,0xcd}.
+inline constexpr char kAudioMostRecentActivatedOutputDeviceIds[] =
+    "settings.audio.most_recent_activated_output_device_ids";
+
 // A dictionary pref that maps device id string to the timestamp of the last
 // time the audio device was connected, in
 // `base::Time::InSecondsFSinceUnixEpoch()`'s format.
