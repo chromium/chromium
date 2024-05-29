@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabListEditorProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.OTHERS;
 
@@ -132,18 +131,74 @@ class TabListEditorCoordinator {
         }
     }
 
+    private final TabListEditorController mTabListEditorController =
+            new TabListEditorController() {
+                @Override
+                public void show(
+                        List<Tab> tabs,
+                        int preSelectedTabCount,
+                        @Nullable RecyclerViewPosition recyclerViewPosition) {
+                    if (mTabListCoordinator == null) {
+                        createTabListCoordinator();
+                    }
+                    mTabListEditorMediator.show(tabs, preSelectedTabCount, recyclerViewPosition);
+                }
+
+                @Override
+                public void hide() {
+                    mTabListEditorMediator.hide();
+                }
+
+                @Override
+                public void configureToolbarWithMenuItems(
+                        List<TabListEditorAction> actions,
+                        @Nullable TabListEditorNavigationProvider navigationProvider) {
+                    assert mTabListCoordinator != null
+                            : "Must call #show before #configureToolbarWithMenuItems";
+                    mTabListEditorMediator.configureToolbarWithMenuItems(
+                            actions, navigationProvider);
+                }
+
+                @Override
+                public boolean isVisible() {
+                    return mTabListEditorMediator.isVisible();
+                }
+
+                @Override
+                public boolean handleBackPressed() {
+                    return mTabListEditorMediator.handleBackPressed();
+                }
+
+                @Override
+                public @BackPressResult int handleBackPress() {
+                    return mTabListEditorMediator.handleBackPress();
+                }
+
+                @Override
+                public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+                    return mTabListEditorMediator.getHandleBackPressChangedSupplier();
+                }
+            };
+
     private final Context mContext;
     private final ViewGroup mParentView;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final @NonNull ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final TabListEditorLayout mTabListEditorLayout;
-    private final TabListCoordinator mTabListCoordinator;
     private final SelectionDelegate<Integer> mSelectionDelegate = new SelectionDelegate<>();
     private final PropertyModel mModel;
-    private final PropertyModelChangeProcessor mTabListEditorLayoutChangeProcessor;
     private final TabListEditorMediator mTabListEditorMediator;
     private final Callback<RecyclerViewPosition> mClientTabListRecyclerViewPositionSetter;
+
+    private final @TabListMode int mTabListMode;
+    private final boolean mDisplayGroups;
+    private final @TabActionState int mInitialTabActionState;
+    private final ViewGroup mRootView;
+    private final TabContentManager mTabContentManager;
+
     private MultiThumbnailCardProvider mMultiThumbnailCardProvider;
+    private TabListCoordinator mTabListCoordinator;
+    private PropertyModelChangeProcessor mTabListEditorLayoutChangeProcessor;
 
     public TabListEditorCoordinator(
             Context context,
@@ -163,146 +218,35 @@ class TabListEditorCoordinator {
             mBrowserControlsStateProvider = browserControlsStateProvider;
             mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
             mClientTabListRecyclerViewPositionSetter = clientTabListRecyclerViewPositionSetter;
+            mTabListMode = mode;
+            mDisplayGroups = displayGroups;
+            mInitialTabActionState = initialTabActionState;
+            mRootView = rootView;
+            mTabContentManager = tabContentManager;
             assert mode == TabListCoordinator.TabListMode.GRID
                     || mode == TabListCoordinator.TabListMode.LIST;
 
+            // The change processor isn't created until TabListCoordinator is created (lazily).
             mTabListEditorLayout =
                     LayoutInflater.from(context)
                             .inflate(R.layout.tab_list_editor_layout, parentView, false)
                             .findViewById(R.id.selectable_list);
+            mModel = new PropertyModel.Builder(TabListEditorProperties.ALL_KEYS).build();
 
-            ThumbnailProvider thumbnailProvider =
-                    initThumbnailProvider(displayGroups, tabContentManager);
-
-            // TODO(ckitagawa): Lazily instantiate the TabListEditorCoordinator. When doing so,
-            // the Coordinator hosting the TabListEditorCoordinator could share and reconfigure
-            // its TabListCoordinator to work with the editor as an optimization.
-            mTabListCoordinator =
-                    new TabListCoordinator(
-                            mode,
-                            context,
-                            mBrowserControlsStateProvider,
-                            currentTabModelFilterSupplier,
-                            thumbnailProvider,
-                            displayGroups,
-                            null,
-                            null,
-                            initialTabActionState,
-                            this::getSelectionDelegate,
-                            null,
-                            mTabListEditorLayout,
-                            false,
-                            COMPONENT_NAME,
-                            rootView,
-                            null);
-
-            // Note: The TabListEditorCoordinator is always created after native is
-            // initialized.
-            Profile regularProfile =
-                    currentTabModelFilterSupplier
-                            .get()
-                            .getTabModel()
-                            .getProfile()
-                            .getOriginalProfile();
-            mTabListCoordinator.initWithNative(regularProfile, null);
-            if (mMultiThumbnailCardProvider != null) {
-                mMultiThumbnailCardProvider.initWithNative(regularProfile);
-            }
-
-            mTabListCoordinator.registerItemType(
-                    TabProperties.UiType.DIVIDER,
-                    new LayoutViewBuilder(R.layout.horizontal_divider),
-                    (model, view, propertyKey) -> {});
-            RecyclerView.LayoutManager layoutManager =
-                    mTabListCoordinator.getContainerView().getLayoutManager();
-            if (layoutManager instanceof GridLayoutManager) {
-                ((GridLayoutManager) layoutManager)
-                        .setSpanSizeLookup(
-                                new GridLayoutManager.SpanSizeLookup() {
-                                    @Override
-                                    public int getSpanSize(int i) {
-                                        int itemType =
-                                                mTabListCoordinator
-                                                        .getContainerView()
-                                                        .getAdapter()
-                                                        .getItemViewType(i);
-
-                                        if (itemType == TabProperties.UiType.DIVIDER) {
-                                            return ((GridLayoutManager) layoutManager)
-                                                    .getSpanCount();
-                                        }
-                                        return 1;
-                                    }
-                                });
-            }
-
-            mTabListEditorLayout.initialize(
-                    mParentView,
-                    mTabListCoordinator.getContainerView(),
-                    mTabListCoordinator.getContainerView().getAdapter(),
-                    mSelectionDelegate);
-            mSelectionDelegate.setSelectionModeEnabledForZeroItems(true);
-
-            mModel =
-                    new PropertyModel.Builder(TabListEditorProperties.ALL_KEYS)
-                            .with(IS_VISIBLE, false)
-                            .build();
-
-            mTabListEditorLayoutChangeProcessor =
-                    PropertyModelChangeProcessor.create(
-                            mModel,
-                            mTabListEditorLayout,
-                            TabListEditorLayoutBinder::bind,
-                            false);
-
-            ResetHandler resetHandler =
-                    new ResetHandler() {
-                        @Override
-                        public void resetWithListOfTabs(
-                                @Nullable List<Tab> tabs,
-                                int preSelectedCount,
-                                @Nullable RecyclerViewPosition recyclerViewPosition,
-                                boolean quickMode) {
-                            TabListEditorCoordinator.this.resetWithListOfTabs(
-                                    tabs, preSelectedCount, quickMode);
-                            if (recyclerViewPosition == null) {
-                                return;
-                            }
-
-                            mTabListCoordinator.setRecyclerViewPosition(recyclerViewPosition);
-                        }
-
-                        @Override
-                        public void syncRecyclerViewPosition() {
-                            if (mClientTabListRecyclerViewPositionSetter == null) {
-                                return;
-                            }
-
-                            mClientTabListRecyclerViewPositionSetter.onResult(
-                                    mTabListCoordinator.getRecyclerViewPosition());
-                        }
-
-                        @Override
-                        public void postHiding() {
-                            mTabListCoordinator.postHiding();
-                            mTabListCoordinator.softCleanup();
-                        }
-                    };
             // TODO(crbug.com/40881091): Refactor SnackbarManager to support multiple overridden
             // parentViews in a stack to avoid contention and using new snackbar managers.
             mTabListEditorMediator =
                     new TabListEditorMediator(
                             mContext,
                             mCurrentTabModelFilterSupplier,
-                            mTabListCoordinator,
-                            resetHandler,
                             mModel,
                             mSelectionDelegate,
-                            mTabListEditorLayout.getToolbar(),
                             displayGroups,
                             snackbarManager,
                             mTabListEditorLayout,
-                            initialTabActionState);
+                            initialTabActionState,
+                            new TabListEditorNavigationProvider(
+                                    mContext, mTabListEditorController));
         }
     }
 
@@ -331,7 +275,142 @@ class TabListEditorCoordinator {
         }
     }
 
-    private ThumbnailProvider initThumbnailProvider(
+    /**
+     * @return {@link TabListEditorController} that can control the TabListEditor.
+     */
+    TabListEditorController getController() {
+        return mTabListEditorController;
+    }
+
+    /** Destroy any members that needs clean up. */
+    public void destroy() {
+        if (mTabListCoordinator != null) {
+            mTabListCoordinator.onDestroy();
+            mTabListCoordinator = null;
+        }
+        if (mTabListEditorLayoutChangeProcessor != null) {
+            mTabListEditorLayoutChangeProcessor.destroy();
+            mTabListEditorLayoutChangeProcessor = null;
+        }
+
+        mTabListEditorLayout.destroy();
+        mTabListEditorMediator.destroy();
+        if (mMultiThumbnailCardProvider != null) {
+            mMultiThumbnailCardProvider.destroy();
+        }
+    }
+
+    private void createTabListCoordinator() {
+        Profile regularProfile =
+                mCurrentTabModelFilterSupplier
+                        .get()
+                        .getTabModel()
+                        .getProfile()
+                        .getOriginalProfile();
+
+        ResetHandler resetHandler =
+                new ResetHandler() {
+                    @Override
+                    public void resetWithListOfTabs(
+                            @Nullable List<Tab> tabs,
+                            int preSelectedCount,
+                            @Nullable RecyclerViewPosition recyclerViewPosition,
+                            boolean quickMode) {
+                        TabListEditorCoordinator.this.resetWithListOfTabs(
+                                tabs, preSelectedCount, quickMode);
+                        if (recyclerViewPosition == null) {
+                            return;
+                        }
+
+                        mTabListCoordinator.setRecyclerViewPosition(recyclerViewPosition);
+                    }
+
+                    @Override
+                    public void syncRecyclerViewPosition() {
+                        if (mClientTabListRecyclerViewPositionSetter == null) {
+                            return;
+                        }
+
+                        mClientTabListRecyclerViewPositionSetter.onResult(
+                                mTabListCoordinator.getRecyclerViewPosition());
+                    }
+
+                    @Override
+                    public void postHiding() {
+                        mTabListCoordinator.postHiding();
+                        mTabListCoordinator.softCleanup();
+                        mTabListCoordinator.resetWithListOfTabs(null, /* quickMode= */ false);
+                    }
+                };
+
+        ThumbnailProvider thumbnailProvider =
+                initMultiThumbnailCardProvider(mDisplayGroups, mTabContentManager);
+        if (mMultiThumbnailCardProvider != null) {
+            mMultiThumbnailCardProvider.initWithNative(regularProfile);
+        }
+        mTabListCoordinator =
+                new TabListCoordinator(
+                        mTabListMode,
+                        mContext,
+                        mBrowserControlsStateProvider,
+                        mCurrentTabModelFilterSupplier,
+                        thumbnailProvider,
+                        mDisplayGroups,
+                        null,
+                        null,
+                        mInitialTabActionState,
+                        this::getSelectionDelegate,
+                        null,
+                        mTabListEditorLayout,
+                        false,
+                        COMPONENT_NAME,
+                        mRootView,
+                        null);
+
+        // Note: The TabListEditorCoordinator is always created after native is
+        // initialized.
+        mTabListCoordinator.initWithNative(regularProfile, null);
+
+        mTabListCoordinator.registerItemType(
+                TabProperties.UiType.DIVIDER,
+                new LayoutViewBuilder(R.layout.horizontal_divider),
+                (model, view, propertyKey) -> {});
+        RecyclerView.LayoutManager layoutManager =
+                mTabListCoordinator.getContainerView().getLayoutManager();
+        if (layoutManager instanceof GridLayoutManager) {
+            ((GridLayoutManager) layoutManager)
+                    .setSpanSizeLookup(
+                            new GridLayoutManager.SpanSizeLookup() {
+                                @Override
+                                public int getSpanSize(int i) {
+                                    int itemType =
+                                            mTabListCoordinator
+                                                    .getContainerView()
+                                                    .getAdapter()
+                                                    .getItemViewType(i);
+
+                                    if (itemType == TabProperties.UiType.DIVIDER) {
+                                        return ((GridLayoutManager) layoutManager).getSpanCount();
+                                    }
+                                    return 1;
+                                }
+                            });
+        }
+
+        mTabListEditorLayout.initialize(
+                mParentView,
+                mTabListCoordinator.getContainerView(),
+                mTabListCoordinator.getContainerView().getAdapter(),
+                mSelectionDelegate);
+        mSelectionDelegate.setSelectionModeEnabledForZeroItems(true);
+        mTabListEditorMediator.initializeWithTabListCoordinator(mTabListCoordinator, resetHandler);
+
+        mTabListEditorLayoutChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mTabListEditorLayout, TabListEditorLayoutBinder::bind);
+    }
+
+    private ThumbnailProvider initMultiThumbnailCardProvider(
             boolean displayGroups, TabContentManager tabContentManager) {
         if (displayGroups) {
             mMultiThumbnailCardProvider =
@@ -348,23 +427,7 @@ class TabListEditorCoordinator {
         };
     }
 
-    /**
-     * @return {@link TabListEditorController} that can control the TabListEditor.
-     */
-    TabListEditorController getController() {
-        return mTabListEditorMediator;
-    }
-
-    /** Destroy any members that needs clean up. */
-    public void destroy() {
-        mTabListCoordinator.onDestroy();
-        mTabListEditorLayout.destroy();
-        mTabListEditorMediator.destroy();
-        mTabListEditorLayoutChangeProcessor.destroy();
-        if (mMultiThumbnailCardProvider != null) {
-            mMultiThumbnailCardProvider.destroy();
-        }
-    }
+    // Testing-specific methods
 
     /**
      * @return The {@link TabListEditorLayout} for testing.

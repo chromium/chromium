@@ -84,7 +84,6 @@ class TabListEditorToolbar extends SelectableListToolbar<Integer> {
     @Override
     public void onSelectionStateChange(List<Integer> selectedItems) {
         super.onSelectionStateChange(selectedItems);
-        int selectedItemsSize = selectedItems.size();
 
         if (mRelatedTabCountProvider == null) return;
 

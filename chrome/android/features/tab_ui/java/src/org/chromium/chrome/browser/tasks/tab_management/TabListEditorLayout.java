@@ -89,7 +89,9 @@ class TabListEditorLayout extends SelectableListLayout<Integer> {
 
     /** Destroy any members that needs clean up. */
     public void destroy() {
-        super.onDestroyed();
+        if (mIsInitialized) {
+            super.onDestroyed();
+        }
     }
 
     private void clearBackgroundViewAccessibilityImportance() {

@@ -280,6 +280,7 @@ public abstract class TabListEditorAction {
         mSelectionDelegate = selectionDelegate;
         mActionDelegate = actionDelegate;
         mEditorSupportsActionOnRelatedTabs = editorSupportsActionOnRelatedTabs;
+        onSelectionStateChange(mSelectionDelegate.getSelectedItemsAsList());
     }
 
     PropertyModel getPropertyModel() {

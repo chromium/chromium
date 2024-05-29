@@ -417,7 +417,7 @@ public class TabGridDialogMediator
     }
 
     public void initWithNative(
-            Supplier<TabListEditorController> tabListEditorControllerSupplier,
+            @NonNull Supplier<TabListEditorController> tabListEditorControllerSupplier,
             TabGroupTitleEditor tabGroupTitleEditor) {
         mTabListEditorControllerSupplier = tabListEditorControllerSupplier;
         mTabGroupTitleEditor = tabGroupTitleEditor;
@@ -694,13 +694,12 @@ public class TabGridDialogMediator
         mModel.set(TabGridDialogProperties.ADD_CLICK_LISTENER, getAddButtonClickListener());
     }
 
-    private void setupDialogSelectionEditor() {
+    private void configureTabListEditorMenu() {
         assert mTabListEditorControllerSupplier != null;
 
-        if (!mTabListEditorControllerSupplier.hasValue() || mTabListEditorSetup) {
+        if (mTabListEditorSetup) {
             return;
         }
-
         mTabListEditorSetup = true;
 
         List<TabListEditorAction> actions = new ArrayList<>();
@@ -955,10 +954,10 @@ public class TabGridDialogMediator
 
         List<Tab> tabs = getRelatedTabs(currentTabId);
         // Setup dialog selection editor.
-        setupDialogSelectionEditor();
         mTabListEditorControllerSupplier
                 .get()
                 .show(tabs, /* preSelectedTabCount= */ 0, mRecyclerViewPositionSupplier.get());
+        configureTabListEditorMenu();
         return true;
     }
 

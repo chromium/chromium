@@ -13,11 +13,10 @@ import androidx.annotation.Nullable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
-import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
@@ -157,16 +156,13 @@ public class TabListEditorManager {
         }
 
         var controller = mControllerSupplier.get();
+        controller.show(
+                TabModelUtils.convertTabListToListOfTabs(mCurrentTabModelFilterSupplier.get()),
+                /* preSelectedTabCount= */ 0,
+                mTabListCoordinator.getRecyclerViewPosition());
         controller.configureToolbarWithMenuItems(
                 mTabListEditorActions, new TabListEditorNavigationProvider(mActivity, controller));
 
-        List<Tab> tabs = new ArrayList<>();
-        TabList list = mCurrentTabModelFilterSupplier.get();
-        for (int i = 0; i < list.getCount(); i++) {
-            tabs.add(list.getTabAt(i));
-        }
-        controller.show(
-                tabs, /* preSelectedTabCount= */ 0, mTabListCoordinator.getRecyclerViewPosition());
         TabUiMetricsHelper.recordSelectionEditorOpenMetrics(
                 TabListEditorOpenMetricGroups.OPEN_FROM_GRID, mActivity);
     }
