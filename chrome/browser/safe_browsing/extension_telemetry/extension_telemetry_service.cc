@@ -985,6 +985,12 @@ void ExtensionTelemetryService::DumpReportForTesting(
                << "      IsSession: "
                << (get_all_args_pb.is_session() ? "Y" : "N") << "\n"
                << "      count: " << get_all_args_pb.count() << "\n";
+            const auto& js_callstacks = get_all_args_pb.js_callstacks();
+            int stack_idx = 0;
+            for (const auto& stack : js_callstacks) {
+              ss << "      JS callstack " << stack_idx++ << " :";
+              ss << ExtensionJSCallStacks::SignalInfoJSCallStackAsString(stack);
+            }
           }
         }
         continue;

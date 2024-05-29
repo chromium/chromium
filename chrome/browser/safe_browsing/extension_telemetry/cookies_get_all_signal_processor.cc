@@ -17,8 +17,9 @@ constexpr size_t kMaxArgSets = 100;
 
 }  // namespace
 
-using GetAllArgsInfo = ExtensionTelemetryReportRequest::SignalInfo::
-    CookiesGetAllInfo::GetAllArgsInfo;
+CookiesGetAllSignalProcessor::CallData::CallData() = default;
+CookiesGetAllSignalProcessor::CallData::~CallData() = default;
+CookiesGetAllSignalProcessor::CallData::CallData(const CallData&) = default;
 
 CookiesGetAllSignalProcessor::CookiesGetAllStoreEntry::
     CookiesGetAllStoreEntry() = default;
@@ -40,34 +41,38 @@ void CookiesGetAllSignalProcessor::ProcessSignal(
   // extension, a new entry is created in the store.
   CookiesGetAllStoreEntry& store_entry =
       cookies_get_all_store_[cga_signal.extension_id()];
-  GetAllArgsInfos& get_all_args_infos = store_entry.get_all_args_infos;
+  CallDataMap& call_data_map = store_entry.call_data_map;
 
-  const std::string arg_set_id = cga_signal.getUniqueArgSetId();
-  auto get_all_args_infos_it = get_all_args_infos.find(arg_set_id);
-  if (get_all_args_infos_it != get_all_args_infos.end()) {
+  std::string arg_set_id = cga_signal.getUniqueArgSetId();
+  auto call_data_it = call_data_map.find(arg_set_id);
+  if (call_data_it != call_data_map.end()) {
     // If a cookies.GetAll() API with the same arguments has been invoked
-    // before, simply increment the count for the corresponding record.
-    auto count = get_all_args_infos_it->second.count();
-    get_all_args_infos_it->second.set_count(count + 1);
-
-  } else if (get_all_args_infos.size() < max_arg_sets_) {
+    // before, simply increment the count for the corresponding record and
+    // save the associated JS callstack data.
+    auto& [args_info, js_callstacks] = call_data_it->second;
+    auto count = args_info.count();
+    args_info.set_count(count + 1);
+    js_callstacks.Add(cga_signal.js_callstack());
+  } else if (call_data_map.size() < max_arg_sets_) {
     // For new argument sets, process only if under max limit.
-    // Create new GetAllArgsInfo object with its unique args set id key.
-    GetAllArgsInfo get_all_args_info;
-    get_all_args_info.set_domain(cga_signal.domain());
-    get_all_args_info.set_name(cga_signal.name());
-    get_all_args_info.set_path(cga_signal.path());
-    get_all_args_info.set_store_id(cga_signal.store_id());
-    get_all_args_info.set_url(cga_signal.url());
-    get_all_args_info.set_count(1);
+    // Create a new entry for the call_data_map.
+    CallData call_data;
+    call_data.args_info.set_domain(cga_signal.domain());
+    call_data.args_info.set_name(cga_signal.name());
+    call_data.args_info.set_path(cga_signal.path());
+    call_data.args_info.set_store_id(cga_signal.store_id());
+    call_data.args_info.set_url(cga_signal.url());
+    call_data.args_info.set_count(1);
     if (cga_signal.secure().has_value()) {
-      get_all_args_info.set_secure(cga_signal.secure().value());
+      call_data.args_info.set_secure(cga_signal.secure().value());
     }
     if (cga_signal.is_session().has_value()) {
-      get_all_args_info.set_is_session(cga_signal.is_session().value());
+      call_data.args_info.set_is_session(cga_signal.is_session().value());
     }
+    // Save the associated JS callstack data as well.
+    call_data.js_callstacks.Add(cga_signal.js_callstack());
 
-    get_all_args_infos.emplace(arg_set_id, get_all_args_info);
+    call_data_map.emplace(std::move(arg_set_id), std::move(call_data));
   } else {
     // Otherwise, increment max exceeded argument sets count.
     store_entry.max_exceeded_arg_sets_count++;
@@ -82,23 +87,28 @@ CookiesGetAllSignalProcessor::GetSignalInfoForReport(
     return nullptr;
 
   // Create the signal info protobuf.
-  auto signal_info =
+  auto signal_info_pb =
       std::make_unique<ExtensionTelemetryReportRequest_SignalInfo>();
   ExtensionTelemetryReportRequest_SignalInfo_CookiesGetAllInfo*
-      cookies_get_all_info = signal_info->mutable_cookies_get_all_info();
+      cookies_get_all_info_pb = signal_info_pb->mutable_cookies_get_all_info();
 
-  for (auto& get_all_args_infos_it :
-       cookies_get_all_store_it->second.get_all_args_infos) {
-    *cookies_get_all_info->add_get_all_args_info() =
-        std::move(get_all_args_infos_it.second);
+  for (auto& [key, call_data] :
+       cookies_get_all_store_it->second.call_data_map) {
+    // Get the JS callstacks associated with this arg set and add them to the
+    // GetAllArgsInfo message.
+    auto js_callstacks = call_data.js_callstacks.GetAll();
+    call_data.args_info.mutable_js_callstacks()->Assign(js_callstacks.begin(),
+                                                        js_callstacks.end());
+    *cookies_get_all_info_pb->add_get_all_args_info() =
+        std::move(call_data.args_info);
   }
-  cookies_get_all_info->set_max_exceeded_args_count(
+  cookies_get_all_info_pb->set_max_exceeded_args_count(
       cookies_get_all_store_it->second.max_exceeded_arg_sets_count);
 
   // Finally, clear the data in the argument sets store.
   cookies_get_all_store_.erase(cookies_get_all_store_it);
 
-  return signal_info;
+  return signal_info_pb;
 }
 
 bool CookiesGetAllSignalProcessor::HasDataToReportForTest() const {

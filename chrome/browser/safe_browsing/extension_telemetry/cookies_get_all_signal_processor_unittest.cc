@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal_processor.h"
+
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "extensions/common/extension_id.h"
@@ -47,7 +48,7 @@ TEST_F(CookiesGetAllSignalProcessorTest, StoresDataAfterProcessingSignal) {
                           is_session_cookie_values[0]);
   processor_.ProcessSignal(signal);
 
-  // Verify that processor now has some data to report.
+  // Verify that the processor now has some data to report.
   EXPECT_TRUE(processor_.HasDataToReportForTest());
 
   // Verify that there is signal info only for the correct
@@ -90,7 +91,7 @@ TEST_F(CookiesGetAllSignalProcessorTest,
       processor_.GetSignalInfoForReport(kExtensionId[0]);
   ASSERT_NE(ext_0_signal_info, nullptr);
 
-  // Verify that processor still has some data to report (for the second
+  // Verify that the processor still has some data to report (for the second
   // extension).
   EXPECT_TRUE(processor_.HasDataToReportForTest());
 
@@ -99,7 +100,7 @@ TEST_F(CookiesGetAllSignalProcessorTest,
       processor_.GetSignalInfoForReport(kExtensionId[1]);
   ASSERT_NE(ext_1_signal_info, nullptr);
 
-  // Verify that processor no longer has data to report.
+  // Verify that the processor no longer has data to report.
   EXPECT_FALSE(processor_.HasDataToReportForTest());
 
   // Verify signal info contents for first extension.
@@ -243,6 +244,81 @@ TEST_F(CookiesGetAllSignalProcessorTest,
 
   EXPECT_FALSE(get_all_args_info.has_secure());
   EXPECT_FALSE(get_all_args_info.has_is_session());
+}
+
+TEST_F(CookiesGetAllSignalProcessorTest, IncludesJSCallStacksInSignalInfo) {
+  const extensions::StackTrace stack_trace[] = {
+      {{1, 1, u"foo1.js", u"cookies.getAll"},
+       {2, 2, u"foo2.js", u"Func2"},
+       {3, 3, u"foo3.js", u"Func3"},
+       {4, 4, u"foo4.js", u"Func4"},
+       {5, 5, u"foo5.js", u"Func5"}},
+      {{1, 1, u"foo1.js", u"cookies.getAll"},
+       {2, 2, u"foo2.js", u"Func2"},
+       {3, 3, u"foo3.js", u"Func3"},
+       {5, 5, u"foo4.js", u"Func4"}}};
+
+  // Process 2 signals with different argument sets.
+  for (int i = 0; i < 2; i++) {
+    auto signal =
+        CookiesGetAllSignal(kExtensionId[0], domains[i], names[i], paths[i],
+                            is_secure_cookie_values[i], store_ids[i], urls[i],
+                            is_session_cookie_values[i], stack_trace[i]);
+    processor_.ProcessSignal(signal);
+  }
+
+  // Retrieve signal info for the extension.
+  std::unique_ptr<SignalInfo> signal_info =
+      processor_.GetSignalInfoForReport(kExtensionId[0]);
+  ASSERT_NE(signal_info, nullptr);
+
+  // Verify that the processor no longer has data to report.
+  EXPECT_FALSE(processor_.HasDataToReportForTest());
+
+  // Verify signal info contents.
+  const CookiesGetAllInfo& cookies_get_all_info =
+      signal_info->cookies_get_all_info();
+
+  // Verify data stored: 2 arg sets.
+  ASSERT_EQ(cookies_get_all_info.get_all_args_info_size(), 2);
+  {
+    const GetAllArgsInfo& get_all_args_info =
+        cookies_get_all_info.get_all_args_info(0);
+    EXPECT_EQ(get_all_args_info.domain(), domains[0]);
+    EXPECT_EQ(get_all_args_info.name(), names[0]);
+    EXPECT_EQ(get_all_args_info.path(), paths[0]);
+    EXPECT_EQ(get_all_args_info.secure(), is_secure_cookie_values[0]);
+    EXPECT_EQ(get_all_args_info.store_id(), store_ids[0]);
+    EXPECT_EQ(get_all_args_info.url(), urls[0]);
+    EXPECT_EQ(get_all_args_info.is_session(), is_session_cookie_values[0]);
+    EXPECT_EQ(get_all_args_info.count(), 1u);
+    // Verify the callstack stored for this arg set.
+    ASSERT_EQ(get_all_args_info.js_callstacks_size(), 1);
+    const SignalInfoJSCallStack& siginfo_callstack =
+        get_all_args_info.js_callstacks(0);
+    extensions::StackTrace trace =
+        ExtensionJSCallStacks::ToExtensionsStackTrace(siginfo_callstack);
+    EXPECT_EQ(trace, stack_trace[0]);
+  }
+  {
+    const GetAllArgsInfo& get_all_args_info =
+        cookies_get_all_info.get_all_args_info(1);
+    EXPECT_EQ(get_all_args_info.domain(), domains[1]);
+    EXPECT_EQ(get_all_args_info.name(), names[1]);
+    EXPECT_EQ(get_all_args_info.path(), paths[1]);
+    EXPECT_EQ(get_all_args_info.secure(), is_secure_cookie_values[1]);
+    EXPECT_EQ(get_all_args_info.store_id(), store_ids[1]);
+    EXPECT_EQ(get_all_args_info.url(), urls[1]);
+    EXPECT_EQ(get_all_args_info.is_session(), is_session_cookie_values[1]);
+    EXPECT_EQ(get_all_args_info.count(), 1u);
+    // Verify the callstack stored for this arg set.
+    ASSERT_EQ(get_all_args_info.js_callstacks_size(), 1);
+    const SignalInfoJSCallStack& siginfo_callstack =
+        get_all_args_info.js_callstacks(0);
+    extensions::StackTrace trace =
+        ExtensionJSCallStacks::ToExtensionsStackTrace(siginfo_callstack);
+    EXPECT_EQ(trace, stack_trace[1]);
+  }
 }
 
 }  // namespace
