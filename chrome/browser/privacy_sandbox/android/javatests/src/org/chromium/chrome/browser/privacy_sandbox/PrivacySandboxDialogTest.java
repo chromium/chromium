@@ -40,7 +40,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -312,7 +311,6 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "b/329590023")
     public void testAfterEEAConsentSpinnerAndNoticeAreShown() throws IOException {
         PrivacySandboxDialogController.disableAnimationsForTesting(false);
 
