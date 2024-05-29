@@ -20,7 +20,6 @@ class BrowserGpuClientDelegate : public viz::GpuClientDelegate {
 
   // GpuClientDelegate:
   viz::GpuHostImpl* EnsureGpuHost() override;
-  viz::HostGpuMemoryBufferManager* GetGpuMemoryBufferManager() override;
 };
 
 }  // namespace content
