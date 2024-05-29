@@ -27,6 +27,9 @@ bool UsesVirtualViewStructureForAutofill(const PrefService* prefs) {
           features::kAutofillVirtualViewStructureAndroid)) {
     return false;
   }
+  if (!prefs->GetBoolean(prefs::kAutofillThirdPartyPasswordManagersAllowed)) {
+    return false;
+  }
   if (!prefs->GetBoolean(prefs::kAutofillUsingVirtualViewStructure)) {
     return false;
   }

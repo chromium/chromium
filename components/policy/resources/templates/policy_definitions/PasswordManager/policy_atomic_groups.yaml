@@ -4,3 +4,4 @@ PasswordManager:
   - PasswordManagerEnabled
   - PasswordManagerAllowShowPasswords
   - PasswordSharingEnabled
+  - ThirdPartyPasswordManagersAllowed

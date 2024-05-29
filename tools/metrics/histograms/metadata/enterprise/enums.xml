@@ -2149,6 +2149,7 @@ chromium-metrics-reviews@google.com.
   <int value="1264" label="GenAIVcBackgroundSettings"/>
   <int value="1265" label="DynamicCodeSettings"/>
   <int value="1266" label="LensOverlaySettings"/>
+  <int value="1267" label="ThirdPartyPasswordManagersAllowed"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

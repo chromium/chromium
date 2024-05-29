@@ -119,9 +119,11 @@ inline constexpr char
 // filling.
 inline constexpr char kAutofillUsingVirtualViewStructure[] =
     "autofill.using_virtual_view_structure";
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
+// Boolean set by the `ThirdPartyPasswordManagersAllowed` policy. Defaults to
+// true which allows users to set the `kAutofillUsingVirtualViewStructure` pref.
+// If set to false, user can only use the built-in password manager.
+inline constexpr char kAutofillThirdPartyPasswordManagersAllowed[] =
+    "autofill.third_party_password_managers_allowed";
 inline constexpr char kFacilitatedPaymentsPix[] = "facilitated_payments.pix";
 #endif  // BUILDFLAG(IS_ANDROID)
 

@@ -1265,6 +1265,7 @@ policies:
   1264: GenAIVcBackgroundSettings
   1265: DynamicCodeSettings
   1266: LensOverlaySettings
+  1267: ThirdPartyPasswordManagersAllowed
 atomic_groups:
   1: Homepage
   2: RemoteAccess

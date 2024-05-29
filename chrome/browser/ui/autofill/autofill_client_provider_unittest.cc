@@ -107,6 +107,15 @@ TEST_F(AutofillClientProviderTest, CreateAndroidClientForEnabledPref) {
   prefs()->SetBoolean(prefs::kAutofillUsingVirtualViewStructure, false);
   EXPECT_TRUE(provider().uses_platform_autofill());
 }
+
+TEST_F(AutofillClientProviderTest, CreateChromeClientIfPolicyDisabled) {
+  prefs()->SetBoolean(prefs::kAutofillThirdPartyPasswordManagersAllowed, false);
+
+  // The general pref may be set but it's ineffective if a policy overrides it.
+  prefs()->SetBoolean(prefs::kAutofillUsingVirtualViewStructure, true);
+
+  EXPECT_FALSE(provider().uses_platform_autofill());
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
