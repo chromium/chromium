@@ -17112,41 +17112,6 @@
             ]
         }
     ],
-    "RedWarningSurvey": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "RedInterstitialDontProceed_20230706",
-                    "params": {
-                        "RedWarningSurveyDidProceedFilter": "FALSE",
-                        "RedWarningSurveyTriggerId": "tk2kQP2nR0ugnJ3q1cK0RSntPR9W",
-                        "probability": "0.5"
-                    },
-                    "enable_features": [
-                        "RedWarningSurvey"
-                    ]
-                },
-                {
-                    "name": "RedInterstitialProceed_20230706",
-                    "params": {
-                        "RedWarningSurveyDidProceedFilter": "TRUE",
-                        "RedWarningSurveyTriggerId": "tFp5yLM9T0ugnJ3q1cK0QsMCryMd",
-                        "probability": "0.5"
-                    },
-                    "enable_features": [
-                        "RedWarningSurvey"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReduceAcceptLanguage": [
         {
             "platforms": [
