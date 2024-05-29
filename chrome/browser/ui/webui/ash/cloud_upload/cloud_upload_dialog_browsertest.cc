@@ -1376,8 +1376,11 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
-                       FixUpDialogBroughtToFrontWhenFailingToLaunchASecondOne) {
+// Tests that the existing Fixup/Setup dialog is brought to the front when
+// trying to launch a second one for a different file.
+IN_PROC_BROWSER_TEST_F(
+    FixUpFlowBrowserTest,
+    FixUpDialogBroughtToFrontWhenFailingToLaunchADifferentOne) {
   // Simulate prefs where the setup flow has already run.
   SetWordFileHandlerToFilesSWA(profile(), kActionIdWebDriveOfficeWord);
 
@@ -1429,6 +1432,57 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   ASSERT_TRUE(modal_parent_widget1->is_top_level());
 }
 
+// Tests that the existing Fixup/Setup dialog is brought to the front when
+// trying to launch a second one for the same file.
+IN_PROC_BROWSER_TEST_F(
+    FixUpFlowBrowserTest,
+    FixUpDialogBroughtToFrontWhenFailingToLaunchADuplicateOne) {
+  // Simulate prefs where the setup flow has already run.
+  SetWordFileHandlerToFilesSWA(profile(), kActionIdWebDriveOfficeWord);
+
+  SetUpFiles();
+
+  // ODFS is not mounted, expect that the Fixup flow will need to run.
+  ASSERT_TRUE(ShouldFixUpOffice(profile(), CloudProvider::kOneDrive));
+
+  gfx::NativeWindow modal_parent1 = LaunchFilesAppAndWait(browser()->profile());
+
+  // Launch the setup dialog at chrome://cloud-upload.
+  LaunchCloudUploadDialogAndGetWebContentsForDialog(
+      profile(), files_, CloudProvider::kOneDrive,
+      std::make_unique<CloudOpenMetrics>(CloudProvider::kOneDrive,
+                                         /*file_count=*/1),
+      "cloud-upload");
+
+  gfx::NativeWindow modal_parent2 = LaunchFilesAppAndWait(browser()->profile());
+
+  auto* modal_parent_widget1 =
+      views::Widget::GetWidgetForNativeWindow(modal_parent1);
+  auto* modal_parent_widget2 =
+      views::Widget::GetWidgetForNativeWindow(modal_parent2);
+
+  // The second files app would have launched above the setup dialog that is
+  // modal to the first files app.
+  ASSERT_TRUE(modal_parent_widget2->IsStackedAbove(
+      modal_parent_widget1->GetNativeView()));
+  ASSERT_TRUE(modal_parent_widget2->is_top_level());
+
+  // A duplicate setup dialog cannot be launched at chrome://cloud-upload as
+  // there is already the setup dialog.
+  ASSERT_FALSE(CloudOpenTask::Execute(
+      profile(), files_, file_manager::file_tasks::TaskDescriptor(),
+      CloudProvider::kOneDrive,
+      std::make_unique<CloudOpenMetrics>(CloudProvider::kOneDrive,
+                                         /*file_count=*/1)));
+
+  // The setup dialog would have been brought to the front.
+  ASSERT_TRUE(modal_parent_widget1->IsStackedAbove(
+      modal_parent_widget2->GetNativeView()));
+  ASSERT_TRUE(modal_parent_widget1->is_top_level());
+}
+
+// Tests that the existing Fixup/Setup dialog is brought to the front when
+// trying to launch a second one via `ShowConnectOneDriveDialog()`.
 IN_PROC_BROWSER_TEST_F(
     FixUpFlowBrowserTest,
     FixUpDialogBroughtToFrontWhenShowConnectOneDriveDialogFailsToLaunch) {

@@ -423,8 +423,12 @@ bool CloudOpenTask::Execute(
   if (event_router) {
     if (!event_router->AddCloudOpenTask(file_urls.front())) {
       LOG(ERROR) << "File already being opened";
-      // Nothing is wrong when the file is already being opened, so use a normal
-      // level notification
+      // If a cloud upload dialog already exists, bring it to the front to
+      // prompt the user to keep going.
+      BringDialogToFrontIfItExists(chrome::kChromeUICloudUploadURL);
+      // Notify the user that a file is already being opened. Nothing is wrong
+      // when the file is already being opened, so use a normal level
+      // notification
       ShowUnableToOpenNotification(
           profile, GetAlreadyBeingOpenedMessage(), GetAlreadyBeingOpenedTitle(),
           /*warning_level=*/
