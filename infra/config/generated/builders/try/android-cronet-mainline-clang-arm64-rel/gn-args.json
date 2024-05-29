@@ -23,6 +23,7 @@
     "symbol_level": 1,
     "target_cpu": "arm64",
     "target_os": "android",
+    "use_clang_coverage": true,
     "use_hashed_jni_names": true,
     "use_partition_alloc": false,
     "use_platform_icu_alternatives": true,

@@ -1133,7 +1133,7 @@ ci.builder(
     notifies = ["cronet"],
 )
 
-# Compiles with Android Mainline Clang
+# Compiles with Android Mainline Clang (coverage-enabled)
 ci.builder(
     name = "android-cronet-mainline-clang-arm64-rel",
     builder_spec = builder_config.builder_spec(
@@ -1165,11 +1165,12 @@ ci.builder(
             "arm64",
             "strip_debug_info",
             "cronet_android_mainline_clang",
+            "use_clang_coverage",
         ],
     ),
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
-        category = "cronet|mainline_clang|arm64",
+        category = "cronet|mainline_clang_coverage|arm64",
         short_name = "rel",
     ),
     contact_team_email = "cronet-team@google.com",
@@ -1310,7 +1311,7 @@ ci.builder(
     notifies = ["cronet"],
 )
 
-# Compiles with Android Mainline Clang
+# Compiles with Android Mainline Clang (coverage-enabled)
 ci.builder(
     name = "android-cronet-mainline-clang-x86-rel",
     builder_spec = builder_config.builder_spec(
@@ -1342,11 +1343,12 @@ ci.builder(
             "x86",
             "strip_debug_info",
             "cronet_android_mainline_clang",
+            "use_clang_coverage",
         ],
     ),
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
-        category = "cronet|mainline_clang|x86",
+        category = "cronet|mainline_clang_coverage|x86",
         short_name = "rel",
     ),
     contact_team_email = "cronet-team@google.com",
