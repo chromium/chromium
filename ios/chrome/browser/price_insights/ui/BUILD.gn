@@ -51,7 +51,10 @@ swift_source_set("price_history_swift") {
     "price_history.swift",
     "price_history_provider.swift",
   ]
-  deps = [ "//ios/chrome/common/ui/colors" ]
+  deps = [
+    "//ios/chrome/browser/price_insights/ui/resources",
+    "//ios/chrome/common/ui/colors",
+  ]
   frameworks = [
     "Charts.framework",
     "Foundation.framework",

@@ -12,8 +12,8 @@ struct HistoryGraph: View {
   let history: [Date: NSNumber]
   let currency: String
 
-  /// Color representing blue (300).
-  static let blue300 = UIColor(named: kBlue300Color) ?? .blue
+  /// Graph gradient color.
+  static let graphGradientColor = "graph_gradient_color"
 
   /// Color representing blue (600).
   static let blue600 = UIColor(named: kBlue600Color) ?? .blue
@@ -34,7 +34,7 @@ struct HistoryGraph: View {
     /// A linear gradient used for styling the graph.
     let linearGradient = LinearGradient(
       gradient: Gradient(colors: [
-        Color(uiColor: Self.blue300).opacity(colorScheme == .dark ? 0.2 : 0.4),
+        Color(Self.graphGradientColor).opacity(colorScheme == .dark ? 0.2 : 0.4),
         Color.clear,
       ]),
       startPoint: .top,
