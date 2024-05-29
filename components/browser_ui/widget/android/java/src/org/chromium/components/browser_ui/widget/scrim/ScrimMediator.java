@@ -94,7 +94,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         }
 
         // Make sure alpha is reset to 0 since the model may be reused.
-        setAlphaInternal(0);
+        setAlphaInternal(0.f);
 
         if (mOverlayFadeInAnimator == null) {
             mOverlayFadeInAnimator = ValueAnimator.ofFloat(0, 1);
@@ -105,6 +105,12 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
                         @Override
                         public void onEnd(Animator animation) {
                             mOverlayAnimator = null;
+                        }
+
+                        @Override
+                        public void onCancel(Animator animation) {
+                            setAlphaInternal(0.f);
+                            onEnd(animation);
                         }
                     });
             mOverlayFadeInAnimator.addUpdateListener(
@@ -157,8 +163,13 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
                         public void onEnd(Animator animation) {
                             // If the animation wasn't ended early, alpha will already be 0 and the
                             // model will be null as a result of #setAlphaInternal().
-                            if (mModel != null) setAlphaInternal(0);
+                            if (mModel != null) setAlphaInternal(0.f);
                             mOverlayAnimator = null;
+                        }
+
+                        @Override
+                        public void onCancel(Animator animation) {
+                            onEnd(animation);
                         }
                     });
             mOverlayFadeOutAnimator.addUpdateListener(
@@ -212,7 +223,7 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
             mSystemUiScrimDelegate.setNavigationBarScrimFraction(alpha);
         }
 
-        boolean isVisible = alpha > 0;
+        boolean isVisible = alpha > Float.MIN_NORMAL;
         if (mModel.get(ScrimProperties.VISIBILITY_CALLBACK) != null
                 && mCurrentVisibility != isVisible) {
             mModel.get(ScrimProperties.VISIBILITY_CALLBACK).onResult(isVisible);
