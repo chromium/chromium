@@ -537,8 +537,11 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
   DecorationTitle* title_layer =
       layer_title_cache->GetGroupTitleLayer(id, incognito);
   if (title_layer) {
-    float title_y = (height - title_layer->size().height()) / 2.f;
+    // Ensure we're using the updated title bitmap prior to accessing/updating
+    // any properties.
     title_layer->SetUIResourceIds();
+
+    float title_y = (height - title_layer->size().height()) / 2.f;
     title_layer->setOpacity(1.0f);
     title_layer->setBounds(gfx::Size(width - (title_text_padding * 2), height));
     title_layer->layer()->SetPosition(gfx::PointF(title_text_padding, title_y));
