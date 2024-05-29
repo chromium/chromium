@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
@@ -29,8 +31,9 @@ public class PermissionsData {
         mLifetime = lifetime;
     }
 
+    @VisibleForTesting
     @CalledByNative
-    private static PermissionsData create(
+    static PermissionsData create(
             @JniType("std::string") String origin,
             @JniType("std::vector<int32_t>") int[] permissions,
             @JniType("std::int64_t") long expiration,

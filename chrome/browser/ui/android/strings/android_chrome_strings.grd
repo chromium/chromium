@@ -1669,6 +1669,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_PERMISSIONS_LIST_HEADER" translateable="false">
         Permissions
       </message>
+      <message name="IDS_SAFETY_HUB_PERMISSIONS_PREFERENCE_UNDO" translateable="false">
+        Undo
+      </message>
 
        <!-- Safe Browsing preferences -->
       <message name="IDS_PREFS_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing preferences. [CHAR_LIMIT=32]">
