@@ -65,14 +65,6 @@
             <include name="IDR_PRODUCT_LOGO_CANARY_24_SHORTCUTS" file="google_chrome/product_logo_24_canary.png" type="BINDATA" />
             <include name="IDR_PRODUCT_LOGO_DEV_24_SHORTCUTS" file="google_chrome/product_logo_24_dev.png" type="BINDATA" />
             <include name="IDR_PRODUCT_LOGO_BETA_24_SHORTCUTS" file="google_chrome/product_logo_24_beta.png" type="BINDATA" />
-            <include name="IDR_PRODUCT_LOGO_32_STABLE_SHORTCUTS" file="google_chrome/product_logo_32.png" type="BINDATA" />
-            <include name="IDR_PRODUCT_LOGO_CANARY_32_SHORTCUTS" file="google_chrome/product_logo_32_canary.png" type="BINDATA" />
-            <include name="IDR_PRODUCT_LOGO_DEV_32_SHORTCUTS" file="google_chrome/product_logo_32_dev.png" type="BINDATA" />
-            <include name="IDR_PRODUCT_LOGO_BETA_32_SHORTCUTS" file="google_chrome/product_logo_32_beta.png" type="BINDATA" />
-            <include name="IDR_PRODUCT_LOGO_48_STABLE_SHORTCUTS" file="google_chrome/product_logo_48.png" type="BINDATA" />
-            <include name="IDR_PRODUCT_LOGO_CANARY_48_SHORTCUTS" file="google_chrome/product_logo_48_canary.png" type="BINDATA" />
-            <include name="IDR_PRODUCT_LOGO_DEV_48_SHORTCUTS" file="google_chrome/product_logo_48_dev.png" type="BINDATA" />
-            <include name="IDR_PRODUCT_LOGO_BETA_48_SHORTCUTS" file="google_chrome/product_logo_48_beta.png" type="BINDATA" />
             <include name="IDR_PRODUCT_LOGO_64_STABLE_SHORTCUTS" file="google_chrome/product_logo_64.png" type="BINDATA" />
             <include name="IDR_PRODUCT_LOGO_CANARY_64_SHORTCUTS" file="google_chrome/product_logo_64_canary.png" type="BINDATA" />
             <include name="IDR_PRODUCT_LOGO_DEV_64_SHORTCUTS" file="google_chrome/product_logo_64_dev.png" type="BINDATA" />
@@ -89,8 +81,6 @@
               <include name="IDR_PRODUCT_LOGO_ANIMATION_SVG" file="chromium/product_logo_animation.svg" type="BINDATA" />
               <include name="IDR_PRODUCT_LOGO_16_CFT_SHORTCUTS" file="google_chrome/google_chrome_for_testing/product_logo_16.png" type="BINDATA" />
               <include name="IDR_PRODUCT_LOGO_24_CFT_SHORTCUTS" file="google_chrome/google_chrome_for_testing/product_logo_24.png" type="BINDATA" />
-              <include name="IDR_PRODUCT_LOGO_32_CFT_SHORTCUTS" file="google_chrome/google_chrome_for_testing/product_logo_32.png" type="BINDATA" />
-              <include name="IDR_PRODUCT_LOGO_48_CFT_SHORTCUTS" file="google_chrome/google_chrome_for_testing/product_logo_48.png" type="BINDATA" />
               <include name="IDR_PRODUCT_LOGO_64_CFT_SHORTCUTS" file="google_chrome/google_chrome_for_testing/product_logo_64.png" type="BINDATA" />
               <include name="IDR_PRODUCT_LOGO_128_CFT_SHORTCUTS" file="google_chrome/google_chrome_for_testing/product_logo_128.png" type="BINDATA" />
             </then>
@@ -101,8 +91,6 @@
           </if> <!-- _is_chrome_for_testing_branded -->
             <include name="IDR_PRODUCT_LOGO_16_SHORTCUTS" file="chromium/product_logo_16.png" type="BINDATA" />
             <include name="IDR_PRODUCT_LOGO_24_SHORTCUTS" file="chromium/product_logo_24.png" type="BINDATA" />
-            <include name="IDR_PRODUCT_LOGO_32_SHORTCUTS" file="chromium/product_logo_32.png" type="BINDATA" />
-            <include name="IDR_PRODUCT_LOGO_48_SHORTCUTS" file="chromium/product_logo_48.png" type="BINDATA" />
             <include name="IDR_PRODUCT_LOGO_64_SHORTCUTS" file="chromium/product_logo_64.png" type="BINDATA" />
             <include name="IDR_PRODUCT_LOGO_128_SHORTCUTS" file="chromium/product_logo_128.png" type="BINDATA" />
         </else>
