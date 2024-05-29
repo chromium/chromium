@@ -88,4 +88,14 @@ public class MockSafetyNetApiHandler implements SafetyNetApiHandler {
     public static void clearMockResponses() {
         sResponseMap.clear();
     }
+
+    @Override
+    public void isVerifyAppsEnabled(long callbackId) {
+        mObserver.onVerifyAppsEnabledDone(callbackId, VerifyAppsResult.SUCCESS_ENABLED);
+    }
+
+    @Override
+    public void enableVerifyApps(long callbackId) {
+        mObserver.onVerifyAppsEnabledDone(callbackId, VerifyAppsResult.SUCCESS_ENABLED);
+    }
 }

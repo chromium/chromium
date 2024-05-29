@@ -87,10 +87,7 @@ public interface SafetyNetApiHandler {
      *
      * @param callbackId The id of the callback which should be returned * with the result.
      */
-    // TODO(crbug.com/341790041): Remove the default implementations on
-    // real ones have landed. These ones are not suitable for production
-    // use.
-    default void isVerifyAppsEnabled(long callbackId) {}
+    void isVerifyAppsEnabled(long callbackId);
 
     /**
      * Prompt the user to enable app verification. The response will be provided to the observer
@@ -98,8 +95,5 @@ public interface SafetyNetApiHandler {
      *
      * @param callbackId The id of the callback which should be returned * with the result.
      */
-    // TODO(crbug.com/341790041): Remove the default implementations on
-    // real ones have landed. These ones are not suitable for production
-    // use.
-    default void enableVerifyApps(long callbackId) {}
+    void enableVerifyApps(long callbackId);
 }
