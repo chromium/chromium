@@ -372,4 +372,4 @@ class GPU_EXPORT SchedulerDfs {
 
 }  // namespace gpu
 
-#endif  // GPU_COMMAND_BUFFER_SERVICE_SCHEDULER_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_SCHEDULER_DFS_H_

@@ -34,4 +34,4 @@ class VIEWS_EXPORT ActionViewInterface {
 
 }  // namespace views
 
-#endif  // UI_VIEWS_ACTION_VIEW_INTERFACE_H_
+#endif  // UI_VIEWS_ACTIONS_ACTION_VIEW_INTERFACE_H_

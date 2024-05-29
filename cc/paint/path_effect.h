@@ -58,4 +58,4 @@ class CC_PAINT_EXPORT PathEffect : public SkRefCnt {
 
 }  // namespace cc
 
-#endif  // CC_PAINT_COLOR_FILTER_H_
+#endif  // CC_PAINT_PATH_EFFECT_H_

@@ -43,4 +43,4 @@ class GL_EXPORT ScopedMakeCurrentUnsafe {
 
 }  // namespace ui
 
-#endif  // UI_GL_SCOPED_MAKE_CURRENT_H_
+#endif  // UI_GL_SCOPED_MAKE_CURRENT_UNSAFE_H_

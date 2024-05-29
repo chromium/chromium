@@ -114,4 +114,4 @@ struct StructTraits<skia::mojom::SkColorSpaceDataView, ::sk_sp<SkColorSpace>> {
 
 }  // namespace mojo
 
-#endif  // SKIA_PUBLIC_MOJOM_SKCOLOR4F_MOJOM_TRAITS_H_
+#endif  // SKIA_PUBLIC_MOJOM_SKCOLORSPACE_MOJOM_TRAITS_H_

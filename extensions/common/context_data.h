@@ -28,4 +28,4 @@ class ContextData {
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_COMMON_FRAME_ADAPTER_H_
+#endif  // EXTENSIONS_COMMON_CONTEXT_DATA_H_

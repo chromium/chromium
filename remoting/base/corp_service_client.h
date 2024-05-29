@@ -70,4 +70,4 @@ class CorpServiceClient {
 
 }  // namespace remoting
 
-#endif  // REMOTING_BASE_DIRECTORY_SERVICE_CLIENT_H_
+#endif  // REMOTING_BASE_CORP_SERVICE_CLIENT_H_

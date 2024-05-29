@@ -116,4 +116,4 @@ class CONTENT_EXPORT AuctionConfigLazyFiller : public PersistedLazyFiller {
 
 }  // namespace auction_worklet
 
-#endif  // CONTENT_SERVICES_AUCTION_WORKLET_BIDDER_LAZY_FILLER_H_
+#endif  // CONTENT_SERVICES_AUCTION_WORKLET_SELLER_LAZY_FILLER_H_

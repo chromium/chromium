@@ -83,4 +83,4 @@ class JsSandboxArrayBufferAllocator final : public v8::ArrayBuffer::Allocator {
 
 }  // namespace android_webview
 
-#endif
+#endif  // ANDROID_WEBVIEW_JS_SANDBOX_SERVICE_JS_SANDBOX_ARRAY_BUFFER_ALLOCATOR_H_

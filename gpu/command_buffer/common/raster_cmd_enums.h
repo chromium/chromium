@@ -19,4 +19,4 @@ enum MsaaMode : uint32_t {
 }  // namespace raster
 }  // namespace gpu
 
-#endif
+#endif  // GPU_COMMAND_BUFFER_COMMON_RASTER_CMD_ENUMS_H_

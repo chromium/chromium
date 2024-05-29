@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_DISPATCHER_TAGGING_H_
-#define BASE_ALLOCATOR_DISPATCHER_TAGGING_H_
+#ifndef BASE_ALLOCATOR_DISPATCHER_MEMORY_TAGGING_H_
+#define BASE_ALLOCATOR_DISPATCHER_MEMORY_TAGGING_H_
 
 #include "partition_alloc/tagging.h"
 
@@ -39,4 +39,4 @@ constexpr MTEMode ConvertToMTEMode(
 
 }  // namespace base::allocator::dispatcher
 
-#endif  // BASE_ALLOCATOR_DISPATCHER_TAGGING_H_
+#endif  // BASE_ALLOCATOR_DISPATCHER_MEMORY_TAGGING_H_

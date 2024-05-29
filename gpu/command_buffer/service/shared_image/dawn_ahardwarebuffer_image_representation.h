@@ -46,4 +46,4 @@ class DawnAHardwareBufferImageRepresentation : public DawnImageRepresentation {
 
 }  // namespace gpu
 
-#endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DAWN_EGL_IMAGE_REPRESENTATION_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DAWN_AHARDWAREBUFFER_IMAGE_REPRESENTATION_H_
