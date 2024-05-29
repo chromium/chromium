@@ -4837,6 +4837,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4562091353415772246">Instalirajte ažuriranja i aplikacije. Ako nastavite, slažete se da ovaj uređaj može i automatski da preuzima i instalira ažuriranja i aplikacije od Google-a, mobilnog operatera i proizvođača uređaja, uz moguće korišćenje mobilnih podataka. Neke od ovih aplikacija mogu da nude kupovine u aplikaciji. <ph name="BEGIN_LINK1" />Saznajte više o Automatskom instaliranju sa Play-a<ph name="BEGIN_LINK1_END" />Saznajte više<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">Dodaj digitalni otisak</translation>
 <translation id="4562155266774382038">Odbacite predlog</translation>
+<translation id="4562364000855074606">Blokirajte aplikacije instalirane na ovom uređaju <ph name="DEVICE_TYPE" />. Da biste ograničili preuzimanje aplikacija ili sadržaja, idite u podešavanja Google Play-a. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Početni jezik za unos je kineski</translation>
 <translation id="4563382028841851106">Ukloni sa naloga</translation>
 <translation id="4563880231729913339">Prst 3</translation>
@@ -8049,6 +8050,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7009709314043432820"><ph name="APP_NAME" /> koristi kameru</translation>
 <translation id="701080569351381435">Prikaži izvor</translation>
 <translation id="7011797924920577670">procenjuje vaša interesovanja</translation>
+<translation id="7012430956470647760">Roditeljski nadzor za aplikacije</translation>
 <translation id="7013762323294215682">Ovaj pristupni ključ će se sačuvati u menadžeru lozinki. Svako ko ima pristup njemu moći će da koristi ovaj pristupni ključ.</translation>
 <translation id="7014174261166285193">Instalacija nije uspela.</translation>
 <translation id="7014480873681694324">Ukloni isticanje</translation>

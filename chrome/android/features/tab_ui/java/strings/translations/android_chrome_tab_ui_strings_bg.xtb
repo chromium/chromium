@@ -61,7 +61,6 @@
 <translation id="4139634748112164403">Разделите ще останат отворени на това устройство, но групата ще бъде изтрита за постоянно</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Затваряне на групата „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_ONE" /> раздел.}other{Затваряне на групата „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="4159784952369912983">лилаво</translation>
-<translation id="4212246570487010370">Продължаване на сърфирането</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Разгъване на групата раздели „<ph name="TITLE_OF_GROUP" />“ с <ph name="TABS_COUNT_ONE" /> раздел.}other{Разгъване на групата раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="427987768447457592">Нова група раздели</translation>
 <translation id="4460014764210899310">Разгрупиране</translation>

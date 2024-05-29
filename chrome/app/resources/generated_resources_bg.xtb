@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">Не сега</translation>
 <translation id="100881991356161927">Име на сайта</translation>
 <translation id="1009663062402466586">Вече се предлагат контроли за игри</translation>
+<translation id="1010136228650201057">Шифроване на потребителските данни</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Блокирала страница}other{Блокирали страници}}</translation>
 <translation id="1011003645819296594">Запазени устройства</translation>
 <translation id="1011355516189274711">Сила на звука на синтезирания говор</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">„Инкогнито“</translation>
 <translation id="1049795001945932310">&amp;Езикови настройки</translation>
 <translation id="1050693411695664090">лоша</translation>
+<translation id="1053776357096024725">Подобряване на звука от вградения микрофон с различни ефекти</translation>
 <translation id="1054048317165655285">Завършване на настройването на телефона ви</translation>
 <translation id="1054153489933238809">Отваряне на оригиналното изображение в нов раздел</translation>
 <translation id="1054187194995068149">Здравейте. Този глас звучи така</translation>
@@ -831,6 +833,7 @@
 <translation id="1607139524282324606">Изчистване на записа</translation>
 <translation id="1607499585984539560">Потребителят не е свързан с домейна</translation>
 <translation id="1608668830839595724">Още действия за избраните елементи</translation>
+<translation id="1608698493373028805">Възможно е това разширение скоро да спре да се поддържа</translation>
 <translation id="1610272688494140697">Настройки за приложението</translation>
 <translation id="161042844686301425">синьозелено</translation>
 <translation id="1611432201750675208">Устройството ви е заключено</translation>
@@ -1703,6 +1706,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2234827758954819389">Ръководство за поверителност</translation>
 <translation id="2234876718134438132">Синхронизиране и услуги на Google</translation>
 <translation id="2235344399760031203">„Бисквитките“ на трети страни са блокирани</translation>
+<translation id="2236949375853147973">Моята активност</translation>
 <translation id="2238379619048995541">Данни за състоянието на активност</translation>
 <translation id="2241053333139545397">Четене и промяна на данните ви в няколко уебсайта.</translation>
 <translation id="2241634353105152135">Само веднъж</translation>
@@ -2315,6 +2319,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2667144577800272420">За другите приложения е зададено да отварят същите връзки като <ph name="APP_NAME" />. Това действие ще деактивира отварянето на поддържаните връзки от <ph name="APP_NAME_2" /> и <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Управление на проверката на правописа</translation>
 <translation id="2668094785979141847">Кликнете, за да излезете от Google Обектив</translation>
+<translation id="2668604389652548400">Премахнете го или го заменете с подобни разширения от <ph name="BEGIN_LINK" />уеб магазина на Chrome<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Отварянето на <ph name="APP_NAME" /> не бе успешно</translation>
 <translation id="2669454659051515572">Всеки, който използва това устройство, може да преглежда изтеглените файлове</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> споделя раздел в Chrome.</translation>
@@ -2365,6 +2370,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2710101514844343743">Данни за употребата и диагностиката</translation>
 <translation id="271033894570825754">Създаване</translation>
 <translation id="2710507903599773521">Устройството ви <ph name="DEVICE_TYPE" /> вече е отключено</translation>
+<translation id="2712141162840347885">Изберете каквото и да е, за да търсите с Google Обектив, или натиснете Escape за изход</translation>
 <translation id="2713106313042589954">Изключване на камерата</translation>
 <translation id="2713444072780614174">бяло</translation>
 <translation id="2714180132046334502">Тъмен фон</translation>
@@ -2989,6 +2995,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3177914167275935955">Устройството ви включва Chrome Education Upgrade, но потребителското ви име не е свързано с профил в Google for Education. Създайте такъв, като посетите g.co/workspace/edusignup от алтернативно устройство.</translation>
 <translation id="3179982752812949580">Шрифт на текста</translation>
 <translation id="3180284704187420717">Запазвайте своите отметки, пароли и др. с функцията за синхронизиране</translation>
+<translation id="3180716079618904608">Изтегляне на приложения и игри</translation>
 <translation id="3181954750937456830">„Безопасно сърфиране“ (защитава вас и устройството ви от опасни сайтове)</translation>
 <translation id="3182749001423093222">Проверка на правописа</translation>
 <translation id="3183139917765991655">Импортиране на потребителски профили</translation>
@@ -4281,6 +4288,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4120817667028078560">Пътят е твърде дълъг</translation>
 <translation id="4124823734405044952">Ключът ви за сигурност е нулиран</translation>
 <translation id="4124935795427217608">Еднорог</translation>
+<translation id="4126375522951286587">Изключване на <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">Супергерой</translation>
 <translation id="4130199216115862831">Регистрационен файл на устройството</translation>
 <translation id="4130750466177569591">Приемам</translation>
@@ -4581,6 +4589,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4364327530094270451">Пъпеш</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> споделя прозорец.</translation>
 <translation id="4364830672918311045">Показване на известия</translation>
+<translation id="4367027658822022112">Можете да фиксирате Google Обектив за лесен достъп, като кликнете върху бутона „Фиксиране“ в горната част на страничния панел</translation>
 <translation id="4367513928820380646">Преглед на премахнатите разрешения</translation>
 <translation id="4367971618859387374">Екранно име</translation>
 <translation id="4368960422722232719">Показване на използваната памет в картата за визуализация при задържане на курсора на мишката върху даден раздел</translation>
@@ -4983,6 +4992,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4666911709726371538">Още приложения</translation>
 <translation id="4668279686271488041">Данните от измерването на рекламите се изтриват редовно от устройството ви.</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">ПИН кодът трябва да съдържа само цифри</translation>
 <translation id="4670909875730475086">Поздравления! Приложението <ph name="APP_NAME" /> бе успешно инсталирано на устройството ви</translation>
 <translation id="4672759829555593783">Отваряне на <ph name="FILE_NAME" /> сега</translation>
 <translation id="4673442866648850031">Отваряне на инструментите за писане при изваждане на писалката</translation>
@@ -5066,6 +5076,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="473936925429402449">Избрано. Допълнително съдържание <ph name="CURRENT_ELEMENT" /> от <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Пропуски</translation>
 <translation id="4740546261986864539">Наскоро отворено</translation>
+<translation id="4741235124132242877">Успешно фиксиране. Можете да използвате Google Обектив от лентата с инструменти</translation>
 <translation id="4742334355511750246">Сайтове без разрешение за показване на изображения</translation>
 <translation id="4742795653798179840">Данните в Chrome бяха изтрити</translation>
 <translation id="4742970037960872810">Премахване на открояването</translation>
@@ -5213,6 +5224,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4853020600495124913">Отваряне в &amp;нов прозорец</translation>
 <translation id="4854317507773910281">Изберете профил на родител за одобрение</translation>
 <translation id="485480310608090163">Още настройки и разрешения</translation>
+<translation id="4858599593306712511">Родителски контроли в приложението</translation>
 <translation id="4858913220355269194">Фриц</translation>
 <translation id="486213875233855629">Звукът е спрян от администратора ви</translation>
 <translation id="4862642413395066333">Подписване на OCSP отговори</translation>
@@ -6764,6 +6776,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6042308850641462728">Още</translation>
 <translation id="604388835206766544">Синтактичният анализ на конфигурацията не бе успешен</translation>
 <translation id="6043994281159824495">Изход сега</translation>
+<translation id="604424701295382420">Успешно фиксиране. Можете да осъществявате достъп до Google Обектив чрез новия бутон в лентата с инструменти</translation>
 <translation id="6045114302329202345">Основен бутон за TrackPoint</translation>
 <translation id="6047632800149092791">Синхронизирането не работи. Опитайте да излезете и отново да влезете в профила си.</translation>
 <translation id="6048747414605857443">Избиране и персонализиране на гласовете за синтезиран говор за ChromeVox и „Прочитане на глас“</translation>
@@ -7596,6 +7609,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6686490380836145850">Затваряне на разделите отдясно</translation>
 <translation id="6686665106869989887">Разделът бе преместен надясно</translation>
 <translation id="6686817083349815241">Запазване на паролата ви</translation>
+<translation id="6687008241368170505">Промяна на ПИН кода за Google Мениджър на пароли</translation>
 <translation id="6687079240787935001">Скриване на <ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">Помолете <ph name="SUPERVISED_USER_NAME" /> да дойде до компютъра. Детето ви ще прочете няколко фрази на този екран, за да бъде създаден гласовият му модел.
     <ph name="BR" />
@@ -8375,6 +8389,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> иска разрешение. Натиснете F6, за да отговорите</translation>
 <translation id="7290242001003353852">Тази услуга за вход, хоствана от <ph name="SAML_DOMAIN" />, осъществява достъп до камерата ви.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Браузърът ви се управлява<ph name="END_LINK" /> от организацията ви, а <ph name="BEGIN_LINK" />потребителският ви профил<ph name="END_LINK" /> – от <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="7292147651179697920">Помолете родителя си да разреши достъпа от настройките</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Обърнете внимание, че Android, Google Play и свързаните с тях приложения се управляват от своите собствени правила за събиране и използване на данни.</translation>
 <translation id="7296503797589217366">Избиране на папката „<ph name="FOLDER_TITLE" />“</translation>
@@ -8683,6 +8698,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7514239104543605883">Копиране на устройството ви</translation>
 <translation id="7514365320538308">Изтегляне</translation>
 <translation id="7514417110442087199">Задаване на действие</translation>
+<translation id="7515191208480168435">Можете да фиксирате Google Обектив за лесен достъп</translation>
 <translation id="751523031290522286">Приложението <ph name="APP_NAME" /> е блокирано от администратор. Поискайте от него разрешение да използвате приложението.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
@@ -10157,6 +10173,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8592141010104017453">Известията да не се показват въобще</translation>
 <translation id="859246725979739260">Достъпът до местоположението ви е блокиран за този сайт.</translation>
 <translation id="8593450223647418235">Няма да можете да отваряте файлове в Microsoft 365, докато не завършите настройването.</translation>
+<translation id="8593686980889923154">Приложението <ph name="APP_NAME" /> е блокирано на вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="8596540852772265699">Персонализирани файлове</translation>
 <translation id="8597845839771543242">Формат на свойството:</translation>
 <translation id="8598249292448297523">отпечатване</translation>
@@ -10576,6 +10593,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8890529496706615641">Потребителският профил не бе преименуван. Моля, опитайте отново или се обърнете към оператора си за техническа поддръжка.</translation>
 <translation id="8892168913673237979">Готово!</translation>
 <translation id="8892246501904593980">Вижте всичките си отметки в „Отметки и списъци“</translation>
+<translation id="8893479486525393799">Студиен микрофон</translation>
 <translation id="8893801527741465188">Деинсталирането завърши</translation>
 <translation id="8893928184421379330">За съжаление устройството <ph name="DEVICE_LABEL" /> не можа да бъде разпознато.</translation>
 <translation id="8894761918470382415">Защита на достъпа до данните от периферни устройства</translation>

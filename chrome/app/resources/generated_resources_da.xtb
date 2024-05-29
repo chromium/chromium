@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">Ikke nu</translation>
 <translation id="100881991356161927">Navn på website</translation>
 <translation id="1009663062402466586">Spilindstillinger er nu tilgængelige</translation>
+<translation id="1010136228650201057">Kryptering af brugerdata</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Siden svarer ikke}one{Siderne svarer ikke}other{Siderne svarer ikke}}</translation>
 <translation id="1011003645819296594">Gemte enheder</translation>
 <translation id="1011355516189274711">Lydstyrke ved oplæsning</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1049795001945932310">&amp;Sprogindstillinger</translation>
 <translation id="1050693411695664090">Dårlig</translation>
+<translation id="1053776357096024725">Få bedre lyd fra din indbyggede mikrofon med forskellige effekter</translation>
 <translation id="1054048317165655285">Gennemfør konfigurationen på din telefon</translation>
 <translation id="1054153489933238809">Åbn originalbillede på ny fane</translation>
 <translation id="1054187194995068149">Hej! Dette er et preview</translation>
@@ -835,6 +837,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1607139524282324606">Ryd indtastning</translation>
 <translation id="1607499585984539560">Brugeren er ikke tilknyttet domænet</translation>
 <translation id="1608668830839595724">Flere handlinger for de valgte elementer</translation>
+<translation id="1608698493373028805">Denne udvidelse understøttes muligvis snart ikke længere</translation>
 <translation id="1610272688494140697">Appindstillinger</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Din enhed er låst</translation>
@@ -1708,6 +1711,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2234827758954819389">Privatlivsguide</translation>
 <translation id="2234876718134438132">Synkronisering og Google-tjenester</translation>
 <translation id="2235344399760031203">Tredjepartscookies er blokeret</translation>
+<translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="2238379619048995541">Data for frekvenstilstand</translation>
 <translation id="2241053333139545397">Læse og redigere dine data på en række websites</translation>
 <translation id="2241634353105152135">Kun én gang</translation>
@@ -2320,6 +2324,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2667144577800272420">Andre apps er konfigureret til at åbne de samme links som <ph name="APP_NAME" />. Dette gør, at <ph name="APP_NAME_2" /> og <ph name="APP_NAME_3" /> ikke kan åbne understøttede links.</translation>
 <translation id="2667463864537187133">Administrer stavekontrollen</translation>
 <translation id="2668094785979141847">Klik for at lukke Google Lens</translation>
+<translation id="2668604389652548400">Fjern eller erstat den med lignende udvidelser fra <ph name="BEGIN_LINK" />Chrome Webshop<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> kunne ikke åbnes.</translation>
 <translation id="2669454659051515572">Alle, der bruger denne enhed, kan se downloadede filer</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> deler en Chrome-fane.</translation>
@@ -2370,6 +2375,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2710101514844343743">Brugs- og diagnostikdata</translation>
 <translation id="271033894570825754">Nyt</translation>
 <translation id="2710507903599773521">Din <ph name="DEVICE_TYPE" /> er nu låst op</translation>
+<translation id="2712141162840347885">Vælg det, du vil søge efter med Google Lens, eller tryk på Escape for at lukke Google Lens</translation>
 <translation id="2713106313042589954">Slå kamera fra</translation>
 <translation id="2713444072780614174">Hvid</translation>
 <translation id="2714180132046334502">Mørk baggrund</translation>
@@ -2994,6 +3000,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3177914167275935955">Din enhed inkluderer en Chrome Education-opgradering, men dit brugernavn er ikke knyttet til en Google for Education-konto. Opret en Google for Education-konto ved at gå til g.co/workspace/edusignup på en sekundær enhed.</translation>
 <translation id="3179982752812949580">Tekstskrifttype</translation>
 <translation id="3180284704187420717">Gem dine bogmærker, adgangskoder og meget mere ved hjælp af synkronisering</translation>
+<translation id="3180716079618904608">Hent apps og spil</translation>
 <translation id="3181954750937456830">Beskyttet browsing (beskytter dig og din enhed mod farlige websites)</translation>
 <translation id="3182749001423093222">Stavekontrol</translation>
 <translation id="3183139917765991655">Profilimport</translation>
@@ -4285,6 +4292,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4120817667028078560">Stien er for lang</translation>
 <translation id="4124823734405044952">Din sikkerhedsnøgle er blevet nulstillet</translation>
 <translation id="4124935795427217608">Enhjørning</translation>
+<translation id="4126375522951286587">Sluk <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">Superhelt</translation>
 <translation id="4130199216115862831">Logfil for enheden</translation>
 <translation id="4130750466177569591">Jeg accepterer</translation>
@@ -4585,6 +4593,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> deler et vindue.</translation>
 <translation id="4364830672918311045">Vis notifikationer</translation>
+<translation id="4367027658822022112">Du kan fastgøre Google Lens for at få nem adgang. Klik på knappen Fastgør øverst i sidepanelet.</translation>
 <translation id="4367513928820380646">Gennemgå fjernede tilladelser</translation>
 <translation id="4367971618859387374">Vist navn</translation>
 <translation id="4368960422722232719">Vis hukommelsesforbrug på fanens infokort</translation>
@@ -4987,6 +4996,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4666911709726371538">Flere apps</translation>
 <translation id="4668279686271488041">Annoncemålingsdata slettes regelmæssigt fra din enhed</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">Pinkoden må kun indeholde tal</translation>
 <translation id="4670909875730475086">Tillykke! <ph name="APP_NAME" /> er blevet installeret på din enhed</translation>
 <translation id="4672759829555593783">Åbn <ph name="FILE_NAME" /> nu</translation>
 <translation id="4673442866648850031">Åbn styluspenværktøjer, når styluspennen fjernes</translation>
@@ -5070,6 +5080,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="473936925429402449">Valgt, yderligere indhold <ph name="CURRENT_ELEMENT" /> ud af <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Billetter</translation>
 <translation id="4740546261986864539">Åbnet for nylig</translation>
+<translation id="4741235124132242877">Funktionen er fastgjort. Brug Google Lens igen via værktøjslinjen</translation>
 <translation id="4742334355511750246">Har ikke tilladelse til at vise billeder</translation>
 <translation id="4742795653798179840">Chrome-dataene er slettet</translation>
 <translation id="4742970037960872810">Fjern fremhævning</translation>
@@ -5217,6 +5228,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4853020600495124913">Åbn i &amp;nyt vindue</translation>
 <translation id="4854317507773910281">Vælg en forældrekonto, der skal godkende</translation>
 <translation id="485480310608090163">Flere indstillinger og tilladelser</translation>
+<translation id="4858599593306712511">Børnesikring i app</translation>
 <translation id="4858913220355269194">Laudrup</translation>
 <translation id="486213875233855629">Slået fra af din administrator</translation>
 <translation id="4862642413395066333">Signering af OCSP-svar</translation>
@@ -6767,6 +6779,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6042308850641462728">Mere</translation>
 <translation id="604388835206766544">Konfigurationen kunne ikke parses</translation>
 <translation id="6043994281159824495">Log ud nu</translation>
+<translation id="604424701295382420">Funktionen er fastgjort. Du kan tilgå Google Lens igen ved hjælp af den nye knap på værktøjslinjen</translation>
 <translation id="6045114302329202345">Primær TrackPoint-knap</translation>
 <translation id="6047632800149092791">Der kunne ikke synkroniseres. Prøv at logge ud og ind igen.</translation>
 <translation id="6048747414605857443">Vælg og tilpas oplæsningsstemmer til ChromeVox og Tekstoplæsning</translation>
@@ -7601,6 +7614,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6686490380836145850">Luk fanerne til højre</translation>
 <translation id="6686665106869989887">Fanen blev flyttet til højre</translation>
 <translation id="6686817083349815241">Gem din adgangskode</translation>
+<translation id="6687008241368170505">Skift pinkode til Google Adgangskodeadministrator</translation>
 <translation id="6687079240787935001">Skjul <ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">Bed <ph name="SUPERVISED_USER_NAME" /> om at komme hen til computeren. Dit barn skal læse et par sætninger på skærmen højt for at oprette sin stemmemodel.
     <ph name="BR" />
@@ -8380,6 +8394,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Der er anmodet om tilladelse. Tryk på F6 for at svare</translation>
 <translation id="7290242001003353852">Denne logintjeneste, som hostes af <ph name="SAML_DOMAIN" />, har adgang til dit kamera.</translation>
 <translation id="7292067737327289208">Din <ph name="BEGIN_LINK" />browser administreres<ph name="END_LINK" /> af din organisation, og din <ph name="BEGIN_LINK" />profil administreres<ph name="END_LINK" /> af <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="7292147651179697920">Bed din forælder om at give dig adgang i Indstillinger</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Bemærk! Android, Play og tilknyttede apps er underlagt deres egne politikker for dataindsamling og brug.</translation>
 <translation id="7296503797589217366">Vælg mappen <ph name="FOLDER_TITLE" /></translation>
@@ -8688,6 +8703,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7514239104543605883">Kopiér til din enhed</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7514417110442087199">Tilføj tildeling</translation>
+<translation id="7515191208480168435">Du kan fastgøre Google Lens for at få nem adgang</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> er blokeret af administratoren. Bed administratoren om at give dig tilladelse til at bruge denne app.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">Page Down</translation>
@@ -10161,6 +10177,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8592141010104017453">Vis slet ingen notifikationer</translation>
 <translation id="859246725979739260">Dette website er blevet blokeret, så det ikke kan få adgang til din lokation.</translation>
 <translation id="8593450223647418235">Du kan ikke åbne filer i Microsoft 365, før konfigurationen er fuldført.</translation>
+<translation id="8593686980889923154"><ph name="APP_NAME" /> er blokeret på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="8596540852772265699">Tilpassede filer</translation>
 <translation id="8597845839771543242">Ejendomsformat:</translation>
 <translation id="8598249292448297523">udskriv</translation>
@@ -10582,6 +10599,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8890529496706615641">Navnet på profilen kunne ikke ændres. Prøv igen, eller kontakt dit mobilselskab for at få teknisk support.</translation>
 <translation id="8892168913673237979">Fuldført</translation>
 <translation id="8892246501904593980">Se alle dine bogmærker i Bogmærker og lister</translation>
+<translation id="8893479486525393799">Studiemikrofon</translation>
 <translation id="8893801527741465188">Afinstallationen er fuldført</translation>
 <translation id="8893928184421379330">Vi beklager, men <ph name="DEVICE_LABEL" />-enheden kunne ikke genkendes.</translation>
 <translation id="8894761918470382415">Beskyttelse af dataadgang for eksterne enheder</translation>

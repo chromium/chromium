@@ -183,6 +183,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1654477262762802994">Mulai kueri suara</translation>
 <translation id="1668469839109562275">VPN bawaan</translation>
 <translation id="1673232940951031776">Akhiri Fokus. <ph name="REMAINING_TIME" /> lagi.</translation>
+<translation id="1675570947608765064">Orang lain dapat melihat perubahan yang Anda buat pada tugas ini</translation>
 <translation id="1675844249244994876">Perbarui jendela kanan</translation>
 <translation id="1677472565718498478">Sisa waktu <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> tidak terhubung.</translation>
@@ -1518,6 +1519,7 @@ Baru diinstal</translation>
 <translation id="6707693040195709527">Perubahan perangkat ke versi sebelumnya sudah lewat batas waktu</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="6723839937902243910">Daya</translation>
+<translation id="672609503628871915">Lihat apa saja yang baru</translation>
 <translation id="6727969043791803658">Terhubung, baterai <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1787,6 +1789,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7773536009433685931">Aktifkan Wi-Fi</translation>
 <translation id="7780094051999721182">pintasan</translation>
 <translation id="7780159184141939021">Memutar Layar</translation>
+<translation id="7781829728241885113">Kemarin</translation>
 <translation id="7792590255364786396">Dapat dilihat</translation>
 <translation id="7796735576426975947">Notifikasi baru disembunyikan</translation>
 <translation id="7798302898096527229">Tekan Search atau Shift untuk membatalkan.</translation>
@@ -2112,6 +2115,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="9000771174482730261">KELOLA PENYIMPANAN</translation>
 <translation id="9005984960510803406">Membuka jendela Crosh</translation>
 <translation id="9017320285115481645">Masukkan kode akses orang tua Family Link.</translation>
+<translation id="9022774213089566801">Sering dikunjungi</translation>
 <translation id="9024331582947483881">layar penuh</translation>
 <translation id="9029736946581028033">Perangkat akan segera dimatikan</translation>
 <translation id="9030319654231318877">Nonaktif sampai matahari terbenam</translation>

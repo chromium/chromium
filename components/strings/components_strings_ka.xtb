@@ -456,6 +456,7 @@
 <translation id="1812527064848182527">პეიზაჟი</translation>
 <translation id="1812975699435941848">სანიტარიული განათლება და სამედიცინო მომზადება</translation>
 <translation id="1816436748874040213">შეუძლია გაზიარებულ ჩანართებში გადაადგილებისა და ,მათი მასშტაბირების თხოვნა</translation>
+<translation id="1817364650920811003">როლი: Chrome-ის მინიშნება. ხელმისაწვდომობის დონე: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">განბლოკვა</translation>
 <translation id="1818585559878922121">დოკუმენტური ფილმები</translation>
 <translation id="182139138257690338">ავტომატური ჩამოტვირთვები</translation>
@@ -1398,6 +1399,7 @@
 <translation id="3642638418806704195">აპლიკაცია:</translation>
 <translation id="3646643500201740985">რეკლამის ეფექტურობის გაზომვა</translation>
 <translation id="3647286794400715637">URL-ის ფრაზის თითოეული ჩანაწერი უნდა შეიცავდეს 1-დან 2-მდე URL-ს.</translation>
+<translation id="3647400963805615193">Chrome-ის მინიშნების დახურვის ღილაკი, დასახურად დააჭირეთ შეყვანის ღილაკს, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">წარმატებული შემოწმება</translation>
 <translation id="3650594806107685466">ბარათის უსაფრთხოებისთვის შეიყვანეთ CVC, რომელიც მოცემულია <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">ლაშქრობა და კემპინგი</translation>
@@ -3218,7 +3220,6 @@
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195852673246414183">ამ პარამეტრის ჩართვის შემდეგ დაბრუნდით ამ ჩანართზე, წერა რომ დაიწყოთ</translation>
 <translation id="7199278868241956094">Oficio</translation>
-<translation id="7201591969684833065">თქვენს ადმინისტრატორს შეუძლია ნახოს:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ვების კონფიდენციალურად დათვალიერებისთვის ახალი ინკოგნიტო ჩანართის გასახსნელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="7203375778433816396">Chrome-ის დაყენება სისტემის ნაგულისხმევ ბრაუზერად</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> არ აკმაყოფილებს უსაფრთხოების სტანდარტებს.</translation>
@@ -3371,6 +3372,7 @@
 <translation id="7481312909269577407">გადამისამართება</translation>
 <translation id="7481603210197454575">კონვერტი Italian</translation>
 <translation id="7483482939016730822">სასკოლო მასალები და საკლასო ინვენტარი</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, დააჭირეთ ტაბულაციის ღილაკს, შემდეგ — შეყვანის ღილაკს, რომ დახუროთ Chrome-ის მინიშნება.</translation>
 <translation id="7485085230273446323">ბიზნესი და მრეწველობა</translation>
 <translation id="7485870689360869515">მონაცემები ვერ მოიძებნა.</translation>
 <translation id="7489392576326061356">შამპუნები და კონდიციონერები</translation>

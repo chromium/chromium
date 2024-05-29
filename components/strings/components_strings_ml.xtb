@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />നിങ്ങളുടെ നെറ്റ്‌വർക്ക് അഡ്‌മിനിസ്ട്രേറ്ററിന്
           <ph name="LIST_ITEM" />നിങ്ങളുടെ ഇന്റർനെറ്റ് സേവന ദാതാവിന്
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">ഈ ഇനം ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="1337692097987160377">ഈ ടാബ് പങ്കിടുക</translation>
 <translation id="1339601241726513588">എൻറോൾമെന്റ് ഡൊമെയ്ൻ:</translation>
 <translation id="1340482604681802745">പിക്കപ്പ് വിലാസം</translation>
@@ -2610,6 +2611,7 @@
 <translation id="6035491133925068289">ട്രാക്കും ഫീൽഡും</translation>
 <translation id="6039846035001940113">പ്രശ്‌നം പരിഹരിക്കപ്പെടുന്നില്ലെങ്കിൽ, സൈറ്റ് ഉടമയെ ബന്ധപ്പെടുക.</translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
+<translation id="6040539895181423374">നിരക്ക് ഉൾക്കാഴ്‌ചകൾ</translation>
 <translation id="604124094241169006">സ്വയമേവ</translation>
 <translation id="6041777658117377052">ചേംബർ താപനില</translation>
 <translation id="6042308850641462728">കൂടുതൽ</translation>
@@ -3215,7 +3217,6 @@
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195852673246414183">നിങ്ങൾ ഈ ക്രമീകരണം ഓണാക്കിയതിന് ശേഷം ഈ ടാബിലേക്ക് മടങ്ങിയെത്തി എഴുതാൻ തുടങ്ങുക</translation>
 <translation id="7199278868241956094">ഒഫീഷ്യോ</translation>
-<translation id="7201591969684833065">നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്റർക്ക് ഇവ കാണാനാകും:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാൻ പുതിയ അദൃശ്യ ടാബ് തുറക്കുന്നതിന് 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="7203375778433816396">സിസ്റ്റത്തിന്റെ ഡിഫോൾട്ട് ബ്രൗസറായി Chrome സജ്ജീകരിക്കുക</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" />, സുരക്ഷാ മാനദണ്ഡങ്ങൾ പാലിക്കുന്നില്ല.</translation>

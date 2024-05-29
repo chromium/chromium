@@ -48,6 +48,7 @@
 <translation id="1175572348579024023">လှိမ့်ရန်</translation>
 <translation id="1175944128323889279">လက်ရှိဘက်ထရီအဆင့် <ph name="BATTERY_PERCENTAGE" />%၊ <ph name="TIME" /> လို</translation>
 <translation id="1178581264944972037">ဆိုင်းငံ့ထားရန်</translation>
+<translation id="1179776263021875437">လုပ်ဆောင်စရာတွင် ပြနေခြင်းကို ရပ်ရန်</translation>
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
 <translation id="1182225749592316782">၎င်းက ကင်မရာနှင့် မိုက်ခရိုဖုန်း ခွင့်ပြုချက်များပါသည့် အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို သုံးခွင့်ပေးသည်</translation>
 <translation id="1182876754474670069">Home</translation>
@@ -119,6 +120,7 @@
 <translation id="1383876407941801731">ရှာဖွေမှု</translation>
 <translation id="1391102559483454063">ဖွင့်ရန်</translation>
 <translation id="1394698770495054737">အပြည့် မှုန်ဝါးခြင်း</translation>
+<translation id="1404963891829069586">အထူးပြသည့် အသံများ</translation>
 <translation id="1407069428457324124">အမှောင်နောက်ခံ</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />။ ရက်စွဲများအကြား ရွှေ့ပြောင်းရန် မြားကီးများ အသုံးပြုပါ။</translation>
 <translation id="141170878022560212">အလယ်ခလုတ်</translation>
@@ -180,6 +182,8 @@
 <translation id="1651914502370159744">‘မှတ်တမ်း’ စာမျက်နှာ ဖွင့်ရန်</translation>
 <translation id="1654477262762802994">အသံဖြင့် စတင် စုံစမ်းမေးမြန်းရန်</translation>
 <translation id="1668469839109562275">အသင့်ပါသော VPN</translation>
+<translation id="1673232940951031776">အထူးပြသမှုကို အပြီးသတ်ရန်။ <ph name="REMAINING_TIME" /> ကျန်သည်။</translation>
+<translation id="1675570947608765064">ဤလုပ်ဆောင်စရာတွင် သင်ပြုလုပ်သော အပြောင်းအလဲများကို အခြားသူများက မြင်နိုင်သည်</translation>
 <translation id="1675844249244994876">ညာဘက်ဝင်းဒိုးကို အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ကျန်ပါသည်</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ချိတ်ဆက်မထားပါ။</translation>
@@ -223,6 +227,7 @@
 <translation id="1824922790784036530">တည်နေရာသုံးခွင့် ဖွင့်ရန်</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ကို ပင်ဖြုတ်လိုက်သည်</translation>
 <translation id="1831565490995294689"><ph name="APP_TO_OPEN" /> ဖွင့်ရန် ရွေးပါ။</translation>
+<translation id="1838011306813517425">အထူးပြသမှု ဆက်တင်များ</translation>
 <translation id="1838895407229022812">'ညအလင်းရောင်' ပိတ်ထားသည်။</translation>
 <translation id="1854180393107901205">ကက်စ်လုပ်နေခြင်း ရပ်မည်</translation>
 <translation id="1862077610023398675">ထိန်းချုပ်မှုများ ဖျောက်ရန်</translation>
@@ -310,6 +315,7 @@
 <translation id="2277103315734023688">အရှေ့သို့ ရစ်ရန်</translation>
 <translation id="2282073721614284166">လင့်ခ်ကို တဘ်တွင်ဖွင့်ရန်</translation>
 <translation id="2292698582925480719">မြင်ကွင်း စကေး</translation>
+<translation id="2293443480080733021">သင်ဘာကို ပြလိုပါသလဲ။ လုပ်ဆောင်စရာ ထည့်ရန်အတွက် ‘Enter ခလုတ်’ နှိပ်ပါ။</translation>
 <translation id="229397294990920565">မိုဘိုင်းဒေတာကို ပိတ်နေပါသည်...</translation>
 <translation id="2295777434187870477">မိုက်ဖွင့်ထားသည်၊ ပိတ်လိုက်ခြင်းဖြင့် အသံတိတ်သွားပါမည်။</translation>
 <translation id="2298170939937364391">'မျက်နှာပြင်အပြည့် မှန်ဘီလူး' ကို ဖွင့်ထားပါသည်။ ၎င်းကို ပိတ်ရန် Ctrl+Search+M ကို ထပ်နှိပ်ပါ။</translation>
@@ -377,6 +383,7 @@
 <translation id="2509468283778169019">စာလုံးကြီးရန် သော့ခလုတ် ပွင့်နေ</translation>
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> ကို ရပ်ရန်။ <ph name="CAPTURE_MEDIUM" /> သည် <ph name="CAPTURE_STATE" /> ဖြစ်သည်</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516416533263263796">အထူးပြသမှု ၁၀ မိနစ်ကျန်သည်</translation>
 <translation id="2516637483312286228">ဂိမ်းထိန်းချုပ်ကိရိယာများ ပြင်ရန်</translation>
 <translation id="2526581474998477112">ဝင်းဒိုးများ လော့ခ်ဖွင့်ရန်</translation>
 <translation id="2528111225373402384">ဟော့စပေါ့ ဆက်တင်များ</translation>
@@ -447,6 +454,7 @@
 <translation id="2798702144670138229">တက်ဘလက်မုဒ် ဖွင့်ထားသည်။ ဂိမ်း ဒက်ရှ်ဘုတ် မရနိုင်ပါ။</translation>
 <translation id="2801954693771979815">ဖန်သားပြင် အရွယ်အစား</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />၊ ရွေးထားသည်</translation>
+<translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">အက်ပ်များ</translation>
 <translation id="2814448776515246190">တစ်စိတ်တစ်ပိုင်း ပုံဖမ်းယူရန်</translation>
 <translation id="2819276065543622893">သင်ယခု ထွက်ပါမည်။</translation>
@@ -474,6 +482,7 @@
 <translation id="2914580577416829331">ဖန်သားပြင် ရိုက်ယူမှုများ</translation>
 <translation id="2924416280450782352">ဖိုင်များ ပြ၍မရပါ။ ဤအကန့်ကို ပြန်ဖွင့်ကြည့်ပါ။</translation>
 <translation id="2931572158271115754">ဤလုပ်ရန်စာရင်းတွင် ဘာမျှမရှိပါ။</translation>
+<translation id="2932487126591186298">၁၀ မိနစ် ထည့်ထားသည်။ <ph name="REMAINING_TIME" /> ကျန်သည်။</translation>
 <translation id="2935225303485967257">ပရိုဖိုင်များ စီမံရန်</translation>
 <translation id="2941112035454246133">နိမ့်</translation>
 <translation id="2942350706960889382">နေရာချထားသည့် မှန်ဘီလူး</translation>
@@ -649,6 +658,7 @@
 <translation id="3576141592585647168">စံတော်ချိန် ပြောင်းခြင်း</translation>
 <translation id="3577473026931028326">တစ်ခုခုမှားသွားသည်။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="3580650856351781466">စကားပြောဖိုင်များ ဒေါင်းလုဒ်လုပ်နေသည်</translation>
+<translation id="3583350334315908861">{MINUTES,plural, =1{မိနစ်}other{မိနစ်}}</translation>
 <translation id="3585296979871889131">သင့်ဖုန်းရှိ မကြာသေးမီက ဓာတ်ပုံ၊ မီဒီယာ၊ အကြောင်းကြားချက်နှင့် အက်ပ်များကို ကြည့်ရန်</translation>
 <translation id="358832729276157756">ExpressKey ၁</translation>
 <translation id="3590441166907930941">ဘေးဘက် ခလုတ်</translation>
@@ -672,6 +682,7 @@
 <translation id="3631369015426612114">အောက်ပါတို့ထံမှ အကြောင်းကြားချက်များကို ခွင့်ပြုရန်</translation>
 <translation id="3633097874324966332">သင်၏စက်နှင့် တွဲချိတ်ရန် ဘလူးတုသ်ဆက်တင်များ ဖွင့်ပါ</translation>
 <translation id="3633851487917460983">ကလစ်ဘုတ် ဖွင့်ရန်</translation>
+<translation id="363473492175527493">ပြရန် သတ်မှတ်ထားသည့် လုပ်ဆောင်စရာ- <ph name="TASK_NAME" />။ လုပ်ဆောင်စရာကို ပြင်ရန် ‘Enter ခလုတ်’ နှိပ်ပါ။</translation>
 <translation id="3638400994746983214">အချက်အလက်လုံခြုံမှု ဖန်သားပြင်ကို အဖွင့်အပိတ်လုပ်ရန်။ <ph name="STATE_TEXT" />။</translation>
 <translation id="3649256019230929621">ဝင်းဒိုး ဇူးမ်ဖြုတ်ရန်</translation>
 <translation id="3649505501900178324">အပ်ဒိတ် ရက်လွန်နေသည်</translation>
@@ -707,6 +718,7 @@
 <translation id="3735740477244556633">အောက်ပါအတိုင်းစီရန်</translation>
 <translation id="3738664582935948253">ဖန်သားပြင်ရိုက်ကူးမှုများတွင် ကလစ်နှင့် လက်ကွက်ဖြတ်လမ်းများကို ယခုပြနိုင်ပါပြီ</translation>
 <translation id="3742055079367172538">မျက်နှာပြင်ပုံရိပ် ရယူပြီး</translation>
+<translation id="3743775386021959186">အထူးပြသမှု <ph name="REMAINING_TIME" /> ကျန်သည်</translation>
 <translation id="3756485814916578707">ဖန်သားပြင်ကို ကာစ်လုပ်နေသည်</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> ဖြတ်လမ်းလင့်ခ်ကို <ph name="OLD_SHORTCUT" /> မှ <ph name="NEW_SHORTCUT" /> သို့ အပ်ဒိတ်လုပ်လိုက်သည်</translation>
 <translation id="3765841986579723851">ယနေ့ ပြင်ဆင်ထားသည်</translation>
@@ -896,6 +908,7 @@
 <translation id="4477751544736611934">ဒေတာခ ပေးရနိုင်သည်။
 စက် ၁ ခု ချိတ်ဆက်ထားသည်။</translation>
 <translation id="4477892968187500306">ဤစက်တွင် Google က အတည်ပြုမထားသော အက်ပ်များ ပါဝင်နိုင်သည်။</translation>
+<translation id="4479130137987693286">လိုအပ်ပါက နောက်ထပ်အချိန်အနည်းငယ် ထည့်နိုင်သည် (သို့) သင်၏အထူးပြသမှုစက်ရှင်ကို အဆုံးသတ်နိုင်သည်</translation>
 <translation id="4479639480957787382">အီတာနက်</translation>
 <translation id="4481530544597605423">ချိတ်ဆက်မှု ဖြုတ်ထားသည့် စက်ပစ္စည်းများ</translation>
 <translation id="4485506555414638855">သင့်ဖုန်းရှိ မကြာသေးမီက ဓာတ်ပုံ၊ မီဒီယာ၊ အကြောင်းကြားချက်နှင့် အက်ပ်များ ကြည့်ရှုမှုအတွက် စနစ်ထည့်သွင်းခြင်းကို ပယ်ရန်</translation>
@@ -1069,6 +1082,7 @@
 <translation id="5095136268899496849">ဆက်တင်များတွင် သင့် <ph name="PRODUCT_NAME" /> ကို စိတ်ကြိုက်လုပ်ပြီး ပုဂ္ဂိုလ်ရေးသီးသန့် ပြုလုပ်နိုင်သည်။ သင့်နောက်ခံကို ပြောင်းကြည့်ပါ (သို့) စခရင်နားချိန်ပုံကို သတ်မှတ်ကြည့်ပါ။</translation>
 <translation id="509790653408515442">သင့်ဖုန်း၏ အက်ပ်များကို တိုက်ရိုက်လွှင့်သောအခါ ၎င်းတို့က ဤနေရာတွင် ပေါ်လာမည်</translation>
 <translation id="5098537242461068432">မျက်နှာပြင်နှင့် ဝင်းဒိုးများ ပြန်ဖွင့်ထားသည်</translation>
+<translation id="5103975065730779239"><ph name="END_TIME_EXPRESSION" /> အထိ</translation>
 <translation id="5104236669533825617">ဖန်သားပြင်ထုတ်လွှင့်မှု ပြုလုပ်၍မရပါ</translation>
 <translation id="5107522548814527560">ဝဘ်</translation>
 <translation id="5111318697104479778"><ph name="DESC" />၊ <ph name="STRENGTH" /></translation>
@@ -1147,6 +1161,7 @@
 <translation id="5395308026110844773">ဖိုင်တွဲပြုလုပ်ရန် <ph name="IN_PLACE_APP" /> ပေါ်တွင် <ph name="DRAGGED_APP_NAME" /> ကို တင်သည်။</translation>
 <translation id="5397578532367286026">ဒီ အသုံးပြုသူ၏ သုံးစွဲမှု နှင့် မှတ်တမ်းကို chrome.com ရှိ (<ph name="MANAGER_EMAIL" />)၏ မန်နေဂျာက ဆန်းစစ် ကြည့်ရှု နိုင်သည်။</translation>
 <translation id="540713187982329711">ဟော့စပေါ့ ဖွင့်/ပိတ်လုပ်သည်။ ဟော့စပေါ့ ဖွင့်ထားပြီး မည်သည့်စက်မျှ ချိတ်ဆက်မထားပါ။</translation>
+<translation id="5409208741270395213">လုပ်ဆောင်စရာကို လုပ်ပြီးဟု မှတ်သားရန်</translation>
 <translation id="5413656666631274079">ဆက်တင်များ စာမျက်နှာ</translation>
 <translation id="5414198321558177633">ပရိုဖိုင်စာရင်းကို ပြန်လည် စတင်နေသည်။ မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။</translation>
 <translation id="5417965108047245734">သင့် <ph name="PRODUCT_NAME" /> သုံးနည်းလေ့လာရန် လမ်းညွှန်အကျဉ်းချုပ်ကို ကြည့်ပါ</translation>
@@ -1178,6 +1193,7 @@
 <translation id="553675580533261935">စက်ရှင်မှ ထွက်နေသည်</translation>
 <translation id="5537725057119320332">သရုပ်ဆောင်​များ</translation>
 <translation id="554017492391497564">ပြီးပြီဟု မှတ်သား၍မရပါ။</translation>
+<translation id="5543778275214926792">'စကားပြော ရွေးရန်' ကို ဖွင့်မလား။</translation>
 <translation id="5546397813406633847">အသုံးပြုသူကို ပြန်လည်ရယူရန်</translation>
 <translation id="554893713779400387">အဖွင့်၊ အပိတ် ခလုတ်</translation>
 <translation id="5550417424894892620">ဖိုင်များကို <ph name="HOLDING_SPACE_TITLE" /> သို့ ထည့်ရန် ဒက်စ်တော့ပေါ်တွင် ချပါ။ ဖိုင်များကို ဒက်စ်တော့တွင် ထည့်၍မရပါ။</translation>
@@ -1201,6 +1217,7 @@
 <translation id="5592745162308462420">fn</translation>
 <translation id="5596627076506792578">ပိုမို ရွေးချယ်စရာများ</translation>
 <translation id="5599242528220103262">လက်ကွက်ဖြတ်လမ်းများ ပိတ်ထားသည်</translation>
+<translation id="5600415762228455511">အထူးပြသမှု ဖွင့်ထားပြီး <ph name="REMAINING_TIME" /> ကျန်သည်။ အထူးပြသနေသည်- <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">စကားပြောတုံ့ပြန်မှုကို ပိတ်ရန် Ctrl + Alt + Z ကို နှိပ်ပါ။</translation>
 <translation id="5601503069213153581">ပင်နံပါတ်</translation>
 <translation id="5618148318840095371">ပိုကောင်းသည့်ကွန်ရက်သို့ ပြောင်းပေးထားသည်</translation>
@@ -1230,8 +1247,10 @@
 <translation id="5699366815052349604">ဖွင့်ထားသောဝင်းဒိုးကို မျက်နှာပြင်နေရာအားလုံးသို့ သတ်မှတ်နိုင်သည်</translation>
 <translation id="5701785125601597013">‘ဖုန်းစင်တာ’ သုံးပြီး သင့်ဖုန်း၏မက်ဆေ့ဂျ်များ အမြန်ပို့နိုင် (သို့) စာပြန်နိုင်သည်</translation>
 <translation id="570390244361237317">အက်ပ်အားလုံးကို သုံးရန် မြားကီးများဖြင့် ရွှေ့ပါ</translation>
+<translation id="5705197514573687092">အထူးပြသမှု ဆက်တင်များကို ပြပါ။ တိုင်မာကို <ph name="FOCUS_DURATION" /> သို့ သတ်မှတ်ထားသည်။</translation>
 <translation id="5707775774148071965">စက်က ကေဘယ်ကြိုးထက် ပိုမြင့်သည့် ဒေတာသယ်ယူနှုန်းကို ပံ့ပိုးသည်။ စက်၏စွမ်းဆောင်ရည်သည် အကန့်အသတ်ရှိနိုင်သည်။</translation>
 <translation id="5710450975648804523">'မနှောင့်ယှက်ရ' ဖွင့်ထားသည်</translation>
+<translation id="5711984160978177607"><ph name="REMAINING_TIME" /> ကျန်သည်</translation>
 <translation id="5712132663381964774"><ph name="PRODUCT_NAME" /> တွင် သင်လိုသမျှအားလုံးပြုလုပ်ရန် အက်ပ်များကိုသုံးပါ။ သင့်အက်ပ်များကို Launcher တွင် တွေ့နိုင်သည်။</translation>
 <translation id="571295407079589142">မိုဘိုင်းဒေတာ ပိတ်ထားသည်</translation>
 <translation id="5727460725221669831">သင့်စကားဝှက်မေ့သွားပါက (သို့) သင့် Google Account စကားဝှက်ကို မကြာသေးမီက ပြောင်းထားပါက ဤအသုံးပြုသူကို ပြန်လည်ရယူကြည့်ပါ။</translation>
@@ -1242,6 +1261,7 @@
 <translation id="5744083938413354016">တို့၍ ဖိဆွဲခြင်း</translation>
 <translation id="5745612484876805746">နေဝင်ချိန်တွင် 'ညအလင်းရောင်' အလိုအလျောက် ပွင့်လာပါမည်</translation>
 <translation id="5750765938512549687">ဘလူးတုသ်ကို ပိတ်ထားသည်</translation>
+<translation id="5758114525425072423">အထူးပြသမှု စတင်ရန်။ တိုင်မာကို <ph name="FOCUS_DURATION" /> သို့ သတ်မှတ်ထားသည်။</translation>
 <translation id="5760866832697883462">သင့် <ph name="NAME" /> နှင့် ချိတ်ဆက်ရန်</translation>
 <translation id="5762420912707163638">ညွှန်မှတ် ပြောင်းရန်ခလုတ်။ <ph name="STATE_TEXT" /> ဖန်သားပြင်ပေါ်တွင် ပုံဆွဲရန် တာ့ချ်ပက်၊ တို့ထိမျက်နှာပြင် (သို့) စတိုင်လပ်စ် သုံးနိုင်သည်။</translation>
 <translation id="576341972084747908">အန္တရာယ်ရှိသော <ph name="FILENAME" /> ကို ဒေါင်းလုဒ်လုပ်ခြင်း</translation>
@@ -1249,6 +1269,7 @@
 <translation id="5764569119212455782">နောက်ဆုံးရွေးထားသော ဘာသာစကားသို့ ပြောင်းရန်</translation>
 <translation id="5767730327234918501">သင့်စီမံခန့်ခွဲသူက ဟော့စပေါ့ ပိတ်လိုက်သည်။</translation>
 <translation id="5769373120130404283">အချက်အလက်လုံခြုံမှု ဖန်သားပြင်</translation>
+<translation id="5770004650349728202">'စကားပြော ရွေးရန်' ကို ဖွင့်ရန်</translation>
 <translation id="5773950591113557721">၎င်းက ကင်မရာနှင့် မိုက်ခရိုဖုန်း ခွင့်ပြုချက်များပါသည့် <ph name="APP_NAME" />၊ အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို သုံးခွင့်ပေးသည်</translation>
 <translation id="5774295353725270860">ဖိုင်များ အက်ပ်ကို ဖွင့်ရန်</translation>
 <translation id="5775936059231769503">ဟော့စပေါ့ ဖွင့်/ပိတ်လုပ်သည်။ ဟော့စပေါ့ ပိတ်လိုက်သည်။</translation>
@@ -1343,8 +1364,10 @@
 <translation id="6119972796024789243">အရောင် အမှန်ပြင်ခြင်း</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ဒေါင်းလုဒ်လုပ်ရန် အတည်ပြုခြင်း</translation>
 <translation id="612734058257491180">ဧည့်သည်စက်ရှင်တွင် Google Assistant ကို အသုံးပြု၍ မရပါ။</translation>
+<translation id="6127370444807669747">ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ထားသော ပလေးလစ်များနှင့် နောက်ထပ်ပြရန်တေးဂီတအတွက် YouTube Music Premium ကို စမ်းကြည့်ပါ</translation>
 <translation id="6129953537138746214">နေရာခြား</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> အတွက် ဖယ်ရှားမှုဒိုင်ယာလော့ခ် ဖွင့်မည်</translation>
+<translation id="6141205840878048728">သင်ဘာကို ပြလိုပါသလဲ။</translation>
 <translation id="6141988275892716286">ဒေါင်းလုဒ်လုပ်ရန် အတည်ပြုခြင်း</translation>
 <translation id="6143578372829139382">YouTube သို့ မျှဝေရန်</translation>
 <translation id="6154006699632741460">ချိတ်ဆက်ပစ္စည်းကို မပံ့ပိုးပါ</translation>
@@ -1405,11 +1428,13 @@
 <translation id="6381109794406942707">ဤစက်ကိုဖွင့်ရန် သင့်ပင်နံပါတ် ထည့်ပါ။</translation>
 <translation id="638716340450135524">ကင်မရာသုံးခွင့် ဖွင့်ရန်</translation>
 <translation id="639644700271529076">စာလုံးကြီးများကို နှိပ်မထား</translation>
+<translation id="6406458002328242616">တိုင်မာကို ပြင်ပါ။ <ph name="FOCUS_DURATION" />။</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="641817663353603351">စာမျက်နှာအပေါ်</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">အကြောင်းကြားချက်အားလုံးကို ထုတ်ပစ်ရန်</translation>
+<translation id="6430225033895752525">အထူးပြသမှု ဆက်တင်များကို ပြပါ</translation>
 <translation id="643147933154517414">အားလုံးပြီးပါပြီ</translation>
 <translation id="6431865393913628856">ဖန်သားပြင် ရိုက်ကူးရန်</translation>
 <translation id="643593192654616063">သိုလှောင်ခန်း စုစုပေါင်း <ph name="STORAGE_TOTAL_SIZE" /> အနက်မှ <ph name="STORAGE_IN_USE_SIZE" /> သုံးထားသည်</translation>
@@ -1450,6 +1475,7 @@
 အသစ်ထည့်သွင်းမှု</translation>
 <translation id="6559158502366839560">နောက်ထပ် အက်ပ်နှင့် ဂိမ်းများ ရှာဖွေရန်</translation>
 <translation id="6559976592393364813">စီမံခန့်ခွဲသူကို မေးရန်</translation>
+<translation id="6562447480759345110">အထူးပြသမှုကို အပြီးသတ်ရန်</translation>
 <translation id="6565007273808762236">eSIM ချိတ်ဆက်မှု မရနိုင်ပါ</translation>
 <translation id="6570831796530454248">{0,plural, =1{စက်ကို တစ်နာရီအတွင်း အပ်ဒိတ်လုပ်ပါ}other{စက်ကို # နာရီအတွင်း အပ်ဒိတ်လုပ်ပါ}}</translation>
 <translation id="6570902864550063460">USB မှတစ်ဆင့် အားသွင်းနေသည်</translation>
@@ -1459,6 +1485,7 @@
 <translation id="6585808820553845416">ချိတ်ဆက်ချိန်<ph name="SESSION_TIME_REMAINING" /> မှာ ပြီးဆုံးမည်။</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />၊ <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">ကင်မရာကို အောက်ဘယ်ဘက်ထောင့်သို့ ကပ်ထားသည်။ စနစ်မျက်နှာပြင်နှင့် ငြိနေသည်။</translation>
+<translation id="6605415194043280389">အထူးပြသမှု ဖွင့်ထားသည်</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင်၏ 'ကြီးကြပ်သူ' က စီမံထားသည်</translation>
 <translation id="6612802754306526077">ဖန်သားပြင်ရိုက်ကူးခြင်းမုဒ် ရွေးထားသည်</translation>
 <translation id="6612889377159412215">လုပ်ဆောင်စရာ အပိုင်းခွဲ</translation>
@@ -1492,6 +1519,7 @@
 <translation id="6707693040195709527">စက်ကို ယခင်ဗားရှင်းသို့ပြောင်းရန် ရက်လွန်နေပါသည်</translation>
 <translation id="6710213216561001401">အရင်</translation>
 <translation id="6723839937902243910">ပါဝါ</translation>
+<translation id="672609503628871915">အသစ် ဘာတွေလဲ ကြည့်ရအောင်</translation>
 <translation id="6727969043791803658">ချိတ်ဆက်ပြီးပြီ၊ ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">ကင်မရာ</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1525,6 +1553,7 @@
 <translation id="6836499262298959512">အန္တရာယ်ဖိုင်</translation>
 <translation id="6837621009301897464">ဖန်သားပြင်ဓာတ်ပုံရိုက်ရန် ဤခလုတ်နှိပ်ပါ</translation>
 <translation id="6852052252232534364">စတင်ရန်နှိပ်ပါ</translation>
+<translation id="6852628153543175788">၁၀ မိနစ် ထည့်ရန်</translation>
 <translation id="6855029042976311970">ယခုလေးတင် ပြင်ဆင်ထားသည်</translation>
 <translation id="6856708615407876657">ရှာဖွေမှုရလဒ် အမျိုးအစားများ ပြောင်းရန်ခလုတ်</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
@@ -1585,6 +1614,7 @@
 <translation id="7068360136237591149">ဖိုင်များ ဖွင့်ပါ</translation>
 <translation id="7076293881109082629">အကောင့်ထံဝင်ရောက်နေသည်</translation>
 <translation id="7076878155205969899">အသံတိတ်ပါ</translation>
+<translation id="7083848064787091821">အထူးပြသရန်</translation>
 <translation id="7084678090004350185">ဟော့စပေါ့ ဖွင့်/ပိတ်လုပ်သည်။ ဟော့စပေါ့ ဖွင့်ထားပြီး စက် <ph name="DEVICECOUNT" /> ခု ချိတ်ဆက်ထားသည်။</translation>
 <translation id="7086931198345821656">ဤအပ်ဒိတ်သည် သင့် <ph name="DEVICE_TYPE" /> ကို ပါဝါဝရှ် ပြုလုပ်ရန် သတ်မှတ်ထားသည်။ ဒေတာအားလုံးကို ဖျက်ပါမည်။ နောက်ဆုံးထွက် <ph name="SYSTEM_APP_NAME" /> အပ်ဒိတ်အကြောင်း ပိုမိုလေ့လာပါ။</translation>
 <translation id="7088960765736518739">ခလုတ်ဖြင့် အသုံးပြုခြင်း</translation>
@@ -1612,6 +1642,7 @@
 <translation id="7188494361780961876">မီနူးကို ဖန်သားပြင်၏ ဘယ်ဘက်ထိပ်ထောင့်သို့ ရွှေ့လိုက်သည်။</translation>
 <translation id="7189412385142492784">သောကြာဂြိုဟ်က ဘယ်လောက်ဝေးလဲ</translation>
 <translation id="7198435252016571249">ကင်မရာကို အောက်ညာဘက်ထောင့်သို့ ကပ်ထားသည်။ စနစ်မျက်နှာပြင်နှင့် ငြိနေသည်။</translation>
+<translation id="720981139652840573">သတ်မှတ်စာသားကို အသံထွက်ဖတ်ပေးသည်။ ပထမဆုံး ဖန်သားပြင်အောက်ခြေတွင် ‘စကားပြော ရွေးရန်’ သင်္ကေတကို ရွေးပြီး စာသားကို မြင်သာအောင်လုပ်ပါ။ လက်ကွက်ဖြတ်လမ်းများကိုလည်း သုံးနိုင်သည်- စာသားကို ‘မြင်သာအောင်လုပ်’ ပြီး Search/Launcher + S ကို နှိပ်ပါ။</translation>
 <translation id="7219573373513695352">စက်ပစ္စည်းများ ချိတ်ဆက်မထားပါ</translation>
 <translation id="7229029500464092426">မှတ်ဉာဏ် <ph name="AVAILABLE_MEMORY" /> | စုစုပေါင်း <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">ဘက်ထရီ <ph name="PERCENTAGE" />% ကျန်သည်။ စက်ကို အားသွင်းပါ။</translation>
@@ -1621,6 +1652,7 @@
 <translation id="7258828758145722155">မနေ့က ပြင်ဆင်ထားသည်</translation>
 <translation id="726276584504105859">မျက်နှာပြင် ခွဲခြမ်းပြသခြင်းကို အသုံးပြုရန် ဤနေရာသို့ ဖိဆွဲပါ</translation>
 <translation id="7262906531272962081">သတိပေးချက် ပြုလုပ်ပါ</translation>
+<translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> လျှော့ရန်</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + နောက်ပြန်ခလုတ်</translation>
 <translation id="7285232777292757180">ဖန်သားပြင်ဓာတ်ပုံရိုက်ရန်အတွက် အမြန်ဆက်တင်များရှိ ဖန်သားပြင် ပုံဖမ်းသည့်တူးလ်ကို သုံးရန်</translation>
 <translation id="7301826272005790482">ဝင်းဒိုးအကြံပြုချက်များ ပယ်ရန်</translation>
@@ -1631,6 +1663,7 @@
 <translation id="7313193732017069507">ကင်မရာခလုတ် ချဲ့ရန်</translation>
 <translation id="7330397557116570022">‘နှုတ်တိုက်ချပေးခြင်း’ သုံးရန် စာသားအကွက်သို့ သွားပါ</translation>
 <translation id="7331646370422660166">Alt + အောက်ညွှန်မြား</translation>
+<translation id="7337660433630200387">+၁၀ မိနစ်</translation>
 <translation id="7340731148882810149">အလိုအလျောက်နှိပ်ခြင်း မီနူး</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">ဖန်သားပြင်လက်ကွက်</translation>
@@ -1650,6 +1683,7 @@
 <translation id="7386767620098596324">ကွန်ရက်ချိတ်ဆက်မှု ပြောင်းရန်။ <ph name="STATE_TEXT" />။</translation>
 <translation id="7392563512730092880">နောက်ပိုင်းတွင် 'ဆက်တင်များ' မှ အချိန်မရွေး စနစ်ထည့်သွင်းနိုင်သည်။</translation>
 <translation id="7401222354741467707">ဝင်းဒိုးဖန်သားပြင်ဓာတ်ပုံ (သို့) ဖန်သားပြင်ရိုက်ကူးမှု အပြည့်ရယူရန်</translation>
+<translation id="7401788553834047908">‘အထူးပြသ’ နေစဉ် ‘မနှောင့်ယှက်ရ’</translation>
 <translation id="7405710164030118432">စက်ပစ္စည်းကို လော့ခ်ဖွင့်ရန် သင်၏ Family Link မိဘသုံးခွင့်ကုဒ်ကို ထည့်ပါ</translation>
 <translation id="7406608787870898861">သင့်မိုဘိုင်းကွန်ရက် စနစ်ထည့်သွင်းခြင်းကို အပြီးသတ်ပါ</translation>
 <translation id="7406854842098869085"><ph name="MODIFIER_1" /> နှိပ်ထားပြီး သင်ဖွင့်လိုသည့် ဝင်းဒိုးရောက်သည်အထိ <ph name="KEY" /> ကို တို့ပါ။ ထို့နောက် လွှတ်လိုက်ပါ</translation>
@@ -1684,6 +1718,8 @@
 <translation id="7519649142417630956">အပြီးပိတ်လိုက်သည်နှင့် စီမံခန့်ခွဲသူသည် အကောင့်မှထွက်သွားပြီး သင့်စက်ကို ထိန်းချုပ်နိုင်တော့မည် မဟုတ်ပါ။
 
 စက်ပိတ်ရန် စက်ပေါ်ရှိ ဖွင့်ပိတ်ခလုတ်ကို ထပ်မံနှိပ်ထားပါ။</translation>
+<translation id="7523420897035067483">‘အထူးပြသ’ နေစဉ် ‘မနှောင့်ယှက်ရ’ ကို ဖွင့်ပါ</translation>
+<translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7526573455193969409">ကွန်ရက်ကို စောင့်ကြည့်နိုင်ပါသည်</translation>
 <translation id="7536035074519304529">IP လိပ်စာ− <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">ဘယ်ဘက်ဝင်းဒိုးကို အပ်ဒိတ်လုပ်ရန်</translation>
@@ -1753,6 +1789,7 @@
 <translation id="7773536009433685931">၎င်းအစား WiFi ဖွင့်ရန်</translation>
 <translation id="7780094051999721182">ဖြတ်လမ်းလင့်ခ်များ</translation>
 <translation id="7780159184141939021">မျက်နှာပြင် လှည့်ခြင်း</translation>
+<translation id="7781829728241885113">မနေ့က</translation>
 <translation id="7792590255364786396">မြင်နိုင်သည်</translation>
 <translation id="7796735576426975947">အကြောင်းကြားချက်အသစ် ဖျောက်ထားသည်</translation>
 <translation id="7798302898096527229">ပယ်ဖျက်ရန် Search သို့မဟုတ် Shift ခလုတ်ကို နှိပ်ပါ။</translation>
@@ -1816,6 +1853,7 @@
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> မှ</translation>
 <translation id="7968693143708939792">ဖိုင်တွဲရွေးရန်...</translation>
 <translation id="7973756967040444713">ကိရိယာဘား ပိတ်ရန်</translation>
+<translation id="797485111629834774">လုပ်ဆောင်စရာကို လုပ်ပြီးဟု မှတ်သားရန်- <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">ဖန်သားပြင်အပြည့် မှန်ဘီလူးကို ဖွင့် (သို့) ပိတ်ရန်</translation>
 <translation id="7977927628060636163">မိုဘိုင်းကွန်ရက်ကို ရှာဖွေနေသည်...</translation>
 <translation id="7982789257301363584">ကွန်ရက်</translation>
@@ -1829,6 +1867,7 @@
 <translation id="8000066093800657092">ကွန်ရက် မရှိပါ</translation>
 <translation id="8001755249288974029">ကာဆာမှ စာကြောင်းအစအထိ စာသားကို ရွေးရန်</translation>
 <translation id="8004512796067398576">တိုးမှု</translation>
+<translation id="8005527720597583355">အထူးပြသမှု စက်ရှင် စတင်ရန်</translation>
 <translation id="8015361438441228492">လုပ်ဆောင်စရာကို တည်းဖြတ်၍မရပါ။</translation>
 <translation id="802782383769312836">ယခင်မျက်နှာပြင်- <ph name="DESK_NAME" />။ မျက်နှာပြင် <ph name="DESK_COUNT" /> ခုအနက် <ph name="DESK_INDEX" />။</translation>
 <translation id="8029247720646289474">ဟော့စပေါ့ချိတ်ဆက်မှု မရပါ</translation>
@@ -1844,6 +1883,7 @@
 <translation id="8054466585765276473">ဘက်ထရီ အချိန်တွက်နေ</translation>
 <translation id="8079538659226626406">မျက်နှာပြင် မျှဝေခြင်း</translation>
 <translation id="8083540854303889870">နောင်အတွက် သိမ်းထားသည်</translation>
+<translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">နောက်ထပ် ရွေးချယ်စရာများအတွက် တဘ်ကိုသုံးပါ။ မျက်နှာပြင်အားလုံးသုံးနိုင်ရန် ဘယ်နှင့် ညာညွှန်မြားတို့ကို သုံးပါ။</translation>
 <translation id="8091153018031979607"><ph name="DAYS_ELAPSED" /> <ph name="START_TIME" /> တွင် စတင်မည်</translation>
 <translation id="8091387634532529612">အလိုအလျောက် အပ်ဒိတ်များ</translation>
@@ -1875,10 +1915,12 @@
 <translation id="8192727139462702395">ဘလူးတုသ် ပိတ်လိုက်သောအခါ ဤပြင်ပစက်များကို သင့် <ph name="DEVICE_TYPE" /> နှင့် ချိတ်ဆက်မှုဖြုတ်ပါမည်-</translation>
 <translation id="8198456017687137612">တဘ်ကို ကာစ်လုပ်နေသည်</translation>
 <translation id="8200772114523450471">ပြန်ဆက်ရန်</translation>
+<translation id="820256110035940528"><ph name="TITLE" /> <ph name="FOCUSED_TIME" /> အတွက် အထူးပြသထားသည်။ ထပ်မံ၍ အထူးပြသရန် ‘အမြန်ဆက်တင်များ’ ဖွင့်ပါ။</translation>
 <translation id="8203795194971602413">ညာဘက်ခလုတ်ကို နှိပ်ရန်</translation>
 <translation id="8209010265547628927">ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="8214996719228530800">Canary ချန်နယ်</translation>
 <translation id="8219451629189078428">ဤအချိန်အတွင်းတွင် သင့် Chromebook ကို ဖွင့်ထားပြီး ပါဝါချိတ်ဆက်ထားရန် လိုအပ်ပါသည်။ အားသွင်းကိရိယာ သို့မဟုတ် ကြားခံကိရိယာကြိုးများကို သင့် Chromebook နှင့် ပလတ်ပေါက် နှစ်ခုစလုံးတွင် တပ်ထားကြောင်း သေချာပါစေ။ သင့် Chromebook ကို မပိတ်ပါနှင့်။</translation>
+<translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> ထည့်ရန်</translation>
 <translation id="8230305195727960608">အရောင်ပြောင်းပြန်ပြုလုပ်သည့်မုဒ်</translation>
 <translation id="8236042855478648955">နားချိန် ရောက်ပါပြီ</translation>
 <translation id="8237964652943995219">လာမည့်မျက်နှာပြင်- <ph name="DESK_NAME" />။ မျက်နှာပြင် <ph name="DESK_COUNT" /> ခုအနက် <ph name="DESK_INDEX" />။</translation>
@@ -1986,6 +2028,7 @@
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">ဖန်သားပြင်ဓာတ်ပုံ တစ်စိတ်တစ်ပိုင်းကို ရိုက်ကူးရန် Enter နှိပ်ပါ</translation>
 <translation id="8676770494376880701">ပါဝါနှိမ့် အားသွင်းကိရိယာ ချိတ်ဆက်ထားသည်</translation>
+<translation id="8679158879996532670">အထူးပြသမှု ဆက်တင်များကို ပြပါ။ အထူးပြသမှု ဖွင့်ထားသည်။ <ph name="REMAINING_TIME" /> ကျန်သည်။</translation>
 <translation id="8683506306463609433">စွမ်းဆောင်ရည် မှတ်တမ်းတင်ခြင်းကို လက်ရှိဖွင့်ထားသည်</translation>
 <translation id="8703634754197148428">စတင် ရိုက်ကူးပါ။ ရိုက်ကူးမှုစတင်သောအခါ Alt + Shift + L သုံး၍ စင်သို့သွားပြီး ရိုက်ကူးမှုရပ်ရန်ခလုတ်ကို ရှာပါ</translation>
 <translation id="8704155109538237473">နှစ်ခုထပ်၍ ကြည့်သော ဝင်းဒိုးကို အထူးပြရန်</translation>
@@ -2004,6 +2047,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />- စတင်နေသည်...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />၊
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8749787185286745219">အချိန်ပြည့်ပါပြီ။ တော်ပါပေသည်။ 🎉</translation>
 <translation id="8755498163081687682">သင်၏အထောက်အထားကို အတည်ပြုပါ- သင်ဖြစ်ကြောင်း <ph name="ORIGIN_NAME" /> က အတည်ပြုလိုသည်</translation>
 <translation id="875593634123171288">VPN ဆက်တင်များကို ပြရန်</translation>
 <translation id="8756799553341497810">ဤမြင်ကွင်းမှ ထွက်ပါက သင့်အက်ပ်အပြင်အဆင်ကို စတင်စိတ်ကြိုက်လုပ်နိုင်သည်။</translation>
@@ -2042,6 +2086,7 @@
 <translation id="8877788021141246043">သတိပေးချက် သတ်မှတ်ပါ</translation>
 <translation id="8878886163241303700">မျက်နှာပြင်ကို တိုးချဲ့နေ</translation>
 <translation id="888982883502837004">သင့်စက်အတွက် ဖာမ်းဝဲအပ်ဒိတ်များ ရနိုင်ပါပြီ။ ဝင်ကြည့်၍ အပ်ဒိတ်လုပ်ရန် နှိပ်ပါ။</translation>
+<translation id="8893479486525393799">စတူဒီယို မိုက်</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> ကို အပြီးဖျက်လိုက်ပါမည်</translation>
 <translation id="889790758758811533">ဘက်ထရီ <ph name="PERCENTAGE" />% ကျန်သည် (<ph name="TIME_LEFT" /> ခန့်)။
 စက်ကို အားသွင်းပါ။</translation>
@@ -2071,6 +2116,7 @@
 <translation id="9000771174482730261">သိုလှောင်ခန်း စီမံခန့်ခွဲရန်</translation>
 <translation id="9005984960510803406">Crosh ဝင်းဒိုးကို ဖွင့်ရန်</translation>
 <translation id="9017320285115481645">Family Link မိဘသုံးကုဒ် ထည့်ပါ။</translation>
+<translation id="9022774213089566801">မကြာခဏ ဝင်ကြည့်ခဲ့သည်</translation>
 <translation id="9024331582947483881">မျက်နှာပြင်အပြည့်</translation>
 <translation id="9029736946581028033">စက်သည် မကြာမီ အားကုန်တော့မည်</translation>
 <translation id="9030319654231318877">နေဝင်ချိန်အထိ ပိတ်ရန်</translation>

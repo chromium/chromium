@@ -61,7 +61,6 @@
 <translation id="4139634748112164403">Skedat do të qëndrojnë të hapura në këtë pajisje, por grupi do të fshihet përgjithmonë</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Mbyll grupin "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />.}other{Mbyll grupin "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Vjollcë</translation>
-<translation id="4212246570487010370">Vazhdo shfletimin</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Zgjero grupin e skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_ONE" /> skedë.}other{Zgjero grupin e skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_MANY" /> skeda.}}</translation>
 <translation id="427987768447457592">Grupi i ri i skedave</translation>
 <translation id="4460014764210899310">Mos grupo</translation>

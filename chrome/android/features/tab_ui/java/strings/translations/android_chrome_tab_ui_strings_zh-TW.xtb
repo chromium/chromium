@@ -61,7 +61,6 @@
 <translation id="4139634748112164403">系統不會在這部裝置上關閉這些分頁，但會永久刪除這個群組</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{關閉含有 <ph name="TABS_COUNT_ONE" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」群組，顏色為<ph name="COLOR_NAME" />。}other{關閉含有 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」群組，顏色為<ph name="COLOR_NAME" />。}}</translation>
 <translation id="4159784952369912983">紫色</translation>
-<translation id="4212246570487010370">繼續瀏覽</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{展開含有 <ph name="TABS_COUNT_ONE" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」分頁群組。}other{展開含有 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」分頁群組。}}</translation>
 <translation id="427987768447457592">新分頁群組</translation>
 <translation id="4460014764210899310">取消分組</translation>

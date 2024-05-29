@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Tarix</translation>
 <translation id="164673457281113247">{count,plural, =1{Bukmark saqlandi}other{Bukmarklar saqlandi}}</translation>
 <translation id="1650222530560417226">Barcha varaqlardagi JavaScript konsoli jurnali va xatolari yigʻilishi uchun “Jurnalga yozishni boshlash” ustiga bosing. Jurnallar sahifa yopilmaguncha yoki “Jurnalga yozishni toʻxtatish” bosilmaguncha yigʻiladi (va faqat xotirada saqlanadi).</translation>
+<translation id="1652333207707886577">Menyuni moslang</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} ta saqlangan parol klaviatura ustida chiqadi.}other{{count} ta saqlangan parol klaviatura ustida chiqadi.}}</translation>
 <translation id="1657011748321897393">Yozuv tarmoq xatoligi sababli joylanmadi.</translation>
 <translation id="165877110639533037">Ochiq tablar yo‘q</translation>
@@ -530,6 +531,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3738428049780661523">Yaratilgan: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Yuklanmalarni yashirish</translation>
 <translation id="3745190878148784130">Matn masshtabini berkitish</translation>
+<translation id="3747231889390582072">Tashkilot xavfsizligini himoyalash uchun bu qurilmadagi saqlanmagan maʼlumotlar oʻchirib tashlanadi. Buga parollar, brauzer tarixi, cookie fayllar va boshqalar kirishi mumkin.</translation>
 <translation id="3762232513783804601">iPad uchun ishlab chiqilgan</translation>
 <translation id="3768725474733206671">Oxirgi yopilgan varaqni ochish</translation>
 <translation id="3771033907050503522">Inkognito varaqlar</translation>
@@ -1228,6 +1230,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7192050974311852563">Yozib olishni boshlash</translation>
 <translation id="7203585745079012652">Qidiruv natijalari o‘qilsin</translation>
 <translation id="7210568419880432164">Bildirishnomalar yoqilmoqda…</translation>
+<translation id="7211038039686180558">Varaqlar guruhi hisobga kirilgan barcha qurilmalarda avtomatik saqlanadi va yangilanib turadi</translation>
 <translation id="721597782417389033">Karta nomi yaroqsiz</translation>
 <translation id="7221173315674413369">Nima yangiliklar ruknida yangi funksiyalar va maslahatlar bilan tanishing</translation>
 <translation id="7223102419539744003">Varaqni yopish</translation>
@@ -1479,6 +1482,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8446884382197647889">Batafsil</translation>
 <translation id="8449347986464073209">Oʻchirish va hisobdan chiqish</translation>
 <translation id="8459333855531264009">Xavfsiz emas</translation>
+<translation id="8466300942149667917">Saqlanmagan hisob maʼlumotlari oʻchirib tashlanadi</translation>
 <translation id="8473863474539038330">Mazillar va boshqa ma’lumotlar</translation>
 <translation id="8487667956631253959">Yoniq</translation>
 <translation id="8487700953926739672">Internetsiz foydalanish mumkin</translation>

@@ -61,7 +61,6 @@
 <translation id="4139634748112164403">ಈ ಸಾಧನದಲ್ಲಿ ಟ್ಯಾಬ್‌ಗಳು ತೆರೆದಿರುತ್ತವೆ, ಆದರೆ ಗುಂಪನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಗುಂಪನ್ನು ಮುಚ್ಚಿರಿ.}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಗುಂಪನ್ನು ಮುಚ್ಚಿರಿ.}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="COLOR_NAME" /> ಬಣ್ಣದ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಗುಂಪನ್ನು ಮುಚ್ಚಿರಿ.}}</translation>
 <translation id="4159784952369912983">ನೇರಳೆ</translation>
-<translation id="4212246570487010370">ಬ್ರೌಸಿಂಗ್ ಮುಂದುವರಿಸಿ</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತೃತಗೊಳಿಸಿ.}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತೃತಗೊಳಿಸಿ.}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತೃತಗೊಳಿಸಿ.}}</translation>
 <translation id="427987768447457592">ಹೊಸ ಟ್ಯಾಬ್ ಗುಂಪು</translation>
 <translation id="4460014764210899310">ಗುಂಪು ವಿಂಗಡಿಸಿ</translation>

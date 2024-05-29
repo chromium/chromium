@@ -469,6 +469,7 @@ Si se le asigna el valor "PromptInTab", cuando la autenticación del usuario cad
       Se descargarán las páginas descartadas y se recuperarán todos sus recursos. Las pestañas asociadas a dichas páginas permanecerán en la barra de pestañas, pero, si las haces visibles, se volverán a cargar completamente.
       </translation>
 <translation id="138847842893090358">Envía el estado de las actualizaciones del sistema operativo</translation>
+<translation id="1389138080311956934">Ahorro de memoria máximo.</translation>
 <translation id="1390529781843037070">Si se habilita esta política o no se le asigna ningún valor, los usuarios pueden imprimir en <ph name="CLOUD_PRINT_NAME" /> desde el cuadro de diálogo de impresión de <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> puede enviar documentos a <ph name="CLOUD_PRINT_NAME" /> para imprimirlos. No impide que los usuarios envíen trabajos de impresión desde sitios web.
 
       Si se inhabilita la política, los usuarios no pueden imprimir en <ph name="CLOUD_PRINT_NAME" /> desde el cuadro de diálogo de impresión de <ph name="PRODUCT_NAME" />.
@@ -576,6 +577,7 @@ La reautenticación online puede solicitarse por varios motivos, como cuando se 
 
       Las impresoras locales, que también se denominan "destinos de impresión nativos", incluyen los destinos que están disponibles para los equipos locales y las impresoras compartidas de la red.</translation>
 <translation id="1456822151187621582">Windows (clientes de <ph name="PRODUCT_OS_NAME" />):</translation>
+<translation id="1459693405370120464">Tiempo</translation>
 <translation id="1464848559468748897">Controla el comportamiento del usuario en una sesión de varios perfiles en dispositivos <ph name="PRODUCT_OS_NAME" />.
 
       Si esta política se establece en MultiProfileUserBehaviorUnrestricted, el usuario puede ser principal o secundario en una sesión de varios perfiles.
@@ -3114,6 +3116,7 @@ Para obtener más información sobre el tratamiento de datos en las funciones de
 
       La opción experimental se eliminará en el futuro cuando el inicio de sesión insertado sea totalmente compatible con todos los flujos de SSO.</translation>
 <translation id="3435796032110614169">Permitir eliminar el historial de trabajos de impresión</translation>
+<translation id="3435896845095436175">Habilitar</translation>
 <translation id="3436217793443508863">El tiempo que debe transcurrir (en milisegundos) sin que el usuario realice ninguna acción antes de que se bloquee la pantalla cuando el dispositivo funcione con la batería</translation>
 <translation id="3437924696598384725">Permitir que el usuario gestione conexiones VPN</translation>
 <translation id="3441664787678256816">Permitir conexiones de asistencia remota de empresa en este equipo.</translation>
@@ -3868,6 +3871,7 @@ En el caso de <ph name="PRODUCT_OS_NAME" />, esta política está relacionada co
 Para obtener información detallada sobre los patrones válidos de <ph name="URL_LABEL" />, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4070039109671307724">Varios</translation>
 <translation id="4072225853834793549">Inhabilitar los accesos directos de accesibilidad en la pantalla de inicio de sesión</translation>
+<translation id="4074922053013383215">Ahorro de memoria moderado.</translation>
 <translation id="4075675819066819571">Colocar la estantería en la parte izquierda de la pantalla</translation>
 <translation id="4079306023113982053">Controla la disponibilidad de <ph name="BOREALIS_NAME" /> para este usuario.
 
@@ -4240,6 +4244,7 @@ Si esta política se inhabilita, los usuarios no podrán hacer el seguimiento de
 <translation id="4389073105055031853">Permitir que los usuarios gestionen todos los certificados</translation>
 <translation id="4389091865841123886">Permite configurar la confirmación remota con el mecanismo de TPM.</translation>
 <translation id="4389113579547582722">Permitir que se muestre la promoción de valoraciones del App Store</translation>
+<translation id="4394049700291259645">Inhabilitar</translation>
 <translation id="4395619678972620537">Si se habilita esta política, las conexiones WebRTC entre pares podrán cambiar a versiones inferiores
       obsoletas de los protocolos TLS/DTLS (DTLS 1.0, TLS 1.0 y TLS 1.1).
       Si se inhabilita esta política o no se establece, estas versiones de TLS/DTLS se
@@ -6799,6 +6804,7 @@ Si la política no se define, <ph name="PRODUCT_OS_NAME" /> usará el directorio
 <translation id="6410847321564585975">Lista de permitidos para informes de actividad en sitios web</translation>
 <translation id="6412352702230183710">Permitir solo hosts de mensajería nativa a nivel de sistema</translation>
 <translation id="6416506846917150119">Inhabilitar la escritura predictiva en el teclado físico cuando los usuarios escriban</translation>
+<translation id="6416916931494972926">Habilitar los informes de telemetría de Kiosk Vision.</translation>
 <translation id="6417265370957905582">Asistente de Google</translation>
 <translation id="6419001911253110938">Habilitar que se muestre la pantalla de introducción de las funciones de IA dentro de la sesión durante el flujo de inicio de sesión</translation>
 <translation id="6421254653839955267">Si se habilita esta política, se omitirá la consulta de CNAME. El nombre del servidor se usará tal como se haya introducido al generar el SPN de Kerberos.
@@ -6948,6 +6954,7 @@ Si no se define esta política o se proporciona una lista vacía de URLs, todas 
 <translation id="6506486086262398387">Si se habilita esta política, la función de sistemas de archivos compartidos en red de <ph name="PRODUCT_OS_NAME" /> usará NTLM para la autenticación en sistemas de archivos compartidos SMB si es necesario. Si se inhabilita, se desactivará el uso de NTLM para la autenticación en sistemas de archivos compartidos SMB.
 
       Si no se asigna ningún valor a esta política, el comportamiento estará inhabilitado para los usuarios gestionados y habilitado para el resto de los usuarios de forma predeterminada.</translation>
+<translation id="6508882314969525299">Inhabilitar los informes de telemetría de Kiosk Vision.</translation>
 <translation id="6509376413448002446">Configura el salvapantallas del usuario para la pantalla de bloqueo.
 
 Si se asigna el valor true a esta política, el dispositivo <ph name="PRODUCT_OS_NAME" /> mostrará un salvapantallas en la pantalla de bloqueo cuando esté inactivo.
@@ -8608,6 +8615,7 @@ Para obtener más información sobre la política <ph name="IEEM_SITELIST_POLICY
       Si se le asigna el valor False o no se le asigna ningún valor, es posible que se bloquee el contenido <ph name="FLASH_PLUGIN_NAME" /> de otros orígenes o de tamaño reducido.
 
       Nota: Para controlar qué sitios web pueden ejecutar <ph name="FLASH_PLUGIN_NAME" />, consulta las políticas <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7801163363326128751">Cambiar el ahorro del modo Ahorro de memoria</translation>
 <translation id="7804859754080118507">Informa de eventos de conexión de red y de intensidad de señal en dispositivos registrados.
 
       Si se le asigna el valor false a esta política o no se le asigna ningún valor, no se enviará esta información.
@@ -9197,6 +9205,7 @@ Para obtener más información sobre las tecnologías antiguas, consulta la pág
 <translation id="8274926413890711289">Habilitar los controles de informes granulares</translation>
 <translation id="8275103737670730746">Permitir llamar a las APIs de selección de archivos o directorios sin un gesto previo del usuario</translation>
 <translation id="8278133379873210419">Impedir que se activen cuadros de diálogo de JavaScript desde submarcos de origen diferente</translation>
+<translation id="8284028944941138279">Ahorro de memoria equilibrado.</translation>
 <translation id="8284296539558710573">Solicitudes de autenticación HTTP de origen cruzado</translation>
 <translation id="8284527236880877730">Si se inhabilita la política <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> y se establece <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" />, se especifica el porcentaje del retraso de atenuación de pantalla cuando el dispositivo esté en el modo de presentación. Si se ajusta el retraso de atenuación de pantalla, se ajustan los retrasos de apagado de pantalla, bloqueo de pantalla e inactividad para mantener las mismas distancias del retraso de atenuación de pantalla que tenía la configuración original.
 
@@ -9373,9 +9382,6 @@ Si la política no se define o el valor es 0, al ir a una URL designada se abrir
 
       Esta política se eliminará después de la versión 115 de Chrome.</translation>
 <translation id="841395160262233331">El menú de aplicaciones/la tecla de búsqueda no podrán cambiar el comportamiento de las teclas de función, y los usuarios no podrán cambiar este ajuste.</translation>
-<translation id="8415506434606458373">Si se define esta política, los orígenes incluidos en la lista podrán obtener atributos del dispositivo (como el número de serie o el nombre de host) mediante la API Device Attributes.
-
-Los orígenes deben corresponder a aplicaciones web que se hayan instalado de manera forzada usando la política <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (desde la versión 125), o que se hayan configurado como aplicaciones de kiosco. Para obtener información sobre las especificaciones de la API Device Attributes, consulta https://wicg.github.io/WebApiDevice/device_attributes.</translation>
 <translation id="8415953438346821074">Si se habilita esta opción, la configuración almacenada en los perfiles de <ph name="PRODUCT_NAME" /> (como los marcadores, los datos de Autocompletar, las contraseñas, etc.) también se escribirá en un archivo almacenado en la carpeta Roaming del perfil de usuario o en una ubicación especificada por el administrador en la política <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. Al habilitar esta política, se inhabilitará la sincronización en la nube.
 
       Si se inhabilita esta política o no se le asigna ningún valor, solo se usarán los perfiles locales habituales.</translation>
@@ -9616,6 +9622,9 @@ Si no se define esta política, los usuarios no podrán jugar al juego del dinos
       Si se asigna el valor "true" a esta política, las pestañas que hayan estado en segundo plano durante un mínimo de 5 minutos podrían inmovilizarse. Inmovilizar las pestañas reduce el consumo de CPU, batería y memoria. <ph name="PRODUCT_NAME" /> usa métodos heurísticos para evitar inmovilizar pestañas que realicen funciones útiles en segundo plano, como mostrar notificaciones, reproducir sonidos o emitir vídeos en streaming. Los desarrolladores web pueden inhabilitar la inmovilización en sus sitios web (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Si se asigna el valor "false" a esta política, no se inmovilizará ninguna pestaña.</translation>
+<translation id="8607613052618540095">Si se habilita esta política, se habilitarán los informes de telemetría de Kiosk Vision.
+Se iniciará el framework de Kiosk Vision y se habilitarán los informes de telemetría de la audiencia.
+Si no se define esta política o se inhabilita, se desactivarán los informes de telemetría de Kiosk Vision.</translation>
 <translation id="8610216287193516769">Se eliminó en la versión M122. Esta política solo se puede utilizar del lado del servidor y nunca ha usado la infraestructura de políticas de ChromeOS para propagarse.
 Si se asigna el valor <ph name="POLICY_VALUE_ALL" /> a esta política o no se le asigna ningún valor, se permitirán todos los usos de las cuentas gestionadas. Esto podría provocar que una cuenta gestionada fuera secundaria. En ese caso, solo recibirá políticas cuando se inicie sesión en esa cuenta como cuenta principal en un perfil del navegador.
       Las políticas establecidas en la cuenta no se implementarán en los siguientes casos:

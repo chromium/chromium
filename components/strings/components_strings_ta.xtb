@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />உங்கள் நிறுவனம் அல்லது பள்ளி
           <ph name="LIST_ITEM" />உங்கள் இணையச் சேவை வழங்குநர்
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">இதை டிராக் செய்யுங்கள்</translation>
 <translation id="1337692097987160377">இந்தத் தாவலைப் பகிர்</translation>
 <translation id="1339601241726513588">பதிவுக் களம்:</translation>
 <translation id="1340482604681802745">பிக்கப் முகவரி</translation>
@@ -2607,6 +2608,7 @@
 <translation id="6035491133925068289">தடகள விளையாட்டுகள்</translation>
 <translation id="6039846035001940113">சிக்கல் தொடர்ந்தால், தள உரிமையாளரைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="6040143037577758943">மூடு</translation>
+<translation id="6040539895181423374">கட்டண விவரங்கள்</translation>
 <translation id="604124094241169006">தானியங்கு</translation>
 <translation id="6041777658117377052">சேம்பர் வெப்பநிலை</translation>
 <translation id="6042308850641462728">மேலும்</translation>
@@ -3211,7 +3213,6 @@
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195852673246414183">இந்த அமைப்பை இயக்கியதும் இந்தப் பிரிவுக்கு மீண்டும் வந்து எழுதத் தொடங்கவும்</translation>
 <translation id="7199278868241956094">Oficio</translation>
-<translation id="7201591969684833065">உங்கள் நிர்வாகி இவற்றைப் பார்க்க முடியும்:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, தனிப்பட்ட முறையில் உலாவுவதற்குப் புதிய மறைநிலைப் பக்கத்தைத் திறக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="7203375778433816396">சிஸ்டத்தின் இயல்பு உலாவியாக Chromeமை அமைக்கும்</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> பாதுகாப்புத் தரநிலைகளுக்கு இணங்கவில்லை.</translation>

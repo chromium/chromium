@@ -40,6 +40,7 @@
 <translation id="2928243913527329289">Google | இந்த ஸ்டோரைப் பற்றி</translation>
 <translation id="2977480621796371840">குழுவிலிருந்து அகற்று</translation>
 <translation id="3008554597174452548">தயாரிப்பைக் கண்காணிப்பதை நிறுத்து</translation>
+<translation id="3026391124054406831">உங்கள் பக்கங்களை ஒழுங்கமைக்க குழுக்களை உருவாக்கலாம்.</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> விலை <ph name="PRICE_DROP" /> குறைந்துள்ளது</translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> பக்கக் குழுவின் வண்ணத்தைக் குறிக்கும் ஐகான்</translation>
 <translation id="3194464645767632461">ரேட்டிங்</translation>
@@ -60,7 +61,6 @@
 <translation id="4139634748112164403">இந்தச் சாதனத்தில் பக்கங்கள் திறந்தே இருக்கும் என்றாலும், குழு நிரந்தரமாக நீக்கப்படும்</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_ONE" /> பக்கத்துடன் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவை மூடும்.}other{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_MANY" /> பக்கங்களுடன் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவை மூடும்.}}</translation>
 <translation id="4159784952369912983">பர்பிள்</translation>
-<translation id="4212246570487010370">உலாவலைத் தொடர்க</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> பக்கம் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவை விரிவாக்கும்.}other{<ph name="TABS_COUNT_MANY" /> பக்கங்கள் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவை விரிவாக்கும்.}}</translation>
 <translation id="427987768447457592">புதிய பக்கக் குழு</translation>
 <translation id="4460014764210899310">குழுவைப் பிரி</translation>

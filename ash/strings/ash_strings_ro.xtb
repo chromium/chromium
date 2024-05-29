@@ -183,6 +183,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1654477262762802994">Începe o interogare vocală</translation>
 <translation id="1668469839109562275">Rețea VPN încorporată</translation>
 <translation id="1673232940951031776">Închide modul Focus. Timp rămas: <ph name="REMAINING_TIME" />.</translation>
+<translation id="1675570947608765064">Modificările acestei sarcini pot fi văzute de alți utilizatori</translation>
 <translation id="1675844249244994876">Actualizează fereastra corectă</translation>
 <translation id="1677472565718498478">Timp rămas: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Opțiunea <ph name="FEATURE_NAME" /> nu s-a conectat.</translation>
@@ -1518,6 +1519,7 @@ Instalare nouă</translation>
 <translation id="6707693040195709527">Ai depășit termenul limită pentru trecerea dispozitivului la versiunea anterioară</translation>
 <translation id="6710213216561001401">Înapoi</translation>
 <translation id="6723839937902243910">Alimentare</translation>
+<translation id="672609503628871915">Vedeți noutățile</translation>
 <translation id="6727969043791803658">Conectat, nivelul bateriei: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="6732087373923685049">Cameră</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1787,6 +1789,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7773536009433685931">Activează conexiunea Wi-Fi</translation>
 <translation id="7780094051999721182">comenzi rapide</translation>
 <translation id="7780159184141939021">Rotește ecranul</translation>
+<translation id="7781829728241885113">Ieri</translation>
 <translation id="7792590255364786396">Vizibil</translation>
 <translation id="7796735576426975947">Notificare nouă ascunsă</translation>
 <translation id="7798302898096527229">Apasă pe tasta de căutare sau pe Shift pentru a anula.</translation>
@@ -2112,6 +2115,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="9000771174482730261">GESTIONEAZĂ SPAȚIUL DE STOCARE</translation>
 <translation id="9005984960510803406">Deschide fereastra Crosh</translation>
 <translation id="9017320285115481645">Introdu codul de acces parental pentru Family Link.</translation>
+<translation id="9022774213089566801">Accesate frecvent</translation>
 <translation id="9024331582947483881">ecran complet</translation>
 <translation id="9029736946581028033">Dispozitivul se va închide în curând</translation>
 <translation id="9030319654231318877">Dezactivată până la apus</translation>

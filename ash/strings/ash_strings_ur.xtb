@@ -183,6 +183,7 @@
 <translation id="1654477262762802994">صوتی استفسار شروع کریں</translation>
 <translation id="1668469839109562275">‏پہلے سے موجود VPN</translation>
 <translation id="1673232940951031776">فوکس ختم کریں۔ <ph name="REMAINING_TIME" /> باقی ہے۔</translation>
+<translation id="1675570947608765064">دوسرے وہ تبدیلیاں دیکھ سکتے ہیں جو آپ اس ٹاسک میں کرتے ہیں</translation>
 <translation id="1675844249244994876">دائیں ونڈو کو اپ ڈیٹ کریں</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> باقی</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> منسلک نہیں ہے۔</translation>
@@ -1517,6 +1518,7 @@
 <translation id="6707693040195709527">گزشتہ ورژن میں آلہ کی تبدیلی کا وقت گزر گیا ہے</translation>
 <translation id="6710213216561001401">گزشتہ</translation>
 <translation id="6723839937902243910">پاور</translation>
+<translation id="672609503628871915">دیکھیں کہ نیا کیا ہے</translation>
 <translation id="6727969043791803658">منسلک ہے، <ph name="BATTERY_PERCENTAGE" /> فیصد بیٹری ہے</translation>
 <translation id="6732087373923685049">کیمرا</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1786,6 +1788,7 @@
 <translation id="7773536009433685931">‏اس کے بجائے WiFi آن کریں</translation>
 <translation id="7780094051999721182">شارٹ کٹس</translation>
 <translation id="7780159184141939021">اسکرین کو گھمائیں</translation>
+<translation id="7781829728241885113">گزشتہ کل</translation>
 <translation id="7792590255364786396">مرئی</translation>
 <translation id="7796735576426975947">نئی اطلاع پوشیدہ ہے</translation>
 <translation id="7798302898096527229">‏منسوخ کرنے کے لیے Search یا Shift دبائیں۔</translation>
@@ -2111,6 +2114,7 @@
 <translation id="9000771174482730261">اسٹوریج کا نظم کریں</translation>
 <translation id="9005984960510803406">‏Crosh ونڈو کھولیں</translation>
 <translation id="9017320285115481645">‏Family Link کا والدین کا رسائی کا کوڈ درج کریں۔</translation>
+<translation id="9022774213089566801">اکثر ملاحظہ کردہ</translation>
 <translation id="9024331582947483881">پوری اسکرین</translation>
 <translation id="9029736946581028033">آلہ جلد ہی بند ہو جائے گا</translation>
 <translation id="9030319654231318877">غروب آفتاب تک آف کریں</translation>

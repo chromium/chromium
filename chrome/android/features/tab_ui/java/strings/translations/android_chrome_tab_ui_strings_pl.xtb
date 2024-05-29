@@ -61,7 +61,6 @@
 <translation id="4139634748112164403">Karty pozostaną otwarte na tym urządzeniu, ale grupa zostanie trwale usunięta</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Zamknij grupę <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_ONE" /> kartą, kolor <ph name="COLOR_NAME" />.}few{Zamknij grupę <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}many{Zamknij grupę <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}other{Zamknij grupę <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> karty, kolor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Purpurowy</translation>
-<translation id="4212246570487010370">Przeglądaj dalej</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Rozwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_ONE" /> kartą.}few{Rozwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami.}many{Rozwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami.}other{Rozwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> karty.}}</translation>
 <translation id="427987768447457592">Nowa grupa kart</translation>
 <translation id="4460014764210899310">Rozgrupuj</translation>

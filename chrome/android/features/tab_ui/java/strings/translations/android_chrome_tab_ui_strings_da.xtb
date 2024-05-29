@@ -61,7 +61,6 @@
 <translation id="4139634748112164403">Fanerne forbliver åbne på denne enhed, men gruppen slettes permanent</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Luk gruppen <ph name="TITLE_OF_GROUP" /> i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_ONE" /> fane.}one{Luk gruppen <ph name="TITLE_OF_GROUP" /> i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_MANY" /> fane.}other{Luk gruppen <ph name="TITLE_OF_GROUP" /> i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="4159784952369912983">Lilla</translation>
-<translation id="4212246570487010370">Fortsæt med at gennemse</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Udvid fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> fane.}one{Udvid fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> fane.}other{Udvid fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="427987768447457592">Ny fanegruppe</translation>
 <translation id="4460014764210899310">Ophæv gruppering</translation>

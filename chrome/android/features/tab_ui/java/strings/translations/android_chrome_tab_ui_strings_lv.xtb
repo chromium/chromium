@@ -61,7 +61,6 @@
 <translation id="4139634748112164403">Cilnes paliks atvērtas šajā ierīcē, taču grupa tiks neatgriezeniski dzēsta</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Aizvērt ciļņu grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TABS_COUNT_ONE" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}zero{Aizvērt ciļņu grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}one{Aizvērt ciļņu grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TABS_COUNT_MANY" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}other{Aizvērt ciļņu grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Violets</translation>
-<translation id="4212246570487010370">Turpiniet pārlūkošanu</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Izvērst ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_ONE" /> cilne.}zero{Izvērst ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}one{Izvērst ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilne.}other{Izvērst ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}}</translation>
 <translation id="427987768447457592">Jauna ciļņu grupa</translation>
 <translation id="4460014764210899310">Atcelt grupēšanu</translation>

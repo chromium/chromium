@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />તમારા નિયોક્તા અથવા તમારી નિશાળ
           <ph name="LIST_ITEM" />તમારા ઇન્ટરનેટ સેવા પ્રદાતા
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">આ આઇટમને ટ્રૅક કરો</translation>
 <translation id="1337692097987160377">આ ટૅબ શેર કરો</translation>
 <translation id="1339601241726513588">નોંધણી ડોમેન:</translation>
 <translation id="1340482604681802745">પિકઅપ માટેનું સરનામું</translation>
@@ -455,6 +456,7 @@
 <translation id="1812527064848182527">લૅન્ડસ્કેપ</translation>
 <translation id="1812975699435941848">આરોગ્ય શિક્ષણ અને તબીબી પ્રશિક્ષણ</translation>
 <translation id="1816436748874040213">શેર કરેલા ટૅબને સ્ક્રોલ અને નાનું-મોટું કરવા માટે કહી શકાય છે</translation>
+<translation id="1817364650920811003">રોલ: Chromeની ટિપ. ઍક્સેસિબિલિટી લેબલ: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">અનબ્લૉક કરો</translation>
 <translation id="1818585559878922121">ડૉક્યુમેન્ટરી મૂવી</translation>
 <translation id="182139138257690338">ઑટોમૅટિક રીતે ડાઉનલોડ</translation>
@@ -1397,6 +1399,7 @@
 <translation id="3642638418806704195">ઍપ્લિકેશન:</translation>
 <translation id="3646643500201740985">કોઈ જાહેરાતના પર્ફોર્મન્સની માપણી</translation>
 <translation id="3647286794400715637">પ્રત્યે URLની સ્ટ્રિંગ ઍન્ટ્રીમાં 1થી 2ની વચ્ચે URLs શામેલ હોવી આવશ્યક છે.</translation>
+<translation id="3647400963805615193">Chromeની ટિપનું બટન છોડી દો, છોડી દેવા માટે Enter દબાવો, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">માન્યતા સફળ</translation>
 <translation id="3650594806107685466">તમારા કાર્ડને સુરક્ષિત રાખવામાં સહાય કરવા માટે, <ph name="SIDE_OF_CARD" /> પર CVC દાખલ કરો</translation>
 <translation id="3650917416636556301">હાઇકિંગ અને કેમ્પિંગ</translation>
@@ -2611,6 +2614,7 @@
 <translation id="6035491133925068289">ટ્રૅક અને ફીલ્ડ</translation>
 <translation id="6039846035001940113">જો સમસ્યા ચાલુ રહે, તો સાઇટના માલિકનો સંપર્ક કરો.</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
+<translation id="6040539895181423374">કિંમત વિશેની જાણકારી</translation>
 <translation id="604124094241169006">સ્વચલિત</translation>
 <translation id="6041777658117377052">ચેમ્બરનું તાપમાન</translation>
 <translation id="6042308850641462728">વધુ</translation>
@@ -3216,7 +3220,6 @@
 <translation id="719464814642662924">વિઝા</translation>
 <translation id="7195852673246414183">એકવાર તમે આ સેટિંગ ચાલુ કરો પછી લખવાનું શરૂ કરવા માટે, આ ટૅબ પર પાછા ફરો</translation>
 <translation id="7199278868241956094">ઑફિસ</translation>
-<translation id="7201591969684833065">તમારા વ્યવસ્થાપક જોઈ શકે છે:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ખાનગી રીતે બ્રાઉઝ કરવા નવી છૂપી ટૅબ ખોલવા માટે Tab પછી Enter દબાવો</translation>
 <translation id="7203375778433816396">Chromeને સિસ્ટમના ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" />, સુરક્ષા માનકોનું પાલન કરતું નથી.</translation>
@@ -3369,6 +3372,7 @@
 <translation id="7481312909269577407">ફોર્વર્ડ કરો</translation>
 <translation id="7481603210197454575">એન્વલપ ઇટાલિયન</translation>
 <translation id="7483482939016730822">શાળા પુરવઠા અને વર્ગખંડનું સાધન</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chromeની ટિપ છોડી દેવા માટે, Tab પછી Enter દબાવો.</translation>
 <translation id="7485085230273446323">વ્યાવસાયિક અને ઔદ્યોગિક</translation>
 <translation id="7485870689360869515">કોઈ ડેટા મળ્યો નથી.</translation>
 <translation id="7489392576326061356">શૅમ્પૂ અને કંડિશનર</translation>

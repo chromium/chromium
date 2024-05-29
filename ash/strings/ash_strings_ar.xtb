@@ -184,6 +184,7 @@
 <translation id="1654477262762802994">بدء طلب بحث صوتي</translation>
 <translation id="1668469839109562275">الشبكة الافتراضية الخاصة المُدمجة</translation>
 <translation id="1673232940951031776">إنهاء "وضع التركيز". يتبقّى <ph name="REMAINING_TIME" />.</translation>
+<translation id="1675570947608765064">يمكن للآخرين الاطّلاع على التغييرات التي تجريها على هذه المهمة</translation>
 <translation id="1675844249244994876">تعديل النافذة اليسرى</translation>
 <translation id="1677472565718498478">الوقت المتبقي <ph name="TIME" /></translation>
 <translation id="1677507110654891115">ميزة <ph name="FEATURE_NAME" /> غير متصلة.</translation>
@@ -1520,6 +1521,7 @@
 <translation id="6707693040195709527">إعادة الجهاز إلى الإصدار السابق متأخرة</translation>
 <translation id="6710213216561001401">السابق</translation>
 <translation id="6723839937902243910">الطاقة</translation>
+<translation id="672609503628871915">تعرف على الجديد</translation>
 <translation id="6727969043791803658">البلوتوث متصل، ومستوى شحن البطارية: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="6732087373923685049">الكاميرا</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1790,6 +1792,7 @@
 <translation id="7773536009433685931">‏تفعيل شبكة Wi-Fi</translation>
 <translation id="7780094051999721182">الاختصارات</translation>
 <translation id="7780159184141939021">تدوير الشاشة</translation>
+<translation id="7781829728241885113">أمس</translation>
 <translation id="7792590255364786396">مرئي</translation>
 <translation id="7796735576426975947">تم إخفاء إشعار جديد</translation>
 <translation id="7798302898096527229">‏اضغط على مفتاح البحث أو المفتاح Shift للإلغاء.</translation>
@@ -2115,6 +2118,7 @@
 <translation id="9000771174482730261">إدارة مساحة التخزين</translation>
 <translation id="9005984960510803406">‏فتح نافذة Crosh</translation>
 <translation id="9017320285115481645">‏يُرجى إدخال رمز الدخول المخصّص للوالدين في Family Link.</translation>
+<translation id="9022774213089566801">المواقع الإلكترونية التي تزورها بشكلٍ متكرر</translation>
 <translation id="9024331582947483881">ملء الشاشة</translation>
 <translation id="9029736946581028033">سيتوقّف الجهاز عن العمل قريبًا</translation>
 <translation id="9030319654231318877">غير مُفعّل حتى غروب الشمس.</translation>

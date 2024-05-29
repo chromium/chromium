@@ -4206,6 +4206,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4050534976465737778">Įsitikinkite, kad abu įrenginiai yra atrakinti, vienas šalia kito ir juose įjungtas „Bluetooth“ ryšys. Bendrindami su „Chromebook“ įrenginiu, kurio nėra jūsų kontaktuose, įsitikinkite, kad jame įjungta matomumo netoliese funkcija (atidarykite būsenos sritį, tada įjunkite matomumo netoliese funkciją). <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Jei norite perjungti į pastarąjį naudotą įvesties metodą, paspauskite <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">paieškos klavišas + rodyklė dešinėn</translation>
+<translation id="405181879009056822">„ChromeOS“ nustatymai</translation>
 <translation id="4052120076834320548">Mažytis</translation>
 <translation id="4052913941260326985">Sukurti QR kodą</translation>
 <translation id="405365679581583349">„Google Play“ paslaugų atnaujinimas</translation>
@@ -5741,6 +5742,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5250372599208556903">„<ph name="SEARCH_ENGINE_NAME" />“ naudoja jūsų vietovę, kad pateiktų vietinį turinį. Tai galite pakeisti apsilankę skiltyje „<ph name="SETTINGS_LINK" />“.</translation>
 <translation id="5252496130205799136">Naudoti „Google“ paskyrą slaptažodžiams išsaugoti ir užpildyti?</translation>
 <translation id="5252653240322147470">PIN kodą turi sudaryti mažiau nei <ph name="MAXIMUM" /> skaitm.</translation>
+<translation id="5253554634804500860">Naudoti „<ph name="DEVICE_NAME" />“</translation>
 <translation id="5254233580564156835">Atminties sąnaudos: <ph name="MEMORY_USAGE" /></translation>
 <translation id="52550593576409946">Nepavyko paleisti viešojo terminalo programos.</translation>
 <translation id="5255726914791076208">Kai redaguosite „passkey“, „<ph name="RP_ID" />“ paskyra nebus pakeista</translation>
@@ -6479,6 +6481,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5806447147478173900">Iš viso pateiktų svetainių naudojamos vietos saugykloje: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (numatytasis)</translation>
 <translation id="5809835394668218762">Daugiau veiksmų (<ph name="WEBSITE" />)</translation>
+<translation id="5809840528400421362">PIN kodas turi būti 6 skaitmenų</translation>
 <translation id="5810809306422959727">Šioje paskyroje tėvų kontrolės naudoti negalima</translation>
 <translation id="5811614940486072060">Šis failas atsisiunčiamas retai ir gali būti pavojingas</translation>
 <translation id="5812674658566766066">Išskleisti viską</translation>

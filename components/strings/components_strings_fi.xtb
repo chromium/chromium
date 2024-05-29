@@ -191,6 +191,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
           <ph name="LIST_ITEM" />työnantajallesi tai oppilaitoksellesi
           <ph name="LIST_ITEM" />internetpalveluntarjoajallesi.
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">Seuraa tätä kohdetta</translation>
 <translation id="1337692097987160377">Jaa tämä välilehti</translation>
 <translation id="1339601241726513588">Käyttöönoton verkkotunnus:</translation>
 <translation id="1340482604681802745">Nouto-osoite</translation>
@@ -2612,6 +2613,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6035491133925068289">Yleisurheilu</translation>
 <translation id="6039846035001940113">Jos ongelma jatkuu, ota yhteyttä sivuston omistajaan.</translation>
 <translation id="6040143037577758943">Sulje</translation>
+<translation id="6040539895181423374">Hintatilastot</translation>
 <translation id="604124094241169006">Automaattinen</translation>
 <translation id="6041777658117377052">Huoneen lämpötila</translation>
 <translation id="6042308850641462728">Lisää</translation>
@@ -3217,7 +3219,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195852673246414183">Kun olet laittanut asetuksen päälle, palaa tälle välilehdelle ja aloita kirjoittaminen</translation>
 <translation id="7199278868241956094">Oficio</translation>
-<translation id="7201591969684833065">Järjestelmänvalvoja näkee seuraavat:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, paina ensin sarkainta ja sitten Enter avataksesi uuden incognito-välilehden, niin voit selata yksityisesti</translation>
 <translation id="7203375778433816396">Valitse Chrome järjestelmän oletusselaimeksi</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ei noudata tietoturvastandardeja.</translation>

@@ -75,6 +75,7 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="2942241131342758843">Gebruik standaard Chromium om links te openen, te zoeken via widgets en om wachtwoorden in andere apps automatisch in te vullen</translation>
 <translation id="2977470724722393594">Chromium is up-to-date</translation>
 <translation id="3044857325852340337">Chromium-gegevens verwijderd</translation>
+<translation id="3049211156275642309">Chromium instellen afronden</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium kan je helpen om dit pakket te volgen op de pagina Nieuw tabblad.}other{Chromium kan je helpen om deze pakketten te volgen op de pagina Nieuw tabblad.}}</translation>
 <translation id="3102849287235003384">Als je op alle websites wilt uitloggen van je Google-account, <ph name="BEGIN_LINK" />log je uit bij Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Zoeken met je stem in Chromium</translation>
@@ -273,6 +274,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="8754966941001340678">Chromium raadt Geoptimaliseerde beveiliging aan</translation>
 <translation id="8759037115129007407">Je gezinslid kan op dit moment geen wachtwoorden krijgen. Vraag hun Chromium te updaten en hun wachtwoorden te synchroniseren. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Dit account en niet-opgeslagen gegevens worden verwijderd uit Chromium.</translation>
+<translation id="8826789549860004832">Haal het maximale uit Chromium door verder te gaan met het instellen van je browser.</translation>
 <translation id="88376265765385899">Opent de Chromium-bookmarks.</translation>
 <translation id="8860548555286245440">URL's in Chromium openen in de incognitomodus</translation>
 <translation id="8866191443434488382">Chromium herkent trackingcodes op sites die je bezoekt en toont pakketupdates op de pagina Nieuw tabblad. Het nummer voor pakkettracking en de naam van de website worden naar Chromium gestuurd om deze functie te bieden en de Shopping-functies voor iedereen te verbeteren. Je kunt dit altijd updaten in de <ph name="BEGIN_LINK" />instellingen voor Verzendstatus bijhouden<ph name="END_LINK" />.</translation>

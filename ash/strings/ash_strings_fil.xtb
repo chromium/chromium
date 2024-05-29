@@ -1516,9 +1516,11 @@ Kaka-install lang</translation>
 <translation id="6696025732084565524">Nangangailangan ng mahalagang update ang iyong naaalis na keyboard</translation>
 <translation id="6697913454192220372">Magdagdag ng bagong desk</translation>
 <translation id="6700713906295497288">Button ng menu ng IME</translation>
+<translation id="6706742084323792866">I-pin ang keyboard</translation>
 <translation id="6707693040195709527">Overdue na ang pagbabalik ng device sa nakaraang bersyon</translation>
 <translation id="6710213216561001401">Nauna</translation>
 <translation id="6723839937902243910">Power</translation>
+<translation id="672609503628871915">Tingnan kung ano'ng bago</translation>
 <translation id="6727969043791803658">Nakakonekta, <ph name="BATTERY_PERCENTAGE" />% ang baterya</translation>
 <translation id="6732087373923685049">camera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1787,6 +1789,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7773536009433685931">I-on na lang ang WiFi</translation>
 <translation id="7780094051999721182">mga shortcut</translation>
 <translation id="7780159184141939021">I-rotate ang Screen</translation>
+<translation id="7781829728241885113">Kahapon</translation>
 <translation id="7792590255364786396">Nakikita</translation>
 <translation id="7796735576426975947">Nakatago ang bagong notification</translation>
 <translation id="7798302898096527229">Pindutin ang Search o Shift upang kanselahin.</translation>
@@ -2111,6 +2114,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="9000771174482730261">PAMAHALAAN ANG STORAGE</translation>
 <translation id="9005984960510803406">Buksan ang window ng Crosh</translation>
 <translation id="9017320285115481645">Ilagay ang access code ng magulang sa Family Link.</translation>
+<translation id="9022774213089566801">Madalas na binibisita</translation>
 <translation id="9024331582947483881">buong screen</translation>
 <translation id="9029736946581028033">Malapit nang mag-off ang device</translation>
 <translation id="9030319654231318877">Naka-off hanggang paglubog ng araw</translation>

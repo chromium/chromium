@@ -18,6 +18,7 @@
 <translation id="1080365971383768617">Contraseñas en todos tus dispositivos</translation>
 <translation id="1082920045291562218">Se cerró la hoja de comentarios del resumen para compartir</translation>
 <translation id="1089606299949659462">¡Se completó la revisión!</translation>
+<translation id="1094555143448724771">Para ver las pestañas de tus otros dispositivos, sincroniza las pestañas y el historial</translation>
 <translation id="1095761715416917775">Asegúrate de que siempre puedas acceder a tus datos sincronizados</translation>
 <translation id="1100066534610197918">Abrir en pestaña nueva en grupo</translation>
 <translation id="1103142993930332957">¿Quieres ayudar a mejorar Chrome?</translation>
@@ -33,6 +34,7 @@
 <translation id="115483310321669804">Usar la contraseña <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Cambiar nombre</translation>
 <translation id="1174479719160874822">Si la pantalla es angosta, Chrome solicitará el sitio móvil</translation>
+<translation id="1175241315203286684">El administrador puede realizar cambios en tu perfil y navegador de forma remota, analizar información sobre el navegador a través de informes y realizar otras tareas necesarias. Es posible que la actividad en este dispositivo también se administre fuera de Chrome.</translation>
 <translation id="1177863135347784049">Personalizado</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1181366777303791449">en <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
@@ -165,6 +167,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="185383612275551373">Utiliza la función de sincronización para obtener el contenido más relevante de Google</translation>
 <translation id="1871098866036088250">Abrir en el navegador Chrome</translation>
 <translation id="1877026089748256423">Chrome no está actualizado.</translation>
+<translation id="1877073879466606884">El perfil al que accediste es un perfil administrado. El administrador puede realizar cambios en la configuración de tu perfil de forma remota, analizar información sobre el navegador a través de informes y realizar otras tareas necesarias.</translation>
 <translation id="1883903952484604915">Mis archivos</translation>
 <translation id="189358972401248634">Otros idiomas</translation>
 <translation id="1900260903084164610">Si continúas, aceptas las <ph name="BEGIN_TOS_LINK" />Condiciones del Servicio<ph name="END_TOS_LINK" />.</translation>
@@ -806,6 +809,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="506254248375231072">No hay pestañas</translation>
 <translation id="5062960805900435602">La actualización sobre la combinación de contraseñas está cerrada</translation>
 <translation id="5081960376148623587">Elige si deseas precargar páginas</translation>
+<translation id="5085038751173179818">Accede a este sitio y a Chrome para obtener tus favoritos y mucho más en todos tus dispositivos</translation>
 <translation id="5091199029769593641">Pronto, cuando abras una nueva pestaña, verás historias de <ph name="SITE_NAME" />. Los sitios que sigues se guardan en tu Cuenta de Google. Puedes administrarlos en la configuración de Descubre.</translation>
 <translation id="509429900233858213">Se ha producido un error.</translation>
 <translation id="5097349930204431044">Los sitios que visitas pueden determinar lo que te gusta y, luego, sugerir anuncios a medida que navegues.</translation>
@@ -834,6 +838,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Descargando archivo…}other{Descargando # archivos…}}</translation>
 <translation id="5210286577605176222">Ir a la pestaña anterior</translation>
 <translation id="5210365745912300556">Cerrar pestaña</translation>
+<translation id="5215957675041756913">Controla tus datos y tu cuenta</translation>
 <translation id="5222676887888702881">Salir</translation>
 <translation id="5226378907213531272">Se desbloqueará la pantalla cada vez que uses el automóvil</translation>
 <translation id="5227554086496586518">Presiona para ver los resultados de la búsqueda.</translation>
@@ -1554,6 +1559,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8562452229998620586">Las contraseñas guardadas aparecerán aquí.</translation>
 <translation id="8570677896027847510">No es posible descargar el archivo de forma segura</translation>
 <translation id="8571213806525832805">Últimas cuatro semanas</translation>
+<translation id="8582529315803410153">Aquí encontrarás las pestañas que se abrieron en otros dispositivos</translation>
 <translation id="859046281437143747">Desde el botón Más opciones, realiza un seguimiento del precio</translation>
 <translation id="860043288473659153">Nombre del titular de la tarjeta</translation>
 <translation id="8602358303461588329">Acceder a Chrome, cerrado.</translation>

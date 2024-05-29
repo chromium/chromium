@@ -4853,6 +4853,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4562091353415772246">Mag-install ng mga update at app. Sa pamamagitan ng pagpapatuloy, sumasang-ayon kang posible ring awtomatikong mag-download at mag-install ang device na ito ng mga update at app mula sa Google, iyong carrier, at manufacturer ng device mo, na posibleng gumamit ng cellular data. Posibleng mag-alok ang ilan sa mga app na ito ng mga in-app na pagbili. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa awtomatikong pag-install sa pamamagitan ng Play<ph name="BEGIN_LINK1_END" /><ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">Magdagdag ng Fingerprint</translation>
 <translation id="4562155266774382038">I-dismiss ang suhestyon</translation>
+<translation id="4562364000855074606">I-block ang mga naka-install na app sa <ph name="DEVICE_TYPE" /> na ito. Para paghigpitan ang pag-download ng mga app o content, pumunta sa Mga Setting ng Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Ang paunang wika sa pag-input ay Chinese</translation>
 <translation id="4563382028841851106">Alisin sa account</translation>
 <translation id="4563880231729913339">Daliri 3</translation>
@@ -8064,6 +8065,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7009709314043432820">Ginagamit ng <ph name="APP_NAME" /> ang iyong camera</translation>
 <translation id="701080569351381435">View Source</translation>
 <translation id="7011797924920577670">tinataya ang iyong mga interest</translation>
+<translation id="7012430956470647760">Parental controls para sa mga app</translation>
 <translation id="7013762323294215682">Mase-save ang passkey na ito sa iyong password manager. Magagamit ng sinumang may access dito ang passkey na ito.</translation>
 <translation id="7014174261166285193">Nabigo ang pag-install.</translation>
 <translation id="7014480873681694324">Alisin ang Highlight</translation>

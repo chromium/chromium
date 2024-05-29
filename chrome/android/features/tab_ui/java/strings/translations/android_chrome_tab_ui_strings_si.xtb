@@ -61,7 +61,6 @@
 <translation id="4139634748112164403">පටිති මෙම උපාංගය මත විවෘතව පවතින නමුත් සමූහය ස්ථිරව මකනු ලැබේ</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක්, වර්ණය <ph name="COLOR_NAME" /> සමග <ph name="TITLE_OF_GROUP" /> සමූහය වසන්න.}one{පටිති <ph name="TABS_COUNT_MANY" />ක්, වර්ණය <ph name="COLOR_NAME" /> සමග <ph name="TITLE_OF_GROUP" /> සමූහය වසන්න.}other{පටිති <ph name="TABS_COUNT_MANY" />ක්, වර්ණය <ph name="COLOR_NAME" /> සමග <ph name="TITLE_OF_GROUP" /> සමූහය වසන්න.}}</translation>
 <translation id="4159784952369912983">දම්</translation>
-<translation id="4212246570487010370">දිගටම බ්‍රවුස් කරන්න</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක් සමග <ph name="TITLE_OF_GROUP" /> පටිති සමූහය දිග හරින්න.}one{පටිති <ph name="TABS_COUNT_MANY" />ක් සමග <ph name="TITLE_OF_GROUP" /> පටිති සමූහය දිග හරින්න.}other{පටිති <ph name="TABS_COUNT_MANY" />ක් සමග <ph name="TITLE_OF_GROUP" /> පටිති සමූහය දිග හරින්න.}}</translation>
 <translation id="427987768447457592">නව පටිති සමූහය</translation>
 <translation id="4460014764210899310">කණ්ඩායම් නොකරන්න</translation>

@@ -48,6 +48,7 @@
 <translation id="1175572348579024023">Ոլորել</translation>
 <translation id="1175944128323889279">Մարտկոցի լիցքի ներկայիս մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%, մնացել է <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Դադար</translation>
+<translation id="1179776263021875437">Դադարեցնել առաջադրանքի վրա կենտրոնացումը</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
 <translation id="1182225749592316782">Սա օգտագործման թույլտվություն է տրամադրում բոլոր հավելվածներին ու կայքերին, որոնք ունեն խոսափողի և տեսախցիկի օգտագործման թույլտվություն</translation>
 <translation id="1182876754474670069">home</translation>
@@ -119,6 +120,7 @@
 <translation id="1383876407941801731">Որոնում</translation>
 <translation id="1391102559483454063">Միացված է</translation>
 <translation id="1394698770495054737">Լրիվ շաղում</translation>
+<translation id="1404963891829069586">Առանց շեղումների ռեժիմի ձայներ</translation>
 <translation id="1407069428457324124">Մուգ թեմա</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />։ Մի ամսաթվից մյուսին անցնելու համար օգտագործեք սլաքի ստեղները։</translation>
 <translation id="141170878022560212">Մեջտեղի կոճակ</translation>
@@ -180,6 +182,8 @@
 <translation id="1651914502370159744">Բացել պատմության էջը</translation>
 <translation id="1654477262762802994">Հնչեցնել հարցում</translation>
 <translation id="1668469839109562275">Ներկառուցված VPN</translation>
+<translation id="1673232940951031776">Դուրս գալ Առանց շեղումների ռեժիմից։ Մնացել է <ph name="REMAINING_TIME" />։</translation>
+<translation id="1675570947608765064">Մյուս օգտատերերը կարող են տեսնել այս առաջադրանքում ձեր կատարած փոփոխությունները</translation>
 <translation id="1675844249244994876">Թարմացնել աջ պատուհանը</translation>
 <translation id="1677472565718498478">Մնացել է <ph name="TIME" /></translation>
 <translation id="1677507110654891115">«<ph name="FEATURE_NAME" />» գործառույթը միացված չէ։</translation>
@@ -223,6 +227,7 @@
 <translation id="1824922790784036530">Միացնել տեղորոշման թույլտվությունը</translation>
 <translation id="1830308660060964064">«<ph name="ITEM_TITLE" />» տարրն ապամրացվեց</translation>
 <translation id="1831565490995294689">Սեղմեք՝ <ph name="APP_TO_OPEN" /> հավելվածը բացելու համար։</translation>
+<translation id="1838011306813517425">Առանց շեղումների ռեժիմի կարգավորումներ</translation>
 <translation id="1838895407229022812">Գիշերային ռեժիմն անջատված է</translation>
 <translation id="1854180393107901205">Դադարեցնել հեռարձակումը</translation>
 <translation id="1862077610023398675">Թաքցնել կառավարման տարրերը</translation>
@@ -310,6 +315,7 @@
 <translation id="2277103315734023688">Առաջ գնալ</translation>
 <translation id="2282073721614284166">Բացել հղումը ներդիրում</translation>
 <translation id="2292698582925480719">Էկրանի մասշտաբ</translation>
+<translation id="2293443480080733021">Ինչի՞ վրա եք ուզում կենտրոնանալ։ Սեղմեք Enter՝ առաջադրանքն ավելացնելու համար։</translation>
 <translation id="229397294990920565">Բջջային ինտերնետն անջատվում է…</translation>
 <translation id="2295777434187870477">Խոսափողը միացված է։ Անջատելու համար սեղմեք այս կոճակը։</translation>
 <translation id="2298170939937364391">Լիաէկրան խոշորացույցը միացավ: Այն անջատելու համար նորից սեղմեք Ctrl+Search+M:</translation>
@@ -377,6 +383,7 @@
 <translation id="2509468283778169019">CAPS LOCK-ը միացված է</translation>
 <translation id="2514415433888497495">Կանգնեցնել <ph name="CAPTURE_MEDIUM" />ը։ <ph name="CAPTURE_MEDIUM" />ը <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516416533263263796">Առանց շեղումների ռեժիմը միացված է, մնացել է 10 րոպե</translation>
 <translation id="2516637483312286228">Փոփոխել խաղի կարգավորումները</translation>
 <translation id="2526581474998477112">Ապակողպել պատուհանները</translation>
 <translation id="2528111225373402384">Թեժ կետի կարգավորումներ</translation>
@@ -447,6 +454,7 @@
 <translation id="2798702144670138229">Պլանշետի ռեժիմը միացված է։ Խաղային վահանակն անհասանելի է։</translation>
 <translation id="2801954693771979815">Էկրանի չափը</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, ընտրված է</translation>
+<translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Հավելվածներ</translation>
 <translation id="2814448776515246190">Էկրանի մի մասի տեսագրում</translation>
 <translation id="2819276065543622893">Դուք հիմա դուրս կգրվեք:</translation>
@@ -474,6 +482,7 @@
 <translation id="2914580577416829331">Էկրանի լուսանկարներ</translation>
 <translation id="2924416280450782352">Չհաջողվեց ցուցադրել տարրերը։ Փորձեք նորից բացել վահանակը։</translation>
 <translation id="2931572158271115754">Անելիքների այս ցուցակում ոչինչ չկա։</translation>
+<translation id="2932487126591186298">Ավելացվել է 10 րոպե։ Մնացել է <ph name="REMAINING_TIME" />։</translation>
 <translation id="2935225303485967257">Կառավարել պրոֆիլները</translation>
 <translation id="2941112035454246133">Ցածր</translation>
 <translation id="2942350706960889382">Ամրացված խոշորացույց</translation>
@@ -649,6 +658,7 @@
 <translation id="3576141592585647168">Փոխեք ժամային գոտին</translation>
 <translation id="3577473026931028326">Սխալ առաջացավ։ Նորից փորձեք։</translation>
 <translation id="3580650856351781466">Խոսքի ճանաչման ֆայլերը ներբեռնվում են</translation>
+<translation id="3583350334315908861">{MINUTES,plural, =1{րոպե}one{րոպե}other{րոպե}}</translation>
 <translation id="3585296979871889131">Դիտել հեռախոսի վերջին լուսանկարները, մեդիաֆայլերը, ծանուցումները և հավելվածները</translation>
 <translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">«Կողք» կոճակ</translation>
@@ -672,6 +682,7 @@
 <translation id="3631369015426612114">Թույլ տալ ծանուցումները հետևյալ կայքերից</translation>
 <translation id="3633097874324966332">Բացեք Bluetooth-ի կարգավորումները՝ սարքը զուգակցելու համար</translation>
 <translation id="3633851487917460983">Բացել սեղմատախտակը</translation>
+<translation id="363473492175527493">Առաջադրանքը, որի վրա պետք է կենտրոնանալ՝ <ph name="TASK_NAME" />։ Առաջադրանքը փոփոխելու համար սեղմեք Enter։</translation>
 <translation id="3638400994746983214">Միացնել/անջատել գաղտնիության էկրանը։ <ph name="STATE_TEXT" />:</translation>
 <translation id="3649256019230929621">Նվազեցնել պատուհանը</translation>
 <translation id="3649505501900178324">Թարմացման ժամկետը լրացել է</translation>
@@ -707,6 +718,7 @@
 <translation id="3735740477244556633">Դասավորել ըստ</translation>
 <translation id="3738664582935948253">Այժմ սեղմումները և ստեղնային դյուրանցումները կարելի է ցուցադրել էկրանի տեսագրումներում</translation>
 <translation id="3742055079367172538">Սքրինշոթը ստեղծված է</translation>
+<translation id="3743775386021959186">Առանց շեղումների ռեժիմը միացված է, մնացել է <ph name="REMAINING_TIME" /></translation>
 <translation id="3756485814916578707">Էկրանի հեռարձակում</translation>
 <translation id="3765841382945324995">«<ph name="SIX_PACK_KEY_NAME" />» գործողության դյուրանցումը դարձել է <ph name="NEW_SHORTCUT" /> (նախկին դյուրանցումը՝ <ph name="OLD_SHORTCUT" />)</translation>
 <translation id="3765841986579723851">Այսօր փոփոխել եք</translation>
@@ -896,6 +908,7 @@
 <translation id="4477751544736611934">Տվյալների փոխանցման համար կարող է գումար գանձվել։
 Միացած է 1 սարք։</translation>
 <translation id="4477892968187500306">Այս սարքում կարող են լինել հավելվածներ, որոնք չեն ստուգվել Google-ի կողմից։</translation>
+<translation id="4479130137987693286">Դուք կարող եք լրացուցիչ ժամանակ ավելացնել կամ դուրս գալ առանց շեղումների ռեժիմից</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Ապազուգակցված սարքեր</translation>
 <translation id="4485506555414638855">Բաց թողնել հեռախոսի վերջին լուսանկարների, մեդիաֆայլերի, ծանուցումների և հավելվածների դիտման կարգավորումը</translation>
@@ -1069,6 +1082,7 @@
 <translation id="5095136268899496849">Հարմարեցրեք և անհատականացրեք <ph name="PRODUCT_NAME" />-ը կարգավորումներում։ Օրինակ՝ փոխեք պաստառը կամ կարգավորեք էկրանապահ։</translation>
 <translation id="509790653408515442">Երբ դուք հեռարձակեք ձեր հեռախոսի հավելվածները, դրանք կհայտնվեն այստեղ</translation>
 <translation id="5098537242461068432">Աշխատասեղանն ու պատուհանները նորից բացվեցին</translation>
+<translation id="5103975065730779239">Մինչև <ph name="END_TIME_EXPRESSION" /></translation>
 <translation id="5104236669533825617">Չհաջողվեց ստեղծել սքրինքաստ</translation>
 <translation id="5107522548814527560">Վեբ</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
@@ -1147,6 +1161,7 @@
 <translation id="5395308026110844773">«<ph name="DRAGGED_APP_NAME" />» հավելվածը «<ph name="IN_PLACE_APP" />» հավելվածի վրա է: Բաց թողեք՝ պանակ ստեղծելու համար:</translation>
 <translation id="5397578532367286026">Այս օգտատիրոջ օգտագործման տվյալները և պատմությունը կարող են վերահսկվել chrome.com-ի կառավարիչի (<ph name="MANAGER_EMAIL" />) կողմից:</translation>
 <translation id="540713187982329711">Միացնել/անջատել թեժ կետը։ Թեժ կետը միացված է, սակայն ոչ մի սարք միացած չէ դրան։</translation>
+<translation id="5409208741270395213">Առաջադրանքը նշել որպես կատարված</translation>
 <translation id="5413656666631274079">Կարգավորումների էջ</translation>
 <translation id="5414198321558177633">Պրոֆիլների ցանկը թարմացվում է։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="5417965108047245734">Դիտեք այս ուղեցույցը՝ իմանալու, թե ինչպես օգտագործել ձեր <ph name="PRODUCT_NAME" />-ը</translation>
@@ -1178,6 +1193,7 @@
 <translation id="553675580533261935">Ելք աշխատաշրջանից</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554017492391497564">Չհաջողվեց նշել որպես կատարված։</translation>
+<translation id="5543778275214926792">Միացնե՞լ «Ընտրեք և լսեք» գործառույթը</translation>
 <translation id="5546397813406633847">Վերականգնել օգտատիրոջը</translation>
 <translation id="554893713779400387">Միացնել/անջատել ձայնային ներածումը</translation>
 <translation id="5550417424894892620">Քաշեք ձեր ֆայլերը աշխատասեղանի վրա՝ «<ph name="HOLDING_SPACE_TITLE" />» պանակում ավելացնելու համար։ Դուք չեք կարող ֆայլեր ավելացնել աշխատասեղանին։</translation>
@@ -1201,6 +1217,7 @@
 <translation id="5592745162308462420">fn</translation>
 <translation id="5596627076506792578">Լրացուցիչ ընտրանքներ</translation>
 <translation id="5599242528220103262">Ստեղնային դյուրանցումն անջատված է</translation>
+<translation id="5600415762228455511">Առանց շեղումների ռեժիմը միացված է, մնացել է <ph name="REMAINING_TIME" />, կենտրոնացում <ph name="TASK_NAME" /> առաջադրանքի վրա</translation>
 <translation id="5600837773213129531">Սեղմեք Ctrl+Alt+Z՝ ձայնային ուղեկցումն անջատելու համար:</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Դուք այժմ ավելի լավ ցանցի եք միացած</translation>
@@ -1230,8 +1247,10 @@
 <translation id="5699366815052349604">Նշանակել ակտիվ պատուհան բոլոր աշխատասեղաններին</translation>
 <translation id="5701785125601597013">Արագ ուղարկեք հաղորդագրություններ կամ պատասխանեք դրանց Հեռախոսի կառավարման կենտրոնի միջոցով</translation>
 <translation id="570390244361237317">Բոլոր հավելվածները․ սլաքների ստեղների օգնությամբ կարող եք բացել բոլոր հավելվածների ցանկը</translation>
+<translation id="5705197514573687092">Ցույց տալ Առանց շեղումների ռեժիմի կարգավորումները։ Սահմանվել է ժամաչափ՝ <ph name="FOCUS_DURATION" />։</translation>
 <translation id="5707775774148071965">Ձեր սարքն աջակցում է տվյալների փոխանցման ավելի բարձր արագություն, քան ձեր մալուխը։ Սարքի աշխատանքի արդյունավետությունը կարող է սահմանափակվել։</translation>
 <translation id="5710450975648804523">«Չանհանգստացնել» ռեժիմն ակտիվ է</translation>
+<translation id="5711984160978177607">Մնացել է <ph name="REMAINING_TIME" /></translation>
 <translation id="5712132663381964774">Ձեր <ph name="PRODUCT_NAME" />-ի հավելվածներով կարող եք կատարել մի շարք առաջադրանքներ։ Անհրաժեշտ հավելվածը գտնելու համար բացեք Գործարկիչը։</translation>
 <translation id="571295407079589142">Բջջային ինտերնետն անջատված է</translation>
 <translation id="5727460725221669831">Եթե մոռացել եք ձեր գաղտնաբառը կամ վերջերս փոխել եք Google հաշվի գաղտնաբառը, փորձեք վերականգնել այս օգտատիրոջը։</translation>
@@ -1242,6 +1261,7 @@
 <translation id="5744083938413354016">Հպումով քաշում</translation>
 <translation id="5745612484876805746">Մութն ընկնելուն պես գիշերային ռեժիմը ավտոմատ կմիանա</translation>
 <translation id="5750765938512549687">Bluetooth-ն անջատված է</translation>
+<translation id="5758114525425072423">Անցնել առանց շեղումների ռեժիմին։ Սահմանվել է ժամաչափ՝ <ph name="FOCUS_DURATION" />։</translation>
 <translation id="5760866832697883462">Կապեք ձեր «<ph name="NAME" />» սարքը</translation>
 <translation id="5762420912707163638">Միացնել/անջատել նշիչը։ <ph name="STATE_TEXT" /> Նշումներ արեք էկրանին հպահարթակի, հպէկրանի կամ ստիլուսի միջոցով։</translation>
 <translation id="576341972084747908">Ներբեռնվում է վտանգավոր ֆայլ՝ <ph name="FILENAME" /></translation>
@@ -1249,6 +1269,7 @@
 <translation id="5764569119212455782">Անցնել վերջին ընտրված լեզվին</translation>
 <translation id="5767730327234918501">Ձեր ադմինիստրատորն անջատել է թեժ կետը։</translation>
 <translation id="5769373120130404283">Գաղտնիության էկրան</translation>
+<translation id="5770004650349728202">Միացնել «Ընտրեք և լսեք» գործառույթը</translation>
 <translation id="5773950591113557721">Սա օգտագործման թույլտվություն է տրամադրում <ph name="APP_NAME" /> հավելվածին և բոլոր այն հավելվածներին ու կայքերին, որոնք ունեն խոսափողի և տեսախցիկի օգտագործման թույլտվություն</translation>
 <translation id="5774295353725270860">Բացել «Ֆայլեր» ծրագիրը</translation>
 <translation id="5775936059231769503">Միացնել/անջատել թեժ կետը։ Թեժ կետն անջատված է։</translation>
@@ -1343,8 +1364,10 @@
 <translation id="6119972796024789243">Գունաշտկում</translation>
 <translation id="6121838516699723042">Հաստատեք <ph name="FILENAME" /> ֆայլի ներբեռնումը</translation>
 <translation id="612734058257491180">Google Օգնականը հասանելի չէ հյուրի աշխատաշրջանում:</translation>
+<translation id="6127370444807669747">Փորձեք YouTube Music Premium-ը․ լսեք անհատականացված երգացանկեր և երաժշտություն՝ ուշադրությունը կենտրոնացնելու համար</translation>
 <translation id="6129953537138746214">Բացատ</translation>
 <translation id="6137566720514957455">Բացել <ph name="USER_EMAIL_ADDRESS" /> հաշվի հեռացման երկխոսության պատուհանը</translation>
+<translation id="6141205840878048728">Ինչի՞ վրա եք ուզում կենտրոնանալ</translation>
 <translation id="6141988275892716286">Հաստատեք ներբեռնումը</translation>
 <translation id="6143578372829139382">Կիսվել YouTube-ում</translation>
 <translation id="6154006699632741460">Արտաքին սարքերը չեն աջակցվում</translation>
@@ -1405,11 +1428,13 @@
 <translation id="6381109794406942707">Սարքն ապակողպելու համար մուտքագրեք ձեր PIN կոդը։</translation>
 <translation id="638716340450135524">Միացնել տեսախցիկի օգտագործման թույլտվությունը</translation>
 <translation id="639644700271529076">CAPS LOCK-ն անջատված է</translation>
+<translation id="6406458002328242616">Փոփոխել ժամաչափը։ <ph name="FOCUS_DURATION" />։</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Օգնական</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Մաքրել բոլոր ծանուցումները</translation>
+<translation id="6430225033895752525">Ցույց տալ Առանց շեղումների ռեժիմի կարգավորումները</translation>
 <translation id="643147933154517414">Ամեն ինչ պատրաստ է</translation>
 <translation id="6431865393913628856">Էկրանի տեսագրում</translation>
 <translation id="643593192654616063"><ph name="STORAGE_TOTAL_SIZE" /> ընդհանուր տարածքից օգտագործվում է <ph name="STORAGE_IN_USE_SIZE" />-ը</translation>
@@ -1450,6 +1475,7 @@
 Նոր տեղադրում</translation>
 <translation id="6559158502366839560">Բացահայտել այլ հավելվածներ և խաղեր</translation>
 <translation id="6559976592393364813">Հարցրեք ադմինիստրատորին</translation>
+<translation id="6562447480759345110">Դուրս գալ Առանց շեղումների ռեժիմից</translation>
 <translation id="6565007273808762236">eSIM կապն անհասանելի է</translation>
 <translation id="6570831796530454248">{0,plural, =1{Թարմացրեք սարքը մեկ ժամվա ընթացքում}one{Թարմացրեք սարքը # ժամվա ընթացքում}other{Թարմացրեք սարքը # ժամվա ընթացքում}}</translation>
 <translation id="6570902864550063460">Լիցքավորում USB-ի միջոցով</translation>
@@ -1459,6 +1485,7 @@
 <translation id="6585808820553845416">Աշխատաշրջանն ավարտվում է <ph name="SESSION_TIME_REMAINING" />-ից:</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Տեսախցիկի պատկերն ամրացված է ներքևի ձախ անկյունում, քանի որ ծածկում էր համակարգի միջերեսի տարրերը։</translation>
+<translation id="6605415194043280389">Առանց շեղումների ռեժիմը միացված է</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="6612802754306526077">Ընտրված է էկրանի տեսագրման ռեժիմը</translation>
 <translation id="6612889377159412215">ենթաառաջադրանք</translation>
@@ -1492,6 +1519,7 @@
 <translation id="6707693040195709527">Օպերացիոն համակարգի նախորդ տարբերակին անցնելու ժամանակը լրացել է</translation>
 <translation id="6710213216561001401">Նախորդը</translation>
 <translation id="6723839937902243910">Սնուցում</translation>
+<translation id="672609503628871915">Իմանալ՝ ինչ նոր բան կա</translation>
 <translation id="6727969043791803658">Միացված է, մարտկոցի լիցքը՝ <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="6732087373923685049">տեսախցիկ</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1525,6 +1553,7 @@
 <translation id="6836499262298959512">Վտանգավոր ֆայլ</translation>
 <translation id="6837621009301897464">Սքրինշոթ անելու համար սեղմեք</translation>
 <translation id="6852052252232534364">Ակտիվացնել</translation>
+<translation id="6852628153543175788">Ավելացնել 10 րոպե</translation>
 <translation id="6855029042976311970">Քիչ առաջ փոփոխել եք</translation>
 <translation id="6856708615407876657">Միացնել/անջատել որոնման արդյունքների կատեգորիաները</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> վ</translation>
@@ -1585,6 +1614,7 @@
 <translation id="7068360136237591149">Բացել ֆայլեր</translation>
 <translation id="7076293881109082629">Մուտք</translation>
 <translation id="7076878155205969899">Անջատել ձայնը</translation>
+<translation id="7083848064787091821">Առանց շեղումների ռեժիմ</translation>
 <translation id="7084678090004350185">Միացնել/անջատել թեժ կետը։ Թեժ կետը միացված է, և <ph name="DEVICECOUNT" /> սարք միացած է դրան։</translation>
 <translation id="7086931198345821656">Այս թարմացումը տեղադրելու համար ձեր <ph name="DEVICE_TYPE" /> սարքում անհրաժեշտ է օգտագործել Powerwash գործառույթը։ Բոլոր տվյալները կջնջվեն։ Իմացեք ավելին <ph name="SYSTEM_APP_NAME" /> հավելվածի վերջին թարմացման մասին։</translation>
 <translation id="7088960765736518739">Switch Access</translation>
@@ -1612,6 +1642,7 @@
 <translation id="7188494361780961876">Ընտրացանկը տեղափոխվեց էկրանի վերևի ձախ անկյուն։</translation>
 <translation id="7189412385142492784">Որքան հեռու է Վեներան</translation>
 <translation id="7198435252016571249">Տեսախցիկի պատկերն ամրացված է ներքևի աջ անկյունում, քանի որ ծածկում էր համակարգի միջերեսի տարրերը։</translation>
+<translation id="720981139652840573">Հնչեցրեք ընդգծված տեքստը։ Նախ էկրանի ներքևում սեղմեք «Ընտրեք և լսեք» պատկերակը, ապա ընդգծեք տեքստը։ Նաև կարող եք օգտագործել ստեղնային դյուրանցում. ընդգծեք տեքստը, ապա սեղմեք Որոնում/Գործարկիչ + S։</translation>
 <translation id="7219573373513695352">Կապված սարքեր չկան</translation>
 <translation id="7229029500464092426">Օգտագործված հիշողության ծավալը՝ <ph name="AVAILABLE_MEMORY" /> | Ընդամենը՝ <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Մարտկոցի լիցքը՝ <ph name="PERCENTAGE" />%։ Միացրեք սարքը հոսանքին։</translation>
@@ -1621,6 +1652,7 @@
 <translation id="7258828758145722155">Երեկ փոփոխել եք</translation>
 <translation id="726276584504105859">Քաշեք այստեղ՝ էկրանի տրոհումն օգտագործելու համար</translation>
 <translation id="7262906531272962081">Ստեղծել հիշեցում</translation>
+<translation id="7264788308526527464">Նվազեցնել <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">Սքրինշոթներ անելու համար օգտագործեք էկրանի տեսագրման գործիքը արագ կարգավորումներում։</translation>
 <translation id="7301826272005790482">Փակել պատուհանների առաջարկները</translation>
@@ -1631,6 +1663,7 @@
 <translation id="7313193732017069507">Ծավալել տեսախցիկը</translation>
 <translation id="7330397557116570022">Թելադրումն օգտագործելու համար անցեք տեքստային դաշտ</translation>
 <translation id="7331646370422660166">alt + ներքև սլաք</translation>
+<translation id="7337660433630200387">+10 ր</translation>
 <translation id="7340731148882810149">Ավտոմատ սեղմումների ընտրացանկ</translation>
 <translation id="7346909386216857016">Եղավ</translation>
 <translation id="7348093485538360975">Էկրանի ստեղնաշար</translation>
@@ -1650,6 +1683,7 @@
 <translation id="7386767620098596324">Միացնել/անջատել կապը։ <ph name="STATE_TEXT" />։</translation>
 <translation id="7392563512730092880">Դուք կարող եք ավելի ուշ նշել պարամետրերը կարգավորումներում։</translation>
 <translation id="7401222354741467707">Ամբողջ էկրանի սքրինշոթ կամ տեսագրություն անել</translation>
+<translation id="7401788553834047908">Չանհանգստացնել Առանց շեղումների ռեժիմում</translation>
 <translation id="7405710164030118432">Սարքն ապակողպելու համար մուտքագրեք Family Link-ի ծնողի մուտքի կոդը</translation>
 <translation id="7406608787870898861">Ավարտեք բջջային ցանցի կարգավորումը</translation>
 <translation id="7406854842098869085">Սեղմեք և պահեք <ph name="MODIFIER_1" /> ստեղնը, այնուհետև հպեք <ph name="KEY" /> ստեղնին, մինչև անհրաժեշտ պատուհանը չբացվի, ապա բաց թողեք</translation>
@@ -1684,6 +1718,8 @@
 <translation id="7519649142417630956">Անջատելուց հետո ադմինիստրատորը դուրս կգրվի և չի կարողանա կառավարել ձեր սարքը։
 
 Սրաքն անջատելու համար նորից սեղմեք և պահեք սնուցման կոճակը։</translation>
+<translation id="7523420897035067483">Չանհանգստացնել Առանց շեղումների ռեժիմում</translation>
+<translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7526573455193969409">Ցանցը կարող է վերահսկվել</translation>
 <translation id="7536035074519304529">IP հասցե՝ <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Թարմացնել ձախ պատուհանը</translation>
@@ -1753,6 +1789,7 @@
 <translation id="7773536009433685931">Միացնել Wi-Fi-ը</translation>
 <translation id="7780094051999721182">դյուրանցումներ</translation>
 <translation id="7780159184141939021">Էկրանի պտտում</translation>
+<translation id="7781829728241885113">Երեկ</translation>
 <translation id="7792590255364786396">Տեսանելի է</translation>
 <translation id="7796735576426975947">Նոր ծանուցումները թաքցված են</translation>
 <translation id="7798302898096527229">Չեղարկելու համար սեղմեք Search կամ Shift:</translation>
@@ -1816,6 +1853,7 @@
 <translation id="7963992254934562106"><ph name="PHONE_NAME" />-ից</translation>
 <translation id="7968693143708939792">Ընտրել պանակ</translation>
 <translation id="7973756967040444713">Փակել գործիքագոտին</translation>
+<translation id="797485111629834774"><ph name="TASK_NAME" /> առաջադրանքը նշել որպես կատարված</translation>
 <translation id="797512352675305461">Միացնել կամ անջատել լիաէկրան խոշորացույցը</translation>
 <translation id="7977927628060636163">Բջջային ցանցերի որոնում...</translation>
 <translation id="7982789257301363584">Ցանց</translation>
@@ -1829,6 +1867,7 @@
 <translation id="8000066093800657092">Ցանց չկա</translation>
 <translation id="8001755249288974029">Ընտրել տեսքսը՝ նշորդից մինչև էջի սկիզբ</translation>
 <translation id="8004512796067398576">Մեծացնել</translation>
+<translation id="8005527720597583355">Սկսել Առանց շեղումների ռեժիմի աշխատաշրջան</translation>
 <translation id="8015361438441228492">Չհաջողվեց փոփոխել առաջադրանքը։</translation>
 <translation id="802782383769312836">Նախորդ աշխատասեղանը՝ <ph name="DESK_NAME" />։ Աշխատասեղան <ph name="DESK_INDEX" />՝ <ph name="DESK_COUNT" />-ից։</translation>
 <translation id="8029247720646289474">Չհաջողվեց միանալ թեժ կետին</translation>
@@ -1844,6 +1883,7 @@
 <translation id="8054466585765276473">Մարտկոցի ժամանակի հաշվարկում:</translation>
 <translation id="8079538659226626406">Ցուցադրել էկրանը</translation>
 <translation id="8083540854303889870">Պահված է հետագայի համար</translation>
+<translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Սեղմեք Tab ստեղնը՝ այլ ընտրանքներ տեսնելու համար։ Աշխատասեղանների միջև անցում կատարելու համար օգտագործեք ձախ և աջ սլաքները։</translation>
 <translation id="8091153018031979607">Մեկնարկը՝ <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Ավտոմատ թարմացումներ</translation>
@@ -1875,10 +1915,12 @@
 <translation id="8192727139462702395">Եթե անջատեք Bluetooth-ը, այս արտաքին սարքերը կանջատվեն ձեր <ph name="DEVICE_TYPE" />-ից՝</translation>
 <translation id="8198456017687137612">Ներդիրի հեռարձակում</translation>
 <translation id="8200772114523450471">Շարունակել</translation>
+<translation id="820256110035940528"><ph name="TITLE" /> Առանց շեղումների ռեժիմ <ph name="FOCUSED_TIME" /> տևողությամբ։ Բացեք Արագ կարգավորումները՝ առաջադրանքի վրա նորից կենտրոնանալու համար։</translation>
 <translation id="8203795194971602413">Աջ սեղմում</translation>
 <translation id="8209010265547628927">Վերակայել</translation>
 <translation id="8214996719228530800">Canary կապուղի</translation>
 <translation id="8219451629189078428">Այս ընթացքում Chromebook-ը պետք է միացված լինի և սնուցվի հոսանքից։ Համոզվեք, որ լիցքավորիչի և ադապտերի մալուխները պատշաճ միացված են Chromebook-ին և վարդակին։ Մի՛ անջատեք Chromebook-ը։</translation>
+<translation id="8220076512072059941">Ավելացնել <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8230305195727960608">Գունաշրջման ռեժիմ</translation>
 <translation id="8236042855478648955">Ընդմիջման ժամն է</translation>
 <translation id="8237964652943995219">Հաջորդ աշխատասեղանը՝ <ph name="DESK_NAME" />։ Աշխատասեղան <ph name="DESK_INDEX" />՝ <ph name="DESK_COUNT" />-ից։</translation>
@@ -1986,6 +2028,7 @@
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Սեղմեք Enter՝ մասնակի սքրինշոթ անելու համար</translation>
 <translation id="8676770494376880701">Կապակցվել է թույլ լիցքով լիցքավորիչ</translation>
+<translation id="8679158879996532670">Ցույց տալ Առանց շեղումների ռեժիմի կարգավորումները։ Առանց շեղումների ռեժիմը միացված է, մնացել է <ph name="REMAINING_TIME" />։</translation>
 <translation id="8683506306463609433">Արդյունավետության հետագծումն ակտիվ է</translation>
 <translation id="8703634754197148428">Սկսել տեսագրումը։ Տեսագրումը սկսելուց հետո կարող եք օգտագործել Alt+Shift+L ստեղների համադրությունը՝ դարակ անցնելու և տեսագրումը կանգնեցնելու կոճակը գտնելու համար։</translation>
 <translation id="8704155109538237473">Անցնել «նկար նկարի մեջ» պատուհանին</translation>
@@ -2004,6 +2047,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />․ ակտիվացում...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8749787185286745219">Ժամանակը սպառվել է։ Կեցցե՛ք։ 🎉</translation>
 <translation id="8755498163081687682"><ph name="ORIGIN_NAME" /> կայքին/հավելվածին անհրաժեշտ է, որ հաստատեք ձեր ինքնությունը</translation>
 <translation id="875593634123171288">Ցուցադրել VPN-ի կարգավորումները</translation>
 <translation id="8756799553341497810">Այս դիտակերպից դուրս գալուց հետո կարող եք սկսել հարմարեցնել ձեր հավելվածների դասավորությունը։</translation>
@@ -2042,6 +2086,7 @@
 <translation id="8877788021141246043">Ստեղծել հիշեցում</translation>
 <translation id="8878886163241303700">Էկրանի ընդարձակում</translation>
 <translation id="888982883502837004">Ձեր սարքի համար հասանելի են ներկառուցված ծրագրի թարմացումներ։ Սեղմեք՝ դրանք տեսնելու և թարմացնելու համար։</translation>
+<translation id="8893479486525393799">Ստուդիայի խոսափող</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" />-ն ընդմիշտ կջնջվի</translation>
 <translation id="889790758758811533">Մարտկոցի լիցքը՝ <ph name="PERCENTAGE" />% (մոտ <ph name="TIME_LEFT" />)։ Միացրեք սարքը հոսանքին։</translation>
 <translation id="88986195241502842">Էջը վար</translation>
@@ -2070,6 +2115,7 @@
 <translation id="9000771174482730261">ԿԱՌԱՎԱՐԵԼ ՏԱՐԱԾՔԸ</translation>
 <translation id="9005984960510803406">Բացել Crosh պատուհանը</translation>
 <translation id="9017320285115481645">Մուտքագրեք Family Link-ի ծնողի մուտքի կոդը։</translation>
+<translation id="9022774213089566801">Հաճախ այցելած</translation>
 <translation id="9024331582947483881">լիաէկրան</translation>
 <translation id="9029736946581028033">Սարքը շուտով կանջատվի</translation>
 <translation id="9030319654231318877">Անջատված է մինչև մայրամուտ</translation>

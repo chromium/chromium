@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Historia</translation>
 <translation id="164673457281113247">{count,plural, =1{Zakładka została zapisana}few{Zakładki zostały zapisane}many{Zakładki zostały zapisane}other{Zakładki zostały zapisane}}</translation>
 <translation id="1650222530560417226">Kliknij przycisk „Uruchom rejestrowanie dziennika”, by rejestrować przyszłe dzienniki i błędy konsoli JavaScript ze wszystkich kart. Dzienniki będą gromadzone (i przechowywane tylko w pamięci) do czasu zamknięcia tej strony lub kliknięcia „Zatrzymaj rejestrowanie dziennika”.</translation>
+<translation id="1652333207707886577">Dostosuj menu</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} zapisane hasło dostępne nad klawiaturą.}few{{count} zapisane hasła dostępne nad klawiaturą.}many{{count} zapisanych haseł dostępnych nad klawiaturą.}other{{count} zapisanego hasła dostępnego nad klawiaturą.}}</translation>
 <translation id="1657011748321897393">Nie udało się udostępnić, bo nie masz połączenia z siecią.</translation>
 <translation id="165877110639533037">Brak otwartych kart</translation>
@@ -470,6 +471,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3435738964857648380">Bezpieczeństwo</translation>
 <translation id="3443810440409579745">Odebrano kartę.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
+<translation id="3445580184527779479">Grupa kart. Rozwinięta.</translation>
 <translation id="3448016392200048164">Widok dzielony</translation>
 <translation id="345565170154308620">Zarządzaj hasłami…</translation>
 <translation id="3464194322481586217">Wystąpił błąd monitorowania ceny.</translation>
@@ -514,6 +516,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3638472932233958418">Wstępne wczytywanie stron</translation>
 <translation id="3642060527569456384">Grupy kart są automatycznie zapisywane i aktualizowane na wszystkich Twoich urządzeniach.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} hasło zostało zapisane tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz je na swoim koncie Google {email}.}few{{count} hasła zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}many{{count} haseł zostało zapisanych tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}other{{count} hasła zostało zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}}</translation>
+<translation id="3650299480924308502">Po wylogowaniu niezapisane dane zostaną usunięte z tego urządzenia. Może to obejmować m.in. hasła i historię.</translation>
 <translation id="3659297405161482746">Nie znaleziono form płatności</translation>
 <translation id="3661160521073045932">Dostępny jest profil konfiguracji</translation>
 <translation id="3670030362669914947">Numer</translation>
@@ -530,6 +533,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3738428049780661523">Utworzono <ph name="DATE" /></translation>
 <translation id="374357899112510277">Ukryj opcję Pobrane</translation>
 <translation id="3745190878148784130">Ukryj opcję Powiększ tekst</translation>
+<translation id="3747231889390582072">Ze względu na bezpieczeństwo organizacji niezapisane dane zostaną usunięte z tego urządzenia. Mogą to być m.in. hasła, historia przeglądania czy pliki cookie.</translation>
 <translation id="3762232513783804601">Dla Twojego iPada</translation>
 <translation id="3768725474733206671">Otwórz ostatnio zamkniętą kartę</translation>
 <translation id="3771033907050503522">Karty incognito</translation>
@@ -969,6 +973,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5971872012779224351">{count,plural, =1{Usunięto 1 zakładkę}few{Usunięto {count} zakładki}many{Usunięto {count} zakładek}other{Usunięto {count} zakładki}}</translation>
 <translation id="5979837087407522202">Szukaj haseł</translation>
 <translation id="5981230843984570095">Zamknij wszystkie nieaktywne</translation>
+<translation id="5982958159110007132">Karta grupy kart. <ph name="TAB_INDEX_IN_GROUP" /> z <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="5984222099446776634">Ostatnio odwiedzone</translation>
 <translation id="598634819525651074">Powierzchnia</translation>
 <translation id="5988097621740394599">Pokazuj obniżki cen na kartach.</translation>
@@ -987,6 +992,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6042308850641462728">Więcej</translation>
 <translation id="6045460247888249350">Dodaj tytuł</translation>
+<translation id="6051432659151380973">Twoje grupy kart są automatycznie zapisywane</translation>
 <translation id="605721222689873409">RR</translation>
 <translation id="6059830886158432458">Tutaj możesz zarządzać wyświetlanymi wiadomościami i aktywnością</translation>
 <translation id="6064824697233747382">Twoja organizacja wymaga wyłączenia synchronizacji.</translation>
@@ -1228,6 +1234,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7192050974311852563">Uruchom rejestrowanie</translation>
 <translation id="7203585745079012652">Odczytuj odpowiedzi</translation>
 <translation id="7210568419880432164">Włącz powiadomienia…</translation>
+<translation id="7211038039686180558">Grupy kart automatycznie zapisują się i aktualizują na wszystkich urządzeniach, na których się logujesz</translation>
 <translation id="721597782417389033">Nieprawidłowa nazwa karty</translation>
 <translation id="7221173315674413369">Poznaj nowe funkcje i wskazówki przedstawione na stronie Nowe funkcje</translation>
 <translation id="7223102419539744003">Zamknij kartę</translation>
@@ -1270,6 +1277,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="745899714366929493">Cały dzień</translation>
 <translation id="7459628154744868585">Silniejsza ochrona jest włączona</translation>
 <translation id="7465351360025415755">Pobieraj treści, które są dla Ciebie ważne</translation>
+<translation id="7470908168505178757">Grupa kart. Zwinięta.</translation>
 <translation id="7472734401283673885">Nazwa firmy</translation>
 <translation id="7473891865547856676">Nie, dziękuję</translation>
 <translation id="7488874549363591659">Dostarczono</translation>
@@ -1479,6 +1487,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8446884382197647889">Więcej informacji</translation>
 <translation id="8449347986464073209">Usuń i wyloguj się</translation>
 <translation id="8459333855531264009">Niebezpieczne</translation>
+<translation id="8466300942149667917">Niezapisane dane na koncie zostaną usunięte</translation>
 <translation id="8473863474539038330">Adresy i ustawienia</translation>
 <translation id="8487667956631253959">Włączono</translation>
 <translation id="8487700953926739672">Dostępny offline</translation>
@@ -1607,6 +1616,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9065203028668620118">Edytuj</translation>
 <translation id="9079935439869366234">Oznacz wszystkie jako nieprzeczytane</translation>
 <translation id="9081058212938299310">Zaktualizować hasło dla <ph name="USERNAME" />?</translation>
+<translation id="9082821980444279398">Gdy opcja jest włączona, możesz używać danych i zapisywać je na swoim koncie Google. Gdy jest wyłączona, dane są zapisywane tylko na tym urządzeniu i są usuwane po wylogowaniu.</translation>
 <translation id="9083838294503912307">Aby synchronizować i personalizować wszystkie swoje urządzenia, włącz synchronizację.</translation>
 <translation id="9087339162317338348">Używaj protokołu HTTPS, kiedy to możliwe, i wyświetlaj ostrzeżenia przed wczytaniem stron, które go nie obsługują.</translation>
 <translation id="9093271241977565440">U góry ekranu kliknij ikonę wyszukiwania</translation>

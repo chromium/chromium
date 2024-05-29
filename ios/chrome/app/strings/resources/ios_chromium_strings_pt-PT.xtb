@@ -75,6 +75,7 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="2942241131342758843">Utilize o Chromium por predefinição para abrir links, pesquisar a partir de widgets e preencher automaticamente palavras-passe noutras apps</translation>
 <translation id="2977470724722393594">O Chromium está atualizado</translation>
 <translation id="3044857325852340337">Dados do Chromium eliminados</translation>
+<translation id="3049211156275642309">Conclua a configuração do Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{O Chromium pode ajudar a acompanhar esta embalagem na página Novo separador.}other{O Chromium pode ajudar a acompanhar estas embalagens na página Novo separador.}}</translation>
 <translation id="3102849287235003384">Para terminar sessão na sua Conta Google em todos os Websites, <ph name="BEGIN_LINK" />termine sessão no Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Pesquise com a voz no Chromium</translation>
@@ -273,6 +274,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="8754966941001340678">O Chromium recomenda a Proteção melhorada</translation>
 <translation id="8759037115129007407">De momento, o membro da sua família não pode receber palavras-passe. Peça-lhe para atualizar o Chromium e sincronizar as respetivas palavras-passe. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Esta conta e quaisquer dados não guardados serão removidos do Chromium.</translation>
+<translation id="8826789549860004832">Continue a configurar o seu navegador para tirar o máximo partido do Chromium.</translation>
 <translation id="88376265765385899">Abre os marcadores do Chromium.</translation>
 <translation id="8860548555286245440">Abrir URLs no Chromium na Navegação anónima</translation>
 <translation id="8866191443434488382">O Chromium vai detetar números de acompanhamento nos sites que visitar e mostrar-lhe atualizações de embalagens na página Novo separador. O número de acompanhamento da embalagem e o nome do Website vão ser enviados para o Chromium para oferecer esta funcionalidade e melhorar as funcionalidades de compras para todos. Pode atualizar esta opção em qualquer altura nas <ph name="BEGIN_LINK" />Definições de acompanhamento de encomendas<ph name="END_LINK" />.</translation>

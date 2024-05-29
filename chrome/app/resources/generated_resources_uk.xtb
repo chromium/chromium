@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">Не зараз</translation>
 <translation id="100881991356161927">Назва сайту</translation>
 <translation id="1009663062402466586">Тепер доступні елементи керування іграми</translation>
+<translation id="1010136228650201057">Шифрування даних користувачів</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Сторінка не відповідає}one{Сторінки не відповідають}few{Сторінки не відповідають}many{Сторінки не відповідають}other{Сторінки не відповідають}}</translation>
 <translation id="1011003645819296594">Збережені пристрої</translation>
 <translation id="1011355516189274711">Гучність синтезу мовлення</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">Анонімний перегляд</translation>
 <translation id="1049795001945932310">&amp;Налаштування мови</translation>
 <translation id="1050693411695664090">Слабкий сигнал</translation>
+<translation id="1053776357096024725">Покращте звук вбудованого мікрофона за допомогою різних ефектів</translation>
 <translation id="1054048317165655285">Завершіть налаштування на телефоні</translation>
 <translation id="1054153489933238809">Відкрити оригінальне зображення в новій вкладці</translation>
 <translation id="1054187194995068149">Вітаю, так звучить мій голос</translation>
@@ -837,6 +839,7 @@
 <translation id="1607139524282324606">Очистити введені дані</translation>
 <translation id="1607499585984539560">Користувач не зв’язаний із цим доменом</translation>
 <translation id="1608668830839595724">Додаткові дії для вибраних елементів</translation>
+<translation id="1608698493373028805">Незабаром підтримку цього розширення може бути припинено</translation>
 <translation id="1610272688494140697">Налаштування додатка</translation>
 <translation id="161042844686301425">Бірюзовий</translation>
 <translation id="1611432201750675208">Пристрій заблоковано</translation>
@@ -2322,6 +2325,7 @@
 <translation id="2667144577800272420">Зараз їх можна відкривати не лише в додатку <ph name="APP_NAME" />. Після зміни додатки <ph name="APP_NAME_2" /> та <ph name="APP_NAME_3" /> більше не зможуть відкривати підтримувані посилання.</translation>
 <translation id="2667463864537187133">Керувати перевіркою орфографії</translation>
 <translation id="2668094785979141847">Натисніть, щоб вийти з Google Об’єктива</translation>
+<translation id="2668604389652548400">Видаліть або замініть його схожим розширенням із <ph name="BEGIN_LINK" />Вебмагазину Chrome<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Не вдалося відкрити додаток <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Усі користувачі цього пристрою можуть бачити завантажені файли</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> транслює вкладку Chrome.</translation>
@@ -2372,6 +2376,7 @@
 <translation id="2710101514844343743">Дані про використання й діагностику</translation>
 <translation id="271033894570825754">Новий</translation>
 <translation id="2710507903599773521">Ваш пристрій <ph name="DEVICE_TYPE" /> розблоковано</translation>
+<translation id="2712141162840347885">Виберіть об’єкт, за яким хочете виконати пошук через Google Об’єктив, або натисніть клавішу Escape, щоб вийти</translation>
 <translation id="2713106313042589954">Вимкнути камеру</translation>
 <translation id="2713444072780614174">Білий</translation>
 <translation id="2714180132046334502">Темний фон</translation>
@@ -2996,6 +3001,7 @@
 <translation id="3177914167275935955">На цьому пристрої є ліцензія Chrome Education Upgrade, але ваше ім’я користувача не зв’язано з обліковим записом Google for Education. Створіть обліковий запис Google for Education на сторінці g.co/workspace/edusignup на додатковому пристрої.</translation>
 <translation id="3179982752812949580">Шрифт тексту</translation>
 <translation id="3180284704187420717">Зберігайте закладки, паролі тощо завдяки синхронізації</translation>
+<translation id="3180716079618904608">Завантажити додатки й ігри</translation>
 <translation id="3181954750937456830">Безпечний перегляд (захищає вас і ваш пристрій від небезпечних сайтів)</translation>
 <translation id="3182749001423093222">Перевірка орфографії</translation>
 <translation id="3183139917765991655">Засіб імпортування профілів</translation>
@@ -4287,6 +4293,7 @@
 <translation id="4120817667028078560">Шлях задовгий</translation>
 <translation id="4124823734405044952">Ключ безпеки скинуто</translation>
 <translation id="4124935795427217608">Єдиноріг</translation>
+<translation id="4126375522951286587">Завершити роботу віртуальної машини <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">Культурист</translation>
 <translation id="4130199216115862831">Журнал пристрою</translation>
 <translation id="4130750466177569591">Прийняти</translation>
@@ -4587,6 +4594,7 @@
 <translation id="4364327530094270451">Диня</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> транслює вікно.</translation>
 <translation id="4364830672918311045">Показувати сповіщення</translation>
+<translation id="4367027658822022112">Ви можете закріпити Google Об’єктив для швидкого доступу. Для цього вгорі бічної панелі натисніть кнопку "Закріпити".</translation>
 <translation id="4367513928820380646">Переглянути скасовані дозволи</translation>
 <translation id="4367971618859387374">Відображувана назва</translation>
 <translation id="4368960422722232719">Показувати використання пам’яті на картці попереднього перегляду вкладки</translation>
@@ -4989,6 +4997,7 @@
 <translation id="4666911709726371538">Більше додатків</translation>
 <translation id="4668279686271488041">Відомості про оцінку ефективності реклами регулярно видаляються з вашого пристрою.</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">PIN-код має містити лише цифри</translation>
 <translation id="4670909875730475086">Вітаємо! Додаток <ph name="APP_NAME" /> установлено на вашому пристрої.</translation>
 <translation id="4672759829555593783">Відкрити файл "<ph name="FILE_NAME" />"</translation>
 <translation id="4673442866648850031">Відкривати інструменти стилуса, коли стилус витягнуто</translation>
@@ -5072,6 +5081,7 @@
 <translation id="473936925429402449">Вибрано, додатковий контент <ph name="CURRENT_ELEMENT" /> з <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Квитки</translation>
 <translation id="4740546261986864539">Нещодавно відкрито</translation>
+<translation id="4741235124132242877">Google Об’єктив закріплено. Тепер він доступний на панелі інструментів.</translation>
 <translation id="4742334355511750246">Заборонено показувати зображення</translation>
 <translation id="4742795653798179840">Дані Chrome видалено</translation>
 <translation id="4742970037960872810">Зняти виділення</translation>
@@ -6765,6 +6775,7 @@
 <translation id="6042308850641462728">Більше</translation>
 <translation id="604388835206766544">Не вдалося виконати синтаксичний аналіз конфігурації</translation>
 <translation id="6043994281159824495">Вийти зараз</translation>
+<translation id="604424701295382420">Google Об’єктив закріплено. Щоб скористатися ним, натисніть нову кнопку на панелі інструментів.</translation>
 <translation id="6045114302329202345">Основна кнопка TrackPoint</translation>
 <translation id="6047632800149092791">Синхронізація не працює. Вийдіть зі свого облікового запису та ввійдіть у нього знову.</translation>
 <translation id="6048747414605857443">Виберіть і налаштуйте голоси для синтезу мовлення в ChromeVox і функції "Читання з екрана"</translation>
@@ -7603,6 +7614,7 @@
 <translation id="6686490380836145850">Закрити вкладки праворуч</translation>
 <translation id="6686665106869989887">Вкладку переміщено праворуч</translation>
 <translation id="6686817083349815241">Зберегти пароль</translation>
+<translation id="6687008241368170505">Змінити PIN-код Google Менеджера паролів</translation>
 <translation id="6687079240787935001">Сховати <ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">Нехай <ph name="SUPERVISED_USER_NAME" /> підійде до комп’ютера. Ваша дитина зачитає декілька фраз на екрані, щоб створити зразок голосу.
     <ph name="BR" />
@@ -8382,6 +8394,7 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Потрібен дозвіл. Натисніть F6, щоб відповісти</translation>
 <translation id="7290242001003353852">Ця служба входу в обліковий запис, зареєстрована в домені <ph name="SAML_DOMAIN" />, намагається отримати доступ до вашої камери.</translation>
 <translation id="7292067737327289208">Вашим <ph name="BEGIN_LINK" />веб-переглядачем керує<ph name="END_LINK" /> організація, а <ph name="BEGIN_LINK" />профілем<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="7292147651179697920">Попроси батьків надати доступ у налаштуваннях</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Зауважте, що Android, Play і пов’язані додатки керуються власними правилами щодо збору й використання даних.</translation>
 <translation id="7296503797589217366">Вибрати папку "<ph name="FOLDER_TITLE" />"</translation>
@@ -8689,6 +8702,7 @@
 <translation id="7514239104543605883">Скопіювати на пристрій</translation>
 <translation id="7514365320538308">Завантажити</translation>
 <translation id="7514417110442087199">Додати призначення</translation>
+<translation id="7515191208480168435">Google Об’єктив можна закріпити для швидкого доступу</translation>
 <translation id="751523031290522286">Додаток <ph name="APP_NAME" /> заблоковано адміністратором. Попросіть у нього дозвіл використовувати цей додаток.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
@@ -10163,6 +10177,7 @@
 <translation id="8592141010104017453">Узагалі не показувати сповіщення</translation>
 <translation id="859246725979739260">Цьому сайту заблоковано доступ до ваших геоданих.</translation>
 <translation id="8593450223647418235">Ви не зможете відкривати файли в Microsoft 365, доки не завершите налаштування.</translation>
+<translation id="8593686980889923154">Додаток "<ph name="APP_NAME" />" заблоковано на твоєму пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="8596540852772265699">Нетипові файли</translation>
 <translation id="8597845839771543242">Формат властивості:</translation>
 <translation id="8598249292448297523">друк</translation>
@@ -10585,6 +10600,7 @@
 <translation id="8890529496706615641">Не вдалося перейменувати профіль. Повторіть спробу або зв'яжіться з оператором, щоб отримати технічну підтримку.</translation>
 <translation id="8892168913673237979">Готово!</translation>
 <translation id="8892246501904593980">Переглядайте всі свої закладки в розділі "Закладки й списки"</translation>
+<translation id="8893479486525393799">Студійний мікрофон</translation>
 <translation id="8893801527741465188">Видалення завершено</translation>
 <translation id="8893928184421379330">На жаль, пристрій <ph name="DEVICE_LABEL" /> неможливо розпізнати.</translation>
 <translation id="8894761918470382415">Обмежити доступ до даних для периферійних пристроїв</translation>

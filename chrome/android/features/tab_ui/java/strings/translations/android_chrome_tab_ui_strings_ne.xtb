@@ -61,7 +61,6 @@
 <translation id="4139634748112164403">यी ट्याबहरू यो डिभाइसमा खुलै रहने छन् तर यो समूह भने सदाका लागि मेटाइने छ</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको <ph name="TITLE_OF_GROUP" /> को समूह बन्द गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको <ph name="TITLE_OF_GROUP" /> को समूह बन्द गर्नुहोस्।}}</translation>
 <translation id="4159784952369912983">बैजनी</translation>
-<translation id="4212246570487010370">ब्राउजिङ जारी राख्नुहोस्</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="TITLE_OF_GROUP" /> को ट्याब समूह एक्स्पान्ड गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="TITLE_OF_GROUP" /> को ट्याब समूह एक्स्पान्ड गर्नुहोस्।}}</translation>
 <translation id="427987768447457592">नयाँ ट्याब समूह</translation>
 <translation id="4460014764210899310">समूह विघटन गर्नुहोस्</translation>

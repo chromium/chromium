@@ -18,6 +18,7 @@
 <translation id="1080365971383768617">Password su tutti i tuoi dispositivi</translation>
 <translation id="1082920045291562218">Condividi con il foglio di feedback sul riepilogo chiuso</translation>
 <translation id="1089606299949659462">Revisione completata.</translation>
+<translation id="1094555143448724771">Per vedere le schede degli altri tuoi dispositivi, sincronizza le schede e la cronologia</translation>
 <translation id="1095761715416917775">Assicurati di poter accedere sempre ai dati sincronizzati</translation>
 <translation id="1100066534610197918">Apri in nuova scheda in gruppo</translation>
 <translation id="1103142993930332957">Vuoi contribuire a migliorare Chrome?</translation>
@@ -33,6 +34,7 @@
 <translation id="115483310321669804">Utilizza password <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Rinomina</translation>
 <translation id="1174479719160874822">Se lo schermo è stretto, Chrome richiederà il sito mobile</translation>
+<translation id="1175241315203286684">L'amministratore può apportare modifiche al profilo e al browser da remoto, analizzare le informazioni sul browser tramite i report ed eseguire altre attività necessarie. L'attività svolta su questo dispositivo potrebbe essere gestita anche al di fuori di Chrome.</translation>
 <translation id="1177863135347784049">Personalizzati</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
 <translation id="1181366777303791449">su <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
@@ -165,6 +167,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="185383612275551373">Attiva la sincronizzazione per ricevere i contenuti più pertinenti di Google</translation>
 <translation id="1871098866036088250">Apri nel browser Chrome</translation>
 <translation id="1877026089748256423">Chrome non è aggiornato</translation>
+<translation id="1877073879466606884">Il profilo a cui hai eseguito l'accesso è un profilo gestito. L'amministratore può apportare modifiche alle impostazioni del profilo da remoto, analizzare le informazioni sul browser tramite i report ed eseguire altre attività necessarie.</translation>
 <translation id="1883903952484604915">I miei file</translation>
 <translation id="189358972401248634">Altre lingue</translation>
 <translation id="1900260903084164610">Se continui, accetti i <ph name="BEGIN_TOS_LINK" />Termini di servizio<ph name="END_TOS_LINK" />.</translation>
@@ -806,6 +809,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="506254248375231072">Nessuna scheda</translation>
 <translation id="5062960805900435602">Aggiornamento sull'unione delle password chiuso</translation>
 <translation id="5081960376148623587">Scegli se precaricare o meno le pagine</translation>
+<translation id="5085038751173179818">Accedi a questo sito e a Chrome per trovare i tuoi preferiti e altri dati su tutti i tuoi dispositivi</translation>
 <translation id="5091199029769593641">A breve vedrai storie di <ph name="SITE_NAME" /> quando aprirai una nuova scheda. I siti che segui vengono salvati nel tuo Account Google. Puoi gestirli nelle impostazioni di Discover.</translation>
 <translation id="509429900233858213">Si è verificato un errore.</translation>
 <translation id="5097349930204431044">I siti che visiti possono stabilire i tuoi interessi e poi suggerire annunci mentre continui a navigare</translation>
@@ -834,6 +838,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Download del file in corso…}other{Download di # file in corso…}}</translation>
 <translation id="5210286577605176222">Vai alla scheda precedente</translation>
 <translation id="5210365745912300556">Chiudi scheda</translation>
+<translation id="5215957675041756913">Controlla i tuoi dati e il tuo account</translation>
 <translation id="5222676887888702881">Esci</translation>
 <translation id="5226378907213531272">Sbloccherai lo schermo ogni volta che userai l'auto</translation>
 <translation id="5227554086496586518">Tocca per visualizzare i risultati di ricerca</translation>
@@ -1554,6 +1559,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8562452229998620586">Le password salvate verranno visualizzate qui.</translation>
 <translation id="8570677896027847510">Impossibile scaricare il file in modo sicuro</translation>
 <translation id="8571213806525832805">Ultime 4 settimane</translation>
+<translation id="8582529315803410153">Qui troverai le tue schede aperte su altri dispositivi</translation>
 <translation id="859046281437143747">Monitora il prezzo dal pulsante Altre opzioni</translation>
 <translation id="860043288473659153">Nome del titolare della carta</translation>
 <translation id="8602358303461588329">Accedi a Chrome, foglio chiuso.</translation>

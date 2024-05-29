@@ -183,6 +183,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1654477262762802994">Start a voice query</translation>
 <translation id="1668469839109562275">Built-in VPN</translation>
 <translation id="1673232940951031776">Finish Focus. <ph name="REMAINING_TIME" /> left.</translation>
+<translation id="1675570947608765064">Others can see changes that you make to this task</translation>
 <translation id="1675844249244994876">Update the right window</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> left</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> is not connected.</translation>
@@ -1518,6 +1519,7 @@ New install</translation>
 <translation id="6707693040195709527">Device change to previous version is overdue</translation>
 <translation id="6710213216561001401">Previous</translation>
 <translation id="6723839937902243910">Power</translation>
+<translation id="672609503628871915">See what's new</translation>
 <translation id="6727969043791803658">Connected, <ph name="BATTERY_PERCENTAGE" />% battery</translation>
 <translation id="6732087373923685049">camera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1787,6 +1789,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7773536009433685931">Turn on Wi-Fi instead</translation>
 <translation id="7780094051999721182">shortcuts</translation>
 <translation id="7780159184141939021">Rotate screen</translation>
+<translation id="7781829728241885113">Yesterday</translation>
 <translation id="7792590255364786396">Visible</translation>
 <translation id="7796735576426975947">New notification hidden</translation>
 <translation id="7798302898096527229">Press Search or Shift to cancel.</translation>
@@ -2112,6 +2115,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="9000771174482730261">MANAGE STORAGE</translation>
 <translation id="9005984960510803406">Open Crosh window</translation>
 <translation id="9017320285115481645">Enter Family Link parent access code.</translation>
+<translation id="9022774213089566801">Frequently visited</translation>
 <translation id="9024331582947483881">full screen</translation>
 <translation id="9029736946581028033">Device will power down soon</translation>
 <translation id="9030319654231318877">Off until sunset</translation>

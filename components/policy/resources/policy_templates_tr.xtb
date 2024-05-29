@@ -587,6 +587,7 @@ mümkündür.</translation>
 
       Yerel yazıcılar ayrıca yerel yazdırma hedefleri olarak da bilinir ve yerel makineler ile paylaşılan ağ yazıcılarının kullanabildiği hedefleri içerir.</translation>
 <translation id="1456822151187621582">Windows (<ph name="PRODUCT_OS_NAME" /> istemcileri):</translation>
+<translation id="1459693405370120464">Hava durumu</translation>
 <translation id="1464848559468748897"><ph name="PRODUCT_OS_NAME" /> cihazlarda çoklu profil içeren oturumdaki kullanıcı davranışını denetle.
 
       Bu politika "MultiProfileUserBehaviorUnrestricted" olarak ayarlanırsa, kullanıcı çoklu profil içeren bir oturumda birincil veya ikincil kullanıcı olabilir.
@@ -3154,6 +3155,7 @@ Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
 
       Satır içi oturum açma özelliği, gelecekte tüm TOA oturum açma akışlarını tam olarak desteklediğinde bu deneysel ayar kaldırılacaktır.</translation>
 <translation id="3435796032110614169">Yazdırma işleri geçmişinin silinmesine izin ver</translation>
+<translation id="3435896845095436175">Etkinleştir</translation>
 <translation id="3436217793443508863">Pil gücüyle çalışırken, ekran kilitlenmeden önce kullanıcı girişi olmadan geçecek süre (milisaniye olarak)</translation>
 <translation id="3437924696598384725">Kullanıcının VPN bağlantılarını yönetmesine izin verme</translation>
 <translation id="3441664787678256816">Bu makineye uzaktan kurumsal destek bağlantıları yapılmasına izin ver</translation>
@@ -4316,6 +4318,7 @@ Politika, Devre Dışı değerine ayarlanırsa kullanıcılar, kargolarını <ph
 <translation id="4389073105055031853">Kullanıcıların tüm sertifikaları yönetmelerine izin ver</translation>
 <translation id="4389091865841123886">TPM mekanizmasıyla uzaktan doğrulamayı yapılandırın.</translation>
 <translation id="4389113579547582722">App Store puan promosyonunun gösterilmesine izin ver</translation>
+<translation id="4394049700291259645">Devre dışı bırak</translation>
 <translation id="4395619678972620537">Politika etkinleştirilirse WebRTC eş bağlantıları, TLS/DTLS (DTLS 1.0, TLS 1.0, TLS 1.1) protokollerinin eski sürümlerine geçebilir.
       Bu politika devre dışı bırakılır veya ayarlanmazsa bu TLS/DTLS sürümleri devre dışı bırakılır.
 
@@ -6899,6 +6902,7 @@ Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_OS_NAME" />, ekran görü
 <translation id="6410847321564585975">Web sitesi etkinlik raporlaması izin verilenler listesi</translation>
 <translation id="6412352702230183710">Yalnızca sistem düzeyinde yerel mesajlaşma ana makinelerine izin ver</translation>
 <translation id="6416506846917150119">Kullanıcılar yazarken fiziksel klavyede tahmine dayalı yazma özelliğini devre dışı bırak</translation>
+<translation id="6416916931494972926">Kiosk Vision'ın telemetri raporlamasını etkinleştir.</translation>
 <translation id="6417265370957905582">Google Asistan</translation>
 <translation id="6419001911253110938">Oturum açma akışı sırasında oturum içi yapay zeka özellikleri için giriş ekranının gösterilmesini etkinleştir</translation>
 <translation id="6421254653839955267">Politika, Etkin değerine ayarlanırsa CNAME araması atlanır. Kerberos SPN oluşturulurken sunucu adı girildiği şekliyle kullanılır.
@@ -7049,6 +7053,7 @@ Politika ayarlanmadan bırakılırsa ya da boş bir URL listesi sağlanırsa tü
 <translation id="6506486086262398387">Politika Etkin değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" /> için Ağ Üzerinde Dosya Paylaşımı özelliği, gerektiğinde SMB paylaşımlarında NTLM ile kimlik doğrulama kullanır. Politika, Devre Dışı değerine ayarlanırsa SMB paylaşımlarında NTLM ile kimlik doğrulama devre dışı bırakılır.
 
       Politika ayarlanmadan bırakılırsa paylaşım keşfi, varsayılan olarak yönetilen kullanıcılar için devre dışı bırakılır, diğer kullanıcılar için etkinleştirilir.</translation>
+<translation id="6508882314969525299">Kiosk Vision'ın telemetri raporlamasını devre dışı bırak.</translation>
 <translation id="6509376413448002446">Kilit ekranındaki kullanıcı ekran koruyucusunu yapılandırır.
 
 Bu politika Doğru değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" /> cihazı, kilit ekranında boşta kaldığında bir ekran koruyucu gösterir.
@@ -9515,9 +9520,6 @@ Bu politika ayarlanmadan bırakılırsa veya 0 değerine ayarlanırsa tanımlana
 
       Bu politika Chrome 115'ten sonra kaldırılacaktır.</translation>
 <translation id="841395160262233331">Başlatıcı/arama tuşu, işlev tuşlarının çalışma biçimini değiştiremez, bu ayar kullanıcılar tarafından da değiştirilemez.</translation>
-<translation id="8415506434606458373">Politika ayarlanırsa, listelenen kaynaklar Device Attributes API'yi kullanarak cihaz özelliklerini (ör. seri numarası, ana makine adı) alabilir.
-
-Kaynaklar, <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> veya <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (sürüm 125'ten itibaren) politikası kullanılarak zorunlu yüklenmiş veya kiosk uygulaması olarak ayarlanmış web uygulamalarına karşılık gelmelidir. Device Attributes API teknik özellikleri için lütfen https://wicg.github.io/WebApiDevice/device_attributes adresini ziyaret edin.</translation>
 <translation id="8415953438346821074">Bu ayarı etkinleştirirseniz <ph name="PRODUCT_NAME" /> profillerinde depolanan yer işaretleri, otomatik doldurma verileri, şifreler gibi ayarlar ayrıca Dolaşım kullanıcı profil klasöründe depolanan bir dosyaya veya Yönetici tarafından <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" /> politikası aracılığıyla belirtilen bir konuma da yazılır. Bu politikayı etkinleştirmek bulut senkronizasyonunu devre dışı bırakır.
 
       Bu politika devre dışı bırakılır veya ayarlanmazsa yalnızca normal yerel profiller kullanılır.</translation>
@@ -9753,6 +9755,9 @@ Poltikanının ayarlanmadan bırakılması, kullanıcıların oyunu kayıtlı <p
       Politika true (doğru) değerine ayarlanırsa en az 5 dakikadır arka planda bulunan sekmeler dondurulabilir. Sekme dondurma işlemi CPU, pil ve bellek kullanımını azaltır. <ph name="PRODUCT_NAME" />, arka planda faydalı işler yapan sekmelerin (ör. bildirimleri görüntüleme, ses çalma, video yayınlama) dondurulmaması için sezgisel yöntemler kullanır. Web geliştiricileri, sitelerinin dondurma kapsamı dışında kalmasını seçebilir (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Politika false (yanlış) değerine ayarlanırsa hiçbir sekme dondurulmaz.</translation>
+<translation id="8607613052618540095">Politika, Etkin değerine ayarlanırsa Kiosk Vision'ın telemetri raporlaması etkinleştirilir.
+Kiosk Vision çerçevesini başlatır ve kitle telemetrisi raporlamasını etkinleştirir.
+Bu politika ayarlanmadan bırakılır veya Devre Dışı değerine ayarlanırsa Kiosk Vision'ın telemetri raporlaması devre dışı bırakılır.</translation>
 <translation id="8610216287193516769">M122 sürümünde kaldırıldı. Bu, yayılımı için ChromeOS politika altyapısını hiç kullanmamış yalnızca sunucu tarafı bir politikadır.
 Bu politika <ph name="POLICY_VALUE_ALL" /> değerine ayarlanır veya ayarlanmadan bırakılırsa yönetilen hesapların her türlü kullanımına izin verilir. Bu durum, yönetilen hesabın ikincil hesap olmasına ve yalnızca tarayıcı profilinde birincil hesap olarak oturum açtığında politika alabilmesine neden olabilir.
       Hesapta ayarlanan politikalar aşağıdaki durumlarda uygulanmaz:

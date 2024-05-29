@@ -61,7 +61,6 @@
 <translation id="4139634748112164403">Sekmeler bu cihazda açık kalır ancak grup kalıcı olarak silinir</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme içeren <ph name="COLOR_NAME" /> renkli <ph name="TITLE_OF_GROUP" /> grubunu kapatın.}other{<ph name="TABS_COUNT_MANY" /> sekme içeren <ph name="COLOR_NAME" /> renkli <ph name="TITLE_OF_GROUP" /> grubunu kapatın.}}</translation>
 <translation id="4159784952369912983">Mor</translation>
-<translation id="4212246570487010370">Göz atmaya devam edin</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu genişlet.}other{<ph name="TABS_COUNT_MANY" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu genişlet.}}</translation>
 <translation id="427987768447457592">Yeni sekme grubu</translation>
 <translation id="4460014764210899310">Grubu Çöz</translation>

@@ -48,6 +48,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1175572348579024023">Posunout</translation>
 <translation id="1175944128323889279">Aktuální stav baterie: <ph name="BATTERY_PERCENTAGE" /> %, zbývá: <ph name="TIME" /></translation>
 <translation id="1178581264944972037">Pozastavit</translation>
+<translation id="1179776263021875437">Přestat se soustředit na úkol</translation>
 <translation id="1181037720776840403">Odebrat</translation>
 <translation id="1182225749592316782">Tímto povolíte přístup všem aplikacím a webům, které mají oprávnění používat kameru a mikrofon.</translation>
 <translation id="1182876754474670069">home</translation>
@@ -119,6 +120,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1391102559483454063">Zapnuto</translation>
 <translation id="1394698770495054737">Úplné rozmazání</translation>
+<translation id="1404963891829069586">Zvuky k soustředění</translation>
 <translation id="1407069428457324124">Tmavý motiv</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Mezi daty se můžete pohybovat pomocí kláves se šipkami.</translation>
 <translation id="141170878022560212">Prostřední tlačítko</translation>
@@ -180,6 +182,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1651914502370159744">Otevřít stránku Historie</translation>
 <translation id="1654477262762802994">Zahájit hlasový dotaz</translation>
 <translation id="1668469839109562275">Vestavěná VPN</translation>
+<translation id="1673232940951031776">Ukončit soustředění. Zbývající čas: <ph name="REMAINING_TIME" />.</translation>
 <translation id="1675844249244994876">Aktualizovat pravé okno</translation>
 <translation id="1677472565718498478">zbývající čas: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Funkce <ph name="FEATURE_NAME" /> není připojena.</translation>
@@ -223,6 +226,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1824922790784036530">Zapnout přístup k poloze</translation>
 <translation id="1830308660060964064">Položka <ph name="ITEM_TITLE" /> byla odepnuta</translation>
 <translation id="1831565490995294689">Výběrem otevřete aplikaci <ph name="APP_TO_OPEN" />.</translation>
+<translation id="1838011306813517425">Nastavení soustředění</translation>
 <translation id="1838895407229022812">Noční režim je vypnutý.</translation>
 <translation id="1854180393107901205">Zastavit odesílání</translation>
 <translation id="1862077610023398675">Skrýt ovládací prvky</translation>
@@ -310,6 +314,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2277103315734023688">Přetočit dopředu</translation>
 <translation id="2282073721614284166">Otevřít odkaz na kartě</translation>
 <translation id="2292698582925480719">Měřítko displeje</translation>
+<translation id="2293443480080733021">Na co se chcete soustředit? Úkol přidáte stisknutím klávesy Enter.</translation>
 <translation id="229397294990920565">Vypínání mobilních dat…</translation>
 <translation id="2295777434187870477">Mikrofon je zapnutý, přepnutím ho ztlumíte.</translation>
 <translation id="2298170939937364391">Je zapnutá lupa celé obrazovky. Vypnete ji opětovným stisknutím kombinace kláves Ctrl+Hledat+M.</translation>
@@ -377,6 +382,7 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2509468283778169019">CAPS LOCK je zapnutý</translation>
 <translation id="2514415433888497495">Vypnout funkci <ph name="CAPTURE_MEDIUM" />. Funkce <ph name="CAPTURE_MEDIUM" /> je <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516416533263263796">Soustředění je zapnuté, zbývá 10 minut</translation>
 <translation id="2516637483312286228">Upravit herní ovládací prvky</translation>
 <translation id="2526581474998477112">Odemknout okna</translation>
 <translation id="2528111225373402384">Nastavení hotspotu</translation>
@@ -447,6 +453,7 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2798702144670138229">Je zapnutý režim tabletu. Herní panel není k dispozici.</translation>
 <translation id="2801954693771979815">Velikost obrazovky</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, vybráno</translation>
+<translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Aplikace</translation>
 <translation id="2814448776515246190">Částečný záznam</translation>
 <translation id="2819276065543622893">Nyní budete odhlášeni.</translation>
@@ -474,6 +481,7 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2914580577416829331">Snímky obrazovky</translation>
 <translation id="2924416280450782352">Položky nelze zobrazit. Už jste tento panel otevřít znovu.</translation>
 <translation id="2931572158271115754">Tento seznam úkolů je prázdný.</translation>
+<translation id="2932487126591186298">Bylo přidáno 10 minut. Zbývající čas: <ph name="REMAINING_TIME" />.</translation>
 <translation id="2935225303485967257">Spravovat profily</translation>
 <translation id="2941112035454246133">Nízká</translation>
 <translation id="2942350706960889382">Zabudovaná lupa</translation>
@@ -649,6 +657,7 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3576141592585647168">Změnit časové pásmo</translation>
 <translation id="3577473026931028326">Došlo k chybě. Zkuste to znovu.</translation>
 <translation id="3580650856351781466">Stahování řečových souborů</translation>
+<translation id="3583350334315908861">{MINUTES,plural, =1{minuta}few{minuty}many{minuty}other{minut}}</translation>
 <translation id="3585296979871889131">Zobrazovat nedávné fotky, média, oznámení a aplikace z telefonu</translation>
 <translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">Boční tlačítko</translation>
@@ -672,6 +681,7 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3631369015426612114">Povolit oznámení z následujících zdrojů</translation>
 <translation id="3633097874324966332">Pokud zařízení chcete spárovat, otevřete nastavení rozhraní Bluetooth</translation>
 <translation id="3633851487917460983">Otevřít schránku</translation>
+<translation id="363473492175527493">Je nastaveno soustředění na tento úkol: <ph name="TASK_NAME" />. Úkol upravíte stisknutím klávesy Enter.</translation>
 <translation id="3638400994746983214">Přepnout obrazovku ochrany soukromí. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Minimalizovat okno</translation>
 <translation id="3649505501900178324">Opožděná aktualizace</translation>
@@ -707,6 +717,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="3735740477244556633">Seřadit podle</translation>
 <translation id="3738664582935948253">V nahrávkách obrazovky teď lze zobrazovat kliknutí a klávesové zkratky</translation>
 <translation id="3742055079367172538">Byl vytvořen snímek obrazovky</translation>
+<translation id="3743775386021959186">Zaměření je zapnuté, zbývající čas: <ph name="REMAINING_TIME" /></translation>
 <translation id="3756485814916578707">Odesílání obsahu obrazovky</translation>
 <translation id="3765841382945324995">Zkratka ke stisknutí klávesy <ph name="SIX_PACK_KEY_NAME" /> byla aktualizována z <ph name="OLD_SHORTCUT" /> na <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Upraveno dnes</translation>
@@ -896,6 +907,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4477751544736611934">To může znamenat náklady na data.
 Je připojeno 1 zařízení.</translation>
 <translation id="4477892968187500306">Toto zařízení může obsahovat aplikace, které nebyly ověřeny Googlem.</translation>
+<translation id="4479130137987693286">Pokud potřebujete, můžete přidat trochu více času, nebo soustředění můžete ukončit.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Nespárovaná zařízení</translation>
 <translation id="4485506555414638855">Zavřít nastavení zobrazování nedávných fotek, médií, oznámení a aplikací z telefonu</translation>
@@ -1069,6 +1081,7 @@ Je připojeno 1 zařízení.</translation>
 <translation id="5095136268899496849">V Nastavení si <ph name="PRODUCT_NAME" /> můžete přizpůsobit. Zkuste změnit tapetu nebo nastavit spořič obrazovky.</translation>
 <translation id="509790653408515442">Tady se zobrazí aplikace streamované z telefonu</translation>
 <translation id="5098537242461068432">Plocha a okna se znovu otevřely</translation>
+<translation id="5103975065730779239">Do <ph name="END_TIME_EXPRESSION" /></translation>
 <translation id="5104236669533825617">Záznam obrazovky nelze vytvořit</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
@@ -1147,6 +1160,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5395308026110844773">Aplikace <ph name="DRAGGED_APP_NAME" /> je nad aplikací <ph name="IN_PLACE_APP" />. Uvolněním vytvoříte složku.</translation>
 <translation id="5397578532367286026">Údaje o využití a historii tohoto uživatele si správce (<ph name="MANAGER_EMAIL" />) může prohlédnout na webu chrome.com.</translation>
 <translation id="540713187982329711">Přepnout hotspot. Hotspot je zapnutý, není připojeno žádné zařízení.</translation>
+<translation id="5409208741270395213">Označit úkol jako hotový</translation>
 <translation id="5413656666631274079">Stránka nastavení</translation>
 <translation id="5414198321558177633">Obnovování seznamu profilů. Může to trvat několik minut.</translation>
 <translation id="5417965108047245734">Projděte si rychlou prohlídku a naučte se v zařízení <ph name="PRODUCT_NAME" /> orientovat</translation>
@@ -1178,6 +1192,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="553675580533261935">Ukončení návštěvy</translation>
 <translation id="5537725057119320332">Odeslat</translation>
 <translation id="554017492391497564">Nelze označit jako dokončené.</translation>
+<translation id="5543778275214926792">Zapnout poslech vybraného textu?</translation>
 <translation id="5546397813406633847">Obnovit uživatele</translation>
 <translation id="554893713779400387">Přepnout diktování</translation>
 <translation id="5550417424894892620">Soubory přetažené na plochu budou přidány do prostoru <ph name="HOLDING_SPACE_TITLE" />. Na plochu soubory přidat nemůžete.</translation>
@@ -1201,6 +1216,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5592745162308462420">fn</translation>
 <translation id="5596627076506792578">Další možnosti</translation>
 <translation id="5599242528220103262">Klávesová zkratka je vypnutá</translation>
+<translation id="5600415762228455511">Soustředění je zapnuté, zbývající čas: <ph name="REMAINING_TIME" />, úkol: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Hlasovou odezvu vypnete stisknutím kláves Ctrl + Alt + Z.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Připojili jsme vás k lepší síti</translation>
@@ -1230,8 +1246,10 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5699366815052349604">Přidružit aktivní okno ke všem plochám</translation>
 <translation id="5701785125601597013">Pomocí Telefonního centra můžete rychle odesílat zprávy z telefonu nebo na ně odpovídat</translation>
 <translation id="570390244361237317">Všechny aplikace, můžete je procházet pomocí kláves se šipkami</translation>
+<translation id="5705197514573687092">Zobrazit nastavení soustředění. Časovač je nastaven na <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Vaše zařízení podporuje vyšší přenosovou rychlost než kabel. Výkon zařízení může být omezen.</translation>
 <translation id="5710450975648804523">Režim Nerušit je zapnutý</translation>
+<translation id="5711984160978177607">Zbývá: <ph name="REMAINING_TIME" /></translation>
 <translation id="5712132663381964774">Pomocí aplikací můžete na zařízení <ph name="PRODUCT_NAME" /> dělat vše, co potřebujete. Své aplikace najdete ve Spouštěči.</translation>
 <translation id="571295407079589142">Mobilní data jsou vypnuta</translation>
 <translation id="5727460725221669831">Pokud jste heslo zapomněli nebo jste nedávno změnili heslo účtu Google, zkuste tohoto uživatele obnovit.</translation>
@@ -1242,6 +1260,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5744083938413354016">Přetažení klepnutím</translation>
 <translation id="5745612484876805746">Noční režim se zapíná automaticky za soumraku</translation>
 <translation id="5750765938512549687">Rozhraní Bluetooth je vypnuté</translation>
+<translation id="5758114525425072423">Spustit soustředění. Časovač je nastaven na <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5760866832697883462">Připojení zařízení <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Přepnout popisovač. <ph name="STATE_TEXT" /> Ke kreslení na obrazovku použijte trackpad, dotykovou obrazovku nebo dotykové pero.</translation>
 <translation id="576341972084747908">Stažení nebezpečného souboru <ph name="FILENAME" /></translation>
@@ -1249,6 +1268,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5764569119212455782">Přepnout na naposledy vybraný jazyk</translation>
 <translation id="5767730327234918501">Váš administrátor hotspot vypnul.</translation>
 <translation id="5769373120130404283">Obrazovka ochrany soukromí</translation>
+<translation id="5770004650349728202">Zapnout poslech vybraného textu.</translation>
 <translation id="5773950591113557721">Tímto povolíte přístup aplikaci <ph name="APP_NAME" /> a všem aplikacím a webům, které mají oprávnění používat kameru a mikrofon.</translation>
 <translation id="5774295353725270860">Do aplikace Soubory</translation>
 <translation id="5775936059231769503">Přepnout hotspot. Hotspot je vypnutý.</translation>
@@ -1343,8 +1363,10 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6119972796024789243">Korekce barev</translation>
 <translation id="6121838516699723042">Potvrzení stahování <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asistent Google v relaci hosta není k dispozici.</translation>
+<translation id="6127370444807669747">Pokud chcete získat přizpůsobené playlisty a další hudbu na soustředění, vyzkoušejte YouTube Music Premium</translation>
 <translation id="6129953537138746214">Mezera</translation>
 <translation id="6137566720514957455">Otevřít dialogové okno odstranění účtu <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6141205840878048728">Na co se chcete soustředit?</translation>
 <translation id="6141988275892716286">Potvrzení stahování</translation>
 <translation id="6143578372829139382">Sdílet na YouTube</translation>
 <translation id="6154006699632741460">Periferní zařízení není podporováno</translation>
@@ -1405,11 +1427,13 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6381109794406942707">Chcete-li zařízení odemknout, zadejte PIN.</translation>
 <translation id="638716340450135524">Zapnout přístup k fotoaparátu</translation>
 <translation id="639644700271529076">CAPS LOCK je vypnutý</translation>
+<translation id="6406458002328242616">Upravit časovač. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Asistent Google</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Vymazat všechna oznámení</translation>
+<translation id="6430225033895752525">Zobrazit nastavení soustředění</translation>
 <translation id="643147933154517414">Vše je hotovo</translation>
 <translation id="6431865393913628856">Nahrávání obrazovky</translation>
 <translation id="643593192654616063">Je využito <ph name="STORAGE_IN_USE_SIZE" /> z celkem <ph name="STORAGE_TOTAL_SIZE" /> úložiště</translation>
@@ -1450,6 +1474,7 @@ Nejsou připojena žádná zařízení.</translation>
 Nová instalace</translation>
 <translation id="6559158502366839560">Objevte další aplikace a hry</translation>
 <translation id="6559976592393364813">Zeptejte se administrátora</translation>
+<translation id="6562447480759345110">Ukončit soustředění</translation>
 <translation id="6565007273808762236">Připojení k eSIM není k dispozici</translation>
 <translation id="6570831796530454248">{0,plural, =1{Do hodiny zařízení aktualizujte}few{Do # hodin zařízení aktualizujte}many{Do # hodiny zařízení aktualizujte}other{Do # hodin zařízení aktualizujte}}</translation>
 <translation id="6570902864550063460">Nabíjení přes USB</translation>
@@ -1459,6 +1484,7 @@ Nová instalace</translation>
 <translation id="6585808820553845416">Relace skončí za <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kamera byla připnuta do levého dolního rohu Konflikt s platformou systému.</translation>
+<translation id="6605415194043280389">Soustředění je zapnuté</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" />, spravováno administrátorem</translation>
 <translation id="6612802754306526077">Je vybrán režim nahrávání obrazovky</translation>
 <translation id="6612889377159412215">dílčí úkol</translation>
@@ -1492,6 +1518,7 @@ Nová instalace</translation>
 <translation id="6707693040195709527">Termín pro převod zařízení na předchozí verzi vypršel</translation>
 <translation id="6710213216561001401">Předchozí</translation>
 <translation id="6723839937902243910">Napájení</translation>
+<translation id="672609503628871915">Co je nového</translation>
 <translation id="6727969043791803658">Připojeno, <ph name="BATTERY_PERCENTAGE" /> % baterie</translation>
 <translation id="6732087373923685049">fotoaparát</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1525,6 +1552,7 @@ Nová instalace</translation>
 <translation id="6836499262298959512">Nebezpečný soubor</translation>
 <translation id="6837621009301897464">Pokud chcete pořídit snímek obrazovky, stiskněte</translation>
 <translation id="6852052252232534364">Aktivujte kliknutím</translation>
+<translation id="6852628153543175788">Přidat 10 min</translation>
 <translation id="6855029042976311970">Právě upraveno</translation>
 <translation id="6856708615407876657">Přepínání kategorií výsledků vyhledávání</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -1585,6 +1613,7 @@ Nová instalace</translation>
 <translation id="7068360136237591149">Otevřít soubory</translation>
 <translation id="7076293881109082629">Přihlášení</translation>
 <translation id="7076878155205969899">Vypnout zvuk</translation>
+<translation id="7083848064787091821">Soustředění</translation>
 <translation id="7084678090004350185">Přepnout hotspot. Hotspot je zapnutý, je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="7086931198345821656">Tato aktualizace vyžaduje vymazání zařízení <ph name="DEVICE_TYPE" /> metodou Powerwash. Všechna data budou smazána. Další informace o nejnovější aktualizaci systému <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Přístup pomocí přepínačů</translation>
@@ -1611,6 +1640,7 @@ Nová instalace</translation>
 <translation id="7188494361780961876">Nabídka byla přesunuta do levého horního rohu obrazovky.</translation>
 <translation id="7189412385142492784">Jak daleko je Venuše</translation>
 <translation id="7198435252016571249">Kamera byla připnuta do pravého dolního rohu. Konflikt s platformou systému.</translation>
+<translation id="720981139652840573">Nechte si nahlas přečíst konkrétní text. V dolní části obrazovky vyberte ikonu Poslech vybraného textu a potom zvýrazněte text. Můžete také použít klávesovou zkratku: zvýrazněte text a potom stiskněte klávesu Hledat/Spouštěč + S.</translation>
 <translation id="7219573373513695352">Žádná připojená zařízení</translation>
 <translation id="7229029500464092426">Paměť: <ph name="AVAILABLE_MEMORY" /> | celkem <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Stav baterie: <ph name="PERCENTAGE" />. Připojte zařízení k napájení.</translation>
@@ -1620,6 +1650,7 @@ Nová instalace</translation>
 <translation id="7258828758145722155">Upraveno včera</translation>
 <translation id="726276584504105859">Chcete-li použít rozdělenou obrazovku, přetáhněte okno sem</translation>
 <translation id="7262906531272962081">Vytvořit připomenutí</translation>
+<translation id="7264788308526527464">Ubrat <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">K pořízení snímků obrazovky můžete použít nástroj pro záznam obrazovky v rychlém nastavení</translation>
 <translation id="7301826272005790482">Zavřít návrhy oken</translation>
@@ -1630,6 +1661,7 @@ Nová instalace</translation>
 <translation id="7313193732017069507">Rozbalit fotoaparát</translation>
 <translation id="7330397557116570022">Pokud chcete použít diktování, přejděte do textového pole</translation>
 <translation id="7331646370422660166">alt + šipka dolů</translation>
+<translation id="7337660433630200387">+10 min</translation>
 <translation id="7340731148882810149">Nabídka automatických kliknutí</translation>
 <translation id="7346909386216857016">Dobře, rozumím</translation>
 <translation id="7348093485538360975">Softwarová klávesnice</translation>
@@ -1649,6 +1681,7 @@ Nová instalace</translation>
 <translation id="7386767620098596324">Přepnout připojení k síti. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Funkci také můžete nastavit později v Nastavení.</translation>
 <translation id="7401222354741467707">Pořídit snímek nebo záznam celé obrazovky</translation>
+<translation id="7401788553834047908">Při soustředění nerušit</translation>
 <translation id="7405710164030118432">Chcete-li zařízení odemknout, zadejte svůj rodičovský přístupový kód služby Family Link</translation>
 <translation id="7406608787870898861">Dokončete nastavení mobilní sítě</translation>
 <translation id="7406854842098869085">Stiskněte a podržte klávesu <ph name="MODIFIER_1" /> a opakovaně stiskněte klávesu <ph name="KEY" />, dokud nepřejdete na okno, které chcete otevřít. Poté klávesy uvolněte.</translation>
@@ -1683,6 +1716,8 @@ Nová instalace</translation>
 <translation id="7519649142417630956">Po vypnutí bude administrátor odhlášen a nebude vaše zařízení moci ovládat.
 
 Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zařízení.</translation>
+<translation id="7523420897035067483">Při soustředění zapnout režim Nerušit</translation>
+<translation id="7524043547948122239">Úkoly Google</translation>
 <translation id="7526573455193969409">Síť může být sledována</translation>
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Aktualizovat levé okno</translation>
@@ -1752,6 +1787,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7773536009433685931">Místo toho zapnout Wi-Fi</translation>
 <translation id="7780094051999721182">zkratky</translation>
 <translation id="7780159184141939021">Otočit obrazovku</translation>
+<translation id="7781829728241885113">Včera</translation>
 <translation id="7792590255364786396">Viditelné</translation>
 <translation id="7796735576426975947">Nové upozornění bylo skryto</translation>
 <translation id="7798302898096527229">Vypnete jej stisknutím klávesy Hledat nebo Shift.</translation>
@@ -1815,6 +1851,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7963992254934562106">Zdroj: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Vybrat složku…</translation>
 <translation id="7973756967040444713">Zavřít panel nástrojů</translation>
+<translation id="797485111629834774">Označit úkol jako hotový: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Zapnout nebo vypnout lupu celé obrazovky</translation>
 <translation id="7977927628060636163">Vyhledávání mobilních sítí...</translation>
 <translation id="7982789257301363584">Síť</translation>
@@ -1828,6 +1865,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8000066093800657092">Žádná síť</translation>
 <translation id="8001755249288974029">Vybrat text od kurzoru do začátku řádku</translation>
 <translation id="8004512796067398576">Zvýšit</translation>
+<translation id="8005527720597583355">Spustit soustředění</translation>
 <translation id="8015361438441228492">Úkol se nepodařilo upravit.</translation>
 <translation id="802782383769312836">Předchozí plocha: <ph name="DESK_NAME" />. Plocha <ph name="DESK_INDEX" /> z <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Připojení k hotspotu se nezdařilo</translation>
@@ -1843,6 +1881,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8054466585765276473">Výpočet doby výdrže baterie.</translation>
 <translation id="8079538659226626406">Sdílení obrazovky</translation>
 <translation id="8083540854303889870">Uloženo na později</translation>
+<translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Další možnosti zobrazíte pmocí tabulátoru. K přístupu ke všem plochám použijte šipky vlevo a vpravo.</translation>
 <translation id="8091153018031979607">Začíná v <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatické aktualizace</translation>
@@ -1874,10 +1913,12 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8192727139462702395">Když vypnete Bluetooth, od zařízení <ph name="DEVICE_TYPE" /> se odpojí tato externí zařízení:</translation>
 <translation id="8198456017687137612">Odesílání karty</translation>
 <translation id="8200772114523450471">Pokračovat</translation>
+<translation id="820256110035940528"><ph name="TITLE" /> Právě jste se <ph name="FOCUSED_TIME" /> soustředili. Pokud se chcete soustředit znovu, otevřete Rychlé nastavení.</translation>
 <translation id="8203795194971602413">Kliknutí pravým tlačítkem</translation>
 <translation id="8209010265547628927">Resetovat</translation>
 <translation id="8214996719228530800">Verze Canary</translation>
 <translation id="8219451629189078428">Chromebook po tuto dobu musí zůstat zapnutý a připojený ke zdroji napájení. Kabely adaptéru nebo nabíječky musí být správně zapojeny do Chromebooku i do zásuvky. Chromebook nevypínejte.</translation>
+<translation id="8220076512072059941">Přidat <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8230305195727960608">Režim převrácení barev</translation>
 <translation id="8236042855478648955">Čas na přestávku</translation>
 <translation id="8237964652943995219">Další plocha: <ph name="DESK_NAME" />. Plocha <ph name="DESK_INDEX" /> z <ph name="DESK_COUNT" />.</translation>
@@ -1985,6 +2026,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Stisknutím klávesy Enter pořídíte částečný snímek obrazovky</translation>
 <translation id="8676770494376880701">Byla připojena nabíječka s nízkým napětím</translation>
+<translation id="8679158879996532670">Zobrazit nastavení soustředění. Soustředění je zapnuté, zbývající čas: <ph name="REMAINING_TIME" />.</translation>
 <translation id="8683506306463609433">Trasování výkonu je aktivní</translation>
 <translation id="8703634754197148428">Zahájit nahrávání. Po zahájení nahrávání můžete stisknutím kláves Alt + Shift + L přejít na poličku a najít tlačítko Zastavit nahrávání</translation>
 <translation id="8704155109538237473">Vybrat okno obrazu v obraze</translation>
@@ -2002,6 +2044,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8735678380411481005">Barva podsvícení klávesnice</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Aktivace…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8749787185286745219">Čas vypršel. Dobrá práce! 🎉</translation>
 <translation id="8755498163081687682">Ověření identity: Web <ph name="ORIGIN_NAME" /> chce ověřit, zda jste to vy</translation>
 <translation id="875593634123171288">Zobrazit nastavení VPN</translation>
 <translation id="8756799553341497810">Až toto zobrazení opustíte, můžete si začít upravovat rozvržení aplikací.</translation>
@@ -2040,6 +2083,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8877788021141246043">Nastavit připomenutí</translation>
 <translation id="8878886163241303700">Rozšíření obrazovky</translation>
 <translation id="888982883502837004">Pro zařízení jsou k dispozici aktualizace firmwaru. Kliknutím je můžete zobrazit a provést aktualizaci.</translation>
+<translation id="8893479486525393799">Studiový mikrofon</translation>
 <translation id="8896630965521842259">Šablona <ph name="DESK_TEMPLATE_NAME" /> bude trvale smazána</translation>
 <translation id="889790758758811533">Stav baterie: <ph name="PERCENTAGE" /> % (přibližně na <ph name="TIME_LEFT" />). Připojte zařízení k napájení.</translation>
 <translation id="88986195241502842">O stránku dolů</translation>
@@ -2068,6 +2112,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="9000771174482730261">SPRAVOVAT ÚLOŽIŠTĚ</translation>
 <translation id="9005984960510803406">Otevřít okno Crosh</translation>
 <translation id="9017320285115481645">Zadejte svůj rodičovský přístupový kód služby Family Link.</translation>
+<translation id="9022774213089566801">Často navštěvované</translation>
 <translation id="9024331582947483881">celá obrazovka</translation>
 <translation id="9029736946581028033">Zařízení se brzy vypne</translation>
 <translation id="9030319654231318877">Do západu slunce vypnuto</translation>

@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />برای کارفرما یا مدرسه‌‌تان
           <ph name="LIST_ITEM" />برای ارائه‌دهنده خدمات اینترنت شما
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">ردیابی این مورد</translation>
 <translation id="1337692097987160377">هم‌رسانی این برگه</translation>
 <translation id="1339601241726513588">دامنه ثبت‌نام:</translation>
 <translation id="1340482604681802745">نشانی تحویل گرفتن</translation>
@@ -2611,6 +2612,7 @@
 <translation id="6035491133925068289">دو و میدانی</translation>
 <translation id="6039846035001940113">اگر مشکل ادامه دارد، با مالک سایت تماس بگیرید.</translation>
 <translation id="6040143037577758943">بستن</translation>
+<translation id="6040539895181423374">اطلاعات آماری قیمت</translation>
 <translation id="604124094241169006">خودکار</translation>
 <translation id="6041777658117377052">دمای محفظه</translation>
 <translation id="6042308850641462728">بیشتر</translation>
@@ -3216,7 +3218,6 @@
 <translation id="719464814642662924">ویزا</translation>
 <translation id="7195852673246414183">بعداز روشن کردن این تنظیم، به این برگه برگردید و نوشتن را شروع کنید</translation>
 <translation id="7199278868241956094">اداری</translation>
-<translation id="7201591969684833065">سرپرستتان می‌تواند این موارد را ببیند:</translation>
 <translation id="7202217080450895452">‏<ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای باز کردن «برگه ناشناس» جدید و مرور کردن به‌صورت خصوصی، کلید Tab و سپس Enter را فشار دهید</translation>
 <translation id="7203375778433816396">‏تنظیم Chrome به‌عنوان مرورگر پیش‌فرض سیستم</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> از استانداردهای امنیتی پیروی نمی‌کند.</translation>

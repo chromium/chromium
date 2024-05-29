@@ -455,6 +455,7 @@
 <translation id="1812527064848182527">භූ දර්ශනය</translation>
 <translation id="1812975699435941848">සෞඛ්‍ය අධ්‍යාපනය සහ වෛද්‍ය පුහුණුව</translation>
 <translation id="1816436748874040213">බෙදා ගත් පටිති අනුචලනය කිරීමට සහ විශාලනය කිරීමට විමසිය හැක</translation>
+<translation id="1817364650920811003">භූමිකාව: Chrome ඉඟිය. ප්‍රවේශ්‍යතා ලේබලය: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">අවහිර නොකරන්න</translation>
 <translation id="1818585559878922121">වාර්තාමය චිත්‍රපට</translation>
 <translation id="182139138257690338">ස්වයංක්‍රීය බාගැනීම්</translation>
@@ -1397,6 +1398,7 @@
 <translation id="3642638418806704195">යෙදුම:</translation>
 <translation id="3646643500201740985">දැන්වීමක් කෙතරම් හොඳින් ක්‍රියාත්මක වේ ද යන්න මැන බැලීම</translation>
 <translation id="3647286794400715637">සෑම url තන්තු ප්‍රවේශයකම URL 1ක් 2ක් අඩංගු විය යුතුය.</translation>
+<translation id="3647400963805615193">Chrome ඉඟි බොත්තම අස් කරන්න, අස් කිරීමට Enter ඔබන්න, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">වලංගුකරණය සාර්ථකයි</translation>
 <translation id="3650594806107685466">ඔබේ කාඩ්පත සුරක්ෂිතව තබා ගැනීමට උදවු කිරීම සඳහා, <ph name="SIDE_OF_CARD" /> මත CVC ඇතුළු කරන්න</translation>
 <translation id="3650917416636556301">පයින් දුර ගමන් කිරීම සහ කූඩාරම් ගැසීම</translation>
@@ -3216,7 +3218,6 @@
 <translation id="719464814642662924">වීසා</translation>
 <translation id="7195852673246414183">ඔබ මෙම සැකසීම ක්‍රියාත්මක කළ පසු, ලිවීම ආරම්භ කිරීමට මෙම පටිත්ත වෙත ආපසු එන්න</translation>
 <translation id="7199278868241956094">ඔෆිසියෝ</translation>
-<translation id="7201591969684833065">ඔබේ පරිපාලකයාට බැලිය හැක්කේ:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, පුද්ගලිකව බ්‍රවුස් කිරීමට නව අප්‍රකට ටැබයක් විවෘත කිරීමට, Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="7203375778433816396">පද්ධතියේ පෙරනිමි බ්‍රව්සරය ලෙස Chrome සකසන්න</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ආරක්ෂක සම්මත අනුගමනය නොකරයි.</translation>
@@ -3369,6 +3370,7 @@
 <translation id="7481312909269577407">ඉදිරියට යන්න</translation>
 <translation id="7481603210197454575">ලියුම් කවරය ඉතාලි</translation>
 <translation id="7483482939016730822">පාසල් සැපයීම සහ පන්තිකාමර උපකරණ</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chrome ඉඟිය අස් කිරීමට පටිත්ත ඔබා පසුව Enter ඔබන්න.</translation>
 <translation id="7485085230273446323">ව්‍යාපාරික සහ කාර්මික</translation>
 <translation id="7485870689360869515">දත්ත කිසිවක් හමු නොවිනි</translation>
 <translation id="7489392576326061356">ෂැම්පු සහ කන්ඩිෂනර්</translation>

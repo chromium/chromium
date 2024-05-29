@@ -61,7 +61,6 @@
 <translation id="4139634748112164403">Табууд энэ төхөөрөмж дээр нээлттэй хэвээр үлдэх хэдий ч бүлгийг бүрмөсөн устгана</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> таб, <ph name="COLOR_NAME" /> өнгөтэй <ph name="TITLE_OF_GROUP" /> табын бүлгийг хаана уу.}other{<ph name="TABS_COUNT_MANY" /> таб, <ph name="COLOR_NAME" /> өнгөтэй <ph name="TITLE_OF_GROUP" /> табын бүлгийг хаана уу.}}</translation>
 <translation id="4159784952369912983">Нил ягаан</translation>
-<translation id="4212246570487010370">Тасралтгүй үзэх</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> таб бүхий <ph name="TITLE_OF_GROUP" />-н бүлгийг дэлгэх.}other{<ph name="TABS_COUNT_MANY" /> таб бүхий <ph name="TITLE_OF_GROUP" />-н бүлгийг дэлгэх.}}</translation>
 <translation id="427987768447457592">Шинэ табын бүлэг</translation>
 <translation id="4460014764210899310">Бүлгийг болих</translation>

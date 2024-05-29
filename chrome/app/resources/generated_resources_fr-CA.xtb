@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">Pas maintenant</translation>
 <translation id="100881991356161927">Nom du site</translation>
 <translation id="1009663062402466586">Commandes de jeu maintenant accessibles</translation>
+<translation id="1010136228650201057">Chiffrement des données utilisateur</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{La page ne répond pas}one{La page ne répond pas}other{Les pages ne répondent pas}}</translation>
 <translation id="1011003645819296594">Appareils enregistrés</translation>
 <translation id="1011355516189274711">Volume de la synthèse vocale</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="1049795001945932310">Paramètres &amp;linguistiques</translation>
 <translation id="1050693411695664090">Médiocre</translation>
+<translation id="1053776357096024725">Améliorez le son de votre microphone intégré avec divers effets</translation>
 <translation id="1054048317165655285">Terminer la configuration sur votre téléphone</translation>
 <translation id="1054153489933238809">Ouvrir l'&amp;image d'origine dans un nouvel onglet</translation>
 <translation id="1054187194995068149">Bonjour. Ceci est un aperçu</translation>
@@ -834,6 +836,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1607139524282324606">Effacer l'entrée</translation>
 <translation id="1607499585984539560">L'utilisateur n'est pas affilié au domaine</translation>
 <translation id="1608668830839595724">Plus d'actions pour les éléments sélectionnés</translation>
+<translation id="1608698493373028805">Cette extension pourrait bientôt ne plus être prise en charge</translation>
 <translation id="1610272688494140697">Paramètres des applications</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Votre appareil est verrouillé</translation>
@@ -2308,6 +2311,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2667144577800272420">D'autres applications sont configurées pour ouvrir les mêmes liens que ceux de l'application <ph name="APP_NAME" />. Cette option désactivera l'ouverture des liens compatibles par les applications <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Gérer le correcteur orthographique</translation>
 <translation id="2668094785979141847">Cliquer pour quitter Lentille Google</translation>
+<translation id="2668604389652548400">Retirez-la ou remplacez-la par une extension semblable de la <ph name="BEGIN_LINK" />boutique en ligne Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Impossible d'ouvrir <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> partage un onglet Chrome.</translation>
@@ -2358,6 +2362,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2710101514844343743">Données d'utilisation et de diagnostics</translation>
 <translation id="271033894570825754">Nouveau</translation>
 <translation id="2710507903599773521">Votre <ph name="DEVICE_TYPE" /> est maintenant déverrouillé</translation>
+<translation id="2712141162840347885">Sélectionner n'importe quel élément pour effectuer une recherche avec Lentille Google ou appuyez sur Échap. pour quitter Lentille Google</translation>
 <translation id="2713106313042589954">Désactiver la caméra</translation>
 <translation id="2713444072780614174">Blanc</translation>
 <translation id="2714180132046334502">Arrière-plan foncé</translation>
@@ -2983,6 +2988,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3177914167275935955">Votre appareil comprend une mise à niveau de Chrome Education, mais votre nom d'utilisateur n'est pas associé à un compte Google for Education. Veuillez créer un compte Google for Education en accédant à la page g.co/workspace/edusignup sur un autre appareil.</translation>
 <translation id="3179982752812949580">Police du texte</translation>
 <translation id="3180284704187420717">Enregistrez vos favoris, mots de passe et plus encore avec la synchronisation</translation>
+<translation id="3180716079618904608">Trouver des applis et des jeux</translation>
 <translation id="3181954750937456830">Navigation sécurisée (vous protège, vous et votre appareil, des sites dangereux)</translation>
 <translation id="3182749001423093222">Correcteur orthographique</translation>
 <translation id="3183139917765991655">Importateur de profils</translation>
@@ -4274,6 +4280,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4120817667028078560">Chemin d'accès trop long</translation>
 <translation id="4124823734405044952">Votre clé de sécurité a été réinitialisée</translation>
 <translation id="4124935795427217608">Licorne</translation>
+<translation id="4126375522951286587">Éteindre <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">Superhéros</translation>
 <translation id="4130199216115862831">Journal de l’appareil</translation>
 <translation id="4130750466177569591">J'accepte</translation>
@@ -4574,6 +4581,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> partage une fenêtre.</translation>
 <translation id="4364830672918311045">Afficher les notifications</translation>
+<translation id="4367027658822022112">Vous pouvez épingler Lentille Google pour un accès facile; cliquez sur le bouton Épingler en haut du panneau latéral</translation>
 <translation id="4367513928820380646">Examiner les autorisations retirées</translation>
 <translation id="4367971618859387374">Nom à afficher</translation>
 <translation id="4368960422722232719">Afficher l'utilisation de la mémoire sur la fiche informative d'aperçu de l'onglet</translation>
@@ -4976,6 +4984,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4666911709726371538">Autres applications</translation>
 <translation id="4668279686271488041">Les données de mesure des annonces sont régulièrement supprimées de votre appareil</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">Le NIP doit être composé uniquement de chiffres</translation>
 <translation id="4670909875730475086">Félicitations! <ph name="APP_NAME" /> a bien été installée sur votre appareil</translation>
 <translation id="4672759829555593783">Ouvrir <ph name="FILE_NAME" /> maintenant</translation>
 <translation id="4673442866648850031">Ouvrir les outils de stylet lorsque le stylet est retiré</translation>
@@ -5059,6 +5068,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="473936925429402449">Sélectionné, contenu supplémentaire <ph name="CURRENT_ELEMENT" /> sur <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tickets</translation>
 <translation id="4740546261986864539">Récemment ouvert</translation>
+<translation id="4741235124132242877">La fonctionnalité a été épinglée! Utilisez à nouveau Lentille Google à partir de la barre d'outils</translation>
 <translation id="4742334355511750246">Non autorisés à afficher des images</translation>
 <translation id="4742795653798179840">Données Chrome supprimées</translation>
 <translation id="4742970037960872810">Retirer la surbrillance</translation>
@@ -6755,6 +6765,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6042308850641462728">Plus</translation>
 <translation id="604388835206766544">Impossible d'analyser la configuration</translation>
 <translation id="6043994281159824495">Se déconnecter maintenant</translation>
+<translation id="604424701295382420">La fonctionnalité a été épinglée! Vous pouvez à nouveau accéder à Lentille Google à partir du nouveau bouton de la barre d'outils</translation>
 <translation id="6045114302329202345">Bouton TrackPoint principal</translation>
 <translation id="6047632800149092791">La synchronisation ne fonctionne pas. Essayez de vous déconnecter et de vous reconnecter.</translation>
 <translation id="6048747414605857443">Sélectionnez et personnalisez les voix de synthèse vocale pour ChromeVox et Sélectionner pour énoncer</translation>
@@ -7589,6 +7600,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6686490380836145850">Fermer les onglets à la droite</translation>
 <translation id="6686665106869989887">Onglet déplacé vers la droite</translation>
 <translation id="6686817083349815241">Enregistrer votre mot de passe</translation>
+<translation id="6687008241368170505">Modifier le NIP du gestionnaire de mots de passe Google</translation>
 <translation id="6687079240787935001">Masquer <ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">Demandez à <ph name="SUPERVISED_USER_NAME" /> de venir à l'ordinateur. Votre enfant lira quelques phrases sur cet écran pour créer son modèle vocal.
     <ph name="BR" />
@@ -8367,6 +8379,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> : autorisation demandée, appuyez sur F6 pour répondre</translation>
 <translation id="7290242001003353852">Ce service de connexion, hébergé par <ph name="SAML_DOMAIN" />, est en train d'accéder à votre caméra.</translation>
 <translation id="7292067737327289208">Votre <ph name="BEGIN_LINK" />navigateur est géré<ph name="END_LINK" /> par votre organisation et votre <ph name="BEGIN_LINK" />profil est géré<ph name="END_LINK" /> par <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="7292147651179697920">Demande à ton parent d'autoriser l'accès dans Paramètres</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Notez qu'Android, Play et les applications connexes sont régis par leurs propres politiques de collection et d'utilisation des données.</translation>
 <translation id="7296503797589217366">Sélectionner le dossier <ph name="FOLDER_TITLE" /></translation>
@@ -8675,6 +8688,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7514239104543605883">Copier vers votre appareil</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7514417110442087199">Attribuer une action</translation>
+<translation id="7515191208480168435">Vous pouvez épingler Lentille Google pour un accès facile</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> est bloquée par l'administrateur. Pour l'utiliser, demandez l'autorisation à l'administrateur.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page suivante</translation>
@@ -10148,6 +10162,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8592141010104017453">N'afficher aucune notification</translation>
 <translation id="859246725979739260">L'accès à votre position a été bloqué pour ce site.</translation>
 <translation id="8593450223647418235">Vous ne pourrez pas ouvrir de fichiers dans Microsoft 365 tant que la configuration n'est pas terminée.</translation>
+<translation id="8593686980889923154">L'appli <ph name="APP_NAME" /> est bloquée sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="8596540852772265699">Fichiers personnalisés</translation>
 <translation id="8597845839771543242">Format des propriétés :</translation>
 <translation id="8598249292448297523">impression</translation>
@@ -10567,6 +10582,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8890529496706615641">Impossible de renommer le profil. Veuillez réessayer ou communiquer avec votre fournisseur de services pour obtenir de l'assistance technique.</translation>
 <translation id="8892168913673237979">Tout est prêt!</translation>
 <translation id="8892246501904593980">Voyez tous vos favoris dans Favoris et listes</translation>
+<translation id="8893479486525393799">Micro de studio</translation>
 <translation id="8893801527741465188">Désinstallation terminée</translation>
 <translation id="8893928184421379330">Désolés, le dispositif <ph name="DEVICE_LABEL" /> n'est pas reconnu.</translation>
 <translation id="8894761918470382415">Protection contre l'accès aux données pour les périphériques</translation>

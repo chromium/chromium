@@ -467,6 +467,7 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
       系统会卸载已舍弃的页面并完全回收其资源。与该页面关联的标签页会保留在标签栏中，但切换到它会触发完全重新加载。
       </translation>
 <translation id="138847842893090358">报告操作系统更新状态</translation>
+<translation id="1389138080311956934">尽可能节省内存。</translation>
 <translation id="1390529781843037070">如果此政策已启用或未设置，用户便可通过 <ph name="PRODUCT_NAME" /> 的打印对话框使用 <ph name="CLOUD_PRINT_NAME" />进行打印<ph name="PRODUCT_NAME" /> 可以将文档提交到 <ph name="CLOUD_PRINT_NAME" />进行打印。这不会妨碍用户在网站上提交打印任务。
 
       如果此政策已停用，用户将无法通过 <ph name="PRODUCT_NAME" /> 的打印对话框使用 <ph name="CLOUD_PRINT_NAME" />进行打印。
@@ -3093,6 +3094,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
       日后，当内嵌登录全面支持所有 SSO 登录流程时，该实验性设置将会取消。</translation>
 <translation id="3435796032110614169">允许删除打印任务记录</translation>
+<translation id="3435896845095436175">启用</translation>
 <translation id="3436217793443508863">当使用电池供电时系统应在设备闲置多久（以毫秒为单位）后锁定屏幕</translation>
 <translation id="3437924696598384725">允许用户管理 VPN 连接</translation>
 <translation id="3441664787678256816">允许企业与这台计算机建立远程支持连接</translation>
@@ -3839,6 +3841,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 如需详细了解有效<ph name="URL_LABEL" />格式，请访问 https://support.google.com/chrome/a?p=url_blocklist_filter_format。</translation>
 <translation id="4070039109671307724">其他</translation>
 <translation id="4072225853834793549">为登录屏幕停用无障碍快捷方式</translation>
+<translation id="4074922053013383215">适中节省内存。</translation>
 <translation id="4075675819066819571">将文件架放置到屏幕左侧</translation>
 <translation id="4079306023113982053">控制该用户能否使用 <ph name="BOREALIS_NAME" />。
 
@@ -4210,6 +4213,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="4389073105055031853">允许用户管理所有证书</translation>
 <translation id="4389091865841123886">通过 TPM 机制配置远程认证。</translation>
 <translation id="4389113579547582722">允许显示弹出式提醒“App Store 评分”</translation>
+<translation id="4394049700291259645">停用</translation>
 <translation id="4395619678972620537">如果已启用此政策，WebRTC 对等连接可以降级至已过时的 TLS/DTLS（DTLS 1.0、TLS 1.0 和 TLS 1.1）协议版本。
       如果已停用或未设置此政策，这些 TLS/DTLS 版本会被停用。
 
@@ -8517,6 +8521,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策设为 False 或未设置，系统可能会屏蔽其他来源的或不重要的 <ph name="FLASH_PLUGIN_NAME" /> 内容。
 
       注意：如需控制哪些网站可以运行 <ph name="FLASH_PLUGIN_NAME" />，请参阅 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />、<ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> 和 <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策。</translation>
+<translation id="7801163363326128751">更改省内存模式的节省量</translation>
 <translation id="7804859754080118507">报告已注册的设备上的网络连接和信号强度事件。
 
       如果此政策设为 false 或未设置，系统不会报告这些信息。
@@ -9097,6 +9102,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8274926413890711289">启用精细报告控件</translation>
 <translation id="8275103737670730746">允许在不使用以往用户手势的情况下调用文件或目录选择器 API</translation>
 <translation id="8278133379873210419">禁止显示从其他来源的子框架触发的 JavaScript 对话框</translation>
+<translation id="8284028944941138279">均衡节省内存。</translation>
 <translation id="8284296539558710573">跨域 HTTP 身份验证提示</translation>
 <translation id="8284527236880877730">如果 <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> 已停用，您可以通过设置 <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> 来指定：当设备处于演示模式时，系统应该对屏幕变暗延迟时间采取的调整幅度（百分比）。调整屏幕变暗延迟时间时，系统会随之调整屏幕关闭延迟时间、屏幕锁定延迟时间和闲置延迟时间，以使它们保持在原有设置下与屏幕变暗延迟时间的间隔。
 
@@ -9264,9 +9270,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       在 Chrome 115 之后，此政策将被移除。</translation>
 <translation id="841395160262233331">启动器键/搜索键将无法更改功能键的行为，并且用户无法更改此设置。</translation>
-<translation id="8415506434606458373">通过设置此政策，您可允许列出的源使用 Device Attributes API 获取设备属性（例如序列号、主机名）。
-
-源必须对应于使用 <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> 或 <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />（自 125 版起）政策强制安装的 Web 应用或设置为自助服务终端应用。如需了解 Device Attributes API 规范，请参阅 https://wicg.github.io/WebApiDevice/device_attributes。</translation>
 <translation id="8415953438346821074">如果您启用了此设置，存储在 <ph name="PRODUCT_NAME" /> 个人资料中的设置（例如书签、自动填充数据、密码等）也会被写入一个存储在漫游用户个人资料文件夹内的文件中，或被写入一个由管理员通过 <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" /> 政策指定的位置中。启用此政策会停用云同步。
 
       如果您停用了或未设置此政策，系统将会仅使用常规的本地个人资料。</translation>

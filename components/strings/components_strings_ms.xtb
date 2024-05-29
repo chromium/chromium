@@ -456,6 +456,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1812527064848182527">landskap</translation>
 <translation id="1812975699435941848">Pendidikan Kesihatan &amp; Latihan Perubatan</translation>
 <translation id="1816436748874040213">Boleh meminta untuk menatal dan mengezum tab kongsi</translation>
+<translation id="1817364650920811003">Peranan: Petua Chrome. Label kebolehaksesan: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Nyahsekat</translation>
 <translation id="1818585559878922121">Filem Dokumentari</translation>
 <translation id="182139138257690338">muat turun automatik</translation>
@@ -1399,6 +1400,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3642638418806704195">Aplikasi:</translation>
 <translation id="3646643500201740985">Mengukur prestasi iklan</translation>
 <translation id="3647286794400715637">Setiap entri rentetan url mesti mengandungi antara 1 hingga 2 URL.</translation>
+<translation id="3647400963805615193">Butang Ketepikan Petua Chrome, tekan kekunci Enter untuk diketepikan, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Pengesahan berjaya</translation>
 <translation id="3650594806107685466">Untuk membantu memastikan kad anda selamat, masukkan CVC pada <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Kembara &amp; Berkhemah</translation>
@@ -3219,7 +3221,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195852673246414183">Selepas anda menghidupkan tetapan ini, kembali kepada tab ini untuk mula menulis</translation>
 <translation id="7199278868241956094">Oficio</translation>
-<translation id="7201591969684833065">Pentadbir anda dapat melihat:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk membuka tab Inkognito baharu untuk semak imbas secara peribadi</translation>
 <translation id="7203375778433816396">Tetapkan Chrome sebagai penyemak imbas lalai sistem</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> tidak mematuhi piawaian keselamatan.</translation>
@@ -3372,6 +3373,7 @@ Butiran tambahan:
 <translation id="7481312909269577407">Majukan</translation>
 <translation id="7481603210197454575">Sampul Itali</translation>
 <translation id="7483482939016730822">Bekalan Sekolah &amp; Peralatan Bilik Darjah</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, tekan kekunci Tab kemudian Enter untuk Mengetepikan Petua Chrome.</translation>
 <translation id="7485085230273446323">Perniagaan &amp; Industri</translation>
 <translation id="7485870689360869515">Tiada data dijumpai.</translation>
 <translation id="7489392576326061356">Syampu &amp; Perapi</translation>

@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">এখনই নয়</translation>
 <translation id="100881991356161927">সাইটের নাম</translation>
 <translation id="1009663062402466586">গেম কন্ট্রোল এখন উপলভ্য</translation>
+<translation id="1010136228650201057">ডেটা এনক্রিপশন ব্যবহারকারী</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{পৃষ্ঠা প্রতিক্রিয়াবিহীন}one{পৃষ্ঠাগুলি প্রতিক্রিয়াবিহীন}other{পৃষ্ঠাগুলি প্রতিক্রিয়াবিহীন}}</translation>
 <translation id="1011003645819296594">সেভ করা ডিভাইস</translation>
 <translation id="1011355516189274711">টেক্সট-টু-স্পিচ ভলিউম</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">ছদ্মবেশী</translation>
 <translation id="1049795001945932310">&amp;ভাষা সেটিংস</translation>
 <translation id="1050693411695664090">দুর্বল</translation>
+<translation id="1053776357096024725">নানারকম এফেক্টের সাহায্যে আপনার বিল্ট-ইন মাইক্রোফোন সাউন্ড বাড়ান</translation>
 <translation id="1054048317165655285">আপনার ফোন সেট আপ করা সম্পূর্ণ করুন</translation>
 <translation id="1054153489933238809">নতুন ট্যাবে আসল ছবিটি খুলুন</translation>
 <translation id="1054187194995068149">হ্যালো। এটি হল একটি প্রিভিউ</translation>
@@ -835,6 +837,7 @@
 <translation id="1607139524282324606">এন্ট্রি মুছে দিন</translation>
 <translation id="1607499585984539560">ডোমেনে ব্যবহারকারীর অনুমোদন নেই</translation>
 <translation id="1608668830839595724">বেছে নেওয়া আইটেমগুলির সাথে আরও কাজ করতে হবে</translation>
+<translation id="1608698493373028805">এই এক্সটেনশন হয়ত শীঘ্রই কাজ করা বন্ধ হয়ে যাবে</translation>
 <translation id="1610272688494140697">অ্যাপ সেটিংস</translation>
 <translation id="161042844686301425">নীলাভ</translation>
 <translation id="1611432201750675208">আপনার ডিভাইস লক করা আছে</translation>
@@ -2320,6 +2323,7 @@
 <translation id="2667144577800272420"><ph name="APP_NAME" />-এর মতো অন্যান্য অ্যাপ একই লিঙ্ক খোলার জন্য সেট করা আছে। এটি <ph name="APP_NAME_2" /> এবং <ph name="APP_NAME_3" />-এর সহায়ক লিঙ্ক খুলতে দেবে না।</translation>
 <translation id="2667463864537187133">বানান পরিক্ষক পরিচালনা করুন</translation>
 <translation id="2668094785979141847">Google Lens ছেড়ে বেরিয়ে আসতে ক্লিক করুন</translation>
+<translation id="2668604389652548400"><ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> থেকে একই ধরনের এক্সটেনশন দিয়ে এটি সরান অথবা বদল করুন</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> খোলা যায়নি</translation>
 <translation id="2669454659051515572">এই ডিভাইস ব্যবহার করছেন এমন যেকেউ ডাউনলোড করা ফাইলগুলি দেখতে পারবেন</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> একটি Chrome ট্যাব শেয়ার করছে।</translation>
@@ -2370,6 +2374,7 @@
 <translation id="2710101514844343743">ব্যবহার এবং ডায়াগনস্টিক সংক্রান্ত ডেটা</translation>
 <translation id="271033894570825754">নতুন</translation>
 <translation id="2710507903599773521">আপনার <ph name="DEVICE_TYPE" /> এখন আনলক করা হয়েছে</translation>
+<translation id="2712141162840347885">Google Lens ব্যবহার করে সার্চ করার জন্য যেকোনও কিছু বেছে নিন অথবা Google Lens থেকে বেরিয়ে যেতে Escape বোতাম প্রেস করুন</translation>
 <translation id="2713106313042589954">ক্যামেরা বন্ধ করুন</translation>
 <translation id="2713444072780614174">সাদা</translation>
 <translation id="2714180132046334502">গাঢ় ব্যাকগ্রাউন্ড</translation>
@@ -2994,6 +2999,7 @@
 <translation id="3177914167275935955">আপনার ডিভাইসে Chrome Education আপগ্রেড অন্তর্ভুক্ত রয়েছে, কিন্তু আপনার ইউজারনেমটি কোনও Google for Education অ্যাকাউন্টের সাথে যুক্ত নয়। একটি সেকেন্ডারি ডিভাইসে g.co/workspace/edusignup-এ গিয়ে একটি Google for Education অ্যাকাউন্ট তৈরি করুন।</translation>
 <translation id="3179982752812949580">টেক্সটের ফন্ট</translation>
 <translation id="3180284704187420717">সিঙ্ক করার সুবিধা ব্যবহার করে নিজের বুকমার্ক, পাসওয়ার্ড ও আরও অনেক কিছু সেভ করুন</translation>
+<translation id="3180716079618904608">অ্যাপ ও গেম পান</translation>
 <translation id="3181954750937456830">নিরাপদ ব্রাউজিং (বিপজ্জনক সাইট থেকে আপনাকে এবং আপনার ডিভাইসকে রক্ষা করে)</translation>
 <translation id="3182749001423093222">বানান পরীক্ষা</translation>
 <translation id="3183139917765991655">প্রোফাইল আমদানিকারক</translation>
@@ -4285,6 +4291,7 @@
 <translation id="4120817667028078560">পাথ অত্যন্ত বড়</translation>
 <translation id="4124823734405044952">আপনার নিরাপত্তা কী রিসেট করা হয়েছে</translation>
 <translation id="4124935795427217608">ইউনিকর্ন</translation>
+<translation id="4126375522951286587"><ph name="VM_NAME" /> বন্ধ করুন</translation>
 <translation id="412730574613779332">স্প্যানডেক্স</translation>
 <translation id="4130199216115862831">ডিভাইস লগ</translation>
 <translation id="4130750466177569591">আমি সম্মত</translation>
@@ -4585,6 +4592,7 @@
 <translation id="4364327530094270451">ফুটি</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> একটি উইন্ডো শেয়ার করছে।</translation>
 <translation id="4364830672918311045">বিজ্ঞপ্তিগুলি প্রদর্শন করুন</translation>
+<translation id="4367027658822022112">সহজে অ্যাক্সেস করার জন্য আপনি Google Lens পিন করে রাখতে পারেন; সাইড প্যানেলের একেবারে উপরে পিন করুন বোতামে ক্লিক করুন</translation>
 <translation id="4367513928820380646">সরিয়ে দেওয়া অনুমতি পর্যালোচনা করুন</translation>
 <translation id="4367971618859387374">যে নাম দেখানো হবে</translation>
 <translation id="4368960422722232719">ট্যাবের উপরে কার্সর নিয়ে যাওয়ার সময় প্রিভিউ দেখার কার্ডে মেমরির ব্যবহার দেখুন</translation>
@@ -4988,6 +4996,7 @@
 <translation id="4666911709726371538">আরও অ্যাপ</translation>
 <translation id="4668279686271488041">আপনার ডিভাইস থেকে বিজ্ঞাপন-পরিমাপ ডেটা নিয়মিত মুছে ফেলা হয়</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">PIN-এ শুধুমাত্র নম্বর দেওয়া যায়</translation>
 <translation id="4670909875730475086">অভিনন্দন! আপনার ডিভাইসে <ph name="APP_NAME" /> ইনস্টল করা হয়েছে</translation>
 <translation id="4672759829555593783">এখন <ph name="FILE_NAME" /> খুলুন</translation>
 <translation id="4673442866648850031">স্টাইলাস সরানো হলে স্টাইলাস টুল খুলুন</translation>
@@ -5071,6 +5080,7 @@
 <translation id="473936925429402449">বেছে নেওয়া ও অতিরিক্ত কন্টেন্ট থাকা মোট <ph name="TOTAL_ELEMENTS" />টি এলিমেন্টের মধ্যে <ph name="CURRENT_ELEMENT" /> নম্বর এলিমেন্ট</translation>
 <translation id="4739639199548674512">টিকিট</translation>
 <translation id="4740546261986864539">সম্প্রতি খোলা হয়েছে</translation>
+<translation id="4741235124132242877">পিন করা আছে! টুলবার থেকে আবার Google Lens ব্যবহার করুন</translation>
 <translation id="4742334355511750246">ছবি দেখানোর অনুমতি দেওয়া হয়নি</translation>
 <translation id="4742795653798179840">Chrome সম্পর্কিত ডেটা মুছে ফেলা হয়েছে</translation>
 <translation id="4742970037960872810">হাইলাইট সরিয়ে দিন</translation>
@@ -6769,6 +6779,7 @@
 <translation id="6042308850641462728">আরও</translation>
 <translation id="604388835206766544">কনফিগারেশন পার্স করা যায়নি</translation>
 <translation id="6043994281159824495">এখনই সাইন-আউট করুন</translation>
+<translation id="604424701295382420">পিন করা আছে! টুলবারে থাকা নতুন বোতাম থেকে আবার আপনি Google Lens অ্যাক্সেস করতে পারবেন</translation>
 <translation id="6045114302329202345">প্রাইমারি TrackPoint বোতাম</translation>
 <translation id="6047632800149092791">সিঙ্ক কাজ করছে না। সাইন-আউট করে আবার ফিরে এসে দেখুন।</translation>
 <translation id="6048747414605857443">ChromeVox ও 'বাছুন ও শুনুন' ফিচারের জন্য টেক্সট-টু-স্পিচ ভয়েস বেছে নিন ও কাস্টমাইজ করুন</translation>
@@ -7604,6 +7615,7 @@
 <translation id="6686490380836145850">ডানদিকের ট্যাবগুলি বন্ধ করুন</translation>
 <translation id="6686665106869989887">ট্যাব ডানদিকে সরে গেছে</translation>
 <translation id="6686817083349815241">আপনার পাসওয়ার্ড সেভ করুন</translation>
+<translation id="6687008241368170505">Google Password Manager পিন পরিবর্তন করুন</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> লুকান</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" />-কে কম্পিউটারের কাছে আসতে বলুন। ভয়েস মডেল তৈরি করতে আপনার সন্তান স্ক্রিনে দেখতে পাওয়া কয়েকটি বাক্যাংশ পড়বে।
     <ph name="BR" />
@@ -8383,6 +8395,7 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - অনুমতি চাওয়া হয়েছে, উত্তর দিতে F6 বোতাম প্রেস করুন</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" /> দ্বারা হোস্ট করা এই সাইন-ইন পরিষেবাটি আপনার ক্যামেরা অ্যাক্সেস করছে।</translation>
 <translation id="7292067737327289208">আপনার প্রতিষ্ঠান আপনার <ph name="BEGIN_LINK" />ব্রাউজার ম্যানেজ করে<ph name="END_LINK" /> এবং <ph name="PROFILE_DOMAIN" /> আপনার<ph name="BEGIN_LINK" /> প্রোফাইল ম্যানেজ করে<ph name="END_LINK" /></translation>
+<translation id="7292147651179697920">সেটিংস থেকে অ্যাক্সেস দেওয়ার জন্য তোমার অভিভাবককে বলো</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">মনে রাখবেন যে Android, Play এবং সংশ্লিষ্ট অন্যান্য অ্যাপ সেগুলির নিজস্ব ডেটা সংগ্রহ ও ব্যবহার করা সংক্রান্ত নীতি মেনে চলে।</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> ফোল্ডার বেছে নিন</translation>
@@ -8691,6 +8704,7 @@
 <translation id="7514239104543605883">আপনার ডিভাইসে কপি করুন</translation>
 <translation id="7514365320538308">ডাউনলোড করুন</translation>
 <translation id="7514417110442087199">অ্যাকশনের জন্য কোনও সুইচ অ্যাসাইন করুন</translation>
+<translation id="7515191208480168435">সহজে অ্যাক্সেস করার জন্য আপনি Google Lens পিন করে রাখতে পারেন</translation>
 <translation id="751523031290522286">অ্যাডমিন <ph name="APP_NAME" /> ব্লক করে রেখেছেন। এই অ্যাপ ব্যবহার করার জন্য অ্যাডমিনের কাছ থেকে অনুমতি নিন।</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
@@ -10164,6 +10178,7 @@
 <translation id="8592141010104017453">কোনও বিজ্ঞপ্তি দেখতে চাই না</translation>
 <translation id="859246725979739260">আপনার লোকেশন অ্যাক্সেস করা থেকে এই সাইটকে ব্লক করা হয়েছে।</translation>
 <translation id="8593450223647418235">সেট-আপ সম্পূর্ণ না করলে আপনি Microsoft 365-এ ফাইল খুলতে পারবেন না।</translation>
+<translation id="8593686980889923154">আপনার <ph name="DEVICE_TYPE" />-এ <ph name="APP_NAME" /> ব্লক করে দেওয়া হয়েছে</translation>
 <translation id="8596540852772265699">কাস্টম ফাইলগুলি</translation>
 <translation id="8597845839771543242">প্রপার্টি ফর্ম্যাট:</translation>
 <translation id="8598249292448297523">প্রিন্ট</translation>
@@ -10584,6 +10599,7 @@
 <translation id="8890529496706615641">প্রোফাইলের নাম পরিবর্তন করা যাবে না। আবার চেষ্টা করুন অথবা প্রযুক্তিগত সহায়তার জন্য আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="8892168913673237979">সমস্ত সেট আছে!</translation>
 <translation id="8892246501904593980">বুকমার্ক ও তালিকায় আপনার সব বুকমার্ক দেখুন</translation>
+<translation id="8893479486525393799">Studio মাইক্রোফোন</translation>
 <translation id="8893801527741465188">আনইনস্টল করা হয়ে গেছে</translation>
 <translation id="8893928184421379330">দুঃখিত, <ph name="DEVICE_LABEL" />ডিভাইসটি স্বীকৃত হতে পারেনি৷</translation>
 <translation id="8894761918470382415">বিভিন্ন ডিভাইসের ক্ষেত্রে ডেটা অ্যাক্সেস সংক্রান্ত সুরক্ষা</translation>

@@ -183,6 +183,7 @@
 <translation id="1654477262762802994">ಧ್ವನಿ ಪ್ರಶ್ನೆಯನ್ನು ಕೇಳಲು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="1668469839109562275">ಬಿಲ್ಟ್-ಇನ್ VPN</translation>
 <translation id="1673232940951031776">ಫೋಕಸ್ ಪೂರ್ಣಗೊಳಿಸಿ. <ph name="REMAINING_TIME" /> ಬಾಕಿಯಿದೆ.</translation>
+<translation id="1675570947608765064">ನೀವು ಈ ಕಾರ್ಯದಲ್ಲಿ ಮಾಡಿದ ಬದಲಾವಣೆಗಳನ್ನು ಇತರರು ನೋಡಬಹುದು</translation>
 <translation id="1675844249244994876">ಬಲ ವಿಂಡೋವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿಲ್ಲ.</translation>
@@ -1518,6 +1519,7 @@
 <translation id="6707693040195709527">ಹಿಂದಿನ ಆವೃತ್ತಿಗೆ ಸಾಧನವನ್ನು ಬದಲಾಯಿಸುವುದು ವಿಳಂಬವಾಗಿದೆ</translation>
 <translation id="6710213216561001401">ಹಿಂದಿನದು</translation>
 <translation id="6723839937902243910">ಪವರ್‌</translation>
+<translation id="672609503628871915">ಹೊಸದೇನಿದೆ ನೋಡಿ</translation>
 <translation id="6727969043791803658">ಸಂಪರ್ಕಗೊಂಡಿದೆ, <ph name="BATTERY_PERCENTAGE" />% ರಷ್ಟು ಬ್ಯಾಟರಿ ಲಭ್ಯವಿದೆ</translation>
 <translation id="6732087373923685049">ಕ್ಯಾಮರಾ</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1787,6 +1789,7 @@
 <translation id="7773536009433685931">ಬದಲಿಗೆ ವೈಫೈ ಆನ್ ಮಾಡಿ</translation>
 <translation id="7780094051999721182">ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="7780159184141939021">ಪರದೆಯನ್ನು ತಿರುಗಿಸಿ</translation>
+<translation id="7781829728241885113">ನಿನ್ನೆ</translation>
 <translation id="7792590255364786396">ಗೋಚರಿಸುತ್ತದೆ</translation>
 <translation id="7796735576426975947">ಹೊಸ ಅಧಿಸೂಚನೆಯನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7798302898096527229">ರದ್ದುಗೊಳಿಸಲು 'ಹುಡುಕಾಟ' ಅಥವಾ Shift ಅನ್ನು ಒತ್ತಿರಿ.</translation>
@@ -2112,6 +2115,7 @@
 <translation id="9000771174482730261">ಸಂಗ್ರಹಣೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="9005984960510803406">Crosh ವಿಂಡೋವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="9017320285115481645">Family Link ಪೋಷಕ ಪ್ರವೇಶದ ಕೋಡ್ ಅನ್ನು ನಮೂದಿಸಿ.</translation>
+<translation id="9022774213089566801">ಆಗಾಗ್ಗೆ ಭೇಟಿ ನೀಡಿರುವುದು</translation>
 <translation id="9024331582947483881">ಪೂರ್ಣ ಪರದೆ</translation>
 <translation id="9029736946581028033">ಸಾಧನವು ಶೀಘ್ರದಲ್ಲಿ ಆಫ್ ಆಗುತ್ತದೆ</translation>
 <translation id="9030319654231318877">ಸೂರ್ಯಾಸ್ತದವರೆಗೆ ಆಫ್</translation>

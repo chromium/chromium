@@ -61,7 +61,6 @@
 <translation id="4139634748112164403">Les pestanyes continuaran obertes en aquest dispositiu, però el grup se suprimirà permanentment</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Tanca el grup <ph name="TITLE_OF_GROUP" /> de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_ONE" /> pestanya.}other{Tanca el grup <ph name="TITLE_OF_GROUP" /> de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="4159784952369912983">Porpra</translation>
-<translation id="4212246570487010370">Continua navegant</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Desplega el grup <ph name="TITLE_OF_GROUP" /> format per <ph name="TABS_COUNT_ONE" /> pestanya.}other{Desplega el grup <ph name="TITLE_OF_GROUP" /> format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="427987768447457592">Grup de pestanyes nou</translation>
 <translation id="4460014764210899310">Desagrupa</translation>

@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">अभी नहीं</translation>
 <translation id="100881991356161927">साइट का नाम</translation>
 <translation id="1009663062402466586">गेम के कंट्रोल अब उपलब्ध हैं</translation>
+<translation id="1010136228650201057">उपयोगकर्ता का डेटा एन्क्रिप्ट (सुरक्षित) करने की सेटिंग</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{पेज काम नहीं कर रहा}one{पेज काम नहीं कर रहे}other{पेज काम नहीं कर रहे}}</translation>
 <translation id="1011003645819296594">सेव किए गए डिवाइस</translation>
 <translation id="1011355516189274711">लिखाई को बोली में बदलने की आवाज़ का लेवल</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">गुप्त</translation>
 <translation id="1049795001945932310">&amp;भाषा सेटिंग</translation>
 <translation id="1050693411695664090">खराब</translation>
+<translation id="1053776357096024725">अलग-अलग इफ़ेक्ट की मदद से, पहले से मौजूद माइक्रोफ़ोन की आवाज़ को बेहतर बनाएं</translation>
 <translation id="1054048317165655285">अपने फ़ोन पर सेट अप पूरा करें</translation>
 <translation id="1054153489933238809">मूल &amp;चित्र को नए टैब में खोलें</translation>
 <translation id="1054187194995068149">नमस्ते. यह एक झलक है</translation>
@@ -835,6 +837,7 @@
 <translation id="1607139524282324606">प्रविष्टि हटाएं</translation>
 <translation id="1607499585984539560">उपयोगकर्ता, एंटरप्राइज़ डोमेन के साथ जुड़ा हुआ नहीं है</translation>
 <translation id="1608668830839595724">चुने गए आइटम के लिए और कार्रवाई</translation>
+<translation id="1608698493373028805">ऐसा हो सकता है कि यह एक्सटेंशन जल्द ही काम करना बंद कर दे</translation>
 <translation id="1610272688494140697">ऐप्लिकेशन की सेटिंग</translation>
 <translation id="161042844686301425">स्यान</translation>
 <translation id="1611432201750675208">आपका डिवाइस लॉक कर दिया गया है</translation>
@@ -2320,6 +2323,7 @@
 <translation id="2667144577800272420">अन्य ऐप्लिकेशन, <ph name="APP_NAME" /> की तरह उन लिंक को खोलने के लिए तैयार हैं. यह <ph name="APP_NAME_2" /> और <ph name="APP_NAME_3" /> को सहायता लिंक खोलने से रोकता है.</translation>
 <translation id="2667463864537187133">स्पेलिंग जाँच प्रबंधित करें</translation>
 <translation id="2668094785979141847">Google Lens से बाहर निकलने के लिए क्लिक करें</translation>
+<translation id="2668604389652548400">इस एक्सटेंशन को हटाएं या इसे <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> पर मौजूद मिलते-जुलते एक्सटेंशन से बदलें</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> नहीं खोला जा सका</translation>
 <translation id="2669454659051515572">इस डिवाइस का इस्तेमाल करने वाले लोग, गुप्त मोड में डाउनलोड की गई फ़ाइलें देख सकते हैं</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" />, Chrome टैब को शेयर कर रहा है.</translation>
@@ -2370,6 +2374,7 @@
 <translation id="2710101514844343743">इस्तेमाल और निदान से जुड़ा डेटा</translation>
 <translation id="271033894570825754">नया</translation>
 <translation id="2710507903599773521">आपका <ph name="DEVICE_TYPE" /> अब अनलॉक हो गया है</translation>
+<translation id="2712141162840347885">Google Lens की मदद से जानकारी खोजने के लिए, कोई भी एलिमेंट चुनें. Google Lens को बंद करने के लिए Escape दबाएं</translation>
 <translation id="2713106313042589954">कैमरा बंद करें</translation>
 <translation id="2713444072780614174">सफ़ेद</translation>
 <translation id="2714180132046334502">गहरा बैकग्राउंड</translation>
@@ -2994,6 +2999,7 @@
 <translation id="3177914167275935955">आपके डिवाइस में Chrome Education Upgrade शामिल है, लेकिन आपका उपयोगकर्ता नाम किसी Google for Education खाते से जुड़ा हुआ नहीं है. कृपया किसी दूसरे डिवाइस से g.co/workspace/edusignup पर जाकर, Google for Education खाता बनाएं.</translation>
 <translation id="3179982752812949580">टेक्स्ट का फ़ॉन्ट</translation>
 <translation id="3180284704187420717">सिंक करने की सुविधा की मदद से, अपने बुकमार्क, पासवर्ड वगैरह सेव करें</translation>
+<translation id="3180716079618904608">ऐप्लिकेशन और गेम पाएं</translation>
 <translation id="3181954750937456830">सुरक्षित ब्राउज़िंग (आपकी और आपके डिवाइस की खतरनाक साइट से सुरक्षा करती है)</translation>
 <translation id="3182749001423093222">स्पेलिंग जांच</translation>
 <translation id="3183139917765991655">प्रोफ़ाइल आयातकर्ता</translation>
@@ -4284,6 +4290,7 @@
 <translation id="4120817667028078560">पाथ बहुत बड़ा है</translation>
 <translation id="4124823734405044952">आपकी सुरक्षा कुंजी रीसेट कर दी गई है</translation>
 <translation id="4124935795427217608">यूनिकॉर्न</translation>
+<translation id="4126375522951286587"><ph name="VM_NAME" /> को शट डाउन करें</translation>
 <translation id="412730574613779332">स्‍पैंडेक्‍स</translation>
 <translation id="4130199216115862831">डिवाइस लॉग</translation>
 <translation id="4130750466177569591">मैं सहमत हूं</translation>
@@ -4584,6 +4591,7 @@
 <translation id="4364327530094270451">खरबूजा</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> किसी विंडो को शेयर कर रहा है.</translation>
 <translation id="4364830672918311045">डिसप्ले नोटिफ़िकेशन</translation>
+<translation id="4367027658822022112">आसानी से ऐक्सेस करने के लिए, Google Lens को पिन किया जा सकता है. ऐसा करने के लिए, साइड पैनल के सबसे ऊपर मौजूद 'पिन करें' बटन पर क्लिक करें</translation>
 <translation id="4367513928820380646">हटाई गई अनुमतियों की समीक्षा करें</translation>
 <translation id="4367971618859387374">डिसप्ले नेम</translation>
 <translation id="4368960422722232719">टैब पर कर्सर घुमाकर झलक दिखाने वाले कार्ड पर, मेमोरी के इस्तेमाल की जानकारी दिखाएं</translation>
@@ -4986,6 +4994,7 @@
 <translation id="4666911709726371538">और ऐप्लिकेशन</translation>
 <translation id="4668279686271488041">आपके डिवाइस से, विज्ञापन की परफ़ॉर्मेंस को मापने वाला डेटा नियमित तौर पर मिटाया जाता है</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">पिन में सिर्फ़ अंकों का इस्तेमाल करें</translation>
 <translation id="4670909875730475086">बधाई हो! <ph name="APP_NAME" /> आपके डिवाइस पर इंस्टॉल हो गया है</translation>
 <translation id="4672759829555593783"><ph name="FILE_NAME" /> को अभी खोलें</translation>
 <translation id="4673442866648850031">स्टाइलस निकाले जाने पर स्टाइलस टूल खोलें</translation>
@@ -5069,6 +5078,7 @@
 <translation id="473936925429402449">ज़्यादा कॉन्टेंट वाले <ph name="TOTAL_ELEMENTS" /> पेजों में से<ph name="CURRENT_ELEMENT" /> पेज चुना गया</translation>
 <translation id="4739639199548674512">टिकट</translation>
 <translation id="4740546261986864539">हाल ही में खोला गया टैब</translation>
+<translation id="4741235124132242877">पिन किया गया! टूलबार से Google Lens का दोबारा इस्तेमाल करें</translation>
 <translation id="4742334355511750246">इमेज दिखाने की अनुमति नहीं है</translation>
 <translation id="4742795653798179840">Chrome का डेटा मिटाया गया</translation>
 <translation id="4742970037960872810">हाइलाइट हटाएं</translation>
@@ -6765,6 +6775,7 @@
 <translation id="6042308850641462728">और ज़्यादा</translation>
 <translation id="604388835206766544">कॉन्फ़िगरेशन को पार्स नहीं किया जा सका</translation>
 <translation id="6043994281159824495">अब प्रस्थान करें</translation>
+<translation id="604424701295382420">पिन किया गया! टूलबार में मौजूद नए बटन का इस्तेमाल करके, Google Lens को फिर से ऐक्सेस किया जा सकता है</translation>
 <translation id="6045114302329202345">मुख्य TrackPoint बटन</translation>
 <translation id="6047632800149092791">सिंक करने की सुविधा काम नहीं कर रही. साइन आउट करके फिर से साइन इन करें.</translation>
 <translation id="6048747414605857443">ChromeVox और 'चुनें और सुनें' सुलभता सुविधा के लिए, लिखाई को बोली में बदलने वाली आवाज़ें चुनें और उन्हें पसंद के मुताबिक बनाएं</translation>
@@ -7599,6 +7610,7 @@
 <translation id="6686490380836145850">दाईं ओर के टैब बंद करें</translation>
 <translation id="6686665106869989887">टैब को दाईं ओर ले जाया गया</translation>
 <translation id="6686817083349815241">अपना पासवर्ड सेव करें</translation>
+<translation id="6687008241368170505">Google Password Manager का पिन बदलें</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> छिपाएं</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> को कंप्यूटर पर आने के लिए कहें. अपनी आवाज़ का नमूना बनाने के लिए, आपका बच्चा इस स्क्रीन पर कुछ वाक्यांश पढ़ेगा.
     <ph name="BR" />
@@ -8378,6 +8390,7 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - अनुमति मांगी गई है, जवाब देने के लिए F6 बटन दबाएं</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" /> की मदद से होस्ट की गई यह साइन इन सेवा, आपका कैमरा ऐक्सेस कर रही है.</translation>
 <translation id="7292067737327289208">आपका संगठन आपके <ph name="BEGIN_LINK" />ब्राउज़र को मैनेज करता है<ph name="END_LINK" /> और <ph name="PROFILE_DOMAIN" /> आपकी <ph name="BEGIN_LINK" />प्रोफ़ाइल को मैनेज करता है<ph name="END_LINK" /></translation>
+<translation id="7292147651179697920">अपने माता-पिता से, सेटिंग में जाकर ऐप्लिकेशन का ऐक्सेस देने के लिए कहें</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">ध्यान रखें कि Android, Play और सहभागी ऐप्लिकेशन पर अपने ही डेटा संग्रह का नियंत्रण होता है. साथ ही, वे नीतियों का इस्तेमाल करते हैं.</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> फ़ोल्डर चुनें</translation>
@@ -8685,6 +8698,7 @@
 <translation id="7514239104543605883">अपने डिवाइस में कॉपी करें</translation>
 <translation id="7514365320538308">डाउनलोड करें</translation>
 <translation id="7514417110442087199">कार्रवाई के लिए कोई स्विच असाइन करें</translation>
+<translation id="7515191208480168435">आसानी से ऐक्सेस करने के लिए, Google Lens को पिन किया जा सकता है</translation>
 <translation id="751523031290522286">आपके एडमिन ने <ph name="APP_NAME" /> को ब्लॉक किया है. इस ऐप्लिकेशन का इस्तेमाल करने के लिए, एडमिन से अनुमति मांगें.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
@@ -10158,6 +10172,7 @@
 <translation id="8592141010104017453">सूचनाएं बिलकुल न दिखाएं</translation>
 <translation id="859246725979739260">इस साइट को, आपकी जगह की जानकारी ऐक्सेस करने से रोका गया है.</translation>
 <translation id="8593450223647418235">सेटअप पूरा होने तक, Microsoft 365 में फ़ाइलें नहीं खोली जा सकतीं.</translation>
+<translation id="8593686980889923154">आपके <ph name="DEVICE_TYPE" /> पर <ph name="APP_NAME" /> को ब्लॉक किया गया है</translation>
 <translation id="8596540852772265699">कस्टम फ़ाइल</translation>
 <translation id="8597845839771543242">प्रॉपर्टी का प्रारूप:</translation>
 <translation id="8598249292448297523">प्रिंट करें</translation>
@@ -10578,6 +10593,7 @@
 <translation id="8890529496706615641">प्रोफ़ाइल का नाम नहीं बदला जा सका. कृपया फिर से कोशिश करें या तकनीकी सहायता पाने के लिए, मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करें.</translation>
 <translation id="8892168913673237979">बिलकुल तैयार है!</translation>
 <translation id="8892246501904593980">बुकमार्क और सूचियों में अपने सभी बुकमार्क देखें</translation>
+<translation id="8893479486525393799">स्टूडियो माइक</translation>
 <translation id="8893801527741465188">अनइंस्टॉल पूरा हुआ</translation>
 <translation id="8893928184421379330">क्षमा करें, डिवाइस <ph name="DEVICE_LABEL" /> की पहचान नहीं हो सकी.</translation>
 <translation id="8894761918470382415">सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह) के लिए डेटा ऐक्सेस सुरक्षा</translation>

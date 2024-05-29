@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">Jetzt nicht</translation>
 <translation id="100881991356161927">Name der Website</translation>
 <translation id="1009663062402466586">Spielsteuerung jetzt verfügbar</translation>
+<translation id="1010136228650201057">Verschlüsselung von Nutzerdaten</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Seite reagiert nicht}other{Seiten reagieren nicht}}</translation>
 <translation id="1011003645819296594">Gespeicherte Geräte</translation>
 <translation id="1011355516189274711">Lautstärke der Sprachausgabe</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1049795001945932310">&amp;Spracheinstellungen</translation>
 <translation id="1050693411695664090">Schlecht</translation>
+<translation id="1053776357096024725">Ton des integrierten Mikrofons mit verschiedenen Effekten anpassen</translation>
 <translation id="1054048317165655285">Einrichtung auf dem Smartphone abschließen</translation>
 <translation id="1054153489933238809">&amp;Original in neuem Tab öffnen</translation>
 <translation id="1054187194995068149">Hallo. Dies ist eine Vorschau.</translation>
@@ -830,6 +832,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1607139524282324606">Eintrag löschen</translation>
 <translation id="1607499585984539560">Nutzer ist nicht mit Domain verbunden</translation>
 <translation id="1608668830839595724">Weitere Aktionen für ausgewählte Elemente</translation>
+<translation id="1608698493373028805">Diese Erweiterung wird möglicherweise bald nicht mehr unterstützt</translation>
 <translation id="1610272688494140697">App-Einstellungen</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Gerät gesperrt</translation>
@@ -2303,6 +2306,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2667144577800272420">Für andere Apps ist festgelegt, dass bei ihnen die gleichen Links wie bei <ph name="APP_NAME" /> geöffnet werden. Dadurch wird deaktiviert, dass bei <ph name="APP_NAME_2" /> und <ph name="APP_NAME_3" /> unterstützte Links geöffnet werden.</translation>
 <translation id="2667463864537187133">Rechtschreibprüfung verwalten</translation>
 <translation id="2668094785979141847">Klicke, um Google Lens zu beenden</translation>
+<translation id="2668604389652548400">Entferne sie oder ersetze sie durch ähnliche Erweiterungen aus dem <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> konnte nicht geöffnet werden</translation>
 <translation id="2669454659051515572">Alle Personen, die dieses Gerät nutzen, können heruntergeladene Dateien sehen</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> hat einen Chrome-Tab freigegeben.</translation>
@@ -2353,6 +2357,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2710101514844343743">Nutzungsdaten &amp; Fehlerberichte</translation>
 <translation id="271033894570825754">Neu</translation>
 <translation id="2710507903599773521">Dein <ph name="DEVICE_TYPE" /> ist jetzt entsperrt</translation>
+<translation id="2712141162840347885">Wähle einen beliebigen Gegenstand für die Suche mit Google Lens aus oder drücke die Esc-Taste, um Google Lens zu beenden</translation>
 <translation id="2713106313042589954">Kamera ausschalten</translation>
 <translation id="2713444072780614174">Weiß</translation>
 <translation id="2714180132046334502">Dunkler Hintergrund</translation>
@@ -2977,6 +2982,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3177914167275935955">Dein Gerät beinhaltet ein Chrome Education-Upgrade, aber dein Nutzername ist nicht mit einem Google for Education-Konto verknüpft. Rufe g.co/workspace/edusignup auf einem Zweitgerät auf und erstelle ein Google for Education-Konto.</translation>
 <translation id="3179982752812949580">Schriftart für Text</translation>
 <translation id="3180284704187420717">Per Synchronisierung Lesezeichen, Passwörter und weitere Inhalte speichern</translation>
+<translation id="3180716079618904608">Apps und Spiele herunterladen</translation>
 <translation id="3181954750937456830">Safe Browsing (mich und mein Gerät vor schädlichen Websites schützen)</translation>
 <translation id="3182749001423093222">Rechtschreibprüfung</translation>
 <translation id="3183139917765991655">Profilimport</translation>
@@ -4266,6 +4272,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4120817667028078560">Pfad zu lang</translation>
 <translation id="4124823734405044952">Dein Sicherheitsschlüssel wurde zurückgesetzt</translation>
 <translation id="4124935795427217608">Einhorn</translation>
+<translation id="4126375522951286587"><ph name="VM_NAME" /> herunterfahren</translation>
 <translation id="412730574613779332">Superheld</translation>
 <translation id="4130199216115862831">Geräteprotokoll</translation>
 <translation id="4130750466177569591">Ich stimme zu</translation>
@@ -4566,6 +4573,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4364327530094270451">Melone</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> hat ein Fenster freigegeben.</translation>
 <translation id="4364830672918311045">Benachrichtigungen einblenden</translation>
+<translation id="4367027658822022112">Du kannst Google Lens anpinnen, um leichter darauf zuzugreifen. Klicke dazu oben in der Seitenleiste auf die Schaltfläche „Anpinnen“.</translation>
 <translation id="4367513928820380646">Entfernte Berechtigungen überprüfen</translation>
 <translation id="4367971618859387374">Anzeigename</translation>
 <translation id="4368960422722232719">Arbeitsspeichernutzung auf Vorschaukarte anzeigen, die beim Bewegen des Mauszeigers auf einen Tab erscheint</translation>
@@ -4968,6 +4976,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4666911709726371538">Weitere Apps</translation>
 <translation id="4668279686271488041">Daten zur Erfolgsmessung von Anzeigen werden regelmäßig von deinem Gerät gelöscht</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">PIN darf nur Ziffern enthalten</translation>
 <translation id="4670909875730475086">Glückwunsch. <ph name="APP_NAME" /> wurde auf deinem Gerät installiert.</translation>
 <translation id="4672759829555593783"><ph name="FILE_NAME" /> jetzt öffnen</translation>
 <translation id="4673442866648850031">Eingabestift-Tools werden automatisch geöffnet, sobald der Eingabestift entfernt wird</translation>
@@ -5051,6 +5060,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="473936925429402449">Ausgewählt, zusätzlicher Inhalt <ph name="CURRENT_ELEMENT" /> von <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tickets</translation>
 <translation id="4740546261986864539">Vor Kurzem geöffnet</translation>
+<translation id="4741235124132242877">Angepinnt! Du kannst Google Lens wieder über die Symbolleiste verwenden.</translation>
 <translation id="4742334355511750246">Dürfen keine Bilder anzeigen</translation>
 <translation id="4742795653798179840">Chrome-Daten gelöscht</translation>
 <translation id="4742970037960872810">Markierung entfernen</translation>
@@ -6744,6 +6754,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6042308850641462728">Mehr</translation>
 <translation id="604388835206766544">Fehler beim Parsen der Konfiguration</translation>
 <translation id="6043994281159824495">Jetzt abmelden</translation>
+<translation id="604424701295382420">Angepinnt! Über die neue Schaltfläche in der Symbolleiste kannst du wieder auf Google Lens zugreifen.</translation>
 <translation id="6045114302329202345">Primäre TrackPoint-Taste</translation>
 <translation id="6047632800149092791">Synchronisierung funktioniert nicht. Melde dich ab und dann wieder an.</translation>
 <translation id="6048747414605857443">Stimmen für die Sprachausgabe für ChromeVox und die Funktion „Vorlesen“ auswählen und anpassen</translation>
@@ -7576,6 +7587,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6686490380836145850">Tabs rechts schließen</translation>
 <translation id="6686665106869989887">Tab wurde nach rechts verschoben</translation>
 <translation id="6686817083349815241">Passwort speichern</translation>
+<translation id="6687008241368170505">PIN für Google Passwortmanager ändern</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> ausblenden</translation>
 <translation id="6689714331348768690">Bitte <ph name="SUPERVISED_USER_NAME" />, an den Computer zu kommen. Dein Kind muss einige Sätze auf diesem Bildschirm vorlesen, damit sein Sprachmodell erstellt werden kann.
     <ph name="BR" />
@@ -8355,6 +8367,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Berechtigung angefordert. Drücke „F6“, um zu reagieren.</translation>
 <translation id="7290242001003353852">Dieser Anmeldedienst wird von <ph name="SAML_DOMAIN" /> gehostet und greift auf deine Kamera zu.</translation>
 <translation id="7292067737327289208">Dein <ph name="BEGIN_LINK" />Browser wird von deiner Organisation verwaltet<ph name="END_LINK" />, dein <ph name="BEGIN_LINK" />Profil<ph name="END_LINK" /> von <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="7292147651179697920">Bitte einen Elternteil, in den Einstellungen den Zugriff zu erlauben</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Hinweis: Unter Android, bei Google Play und in zugehörigen Apps gelten eigene Richtlinien für die Erhebung und Nutzung von Daten.</translation>
 <translation id="7296503797589217366">Ordner „<ph name="FOLDER_TITLE" />“ auswählen</translation>
@@ -8663,6 +8676,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7514239104543605883">Auf mein Gerät kopieren</translation>
 <translation id="7514365320538308">Herunterladen</translation>
 <translation id="7514417110442087199">Zuweisung hinzufügen</translation>
+<translation id="7515191208480168435">Du kannst Google Lens anpinnen, um leichter darauf zuzugreifen</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> wurde durch den Administrator blockiert. Frage deinen Administrator, wenn du diese App nutzen möchtest.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">Bild-ab</translation>
@@ -10137,6 +10151,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8592141010104017453">Keine Benachrichtigungen anzeigen</translation>
 <translation id="859246725979739260">Diese Website darf nicht auf deinen Standort zugreifen.</translation>
 <translation id="8593450223647418235">Du kannst Dateien erst dann in Microsoft 365 öffnen, wenn die Einrichtung abgeschlossen ist.</translation>
+<translation id="8593686980889923154"><ph name="APP_NAME" /> ist auf deinem Gerät (<ph name="DEVICE_TYPE" />) blockiert</translation>
 <translation id="8596540852772265699">Benutzerdefinierte Dateien</translation>
 <translation id="8597845839771543242">Eigenschaftsformat:</translation>
 <translation id="8598249292448297523">drucken</translation>
@@ -10556,6 +10571,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8890529496706615641">Das Profil konnte nicht umbenannt werden. Bitte versuche es noch einmal oder wende dich an den technischen Support.</translation>
 <translation id="8892168913673237979">Fertig!</translation>
 <translation id="8892246501904593980">Alle deine Lesezeichen in „Lesezeichen und Listen“ ansehen</translation>
+<translation id="8893479486525393799">Studiomikrofon</translation>
 <translation id="8893801527741465188">Deinstallation abgeschlossen</translation>
 <translation id="8893928184421379330">Das Gerät <ph name="DEVICE_LABEL" /> wurde nicht erkannt.</translation>
 <translation id="8894761918470382415">Schutz vor Datenzugriff von Peripheriegeräten</translation>

@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">Agora non</translation>
 <translation id="100881991356161927">Nome do sitio</translation>
 <translation id="1009663062402466586">Os controis de xogo xa están dispoñibles</translation>
+<translation id="1010136228650201057">Encriptación de datos de usuario</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Páxina que non responde}other{Páxinas que non responden}}</translation>
 <translation id="1011003645819296594">Dispositivos gardados</translation>
 <translation id="1011355516189274711">Volume da saída de texto a voz</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">Modo de incógnito</translation>
 <translation id="1049795001945932310">&amp;Configuración de idioma</translation>
 <translation id="1050693411695664090">Mala</translation>
+<translation id="1053776357096024725">Mellora o son do micrófono integrado con varios efectos</translation>
 <translation id="1054048317165655285">Finaliza a configuración no teléfono</translation>
 <translation id="1054153489933238809">Abrir imaxe orixinal na pestana nova</translation>
 <translation id="1054187194995068149">Ola. Esta á unha vista previa</translation>
@@ -832,6 +834,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1607139524282324606">Borrar entrada</translation>
 <translation id="1607499585984539560">O usuario non está vinculado ao dominio</translation>
 <translation id="1608668830839595724">Máis accións para os elementos seleccionados</translation>
+<translation id="1608698493373028805">Pode que esta extensión deixe de estar dispoñible dentro de pouco</translation>
 <translation id="1610272688494140697">Configuración da aplicación</translation>
 <translation id="161042844686301425">Ciano</translation>
 <translation id="1611432201750675208">O dispositivo está bloqueado</translation>
@@ -2305,6 +2308,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2667144577800272420">Hai outras aplicacións configuradas para abrir as mesmas ligazóns que <ph name="APP_NAME" />. Con esta acción, <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" /> deixarán de ser as aplicacións predeterminadas para abrir as ligazóns compatibles.</translation>
 <translation id="2667463864537187133">Xestionar corrector ortográfico</translation>
 <translation id="2668094785979141847">Fai clic para saír de Google Lens</translation>
+<translation id="2668604389652548400">Quítaa ou substitúea por outra similar de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Non se puido abrir <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Calquera que use este dispositivo pode ver os ficheiros descargados</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> está compartindo unha pestana de Chrome.</translation>
@@ -2355,6 +2359,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2710101514844343743">Datos de uso e diagnóstico</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2710507903599773521">O teu dispositivo <ph name="DEVICE_TYPE" /> agora está desbloqueado</translation>
+<translation id="2712141162840347885">Selecciona o que queiras buscar con Google Lens ou preme Escape para saír da función</translation>
 <translation id="2713106313042589954">Apagar cámara</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2714180132046334502">Fondo escuro</translation>
@@ -2979,6 +2984,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3177914167275935955">O teu dispositivo inclúe unha licenza Chrome Education Upgrade, pero o teu nome de usuario non está asociado a unha conta de Google for Education. Crea unha conta de Google for Education visitando g.co/workspace/edusignup desde un dispositivo secundario.</translation>
 <translation id="3179982752812949580">Tipo de letra do texto</translation>
 <translation id="3180284704187420717">Garda os teus marcadores ou os contrasinais, entre outras cousas, grazas á sincronización</translation>
+<translation id="3180716079618904608">Instalar aplicacións e xogos</translation>
 <translation id="3181954750937456830">Navegación segura (protección para ti e o teu dispositivo contra os sitios perigosos)</translation>
 <translation id="3182749001423093222">Corrector ortográfico</translation>
 <translation id="3183139917765991655">Importador de perfís</translation>
@@ -4273,6 +4279,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4120817667028078560">A ruta é demasiado longa</translation>
 <translation id="4124823734405044952">Restableceuse a túa chave de seguranza</translation>
 <translation id="4124935795427217608">Unicornio</translation>
+<translation id="4126375522951286587">Apagar <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">Rexistro do dispositivo</translation>
 <translation id="4130750466177569591">Acepto</translation>
@@ -4573,6 +4580,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4364327530094270451">Melón</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> está compartindo unha ventá.</translation>
 <translation id="4364830672918311045">Mostrar notificacións</translation>
+<translation id="4367027658822022112">Podes fixar Google Lens para acceder este servizo facilmente. Fai clic no botón Fixar que está na parte superior do panel lateral</translation>
 <translation id="4367513928820380646">Revisar permisos quitados</translation>
 <translation id="4367971618859387374">Nome visible</translation>
 <translation id="4368960422722232719">Mostrar uso da memoria na tarxeta de vista previa que aparece ao pasar por enriba das pestanas</translation>
@@ -4975,6 +4983,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4666911709726371538">Máis aplicacións</translation>
 <translation id="4668279686271488041">Os datos de medición de anuncios elimínanse de maneira regular do dispositivo</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">O PIN só pode conter números</translation>
 <translation id="4670909875730475086">Parabéns! <ph name="APP_NAME" /> instalouse correctamente no teu dispositivo</translation>
 <translation id="4672759829555593783">Abrir <ph name="FILE_NAME" /> agora</translation>
 <translation id="4673442866648850031">Abre as ferramentas do lapis óptico ao extraelo</translation>
@@ -5058,6 +5067,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="473936925429402449">Botón de contido extra (seleccionado): <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tíckets</translation>
 <translation id="4740546261986864539">Aberta recentemente</translation>
+<translation id="4741235124132242877">Elemento fixado! Usa Google Lens de novo desde a barra de ferramentas</translation>
 <translation id="4742334355511750246">Permiso denegado para mostrar imaxes</translation>
 <translation id="4742795653798179840">Datos de Chrome eliminados</translation>
 <translation id="4742970037960872810">Deixar de salientar texto</translation>
@@ -6752,6 +6762,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6042308850641462728">Máis</translation>
 <translation id="604388835206766544">Produciuse un erro ao analizar a configuración</translation>
 <translation id="6043994281159824495">Pechar sesión agora</translation>
+<translation id="604424701295382420">Elemento fixado! Podes volver acceder a Google Lens desde o novo botón da barra de ferramentas</translation>
 <translation id="6045114302329202345">Botón principal de TrackPoint</translation>
 <translation id="6047632800149092791">A sincronización non funciona. Tenta pechar sesión e iniciala de novo.</translation>
 <translation id="6048747414605857443">Selecciona e personaliza as voces para a conversión de texto a voz de ChromeVox e Escoitar selección</translation>
@@ -7584,6 +7595,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6686490380836145850">Pechar as pestanas situadas á dereita</translation>
 <translation id="6686665106869989887">A pestana moveuse á dereita</translation>
 <translation id="6686817083349815241">Gardar o teu contrasinal</translation>
+<translation id="6687008241368170505">Cambiar PIN do xestor de contrasinais de Google</translation>
 <translation id="6687079240787935001">Ocultar <ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">Pídelle a <ph name="SUPERVISED_USER_NAME" /> que veña ao ordenador. O teu fillo ou filla vai ler unhas frases na pantalla para crear o seu modelo de voz.
     <ph name="BR" />
@@ -8362,6 +8374,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" />: permiso solicitado; preme F6 para responder</translation>
 <translation id="7290242001003353852">Este servizo de inicio de sesión, que está aloxado por <ph name="SAML_DOMAIN" />, está accedendo á túa cámara.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />O teu navegador está xestionado<ph name="END_LINK" /> pola túa organización e <ph name="BEGIN_LINK" />o teu perfil está xestionado<ph name="END_LINK" /> por <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="7292147651179697920">Pídelle ao teu pai ou nai que permita o acceso en Configuración</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Ten en conta que Android, Play e as aplicacións asociadas réxense polas súas propias políticas de recompilación e uso de datos.</translation>
 <translation id="7296503797589217366">Seleccionar o cartafol <ph name="FOLDER_TITLE" /></translation>
@@ -8670,6 +8683,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7514239104543605883">Copiar no teu dispositivo</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7514417110442087199">Engadir asignación</translation>
+<translation id="7515191208480168435">Podes fixar Google Lens para acceder facilmente</translation>
 <translation id="751523031290522286">O administrador bloqueou <ph name="APP_NAME" />. Pídelle permiso para utilizar esta aplicación.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">avanzar páxina</translation>
@@ -10143,6 +10157,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8592141010104017453">Non mostrar ningunha notificación</translation>
 <translation id="859246725979739260">Impediuse que este sitio acceda á túa localización.</translation>
 <translation id="8593450223647418235">Non poderás abrir ficheiros en Microsoft 365 ata que se complete a configuración.</translation>
+<translation id="8593686980889923154">A aplicación <ph name="APP_NAME" /> está bloqueada no teu dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="8596540852772265699">Ficheiros personalizados</translation>
 <translation id="8597845839771543242">Formato de propiedade:</translation>
 <translation id="8598249292448297523">impresión</translation>
@@ -10562,6 +10577,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8890529496706615641">Non se puido cambiar o nome do perfil. Téntao de novo ou ponte en contacto co teu operador para obter asistencia técnica.</translation>
 <translation id="8892168913673237979">Todo listo!</translation>
 <translation id="8892246501904593980">Consulta todos os marcadores en Marcadores e listas</translation>
+<translation id="8893479486525393799">Micrófono de estudio</translation>
 <translation id="8893801527741465188">Desinstalación completa</translation>
 <translation id="8893928184421379330">Non se puido recoñecer o dispositivo <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8894761918470382415">Protección para periféricos contra o acceso aos datos</translation>

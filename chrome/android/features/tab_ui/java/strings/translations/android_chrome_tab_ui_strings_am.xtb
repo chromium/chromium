@@ -61,7 +61,6 @@
 <translation id="4139634748112164403">ትሮች በዚህ መሣሪያ ላይ ክፍት እንደሆኑ ይቆያሉ፣ ነገር ግን ቡድኑ እስከመጨረሻው ይሰረዛል</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን በ<ph name="TABS_COUNT_ONE" /> ትር፣ በ<ph name="COLOR_NAME" />ቀለም ዝጋ።}one{የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትር፣ በ<ph name="COLOR_NAME" />ቀለም ዝጋ።}other{የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትሮች፣ በ<ph name="COLOR_NAME" />ቀለም ዝጋ።}}</translation>
 <translation id="4159784952369912983">ሐምራዊ</translation>
-<translation id="4212246570487010370">ማሰሱን ይቀጥሉ</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ትር ያለው የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን ይዘርጉ።}one{<ph name="TABS_COUNT_MANY" /> ትር ያለው የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን ይዘርጉ።}other{<ph name="TABS_COUNT_MANY" /> ትሮች ያሉት የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን ይዘርጉ።}}</translation>
 <translation id="427987768447457592">አዲስ የትር ቡድን</translation>
 <translation id="4460014764210899310">ነጥል</translation>

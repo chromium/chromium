@@ -18,6 +18,7 @@
 <translation id="1080365971383768617">在所有设备上使用您的密码</translation>
 <translation id="1082920045291562218">已关闭分享摘要反馈工作表</translation>
 <translation id="1089606299949659462">查看完毕！</translation>
+<translation id="1094555143448724771">如需查看您在其他设备中打开的标签页，请同步您的标签页和历史记录</translation>
 <translation id="1095761715416917775">确保您可以随时访问自己的同步数据</translation>
 <translation id="1100066534610197918">在群组内的新标签页中打开</translation>
 <translation id="1103142993930332957">帮助改进 Chrome？</translation>
@@ -33,6 +34,7 @@
 <translation id="115483310321669804">使用密码 <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">重命名</translation>
 <translation id="1174479719160874822">当屏幕较窄时，Chrome 会请求改用移动网站</translation>
+<translation id="1175241315203286684">您的管理员可以远程更改您的个人资料和浏览器设置，通过报告分析浏览器的相关信息，以及执行其他必要的任务。此设备上的活动可能也在接受 Chrome 外部的管理。</translation>
 <translation id="1177863135347784049">自定义</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1181366777303791449">位于：<ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
@@ -165,6 +167,7 @@
 <translation id="185383612275551373">同步即可获取 Google 提供的与您最相关的内容</translation>
 <translation id="1871098866036088250">在 Chrome 浏览器中打开</translation>
 <translation id="1877026089748256423">Chrome 版本太旧</translation>
+<translation id="1877073879466606884">您登录的个人资料是受管个人资料。您的管理员可以远程更改您的个人资料设置，通过报告分析浏览器的相关信息，以及执行其他必要的任务。</translation>
 <translation id="1883903952484604915">我的文件</translation>
 <translation id="189358972401248634">其他语言</translation>
 <translation id="1900260903084164610">继续操作即表示您同意遵守<ph name="BEGIN_TOS_LINK" />服务条款<ph name="END_TOS_LINK" />。</translation>
@@ -806,6 +809,7 @@
 <translation id="506254248375231072">没有任何标签页</translation>
 <translation id="5062960805900435602">已关闭关于密码合并的更新</translation>
 <translation id="5081960376148623587">选择是否要预加载网页</translation>
+<translation id="5085038751173179818">登录此网站和 Chrome 即可获取您在所有设备上保存的书签及其他信息</translation>
 <translation id="5091199029769593641">不久之后，当打开新标签页时，您将看到来自<ph name="SITE_NAME" />的故事。您关注的网站会保存在您的 Google 账号中。您可在“探索”设置中管理它们。</translation>
 <translation id="509429900233858213">出现错误。</translation>
 <translation id="5097349930204431044">您访问的网站能判断您的喜好，然后在您继续浏览时向您展示建议的广告</translation>
@@ -834,6 +838,7 @@
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{正在下载文件…}other{正在下载 # 个文件…}}</translation>
 <translation id="5210286577605176222">跳转到上一个标签页</translation>
 <translation id="5210365745912300556">关闭标签页</translation>
+<translation id="5215957675041756913">控制您的数据和账号</translation>
 <translation id="5222676887888702881">退出</translation>
 <translation id="5226378907213531272">每次使用车载系统时，您都需要解锁屏幕</translation>
 <translation id="5227554086496586518">点按即可查看搜索结果</translation>
@@ -1552,6 +1557,7 @@
 <translation id="8562452229998620586">已保存的密码将显示在这里。</translation>
 <translation id="8570677896027847510">无法安全地下载文件</translation>
 <translation id="8571213806525832805">过去 4 周</translation>
+<translation id="8582529315803410153">您在其他设备上打开的标签页会显示在此处</translation>
 <translation id="859046281437143747">通过“更多选项”按钮跟踪价格</translation>
 <translation id="860043288473659153">持卡人姓名</translation>
 <translation id="8602358303461588329">登录 Chrome，已关闭。</translation>

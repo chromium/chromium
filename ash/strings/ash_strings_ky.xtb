@@ -183,6 +183,7 @@
 <translation id="1654477262762802994">Айтып издеп баштоо</translation>
 <translation id="1668469839109562275">Камтылган VPN</translation>
 <translation id="1673232940951031776">Ынтаа коюу режимин өчүрүңүз. <ph name="REMAINING_TIME" /> калды.</translation>
+<translation id="1675570947608765064">Башка колдонуучулар бул ишке киргизилген өзгөртүүлөрүңүздү көрө алат</translation>
 <translation id="1675844249244994876">Оң жактагы терезени жаңыртуу</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> калды</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> туташкан жок.</translation>
@@ -1515,9 +1516,11 @@
 <translation id="6696025732084565524">Ажыратылуучу баскычтопко жаңыртуу талап кылынат</translation>
 <translation id="6697913454192220372">Жаңы иш такта кошуу</translation>
 <translation id="6700713906295497288">IME меню баскычы</translation>
+<translation id="6706742084323792866">Баскычтопту кадап коюу</translation>
 <translation id="6707693040195709527">Түзмөктү мурунку версияга өзгөртүүнүн мөөнөтү бүттү</translation>
 <translation id="6710213216561001401">Мурунку</translation>
 <translation id="6723839937902243910">Кубат</translation>
+<translation id="672609503628871915">Эмне жаңылык бар</translation>
 <translation id="6727969043791803658">Туташып турат, батареянын деңгээли – <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6732800389263199929">дагы <ph name="COUNT" /></translation>
@@ -1787,6 +1790,7 @@
 <translation id="7773536009433685931">Анын ордуна WiFi'ды күйгүзүңүз</translation>
 <translation id="7780094051999721182">ыкчам баскычтар</translation>
 <translation id="7780159184141939021">Экранды буруу</translation>
+<translation id="7781829728241885113">Кечээ</translation>
 <translation id="7792590255364786396">Көрүнүп турат</translation>
 <translation id="7796735576426975947">Жаңы билдирме жашырылды</translation>
 <translation id="7798302898096527229">Өчүрүп коюу үчүн Search же Shift баскычтарын басыңыз.</translation>
@@ -2112,6 +2116,7 @@
 <translation id="9000771174482730261">САКТАГЫЧТЫ БАШКАРУУ</translation>
 <translation id="9005984960510803406">Crosh терезесин ачуу</translation>
 <translation id="9017320285115481645">Family Link'ке ата-эненин кодун киргизиңиз.</translation>
+<translation id="9022774213089566801">Көп каралгандар</translation>
 <translation id="9024331582947483881">толук экран</translation>
 <translation id="9029736946581028033">Түзмөктүн батареясы бир аздан кийин отурат</translation>
 <translation id="9030319654231318877">Күн батканга чейин өчүк</translation>

@@ -195,6 +195,7 @@
           <ph name="LIST_ITEM" />ձեր ընկերությանը կամ ուսումնական հաստատությանը,
           <ph name="LIST_ITEM" />ինտերնետային ծառայությունների մատուցողին։
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">Հետևել էջին</translation>
 <translation id="1337692097987160377">Կիսվել</translation>
 <translation id="1339601241726513588">Տիրույթի գրանցում`</translation>
 <translation id="1340482604681802745">Ստացման հասցեն</translation>
@@ -2622,6 +2623,7 @@
 <translation id="6035491133925068289">Թեթև աթլետիկա</translation>
 <translation id="6039846035001940113">Եթե խնդիրը չվերանա, կապվեք կայքի սեփականատիրոջ հետ։</translation>
 <translation id="6040143037577758943">Փակել</translation>
+<translation id="6040539895181423374">Գների վիճակագրությունը</translation>
 <translation id="604124094241169006">Ավտոմատ</translation>
 <translation id="6041777658117377052">Խցիկի ջերմաստիճանը</translation>
 <translation id="6042308850641462728">Ավելին</translation>
@@ -3227,7 +3229,6 @@
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195852673246414183">Այս կարգավորումը միացնելուց հետո վերադարձեք ընթացիկ ներդիր, որպեսզի սկսեք գրել</translation>
 <translation id="7199278868241956094">Oficio</translation>
-<translation id="7201591969684833065">Ձեր ադմինիստրատորը կարող է տեսնել՝</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Նոր ինկոգնիտո ներդիր բացելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="7203375778433816396">Դարձնել Chrome-ը համակարգի կանխադրված դիտարկիչ</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" />-ը չի հետևում անվտանգության չափորոշիչներին:</translation>

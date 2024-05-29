@@ -61,7 +61,6 @@
 <translation id="4139634748112164403">Os separadores vão permanecer abertos neste dispositivo, mas o grupo vai ser eliminado permanentemente</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Feche o grupo <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> separador, cor <ph name="COLOR_NAME" />.}other{Feche o grupo <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> separadores, cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Roxo</translation>
-<translation id="4212246570487010370">Continue a navegar</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Expandir o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> separador.}other{Expandir o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
 <translation id="427987768447457592">Novo grupo separadores</translation>
 <translation id="4460014764210899310">Desagrupar</translation>

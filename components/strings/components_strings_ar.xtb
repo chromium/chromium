@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />صاحب العمل أو المدرسة
           <ph name="LIST_ITEM" />مزوّد خدمة الإنترنت
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">تتبُّع هذا العنصر</translation>
 <translation id="1337692097987160377">مشاركة علامة التبويب هذه</translation>
 <translation id="1339601241726513588">نطاق التسجيل:</translation>
 <translation id="1340482604681802745">عنوان الاستلام</translation>
@@ -2614,6 +2615,7 @@
 <translation id="6035491133925068289">ألعاب قوى</translation>
 <translation id="6039846035001940113">في حال استمرت المشكلة، اتصل بمالك الموقع.</translation>
 <translation id="6040143037577758943">إغلاق</translation>
+<translation id="6040539895181423374">معلومات مفصّلة عن الأسعار</translation>
 <translation id="604124094241169006">تلقائي</translation>
 <translation id="6041777658117377052">درجة حرارة الغرفة</translation>
 <translation id="6042308850641462728">عرض المزيد</translation>
@@ -3219,7 +3221,6 @@
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195852673246414183">بعد تفعيل هذا الإعداد، عليك الرجوع إلى علامة التبويب هذه لبدء الكتابة.</translation>
 <translation id="7199278868241956094">Oficio</translation>
-<translation id="7201591969684833065">يمكن للمشرف الاطِّلاع على ما يلي:</translation>
 <translation id="7202217080450895452">‏<ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab)، ثم المفتاح Enter لفتح علامة تبويب جديدة في وضع التصفّح المتخفي للتصفُّح بخصوصية تامة.</translation>
 <translation id="7203375778433816396">‏ضبط Chrome كمتصفِّح تلقائي للنظام</translation>
 <translation id="7210863904660874423">لا يلتزم <ph name="HOST_NAME" /> بمعايير الأمان.</translation>

@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />የእርስዎ አሰሪ ወይም ትምህርት ቤት
           <ph name="LIST_ITEM" />የእርስዎ በይነመረብ አገልግሎት አቅራቢ
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">ይህን ንጥል ይከታተሉ</translation>
 <translation id="1337692097987160377">ይህን ትር አጋራ</translation>
 <translation id="1339601241726513588">የምዝገባ ጎራ፦</translation>
 <translation id="1340482604681802745">የመውሰጃ አድራሻ</translation>
@@ -2610,6 +2611,7 @@
 <translation id="6035491133925068289">ትራክ እና ሜዳ</translation>
 <translation id="6039846035001940113">ችግሩ ከቀጠለ የጣቢያ ባለቤቱን ያነጋግሩ።</translation>
 <translation id="6040143037577758943">ዝጋ</translation>
+<translation id="6040539895181423374">የዋጋ ግንዛቤዎች</translation>
 <translation id="604124094241169006">ራስ-ሰር</translation>
 <translation id="6041777658117377052">የክፍል ሙቀት መጠን</translation>
 <translation id="6042308850641462728">ተጨማሪ</translation>
@@ -3215,7 +3217,6 @@
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195852673246414183">ይህን ቅንብር ካበሩት በኋላ፣ መጻፍ ለመጀመር ወደዚህ ትር ይመለሱ</translation>
 <translation id="7199278868241956094">ኦፊኮ</translation>
-<translation id="7201591969684833065">የእርስዎ አስተዳዳሪ እነዚህን መመልከት ይችላል፦</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ትርን ይጫኑና ከዚያ በግል እንዲያስሱ አዲስ ማንነት የማያሳውቅ ትርን ለመክፈት አስገባን ይጫኑ</translation>
 <translation id="7203375778433816396">Chromeን እንደ የስርዓቱ ነባሪ አሳሽ ያቀናብራል</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> የደህንነት መስፈርቶችን አያከብርም።</translation>

@@ -191,7 +191,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
           <ph name="LIST_ITEM" />vašem poslodavcu ili školi
           <ph name="LIST_ITEM" />vašem pružaocu internet usluga
         <ph name="END_LIST" /></translation>
-<translation id="1335042910556016570">Prati ovaj artikl</translation>
+<translation id="1335042910556016570">Praćenje artikla</translation>
 <translation id="1337692097987160377">Dijeli ovu karticu</translation>
 <translation id="1339601241726513588">Domena za prijavljivanje:</translation>
 <translation id="1340482604681802745">Adresa preuzimanja</translation>
@@ -3218,7 +3218,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195852673246414183">Nakon što uključite ovu postavku, vratite se na ovu karticu da počnete pisati</translation>
 <translation id="7199278868241956094">Oficio</translation>
-<translation id="7201591969684833065">Administrator može vidjeti:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pritisnite Tab, a zatim Enter da otvorite novu anonimnu karticu i da privatno pregledate</translation>
 <translation id="7203375778433816396">Postavite Chrome kao zadani preglednik sistema</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> se ne pridržava sigurnosnih standarda.</translation>

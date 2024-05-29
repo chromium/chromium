@@ -191,6 +191,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <ph name="LIST_ITEM" />la teva empresa o el teu centre educatiu
 <ph name="LIST_ITEM" />el teu proveïdor d'Internet
 <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">Fes un seguiment d'aquest element</translation>
 <translation id="1337692097987160377">Comparteix aquesta pestanya</translation>
 <translation id="1339601241726513588">Domini d'inscripció:</translation>
 <translation id="1340482604681802745">Adreça de recollida</translation>
@@ -2611,6 +2612,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6035491133925068289">Atletisme</translation>
 <translation id="6039846035001940113">Si el problema continua, contacta amb el propietari del lloc web.</translation>
 <translation id="6040143037577758943">Tanca</translation>
+<translation id="6040539895181423374">Estadístiques de preus</translation>
 <translation id="604124094241169006">Automàtic</translation>
 <translation id="6041777658117377052">Temperatura de la sala</translation>
 <translation id="6042308850641462728">Més</translation>
@@ -3216,7 +3218,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195852673246414183">Un cop hagis activat aquesta opció de configuració, torna a aquesta pestanya per començar a escriure</translation>
 <translation id="7199278868241956094">Oficio</translation>
-<translation id="7201591969684833065">L'administrador pot veure el següent:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Prem Tab i després Retorn per obrir una pestanya d'incògnit nova i navegar en privat.</translation>
 <translation id="7203375778433816396">Estableix Chrome com a navegador predeterminat del sistema</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> no compleix la normativa de seguretat.</translation>

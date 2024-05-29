@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">Не сейчас</translation>
 <translation id="100881991356161927">Название сайта</translation>
 <translation id="1009663062402466586">Теперь доступны средства управления играми</translation>
+<translation id="1010136228650201057">Шифрование пользовательских данных</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Страница не отвечает}one{Страницы не отвечают}few{Страницы не отвечают}many{Страницы не отвечают}other{Страницы не отвечают}}</translation>
 <translation id="1011003645819296594">Сохраненные устройства</translation>
 <translation id="1011355516189274711">Громкость озвучивания текста</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">Инкогнито</translation>
 <translation id="1049795001945932310">&amp;Язык</translation>
 <translation id="1050693411695664090">низкое</translation>
+<translation id="1053776357096024725">Улучшить звук встроенного микрофона с помощью различных эффектов</translation>
 <translation id="1054048317165655285">Завершите настройку на телефоне</translation>
 <translation id="1054153489933238809">Открыть оригинальное изображение в новой вкладке</translation>
 <translation id="1054187194995068149">Привет. Это проверка голоса</translation>
@@ -835,6 +837,7 @@
 <translation id="1607139524282324606">Очистить запись</translation>
 <translation id="1607499585984539560">Пользователь не связан с доменом.</translation>
 <translation id="1608668830839595724">Другие действия с выбранными закладками</translation>
+<translation id="1608698493373028805">Скоро мы можем прекратить поддержку этого расширения</translation>
 <translation id="1610272688494140697">Настройки приложения</translation>
 <translation id="161042844686301425">Голубой</translation>
 <translation id="1611432201750675208">Ваше устройство заблокировано</translation>
@@ -2308,6 +2311,7 @@
 <translation id="2667144577800272420">Вы хотите установить "<ph name="APP_NAME" />" в качестве приложения по умолчанию? После изменения эти ссылки больше не будут открываться в приложениях "<ph name="APP_NAME_2" />" и "<ph name="APP_NAME_3" />".</translation>
 <translation id="2667463864537187133">Настроить проверку орфографии</translation>
 <translation id="2668094785979141847">Нажмите, чтобы закрыть Google Объектив</translation>
+<translation id="2668604389652548400">Удалите его или замените другим расширением из <ph name="BEGIN_LINK" />интернет-магазина Chrome<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Не удалось запустить <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Скачанные файлы будут доступны всем пользователям этого устройства.</translation>
 <translation id="2670102641511624474">Приложение "<ph name="APP_NAME" />" предоставило доступ к вкладке Chrome.</translation>
@@ -2358,6 +2362,7 @@
 <translation id="2710101514844343743">Данные о работе устройства</translation>
 <translation id="271033894570825754">Новое</translation>
 <translation id="2710507903599773521">Устройство <ph name="DEVICE_TYPE" /> разблокировано</translation>
+<translation id="2712141162840347885">Выберите что-нибудь для поиска с помощью Google Объектива. Что закрыть его, нажмите клавишу Esc.</translation>
 <translation id="2713106313042589954">Выключить камеру</translation>
 <translation id="2713444072780614174">Белый</translation>
 <translation id="2714180132046334502">Темный фон</translation>
@@ -2982,6 +2987,7 @@
 <translation id="3177914167275935955">На этом устройстве есть лицензия Chrome Education, но ваше имя пользователя не связано с аккаунтом Google for Education. Создайте аккаунт Google for Education на странице g.co/workspace/edusignup, используя другое устройство.</translation>
 <translation id="3179982752812949580">Шрифт текста</translation>
 <translation id="3180284704187420717">Сохраняйте закладки, пароли и многое другое с помощью функции синхронизации.</translation>
+<translation id="3180716079618904608">Приложения и игры</translation>
 <translation id="3181954750937456830">Безопасный просмотр (защищает вас и ваше устройство от опасных сайтов)</translation>
 <translation id="3182749001423093222">Проверка правописания</translation>
 <translation id="3183139917765991655">Импорт профилей</translation>
@@ -4273,6 +4279,7 @@
 <translation id="4120817667028078560">Слишком длинный путь</translation>
 <translation id="4124823734405044952">Настройки электронного ключа сброшены.</translation>
 <translation id="4124935795427217608">Единорог</translation>
+<translation id="4126375522951286587">Выключить <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">Супергерой</translation>
 <translation id="4130199216115862831">Журнал устройства</translation>
 <translation id="4130750466177569591">Принимаю</translation>
@@ -4573,6 +4580,7 @@
 <translation id="4364327530094270451">Дыня</translation>
 <translation id="4364567974334641491">Приложение "<ph name="APP_NAME" />" предоставило доступ к окну.</translation>
 <translation id="4364830672918311045">Показ уведомлений</translation>
+<translation id="4367027658822022112">Для быстрого доступа к Google Объективу нажмите кнопку "Закрепить" в верхней части боковой панели</translation>
 <translation id="4367513928820380646">Посмотреть отозванные разрешения</translation>
 <translation id="4367971618859387374">Отображаемое имя</translation>
 <translation id="4368960422722232719">Показывать использование памяти на карточке предпросмотра вкладки</translation>
@@ -4975,6 +4983,7 @@
 <translation id="4666911709726371538">Больше приложений</translation>
 <translation id="4668279686271488041">Данные для оценки эффективности рекламы регулярно удаляются с вашего устройства.</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">PIN-код должен содержать только цифры.</translation>
 <translation id="4670909875730475086">Приложение "<ph name="APP_NAME" />" установлено на ваше устройство.</translation>
 <translation id="4672759829555593783">Открыть файл "<ph name="FILE_NAME" />"</translation>
 <translation id="4673442866648850031">Оставлять открытыми инструменты стилуса при его извлечении</translation>
@@ -5058,6 +5067,7 @@
 <translation id="473936925429402449">Выбрано, показан дополнительный контент на карточке <ph name="CURRENT_ELEMENT" /> из <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Билеты</translation>
 <translation id="4740546261986864539">Было открыто недавно</translation>
+<translation id="4741235124132242877">Закреплено. Теперь вы можете запускать Google Объектив с панели инструментов.</translation>
 <translation id="4742334355511750246">Запретить сайтам показывать изображения</translation>
 <translation id="4742795653798179840">Данные из Chrome удалены</translation>
 <translation id="4742970037960872810">Снять выделение</translation>
@@ -6755,6 +6765,7 @@
 <translation id="6042308850641462728">Ещё</translation>
 <translation id="604388835206766544">Не удалось выполнить синтаксический анализ конфигурации.</translation>
 <translation id="6043994281159824495">Выйти</translation>
+<translation id="604424701295382420">Закреплено. Теперь вы можете запускать Google Объектив с помощью новой кнопки на панели инструментов.</translation>
 <translation id="6045114302329202345">Основная кнопка TrackPoint</translation>
 <translation id="6047632800149092791">Ошибка синхронизации. Выйдите из системы и войдите снова.</translation>
 <translation id="6048747414605857443">Настроить синтез речи для программы ChromeVox и функции "Озвучивание при нажатии"</translation>
@@ -7593,6 +7604,7 @@
 <translation id="6686490380836145850">Закрыть вкладки справа</translation>
 <translation id="6686665106869989887">Вкладка перемещена вправо</translation>
 <translation id="6686817083349815241">Сохранить пароль</translation>
+<translation id="6687008241368170505">Изменить PIN-код Google Менеджера паролей</translation>
 <translation id="6687079240787935001">Скрыть <ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">Попросите пользователя <ph name="SUPERVISED_USER_NAME" /> подойти к компьютеру. Чтобы создать образец голоса, ребенку будет нужно прочитать вслух несколько фраз на экране.
     <ph name="BR" />
@@ -8372,6 +8384,7 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – требуется разрешение. Нажмите F6, чтобы ответить.</translation>
 <translation id="7290242001003353852">Сервису входа, размещенному в домене <ph name="SAML_DOMAIN" />, разрешен доступ к вашей камере.</translation>
 <translation id="7292067737327289208">Этим <ph name="BEGIN_LINK" />браузером управляет<ph name="END_LINK" /> ваша организация, а <ph name="BEGIN_LINK" />профилем<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" />.</translation>
+<translation id="7292147651179697920">Попроси родителя разрешить доступ в настройках.</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Обратите внимание, что для Android, Google Play и связанных с ними приложений действуют их собственные правила по сбору и использованию данных.</translation>
 <translation id="7296503797589217366">Выбрать папку "<ph name="FOLDER_TITLE" />"</translation>
@@ -8679,6 +8692,7 @@
 <translation id="7514239104543605883">Копировать на мое устройство</translation>
 <translation id="7514365320538308">Скачать</translation>
 <translation id="7514417110442087199">Добавить назначение</translation>
+<translation id="7515191208480168435">Вы можете закрепить Google Объектив для быстрого доступа.</translation>
 <translation id="751523031290522286">Чтобы пользоваться приложением "<ph name="APP_NAME" />", требуется разрешение администратора.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">Page Down</translation>
@@ -10153,6 +10167,7 @@
 <translation id="8592141010104017453">Не показывать уведомления</translation>
 <translation id="859246725979739260">Этому сайту запрещено получать информацию о том, где вы находитесь.</translation>
 <translation id="8593450223647418235">Если не завершить настройку, вы не сможете открывать файлы в Microsoft 365.</translation>
+<translation id="8593686980889923154">Приложение "<ph name="APP_NAME" />" на устройстве <ph name="DEVICE_TYPE" /> заблокировано</translation>
 <translation id="8596540852772265699">Пользовательские файлы</translation>
 <translation id="8597845839771543242">Формат свойств:</translation>
 <translation id="8598249292448297523">печать</translation>
@@ -10575,6 +10590,7 @@
 <translation id="8890529496706615641">Не удалось переименовать профиль. Повторите попытку или обратитесь к своему оператору за технической поддержкой.</translation>
 <translation id="8892168913673237979">Все готово!</translation>
 <translation id="8892246501904593980">Посмотреть все закладки можно в разделе "Закладки и списки".</translation>
+<translation id="8893479486525393799">Студийный микрофон</translation>
 <translation id="8893801527741465188">Приложение удалено</translation>
 <translation id="8893928184421379330">Не удалось распознать устройство <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8894761918470382415">Ограничение доступа к данным для периферийных устройств</translation>

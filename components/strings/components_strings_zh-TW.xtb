@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />你的雇主或學校
           <ph name="LIST_ITEM" />你的網際網路服務供應商
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">追蹤這項商品</translation>
 <translation id="1337692097987160377">分享此分頁</translation>
 <translation id="1339601241726513588">註冊網域：</translation>
 <translation id="1340482604681802745">取件地址</translation>
@@ -2609,6 +2610,7 @@
 <translation id="6035491133925068289">田徑運動</translation>
 <translation id="6039846035001940113">如果問題仍未解決，請與網站擁有者聯絡。</translation>
 <translation id="6040143037577758943">關閉</translation>
+<translation id="6040539895181423374">價格分析</translation>
 <translation id="604124094241169006">自動</translation>
 <translation id="6041777658117377052">室內溫度</translation>
 <translation id="6042308850641462728">更多</translation>
@@ -3214,7 +3216,6 @@
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195852673246414183">開啟這項設定後，請返回這個分頁開始輸入內容</translation>
 <translation id="7199278868241956094">Oficio</translation>
-<translation id="7201591969684833065">系統管理員可以查看以下項目：</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可開啟新的無痕分頁以進行私密瀏覽</translation>
 <translation id="7203375778433816396">將 Chrome 設為系統的預設瀏覽器</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> 不符合安全性標準。</translation>

@@ -790,6 +790,7 @@ Als je dit beleid niet instelt, krijgen gebruikers een waarschuwing (in plaats v
 <translation id="1635748761015837179">Schrijven naar externe opslagapparaten toestaan</translation>
 <translation id="1639468541408865385">HTTP-verificatiecache met wereldwijd bereik aanzetten</translation>
 <translation id="1639673466479276550">Zet de screensaver voor het inlogscherm aan.</translation>
+<translation id="1640447222731279244">Bepalen of de functie ChromeOS-achtergrond 'Maken met AI' kan worden aangezet</translation>
 <translation id="1640824698339859203">Zwevende SSO aanzetten en de webserviceverificaties van de gebruiker naar een nieuw apparaat verplaatsen</translation>
 <translation id="1641117061932613266"><ph name="PRODUCT_NAME" /> V2-service aanzetten</translation>
 <translation id="1641394008743444477">Hiermee kun je een lijst van <ph name="PRODUCT_OS_NAME" />-functies instellen die worden uitgezet.
@@ -843,6 +844,12 @@ Voor oorsprongen waarvoor geen informatie is in beleid of gebruikersinstellingen
 
 Als je het beleid instelt op False, of niet instelt, worden er geen gebeurtenissen vastgelegd.</translation>
 <translation id="1692990221685273468">Bepaalt of de ingebouwde certificaatverificatie beperkingen afdwingt die zijn gecodeerd in vertrouwensankers die worden geladen vanuit de vertrouwde opslag van het platform.</translation>
+<translation id="1693528798631913178">Met dit beleid kun je de functie VC-achtergrond 'Maken met AI' aan- of uitzetten voor ChromeOS.
+0 = De functie uitzetten voor gebruikers.
+
+1 = De functie aanzetten voor gebruikers. Er worden geen gegevens naar Google gestuurd om AI-modellen te trainen of te verbeteren.
+
+Als je dit beleid niet instelt, staat de functie VC-achtergrond 'Maken met AI' uit voor zakelijke gebruikers.</translation>
 <translation id="169467210981344373">HTTP-verificatiecache met wereldwijd bereik uitzetten</translation>
 <translation id="1696501581280568361">Stelt profielscheiding voor</translation>
 <translation id="1698810555265314018">Dit beleid beheert de afbeeldingsresolutie voor afdrukken als <ph name="PRODUCT_NAME" /> gerasterde pdf's afdrukt.
@@ -1732,6 +1739,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="2326031114717677574">Snelheid waarmee audiogegevens worden bemonsterd en verzameld. Het toegestane minimum is 1 minuut.
 
       Als je dit beleid niet instelt, is de standaardsnelheid van 15 minuten van toepassing.</translation>
+<translation id="2331028134545182024">Bepalen of de functie ChromeOS VC-achtergrond 'Maken met AI' kan worden aangezet</translation>
 <translation id="2333228572393176330">Met dit beleid wordt een beveiligingsfunctie in TLS 1.3 beheerd waarmee verbindingen worden beschermd tegen downgrade-aanvallen. De functie is compatibel met eerdere versies en heeft geen invloed op verbindingen met servers of proxy's die voldoen aan TLS 1.2. Oudere versies van bepaalde proxy's die TLS onderscheppen, bevatten een implementatiefout waardoor ze incompatibel zijn.
 
       Als dit beleid is ingesteld op True of niet is ingesteld, zet <ph name="PRODUCT_NAME" /> deze beveiligingsmaatregelen aan voor alle verbindingen.
@@ -3102,6 +3110,7 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
 
       De experimentele instelling wordt in de toekomst verwijderd als het inline inlogproces alle SSO-inlogprocessen volledig ondersteunt.</translation>
 <translation id="3435796032110614169">Verwijderen van afdrukgeschiedenis toestaan</translation>
+<translation id="3435896845095436175">Aanzetten</translation>
 <translation id="3436217793443508863">De tijdsduur zonder gebruikersinvoer waarna het scherm wordt vergrendeld als er op de batterij wordt gewerkt (in milliseconden)</translation>
 <translation id="3437924696598384725">De gebruiker toestaan VPN-verbindingen te beheren</translation>
 <translation id="3441664787678256816">Verbindingen voor externe zakelijke support met deze machine toestaan</translation>
@@ -4222,6 +4231,7 @@ Als je het beleid niet toepast, kunnen gebruikers hun pakketten op <ph name="PRO
 <translation id="4389073105055031853">Gebruikers toestaan alle certificaten te beheren</translation>
 <translation id="4389091865841123886">De externe bevestiging configureren met een TPM-mechanisme.</translation>
 <translation id="4389113579547582722">Toestaan dat de promotie voor appstore-beoordelingen wordt getoond</translation>
+<translation id="4394049700291259645">Uitzetten</translation>
 <translation id="4395619678972620537">Als je het beleid toepast, kunnen WebRTC-peerverbindingen worden gedowngraded naar verouderde versies van de TLS/DTLS-protocollen (DTLS 1.0, TLS 1.0 en TLS 1.1).
       Als je dit beleid niet toepast of niet instelt, worden deze TLS/DTLS-versies uitgezet.
 
@@ -4839,6 +4849,17 @@ Als je dit beleid niet instelt, volgt <ph name="PRODUCT_NAME" /> het standaard u
       - Als je dit beleid instelt op <ph name="SKIP_TOS_DIALOG" />, beschikt de browser over beperkte functionaliteit.
 
       - Als je dit beleid instelt op <ph name="SKIP_TOS_DIALOG" />, moeten beheerders dit laten weten aan eindgebruikers van het apparaat.</translation>
+<translation id="489760181463331251">Met dit beleid wijzig je het besparingsniveau van Geheugenbesparing.
+
+Dit is alleen van kracht als Geheugenbesparing is aangezet via de instellingen of via het beleid <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" /> en heeft invloed op hoe heuristieken worden gebruikt om te bepalen wanneer tabbladen moeten worden verwijderd. Als je bijvoorbeeld de levensduur van een inactief tabblad verkort voordat je het verwijdert, kun je geheugen besparen. Het betekent ook dat tabbladen vaker worden geladen, wat kan leiden tot een slechte gebruikerservaring en meer netwerkverkeer.
+
+Als je het beleid instelt op 0, zorgt Geheugenbesparing voor gemiddelde geheugenbesparingen. Tabbladen worden na een langere periode inactief.
+
+Als je het beleid instelt op 1, zorgt Geheugenbesparing voor gebalanceerde geheugenbesparingen. Je tabbladen worden na een optimale periode inactief.
+
+Als je het beleid instelt op 2, zorgt Geheugenbesparing voor maximale geheugenbesparingen. Je tabbladen worden na een kortere periode inactief.
+
+Als je dit beleid niet instelt, kan de eindgebruiker deze instelling beheren in chrome://settings/performance.</translation>
 <translation id="489803897780524242">Parameter die plaatsing van zoektermen beheert voor de standaardzoekprovider</translation>
 <translation id="4899708173828500852">Safe Browsing aanzetten</translation>
 <translation id="4906194810004762807">Vernieuwingsfrequentie voor apparaatbeleid</translation>
@@ -5194,6 +5215,12 @@ Als dit beleid niet is ingesteld of de lijst geen geldige verwijzingen naar afbe
       Als dit beleid niet is ingesteld, wordt de standaardperiode van 604.800.000 milliseconden (één week) gebruikt.</translation>
 <translation id="5212810195096589189">Rechten voor VM-CLI specificeren</translation>
 <translation id="5213038356678567351">Websites die nooit een schakeling tussen browsers veroorzaken.</translation>
+<translation id="5215621993623612880">Met dit beleid kun je de functie Achtergrond 'Maken met AI' aan- of uitzetten voor ChromeOS.
+0 = De functie uitzetten voor gebruikers.
+
+1 = De functie aanzetten voor gebruikers. Er worden geen gegevens naar Google gestuurd om AI-modellen te trainen of te verbeteren.
+
+Als je dit beleid niet instelt, staat de functie Achtergrond 'Maken met AI' uit voor zakelijke gebruikers.</translation>
 <translation id="5216815237712190041">Configureer een achtergrondafbeelding op apparaatniveau die wordt weergegeven op het inlogscherm als er nog geen gebruiker is ingelogd op het apparaat. Je kunt het beleid instellen door de URL op te geven waar het Chrome OS-apparaat de achtergrondafbeelding kan downloaden, evenals een cryptografische hash waarmee de integriteit van de download kan worden gecheckt. De afbeelding moet een jpeg-indeling hebben en mag niet groter zijn dan 16 MB. De URL moet zonder verificatie toegankelijk zijn. De achtergrondafbeelding wordt gedownload en gecachet. Deze wordt opnieuw gedownload als de URL of de hash wordt gewijzigd.
 
       Als het achtergrondbeleid voor het apparaat is ingesteld, downloadt het Chrome OS-apparaat de achtergrondafbeelding en gebruikt deze op het inlogscherm als er nog geen gebruiker is ingelogd op het apparaat. Zodra de gebruiker inlogt, wordt het achtergrondbeleid van de gebruiker toegepast.
@@ -6713,6 +6740,7 @@ Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standa
       Snel koppelen is een nieuw proces voor bluetooth-koppeling waarin gekoppelde randapparaten met een GAIA-account worden gekoppeld.
       Andere Chrome OS- en Android-apparaten waarop je op hetzelfde GAIA-account ingelogd bent, worden automatisch gekoppeld.
       Als je dit beleid niet instelt, wordt de standaardwaarde uitgezet voor zakelijke gebruikers en aangezet voor niet-beheerde accounts.</translation>
+<translation id="6400959027108936283">De functie aanzetten</translation>
 <translation id="6401669939808766804">De gebruiker uitloggen</translation>
 <translation id="640244877779556713">Suggestie voor emoji's aanzetten</translation>
 <translation id="6403114173011456561">Beheert het virtuele aanraaktoetsenbord en fungeert als aanvullend beleid op het beleid <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
@@ -7053,6 +7081,7 @@ Wijzigingen in het beleid zijn alleen van toepassing als ARC niet actief is, bij
 
       Opmerking: Gebruik dit beleid met <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />.</translation>
 <translation id="6625136649067113817">Een Booleaanse markering die aangeeft of het schermtoetsenbord de optie voor spellingcontrole heeft.</translation>
+<translation id="6626319579493977784">Instellingen voor dynamische code</translation>
 <translation id="66265932317331474">CPU-info melden</translation>
 <translation id="6628120204569232711">Opslagstatus rapporteren</translation>
 <translation id="662991036483361836">Niet toestaan dat gebruikers Dichtbij delen aanzetten</translation>
@@ -8038,6 +8067,7 @@ Dit vervangt het beëindigde beleid <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_
       Als je het beleid niet toepast of niet instelt, betekent dit dat ingeschreven apparaten geen TPM-beveiligingsstatus vastleggen of rapporteren.
       Uitzondering: informatie over TPM wordt beheerd door <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> voor M95 en lager.</translation>
 <translation id="739556497251174388">Hiermee kunnen de inloggegevens voor <ph name="PRODUCT_OS_NAME" /> opnieuw worden gebruikt voor netwerkverificatie</translation>
+<translation id="7402257017733669351">Voorkomen dat het browserproces dynamische code maakt</translation>
 <translation id="7402772023599097052">Als je dit beleid aanzet of niet instelt, worden beveiligingswaarschuwingen getoond als Chrome wordt gestart met bepaalde mogelijk schadelijke opdrachtregelmarkeringen.
 
 Als dit beleid is uitgezet, worden er geen beveiligingswaarschuwingen getoond als Chrome wordt gestart met bepaalde mogelijk schadelijke opdrachtregelmarkeringen.
@@ -9292,9 +9322,6 @@ Als je dit beleid niet instelt of instelt op 0, wordt de URL onmiddellijk in een
 
       Dit beleid wordt na Chrome 115 verwijderd.</translation>
 <translation id="841395160262233331">De Launcher-/zoektoets kan het gedrag van functietoetsen niet wijzigen en deze instelling kan niet worden gewijzigd door gebruikers.</translation>
-<translation id="8415506434606458373">Als je het beleid instelt, kunnen vermelde oorsprongen apparaatkenmerken (zoals serienummer, hostnaam) ophalen via de Device Attributes API.
-
-Oorsprongen moeten overeenkomen met web-apps die afgedwongen zijn geïnstalleerd met het beleid <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> of <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (sinds versie 125) of die zijn ingesteld als kiosk-app. Ga naar https://wicg.github.io/WebApiDevice/device_attributes voor de specificaties van de Device Attributes API.</translation>
 <translation id="8415953438346821074">Als je deze instelling aanzet, worden de instellingen die zijn opgeslagen in <ph name="PRODUCT_NAME" />-profielen, zoals bookmarks, gegevens voor automatisch invullen en wachtwoorden, ook geschreven naar een bestand dat is opgeslagen in de map voor roaming-gebruikersprofielen of op een locatie die de beheerder heeft opgegeven via het beleid <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. Als je dit beleid toepast, wordt cloudsynchronisatie uitgezet.
 
       Als je dit beleid niet toepast of niet instelt, worden alleen de gewone lokale profielen gebruikt.</translation>
@@ -9317,6 +9344,7 @@ Oorsprongen moeten overeenkomen met web-apps die afgedwongen zijn geïnstalleerd
 <translation id="8429593528367808164">Voorspellend schrijven voor fysiek toetsenbord als gebruikers typen aanzetten</translation>
 <translation id="8433186206711564395">Netwerkinstellingen</translation>
 <translation id="8433769814000220721">Voorgestelde content aanzetten</translation>
+<translation id="8435304381855818385">Standaardinstellingen voor dynamische code</translation>
 <translation id="843609873781525167">Als je het beleid instelt op True, checkt <ph name="PRODUCT_NAME" /> altijd of het de standaardbrowser is bij het opstarten en, indien mogelijk, registreert het zichzelf automatisch. Als je het beleid instelt op False, checkt <ph name="PRODUCT_NAME" /> niet of het de standaardbrowser is en worden de gebruikersmogelijkheden voor deze optie uitgezet.
 
       Als je het beleid niet instelt, geeft <ph name="PRODUCT_NAME" /> gebruikers de controle over of het de standaardbrowser is en als dit niet zo is, of er gebruikersmeldingen moeten worden weergegeven.

@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Geschiedenis</translation>
 <translation id="164673457281113247">{count,plural, =1{Bookmark opgeslagen}other{Bookmarks opgeslagen}}</translation>
 <translation id="1650222530560417226">Tik op de knop 'Logboekregistratie starten' om toekomstige logboeken van JavaScript-console en fouten van alle tabbladen te verzamelen. Er worden logboeken verzameld (en alleen opgeslagen in het geheugen) totdat de pagina wordt gesloten of op 'Logboekregistratie stoppen' wordt getikt.</translation>
+<translation id="1652333207707886577">Je menu aanpassen</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} opgeslagen wachtwoord beschikbaar boven je toetsenbord.}other{{count} opgeslagen wachtwoorden beschikbaar boven je toetsenbord.}}</translation>
 <translation id="1657011748321897393">Delen is mislukt omdat je niet verbonden bent met het netwerk.</translation>
 <translation id="165877110639533037">Geen geopende tabbladen</translation>
@@ -530,6 +531,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3738428049780661523">Gemaakt: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Downloads verbergen</translation>
 <translation id="3745190878148784130">Tekst zoomen verbergen</translation>
+<translation id="3747231889390582072">Niet-opgeslagen gegevens worden verwijderd van dit apparaat om je organisatie te beschermen. Dit kunnen onder andere wachtwoorden, browsegeschiedenis en cookies zijn.</translation>
 <translation id="3762232513783804601">Ontworpen voor je iPad</translation>
 <translation id="3768725474733206671">Laatst gesloten tabblad opnieuw openen</translation>
 <translation id="3771033907050503522">Incognitotabbladen</translation>
@@ -1228,6 +1230,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7192050974311852563">Logboekregistratie starten</translation>
 <translation id="7203585745079012652">Antwoorden uitspreken</translation>
 <translation id="7210568419880432164">Meldingen aanzetten…</translation>
+<translation id="7211038039686180558">Je tabbladgroepen worden automatisch opgeslagen en geüpdatet op al je ingelogde apparaten</translation>
 <translation id="721597782417389033">Ongeldige bijnaam kaart</translation>
 <translation id="7221173315674413369">Ontdek nieuwe functies en tips in Wat is er nieuw</translation>
 <translation id="7223102419539744003">Tabblad sluiten</translation>
@@ -1479,6 +1482,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8446884382197647889">Meer informatie</translation>
 <translation id="8449347986464073209">Verwijderen en uitloggen</translation>
 <translation id="8459333855531264009">Niet beveiligd</translation>
+<translation id="8466300942149667917">Niet-opgeslagen accountgegevens worden verwijderd</translation>
 <translation id="8473863474539038330">Adressen en meer</translation>
 <translation id="8487667956631253959">Aan</translation>
 <translation id="8487700953926739672">Offline beschikbaar</translation>

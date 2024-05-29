@@ -191,6 +191,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
           <ph name="LIST_ITEM" />Din arbejdsgiver eller skole
           <ph name="LIST_ITEM" />Din internetudbyder
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">Overvåg denne vare</translation>
 <translation id="1337692097987160377">Del denne fane</translation>
 <translation id="1339601241726513588">Registreringsdomæne:</translation>
 <translation id="1340482604681802745">Afhentningsadresse</translation>
@@ -2611,6 +2612,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6035491133925068289">Atletik</translation>
 <translation id="6039846035001940113">Kontakt ejeren af websitet, hvis problemet fortsætter.</translation>
 <translation id="6040143037577758943">Luk</translation>
+<translation id="6040539895181423374">Prisinfo</translation>
 <translation id="604124094241169006">Automatisk</translation>
 <translation id="6041777658117377052">Kabinettemperatur</translation>
 <translation id="6042308850641462728">Mere</translation>
@@ -3216,7 +3218,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195852673246414183">Når du har aktiveret denne indstilling, kan du vende tilbage til denne fane for at skrive</translation>
 <translation id="7199278868241956094">Oficio</translation>
-<translation id="7201591969684833065">Din administrator kan se:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten efterfulgt af Enter for at åbne en ny inkognitofane, så du kan browse privat</translation>
 <translation id="7203375778433816396">Angiv Chrome som systemets standardbrowser</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> overholder ikke sikkerhedsstandarderne.</translation>

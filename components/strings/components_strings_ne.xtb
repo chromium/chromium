@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />तपाईंको रोजगारदाता वा विद्यालय
           <ph name="LIST_ITEM" />तपाईंको इन्टरनेट सेवा प्रदायक
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">यो वस्तु ट्र्याक गर्नुहोस्</translation>
 <translation id="1337692097987160377">यो ट्याब सेयर गर्नुहोस्</translation>
 <translation id="1339601241726513588">भर्ती डोमेन:</translation>
 <translation id="1340482604681802745">पिकअपको ठेगाना</translation>
@@ -2609,6 +2610,7 @@
 <translation id="6035491133925068289">ट्र्याक तथा मैदान</translation>
 <translation id="6039846035001940113">समस्या जारी रहेको खण्डमा साइटको मालिकलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
+<translation id="6040539895181423374">मूल्यसम्बन्धी इनसाइटहरू</translation>
 <translation id="604124094241169006">स्वचालित</translation>
 <translation id="6041777658117377052">कक्षको तापक्रम</translation>
 <translation id="6042308850641462728">थप</translation>
@@ -3214,7 +3216,6 @@
 <translation id="719464814642662924">भिषा</translation>
 <translation id="7195852673246414183">यो सेटिङ अन गरेपछि यस ट्याबमा फर्केर लेख्न थाल्नुहोस्</translation>
 <translation id="7199278868241956094">Oficio</translation>
-<translation id="7201591969684833065">तपाईंका प्रशासक निम्न कुरा हेर्न सक्नुहुन्छ:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं गोप्य रूपमा ब्राउज गर्न चाहनुहुन्छ भने ट्याब की अनि इन्टर की थिचेर नयाँ इन्कोग्निटो ट्याब खोल्नुहोस्</translation>
 <translation id="7203375778433816396">Chrome लाई सिस्टमको डिफल्ट ब्राउजर बनाउनुहोस्</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ले सुरक्षा मानहरूको पालना गर्दैन।</translation>

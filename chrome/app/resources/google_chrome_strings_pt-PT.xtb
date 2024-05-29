@@ -59,7 +59,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="1873233029667955273">O Google Chrome não é o seu navegador predefinido.</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">O Chrome está desatualizado</translation>
-<translation id="1907925560334657849">Para partilhar a sua janela, permita a Gravação de ecrã para o Chrome nas Preferências do sistema</translation>
+<translation id="1907925560334657849">Para partilhar a sua janela, permita a gravação de ecrã para o Chrome nas Preferências do sistema</translation>
 <translation id="1919130412786645364">Permitir o início de sessão no Chrome</translation>
 <translation id="1953553007165777902">A transferir… Falta(m) <ph name="MINUTE" /> minuto(s)</translation>
 <translation id="1982647487457769627">O Chrome funciona em várias plataformas para lhe oferecer uma experiência familiar, independentemente do dispositivo</translation>
@@ -411,7 +411,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="7088681679121566888">O Chrome está atualizado.</translation>
 <translation id="7098166902387133879">O Google Chrome está a utilizar o microfone.</translation>
 <translation id="7099479769133613710">Reiniciar para atualizar o &amp;ChromeOS</translation>
-<translation id="7100085796996987445">Para partilhar o ecrã, permita a Gravação de ecrã para o Chrome nas Preferências do sistema</translation>
+<translation id="7100085796996987445">Para partilhar o ecrã, permita a gravação de ecrã para o Chrome nas Preferências do sistema</translation>
 <translation id="7106741999175697885">Gestor de tarefas - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Está disponível uma atualização para o Chrome que será aplicada logo que o reinicie.}=1{Está disponível uma atualização para o Chrome que será aplicada logo que o reinicie. Não é possível reabrir a sua janela de navegação anónima.}other{Está disponível uma atualização para o Chrome que será aplicada logo que o reinicie. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
 <translation id="7155997830309522122">Em caso afirmativo, edite a sua palavra-passe guardada no Chrome para que corresponda à nova palavra-passe.</translation>

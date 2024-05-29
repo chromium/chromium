@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">Nie nou nie</translation>
 <translation id="100881991356161927">Werfnaam</translation>
 <translation id="1009663062402466586">Speletjiekontroles nou beskikbaar</translation>
+<translation id="1010136228650201057">Gebruikerdata-enkripsie</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Bladsy reageer nie}other{Bladsye reageer nie}}</translation>
 <translation id="1011003645819296594">Gestoorde toestelle</translation>
 <translation id="1011355516189274711">Teks-na-spraak-volume</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1049795001945932310">Taalinstellings …</translation>
 <translation id="1050693411695664090">Swak</translation>
+<translation id="1053776357096024725">Verbeter jou ingeboude mikrofoonklank met verskeie effekte</translation>
 <translation id="1054048317165655285">Voltooi die opstelling op jou foon</translation>
 <translation id="1054153489933238809">Maak oorspronklike prent in nuwe oortjie oop</translation>
 <translation id="1054187194995068149">Hallo. Hierdie is 'n voorskou</translation>
@@ -834,6 +836,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1607139524282324606">Vee inskrywing uit</translation>
 <translation id="1607499585984539560">Gebruik word nie met domein geaffilieer nie</translation>
 <translation id="1608668830839595724">Meer handelinge vir geselekteerde items</translation>
+<translation id="1608698493373028805">Hierdie uitbreiding sal dalk binnekort nie meer gesteun word nie</translation>
 <translation id="1610272688494140697">Programinstellings</translation>
 <translation id="161042844686301425">Siaanblou</translation>
 <translation id="1611432201750675208">Jou toestel is gesluit</translation>
@@ -2319,6 +2322,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2667144577800272420">Ander programme is gestel om dieselfde skakels oop te maak as <ph name="APP_NAME" />. Dit sal <ph name="APP_NAME_2" /> en <ph name="APP_NAME_3" /> deaktiveer sodat hulle nie gesteunde skakels kan oopmaak nie.</translation>
 <translation id="2667463864537187133">Bestuur speltoets</translation>
 <translation id="2668094785979141847">Klik om uit Google Lens te gaan</translation>
+<translation id="2668604389652548400">Verwyder of vervang dit met soortgelyke uitbreidings van die <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> af</translation>
 <translation id="2669241540496514785">Kon nie "<ph name="APP_NAME" />" oopmaak nie</translation>
 <translation id="2669454659051515572">Enigiemand wat hierdie toestel gebruik, kan afgelaaide lêers sien</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> deel tans 'n Chrome-oortjie.</translation>
@@ -2369,6 +2373,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2710101514844343743">Gebruik- en diagnostiese data</translation>
 <translation id="271033894570825754">Nuut</translation>
 <translation id="2710507903599773521">Jou <ph name="DEVICE_TYPE" /> is nou ontsluit</translation>
+<translation id="2712141162840347885">Kies enigiets om met Google Lens te soek of druk Escape om uit Google Lens te gaan</translation>
 <translation id="2713106313042589954">Skakel kamera af</translation>
 <translation id="2713444072780614174">Wit</translation>
 <translation id="2714180132046334502">Donker agtergrond</translation>
@@ -2993,6 +2998,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3177914167275935955">Jou toestel sluit ’n Chrome Education-opgradering in, maar jou gebruikernaam word nie met ’n Google for Education-rekening geassosieer nie. Skep asseblief ’n Google for Education-rekening deur g.co/workspace/edusignup op ’n sekondêre toestel te besoek.</translation>
 <translation id="3179982752812949580">Tekslettertipe</translation>
 <translation id="3180284704187420717">Stoor jou boekmerke, wagwoorde en meer met sinkronisering</translation>
+<translation id="3180716079618904608">Kry apps en speletjies</translation>
 <translation id="3181954750937456830">Veiligblaai (beskerm jou en jou toestel teen gevaarlike werwe)</translation>
 <translation id="3182749001423093222">Speltoets</translation>
 <translation id="3183139917765991655">Profielinvoerder</translation>
@@ -4284,6 +4290,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4120817667028078560">Pad te lank</translation>
 <translation id="4124823734405044952">Jou sekuriteitsleutel is teruggestel</translation>
 <translation id="4124935795427217608">Eenhoring</translation>
+<translation id="4126375522951286587">Skakel <ph name="VM_NAME" /> af</translation>
 <translation id="412730574613779332">Spandex</translation>
 <translation id="4130199216115862831">Toestelloglêer</translation>
 <translation id="4130750466177569591">Ek stem in</translation>
@@ -4584,6 +4591,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4364327530094270451">Spanspek</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> deel tans 'n venster.</translation>
 <translation id="4364830672918311045">Wys kennisgewings</translation>
+<translation id="4367027658822022112">Jy kan Google Lens vasspeld vir maklike toegang; klik boaan die kantpaneel op die Speld Vas-knoppie</translation>
 <translation id="4367513928820380646">Gaan verwyderde toestemmings na</translation>
 <translation id="4367971618859387374">Vertoonnaam</translation>
 <translation id="4368960422722232719">Wys geheuegebruik op voorskou van oortjie se stilhangkaart</translation>
@@ -4986,6 +4994,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4666911709726371538">Meer programme</translation>
 <translation id="4668279686271488041">Advertensiemetingdata word gereeld van jou toestel af uitgevee</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">PIN moet net syfers gebruik</translation>
 <translation id="4670909875730475086">Geluk! <ph name="APP_NAME" /> is suksesvol op jou toestel geïnstalleer</translation>
 <translation id="4672759829555593783">Maak <ph name="FILE_NAME" /> nou oop</translation>
 <translation id="4673442866648850031">Maak stilusnutsgoed oop wanneer die stilus verwyder word</translation>
@@ -5069,6 +5078,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="473936925429402449">Ekstra inhoud <ph name="CURRENT_ELEMENT" /> van <ph name="TOTAL_ELEMENTS" /> gekies</translation>
 <translation id="4739639199548674512">Kaartjies</translation>
 <translation id="4740546261986864539">Onlangs oopgemaak</translation>
+<translation id="4741235124132242877">Vasgespeld! Gebruik weer Google Lens op die nutsbalk</translation>
 <translation id="4742334355511750246">Mag nie prente wys nie</translation>
 <translation id="4742795653798179840">Chrome-data is uitgevee</translation>
 <translation id="4742970037960872810">Verwyder kleurmerk</translation>
@@ -6767,6 +6777,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6042308850641462728">Meer</translation>
 <translation id="604388835206766544">Kon nie opstelling ontleed nie</translation>
 <translation id="6043994281159824495">Meld nou af</translation>
+<translation id="604424701295382420">Vasgespeld! Jy kan weer toegang tot Google Lens kry vanaf die nuwe knoppie op die nutsbalk</translation>
 <translation id="6045114302329202345">Primêre TrackPoint-knoppie</translation>
 <translation id="6047632800149092791">Sinkronisering werk nie. Probeer afmeld en weer aanmeld.</translation>
 <translation id="6048747414605857443">Kies en pasmaak teks-na-spraak-stemme vir ChromeVox en Hardoplees</translation>
@@ -7599,6 +7610,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6686490380836145850">Maak oortjies aan die regterkant toe</translation>
 <translation id="6686665106869989887">Oortjie is na regs geskuif</translation>
 <translation id="6686817083349815241">Stoor jou wagwoord</translation>
+<translation id="6687008241368170505">Verander Google Wagwoordbestuurder se PIN</translation>
 <translation id="6687079240787935001">Versteek <ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">Vra <ph name="SUPERVISED_USER_NAME" /> om na die rekenaar toe te kom. Jou kind sal 'n paar frases op hierdie skerm lees om hul stemmodel te skep.
     <ph name="BR" />
@@ -8377,6 +8389,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – toestemming is versoek; druk F6 om te antwoord</translation>
 <translation id="7290242001003353852">Hierdie aanmelddiens, waarvan <ph name="SAML_DOMAIN" /> die gasheer is, gaan tans by jou kamera in.</translation>
 <translation id="7292067737327289208">Jou organisasie <ph name="BEGIN_LINK" />bestuur jou blaaier<ph name="END_LINK" /> en <ph name="PROFILE_DOMAIN" /> <ph name="BEGIN_LINK" />bestuur jou profiel<ph name="END_LINK" /></translation>
+<translation id="7292147651179697920">Vra jou ouer om toegang in Instellings te gee</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Let daarop dat Android, Play en geassosieerde programme deur hul eie beleide vir data-insameling- en gebruik beheer word.</translation>
 <translation id="7296503797589217366">Kies vouer <ph name="FOLDER_TITLE" /></translation>
@@ -8685,6 +8698,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7514239104543605883">Kopieer na jou toestel toe</translation>
 <translation id="7514365320538308">Laai af</translation>
 <translation id="7514417110442087199">Voeg toewysing by</translation>
+<translation id="7515191208480168435">Jy kan Google Lens vasspeld vir maklike toegang</translation>
 <translation id="751523031290522286">Administrateur blokkeer <ph name="APP_NAME" />. Vra administrateur vir toestemming om hierdie program te gebruik.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">blaai af</translation>
@@ -10158,6 +10172,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8592141010104017453">Moet glad nie kennisgewings wys nie</translation>
 <translation id="859246725979739260">Hierdie werf word gekeer om toegang tot jou ligging te kry</translation>
 <translation id="8593450223647418235">Jy sal nie lêers in Microsoft 365 kan oopmaak voordat opstelling voltooi is nie.</translation>
+<translation id="8593686980889923154"><ph name="APP_NAME" /> is geblokkeer op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="8596540852772265699">Gepasmaakte lêers</translation>
 <translation id="8597845839771543242">Eiendomsformaat:</translation>
 <translation id="8598249292448297523">druk</translation>
@@ -10577,6 +10592,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8890529496706615641">Profiel kon nie hernoem word nie. Probeer weer of kontak jou diensverskaffer vir tegniese steundiens.</translation>
 <translation id="8892168913673237979">Gereed!</translation>
 <translation id="8892246501904593980">Sien al jou boekmerke in “Boekmerke en lyste”</translation>
+<translation id="8893479486525393799">Ateljeemikrofoon</translation>
 <translation id="8893801527741465188">Deïnstallering is voltooi</translation>
 <translation id="8893928184421379330">Jammer, die toestel <ph name="DEVICE_LABEL" /> kon nie herken word nie.</translation>
 <translation id="8894761918470382415">Datatoegangbeskerming vir randtoestelle</translation>

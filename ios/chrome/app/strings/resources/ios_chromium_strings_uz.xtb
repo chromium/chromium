@@ -74,6 +74,7 @@ Chromiumni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <p
 <translation id="2942241131342758843">Havolalarni ochish, vidjetlar orqali qidiruv, boshqa ilovalarda parollar avtomatik kitilishda Chromium birlamchi ilova sifatida ishlatilsin</translation>
 <translation id="2977470724722393594">Siz Chromium brauzerining eng oxirgi versiyasidan foydalanyapsiz.</translation>
 <translation id="3044857325852340337">Chromium maʼlumotlari oʻchirildi</translation>
+<translation id="3049211156275642309">Chromiumni sozlashni nihoyasiga yetkazing</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium bu paketni Yangi varaqda kuzatishingizda yordam beradi.}other{Chromium bu paketlarni Yangi varaqda kuzatishingizda yordam beradi.}}</translation>
 <translation id="3102849287235003384">Barcha saytlarda Google hisobingizdan chiqish uchun <ph name="BEGIN_LINK" />Chromium brauzerida hisobdan chiqing<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Chromiumda ovoz bilan qidirish</translation>
@@ -272,6 +273,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="8754966941001340678">Chromium kuchaytirilgan himoyani tavsiya qiladi</translation>
 <translation id="8759037115129007407">Oila aʼzolaringiz hozir parollarni qabul qila olmaydi. Ulardan Chromium brauzerini yangilash va parollarini sinxronlashni soʻrang. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Bu hisob va uning barcha saqlanmagan maʼlumotlari Chromiumdan olib tashlanadi.</translation>
+<translation id="8826789549860004832">Brauzerni sozlashda davom etish orqali Chromiumdan unumli foydalaning.</translation>
 <translation id="88376265765385899">Chromium bukmarklarini ochadi.</translation>
 <translation id="8860548555286245440">URL manzillarni Chromium brauzerida Inkognito rejimda ochish</translation>
 <translation id="8866191443434488382">Chromium siz ochgan saytlardagi treking raqamlarini aniqlaydi va yangi varaqda paket yangilanishlarini koʻrsatadi. Bu funksiyani taqdim qilish va hamma uchun xaridni yaxshilash uchun joʻnatmani kuzatish raqami va veb-sayt nomi Chromium brauzeriga yuboriladi. Buni istalgan vaqtda <ph name="BEGIN_LINK" />Joʻnatmani kuzatish raqamlari<ph name="END_LINK" /> orqali yangilash mumkin.</translation>

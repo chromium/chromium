@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />আপোনাৰ নিয়োগদাতা বা স্কুল
           <ph name="LIST_ITEM" />আপোনাৰ ইণ্টাৰনেট সেৱা প্ৰদানকাৰী
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">এই বস্তুটো ট্ৰেক কৰক</translation>
 <translation id="1337692097987160377">এই টেবটো শ্বেয়াৰ কৰক</translation>
 <translation id="1339601241726513588">পঞ্জীয়নৰ ড'মেইন:</translation>
 <translation id="1340482604681802745">পিক আপ কৰাৰ ঠিকনা</translation>
@@ -2607,6 +2608,7 @@
 <translation id="6035491133925068289">ট্ৰেক এণ্ড ফিল্ড</translation>
 <translation id="6039846035001940113">যদি এই সমস্যাটো চলি থাকে তেন্তে ছাইটৰ গৰাকীৰ সৈতে সম্পর্ক কৰক।</translation>
 <translation id="6040143037577758943">বন্ধ কৰক</translation>
+<translation id="6040539895181423374">মূল্যৰ বিষয়ে অধিক তথ্য</translation>
 <translation id="604124094241169006">স্বয়ংক্ৰিয়</translation>
 <translation id="6041777658117377052">চেম্বাৰৰ তাপমান</translation>
 <translation id="6042308850641462728">অধিক</translation>
@@ -3211,7 +3213,6 @@
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195852673246414183">আপুনি এই ছেটিংটো অন কৰাৰ পাছত, লিখিবলৈ আৰম্ভ কৰাৰ বাবে এই টেবটোলৈ উভতি আহক</translation>
 <translation id="7199278868241956094">অ’ফিচিঅ’</translation>
-<translation id="7201591969684833065">আপোনাৰ প্ৰশাসকে এয়া চাব পাৰে:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ব্যক্তিগতভাৱে ব্ৰাউজ কৰাৰ বাবে এটা নতুন ইনক’গনিট’ টেব খুলিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="7203375778433816396">Chromeক ছিষ্টেমৰ ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰক</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" />এ সুৰক্ষাৰ নীতি মানি নচলে।</translation>

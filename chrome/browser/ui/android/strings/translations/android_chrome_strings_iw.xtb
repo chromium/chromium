@@ -18,6 +18,7 @@
 <translation id="1080365971383768617">סיסמאות בכל המכשירים</translation>
 <translation id="1082920045291562218">גיליון השיתוף עם סיכום המשוב נסגר</translation>
 <translation id="1089606299949659462">הבדיקה הושלמה!</translation>
+<translation id="1094555143448724771">כדי לראות כרטיסיות מהמכשירים האחרים שלך, צריך לסנכרן את הכרטיסיות ואת ההיסטוריה</translation>
 <translation id="1095761715416917775">כדאי לוודא שניתן לגשת לנתונים המסונכרנים בכל רגע</translation>
 <translation id="1100066534610197918">פתיחה בכרטיסייה חדשה בקבוצה</translation>
 <translation id="1103142993930332957">‏רוצה לעזור לנו לשפר את Chrome?</translation>
@@ -33,6 +34,7 @@
 <translation id="115483310321669804">שימוש בסיסמה <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">שינוי שם</translation>
 <translation id="1174479719160874822">‏אם המסך צר, Chrome יבקש את האתר לנייד</translation>
+<translation id="1175241315203286684">‏לאדמין יש אפשרות לבצע מרחוק שינויים בפרופיל ובדפדפן, לנתח מידע על הדפדפן באמצעות דוחות ולבצע משימות חשובות אחרות. אפשר לנהל את הפעילות במכשיר הזה גם מחוץ ל-Chrome.</translation>
 <translation id="1177863135347784049">מותאם אישית</translation>
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1181366777303791449">ב-<ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
@@ -165,6 +167,7 @@
 <translation id="185383612275551373">‏אפשר לבצע סנכרון כדי לקבל את התוכן הכי רלוונטי מ-Google</translation>
 <translation id="1871098866036088250">‏פתיחה בדפדפן Chrome</translation>
 <translation id="1877026089748256423">‏Chrome אינו מעודכן</translation>
+<translation id="1877073879466606884">הפרופיל שאליו נכנסת הוא פרופיל מנוהל. לאדמין יש אפשרות לשנות מרחוק את הגדרות הפרופיל, לנתח מידע על הדפדפן באמצעות דוחות ולבצע משימות חשובות אחרות.</translation>
 <translation id="1883903952484604915">הקבצים שלי</translation>
 <translation id="189358972401248634">שפות אחרות</translation>
 <translation id="1900260903084164610">לחיצה על המשך תתפרש כהסכמה ל<ph name="BEGIN_TOS_LINK" />תנאים ולהגבלות<ph name="END_TOS_LINK" /></translation>
@@ -806,6 +809,7 @@
 <translation id="506254248375231072">אין כרטיסיות</translation>
 <translation id="5062960805900435602">העדכון על מיזוג הסיסמאות נסגר</translation>
 <translation id="5081960376148623587">בוחרים אם לאפשר טעינת דפים מראש</translation>
+<translation id="5085038751173179818">‏צריך להיכנס לחשבון באתר הזה וב-Chrome כדי שהסימניות ונתונים נוספים יופיעו בכל המכשירים שלך</translation>
 <translation id="5091199029769593641">‏בקרוב יוצגו סטוריז מהאתר <ph name="SITE_NAME" /> בפתיחת כרטיסייה חדשה. אתרים שנמצאים במעקב נשמרים בחשבון Google שלך. יש לך אפשרות לנהל אותם בהגדרות של Discover.</translation>
 <translation id="509429900233858213">אירעה שגיאה.</translation>
 <translation id="5097349930204431044">אתרים שביקרת בהם יכולים לזהות מה מעניין אותך ואז להציע מודעות במהלך הגלישה</translation>
@@ -834,6 +838,7 @@
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{מתבצעת הורדה של קובץ…}one{מתבצעת הורדה של # קבצים…}two{מתבצעת הורדה של # קבצים…}other{מתבצעת הורדה של # קבצים…}}</translation>
 <translation id="5210286577605176222">חזרה לכרטיסייה הקודמת</translation>
 <translation id="5210365745912300556">סגירת כרטיסייה</translation>
+<translation id="5215957675041756913">שליטה בנתונים ובחשבון</translation>
 <translation id="5222676887888702881">יציאה</translation>
 <translation id="5226378907213531272">יהיה צורך לבטל את נעילת המסך בכל פעם שמשתמשים ברכב</translation>
 <translation id="5227554086496586518">יש להקיש כדי להציג את תוצאות החיפוש</translation>
@@ -868,7 +873,7 @@
 <translation id="5438292632479953702">להורדה מחדש</translation>
 <translation id="5439191312780166229">‏מקבלים אזהרות לגבי אתרים מסוכנים, גם כאלה שלא היו ידועים ל-Google לפני כן, בעזרת ניתוח של יותר נתונים מאתרים בהשוואה להגנה הרגילה. אפשר לדלג על האזהרות מ-Chrome.</translation>
 <translation id="5441137934526263133">‏האתר לא פועל? קובצי cookie של צד שלישי חסומים</translation>
-<translation id="5441466871879044658">תרגום לשפה זו</translation>
+<translation id="5441466871879044658">תרגום לשפה הזו</translation>
 <translation id="5441522332038954058">מעבר לשורת כתובת האתר</translation>
 <translation id="5444999712122199445">חזרה לאתר</translation>
 <translation id="544776284582297024">כדי לפתוח כרטיסיות ולהיכנס לדפים שונים בו-זמנית, יש להקיש על לחצן הכרטיסיות הפתוחות</translation>
@@ -1402,7 +1407,7 @@
 <translation id="7903184275147100332">הפעולה עשויה להימשך כמה רגעים</translation>
 <translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7914399737746719723">האפליקציה הותקנה</translation>
-<translation id="7919123827536834358">תרגום אוטומטי של שפות אלה</translation>
+<translation id="7919123827536834358">תרגום אוטומטי של השפות האלה</translation>
 <translation id="7926975587469166629">כינוי הכרטיס</translation>
 <translation id="7929962904089429003">פתיחת התפריט</translation>
 <translation id="7930998711684428189">הצגת אזהרה אם סיסמאות נחשפות עקב פרצה באבטחת מידע.</translation>
@@ -1554,6 +1559,7 @@
 <translation id="8562452229998620586">הסיסמאות השמורות יופיעו כאן.</translation>
 <translation id="8570677896027847510">לא ניתן להוריד את הקובץ באופן מאובטח</translation>
 <translation id="8571213806525832805">מארבעת השבועות האחרונים</translation>
+<translation id="8582529315803410153">כאן יופיעו הכרטיסיות שפתוחות במכשירים אחרים</translation>
 <translation id="859046281437143747">אפשר לעקוב אחר המחיר באמצעות לחצן האפשרויות הנוספות</translation>
 <translation id="860043288473659153">שם בעל הכרטיס</translation>
 <translation id="8602358303461588329">‏כניסה ל-Chrome, סגור.</translation>

@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">以后再说</translation>
 <translation id="100881991356161927">网站名称</translation>
 <translation id="1009663062402466586">游戏控件现已可供使用</translation>
+<translation id="1010136228650201057">用户数据加密</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{1 个页面无响应}other{多个页面无响应}}</translation>
 <translation id="1011003645819296594">已保存的设备</translation>
 <translation id="1011355516189274711">文字转语音的音量</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">无痕</translation>
 <translation id="1049795001945932310">语言设置(&amp;L)</translation>
 <translation id="1050693411695664090">较差</translation>
+<translation id="1053776357096024725">通过各种效果增强内置麦克风的音效</translation>
 <translation id="1054048317165655285">在您的手机上完成设置</translation>
 <translation id="1054153489933238809">在新标签页中打开原始图片(&amp;I)</translation>
 <translation id="1054187194995068149">您好，这是预览版</translation>
@@ -828,6 +830,7 @@
 <translation id="1607139524282324606">清除此条目</translation>
 <translation id="1607499585984539560">此用户未与网域关联</translation>
 <translation id="1608668830839595724">可对所选项执行的更多操作</translation>
+<translation id="1608698493373028805">此扩展程序可能很快将不再受支持</translation>
 <translation id="1610272688494140697">应用设置</translation>
 <translation id="161042844686301425">青色</translation>
 <translation id="1611432201750675208">您的设备已锁定</translation>
@@ -2298,6 +2301,7 @@
 <translation id="2667144577800272420">其他应用已设为与<ph name="APP_NAME" />打开同样的链接。此操作会阻止<ph name="APP_NAME_2" />和<ph name="APP_NAME_3" />打开受支持的链接。</translation>
 <translation id="2667463864537187133">管理拼写检查</translation>
 <translation id="2668094785979141847">点击即可退出 Google 智能镜头</translation>
+<translation id="2668604389652548400">请移除此扩展程序，或将其替换为 <ph name="BEGIN_LINK" />Chrome 应用商店<ph name="END_LINK" />中的类似扩展程序</translation>
 <translation id="2669241540496514785">无法打开 <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">任何使用此设备的用户都能看到已下载的文件</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> 正在共享 Chrome 标签页。</translation>
@@ -2348,6 +2352,7 @@
 <translation id="2710101514844343743">使用情况和诊断数据</translation>
 <translation id="271033894570825754">新</translation>
 <translation id="2710507903599773521">您的 <ph name="DEVICE_TYPE" /> 现已解锁</translation>
+<translation id="2712141162840347885">选择任意内容即可使用 Google 智能镜头进行搜索，按 Esc 键可退出 Google 智能镜头</translation>
 <translation id="2713106313042589954">关闭摄像头</translation>
 <translation id="2713444072780614174">白色</translation>
 <translation id="2714180132046334502">深色背景</translation>
@@ -2972,6 +2977,7 @@
 <translation id="3177914167275935955">您的设备随附了一份 Chrome 教育版升级许可，但您的用户名并未与 Google for Education 账号关联。请先在辅助设备上前往 g.co/workspace/edusignup 创建一个 Google for Education 账号。</translation>
 <translation id="3179982752812949580">文本字体</translation>
 <translation id="3180284704187420717">借助同步功能保存您的书签、密码等数据</translation>
+<translation id="3180716079618904608">获取应用和游戏</translation>
 <translation id="3181954750937456830">安全浏览（保护您和您的设备不受危险网站的侵害）</translation>
 <translation id="3182749001423093222">拼写检查</translation>
 <translation id="3183139917765991655">个人资料导入应用</translation>
@@ -4260,6 +4266,7 @@
 <translation id="4120817667028078560">路径过长</translation>
 <translation id="4124823734405044952">您的安全密钥已重置完毕</translation>
 <translation id="4124935795427217608">独角兽</translation>
+<translation id="4126375522951286587">关闭“<ph name="VM_NAME" />”</translation>
 <translation id="412730574613779332">勇士</translation>
 <translation id="4130199216115862831">设备日志</translation>
 <translation id="4130750466177569591">我同意</translation>
@@ -4560,6 +4567,7 @@
 <translation id="4364327530094270451">甜瓜</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> 正在共享窗口。</translation>
 <translation id="4364830672918311045">显示通知</translation>
+<translation id="4367027658822022112">您可以固定 Google 智能镜头以方便访问，点击侧边栏顶部的“固定”按钮即可</translation>
 <translation id="4367513928820380646">查看已撤消的权限</translation>
 <translation id="4367971618859387374">显示名称</translation>
 <translation id="4368960422722232719">在标签页的悬停预览卡片上显示内存用量</translation>
@@ -4962,6 +4970,7 @@
 <translation id="4666911709726371538">更多应用</translation>
 <translation id="4668279686271488041">系统会定期从您的设备中删除广告衡量数据</translation>
 <translation id="4668929960204016307">、</translation>
+<translation id="4668936527507421457">PIN 码只能包含数字</translation>
 <translation id="4670909875730475086">恭喜！您已成功在设备上安装“<ph name="APP_NAME" />”</translation>
 <translation id="4672759829555593783">立即打开“<ph name="FILE_NAME" />”文件</translation>
 <translation id="4673442866648850031">取出触控笔时打开触控笔工具</translation>
@@ -5045,6 +5054,7 @@
 <translation id="473936925429402449">已选择，第 <ph name="CURRENT_ELEMENT" /> 项附加内容，共 <ph name="TOTAL_ELEMENTS" /> 项</translation>
 <translation id="4739639199548674512">票据</translation>
 <translation id="4740546261986864539">最近打开过</translation>
+<translation id="4741235124132242877">已固定！可通过工具栏再次使用 Google 智能镜头</translation>
 <translation id="4742334355511750246">不允许显示图片</translation>
 <translation id="4742795653798179840">已删除 Chrome 数据</translation>
 <translation id="4742970037960872810">撤消突出显示</translation>
@@ -6738,6 +6748,7 @@
 <translation id="6042308850641462728">展开</translation>
 <translation id="604388835206766544">无法解析配置</translation>
 <translation id="6043994281159824495">立即退出</translation>
+<translation id="604424701295382420">已固定！您可以通过工具栏中的新按钮再次使用 Google 智能镜头</translation>
 <translation id="6045114302329202345">TrackPoint 主按钮</translation>
 <translation id="6047632800149092791">同步功能无法正常运行。请尝试退出账号并重新登录。</translation>
 <translation id="6048747414605857443">为 ChromeVox 和“随选朗读”选择和自定义文字转语音的语音</translation>
@@ -7570,6 +7581,7 @@
 <translation id="6686490380836145850">关闭右侧标签页</translation>
 <translation id="6686665106869989887">此标签页已移至右侧</translation>
 <translation id="6686817083349815241">保存您的密码</translation>
+<translation id="6687008241368170505">更改 Google 密码管理工具 PIN 码</translation>
 <translation id="6687079240787935001">隐藏<ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">请让<ph name="SUPERVISED_USER_NAME" />面对计算机。您的孩子将会读出此屏幕上的一些短语以创建其语音模型。
     <ph name="BR" />
@@ -8349,6 +8361,7 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - 收到了权限请求，按 F6 即可回复</translation>
 <translation id="7290242001003353852">这项由 <ph name="SAML_DOMAIN" /> 托管的登录服务正在使用您的摄像头。</translation>
 <translation id="7292067737327289208">您的<ph name="BEGIN_LINK" />浏览器<ph name="END_LINK" />由贵组织管理，您的<ph name="BEGIN_LINK" />个人资料<ph name="END_LINK" />由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
+<translation id="7292147651179697920">请家长在“设置”中授予访问权限</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">请注意，Android、Play 及相关应用受各自的数据收集和使用政策的约束。</translation>
 <translation id="7296503797589217366">选择“<ph name="FOLDER_TITLE" />”文件夹</translation>
@@ -8657,6 +8670,7 @@
 <translation id="7514239104543605883">复制到您的设备</translation>
 <translation id="7514365320538308">下载</translation>
 <translation id="7514417110442087199">添加分配关系</translation>
+<translation id="7515191208480168435">您可以固定 Google 智能镜头以方便访问</translation>
 <translation id="751523031290522286">“<ph name="APP_NAME" />”已被管理员禁用。请让管理员授权您使用此应用。</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">向下翻页</translation>
@@ -10131,6 +10145,7 @@
 <translation id="8592141010104017453">完全不显示通知</translation>
 <translation id="859246725979739260">此网站无法使用您的位置信息。</translation>
 <translation id="8593450223647418235">完成设置前，您无法在 Microsoft 365 中打开文件。</translation>
+<translation id="8593686980889923154">“<ph name="APP_NAME" />”在您的 <ph name="DEVICE_TYPE" /> 上已被屏蔽</translation>
 <translation id="8596540852772265699">自定义文件</translation>
 <translation id="8597845839771543242">属性格式：</translation>
 <translation id="8598249292448297523">打印</translation>
@@ -10550,6 +10565,7 @@
 <translation id="8890529496706615641">无法重命名配置文件。请重试，或者向您的运营商寻求技术支持。</translation>
 <translation id="8892168913673237979">搞定了！</translation>
 <translation id="8892246501904593980">在“书签和清单”部分中查看您的所有书签</translation>
+<translation id="8893479486525393799">录音室麦克风</translation>
 <translation id="8893801527741465188">已卸载完毕</translation>
 <translation id="8893928184421379330">抱歉，系统无法识别设备“<ph name="DEVICE_LABEL" />”。</translation>
 <translation id="8894761918470382415">外围设备数据访问保护</translation>

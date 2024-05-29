@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">Ne sada</translation>
 <translation id="100881991356161927">Naziv web-lokacije</translation>
 <translation id="1009663062402466586">Sad su dostupne kontrole igara</translation>
+<translation id="1010136228650201057">Šifriranje korisničkih podataka</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Stranica ne reagira}one{Stranice ne reagiraju}few{Stranice ne reagiraju}other{Stranice ne reagiraju}}</translation>
 <translation id="1011003645819296594">Spremljeni uređaji</translation>
 <translation id="1011355516189274711">Glasnoća govora za pretvaranje teksta u govor</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">Anonimno</translation>
 <translation id="1049795001945932310">&amp;Postavke jezika</translation>
 <translation id="1050693411695664090">Slaba</translation>
+<translation id="1053776357096024725">Poboljšajte zvuk ugrađenog mikrofona raznim efektima</translation>
 <translation id="1054048317165655285">Dovršite postavljanje na telefonu</translation>
 <translation id="1054153489933238809">Otvori izvornu sl&amp;iku na novoj kartici</translation>
 <translation id="1054187194995068149">Pozdrav. Ovo je pregled</translation>
@@ -835,6 +837,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1607139524282324606">Brisanje unosa</translation>
 <translation id="1607499585984539560">Korisnik nije povezan s domenom</translation>
 <translation id="1608668830839595724">Više radnji za odabrane stavke</translation>
+<translation id="1608698493373028805">Ovo proširenje uskoro možda više neće biti podržano</translation>
 <translation id="1610272688494140697">Postavke aplikacije</translation>
 <translation id="161042844686301425">Cijan</translation>
 <translation id="1611432201750675208">Uređaj je zaključan</translation>
@@ -2310,6 +2313,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2667144577800272420">Druge aplikacije postavljene su tako da otvaraju iste veze kao <ph name="APP_NAME" />. Time će se aplikacijama <ph name="APP_NAME_2" /> i <ph name="APP_NAME_3" /> onemogućiti da otvaraju podržane veze.</translation>
 <translation id="2667463864537187133">Upravljanje provjerom pravopisa</translation>
 <translation id="2668094785979141847">Kliknite za zatvaranje Google objektiva</translation>
+<translation id="2668604389652548400">Uklonite ga ili zamijenite sličnim proširenjima iz <ph name="BEGIN_LINK" />Chrome Web Storea<ph name="END_LINK" />.</translation>
 <translation id="2669241540496514785">Aplikaciju <ph name="APP_NAME" /> nije moguće otvoriti</translation>
 <translation id="2669454659051515572">Svi koji upotrebljavaju ovaj uređaj mogu vidjeti preuzete datoteke</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> dijeli Chromeovu karticu.</translation>
@@ -2360,6 +2364,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2710101514844343743">Podaci o upotrebi i dijagnostici</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2710507903599773521">Vaš je uređaj <ph name="DEVICE_TYPE" /> sada otključan</translation>
+<translation id="2712141162840347885">Odaberite bilo što za pretraživanje pomoću Google objektiva ili pritisnite Escape da biste zatvorili Google objektiv</translation>
 <translation id="2713106313042589954">Isključi kameru</translation>
 <translation id="2713444072780614174">Bijela</translation>
 <translation id="2714180132046334502">Tamna pozadina</translation>
@@ -2984,6 +2989,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3177914167275935955">Vaš uređaj uključuje Nadogradnju za Chrome za obrazovanje, no vaše korisničko ime nije povezano s računom za Google for Education. Izradite račun za Google for Education na sekundarnom uređaju na stranici g.co/workspace/edusignup.</translation>
 <translation id="3179982752812949580">Font teksta</translation>
 <translation id="3180284704187420717">Spremanje oznaka, zaporki i drugih podataka uz sinkronizaciju</translation>
+<translation id="3180716079618904608">Nabavite aplikacije i igre</translation>
 <translation id="3181954750937456830">Sigurno pregledavanje (štiti vas i vaš uređaj od opasnih web-lokacija)</translation>
 <translation id="3182749001423093222">Provjera pravopisa</translation>
 <translation id="3183139917765991655">Uvoz profila</translation>
@@ -4274,6 +4280,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4120817667028078560">Putanja je predugačka</translation>
 <translation id="4124823734405044952">Vaš sigurnosni ključ vraćen je na zadano</translation>
 <translation id="4124935795427217608">Jednorog</translation>
+<translation id="4126375522951286587">Isključite uređaj <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">Elastični</translation>
 <translation id="4130199216115862831">Zapisnik uređaja</translation>
 <translation id="4130750466177569591">Slažem se</translation>
@@ -4574,6 +4581,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4364327530094270451">Dinja</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> dijeli prozor.</translation>
 <translation id="4364830672918311045">Prikaži obavijesti</translation>
+<translation id="4367027658822022112">Google objektiv možete prikvačiti radi lakšeg pristupa; kliknite gumb Prikvači pri vrhu bočne ploče</translation>
 <translation id="4367513928820380646">Pregledajte uklonjena dopuštenja</translation>
 <translation id="4367971618859387374">Naziv za prikaz</translation>
 <translation id="4368960422722232719">Prikaži upotrebu memorije na kartici zadržavanjem kartice pregleda</translation>
@@ -4976,6 +4984,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4666911709726371538">Više aplikacija</translation>
 <translation id="4668279686271488041">Podaci o mjerenju oglasa redovito se brišu s vašeg uređaja</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">PIN mora upotrebljavati samo brojeve</translation>
 <translation id="4670909875730475086">Čestitamo! Aplikacija <ph name="APP_NAME" /> uspješno je instalirana na vašem uređaju</translation>
 <translation id="4672759829555593783">Odmah otvori <ph name="FILE_NAME" /></translation>
 <translation id="4673442866648850031">Alati pisaljke otvaraju se i zatvaraju kad se umetne ili izbaci pisaljka</translation>
@@ -5059,6 +5068,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="473936925429402449">Odabrano, dodatni sadržaj <ph name="CURRENT_ELEMENT" /> od <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tiketi</translation>
 <translation id="4740546261986864539">Nedavno otvoreno</translation>
+<translation id="4741235124132242877">Prikvačeno! Ponovo upotrijebite Google objektiv s alatne trake</translation>
 <translation id="4742334355511750246">Nije dopušteno prikazivanje slika</translation>
 <translation id="4742795653798179840">Izbrisani Chromeovi podaci</translation>
 <translation id="4742970037960872810">Ukloni isticanje</translation>
@@ -6753,6 +6763,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6042308850641462728">Više</translation>
 <translation id="604388835206766544">Analiza konfiguracije nije uspjela</translation>
 <translation id="6043994281159824495">Odjavi se odmah</translation>
+<translation id="604424701295382420">Prikvačeno! Google objektivu možete ponovo pristupiti pomoću novog gumba na alatnoj traci</translation>
 <translation id="6045114302329202345">Primarni gumb za TrackPoint</translation>
 <translation id="6047632800149092791">Sinkronizacija ne funkcionira. Odjavite se pa se ponovo prijavite.</translation>
 <translation id="6048747414605857443">Odaberite i prilagodite glasove za pretvaranje teksta u govor za ChromeVox i Odabir za govor</translation>
@@ -7589,6 +7600,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6686490380836145850">Zatvori kartice s desne strane</translation>
 <translation id="6686665106869989887">Kartica je premještena udesno</translation>
 <translation id="6686817083349815241">Spremite zaporku</translation>
+<translation id="6687008241368170505">Promijenite PIN za Google upravitelja zaporki</translation>
 <translation id="6687079240787935001">Sakrij <ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">Neka <ph name="SUPERVISED_USER_NAME" /> dođe do računala. Dijete će pročitati nekoliko izraza na ovom zaslonu da bi se izradio njegov glasovni model.
     <ph name="BR" />
@@ -8368,6 +8380,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Zatraženo je dopuštenje. Da biste odgovorili, pritisnite F6</translation>
 <translation id="7290242001003353852">Usluga prijave, koju hostira <ph name="SAML_DOMAIN" />, pristupa vašoj kameri.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Preglednikom upravlja<ph name="END_LINK" /> vaša organizacija, a <ph name="BEGIN_LINK" />profilom upravlja<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="7292147651179697920">Zamoli roditelja da dopusti pristup u postavkama</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Napominjemo da su Android, Play i povezane aplikacije regulirani vlastitim pravilima o prikupljanju i upotrebi podataka.</translation>
 <translation id="7296503797589217366">Odabir mape <ph name="FOLDER_TITLE" /></translation>
@@ -8676,6 +8689,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7514239104543605883">Kopiraj na svoj uređaj</translation>
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="7514417110442087199">Dodaj zadatak</translation>
+<translation id="7515191208480168435">Možete prikvačiti Google objektiv radi lakšeg pristupa</translation>
 <translation id="751523031290522286">Administrator je blokirao aplikaciju <ph name="APP_NAME" />. Da biste koristili tu aplikaciju, tražite dopuštenje od administratora.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">stranica prema dolje</translation>
@@ -10150,6 +10164,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8592141010104017453">Obavijesti se ne prikazuju</translation>
 <translation id="859246725979739260">Ovoj web-lokaciji blokiran je pristup vašoj lokaciji.</translation>
 <translation id="8593450223647418235">Nećete moći otvarati datoteke u sustavu Microsoft 365 dok se postavljanje ne dovrši.</translation>
+<translation id="8593686980889923154">Aplikacija <ph name="APP_NAME" /> blokirana je na vašem uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="8596540852772265699">Prilagođene datoteke</translation>
 <translation id="8597845839771543242">Oblik svojstva:</translation>
 <translation id="8598249292448297523">ispis</translation>
@@ -10571,6 +10586,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8890529496706615641">Preimenovanje profila nije uspjelo. Pokušajte ponovo ili se obratite mobilnom operateru za tehničku podršku.</translation>
 <translation id="8892168913673237979">Sve je spremno!</translation>
 <translation id="8892246501904593980">Prikaz svih oznaka u oznakama i popisima</translation>
+<translation id="8893479486525393799">Studijski mikrofon</translation>
 <translation id="8893801527741465188">Deinstalacija je dovršena</translation>
 <translation id="8893928184421379330">Žao nam je, nije bilo moguće prepoznati uređaj <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8894761918470382415">Zaštita pristupa podacima za periferne uređaje</translation>

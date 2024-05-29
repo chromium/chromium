@@ -183,6 +183,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1654477262762802994">Aloita puhekysely</translation>
 <translation id="1668469839109562275">Sisäänrakennettu VPN</translation>
 <translation id="1673232940951031776">Lopeta Keskittymistila. <ph name="REMAINING_TIME" /> jäljellä.</translation>
+<translation id="1675570947608765064">Muut voivat nähdä tähän tehtävään tekemäsi muutokset</translation>
 <translation id="1675844249244994876">Päivitä oikeanpuoleinen ikkuna</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> jäljellä</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ei ole yhdistetty.</translation>
@@ -1518,6 +1519,7 @@ Uusi asennus</translation>
 <translation id="6707693040195709527">Laitteen päivitys aiempaan versioon on myöhässä</translation>
 <translation id="6710213216561001401">Edellinen</translation>
 <translation id="6723839937902243910">Virta</translation>
+<translation id="672609503628871915">Uudet ominaisuudet</translation>
 <translation id="6727969043791803658">Yhdistetty, akun taso <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1787,6 +1789,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7773536009433685931">Laita Wi-Fi-yhteys päälle</translation>
 <translation id="7780094051999721182">pikakuvakkeista</translation>
 <translation id="7780159184141939021">Käännä näyttö</translation>
+<translation id="7781829728241885113">Eilen</translation>
 <translation id="7792590255364786396">Näkyy</translation>
 <translation id="7796735576426975947">Uusi ilmoitus piilotettu</translation>
 <translation id="7798302898096527229">Peru painamalla haku- tai vaihtonäppäintä.</translation>
@@ -2111,6 +2114,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="9000771174482730261">HALLINNOI TALLENNUSTILAA</translation>
 <translation id="9005984960510803406">Avaa Crosh-ikkuna</translation>
 <translation id="9017320285115481645">Syötä vanhemman Family Link ‑käyttökoodi</translation>
+<translation id="9022774213089566801">Usein avatut</translation>
 <translation id="9024331582947483881">koko näyttö</translation>
 <translation id="9029736946581028033">Laite sammuu pian</translation>
 <translation id="9030319654231318877">Pois päältä auringonlaskuun asti</translation>

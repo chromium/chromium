@@ -61,7 +61,6 @@
 <translation id="4139634748112164403">တဘ်များကို ဤစက်တွင် ဆက်ဖွင့်ထားမည်ဖြစ်သော်လည်း အဖွဲ့ကို အပြီးဖျက်ပါမည်</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် <ph name="TITLE_OF_GROUP" /> အုပ်စုကို ပိတ်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် <ph name="TITLE_OF_GROUP" /> အုပ်စုကို ပိတ်ပါ။}}</translation>
 <translation id="4159784952369912983">ခရမ်း</translation>
-<translation id="4212246570487010370">ဆက်တိုက် ရှာကြည့်ခြင်း</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခုပါသော <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို ပိုပြပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခုပါသော <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို ပိုပြပါ။}}</translation>
 <translation id="427987768447457592">တဘ်အုပ်စုအသစ်</translation>
 <translation id="4460014764210899310">အုပ်စု ဖွဲ့မထားပါ</translation>

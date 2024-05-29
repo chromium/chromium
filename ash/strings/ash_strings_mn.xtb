@@ -183,6 +183,7 @@
 <translation id="1654477262762802994">Дуут асуулга эхлүүлэх</translation>
 <translation id="1668469839109562275">Бүрэлдэхүүн VPN</translation>
 <translation id="1673232940951031776">Төвлөрөх горимыг дуусгана уу. <ph name="REMAINING_TIME" /> үлдсэн.</translation>
+<translation id="1675570947608765064">Бусад хүн таны энэ ажилд хийсэн өөрчлөлтүүдийг харах боломжтой</translation>
 <translation id="1675844249244994876">Баруун талын цонхыг шинэчлэх</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> үлдсэн</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> холбогдоогүй.</translation>
@@ -1519,6 +1520,7 @@
 <translation id="6707693040195709527">Төхөөрөмжийг өмнөх хувилбар луу нь өөрчлөх хугацаа хэтэрсэн</translation>
 <translation id="6710213216561001401">Өмнөх</translation>
 <translation id="6723839937902243910">Эрчим хүч</translation>
+<translation id="672609503628871915">Шинэ зүйл юу байна?</translation>
 <translation id="6727969043791803658">Холбогдсон, батарей <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">камер</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1788,6 +1790,7 @@
 <translation id="7773536009433685931">Оронд нь Wi-Fi-г асаах</translation>
 <translation id="7780094051999721182">товчлолууд</translation>
 <translation id="7780159184141939021">Дэлгэцийг эргүүлсэн</translation>
+<translation id="7781829728241885113">Өчигдөр</translation>
 <translation id="7792590255364786396">Харагдана</translation>
 <translation id="7796735576426975947">Шинэ мэдэгдлийг нуусан</translation>
 <translation id="7798302898096527229">Цуцлахын тулд Search эсвэл Shift товчлуурыг дарна уу.</translation>
@@ -2114,6 +2117,7 @@
 <translation id="9000771174482730261">ХАДГАЛАХ САНГ УДИРДАХ</translation>
 <translation id="9005984960510803406">Crosh цонхыг нээх</translation>
 <translation id="9017320285115481645">Family Link-н эцэг эхийн нэвтрэх кодоо оруулна уу.</translation>
+<translation id="9022774213089566801">Байнга зочилдог</translation>
 <translation id="9024331582947483881">бүтэн дэлгэц</translation>
 <translation id="9029736946581028033">Төхөөрөмж удахгүй унтарна</translation>
 <translation id="9030319654231318877">Нар жаргах хүртэл унтраалттай</translation>

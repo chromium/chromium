@@ -2513,7 +2513,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2806372837663997957">O dispositivo com o qual está a tentar efetuar a partilha não aceitou.</translation>
 <translation id="2806891468525657116">O atalho já existe.</translation>
 <translation id="2807517655263062534">Os ficheiros que transferir são apresentados aqui</translation>
-<translation id="2809946454624727734">Pode aceder-lhe nas suas Moradas guardadas.</translation>
+<translation id="2809946454624727734">Pode consultá-la nas suas Moradas guardadas.</translation>
 <translation id="2811205483104563968">Contas</translation>
 <translation id="2812049959647166806">O Thunderbolt não é suportado</translation>
 <translation id="2812171980080389735">Redes e palavras-passe guardadas para ligação instantânea</translation>
@@ -4840,6 +4840,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4562091353415772246">Instale atualizações e apps. Ao continuar, aceita que este dispositivo também pode transferir e instalar automaticamente atualizações e apps a partir da Google, da sua operadora e do fabricante do dispositivo, possivelmente através de dados móveis. Algumas destas apps podem oferecer compras na app. <ph name="BEGIN_LINK1" />Saiba mais sobre a Instalação automática do Google Play<ph name="BEGIN_LINK1_END" />Saiba mais<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">Adicionar impressão digital</translation>
 <translation id="4562155266774382038">Ignorar sugestão</translation>
+<translation id="4562364000855074606">Bloqueie apps instaladas neste <ph name="DEVICE_TYPE" />. Para restringir a transferência de apps ou conteúdos, aceda às Definições do Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">O idioma de introdução inicial é chinês</translation>
 <translation id="4563382028841851106">Remover da conta</translation>
 <translation id="4563880231729913339">Dedo 3</translation>
@@ -8050,6 +8051,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7009709314043432820">A app <ph name="APP_NAME" /> está a utilizar a sua câmara.</translation>
 <translation id="701080569351381435">Ver origem</translation>
 <translation id="7011797924920577670">faz uma estimativa dos seus interesses</translation>
+<translation id="7012430956470647760">Controlos parentais para apps</translation>
 <translation id="7013762323294215682">Esta chave de acesso vai ser guardada no seu gestor de palavras-passe. Qualquer pessoa com acesso a este gestor vai poder usar esta chave de acesso.</translation>
 <translation id="7014174261166285193">A instalação falhou.</translation>
 <translation id="7014480873681694324">Remover realce</translation>

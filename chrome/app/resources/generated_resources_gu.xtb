@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">હમણાં નહીં</translation>
 <translation id="100881991356161927">સાઇટનું નામ</translation>
 <translation id="1009663062402466586">ગેમના નિયંત્રણો હવે ઉપલબ્ધ છે</translation>
+<translation id="1010136228650201057">વપરાશકર્તાના ડેટાનું એન્ક્રિપ્શન</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{પેજ પ્રતિભાવ આપતું નથી}one{પેજ પ્રતિભાવ આપતું નથી}other{પેજ પ્રતિભાવ આપતું નથી}}</translation>
 <translation id="1011003645819296594">સાચવેલા ડિવાઇસ</translation>
 <translation id="1011355516189274711">ટેક્સ્ટ ટૂ સ્પીચનું વૉલ્યૂમ</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">છૂપી</translation>
 <translation id="1049795001945932310">&amp;ભાષા સેટિંગ</translation>
 <translation id="1050693411695664090">ખરાબ</translation>
+<translation id="1053776357096024725">તમારા માઇક્રોફોનના બિલ્ટ-ઇન સાઉન્ડની અસરકારકતાને વિવિધ પ્રભાવો વડે વધારો</translation>
 <translation id="1054048317165655285">તમારા ફોન પર સેટઅપ પૂર્ણ કરો</translation>
 <translation id="1054153489933238809">નવા ટેબમાં મૂળ &amp;છબી ખોલો</translation>
 <translation id="1054187194995068149">નમસ્તે. આ પ્રીવ્યૂ છે</translation>
@@ -830,6 +832,7 @@
 <translation id="1607139524282324606">એન્ટ્રી સાફ કરો</translation>
 <translation id="1607499585984539560">વપરાશકર્તા આ ડોમેન સાથે સંકળાયેલા નથી</translation>
 <translation id="1608668830839595724">પસંદ કરેલી આઇટમ માટે વધુ ક્રિયાઓ</translation>
+<translation id="1608698493373028805">આ એક્સ્ટેન્શનને ટૂંક સમયમાં હવેથી સપોર્ટ આપવામાં આવશે નહીં</translation>
 <translation id="1610272688494140697">ઍપના સેટિંગ</translation>
 <translation id="161042844686301425">સ્યાન</translation>
 <translation id="1611432201750675208">તમારું ડિવાઇસ લૉક કરેલું છે</translation>
@@ -1694,6 +1697,7 @@
 <translation id="2234827758954819389">પ્રાઇવસી સંબંધિત માર્ગદર્શિકા</translation>
 <translation id="2234876718134438132">સિંક અને Google સેવાઓ</translation>
 <translation id="2235344399760031203">ત્રીજા પક્ષની કુકી બ્લૉક કરવામાં આવી છે</translation>
+<translation id="2236949375853147973">મારી ઍક્ટિવિટી</translation>
 <translation id="2238379619048995541">ફ્રીક્વેંસી સ્થિતિ ડેટા</translation>
 <translation id="2241053333139545397">ઘણી બધી વેબસાઇટ્સ પર તમારો ડેટા વાંચો અને બદલો</translation>
 <translation id="2241634353105152135">માત્ર એક વખત</translation>
@@ -2304,6 +2308,7 @@
 <translation id="2667144577800272420"><ph name="APP_NAME" />ની જેમજ અન્ય ઍપ પણ આ બધી લિંક ખોલવા માટે સેટ કરવામાં આવી છે. આમ કરવાથી <ph name="APP_NAME_2" /> અને <ph name="APP_NAME_3" /> સપોર્ટેડ લિંક ખોલી શકશે નહીં.</translation>
 <translation id="2667463864537187133">જોડણીની તપાસ મેનેજ કરો</translation>
 <translation id="2668094785979141847">Google Lensમાંથી બહાર નીકળવા માટે ક્લિક કરો</translation>
+<translation id="2668604389652548400"><ph name="BEGIN_LINK" />Chrome વેબ સ્ટોર<ph name="END_LINK" />માંથી કાઢી નાખો અથવા તેના બદલે સમાન એક્સ્ટેન્શનનો ઉપયોગ કરો</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> ખોલી શક્યાં નહીં</translation>
 <translation id="2669454659051515572">આ ડિવાઇસનો ઉપયોગ કરનારી કોઈપણ વ્યક્તિ ડાઉનલોડ કરેલી ફાઇલો જોઈ શકે છે</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" />, Chrome ટૅબને શેર કરી રહી છે.</translation>
@@ -2354,6 +2359,7 @@
 <translation id="2710101514844343743">વપરાશ અને નિદાનનો ડેટા</translation>
 <translation id="271033894570825754">નવું</translation>
 <translation id="2710507903599773521">તમારું <ph name="DEVICE_TYPE" /> હવે અનલૉક કરેલું છે</translation>
+<translation id="2712141162840347885">Google Lens વડે શોધવા માટે કંઈપણ પસંદ કરો અથવા Google Lensમાંથી બહાર નીકળવા માટે Esc કી દબાવો</translation>
 <translation id="2713106313042589954">કૅમેરા બંધ કરો</translation>
 <translation id="2713444072780614174">શ્વેત</translation>
 <translation id="2714180132046334502">ઘાટું બૅકગ્રાઉન્ડ</translation>
@@ -2978,6 +2984,7 @@
 <translation id="3177914167275935955">તમારા ડિવાઇસ માટે Chrome Education Upgrade શામેલ છે, પરંતુ તમારું વપરાશકર્તાનું નામ કોઈ Google for Education એકાઉન્ટ સાથે સંકળાયેલું નથી. કૃપા કરીને કોઈ ગૌણ ડિવાઇસ પર g.co/workspace/edusignupની મુલાકાત લઈને એક Google for Education એકાઉન્ટ બનાવો.</translation>
 <translation id="3179982752812949580">ટેક્સ્ટ ફોન્ટ</translation>
 <translation id="3180284704187420717">સિંક સુવિધા વડે તમારા બુકમાર્ક, પાસવર્ડ અને અન્ય બાબતો સાચવો</translation>
+<translation id="3180716079618904608">ઍપ અને ગેમ મેળવો</translation>
 <translation id="3181954750937456830">Safe Browsing (તમારું અને તમારા ડિવાઇસનું જોખમી સાઇટથી રક્ષણ કરે છે)</translation>
 <translation id="3182749001423093222">જોડણીની તપાસ</translation>
 <translation id="3183139917765991655">પ્રોફાઇલ આયાતકાર</translation>
@@ -4269,6 +4276,7 @@
 <translation id="4120817667028078560">પાથ ખૂબ લાંબો છે</translation>
 <translation id="4124823734405044952">તમારો સુરક્ષા કોડ રીસેટ કરવામાં આવ્યો છે</translation>
 <translation id="4124935795427217608">યુનિકોર્ન - એક કાલ્પનિક પાંખવાળો ઘોડો</translation>
+<translation id="4126375522951286587"><ph name="VM_NAME" />ને શટ ડાઉન કરો</translation>
 <translation id="412730574613779332">સ્પાંડેક્સ</translation>
 <translation id="4130199216115862831">ઉપકરણ લૉગ</translation>
 <translation id="4130750466177569591">હું સંમત છું</translation>
@@ -4569,6 +4577,7 @@
 <translation id="4364327530094270451">ટેટી</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" />, એક વિંડો શેર કરી રહી છે.</translation>
 <translation id="4364830672918311045">નોટિફિકેશન બતાવો</translation>
+<translation id="4367027658822022112">તમે સરળ ઍક્સેસ માટે Google Lensને પિન કરી શકો છો; બાજુની પૅનલમાં સૌથી ઉપર પિન કરો બટન પર ક્લિક કરો</translation>
 <translation id="4367513928820380646">કાઢી નાખવામાં આવેલી પરવાનગીઓનો રિવ્યૂ કરો</translation>
 <translation id="4367971618859387374">ડિસ્પ્લે નામ</translation>
 <translation id="4368960422722232719">ટૅબ હોવર પ્રીવ્યૂ કાર્ડ પર મેમરીનો વપરાશ બતાવો</translation>
@@ -4828,6 +4837,7 @@
 <translation id="4562091353415772246">અપડેટ અને ઍપ ઇન્સ્ટૉલ કરો. આગળ વધીને, તમે એ સંભાવના માટે સંમત થાઓ છો કે આ ડિવાઇસ સેલ્યુલર ડેટાનો ઉપયોગ કરીને Google, તમારા મોબાઇલ ઑપરેટર અને તમારા ડિવાઇસના નિર્માતાના અપડેટ અને ઍપ ઑટોમૅટિક રીતે ડાઉનલોડ અને ઇન્સ્ટૉલ પણ કરી શકે છે. આમાંની અમુક ઍપ ઍપમાંથી ખરીદીઓ ઑફર કરી શકે છે. <ph name="BEGIN_LINK1" />Play ઑટો ઇન્સ્ટૉલ વિશે વધુ જાણો<ph name="BEGIN_LINK1_END" />વધુ જાણો<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">ફિંગરપ્રિન્ટ ઉમેરો</translation>
 <translation id="4562155266774382038">સૂચન છોડી દો</translation>
+<translation id="4562364000855074606">આ <ph name="DEVICE_TYPE" /> પર ઇન્સ્ટૉલ કરેલી ઍપને બ્લૉક કરો. ઍપ અથવા કન્ટેન્ટ ડાઉનલોડ કરવા પર પ્રતિબંધ મૂકવા માટે, Google Playના સેટિંગ પર જાઓ. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">પ્રારંભિક ઇનપુટ ભાષા ચીની છે</translation>
 <translation id="4563382028841851106">એકાઉન્ટમાંથી કાઢી નાખો</translation>
 <translation id="4563880231729913339">આંગળી 3</translation>
@@ -4971,6 +4981,7 @@
 <translation id="4666911709726371538">વધુ ઍપ</translation>
 <translation id="4668279686271488041">જાહેરાત-માપણીના ડેટાને નિયમિત રીતે તમારા ડિવાઇસમાંથી ડિલીટ કરવામાં આવે છે</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">પિનમાં માત્ર અંકોનો ઉપયોગ થવો જરૂરી છે</translation>
 <translation id="4670909875730475086">અભિનંદન! તમારા ડિવાઇસ પર <ph name="APP_NAME" />નું ઇન્સ્ટૉલેશન સફળતાપૂર્વક પૂર્ણ થયું</translation>
 <translation id="4672759829555593783"><ph name="FILE_NAME" /> હમણાં ખોલો</translation>
 <translation id="4673442866648850031">જ્યારે સ્ટાઇલસ દૂર કરવામાં આવ્યું હોય ત્યારે સ્ટાઇલસનાં સાધનો ખોલો</translation>
@@ -5054,6 +5065,7 @@
 <translation id="473936925429402449">પસંદ કરેલા, <ph name="TOTAL_ELEMENTS" />માંથી વધારાના <ph name="CURRENT_ELEMENT" /> કન્ટેન્ટ</translation>
 <translation id="4739639199548674512">ટિકિટ</translation>
 <translation id="4740546261986864539">તાજેતરમાં ખોલવામાં આવેલું</translation>
+<translation id="4741235124132242877">પિન થઈ! ટૂલબારમાંથી Google Lensનો ફરીથી ઉપયોગ કરો</translation>
 <translation id="4742334355511750246">છબીઓ બતાવવાની મંજૂરી નથી</translation>
 <translation id="4742795653798179840">Chromeનો ડેટા ડિલીટ કર્યો</translation>
 <translation id="4742970037960872810">હાઇલાઇટ કાઢી નાખો</translation>
@@ -5201,6 +5213,7 @@
 <translation id="4853020600495124913">&amp;નવી વિંડોમાં ખોલો</translation>
 <translation id="4854317507773910281">મંજૂરી માટે માતાપિતાનું એકાઉન્ટ પસંદ કરો</translation>
 <translation id="485480310608090163">વધુ સેટિંગ અને પરવાનગીઓ</translation>
+<translation id="4858599593306712511">ઍપ માટે માતાપિતાના યોગ્ય નિયંત્રણો</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">તમારા ઍડમિનિસ્ટ્રેટર મ્યૂટ કરવામાં આવ્યું છે</translation>
 <translation id="4862642413395066333">OCSP પ્રતિસાદોને સાઇન ઇન કરે છે</translation>
@@ -6753,6 +6766,7 @@ USB ડિવાઇસ</translation>
 <translation id="6042308850641462728">વધુ</translation>
 <translation id="604388835206766544">ગોઠવણીનું વિશ્લેષણ કરવામાં નિષ્ફળ થયાં</translation>
 <translation id="6043994281159824495">હવે સાઇન આઉટ કરો</translation>
+<translation id="604424701295382420">પિન થઈ! તમે ટૂલબાર પરના નવા બટનમાંથી Google Lensને ફરીથી ઍક્સેસ કરી શકો છો</translation>
 <translation id="6045114302329202345">પ્રાથમિક TrackPoint બટન</translation>
 <translation id="6047632800149092791">સિંક કાર્ય કરી રહ્યું નથી. સાઇન આઉટ કરીને ફરી પાછા સાઇન ઇન કરવાનો પ્રયાસ કરો.</translation>
 <translation id="6048747414605857443">ChromeVox અને 'સાંભળવા માટે પસંદ કરો' સુવિધા માટે ટેક્સ્ટ ટૂ સ્પીચ વૉઇસ પસંદ કરો અને કસ્ટમાઇઝ કરો</translation>
@@ -7587,6 +7601,7 @@ USB ડિવાઇસ</translation>
 <translation id="6686490380836145850">જમણી બાજુનાં ટૅબ્સ બંધ કરો</translation>
 <translation id="6686665106869989887">ટૅબને જમણે ખસેડી</translation>
 <translation id="6686817083349815241">તમારો પાસવર્ડ સાચવો</translation>
+<translation id="6687008241368170505">Google Password Manager પિન બદલો</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> છુપાવો</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" />ને કમ્પ્યુટર પર આવવાનું કહો. તમારું બાળક તેમનું વૉઇસ મૉડલ બનાવવા માટે આ સ્ક્રીન પરના કેટલાક શબ્દસમૂહો વાંચશે.
     <ph name="BR" />
@@ -8036,6 +8051,7 @@ USB ડિવાઇસ</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> તમારા કૅમેરાનો ઉપયોગ કરી રહી છે</translation>
 <translation id="701080569351381435">સ્રોત જુઓ</translation>
 <translation id="7011797924920577670">તમારી રુચિઓ વિશે અનુમાન</translation>
+<translation id="7012430956470647760">ઍપ માટે માતાપિતાના યોગ્ય નિયંત્રણો</translation>
 <translation id="7013762323294215682">આ પાસકી તમારા Password Managerમાં સાચવવામાં આવશે. આ પાસકીની ઍક્સેસ ધરાવનારી કોઈપણ વ્યક્તિ તેનો ઉપયોગ કરી શકશે.</translation>
 <translation id="7014174261166285193">ઇન્સ્ટોલેશન નિષ્ફળ થયું.</translation>
 <translation id="7014480873681694324">હાઇલાઇટ કાઢી નાખો</translation>
@@ -8366,6 +8382,7 @@ USB ડિવાઇસ</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - પરવાનગીની વિનંતી કરવામાં આવી, જવાબ આપવા માટે F6 દબાવો</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" /> દ્વારા હોસ્ટ થયેલ સાઇન-ઇન સેવા, તમારા કૅમેરાને ઍક્સેસ કરી રહી છે.</translation>
 <translation id="7292067737327289208">તમારી સંસ્થા દ્વારા તમારું <ph name="BEGIN_LINK" />બ્રાઉઝર મેનેજ<ph name="END_LINK" /> કરવામાં આવે છે અને <ph name="PROFILE_DOMAIN" />દ્વારા તમારી <ph name="BEGIN_LINK" />પ્રોફાઇલ મેનેજ<ph name="END_LINK" /> કરવામાં આવે છે</translation>
+<translation id="7292147651179697920">તમારા માતાપિતાને સેટિંગમાં ઍક્સેસની મંજૂરી આપવાનું કહો</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">નોંધ લો કે Android, Play અને સંબંધિત ઍપ ડેટા એકત્ર કરવાની અને તેનો ઉપયોગ કરવાની તેમની પોતાની પૉલિસીઓ પ્રમાણે મેનેજ થાય છે.</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> ફોલ્ડર પસંદ કરો</translation>
@@ -8674,6 +8691,7 @@ USB ડિવાઇસ</translation>
 <translation id="7514239104543605883">તમારા ડિવાઇસ પર કૉપિ કરો</translation>
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
 <translation id="7514417110442087199">સોંપણી ઉમેરો</translation>
+<translation id="7515191208480168435">તમે સરળ ઍક્સેસ માટે Google Lensને પિન કરી શકો છો</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> વ્યવસ્થાપક દ્વારા બ્લૉક કરેલી છે. આ ઍપનો ઉપયોગ કરવા માટે વ્યવસ્થાપક પાસેથી પરવાનગી મેળવો.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
@@ -10142,6 +10160,7 @@ USB ડિવાઇસ</translation>
 <translation id="8592141010104017453">કોઈપણ નોટિફિકેશન બતાવશો નહીં</translation>
 <translation id="859246725979739260">આ સાઇટને તમારા સ્થાનનો ઍક્સેસ કરવાથી બ્લૉક કરવામાં આવી છે.</translation>
 <translation id="8593450223647418235">સેટઅપ પૂરું ન થાય ત્યાં સુધી, તમે Microsoft 365માં ફાઇલો ખોલી શકશો નહીં.</translation>
+<translation id="8593686980889923154"><ph name="APP_NAME" />ને તમારા <ph name="DEVICE_TYPE" /> પર બ્લૉક કરેલી છે</translation>
 <translation id="8596540852772265699">કસ્ટમ ફાઇલો</translation>
 <translation id="8597845839771543242">ગુણધર્મનું ફોર્મેટ:</translation>
 <translation id="8598249292448297523">પ્રિન્ટ કરો</translation>
@@ -10562,6 +10581,7 @@ USB ડિવાઇસ</translation>
 <translation id="8890529496706615641">પ્રોફાઇલનું નામ બદલી શકાયું નથી. કૃપા કરીને ફરીથી પ્રયાસ કરો અથવા ટેક્નિકલ સપોર્ટ માટે તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="8892168913673237979">બધું સેટ છે!</translation>
 <translation id="8892246501904593980">તમારા તમામ બુકમાર્ક 'બુકમાર્ક અને સૂચિઓ'માં જુઓ</translation>
+<translation id="8893479486525393799">Studioનું માઇક</translation>
 <translation id="8893801527741465188">અનઇન્સ્ટૉલ કરવું પૂર્ણ</translation>
 <translation id="8893928184421379330">માફ કરશો, ઉપકરણ <ph name="DEVICE_LABEL" /> ઓળખી શકાયું નથી.</translation>
 <translation id="8894761918470382415">પેરિફેરલ માટે ડેટા ઍક્સેસનું સંરક્ષણ</translation>

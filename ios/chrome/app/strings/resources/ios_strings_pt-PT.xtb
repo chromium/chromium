@@ -100,7 +100,7 @@
 <translation id="1506063256525392513">Isto permite-lhe tirar e carregar fotos, bem como ler códigos QR</translation>
 <translation id="1509486075633541495">Inicie sessão no Website</translation>
 <translation id="1509960214886564027">As funcionalidades em muitos sites podem falhar.</translation>
-<translation id="1520027731907768768">Receba alertas de descida do preço relativos a produtos que acompanha.</translation>
+<translation id="1520027731907768768">Receba alertas de descida do preço de produtos que acompanha.</translation>
 <translation id="152234381334907219">Nunca guardado</translation>
 <translation id="1523341279170789507">Mostrar todos os cookies</translation>
 <translation id="1524563461097350801">Não</translation>
@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="164673457281113247">{count,plural, =1{Marcador guardado}other{Marcadores guardados}}</translation>
 <translation id="1650222530560417226">Toque no botão "Iniciar o registo" para recolher futuros registos da consola de JavaScript e erros de todos os separadores. Os registos serão recolhidos (e armazenados apenas na memória) até fechar esta página ou tocar em "Parar o registo".</translation>
+<translation id="1652333207707886577">Personalize o menu</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} palavra-passe guardada disponível acima do teclado.}other{{count} palavras-passe guardadas disponíveis acima do teclado.}}</translation>
 <translation id="1657011748321897393">A partilha falhou porque não está ligado à rede.</translation>
 <translation id="165877110639533037">Sem separadores abertos</translation>
@@ -530,6 +531,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3738428049780661523">Data de criação: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Ocultar Transferências</translation>
 <translation id="3745190878148784130">Ocultar Aplicar zoom no texto</translation>
+<translation id="3747231889390582072">Para proteger a segurança da sua organização, os dados não guardados vão ser eliminados deste dispositivo. Estes dados podem incluir palavras-passe, o histórico de navegação, cookies e muito mais.</translation>
 <translation id="3762232513783804601">Concebido para o iPad</translation>
 <translation id="3768725474733206671">Voltar a abrir o último separador fechado</translation>
 <translation id="3771033907050503522">Sep. nav. anónima</translation>
@@ -1228,6 +1230,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7192050974311852563">Iniciar registo</translation>
 <translation id="7203585745079012652">Ouvir Respostas</translation>
 <translation id="7210568419880432164">Ativar notificações…</translation>
+<translation id="7211038039686180558">Os seus grupos de separadores são guardados e atualizados automaticamente em todos os dispositivos com sessão iniciada</translation>
 <translation id="721597782417389033">Alcunha do cartão inválido</translation>
 <translation id="7221173315674413369">Explore novas funcionalidades e sugestões em Novidades</translation>
 <translation id="7223102419539744003">Fechar separador</translation>
@@ -1479,6 +1482,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8446884382197647889">Saiba Mais</translation>
 <translation id="8449347986464073209">Eliminar e terminar sessão</translation>
 <translation id="8459333855531264009">Inseguro</translation>
+<translation id="8466300942149667917">Os dados da conta não guardados vão ser eliminados</translation>
 <translation id="8473863474539038330">Moradas e mais</translation>
 <translation id="8487667956631253959">Ativada</translation>
 <translation id="8487700953926739672">Disponível offline</translation>

@@ -48,6 +48,7 @@
 <translation id="1175572348579024023">滚动</translation>
 <translation id="1175944128323889279">当前电池电量为 <ph name="BATTERY_PERCENTAGE" />%，还可使用 <ph name="TIME" /></translation>
 <translation id="1178581264944972037">暂停</translation>
+<translation id="1179776263021875437">停止专注于此任务</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1182225749592316782">这将允许所有具有摄像头和麦克风使用权限的应用和网站使用摄像头和麦克风</translation>
 <translation id="1182876754474670069">光标移至行首</translation>
@@ -119,6 +120,7 @@
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1391102559483454063">已开启</translation>
 <translation id="1394698770495054737">完全虚化</translation>
+<translation id="1404963891829069586">专注模式音乐</translation>
 <translation id="1407069428457324124">深色主题</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />。使用箭头键可浏览日期。</translation>
 <translation id="141170878022560212">鼠标中键</translation>
@@ -180,6 +182,7 @@
 <translation id="1651914502370159744">打开“历史记录”页</translation>
 <translation id="1654477262762802994">启动语音查询</translation>
 <translation id="1668469839109562275">内置 VPN</translation>
+<translation id="1673232940951031776">结束专注模式。还剩 <ph name="REMAINING_TIME" />。</translation>
 <translation id="1675844249244994876">更新右侧窗口</translation>
 <translation id="1677472565718498478">电量尚余 <ph name="TIME" /></translation>
 <translation id="1677507110654891115">未连接“<ph name="FEATURE_NAME" />”。</translation>
@@ -223,6 +226,7 @@
 <translation id="1824922790784036530">开启位置信息访问权限</translation>
 <translation id="1830308660060964064">“<ph name="ITEM_TITLE" />”已被取消固定</translation>
 <translation id="1831565490995294689">选择<ph name="APP_TO_OPEN" />即可将其打开。</translation>
+<translation id="1838011306813517425">专注模式设置</translation>
 <translation id="1838895407229022812">当前已关闭护眼模式。</translation>
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1862077610023398675">隐藏控件</translation>
@@ -310,6 +314,7 @@
 <translation id="2277103315734023688">快进</translation>
 <translation id="2282073721614284166">在标签页中打开链接</translation>
 <translation id="2292698582925480719">显示比例</translation>
+<translation id="2293443480080733021">您打算专注于什么任务？按 Enter 键即可添加任务。</translation>
 <translation id="229397294990920565">移动数据网络正在关闭…</translation>
 <translation id="2295777434187870477">麦克风已开启，使用切换开关可将麦克风静音。</translation>
 <translation id="2298170939937364391">已启用全屏放大镜。再按一次 Ctrl+搜索键+M 组合键即可将其停用。</translation>
@@ -377,6 +382,7 @@
 <translation id="2509468283778169019">CAPS LOCK 已打开</translation>
 <translation id="2514415433888497495">停用<ph name="CAPTURE_MEDIUM" />。<ph name="CAPTURE_MEDIUM" />已<ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516416533263263796">已开启专注模式，还剩 10 分钟</translation>
 <translation id="2516637483312286228">修改游戏控件</translation>
 <translation id="2526581474998477112">解锁窗口</translation>
 <translation id="2528111225373402384">热点设置</translation>
@@ -447,6 +453,7 @@
 <translation id="2798702144670138229">平板电脑模式已开启。游戏信息中心不可用。</translation>
 <translation id="2801954693771979815">屏幕上的内容大小</translation>
 <translation id="2802938996245446490">已选择“<ph name="BUTTON_LABEL" />”</translation>
+<translation id="2804617685448902294"><ph name="TITLE" /><ph name="BODY" /></translation>
 <translation id="2805756323405976993">应用</translation>
 <translation id="2814448776515246190">截取/录制局部屏幕</translation>
 <translation id="2819276065543622893">您将立即退出。</translation>
@@ -474,6 +481,7 @@
 <translation id="2914580577416829331">屏幕截图</translation>
 <translation id="2924416280450782352">无法显示内容。请尝试重新打开此面板。</translation>
 <translation id="2931572158271115754">此待办事项清单中没有任何内容。</translation>
+<translation id="2932487126591186298">已增加 10 分钟。还剩 <ph name="REMAINING_TIME" />。</translation>
 <translation id="2935225303485967257">管理个人资料</translation>
 <translation id="2941112035454246133">低</translation>
 <translation id="2942350706960889382">停靠的放大镜</translation>
@@ -649,6 +657,7 @@
 <translation id="3576141592585647168">更改时区</translation>
 <translation id="3577473026931028326">出了点问题。请重试。</translation>
 <translation id="3580650856351781466">正在下载语音识别结果文件</translation>
+<translation id="3583350334315908861">{MINUTES,plural, =1{分钟}other{分钟}}</translation>
 <translation id="3585296979871889131">查看手机中的近期照片、媒体内容、通知和应用</translation>
 <translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">侧边按钮</translation>
@@ -672,6 +681,7 @@
 <translation id="3631369015426612114">允许显示来自以下来源的通知</translation>
 <translation id="3633097874324966332">请打开蓝牙设置为您的设备配对</translation>
 <translation id="3633851487917460983">打开剪贴板</translation>
+<translation id="363473492175527493">设为要专注处理的任务：<ph name="TASK_NAME" />。按 Enter 键即可修改任务。</translation>
 <translation id="3638400994746983214">开启/关闭隐私保护屏。<ph name="STATE_TEXT" />。</translation>
 <translation id="3649256019230929621">最小化窗口</translation>
 <translation id="3649505501900178324">更新逾期</translation>
@@ -707,6 +717,7 @@
 <translation id="3735740477244556633">排序依据</translation>
 <translation id="3738664582935948253">现在，您可在录制的屏幕内容中显示点击操作和键盘快捷键</translation>
 <translation id="3742055079367172538">已完成屏幕截图</translation>
+<translation id="3743775386021959186">已开启专注模式，还剩 <ph name="REMAINING_TIME" /></translation>
 <translation id="3756485814916578707">正在投放屏幕</translation>
 <translation id="3765841382945324995">“<ph name="SIX_PACK_KEY_NAME" />”对应的快捷键原为 <ph name="OLD_SHORTCUT" />，现已更新为 <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">今天修改过</translation>
@@ -895,6 +906,7 @@
 <translation id="4477751544736611934">这可能会产生流量费用。
 已连接 1 部设备。</translation>
 <translation id="4477892968187500306">此设备可能包含未经 Google 验证的应用。</translation>
+<translation id="4479130137987693286">您可以根据需要再增加一点时间，也可以结束专注模式</translation>
 <translation id="4479639480957787382">以太网</translation>
 <translation id="4481530544597605423">未配对的设备</translation>
 <translation id="4485506555414638855">取消设置查看手机中的近期照片、媒体内容、通知和应用</translation>
@@ -1068,6 +1080,7 @@
 <translation id="5095136268899496849">您可在“设置”中对 <ph name="PRODUCT_NAME" /> 进行自定义和个性化设置。不妨尝试更换壁纸或设置屏保。</translation>
 <translation id="509790653408515442">当您流式传输您手机上的应用时，它们会显示在此处</translation>
 <translation id="5098537242461068432">已重新打开桌面和窗口</translation>
+<translation id="5103975065730779239">结束时间：<ph name="END_TIME_EXPRESSION" /></translation>
 <translation id="5104236669533825617">无法创建抓屏</translation>
 <translation id="5107522548814527560">网页</translation>
 <translation id="5111318697104479778"><ph name="DESC" />，<ph name="STRENGTH" /></translation>
@@ -1145,6 +1158,7 @@
 <translation id="5395308026110844773">“<ph name="DRAGGED_APP_NAME" />”已拖至“<ph name="IN_PLACE_APP" />”上，松开即可创建文件夹。</translation>
 <translation id="5397578532367286026">管理员 (<ph name="MANAGER_EMAIL" />) 可在 chrome.com 上查看该用户的使用情况和历史记录。</translation>
 <translation id="540713187982329711">开启/关闭热点。热点处于开启状态，但尚未连接任何设备。</translation>
+<translation id="5409208741270395213">将任务标记为已完成</translation>
 <translation id="5413656666631274079">“设置”页面</translation>
 <translation id="5414198321558177633">正在刷新配置文件列表。这可能需要几分钟的时间。</translation>
 <translation id="5417965108047245734">不妨观看快速导览，了解如何玩转 <ph name="PRODUCT_NAME" /></translation>
@@ -1176,6 +1190,7 @@
 <translation id="553675580533261935">退出会话</translation>
 <translation id="5537725057119320332">投放</translation>
 <translation id="554017492391497564">无法标记为完成。</translation>
+<translation id="5543778275214926792">开启随选朗读？</translation>
 <translation id="5546397813406633847">让用户恢复登录</translation>
 <translation id="554893713779400387">开启/关闭语音输入</translation>
 <translation id="5550417424894892620">将文件拖放到桌面上即可将其添加到<ph name="HOLDING_SPACE_TITLE" />。您无法将文件添加到桌面。</translation>
@@ -1199,6 +1214,7 @@
 <translation id="5592745162308462420">fn</translation>
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5599242528220103262">键盘快捷键处于停用状态</translation>
+<translation id="5600415762228455511">已开启专注模式，还剩 <ph name="REMAINING_TIME" />，正在专注于：<ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">按 Ctrl + Alt + Z 即可停用语音反馈。</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">我们已将您切换到更好的网络</translation>
@@ -1228,8 +1244,10 @@
 <translation id="5699366815052349604">将使用中的窗口分配至所有桌面</translation>
 <translation id="5701785125601597013">使用 Phone Hub 快速发送或回复手机消息</translation>
 <translation id="570390244361237317">“所有应用”：若要访问各个应用，请使用箭头键导航</translation>
+<translation id="5705197514573687092">显示专注模式设置。定时器已设为 <ph name="FOCUS_DURATION" />。</translation>
 <translation id="5707775774148071965">您的设备支持的数据传输速率高于数据线的数据传输速率。设备性能可能会受到限制。</translation>
 <translation id="5710450975648804523">“请勿打扰”模式已开启</translation>
+<translation id="5711984160978177607">还剩 <ph name="REMAINING_TIME" /></translation>
 <translation id="5712132663381964774">您可在 <ph name="PRODUCT_NAME" /> 上使用应用完成各种任务。可以在启动器中查找相关应用。</translation>
 <translation id="571295407079589142">移动数据网络处于关闭状态</translation>
 <translation id="5727460725221669831">如果您忘记了密码，或最近更改过自己的 Google 账号密码，请尝试让此用户恢复登录。</translation>
@@ -1240,6 +1258,7 @@
 <translation id="5744083938413354016">点按拖动</translation>
 <translation id="5745612484876805746">护眼模式会于日落时自动开启</translation>
 <translation id="5750765938512549687">蓝牙已关闭</translation>
+<translation id="5758114525425072423">开启专注模式。定时器已设为 <ph name="FOCUS_DURATION" />。</translation>
 <translation id="5760866832697883462">连接您的“<ph name="NAME" />”</translation>
 <translation id="5762420912707163638">开启/关闭标记工具。<ph name="STATE_TEXT" />您可以使用触控板、触摸屏或触控笔在屏幕上绘画。</translation>
 <translation id="576341972084747908">正在下载有风险的文件 <ph name="FILENAME" /></translation>
@@ -1247,6 +1266,7 @@
 <translation id="5764569119212455782">切换到所选的最后一种语言</translation>
 <translation id="5767730327234918501">您的管理员已关闭热点。</translation>
 <translation id="5769373120130404283">隐私保护屏</translation>
+<translation id="5770004650349728202">开启随选朗读</translation>
 <translation id="5773950591113557721">这将允许“<ph name="APP_NAME" />”以及所有具有摄像头和麦克风使用权限的应用和网站使用摄像头和麦克风</translation>
 <translation id="5774295353725270860">打开文件应用</translation>
 <translation id="5775936059231769503">开启/关闭热点。热点处于关闭状态。</translation>
@@ -1341,8 +1361,10 @@
 <translation id="6119972796024789243">色彩校正</translation>
 <translation id="6121838516699723042">确认下载“<ph name="FILENAME" />”</translation>
 <translation id="612734058257491180">无法在访客会话中使用 Google 助理。</translation>
+<translation id="6127370444807669747">如需聆听个性化播放列表和更多专注模式音乐，请试用 YouTube Music Premium</translation>
 <translation id="6129953537138746214">空格</translation>
 <translation id="6137566720514957455">打开与 <ph name="USER_EMAIL_ADDRESS" /> 对应的“移除账号”对话框</translation>
+<translation id="6141205840878048728">您打算专注于什么任务？</translation>
 <translation id="6141988275892716286">确认下载</translation>
 <translation id="6143578372829139382">分享到 YouTube</translation>
 <translation id="6154006699632741460">不支持外围设备</translation>
@@ -1403,11 +1425,13 @@
 <translation id="6381109794406942707">要解锁此设备，请输入您的 PIN 码。</translation>
 <translation id="638716340450135524">开启摄像头使用权限</translation>
 <translation id="639644700271529076">CAPS LOCK 已关闭</translation>
+<translation id="6406458002328242616">修改定时器。<ph name="FOCUS_DURATION" />。</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google 助理</translation>
 <translation id="641817663353603351">向上翻页</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">清除所有通知</translation>
+<translation id="6430225033895752525">显示专注模式设置</translation>
 <translation id="643147933154517414">大功告成</translation>
 <translation id="6431865393913628856">屏幕录制</translation>
 <translation id="643593192654616063">已使用 <ph name="STORAGE_IN_USE_SIZE" /> 的存储空间，总共 <ph name="STORAGE_TOTAL_SIZE" /></translation>
@@ -1448,6 +1472,7 @@
 新安装</translation>
 <translation id="6559158502366839560">探索更多应用和游戏</translation>
 <translation id="6559976592393364813">询问您的管理员</translation>
+<translation id="6562447480759345110">结束专注模式</translation>
 <translation id="6565007273808762236">无法连接 eSIM 卡</translation>
 <translation id="6570831796530454248">{0,plural, =1{请在 1 小时内更新此设备}other{请在 # 小时内更新此设备}}</translation>
 <translation id="6570902864550063460">正在通过 USB 充电</translation>
@@ -1457,6 +1482,7 @@
 <translation id="6585808820553845416">会话将在<ph name="SESSION_TIME_REMAINING" />后结束。</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />，<ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">相机已对准左下角。与系统界面冲突。</translation>
+<translation id="6605415194043280389">专注模式已开启</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
 <translation id="6612802754306526077">已选择录屏模式</translation>
 <translation id="6612889377159412215">子任务</translation>
@@ -1490,6 +1516,7 @@
 <translation id="6707693040195709527">将设备回滚到上一个版本的截止日期已过</translation>
 <translation id="6710213216561001401">上一项</translation>
 <translation id="6723839937902243910">电源</translation>
+<translation id="672609503628871915">了解一下新变化</translation>
 <translation id="6727969043791803658">已连接，剩余电量为 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">摄像头</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1523,6 +1550,7 @@
 <translation id="6836499262298959512">危险文件</translation>
 <translation id="6837621009301897464">如需截取屏幕截图，请按</translation>
 <translation id="6852052252232534364">点击即可启用</translation>
+<translation id="6852628153543175788">增加 10 分钟</translation>
 <translation id="6855029042976311970">刚刚修改过</translation>
 <translation id="6856708615407876657">切换搜索结果类别</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
@@ -1583,6 +1611,7 @@
 <translation id="7068360136237591149">打开文件</translation>
 <translation id="7076293881109082629">正在登录</translation>
 <translation id="7076878155205969899">静音</translation>
+<translation id="7083848064787091821">专注模式</translation>
 <translation id="7084678090004350185">开启/关闭热点。热点处于开启状态，且已连接 <ph name="DEVICECOUNT" /> 部设备。</translation>
 <translation id="7086931198345821656">这项更新需要对您的 <ph name="DEVICE_TYPE" /> 执行 Powerwash 操作。此设备中的所有数据都将被删除。详细了解最新的 <ph name="SYSTEM_APP_NAME" />更新。</translation>
 <translation id="7088960765736518739">开关控制</translation>
@@ -1610,6 +1639,7 @@
 <translation id="7188494361780961876">菜单已移至屏幕的左上角。</translation>
 <translation id="7189412385142492784">金星有多远</translation>
 <translation id="7198435252016571249">相机已对准右下角。与系统界面冲突。</translation>
+<translation id="720981139652840573">让系统大声朗读特定文字。首先，选择屏幕底部的“随选朗读”图标，然后突出显示文字。您也可以使用键盘快捷键：突出显示文字，然后按搜索键/启动器键 + S。</translation>
 <translation id="7219573373513695352">未连接任何设备</translation>
 <translation id="7229029500464092426">可用内存为 <ph name="AVAILABLE_MEMORY" /> | 共 <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">电量剩余 <ph name="PERCENTAGE" />%。请为设备接通电源。</translation>
@@ -1619,6 +1649,7 @@
 <translation id="7258828758145722155">昨天修改过</translation>
 <translation id="726276584504105859">拖到此处即可使用分屏模式</translation>
 <translation id="7262906531272962081">创建提醒</translation>
+<translation id="7264788308526527464">减少 <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" />键 + 退格键</translation>
 <translation id="7285232777292757180">使用快捷设置中的“屏幕截取”工具截屏</translation>
 <translation id="7301826272005790482">关闭窗口建议</translation>
@@ -1629,6 +1660,7 @@
 <translation id="7313193732017069507">展开相机</translation>
 <translation id="7330397557116570022">需要选择一个文本字段才能使用语音输入</translation>
 <translation id="7331646370422660166">alt + 向下键</translation>
+<translation id="7337660433630200387">增加 10 分钟</translation>
 <translation id="7340731148882810149">“自动点击”菜单</translation>
 <translation id="7346909386216857016">知道了</translation>
 <translation id="7348093485538360975">屏幕键盘</translation>
@@ -1648,6 +1680,7 @@
 <translation id="7386767620098596324">开启/关闭网络连接。<ph name="STATE_TEXT" />。</translation>
 <translation id="7392563512730092880">日后您随时可从“设置”中进行设置。</translation>
 <translation id="7401222354741467707">截取整个屏幕或录屏</translation>
+<translation id="7401788553834047908">在专注模式下启用勿扰模式</translation>
 <translation id="7405710164030118432">要解锁此设备，请输入您的 Family Link 家长访问码</translation>
 <translation id="7406608787870898861">请完成您的移动网络设置</translation>
 <translation id="7406854842098869085">在按住 <ph name="MODIFIER_1" /> 键的同时，多次按 <ph name="KEY" /> 键直到切换至您要打开的窗口，然后松开手指</translation>
@@ -1682,6 +1715,8 @@
 <translation id="7519649142417630956">一旦关机，管理员将被强制退出登录，并且无法再控制您的设备。
 
 要将设备关机，请再次按住设备上的电源按钮。</translation>
+<translation id="7523420897035067483">在专注模式下启用勿扰模式</translation>
+<translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7526573455193969409">网络可能受到了监控</translation>
 <translation id="7536035074519304529">IP 地址：<ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">更新左侧窗口</translation>
@@ -1751,6 +1786,7 @@
 <translation id="7773536009433685931">改为开启 Wi-Fi</translation>
 <translation id="7780094051999721182">快捷方式</translation>
 <translation id="7780159184141939021">旋转屏幕</translation>
+<translation id="7781829728241885113">昨天</translation>
 <translation id="7792590255364786396">可见</translation>
 <translation id="7796735576426975947">已隐藏新通知</translation>
 <translation id="7798302898096527229">按搜索键或按 Shift 键可取消。</translation>
@@ -1814,6 +1850,7 @@
 <translation id="7963992254934562106">来自 <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">选择文件夹…</translation>
 <translation id="7973756967040444713">关闭工具栏</translation>
+<translation id="797485111629834774">将以下任务标记为已完成：<ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">开启或关闭全屏放大镜</translation>
 <translation id="7977927628060636163">正在搜索移动网络…</translation>
 <translation id="7982789257301363584">网络</translation>
@@ -1827,6 +1864,7 @@
 <translation id="8000066093800657092">未连接任何网络</translation>
 <translation id="8001755249288974029">选中从光标处到行首的文字</translation>
 <translation id="8004512796067398576">增加</translation>
+<translation id="8005527720597583355">开启专注模式</translation>
 <translation id="8015361438441228492">无法修改任务。</translation>
 <translation id="802782383769312836">上一个桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 个桌面（共 <ph name="DESK_COUNT" /> 个）。</translation>
 <translation id="8029247720646289474">热点连接失败</translation>
@@ -1842,6 +1880,7 @@
 <translation id="8054466585765276473">正在计算续航时间。</translation>
 <translation id="8079538659226626406">屏幕共享</translation>
 <translation id="8083540854303889870">已保存供日后使用</translation>
+<translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">使用 Tab 键可查看更多选项。使用向左键和向右键可访问所有桌面。</translation>
 <translation id="8091153018031979607">开始时间：<ph name="START_TIME" /><ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">自动更新</translation>
@@ -1873,10 +1912,12 @@
 <translation id="8192727139462702395">关闭蓝牙后，以下外部设备将与您的 <ph name="DEVICE_TYPE" /> 断开连接：</translation>
 <translation id="8198456017687137612">正在投放标签页</translation>
 <translation id="8200772114523450471">继续</translation>
+<translation id="820256110035940528"><ph name="TITLE" />您刚刚专注了 <ph name="FOCUSED_TIME" />。打开“快捷设置”即可再次开启专注模式。</translation>
 <translation id="8203795194971602413">点击鼠标右键</translation>
 <translation id="8209010265547628927">重置</translation>
 <translation id="8214996719228530800">Canary 渠道</translation>
 <translation id="8219451629189078428">在此期间，您的 Chromebook 需要保持开机和通电状态。请确保充电器和适配器线缆都已完全插好 - 既已连接到您的 Chromebook，也已连接到电源插座。切勿关闭您的 Chromebook。</translation>
+<translation id="8220076512072059941">增加 <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8230305195727960608">颜色反转模式</translation>
 <translation id="8236042855478648955">该休息了</translation>
 <translation id="8237964652943995219">下一个桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 个桌面（共 <ph name="DESK_COUNT" /> 个）。</translation>
@@ -1984,6 +2025,7 @@
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">按 Enter 键即可截取局部屏幕</translation>
 <translation id="8676770494376880701">已连接低功率充电器</translation>
+<translation id="8679158879996532670">显示专注模式设置。已开启专注模式，还剩 <ph name="REMAINING_TIME" />。</translation>
 <translation id="8683506306463609433">正在跟踪性能</translation>
 <translation id="8703634754197148428">开始录制。录制开始后，使用 Alt + Shift + L 可转到任务栏并从中找到“停止录制”按钮</translation>
 <translation id="8704155109538237473">聚焦于画中画窗口</translation>
@@ -2002,6 +2044,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />：正在启用…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />，
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8749787185286745219">时间到。太棒了！🎉</translation>
 <translation id="8755498163081687682">验证您的身份：<ph name="ORIGIN_NAME" /> 想确认您的身份</translation>
 <translation id="875593634123171288">显示 VPN 设置</translation>
 <translation id="8756799553341497810">退出此视图后，您就可以开始自定义应用布局。</translation>
@@ -2040,6 +2083,7 @@
 <translation id="8877788021141246043">设置提醒</translation>
 <translation id="8878886163241303700">正在扩展屏幕</translation>
 <translation id="888982883502837004">有适用于您设备的固件更新。点击即可查看并更新。</translation>
+<translation id="8893479486525393799">录音室麦克风</translation>
 <translation id="8896630965521842259">“<ph name="DESK_TEMPLATE_NAME" />”会被永久删除</translation>
 <translation id="889790758758811533">电量剩余 <ph name="PERCENTAGE" />%（大约能维持 <ph name="TIME_LEFT" />）。请为设备接通电源。</translation>
 <translation id="88986195241502842">向下翻页</translation>
@@ -2068,6 +2112,7 @@
 <translation id="9000771174482730261">管理存储空间</translation>
 <translation id="9005984960510803406">打开 Crosh 窗口</translation>
 <translation id="9017320285115481645">输入 Family Link 家长访问码。</translation>
+<translation id="9022774213089566801">经常访问</translation>
 <translation id="9024331582947483881">全屏</translation>
 <translation id="9029736946581028033">设备很快就会关机</translation>
 <translation id="9030319654231318877">已关闭，直到日落</translation>

@@ -61,7 +61,6 @@
 <translation id="4139634748112164403">Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppe wird endgültig gelöscht</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Gruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_ONE" /> Tab schließen, Farbe: <ph name="COLOR_NAME" />.}other{Gruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_MANY" /> Tabs schließen, Farbe: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Violett</translation>
-<translation id="4212246570487010370">Mehr ansehen</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_ONE" /> Tab maximieren.}other{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren.}}</translation>
 <translation id="427987768447457592">Neue Tabgruppe</translation>
 <translation id="4460014764210899310">Gruppierung aufheben</translation>

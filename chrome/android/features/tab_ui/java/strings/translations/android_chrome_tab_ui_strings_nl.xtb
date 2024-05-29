@@ -61,7 +61,6 @@
 <translation id="4139634748112164403">De tabbladen blijven open op dit apparaat, maar de groep wordt definitief verwijderd</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Groep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_ONE" /> tabblad sluiten, kleur <ph name="COLOR_NAME" />.}other{Groep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_MANY" /> tabbladen sluiten, kleur <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Paars</translation>
-<translation id="4212246570487010370">Verder browsen</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_ONE" /> tabblad uitvouwen.}other{Tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_MANY" /> tabbladen uitvouwen.}}</translation>
 <translation id="427987768447457592">Nieuwe tabbladgroep</translation>
 <translation id="4460014764210899310">Groeperen ongedaan maken</translation>

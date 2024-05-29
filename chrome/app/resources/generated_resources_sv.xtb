@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">Inte nu</translation>
 <translation id="100881991356161927">Webbplatsnamn:</translation>
 <translation id="1009663062402466586">Nu är spelkontroller tillgängliga</translation>
+<translation id="1010136228650201057">Kryptering av användardata</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{sida svarar inte}other{sidor svarar inte}}</translation>
 <translation id="1011003645819296594">Sparade enheter</translation>
 <translation id="1011355516189274711">Volym för text till tal</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1049795001945932310">&amp;Språkinställningar</translation>
 <translation id="1050693411695664090">Dålig</translation>
+<translation id="1053776357096024725">Förbättra ljudet från den inbyggda mikrofonen med olika effekter</translation>
 <translation id="1054048317165655285">Slutför konfigurationen på telefonen</translation>
 <translation id="1054153489933238809">Öppna originalbilden i en ny flik</translation>
 <translation id="1054187194995068149">Hej! Det här är en förhandsgranskning</translation>
@@ -834,6 +836,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1607139524282324606">Rensa post</translation>
 <translation id="1607499585984539560">Användaren saknar koppling till domänen</translation>
 <translation id="1608668830839595724">Fler åtgärder för valda objekt</translation>
+<translation id="1608698493373028805">Det här tillägget stöds snart kanske inte längre</translation>
 <translation id="1610272688494140697">Appinställningar</translation>
 <translation id="161042844686301425">Cyanblå</translation>
 <translation id="1611432201750675208">Enheten är låst</translation>
@@ -1185,7 +1188,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1850145825777333687">Användaruppgifter för enheten</translation>
 <translation id="1850508293116537636">Rotera &amp;medurs</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Innan du registrerar dig måste du rensa TPM så att <ph name="DEVICE_OS" /> kan ta ägarskap över enheten.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Du kan även stänga av TPM-enheten helt. Din data lagras fortfarande säkert med mjukvarukryptering, men vissa säkerhetsfunktioner, till exempel maskinvarustödda certifikat, inaktiveras.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH2" />Du kan även stänga av TPM-enheten helt. Din data lagras fortfarande säkert med mjukvarukryptering, men vissa säkerhetsfunktioner, till exempel hårdvarustödda certifikat, inaktiveras.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Du kan ändra TPM-inställningarna genom att starta om och öppna systeminställningarna för BIOS/UEFI. Stegen varierar beroende på enhetsmodell. Om du vill läsa mer kan du öppna dokumentationen för <ph name="DEVICE_OS" /> på en separat enhet innan du startar om: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852799913675865625">Ett fel uppstod när följande fil skulle läsas: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">Fortsätt där du slutade. Du kan ställa in att appar alltid ska återställas vid start eller inaktivera återställning i inställningarna.</translation>
@@ -2319,6 +2322,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2667144577800272420">Andra appar är inställda på att öppna samma länkar som <ph name="APP_NAME" />. Detta inaktiverar att <ph name="APP_NAME_2" /> och <ph name="APP_NAME_3" /> öppnar länkar som stöds.</translation>
 <translation id="2667463864537187133">Hantera stavningskontrollen</translation>
 <translation id="2668094785979141847">Klicka för att avsluta Google Lens</translation>
+<translation id="2668604389652548400">Ta bort eller ersätt det med liknande tillägg från <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Det gick inte att öppna <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Alla som använder enheten kan se nedladdade filer</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> delar en Chrome-flik.</translation>
@@ -2369,6 +2373,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2710101514844343743">Diagnostik- och användningsdata</translation>
 <translation id="271033894570825754">Ny</translation>
 <translation id="2710507903599773521">Din <ph name="DEVICE_TYPE" /> är nu upplåst</translation>
+<translation id="2712141162840347885">Välj vad du vill söka efter med Google Lens eller tryck på Escape för att avsluta Google Lens</translation>
 <translation id="2713106313042589954">Stäng av kameran</translation>
 <translation id="2713444072780614174">Vit</translation>
 <translation id="2714180132046334502">Mörk bakgrund</translation>
@@ -2993,6 +2998,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3177914167275935955">Chrome Education Upgrade ingår med enheten, men ditt användarnamn är inte kopplat till ett Google for Education-konto. Skapa ett Google for Education-konto genom att besöka g.co/workspace/edusignup på en annan enhet.</translation>
 <translation id="3179982752812949580">Textens teckensnitt</translation>
 <translation id="3180284704187420717">Spara bokmärken, lösenord och annat med synkronisering</translation>
+<translation id="3180716079618904608">Skaffa appar och spel</translation>
 <translation id="3181954750937456830">Säker webbsökning (skyddar dig och enheten från skadliga webbplatser)</translation>
 <translation id="3182749001423093222">Stavningskontroll</translation>
 <translation id="3183139917765991655">Profilimportör</translation>
@@ -4284,6 +4290,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4120817667028078560">Sökvägen är för lång</translation>
 <translation id="4124823734405044952">Säkerhetsnyckeln har återställts</translation>
 <translation id="4124935795427217608">Enhörning</translation>
+<translation id="4126375522951286587">Stäng av <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">Superhjälte</translation>
 <translation id="4130199216115862831">Enhetslogg</translation>
 <translation id="4130750466177569591">Jag godkänner</translation>
@@ -4584,6 +4591,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> delar ett fönster.</translation>
 <translation id="4364830672918311045">Visa aviseringar</translation>
+<translation id="4367027658822022112">Du kan fästa Google Lens för enkel åtkomst. Klicka på knappen Fäst högst upp på sidopanelen</translation>
 <translation id="4367513928820380646">Granska borttagna behörigheter</translation>
 <translation id="4367971618859387374">Visningsnamn</translation>
 <translation id="4368960422722232719">Visa minnesanvändning på förhandsgranskningskortet när du håller muspekaren över en flik</translation>
@@ -4986,6 +4994,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4666911709726371538">Fler appar</translation>
 <translation id="4668279686271488041">Data för annonsmätning raderas regelbundet från enheten</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">Pinkoden får endast innehålla siffror</translation>
 <translation id="4670909875730475086">Grattis! <ph name="APP_NAME" /> har installerats på enheten</translation>
 <translation id="4672759829555593783">Öppna <ph name="FILE_NAME" /> nu</translation>
 <translation id="4673442866648850031">Öppna verktyg för e-penna när e-pennan tas ut</translation>
@@ -5069,6 +5078,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="473936925429402449">Valt, extrainnehåll <ph name="CURRENT_ELEMENT" /> av <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Biljetter</translation>
 <translation id="4740546261986864539">Nyligen öppnade</translation>
+<translation id="4741235124132242877">Fäst! Använd Google Lens igen från verktygsfältet</translation>
 <translation id="4742334355511750246">Får inte visa bilder</translation>
 <translation id="4742795653798179840">Data i Chrome har raderats</translation>
 <translation id="4742970037960872810">Ta bort markering</translation>
@@ -6369,7 +6379,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5739458112391494395">Mycket stor</translation>
 <translation id="5740126560802162366">Webbplatser kan spara data på enheten</translation>
 <translation id="5740328398383587084">Närdelning</translation>
-<translation id="5740709157181662145">Maskinvarustöd och stabilitet för <ph name="DEVICE_OS" /></translation>
+<translation id="5740709157181662145">Hårdvarustöd och stabilitet för <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Skärmspegling</translation>
 <translation id="574209121243317957">Ton</translation>
 <translation id="5742787970423162234">Paketerade webbappar med förbättrade funktioner. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -6766,6 +6776,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6042308850641462728">Mer</translation>
 <translation id="604388835206766544">Det gick inte att tolka konfigurationen</translation>
 <translation id="6043994281159824495">Logga ut nu</translation>
+<translation id="604424701295382420">Fäst! Du kan komma åt Google Lens igen från den nya knappen i verktygsfältet</translation>
 <translation id="6045114302329202345">Primär TrackPoint-knapp</translation>
 <translation id="6047632800149092791">Det går inte att synkronisera. Testa att logga ut och sedan logga in igen.</translation>
 <translation id="6048747414605857443">Välj och anpassa röster för text till tal för ChromeVox och Textuppläsning</translation>
@@ -7598,6 +7609,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6686490380836145850">Stäng flikar till höger</translation>
 <translation id="6686665106869989887">Fliken flyttades åt höger</translation>
 <translation id="6686817083349815241">Spara lösenordet</translation>
+<translation id="6687008241368170505">Ändra pinkod för Google Lösenordshantering</translation>
 <translation id="6687079240787935001">Dölj <ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">Be <ph name="SUPERVISED_USER_NAME" /> att komma till datorn. Röstmodellen skapas genom att barnet läser upp några fraser på skärmen.
     <ph name="BR" />
@@ -8377,6 +8389,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Behörighet har begärts, tryck på F6 för att svara</translation>
 <translation id="7290242001003353852">Inloggningstjänsten som tillhandahålls av <ph name="SAML_DOMAIN" /> använder din kamera.</translation>
 <translation id="7292067737327289208">Din <ph name="BEGIN_LINK" />webbläsare hanteras<ph name="END_LINK" /> av din organisation och din <ph name="BEGIN_LINK" />profil hanteras<ph name="END_LINK" /> av <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="7292147651179697920">Be en förälder att tillåta åtkomst i Inställningar</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Observera att Android, Play och dithörande appar omfattas av sina egna policyer för insamling och användning av data.</translation>
 <translation id="7296503797589217366">Välj mappen <ph name="FOLDER_TITLE" /></translation>
@@ -8685,6 +8698,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7514239104543605883">Kopiera till din enhet</translation>
 <translation id="7514365320538308">Ladda ned</translation>
 <translation id="7514417110442087199">Lägg till tilldelning</translation>
+<translation id="7515191208480168435">Du kan fästa Google Lens för enkel åtkomst</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> blockeras av administratören. Be administratören om behörighet att använda den här appen.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">sida ned</translation>
@@ -10159,6 +10173,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8592141010104017453">Visa inga aviseringar alls</translation>
 <translation id="859246725979739260">Åtkomst till din plats har blockerats för den här webbplatsen</translation>
 <translation id="8593450223647418235">Du kan inte öppna filer i Microsoft 365 förrän konfigureringen är klar.</translation>
+<translation id="8593686980889923154"><ph name="APP_NAME" /> har blockerats på <ph name="DEVICE_TYPE" /></translation>
 <translation id="8596540852772265699">Egna filformat</translation>
 <translation id="8597845839771543242">Format på egenskap:</translation>
 <translation id="8598249292448297523">skriv ut</translation>
@@ -10578,6 +10593,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8890529496706615641">Det gick inte att byta namn på profilen. Försök igen eller kontakta operatören om du behöver teknisk support.</translation>
 <translation id="8892168913673237979">Klart!</translation>
 <translation id="8892246501904593980">Se alla dina bokmärken i Bokmärken och Listor</translation>
+<translation id="8893479486525393799">Studiomikrofon</translation>
 <translation id="8893801527741465188">Avinstallationen är slutförd</translation>
 <translation id="8893928184421379330">Det gick tyvärr inte att identifiera enheten <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8894761918470382415">Dataåtkomstskydd för kringutrustning</translation>

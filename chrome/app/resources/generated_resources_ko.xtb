@@ -758,7 +758,7 @@
 <translation id="1563702743503072935">로그인한 상태라면 이 기기에서도 Google 계정의 비밀번호를 사용할 수 있습니다.</translation>
 <translation id="1566049601598938765">웹사이트</translation>
 <translation id="15662109988763471">선택한 프린터가 사용 불가능하거나 올바르게 설치되어 있지 않습니다. 프린터를 확인하거나 다른 프린터를 선택해 보세요.</translation>
-<translation id="1566329594234563241">비활성화 상태이며 전원에 연결되어 있는 동안</translation>
+<translation id="1566329594234563241">비활성 상태이며 전원에 연결되어 있는 동안</translation>
 <translation id="1567135437923613642">추천 실험 기능 사용</translation>
 <translation id="1567387640189251553">마지막으로 비밀번호를 입력한 후 다른 키보드가 연결되었습니다. 키 입력 내용을 도용하려는 시도일 수 있습니다.</translation>
 <translation id="1567579616025300478">이 사이트에서는 기기에 데이터를 저장할 수 없습니다.</translation>
@@ -1711,6 +1711,7 @@
 <translation id="2234827758954819389">개인 정보 보호 가이드</translation>
 <translation id="2234876718134438132">동기화 및 Google 서비스</translation>
 <translation id="2235344399760031203">타사 쿠키가 차단됨</translation>
+<translation id="2236949375853147973">내 활동</translation>
 <translation id="2238379619048995541">주파수 상태 데이터</translation>
 <translation id="2241053333139545397">여러 웹사이트의 데이터를 읽고 변경</translation>
 <translation id="2241634353105152135">한 번만</translation>
@@ -5227,6 +5228,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4853020600495124913">새 창에서 열기(&amp;N)</translation>
 <translation id="4854317507773910281">승인을 요청할 부모 계정 선택</translation>
 <translation id="485480310608090163">추가 설정 및 권한</translation>
+<translation id="4858599593306712511">앱 자녀 보호 기능</translation>
 <translation id="4858913220355269194">축구왕</translation>
 <translation id="486213875233855629">관리자가 음소거함</translation>
 <translation id="4862642413395066333">OCSP 응답 서명</translation>
@@ -10883,7 +10885,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9094859731829297286">Linux에 사용할 고정된 크기의 디스크를 예약하시겠습니까?</translation>
 <translation id="909554839118732438">시크릿 창 닫기</translation>
 <translation id="9095819602391364796">사이트에서 MIDI 기기를 제어하고 다시 프로그래밍하도록 허용하지 않음</translation>
-<translation id="9096053102600371572">스크롤 제어됨 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="9096053102600371572">스크롤 제어 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="9096776523567481218">로컬에 설치되지 않음</translation>
 <translation id="9098860402274800697">Google Play 및 Android 앱 삭제</translation>
 <translation id="9099220545925418560">방문 기록을 기반으로 추천됩니다. 설정이 사용 중지되어 있습니다.</translation>

@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">Հիմա չէ</translation>
 <translation id="100881991356161927">Կայքի անվանումը</translation>
 <translation id="1009663062402466586">Այժմ հասանելի են խաղերի կառավարման տարրեր</translation>
+<translation id="1010136228650201057">Օգտատիրոջ տվյալների գաղտնագրում</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{էջ չի պատասխանում}one{էջ չի պատասխանում}other{էջ չի պատասխանում}}</translation>
 <translation id="1011003645819296594">Պահված սարքեր</translation>
 <translation id="1011355516189274711">Տեքստի հնչեցման ձայնի ուժգնությունը</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">Ինկոգնիտո</translation>
 <translation id="1049795001945932310">&amp;Լեզվի կարգավորումներ</translation>
 <translation id="1050693411695664090">Վատ</translation>
+<translation id="1053776357096024725">Լավացնել ներկառուցված խոսափողի ձայնը տարբեր էֆեկտների միջոցով</translation>
 <translation id="1054048317165655285">Ավարտեք կարգավորումը ձեր հեռախոսում</translation>
 <translation id="1054153489933238809">Բացել &amp;պատկերի բնօրինակը նոր ներդիրով</translation>
 <translation id="1054187194995068149">Ողջույն։ Սա նախնական տարբերակ է։</translation>
@@ -835,6 +837,7 @@
 <translation id="1607139524282324606">Մաքրել հաղորդագրությունը</translation>
 <translation id="1607499585984539560">Օգտատերը կապված չէ տիրույթի հետ</translation>
 <translation id="1608668830839595724">Այլ գործողություններ ընտրված տարրերի համար</translation>
+<translation id="1608698493373028805">Շուտով այս ընդլայնումը կարող է այլևս չաջակցվել</translation>
 <translation id="1610272688494140697">Հավելվածի կարգավորումներ</translation>
 <translation id="161042844686301425">Երկնագույն</translation>
 <translation id="1611432201750675208">Ձեր սարքը կողպված է</translation>
@@ -1699,6 +1702,7 @@
 <translation id="2234827758954819389">Տվյալների պաշտպանության ուղեցույց</translation>
 <translation id="2234876718134438132">Համաժամացում և Google-ի ծառայություններ</translation>
 <translation id="2235344399760031203">Երրորդ կողմի քուքիներն արգելափակված են</translation>
+<translation id="2236949375853147973">Իմ գործողությունները</translation>
 <translation id="2238379619048995541">Տվյալներ հաճախականության վիճակի մասին</translation>
 <translation id="2241053333139545397">Կարդալ և փոխել ձեր տվյալները մի շարք վեբկայքերում</translation>
 <translation id="2241634353105152135">Միայն այս անգամ</translation>
@@ -2306,6 +2310,7 @@
 <translation id="2667144577800272420">Կան այլ հավելվածներ, որոնք կարգավորված են այնպես, որ կարողանան բացել նույն հղումները, ինչ <ph name="APP_NAME" /> հավելվածը։ Դա նշանակում է, որ <ph name="APP_NAME_2" /> և <ph name="APP_NAME_3" /> հավելվածները չեն կարողանա բացել աջակցվող հղումներ։</translation>
 <translation id="2667463864537187133">Կառավարել ուղղագրության ստուգումը</translation>
 <translation id="2668094785979141847">Հպեք՝ Google Տեսապակուց դուրս գալու համար</translation>
+<translation id="2668604389652548400">Հեռացրեք այն կամ փոխարինեք նմանատիպ ընդլայնումներով <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />-ից</translation>
 <translation id="2669241540496514785">Չհաջողվեց բացել <ph name="APP_NAME" /> հավելվածը</translation>
 <translation id="2669454659051515572">Այս սարքն օգտագործող ցանկացած օգտատեր կարող է տեսնել ներբեռնված ֆայլերը</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> հավելվածը կիսվում է Chrome-ի ներդիրով:</translation>
@@ -2356,6 +2361,7 @@
 <translation id="2710101514844343743">Օգտագործման և դիագնոստիկ տվյալներ</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2710507903599773521">Ձեր <ph name="DEVICE_TYPE" />-ն այժմ ապակողպված է</translation>
+<translation id="2712141162840347885">Ընտրեք ցանկացած բան՝ Google Տեսապակու միջոցով որոնելու համար, կամ սեղմեք Escape՝ Google Տեսապակին փակելու համար</translation>
 <translation id="2713106313042589954">Անջատել տեսախցիկը</translation>
 <translation id="2713444072780614174">Սպիտակ</translation>
 <translation id="2714180132046334502">Մուգ ֆոն</translation>
@@ -2980,6 +2986,7 @@
 <translation id="3177914167275935955">Ձեր սարքում առկա է Chrome Education-ի լիցենզիա, բայց ձեր օգտանունը կապված չէ Google for Education հաշվի հետ։ Ստեղծեք Google for Education հաշիվ՝ մեկ այլ սարքում անցնելով g.co/workspace/edusignup էջ։</translation>
 <translation id="3179982752812949580">Տեքստի տառատեսակը</translation>
 <translation id="3180284704187420717">Պահեք ձեր էջանիշները, գաղտնաբառերը և ավելին համաժամացման միջոցով</translation>
+<translation id="3180716079618904608">Հավելվածների ու խաղերի տեղադրում</translation>
 <translation id="3181954750937456830">Անվտանգ դիտարկում (պաշտպանում է ձեզ և ձեր սարքը վտանգավոր կայքերից)</translation>
 <translation id="3182749001423093222">Ուղղագրության ստուգում</translation>
 <translation id="3183139917765991655">Պրոֆիլի ներմուծիչ</translation>
@@ -4269,6 +4276,7 @@
 <translation id="4120817667028078560">Ուղին չափազանց երկար է</translation>
 <translation id="4124823734405044952">Անվտանգության բանալու կարգավորումները զրոյացվեցին։</translation>
 <translation id="4124935795427217608">Միաեղջյուր</translation>
+<translation id="4126375522951286587">Անջատել <ph name="VM_NAME" /> հեռակա սարքը</translation>
 <translation id="412730574613779332">Գերհերոս</translation>
 <translation id="4130199216115862831">Սարքի մատյան</translation>
 <translation id="4130750466177569591">Համաձայն եմ</translation>
@@ -4569,6 +4577,7 @@
 <translation id="4364327530094270451">Սեխ</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> հավելվածը կիսվում է պատուհանով:</translation>
 <translation id="4364830672918311045">Ցույց տալ ծանուցումները</translation>
+<translation id="4367027658822022112">Google Տեսապակուց արագ օգտվելու համար սեղմեք կողային վահանակի վերևի հատվածում գտնվող «Ամրացնել» կոճակը</translation>
 <translation id="4367513928820380646">Ստուգել հեռացված թույլտվությունները</translation>
 <translation id="4367971618859387374">Ցուցադրվող անունը</translation>
 <translation id="4368960422722232719">Ներդիրի վրա պահելուց ցույց տալ օգտագործված հիշողության նախադիտման քարտը</translation>
@@ -4971,6 +4980,7 @@
 <translation id="4666911709726371538">Այլ հավելվածներ</translation>
 <translation id="4668279686271488041">Գովազդի արդյունավետության գնահատման տվյալները պարբերաբար ջնջվում են ձեր սարքից</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">PIN կոդը պետք է բաղկացած լինի միայն թվերից</translation>
 <translation id="4670909875730475086">Շնորհավորում ենք․ «<ph name="APP_NAME" />» հավելվածը տեղադրվեց ձեր սարքում</translation>
 <translation id="4672759829555593783">Բացել <ph name="FILE_NAME" /> ֆայլը</translation>
 <translation id="4673442866648850031">Ստիլուսը հեռացնելու դեպքում բացել ստիլուսի գործիքները</translation>
@@ -5054,6 +5064,7 @@
 <translation id="473936925429402449">Ընտրված է լրացուցիչ բովանդակություն <ph name="CURRENT_ELEMENT" />-ը՝ <ph name="TOTAL_ELEMENTS" />-ից</translation>
 <translation id="4739639199548674512">Տոմսեր</translation>
 <translation id="4740546261986864539">Վերջերս բացված</translation>
+<translation id="4741235124132242877">Google Տեսապակին ամրացված է․ այն այժմ հասանելի է գործիքագոտում</translation>
 <translation id="4742334355511750246">Չի թույլատրվում ցուցադրել պատկերներ</translation>
 <translation id="4742795653798179840">Տվյալները ջնջվել են Chrome-ից</translation>
 <translation id="4742970037960872810">Հեռացնել ընդգծումը</translation>
@@ -5201,6 +5212,7 @@
 <translation id="4853020600495124913">Բացել &amp;նոր պատուհանում</translation>
 <translation id="4854317507773910281">Հաստատման համար ընտրեք ծնողի հաշիվը</translation>
 <translation id="485480310608090163">Այլ կարգավորումներ և թույլտվություններ</translation>
+<translation id="4858599593306712511">Հավելվածների ծնողական վերահսկողություն</translation>
 <translation id="4858913220355269194">Ֆուտբոլ</translation>
 <translation id="486213875233855629">Ադմինիստրատորն անջատել է ձայնը</translation>
 <translation id="4862642413395066333">OCSP պատասխանների ստորագրում</translation>
@@ -6748,6 +6760,7 @@
 <translation id="6042308850641462728">Ավելին</translation>
 <translation id="604388835206766544">Չհաջողվեց վերլուծել կազմաձևը</translation>
 <translation id="6043994281159824495">Դուրս գրվել</translation>
+<translation id="604424701295382420">Google Տեսապակին ամրացված է․ այն բացելու համար օգտագործեք գործիքագոտու նոր կոճակը</translation>
 <translation id="6045114302329202345">TrackPoint-ի հիմնական կոճակ</translation>
 <translation id="6047632800149092791">Համաժամացումը չի աշխատում։ Դուրս եկեք հաշվից և նորից մտեք։</translation>
 <translation id="6048747414605857443">Ընտրեք և անհատականացրեք տեքստի հնչեցման ձայները ChromeVox-ի և «Ընտրեք և լսեք» գործառույթի համար</translation>
@@ -7582,6 +7595,7 @@
 <translation id="6686490380836145850">Փակել աջ կողմի ներդիրները</translation>
 <translation id="6686665106869989887">Ներդիրը տեղափոխվեց աջ</translation>
 <translation id="6686817083349815241">Պահել գաղտնաբառը</translation>
+<translation id="6687008241368170505">Փոխել Google գաղտնաբառերի կառավարչի PIN կոդը</translation>
 <translation id="6687079240787935001">Թաքցնել «<ph name="MODULE_TITLE" />» զամբյուղը</translation>
 <translation id="6689714331348768690">Խնդրեք <ph name="SUPERVISED_USER_NAME" />-ին մոտենալ համակարգչին։ Իր ձայնի նմուշը ստեղծելու համար երեխան պետք է կարդա էկրանին ցուցադրված մի քանի արտահայտություն։
     <ph name="BR" />
@@ -8360,6 +8374,7 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Պահանջվում է թույլտվություն։ Արձագանքելու համար սեղմեք F6 ստեղնը։</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" />-ի կողմից տրամադրվող մուտքի ծառայությունն օգտագործում է ձեր տեսախցիկը:</translation>
 <translation id="7292067737327289208">Ձեր <ph name="BEGIN_LINK" />դիտարկիչը կառավարվում է<ph name="END_LINK" /> ձեր կազմակերպության կողմից, իսկ <ph name="BEGIN_LINK" />պրոֆիլը<ph name="END_LINK" />՝ <ph name="PROFILE_DOMAIN" /> տիրույթի կողմից</translation>
+<translation id="7292147651179697920">Խնդրեք ծնողին Կարգավորումներում թույլատրել օգտագործումը</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Նկատի ունեցեք, որ Android-ի, Play-ի և դրանց հետ կապված հավելվածների օգտագործումը կարգավորվում է դրանց տվյալների հավաքման և օգտագործման կանոններով։</translation>
 <translation id="7296503797589217366">Ընտրել <ph name="FOLDER_TITLE" /> պանակը</translation>
@@ -8668,6 +8683,7 @@
 <translation id="7514239104543605883">Պատճենել սարքում</translation>
 <translation id="7514365320538308">Ներբեռնել</translation>
 <translation id="7514417110442087199">Ավելացնել նշանակում</translation>
+<translation id="7515191208480168435">Ամրացրեք Google Տեսապակին՝ արագ մուտքի համար</translation>
 <translation id="751523031290522286">Ադմինիստրատորն արգելափակել է <ph name="APP_NAME" /> հավելվածը։ Խնդրեք նրան տրամադրել ձեզ հավելվածի օգտագործման թույլտվություն։</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
@@ -10140,6 +10156,7 @@
 <translation id="8592141010104017453">Ցույց չտալ ծանուցումներ</translation>
 <translation id="859246725979739260">Այս կայքին արգելված է օգտագործել ձեր տեղադրության մասին տվյալները։</translation>
 <translation id="8593450223647418235">Դուք չեք կարողանա ֆայլեր բացել Microsoft 365-ում, քանի դեռ կարգավորումը չի ավարտվել։</translation>
+<translation id="8593686980889923154"><ph name="APP_NAME" /> հավելվածն արգելափակված է ձեր <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="8596540852772265699">Օգտատիրոջ ֆայլեր</translation>
 <translation id="8597845839771543242">Հատկության ձևաչափ՝</translation>
 <translation id="8598249292448297523">տպել</translation>
@@ -10560,6 +10577,7 @@
 <translation id="8890529496706615641">Չհաջողվեց վերանվանել պրոֆիլը։ Նորից փորձեք կամ դիմեք օպերատորին՝ տեխնիկական աջակցման համար։</translation>
 <translation id="8892168913673237979">Կայված է:</translation>
 <translation id="8892246501904593980">Տեսնել բոլոր էջանիշները «Էջանիշներ և ցանկեր» բաժնում</translation>
+<translation id="8893479486525393799">Ստուդիայի խոսափող</translation>
 <translation id="8893801527741465188">Ապատեղադրումն ավարտվեց</translation>
 <translation id="8893928184421379330">Չհաջողվեց ճանաչել <ph name="DEVICE_LABEL" /> սարքը:</translation>
 <translation id="8894761918470382415">Տվյալների հասանելիության պաշտպանություն արտաքին սարքերի համար</translation>

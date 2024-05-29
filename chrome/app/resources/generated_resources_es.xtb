@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">Ahora no</translation>
 <translation id="100881991356161927">Nombre del sitio</translation>
 <translation id="1009663062402466586">Controles de juegos ya disponibles</translation>
+<translation id="1010136228650201057">Cifrado de datos de usuario</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{La página no responde}other{Las páginas no responden}}</translation>
 <translation id="1011003645819296594">Dispositivos guardados</translation>
 <translation id="1011355516189274711">Volumen de conversión de texto a voz</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">Incógnito</translation>
 <translation id="1049795001945932310">&amp;Configuración de idioma</translation>
 <translation id="1050693411695664090">Mala</translation>
+<translation id="1053776357096024725">Mejora el sonido de tu micrófono integrado con varios efectos</translation>
 <translation id="1054048317165655285">Completa la configuración en tu teléfono</translation>
 <translation id="1054153489933238809">Abrir &amp;imagen original en una pestaña nueva</translation>
 <translation id="1054187194995068149">Hola. Esto es una muestra.</translation>
@@ -833,6 +835,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1607139524282324606">Borrar entrada</translation>
 <translation id="1607499585984539560">El usuario no está asociado a un dominio</translation>
 <translation id="1608668830839595724">Más acciones para los elementos seleccionados</translation>
+<translation id="1608698493373028805">Es posible que esta extensión deje de admitirse próximamente</translation>
 <translation id="1610272688494140697">Configuración de la aplicación</translation>
 <translation id="161042844686301425">Cian</translation>
 <translation id="1611432201750675208">Tu dispositivo está bloqueado</translation>
@@ -1697,6 +1700,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2234827758954819389">Guía de privacidad</translation>
 <translation id="2234876718134438132">Sincronización y servicios de Google</translation>
 <translation id="2235344399760031203">Se han bloqueado las cookies de terceros</translation>
+<translation id="2236949375853147973">Mi Actividad</translation>
 <translation id="2238379619048995541">Datos de estado de frecuencia</translation>
 <translation id="2241053333139545397">Leer y modificar tus datos en una serie de sitios web</translation>
 <translation id="2241634353105152135">Solo una vez</translation>
@@ -2307,6 +2311,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2667144577800272420">Se han configurado otras aplicaciones para abrir los mismos enlaces que <ph name="APP_NAME" />. Se inhabilitará la apertura de enlaces compatibles desde <ph name="APP_NAME_2" /> y <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Gestionar el corrector ortográfico</translation>
 <translation id="2668094785979141847">Haz clic para salir de Google Lens</translation>
+<translation id="2668604389652548400">Quítala o sustitúyela por extensiones similares de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">No se ha podido abrir el archivo <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Cualquier persona que use este dispositivo puede ver los archivos descargados</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> está compartiendo una pestaña de Chrome.</translation>
@@ -2357,6 +2362,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2710101514844343743">Datos de uso y diagnóstico</translation>
 <translation id="271033894570825754">Nuevo</translation>
 <translation id="2710507903599773521">Tu <ph name="DEVICE_TYPE" /> ahora está desbloqueado</translation>
+<translation id="2712141162840347885">Selecciona cualquier cosa para buscarla con Google Lens o pulsa la tecla Esc para salir de Google Lens</translation>
 <translation id="2713106313042589954">Desactivar cámara</translation>
 <translation id="2713444072780614174">Blanco</translation>
 <translation id="2714180132046334502">Fondo oscuro</translation>
@@ -2980,6 +2986,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3177914167275935955">Tu dispositivo incluye una Licencia de Chrome Education, pero tu nombre de usuario no está asociado a una cuenta de Google for Education. Crea una cuenta de Google for Education en g.co/workspace/edusignup con un dispositivo secundario.</translation>
 <translation id="3179982752812949580">Fuente del texto</translation>
 <translation id="3180284704187420717">Guarda tus marcadores, contraseñas y más con la sincronización</translation>
+<translation id="3180716079618904608">Obtener aplicaciones y juegos</translation>
 <translation id="3181954750937456830">Navegación segura (te protege a ti y a tu dispositivo frente a sitios peligrosos)</translation>
 <translation id="3182749001423093222">Revisión ortográfica</translation>
 <translation id="3183139917765991655">Importador de perfiles</translation>
@@ -4270,6 +4277,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4120817667028078560">Ruta demasiado larga</translation>
 <translation id="4124823734405044952">Tu llave de seguridad se ha restablecido</translation>
 <translation id="4124935795427217608">Unicornio</translation>
+<translation id="4126375522951286587">Apagar <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">Superhéroe</translation>
 <translation id="4130199216115862831">Registro de dispositivo</translation>
 <translation id="4130750466177569591">Acepto</translation>
@@ -4570,6 +4578,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4364327530094270451">Melón</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> está compartiendo una ventana.</translation>
 <translation id="4364830672918311045">Mostrar notificaciones</translation>
+<translation id="4367027658822022112">Para acceder fácilmente a Google Lens, puedes fijarlo haciendo clic en el botón Fijar situado en la parte superior del panel lateral</translation>
 <translation id="4367513928820380646">Revisar permisos quitados</translation>
 <translation id="4367971618859387374">Nombre visible</translation>
 <translation id="4368960422722232719">Mostrar uso de memoria en la tarjeta de vista previa que se muestra al colocar el cursor sobre una pestaña</translation>
@@ -4972,6 +4981,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4666911709726371538">Más aplicaciones</translation>
 <translation id="4668279686271488041">Los datos de medición de anuncios se eliminarán periódicamente de tu dispositivo.</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">El PIN debe estar compuesto únicamente por números</translation>
 <translation id="4670909875730475086">¡Enhorabuena! <ph name="APP_NAME" /> se ha instalado correctamente en tu dispositivo.</translation>
 <translation id="4672759829555593783">Abrir <ph name="FILE_NAME" /> ahora</translation>
 <translation id="4673442866648850031">Abrir las herramientas del lápiz óptico al quitarlo</translation>
@@ -5055,6 +5065,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="473936925429402449">Seleccionado contenido adicional <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tickets</translation>
 <translation id="4740546261986864539">Abierta recientemente</translation>
+<translation id="4741235124132242877">¡Fijado! Vuelve a usar Google Lens desde la barra de herramientas.</translation>
 <translation id="4742334355511750246">No puede mostrar imágenes</translation>
 <translation id="4742795653798179840">Datos de Chrome eliminados</translation>
 <translation id="4742970037960872810">Eliminar resaltado</translation>
@@ -5202,6 +5213,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4853020600495124913">Abrir en una ventana &amp;nueva</translation>
 <translation id="4854317507773910281">Elige una cuenta parental para la aprobación</translation>
 <translation id="485480310608090163">Más ajustes y permisos</translation>
+<translation id="4858599593306712511">Controles parentales de aplicaciones</translation>
 <translation id="4858913220355269194">Balón</translation>
 <translation id="486213875233855629">Silenciado por tu administrador</translation>
 <translation id="4862642413395066333">Firma de respuestas de OCSP</translation>
@@ -6751,6 +6763,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6042308850641462728">Más</translation>
 <translation id="604388835206766544">Se ha producido un error al analizar la configuración</translation>
 <translation id="6043994281159824495">Salir ahora</translation>
+<translation id="604424701295382420">¡Fijado! Puedes volver a acceder a Google Lens desde el nuevo botón de la barra de herramientas.</translation>
 <translation id="6045114302329202345">Botón principal del TrackPoint</translation>
 <translation id="6047632800149092791">No funciona la sincronización. Prueba a cerrar sesión y volver a iniciarla.</translation>
 <translation id="6048747414605857443">Selecciona y personaliza las voces de la conversión de texto a voz de ChromeVox y Enunciar selección</translation>
@@ -7583,6 +7596,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6686490380836145850">Cerrar pestañas a la derecha</translation>
 <translation id="6686665106869989887">Pestaña movida a la derecha</translation>
 <translation id="6686817083349815241">Guardar tu contraseña</translation>
+<translation id="6687008241368170505">Cambiar PIN del Gestor de contraseñas de Google</translation>
 <translation id="6687079240787935001">Ocultar <ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">Dile a <ph name="SUPERVISED_USER_NAME" /> que se acerque al ordenador. Para crear su modelo de voz, deberá leer algunas frases que aparecerán en la pantalla.
     <ph name="BR" />
@@ -8362,6 +8376,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" />: permiso solicitado, pulsa F6 para responder</translation>
 <translation id="7290242001003353852">Este servicio de inicio de sesión (que se aloja en <ph name="SAML_DOMAIN" />) está accediendo a la cámara.</translation>
 <translation id="7292067737327289208">Tu organización <ph name="BEGIN_LINK" />gestiona tu navegador<ph name="END_LINK" />, y <ph name="PROFILE_DOMAIN" /> <ph name="BEGIN_LINK" />gestiona tu perfil<ph name="END_LINK" /></translation>
+<translation id="7292147651179697920">Pídele a tu padre o madre que te dé acceso desde Configuración</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Ten en cuenta que Android, Google Play y las aplicaciones asociadas se rigen por sus propias políticas de recogida y uso de datos.</translation>
 <translation id="7296503797589217366">Seleccionar carpeta <ph name="FOLDER_TITLE" /></translation>
@@ -8670,6 +8685,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7514239104543605883">Copiar en tu dispositivo</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7514417110442087199">Añadir mapeo</translation>
+<translation id="7515191208480168435">Puedes fijar Google Lens para acceder fácilmente</translation>
 <translation id="751523031290522286">El administrador ha bloqueado <ph name="APP_NAME" />. Pide permiso al administrador para usar esta aplicación.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">Av Pág</translation>
@@ -10144,6 +10160,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8592141010104017453">No mostrar ninguna notificación</translation>
 <translation id="859246725979739260">Este sitio web no tiene permiso para acceder a tu ubicación.</translation>
 <translation id="8593450223647418235">No podrás abrir archivos en Microsoft 365 hasta que se haya completado la configuración.</translation>
+<translation id="8593686980889923154">Se ha bloqueado <ph name="APP_NAME" /> en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8596540852772265699">Archivos personalizados</translation>
 <translation id="8597845839771543242">Formato de propiedad:</translation>
 <translation id="8598249292448297523">impresión</translation>
@@ -10563,6 +10580,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8890529496706615641">No se ha podido cambiar el nombre del perfil. Inténtalo de nuevo o ponte en contacto con tu operador para obtener asistencia técnica.</translation>
 <translation id="8892168913673237979">¡Todo listo!</translation>
 <translation id="8892246501904593980">Ver todos tus marcadores en Marcadores y listas</translation>
+<translation id="8893479486525393799">Micrófono de estudio</translation>
 <translation id="8893801527741465188">Desinstalación completada</translation>
 <translation id="8893928184421379330">No se ha podido reconocer el dispositivo <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8894761918470382415">Protección de acceso a datos desde periféricos</translation>

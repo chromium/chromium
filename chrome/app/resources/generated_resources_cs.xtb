@@ -20,6 +20,7 @@
 <translation id="1008557486741366299">Teď ne</translation>
 <translation id="100881991356161927">Název webu</translation>
 <translation id="1009663062402466586">K dispozici jsou ovládací prvky hry</translation>
+<translation id="1010136228650201057">Šifrování uživatelských dat</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Stránka nereaguje}few{Stránky nereagují}many{Stránky nereagují}other{Stránky nereagují}}</translation>
 <translation id="1011003645819296594">Uložená zařízení</translation>
 <translation id="1011355516189274711">Hlasitost převodu textu na řeč</translation>
@@ -73,6 +74,7 @@
 <translation id="1049743911850919806">Anonymní režim</translation>
 <translation id="1049795001945932310">&amp;Jazyková nastavení</translation>
 <translation id="1050693411695664090">Nízká</translation>
+<translation id="1053776357096024725">Vylepšit zvuk vestavěného mikrofonu pomocí různých efektů</translation>
 <translation id="1054048317165655285">Dokončete nastavení na telefonu</translation>
 <translation id="1054153489933238809">Otevřít původní &amp;obrázek na nové kartě</translation>
 <translation id="1054187194995068149">Dobrý den, tohle je ukázka</translation>
@@ -835,6 +837,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1607139524282324606">Vymazat položku</translation>
 <translation id="1607499585984539560">Uživatel není přidružen k doméně</translation>
 <translation id="1608668830839595724">Další akce s vybranými položkami</translation>
+<translation id="1608698493373028805">Toto rozšíření pravděpodobně již brzy nebude podporováno</translation>
 <translation id="1610272688494140697">Nastavení aplikací</translation>
 <translation id="161042844686301425">Azurová</translation>
 <translation id="1611432201750675208">Zařízení je zamknuté</translation>
@@ -2308,6 +2311,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2667144577800272420">Ostatní aplikace jsou nastaveny, aby otevíraly stejné odkazy jako aplikace <ph name="APP_NAME" />. Aplikace <ph name="APP_NAME_2" /> a <ph name="APP_NAME_3" /> tak nebudou moci otevírat podporované odkazy.</translation>
 <translation id="2667463864537187133">Správa kontroly pravopisu</translation>
 <translation id="2668094785979141847">Kliknutím ukončíte Google Lens</translation>
+<translation id="2668604389652548400">Odstraňte ho nebo ho nahraďte podobnými rozšířeními z <ph name="BEGIN_LINK" />Internetového obchodu Chrome<ph name="END_LINK" />.</translation>
 <translation id="2669241540496514785">Aplikaci <ph name="APP_NAME" /> nelze otevřít</translation>
 <translation id="2669454659051515572">Stažené soubory může vidět kdokoli, kdo používá tohle zařízení</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> sdílí kartu Chrome.</translation>
@@ -2358,6 +2362,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2710101514844343743">Údaje o využití a diagnostice</translation>
 <translation id="271033894570825754">Nové</translation>
 <translation id="2710507903599773521">Vaše zařízení <ph name="DEVICE_TYPE" /> je teď odemknuté</translation>
+<translation id="2712141162840347885">Vyberte cokoli, co chcete vyhledat pomocí Google Lens, nebo Google Lens stisknutím klávesy Escape ukončete</translation>
 <translation id="2713106313042589954">Vypnout kameru</translation>
 <translation id="2713444072780614174">Bílá</translation>
 <translation id="2714180132046334502">Tmavé pozadí</translation>
@@ -2982,6 +2987,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3177914167275935955">Vaše zařízení obsahuje upgrade Chrome Education, ale vaše uživatelské jméno není přidruženo k účtu Google for Education. Navštivte na sekundárním zařízení stránku g.co/workspace/edusignup a vytvořte si účet Google for Education.</translation>
 <translation id="3179982752812949580">Písmo textu</translation>
 <translation id="3180284704187420717">Ukládejte si záložky, hesla a další obsah pomocí synchronizace</translation>
+<translation id="3180716079618904608">Získání aplikací a her</translation>
 <translation id="3181954750937456830">Bezpečné prohlížení (chrání vás a vaše zařízení před nebezpečnými weby)</translation>
 <translation id="3182749001423093222">Kontrola pravopisu</translation>
 <translation id="3183139917765991655">Nástroj na import profilů</translation>
@@ -4270,6 +4276,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4120817667028078560">Cesta je příliš dlouhá</translation>
 <translation id="4124823734405044952">Bezpečnostní klíč byl resetován</translation>
 <translation id="4124935795427217608">Jednorožec</translation>
+<translation id="4126375522951286587">Vypnout počítač <ph name="VM_NAME" /></translation>
 <translation id="412730574613779332">Borec</translation>
 <translation id="4130199216115862831">Protokol zařízení</translation>
 <translation id="4130750466177569591">Souhlasím</translation>
@@ -4570,6 +4577,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4364327530094270451">Meloun</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> sdílí okno.</translation>
 <translation id="4364830672918311045">Zobrazování oznámení</translation>
+<translation id="4367027658822022112">Google Lens si můžete pro snadný přístup připnout. Stačí v horní části postranního panelu kliknout na tlačítko Připnout.</translation>
 <translation id="4367513928820380646">Zkontrolujte odstraněná oprávnění</translation>
 <translation id="4367971618859387374">Zobrazované jméno</translation>
 <translation id="4368960422722232719">V náhledu karty při najetí myší zobrazovat využití paměti</translation>
@@ -4972,6 +4980,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4666911709726371538">Další aplikace</translation>
 <translation id="4668279686271488041">Údaje o měření reklam se z vašeho zařízení pravidelně mažou.</translation>
 <translation id="4668929960204016307">,</translation>
+<translation id="4668936527507421457">PIN smí obsahovat pouze číslice</translation>
 <translation id="4670909875730475086">Gratulujeme! Na zařízení byla úspěšně nainstalována aplikace <ph name="APP_NAME" /></translation>
 <translation id="4672759829555593783">Otevřít soubor <ph name="FILE_NAME" /></translation>
 <translation id="4673442866648850031">Při vyjmutí dotykového pera automaticky otevřít nástroje pro dotykové pero</translation>
@@ -5055,6 +5064,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="473936925429402449">Vybráno, extra obsah <ph name="CURRENT_ELEMENT" /> z <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Lístky</translation>
 <translation id="4740546261986864539">Nedávno otevřeno</translation>
+<translation id="4741235124132242877">Připnuto! Příště použijte Google Lens z lišty</translation>
 <translation id="4742334355511750246">Zákaz zobrazovat obrázky</translation>
 <translation id="4742795653798179840">Data Chromu byla smazána</translation>
 <translation id="4742970037960872810">Odstranit zvýraznění</translation>
@@ -6390,7 +6400,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5774295353725270860">Do aplikace Soubory</translation>
 <translation id="5775777649329475570">Odebrat Google Play a aplikace pro Android?</translation>
 <translation id="5775863968701268310">Spravovat předvolby Google Play</translation>
-<translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (výchozí nastavení systému)</translation>
+<translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (předvoleno systémem)</translation>
 <translation id="5776450228446082914">Seznam webů, které lze otevřít v obou prohlížečích.</translation>
 <translation id="5776571780337000608">Pomocí této aplikace můžete otevírat a upravovat podporované soubory z prohlížeče souborů nebo jiných aplikací. Pokud chcete určit, které soubory se ve výchozím nastavení otevírají v této aplikaci, přečtěte si, <ph name="BEGIN_LINK" />jak na zařízení nastavit výchozí aplikace<ph name="END_LINK" />.</translation>
 <translation id="5776884611062957102">Služby určování polohy Google zlepšují přesnost určování polohy na základě sítí Wi-Fi, mobilních sítí a senzorů, pomocí kterých se snaží odhadnout vaši polohu. Google může pravidelně shromažďovat údaje o poloze a anonymně je používat ke zlepšování přesnosti polohy a služeb založených na poloze.
@@ -6748,6 +6758,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6042308850641462728">Více</translation>
 <translation id="604388835206766544">Konfiguraci se nepodařilo analyzovat</translation>
 <translation id="6043994281159824495">Odhlásit se</translation>
+<translation id="604424701295382420">Připnuto! Příště můžete Google Lens použít pomocí nového tlačítka na liště</translation>
 <translation id="6045114302329202345">Primární tlačítko TrackPointu</translation>
 <translation id="6047632800149092791">Synchronizace nefunguje. Zkuste se odhlásit a znovu přihlásit.</translation>
 <translation id="6048747414605857443">Vyberte a přizpůsobte hlasy převodu textu na řeč pro ChromeVox a poslech vybraného textu</translation>
@@ -7584,6 +7595,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6686490380836145850">Zavřít karty napravo</translation>
 <translation id="6686665106869989887">Karta byla přesunuta doprava</translation>
 <translation id="6686817083349815241">Uložte si heslo</translation>
+<translation id="6687008241368170505">Změnit PIN správce hesel Google</translation>
 <translation id="6687079240787935001">Skrýt <ph name="MODULE_TITLE" /></translation>
 <translation id="6689714331348768690">Požádejte uživatele <ph name="SUPERVISED_USER_NAME" />, aby přišel k počítači. Dítě si vytvoří hlasový model přečtením několika vět z obrazovky.
     <ph name="BR" />
@@ -8363,6 +8375,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Odpovězte na žádost o oprávnění stisknutím klávesy F6</translation>
 <translation id="7290242001003353852">Přihlašovací služba hostovaná doménou <ph name="SAML_DOMAIN" /> požádala o přístup ke kameře.</translation>
 <translation id="7292067737327289208">Váš <ph name="BEGIN_LINK" />prohlížeč spravuje<ph name="END_LINK" /> vaše organizace a váš <ph name="BEGIN_LINK" />profil spravuje<ph name="END_LINK" /> doména <ph name="PROFILE_DOMAIN" /></translation>
+<translation id="7292147651179697920">Požádej rodiče, aby ti v Nastavení povolili přístup</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7295614427631867477">Upozorňujeme, že systém Android, služba Play a přidružené aplikace se řídí vlastními zásadami shromažďování a používání dat.</translation>
 <translation id="7296503797589217366">Vybrat složku <ph name="FOLDER_TITLE" /></translation>
@@ -8670,6 +8683,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7514239104543605883">Kopírovat do zařízení</translation>
 <translation id="7514365320538308">Stáhnout</translation>
 <translation id="7514417110442087199">Přidat přiřazení</translation>
+<translation id="7515191208480168435">Google Lens si můžete pro snadný přístup připnout</translation>
 <translation id="751523031290522286">Správce aplikaci <ph name="APP_NAME" /> zablokoval. Chcete-li ji používat, požádejte správce o oprávnění.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
@@ -10144,6 +10158,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8592141010104017453">Oznámení vůbec nezobrazovat</translation>
 <translation id="859246725979739260">Tomuto webu byl přístup k vaší poloze zablokován.</translation>
 <translation id="8593450223647418235">Soubory budete moci v aplikacích Microsoft 365 otevírat až poté, co nastavení dokončíte.</translation>
+<translation id="8593686980889923154">Aplikace <ph name="APP_NAME" /> je ve vašem zařízení <ph name="DEVICE_TYPE" /> blokována</translation>
 <translation id="8596540852772265699">Vlastní soubory</translation>
 <translation id="8597845839771543242">Formát vlastnosti:</translation>
 <translation id="8598249292448297523">tisk</translation>
@@ -10564,6 +10579,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8890529496706615641">Profil se nepodařilo přejmenovat. Zkuste to znovu nebo požádejte o technickou podporu operátora.</translation>
 <translation id="8892168913673237979">Vše je nastaveno!</translation>
 <translation id="8892246501904593980">V sekci Záložky a seznamy si můžete prohlédnout všechny své záložky</translation>
+<translation id="8893479486525393799">Studiový mikrofon</translation>
 <translation id="8893801527741465188">Odinstalace byla dokončena</translation>
 <translation id="8893928184421379330">Je nám líto, zařízení <ph name="DEVICE_LABEL" /> nelze rozpoznat.</translation>
 <translation id="8894761918470382415">Ochrana přístupu k datům pro periferní zařízení</translation>

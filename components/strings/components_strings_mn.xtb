@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />Таны ажил олгогч эсвэл сургууль
           <ph name="LIST_ITEM" />Таны интернэт үйлчилгээ нийлүүлэгч
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">Энэ зүйлийг хянах</translation>
 <translation id="1337692097987160377">Энэ табыг хуваалцах</translation>
 <translation id="1339601241726513588">Бүртгэлийн домэйн:</translation>
 <translation id="1340482604681802745">Авах хаяг</translation>
@@ -2612,6 +2613,7 @@
 <translation id="6035491133925068289">Гүйлтийн зам, талбай</translation>
 <translation id="6039846035001940113">Асуудал үргэлжилсээр байвал сайтын эзэмшигчтэй холбогдоно уу.</translation>
 <translation id="6040143037577758943">Хаах</translation>
+<translation id="6040539895181423374">Үнийн статистик</translation>
 <translation id="604124094241169006">Автомат</translation>
 <translation id="6041777658117377052">Танхимын температур</translation>
 <translation id="6042308850641462728">Илүү их</translation>
@@ -3216,7 +3218,6 @@
 <translation id="719464814642662924">Виз</translation>
 <translation id="7195852673246414183">Энэ тохиргоог асаасныхаа дараа бичиж эхлэхийн тулд энэ таб руу буцаж ирнэ үү</translation>
 <translation id="7199278868241956094">Oficio</translation>
-<translation id="7201591969684833065">Таны админ дараахыг харах боломжтой:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, Нууцлалтайгаар үзэхийн тулд шинэ Нууцлалтай табыг эхлээд Tab, дараа нь Enter дээр дарж нээнэ үү</translation>
 <translation id="7203375778433816396">Chrome-г системийн өгөгдмөл хөтөч болгон тохируулах</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> нь аюулгүй байдлын стандартыг дагахгүй байна.</translation>

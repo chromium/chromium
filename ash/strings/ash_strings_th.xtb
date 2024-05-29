@@ -1514,6 +1514,7 @@
 <translation id="6707693040195709527">เกินกำหนดการเปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าแล้ว</translation>
 <translation id="6710213216561001401">ก่อนหน้า</translation>
 <translation id="6723839937902243910">พลังงาน</translation>
+<translation id="672609503628871915">ดูว่ามีอะไรใหม่</translation>
 <translation id="6727969043791803658">เชื่อมต่อแล้ว แบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">กล้อง</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1783,6 +1784,7 @@
 <translation id="7773536009433685931">เปิด Wi-Fi แทน</translation>
 <translation id="7780094051999721182">ทางลัด</translation>
 <translation id="7780159184141939021">หมุนหน้าจอ</translation>
+<translation id="7781829728241885113">เมื่อวานนี้</translation>
 <translation id="7792590255364786396">มองเห็นได้</translation>
 <translation id="7796735576426975947">การแจ้งเตือนใหม่ซ่อนอยู่</translation>
 <translation id="7798302898096527229">กด Search หรือ Shift เพื่อยกเลิก</translation>
@@ -2108,6 +2110,7 @@
 <translation id="9000771174482730261">จัดการพื้นที่เก็บข้อมูล</translation>
 <translation id="9005984960510803406">เปิดหน้าต่าง Crosh</translation>
 <translation id="9017320285115481645">ป้อนรหัสการเข้าถึง Family Link ของผู้ปกครอง</translation>
+<translation id="9022774213089566801">เข้าชมบ่อย</translation>
 <translation id="9024331582947483881">เต็มหน้าจอ</translation>
 <translation id="9029736946581028033">อุปกรณ์จะปิดในไม่ช้า</translation>
 <translation id="9030319654231318877">ปิดจนถึงพระอาทิตย์ตก</translation>

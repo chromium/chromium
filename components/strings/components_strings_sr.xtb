@@ -456,6 +456,7 @@
 <translation id="1812527064848182527">водоравно</translation>
 <translation id="1812975699435941848">Здравствено образовање и медицинска обука</translation>
 <translation id="1816436748874040213">Може да тражи да скролује и зумира дељене картице</translation>
+<translation id="1817364650920811003">Улога: савет за Chrome. Ознака приступачности: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Одблокирај</translation>
 <translation id="1818585559878922121">Документарни филмови</translation>
 <translation id="182139138257690338">аутоматска преузимања</translation>
@@ -1398,6 +1399,7 @@
 <translation id="3642638418806704195">Апликација:</translation>
 <translation id="3646643500201740985">Мерење учинка огласа</translation>
 <translation id="3647286794400715637">Унос сваког стринга URL-а мора да садржи између 1 и 2 URL-а.</translation>
+<translation id="3647400963805615193">Дугме Одбаци савет за Chrome, притисните Enter да бисте одбацили, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Потврда ваљаности је успела</translation>
 <translation id="3650594806107685466">Да бисте заштитили картицу, унесите CVC (<ph name="SIDE_OF_CARD" />)</translation>
 <translation id="3650917416636556301">Пешачење и камповање</translation>
@@ -3217,7 +3219,6 @@
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195852673246414183">Када укључите ово подешавање, вратите се на ову картицу да бисте почели да пишете</translation>
 <translation id="7199278868241956094">Oficio</translation>
-<translation id="7201591969684833065">Администратор може да види:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте отворили нову картицу без архивирања и прегледали приватно</translation>
 <translation id="7203375778433816396">Подесите Chrome као подразумевани прегледач система</translation>
 <translation id="7210863904660874423">Хост <ph name="HOST_NAME" /> не поштује безбедносне стандарде.</translation>
@@ -3370,6 +3371,7 @@
 <translation id="7481312909269577407">Напред</translation>
 <translation id="7481603210197454575">Италијанска коверта</translation>
 <translation id="7483482939016730822">Школски прибор и опрема за учионице</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, притисните Tab, па Enter да бисте одбацили савет за Chrome.</translation>
 <translation id="7485085230273446323">Врсте пословања и индустрија</translation>
 <translation id="7485870689360869515">Нису пронађени подаци.</translation>
 <translation id="7489392576326061356">Шампони и регенератори</translation>

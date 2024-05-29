@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />သင်၏အလုပ်ရှင် သို့မဟုတ် ကျောင်း
           <ph name="LIST_ITEM" />သင်၏ အင်တာနက်ဝန်ဆောင်မှုပေးသူ
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">ဤပစ္စည်းကို ခြေရာခံရန်</translation>
 <translation id="1337692097987160377">ဤတဘ်ကို မျှဝေရန်</translation>
 <translation id="1339601241726513588">စာရင်းသွင်းရန် ဒိုမိန်း</translation>
 <translation id="1340482604681802745">ထုတ်ယူရန် လိပ်စာ</translation>
@@ -2612,6 +2613,7 @@
 <translation id="6035491133925068289">ပြေးခုန်ပစ်</translation>
 <translation id="6039846035001940113">ပြဿနာ ဆက်ရှိနေသေးလျှင် ဝဘ်ဆိုက်ပိုင်ရှင်ကို ဆက်သွယ်ပါ။</translation>
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
+<translation id="6040539895181423374">ဈေးနှုန်းသိကောင်းစရာများ</translation>
 <translation id="604124094241169006">အလိုအလျောက်</translation>
 <translation id="6041777658117377052">အခန်း အပူချိန်</translation>
 <translation id="6042308850641462728">နောက်ထပ်</translation>
@@ -3216,7 +3218,6 @@
 <translation id="719464814642662924">ဗီဇာ</translation>
 <translation id="7195852673246414183">ဤဆက်တင်ကို ဖွင့်ပြီးနောက် စရေးရန် ဤတဘ်သို့ ပြန်လာပါ</translation>
 <translation id="7199278868241956094">Oficio</translation>
-<translation id="7201591969684833065">သင့်စီမံခန့်ခွဲသူများက အောက်ပါတို့ကို မြင်နိုင်သည်-</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Tab နှိပ်ပြီး Enter ခလုတ်နှိပ်၍ ရုပ်ဖျက်တဘ်အသစ်တွင် သီးသန့်ကြည့်ရှုနိုင်သည်</translation>
 <translation id="7203375778433816396">Chrome ကို စနစ်၏ မူရင်းဘရောင်ဇာအဖြစ် သတ်မှတ်ရန်</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> သည်လုံခြုံရေး စံနှုန်းများကို လိုက်နာမှုမရှိပါ။</translation>

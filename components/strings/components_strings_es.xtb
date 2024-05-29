@@ -191,6 +191,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
           <ph name="LIST_ITEM" />Tu empresa o centro educativo
           <ph name="LIST_ITEM" />Tu proveedor de servicios de Internet
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">Seguir este artículo</translation>
 <translation id="1337692097987160377">Compartir esta pestaña</translation>
 <translation id="1339601241726513588">Dominio de registro:</translation>
 <translation id="1340482604681802745">Dirección de recogida</translation>
@@ -2611,6 +2612,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6035491133925068289">Atletismo</translation>
 <translation id="6039846035001940113">Si el problema persiste, ponte en contacto con el propietario del sitio web.</translation>
 <translation id="6040143037577758943">Cerrar</translation>
+<translation id="6040539895181423374">Estadísticas sobre precios</translation>
 <translation id="604124094241169006">Automático</translation>
 <translation id="6041777658117377052">Temperatura de la cámara</translation>
 <translation id="6042308850641462728">Más</translation>
@@ -3216,7 +3218,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195852673246414183">Cuando hayas activado esta opción, vuelve a esta pestaña para empezar a escribir</translation>
 <translation id="7199278868241956094">Oficio</translation>
-<translation id="7201591969684833065">El administrador puede consultar lo siguiente:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y, a continuación, Intro para abrir una pestaña de Incógnito nueva y navegar de forma privada</translation>
 <translation id="7203375778433816396">Establecer Chrome como navegador predeterminado del sistema</translation>
 <translation id="7210863904660874423">La página <ph name="HOST_NAME" /> no cumple los estándares de seguridad.</translation>

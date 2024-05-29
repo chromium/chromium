@@ -183,6 +183,7 @@
 <translation id="1654477262762802994">開始語音查詢</translation>
 <translation id="1668469839109562275">內置 VPN</translation>
 <translation id="1673232940951031776">閂「專注模式」，淨返 <ph name="REMAINING_TIME" />。</translation>
+<translation id="1675570947608765064">其他人可以查看你對此工作所作的變更</translation>
 <translation id="1675844249244994876">更新右邊視窗</translation>
 <translation id="1677472565718498478">電量尚餘 <ph name="TIME" /></translation>
 <translation id="1677507110654891115">「<ph name="FEATURE_NAME" />」並未連線。</translation>
@@ -1516,6 +1517,7 @@
 <translation id="6707693040195709527">未在期限內將裝置回復為先前的版本</translation>
 <translation id="6710213216561001401">上一個</translation>
 <translation id="6723839937902243910">電源</translation>
+<translation id="672609503628871915">查看最新內容</translation>
 <translation id="6727969043791803658">已連接，電量為 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">攝錄機</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1785,6 +1787,7 @@
 <translation id="7773536009433685931">改為開啟 Wi-Fi</translation>
 <translation id="7780094051999721182">捷徑</translation>
 <translation id="7780159184141939021">旋轉螢幕</translation>
+<translation id="7781829728241885113">昨天</translation>
 <translation id="7792590255364786396">顯示</translation>
 <translation id="7796735576426975947">已隱藏新通知</translation>
 <translation id="7798302898096527229">按下搜尋鍵或 Shift 鍵即可取消。</translation>
@@ -2110,6 +2113,7 @@
 <translation id="9000771174482730261">管理儲存空間</translation>
 <translation id="9005984960510803406">開啟 Crosh Window</translation>
 <translation id="9017320285115481645">請輸入 Family Link 家長存取碼。</translation>
+<translation id="9022774213089566801">經常瀏覽</translation>
 <translation id="9024331582947483881">全螢幕</translation>
 <translation id="9029736946581028033">裝置即將關閉</translation>
 <translation id="9030319654231318877">關閉，直到日落</translation>

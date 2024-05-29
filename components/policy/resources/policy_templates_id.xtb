@@ -598,6 +598,7 @@ perubahan sandi, tetapi juga dapat diterapkan oleh kebijakan tertentu seperti
 
       Printer lokal juga disebut sebagai tujuan cetak native, dan menyertakan tujuan yang tersedia untuk mesin lokal dan printer jaringan bersama.</translation>
 <translation id="1456822151187621582">Windows (klien <ph name="PRODUCT_OS_NAME" />):</translation>
+<translation id="1459693405370120464">Cuaca</translation>
 <translation id="1464848559468748897">Mengontrol perilaku pengguna di sesi multi profil di perangkat <ph name="PRODUCT_OS_NAME" />.
 
       Jika kebijakan ini disetel ke 'MultiProfileUserBehaviorUnrestricted', pengguna dapat menjadi pengguna utama atau sekunder di sesi multi profil.
@@ -3215,6 +3216,7 @@ Untuk informasi selengkapnya tentang penanganan data untuk fitur AI generatif, l
 
       Setelan eksperimental ini akan dihapus di masa mendatang setelah login inline mendukung sepenuhnya semua alur login SSO.</translation>
 <translation id="3435796032110614169">Mengizinkan histori tugas pencetakan untuk dihapus</translation>
+<translation id="3435896845095436175">Aktifkan</translation>
 <translation id="3436217793443508863">Durasi waktu tanpa input pengguna sebelum layar terkunci saat menggunakan baterai, dalam milidetik.</translation>
 <translation id="3437924696598384725">Izinkan pengguna mengelola koneksi VPN</translation>
 <translation id="3441664787678256816">Mengizinkan koneksi dukungan jarak jauh perusahaan ke perangkat ini</translation>
@@ -4389,6 +4391,7 @@ Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat melacak paket mere
 <translation id="4389073105055031853">Izinkan pengguna mengelola semua sertifikat</translation>
 <translation id="4389091865841123886">Mengonfigurasi pengesahan jarak jauh dengan mekanisme TPM.</translation>
 <translation id="4389113579547582722">Izinkan pop-up Rating App Store ditampilkan</translation>
+<translation id="4394049700291259645">Nonaktifkan</translation>
 <translation id="4395619678972620537">Jika diaktifkan, koneksi pembanding WebRTC dapat melakukan downgrade ke versi
       protokol TLS/DTLS (DTLS 1.0, TLS 1.0, dan TLS 1.1) yang tidak digunakan lagi.
       Jika kebijakan ini disetel ke nonaktif atau tidak disetel, versi TLS/DTLS ini akan
@@ -7060,6 +7063,7 @@ Jika kebijakan ini tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan menggunakan
 <translation id="6410847321564585975">Daftar pelaporan aktivitas situs yang diizinkan</translation>
 <translation id="6412352702230183710">Hanya izinkan host pesan native tingkat sistem</translation>
 <translation id="6416506846917150119">Nonaktifkan penulisan prediktif keyboard fisik saat pengguna mengetik</translation>
+<translation id="6416916931494972926">Aktifkan pelaporan telemetri Kiosk Vision.</translation>
 <translation id="6417265370957905582">Asisten Google</translation>
 <translation id="6419001911253110938">Mengaktifkan tampilan layar pengantar untuk fitur AI dalam sesi selama alur login</translation>
 <translation id="6421254653839955267">Jika kebijakan disetel ke Aktif, pencarian CNAME akan dilewati. Nama server akan digunakan sebagaimana dimasukkan saat menghasilkan SPN Kerberos.
@@ -7218,6 +7222,7 @@ hanya dapat menggunakan URL alihan standar saat menggunakan <ph name="IDENTITY_A
 <translation id="6506486086262398387">Menyetel kebijakan ke Aktif berarti fitur Berbagi File Jaringan untuk <ph name="PRODUCT_OS_NAME" /> akan menggunakan NTLM sebagai autentikasi untuk berbagi SMB jika perlu. Jika kebijakan disetel ke Nonaktif, autentikasi NTLM untuk berbagi SMB akan dinonaktifkan.
 
       Jika kebijakan tidak disetel, perilaku default akan dinonaktifkan bagi pengguna terkelola dan aktif bagi pengguna lainnya.</translation>
+<translation id="6508882314969525299">Nonaktifkan pelaporan telemetri Kiosk Vision.</translation>
 <translation id="6509376413448002446">Mengonfigurasi screensaver pengguna untuk layar kunci.
 
 Jika kebijakan ini disetel ke benar (true), perangkat <ph name="PRODUCT_OS_NAME" /> akan menampilkan screensaver saat tidak ada aktivitas di layar kunci.
@@ -9692,9 +9697,6 @@ Jika kebijakan tidak disetel atau disetel ke 0, navigasi ke URL yang ditetapkan 
 
       Kebijakan ini akan dihapus setelah Chrome 115.</translation>
 <translation id="841395160262233331">Tombol peluncur/penelusuran tidak akan dapat mengubah perilaku tombol fungsi, dan setelan ini tidak dapat diubah oleh pengguna.</translation>
-<translation id="8415506434606458373">Jika kebijakan ini disetel, origin yang tercantum bisa mendapatkan atribut perangkat (mis. nomor seri, nama host) menggunakan Device Attributes API.
-
-Origin harus sesuai dengan aplikasi web yang diinstal otomatis menggunakan kebijakan <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> atau <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (sejak versi 125) atau disiapkan sebagai aplikasi kios. Untuk spesifikasi Device Attributes API, lihat https://wicg.github.io/WebApiDevice/device_attributes.</translation>
 <translation id="8415953438346821074">Jika Anda mengaktifkan setelan ini, setelan yang disimpan di profil <ph name="PRODUCT_NAME" /> seperti bookmark, data isi otomatis, sandi, dan informasi lainnya juga akan ditulis ke file yang disimpan di folder profil pengguna Roaming atau lokasi yang ditentukan oleh Administrator melalui kebijakan <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. Mengaktifkan kebijakan ini akan menonaktifkan sinkronisasi cloud.
 
       Jika kebijakan ini dinonaktifkan atau tidak disetel, hanya profil lokal reguler yang akan digunakan.</translation>
@@ -9936,6 +9938,9 @@ Jika kebijakan tidak disetel, pengguna tidak dapat memainkan game di <ph name="P
       Jika kebijakan ini ditetapkan ke true, tab yang telah berjalan di latar belakang selama setidaknya 5 menit dapat dibekukan. Pembekuan tab mengurangi penggunaan CPU, baterai, dan memori. <ph name="PRODUCT_NAME" /> menggunakan heuristik untuk menghindari pembekuan tab yang sedang aktif di latar belakang (misalnya, menampilkan notifikasi, memutar suara, streaming video). Developer web juga dapat memilih untuk tidak membekukan situsnya (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Jika kebijakan ditetapkan ke false, tidak ada tab yang akan dibekukan.</translation>
+<translation id="8607613052618540095">Jika kebijakan disetel ke Aktif, pelaporan telemetri Kiosk Vision akan diaktifkan.
+Tindakan ini akan memulai framework Kiosk Vision dan mengaktifkan pelaporan telemetri audiens.
+Jika kebijakan ini tidak disetel atau disetel ke Nonaktif, pelaporan telemetri Kiosk Vision akan dinonaktifkan.</translation>
 <translation id="8610216287193516769">Dihapus di M122 - ini adalah kebijakan khusus sisi server yang tidak pernah menggunakan infrastruktur kebijakan ChromeOS untuk penerapannya.
 Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_ALL" /> atau tidak disetel, semua penggunaan akun terkelola akan diizinkan. Tindakan ini dapat menyebabkan akun terkelola menjadi akun sekunder, yang hanya akan menerima kebijakan jika akun tersebut login sebagai akun utama di Profil browser.
       Kebijakan yang disetel untuk akun tidak akan diterapkan dalam skenario berikut:

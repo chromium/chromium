@@ -183,6 +183,7 @@
 <translation id="1654477262762802994">شروع پُرسمان صوتی</translation>
 <translation id="1668469839109562275">‏VPN داخلی</translation>
 <translation id="1673232940951031776">پایان دادن «تمرکز». ‫<ph name="REMAINING_TIME" /> باقی مانده است.</translation>
+<translation id="1675570947608765064">دیگران می‌توانند تغییراتی را که در این تکلیف ایجاد می‌کنید ببینند</translation>
 <translation id="1675844249244994876">به‌روزرسانی پنجره راست</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> باقی‌مانده</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> متصل نیست.</translation>
@@ -1518,6 +1519,7 @@
 <translation id="6707693040195709527">زمان تغییر دادن دستگاه به نسخه قبلی از موعد مقرر گذشته است</translation>
 <translation id="6710213216561001401">قبلی</translation>
 <translation id="6723839937902243910">نیرو</translation>
+<translation id="672609503628871915">مشاهده تازه‌ها</translation>
 <translation id="6727969043791803658">متصل، <ph name="BATTERY_PERCENTAGE" />٪ باتری</translation>
 <translation id="6732087373923685049">دوربین</translation>
 <translation id="6732800389263199929">بیش‌از <ph name="COUNT" /></translation>
@@ -1787,6 +1789,7 @@
 <translation id="7773536009433685931">‏روشن کردن Wi-Fi</translation>
 <translation id="7780094051999721182">میان‌برها</translation>
 <translation id="7780159184141939021">چرخاندن صفحه</translation>
+<translation id="7781829728241885113">دیروز</translation>
 <translation id="7792590255364786396">نمایان</translation>
 <translation id="7796735576426975947">اعلان جدید پنهان شده است</translation>
 <translation id="7798302898096527229">‏برای لغو کردن، Search یا Shift را فشار دهید.</translation>
@@ -2111,6 +2114,7 @@
 <translation id="9000771174482730261">مدیریت فضای ذخیره‌سازی</translation>
 <translation id="9005984960510803406">‏باز کردن پنجره Crosh</translation>
 <translation id="9017320285115481645">‏کد دسترسی ولی Family Link را وارد کنید</translation>
+<translation id="9022774213089566801">اغلب از آن‌ها بازدید شده است</translation>
 <translation id="9024331582947483881">تمام‌صفحه</translation>
 <translation id="9029736946581028033">دستگاه به‌زودی خاموش خواهد شد</translation>
 <translation id="9030319654231318877">خاموش تا غروب آفتاب</translation>

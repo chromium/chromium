@@ -61,7 +61,6 @@
 <translation id="4139634748112164403">Les onglets resteront ouverts sur cet appareil, mais le groupe sera définitivement supprimé</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Fermer le groupe <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Fermer le groupe <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Fermer le groupe <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="4159784952369912983">Mauve</translation>
-<translation id="4212246570487010370">Continuer la navigation</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="427987768447457592">Nouveau groupe d'onglets</translation>
 <translation id="4460014764210899310">Dégrouper</translation>

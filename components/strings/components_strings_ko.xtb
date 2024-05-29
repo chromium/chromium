@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />고용주 또는 학교
           <ph name="LIST_ITEM" />인터넷 서비스 제공업체
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">이 항목 추적</translation>
 <translation id="1337692097987160377">이 탭 공유</translation>
 <translation id="1339601241726513588">등록 도메인:</translation>
 <translation id="1340482604681802745">수령 주소</translation>
@@ -2611,6 +2612,7 @@
 <translation id="6035491133925068289">육상</translation>
 <translation id="6039846035001940113">문제가 계속되면 사이트 소유자에게 문의하세요.</translation>
 <translation id="6040143037577758943">닫기</translation>
+<translation id="6040539895181423374">가격 정보</translation>
 <translation id="604124094241169006">자동</translation>
 <translation id="6041777658117377052">챔버 온도</translation>
 <translation id="6042308850641462728">자세히</translation>
@@ -3216,7 +3218,6 @@
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195852673246414183">이 설정을 사용 설정한 후 이 탭으로 돌아와서 작성을 시작하세요</translation>
 <translation id="7199278868241956094">Oficio</translation>
-<translation id="7201591969684833065">관리자가 볼 수 있는 항목은 다음과 같습니다.</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, 새 시크릿 탭을 열어 비공개로 탐색하려면 Tab을 누른 다음 Enter 누르기</translation>
 <translation id="7203375778433816396">Chrome을 시스템 기본 브라우저로 설정</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" />에서 보안 기준을 준수하지 않습니다.</translation>

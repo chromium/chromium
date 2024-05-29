@@ -18,6 +18,7 @@
 <translation id="1080365971383768617">Mật khẩu trên tất cả thiết bị của bạn</translation>
 <translation id="1082920045291562218">Trang Chia sẻ kèm theo phản hồi về bảng tóm tắt đã đóng</translation>
 <translation id="1089606299949659462">Đã hoàn tất quá trình xem xét!</translation>
+<translation id="1094555143448724771">Để xem thẻ từ các thiết bị khác của bạn, hãy đồng bộ hoá các thẻ và nhật ký</translation>
 <translation id="1095761715416917775">Đảm bảo bạn luôn có thể truy cập vào dữ liệu đồng bộ hóa</translation>
 <translation id="1100066534610197918">Mở trong thẻ mới trong nhóm</translation>
 <translation id="1103142993930332957">Giúp cải thiện Chrome?</translation>
@@ -33,6 +34,7 @@
 <translation id="115483310321669804">Sử dụng mật khẩu <ph name="PASSWORD" /></translation>
 <translation id="1173894706177603556">Đổi tên</translation>
 <translation id="1174479719160874822">Chrome sẽ yêu cầu trang web dành cho thiết bị di động khi màn hình bị thu hẹp</translation>
+<translation id="1175241315203286684">Quản trị viên có thể thay đổi hồ sơ và trình duyệt của bạn từ xa, phân tích thông tin về trình duyệt thông qua báo cáo và thực hiện những nhiệm vụ cần thiết khác. Hoạt động trên thiết bị này cũng có thể được quản lý bên ngoài Chrome.</translation>
 <translation id="1177863135347784049">Tùy chỉnh</translation>
 <translation id="1181037720776840403">Xóa</translation>
 <translation id="1181366777303791449">trên <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
@@ -165,6 +167,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="185383612275551373">Đồng bộ hoá để xem nội dung phù hợp nhất trên Google</translation>
 <translation id="1871098866036088250">Mở trong trình duyệt Chrome</translation>
 <translation id="1877026089748256423">Chrome đã lỗi thời</translation>
+<translation id="1877073879466606884">Hồ sơ bạn đã đăng nhập là hồ sơ được quản lý. Quản trị viên có thể thay đổi các chế độ cài đặt hồ sơ của bạn từ xa, phân tích thông tin về trình duyệt thông qua báo cáo và thực hiện những nhiệm vụ cần thiết khác.</translation>
 <translation id="1883903952484604915">Tệp của tôi</translation>
 <translation id="189358972401248634">Ngôn ngữ khác</translation>
 <translation id="1900260903084164610">Bằng việc tiếp tục, bạn đồng ý với <ph name="BEGIN_TOS_LINK" />Điều khoản dịch vụ<ph name="END_TOS_LINK" />,</translation>
@@ -806,6 +809,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="506254248375231072">Không có thẻ nào</translation>
 <translation id="5062960805900435602">Thông tin cập nhật về việc hợp nhất mật khẩu đã đóng</translation>
 <translation id="5081960376148623587">Chọn có tải trước trang hay không</translation>
+<translation id="5085038751173179818">Đăng nhập vào trang web này và Chrome để sử dụng dấu trang và các nội dung khác trên tất cả thiết bị của bạn</translation>
 <translation id="5091199029769593641">Bạn sẽ sớm thấy các tin bài của <ph name="SITE_NAME" /> khi mở một thẻ mới. Các trang web bạn theo dõi sẽ được lưu trong tài khoản Google của bạn. Bạn có thể quản lý các trang web đó trong phần cài đặt Khám phá.</translation>
 <translation id="509429900233858213">Đã xảy ra lỗi.</translation>
 <translation id="5097349930204431044">Các trang web bạn truy cập có thể xác định sở thích của bạn để đề xuất quảng cáo khi bạn tiếp tục duyệt web</translation>
@@ -834,6 +838,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Đang tải tệp xuống…}other{Đang tải # tệp xuống…}}</translation>
 <translation id="5210286577605176222">Quay về thẻ trước</translation>
 <translation id="5210365745912300556">Đóng thẻ</translation>
+<translation id="5215957675041756913">Kiểm soát dữ liệu và tài khoản của bạn</translation>
 <translation id="5222676887888702881">Đăng xuất</translation>
 <translation id="5226378907213531272">Bạn sẽ mở khoá màn hình mỗi khi dùng ô tô</translation>
 <translation id="5227554086496586518">Nhấn để xem kết quả tìm kiếm</translation>
@@ -1554,6 +1559,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8562452229998620586">Mật khẩu đã lưu của bạn sẽ xuất hiện tại đây.</translation>
 <translation id="8570677896027847510">Không thể tải tệp xuống một cách an toàn</translation>
 <translation id="8571213806525832805">4 tuần qua</translation>
+<translation id="8582529315803410153">Bạn sẽ thấy các thẻ mà bạn mở trên những thiết bị khác tại đây</translation>
 <translation id="859046281437143747">Theo dõi giá trong nút Tuỳ chọn khác</translation>
 <translation id="860043288473659153">Tên chủ thẻ</translation>
 <translation id="8602358303461588329">Đã đóng trang Đăng nhập vào Chrome.</translation>

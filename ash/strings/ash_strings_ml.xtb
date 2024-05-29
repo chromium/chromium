@@ -48,6 +48,7 @@
 <translation id="1175572348579024023">സ്‌ക്രോൾ ചെയ്യുക</translation>
 <translation id="1175944128323889279">നിലവിലെ ബാറ്ററി നില <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> ശേഷിക്കുന്നു</translation>
 <translation id="1178581264944972037">താൽക്കാലികമായി നിർത്തുക</translation>
+<translation id="1179776263021875437">ടാസ്‌ക്കിൽ ഫോക്കസ് ചെയ്യുന്നത് നിർത്തുക</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
 <translation id="1182225749592316782">ക്യാമറ, മൈക്രോഫോൺ എന്നിവ ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും ഇത് ആക്‌സസ് അനുവദിക്കുന്നു</translation>
 <translation id="1182876754474670069">വീട്</translation>
@@ -119,6 +120,7 @@
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">ഓണാണ്</translation>
 <translation id="1394698770495054737">പൂർണ്ണമായി മങ്ങിക്കൽ</translation>
+<translation id="1404963891829069586">ഫോക്കസ് ശബ്‌ദങ്ങൾ</translation>
 <translation id="1407069428457324124">ഡാർക്ക് തീം</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. തീയതികൾക്കിടയിൽ നാവിഗേറ്റ് ചെയ്യാൻ അമ്പടയാള കീകൾ ഉപയോഗിക്കുക.</translation>
 <translation id="141170878022560212">മിഡിൽ ബട്ടൺ</translation>
@@ -180,6 +182,8 @@
 <translation id="1651914502370159744">ചരിത്രം പേജ് തുറക്കുക</translation>
 <translation id="1654477262762802994">ഒരു ശബ്‌ദ ചോദ്യം ആരംഭിക്കുക</translation>
 <translation id="1668469839109562275">ബിൽറ്റ് ഇൻ VPN</translation>
+<translation id="1673232940951031776">ഫോക്കസ് പൂർത്തിയാക്കുക. <ph name="REMAINING_TIME" /> ശേഷിക്കുന്നു.</translation>
+<translation id="1675570947608765064">ഈ ടാസ്ക്കിൽ നിങ്ങൾ വരുത്തുന്ന മാറ്റങ്ങൾ മറ്റുള്ളവർക്ക് കാണാനാകും</translation>
 <translation id="1675844249244994876">വലതുവശത്തെ വിൻഡോ അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ശേഷിക്കുന്നു</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> കണക്‌റ്റ് ചെയ്‌തിട്ടില്ല.</translation>
@@ -223,6 +227,7 @@
 <translation id="1824922790784036530">ലൊക്കേഷൻ ആക്‌സസ് ഓണാക്കുക</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> അൺപിൻ ചെയ്‌തു</translation>
 <translation id="1831565490995294689"><ph name="APP_TO_OPEN" /> തുറക്കാൻ തിരഞ്ഞെടുക്കുക.</translation>
+<translation id="1838011306813517425">ഫോക്കസ് ക്രമീകരണം</translation>
 <translation id="1838895407229022812">നൈറ്റ് ലൈറ്റ് ഓഫാണ്.</translation>
 <translation id="1854180393107901205">കാസ്റ്റ് ചെയ്യുന്നത് നിർത്തുക</translation>
 <translation id="1862077610023398675">നിയന്ത്രണങ്ങൾ മറയ്ക്കുക</translation>
@@ -310,6 +315,7 @@
 <translation id="2277103315734023688">മുന്നോട്ട് നീക്കുക</translation>
 <translation id="2282073721614284166">ടാബ് ലിങ്ക് തുറക്കുക</translation>
 <translation id="2292698582925480719">ഡിസ്പ്ലേ സ്കെയിൽ</translation>
+<translation id="2293443480080733021">ഏത് കാര്യത്തിൽ ഫോക്കസ് ചെയ്യാനാണ് നിങ്ങൾ ആഗ്രഹിക്കുന്നത്? ടാസ്‌ക് ചേർക്കാൻ 'Enter' അമർത്തുക.</translation>
 <translation id="229397294990920565">മൊബൈൽ ഡാറ്റ ഓഫാക്കുന്നു...</translation>
 <translation id="2295777434187870477">മൈക്ക് ഓണാണ്, മാറ്റുന്നത് ഇൻപുട്ടിനെ മ്യൂട്ട് ചെയ്യും.</translation>
 <translation id="2298170939937364391">പൂർണ്ണ സ്ക്രീൻ മാഗ്നിഫയർ പ്രവർത്തനക്ഷമമാക്കി. ഇത് ഓഫാക്കാൻ Ctrl+തിരയൽ+M വീണ്ടും അമർത്തുക.</translation>
@@ -377,6 +383,7 @@
 <translation id="2509468283778169019">CAPS LOCK ഓൺ ആണ്</translation>
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> നിർത്തുക. <ph name="CAPTURE_MEDIUM" />, <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516416533263263796">ഫോക്കസ് ഓണാണ്, 10 മിനിറ്റ് ശേഷിക്കുന്നു</translation>
 <translation id="2516637483312286228">ഗെയിം നിയന്ത്രണങ്ങൾ എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="2526581474998477112">വിൻഡോകൾ അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="2528111225373402384">ഹോട്ട്സ്പോട്ട് ക്രമീകരണം</translation>
@@ -447,6 +454,7 @@
 <translation id="2798702144670138229">ടാബ്‌ലെറ്റ് മോഡ് ഓണാണ്. ഗെയിം ഡാഷ്ബോർഡ് ലഭ്യമല്ല.</translation>
 <translation id="2801954693771979815">സ്‌ക്രീൻ വലുപ്പം</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, തിരഞ്ഞെടുത്തു</translation>
+<translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">ആപ്പുകൾ</translation>
 <translation id="2814448776515246190">ഭാഗികമായി ക്യാപ്‌ചർ ചെയ്യൽ</translation>
 <translation id="2819276065543622893">നിങ്ങൾ ഇപ്പോൾ സൈൻ ഔട്ട് ചെയ്യും.</translation>
@@ -474,6 +482,7 @@
 <translation id="2914580577416829331">സ്ക്രീൻ ക്യാപ്‌ചറുകൾ</translation>
 <translation id="2924416280450782352">ഇനങ്ങൾ കാണിക്കാനാകുന്നില്ല. ഈ പാനൽ വീണ്ടും തുറന്ന് നോക്കുക.</translation>
 <translation id="2931572158271115754">ചെയ്യാനുള്ള കാര്യങ്ങളുടെ ലിസ്റ്റിൽ ഒന്നുമില്ല.</translation>
+<translation id="2932487126591186298">10 മിനിറ്റ് ചേർത്തു. <ph name="REMAINING_TIME" /> ശേഷിക്കുന്നു.</translation>
 <translation id="2935225303485967257">പ്രൊഫൈലുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="2941112035454246133">താഴ്ന്ന</translation>
 <translation id="2942350706960889382">ഡോക്ക് ചെയ്‌ത മാഗ്നിഫയർ</translation>
@@ -649,6 +658,7 @@
 <translation id="3576141592585647168">സമയമേഖല മാറ്റുക</translation>
 <translation id="3577473026931028326">എന്തോ കുഴപ്പമുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3580650856351781466">സംഭാഷണ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യുന്നു</translation>
+<translation id="3583350334315908861">{MINUTES,plural, =1{മിനിറ്റ്}other{മിനിറ്റ്}}</translation>
 <translation id="3585296979871889131">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും അറിയിപ്പുകളും ആപ്പുകളും കാണുക</translation>
 <translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">സൈഡ് ബട്ടൺ</translation>
@@ -672,6 +682,7 @@
 <translation id="3631369015426612114">ഇനിപ്പറയുന്നതിൽ നിന്നുള്ള അറിയിപ്പുകൾ അനുവദിക്കുക</translation>
 <translation id="3633097874324966332">നിങ്ങളുടെ ഉപകരണം ജോടിയാക്കാൻ Bluetooth ക്രമീകരണം തുറക്കുക</translation>
 <translation id="3633851487917460983">ക്ലിപ്പ്ബോർഡ് തുറക്കുക</translation>
+<translation id="363473492175527493">ഇനിപ്പറയുന്നതിൽ ഫോക്കസ് ചെയ്യാൻ സജ്ജീകരിച്ചിരിക്കുന്ന ടാസ്‌ക്: <ph name="TASK_NAME" />. ടാസ്‌ക് എഡിറ്റ് ചെയ്യാൻ 'Enter' അമർത്തുക.</translation>
 <translation id="3638400994746983214">സ്വകാര്യതാ സ്‌ക്രീൻ മാറ്റുക. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">വിൻഡോ ചെറുതാക്കുക</translation>
 <translation id="3649505501900178324">അപ്‌ഡേറ്റ് കാലാവധി കഴിഞ്ഞിരിക്കുന്നു</translation>
@@ -707,6 +718,7 @@
 <translation id="3735740477244556633">ഇപ്രകാരം അടുക്കുക</translation>
 <translation id="3738664582935948253">ഇപ്പോൾ നിങ്ങൾക്ക് സ്‌ക്രീൻ റെക്കോർഡിംഗുകളിൽ ക്ലിക്ക്, കീബോർഡ് കുറുക്കുവഴികൾ കാണിക്കാനാകും</translation>
 <translation id="3742055079367172538">സ്‌ക്രീൻഷോട്ട് എടുത്തു</translation>
+<translation id="3743775386021959186">ഫോക്കസ് ഓണാണ്, <ph name="REMAINING_TIME" /> ശേഷിക്കുന്നു</translation>
 <translation id="3756485814916578707">സ്‌ക്രീൻ കാസ്റ്റ് ചെയ്യുന്നു</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> കുറുക്കുവഴി, <ph name="OLD_SHORTCUT" /> എന്നതിൽ നിന്ന് <ph name="NEW_SHORTCUT" /> എന്നതാക്കി അപ്ഡേറ്റ് ചെയ്തു</translation>
 <translation id="3765841986579723851">ഇന്ന് എഡിറ്റ് ചെയ്തത്</translation>
@@ -896,6 +908,7 @@
 <translation id="4477751544736611934">ഇതിന് ഡാറ്റാ നിരക്കുകൾ ഈടാക്കിയേക്കാം.
 ഒരു ഉപകരണം കണക്‌റ്റ് ചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="4477892968187500306">Google പരിശോധിച്ചുറപ്പിച്ചിട്ടില്ലാത്ത ആപ്പുകൾ ഈ ഉപകരണത്തിൽ അടങ്ങിയിരിക്കാം.</translation>
+<translation id="4479130137987693286">നിങ്ങൾക്ക് ആവശ്യമെങ്കിൽ കുറച്ച് സമയം കൂടി ചേർക്കാം അല്ലെങ്കിൽ നിങ്ങളുടെ ഫോക്കസ് സെഷൻ അവസാനിപ്പിക്കാം</translation>
 <translation id="4479639480957787382">എതെര്‍‌നെറ്റ്</translation>
 <translation id="4481530544597605423">ജോടി മാറ്റിയ ഉപകരണങ്ങൾ</translation>
 <translation id="4485506555414638855">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും അറിയിപ്പുകളും ആപ്പുകളും കാണുന്നത് സജ്ജീകരിക്കുന്നത് ഡിസ്‌മിസ് ചെയ്യുക</translation>
@@ -1069,6 +1082,7 @@
 <translation id="5095136268899496849">ക്രമീകരണത്തിൽ നിങ്ങളുടെ <ph name="PRODUCT_NAME" /> ഇഷ്‌ടാനുസൃതമാക്കുക, വ്യക്തിപരമാക്കുക. നിങ്ങളുടെ വാൾപേപ്പർ മാറ്റാനോ സ്ക്രീൻ സേവർ സജ്ജീകരിക്കാനോ ശ്രമിക്കുക.</translation>
 <translation id="509790653408515442">ഫോണിലെ ആപ്പുകൾ നിങ്ങൾ സ്ട്രീം ചെയ്യുമ്പോൾ അവ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="5098537242461068432">ഡെസ്‌ക്കും വിൻഡോകളും വീണ്ടും തുറന്നു</translation>
+<translation id="5103975065730779239"><ph name="END_TIME_EXPRESSION" /> വരെ</translation>
 <translation id="5104236669533825617">സ്ക്രീൻകാസ്റ്റ് സൃഷ്ടിക്കാനാകുന്നില്ല</translation>
 <translation id="5107522548814527560">വെബ്</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
@@ -1147,6 +1161,7 @@
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> എന്നതിന് മുകളിലാണ് <ph name="DRAGGED_APP_NAME" />, ഫോൾഡർ സൃഷ്‌ടിക്കാൻ റിലീസ് ചെയ്യുക.</translation>
 <translation id="5397578532367286026">ഈ ഉപയോക്താവിന്റെ ഉപയോഗവും ചരിത്രവും chrome.com-ൽ മാനേജർക്ക് (<ph name="MANAGER_EMAIL" />) അവലോകനം ചെയ്യാനാകും.</translation>
 <translation id="540713187982329711">ഹോട്ട്സ്പോട്ട് ടോഗിൾ ചെയ്യുക. ഹോട്ട്സ്പോട്ട് ഓണാണ്, ഉപകരണങ്ങളൊന്നും കണക്റ്റ് ചെയ്തിട്ടില്ല.</translation>
+<translation id="5409208741270395213">ടാസ്‌ക് പൂർത്തിയായതായി അടയാളപ്പെടുത്തുക</translation>
 <translation id="5413656666631274079">ക്രമീകരണ പേജ്</translation>
 <translation id="5414198321558177633">പ്രൊഫൈല്‍ ലിസ്റ്റ് റീഫ്രഷ് ചെയ്യുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="5417965108047245734">നിങ്ങളുടെ <ph name="PRODUCT_NAME" /> എന്നതിനെ കുറിച്ച് മനസ്സിലാക്കാൻ ഒരു ദ്രുത ടൂർ നടത്തുക</translation>
@@ -1178,6 +1193,7 @@
 <translation id="553675580533261935">സെഷനിൽ നിന്ന് പുറത്തുകടക്കുന്നു</translation>
 <translation id="5537725057119320332">കാസ്റ്റ്</translation>
 <translation id="554017492391497564">പൂർത്തിയാക്കിയെന്ന് അടയാളപ്പെടുത്താനായില്ല.</translation>
+<translation id="5543778275214926792">'വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക' ഓണാക്കണോ?</translation>
 <translation id="5546397813406633847">ഉപയോക്താവിനെ വീണ്ടെടുക്കുക</translation>
 <translation id="554893713779400387">പറഞ്ഞ് കൊടുക്കൽ മാറ്റുക</translation>
 <translation id="5550417424894892620"><ph name="HOLDING_SPACE_TITLE" /> എന്നതിലേക്ക് ചേർക്കേണ്ട ഫയലുകൾ ഡെസ്‌ക്ടോപ്പിൽ വലിച്ചിടുക. നിങ്ങൾക്ക് ഡെസ്ക്ടോപ്പിലേക്ക് ഫയലുകൾ ചേർക്കാനാകുന്നില്ല.</translation>
@@ -1201,6 +1217,7 @@
 <translation id="5592745162308462420">fn</translation>
 <translation id="5596627076506792578">കൂടുതൽ‍ ഓപ്‌ഷനുകൾ</translation>
 <translation id="5599242528220103262">കീബോഡ് കുറുക്കുവഴികൾ ഓഫാണ്</translation>
+<translation id="5600415762228455511">ഫോക്കസ് ഓണാണ്, <ph name="REMAINING_TIME" /> ശേഷിക്കുന്നു, ഇനിപ്പറയുന്നതിൽ ഫോക്കസ് ചെയ്യുന്നു: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">സംഭാഷണ ഫീഡ്‌ബാക്ക് പ്രവർത്തനരഹിതമാക്കാൻ Ctrl + Alt + Z അമർത്തുക.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">ഞങ്ങൾ നിങ്ങളെ മികച്ച നെറ്റ്‌വർക്കിലേക്ക് മാറ്റി</translation>
@@ -1230,8 +1247,10 @@
 <translation id="5699366815052349604">സജീവമായ വിൻഡോ എല്ലാ ഡെസ്ക്കുകളിലേക്കും അസൈൻ ചെയ്യുക</translation>
 <translation id="5701785125601597013">ഫോൺ ഹബ് ഉപയോഗിച്ച് നിങ്ങളുടെ ഫോണിൽ നിന്ന് വേഗത്തിൽ സന്ദേശങ്ങൾ അയയ്‌ക്കുകയോ അവയ്‌ക്ക് മറുപടി നൽകുകയോ ചെയ്യുക</translation>
 <translation id="570390244361237317">എല്ലാ ആപ്പുകളും, എല്ലാ ആപ്പുകളും ആക്സസ് ചെയ്യാൻ അമ്പടയാള കീകൾ ഉപയോഗിച്ച് നാവിഗേറ്റ് ചെയ്യുക</translation>
+<translation id="5705197514573687092">ഫോക്കസ് ക്രമീകരണം കാണിക്കുക. <ph name="FOCUS_DURATION" /> എന്നതിലേക്ക് ടൈമർ സജ്ജീകരിച്ചു.</translation>
 <translation id="5707775774148071965">നിങ്ങളുടെ ഉപകരണം, നിങ്ങളുടെ കേബിളിനേക്കാൾ കൂടുതൽ ഡാറ്റാ നിരക്കിനെ പിന്തുണയ്ക്കുന്നു. ഉപകരണ പ്രകടനം പരിമിതപ്പെട്ടേക്കാം.</translation>
 <translation id="5710450975648804523">'ശല്യപ്പെടുത്തരുത്' ഓണാണ്</translation>
+<translation id="5711984160978177607"><ph name="REMAINING_TIME" /> ശേഷിക്കുന്നു</translation>
 <translation id="5712132663381964774"><ph name="PRODUCT_NAME" /> എന്നതിൽ നിങ്ങൾക്ക് ആവശ്യമുള്ളതെല്ലാം ചെയ്യാൻ ആപ്പുകൾ ഉപയോഗിക്കുക. ലോഞ്ചറിൽ നിങ്ങളുടെ ആപ്പുകൾ കണ്ടെത്താം.</translation>
 <translation id="571295407079589142">മൊബൈൽ ഡാറ്റ ഓഫാക്കി</translation>
 <translation id="5727460725221669831">നിങ്ങൾ പാസ്‌വേഡ് മറന്നെങ്കിലോ അടുത്തിടെ നിങ്ങളുടെ Google Account പാസ്‌വേഡ് മാറ്റിയിട്ടുണ്ടെങ്കിലോ ഈ ഉപയോക്താവിനെ വീണ്ടെടുക്കാൻ ശ്രമിക്കുക.</translation>
@@ -1242,6 +1261,7 @@
 <translation id="5744083938413354016">ടാപ്പുചെയ്‌ത് വലിച്ചിടൽ</translation>
 <translation id="5745612484876805746">സൂര്യാസ്‌തമയ സമയത്ത് നൈറ്റ് ലൈറ്റ് സ്വയമേവ ഓണാകും</translation>
 <translation id="5750765938512549687">Bluetooth ഓഫാണ്</translation>
+<translation id="5758114525425072423">ഫോക്കസ് ആരംഭിക്കുക. <ph name="FOCUS_DURATION" /> എന്നതിലേക്ക് ടൈമർ സജ്ജീകരിച്ചു.</translation>
 <translation id="5760866832697883462">നിങ്ങളുടെ <ph name="NAME" /> കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="5762420912707163638">മാർക്കർ ടോഗിൾ ചെയ്യുക. <ph name="STATE_TEXT" /> സ്ക്രീനിൽ വരയ്ക്കാൻ ട്രാക്ക്‌പാഡോ ടച്ച്സ്ക്രീനോ സ്റ്റൈലസോ ഉപയോഗിക്കുക.</translation>
 <translation id="576341972084747908">അപകടകരമായ <ph name="FILENAME" /> ഡൗൺലോഡ് ചെയ്യുക</translation>
@@ -1249,6 +1269,7 @@
 <translation id="5764569119212455782">അവസാനം തിരഞ്ഞെടുത്ത ഭാഷയിലേക്ക് മാറുക</translation>
 <translation id="5767730327234918501">നിങ്ങളുടെ അഡ്‌മിൻ, ഹോട്ട്സ്പോട്ട് ഓഫാക്കി.</translation>
 <translation id="5769373120130404283">സ്വകാര്യതാ സ്‌ക്രീൻ</translation>
+<translation id="5770004650349728202">'വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക' ഓണാക്കുക</translation>
 <translation id="5773950591113557721"><ph name="APP_NAME" /> എന്നതിനും, ക്യാമറ മൈക്രോഫോൺ എന്നിവ ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും ഇത് ആക്‌സസ് അനുവദിക്കുന്നു</translation>
 <translation id="5774295353725270860">ഓപ്പൺ ഫയലുകൾ ആപ്പ്</translation>
 <translation id="5775936059231769503">ഹോട്ട്സ്പോട്ട് ടോഗിൾ ചെയ്യുക. ഹോട്ട്സ്പോട്ട് ഓഫാണ്.</translation>
@@ -1343,8 +1364,10 @@
 <translation id="6119972796024789243">നിറം ശരിയാക്കൽ</translation>
 <translation id="6121838516699723042">ഡൗൺലോഡ് സ്ഥിരീകരിക്കുക <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">അതിഥി സെഷനിൽ Google അസി‌സ്‌റ്റന്റ് ലഭ്യമല്ല.</translation>
+<translation id="6127370444807669747">വ്യക്തിപരമാക്കിയ പ്ലേലിസ്റ്റുകൾക്കും കൂടുതൽ ഫോക്കസ് സംഗീതത്തിനുമായി, YouTube Music Premium പരീക്ഷിച്ച് നോക്കൂ</translation>
 <translation id="6129953537138746214">സ്പെയ്സ്</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> -നുള്ള ഡയലോഗ് നീക്കം ചെയ്യുക തുറക്കുക</translation>
+<translation id="6141205840878048728">ഏത് കാര്യത്തിൽ ഫോക്കസ് ചെയ്യാനാണ് നിങ്ങൾ ആഗ്രഹിക്കുന്നത്?</translation>
 <translation id="6141988275892716286">ഡൗൺലോഡ് സ്ഥിരീകരിക്കുക</translation>
 <translation id="6143578372829139382">YouTube-ലേക്ക് പങ്കിടൂ</translation>
 <translation id="6154006699632741460">പെരിഫറലിനെ പിന്തുണയ്ക്കുന്നില്ല</translation>
@@ -1405,11 +1428,13 @@
 <translation id="6381109794406942707">ഉപകരണം അൺലോക്ക് ചെയ്യാൻ, നിങ്ങളുടെ പിൻ നൽകുക.</translation>
 <translation id="638716340450135524">ക്യാമറ ആക്‌സസ് ഓണാക്കുക</translation>
 <translation id="639644700271529076">CAPS LOCK ഓഫാണ്</translation>
+<translation id="6406458002328242616">ടൈമർ എഡിറ്റ് ചെയ്യുക. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">എല്ലാ അറിയിപ്പുകളും മായ്ക്കുക</translation>
+<translation id="6430225033895752525">ഫോക്കസ് ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="643147933154517414">എല്ലാം ചെയ്‌തു</translation>
 <translation id="6431865393913628856">സ്‌ക്രീൻ റെക്കോർഡ്</translation>
 <translation id="643593192654616063">ആകെയുള്ള <ph name="STORAGE_TOTAL_SIZE" /> സ്റ്റോറേജിൽ <ph name="STORAGE_IN_USE_SIZE" /> ഉപയോഗിക്കുന്നു</translation>
@@ -1450,6 +1475,7 @@
 പുതിയ ഇൻസ്റ്റാൾ</translation>
 <translation id="6559158502366839560">കൂടുതൽ ആപ്പുകളും ഗെയിമുകളും അടുത്തറിയൂ</translation>
 <translation id="6559976592393364813">അഡ്‌മിനിസ്‌ട്രേറ്ററോട് ചോദിക്കുക</translation>
+<translation id="6562447480759345110">ഫോക്കസ് പൂർത്തിയാക്കുക</translation>
 <translation id="6565007273808762236">eSIM കണക്ഷൻ ലഭ്യമല്ല</translation>
 <translation id="6570831796530454248">{0,plural, =1{ഒരു മണിക്കൂറിനുള്ളിൽ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക}other{# മണിക്കൂറിനുള്ളിൽ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക}}</translation>
 <translation id="6570902864550063460">USB വഴി ചാർജ് ചെയ്യുന്നു</translation>
@@ -1459,6 +1485,7 @@
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" />-നുള്ളിൽ സെഷൻ അവസാനിക്കുന്നു.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">താഴെ ഇടത് കോണിലേക്ക് ക്യാമറ സ്‌നാപ്പ് ചെയ്തു. സിസ്റ്റം സർഫേസിനെ ഓവർലാപ്പ് ചെയ്യുന്നു.</translation>
+<translation id="6605415194043280389">ഫോക്കസ് ഓണാണ്</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="6612802754306526077">സ്ക്രീൻ റെക്കോർഡിംഗ് മോഡ് തിരഞ്ഞെടുത്തു</translation>
 <translation id="6612889377159412215">ഉപടാസ്‌ക്</translation>
@@ -1492,6 +1519,7 @@
 <translation id="6707693040195709527">മുമ്പത്തെ പതിപ്പിലേക്ക് ഉപകരണം മാറ്റേണ്ട സമയം കഴിഞ്ഞു.</translation>
 <translation id="6710213216561001401">മുമ്പത്തേത്</translation>
 <translation id="6723839937902243910">പവർ</translation>
+<translation id="672609503628871915">പുതിയതെന്താണെന്ന് കാണുക</translation>
 <translation id="6727969043791803658">കണക്റ്റ് ചെയ്‌തു, <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററി</translation>
 <translation id="6732087373923685049">ക്യാമറ</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /> എണ്ണം</translation>
@@ -1525,6 +1553,7 @@
 <translation id="6836499262298959512">അപകടകരമായ ഫയൽ</translation>
 <translation id="6837621009301897464">സ്ക്രീൻഷോട്ട് എടുക്കാൻ, അമർത്തുക</translation>
 <translation id="6852052252232534364">ക്ലിക്ക് ചെയ്ത് സജീവമാക്കൂ</translation>
+<translation id="6852628153543175788">10 മിനിറ്റ് ചേർക്കുക</translation>
 <translation id="6855029042976311970">ഇപ്പോൾ എഡിറ്റ് ചെയ്‌തത്</translation>
 <translation id="6856708615407876657">തിരയൽ ഫലത്തിന്റെ വിഭാഗങ്ങൾ ടോഗിൾ ചെയ്യുക</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
@@ -1585,6 +1614,7 @@
 <translation id="7068360136237591149">ഫയലുകൾ തുറക്കുക</translation>
 <translation id="7076293881109082629">സൈൻ ഇൻ ചെയ്യുന്നു</translation>
 <translation id="7076878155205969899">ശബ്‌ദം മ്യൂട്ട് ചെയ്യുക</translation>
+<translation id="7083848064787091821">ഫോക്കസ്</translation>
 <translation id="7084678090004350185">ഹോട്ട്സ്പോട്ട് ടോഗിൾ ചെയ്യുക. ഹോട്ട്സ്പോട്ട് ഓണാണ്, <ph name="DEVICECOUNT" /> ഉപകരണങ്ങൾ കണക്റ്റ് ചെയ്തിരിക്കുന്നു.</translation>
 <translation id="7086931198345821656">ഈ അപ്ഡേറ്റിന് നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> Powerwash ചെയ്യേണ്ടതുണ്ട്. എല്ലാ ഡാറ്റയും ഇല്ലാതാക്കും. ഏറ്റവും പുതിയ <ph name="SYSTEM_APP_NAME" /> അപ്‌ഡേറ്റിനെ കുറിച്ച് കൂടുതലറിയുക.</translation>
 <translation id="7088960765736518739">സ്വിച്ച് ആക്‌സസ്</translation>
@@ -1612,6 +1642,7 @@
 <translation id="7188494361780961876">സ്‌ക്രീനിന്റെ മുകളിൽ ഇടത് കോണിലേക്ക് മെനു നീക്കിയിരിക്കുന്നു.</translation>
 <translation id="7189412385142492784">ശുക്രനിലേക്ക് എത്ര ദൂരമുണ്ട്</translation>
 <translation id="7198435252016571249">താഴെ വലത് കോണിലേക്ക് ക്യാമറ സ്‌നാപ്പ് ചെയ്തു. സിസ്റ്റം സർഫേസിനെ ഓവർലാപ്പ് ചെയ്യുന്നു.</translation>
+<translation id="720981139652840573">നിർദ്ദിഷ്‌ട ടെക്‌സ്റ്റ് ഉച്ചത്തിൽ വായിച്ച് കേൾപ്പിക്കുക. ആദ്യം, നിങ്ങളുടെ സ്ക്രീനിന്റെ താഴെയുള്ള 'വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക' ഐക്കൺ തിരഞ്ഞെടുക്കുക, തുടർന്ന് ടെക്സ്റ്റ് ഹൈലൈറ്റ് ചെയ്യുക. നിങ്ങൾക്ക് ഒരു കീബോഡ് കുറുക്കുവഴിയും ഉപയോഗിക്കാം: ടെക്സ്റ്റ് ഹൈലൈറ്റ് ചെയ്യുക, തുടർന്ന് Search/ലോഞ്ചർ + S അമർത്തുക.</translation>
 <translation id="7219573373513695352">ഉപകരണങ്ങളൊന്നും ബന്ധിപ്പിച്ചിട്ടില്ല</translation>
 <translation id="7229029500464092426">മെമ്മറി <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ആകെ</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ബാറ്ററി ചാർജ് ശേഷിക്കുന്നു.
@@ -1622,6 +1653,7 @@
 <translation id="7258828758145722155">ഇന്നലെ എഡിറ്റ് ചെയ്‌തത്</translation>
 <translation id="726276584504105859">സ്പ്ലിറ്റ് സ്ക്രീൻ ഉപയോഗിക്കുന്നതിന് ഇവിടെ വലിച്ചിടുക</translation>
 <translation id="7262906531272962081">റിമൈൻഡർ സൃഷ്‌ടിക്കുക</translation>
+<translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> കുറയ്ക്കുക</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">സ്ക്രീൻഷോട്ടുകൾ എടുക്കാൻ ദ്രുത ക്രമീകരണത്തിൽ സ്ക്രീൻ ക്യാപ്ചർ ചെയ്യൽ ടൂൾ ഉപയോഗിക്കുക</translation>
 <translation id="7301826272005790482">വിൻഡോ നിർദ്ദേശങ്ങൾ ഡിസ്‌മിസ് ചെയ്യുക</translation>
@@ -1632,6 +1664,7 @@
 <translation id="7313193732017069507">ക്യാമറ വികസിപ്പിക്കുക</translation>
 <translation id="7330397557116570022">കേട്ടെഴുത്ത് ഉപയോഗിക്കാൻ ഒരു ടെക്സ്റ്റ് ഫീൽഡിലേക്ക് പോകുക</translation>
 <translation id="7331646370422660166">alt + താഴേക്കുള്ള അമ്പടയാളം</translation>
+<translation id="7337660433630200387">+10 മിനിറ്റ്</translation>
 <translation id="7340731148882810149">സ്വയമേവയുള്ള ക്ലിക്കുകളുടെ മെനു</translation>
 <translation id="7346909386216857016">മനസ്സിലായി</translation>
 <translation id="7348093485538360975">ഓൺ-സ്‌ക്രീൻ കീബോർഡ്</translation>
@@ -1651,6 +1684,7 @@
 <translation id="7386767620098596324">നെറ്റ്‌വർക്ക് കണക്ഷൻ മാറ്റുക. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">ക്രമീകരണത്തിൽ നിന്ന് നിങ്ങൾക്ക് പിന്നീട് എപ്പോൾ വേണമെങ്കിലും സജ്ജീകരിക്കാം.</translation>
 <translation id="7401222354741467707">പൂർണ്ണ സ്ക്രീൻഷോട്ടോ സ്ക്രീൻ റെക്കോർഡിംഗോ എടുക്കുക</translation>
+<translation id="7401788553834047908">ഫോക്കസിലായിരിക്കുമ്പോൾ 'ശല്യപ്പെടുത്തരുത്'</translation>
 <translation id="7405710164030118432">ഉപകരണം അൺലോക്ക് ചെയ്യാൻ നിങ്ങളുടെ Family Link രക്ഷാകർതൃ ആക്‌സസ് കോഡ് നൽകുക</translation>
 <translation id="7406608787870898861">നിങ്ങളുടെ മൊബൈൽ നെറ്റ്‌വര്‍ക്ക് സജ്ജീകരിക്കുന്നത് പൂർത്തിയാക്കുക</translation>
 <translation id="7406854842098869085">നിങ്ങൾ തുറക്കാൻ ആഗ്രഹിക്കുന്ന വിൻഡോയിലേക്ക് എത്തുന്നത് വരെ <ph name="MODIFIER_1" /> അമർത്തിപ്പിടിച്ച്, <ph name="KEY" /> ടാപ്പ് ചെയ്യുക, തുടർന്ന് റിലീസ് ചെയ്യുക</translation>
@@ -1685,6 +1719,8 @@
 <translation id="7519649142417630956">ഷട്ട് ഡൗൺ ചെയ്തുകഴിഞ്ഞാൽ അഡ്‌മിൻ ലോഗൗട്ട് ആകും, അവർക്ക് നിങ്ങളുടെ ഉപകരണം നിയന്ത്രിക്കാനാകില്ല.
 
 ഉപകരണം ഷട്ട് ഡൗൺ ചെയ്യാൻ, ഉപകരണത്തിലെ പവർ ബട്ടൺ വീണ്ടും അമർത്തിപ്പിടിക്കുക.</translation>
+<translation id="7523420897035067483">ഫോക്കസിലായിരിക്കുമ്പോൾ 'ശല്യപ്പെടുത്തരുത്' പ്രവർത്തനക്ഷമമാക്കുക</translation>
+<translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7526573455193969409">നെറ്റ്‌വർക്ക് നിരീക്ഷിക്കപ്പെടാം</translation>
 <translation id="7536035074519304529">IP വിലാസം: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">ഇടതുവശത്തെ വിൻഡോ അപ്ഡേറ്റ് ചെയ്യുക</translation>
@@ -1754,6 +1790,7 @@
 <translation id="7773536009433685931">പകരം വൈഫൈ ഓണാക്കുക</translation>
 <translation id="7780094051999721182">കുറുക്കുവഴികൾ</translation>
 <translation id="7780159184141939021">സ്‌ക്രീൻ തിരിക്കുക</translation>
+<translation id="7781829728241885113">ഇന്നലെ</translation>
 <translation id="7792590255364786396">കാണാനാകുന്നത്</translation>
 <translation id="7796735576426975947">പുതിയ അറിയിപ്പ് മറച്ചിരിക്കുന്നു</translation>
 <translation id="7798302898096527229">റദ്ദാക്കാൻ 'തിരയൽ' അല്ലെങ്കിൽ Shift അമർത്തുക.</translation>
@@ -1817,6 +1854,7 @@
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> എന്നതിൽ നിന്നുള്ളത്</translation>
 <translation id="7968693143708939792">ഫോൾഡർ തിരഞ്ഞെടുക്കുക...</translation>
 <translation id="7973756967040444713">ടൂൾബാർ അടയ്ക്കുക</translation>
+<translation id="797485111629834774">ടാസ്‌ക് പൂർത്തിയായതായി അടയാളപ്പെടുത്തുക: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">പൂർണ്ണസ്‌ക്രീൻ മാഗ്നിഫയർ ഓണാക്കുകയോ ഓഫാക്കുകയോ ചെയ്യുക</translation>
 <translation id="7977927628060636163">മൊബൈൽ നെറ്റ്‌വർക്കുകൾ തിരയുന്നു...</translation>
 <translation id="7982789257301363584">നെറ്റ്‌വർക്ക്</translation>
@@ -1830,6 +1868,7 @@
 <translation id="8000066093800657092">നെറ്റ്‌വര്‍ക്ക് ഇല്ല</translation>
 <translation id="8001755249288974029">കഴ്‌സർ മുതൽ വരിയുടെ തുടക്കം വരെയുള്ള ടെക്‌സ്‌റ്റ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8004512796067398576">വർദ്ധന</translation>
+<translation id="8005527720597583355">ഫോക്കസ് സെഷൻ ആരംഭിക്കുക</translation>
 <translation id="8015361438441228492">ടാസ്‌ക് എഡിറ്റ് ചെയ്യാനായില്ല.</translation>
 <translation id="802782383769312836">മുമ്പത്തെ ഡെസ്‌ക്: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> ഡെസ്‌ക്കുകളിൽ <ph name="DESK_INDEX" />-ാമത്തേത്.</translation>
 <translation id="8029247720646289474">ഹോട്ട്‌സ്പോട്ട് കണക്‌റ്റ് ചെയ്യാനായില്ല</translation>
@@ -1845,6 +1884,7 @@
 <translation id="8054466585765276473">ബാറ്ററി സമയം കണക്കാക്കുന്നു.</translation>
 <translation id="8079538659226626406">സ്ക്രീൻ പങ്കിടൽ</translation>
 <translation id="8083540854303889870">പിന്നീട് കാണാൻ സംരക്ഷിച്ചവ</translation>
+<translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">കൂടുതൽ ഓപ്ഷനുകൾക്കായി ടാബ് ഉപയോഗിക്കുക. എല്ലാ ഡെസ്‌ക്കുകളും ആക്‌സസ് ചെയ്യാൻ ഇടത്, വലത് അമ്പടയാളങ്ങൾ ഉപയോഗിക്കുക.</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" />-ന് <ph name="DAYS_ELAPSED" /> ആരംഭിക്കുന്നു</translation>
 <translation id="8091387634532529612">സ്വയമേവയുള്ള അപ്‌ഡേറ്റുകൾ</translation>
@@ -1876,10 +1916,12 @@
 <translation id="8192727139462702395">നിങ്ങൾ Bluetooth ഓഫാക്കിയാൽ, ഈ ബാഹ്യ ഉപകരണങ്ങൾ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ നിന്ന് വിച്ഛേദിക്കും:</translation>
 <translation id="8198456017687137612">ടാബ് കാസ്‌റ്റ് ചെയ്യുന്നു</translation>
 <translation id="8200772114523450471">പുനരാരംഭിക്കുക</translation>
+<translation id="820256110035940528"><ph name="TITLE" /> <ph name="FOCUSED_TIME" /> സമയത്തേക്ക് നിങ്ങൾ ഇപ്പോൾ ഫോക്കസ് ചെയ്തു. വീണ്ടും ഫോക്കസ് ചെയ്യാൻ, ദ്രുത ക്രമീകരണം തുറക്കുക.</translation>
 <translation id="8203795194971602413">വലത് ക്ലിക്ക്</translation>
 <translation id="8209010265547628927">റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="8214996719228530800">Canary ചാനൽ</translation>
 <translation id="8219451629189078428">ഈ സമയത്ത്, നിങ്ങളുടെ Chromebook ഓണാക്കിയ നിലയിൽ തുടരേണ്ടതും അത് വൈദ്യുതിയിലേക്ക് കണക്‌റ്റ് ചെയ്യേണ്ടതുമുണ്ട്. നിങ്ങളുടെ Chromebook-ലും പവർ ഔട്ട്‌ലെറ്റിലും ചാർജറോ അഡാപ്‌റ്റർ കേബിളുകളോ പൂർണ്ണമായി പ്ലഗ്-ഇൻ ചെയ്‌തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക. നിങ്ങളുടെ Chromebook ഓഫാക്കരുത്.</translation>
+<translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> ചേർക്കുക</translation>
 <translation id="8230305195727960608">നിറം വിപരീതമാക്കൽ മോഡ്</translation>
 <translation id="8236042855478648955">ഇടവേളയ്ക്ക് സമയമായി</translation>
 <translation id="8237964652943995219">അടുത്ത ഡെസ്‌ക്: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> ഡെസ്‌ക്കുകളിൽ <ph name="DESK_INDEX" />-ാമത്തേത്.</translation>
@@ -1987,6 +2029,7 @@
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">ഭാഗിക സ്ക്രീൻഷോട്ട് എടുക്കാൻ Enter അമർത്തുക</translation>
 <translation id="8676770494376880701">കുറഞ്ഞ തോതിൽ വൈദ്യുതി പ്രവഹിക്കുന്ന ചാർജർ കണക്റ്റുചെയ്‌തു</translation>
+<translation id="8679158879996532670">ഫോക്കസ് ക്രമീകരണം കാണിക്കുക. ഫോക്കസ് ഓണാണ്, <ph name="REMAINING_TIME" /> ശേഷിക്കുന്നു.</translation>
 <translation id="8683506306463609433">പ്രകടനം പിന്തുടരൽ സജീവം</translation>
 <translation id="8703634754197148428">റെക്കോർഡിംഗ് ആരംഭിക്കൂ. റെക്കോർഡിംഗ് ആരംഭിച്ചുകഴിഞ്ഞാൽ, ഷെൽഫിലേക്ക് പോയി റെക്കോർഡിംഗ് നിർത്തുക ബട്ടൺ കണ്ടെത്താൻ Alt + Shift + L ഉപയോഗിക്കുക</translation>
 <translation id="8704155109538237473">ചിത്രത്തിനുള്ളിൽ ചിത്രം വിൻഡോ ഫോക്കസ് ചെയ്യുക</translation>
@@ -2005,6 +2048,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: സജീവമാക്കുന്നു...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8749787185286745219">സമയം കഴിഞ്ഞു. കൊള്ളാം! 🎉</translation>
 <translation id="8755498163081687682">നിങ്ങളുടെ ഐഡന്റിറ്റി പരിശോധിച്ചുറപ്പിക്കുക: ഇത് നിങ്ങൾ തന്നെയാണെന്ന് സ്ഥിരീകരിക്കാൻ <ph name="ORIGIN_NAME" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="875593634123171288">VPN ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="8756799553341497810">നിങ്ങൾ ഈ കാഴ്‌ചയിൽ നിന്ന് പുറത്തുകടന്നാൽ നിങ്ങൾക്ക് ആപ്പ് ലേഔട്ട് ഇഷ്‌ടാനുസൃതമാക്കാൻ ആരംഭിക്കാം.</translation>
@@ -2043,6 +2087,7 @@
 <translation id="8877788021141246043">ഒരു റിമൈൻഡർ സജ്ജീകരിക്കുക</translation>
 <translation id="8878886163241303700">സ്‌ക്രീൻ വിപുലീകരിക്കുന്നു</translation>
 <translation id="888982883502837004">നിങ്ങളുടെ ഉപകരണത്തിന് ഫേം‌വെയർ അപ്ഡേറ്റുകൾ ലഭ്യമാണ്. അവലോകനം ചെയ്ത് അപ്ഡേറ്റ് ചെയ്യാൻ ക്ലിക്ക് ചെയ്യുക.</translation>
+<translation id="8893479486525393799">Studio മൈക്ക്</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> ശാശ്വതമായി ഇല്ലാതാക്കും</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% ബാറ്ററി ചാർജ് ശേഷിക്കുന്നു (ഏകദേശം <ph name="TIME_LEFT" />). നിങ്ങളുടെ ഉപകരണം പവറിലേക്ക് കണക്റ്റ് ചെയ്യുക.</translation>
 <translation id="88986195241502842">Page down</translation>
@@ -2071,6 +2116,7 @@
 <translation id="9000771174482730261">സ്‌റ്റോറേജ് മാനേജ് ചെയ്യുക</translation>
 <translation id="9005984960510803406">Crosh വിൻഡോ തുറക്കുക</translation>
 <translation id="9017320285115481645">Family Link രക്ഷാകർതൃ ആക്‌സസ് കോഡ് നൽകുക.</translation>
+<translation id="9022774213089566801">പതിവായി സന്ദർശിക്കുന്നവ</translation>
 <translation id="9024331582947483881">പൂര്‍ണ്ണ സ്‌ക്രീന്‍</translation>
 <translation id="9029736946581028033">ഉപകരണം ഉടൻ ഓഫാകും</translation>
 <translation id="9030319654231318877">സൂര്യാസ്തമയം വരെ ഓഫാണ്</translation>

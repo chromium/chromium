@@ -456,6 +456,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1812527064848182527">orientacja pozioma</translation>
 <translation id="1812975699435941848">Edukacja zdrowotna i szkolenia medyczne</translation>
 <translation id="1816436748874040213">Może prosić o przewijanie i powiększanie udostępnionych kart</translation>
+<translation id="1817364650920811003">Rola: wskazówka dotycząca Chrome. Etykieta ułatwień dostępu: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Odblokuj</translation>
 <translation id="1818585559878922121">Filmy dokumentalne</translation>
 <translation id="182139138257690338">pobieranie automatyczne</translation>
@@ -1398,6 +1399,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3642638418806704195">Aplikacja:</translation>
 <translation id="3646643500201740985">Pomiar skuteczności reklamy</translation>
 <translation id="3647286794400715637">Każda pozycja z adresami URL musi zawierać od 1 do 2 takich adresów.</translation>
+<translation id="3647400963805615193">Przycisk zamykający wskazówkę dotyczącą Chrome; naciśnij Enter, aby zamknąć; <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Weryfikacja powiodła się</translation>
 <translation id="3650594806107685466">Ze względów bezpieczeństwa wpisz kod CVC znajdujący się <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Wędrówki i campingi</translation>
@@ -3218,7 +3220,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195852673246414183">Po włączeniu tego ustawienia wróć na tę kartę, aby zacząć pisać</translation>
 <translation id="7199278868241956094">Oficio</translation>
-<translation id="7201591969684833065">Administrator może zobaczyć:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, naciśnij Tab, a potem Enter, aby otworzyć nową kartę incognito i przeglądać prywatnie</translation>
 <translation id="7203375778433816396">Ustaw Chrome jako domyślną przeglądarkę w systemie</translation>
 <translation id="7210863904660874423">Serwer <ph name="HOST_NAME" /> nie spełnia norm bezpieczeństwa.</translation>
@@ -3371,6 +3372,7 @@ Dodatkowe informacje:
 <translation id="7481312909269577407">Dalej</translation>
 <translation id="7481603210197454575">Koperta włoska</translation>
 <translation id="7483482939016730822">Artykuły szkolne i sprzęt do klasy</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />. Aby zamknąć wskazówkę dotyczącą Chrome, naciśnij Tab, a następnie Enter.</translation>
 <translation id="7485085230273446323">Biznes i przemysł</translation>
 <translation id="7485870689360869515">Nie znaleziono danych.</translation>
 <translation id="7489392576326061356">Szampony i odżywki</translation>

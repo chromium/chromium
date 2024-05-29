@@ -183,6 +183,7 @@
 <translation id="1654477262762802994">音声検索を開始</translation>
 <translation id="1668469839109562275">組み込みの VPN</translation>
 <translation id="1673232940951031776">フォーカス モードを終了します。残り時間は <ph name="REMAINING_TIME" /> です。</translation>
+<translation id="1675570947608765064">このタスクに加えた変更は、他のユーザーにも表示されます</translation>
 <translation id="1675844249244994876">右側のウィンドウを更新する</translation>
 <translation id="1677472565718498478">残り <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> は接続されていません。</translation>
@@ -1518,6 +1519,7 @@
 <translation id="6707693040195709527">デバイスを以前のバージョンに戻す期限が過ぎています</translation>
 <translation id="6710213216561001401">前へ</translation>
 <translation id="6723839937902243910">電源</translation>
+<translation id="672609503628871915">新機能を確認する</translation>
 <translation id="6727969043791803658">接続済み、<ph name="BATTERY_PERCENTAGE" />% のバッテリー残量</translation>
 <translation id="6732087373923685049">カメラ</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1788,6 +1790,7 @@
 <translation id="7773536009433685931">代わりに Wi-Fi をオンにする</translation>
 <translation id="7780094051999721182">ショートカット</translation>
 <translation id="7780159184141939021">画面の回転</translation>
+<translation id="7781829728241885113">昨日</translation>
 <translation id="7792590255364786396">表示</translation>
 <translation id="7796735576426975947">新しい通知は表示されません</translation>
 <translation id="7798302898096527229">キャンセルするには検索キーまたは Shift キーを押します。</translation>
@@ -2112,6 +2115,7 @@
 <translation id="9000771174482730261">ストレージを管理</translation>
 <translation id="9005984960510803406">Crosh ウィンドウを開く</translation>
 <translation id="9017320285115481645">ファミリー リンクの保護者のアクセスコードを入力してください。</translation>
+<translation id="9022774213089566801">よく使用するサイト</translation>
 <translation id="9024331582947483881">全画面表示</translation>
 <translation id="9029736946581028033">デバイスの電源がまもなく切れます</translation>
 <translation id="9030319654231318877">日の入りまでオフ</translation>

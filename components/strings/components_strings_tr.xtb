@@ -928,7 +928,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2725927759457695883">Tam adı doldur</translation>
 <translation id="2726001110728089263">Yan Tepsi</translation>
 <translation id="2728127805433021124">Sunucunun sertifikası, zayıf bir imza algoritması kullanılarak imzalanmış.</translation>
-<translation id="272937284275742856">Ödeme ayrıntılarınız güvenli bir şekilde doğrulanıyor...</translation>
+<translation id="272937284275742856">Ödeme bilgileriniz güvenli bir şekilde doğrulanıyor...</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Bağlantı Teşhislerini Çalıştırma<ph name="END_LINK" /></translation>
 <translation id="2731220418440848219">Chromium'daki arama motorunuz hakkında daha fazla bilgi</translation>
 <translation id="2731382536835015353">44 x 68 inç</translation>
@@ -3216,7 +3216,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195852673246414183">Bu ayarı açtıktan sonra yazmaya başlamak için bu sekmeye dönün</translation>
 <translation id="7199278868241956094">Oficio</translation>
-<translation id="7201591969684833065">Yöneticiniz şunları görebilir:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, yeni bir gizli sekme açıp gizli olarak göz atmak için Sekme tuşuna, sonra Enter'a basın</translation>
 <translation id="7203375778433816396">Chrome'u sistemin varsayılan tarayıcısı olarak ayarlayın</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> güvenlik standartlarına uymuyor.</translation>
