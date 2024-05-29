@@ -280,7 +280,7 @@ void AutofillManager::OnFormSubmitted(const FormData& form,
   if (!IsValidFormData(form)) {
     return;
   }
-  NotifyObservers(&Observer::OnFormSubmitted, form.global_id());
+  NotifyObservers(&Observer::OnFormSubmitted, form);
   OnFormSubmittedImpl(form, known_success, source);
 }
 

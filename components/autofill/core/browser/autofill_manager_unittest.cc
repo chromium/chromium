@@ -364,7 +364,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   // TODO(crbug.com/) Test in browser_autofill_manager_unittest.cc that
   // FillOrPreviewForm() triggers OnFillOrPreviewDataModelForm().
 
-  EXPECT_CALL(observer, OnFormSubmitted(m, f));
+  EXPECT_CALL(observer, OnFormSubmitted(m, Ref(form)));
   manager().OnFormSubmitted(form, true,
                             mojom::SubmissionSource::FORM_SUBMISSION);
 
