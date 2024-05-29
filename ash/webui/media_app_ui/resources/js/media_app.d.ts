@@ -255,6 +255,11 @@ declare interface ClientApiDelegate {
    */
   viewportUpdated(viewportBox: RectF, scaleFactor: number): void;
   /**
+   * Called when the media app finishes loading a PDF file, to notify Mahi about
+   * the refresh availability.
+   */
+  onPdfLoaded(): void;
+  /**
    * Called when the media app shows a context menu on PDF surface, to notify
    * Mahi to show its widget card accordingly.
    * @param anchor The coordinate and size of the context menu to help Mahi

@@ -67,32 +67,29 @@ MahiMediaAppClient::MahiMediaAppClient(
   // Registers self to `MahiMediaAppContentManager` as a client.
   chromeos::MahiMediaAppContentManager::Get()->AddClient(client_id_, this);
 
-  // Registers self as the window observer.
-  media_app_window_->AddObserver(this);
-
-  // Registers self as a focus event observer.
-  aura::client::FocusClient* focus_client =
-      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
-  focus_client->AddObserver(this);
-
-  // Checks the current focused window.
-  OnWindowFocused(focus_client->GetFocusedWindow(), nullptr);
+  // Starts to observe media_app_window_ events.
+  window_observation_.Observe(media_app_window_);
 }
 
 MahiMediaAppClient::~MahiMediaAppClient() {
   // Manually calls `RemoveClient()` when disconnecting.
   chromeos::MahiMediaAppContentManager::Get()->RemoveClient(client_id_);
+}
 
-  // Unregisters window observer.
-  if (media_app_window_) {
-    media_app_window_->RemoveObserver(this);
+void MahiMediaAppClient::OnPdfLoaded() {
+  if (!ash::Shell::HasInstance()) {
+    return;
   }
 
-  // Unregisters focus observer.
-  if (ash::Shell::HasInstance()) {
-    aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
-        ->RemoveObserver(this);
-  }
+  // On PDF loaded, the client starts to observe focus events and notify Mahi
+  // system when the media app window has focus.
+  focus_observation_.Reset();
+  aura::client::FocusClient* focus_client =
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
+  focus_observation_.Observe(focus_client);
+
+  // Checks the current focused window.
+  OnWindowFocused(focus_client->GetFocusedWindow(), nullptr);
 }
 
 void MahiMediaAppClient::OnPdfContextMenuShow(const ::gfx::RectF& anchor) {
@@ -165,6 +162,7 @@ void MahiMediaAppClient::OnWindowBoundsChanged(
 void MahiMediaAppClient::OnWindowDestroying(aura::Window* window) {
   if (window == media_app_window_) {
     media_app_window_ = nullptr;
+    window_observation_.Reset();
   }
 }
 

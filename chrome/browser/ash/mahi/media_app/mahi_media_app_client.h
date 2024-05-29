@@ -38,6 +38,7 @@ class MahiMediaAppClient : public media_app_ui::mojom::MahiUntrustedPageHandler,
   ~MahiMediaAppClient() override;
 
   // media_app_ui::mojom::MahiUntrustedPageHandler:
+  void OnPdfLoaded() override;
   void OnPdfContextMenuShow(const ::gfx::RectF& anchor) override;
   void OnPdfContextMenuHide() override;
 
@@ -77,6 +78,11 @@ class MahiMediaAppClient : public media_app_ui::mojom::MahiUntrustedPageHandler,
   // Not owned. The window this client is associated with, whose address is used
   // in checking focus status.
   raw_ptr<aura::Window> media_app_window_;
+  base::ScopedObservation<aura::client::FocusClient,
+                          aura::client::FocusChangeObserver>
+      focus_observation_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
 };
 
 }  // namespace ash

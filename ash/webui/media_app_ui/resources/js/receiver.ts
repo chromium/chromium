@@ -383,6 +383,9 @@ const DELEGATE: ClientApiDelegate = {
   async viewportUpdated(viewportBox: RectF, scaleFactor: number) {
     await ocrUntrustedPageHandler?.viewportUpdated(viewportBox, scaleFactor);
   },
+  async onPdfLoaded() {
+    await mahiUntrustedPageHandler?.onPdfLoaded();
+  },
   async onPdfContextMenuShow(anchor: RectF) {
     await mahiUntrustedPageHandler?.onPdfContextMenuShow(anchor);
   },

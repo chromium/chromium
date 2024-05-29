@@ -89,6 +89,10 @@ interface OcrUntrustedPage {
 // Interface implemented in the browser process and called by the
 // chrome-untrusted:// Media App page.
 interface MahiUntrustedPageHandler {
+  // Notifies when media app finishes loading a PDF file. This may be used for
+  // Mahi refresh availability.
+  OnPdfLoaded();
+
   // Notifies when the PDF context menu is shown. This may be used to show the
   // Mahi widget card.
   OnPdfContextMenuShow(gfx.mojom.RectF anchor);
@@ -104,6 +108,6 @@ interface MahiUntrustedPage {
   // Hides the PDF context menu, if currently shown.
   HidePdfContextMenu();
 
-  // Requests the text content of the pdf file.
+  // Requests the text content of the PDF file.
   GetPdfContent(int32 limit) => (string? content);
 };

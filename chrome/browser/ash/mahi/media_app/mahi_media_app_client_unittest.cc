@@ -24,7 +24,9 @@ namespace ash {
 
 namespace {
 using ::testing::_;
-}
+using ::testing::InSequence;
+using ::testing::MockFunction;
+}  // namespace
 
 class MockMahiUntrustedPage
     : public ash::media_app_ui::mojom::MahiUntrustedPage {
@@ -169,8 +171,31 @@ TEST_F(MahiMediaAppClientTest, WindowFocus) {
   mahi_media_app_client_ = std::make_unique<MahiMediaAppClient>(
       receiver_.BindNewPipeAndPassRemote(), "test_name", window_1.get());
 
-  // `window_1` gets focus, notifies proxy `OnPdfGetFocus` event.
-  EXPECT_CALL(mock_mahi_media_app_events_proxy_, OnPdfGetFocus(_)).Times(1);
+  MockFunction<void(std::string check_point_name)> check;
+  {
+    InSequence sequence;
+    EXPECT_CALL(check, Call("PDF loaded"));
+    EXPECT_CALL(mock_mahi_media_app_events_proxy_, OnPdfGetFocus(_)).Times(1);
+    EXPECT_CALL(check, Call("focus window_2"));
+    EXPECT_CALL(check, Call("focus window_1"));
+    EXPECT_CALL(mock_mahi_media_app_events_proxy_, OnPdfGetFocus(_)).Times(1);
+  }
+
+  // `window_1` gets focus, but because `OnPdfLoaded` is not called, the client
+  // doesn't observe this focus event.
+  focus_client->FocusWindow(window_1.get());
+
+  // `OnPdfLoaded` called, the client starts to observer focus event. And
+  // because `window_1` is currently focused, it notifies events proxy
+  // instantly.
+  check.Call("PDF loaded");
+  mahi_media_app_client_->OnPdfLoaded();
+
+  // Switches focus to `window_2` and back to `window_1`, the client notifies
+  // event proxy again.
+  check.Call("focus window_2");
+  focus_client->FocusWindow(window_2.get());
+  check.Call("focus window_1");
   focus_client->FocusWindow(window_1.get());
 }
 

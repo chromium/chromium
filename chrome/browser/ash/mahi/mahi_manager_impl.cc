@@ -283,6 +283,9 @@ void MahiManagerImpl::SetMediaAppPDFFocused() {
       chromeos::MahiMediaAppContentManager::Get();
   CHECK(media_app_content_manager);
 
+  bool old_media_app_pdf_focused = media_app_pdf_focused_;
+  base::UnguessableToken old_media_app_client_id = media_app_client_id_;
+
   media_app_client_id_ = media_app_content_manager->active_client_id();
   media_app_pdf_focused_ = true;
   std::optional<std::string> file_name =
@@ -297,6 +300,13 @@ void MahiManagerImpl::SetMediaAppPDFFocused() {
       GURL{base::StrCat({"file:///media-app/", file_name.value()})},
       /*title=*/base::UTF8ToUTF16(file_name.value()), gfx::ImageSkia(),
       /*distillable=*/true);
+
+  // To avoid refresh banner flicker. This could happen when a new PDF file is
+  // opened from file picker dialog in media app.
+  if (old_media_app_pdf_focused &&
+      old_media_app_client_id == media_app_client_id_) {
+    return;
+  }
 
   const bool availability =
       !current_panel_url_.EqualsIgnoringRef(current_page_info_->url);
