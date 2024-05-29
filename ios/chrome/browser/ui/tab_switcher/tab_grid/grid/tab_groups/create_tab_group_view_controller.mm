@@ -581,7 +581,7 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
 
   NSLayoutConstraint* keyboardConstraint = [container.bottomAnchor
       constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor];
-  keyboardConstraint.priority = UILayoutPriorityDefaultLow;
+  keyboardConstraint.priority = UILayoutPriorityDefaultHigh + 1;
 
   _regularConstraints = @[
     [dotAndFieldContainer.leadingAnchor
