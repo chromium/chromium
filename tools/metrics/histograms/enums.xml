@@ -24951,6 +24951,7 @@ from previous Chrome versions.
   <int value="1665430464" label="force-control-face-ae"/>
   <int value="1665999627" label="GameDashboard:disabled"/>
   <int value="1666226008" label="CrOSLegacyMediaFormats:disabled"/>
+  <int value="1666643895" label="BrowsingDataModel:enabled"/>
   <int value="1666933104" label="TabStripStartupRefactoring:enabled"/>
   <int value="1667533501" label="SameAppWindowCycle:disabled"/>
   <int value="1667584730" label="WebXR:disabled"/>
@@ -24992,6 +24993,7 @@ from previous Chrome versions.
   <int value="1681219077" label="VoiceButtonInTopToolbar:enabled"/>
   <int value="1681510941" label="AndroidElegantTextHeight:disabled"/>
   <int value="1681612611" label="CodeBasedRBD:disabled"/>
+  <int value="1683395700" label="BrowsingDataModel:disabled"/>
   <int value="1683560662" label="ChromeShareHighlightsAndroid:disabled"/>
   <int value="1684043382" label="AssistantKeyRemapping:enabled"/>
   <int value="1684080951" label="ArcUnthrottleOnActiveAudio:enabled"/>

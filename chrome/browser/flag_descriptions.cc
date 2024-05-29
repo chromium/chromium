@@ -4076,6 +4076,9 @@ const char kAccountReauthenticationRecentTimeWindow0mins[] = "0 mins";
 const char kAccountReauthenticationRecentTimeWindow1mins[] = "1 mins";
 const char kAccountReauthenticationRecentTimeWindow5mins[] = "5 mins";
 
+const char kBrowsingDataModelName[] = "Browsing Data Model";
+const char kBrowsingDataModelDescription[] = "Enables BDM on Android.";
+
 const char kChimeAlwaysShowNotificationDescription[] =
     "A debug flag to always show Chime notification after receiving a payload.";
 const char kChimeAlwaysShowNotificationName[] =

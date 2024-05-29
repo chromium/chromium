@@ -1122,6 +1122,14 @@
     "expiry_milestone": 129
   },
   {
+    "name": "browsing-data-model-clank",
+    "owners": [
+      "alimariam@google.com",
+      "tommasin@chromium.org",
+      "chrome-browser-privacy-team@google.com"],
+      "expiry_milestone": 129
+  },
+  {
     "name": "butter-on-desktop-followup",
     "owners": [
       "sygiet@google.com",
