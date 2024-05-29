@@ -90,7 +90,8 @@ public class HubTabSwitcherListEditorFacility extends Facility<HubTabSwitcherBas
         newTabIdsList.add(tabId);
         HubTabSwitcherListEditorFacility newEditor =
                 new HubTabSwitcherListEditorFacility(mHostStation, newTabIdsList);
-        return mHostStation.enterFacilitySync(
+        return mHostStation.swapFacilitySync(
+                this,
                 newEditor,
                 () ->
                         ViewActionOnDescendant.performOnRecyclerViewNthItem(

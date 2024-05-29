@@ -34,7 +34,7 @@ public class ConditionWaiter {
      *
      * <p>Tracks and aggregates the ConditionStatues for user-friendly printing.
      */
-    static class ConditionWait {
+    protected static class ConditionWait {
 
         private final Condition mCondition;
         private final @ConditionOrigin int mOrigin;
@@ -209,10 +209,12 @@ public class ConditionWaiter {
      * {@link ConditionWait}es.
      *
      * @param conditionWaits the {@link ConditionWait}es to process.
+     * @param transitionName String representing the Transition to print
      * @param options the {@link TransitionOptions} to configure the polling parameters.
      * @throws AssertionError if not all {@link Condition}s are fulfilled before timing out.
      */
-    static void waitFor(List<ConditionWait> conditionWaits, TransitionOptions options) {
+    static void waitFor(
+            List<ConditionWait> conditionWaits, String transitionName, TransitionOptions options) {
         Runnable checker =
                 () -> {
                     boolean anyCriteriaMissing = false;
@@ -226,7 +228,8 @@ public class ConditionWaiter {
                     } else {
                         Log.i(
                                 TAG,
-                                "Conditions fulfilled:\n%s",
+                                "%s: Conditions fulfilled:\n%s",
+                                transitionName,
                                 createWaitConditionsSummary(conditionWaits));
                     }
                 };

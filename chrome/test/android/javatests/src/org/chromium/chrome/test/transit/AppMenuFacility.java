@@ -35,6 +35,7 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 
 import java.util.concurrent.Callable;
+import java.util.function.Function;
 
 /**
  * Base class for app menus shown when pressing ("...").
@@ -51,7 +52,9 @@ public abstract class AppMenuFacility<HostStationT extends Station>
 
     /** Create a new app menu item which runs |selectHandler| when selected. */
     protected <SelectReturnT> Item<SelectReturnT> declareMenuItem(
-            ItemsBuilder items, @IdRes int id, Callable<SelectReturnT> selectHandler) {
+            ItemsBuilder items,
+            @IdRes int id,
+            Function<ItemOnScreenFacility<SelectReturnT>, SelectReturnT> selectHandler) {
         return items.declareItem(itemViewMatcher(id), itemDataMatcher(id), selectHandler);
     }
 
@@ -100,7 +103,9 @@ public abstract class AppMenuFacility<HostStationT extends Station>
      * selected.
      */
     protected <SelectReturnT> Item<SelectReturnT> declarePossibleMenuItem(
-            ItemsBuilder items, @IdRes int id, Callable<SelectReturnT> selectHandler) {
+            ItemsBuilder items,
+            @IdRes int id,
+            Function<ItemOnScreenFacility<SelectReturnT>, SelectReturnT> selectHandler) {
         return items.declarePossibleItem(itemViewMatcher(id), itemDataMatcher(id), selectHandler);
     }
 

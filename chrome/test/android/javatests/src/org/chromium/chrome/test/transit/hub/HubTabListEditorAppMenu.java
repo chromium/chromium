@@ -69,7 +69,9 @@ public class HubTabListEditorAppMenu extends AppMenuFacility<HubTabSwitcherBaseS
     }
 
     /** Actual implementation of {@link #groupTabs()}. Called after scrolling if necessary. */
-    private Pair<HubTabSwitcherStation, HubTabSwitcherGroupCardFacility> doGroupTabs() {
+    private Pair<HubTabSwitcherStation, HubTabSwitcherGroupCardFacility> doGroupTabs(
+            ItemOnScreenFacility<Pair<HubTabSwitcherStation, HubTabSwitcherGroupCardFacility>>
+                    itemOnScreen) {
         HubTabSwitcherStation tabSwitcherAfter = new HubTabSwitcherStation();
         HubTabSwitcherGroupCardFacility groupCard =
                 new HubTabSwitcherGroupCardFacility(

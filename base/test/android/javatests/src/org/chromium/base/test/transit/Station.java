@@ -157,7 +157,7 @@ public abstract class Station extends ConditionalState {
         return enterFacilitySync(facility, TransitionOptions.DEFAULT, trigger);
     }
 
-    /** Version of #enterFacilitySync() with extra TransitionOptions. */
+    /** Version of {@link #enterFacilitySync(F, Trigger)} with extra TransitionOptions. */
     public <F extends Facility> F enterFacilitySync(
             F facility, TransitionOptions options, Trigger trigger) {
         assert facility.getHostStation() == this;
@@ -173,19 +173,78 @@ public abstract class Station extends ConditionalState {
      *
      * @param facility the {@link Facility} to exit.
      * @param trigger the trigger to start the transition (e.g. clicking a view).
-     * @return the {@link Facility} exited, now DONE.
      * @param <F> the type of {@link Facility} exited.
      */
-    public <F extends Facility> F exitFacilitySync(F facility, Trigger trigger) {
-        return exitFacilitySync(facility, TransitionOptions.DEFAULT, trigger);
+    public <F extends Facility> void exitFacilitySync(F facility, Trigger trigger) {
+        exitFacilitySync(facility, TransitionOptions.DEFAULT, trigger);
     }
 
-    /** Version of #exitFacilitySync() with extra TransitionOptions. */
-    public <F extends Facility> F exitFacilitySync(
+    /** Version of {@link #exitFacilitySync(F, Trigger)} with extra TransitionOptions. */
+    public <F extends Facility> void exitFacilitySync(
             F facility, TransitionOptions options, Trigger trigger) {
         FacilityCheckOut checkOut = new FacilityCheckOut(facility, options, trigger);
         checkOut.transitionSync();
-        return facility;
+    }
+
+    /**
+     * Starts a transition out of a {@link Facility} and into another {@link Facility}.
+     *
+     * <p>Runs the transition |trigger| and blocks until |facilityToExit| is considered FINISHED
+     * (exit Conditions are fulfilled) and |facilityToEnter| is considered ACTIVE (enter Conditions
+     * are fulfilled).
+     *
+     * @param facilityToExit the {@link Facility} to exit.
+     * @param facilityToEnter the {@link Facility} to enter.
+     * @param trigger the trigger to start the transition (e.g. clicking a view).
+     * @return the {@link Facility} entered, now ACTIVE.
+     * @param <F> the type of {@link Facility} entered.
+     */
+    public <F extends Facility> F swapFacilitySync(
+            Facility facilityToExit, F facilityToEnter, Trigger trigger) {
+        return swapFacilitySync(
+                facilityToExit, facilityToEnter, TransitionOptions.DEFAULT, trigger);
+    }
+
+    /** Version of {@link #swapFacilitySync(Facility, F, Trigger)} with extra TransitionOptions. */
+    public <F extends Facility> F swapFacilitySync(
+            Facility facilityToExit,
+            F facilityToEnter,
+            TransitionOptions options,
+            Trigger trigger) {
+        FacilitySwap swap =
+                new FacilitySwap(List.of(facilityToExit), facilityToEnter, options, trigger);
+        swap.transitionSync();
+        return facilityToEnter;
+    }
+
+    /**
+     * Starts a transition out of 1+ {@link Facility}s and into another {@link Facility}.
+     *
+     * <p>Runs the transition |trigger| and blocks until all |facilitiesToExit| are considered
+     * FINISHED (exit Conditions are fulfilled) and |facilityToEnter| is considered ACTIVE (enter
+     * Conditions are fulfilled).
+     *
+     * @param facilitiesToExit the {@link Facility}s to exit.
+     * @param facilityToEnter the {@link Facility} to enter.
+     * @param trigger the trigger to start the transition (e.g. clicking a view).
+     * @return the {@link Facility} entered, now ACTIVE.
+     * @param <F> the type of {@link Facility} entered.
+     */
+    public <F extends Facility> F swapFacilitySync(
+            List<Facility> facilitiesToExit, F facilityToEnter, Trigger trigger) {
+        return swapFacilitySync(
+                facilitiesToExit, facilityToEnter, TransitionOptions.DEFAULT, trigger);
+    }
+
+    /** Version of {@link #swapFacilitySync(List, F, Trigger)} with extra TransitionOptions. */
+    public <F extends Facility> F swapFacilitySync(
+            List<Facility> facilitiesToExit,
+            F facilityToEnter,
+            TransitionOptions options,
+            Trigger trigger) {
+        FacilitySwap swap = new FacilitySwap(facilitiesToExit, facilityToEnter, options, trigger);
+        swap.transitionSync();
+        return facilityToEnter;
     }
 
     /**

@@ -31,16 +31,16 @@ public abstract class Transition {
 
     protected final int mId;
     protected final TransitionOptions mOptions;
-    protected final List<ConditionalState> mExitedStates;
-    protected final List<ConditionalState> mEnteredStates;
+    protected final List<? extends ConditionalState> mExitedStates;
+    protected final List<? extends ConditionalState> mEnteredStates;
     @Nullable protected final Trigger mTrigger;
 
     protected List<ConditionWait> mWaits;
 
     Transition(
             TransitionOptions options,
-            List<ConditionalState> exitedStates,
-            List<ConditionalState> enteredStates,
+            List<? extends ConditionalState> exitedStates,
+            List<? extends ConditionalState> enteredStates,
             @Nullable Trigger trigger) {
         mId = ++sLastTripId;
         mOptions = options;
@@ -125,7 +125,7 @@ public abstract class Transition {
         // prints the state of all conditions. The timeout can be reduced when explicitly looking
         // for flakiness due to tight timeouts.
         try {
-            ConditionWaiter.waitFor(mWaits, mOptions);
+            ConditionWaiter.waitFor(mWaits, toDebugString(), mOptions);
         } catch (Throwable e) {
             throw newTransitionException(e);
         }
