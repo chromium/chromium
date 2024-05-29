@@ -585,19 +585,23 @@ const FeatureEntry::FeatureParam kRichAutocompletionImplementationLabel[] = {
 const FeatureEntry::FeatureParam
     kRichAutocompletionImplementationTextField3Chars[] = {
         {kRichAutocompletionParam, kRichAutocompletionParamTextField},
-        {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"}};
+        {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"},
+        {"RichAutocompletionAutocompleteTitlesMinChar", "3"}};
 const FeatureEntry::FeatureParam
     kRichAutocompletionImplementationTextField4Chars[] = {
         {kRichAutocompletionParam, kRichAutocompletionParamTextField},
-        {"RichAutocompletionAutocompleteShortcutTextMinChar", "4"}};
+        {"RichAutocompletionAutocompleteShortcutTextMinChar", "4"},
+        {"RichAutocompletionAutocompleteTitlesMinChar", "4"}};
 const FeatureEntry::FeatureParam
     kRichAutocompletionImplementationNoAdditionalText3Chars[] = {
         {kRichAutocompletionParam, kRichAutocompletionParamNoAdditionalText},
-        {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"}};
+        {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"},
+        {"RichAutocompletionAutocompleteTitlesMinChar", "3"}};
 const FeatureEntry::FeatureParam
     kRichAutocompletionImplementationNoAdditionalText4Chars[] = {
         {kRichAutocompletionParam, kRichAutocompletionParamNoAdditionalText},
-        {"RichAutocompletionAutocompleteShortcutTextMinChar", "4"}};
+        {"RichAutocompletionAutocompleteShortcutTextMinChar", "4"},
+        {"RichAutocompletionAutocompleteTitlesMinChar", "4"}};
 const FeatureEntry::FeatureVariation
     kRichAutocompletionImplementationVariations[] = {
         {"In Label", kRichAutocompletionImplementationLabel,
