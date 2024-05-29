@@ -33,6 +33,7 @@ build_webui("build") {
     "js/utils/event_utils.ts",
     "js/utils/mojo_data_providers.ts",
     "js/utils/print_preview_cros_app_types.ts",
+    "js/utils/validation_utils.ts",
   ]
 
   web_component_files = [

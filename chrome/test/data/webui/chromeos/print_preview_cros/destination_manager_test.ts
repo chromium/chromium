@@ -334,4 +334,30 @@ suite('DestinationManager', () => {
         managerDestinations[0], instance.getActiveDestination(),
         'Active destination should be first destination');
   });
+
+  // Verify destinationExist returns true when cache contains a destination;
+  // otherwise false.
+  test(
+      'destinationExists returns true when destinationCache has key',
+      async () => {
+        // Initialize manager with test destinations.
+        const testDestinations = [createTestDestination()];
+        destinationProvider.setLocalDestinationResult(testDestinations);
+        instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
+        const destinationsChangedEvent =
+            eventToPromise(DESTINATION_MANAGER_DESTINATIONS_CHANGED, instance);
+        mockTimer.tick(testDelay);
+        await destinationsChangedEvent;
+
+        // Verify destinations added during initialization and fetch exist.
+        assertTrue(
+            instance.destinationExists(PDF_DESTINATION.id),
+            'Inserted by initialization');
+        assertTrue(
+            instance.destinationExists(testDestinations[0]!.id),
+            'Inserted by fetch');
+        assertFalse(
+            instance.destinationExists('unknownDestinationId'),
+            'Unknown key should not exist');
+      });
 });

@@ -95,6 +95,11 @@ export class DestinationManager extends EventTarget implements
     this.insertDigitalDestinations();
   }
 
+  // Returns true if destination exists in cache.
+  destinationExists(destinationId: string): boolean {
+    return this.destinationCache.has(destinationId);
+  }
+
   // TODO(b/323421684): Returns true if initial fetch has returned
   // and there are valid destinations available in the destination
   // cache.

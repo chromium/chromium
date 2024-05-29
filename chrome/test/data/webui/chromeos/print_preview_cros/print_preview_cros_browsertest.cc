@@ -111,6 +111,10 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest, SummaryPanelTest) {
   RunTestAtPath("summary_panel_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest, ValidationUtilsTest) {
+  RunTestAtPath("validation_utils_test.js");
+}
+
 }  // namespace
 
 }  // namespace ash
