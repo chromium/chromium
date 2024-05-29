@@ -2567,6 +2567,7 @@ void LineBreaker::RemoveTrailingCollapsibleSpace(LineInfo* line_info) {
 
   // We have a trailing collapsible space. Remove it.
   InlineItemResult* item_result = trailing_collapsible_space_->item_result;
+  bool position_was_saturated = position_ == LayoutUnit::Max();
   position_ -= item_result->inline_size;
   if (const ShapeResultView* collapsed_shape_result =
           trailing_collapsible_space_->collapsed_shape_result) {
@@ -2583,6 +2584,9 @@ void LineBreaker::RemoveTrailingCollapsibleSpace(LineInfo* line_info) {
   }
   trailing_collapsible_space_.reset();
   trailing_whitespace_ = WhitespaceState::kCollapsed;
+  if (position_was_saturated) {
+    position_ = line_info->ComputeWidth();
+  }
 }
 
 // Compute the width of trailing spaces without removing it.
