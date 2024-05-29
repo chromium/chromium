@@ -1169,7 +1169,7 @@ public class NewTabPageTest {
         View mvTilesLayout = ntpLayout.findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
 
         int expectedTitleTopMargin =
-                res.getDimensionPixelSize(R.dimen.tile_view_title_margin_top_modern_polish);
+                res.getDimensionPixelSize(R.dimen.tile_view_title_margin_top_modern);
         TileView suggestionsTileElement = (TileView) ((LinearLayout) mvTilesLayout).getChildAt(0);
         Assert.assertEquals(
                 "The top margin of the tile element's title is wrong.",

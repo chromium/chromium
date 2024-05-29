@@ -146,7 +146,6 @@ found in the LICENSE file.
     <dimen name="mvt_container_lateral_margin_polish">@dimen/signin_promo_lateral_paddings</dimen>
     <dimen name="mvt_container_top_padding_polish">17dp</dimen>
     <dimen name="mvt_container_bottom_padding_polish">22dp</dimen>
-    <dimen name="tile_view_title_margin_top_modern_polish">63dp</dimen>
     <dimen name="mvt_container_top_margin_polish">23dp</dimen>
     <dimen name="mvt_container_to_ntp_right_extra_margin_two_feed_tablet">16dp</dimen>
     <dimen name="mvt_container_bottom_margin_tablet">48dp</dimen>
