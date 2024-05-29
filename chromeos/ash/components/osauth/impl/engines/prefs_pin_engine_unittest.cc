@@ -33,6 +33,8 @@ using ::testing::InSequence;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
 
+const char kAuthSessionId[] = "31415926535";
+
 class PrefsPinEngineTest : public ::testing::Test {
  protected:
   PrefsPinEngineTest()
@@ -66,6 +68,7 @@ class PrefsPinEngineTest : public ::testing::Test {
         .WillOnce([](auto&&, auto&& callback) {
           user_data_auth::StartAuthSessionReply reply;
           reply.set_user_exists(true);
+          reply.set_auth_session_id(kAuthSessionId);
           std::move(callback).Run(reply);
         });
     EXPECT_CALL(mock_udac_, ListAuthFactors(_, _))
