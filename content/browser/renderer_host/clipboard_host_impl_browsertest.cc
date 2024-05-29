@@ -10,7 +10,6 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
@@ -21,7 +20,6 @@
 #include "content/public/test/permissions_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/file_info.h"
@@ -179,10 +177,7 @@ IN_PROC_BROWSER_TEST_P(ClipboardDocUrlBrowserTestP, HtmlUrl) {
 
 class ClipboardBrowserTest : public ClipboardHostImplBrowserTest {
  public:
-  ClipboardBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        blink::features::kEmptyClipboardRead, /*enabled*/ true);
-  }
+  ClipboardBrowserTest() = default;
 
   void SetPermissionOverrideForAsyncClipboardTests(
       blink::mojom::PermissionStatus status) {
@@ -211,9 +206,6 @@ class ClipboardBrowserTest : public ClipboardHostImplBrowserTest {
         shell(), embedded_https_test_server().GetURL("/title1.html")));
     shell()->web_contents()->Focus();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest, EmptyClipboard) {

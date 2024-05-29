@@ -359,12 +359,6 @@ void ClipboardPromise::ResolveRead() {
     return;
   }
   ScriptState::Scope scope(script_state);
-  if (!RuntimeEnabledFeatures::EmptyClipboardReadEnabled() &&
-      !clipboard_item_data_.size()) {
-    script_promise_resolver_->RejectWithDOMException(
-        DOMExceptionCode::kDataError, "No valid data on clipboard.");
-    return;
-  }
   HeapVector<std::pair<String, ScriptPromiseUntyped>> items;
   items.ReserveInitialCapacity(clipboard_item_data_.size());
 
