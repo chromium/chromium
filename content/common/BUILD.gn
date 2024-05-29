@@ -209,7 +209,6 @@ source_set("common") {
     "media/cdm_info.cc",
     "mojo_core_library_support.cc",
     "mojo_core_library_support.h",
-    "native_web_keyboard_event_aura.cc",
     "navigation_gesture.h",
     "navigation_params_utils.h",
     "origin_util.cc",
@@ -277,6 +276,7 @@ source_set("common") {
     "//build:chromeos_buildflags",
     "//build/util:chromium_git_revision",
     "//components/discardable_memory/common",
+    "//components/input",
     "//components/services/filesystem/public/mojom",
     "//components/tracing:startup_tracing",
     "//content:content_resources",
@@ -376,9 +376,6 @@ source_set("common") {
       "android/sync_compositor_statics.h",
       "cursors/webcursor_android.cc",
       "font_list_android.cc",
-      "input/web_input_event_builders_android.cc",
-      "input/web_input_event_builders_android.h",
-      "native_web_keyboard_event_android.cc",
     ]
 
     if (use_seccomp_bpf) {
@@ -388,23 +385,15 @@ source_set("common") {
 
   if (is_ios) {
     # TOOD: Create ios file instead of stealing android
-    sources += [
-      "cursors/webcursor_android.cc",
-      "input/web_input_event_builders_ios.h",
-      "input/web_input_event_builders_ios.mm",
-      "native_web_keyboard_event_ios.mm",
-    ]
+    sources += [ "cursors/webcursor_android.cc" ]
   }
 
   if (is_mac) {
     sources += [
-      "input/web_input_event_builders_mac.h",
-      "input/web_input_event_builders_mac.mm",
       "mac/attributed_string_type_converters.h",
       "mac/attributed_string_type_converters.mm",
       "mac/task_port_policy.cc",
       "mac/task_port_policy.h",
-      "native_web_keyboard_event_mac.mm",
     ]
     deps += [ "//sandbox/mac:seatbelt" ]
   }
@@ -444,10 +433,7 @@ source_set("common") {
   if (use_aura) {
     deps += [ "//ui/wm" ]
   } else {
-    sources -= [
-      "cursors/webcursor_aura.cc",
-      "native_web_keyboard_event_aura.cc",
-    ]
+    sources -= [ "cursors/webcursor_aura.cc" ]
   }
 
   if (is_linux || is_chromeos) {

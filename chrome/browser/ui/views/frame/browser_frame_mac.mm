@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
 #import "chrome/browser/ui/views/frame/browser_frame_mac.h"
 
 #import "base/apple/foundation_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
@@ -27,6 +26,7 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/dom_distiller/content/browser/distillable_page_utils.h"
 #include "components/dom_distiller/core/url_utils.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
@@ -35,7 +35,6 @@
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/l10n/l10n_util.h"

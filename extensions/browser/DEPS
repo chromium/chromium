@@ -4,6 +4,7 @@ include_rules = [
   "+components/back_forward_cache",
   "+components/crash/core",
   "+components/guest_view",
+  "+components/input",
   "+components/keyed_service",
   "+components/pref_registry",
   "+components/services/unzip/content",

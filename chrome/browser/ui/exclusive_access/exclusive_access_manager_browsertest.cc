@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "url/gurl.h"

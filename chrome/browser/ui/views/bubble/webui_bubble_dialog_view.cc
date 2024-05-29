@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 
 #include "build/build_config.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/visibility.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

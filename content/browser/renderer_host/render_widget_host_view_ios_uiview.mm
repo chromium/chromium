@@ -6,8 +6,8 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/input/web_input_event_builders_ios.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "content/common/input/web_input_event_builders_ios.h"
 
 static void* kObservingContext = &kObservingContext;
 

@@ -5,6 +5,7 @@
 #include "content/browser/android/ime_adapter_android.h"
 
 #include <android/input.h>
+
 #include <algorithm>
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/browser/android/text_suggestion_host_android.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
@@ -22,7 +24,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/android/content_jni_headers/ImeAdapterImpl_jni.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/ime_host.mojom.h"
 #include "third_party/blink/public/mojom/input/stylus_writing_gesture.mojom.h"

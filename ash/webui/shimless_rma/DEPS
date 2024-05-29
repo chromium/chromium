@@ -10,6 +10,7 @@ include_rules = [
   "+ui/web_dialogs",
   "+ui/chromeos",
   "+ui/chromeos/strings",
+  "+components/input",
   "+components/onc/onc_constants.h",
   "+components/onc/onc_pref_names.h",
   "+components/permissions/permission_request_manager.h",

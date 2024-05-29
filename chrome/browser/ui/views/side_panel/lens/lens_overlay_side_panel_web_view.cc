@@ -16,8 +16,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/file_select_listener.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 using SidePanelWebUIViewT_LensUntrustedUI =

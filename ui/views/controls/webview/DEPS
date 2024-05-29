@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/input",
   "+content/public",
   "+content/test/test_content_browser_client.h",
   "+content/test/test_web_contents.h",

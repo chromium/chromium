@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/remote_cocoa.h"
-
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "components/input/native_web_keyboard_event.h"
+#include "components/input/web_input_event_builders_mac.h"
 #include "content/app_shim_remote_cocoa/render_widget_host_ns_view_bridge.h"
 #include "content/app_shim_remote_cocoa/render_widget_host_ns_view_host_helper.h"
 #include "content/app_shim_remote_cocoa/web_contents_ns_view_bridge.h"
-#include "content/common/input/web_input_event_builders_mac.h"
 #include "content/common/render_widget_host_ns_view.mojom.h"
 #include "content/common/web_contents_ns_view_bridge.mojom.h"
+#include "content/public/browser/remote_cocoa.h"
 #include "content/public/browser/render_widget_host_view_mac_delegate.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/web_input_event_builders_android.h"
+#include "components/input/web_input_event_builders_android.h"
 
 #include <android/input.h>
 #include <android/keycodes.h>

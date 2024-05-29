@@ -176,6 +176,7 @@ include_rules = [
   "+components/infobars/android",
   "+components/infobars/content",
   "+components/infobars/core",
+  "+components/input",
   "+components/installedapp",
   "+components/invalidation/impl",
   "+components/invalidation/public",

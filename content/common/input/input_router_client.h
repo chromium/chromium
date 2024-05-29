@@ -6,8 +6,8 @@
 #define CONTENT_COMMON_INPUT_INPUT_ROUTER_CLIENT_H_
 
 #include "cc/input/touch_action.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/common/input/event_with_latency_info.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"

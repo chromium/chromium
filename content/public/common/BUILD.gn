@@ -176,7 +176,6 @@ source_set("common_sources") {
     "dips_utils.h",
     "drop_data.cc",
     "drop_data.h",
-    "input/native_web_keyboard_event.h",
     "input_event_ack_state.h",
     "isolated_world_ids.h",
     "javascript_dialog_type.h",

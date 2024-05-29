@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <Carbon/Carbon.h>  // for the kVK_* constants.
+#include <Cocoa/Cocoa.h>
+
 #include "base/apple/owned_objc.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/public/test/render_view_test.h"
 #include "content/renderer/render_frame_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,9 +18,6 @@
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
-
-#include <Carbon/Carbon.h>  // for the kVK_* constants.
-#include <Cocoa/Cocoa.h>
 
 using blink::TestWebFrameContentDumper;
 

@@ -43,6 +43,7 @@ include_rules = [
   "+components/history_embeddings",
   "+components/infobars/content",
   "+components/infobars/core",
+  "+components/input",
   "+components/javascript_dialogs",
   "+components/keep_alive_registry",
   "+components/keyed_service/content",

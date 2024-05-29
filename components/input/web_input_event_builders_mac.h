@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_WEB_INPUT_EVENT_BUILDERS_MAC_H_
-#define CONTENT_COMMON_INPUT_WEB_INPUT_EVENT_BUILDERS_MAC_H_
+#ifndef COMPONENTS_INPUT_WEB_INPUT_EVENT_BUILDERS_MAC_H_
+#define COMPONENTS_INPUT_WEB_INPUT_EVENT_BUILDERS_MAC_H_
 
-#include "content/common/content_export.h"
+#include "base/component_export.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -17,12 +17,12 @@
 
 namespace content {
 
-class CONTENT_EXPORT WebKeyboardEventBuilder {
+class COMPONENT_EXPORT(INPUT) WebKeyboardEventBuilder {
  public:
   static blink::WebKeyboardEvent Build(NSEvent* event);
 };
 
-class CONTENT_EXPORT WebMouseEventBuilder {
+class COMPONENT_EXPORT(INPUT) WebMouseEventBuilder {
  public:
   static blink::WebMouseEvent Build(
       NSEvent* event,
@@ -32,21 +32,21 @@ class CONTENT_EXPORT WebMouseEventBuilder {
       bool unacceleratedMovement = false);
 };
 
-class CONTENT_EXPORT WebMouseWheelEventBuilder {
+class COMPONENT_EXPORT(INPUT) WebMouseWheelEventBuilder {
  public:
   static blink::WebMouseWheelEvent Build(NSEvent* event, NSView* view);
 };
 
-class CONTENT_EXPORT WebGestureEventBuilder {
+class COMPONENT_EXPORT(INPUT) WebGestureEventBuilder {
  public:
   static blink::WebGestureEvent Build(NSEvent*, NSView*);
 };
 
-class CONTENT_EXPORT WebTouchEventBuilder {
+class COMPONENT_EXPORT(INPUT) WebTouchEventBuilder {
  public:
   static blink::WebTouchEvent Build(NSEvent* event, NSView* view);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_COMMON_INPUT_WEB_INPUT_EVENT_BUILDERS_MAC_H_
+#endif  // COMPONENTS_INPUT_WEB_INPUT_EVENT_BUILDERS_MAC_H_

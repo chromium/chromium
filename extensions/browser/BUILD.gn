@@ -595,6 +595,7 @@ source_set("browser_sources") {
     "//components/crx_file",
     "//components/crx_file:crx_creator",
     "//components/guest_view/browser",
+    "//components/input",
     "//components/keyed_service/content",
     "//components/keyed_service/content:content",
     "//components/keyed_service/core",

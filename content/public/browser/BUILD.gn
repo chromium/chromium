@@ -564,6 +564,7 @@ source_set("browser_sources") {
   deps = [
     "//build:chromeos_buildflags",
     "//cc",
+    "//components/input",
     "//components/services/storage/public/cpp",
     "//components/variations:variations",
     "//components/viz/host",

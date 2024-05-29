@@ -192,6 +192,7 @@ static_library("web_contents_delegate") {
   deps = [
     ":web_contents_delegate_jni_headers",
     "//base",
+    "//components/input",
     "//content/public/browser",
     "//content/public/common",
     "//net",

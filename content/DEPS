@@ -27,6 +27,7 @@ include_rules = [
   "+components/app_launch_prefetch",
   "+components/attribution_reporting",
   "+components/browsing_topics/common",
+  "+components/input",
   "+components/memory_pressure",
   "+components/ml/mojom",
   "+components/services/filesystem",

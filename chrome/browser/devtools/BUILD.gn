@@ -146,6 +146,7 @@ static_library("devtools") {
       "//components/guest_view/browser",
       "//components/infobars/content",
       "//components/infobars/core",
+      "//components/input",
       "//components/javascript_dialogs",
       "//components/keep_alive_registry",
       "//components/keyed_service/content",

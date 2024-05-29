@@ -4391,6 +4391,7 @@ source_set("ash") {
     "//components/google/core/common",
     "//components/guest_os:prefs",
     "//components/image_fetcher/core",
+    "//components/input",
     "//components/invalidation/impl",
     "//components/language/core/browser",
     "//components/language/core/common",

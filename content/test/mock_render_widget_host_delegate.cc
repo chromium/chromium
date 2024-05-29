@@ -5,12 +5,12 @@
 #include "content/test/mock_render_widget_host_delegate.h"
 
 #include "base/notimplemented.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/viz/common/hit_test/hit_test_data_provider.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "ui/compositor/compositor.h"
 #include "ui/display/screen.h"
 

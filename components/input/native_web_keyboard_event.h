@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_COMMON_INPUT_NATIVE_WEB_KEYBOARD_EVENT_H_
-#define CONTENT_PUBLIC_COMMON_INPUT_NATIVE_WEB_KEYBOARD_EVENT_H_
+#ifndef COMPONENTS_INPUT_NATIVE_WEB_KEYBOARD_EVENT_H_
+#define COMPONENTS_INPUT_NATIVE_WEB_KEYBOARD_EVENT_H_
 
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/common/content_export.h"
+#include "base/component_export.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -23,7 +23,8 @@ namespace content {
 
 // Owns a platform specific event; used to pass own and pass event through
 // platform independent code.
-struct CONTENT_EXPORT NativeWebKeyboardEvent : public blink::WebKeyboardEvent {
+struct COMPONENT_EXPORT(INPUT) NativeWebKeyboardEvent :
+    public blink::WebKeyboardEvent {
   NativeWebKeyboardEvent(blink::WebInputEvent::Type type,
                          int modifiers,
                          base::TimeTicks timestamp);
@@ -71,4 +72,4 @@ struct CONTENT_EXPORT NativeWebKeyboardEvent : public blink::WebKeyboardEvent {
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_COMMON_INPUT_NATIVE_WEB_KEYBOARD_EVENT_H_
+#endif  // COMPONENTS_INPUT_NATIVE_WEB_KEYBOARD_EVENT_H_

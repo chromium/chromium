@@ -558,6 +558,7 @@ static_library("ui") {
     "//components/image_fetcher/core",
     "//components/infobars/content",
     "//components/infobars/core",
+    "//components/input",
     "//components/javascript_dialogs",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
@@ -6486,6 +6487,7 @@ static_library("ui") {
       "//components/global_media_controls",
       "//components/global_media_controls/public/mojom:device_service",
       "//components/history/core/browser",
+      "//components/input",
       "//components/live_caption",
       "//components/live_caption:constants",
       "//components/media_effects:media_effects",
@@ -7325,6 +7327,7 @@ static_library("test_support") {
     deps += [
       "//chrome/test:test_support_ui",
       "//components/embedder_support:embedder_support",
+      "//components/input",
       "//components/media_message_center:media_message_center",
       "//components/media_router/browser:browser",
       "//components/signin/core/browser",

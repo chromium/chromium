@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/input",
   "+content/public",
   "+ui/base",
   "+ui/events",

@@ -28,7 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "content/common/input/web_input_event_builders_mac.h"
+#include "components/input/web_input_event_builders_mac.h"
 
 #import <ApplicationServices/ApplicationServices.h>
 #import <Cocoa/Cocoa.h>

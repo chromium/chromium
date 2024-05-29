@@ -33,6 +33,7 @@ component("webview") {
 
   deps = [
     "//base:i18n",
+    "//components/input",
     "//ipc",
     "//skia",
     "//ui/accessibility",

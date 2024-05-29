@@ -1,6 +1,4 @@
-dtapuska@chromium.org
-bokan@chromium.org
-flackr@chromium.org
+file://components/input/OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

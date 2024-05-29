@@ -3,6 +3,7 @@
 # add any additional dependencies on content code.
 # https://crbug.com/958255
 include_rules = [
+  "+components/input/native_web_keyboard_event.h",
   "+components/remote_cocoa/app_shim",
   "+content/app_shim_remote_cocoa",
   "+content/browser/accessibility/browser_accessibility_cocoa.h",
@@ -13,7 +14,7 @@ include_rules = [
   "+content/browser/download/drag_download_file.h",
   "+content/browser/download/drag_download_util.h",
   "+content/browser/renderer_host/input/mouse_wheel_rails_filter_mac.h",
-  "+content/common/input/web_input_event_builders_mac.h",
+  "+components/input/web_input_event_builders_mac.h",
   "+content/browser/renderer_host/render_widget_host_view_mac.h",
   "+content/browser/renderer_host/render_widget_host_view_mac_editcommand_helper.h",
   "+content/browser/web_contents/web_contents_impl.h",
@@ -23,7 +24,6 @@ include_rules = [
   "+content/common/render_widget_host_ns_view.mojom.h",
   "+content/common/web_contents_ns_view_bridge.mojom.h",
   "+content/public/browser/content_browser_client.h",
-  "+content/public/common/input/native_web_keyboard_event.h",
   "+content/public/browser/remote_cocoa.h",
   "+content/public/browser/browser_accessibility_state.h",
   "+content/public/browser/render_widget_host_view_mac_delegate.h",

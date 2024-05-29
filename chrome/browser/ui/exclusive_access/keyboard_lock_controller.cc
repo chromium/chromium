@@ -14,8 +14,8 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_permission_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 using base::TimeTicks;

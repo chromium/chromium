@@ -6,7 +6,7 @@
 
 #include <windows.h>
 
-#include "content/public/common/input/native_web_keyboard_event.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "ui/events/event.h"
 
 namespace views {

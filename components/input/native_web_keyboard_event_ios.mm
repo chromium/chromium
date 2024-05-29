@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/common/input/native_web_keyboard_event.h"
+#import "components/input/native_web_keyboard_event.h"
 
-#include "content/common/input/web_input_event_builders_ios.h"
+#include "components/input/web_input_event_builders_ios.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 
