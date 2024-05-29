@@ -2995,7 +2995,8 @@ bool AXObject::IsLineBreakingObject() const {
   // virtual accessibility nodes, for example.
   //
   // We assume that most images on the Web are inline.
-  return !IsImage() && ui::IsStructure(RoleValue());
+  return !IsImage() && ui::IsStructure(RoleValue()) &&
+         !IsA<SVGElement>(GetNode());
 }
 
 bool AXObject::IsLinked() const {
@@ -4020,10 +4021,6 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
   if (element->HasTagName(html_names::kRtTag)) {
     return true;
   }
-
-  // Preserve SVG grouping elements.
-  if (IsA<SVGGElement>(element))
-    return true;
 
   // Keep table-related elements in the tree, because it's too easy for them
   // to in and out of being ignored based on their ancestry, as their role

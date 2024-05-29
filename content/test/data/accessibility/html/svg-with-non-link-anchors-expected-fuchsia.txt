@@ -11,4 +11,3 @@ UNKNOWN focusable has_input_focus
 ++++++++++++UNKNOWN label='not focusable'
 ++++++UNKNOWN label='Not text descendants'
 ++++++++UNKNOWN focusable
-++++++++UNKNOWN hidden

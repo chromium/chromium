@@ -510,6 +510,15 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool IsIgnored();
 
   // Whether an ignored object should still be included in the serialized tree.
+  // Reasons for doing this:
+  // - An object is in a hidden subtree that will be recursive name computation,
+  // which traverses the AXObject hierarchy.
+  // - Internal bookkeeping reasons, e.g. keeping children that cannot be
+  // reached via NodeTraversal, as LayoutTreeBuilderTraversal is not always
+  // safe.
+  // - Line breaking objects and objects with an associated language, which
+  // although not exposed via a11y APIs, are useful in browser-side property
+  // computations for nodes that are exposed.
   bool IsIgnoredButIncludedInTree() const;
   bool IsIgnoredButIncludedInTree();
 

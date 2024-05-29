@@ -9,8 +9,6 @@ UNKNOWN focusable has_input_focus
 ++++++IMAGE label='defs should not be exposed'
 ++++++IMAGE label='discard should not be exposed'
 ++++++IMAGE label='filter and filter effect elements should not be exposed'
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN hidden
 ++++++IMAGE label='hatch should not be exposed'
 ++++++IMAGE label='hatchpath should not be exposed'
 ++++++IMAGE label='image which lacks criteria for inclusion should not be exposed'
@@ -41,7 +39,6 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++UNKNOWN label='Hello '
 ++++++++++++++UNKNOWN label='world'
 ++++++IMAGE label='group which lacks criteria for inclusion should not be exposed'
-++++++++UNKNOWN hidden
 ++++++IMAGE label='line which lacks criteria for inclusion should not be exposed'
 ++++++IMAGE label='path which lacks criteria for inclusion should not be exposed'
 ++++++IMAGE label='polygon which lacks criteria for inclusion should not be exposed'
