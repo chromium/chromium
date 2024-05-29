@@ -2815,6 +2815,32 @@ TEST_F(SnapGroupTest, AutoSnapBothWindowsWithMinimumSizes) {
   }
 }
 
+// Test that dragging a window to snap in Overview to activate Partial Overview
+// works properly with the existence of Snap Group. Regression test for
+// http://b/340931820.
+TEST_F(SnapGroupTest, DragToSnapInOverviewWithSnapGroup) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+
+  std::unique_ptr<aura::Window> w3(CreateAppWindow(gfx::Rect()));
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  // Drag `w3` to snap and verify the partial Overview Grid bounds.
+  DragItemToPoint(GetOverviewItemForWindow(w3.get()), gfx::Point(0, 400),
+                  GetEventGenerator(), /*by_touch_gestures=*/false,
+                  /*drop=*/true);
+  EXPECT_TRUE(IsInOverviewSession());
+  EXPECT_EQ(WindowStateType::kPrimarySnapped,
+            WindowState::Get(w3.get())->GetStateType());
+  gfx::Rect expected_overview_grid_bounds = work_area_bounds();
+  expected_overview_grid_bounds.Subtract(w3->GetBoundsInScreen());
+  EXPECT_EQ(expected_overview_grid_bounds,
+            GetOverviewGridBounds(Shell::GetPrimaryRootWindow()));
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupDividerTest:
 
@@ -3287,7 +3313,7 @@ TEST_F(SnapGroupDividerTest, SnapGroupDividerEnlargedHitArea) {
 // `SplitViewController` still manages the windows and updates the bounds in a
 // `SnapGroup`. This will just check that double tap still works after
 // conversion.
-TEST_F(SnapGroupTest, DoubleTapDividerInTablet) {
+TEST_F(SnapGroupDividerTest, DoubleTapDividerInTablet) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
   SnapTwoTestWindows(w1.get(), w2.get());

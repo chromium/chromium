@@ -822,8 +822,9 @@ bool CanSnapActionSourceStartFasterSplitView(
     case WindowSnapActionSource::kDragWindowToEdgeToSnap:
     case WindowSnapActionSource::kSnapByWindowLayoutMenu:
     case WindowSnapActionSource::kLongPressCaptionButtonToSnap:
+    case WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap:
     case WindowSnapActionSource::kTest:
-    case ash::WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu:
+    case WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu:
       // We only start partial overview for the above snap sources.
       return true;
     default:
@@ -924,8 +925,12 @@ bool CanStartSplitViewOverviewSessionInClamshell(
   }
 
   // Skip starting `SplitViewOverviewSession` if a fully visible window snapped
-  // on the opposite side.
-  if (GetOppositeVisibleSnappedWindow(window)) {
+  // on the opposite side. Exception: If dragging in Overview, skip checking
+  // opposite-side snapped windows, as they're not visually snapped for the
+  // user in Overview.
+  if (snap_action_source !=
+          WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap &&
+      GetOppositeVisibleSnappedWindow(window)) {
     return false;
   }
 

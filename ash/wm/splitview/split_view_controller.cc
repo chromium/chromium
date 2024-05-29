@@ -2251,8 +2251,13 @@ void SplitViewController::OnWindowSnapped(
     }
   }
 
+  //  Early return if `snap_action_source` originates from
+  //  `kDragOrSelectOverviewWindowToSnap` to avoid snap-to-replace within
+  //  another snap group in Overview;
   if (auto* snap_group_controller = SnapGroupController::Get();
       snap_group_controller &&
+      snap_action_source !=
+          WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap &&
       snap_group_controller->OnSnappingWindow(window, snap_action_source)) {
     // End split view is needed due to the inconsistent checks between
     // `ShouldConsiderWindowForFasterSplitView()` and
