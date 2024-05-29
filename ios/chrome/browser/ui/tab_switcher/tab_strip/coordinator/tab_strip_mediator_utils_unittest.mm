@@ -36,7 +36,8 @@ std::unique_ptr<web::WebState> CreateWebState() {
 class TabStripMediatorUtilsTest : public PlatformTest {
  public:
   TabStripMediatorUtilsTest() {
-    feature_list_.InitWithFeatures({kTabGroupsInGrid, kTabGroupsIPad}, {});
+    feature_list_.InitWithFeatures(
+        {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip}, {});
     TestChromeBrowserState::Builder browser_state_builder;
     browser_state_ = browser_state_builder.Build();
     browser_ = std::make_unique<TestBrowser>(
