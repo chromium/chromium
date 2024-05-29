@@ -1735,7 +1735,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.IsSyncPasswordHashSaved"
     enum="IsSyncPasswordHashSaved" expires_after="2024-11-03">
-  <owner>vakh@chromium.org</owner>
+  <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     This metric reports whether a sync password hash is saved. Recorded shortly
@@ -2045,7 +2045,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.NonSyncPasswordHashChange"
     enum="GaiaPasswordHashChange" expires_after="2024-11-03">
-  <owner>drubery@chromium.org</owner>
+  <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     This metric reports a type of a password hash change event where the
@@ -2345,7 +2345,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.PasswordReuse.NumberOfMatches"
     units="credentials" expires_after="2024-11-03">
-  <owner>vakh@chromium.org</owner>
+  <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     This metric shows how many saved credentials (num unique registry-controlled
@@ -2361,7 +2361,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.PasswordReuse.PasswordFieldDetected"
     enum="PasswordReusePasswordFieldDetected" expires_after="2024-11-03">
-  <owner>vakh@chromium.org</owner>
+  <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     This metric reports whether a password field had been detected on a page
@@ -2375,7 +2375,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.PasswordReuse.TotalPasswords"
     units="credentials" expires_after="2024-09-22">
-  <owner>vakh@chromium.org</owner>
+  <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     This metric shows how many credentials are stored in Password Manager when a
@@ -3264,7 +3264,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.ReusedPasswordType" enum="ReusedPasswordType"
     expires_after="2024-11-03">
-  <owner>vakh@chromium.org</owner>
+  <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the type of password (e.g saved password, sync password, enterprise
@@ -3622,7 +3622,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.SyncPasswordHashChange"
     enum="GaiaPasswordHashChange" expires_after="2024-11-03">
-  <owner>drubery@chromium.org</owner>
+  <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     This metric reports a type of a sync password hash change event. Recorded
@@ -4257,7 +4257,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordProtection.InterstitialAction"
     enum="PasswordProtectionWarningAction" expires_after="2024-09-01">
-  <owner>xinghuilu@chromium.org</owner>
+  <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records how a user interacts with the password protection interstitial
@@ -4269,7 +4269,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordProtection.ModalWarningDialogAction"
     enum="PasswordProtectionWarningAction" expires_after="2024-09-22">
-  <owner>vakh@chromium.org</owner>
+  <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records how a user interacts with the password protection modal warning
@@ -4280,7 +4280,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordProtection.ModalWarningDialogLifetime" units="ms"
     expires_after="2025-04-19">
-  <owner>xinghuilu@chromium.org</owner>
+  <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the interval between when the password protection modal warning
@@ -4303,7 +4303,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="PasswordProtection.PasswordAlertModeOutcome"
     enum="PasswordProtectionRequestOutcome" expires_after="2025-01-22">
-  <owner>xinghuilu@chromium.org</owner>
+  <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the outcome of the password alert mode, indicating if password alert
@@ -4315,7 +4315,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordProtection.PasswordProtectionResponseOrErrorCode"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-10-28">
-  <owner>drubery@chromium.org</owner>
+  <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Response or error codes for PasswordProtectionRequest. Logged after chrome
@@ -4339,7 +4339,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordProtection.RequestNetworkDuration" units="ms"
     expires_after="2024-09-22">
-  <owner>drubery@chromium.org</owner>
+  <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time it takes for PasswordProtectionService request. It is not recorded
@@ -4349,7 +4349,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="PasswordProtection.RequestOutcome"
     enum="PasswordProtectionRequestOutcome" expires_after="2024-11-17">
-  <owner>vakh@chromium.org</owner>
+  <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the outcome of the password protection request, indicating if
@@ -4360,7 +4360,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordProtection.RequestReferringAppSource"
     enum="PasswordProtectionReferringAppSource" expires_after="2024-11-30">
-  <owner>xinghuilu@chromium.org</owner>
+  <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the referring app source of the password protection request,
@@ -4371,7 +4371,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordProtection.RequestWithToken.{TriggerType}"
     enum="BooleanSent" expires_after="2024-10-20">
-  <owner>xinghuilu@chromium.org</owner>
+  <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records if the password protection request, triggered by a(n) {TriggerType},
@@ -4405,7 +4405,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordProtection.Verdict" enum="PasswordProtectionVerdict"
     expires_after="2024-11-17">
-  <owner>vakh@chromium.org</owner>
+  <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Verdict types returned by Safe Browsing server for a password protection
