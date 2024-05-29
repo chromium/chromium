@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
+#include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "components/lens/lens_features.h"
 #include "content/public/browser/navigation_handle.h"
@@ -20,7 +21,8 @@ namespace lens {
 // static
 std::unique_ptr<content::NavigationThrottle>
 LensOverlaySidePanelNavigationThrottle::MaybeCreateFor(
-    content::NavigationHandle* handle) {
+    content::NavigationHandle* handle,
+    ThemeService* theme_service) {
   // We only want to handle navigations within the side panel results frame, so
   // we can ignore all navigations to a primary main frame. We can also ignore
   // all navigations that don't occur one level down (e.g. children of iframes
@@ -39,7 +41,8 @@ LensOverlaySidePanelNavigationThrottle::MaybeCreateFor(
       controller->results_side_panel_coordinator()->IsEntryShowing() &&
       (handle->GetWebContents() == controller->results_side_panel_coordinator()
                                        ->GetSidePanelWebContents())) {
-    return base::WrapUnique(new LensOverlaySidePanelNavigationThrottle(handle));
+    return base::WrapUnique(
+        new LensOverlaySidePanelNavigationThrottle(handle, theme_service));
   }
 
   return nullptr;
@@ -60,8 +63,9 @@ const char* LensOverlaySidePanelNavigationThrottle::GetNameForLogging() {
 }
 
 LensOverlaySidePanelNavigationThrottle::LensOverlaySidePanelNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : NavigationThrottle(navigation_handle) {}
+    content::NavigationHandle* navigation_handle,
+    ThemeService* theme_service)
+    : NavigationThrottle(navigation_handle), theme_service_(theme_service) {}
 
 LensOverlaySidePanelNavigationThrottle::ThrottleCheckResult
 LensOverlaySidePanelNavigationThrottle::HandleSidePanelRequest() {
@@ -102,7 +106,8 @@ LensOverlaySidePanelNavigationThrottle::HandleSidePanelRequest() {
   // If this is a same site navigation and search URL that does not have common
   // search parameters, we need to append them to the URL and then load it
   // manually into the side panel frame.
-  auto url_with_params = lens::AppendCommonSearchParametersToURL(url);
+  auto url_with_params = lens::AppendCommonSearchParametersToURL(
+      url, lens::LensOverlayShouldUseDarkMode(theme_service_));
   controller->LoadURLInResultsFrame(url_with_params);
   return content::NavigationThrottle::CANCEL;
 }

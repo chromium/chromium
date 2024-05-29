@@ -115,13 +115,15 @@ void AppendTranslateParamsToMap(std::map<std::string, std::string>& params,
   params[kTliteTargetLanguageParameterKey] = locale;
 }
 
-GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify) {
+GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
+                                       bool use_dark_mode) {
   GURL new_url = url_to_modify;
   new_url = net::AppendOrReplaceQueryParameter(
       new_url, kSearchCompanionParameterKey, kSearchCompanionParameterValue);
   new_url = net::AppendOrReplaceQueryParameter(
       new_url, kLanguageCodeParameterKey,
       g_browser_process->GetApplicationLocale());
+  new_url = AppendDarkModeParamToURL(new_url, use_dark_mode);
   return new_url;
 }
 
@@ -201,8 +203,6 @@ GURL BuildTextOnlySearchURL(
     bool use_dark_mode) {
   GURL url_with_query_params =
       GURL(lens::features::GetLensOverlayResultsSearchURL());
-  url_with_query_params =
-      AppendDarkModeParamToURL(url_with_query_params, use_dark_mode);
   url_with_query_params = AppendInvocationSourceParamToURL(
       url_with_query_params, invocation_source);
   url_with_query_params = AppendUrlParamsFromMap(
@@ -218,7 +218,7 @@ GURL BuildTextOnlySearchURL(
         kLensModeParameterTextValue);
   }
   url_with_query_params =
-      AppendCommonSearchParametersToURL(url_with_query_params);
+      AppendCommonSearchParametersToURL(url_with_query_params, use_dark_mode);
   url_with_query_params = AppendSearchContextParamToURL(url_with_query_params,
                                                         page_url, page_title);
   return url_with_query_params;
@@ -233,14 +233,12 @@ GURL BuildLensSearchURL(
     bool use_dark_mode) {
   GURL url_with_query_params =
       GURL(lens::features::GetLensOverlayResultsSearchURL());
-  url_with_query_params =
-      AppendDarkModeParamToURL(url_with_query_params, use_dark_mode);
   url_with_query_params = AppendInvocationSourceParamToURL(
       url_with_query_params, invocation_source);
   url_with_query_params = AppendUrlParamsFromMap(
       url_with_query_params, additional_search_query_params);
   url_with_query_params =
-      AppendCommonSearchParametersToURL(url_with_query_params);
+      AppendCommonSearchParametersToURL(url_with_query_params, use_dark_mode);
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kTextQueryParameterKey,
       text_query.has_value() ? *text_query : "");
@@ -292,6 +290,8 @@ bool HasCommonSearchQueryParameters(const GURL& url) {
   return net::GetValueForKeyInQuery(url, kSearchCompanionParameterKey,
                                     &temp_output_string) &&
          net::GetValueForKeyInQuery(url, kLanguageCodeParameterKey,
+                                    &temp_output_string) &&
+         net::GetValueForKeyInQuery(url, kDarkModeParameterKey,
                                     &temp_output_string);
 }
 
