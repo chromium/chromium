@@ -162,8 +162,9 @@ class OfferNotificationBubbleViewsInteractiveUiTest
   }
 
   void CloseBubbleWithReason(views::Widget::ClosedReason closed_reason) {
+    ASSERT_TRUE(GetOfferNotificationBubbleViews());
     auto* widget = GetOfferNotificationBubbleViews()->GetWidget();
-    EXPECT_TRUE(widget);
+    ASSERT_TRUE(widget);
     views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
     widget->CloseWithReason(closed_reason);
     destroyed_waiter.Wait();
