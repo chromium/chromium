@@ -14,5 +14,6 @@
     [RuntimeEnabled=WebGPUExperimentalFeatures] readonly attribute boolean isCompatibilityMode;
 
     [CallWith=ScriptState] Promise<GPUDevice> requestDevice(optional GPUDeviceDescriptor descriptor = {});
-    [CallWith=ScriptState] Promise<GPUAdapterInfo> requestAdapterInfo();
+    // TODO(crbug.com/335383516): Remove this once synchronous info attribute is implemented.
+    [CallWith=ScriptState, Measure] Promise<GPUAdapterInfo> requestAdapterInfo();
 };
