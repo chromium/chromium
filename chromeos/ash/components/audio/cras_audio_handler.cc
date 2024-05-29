@@ -3131,15 +3131,10 @@ const std::optional<AudioDevice>
 CrasAudioHandler::GetPreferredDeviceIfDeviceSetSeenBefore(
     bool is_input,
     const AudioDeviceList& devices) const {
-  const std::map<std::string, std::string>& device_pref_set_map =
-      is_input ? input_device_pref_set_map_ : output_device_pref_set_map_;
-  const std::string ids = GetDeviceSetIdString(devices);
-  const auto iter = device_pref_set_map.find(ids);
-  if (iter == device_pref_set_map.end()) {
-    return std::nullopt;
-  }
+  std::optional<uint64_t> id =
+      audio_pref_handler_->GetPreferredDeviceFromPreferenceSet(is_input,
+                                                               devices);
 
-  std::optional<uint64_t> id = ParseDeviceId(iter->second);
   if (!id.has_value()) {
     return std::nullopt;
   }
@@ -3162,11 +3157,8 @@ void CrasAudioHandler::SyncDevicePrefSetMap(bool is_input) {
     return;
   }
 
-  std::map<std::string, std::string>& device_pref_set_map =
-      is_input ? input_device_pref_set_map_ : output_device_pref_set_map_;
-  const std::string ids = GetDeviceSetIdString(
-      GetSimpleUsageAudioDevices(audio_devices_, is_input));
-  device_pref_set_map[ids] = GetDeviceIdString(*active_device);
+  audio_pref_handler_->UpdateDevicePreferenceSet(
+      GetSimpleUsageAudioDevices(audio_devices_, is_input), *active_device);
 }
 
 void CrasAudioHandler::HandleHotPlugDeviceWithNotification(

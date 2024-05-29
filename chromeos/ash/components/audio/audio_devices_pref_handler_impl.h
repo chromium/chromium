@@ -51,6 +51,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
                                  const AudioDevice* base) override;
   int GetUserPriority(const AudioDevice& device) override;
 
+  const std::optional<uint64_t> GetPreferredDeviceFromPreferenceSet(
+      bool is_input,
+      const AudioDeviceList& devices) override;
+
+  void UpdateDevicePreferenceSet(const AudioDeviceList& devices,
+                                 const AudioDevice& preferred_device) override;
+
   void DropLeastRecentlySeenDevices(
       const std::vector<AudioDevice>& connected_devices,
       size_t keep_devices) override;
@@ -106,6 +113,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   void LoadOutputDevicesUserPriorityPref();
   void SaveOutputDevicesUserPriorityPref();
 
+  // Load and save methods for the preference set for all input devices.
+  void LoadInputDevicePreferenceSetPref();
+  void SaveInputDevicePreferenceSetPref();
+
+  // Load and save methods for the preference set for all output devices.
+  void LoadOutputDevicePreferenceSetPref();
+  void SaveOutputDevicePreferenceSetPref();
+
   double GetOutputVolumePrefValue(const AudioDevice& device);
   double GetInputGainPrefValue(const AudioDevice& device);
   double GetDeviceDefaultOutputVolume(const AudioDevice& device);
@@ -146,6 +161,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   base::Value::Dict device_state_settings_;
   base::Value::Dict input_device_user_priority_settings_;
   base::Value::Dict output_device_user_priority_settings_;
+  base::Value::Dict input_device_preference_set_settings_;
+  base::Value::Dict output_device_preference_set_settings_;
 
   raw_ptr<PrefService> local_state_;  // not owned
 

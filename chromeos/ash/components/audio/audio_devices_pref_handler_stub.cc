@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "chromeos/ash/components/audio/audio_device.h"
+#include "chromeos/ash/components/audio/audio_device_id.h"
 
 namespace ash {
 
@@ -173,6 +174,31 @@ bool AudioDevicesPrefHandlerStub::GetHfpMicSrState() {
 
 void AudioDevicesPrefHandlerStub::SetHfpMicSrState(bool hfp_mic_sr_state) {
   hfp_mic_sr_ = hfp_mic_sr_state;
+}
+
+const std::optional<uint64_t>
+AudioDevicesPrefHandlerStub::GetPreferredDeviceFromPreferenceSet(
+    bool is_input,
+    const AudioDeviceList& devices) {
+  const std::string ids = GetDeviceSetIdString(devices);
+  const auto iter = device_preference_set_map_.find(ids);
+  if (iter == device_preference_set_map_.end()) {
+    return std::nullopt;
+  }
+
+  return ParseDeviceId(iter->second);
+}
+
+void AudioDevicesPrefHandlerStub::UpdateDevicePreferenceSet(
+    const AudioDeviceList& devices,
+    const AudioDevice& preferred_device) {
+  const std::string ids = GetDeviceSetIdString(devices);
+  device_preference_set_map_[ids] = GetDeviceIdString(preferred_device);
+}
+
+const AudioDevicesPrefHandlerStub::AudioDevicePreferenceSetMap&
+AudioDevicesPrefHandlerStub::GetDevicePreferenceSetMap() {
+  return device_preference_set_map_;
 }
 
 }  // namespace ash

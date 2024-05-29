@@ -770,9 +770,8 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
   }
 
   // Retrieves input_device_pref_set_map_ or output_device_pref_set_map_.
-  std::map<std::string, std::string>& GetDevicePrefSetMap(bool is_input) {
-    return is_input ? cras_audio_handler_->input_device_pref_set_map_
-                    : cras_audio_handler_->output_device_pref_set_map_;
+  const std::map<std::string, std::string>& GetDevicePrefSetMap() {
+    return audio_pref_handler_->GetDevicePreferenceSetMap();
   }
 
   // Mock time fast forward.
@@ -7376,17 +7375,13 @@ TEST_P(CrasAudioHandlerTest,
 // and no crashes.
 TEST_P(CrasAudioHandlerTest, SyncDevicePrefSetMap) {
   SetUpCrasAudioHandler({});
-  std::map<std::string, std::string>& input_device_pref_set_map =
-      GetDevicePrefSetMap(/*is_input=*/true);
-  std::map<std::string, std::string>& output_device_pref_set_map =
-      GetDevicePrefSetMap(/*is_input=*/false);
-  EXPECT_TRUE(input_device_pref_set_map.empty());
-  EXPECT_TRUE(output_device_pref_set_map.empty());
+  const std::map<std::string, std::string>& device_pref_set_map =
+      GetDevicePrefSetMap();
+  EXPECT_TRUE(device_pref_set_map.empty());
 
   SyncDevicePrefSetMap(/*is_input=*/true);
   SyncDevicePrefSetMap(/*is_input=*/false);
-  EXPECT_TRUE(input_device_pref_set_map.empty());
-  EXPECT_TRUE(output_device_pref_set_map.empty());
+  EXPECT_TRUE(device_pref_set_map.empty());
 }
 
 // Tests that showing notification is debounced for audio output device.

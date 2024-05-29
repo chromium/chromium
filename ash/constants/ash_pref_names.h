@@ -176,6 +176,18 @@ inline constexpr char kAudioInputDevicesUserPriority[] =
 inline constexpr char kAudioOutputDevicesUserPriority[] =
     "settings.audio.output_user_priority";
 
+// A dictionary pref that maps a set of input devices to the user-preferred
+// device among this set. E.g {(0xab,0xbc -> 0xbc), (0xab,0xbc,0xcd -> 0xbc),
+// (0xab,0xbc,0xcd,0xde -> 0xbc)}.
+inline constexpr char kAudioInputDevicePreferenceSet[] =
+    "settings.audio.input_preference_set";
+
+// A dictionary pref that maps a set of output devices to the user-preferred
+// device among this set. E.g {(0xab,0xbc -> 0xbc), (0xab,0xbc,0xcd -> 0xbc),
+// (0xab,0xbc,0xcd,0xde -> 0xbc)}.
+inline constexpr char kAudioOutputDevicePreferenceSet[] =
+    "settings.audio.output_preference_set";
+
 // A dictionary pref that maps device id string to the timestamp of the last
 // time the audio device was connected, in
 // `base::Time::InSecondsFSinceUnixEpoch()`'s format.

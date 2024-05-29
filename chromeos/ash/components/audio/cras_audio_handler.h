@@ -1118,13 +1118,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Whether the speak-on-mute detection is enabled in CRAS.
   bool speak_on_mute_detection_on_ = false;
 
-  // Stores the user preferred device among a set of devices. The key is the
-  // concatenation of a list of sorted audio stable id string. The value is the
-  // stable id string of the preferred device. TODO(zhangwenyu): To be replaced
-  // by real interaction with Pref service.
-  std::map<std::string, std::string> output_device_pref_set_map_;
-  std::map<std::string, std::string> input_device_pref_set_map_;
-
   // Stores a list of most recently activated devices' stable id. Most recent
   // device on the end.
   // TODO(zhangwenyu): To be replaced by real interaction with Pref service.

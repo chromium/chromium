@@ -28,6 +28,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   using AudioDeviceVolumeGain = std::map<uint64_t, int>;
   using AudioDeviceStateMap = std::map<uint64_t, DeviceState>;
   using AudioDeviceUserPriority = std::map<uint64_t, int>;
+  using AudioDevicePreferenceSetMap = std::map<std::string, std::string>;
 
   AudioDevicesPrefHandlerStub();
 
@@ -70,6 +71,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   bool GetHfpMicSrState() override;
   void SetHfpMicSrState(bool hfp_mic_sr_state) override;
 
+  const std::optional<uint64_t> GetPreferredDeviceFromPreferenceSet(
+      bool is_input,
+      const AudioDeviceList& devices) override;
+  void UpdateDevicePreferenceSet(const AudioDeviceList& devices,
+                                 const AudioDevice& preferred_device) override;
+
+  const AudioDevicePreferenceSetMap& GetDevicePreferenceSetMap();
+
  protected:
   ~AudioDevicesPrefHandlerStub() override;
 
@@ -78,6 +87,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   AudioDeviceVolumeGain audio_device_volume_gain_map_;
   AudioDeviceStateMap audio_device_state_map_;
   AudioDeviceUserPriority user_priority_map_;
+  AudioDevicePreferenceSetMap device_preference_set_map_;
 
   base::ObserverList<AudioPrefObserver>::Unchecked observers_;
 

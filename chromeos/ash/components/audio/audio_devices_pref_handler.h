@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
+#include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/audio_pref_observer.h"
 
 namespace ash {
@@ -74,6 +75,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
                                          const AudioDevice* base) = 0;
   // Reads the user priority from prefs.
   virtual int GetUserPriority(const AudioDevice& device) = 0;
+
+  // Gets the preferred device stable id given a set of devices from prefs.
+  virtual const std::optional<uint64_t> GetPreferredDeviceFromPreferenceSet(
+      bool is_input,
+      const AudioDeviceList& devices) = 0;
+
+  // Set |preferred_device| as the preferred device among a set of |devices|.
+  virtual void UpdateDevicePreferenceSet(
+      const AudioDeviceList& devices,
+      const AudioDevice& preferred_device) = 0;
 
   // Reads the audio output allowed value from prefs.
   virtual bool GetAudioOutputAllowedValue() const = 0;
