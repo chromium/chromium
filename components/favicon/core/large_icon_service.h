@@ -23,6 +23,15 @@ namespace favicon {
 // implementation of this uses Google's favicon service.
 class LargeIconService : public KeyedService {
  public:
+  // Controls the icon size in pixels returned by the
+  // `GetLargeIconFromCacheFallbackToGoogleServer()`. This enum is used to
+  // ensure icons are requested at standard sizes, because the underlying
+  // favicon database stores at most 1 icon per domain and favicons are
+  // requested from the Google server at a single hard-coded size.
+  enum class StandardIconSize {
+    k16x16 = 0,
+    k32x32 = 1,
+  };
   // Controls the behavior when there is no icon bigger than the minimum size to
   // return.
   enum class NoBigEnoughIconBehavior {
@@ -125,7 +134,7 @@ class LargeIconService : public KeyedService {
   // FaviconService.
   //
   // WARNING: This function will share the `page_url` with a Google server. This
-  // Can be used only for urls that are not privacy sensitive or for users that
+  // can be used only for urls that are not privacy sensitive or for users that
   // sync their history with Google servers.
   // TODO(crbug.com/41425581): It is not clear from the name of this function,
   // that it actually adds the icon to the local cache. Maybe
@@ -135,6 +144,31 @@ class LargeIconService : public KeyedService {
       bool should_trim_page_url_path,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       favicon_base::GoogleFaviconServerCallback callback) = 0;
+
+  // Requests the best large icon for the `page_url` via
+  // `GetLargeIconRawBitmapForPageUrl()`. `min_source_size` and
+  // `size_to_resize_to` are converted to integer values before being processed
+  // further. They and `no_big_enough_icon_behavior` control the behavior of the
+  // `GetLargeIconRawBitmapForPageUrl()`. If no icon (of any size) is found in
+  // the local cache for `page_url`, the icon is queried from the Google server
+  // via `GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache()`.
+  //
+  // Note: it's possible to obtain an image bigger than the largest standard
+  // size (32x32) if the user has visited the `page_url` previously a mobile
+  // device and the passed-in `size_to_resize_to` is `std::nullopt`.
+  //
+  // WARNING: This function may share the `page_url` with a Google server if the
+  // icon is not found locally. This can be used only for urls that are not
+  // privacy sensitive or for users that sync their history with Google servers.
+  virtual void GetLargeIconFromCacheFallbackToGoogleServer(
+      const GURL& page_url,
+      StandardIconSize min_source_size,
+      std::optional<StandardIconSize> size_to_resize_to,
+      NoBigEnoughIconBehavior no_big_enough_icon_behavior,
+      bool should_trim_page_url_path,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      favicon_base::LargeIconCallback callback,
+      base::CancelableTaskTracker* tracker) = 0;
 
   // Update the time that the icon at `icon_url` was requested. This should be
   // called after obtaining the icon by GetLargeIcon*OrFallbackStyle() for any

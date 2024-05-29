@@ -100,6 +100,17 @@ class MockLargeIconService : public favicon::LargeIconService {
                base::CancelableTaskTracker* tracker),
               (override));
   MOCK_METHOD(void,
+              GetLargeIconFromCacheFallbackToGoogleServer,
+              (const GURL& page_url,
+               StandardIconSize min_source_size_in_pixel,
+               std::optional<StandardIconSize> size_in_pixel_to_resize_to,
+               NoBigEnoughIconBehavior no_big_enough_icon_behavior,
+               bool should_trim_page_url_path,
+               const net::NetworkTrafficAnnotationTag& traffic_annotation,
+               favicon_base::LargeIconCallback callback,
+               base::CancelableTaskTracker* tracker),
+              (override));
+  MOCK_METHOD(void,
               TouchIconFromGoogleServer,
               (const GURL& icon_url),
               (override));
