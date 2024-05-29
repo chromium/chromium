@@ -22,6 +22,8 @@ def main():
   parser.add_argument(
     '--chrome-track-event-descriptor', type=str, required=True)
   parser.add_argument(
+    '--winscope-extensions-descriptor', type=str, required=True)
+  parser.add_argument(
       '--chrome-stdlib', type=str, required=True)
   parser.add_argument('--test-dir', type=str, required=True)
   parser.add_argument(
@@ -37,6 +39,7 @@ def main():
     "--metrics-descriptor", args.metrics_descriptor,
                             args.all_chrome_metrics_descriptor,
     "--chrome-track-event-descriptor", args.chrome_track_event_descriptor,
+    "--winscope-extensions", args.winscope_extensions_descriptor,
     "--override-sql-module", os.path.abspath(args.chrome_stdlib),
     "--test-dir", args.test_dir,
     "--name-filter",
