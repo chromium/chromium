@@ -10,8 +10,11 @@
 #include "base/process/process_metrics.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "ui/accessibility/ax_mode.h"
@@ -152,6 +155,8 @@ void MetricsProviderDesktop::Initialize() {
   current_mode_ = ComputeCurrentMode();
 
   ResetTrackers();
+
+  PostDiskMetricsTask();
 }
 
 void MetricsProviderDesktop::ProvideCurrentSessionData(
@@ -171,10 +176,17 @@ void MetricsProviderDesktop::ProvideCurrentSessionData(
   // that this mode is what is adequately reported at the next report, unless it
   // changes in the meantime.
   current_mode_ = ComputeCurrentMode();
+
+  RecordDiskMetrics();
+
+  // Request a disk measurement so it's ready for the next interval
+  PostDiskMetricsTask();
 }
 
 MetricsProviderDesktop::MetricsProviderDesktop(PrefService* local_state)
-    : local_state_(local_state) {
+    : local_state_(local_state),
+      disk_metrics_getter_(
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {
   DCHECK(!g_metrics_provider);
   g_metrics_provider = this;
 
@@ -382,6 +394,64 @@ void MetricsProviderDesktop::PostCpuFrequencyEstimation() {
       FROM_HERE,
       base::BindOnce(&MetricsProviderDesktop::RecordCpuFrequencyMetrics,
                      base::Unretained(this), base::TimeTicks::Now()));
+}
+
+void MetricsProviderDesktop::RecordDiskMetrics() {
+  if (!pending_disk_metrics_) {
+    // The measurements aren't ready yet, don't report anything.
+    return;
+  }
+
+  if (pending_disk_metrics_->free_bytes == -1 ||
+      pending_disk_metrics_->total_bytes == -1) {
+    return;
+  }
+
+  base::UmaHistogramCustomCounts(
+      "PerformanceManager.DiskStats.UserDataDirFreeSpaceMb",
+      pending_disk_metrics_->free_bytes /
+          kBytesPerMb,  // space_info is bytes, convert to Mb
+      0, 10240,  // It's fine to bucket everything >10Gb as "large enough"
+      100);
+  // Also report as a percentage of capacity
+  base::UmaHistogramPercentage(
+      "PerformanceManager.DiskStats.UserDataDirFreeSpacePercent",
+      pending_disk_metrics_->free_bytes * 100 /
+          pending_disk_metrics_->total_bytes);
+
+  pending_disk_metrics_ = std::nullopt;
+}
+
+void MetricsProviderDesktop::PostDiskMetricsTask() {
+  if (!g_browser_process || !g_browser_process->profile_manager()) {
+    // It's possible to have a null browser process or a null profile manager in
+    // unit tests.
+    return;
+  }
+
+  // Records the free/available space on the disk that hosts the user data dir.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  const base::FilePath& user_data_dir = profile_manager->user_data_dir();
+
+  disk_metrics_getter_
+      .AsyncCall(&MetricsProviderDesktop::DiskMetricsThreadPoolGetter::
+                     ComputeDiskMetrics)
+      .WithArgs(user_data_dir)
+      .Then(base::BindOnce(&MetricsProviderDesktop::SavePendingDiskMetrics,
+                           base::Unretained(this)));
+}
+
+MetricsProviderDesktop::DiskMetrics
+MetricsProviderDesktop::DiskMetricsThreadPoolGetter::ComputeDiskMetrics(
+    const base::FilePath& user_data_dir) {
+  return {
+      .free_bytes = base::SysInfo::AmountOfFreeDiskSpace(user_data_dir),
+      .total_bytes = base::SysInfo::AmountOfTotalDiskSpace(user_data_dir),
+  };
+}
+
+void MetricsProviderDesktop::SavePendingDiskMetrics(DiskMetrics metrics) {
+  pending_disk_metrics_ = metrics;
 }
 
 }  // namespace performance_manager
