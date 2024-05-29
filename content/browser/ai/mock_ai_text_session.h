@@ -2,24 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_MODEL_EXECUTION_MOCK_MODEL_EXECUTION_SESSION_H_
-#define CONTENT_BROWSER_MODEL_EXECUTION_MOCK_MODEL_EXECUTION_SESSION_H_
+#ifndef CONTENT_BROWSER_AI_MOCK_AI_TEXT_SESSION_H_
+#define CONTENT_BROWSER_AI_MOCK_AI_TEXT_SESSION_H_
 
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/model_execution/model_session.mojom.h"
 
+namespace content {
+
 // The mock implementation of `blink::mojom::ModelGenericSession` used for
 // testing.
-class MockModelExecutionSession : public blink::mojom::ModelGenericSession {
+class MockAITextSession : public blink::mojom::ModelGenericSession {
  public:
-  MockModelExecutionSession();
-  MockModelExecutionSession(const MockModelExecutionSession&) = delete;
-  MockModelExecutionSession& operator=(const MockModelExecutionSession&) =
-      delete;
+  MockAITextSession();
+  MockAITextSession(const MockAITextSession&) = delete;
+  MockAITextSession& operator=(const MockAITextSession&) = delete;
 
-  ~MockModelExecutionSession() override;
+  ~MockAITextSession() override;
 
   // `blink::mojom::ModelGenericSession` implementation.
   void Execute(const std::string& input,
@@ -34,7 +35,9 @@ class MockModelExecutionSession : public blink::mojom::ModelGenericSession {
   bool is_destroyed_ = false;
   mojo::RemoteSet<blink::mojom::ModelStreamingResponder> responder_set_;
 
-  base::WeakPtrFactory<MockModelExecutionSession> weak_ptr_factory_{this};
+  base::WeakPtrFactory<MockAITextSession> weak_ptr_factory_{this};
 };
 
-#endif  // CONTENT_BROWSER_MODEL_EXECUTION_MOCK_MODEL_EXECUTION_SESSION_H_
+}  // namespace content
+
+#endif  // CONTENT_BROWSER_AI_MOCK_AI_TEXT_SESSION_H_

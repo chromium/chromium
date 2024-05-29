@@ -828,7 +828,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 
   if (base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI)) {
     map->Add<blink::mojom::ModelManager>(base::BindRepeating(
-        &RenderFrameHostImpl::BindModelManager, base::Unretained(host)));
+        &RenderFrameHostImpl::BindAIManager, base::Unretained(host)));
   }
 
   map->Add<blink::mojom::NotificationService>(base::BindRepeating(

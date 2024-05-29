@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/model_execution/mock_model_execution_session.h"
+#include "content/browser/ai/mock_ai_text_session.h"
 
 #include <optional>
 
@@ -15,13 +15,14 @@
 #include "third_party/blink/public/mojom/model_execution/model_session.mojom-shared.h"
 #include "third_party/blink/public/mojom/model_execution/model_session.mojom.h"
 
-MockModelExecutionSession::MockModelExecutionSession() = default;
+namespace content {
 
-MockModelExecutionSession::~MockModelExecutionSession() = default;
+MockAITextSession::MockAITextSession() = default;
 
-void MockModelExecutionSession::DoMockExecution(
-    const std::string& input,
-    mojo::RemoteSetElementId responder_id) {
+MockAITextSession::~MockAITextSession() = default;
+
+void MockAITextSession::DoMockExecution(const std::string& input,
+                                        mojo::RemoteSetElementId responder_id) {
   blink::mojom::ModelStreamingResponder* responder =
       responder_set_.Get(responder_id);
   if (!responder) {
@@ -34,7 +35,7 @@ void MockModelExecutionSession::DoMockExecution(
                         std::nullopt);
 }
 
-void MockModelExecutionSession::Execute(
+void MockAITextSession::Execute(
     const std::string& input,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
@@ -51,12 +52,12 @@ void MockModelExecutionSession::Execute(
       responder_set_.Add(std::move(pending_responder));
   content::GetUIThreadTaskRunner()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&MockModelExecutionSession::DoMockExecution,
+      base::BindOnce(&MockAITextSession::DoMockExecution,
                      weak_ptr_factory_.GetWeakPtr(), input, responder_id),
       base::Seconds(1));
 }
 
-void MockModelExecutionSession::Destroy() {
+void MockAITextSession::Destroy() {
   is_destroyed_ = true;
 
   for (auto& responder : responder_set_) {
@@ -66,3 +67,5 @@ void MockModelExecutionSession::Destroy() {
   }
   responder_set_.Clear();
 }
+
+}  // namespace content
