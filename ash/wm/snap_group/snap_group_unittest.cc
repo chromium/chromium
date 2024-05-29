@@ -2843,6 +2843,47 @@ TEST_F(SnapGroupTest, DragToSnapInOverviewWithSnapGroup) {
             GetOverviewGridBounds(Shell::GetPrimaryRootWindow()));
 }
 
+// Verifies that with a 3rd window, visually stacked below two snapped
+// windows, but placed before the opposite snapped window within the Snap Group
+// in MRU order, snapping a 4th window in this setup does not initiate partial
+// overview. See http://b/339709601 for details.
+TEST_F(SnapGroupTest, RecallSnapGroupWontStartPartialOverview) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  auto* snap_group_controller = SnapGroupController::Get();
+  auto* snap_group =
+      snap_group_controller->GetSnapGroupForGivenWindow(w1.get());
+  ASSERT_TRUE(snap_group);
+
+  // Open a 3rd window on top to occlude the snap group.
+  std::unique_ptr<aura::Window> w3(CreateAppWindow(work_area_bounds()));
+
+  // Recall the snap group.
+  wm::ActivateWindow(w1.get());
+  auto* desk_container = desks_util::GetActiveDeskContainerForRoot(
+      Shell::Get()->GetPrimaryRootWindow());
+
+  // Verify the stacking order from bottom to top.
+  EXPECT_THAT(desk_container->children(),
+              ElementsAre(w3.get(), w2.get(), w1.get(),
+                          snap_group->snap_group_divider()
+                              ->divider_widget()
+                              ->GetNativeWindow()));
+
+  // Open a 4th window and snap it on top. Test we don't start partial overview.
+  std::unique_ptr<aura::Window> w4(CreateAppWindow());
+  SnapOneTestWindow(w4.get(),
+                    /*state_type=*/chromeos::WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  EXPECT_FALSE(IsInOverviewSession());
+
+  // Test the window gets snapped to replace.
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w2.get(), w4.get()));
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupDividerTest:
 

@@ -28,9 +28,12 @@ enum DesksMruType {
   kActiveDesk,
 };
 
-// A predicate that determines whether |window| can be included in the MRU
+// A predicate that determines whether `window` can be included in the MRU
 // window list.
 bool CanIncludeWindowInMruList(aura::Window* window);
+
+// A predicate that determines whether `window` is an app type.
+bool CanIncludeWindowInAppMruList(aura::Window* window);
 
 // Maintains a most recently used list of windows. This is used for window
 // cycling using Alt+Tab and overview mode.

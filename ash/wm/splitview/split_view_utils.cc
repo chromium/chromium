@@ -17,6 +17,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/toast/toast_manager_impl.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_utils.h"
@@ -847,11 +848,24 @@ bool ShouldExcludeForOcclusionCheck(const aura::Window* window,
          window_state->IsPip();
 }
 
+aura::Window::Windows GetActiveDeskAppWindowsInZOrder(aura::Window* root) {
+  aura::Window::Windows windows;
+  const auto children =
+      desks_util::GetActiveDeskContainerForRoot(root)->children();
+  // Iterate through the desk container's children in reversed order.
+  for (const auto& child : base::Reversed(children)) {
+    if (CanIncludeWindowInAppMruList(child)) {
+      windows.push_back(child.get());
+    }
+  }
+  return windows;
+}
+
 aura::Window* GetOppositeVisibleSnappedWindow(aura::Window* window) {
-  // `BuildAppWindowList()` will exclude transient windows like the window
-  // layout menu and other bubble widgets.
-  const auto windows =
-      Shell::Get()->mru_window_tracker()->BuildAppWindowList(kActiveDesk);
+  // `GetActiveDeskAppWindowsInZOrder()` will exclude transient windows like the
+  // window layout menu and other bubble widgets.
+  aura::Window::Windows windows =
+      GetActiveDeskAppWindowsInZOrder(window->GetRootWindow());
   const auto opposite_snap_type = GetOppositeSnapType(window);
 
   // Track the union bounds of the windows that are more recently used than the

@@ -269,6 +269,10 @@ ASH_EXPORT bool CanSnapActionSourceStartFasterSplitView(
 bool ShouldExcludeForOcclusionCheck(const aura::Window* window,
                                     const aura::Window* target_root);
 
+// Returns the set of windows which can be cycled through in the stacking order
+// of the children of the active desk container of `root`.
+aura::Window::Windows GetActiveDeskAppWindowsInZOrder(aura::Window* root);
+
 // Returns the window that is fully visible (without occlusion) and snapped to
 // the opposite side of the given `window`. Returns nullptr if no such window
 // exists.

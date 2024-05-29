@@ -264,8 +264,8 @@ void SnapGroupController::MinimizeTopMostSnapGroup() {
 
 SnapGroup* SnapGroupController::GetTopmostVisibleSnapGroup(
     const aura::Window* target_root) const {
-  for (const aura::Window* top_window :
-       Shell::Get()->mru_window_tracker()->BuildAppWindowList(kActiveDesk)) {
+  for (const aura::Window* top_window : GetActiveDeskAppWindowsInZOrder(
+           const_cast<aura::Window*>(target_root))) {
     // Skip to the topmost window on `target_root`, ignoring occlusion-exempt
     // windows.
     if (ShouldExcludeForOcclusionCheck(top_window, target_root)) {
