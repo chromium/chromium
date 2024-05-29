@@ -17,6 +17,14 @@ class Trip extends Transition {
     private final Station mOrigin;
     private final Station mDestination;
 
+    /**
+     * Constructor. Trip is instantiated to move from one {@link Station} into another.
+     *
+     * @param origin the {@link Station} to depart from.
+     * @param destination the {@link Station} to travel to.
+     * @param options the {@link TransitionOptions}.
+     * @param trigger the action that triggers the transition. e.g. clicking a View.
+     */
     Trip(Station origin, Station destination, TransitionOptions options, Trigger trigger) {
         super(options, List.of(origin), List.of(destination), trigger);
         mOrigin = origin;
