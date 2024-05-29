@@ -222,36 +222,22 @@ class CrosUsbNotificationDelegate
   base::WeakPtrFactory<CrosUsbNotificationDelegate> weak_ptr_factory_{this};
 };
 
-// List of class codes to handle / not handle.
-// See https://www.usb.org/defined-class-codes for more information.
-enum UsbClassCode : uint8_t {
-  USB_CLASS_PER_INTERFACE = 0x00,
-  USB_CLASS_AUDIO = 0x01,
-  USB_CLASS_COMM = 0x02,
-  USB_CLASS_HID = 0x03,
-  USB_CLASS_PHYSICAL = 0x05,
-  USB_CLASS_STILL_IMAGE = 0x06,
-  USB_CLASS_PRINTER = 0x07,
-  USB_CLASS_MASS_STORAGE = 0x08,
-  USB_CLASS_HUB = 0x09,
-  USB_CLASS_CDC_DATA = 0x0a,
-  USB_CLASS_CSCID = 0x0b,
-  USB_CLASS_CONTENT_SEC = 0x0d,
-  USB_CLASS_VIDEO = 0x0e,
-  USB_CLASS_PERSONAL_HEALTHCARE = 0x0f,
-  USB_CLASS_BILLBOARD = 0x11,
-  USB_CLASS_DIAGNOSTIC_DEVICE = 0xdc,
-  USB_CLASS_WIRELESS_CONTROLLER = 0xe0,
-  USB_CLASS_MISC = 0xef,
-  USB_CLASS_APP_SPEC = 0xfe,
-  USB_CLASS_VENDOR_SPEC = 0xff,
-};
-
 device::mojom::UsbDeviceFilterPtr UsbFilterByClassCode(
     UsbClassCode device_class) {
   auto filter = device::mojom::UsbDeviceFilter::New();
   filter->has_class_code = true;
   filter->class_code = device_class;
+  return filter;
+}
+
+device::mojom::UsbDeviceFilterPtr UsbFilterByClassAndSubclassCode(
+    UsbClassCode device_class,
+    UsbSubclassCode device_subclass) {
+  auto filter = device::mojom::UsbDeviceFilter::New();
+  filter->has_class_code = true;
+  filter->class_code = device_class;
+  filter->has_subclass_code = true;
+  filter->subclass_code = device_subclass;
   return filter;
 }
 
@@ -438,24 +424,31 @@ CrosUsbDetector::CrosUsbDetector() {
   DCHECK(!g_cros_usb_detector);
   g_cros_usb_detector = this;
 
-  guest_os_classes_without_notif_.emplace_back(
+  // If *ALL* interfaces of a device match the below list, no notification will
+  // be shown.
+  guest_os_usb_int_all_filter_.emplace_back(
       UsbFilterByClassCode(USB_CLASS_CDC_DATA));
-  guest_os_classes_without_notif_.emplace_back(
+  guest_os_usb_int_all_filter_.emplace_back(
       UsbFilterByClassCode(USB_CLASS_HID));
-  guest_os_classes_without_notif_.emplace_back(
+  guest_os_usb_int_all_filter_.emplace_back(
       UsbFilterByClassCode(USB_CLASS_PHYSICAL));
-  guest_os_classes_without_notif_.emplace_back(
+  guest_os_usb_int_all_filter_.emplace_back(
       UsbFilterByClassCode(USB_CLASS_AUDIO));
-  guest_os_classes_without_notif_.emplace_back(
+  guest_os_usb_int_all_filter_.emplace_back(
       UsbFilterByClassCode(USB_CLASS_STILL_IMAGE));
-  guest_os_classes_without_notif_.emplace_back(
+  guest_os_usb_int_all_filter_.emplace_back(
       UsbFilterByClassCode(USB_CLASS_MASS_STORAGE));
-  guest_os_classes_without_notif_.emplace_back(
+  guest_os_usb_int_all_filter_.emplace_back(
       UsbFilterByClassCode(USB_CLASS_VIDEO));
-  guest_os_classes_without_notif_.emplace_back(
+  guest_os_usb_int_all_filter_.emplace_back(
       UsbFilterByClassCode(USB_CLASS_BILLBOARD));
-  guest_os_classes_without_notif_.emplace_back(
+  guest_os_usb_int_all_filter_.emplace_back(
       UsbFilterByClassCode(USB_CLASS_PERSONAL_HEALTHCARE));
+
+  // If *ANY* interfaces of a device match the below list, no notification will
+  // be shown.
+  guest_os_usb_int_any_filter_.emplace_back(UsbFilterByClassAndSubclassCode(
+      USB_CLASS_COMM, USB_COMM_SUBCLASS_ETHERNET));
 
   CiceroneClient::Get()->AddObserver(this);
   ConciergeClient::Get()->AddVmObserver(this);
@@ -541,8 +534,13 @@ bool CrosUsbDetector::ShouldShowNotification(const UsbDevice& device) {
     return false;
   }
 
-  return GetFilteredInterfacesMask(guest_os_classes_without_notif_,
-                                   *device.info) != 0;
+  bool all_filter_cleared =
+      GetFilteredInterfacesMask(guest_os_usb_int_all_filter_, *device.info) !=
+      0;
+  bool any_filter_cleared =
+      GetFilteredInterfacesMask(guest_os_usb_int_any_filter_, *device.info) ==
+      GetUsbInterfaceBaseMask(*device.info);
+  return all_filter_cleared && any_filter_cleared;
 }
 
 void CrosUsbDetector::OnContainerStarted(

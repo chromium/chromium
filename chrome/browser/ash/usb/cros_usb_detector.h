@@ -29,6 +29,51 @@ namespace ash {
 
 const uint8_t kInvalidUsbPortNumber = 0xff;
 
+// List of class codes to handle / not handle.
+// See https://www.usb.org/defined-class-codes for more information.
+enum UsbClassCode : uint8_t {
+  USB_CLASS_PER_INTERFACE = 0x00,
+  USB_CLASS_AUDIO = 0x01,
+  USB_CLASS_COMM = 0x02,
+  USB_CLASS_HID = 0x03,
+  USB_CLASS_PHYSICAL = 0x05,
+  USB_CLASS_STILL_IMAGE = 0x06,
+  USB_CLASS_PRINTER = 0x07,
+  USB_CLASS_MASS_STORAGE = 0x08,
+  USB_CLASS_HUB = 0x09,
+  USB_CLASS_CDC_DATA = 0x0a,
+  USB_CLASS_CSCID = 0x0b,
+  USB_CLASS_CONTENT_SEC = 0x0d,
+  USB_CLASS_VIDEO = 0x0e,
+  USB_CLASS_PERSONAL_HEALTHCARE = 0x0f,
+  USB_CLASS_BILLBOARD = 0x11,
+  USB_CLASS_DIAGNOSTIC_DEVICE = 0xdc,
+  USB_CLASS_WIRELESS_CONTROLLER = 0xe0,
+  USB_CLASS_MISC = 0xef,
+  USB_CLASS_APP_SPEC = 0xfe,
+  USB_CLASS_VENDOR_SPEC = 0xff,
+};
+
+// List of subclass codes to handle / not handle.
+// See https://www.usb.org/defined-class-codes for more information.
+// Each class may have subclasses defined.
+enum UsbSubclassCode : uint8_t {
+  // Subclasses for USB_CLASS_COMM
+  USB_COMM_SUBCLASS_DIRECT_LINE_CTL = 0x01,
+  USB_COMM_SUBCLASS_ABSTRACT_CTL = 0x02,
+  USB_COMM_SUBCLASS_TELEPHONE_CTL = 0x03,
+  USB_COMM_SUBCLASS_MULTICHANNEL_CTL = 0x04,
+  USB_COMM_SUBCLASS_CAPI_CTL = 0x05,
+  USB_COMM_SUBCLASS_ETHERNET = 0x06,
+  USB_COMM_SUBCLASS_ATM_NETWORKING_CTL = 0x07,
+  USB_COMM_SUBCLASS_WIRELESS_HANDSET_CTL = 0x08,
+  USB_COMM_SUBCLASS_DEVICE_MGMT = 0x09,
+  USB_COMM_SUBCLASS_MOBILE_DIRECT_LINE = 0x0a,
+  USB_COMM_SUBCLASS_OBEX = 0x0b,
+  USB_COMM_SUBCLASS_ETHERNET_EMULATION = 0x0c,
+  USB_COMM_SUBCLASS_NETWORK_CTL = 0x0d,
+};
+
 // Reasons the notification may be closed. These are used in histograms so do
 // not remove/reorder entries. Only add at the end just before kMaxValue. Also
 // remember to update the enum listing in
@@ -289,8 +334,10 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
   mojo::AssociatedReceiver<device::mojom::UsbDeviceManagerClient>
       client_receiver_{this};
 
-  std::vector<device::mojom::UsbDeviceFilterPtr>
-      guest_os_classes_without_notif_;
+  // USB filters, if *ALL* interfaces match no notification will be shown.
+  std::vector<device::mojom::UsbDeviceFilterPtr> guest_os_usb_int_all_filter_;
+  // USB filters, if *ANY* interfaces match no notification will be shown.
+  std::vector<device::mojom::UsbDeviceFilterPtr> guest_os_usb_int_any_filter_;
 
   // GUID -> UsbDevice map for all connected USB devices.
   std::map<std::string, UsbDevice> usb_devices_;

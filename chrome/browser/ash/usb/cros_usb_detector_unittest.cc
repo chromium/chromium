@@ -15,6 +15,8 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
@@ -416,6 +418,36 @@ TEST_F(CrosUsbDetectorTest, NotificationShown) {
   EXPECT_EQ(notification->buttons().size(), 4u);
   device_manager_.RemoveDevice(device);
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(CrosUsbDetectorTest, NotificationNotShownForEthernetInterface) {
+  ConnectToDeviceManager();
+  base::RunLoop().RunUntilIdle();
+
+  auto device = base::MakeRefCounted<device::FakeUsbDeviceInfo>(
+      0x200, USB_CLASS_COMM, USB_COMM_SUBCLASS_ETHERNET, 0xff, 0x0100, 0, 0, 0,
+      0, "my cool manufacturer", "my cool ethernet adapter", "SN1337");
+  std::string notification_id =
+      CrosUsbDetector::MakeNotificationId(device->guid());
+
+  // Notifications should not be shown if no VMs enabled.
+  crostini::FakeCrostiniFeatures crostini_features;
+  crostini_features.set_enabled(false);
+  device_manager_.AddDevice(device);
+  base::RunLoop().RunUntilIdle();
+
+  std::optional<message_center::Notification> notification =
+      display_service_->GetNotification(notification_id);
+  EXPECT_FALSE(notification);
+  device_manager_.RemoveDevice(device);
+  base::RunLoop().RunUntilIdle();
+
+  // Notification should never be shown
+  crostini_features.set_enabled(true);
+  device_manager_.AddDevice(device);
+  base::RunLoop().RunUntilIdle();
+  notification = display_service_->GetNotification(notification_id);
+  ASSERT_FALSE(notification);
 }
 
 TEST_F(CrosUsbDetectorTest, NotificationControlledByPolicy) {
