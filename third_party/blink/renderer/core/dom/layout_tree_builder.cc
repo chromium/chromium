@@ -111,6 +111,12 @@ void LayoutTreeBuilderForElement::CreateLayoutObject() {
     new_layout_object->Destroy();
     return;
   }
+  // ::scroll-marker-group should only be created if the originating element
+  // is a scroll container.
+  if (node_->IsScrollMarkerGroupPseudoElement() &&
+      !parent_layout_object->IsScrollContainer()) {
+    return;
+  }
 
   // Make sure the LayoutObject already knows it is going to be added to a
   // LayoutFlowThread before we set the style for the first time. Otherwise code

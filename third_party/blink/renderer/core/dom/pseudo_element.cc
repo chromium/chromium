@@ -439,6 +439,8 @@ bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
   }
   switch (pseudo_id) {
     case kPseudoIdFirstLetter:
+    case kPseudoIdScrollMarkerGroupBefore:
+    case kPseudoIdScrollMarkerGroupAfter:
     case kPseudoIdBackdrop:
     case kPseudoIdViewTransition:
     case kPseudoIdViewTransitionGroup:
@@ -446,16 +448,6 @@ bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
     case kPseudoIdViewTransitionNew:
     case kPseudoIdViewTransitionOld:
       return true;
-    case kPseudoIdScrollMarkerGroupBefore: {
-      const ComputedStyle* parent_style =
-          originating_element->GetComputedStyle();
-      return parent_style && parent_style->HasScrollMarkersBefore();
-    }
-    case kPseudoIdScrollMarkerGroupAfter: {
-      const ComputedStyle* parent_style =
-          originating_element->GetComputedStyle();
-      return parent_style && parent_style->HasScrollMarkersAfter();
-    }
     case kPseudoIdBefore:
     case kPseudoIdAfter:
       return !pseudo_style.ContentPreventsBoxGeneration();
