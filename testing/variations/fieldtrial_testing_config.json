@@ -7949,7 +7949,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ComposeSettingsVisibility",
+                        "ComposeGraduated",
                         "TabOrganizationSettingsVisibility"
                     ]
                 }

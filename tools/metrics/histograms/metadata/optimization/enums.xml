@@ -246,7 +246,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="OptimizationGuideModelQualityLogsUploadStatus">
   <int value="0" label="Unknown"/>
-  <int value="1" label="UploadSuccessful">Logs upload was successful.</int>
+  <int value="1" label="Upload Successful">Logs upload was successful.</int>
   <int value="2" label="Logging Not Enabled">
     Upload is disabled due to logging feature not enabled.
   </int>
@@ -259,6 +259,9 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="5" label="Disabled due to Enterprise Policy">
     Upload was disabled due to enterprise policy.
+  </int>
+  <int value="6" label="Feature Not Enabled For User">
+    Upload is disabled because the feature is not enabled for the user.
   </int>
 </enum>
 

@@ -83,13 +83,23 @@ bool ChromeModelQualityLogsUploaderService::CanUploadLogs(
     return false;
   }
 
-  // Don't upload logs if logging is disabled by enterprise policy.
-  if (model_execution_feature_controller_ &&
-      !model_execution_feature_controller_
-           ->ShouldFeatureBeCurrentlyAllowedForLogging(feature)) {
-    RecordUploadStatusHistogram(
-        feature, ModelQualityLogsUploadStatus::kDisabledDueToEnterprisePolicy);
-    return false;
+  if (model_execution_feature_controller_) {
+    // Don't upload logs if the feature is not enabled for the user.
+    if (!model_execution_feature_controller_
+             ->ShouldFeatureBeCurrentlyEnabledForUser(feature)) {
+      RecordUploadStatusHistogram(
+          feature, ModelQualityLogsUploadStatus::kFeatureNotEnabledForUser);
+      return false;
+    }
+
+    // Don't upload logs if logging is disabled by enterprise policy.
+    if (!model_execution_feature_controller_
+             ->ShouldFeatureBeCurrentlyAllowedForLogging(feature)) {
+      RecordUploadStatusHistogram(
+          feature,
+          ModelQualityLogsUploadStatus::kDisabledDueToEnterprisePolicy);
+      return false;
+    }
   }
 
   return true;

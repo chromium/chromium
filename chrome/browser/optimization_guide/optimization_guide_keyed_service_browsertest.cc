@@ -73,6 +73,7 @@
 namespace optimization_guide {
 
 using model_execution::prefs::ModelExecutionEnterprisePolicyValue;
+using ::testing::ElementsAre;
 
 namespace {
 
@@ -1485,8 +1486,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 
   policy::PolicyMap policies;
 
-  // Disable logging via via the enterprise policy to state
-  // kAllowWithoutLogging.
+  // Disable logging via the enterprise policy to state kAllowWithoutLogging.
   policies.Set(policy::key::kHelpMeWriteSettings,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                policy::POLICY_SOURCE_CLOUD,
@@ -1556,11 +1556,17 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 
   ogks->UploadModelQualityLogs(std::move(log_entry_3));
 
-  // Upload should be disabled twice when logging is disabled via enterprise
-  // policy, total count should be 2.
-  histogram_tester()->ExpectBucketCount(
-      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
-      ModelQualityLogsUploadStatus::kDisabledDueToEnterprisePolicy, 2);
+  // Log uploads should have been recorded as disabled twice because of
+  // enterprise policy.
+  EXPECT_THAT(
+      histogram_tester()->GetAllSamples(
+          "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus."
+          "Compose"),
+      ElementsAre(
+          base::Bucket(
+              ModelQualityLogsUploadStatus::kDisabledDueToEnterprisePolicy, 1),
+          base::Bucket(ModelQualityLogsUploadStatus::kFeatureNotEnabledForUser,
+                       1)));
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
@@ -1600,7 +1606,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EXPECT_FALSE(ogks->GetChromeModelQualityLogsUploaderService()->CanUploadLogs(
       UserVisibleFeatureKey::kCompose));
 
-  // Disable logging via via the enterprise policy to kDisable state this should
+  // Disable logging via the enterprise policy to kDisable state this should
   // return ChromeModelQualityLogsUploaderService::CanUploadLogs to false.
   policies.Set(policy::key::kHelpMeWriteSettings,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -1619,7 +1625,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EXPECT_FALSE(ogks->GetChromeModelQualityLogsUploaderService()->CanUploadLogs(
       UserVisibleFeatureKey::kCompose));
 
-  // Enable logging via via the enterprise policy to state kAllow this shouldn't
+  // Enable logging via the enterprise policy to state kAllow this shouldn't
   // stop upload and should return
   // ChromeModelQualityLogsUploaderService::CanUploadLogs to true.
   policies.Set(
@@ -1639,11 +1645,17 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EXPECT_TRUE(ogks->GetChromeModelQualityLogsUploaderService()->CanUploadLogs(
       UserVisibleFeatureKey::kCompose));
 
-  // Upload should be disabled twice when logging is disabled via enterprise
-  // policy, total count should be 2.
-  histogram_tester()->ExpectBucketCount(
-      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
-      ModelQualityLogsUploadStatus::kDisabledDueToEnterprisePolicy, 2);
+  // Log uploads should have been recorded as disabled twice because of
+  // enterprise policy.
+  EXPECT_THAT(
+      histogram_tester()->GetAllSamples(
+          "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus."
+          "Compose"),
+      ElementsAre(
+          base::Bucket(
+              ModelQualityLogsUploadStatus::kDisabledDueToEnterprisePolicy, 1),
+          base::Bucket(ModelQualityLogsUploadStatus::kFeatureNotEnabledForUser,
+                       1)));
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,

@@ -272,12 +272,14 @@ enum class ModelQualityLogsUploadStatus {
   kMetricsReportingDisabled = 4,
   // Upload is disabled due to enterprise policy.
   kDisabledDueToEnterprisePolicy = 5,
+  // Upload is disabled because the feature is not enabled for the user.
+  kFeatureNotEnabledForUser = 6,
 
   // Insert new values before this line.
   // This enum must remain synchronized with the enum
   // |OptimizationGuideModelQualityLogsUploadStatus| in
   // tools/metrics/histograms/metadata/optimization/enums.xml.
-  kMaxValue = kDisabledDueToEnterprisePolicy,
+  kMaxValue = kFeatureNotEnabledForUser,
 };
 
 // Performance class of this device.
