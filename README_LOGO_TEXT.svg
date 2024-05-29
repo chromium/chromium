@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" height="64" width="160">
+<svg xmlns="http://www.w3.org/2000/svg" height="64" width="168">
     <style>
         .text {
             font-family: Helvetica, sans-serif;
@@ -12,6 +12,6 @@
     </style>
 
     <g class="text">
-        <text x="50%" y="50%">Chromium</text>
+        <text x="50%" y="55%">Chromium</text>
     </g>
 </svg>
