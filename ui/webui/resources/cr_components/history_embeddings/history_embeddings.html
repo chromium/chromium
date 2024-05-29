@@ -38,7 +38,7 @@ hr {
   border: 0;
   height: 1px;
   background: var(--cr-fallback-color-divider);
-  margin: 8px 24px;
+  margin: 0px 24px;
 }
 
 hr:last-of-type {
@@ -46,7 +46,13 @@ hr:last-of-type {
 }
 
 cr-url-list-item {
-  --cr-url-list-item-padding: 6px 24px;
+  --cr-url-list-item-height: auto;
+  --cr-url-list-item-padding: 14px 24px 6px;
+}
+
+hr:has(+ cr-url-list-item:hover),
+cr-url-list-item:hover + hr {
+  opacity: 0;
 }
 
 .footer {
@@ -64,7 +70,7 @@ a {
   font-size: 11px;
   font-style: italic;
   line-height: 16px;
-  padding: var(--cr-url-list-item-padding);
+  padding: 6px 24px 14px;
 }
 
 .source-passage-line {
