@@ -6046,120 +6046,100 @@ TEST_F(ManifestParserTest, PermissionsPolicyInvalidAllowlistEntry) {
 
 TEST_F(ManifestParserTest, LaunchHandlerParseRules) {
   using ClientMode = mojom::blink::ManifestLaunchHandler::ClientMode;
-
+  // Smoke test.
   {
-    ScopedWebAppLaunchHandlerForTest feature(false);
-
-    // Feature not enabled, should not be parsed.
     auto& manifest = ParseManifest(R"({
       "launch_handler": {
-        "client_mode": "navigate-existing"
+        "client_mode": "focus-existing"
       }
     })");
-    EXPECT_FALSE(manifest->launch_handler);
+    EXPECT_EQ(manifest->launch_handler->client_mode,
+              ClientMode::kFocusExisting);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+  {
+    auto& manifest = ParseManifest(R"({
+      "launch_handler": {
+        "client_mode": "navigate-new"
+      }
+    })");
+    EXPECT_EQ(manifest->launch_handler->client_mode, ClientMode::kNavigateNew);
     EXPECT_EQ(0u, GetErrorCount());
   }
 
+  // Empty object is fine.
   {
-    ScopedWebAppLaunchHandlerForTest feature(true);
-    // Smoke test.
-    {
-      auto& manifest = ParseManifest(R"({
-        "launch_handler": {
-          "client_mode": "focus-existing"
-        }
-      })");
-      EXPECT_EQ(manifest->launch_handler->client_mode,
-                ClientMode::kFocusExisting);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-    {
-      auto& manifest = ParseManifest(R"({
-        "launch_handler": {
-          "client_mode": "navigate-new"
-        }
-      })");
-      EXPECT_EQ(manifest->launch_handler->client_mode,
-                ClientMode::kNavigateNew);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
+    auto& manifest = ParseManifest(R"({
+      "launch_handler": {}
+    })");
+    EXPECT_EQ(manifest->launch_handler->client_mode, ClientMode::kAuto);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
 
-    // Empty object is fine.
-    {
-      auto& manifest = ParseManifest(R"({
-        "launch_handler": {}
-      })");
-      EXPECT_EQ(manifest->launch_handler->client_mode, ClientMode::kAuto);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
+  // Empty array is fine.
+  {
+    auto& manifest = ParseManifest(R"({
+      "launch_handler": {
+        "client_mode": []
+      }
+    })");
+    EXPECT_EQ(manifest->launch_handler->client_mode, ClientMode::kAuto);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
 
-    // Empty array is fine.
-    {
-      auto& manifest = ParseManifest(R"({
-        "launch_handler": {
-          "client_mode": []
-        }
-      })");
-      EXPECT_EQ(manifest->launch_handler->client_mode, ClientMode::kAuto);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
+  // Unknown single string.
+  {
+    auto& manifest = ParseManifest(R"({
+      "launch_handler": {
+        "client_mode": "space"
+      }
+    })");
+    EXPECT_EQ(manifest->launch_handler->client_mode, ClientMode::kAuto);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("client_mode value 'space' ignored, unknown value.", errors()[0]);
+  }
 
-    // Unknown single string.
-    {
-      auto& manifest = ParseManifest(R"({
-        "launch_handler": {
-          "client_mode": "space"
-        }
-      })");
-      EXPECT_EQ(manifest->launch_handler->client_mode, ClientMode::kAuto);
-      EXPECT_EQ(1u, GetErrorCount());
-      EXPECT_EQ("client_mode value 'space' ignored, unknown value.",
-                errors()[0]);
-    }
+  // First known value in array is used.
+  {
+    auto& manifest = ParseManifest(R"({
+      "launch_handler": {
+        "client_mode": ["navigate-existing", "navigate-new"]
+      }
+    })");
+    EXPECT_EQ(manifest->launch_handler->client_mode,
+              ClientMode::kNavigateExisting);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+  {
+    auto& manifest = ParseManifest(R"({
+      "launch_handler": {
+        "client_mode": [null, "space", "focus-existing", "auto"]
+      }
+    })");
+    EXPECT_EQ(manifest->launch_handler->client_mode,
+              ClientMode::kFocusExisting);
+    EXPECT_EQ(2u, GetErrorCount());
+    EXPECT_EQ("client_mode value 'null' ignored, string expected.",
+              errors()[0]);
+    EXPECT_EQ("client_mode value 'space' ignored, unknown value.", errors()[1]);
+  }
 
-    // First known value in array is used.
-    {
-      auto& manifest = ParseManifest(R"({
-        "launch_handler": {
-          "client_mode": ["navigate-existing", "navigate-new"]
-        }
-      })");
-      EXPECT_EQ(manifest->launch_handler->client_mode,
-                ClientMode::kNavigateExisting);
-      EXPECT_EQ(0u, GetErrorCount());
-    }
-    {
-      auto& manifest = ParseManifest(R"({
-        "launch_handler": {
-          "client_mode": [null, "space", "focus-existing", "auto"]
-        }
-      })");
-      EXPECT_EQ(manifest->launch_handler->client_mode,
-                ClientMode::kFocusExisting);
-      EXPECT_EQ(2u, GetErrorCount());
-      EXPECT_EQ("client_mode value 'null' ignored, string expected.",
-                errors()[0]);
-      EXPECT_EQ("client_mode value 'space' ignored, unknown value.",
-                errors()[1]);
-    }
-
-    // Don't parse if the property isn't an object.
-    {
-      auto& manifest = ParseManifest(R"({ "launch_handler": null })");
-      EXPECT_FALSE(manifest->launch_handler);
-      EXPECT_EQ(1u, GetErrorCount());
-      EXPECT_EQ("launch_handler value ignored, object expected.", errors()[0]);
-    }
-    {
-      auto& manifest = ParseManifest(R"({
-        "launch_handler": [{
-          "client_mode": "navigate-new"
-        }]
-      })");
-      EXPECT_FALSE(manifest->launch_handler);
-      EXPECT_EQ(1u, GetErrorCount());
-      EXPECT_EQ("launch_handler value ignored, object expected.", errors()[0]);
-    }
+  // Don't parse if the property isn't an object.
+  {
+    auto& manifest = ParseManifest(R"({ "launch_handler": null })");
+    EXPECT_FALSE(manifest->launch_handler);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("launch_handler value ignored, object expected.", errors()[0]);
+  }
+  {
+    auto& manifest = ParseManifest(R"({
+      "launch_handler": [{
+        "client_mode": "navigate-new"
+      }]
+    })");
+    EXPECT_FALSE(manifest->launch_handler);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("launch_handler value ignored, object expected.", errors()[0]);
   }
 }
 

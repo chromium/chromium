@@ -2795,11 +2795,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-desktop-pwas-launch-handler",
-    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 116
-  },
-  {
     "name": "enable-desktop-pwas-scope-extensions",
     "owners": [ "luhua@microsoft.com", "pwa-team@google.com" ],
     "expiry_milestone": 130

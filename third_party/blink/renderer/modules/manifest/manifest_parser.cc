@@ -2120,10 +2120,6 @@ Vector<String> ManifestParser::ParseOriginAllowlist(
 
 mojom::blink::ManifestLaunchHandlerPtr ManifestParser::ParseLaunchHandler(
     const JSONObject* object) {
-  if (!RuntimeEnabledFeatures::WebAppLaunchHandlerEnabled(execution_context_)) {
-    return nullptr;
-  }
-
   const JSONValue* launch_handler_value = object->Get("launch_handler");
   if (!launch_handler_value) {
     return nullptr;

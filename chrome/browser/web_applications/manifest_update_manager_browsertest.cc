@@ -2258,13 +2258,7 @@ INSTANTIATE_TEST_SUITE_P(
                       UpdateDialogParam::kDisabled),
     ManifestUpdateManagerBrowserTest_UpdateDialog::ParamToString);
 
-class ManifestUpdateManagerLaunchHandlerBrowserTest
-    : public ManifestUpdateManagerBrowserTest {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWebAppEnableLaunchHandler};
-};
-
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerLaunchHandlerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsLaunchHandlerChange) {
   constexpr char kManifestTemplate[] = R"(
     {

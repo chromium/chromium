@@ -31,7 +31,6 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "extensions/common/constants.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "url/gurl.h"
 
@@ -414,19 +413,15 @@ void WebAppLaunchProcess::MaybeEnqueueWebLaunchParams(
     bool is_file_handling,
     content::WebContents* web_contents,
     bool started_new_navigation) {
-  if (is_file_handling || web_app_->launch_handler().has_value() ||
-      base::FeatureList::IsEnabled(
-          blink::features::kWebAppEnableLaunchHandler)) {
-    WebAppLaunchParams launch_params;
-    launch_params.started_new_navigation = started_new_navigation;
-    launch_params.app_id = web_app_->app_id();
-    launch_params.target_url = launch_url;
-    launch_params.paths = is_file_handling ? params_->launch_files
-                                           : std::vector<base::FilePath>();
-    WebAppTabHelper::FromWebContents(web_contents)
-        ->EnsureLaunchQueue()
-        .Enqueue(std::move(launch_params));
-  }
+  WebAppLaunchParams launch_params;
+  launch_params.started_new_navigation = started_new_navigation;
+  launch_params.app_id = web_app_->app_id();
+  launch_params.target_url = launch_url;
+  launch_params.paths =
+      is_file_handling ? params_->launch_files : std::vector<base::FilePath>();
+  WebAppTabHelper::FromWebContents(web_contents)
+      ->EnsureLaunchQueue()
+      .Enqueue(std::move(launch_params));
 }
 
 }  // namespace web_app

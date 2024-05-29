@@ -9,6 +9,6 @@
     Exposed=Window,
     RuntimeEnabled=WebAppLaunchQueue
 ] interface LaunchParams {
-  [RuntimeEnabled=WebAppLaunchHandler] readonly attribute USVString targetURL;
+  readonly attribute USVString targetURL;
   [RuntimeEnabled=FileHandling] readonly attribute FrozenArray<FileSystemHandle> files;
 };
