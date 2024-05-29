@@ -3222,6 +3222,10 @@ crbug.com/626703 external/wpt/css/css-will-change/will-change-abspos-cb-dynamic-
 crbug.com/626703 external/wpt/css/css-will-change/will-change-abspos-cb-001.html [ Failure ]
 crbug.com/892337 external/wpt/resource-timing/content-type-parsing.html [ Failure Timeout ]
 
+# Some WebXR tests that have become flaky
+crbug.com/343470120 [ Linux ] external/wpt/webxr/xrSession_requestAnimationFrame_getViewerPose.https.html [ Failure Pass ]
+crbug.com/343470120 [ Linux ] external/wpt/webxr/xrStationaryReferenceSpace_floorlevel_updates.https.html [ Failure Pass ]
+
 # origin-border-box tests fail on bots, but some of them seem to pass locally
 crbug.com/626703 external/wpt/css/css-backgrounds/background-origin/origin-border-box.html [ Failure Pass ]
 crbug.com/626703 external/wpt/css/css-backgrounds/background-origin/origin-border-box_with_position.html [ Failure Pass ]
