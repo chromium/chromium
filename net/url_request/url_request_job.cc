@@ -431,6 +431,7 @@ void URLRequestJob::NotifyHeadersComplete() {
 
   if (IsRedirectResponse(&new_location, &http_status_code,
                          &insecure_scheme_was_upgraded)) {
+    CHECK(!NeedsAuth());
     // Redirect response bodies are not read. Notify the transaction
     // so it does not treat being stopped as an error.
     DoneReadingRedirectResponse();
@@ -476,6 +477,8 @@ void URLRequestJob::NotifyHeadersComplete() {
   }
 
   if (NeedsAuth()) {
+    CHECK(!IsRedirectResponse(&new_location, &http_status_code,
+                              &insecure_scheme_was_upgraded));
     std::unique_ptr<AuthChallengeInfo> auth_info = GetAuthChallengeInfo();
     // Need to check for a NULL auth_info because the server may have failed
     // to send a challenge with the 401 response.

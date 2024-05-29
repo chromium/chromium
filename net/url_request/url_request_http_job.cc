@@ -1441,6 +1441,11 @@ bool URLRequestHttpJob::IsSafeRedirect(const GURL& location) {
 }
 
 bool URLRequestHttpJob::NeedsAuth() {
+  if (!transaction_.get()) {
+    // If we synthesized a redirect (for `DNS_NAME_HTTPS_ONLY`, e.g.), we aren't
+    // guaranteed to have a transaction here.
+    return false;
+  }
   int code = GetResponseCode();
   if (code == -1)
     return false;
