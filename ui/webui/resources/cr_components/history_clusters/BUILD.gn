@@ -41,6 +41,7 @@ build_webui("build") {
   css_files = [
     "history_clusters_shared_style.css",
     "history_clusters_shared_style_lit.css",
+    "page_favicon.css",
     "search_query.css",
     "shared_vars.css",
   ]

@@ -15,6 +15,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
 let callbackRouterRemote: PageRemote;
@@ -254,6 +255,7 @@ suite('history-clusters', () => {
 
     const [clientId, pageUrl] =
         await imageServiceHandler.whenCalled('getPageImageUrl');
+    await microtasksFinished();
     assertEquals(PageImageServiceClientId.Journeys, clientId);
     assertEquals(urlVisit.visit.normalizedUrl, pageUrl);
 
@@ -272,6 +274,7 @@ suite('history-clusters', () => {
     icon.url = {url: 'https://something-different.com'};
     const [newClientId, newPageUrl] =
         await imageServiceHandler.whenCalled('getPageImageUrl');
+    await microtasksFinished();
     assertEquals(PageImageServiceClientId.Journeys, newClientId);
     assertTrue(!!newPageUrl);
     assertEquals('https://something-different.com', newPageUrl.url);
