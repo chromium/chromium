@@ -486,15 +486,20 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!gpu_channel_host) {
-    // Chrome OS can't fallback to software compositing so retry up to 10
-    // seconds to initialize the GPU channel.
-    constexpr auto kRetryTimeout = base::Seconds(10);
-    base::TimeTicks begin = base::TimeTicks::Now();
-    while (base::TimeTicks::Now() - begin < kRetryTimeout &&
-           !gpu_channel_host) {
-      gpu_channel_host =
-          gpu_channel_establish_factory_->EstablishGpuChannelSync();
+    // If passed in `gpu_channel_host` is null, the previous EstablishGpuChannel
+    // have failed. It means the gpu process have died but the browser UI thread
+    // have not received child process disconnect signal. Manually remove it
+    // before EstablishGpuChannel again. More in crbug.com/322909915.
+    // TODO(crbug.com/322909915): Observe `GPU.EstablishGpuChannelSyncRetry`
+    // metrics, and consider extending this behavior to other platforms.
+    auto* gpu_process_host = GpuProcessHost::Get();
+    if (gpu_process_host) {
+      gpu_process_host->GpuProcessHost::ForceShutdown();
     }
+
+    // If it fails with the new gpu process, we return kFatalFailure.
+    gpu_channel_host =
+        gpu_channel_establish_factory_->EstablishGpuChannelSync();
     UMA_HISTOGRAM_BOOLEAN("GPU.EstablishGpuChannelSyncRetry",
                           !!gpu_channel_host);
   }
