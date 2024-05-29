@@ -146,26 +146,13 @@ def generate_name_based_guid(namespace, name):
              md5_hex_digits[9], ''.join(md5_hex_digits[10:])))
 
 
-def get_wix_flags(product_name,
-                  product_name_legal_identifier,
-                  msi_product_version,
-                  product_version,
-                  appid,
-                  company_name,
-                  company_full_name,
-                  custom_action_dll_path=None,
-                  product_uninstaller_additional_args=None,
-                  msi_product_id=None,
-                  msi_upgradecode_guid=None,
-                  product_installer_path=None,
-                  product_installer_data=None,
-                  product_icon_path=None,
-                  product_installer_install_command=None,
-                  product_installer_disable_update_registration_arg=None,
-                  product_custom_params=None,
-                  standalone_installer_path=None,
-                  metainstaller_path=None,
-                  architecture=None):
+def get_wix_flags(product_name, product_name_legal_identifier,
+                  msi_product_version, product_version, appid, company_name,
+                  company_full_name, custom_action_dll_path,
+                  product_uninstaller_additional_args, msi_product_id,
+                  msi_upgradecode_guid, product_installer_data,
+                  product_icon_path, product_custom_params,
+                  standalone_installer_path, architecture):
     """Generate the proper set of defines for WiX Candle usage."""
     defines = [
         ('ProductName', product_name),
@@ -183,11 +170,6 @@ def get_wix_flags(product_name,
         ('MsiUpgradeCode', msi_upgradecode_guid),
         ('ProductCustomParams', "%s" % product_custom_params),
         ('StandaloneInstallerPath', standalone_installer_path),
-        ('GoogleUpdateMetainstallerPath', "%s" % metainstaller_path),
-        ('ProductInstallerInstallCommand', product_installer_install_command),
-        ('ProductInstallerDisableUpdateRegistrationArg',
-         product_installer_disable_update_registration_arg),
-        ('ProductInstallerPath', product_installer_path),
         ('ProductInstallerData',
          product_installer_data.replace('==MSI-PRODUCT-ID==', msi_product_id)),
         ('ProductIcon', product_icon_path),
@@ -206,78 +188,51 @@ def get_wix_flags(product_name,
     return flags
 
 
-class EnterpriseInstaller:
+def BuildInstaller(wix_path, product_name, product_version, appid,
+                   product_custom_params, product_uninstaller_additional_args,
+                   product_installer_data, standalone_installer_path,
+                   custom_action_dll_path, msi_base_name,
+                   enterprise_installer_dir, company_name, company_full_name,
+                   product_icon_path, architecture, output_dir):
     """Creates an enterprise installer from a standalone installer."""
+    product_name_legal_identifier = product_name.replace(' ', '')
+    msi_name = msi_base_name + '.msi'
+    msi_product_version = convert_to_msi_version_number_if_needed(
+        product_version)
 
-    def __init__(self, wix_path, product_name, product_version, appid,
-                 product_custom_params, product_uninstaller_additional_args,
-                 product_installer_data, standalone_installer_path,
-                 custom_action_dll_path, msi_base_name,
-                 enterprise_installer_dir, company_name, company_full_name,
-                 output_dir):
-        self._wix_path = wix_path
-        self._product_name = product_name
-        self._product_version = product_version
-        self._appid = appid
-        self._product_custom_params = product_custom_params
-        self._product_uninstaller_additional_args = (
-            product_uninstaller_additional_args)
-        self._product_installer_data = product_installer_data
-        self._standalone_installer_path = standalone_installer_path
-        self._custom_action_dll_path = custom_action_dll_path
-        self._msi_base_name = msi_base_name
-        self._enterprise_installer_dir = enterprise_installer_dir
-        self._company_name = company_name
-        self._company_full_name = company_full_name
-        self._output_dir = output_dir
+    updater_installer_namespace = get_installer_namespace()
 
-    def BuildInstaller(self):
-        product_name_legal_identifier = self._product_name.replace(' ', '')
-        msi_name = self._msi_base_name + '.msi'
-        msi_product_version = convert_to_msi_version_number_if_needed(
-            self._product_version)
+    # Include the .msi filename in the Product Code generation because "the
+    # product code must be changed if... the name of the .msi file has been
+    # changed" according to msdn.microsoft.com/en-us/library/aa367850.aspx.
+    # Also include the version number since we process version changes as
+    # major upgrades.
+    msi_product_id = generate_name_based_guid(
+        updater_installer_namespace,
+        'Product %s %s %s' % (product_name, msi_base_name, product_version))
+    msi_upgradecode_guid = generate_name_based_guid(
+        updater_installer_namespace, 'Upgrade ' + product_name)
 
-        updater_installer_namespace = get_installer_namespace()
+    # To allow for multiple versions of the same product to be generated,
+    # stick output in a subdirectory.
+    output_directory_name = os.path.join(output_dir,
+                                         appid + '.' + product_version)
+    os.makedirs(output_directory_name, exist_ok=True)
 
-        # Include the .msi filename in the Product Code generation because "the
-        # product code must be changed if... the name of the .msi file has been
-        # changed" according to msdn.microsoft.com/en-us/library/aa367850.aspx.
-        # Also include the version number since we process version changes as
-        # major upgrades.
-        msi_product_id = generate_name_based_guid(
-            updater_installer_namespace, 'Product %s %s %s' %
-            (self._product_name, self._msi_base_name, self._product_version))
-        msi_upgradecode_guid = generate_name_based_guid(
-            updater_installer_namespace, 'Upgrade ' + self._product_name)
-
-        # To allow for multiple versions of the same product to be generated,
-        # stick output in a subdirectory.
-        output_directory_name = os.path.join(
-            self._output_dir, self._appid + '.' + self._product_version)
-        os.makedirs(output_directory_name, exist_ok=True)
-
-        subprocess.run([
-            self._wix_path, 'build', '-nologo', '-o',
-            os.path.join(output_directory_name, msi_name),
-            os.path.join(self._enterprise_installer_dir,
-                         'enterprise_standalone_installer.wxs.xml')
-        ] + get_wix_flags(
-            self._product_name,
-            product_name_legal_identifier,
-            msi_product_version,
-            self._product_version,
-            self._appid,
-            self._company_name,
-            self._company_full_name,
-            product_custom_params=self._product_custom_params,
-            standalone_installer_path=self._standalone_installer_path,
-            custom_action_dll_path=self._custom_action_dll_path,
-            product_uninstaller_additional_args=self.
-            _product_uninstaller_additional_args,
-            msi_product_id=msi_product_id,
-            msi_upgradecode_guid=msi_upgradecode_guid,
-            product_installer_data=self._product_installer_data),
-                       check=True)
+    subprocess.run([
+        wix_path, 'build', '-nologo', '-o',
+        os.path.join(output_directory_name, msi_name),
+        os.path.join(enterprise_installer_dir,
+                     'enterprise_standalone_installer.wxs.xml')
+    ] + get_wix_flags(
+        product_name, product_name_legal_identifier, msi_product_version,
+        product_version, appid, company_name, company_full_name,
+        custom_action_dll_path, product_uninstaller_additional_args,
+        msi_product_id, msi_upgradecode_guid, product_installer_data,
+        product_icon_path, product_custom_params, standalone_installer_path,
+        architecture),
+                   check=True)
+    return os.path.join(output_directory_name, msi_name)
 
 
 def main():
@@ -313,6 +268,13 @@ def main():
             'time, url-encoded. This is needed since command line parameters '
             'cannot be passed to the product installer when it is wrapped in '
             'a standalone installer.'))
+    parser.add_argument('--product_icon_path',
+                        required=False,
+                        help=('path to installer icon.'))
+    parser.add_argument('--architecture',
+                        required=True,
+                        choices=['x86', 'x64', 'arm64'],
+                        help=('architecture of the build.'))
     parser.add_argument('--standalone_installer_path',
                         required=True,
                         help='path to product standalone installer')
@@ -346,13 +308,14 @@ def main():
         required=True,
         help='path to the directory that will contain the resulting MSI')
     args = parser.parse_args()
-    EnterpriseInstaller(
-        args.wix_path, args.product_name, args.product_version, args.appid,
-        args.product_custom_params, args.product_uninstaller_additional_args,
-        args.product_installer_data, args.standalone_installer_path,
-        args.custom_action_dll_path, args.msi_base_name,
-        args.enterprise_installer_dir, args.company_name,
-        args.company_full_name, args.output_dir).BuildInstaller()
+    BuildInstaller(args.wix_path, args.product_name, args.product_version,
+                   args.appid, args.product_custom_params,
+                   args.product_uninstaller_additional_args,
+                   args.product_installer_data, args.standalone_installer_path,
+                   args.custom_action_dll_path, args.msi_base_name,
+                   args.enterprise_installer_dir, args.company_name,
+                   args.company_full_name, args.product_icon_path,
+                   args.architecture, args.output_dir)
 
 
 if __name__ == '__main__':

@@ -736,7 +736,7 @@ treating "x64" the same as "x86_64".
 For more information, see the
 [protocol document](protocol_3_1.md#update-checks-body-update-check-response-objects-update-check-response-3).
 
-### MSI installers (work in progress)
+### MSI installers
 
 MSI installers package an offline/standalone installer, and can be built using
 [msi_from_standalone.py](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/win/signing/msi_from_standalone.py)
@@ -765,6 +765,7 @@ python3 chrome/updater/win/signing/msi_from_standalone.py
     --enterprise_installer_dir chrome/updater/win/signing
     --company_name "Google"
     --company_full_name "Google LLC"
+    --architecture x64
     --output_dir out/Default
 ```
 
