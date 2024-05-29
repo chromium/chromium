@@ -788,6 +788,8 @@ data/accessibility/aria/aria-generic-expected-win.txt
 data/accessibility/aria/aria-generic.html
 data/accessibility/aria/aria-global-expected-blink.txt
 data/accessibility/aria/aria-global.html
+data/accessibility/aria/aria-grid-aria-selected-expected-uia-win.txt
+data/accessibility/aria/aria-grid-aria-selected.html
 data/accessibility/aria/aria-grid-dynamic-add-row-expected-blink.txt
 data/accessibility/aria/aria-grid-dynamic-add-row.html
 data/accessibility/aria/aria-grid-expected-android-assist-data.txt

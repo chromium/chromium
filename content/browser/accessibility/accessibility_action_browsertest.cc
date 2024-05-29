@@ -874,10 +874,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
   ASSERT_TRUE(waiter.WaitForNotification());
 
-  BrowserAccessibility* cell1 = FindNode(ax::mojom::Role::kCell, "A");
+  BrowserAccessibility* cell1 = FindNode(ax::mojom::Role::kGridCell, "A");
   ASSERT_NE(nullptr, cell1);
 
-  BrowserAccessibility* cell2 = FindNode(ax::mojom::Role::kCell, "B");
+  BrowserAccessibility* cell2 = FindNode(ax::mojom::Role::kGridCell, "B");
   ASSERT_NE(nullptr, cell2);
 
   // Initial state

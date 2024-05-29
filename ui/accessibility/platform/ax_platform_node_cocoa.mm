@@ -574,6 +574,8 @@ void CollectAncestorRoles(
       // a list as of 10.12.6, so following WebKit and using table role:
       // crbug.com/753925
       return NSAccessibilityTableRole;
+    case ax::mojom::Role::kGridCell:
+      return @"AXCell";
     case ax::mojom::Role::kHeading:
       return @"AXHeading";
     case ax::mojom::Role::kImage:

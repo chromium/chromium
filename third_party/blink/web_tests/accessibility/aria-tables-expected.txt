@@ -26,7 +26,7 @@ AXRole: AXGenericContainer
             AXRole: AXRowHeader "row head< 1/div> data row head 2"
                 AXRole: AXStaticText "row head< 1/div>"
                     AXRole: AXInlineTextBox "row head< 1/div>"
-                AXRole: AXCell "data"
+                AXRole: AXGridCell "data"
                     AXRole: AXStaticText "data"
                         AXRole: AXInlineTextBox "data"
                 AXRole: AXRowHeader "row head 2"

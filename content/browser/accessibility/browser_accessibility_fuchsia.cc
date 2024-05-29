@@ -144,6 +144,8 @@ BrowserAccessibilityFuchsia::GetFuchsiaRole() const {
       return FuchsiaRole::kColumnHeader;
     case AXRole::kGrid:
       return FuchsiaRole::kGrid;
+    case AXRole::kGridCell:
+      return FuchsiaRole::kCell;
     case AXRole::kHeader:
       return FuchsiaRole::kHeader;
     case AXRole::kImage:

@@ -990,6 +990,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'ValidateCommonProperties', function() {
     RoleType.CLIENT,
     RoleType.EMBEDDED_OBJECT,
     RoleType.GENERIC_CONTAINER,
+    RoleType.GRID_CELL,
     RoleType.IMAGE,
     RoleType.IME_CANDIDATE,
     RoleType.INLINE_TEXT_BOX,

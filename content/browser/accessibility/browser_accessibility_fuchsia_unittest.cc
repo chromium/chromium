@@ -157,6 +157,7 @@ TEST_F(BrowserAccessibilityFuchsiaTest, ToFuchsiaNodeDataTranslatesRoles) {
           {AXRole::kTextFieldWithComboBox, Role::kTextFieldWithComboBox},
           {AXRole::kTable, Role::kTable},
           {AXRole::kGrid, Role::kGrid},
+          {AXRole::kGridCell, Role::kCell},
           {AXRole::kRow, Role::kTableRow},
           {AXRole::kCell, Role::kCell},
           {AXRole::kColumnHeader, Role::kColumnHeader},

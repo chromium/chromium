@@ -7,11 +7,11 @@ rootWebArea
 ++++++++++++staticText name='Alphabet'
 ++++++++++++++inlineTextBox name='Alphabet'
 ++++++++row
-++++++++++cell name='A'
+++++++++++gridCell name='A'
 ++++++++++++staticText name='A'
 ++++++++++++++inlineTextBox name='A'
 ++++++++row
-++++++++++cell name='B'
+++++++++++gridCell name='B'
 ++++++++++++staticText name='B'
 ++++++++++++++inlineTextBox name='B'
 ++++++grid
@@ -20,11 +20,11 @@ rootWebArea
 ++++++++++++staticText name='Alphabet'
 ++++++++++++++inlineTextBox name='Alphabet'
 ++++++++row
-++++++++++cell name='A'
+++++++++++gridCell name='A'
 ++++++++++++staticText name='A'
 ++++++++++++++inlineTextBox name='A'
 ++++++++row
-++++++++++cell name='B'
+++++++++++gridCell name='B'
 ++++++++++++staticText name='B'
 ++++++++++++++inlineTextBox name='B'
 ++++++grid
@@ -33,11 +33,11 @@ rootWebArea
 ++++++++++++staticText name='Alphabet'
 ++++++++++++++inlineTextBox name='Alphabet'
 ++++++++row
-++++++++++cell name='A'
+++++++++++gridCell name='A'
 ++++++++++++staticText name='A'
 ++++++++++++++inlineTextBox name='A'
 ++++++++row
-++++++++++cell name='B'
+++++++++++gridCell name='B'
 ++++++++++++staticText name='B'
 ++++++++++++++inlineTextBox name='B'
 ++++++grid
@@ -46,11 +46,11 @@ rootWebArea
 ++++++++++++staticText name='Alphabet'
 ++++++++++++++inlineTextBox name='Alphabet'
 ++++++++row
-++++++++++cell name='B'
+++++++++++gridCell name='B'
 ++++++++++++staticText name='B'
 ++++++++++++++inlineTextBox name='B'
 ++++++++row
-++++++++++cell name='A'
+++++++++++gridCell name='A'
 ++++++++++++staticText name='A'
 ++++++++++++++inlineTextBox name='A'
 ++++++grid
@@ -59,11 +59,11 @@ rootWebArea
 ++++++++++++staticText name='Alphabet'
 ++++++++++++++inlineTextBox name='Alphabet'
 ++++++++row
-++++++++++cell name='A'
+++++++++++gridCell name='A'
 ++++++++++++staticText name='A'
 ++++++++++++++inlineTextBox name='A'
 ++++++++row
-++++++++++cell name='A'
+++++++++++gridCell name='A'
 ++++++++++++staticText name='A'
 ++++++++++++++inlineTextBox name='A'
 ++++++grid
@@ -71,10 +71,10 @@ rootWebArea
 ++++++++++rowHeader name='Alphabet'
 ++++++++++++staticText name='Alphabet'
 ++++++++++++++inlineTextBox name='Alphabet'
-++++++++++cell name='A'
+++++++++++gridCell name='A'
 ++++++++++++staticText name='A'
 ++++++++++++++inlineTextBox name='A'
-++++++++++cell name='B'
+++++++++++gridCell name='B'
 ++++++++++++staticText name='B'
 ++++++++++++++inlineTextBox name='B'
 ++++++grid
@@ -82,10 +82,10 @@ rootWebArea
 ++++++++++rowHeader name='Alphabet'
 ++++++++++++staticText name='Alphabet'
 ++++++++++++++inlineTextBox name='Alphabet'
-++++++++++cell name='A'
+++++++++++gridCell name='A'
 ++++++++++++staticText name='A'
 ++++++++++++++inlineTextBox name='A'
-++++++++++cell name='B'
+++++++++++gridCell name='B'
 ++++++++++++staticText name='B'
 ++++++++++++++inlineTextBox name='B'
 ++++++grid
@@ -93,10 +93,10 @@ rootWebArea
 ++++++++++rowHeader name='Alphabet'
 ++++++++++++staticText name='Alphabet'
 ++++++++++++++inlineTextBox name='Alphabet'
-++++++++++cell name='A'
+++++++++++gridCell name='A'
 ++++++++++++staticText name='A'
 ++++++++++++++inlineTextBox name='A'
-++++++++++cell name='B'
+++++++++++gridCell name='B'
 ++++++++++++staticText name='B'
 ++++++++++++++inlineTextBox name='B'
 ++++++grid
@@ -104,10 +104,10 @@ rootWebArea
 ++++++++++rowHeader name='Alphabet'
 ++++++++++++staticText name='Alphabet'
 ++++++++++++++inlineTextBox name='Alphabet'
-++++++++++cell name='B'
+++++++++++gridCell name='B'
 ++++++++++++staticText name='B'
 ++++++++++++++inlineTextBox name='B'
-++++++++++cell name='A'
+++++++++++gridCell name='A'
 ++++++++++++staticText name='A'
 ++++++++++++++inlineTextBox name='A'
 ++++++grid
@@ -115,9 +115,9 @@ rootWebArea
 ++++++++++rowHeader name='Alphabet'
 ++++++++++++staticText name='Alphabet'
 ++++++++++++++inlineTextBox name='Alphabet'
-++++++++++cell name='A'
+++++++++++gridCell name='A'
 ++++++++++++staticText name='A'
 ++++++++++++++inlineTextBox name='A'
-++++++++++cell name='A'
+++++++++++gridCell name='A'
 ++++++++++++staticText name='A'
 ++++++++++++++inlineTextBox name='A'

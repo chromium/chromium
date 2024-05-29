@@ -371,6 +371,7 @@ export namespace AutomationPredicate {
           Role.BUTTON,
           Role.CELL,
           Role.CHECK_BOX,
+          Role.GRID_CELL,
           Role.RADIO_BUTTON,
           Role.SWITCH,
         ].includes(node.role!) &&
@@ -834,9 +835,8 @@ export namespace AutomationPredicate {
 
   // Table related predicates.
   /** Returns if the node has a cell like role. */
-  export const cellLike =
-      AutomationPredicate.roles(
-        [Role.CELL, Role.ROW_HEADER, Role.COLUMN_HEADER]);
+  export const cellLike = AutomationPredicate.roles(
+      [Role.CELL, Role.GRID_CELL, Role.ROW_HEADER, Role.COLUMN_HEADER]);
 
   /** Returns if the node is a table header. */
   export const tableHeader =

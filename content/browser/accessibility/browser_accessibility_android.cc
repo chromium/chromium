@@ -629,6 +629,7 @@ bool BrowserAccessibilityAndroid::IsLeafConsideringChildren() const {
 
     if (child->GetRole() == ax::mojom::Role::kTable ||
         child->GetRole() == ax::mojom::Role::kCell ||
+        child->GetRole() == ax::mojom::Role::kGridCell ||
         child->GetRole() == ax::mojom::Role::kRow ||
         child->GetRole() == ax::mojom::Role::kLayoutTable ||
         child->GetRole() == ax::mojom::Role::kLayoutTableCell ||

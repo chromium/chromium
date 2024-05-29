@@ -14,17 +14,17 @@ rootWebArea
 ++++++++++++++staticText name='Column 3'
 ++++++++++++++++inlineTextBox name='Column 3'
 ++++++++++row
-++++++++++++cell name='Cell A2' ariaCellColumnIndex=2 ariaCellRowIndex=2
+++++++++++++gridCell name='Cell A2' ariaCellColumnIndex=2 ariaCellRowIndex=2
 ++++++++++++++staticText name='Cell A2'
 ++++++++++++++++inlineTextBox name='Cell A2'
-++++++++++++cell name='Cell A3' ariaCellColumnIndex=3 ariaCellRowIndex=2
+++++++++++++gridCell name='Cell A3' ariaCellColumnIndex=3 ariaCellRowIndex=2
 ++++++++++++++staticText name='Cell A3'
 ++++++++++++++++inlineTextBox name='Cell A3'
 ++++++++++row
-++++++++++++cell name='Cell B1' ariaCellColumnIndex=1 ariaCellRowIndex=3
+++++++++++++gridCell name='Cell B1' ariaCellColumnIndex=1 ariaCellRowIndex=3
 ++++++++++++++staticText name='Cell B1'
 ++++++++++++++++inlineTextBox name='Cell B1'
-++++++++++++cell name='Cell B2' ariaCellColumnIndex=2 ariaCellRowIndex=3
+++++++++++++gridCell name='Cell B2' ariaCellColumnIndex=2 ariaCellRowIndex=3
 ++++++++++++++staticText name='Cell B2'
 ++++++++++++++++inlineTextBox name='Cell B2'
 ++++++paragraph ignored

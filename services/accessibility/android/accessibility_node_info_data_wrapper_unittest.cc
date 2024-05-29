@@ -598,7 +598,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, SelectedState) {
   AccessibilityNodeInfoDataWrapper cell_wrapper(tree_source(), &cells[0]);
 
   ui::AXNodeData data = CallSerialize(cell_wrapper);
-  ASSERT_EQ(ax::mojom::Role::kCell, data.role);
+  ASSERT_EQ(ax::mojom::Role::kGridCell, data.role);
   ASSERT_EQ(0,
             data.GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex));
   ASSERT_EQ(
@@ -654,7 +654,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, CellIndexes) {
     auto& cell = cells[i];
     AccessibilityNodeInfoDataWrapper cell_wrapper(tree_source(), &cell);
     ui::AXNodeData data = CallSerialize(cell_wrapper);
-    ASSERT_EQ(ax::mojom::Role::kCell, data.role);
+    ASSERT_EQ(ax::mojom::Role::kGridCell, data.role);
     int expected_row_index = i % 2;
     int expected_col_index = i / 2;
     ASSERT_EQ(

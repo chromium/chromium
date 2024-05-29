@@ -295,8 +295,7 @@ OutputRule.RULES = {
           $node(tableCellColumnHeaders) $roleDescription $state $description`,
       braille: `$state
           $name $cellIndexText $node(tableCellColumnHeaders) $roleDescription
-          $description
-          $if($selected, @aria_selected_true)`,
+          $description`,
     },
     [RoleType.CHECK_BOX]: {
       speak: `$if($checked, $earcon(CHECK_ON), $earcon(CHECK_OFF))
@@ -320,6 +319,20 @@ OutputRule.RULES = {
     [RoleType.GRID]: {
       speak: `$name $node(activeDescendant) $role $state $restriction
           $description`,
+    },
+    [RoleType.GRID_CELL]: {
+      enter: {
+        speak: `$cellIndexText $node(tableCellColumnHeaders) $nameFromNode
+            $roleDescription $state`,
+        braille: `$state $cellIndexText $node(tableCellColumnHeaders)
+            $nameFromNode $roleDescription`,
+      },
+      speak: `$nameFromNode $descendants $cellIndexText
+          $node(tableCellColumnHeaders) $roleDescription $state $description`,
+      braille: `$state
+          $name $cellIndexText $node(tableCellColumnHeaders) $roleDescription
+          $description
+          $if($selected, @aria_selected_true)`,
     },
     [RoleType.GROUP]: {
       enter: `$nameFromNode $roleDescription $state $restriction $description`,

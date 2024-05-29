@@ -6288,7 +6288,7 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
   update.nodes[13].role = ax::mojom::Role::kGrid;
   update.nodes[13].child_ids = {grid_without_header_cell_id};
   update.nodes[14].id = grid_without_header_cell_id;
-  update.nodes[14].role = ax::mojom::Role::kCell;
+  update.nodes[14].role = ax::mojom::Role::kGridCell;
   update.nodes[14].AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
   update.nodes[15].id = grid_with_header_id;
   update.nodes[15].role = ax::mojom::Role::kGrid;
@@ -6304,7 +6304,7 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
   update.nodes[18].role = ax::mojom::Role::kRow;
   update.nodes[18].child_ids = {grid_with_header_cell_id};
   update.nodes[19].id = grid_with_header_cell_id;
-  update.nodes[19].role = ax::mojom::Role::kCell;
+  update.nodes[19].role = ax::mojom::Role::kGridCell;
   update.nodes[19].AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
   update.nodes[20].id = button_with_value;
   update.nodes[20].role = ax::mojom::Role::kButton;
@@ -7345,7 +7345,7 @@ TEST_F(AXPlatformNodeWinTest, ISelectionItemProviderGrid) {
 
   AXNodeData cell1;
   cell1.id = 3;
-  cell1.role = ax::mojom::Role::kCell;
+  cell1.role = ax::mojom::Role::kGridCell;
   cell1.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
   row1.child_ids.push_back(cell1.id);
 

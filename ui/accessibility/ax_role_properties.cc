@@ -96,6 +96,7 @@ bool IsButton(const ax::mojom::Role role) {
 bool IsCellOrTableHeader(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kCell:
+    case ax::mojom::Role::kGridCell:
     case ax::mojom::Role::kColumnHeader:
     case ax::mojom::Role::kMathMLTableCell:
     case ax::mojom::Role::kRowHeader:
@@ -396,6 +397,7 @@ bool IsLikelyActiveDescendantRole(const ax::mojom::Role role) {
     case ax::mojom::Role::kCell:
     case ax::mojom::Role::kCheckBox:
     case ax::mojom::Role::kComment:
+    case ax::mojom::Role::kGridCell:
     case ax::mojom::Role::kListBoxOption:
     case ax::mojom::Role::kMenuItem:
     case ax::mojom::Role::kMenuItemCheckBox:
@@ -554,6 +556,7 @@ bool IsReadOnlySupported(const ax::mojom::Role role) {
     case ax::mojom::Role::kDate:
     case ax::mojom::Role::kDateTime:
     case ax::mojom::Role::kGrid:
+    case ax::mojom::Role::kGridCell:
     case ax::mojom::Role::kInputTime:
     case ax::mojom::Role::kListBox:
     case ax::mojom::Role::kMenuItemCheckBox:
@@ -569,10 +572,6 @@ bool IsReadOnlySupported(const ax::mojom::Role role) {
     case ax::mojom::Role::kTextFieldWithComboBox:
     case ax::mojom::Role::kTreeGrid:
       return true;
-
-    // https://www.w3.org/TR/wai-aria-1.1/#aria-readonly
-    // ARIA-1.1+ 'gridcell', supports aria-readonly, but 'cell' does not.
-    //
     // https://www.w3.org/TR/wai-aria-1.1/#columnheader
     // https://www.w3.org/TR/wai-aria-1.1/#rowheader
     // While the [columnheader|rowheader] role can be used in both interactive
@@ -631,6 +630,7 @@ bool IsSection(const ax::mojom::Role role) {
     case ax::mojom::Role::kFeed:       // Subclass of kList.
     case ax::mojom::Role::kFigure:
     case ax::mojom::Role::kGrid:  // Subclass of kTable.
+    case ax::mojom::Role::kGridCell:  // Subclass of kCell.
     case ax::mojom::Role::kGroup:
     case ax::mojom::Role::kImage:
     case ax::mojom::Role::kList:
@@ -712,7 +712,7 @@ bool IsSelectRequiredOrImplicit(const ax::mojom::Role role) {
 
 bool IsSelectSupported(const ax::mojom::Role role) {
   switch (role) {
-    case ax::mojom::Role::kCell:
+    case ax::mojom::Role::kGridCell:
     case ax::mojom::Role::kColumnHeader:
     case ax::mojom::Role::kListBoxOption:
     case ax::mojom::Role::kMathMLTableCell:
@@ -934,6 +934,7 @@ bool IsUIAEmbeddedObject(ax::mojom::Role role) {
     case ax::mojom::Role::kForm:
     case ax::mojom::Role::kGraphicsSymbol:
     case ax::mojom::Role::kGrid:
+    case ax::mojom::Role::kGridCell:
     case ax::mojom::Role::kIframe:
     case ax::mojom::Role::kIframePresentational:
     case ax::mojom::Role::kImage:
@@ -1088,12 +1089,12 @@ bool SupportsOrientation(const ax::mojom::Role role) {
 bool SupportsRequired(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kButton:        // Used by the file upload button.
-    case ax::mojom::Role::kCell:          // Used only for grid.
     case ax::mojom::Role::kColumnHeader:  // Used only for gridheaders.
     case ax::mojom::Role::kComboBoxGrouping:
     case ax::mojom::Role::kCheckBox:
     case ax::mojom::Role::kDate:
     case ax::mojom::Role::kDateTime:
+    case ax::mojom::Role::kGridCell:
     case ax::mojom::Role::kInputTime:
     case ax::mojom::Role::kListBox:
     case ax::mojom::Role::kRadioButton:

@@ -670,7 +670,8 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
 
       // TableView fires selection events on rows/cells
       // and we want to ignore those because it also fires focus events.
-      const skip = AutomationPredicate.roles([RoleType.CELL, RoleType.ROW]);
+      const skip = AutomationPredicate.roles(
+          [RoleType.CELL, RoleType.GRID_CELL, RoleType.ROW]);
       if (isDesktop && skip(target)) {
         return;
       }

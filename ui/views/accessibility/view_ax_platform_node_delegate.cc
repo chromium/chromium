@@ -926,8 +926,10 @@ std::optional<int32_t> ViewAXPlatformNodeDelegate::GetCellId(
     return std::nullopt;
 
   const ui::AXNodeData& cell_data = ax_cell->GetData();
-  if (cell_data.role == ax::mojom::Role::kCell)
+  if (cell_data.role == ax::mojom::Role::kCell ||
+      cell_data.role == ax::mojom::Role::kGridCell) {
     return cell_data.id;
+  }
 
   return std::nullopt;
 }

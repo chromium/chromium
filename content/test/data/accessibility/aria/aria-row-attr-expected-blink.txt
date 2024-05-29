@@ -13,9 +13,9 @@ rootWebArea
 ++++++++++++staticText name='cell 4'
 ++++++++++++++inlineTextBox name='cell 4'
 ++++++++row ariaCellRowIndex=4
-++++++++++cell name='cell 2' ariaCellRowIndex=4
+++++++++++gridCell name='cell 2' ariaCellRowIndex=4
 ++++++++++++staticText name='cell 2'
 ++++++++++++++inlineTextBox name='cell 2'
-++++++++++cell name='cell 3' ariaCellRowIndex=4
+++++++++++gridCell name='cell 3' ariaCellRowIndex=4
 ++++++++++++staticText name='cell 3'
 ++++++++++++++inlineTextBox name='cell 3'

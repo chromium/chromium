@@ -211,7 +211,7 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
 
     if (collection_info) {
       if (collection_info->row_count > 1 && collection_info->column_count > 1) {
-        out_data->role = ax::mojom::Role::kCell;
+        out_data->role = ax::mojom::Role::kGridCell;
         out_data->AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex,
                                   collection_item_info->row_index);
         out_data->AddIntAttribute(

@@ -372,7 +372,7 @@ const RoleEntry kAriaRoles[] = {
     // End ARIA Graphics module roles.
     // -------------------------------------------------
     {"grid", ax::mojom::blink::Role::kGrid},
-    {"gridcell", ax::mojom::blink::Role::kCell},
+    {"gridcell", ax::mojom::blink::Role::kGridCell},
     {"group", ax::mojom::blink::Role::kGroup},
     {"heading", ax::mojom::blink::Role::kHeading},
     {"img", ax::mojom::blink::Role::kImage},
@@ -2678,6 +2678,17 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
                : ax::mojom::blink::Role::kSectionWithoutName;
   }
 
+  if (role_ == ax::mojom::blink::Role::kCell) {
+    AncestorsIterator ancestor = base::ranges::find_if(
+        UnignoredAncestorsBegin(), UnignoredAncestorsEnd(),
+        &AXObject::IsTableLikeRole);
+    if (ancestor.current_ &&
+        (ancestor.current_->RoleValue() == ax::mojom::blink::Role::kGrid ||
+         ancestor.current_->RoleValue() == ax::mojom::blink::Role::kTreeGrid)) {
+      return ax::mojom::blink::Role::kGridCell;
+    }
+  }
+
   // TODO(accessibility): Consider moving the image vs. image map role logic
   // here. Currently it is implemented in AXPlatformNode subclasses and thus
   // not available to the InspectorAccessibilityAgent.
@@ -4225,25 +4236,7 @@ bool AXObject::IsSubWidget() const {
     case ax::mojom::blink::Role::kRowHeader:
     case ax::mojom::blink::Role::kColumn:
     case ax::mojom::blink::Role::kRow: {
-      // If it has an explicit ARIA role, it's a subwidget.
-      //
-      // Reasoning:
-      // Static table cells are not selectable, but ARIA grid cells
-      // and rows definitely are according to the spec. To support
-      // ARIA 1.0, it's sufficient to just check if there's any
-      // ARIA role at all, because if so then it must be a grid-related
-      // role so it must be selectable.
-      //
-      // TODO(accessibility): an ARIA 1.1+ role of "cell", or a role of "row"
-      // inside an ARIA 1.1 role of "table", should not be selectable. We may
-      // need to create separate role enums for grid cells vs table cells
-      // to implement this.
-      if (RawAriaRole() != ax::mojom::blink::Role::kUnknown) {
-        return true;
-      }
-
-      // Otherwise it's only a subwidget if it's in a grid or treegrid,
-      // not in a table.
+      // It's only a subwidget if it's in a grid or treegrid, not in a table.
       AncestorsIterator ancestor = base::ranges::find_if(
           UnignoredAncestorsBegin(), UnignoredAncestorsEnd(),
           &AXObject::IsTableLikeRole);
@@ -4252,6 +4245,7 @@ bool AXObject::IsSubWidget() const {
               ancestor.current_->RoleValue() ==
                   ax::mojom::blink::Role::kTreeGrid);
     }
+    case ax::mojom::blink::Role::kGridCell:
     case ax::mojom::blink::Role::kListBoxOption:
     case ax::mojom::blink::Role::kMenuListOption:
     case ax::mojom::blink::Role::kTab:
@@ -4995,6 +4989,7 @@ bool AXObject::SupportsARIAExpanded() const {
     case ax::mojom::blink::Role::kComboBoxSelect:
     case ax::mojom::blink::Role::kDisclosureTriangle:
     case ax::mojom::blink::Role::kDisclosureTriangleGrouped:
+    case ax::mojom::blink::Role::kGridCell:
     case ax::mojom::blink::Role::kLink:
     case ax::mojom::blink::Role::kPopUpButton:
     case ax::mojom::blink::Role::kMenuItem:
@@ -5007,12 +5002,6 @@ bool AXObject::SupportsARIAExpanded() const {
     case ax::mojom::blink::Role::kTextFieldWithComboBox:
     case ax::mojom::blink::Role::kToggleButton:
     case ax::mojom::blink::Role::kTreeItem:
-      return true;
-    case ax::mojom::blink::Role::kCell:
-      // TODO(Accessibility): aria-expanded is supported on grid cells but not
-      // on cells inside a static table. Consider creating separate internal
-      // roles so that we can easily distinguish these two types. See also
-      // IsSubWidget().
       return true;
     default:
       return false;
@@ -7364,6 +7353,7 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kDocGlossRef:
     case ax::mojom::blink::Role::kDisclosureTriangle:
     case ax::mojom::blink::Role::kDisclosureTriangleGrouped:
+    case ax::mojom::blink::Role::kGridCell:
     case ax::mojom::blink::Role::kHeading:
     case ax::mojom::blink::Role::kLayoutTableCell:
     case ax::mojom::blink::Role::kLineBreak:

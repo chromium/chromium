@@ -24,7 +24,7 @@ rootWebArea
 ++++++form name='Name required for form'
 ++++++grid
 ++++++++columnHeader expanded
-++++++++cell expanded
+++++++++gridCell expanded
 ++++++++row expanded
 ++++++++rowGroup
 ++++++++rowHeader expanded
@@ -70,7 +70,7 @@ rootWebArea
 ++++++switch expanded
 ++++++tab expanded
 ++++++table
-++++++++cell expanded
+++++++++cell
 ++++++tabList
 ++++++tabPanel
 ++++++term

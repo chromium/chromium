@@ -942,6 +942,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaGrid) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaGridAriaSelected) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-grid-aria-selected.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaGridDynamicAddRow) {
   RunAriaTest(FILE_PATH_LITERAL("aria-grid-dynamic-add-row.html"));
 }

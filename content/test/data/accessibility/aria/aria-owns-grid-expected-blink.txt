@@ -10,9 +10,9 @@ rootWebArea
 ++++++++++++staticText name='Rendering Engine'
 ++++++++++++++inlineTextBox name='Rendering Engine'
 ++++++++row tableRowIndex=1
-++++++++++cell name='Chrome' tableCellColumnIndex=0 tableCellColumnSpan=1 tableCellRowIndex=1 tableCellRowSpan=1
+++++++++++gridCell name='Chrome' tableCellColumnIndex=0 tableCellColumnSpan=1 tableCellRowIndex=1 tableCellRowSpan=1
 ++++++++++++staticText name='Chrome'
 ++++++++++++++inlineTextBox name='Chrome'
-++++++++++cell name='Blink' tableCellColumnIndex=1 tableCellColumnSpan=1 tableCellRowIndex=1 tableCellRowSpan=1
+++++++++++gridCell name='Blink' tableCellColumnIndex=1 tableCellColumnSpan=1 tableCellRowIndex=1 tableCellRowSpan=1
 ++++++++++++staticText name='Blink'
 ++++++++++++++inlineTextBox name='Blink'

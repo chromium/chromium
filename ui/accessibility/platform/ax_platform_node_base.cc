@@ -909,10 +909,8 @@ bool AXPlatformNodeBase::IsStructuredAnnotation() const {
 // should be moved there.
 bool AXPlatformNodeBase::IsSelectionItemSupported() const {
   switch (GetRole()) {
-    // An ARIA 1.1+ role of "cell", or a role of "row" inside
-    // an ARIA 1.1 role of "table", should not be selectable.
-    // ARIA "table" is not interactable, ARIA "grid" is.
-    case ax::mojom::Role::kCell:
+    // An ARIA 1.1+ role of "row" inside an ARIA 1.1 role of "table", should not
+    // be selectable. ARIA "table" is not interactable, ARIA "grid" is.
     case ax::mojom::Role::kColumnHeader:
     case ax::mojom::Role::kRow:
     case ax::mojom::Role::kRowHeader: {
@@ -945,6 +943,7 @@ bool AXPlatformNodeBase::IsSelectionItemSupported() const {
     case ax::mojom::Role::kMenuListOption:
     case ax::mojom::Role::kTreeItem:
       return HasBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+    case ax::mojom::Role::kGridCell:
     case ax::mojom::Role::kTab:
       // According to the UIA documentation, this role should always support the
       // SelectionItem control pattern:

@@ -13,15 +13,15 @@ rootWebArea
 ++++++++++++staticText name='cell 5'
 ++++++++++++++inlineTextBox name='cell 5'
 ++++++++row ariaCellColumnIndex=2
-++++++++++cell name='cell 2' ariaCellColumnIndex=2
+++++++++++gridCell name='cell 2' ariaCellColumnIndex=2
 ++++++++++++staticText name='cell 2'
 ++++++++++++++inlineTextBox name='cell 2'
-++++++++++cell name='cell 3' ariaCellColumnIndex=3
+++++++++++gridCell name='cell 3' ariaCellColumnIndex=3
 ++++++++++++staticText name='cell 3'
 ++++++++++++++inlineTextBox name='cell 3'
-++++++++++cell name='cell 4' ariaCellColumnIndex=4
+++++++++++gridCell name='cell 4' ariaCellColumnIndex=4
 ++++++++++++staticText name='cell 4'
 ++++++++++++++inlineTextBox name='cell 4'
-++++++++++cell name='cell 5' ariaCellColumnIndex=5
+++++++++++gridCell name='cell 5' ariaCellColumnIndex=5
 ++++++++++++staticText name='cell 5'
 ++++++++++++++inlineTextBox name='cell 5'

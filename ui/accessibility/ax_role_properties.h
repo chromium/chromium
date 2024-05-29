@@ -161,9 +161,9 @@ AX_BASE_EXPORT bool IsRangeValueSupported(const ax::mojom::Role role);
 
 // Returns true if this object supports readonly.
 //
-// Note: This returns false for table cells and headers, it is up to the
-//       caller to make sure that they are included IFF they are within an
-//       ARIA-1.1+ role='grid' or 'treegrid', and not role='table'.
+// Note: This returns false for table headers, it is up to the caller to make
+//       sure that they are included IFF they are within an ARIA-1.1+
+//       role='grid' or 'treegrid', and not role='table'.
 AX_BASE_EXPORT bool IsReadOnlySupported(const ax::mojom::Role role);
 
 // Returns true if the provided role is at the root of a window-like container,

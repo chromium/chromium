@@ -59,7 +59,8 @@ bool isRowlessTable(AXNode* node) {
       return isRowlessTable(child);
     } else if (IsTableRow(child->GetRole())) {
       return false;
-    } else if (child->GetRole() == ax::mojom::Role::kCell) {
+    } else if (child->GetRole() == ax::mojom::Role::kCell ||
+               child->GetRole() == ax::mojom::Role::kGridCell) {
       // A row will always be reached before a cell if the table is not rowless.
       return true;
     }

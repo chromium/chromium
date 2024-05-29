@@ -13,9 +13,9 @@ Document
 ++Edit Name='Readonly-true contenteditable textbox'
 ++DataGrid Grid.ColumnCount=3 Grid.RowCount=1 Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false Table.RowOrColumnMajor='RowMajor'
 ++++DataItem
-++++++DataItem Name='Readonly-false gridcell' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
-++++++DataItem Name='Readonly-true gridcell' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
-++++++DataItem Name='Readonly not specified gridcell' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++++DataItem Name='Readonly-false gridcell' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1 SelectionItem.IsSelected=false
+++++++DataItem Name='Readonly-true gridcell' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1 SelectionItem.IsSelected=false
+++++++DataItem Name='Readonly not specified gridcell' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1 SelectionItem.IsSelected=false
 ++CheckBox Name='Readonly checkbox' Toggle.ToggleState='Off'
 ++ComboBox Name='Readonly combobox' ExpandCollapse.ExpandCollapseState='LeafNode'
 ++List Name='Readonly listbox' Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false

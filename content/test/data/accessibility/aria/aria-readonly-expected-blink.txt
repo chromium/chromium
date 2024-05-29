@@ -22,9 +22,9 @@ rootWebArea
 ++++++grid
 ++++++++rowGroup ignored
 ++++++++++row
-++++++++++++cell name='Readonly-false gridcell'
-++++++++++++cell name='Readonly-true gridcell' restriction=readOnly
-++++++++++++cell name='Readonly not specified gridcell'
+++++++++++++gridCell name='Readonly-false gridcell'
+++++++++++++gridCell name='Readonly-true gridcell' restriction=readOnly
+++++++++++++gridCell name='Readonly not specified gridcell'
 ++++++checkBox name='Readonly checkbox' restriction=readOnly
 ++++++textFieldWithComboBox name='Readonly combobox' restriction=readOnly haspopup=listbox
 ++++++++genericContainer

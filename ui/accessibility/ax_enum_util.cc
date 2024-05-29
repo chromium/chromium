@@ -326,6 +326,8 @@ const char* ToString(ax::mojom::Role role) {
       return "graphicsSymbol";
     case ax::mojom::Role::kGrid:
       return "grid";
+    case ax::mojom::Role::kGridCell:
+      return "gridCell";
     case ax::mojom::Role::kGroup:
       return "group";
     case ax::mojom::Role::kHeader:
@@ -756,6 +758,8 @@ ax::mojom::Role StringToRole(const std::string& role) {
     return ax::mojom::Role::kGraphicsSymbol;
   } else if (role == "kGrid") {
     return ax::mojom::Role::kGrid;
+  } else if (role == "kGridCell") {
+    return ax::mojom::Role::kGridCell;
   } else if (role == "kGroup") {
     return ax::mojom::Role::kGroup;
   } else if (role == "kHeader") {

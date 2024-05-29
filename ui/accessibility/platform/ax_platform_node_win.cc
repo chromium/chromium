@@ -1037,6 +1037,10 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
       return {UIALocalizationStrategy::kDeferToControlType,
               UIA_DataGridControlTypeId, L"grid"};
 
+    case ax::mojom::Role::kGridCell:
+      return {UIALocalizationStrategy::kDeferToControlType,
+              UIA_DataItemControlTypeId, L"gridcell"};
+
     case ax::mojom::Role::kGroup:
       return {UIALocalizationStrategy::kDeferToControlType,
               UIA_GroupControlTypeId, L"group"};
@@ -6570,6 +6574,9 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kGrid:
       return ROLE_SYSTEM_TABLE;
 
+    case ax::mojom::Role::kGridCell:
+      return ROLE_SYSTEM_CELL;
+
     case ax::mojom::Role::kGroup:
       return ROLE_SYSTEM_GROUPING;
 
@@ -7525,6 +7532,7 @@ bool AXPlatformNodeWin::IsUIAControl() const {
       case ax::mojom::Role::kFigure:
       case ax::mojom::Role::kFooter:
       case ax::mojom::Role::kFooterAsNonLandmark:
+      case ax::mojom::Role::kGridCell:
       case ax::mojom::Role::kHeader:
       case ax::mojom::Role::kHeaderAsNonLandmark:
       case ax::mojom::Role::kListBoxOption:

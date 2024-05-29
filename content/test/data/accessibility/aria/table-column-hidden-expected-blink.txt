@@ -15,25 +15,25 @@ rootWebArea
 ++++++++++++++staticText name='Weather'
 ++++++++++++++++inlineTextBox name='Weather'
 ++++++++++row
-++++++++++++cell name='January' ariaCellColumnIndex=2 ariaCellRowIndex=3
+++++++++++++gridCell name='January' ariaCellColumnIndex=2 ariaCellRowIndex=3
 ++++++++++++++staticText name='January'
 ++++++++++++++++inlineTextBox name='January'
-++++++++++++cell name='01' ariaCellColumnIndex=3 ariaCellRowIndex=3
+++++++++++++gridCell name='01' ariaCellColumnIndex=3 ariaCellRowIndex=3
 ++++++++++++++staticText name='01'
 ++++++++++++++++inlineTextBox name='01'
-++++++++++++cell ignored invisible
-++++++++++++cell name='Sunny' ariaCellColumnIndex=5 ariaCellRowIndex=3
+++++++++++++gridCell ignored invisible
+++++++++++++gridCell name='Sunny' ariaCellColumnIndex=5 ariaCellRowIndex=3
 ++++++++++++++staticText name='Sunny'
 ++++++++++++++++inlineTextBox name='Sunny'
 ++++++++++row
-++++++++++++cell name='January' ariaCellColumnIndex=2 ariaCellRowIndex=4
+++++++++++++gridCell name='January' ariaCellColumnIndex=2 ariaCellRowIndex=4
 ++++++++++++++staticText name='January'
 ++++++++++++++++inlineTextBox name='January'
-++++++++++++cell name='02' ariaCellColumnIndex=3 ariaCellRowIndex=4
+++++++++++++gridCell name='02' ariaCellColumnIndex=3 ariaCellRowIndex=4
 ++++++++++++++staticText name='02'
 ++++++++++++++++inlineTextBox name='02'
-++++++++++++cell ignored invisible
-++++++++++++cell name='Rainy' ariaCellColumnIndex=5 ariaCellRowIndex=4
+++++++++++++gridCell ignored invisible
+++++++++++++gridCell name='Rainy' ariaCellColumnIndex=5 ariaCellRowIndex=4
 ++++++++++++++staticText name='Rainy'
 ++++++++++++++++inlineTextBox name='Rainy'
 ++++++paragraph

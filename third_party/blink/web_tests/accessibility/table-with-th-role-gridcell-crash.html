@@ -18,7 +18,7 @@ function axElementById(id) {
 
 test(function(t) {
     var ax = axElementById("cell1");
-    assert_equals(ax.role, "AXRole: AXCell");
+    assert_equals(ax.role, "AXRole: AXGridCell");
 }, "A <th role='gridcell'> in a table with extra layout objects doesn't crash");
 </script>
 <!--

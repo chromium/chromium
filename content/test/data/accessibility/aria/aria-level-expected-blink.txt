@@ -51,11 +51,11 @@ rootWebArea
 ++++++treeGrid
 ++++++++rowGroup ignored
 ++++++++++row hierarchicalLevel=1
-++++++++++++cell name='Cell at level 1'
+++++++++++++gridCell name='Cell at level 1'
 ++++++++++++++staticText name='Cell at level 1'
 ++++++++++++++++inlineTextBox name='Cell at level 1'
 ++++++++++row hierarchicalLevel=2
-++++++++++++cell name='Cell at level 2'
+++++++++++++gridCell name='Cell at level 2'
 ++++++++++++++staticText name='Cell at level 2'
 ++++++++++++++++inlineTextBox name='Cell at level 2'
 ++++++genericContainer

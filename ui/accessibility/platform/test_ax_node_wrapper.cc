@@ -617,7 +617,7 @@ bool TestAXNodeWrapper::AccessibilityPerformAction(
 
       switch (GetRole()) {
         case ax::mojom::Role::kListBoxOption:
-        case ax::mojom::Role::kCell: {
+        case ax::mojom::Role::kGridCell: {
           bool current_value =
               GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
           ReplaceBoolAttribute(ax::mojom::BoolAttribute::kSelected,

@@ -8,12 +8,12 @@ Document
 ++++++DataItem Name='Column 3' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
 ++++++++Text Name='Column 3' IsControlElement=false
 ++++DataItem
-++++++DataItem Name='Cell A2' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
+++++++DataItem Name='Cell A2' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1 SelectionItem.IsSelected=false
 ++++++++Text Name='Cell A2' IsControlElement=false
-++++++DataItem Name='Cell A3' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
+++++++DataItem Name='Cell A3' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1 SelectionItem.IsSelected=false
 ++++++++Text Name='Cell A3' IsControlElement=false
 ++++DataItem
-++++++DataItem Name='Cell B1' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
+++++++DataItem Name='Cell B1' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1 SelectionItem.IsSelected=false
 ++++++++Text Name='Cell B1' IsControlElement=false
-++++++DataItem Name='Cell B2' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
+++++++DataItem Name='Cell B2' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1 SelectionItem.IsSelected=false
 ++++++++Text Name='Cell B2' IsControlElement=false

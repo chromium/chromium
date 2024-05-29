@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
 [FAIL] el-tbody
   assert_equals: <tbody data-testname="el-tbody" data-expectedrole="rowgroup" class="ex">\n    <tr data-testname="el-tr-tbody" data-expectedrole="row" class="ex">\n      <th data-testname="el-th-in-row" data-expectedrole="rowheader" class="ex">1</th>\n      <td data-testname="el-td" data-expectedrole="cell" class="ex">2</td>\n      <td>3</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>5</td>\n      <td>6</td>\n    </tr>\n  </tbody> expected "rowgroup" but got "none"
-[FAIL] el-td
-  assert_equals: <td data-testname="el-td" data-expectedrole="cell" class="ex">2</td> expected "cell" but got "gridcell"
-Harness: the test ran to completion.
+sHarness: the test ran to completion.

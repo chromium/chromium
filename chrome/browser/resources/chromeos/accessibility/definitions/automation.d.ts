@@ -228,6 +228,7 @@ declare namespace chrome {
       GRAPHICS_OBJECT = 'graphicsObject',
       GRAPHICS_SYMBOL = 'graphicsSymbol',
       GRID = 'grid',
+      GRID_CELL = 'gridCell',
       GROUP = 'group',
       HEADER = 'header',
       HEADER_AS_NON_LANDMARK = 'headerAsNonLandmark',

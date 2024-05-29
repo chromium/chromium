@@ -1418,6 +1418,7 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
     case ax::mojom::Role::kComboBoxMenuButton:
     case ax::mojom::Role::kDesktop:
     case ax::mojom::Role::kFigcaption:
+    case ax::mojom::Role::kGridCell:
     case ax::mojom::Role::kGroup:
     case ax::mojom::Role::kIframe:
     case ax::mojom::Role::kLegend:

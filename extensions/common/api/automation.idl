@@ -242,6 +242,7 @@
     // End ARIA Graphics module roles.
     // --------------------------------------------------------------
     grid,
+    gridCell,
     group,
     header,
     headerAsNonLandmark,

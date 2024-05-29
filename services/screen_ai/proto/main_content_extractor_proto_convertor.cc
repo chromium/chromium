@@ -64,16 +64,17 @@ std::string GetMainContentExtractorRoleFromChromeRole(ax::mojom::Role role) {
 
   constexpr auto kRolesWithAllLowercaseName =
       base::MakeFixedFlatSet<ax::mojom::Role>({
-          ax::mojom::Role::kAlertDialog,   ax::mojom::Role::kApplication,
-          ax::mojom::Role::kCheckBox,      ax::mojom::Role::kColumnHeader,
-          ax::mojom::Role::kContentInfo,   ax::mojom::Role::kListBox,
-          ax::mojom::Role::kListItem,      ax::mojom::Role::kMenuBar,
-          ax::mojom::Role::kMenuItem,      ax::mojom::Role::kMenuItemCheckBox,
-          ax::mojom::Role::kMenuItemRadio, ax::mojom::Role::kRadioGroup,
-          ax::mojom::Role::kRowGroup,      ax::mojom::Role::kRowHeader,
-          ax::mojom::Role::kScrollBar,     ax::mojom::Role::kSearchBox,
-          ax::mojom::Role::kSpinButton,    ax::mojom::Role::kTabList,
-          ax::mojom::Role::kTabPanel,      ax::mojom::Role::kTreeItem,
+          ax::mojom::Role::kAlertDialog,      ax::mojom::Role::kApplication,
+          ax::mojom::Role::kCheckBox,         ax::mojom::Role::kColumnHeader,
+          ax::mojom::Role::kContentInfo,      ax::mojom::Role::kGridCell,
+          ax::mojom::Role::kListBox,          ax::mojom::Role::kListItem,
+          ax::mojom::Role::kMenuBar,          ax::mojom::Role::kMenuItem,
+          ax::mojom::Role::kMenuItemCheckBox, ax::mojom::Role::kMenuItemRadio,
+          ax::mojom::Role::kRadioGroup,       ax::mojom::Role::kRowGroup,
+          ax::mojom::Role::kRowHeader,        ax::mojom::Role::kScrollBar,
+          ax::mojom::Role::kSearchBox,        ax::mojom::Role::kSpinButton,
+          ax::mojom::Role::kTabList,          ax::mojom::Role::kTabPanel,
+          ax::mojom::Role::kTreeItem,
       });
   if (base::Contains(kRolesWithAllLowercaseName, role)) {
     return base::ToLowerASCII(role_name);
@@ -130,7 +131,6 @@ std::string GetMainContentExtractorRoleFromChromeRole(ax::mojom::Role role) {
            {ax::mojom::Role::kGraphicsDocument, "graphics-document"},
            {ax::mojom::Role::kGraphicsObject, "graphics-object"},
            {ax::mojom::Role::kGraphicsSymbol, "graphics-symbol"},
-           {ax::mojom::Role::kCell, "gridcell"},
            {ax::mojom::Role::kImage, "img"},
            {ax::mojom::Role::kContentInsertion, "insertion"},
            {ax::mojom::Role::kListBoxOption, "option"},

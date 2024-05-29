@@ -112,8 +112,8 @@ enum Event {
 // Web: this attribute is only used in web content.
 //
 // Native: this attribute is only used in native UI.
-// Next version: 7
-// Next value: 212
+// Next version: 8
+// Next value: 213
 [Extensible, Stable, Uuid="d258eb73-e0cc-490c-b881-80ee11d3fec2"]
 enum Role {
   [Default]kUnknown = 181, // The role has not been set.
@@ -228,6 +228,7 @@ enum Role {
   // End ARIA Graphics module roles.
   // --------------------------------------------------------------
   kGrid = 92,
+  [MinVersion=7] kGridCell = 212,
   kGroup = 93,
   kHeader = 94,
   kHeaderAsNonLandmark = 95,
