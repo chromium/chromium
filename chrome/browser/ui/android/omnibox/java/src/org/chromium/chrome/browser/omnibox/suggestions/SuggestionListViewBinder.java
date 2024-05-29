@@ -42,6 +42,7 @@ class SuggestionListViewBinder {
         } else if (SuggestionListProperties.EMBEDDER.equals(propertyKey)) {
             view.dropdown.setEmbedder(model.get(SuggestionListProperties.EMBEDDER));
         } else if (SuggestionListProperties.OMNIBOX_SESSION_ACTIVE.equals(propertyKey)) {
+            updateContainerVisibility(model, view);
             view.dropdown.onOmniboxSessionStateChange(
                     model.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE));
         } else if (SuggestionListProperties.GESTURE_OBSERVER.equals(propertyKey)) {
@@ -108,7 +109,9 @@ class SuggestionListViewBinder {
     private static void updateContainerVisibility(
             PropertyModel model, SuggestionListViewHolder holder) {
         ModelList listItems = model.get(SuggestionListProperties.SUGGESTION_MODELS);
-        int visibility = listItems.size() == 0 ? View.GONE : View.VISIBLE;
+        boolean shouldBeVisible =
+                model.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE) && listItems.size() > 0;
+        int visibility = shouldBeVisible ? View.VISIBLE : View.GONE;
         holder.container.setVisibility(visibility);
         holder.dropdown.setVisibility(visibility);
     }
