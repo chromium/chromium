@@ -13,6 +13,7 @@ import android.view.View;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -91,6 +92,8 @@ class GoogleBottomBarActionsHandler {
     }
 
     private void onShareButtonClick(ButtonConfig buttonConfig) {
+        // TODO(b/342576463) Remove after GBB experiment
+        RecordUserAction.record("CustomTabsCustomActionButtonClick");
         PendingIntent pendingIntent = buttonConfig.getPendingIntent();
         if (pendingIntent != null) {
             sendPendingIntentWithUrl(pendingIntent);
@@ -118,6 +121,8 @@ class GoogleBottomBarActionsHandler {
     }
 
     private void onSaveButtonClick(ButtonConfig buttonConfig, View view) {
+        // TODO(b/342576463) Remove after GBB experiment
+        RecordUserAction.record("CustomTabsCustomActionButtonClick");
         PendingIntent pendingIntent = buttonConfig.getPendingIntent();
         if (pendingIntent != null) {
             sendPendingIntentWithUrl(pendingIntent);
