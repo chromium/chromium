@@ -35,10 +35,11 @@ source_set("unit_tests") {
     "//components/search_engines",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/policy/model:test_support",
-    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/ui/search_engine_choice:constants",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
   ]

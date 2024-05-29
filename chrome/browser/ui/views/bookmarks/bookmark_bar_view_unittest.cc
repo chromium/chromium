@@ -32,7 +32,9 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h"
 #include "chrome/browser/ui/views/native_widget_factory.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -149,6 +151,7 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
     return bookmark_bar_view;
   }
 
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfile> profile_;
   TestBrowserWindow browser_window_;

@@ -78,7 +78,7 @@ void TemplateURLServiceUnitTestBase::SetUp() {
 
   search_engine_choice_service_ =
       std::make_unique<search_engines::SearchEngineChoiceService>(
-          pref_service_, &local_state_, country_codes::kCountryIDUnknown);
+          pref_service_, local_state_, country_codes::kCountryIDUnknown);
 
   template_url_service_ = CreateService();
 }

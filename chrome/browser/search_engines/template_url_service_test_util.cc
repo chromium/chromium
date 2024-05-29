@@ -148,7 +148,7 @@ TemplateURLServiceTestUtil::TemplateURLServiceTestUtil(
 
   search_engine_choice_service_ =
       std::make_unique<search_engines::SearchEngineChoiceService>(
-          *profile_->GetPrefs(), g_browser_process->local_state());
+          *profile_->GetPrefs(), *g_browser_process->local_state());
 
   ResetModel(false);
 }

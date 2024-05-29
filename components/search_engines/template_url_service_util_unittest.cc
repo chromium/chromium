@@ -314,7 +314,7 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
         metrics::prefs::kMetricsReportingEnabled, true);
     search_engine_choice_service_ =
         std::make_unique<search_engines::SearchEngineChoiceService>(
-            prefs_, &local_state_);
+            prefs_, local_state_);
   }
 
   // Simulates how the search providers are loaded during Chrome init by

@@ -35,6 +35,10 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/version_info/version_info.h"
 
+#if !BUILDFLAG(IS_FUCHSIA)
+#include "components/variations/service/variations_service.h"  // nogncheck
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -160,16 +164,33 @@ using NativeCallbackType = base::OnceCallback<void(int)>;
 }  // namespace
 
 SearchEngineChoiceService::SearchEngineChoiceService(PrefService& profile_prefs,
-                                                     PrefService* local_state,
+                                                     PrefService& local_state,
                                                      int variations_country_id)
     : profile_prefs_(profile_prefs),
       variations_country_id_(variations_country_id) {
-  if (local_state) {
-    ProcessPendingChoiceScreenDisplayState(*local_state);
-  } else {
-    CHECK_IS_TEST();
-  }
+  ProcessPendingChoiceScreenDisplayState(local_state);
   PreprocessPrefsForReprompt();
+}
+
+SearchEngineChoiceService::SearchEngineChoiceService(
+    PrefService& profile_prefs,
+    PrefService& local_state,
+    variations::VariationsService* variations_service)
+    : SearchEngineChoiceService(profile_prefs,
+                                local_state,
+#if BUILDFLAG(IS_FUCHSIA)
+                                // We can't add a dependency from Fuchsia to
+                                // `components/variations/service`.
+                                country_codes::kCountryIDUnknown)
+#else
+                                variations_service
+                                    ? country_codes::CountryStringToCountryID(
+                                          base::ToUpperASCII(
+                                              variations_service
+                                                  ->GetLatestCountry()))
+                                    : country_codes::kCountryIDUnknown)
+#endif
+{
 }
 
 SearchEngineChoiceService::~SearchEngineChoiceService() = default;

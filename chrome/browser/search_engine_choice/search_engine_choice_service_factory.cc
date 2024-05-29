@@ -8,7 +8,6 @@
 #include "base/check_is_test.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/country_codes/country_codes.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "chrome/browser/browser_process.h"
 #include "components/variations/service/variations_service.h"
@@ -17,17 +16,10 @@ namespace search_engines {
 namespace {
 std::unique_ptr<KeyedService> BuildSearchEngineChoiceService(
     content::BrowserContext* context) {
-  int variations_country_id = country_codes::kCountryIDUnknown;
-  if (g_browser_process->variations_service()) {
-    variations_country_id =
-        country_codes::CountryStringToCountryID(base::ToUpperASCII(
-            g_browser_process->variations_service()->GetLatestCountry()));
-  }
-
   auto& profile = CHECK_DEREF(Profile::FromBrowserContext(context));
   return std::make_unique<SearchEngineChoiceService>(
-      *profile.GetPrefs(), g_browser_process->local_state(),
-      variations_country_id);
+      *profile.GetPrefs(), CHECK_DEREF(g_browser_process->local_state()),
+      g_browser_process->variations_service());
 }
 }  // namespace
 
@@ -67,6 +59,10 @@ std::unique_ptr<KeyedService>
 SearchEngineChoiceServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return BuildSearchEngineChoiceService(context);
+}
+
+bool SearchEngineChoiceServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
 }
 
 }  // namespace search_engines

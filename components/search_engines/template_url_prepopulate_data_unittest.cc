@@ -170,7 +170,7 @@ class TemplateURLPrepopulateDataTest : public testing::Test {
         metrics::prefs::kMetricsReportingEnabled, true);
     search_engine_choice_service_ =
         std::make_unique<search_engines::SearchEngineChoiceService>(
-            prefs_, &local_state_);
+            prefs_, local_state_);
   }
 
   search_engines::SearchEngineChoiceService* search_engine_choice_service() {

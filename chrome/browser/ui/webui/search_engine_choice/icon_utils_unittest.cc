@@ -27,7 +27,7 @@ class IconUtilsTest : public ::testing::Test {
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
     search_engine_choice_service_ =
         std::make_unique<search_engines::SearchEngineChoiceService>(
-            pref_service_, g_browser_process->local_state());
+            pref_service_, *g_browser_process->local_state());
   }
 
   ~IconUtilsTest() override = default;
