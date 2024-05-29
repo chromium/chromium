@@ -194,55 +194,6 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
   return base::ok();
 }
 
-base::expected<void, compose::ComposeNudgeDenyReason>
-ComposeEnabling::ShouldTriggerPopup(
-    std::string_view autocomplete_attribute,
-    bool allows_writing_suggestions,
-    Profile* profile,
-    PrefService* prefs,
-    translate::TranslateManager* translate_manager,
-    bool ongoing_session,
-    const url::Origin& top_level_frame_origin,
-    const url::Origin& element_frame_origin,
-    GURL url,
-    autofill::AutofillSuggestionTriggerSource trigger_source,
-    bool is_msbb_enabled) {
-  if (ongoing_session) {
-    return ShouldTriggerSavedStatePopup(trigger_source);
-  }
-
-  base::expected<void, compose::ComposeShowStatus> show_status =
-      ShouldTriggerNoStatePopup(autocomplete_attribute,
-                                allows_writing_suggestions, profile, prefs,
-                                translate_manager, top_level_frame_origin,
-                                element_frame_origin, url, is_msbb_enabled);
-  if (show_status.has_value()) {
-    compose::LogComposeProactiveNudgeShowStatus(
-        compose::ComposeShowStatus::kShouldShow);
-    return base::ok();
-  }
-
-  compose::LogComposeProactiveNudgeShowStatus(show_status.error());
-  switch (show_status.error()) {
-    case compose::ComposeShowStatus::
-        kProactiveNudgeDisabledGloballyByUserPreference:
-    case compose::ComposeShowStatus::
-        kProactiveNudgeDisabledForSiteByUserPreference:
-    case compose::ComposeShowStatus::kProactiveNudgeFeatureDisabled:
-    case compose::ComposeShowStatus::kRandomlyBlocked:
-    case compose::ComposeShowStatus::kProactiveNudgeDisabledByMSBB:
-      // The disabled deny reason means the nudge would show if preference or
-      // configuration changed.
-      return base::unexpected(
-          compose::ComposeNudgeDenyReason::kProactiveNudgeDisabled);
-    default:
-      // The blocked deny reason means the nudge would never display even if
-      // preferences or configuration changed.
-      return base::unexpected(
-          compose::ComposeNudgeDenyReason::kProactiveNudgeBlocked);
-  }
-}
-
 base::expected<void, compose::ComposeShowStatus>
 ComposeEnabling::ShouldTriggerNoStatePopup(
     std::string_view autocomplete_attribute,
@@ -324,26 +275,23 @@ ComposeEnabling::ShouldTriggerNoStatePopup(
   return base::ok();
 }
 
-base::expected<void, compose::ComposeNudgeDenyReason>
-ComposeEnabling::ShouldTriggerSavedStatePopup(
+bool ComposeEnabling::ShouldTriggerSavedStatePopup(
     autofill::AutofillSuggestionTriggerSource trigger_source) {
   // No need to preform field and page level checks since there is already saved
   // state. Only check config and features.
 
   if (!compose::GetComposeConfig().saved_state_nudge_enabled) {
-    return base::unexpected(
-        compose::ComposeNudgeDenyReason::kSavedStateNudgeDisabled);
+    return false;
   }
 
   if (trigger_source ==
           autofill::AutofillSuggestionTriggerSource::kComposeDialogLostFocus &&
       !base::FeatureList::IsEnabled(
           compose::features::kEnableComposeSavedStateNotification)) {
-    return base::unexpected(
-        compose::ComposeNudgeDenyReason::kSavedStateNotificationDisabled);
+    return false;
   }
 
-  return base::ok();
+  return true;
 }
 
 bool ComposeEnabling::ShouldTriggerContextMenu(

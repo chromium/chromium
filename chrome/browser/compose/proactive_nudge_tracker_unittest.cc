@@ -85,6 +85,14 @@ class MockProactiveNudgeTrackerDelegate
   float SegmentationForceShowResult() override {
     return kSegmentationForceShowResult;
   }
+  compose::PageUkmTracker* GetPageUkmTracker() override {
+    return page_ukm_tracker_.get();
+  }
+
+ private:
+  const ukm::SourceId valid_test_source_id_{1};
+  std::unique_ptr<compose::PageUkmTracker> page_ukm_tracker_ =
+      std::make_unique<compose::PageUkmTracker>(valid_test_source_id_);
 };
 
 class ProactiveNudgeTrackerTestBase : public testing::Test {

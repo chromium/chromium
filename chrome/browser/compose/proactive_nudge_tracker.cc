@@ -174,6 +174,7 @@ ProactiveNudgeTracker::ProactiveNudgeTracker(
 void ProactiveNudgeTracker::StartObserving(content::WebContents* web_contents) {
   if (!SegmentationStateIsValid()) {
     // Unable to show proactive nudge if configuration is not consistent.
+    // Todo(b/343281445): Use fallback strategy if state is invalid.
     return;
   }
   autofill_managers_observation_.Observe(
@@ -236,6 +237,12 @@ bool ProactiveNudgeTracker::ProactiveNudgeRequestedForFormField(
     // If the timer is 0-duration and no segmentation result is required, then
     // just transition to Shown state directly before returning true.
     state_->show_state = ShowState::kShown;
+    compose::LogComposeProactiveNudgeCtr(
+        compose::ComposeProactiveNudgeCtrEvent::kNudgeDisplayed);
+    compose::LogComposeProactiveNudgeShowStatus(
+        compose::ComposeShowStatus::kShouldShow);
+    delegate_->GetPageUkmTracker()->ProactiveNudgeShown();
+    delegate_->GetPageUkmTracker()->ComposeProactiveNudgeShouldShow();
     return true;
   }
   return false;
@@ -351,7 +358,17 @@ void ProactiveNudgeTracker::GotClassificationResult(
       break;
   }
 
-  MaybeShowProactiveNudge();
+  if (state_->segmentation_result->ordered_labels.empty() ||
+      state_->segmentation_result->ordered_labels[0] !=
+          segmentation_platform::kComposePrmotionLabelShow) {
+    // The nudge was blocked by segmentation platform.
+    delegate_->GetPageUkmTracker()->ComposeProactiveNudgeShouldShow();
+    compose::LogComposeProactiveNudgeShowStatus(
+        compose::ComposeShowStatus::
+            kProactiveNudgeBlockedBySegmentationPlatform);
+  } else {
+    MaybeShowProactiveNudge();
+  }
 }
 
 void ProactiveNudgeTracker::CollectTrainingData(

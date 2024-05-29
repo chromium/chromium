@@ -57,7 +57,7 @@ class MockComposeClient : public compose::ComposeClient {
                const autofill::FormFieldData& trigger_field,
                autofill::AutofillSuggestionTriggerSource trigger_source),
               (override));
-  MOCK_METHOD(compose::PageUkmTracker*, getPageUkmTracker, (), (override));
+  MOCK_METHOD(compose::PageUkmTracker*, GetPageUkmTracker, (), (override));
   MOCK_METHOD(void, DisableProactiveNudge, (), (override));
   MOCK_METHOD(void, OpenProactiveNudgeSettings, (), (override));
   MOCK_METHOD(void,
@@ -98,7 +98,7 @@ class ComposeManagerImplTest : public testing::Test {
     compose::ResetConfigForTesting();
 
     // Allow the manager to obtain the PageUkmTracker instance.
-    ON_CALL(mock_compose_client(), getPageUkmTracker)
+    ON_CALL(mock_compose_client(), GetPageUkmTracker)
         .WillByDefault(testing::Return(page_ukm_tracker_.get()));
     // Record the FormFieldData sent to the client.
     ON_CALL(mock_compose_client(), ShowComposeDialog(_, _, _, _))

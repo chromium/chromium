@@ -71,7 +71,7 @@ class ChromeComposeClient
       const autofill::FormData& form_data,
       const autofill::FormFieldData& trigger_field,
       autofill::AutofillSuggestionTriggerSource trigger_source) override;
-  compose::PageUkmTracker* getPageUkmTracker() override;
+  compose::PageUkmTracker* GetPageUkmTracker() override;
   void DisableProactiveNudge() override;
   void OpenProactiveNudgeSettings() override;
   void AddSiteToNeverPromptList(const url::Origin& origin) override;

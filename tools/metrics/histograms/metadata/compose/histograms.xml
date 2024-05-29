@@ -159,6 +159,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
     Histogram that records the show status of the Compose proactive nudge.
+    Segmentation Platform block reasons are recorded with the lowest priority.
     Logged each time the nudge is displayed or blocked from displaying (with a
     reason why).
   </summary>

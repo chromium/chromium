@@ -67,18 +67,20 @@ class ComposeEnabling {
   static ScopedOverride ScopedEnableComposeForTesting();
   static ScopedOverride ScopedSkipUserCheckForTesting();
 
-  base::expected<void, compose::ComposeNudgeDenyReason> ShouldTriggerPopup(
+  base::expected<void, compose::ComposeShowStatus> ShouldTriggerNoStatePopup(
       std::string_view autocomplete_attribute,
-      bool allows_writing_suggestions,
+      bool writingsuggestions_attribute,
       Profile* profile,
       PrefService* prefs,
       translate::TranslateManager* translate_manager,
-      bool ongoing_session,
       const url::Origin& top_level_frame_origin,
       const url::Origin& element_frame_origin,
       GURL url,
-      autofill::AutofillSuggestionTriggerSource trigger_source,
       bool is_msbb_enabled);
+
+  bool ShouldTriggerSavedStatePopup(
+      autofill::AutofillSuggestionTriggerSource trigger_source);
+
   bool ShouldTriggerContextMenu(Profile* profile,
                                 translate::TranslateManager* translate_manager,
                                 content::RenderFrameHost* rfh,
@@ -94,20 +96,6 @@ class ComposeEnabling {
       const url::Origin& top_level_frame_origin,
       const url::Origin& element_frame_origin,
       bool is_newsted_within_fenced_frame);
-
-  base::expected<void, compose::ComposeShowStatus> ShouldTriggerNoStatePopup(
-      std::string_view autocomplete_attribute,
-      bool writingsuggestions_attribute,
-      Profile* profile,
-      PrefService* prefs,
-      translate::TranslateManager* translate_manager,
-      const url::Origin& top_level_frame_origin,
-      const url::Origin& element_frame_origin,
-      GURL url,
-      bool is_msbb_enabled);
-  base::expected<void, compose::ComposeNudgeDenyReason>
-  ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource trigger_source);
 
   static base::expected<void, compose::ComposeShowStatus> CheckEnabling(
       OptimizationGuideKeyedService* opt_guide,

@@ -47,7 +47,7 @@ class ComposeClient {
       autofill::AutofillSuggestionTriggerSource trigger_source) = 0;
 
   // Getter for the PageUkmTracker instance for the currently loaded page.
-  virtual PageUkmTracker* getPageUkmTracker() = 0;
+  virtual PageUkmTracker* GetPageUkmTracker() = 0;
 
   // Disable the global preference controlling the proactive nudge.
   virtual void DisableProactiveNudge() = 0;
