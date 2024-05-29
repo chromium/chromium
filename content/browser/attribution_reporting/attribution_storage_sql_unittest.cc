@@ -103,7 +103,7 @@ struct AttributionSourceRecord {
   int attribution_logic;
   int64_t priority;
   std::string source_site;
-  int num_conversions;
+  int num_attributions;
   int num_aggregatable_attribution_reports;
   int event_level_active;
   int aggregatable_active;
@@ -337,7 +337,7 @@ class AttributionStorageSqlTest : public testing::Test {
     statement.BindTime(4, record.source_time);
     statement.BindTime(5, record.expiry_time);
     statement.BindTime(6, record.aggregatable_report_window_time);
-    statement.BindInt(7, record.num_conversions);
+    statement.BindInt(7, record.num_attributions);
     statement.BindInt(8, record.event_level_active);
     statement.BindInt(9, record.aggregatable_active);
     statement.BindInt(10, record.source_type);
@@ -2592,7 +2592,7 @@ TEST_F(AttributionStorageSqlTest,
       .source_id = 2,
       .source_type = 3,
       .attribution_logic = 5,
-      .num_conversions = -1,
+      .num_attributions = -1,
       .num_aggregatable_attribution_reports = -1,
       .event_level_active = 2,
       .aggregation_keys = "foo",

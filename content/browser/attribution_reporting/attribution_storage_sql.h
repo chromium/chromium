@@ -231,7 +231,7 @@ class CONTENT_EXPORT AttributionStorageSql {
   };
   [[nodiscard]] ReplaceReportResult MaybeReplaceLowerPriorityEventLevelReport(
       const AttributionReport& report,
-      int num_conversions,
+      int num_attributions,
       int64_t conversion_priority,
       std::optional<AttributionReport>& replaced_report)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
@@ -300,7 +300,7 @@ class CONTENT_EXPORT AttributionStorageSql {
   AttributionTrigger::EventLevelResult MaybeStoreEventLevelReport(
       AttributionReport& report,
       std::optional<uint64_t> dedup_key,
-      int num_conversions,
+      int num_attributions,
       std::optional<AttributionReport>& replaced_report,
       std::optional<AttributionReport>& dropped_report,
       std::optional<int>& max_event_level_reports_per_destination)

@@ -234,7 +234,7 @@ int64_t StorageFileSizeKB(const base::FilePath& path_to_database) {
 
 struct AttributionStorageSql::StoredSourceData {
   StoredSource source;
-  int num_conversions;
+  int num_attributions;
   int num_aggregatable_attribution_reports;
 };
 
@@ -280,7 +280,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
       DeserializeAttributionLogic(statement.ColumnInt(col++));
   int64_t priority = statement.ColumnInt64(col++);
   std::optional<uint64_t> debug_key = ColumnUint64OrNull(statement, col++);
-  int num_conversions = statement.ColumnInt(col++);
+  int num_attributions = statement.ColumnInt(col++);
   int remaining_aggregatable_attribution_budget = statement.ColumnInt(col++);
   int num_aggregatable_attribution_reports = statement.ColumnInt(col++);
   std::optional<attribution_reporting::AggregationKeys> aggregation_keys =
@@ -306,7 +306,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
         ReportCorruptionStatus::kSourceInvalidAttributionLogic);
   }
 
-  if (num_conversions < 0) {
+  if (num_attributions < 0) {
     corruption_causes.Put(ReportCorruptionStatus::kSourceInvalidNumConversions);
   }
 
@@ -438,7 +438,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
   }
 
   return StoredSourceData{.source = std::move(*stored_source),
-                          .num_conversions = num_conversions,
+                          .num_attributions = num_attributions,
                           .num_aggregatable_attribution_reports =
                               num_aggregatable_attribution_reports};
 }
@@ -664,15 +664,15 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
   const base::Time aggregatable_report_window_time =
       source_time + reg.aggregatable_report_window;
 
-  int num_conversions = 0;
+  int num_attributions = 0;
   auto attribution_logic = StoredSource::AttributionLogic::kTruthfully;
   bool event_level_active = true;
   if (const auto& response = randomized_response_data.response()) {
-    num_conversions = response->size();
-    attribution_logic = num_conversions == 0
+    num_attributions = response->size();
+    attribution_logic = num_attributions == 0
                             ? StoredSource::AttributionLogic::kNever
                             : StoredSource::AttributionLogic::kFalsely;
-    event_level_active = num_conversions == 0;
+    event_level_active = num_attributions == 0;
   }
   // Aggregatable reports are not subject to `attribution_logic`.
   const bool aggregatable_active = true;
@@ -700,7 +700,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
   statement.BindInt(7, SerializeAttributionLogic(attribution_logic));
   statement.BindInt64(8, reg.priority);
   statement.BindString(9, common_info.source_site().Serialize());
-  statement.BindInt(10, num_conversions);
+  statement.BindInt(10, num_attributions);
   statement.BindBool(11, event_level_active);
   statement.BindBool(12, aggregatable_active);
 
@@ -838,10 +838,10 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
 AttributionStorageSql::ReplaceReportResult
 AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
     const AttributionReport& report,
-    int num_conversions,
+    int num_attributions,
     int64_t conversion_priority,
     std::optional<AttributionReport>& replaced_report) {
-  DCHECK_GE(num_conversions, 0);
+  DCHECK_GE(num_attributions, 0);
 
   const auto* data =
       absl::get_if<AttributionReport::EventLevelData>(&report.data());
@@ -855,7 +855,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   DCHECK(source.trigger_specs().SingleSharedSpec());
 
   // If there's already capacity for the new report, there's nothing to do.
-  if (num_conversions < source.max_event_level_reports()) {
+  if (num_attributions < source.max_event_level_reports()) {
     return ReplaceReportResult::kAddNewReport;
   }
 
@@ -1204,7 +1204,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     DCHECK(new_event_level_report.has_value());
     store_event_level_status = MaybeStoreEventLevelReport(
         *new_event_level_report, dedup_key,
-        source_to_attribute->num_conversions, replaced_event_level_report,
+        source_to_attribute->num_attributions, replaced_event_level_report,
         dropped_event_level_report,
         limits.max_event_level_reports_per_destination);
   }
@@ -1260,7 +1260,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   // Based on the deletion logic here and the fact that we delete sources
   // with |num_attributions > 0| or |num_aggregatable_attribution_reports > 0|
   // when there is a new matching source in |StoreSource()|, we should be
-  // guaranteed that these sources all have |num_conversions == 0| and
+  // guaranteed that these sources all have |num_attributions == 0| and
   // |num_aggregatable_attribution_reports == 0|, and that they never
   // contributed to a rate limit. Therefore, we don't need to call
   // |RateLimitTable::ClearDataForSourceIds()| here.
@@ -1439,7 +1439,7 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
 EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
     AttributionReport& report,
     std::optional<uint64_t> dedup_key,
-    int num_conversions,
+    int num_attributions,
     std::optional<AttributionReport>& replaced_report,
     std::optional<AttributionReport>& dropped_report,
     std::optional<int>& max_event_level_reports_per_destination) {
@@ -1460,8 +1460,9 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
   }
 
   const auto maybe_replace_lower_priority_report_result =
-      MaybeReplaceLowerPriorityEventLevelReport(
-          report, num_conversions, event_level_data->priority, replaced_report);
+      MaybeReplaceLowerPriorityEventLevelReport(report, num_attributions,
+                                                event_level_data->priority,
+                                                replaced_report);
 
   switch (maybe_replace_lower_priority_report_result) {
     case ReplaceReportResult::kError:
