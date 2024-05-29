@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/task_features.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
@@ -95,7 +96,9 @@ void MessagePumpWin::Quit() {
 MessagePumpForUI::MessagePumpForUI() {
   bool succeeded = message_window_.Create(
       BindRepeating(&MessagePumpForUI::MessageCallback, Unretained(this)));
-  CHECK(succeeded);
+  CHECK(succeeded) << "Failed to create message-only Window with error"
+                   << StringPrintf("0x%08x",
+                                   static_cast<unsigned int>(::GetLastError()));
 }
 
 MessagePumpForUI::~MessagePumpForUI() = default;
