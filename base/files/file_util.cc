@@ -53,8 +53,9 @@ namespace {
 void RunAndReply(OnceCallback<bool()> action_callback,
                  OnceCallback<void(bool)> reply_callback) {
   bool result = std::move(action_callback).Run();
-  if (!reply_callback.is_null())
+  if (!reply_callback.is_null()) {
     std::move(reply_callback).Run(result);
+  }
 }
 
 #endif  // !BUILDFLAG(IS_WIN)
@@ -85,8 +86,9 @@ bool ReadStreamToSpanWithMaxSize(
     LARGE_INTEGER size;
     size.HighPart = static_cast<LONG>(file_info.nFileSizeHigh);
     size.LowPart = file_info.nFileSizeLow;
-    if (size.QuadPart > 0)
+    if (size.QuadPart > 0) {
       chunk_size = static_cast<size_t>(size.QuadPart);
+    }
   }
 #else   // BUILDFLAG(IS_WIN)
   // In cases where the reported file size is 0, use a smaller chunk size to
@@ -96,8 +98,9 @@ bool ReadStreamToSpanWithMaxSize(
   constexpr size_t kSmallChunkSize = 4096;
   chunk_size = kSmallChunkSize - 1;
   stat_wrapper_t file_info = {};
-  if (!File::Fstat(fileno(stream), &file_info) && file_info.st_size > 0)
+  if (!File::Fstat(fileno(stream), &file_info) && file_info.st_size > 0) {
     chunk_size = static_cast<size_t>(file_info.st_size);
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   // We need to attempt to read at EOF for feof flag to be set so here we use
@@ -119,14 +122,16 @@ bool ReadStreamToSpanWithMaxSize(
     }
     // In case EOF was not reached, iterate again but revert to the default
     // chunk size.
-    if (bytes_read_so_far == 0)
+    if (bytes_read_so_far == 0) {
       chunk_size = kDefaultChunkSize;
+    }
 
     bytes_read_so_far += bytes_read_this_pass;
     // Last fread syscall (after EOF) can be avoided via feof, which is just a
     // flag check.
-    if (feof(stream))
+    if (feof(stream)) {
       break;
+    }
     bytes_span = resize_span(bytes_read_so_far + chunk_size);
     DCHECK_EQ(bytes_span.size(), bytes_read_so_far + chunk_size);
   }
@@ -167,14 +172,16 @@ OnceClosure GetDeletePathRecursivelyCallback(
 int64_t ComputeDirectorySize(const FilePath& root_path) {
   int64_t running_size = 0;
   FileEnumerator file_iter(root_path, true, FileEnumerator::FILES);
-  while (!file_iter.Next().empty())
+  while (!file_iter.Next().empty()) {
     running_size += file_iter.GetInfo().GetSize();
+  }
   return running_size;
 }
 
 bool Move(const FilePath& from_path, const FilePath& to_path) {
-  if (from_path.ReferencesParent() || to_path.ReferencesParent())
+  if (from_path.ReferencesParent() || to_path.ReferencesParent()) {
     return false;
+  }
   return internal::MoveUnsafe(from_path, to_path);
 }
 
@@ -236,8 +243,9 @@ bool ContentsEqual(const FilePath& filename1, const FilePath& filename2) {
 
   // Even if both files aren't openable (and thus, in some sense, "equal"),
   // any unusable file yields a result of "false".
-  if (!file1.is_open() || !file2.is_open())
+  if (!file1.is_open() || !file2.is_open()) {
     return false;
+  }
 
   const int BUFFER_SIZE = 2056;
   char buffer1[BUFFER_SIZE], buffer2[BUFFER_SIZE];
@@ -245,8 +253,7 @@ bool ContentsEqual(const FilePath& filename1, const FilePath& filename2) {
     file1.read(buffer1, BUFFER_SIZE);
     file2.read(buffer2, BUFFER_SIZE);
 
-    if ((file1.eof() != file2.eof()) ||
-        (file1.gcount() != file2.gcount()) ||
+    if ((file1.eof() != file2.eof()) || (file1.gcount() != file2.gcount()) ||
         (memcmp(buffer1, buffer2, static_cast<size_t>(file1.gcount())))) {
       file1.close();
       file2.close();
@@ -270,8 +277,9 @@ bool TextContentsEqual(const FilePath& filename1, const FilePath& filename2) {
 
   // Even if both files aren't openable (and thus, in some sense, "equal"),
   // any unusable file yields a result of "false".
-  if (!file1.is_open() || !file2.is_open())
+  if (!file1.is_open() || !file2.is_open()) {
     return false;
+  }
 
   do {
     std::string line1, line2;
@@ -279,26 +287,28 @@ bool TextContentsEqual(const FilePath& filename1, const FilePath& filename2) {
     getline(file2, line2);
 
     // Check for mismatched EOF states, or any error state.
-    if ((file1.eof() != file2.eof()) ||
-        file1.bad() || file2.bad()) {
+    if ((file1.eof() != file2.eof()) || file1.bad() || file2.bad()) {
       return false;
     }
 
     // Trim all '\r' and '\n' characters from the end of the line.
     std::string::size_type end1 = line1.find_last_not_of("\r\n");
-    if (end1 == std::string::npos)
+    if (end1 == std::string::npos) {
       line1.clear();
-    else if (end1 + 1 < line1.length())
+    } else if (end1 + 1 < line1.length()) {
       line1.erase(end1 + 1);
+    }
 
     std::string::size_type end2 = line2.find_last_not_of("\r\n");
-    if (end2 == std::string::npos)
+    if (end2 == std::string::npos) {
       line2.clear();
-    else if (end2 + 1 < line2.length())
+    } else if (end2 + 1 < line2.length()) {
       line2.erase(end2 + 1);
+    }
 
-    if (line1 != line2)
+    if (line1 != line2) {
       return false;
+    }
   } while (!file1.eof() || !file2.eof());
 
   return true;
@@ -359,21 +369,25 @@ bool ReadFileToString(const FilePath& path, std::string* contents) {
 bool ReadFileToStringWithMaxSize(const FilePath& path,
                                  std::string* contents,
                                  size_t max_size) {
-  if (contents)
+  if (contents) {
     contents->clear();
-  if (path.ReferencesParent())
+  }
+  if (path.ReferencesParent()) {
     return false;
+  }
   ScopedFILE file_stream(OpenFile(path, "rb"));
-  if (!file_stream)
+  if (!file_stream) {
     return false;
+  }
   return ReadStreamToStringWithMaxSize(file_stream.get(), max_size, contents);
 }
 
 bool IsDirectoryEmpty(const FilePath& dir_path) {
   FileEnumerator files(dir_path, false,
-      FileEnumerator::FILES | FileEnumerator::DIRECTORIES);
-  if (files.Next().empty())
+                       FileEnumerator::FILES | FileEnumerator::DIRECTORIES);
+  if (files.Next().empty()) {
     return true;
+  }
   return false;
 }
 
@@ -384,8 +398,9 @@ bool CreateTemporaryFile(FilePath* path) {
 
 ScopedFILE CreateAndOpenTemporaryStream(FilePath* path) {
   FilePath directory;
-  if (!GetTempDir(&directory))
+  if (!GetTempDir(&directory)) {
     return nullptr;
+  }
 
   return CreateAndOpenTemporaryStreamInDir(directory, path);
 }
@@ -396,8 +411,9 @@ bool CreateDirectory(const FilePath& full_path) {
 
 bool GetFileSize(const FilePath& file_path, int64_t* file_size) {
   File::Info info;
-  if (!GetFileInfo(file_path, &info))
+  if (!GetFileInfo(file_path, &info)) {
     return false;
+  }
   *file_size = info.size;
   return true;
 }
@@ -409,8 +425,9 @@ bool TouchFile(const FilePath& path,
 
 #if BUILDFLAG(IS_WIN)
   // On Windows, FILE_FLAG_BACKUP_SEMANTICS is needed to open a directory.
-  if (DirectoryExists(path))
+  if (DirectoryExists(path)) {
     flags |= File::FLAG_WIN_BACKUP_SEMANTICS;
+  }
 #elif BUILDFLAG(IS_FUCHSIA)
   // On Fuchsia, we need O_RDONLY for directories, or O_WRONLY for files.
   // TODO(crbug.com/40620916): Find a cleaner workaround for this.
@@ -418,32 +435,38 @@ bool TouchFile(const FilePath& path,
 #endif
 
   File file(path, flags);
-  if (!file.IsValid())
+  if (!file.IsValid()) {
     return false;
+  }
 
   return file.SetTimes(last_accessed, last_modified);
 }
 
 bool CloseFile(FILE* file) {
-  if (file == nullptr)
+  if (file == nullptr) {
     return true;
+  }
   return fclose(file) == 0;
 }
 
 bool TruncateFile(FILE* file) {
-  if (file == nullptr)
+  if (file == nullptr) {
     return false;
+  }
   long current_offset = ftell(file);
-  if (current_offset == -1)
+  if (current_offset == -1) {
     return false;
+  }
 #if BUILDFLAG(IS_WIN)
   int fd = _fileno(file);
-  if (_chsize(fd, current_offset) != 0)
+  if (_chsize(fd, current_offset) != 0) {
     return false;
+  }
 #else
   int fd = fileno(file);
-  if (ftruncate(fd, current_offset) != 0)
+  if (ftruncate(fd, current_offset) != 0) {
     return false;
+  }
 #endif
   return true;
 }

@@ -32,6 +32,7 @@
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <sys/stat.h>
 #include <unistd.h>
+
 #include "base/posix/eintr_wrapper.h"
 #endif
 
@@ -340,6 +341,7 @@ BASE_EXPORT std::optional<FilePath> ReadSymbolicLinkAbsolute(
 
 // Bits and masks of the file permission.
 enum FilePermissionBits {
+  // clang-format off
   FILE_PERMISSION_MASK              = S_IRWXU | S_IRWXG | S_IRWXO,
   FILE_PERMISSION_USER_MASK         = S_IRWXU,
   FILE_PERMISSION_GROUP_MASK        = S_IRWXG,
@@ -354,6 +356,7 @@ enum FilePermissionBits {
   FILE_PERMISSION_READ_BY_OTHERS    = S_IROTH,
   FILE_PERMISSION_WRITE_BY_OTHERS   = S_IWOTH,
   FILE_PERMISSION_EXECUTE_BY_OTHERS = S_IXOTH,
+  // clang-format on
 };
 
 // Reads the permission of the given |path|, storing the file permission
@@ -575,8 +578,7 @@ BASE_EXPORT int ReadFile(const FilePath& filename, char* data, int max_size);
 // If file doesn't exist, it gets created with read/write permissions for all.
 // Note that the other variants of WriteFile() below may be easier to use.
 // TODO(crbug.com/40284755): Migrate callers to the span variant.
-BASE_EXPORT int WriteFile(const FilePath& filename, const char* data,
-                          int size);
+BASE_EXPORT int WriteFile(const FilePath& filename, const char* data, int size);
 
 // Writes |data| into the file, overwriting any data that was previously there.
 // Returns true if and only if all of |data| was written. If the file does not
@@ -745,8 +747,7 @@ namespace internal {
 
 // Same as Move but allows paths with traversal components.
 // Use only with extreme care.
-BASE_EXPORT bool MoveUnsafe(const FilePath& from_path,
-                            const FilePath& to_path);
+BASE_EXPORT bool MoveUnsafe(const FilePath& from_path, const FilePath& to_path);
 
 #if BUILDFLAG(IS_WIN)
 // Copy from_path to to_path recursively and then delete from_path recursively.

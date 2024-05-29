@@ -110,15 +110,17 @@ const size_t kLargeFileSize = (1 << 16) + 3;
 // error.
 FilePath MakeShortFilePath(const FilePath& input) {
   DWORD path_short_len = ::GetShortPathName(input.value().c_str(), nullptr, 0);
-  if (path_short_len == 0UL)
+  if (path_short_len == 0UL) {
     return FilePath();
+  }
 
   std::wstring path_short_str;
   path_short_len = ::GetShortPathName(
       input.value().c_str(), WriteInto(&path_short_str, path_short_len),
       path_short_len);
-  if (path_short_len == 0UL)
+  if (path_short_len == 0UL) {
     return FilePath();
+  }
 
   return FilePath(path_short_str);
 }
@@ -267,17 +269,14 @@ class FindResultCollector {
     return files_.find(file.value()) != files_.end();
   }
 
-  int size() {
-    return static_cast<int>(files_.size());
-  }
+  int size() { return static_cast<int>(files_.size()); }
 
  private:
   std::set<FilePath::StringType> files_;
 };
 
 // Simple function to dump some text into a new file.
-void CreateTextFile(const FilePath& filename,
-                    const std::wstring& contents) {
+void CreateTextFile(const FilePath& filename, const std::wstring& contents) {
   std::wofstream file;
 #if BUILDFLAG(IS_WIN)
   file.open(filename.value().c_str());
@@ -419,7 +418,7 @@ TEST_F(FileUtilTest, NormalizeFilePathBasic) {
   FilePath normalized_file_a_path, normalized_file_b_path;
   ASSERT_FALSE(PathExists(file_a_path));
   ASSERT_FALSE(NormalizeFilePath(file_a_path, &normalized_file_a_path))
-    << "NormalizeFilePath() should fail on nonexistent paths.";
+      << "NormalizeFilePath() should fail on nonexistent paths.";
 
   CreateTextFile(file_a_path, bogus_content);
   ASSERT_TRUE(PathExists(file_a_path));
@@ -432,8 +431,8 @@ TEST_F(FileUtilTest, NormalizeFilePathBasic) {
   // Because this test created |dir_path|, we know it is not a link
   // or junction.  So, the real path of the directory holding file a
   // must be the parent of the path holding file b.
-  ASSERT_TRUE(normalized_file_a_path.DirName()
-      .IsParent(normalized_file_b_path.DirName()));
+  ASSERT_TRUE(normalized_file_a_path.DirName().IsParent(
+      normalized_file_b_path.DirName()));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -562,17 +561,17 @@ TEST_F(FileUtilTest, NormalizeFilePathReparsePoints) {
 
     // Check that the path base_b\to_sub_a\file.txt can be normalized to exclude
     // the junction to_sub_a.
-    ASSERT_TRUE(NormalizeFilePath(to_sub_a.Append(FPL("file.txt")),
-                                             &normalized_path));
+    ASSERT_TRUE(
+        NormalizeFilePath(to_sub_a.Append(FPL("file.txt")), &normalized_path));
     ASSERT_EQ(file_txt.value(), normalized_path.value());
 
     // Check that the path base_b\to_base_b\to_base_b\to_sub_a\file.txt can be
     // normalized to exclude junctions to_base_b and to_sub_a .
     ASSERT_TRUE(NormalizeFilePath(base_b.Append(FPL("to_base_b"))
-                                                   .Append(FPL("to_base_b"))
-                                                   .Append(FPL("to_sub_a"))
-                                                   .Append(FPL("file.txt")),
-                                             &normalized_path));
+                                      .Append(FPL("to_base_b"))
+                                      .Append(FPL("to_sub_a"))
+                                      .Append(FPL("file.txt")),
+                                  &normalized_path));
     ASSERT_EQ(file_txt.value(), normalized_path.value());
 
     // A long enough path will cause NormalizeFilePath() to fail.  Make a long
@@ -583,22 +582,21 @@ TEST_F(FileUtilTest, NormalizeFilePathReparsePoints) {
     while (long_path.value().length() <= kLengthLimit) {
       long_path = long_path.Append(FPL("to_base_b"));
     }
-    long_path = long_path.Append(FPL("to_sub_a"))
-                         .Append(FPL("file.txt"));
+    long_path = long_path.Append(FPL("to_sub_a")).Append(FPL("file.txt"));
 
     ASSERT_FALSE(NormalizeFilePath(long_path, &normalized_path));
 
     // Normalizing the junction to deep.txt should fail, because the expanded
     // path to deep.txt is longer than MAX_PATH.
-    ASSERT_FALSE(NormalizeFilePath(to_sub_long.Append(deep_txt),
-                                              &normalized_path));
+    ASSERT_FALSE(
+        NormalizeFilePath(to_sub_long.Append(deep_txt), &normalized_path));
 
     // Delete the reparse points, and see that NormalizeFilePath() fails
     // to traverse them.
   }
 
-  ASSERT_FALSE(NormalizeFilePath(to_sub_a.Append(FPL("file.txt")),
-                                            &normalized_path));
+  ASSERT_FALSE(
+      NormalizeFilePath(to_sub_a.Append(FPL("file.txt")), &normalized_path));
 }
 
 TEST_F(FileUtilTest, DevicePathToDriveLetter) {
@@ -626,8 +624,7 @@ TEST_F(FileUtilTest, DevicePathToDriveLetter) {
   // to be preserved.
   FilePath kRelativePath(FPL("dir1\\dir2\\file.txt"));
   ASSERT_TRUE(DevicePathToDriveLetterPath(
-      actual_device_path.Append(kRelativePath),
-      &win32_path));
+      actual_device_path.Append(kRelativePath), &win32_path));
   EXPECT_EQ(FilePath(real_drive_letter + FILE_PATH_LITERAL("\\"))
                 .Append(kRelativePath)
                 .value(),
@@ -645,12 +642,11 @@ TEST_F(FileUtilTest, DevicePathToDriveLetter) {
   ASSERT_GT(new_length, 0u);
   FilePath prefix_of_real_device_path(
       actual_device_path.value().substr(0, new_length));
-  ASSERT_FALSE(DevicePathToDriveLetterPath(prefix_of_real_device_path,
-                                           &win32_path));
+  ASSERT_FALSE(
+      DevicePathToDriveLetterPath(prefix_of_real_device_path, &win32_path));
 
   ASSERT_FALSE(DevicePathToDriveLetterPath(
-      prefix_of_real_device_path.Append(kRelativePath),
-      &win32_path));
+      prefix_of_real_device_path.Append(kRelativePath), &win32_path));
 
   // Deform the real path so that it is invalid by adding some characters. For
   // example, if C: maps to \Device\HardDiskVolume8, then we simulate a
@@ -660,16 +656,14 @@ TEST_F(FileUtilTest, DevicePathToDriveLetter) {
   // never happen.
   const FilePath::StringType kExtraChars = FPL("12345");
 
-  FilePath real_device_path_plus_numbers(
-      actual_device_path.value() + kExtraChars);
+  FilePath real_device_path_plus_numbers(actual_device_path.value() +
+                                         kExtraChars);
+
+  ASSERT_FALSE(
+      DevicePathToDriveLetterPath(real_device_path_plus_numbers, &win32_path));
 
   ASSERT_FALSE(DevicePathToDriveLetterPath(
-      real_device_path_plus_numbers,
-      &win32_path));
-
-  ASSERT_FALSE(DevicePathToDriveLetterPath(
-      real_device_path_plus_numbers.Append(kRelativePath),
-      &win32_path));
+      real_device_path_plus_numbers.Append(kRelativePath), &win32_path));
 }
 
 TEST_F(FileUtilTest, AreShortFilePathsEnabled) {
@@ -723,8 +717,8 @@ TEST_F(FileUtilTest, CreateTemporaryFileInDirLongPathTest) {
   ASSERT_TRUE(MakeFileUnreadable(long_test_dir));
 
   // Use the short form of the directory to create a temporary filename.
-  ASSERT_TRUE(CreateTemporaryFileInDir(
-      short_test_dir.Append(kTestSubDirName), &temp_file));
+  ASSERT_TRUE(CreateTemporaryFileInDir(short_test_dir.Append(kTestSubDirName),
+                                       &temp_file));
   EXPECT_TRUE(PathExists(temp_file));
   EXPECT_TRUE(short_test_dir.IsParent(temp_file.DirName()));
 
@@ -988,7 +982,7 @@ TEST_F(FileUtilTest, CreateAndReadSymlinks) {
   CreateTextFile(link_to, bogus_content);
 
   ASSERT_TRUE(CreateSymbolicLink(link_to, link_from))
-    << "Failed to create file symlink.";
+      << "Failed to create file symlink.";
 
   // If we created the link properly, we should be able to read the contents
   // through it.
@@ -1003,7 +997,7 @@ TEST_F(FileUtilTest, CreateAndReadSymlinks) {
   link_to = temp_dir_.GetPath().Append(FPL("to_dir"));
   ASSERT_TRUE(CreateDirectory(link_to));
   ASSERT_TRUE(CreateSymbolicLink(link_to, link_from))
-    << "Failed to create directory symlink.";
+      << "Failed to create directory symlink.";
 
   // Test failures.
   EXPECT_FALSE(CreateSymbolicLink(link_to, link_to));
@@ -1076,7 +1070,7 @@ TEST_F(FileUtilTest, NormalizeFilePathSymlinks) {
   CreateTextFile(link_to, bogus_content);
 
   ASSERT_TRUE(CreateSymbolicLink(link_to, link_from))
-    << "Failed to create file symlink.";
+      << "Failed to create file symlink.";
 
   // Check that NormalizeFilePath sees the link.
   FilePath normalized_path;
@@ -1090,18 +1084,18 @@ TEST_F(FileUtilTest, NormalizeFilePathSymlinks) {
   link_to = temp_dir_.GetPath().Append(FPL("to_dir"));
   ASSERT_TRUE(CreateDirectory(link_to));
   ASSERT_TRUE(CreateSymbolicLink(link_to, link_from))
-    << "Failed to create directory symlink.";
+      << "Failed to create directory symlink.";
 
   EXPECT_FALSE(NormalizeFilePath(link_from, &normalized_path))
-    << "Links to directories should return false.";
+      << "Links to directories should return false.";
 
   // Test that a loop in the links causes NormalizeFilePath() to return false.
   link_from = temp_dir_.GetPath().Append(FPL("link_a"));
   link_to = temp_dir_.GetPath().Append(FPL("link_b"));
   ASSERT_TRUE(CreateSymbolicLink(link_to, link_from))
-    << "Failed to create loop symlink a.";
+      << "Failed to create loop symlink a.";
   ASSERT_TRUE(CreateSymbolicLink(link_from, link_to))
-    << "Failed to create loop symlink b.";
+      << "Failed to create loop symlink b.";
 
   // Infinite loop!
   EXPECT_FALSE(NormalizeFilePath(link_from, &normalized_path));
@@ -1245,8 +1239,8 @@ TEST_F(FileUtilTest, ChangeFilePermissionsAndWrite) {
   EXPECT_FALSE(PathIsWritable(file_name));
 
   // Give read permission.
-  EXPECT_TRUE(SetPosixFilePermissions(file_name,
-                                      FILE_PERMISSION_WRITE_BY_USER));
+  EXPECT_TRUE(
+      SetPosixFilePermissions(file_name, FILE_PERMISSION_WRITE_BY_USER));
   EXPECT_TRUE(GetPosixFilePermissions(file_name, &mode));
   EXPECT_TRUE(mode & FILE_PERMISSION_WRITE_BY_USER);
   // Make sure the file can be write.
@@ -1369,12 +1363,9 @@ TEST_F(FileUtilTest, CopyDirectoryPermissions) {
   // Copy the directory recursively.
   FilePath dir_name_to =
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Copy_To_Subdir"));
-  FilePath file_name_to =
-      dir_name_to.Append(FILE_PATH_LITERAL("Reggy-1.txt"));
-  FilePath file2_name_to =
-      dir_name_to.Append(FILE_PATH_LITERAL("Reggy-2.txt"));
-  FilePath file3_name_to =
-      dir_name_to.Append(FILE_PATH_LITERAL("Reggy-3.txt"));
+  FilePath file_name_to = dir_name_to.Append(FILE_PATH_LITERAL("Reggy-1.txt"));
+  FilePath file2_name_to = dir_name_to.Append(FILE_PATH_LITERAL("Reggy-2.txt"));
+  FilePath file3_name_to = dir_name_to.Append(FILE_PATH_LITERAL("Reggy-3.txt"));
 
   ASSERT_FALSE(PathExists(dir_name_to));
 
@@ -1437,8 +1428,7 @@ TEST_F(FileUtilTest, CopyDirectoryPermissionsOverExistingFile) {
   ASSERT_TRUE(PathExists(dir_name_to));
 
   // Create a file under the directory with wider permissions.
-  FilePath file_name_to =
-      dir_name_to.Append(FILE_PATH_LITERAL("Reggy-1.txt"));
+  FilePath file_name_to = dir_name_to.Append(FILE_PATH_LITERAL("Reggy-1.txt"));
   CreateTextFile(file_name_to, L"Rigby");
   ASSERT_TRUE(PathExists(file_name_to));
   ASSERT_TRUE(SetPosixFilePermissions(file_name_to, 0777));
@@ -1996,7 +1986,6 @@ TEST_F(FileUtilTest, MoveFileDirExists) {
   EXPECT_FALSE(Move(file_name_from, dir_name_to));
 }
 
-
 TEST_F(FileUtilTest, MoveNew) {
   // Create a directory
   FilePath dir_name_from =
@@ -2087,8 +2076,7 @@ TEST_F(FileUtilTest, CopyDirectoryRecursivelyNew) {
   ASSERT_TRUE(PathExists(file_name_from));
 
   // Create a subdirectory.
-  FilePath subdir_name_from =
-      dir_name_from.Append(FILE_PATH_LITERAL("Subdir"));
+  FilePath subdir_name_from = dir_name_from.Append(FILE_PATH_LITERAL("Subdir"));
   CreateDirectory(subdir_name_from);
   ASSERT_TRUE(PathExists(subdir_name_from));
 
@@ -2103,8 +2091,7 @@ TEST_F(FileUtilTest, CopyDirectoryRecursivelyNew) {
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Copy_To_Subdir"));
   FilePath file_name_to =
       dir_name_to.Append(FILE_PATH_LITERAL("Copy_Test_File.txt"));
-  FilePath subdir_name_to =
-      dir_name_to.Append(FILE_PATH_LITERAL("Subdir"));
+  FilePath subdir_name_to = dir_name_to.Append(FILE_PATH_LITERAL("Subdir"));
   FilePath file_name2_to =
       subdir_name_to.Append(FILE_PATH_LITERAL("Copy_Test_File.txt"));
 
@@ -2137,8 +2124,7 @@ TEST_F(FileUtilTest, CopyDirectoryRecursivelyExists) {
   ASSERT_TRUE(PathExists(file_name_from));
 
   // Create a subdirectory.
-  FilePath subdir_name_from =
-      dir_name_from.Append(FILE_PATH_LITERAL("Subdir"));
+  FilePath subdir_name_from = dir_name_from.Append(FILE_PATH_LITERAL("Subdir"));
   CreateDirectory(subdir_name_from);
   ASSERT_TRUE(PathExists(subdir_name_from));
 
@@ -2156,8 +2142,7 @@ TEST_F(FileUtilTest, CopyDirectoryRecursivelyExists) {
       dir_name_exists.Append(FILE_PATH_LITERAL("Copy_From_Subdir"));
   FilePath file_name_to =
       dir_name_to.Append(FILE_PATH_LITERAL("Copy_Test_File.txt"));
-  FilePath subdir_name_to =
-      dir_name_to.Append(FILE_PATH_LITERAL("Subdir"));
+  FilePath subdir_name_to = dir_name_to.Append(FILE_PATH_LITERAL("Subdir"));
   FilePath file_name2_to =
       subdir_name_to.Append(FILE_PATH_LITERAL("Copy_Test_File.txt"));
 
@@ -2192,8 +2177,7 @@ TEST_F(FileUtilTest, CopyDirectoryNew) {
   ASSERT_TRUE(PathExists(file_name_from));
 
   // Create a subdirectory.
-  FilePath subdir_name_from =
-      dir_name_from.Append(FILE_PATH_LITERAL("Subdir"));
+  FilePath subdir_name_from = dir_name_from.Append(FILE_PATH_LITERAL("Subdir"));
   CreateDirectory(subdir_name_from);
   ASSERT_TRUE(PathExists(subdir_name_from));
 
@@ -2208,8 +2192,7 @@ TEST_F(FileUtilTest, CopyDirectoryNew) {
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Copy_To_Subdir"));
   FilePath file_name_to =
       dir_name_to.Append(FILE_PATH_LITERAL("Copy_Test_File.txt"));
-  FilePath subdir_name_to =
-      dir_name_to.Append(FILE_PATH_LITERAL("Subdir"));
+  FilePath subdir_name_to = dir_name_to.Append(FILE_PATH_LITERAL("Subdir"));
 
   ASSERT_FALSE(PathExists(dir_name_to));
 
@@ -2239,8 +2222,7 @@ TEST_F(FileUtilTest, CopyDirectoryExists) {
   ASSERT_TRUE(PathExists(file_name_from));
 
   // Create a subdirectory.
-  FilePath subdir_name_from =
-      dir_name_from.Append(FILE_PATH_LITERAL("Subdir"));
+  FilePath subdir_name_from = dir_name_from.Append(FILE_PATH_LITERAL("Subdir"));
   CreateDirectory(subdir_name_from);
   ASSERT_TRUE(PathExists(subdir_name_from));
 
@@ -2255,8 +2237,7 @@ TEST_F(FileUtilTest, CopyDirectoryExists) {
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Copy_To_Subdir"));
   FilePath file_name_to =
       dir_name_to.Append(FILE_PATH_LITERAL("Copy_Test_File.txt"));
-  FilePath subdir_name_to =
-      dir_name_to.Append(FILE_PATH_LITERAL("Subdir"));
+  FilePath subdir_name_to = dir_name_to.Append(FILE_PATH_LITERAL("Subdir"));
 
   // Create the destination directory.
   CreateDirectory(dir_name_to);
@@ -2409,8 +2390,7 @@ TEST_F(FileUtilTest, CopyDirectoryWithNonRegularFiles) {
   ASSERT_TRUE(PathExists(symlink_name_from));
 
   // Create a fifo under the directory.
-  FilePath fifo_name_from =
-      dir_name_from.Append(FILE_PATH_LITERAL("Fifo"));
+  FilePath fifo_name_from = dir_name_from.Append(FILE_PATH_LITERAL("Fifo"));
   ASSERT_EQ(0, mkfifo(fifo_name_from.value().c_str(), 0644));
   ASSERT_TRUE(PathExists(fifo_name_from));
 
@@ -2419,10 +2399,8 @@ TEST_F(FileUtilTest, CopyDirectoryWithNonRegularFiles) {
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Copy_To_Subdir"));
   FilePath file_name_to =
       dir_name_to.Append(FILE_PATH_LITERAL("Copy_Test_File.txt"));
-  FilePath symlink_name_to =
-      dir_name_to.Append(FILE_PATH_LITERAL("Symlink"));
-  FilePath fifo_name_to =
-      dir_name_to.Append(FILE_PATH_LITERAL("Fifo"));
+  FilePath symlink_name_to = dir_name_to.Append(FILE_PATH_LITERAL("Symlink"));
+  FilePath fifo_name_to = dir_name_to.Append(FILE_PATH_LITERAL("Fifo"));
 
   ASSERT_FALSE(PathExists(dir_name_to));
 
@@ -2671,26 +2649,19 @@ TEST_F(ReadOnlyFileUtilTest, ContentsEqual) {
   data_dir = data_dir.AppendASCII("file_util");
   ASSERT_TRUE(PathExists(data_dir));
 
-  FilePath original_file =
-      data_dir.Append(FILE_PATH_LITERAL("original.txt"));
-  FilePath same_file =
-      data_dir.Append(FILE_PATH_LITERAL("same.txt"));
+  FilePath original_file = data_dir.Append(FILE_PATH_LITERAL("original.txt"));
+  FilePath same_file = data_dir.Append(FILE_PATH_LITERAL("same.txt"));
   FilePath same_length_file =
       data_dir.Append(FILE_PATH_LITERAL("same_length.txt"));
-  FilePath different_file =
-      data_dir.Append(FILE_PATH_LITERAL("different.txt"));
+  FilePath different_file = data_dir.Append(FILE_PATH_LITERAL("different.txt"));
   FilePath different_first_file =
       data_dir.Append(FILE_PATH_LITERAL("different_first.txt"));
   FilePath different_last_file =
       data_dir.Append(FILE_PATH_LITERAL("different_last.txt"));
-  FilePath empty1_file =
-      data_dir.Append(FILE_PATH_LITERAL("empty1.txt"));
-  FilePath empty2_file =
-      data_dir.Append(FILE_PATH_LITERAL("empty2.txt"));
-  FilePath shortened_file =
-      data_dir.Append(FILE_PATH_LITERAL("shortened.txt"));
-  FilePath binary_file =
-      data_dir.Append(FILE_PATH_LITERAL("binary_file.bin"));
+  FilePath empty1_file = data_dir.Append(FILE_PATH_LITERAL("empty1.txt"));
+  FilePath empty2_file = data_dir.Append(FILE_PATH_LITERAL("empty2.txt"));
+  FilePath shortened_file = data_dir.Append(FILE_PATH_LITERAL("shortened.txt"));
+  FilePath binary_file = data_dir.Append(FILE_PATH_LITERAL("binary_file.bin"));
   FilePath binary_file_same =
       data_dir.Append(FILE_PATH_LITERAL("binary_file_same.bin"));
   FilePath binary_file_diff =
@@ -2717,28 +2688,19 @@ TEST_F(ReadOnlyFileUtilTest, TextContentsEqual) {
   data_dir = data_dir.AppendASCII("file_util");
   ASSERT_TRUE(PathExists(data_dir));
 
-  FilePath original_file =
-      data_dir.Append(FILE_PATH_LITERAL("original.txt"));
-  FilePath same_file =
-      data_dir.Append(FILE_PATH_LITERAL("same.txt"));
-  FilePath crlf_file =
-      data_dir.Append(FILE_PATH_LITERAL("crlf.txt"));
-  FilePath shortened_file =
-      data_dir.Append(FILE_PATH_LITERAL("shortened.txt"));
-  FilePath different_file =
-      data_dir.Append(FILE_PATH_LITERAL("different.txt"));
+  FilePath original_file = data_dir.Append(FILE_PATH_LITERAL("original.txt"));
+  FilePath same_file = data_dir.Append(FILE_PATH_LITERAL("same.txt"));
+  FilePath crlf_file = data_dir.Append(FILE_PATH_LITERAL("crlf.txt"));
+  FilePath shortened_file = data_dir.Append(FILE_PATH_LITERAL("shortened.txt"));
+  FilePath different_file = data_dir.Append(FILE_PATH_LITERAL("different.txt"));
   FilePath different_first_file =
       data_dir.Append(FILE_PATH_LITERAL("different_first.txt"));
   FilePath different_last_file =
       data_dir.Append(FILE_PATH_LITERAL("different_last.txt"));
-  FilePath first1_file =
-      data_dir.Append(FILE_PATH_LITERAL("first1.txt"));
-  FilePath first2_file =
-      data_dir.Append(FILE_PATH_LITERAL("first2.txt"));
-  FilePath empty1_file =
-      data_dir.Append(FILE_PATH_LITERAL("empty1.txt"));
-  FilePath empty2_file =
-      data_dir.Append(FILE_PATH_LITERAL("empty2.txt"));
+  FilePath first1_file = data_dir.Append(FILE_PATH_LITERAL("first1.txt"));
+  FilePath first2_file = data_dir.Append(FILE_PATH_LITERAL("first2.txt"));
+  FilePath empty1_file = data_dir.Append(FILE_PATH_LITERAL("empty1.txt"));
+  FilePath empty2_file = data_dir.Append(FILE_PATH_LITERAL("empty2.txt"));
   FilePath blank_line_file =
       data_dir.Append(FILE_PATH_LITERAL("blank_line.txt"));
   FilePath blank_line_crlf_file =
@@ -2779,8 +2741,7 @@ TEST_F(FileUtilTest, CopyAndDeleteDirectoryTest) {
 
   ASSERT_FALSE(PathExists(dir_name_to));
 
-  EXPECT_TRUE(internal::CopyAndDeleteDirectory(dir_name_from,
-                                                     dir_name_to));
+  EXPECT_TRUE(internal::CopyAndDeleteDirectory(dir_name_from, dir_name_to));
 
   // Check everything has been moved.
   EXPECT_FALSE(PathExists(dir_name_from));
@@ -2791,9 +2752,8 @@ TEST_F(FileUtilTest, CopyAndDeleteDirectoryTest) {
 
 TEST_F(FileUtilTest, GetTempDirTest) {
   static const TCHAR* kTmpKey = _T("TMP");
-  static const TCHAR* kTmpValues[] = {
-    _T(""), _T("C:"), _T("C:\\"), _T("C:\\tmp"), _T("C:\\tmp\\")
-  };
+  static const TCHAR* kTmpValues[] = {_T(""), _T("C:"), _T("C:\\"),
+                                      _T("C:\\tmp"), _T("C:\\tmp\\")};
   // Save the original $TMP.
   size_t original_tmp_size;
   TCHAR* original_tmp;
@@ -2804,8 +2764,8 @@ TEST_F(FileUtilTest, GetTempDirTest) {
     FilePath path;
     ::_tputenv_s(kTmpKey, kTmpValues[i]);
     GetTempDir(&path);
-    EXPECT_TRUE(path.IsAbsolute()) << "$TMP=" << kTmpValues[i] <<
-        " result=" << path.value();
+    EXPECT_TRUE(path.IsAbsolute())
+        << "$TMP=" << kTmpValues[i] << " result=" << path.value();
   }
 
   // Restore the original $TMP.
@@ -2871,10 +2831,12 @@ TEST_F(FileUtilTest, CreateTemporaryFileTest) {
     EXPECT_TRUE(PathExists(i));
     EXPECT_FALSE(DirectoryExists(i));
   }
-  for (int i = 0; i < 3; i++)
-    EXPECT_FALSE(temp_files[i] == temp_files[(i+1)%3]);
-  for (const auto& i : temp_files)
+  for (int i = 0; i < 3; i++) {
+    EXPECT_FALSE(temp_files[i] == temp_files[(i + 1) % 3]);
+  }
+  for (const auto& i : temp_files) {
     EXPECT_TRUE(DeleteFile(i));
+  }
 }
 
 TEST_F(FileUtilTest, CreateAndOpenTemporaryStreamTest) {
@@ -2891,7 +2853,7 @@ TEST_F(FileUtilTest, CreateAndOpenTemporaryStreamTest) {
 
   // Make sure all names are unique.
   for (i = 0; i < 3; ++i) {
-    EXPECT_FALSE(names[i] == names[(i+1)%3]);
+    EXPECT_FALSE(names[i] == names[(i + 1) % 3]);
   }
 
   // Close and delete.
@@ -3108,10 +3070,12 @@ TEST_F(FileUtilTest, AllocateFileRegionTest_ZeroOffset) {
   char data_read[32];
   int bytes_read = file.Read(0, data_read, kExtendedFileLength);
   EXPECT_EQ(bytes_read, kExtendedFileLength);
-  for (int i = 0; i < kTestFileLength; ++i)
+  for (int i = 0; i < kTestFileLength; ++i) {
     EXPECT_EQ(test_data[i], data_read[i]);
-  for (int i = kTestFileLength; i < kExtendedFileLength; ++i)
+  }
+  for (int i = kTestFileLength; i < kExtendedFileLength; ++i) {
     EXPECT_EQ(0, data_read[i]);
+  }
 }
 
 TEST_F(FileUtilTest, AllocateFileRegionTest_NonZeroOffset) {
@@ -3135,10 +3099,12 @@ TEST_F(FileUtilTest, AllocateFileRegionTest_NonZeroOffset) {
   char data_read[32];
   int bytes_read = file.Read(0, data_read, kExtendedFileLength);
   EXPECT_EQ(bytes_read, kExtendedFileLength);
-  for (int i = 0; i < kTestFileLength; ++i)
+  for (int i = 0; i < kTestFileLength; ++i) {
     EXPECT_EQ(test_data[i], data_read[i]);
-  for (int i = kTestFileLength; i < kExtendedFileLength; ++i)
+  }
+  for (int i = kTestFileLength; i < kExtendedFileLength; ++i) {
     EXPECT_EQ(0, data_read[i]);
+  }
 }
 
 TEST_F(FileUtilTest, AllocateFileRegionTest_DontTruncate) {
@@ -3210,8 +3176,7 @@ TEST_F(FileUtilTest, CreateDirectoryTest) {
 
   // Given these assumptions hold, it should be safe to
   // test that "creating" these directories succeeds.
-  EXPECT_TRUE(CreateDirectory(
-      FilePath(FilePath::kCurrentDirectory)));
+  EXPECT_TRUE(CreateDirectory(FilePath(FilePath::kCurrentDirectory)));
   EXPECT_TRUE(CreateDirectory(top_level));
 
 #if BUILDFLAG(IS_WIN)
@@ -3233,8 +3198,7 @@ TEST_F(FileUtilTest, DetectDirectoryTest) {
   EXPECT_TRUE(PathExists(test_root));
   EXPECT_TRUE(DirectoryExists(test_root));
   // Check a file
-  FilePath test_path =
-      test_root.Append(FILE_PATH_LITERAL("foobar.txt"));
+  FilePath test_path = test_root.Append(FILE_PATH_LITERAL("foobar.txt"));
   EXPECT_FALSE(PathExists(test_path));
   CreateTextFile(test_path, L"test file");
   EXPECT_TRUE(PathExists(test_path));
@@ -3273,8 +3237,8 @@ TEST_F(FileUtilTest, FileEnumeratorTest) {
   CreateTextFile(dir2innerfile, std::wstring());
   FilePath file1 = temp_dir_.GetPath().Append(FPL("file1.txt"));
   CreateTextFile(file1, std::wstring());
-  FilePath file2_rel = dir2.Append(FilePath::kParentDirectory)
-      .Append(FPL("file2.txt"));
+  FilePath file2_rel =
+      dir2.Append(FilePath::kParentDirectory).Append(FPL("file2.txt"));
   CreateTextFile(file2_rel, std::wstring());
   FilePath file2_abs = temp_dir_.GetPath().Append(FPL("file2.txt"));
 
@@ -3581,8 +3545,9 @@ MULTIPROCESS_TEST_MAIN(ChildMain) {
   size_t written = 0;
   while (written < strlen(kTestData)) {
     ssize_t res = write(fd, kTestData + written, strlen(kTestData) - written);
-    if (res == -1)
+    if (res == -1) {
       break;
+    }
     written += res;
   }
   CHECK_EQ(strlen(kTestData), written);
@@ -4017,14 +3982,13 @@ TEST_F(FileUtilTest, TouchFile) {
   Time access_time;
   // This timestamp is divisible by one day (in local timezone),
   // to make it work on FAT too.
-  ASSERT_TRUE(Time::FromString("Wed, 16 Nov 1994, 00:00:00",
-                               &access_time));
+  ASSERT_TRUE(Time::FromString("Wed, 16 Nov 1994, 00:00:00", &access_time));
 
   Time modification_time;
   // Note that this timestamp is divisible by two (seconds) - FAT stores
   // modification times with 2s resolution.
-  ASSERT_TRUE(Time::FromString("Tue, 15 Nov 1994, 12:45:26 GMT",
-              &modification_time));
+  ASSERT_TRUE(
+      Time::FromString("Tue, 15 Nov 1994, 12:45:26 GMT", &modification_time));
 
   ASSERT_TRUE(TouchFile(foobar, access_time, modification_time));
   File::Info file_info;
@@ -4177,12 +4141,10 @@ class VerifyPathControlledByUserTest : public FileUtilTest {
     // Other users can't read, write, traverse
     int disabled_permissions = FILE_PERMISSION_OTHERS_MASK;
 
-    ASSERT_NO_FATAL_FAILURE(
-        ChangePosixFilePermissions(
-            base_dir_, enabled_permissions, disabled_permissions));
-    ASSERT_NO_FATAL_FAILURE(
-        ChangePosixFilePermissions(
-            sub_dir_, enabled_permissions, disabled_permissions));
+    ASSERT_NO_FATAL_FAILURE(ChangePosixFilePermissions(
+        base_dir_, enabled_permissions, disabled_permissions));
+    ASSERT_NO_FATAL_FAILURE(ChangePosixFilePermissions(
+        sub_dir_, enabled_permissions, disabled_permissions));
   }
 
   FilePath base_dir_;
@@ -4196,9 +4158,8 @@ class VerifyPathControlledByUserTest : public FileUtilTest {
 
 TEST_F(VerifyPathControlledByUserTest, BadPaths) {
   // File does not exist.
-  FilePath does_not_exist = base_dir_.AppendASCII("does")
-                                     .AppendASCII("not")
-                                     .AppendASCII("exist");
+  FilePath does_not_exist =
+      base_dir_.AppendASCII("does").AppendASCII("not").AppendASCII("exist");
   EXPECT_FALSE(
       VerifyPathControlledByUser(base_dir_, does_not_exist, uid_, ok_gids_));
 
@@ -4217,7 +4178,7 @@ TEST_F(VerifyPathControlledByUserTest, Symlinks) {
   // Symlinks in the path should cause failure.
 
   // Symlink to the file at the end of the path.
-  FilePath file_link =  base_dir_.AppendASCII("file_link");
+  FilePath file_link = base_dir_.AppendASCII("file_link");
   ASSERT_TRUE(CreateSymbolicLink(text_file_, file_link))
       << "Failed to create symlink.";
 
@@ -4227,9 +4188,9 @@ TEST_F(VerifyPathControlledByUserTest, Symlinks) {
       VerifyPathControlledByUser(file_link, file_link, uid_, ok_gids_));
 
   // Symlink from one directory to another within the path.
-  FilePath link_to_sub_dir =  base_dir_.AppendASCII("link_to_sub_dir");
+  FilePath link_to_sub_dir = base_dir_.AppendASCII("link_to_sub_dir");
   ASSERT_TRUE(CreateSymbolicLink(sub_dir_, link_to_sub_dir))
-    << "Failed to create symlink.";
+      << "Failed to create symlink.";
 
   FilePath file_path_with_link = link_to_sub_dir.AppendASCII("file.txt");
   ASSERT_TRUE(PathExists(file_path_with_link));
@@ -4250,12 +4211,9 @@ TEST_F(VerifyPathControlledByUserTest, OwnershipChecks) {
   uid_t bad_uid = uid_ + 1;
 
   // Make all files and directories non-world-writable.
-  ASSERT_NO_FATAL_FAILURE(
-      ChangePosixFilePermissions(base_dir_, 0u, S_IWOTH));
-  ASSERT_NO_FATAL_FAILURE(
-      ChangePosixFilePermissions(sub_dir_, 0u, S_IWOTH));
-  ASSERT_NO_FATAL_FAILURE(
-      ChangePosixFilePermissions(text_file_, 0u, S_IWOTH));
+  ASSERT_NO_FATAL_FAILURE(ChangePosixFilePermissions(base_dir_, 0u, S_IWOTH));
+  ASSERT_NO_FATAL_FAILURE(ChangePosixFilePermissions(sub_dir_, 0u, S_IWOTH));
+  ASSERT_NO_FATAL_FAILURE(ChangePosixFilePermissions(text_file_, 0u, S_IWOTH));
 
   // We control these paths.
   EXPECT_TRUE(VerifyPathControlledByUser(base_dir_, sub_dir_, uid_, ok_gids_));
@@ -4283,11 +4241,11 @@ TEST_F(VerifyPathControlledByUserTest, OwnershipChecks) {
 TEST_F(VerifyPathControlledByUserTest, GroupWriteTest) {
   // Make all files and directories writable only by their owner.
   ASSERT_NO_FATAL_FAILURE(
-      ChangePosixFilePermissions(base_dir_, 0u, S_IWOTH|S_IWGRP));
+      ChangePosixFilePermissions(base_dir_, 0u, S_IWOTH | S_IWGRP));
   ASSERT_NO_FATAL_FAILURE(
-      ChangePosixFilePermissions(sub_dir_, 0u, S_IWOTH|S_IWGRP));
+      ChangePosixFilePermissions(sub_dir_, 0u, S_IWOTH | S_IWGRP));
   ASSERT_NO_FATAL_FAILURE(
-      ChangePosixFilePermissions(text_file_, 0u, S_IWOTH|S_IWGRP));
+      ChangePosixFilePermissions(text_file_, 0u, S_IWOTH | S_IWGRP));
 
   // Any group is okay because the path is not group-writable.
   EXPECT_TRUE(VerifyPathControlledByUser(base_dir_, sub_dir_, uid_, ok_gids_));
@@ -4330,10 +4288,9 @@ TEST_F(VerifyPathControlledByUserTest, GroupWriteTest) {
   // the union of good and bad gids passes.
 
   std::set<gid_t> multiple_gids;
-  std::set_union(
-      ok_gids_.begin(), ok_gids_.end(),
-      bad_gids_.begin(), bad_gids_.end(),
-      std::inserter(multiple_gids, multiple_gids.begin()));
+  std::set_union(ok_gids_.begin(), ok_gids_.end(), bad_gids_.begin(),
+                 bad_gids_.end(),
+                 std::inserter(multiple_gids, multiple_gids.begin()));
 
   EXPECT_TRUE(
       VerifyPathControlledByUser(base_dir_, sub_dir_, uid_, multiple_gids));
@@ -4345,12 +4302,9 @@ TEST_F(VerifyPathControlledByUserTest, GroupWriteTest) {
 
 TEST_F(VerifyPathControlledByUserTest, WriteBitChecks) {
   // Make all files and directories non-world-writable.
-  ASSERT_NO_FATAL_FAILURE(
-      ChangePosixFilePermissions(base_dir_, 0u, S_IWOTH));
-  ASSERT_NO_FATAL_FAILURE(
-      ChangePosixFilePermissions(sub_dir_, 0u, S_IWOTH));
-  ASSERT_NO_FATAL_FAILURE(
-      ChangePosixFilePermissions(text_file_, 0u, S_IWOTH));
+  ASSERT_NO_FATAL_FAILURE(ChangePosixFilePermissions(base_dir_, 0u, S_IWOTH));
+  ASSERT_NO_FATAL_FAILURE(ChangePosixFilePermissions(sub_dir_, 0u, S_IWOTH));
+  ASSERT_NO_FATAL_FAILURE(ChangePosixFilePermissions(text_file_, 0u, S_IWOTH));
 
   // Initialy, we control all parts of the path.
   EXPECT_TRUE(VerifyPathControlledByUser(base_dir_, sub_dir_, uid_, ok_gids_));
@@ -4359,16 +4313,14 @@ TEST_F(VerifyPathControlledByUserTest, WriteBitChecks) {
   EXPECT_TRUE(VerifyPathControlledByUser(sub_dir_, text_file_, uid_, ok_gids_));
 
   // Make base_dir_ world-writable.
-  ASSERT_NO_FATAL_FAILURE(
-      ChangePosixFilePermissions(base_dir_, S_IWOTH, 0u));
+  ASSERT_NO_FATAL_FAILURE(ChangePosixFilePermissions(base_dir_, S_IWOTH, 0u));
   EXPECT_FALSE(VerifyPathControlledByUser(base_dir_, sub_dir_, uid_, ok_gids_));
   EXPECT_FALSE(
       VerifyPathControlledByUser(base_dir_, text_file_, uid_, ok_gids_));
   EXPECT_TRUE(VerifyPathControlledByUser(sub_dir_, text_file_, uid_, ok_gids_));
 
   // Make sub_dir_ world writable.
-  ASSERT_NO_FATAL_FAILURE(
-      ChangePosixFilePermissions(sub_dir_, S_IWOTH, 0u));
+  ASSERT_NO_FATAL_FAILURE(ChangePosixFilePermissions(sub_dir_, S_IWOTH, 0u));
   EXPECT_FALSE(VerifyPathControlledByUser(base_dir_, sub_dir_, uid_, ok_gids_));
   EXPECT_FALSE(
       VerifyPathControlledByUser(base_dir_, text_file_, uid_, ok_gids_));
@@ -4376,8 +4328,7 @@ TEST_F(VerifyPathControlledByUserTest, WriteBitChecks) {
       VerifyPathControlledByUser(sub_dir_, text_file_, uid_, ok_gids_));
 
   // Make text_file_ world writable.
-  ASSERT_NO_FATAL_FAILURE(
-      ChangePosixFilePermissions(text_file_, S_IWOTH, 0u));
+  ASSERT_NO_FATAL_FAILURE(ChangePosixFilePermissions(text_file_, S_IWOTH, 0u));
   EXPECT_FALSE(VerifyPathControlledByUser(base_dir_, sub_dir_, uid_, ok_gids_));
   EXPECT_FALSE(
       VerifyPathControlledByUser(base_dir_, text_file_, uid_, ok_gids_));
@@ -4385,8 +4336,7 @@ TEST_F(VerifyPathControlledByUserTest, WriteBitChecks) {
       VerifyPathControlledByUser(sub_dir_, text_file_, uid_, ok_gids_));
 
   // Make sub_dir_ non-world writable.
-  ASSERT_NO_FATAL_FAILURE(
-      ChangePosixFilePermissions(sub_dir_, 0u, S_IWOTH));
+  ASSERT_NO_FATAL_FAILURE(ChangePosixFilePermissions(sub_dir_, 0u, S_IWOTH));
   EXPECT_FALSE(VerifyPathControlledByUser(base_dir_, sub_dir_, uid_, ok_gids_));
   EXPECT_FALSE(
       VerifyPathControlledByUser(base_dir_, text_file_, uid_, ok_gids_));
@@ -4394,8 +4344,7 @@ TEST_F(VerifyPathControlledByUserTest, WriteBitChecks) {
       VerifyPathControlledByUser(sub_dir_, text_file_, uid_, ok_gids_));
 
   // Make base_dir_ non-world-writable.
-  ASSERT_NO_FATAL_FAILURE(
-      ChangePosixFilePermissions(base_dir_, 0u, S_IWOTH));
+  ASSERT_NO_FATAL_FAILURE(ChangePosixFilePermissions(base_dir_, 0u, S_IWOTH));
   EXPECT_TRUE(VerifyPathControlledByUser(base_dir_, sub_dir_, uid_, ok_gids_));
   EXPECT_FALSE(
       VerifyPathControlledByUser(base_dir_, text_file_, uid_, ok_gids_));
@@ -4404,8 +4353,7 @@ TEST_F(VerifyPathControlledByUserTest, WriteBitChecks) {
 
   // Back to the initial state: Nothing is writable, so every path
   // should pass.
-  ASSERT_NO_FATAL_FAILURE(
-      ChangePosixFilePermissions(text_file_, 0u, S_IWOTH));
+  ASSERT_NO_FATAL_FAILURE(ChangePosixFilePermissions(text_file_, 0u, S_IWOTH));
   EXPECT_TRUE(VerifyPathControlledByUser(base_dir_, sub_dir_, uid_, ok_gids_));
   EXPECT_TRUE(
       VerifyPathControlledByUser(base_dir_, text_file_, uid_, ok_gids_));
@@ -4607,8 +4555,9 @@ TEST(FileUtilMultiThreadedTest, MultiThreadedTempFiles) {
   }
 
   // Wait until all threads are started for max parallelism.
-  for (auto& thread : threads)
+  for (auto& thread : threads) {
     thread->WaitUntilThreadStarted();
+  }
 
   const RepeatingClosure open_write_close_read = BindRepeating([]() {
     FilePath output_filename;
@@ -4647,8 +4596,9 @@ TEST(FileUtilMultiThreadedTest, MultiThreadedTempFiles) {
     }
   }
 
-  for (auto& thread : threads)
+  for (auto& thread : threads) {
     thread->Stop();
+  }
 }
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -4659,9 +4609,7 @@ TEST(ScopedFD, ScopedFDDoesClose) {
   ASSERT_EQ(0, pipe(fds));
   const int write_end = fds[1];
   ScopedFD read_end_closer(fds[0]);
-  {
-    ScopedFD write_end_closer(fds[1]);
-  }
+  { ScopedFD write_end_closer(fds[1]); }
   // This is the only thread. This file descriptor should no longer be valid.
   int ret = close(write_end);
   EXPECT_EQ(-1, ret);
