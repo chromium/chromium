@@ -58,25 +58,20 @@ void AIManagerImpl::Create(
 
 void AIManagerImpl::CanCreateTextSession(
     CanCreateTextSessionCallback callback) {
-  // If the model path is empty or invalid, return false.
   auto model_path =
       optimization_guide::switches::GetOnDeviceModelExecutionOverride();
-  if (!model_path) {
-    render_frame_host().AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kWarning,
-        "Unable to create generic session because the model path is not "
-        "provided.");
-    std::move(callback).Run(/*can_create=*/false);
-    return;
+  if (model_path) {
+    // If the model path is provided, we do this additional check and post a
+    // warning message to dev tools if it's invalid.
+    // This needs to be done in a task runner with `MayBlock` trait.
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(IsModelPathValid, model_path.value()),
+        base::BindOnce(&AIManagerImpl::OnModelPathValidationComplete,
+                       weak_factory_.GetWeakPtr(), model_path.value()));
   }
-
-  // This needs to be done in a task runner with `MayBlock` trait.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(IsModelPathValid, model_path.value()),
-      base::BindOnce(&AIManagerImpl::OnModelPathValidationComplete,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     model_path.value()));
+  // If the model path is not provided, we skip the model path check.
+  CanOptimizationGuideKeyedServiceCreateGenericSession(std::move(callback));
 }
 
 void AIManagerImpl::CreateTextSession(
@@ -212,19 +207,13 @@ void AIManagerImpl::CanOptimizationGuideKeyedServiceCreateGenericSession(
   std::move(callback).Run(/*can_create=*/true);
 }
 
-void AIManagerImpl::OnModelPathValidationComplete(
-    CanCreateTextSessionCallback callback,
-    const std::string& model_path,
-    bool is_valid_path) {
+void AIManagerImpl::OnModelPathValidationComplete(const std::string& model_path,
+                                                  bool is_valid_path) {
   if (!is_valid_path) {
     render_frame_host().AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
         base::StringPrintf("Unable to create generic session because "
                            "the model path ('%s') is invalid.",
                            model_path.c_str()));
-    std::move(callback).Run(false);
-    return;
   }
-
-  CanOptimizationGuideKeyedServiceCreateGenericSession(std::move(callback));
 }

@@ -46,8 +46,7 @@ class AIManagerImpl : public content::DocumentUserData<AIManagerImpl>,
   void GetDefaultTextSessionSamplingParams(
       GetDefaultTextSessionSamplingParamsCallback callback) override;
 
-  void OnModelPathValidationComplete(CanCreateTextSessionCallback callback,
-                                     const std::string& model_path,
+  void OnModelPathValidationComplete(const std::string& model_path,
                                      bool is_valid_path);
 
   void CanOptimizationGuideKeyedServiceCreateGenericSession(
