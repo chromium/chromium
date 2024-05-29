@@ -2472,7 +2472,7 @@ TEST_F(SnapGroupTest, MaximizeSnappedWindowExitPointTest) {
 
 // Tests that the corresponding snap group will be removed when one of the
 // windows in the snap group gets destroyed.
-TEST_F(SnapGroupTest, WindowDestroyTest) {
+TEST_F(SnapGroupTest, WindowDestroyToBreakSnapGroup) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
   SnapTwoTestWindows(w1.get(), w2.get());
@@ -2489,6 +2489,37 @@ TEST_F(SnapGroupTest, WindowDestroyTest) {
   w1.reset();
   EXPECT_TRUE(snap_groups.empty());
   EXPECT_TRUE(window_to_snap_group_map.empty());
+}
+
+// Tests to verify that resnapping a window within a Snap Group to the same
+// position but with a different snap ratio will break the existing group. See
+// http://b/342230763 for more details.
+TEST_F(SnapGroupTest, ReSnapWindowWithDifferentSnapRatioToBreakTheGroup) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  ASSERT_TRUE(snap_group_divider());
+
+  // Verify that `w2` is re-snapped at `chromeos::kOneThirdSnapRatio` of the
+  // work area bounds.
+  SnapOneTestWindow(w2.get(), WindowStateType::kSecondarySnapped,
+                    chromeos::kOneThirdSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+
+  // Explicitly process the asynchronous task posted by
+  // `SnapGroup::OnWindowBoundsChanged()`.
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that Snap Group breaks on the 2nd snap event.
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_FALSE(snap_group_divider());
+
+  EXPECT_EQ(
+      std::round(work_area_bounds().width() * chromeos::kOneThirdSnapRatio),
+      w2->bounds().width());
 }
 
 // Tests that if one window in the snap group is actiaved, the stacking order of

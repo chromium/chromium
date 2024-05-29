@@ -1567,7 +1567,7 @@ void SplitViewController::OnWindowActivated(ActivationReason reason,
   }
 }
 
-aura::Window* SplitViewController::GetRootWindow() {
+aura::Window* SplitViewController::GetRootWindow() const {
   return root_window_;
 }
 

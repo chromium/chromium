@@ -355,7 +355,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                          aura::Window* lost_active) override;
 
   // LayoutDividerController:
-  aura::Window* GetRootWindow() override;
+  aura::Window* GetRootWindow() const override;
   void StartResizeWithDivider(const gfx::Point& location_in_screen) override;
   void UpdateResizeWithDivider(const gfx::Point& location_in_screen) override;
   bool EndResizeWithDivider(const gfx::Point& location_in_screen) override;

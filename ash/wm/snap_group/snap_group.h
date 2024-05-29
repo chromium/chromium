@@ -12,6 +12,7 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
@@ -75,7 +76,7 @@ class SnapGroup : public aura::WindowObserver,
 
   // Returns true if snap group is configured in a vertical split-screen layout.
   // Returns false otherwise.
-  bool IsSnapGroupLayoutHorizontal();
+  bool IsSnapGroupLayoutHorizontal() const;
 
   // Unified helper to handle mouse/touch events received from
   // `ToplevelWindowEventHandler` to hide `snap_group_divider_` when either of
@@ -92,13 +93,17 @@ class SnapGroup : public aura::WindowObserver,
   void OnWindowDestroying(aura::Window* window) override;
   void OnWindowParentChanged(aura::Window* window,
                              aura::Window* parent) override;
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override;
 
   // WindowStateObserver:
   void OnPreWindowStateTypeChange(WindowState* window_state,
                                   chromeos::WindowStateType old_type) override;
 
   // LayoutDividerController:
-  aura::Window* GetRootWindow() override;
+  aura::Window* GetRootWindow() const override;
   void StartResizeWithDivider(const gfx::Point& location_in_screen) override;
   void UpdateResizeWithDivider(const gfx::Point& location_in_screen) override;
   bool EndResizeWithDivider(const gfx::Point& location_in_screen) override;
@@ -153,6 +158,17 @@ class SnapGroup : public aura::WindowObserver,
   // the windows are no longer valid for a snap group.
   void RefreshSnapGroup();
 
+  // Returns true if the entire work area is completely occupied by the
+  // windows in this snap group, taking into account the divider between them.
+  // Returns false otherwise.
+  bool IsWorkAreaFullyFilledBySnappedWindows() const;
+
+  // Called asynchronously by `OnWindowBoundsChanged()` to validate the current
+  // snap group on window bounds changed. If the union bounds of the snapped
+  // windows do not completely fill the work area (including the divider), the
+  // snap group is removed.
+  void RemoveSnapGroupIfNotFillWorkArea();
+
   // Hides scoped windows in a snap group in partial overview, restores their
   // visibility when partial overview ends.
   void OnOverviewModeStarting();
@@ -181,6 +197,17 @@ class SnapGroup : public aura::WindowObserver,
   // for secondary screen orientation.
   raw_ptr<aura::Window> window2_;
 
+  // True if the shutting down process has been triggered.
+  bool is_shutting_down_ = false;
+
+  // Boolean flag indicating whether a task has been posted to validate the
+  // bounds of the currently snapped windows. This flag prevents multiple
+  // validation tasks from being queued up simultaneously.
+  bool pending_check_ = false;
+
+  // True if the snapped windows bounds are being adjusted.
+  bool adjusting_snapped_window_bounds_ = false;
+
   // Tracks the timestamp of the original Snap Group's creation time, preserved
   // when using 'Snap to Replace'.
   const base::TimeTicks carry_over_creation_time_;
@@ -190,8 +217,7 @@ class SnapGroup : public aura::WindowObserver,
   // the two snapped windows remain unchanged throughout its existence.
   const base::TimeTicks actual_creation_time_;
 
-  // True if the shutting down process has been triggered.
-  bool is_shutting_down_ = false;
+  base::WeakPtrFactory<SnapGroup> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
