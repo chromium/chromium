@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
+#include "chrome/browser/ui/views/supervised_user/parent_permission_dialog_view.h"
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <string_view>
@@ -36,7 +37,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/views/supervised_user/parent_permission_dialog_view.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -122,7 +122,7 @@ class ParentPermissionDialogViewHarness
         browser->tab_strip_model()->GetActiveWebContents();
 
     dialog_ = CreatePermissionDialog(
-        dialog_input, browser, contents, icon,
+        dialog_input, browser, contents, icon, extension_approval_entry_point_,
         base::BindOnce(
             &ParentPermissionDialogViewHarness::OnParentPermissionDialogDone,
             base::Unretained(this)));
@@ -139,6 +139,12 @@ class ParentPermissionDialogViewHarness
     reprompt_on_incorrect_password_ = reprompt_on_incorrect_password;
   }
 
+  void SetExtensionApprovalEntryPoint(
+      SupervisedUserExtensionParentApprovalEntryPoint
+          extension_approval_entry_point) {
+    extension_approval_entry_point_ = extension_approval_entry_point;
+  }
+
  protected:
   template <typename T>
   std::unique_ptr<ParentPermissionDialog> CreatePermissionDialog(
@@ -146,6 +152,8 @@ class ParentPermissionDialogViewHarness
       Browser* browser,
       content::WebContents* contents,
       gfx::ImageSkia icon,
+      std::optional<SupervisedUserExtensionParentApprovalEntryPoint>
+          extension_approval_entry_point,
       ParentPermissionDialog::DoneCallback done_callback);
 
   template <>
@@ -154,6 +162,8 @@ class ParentPermissionDialogViewHarness
       Browser* browser,
       content::WebContents* contents,
       gfx::ImageSkia icon,
+      std::optional<SupervisedUserExtensionParentApprovalEntryPoint>
+          extension_approval_entry_point,
       ParentPermissionDialog::DoneCallback done_callback) {
     return ParentPermissionDialog::CreateParentPermissionDialog(
         browser->profile(), contents->GetTopLevelNativeWindow(), icon,
@@ -166,10 +176,13 @@ class ParentPermissionDialogViewHarness
       Browser* browser,
       content::WebContents* contents,
       gfx::ImageSkia icon,
+      std::optional<SupervisedUserExtensionParentApprovalEntryPoint>
+          extension_approval_entry_point,
       ParentPermissionDialog::DoneCallback done_callback) {
     return ParentPermissionDialog::CreateParentPermissionDialogForExtension(
         browser->profile(), contents->GetTopLevelNativeWindow(), icon,
-        dialog_input, std::move(done_callback));
+        dialog_input, extension_approval_entry_point.value(),
+        std::move(done_callback));
   }
 
  private:
@@ -204,6 +217,10 @@ class ParentPermissionDialogViewHarness
 
   // Optional result, if dialog was interacted.
   std::optional<ParentPermissionDialog::Result> result_;
+
+  SupervisedUserExtensionParentApprovalEntryPoint
+      extension_approval_entry_point_ =
+          SupervisedUserExtensionParentApprovalEntryPoint::kMaxValue;
 };
 
 // End to end test of ParentPermissionDialog that exercises the dialog's
@@ -270,6 +287,17 @@ class ParentPermissionDialogViewTest
       histogram_tester_.ExpectBucketCount(histogram_name, state_bucket,
                                           expected_count);
     });
+  }
+
+  auto CheckHistogramBucketCount(
+      std::string_view histogram_name,
+      SupervisedUserExtensionParentApprovalEntryPoint entry_point_bucket,
+      int expected_count) {
+    return Do(
+        [this, histogram_name, entry_point_bucket, expected_count]() -> void {
+          histogram_tester_.ExpectBucketCount(
+              histogram_name, entry_point_bucket, expected_count);
+        });
   }
 
   auto CheckHistogramTotalCount(std::string_view histogram_name,
@@ -360,6 +388,9 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
 
 IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
                        PermissionReceived_extension) {
+  // Provide an extension dialog entry point to test the recorded histograms.
+  harness_.SetExtensionApprovalEntryPoint(
+      SupervisedUserExtensionParentApprovalEntryPoint::kOnWebstoreInstallation);
   supervision_mixin_.SetNextReAuthStatus(
       GaiaAuthConsumer::ReAuthProofTokenStatus::kSuccess);
 
@@ -389,6 +420,14 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
       CheckResult(GetActionStatus(SupervisedUserExtensionsMetricsRecorder::
                                       kParentPermissionDialogOpenedActionName),
                   ActionStatus::kWasPerformed),
+      // The provided entry point for the parent approval dialog has been
+      // recorded.
+      CheckHistogramBucketCount(
+          SupervisedUserExtensionsMetricsRecorder::
+              kExtensionParentApprovalEntryPointHistogramName,
+          SupervisedUserExtensionParentApprovalEntryPoint::
+              kOnWebstoreInstallation,
+          1),
       CheckResult(
           GetActionStatus(SupervisedUserExtensionsMetricsRecorder::
                               kParentPermissionDialogParentApprovedActionName),
@@ -397,6 +436,10 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
 
 IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
                        PermissionFailedInvalidPassword_extension) {
+  // Provide an extension dialog entry point to test the recorded histograms.
+  harness_.SetExtensionApprovalEntryPoint(
+      SupervisedUserExtensionParentApprovalEntryPoint::
+          kOnExtensionManagementSetEnabledOperation);
   supervision_mixin_.SetNextReAuthStatus(
       GaiaAuthConsumer::ReAuthProofTokenStatus::kInvalidGrant);
 
@@ -430,6 +473,14 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
       CheckHistogramTotalCount(SupervisedUserExtensionsMetricsRecorder::
                                    kParentPermissionDialogHistogramName,
                                3),
+      // The provided entry point for the parent approval dialog has been
+      // recorded.
+      CheckHistogramBucketCount(
+          SupervisedUserExtensionsMetricsRecorder::
+              kExtensionParentApprovalEntryPointHistogramName,
+          SupervisedUserExtensionParentApprovalEntryPoint::
+              kOnExtensionManagementSetEnabledOperation,
+          1),
       CheckResult(GetActionStatus(SupervisedUserExtensionsMetricsRecorder::
                                       kParentPermissionDialogOpenedActionName),
                   ActionStatus::kWasPerformed))));

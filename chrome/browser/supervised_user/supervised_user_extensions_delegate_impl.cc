@@ -80,17 +80,22 @@ void SupervisedUserExtensionsDelegateImpl::RequestToAddExtensionOrShowError(
     const Extension& extension,
     content::WebContents* web_contents,
     const gfx::ImageSkia& icon,
+    SupervisedUserExtensionParentApprovalEntryPoint
+        extension_approval_entry_point,
     ExtensionApprovalDoneCallback extension_approval_callback) {
   DCHECK(IsChild());
   DCHECK(!IsExtensionAllowedByParent(extension));
 
   done_callback_ = std::move(extension_approval_callback);
-  RequestExtensionApproval(extension, web_contents->GetWeakPtr(), icon);
+  RequestExtensionApproval(extension, web_contents->GetWeakPtr(),
+                           extension_approval_entry_point, icon);
 }
 
 void SupervisedUserExtensionsDelegateImpl::RequestToEnableExtensionOrShowError(
     const Extension& extension,
     content::WebContents* web_contents,
+    SupervisedUserExtensionParentApprovalEntryPoint
+        extension_approval_entry_point,
     ExtensionApprovalDoneCallback extension_approval_callback) {
   CHECK(IsChild());
   CHECK(!IsExtensionAllowedByParent(extension));
@@ -102,7 +107,8 @@ void SupervisedUserExtensionsDelegateImpl::RequestToEnableExtensionOrShowError(
       &SupervisedUserExtensionsDelegateImpl::RequestExtensionApproval,
       base::Unretained(this), std::cref(extension),
       web_contents ? std::make_optional(web_contents->GetWeakPtr())
-                   : std::nullopt);
+                   : std::nullopt,
+      extension_approval_entry_point);
   icon_loader_ = std::make_unique<ExtensionIconLoader>();
   icon_loader_->Load(extension, context_, std::move(icon_callback));
 }
@@ -132,9 +138,12 @@ void SupervisedUserExtensionsDelegateImpl::RecordExtensionEnablementUmaMetrics(
 }
 
 void SupervisedUserExtensionsDelegateImpl::
-    ShowParentPermissionDialogForExtension(const Extension& extension,
-                                           content::WebContents* contents,
-                                           const gfx::ImageSkia& icon) {
+    ShowParentPermissionDialogForExtension(
+        const Extension& extension,
+        content::WebContents* contents,
+        const gfx::ImageSkia& icon,
+        SupervisedUserExtensionParentApprovalEntryPoint
+            extension_approval_entry_point) {
   ParentPermissionDialog::DoneCallback inner_done_callback = base::BindOnce(
       &::OnParentPermissionDialogComplete, std::move(done_callback_));
 
@@ -143,7 +152,8 @@ void SupervisedUserExtensionsDelegateImpl::
   parent_permission_dialog_ =
       ParentPermissionDialog::CreateParentPermissionDialogForExtension(
           Profile::FromBrowserContext(context_), parent_window, icon,
-          &extension, std::move(inner_done_callback));
+          &extension, extension_approval_entry_point,
+          std::move(inner_done_callback));
   parent_permission_dialog_->ShowDialog();
 }
 
@@ -172,6 +182,8 @@ void SupervisedUserExtensionsDelegateImpl::
 void SupervisedUserExtensionsDelegateImpl::RequestExtensionApproval(
     const Extension& extension,
     std::optional<base::WeakPtr<content::WebContents>> contents,
+    SupervisedUserExtensionParentApprovalEntryPoint
+        extension_approval_entry_point,
     const gfx::ImageSkia& icon) {
   // Treat the request as canceled if web contents that the request originated
   // in was destroyed (the web contents was originally passed, but weak ptr is
@@ -190,7 +202,8 @@ void SupervisedUserExtensionsDelegateImpl::RequestExtensionApproval(
   content::WebContents* web_contents = contents.value().get();
   if (CanInstallExtensions()) {
     ShowParentPermissionDialogForExtension(extension, contents.value().get(),
-                                           icon);
+                                           icon,
+                                           extension_approval_entry_point);
     return;
   }
   ShowInstallBlockedByParentDialogForExtension(

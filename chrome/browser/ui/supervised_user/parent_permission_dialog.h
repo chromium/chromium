@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
@@ -92,7 +93,8 @@ class ParentPermissionDialog {
   // specified |extension|.
   // |profile| is the child user's profile.
   // |window| is the window to which the dialog will be modal. Can be nullptr.
-  // |icon| will be used as a backup in case |extension| doesn't have a loaded
+  // |icon| will be used as a backup in case |extension| has not loaded.
+  // |extension_approval_entry_point| indicates which flow invoked the dialog.
   // |done_callback| will be called  on dialog completion.
   static std::unique_ptr<ParentPermissionDialog>
   CreateParentPermissionDialogForExtension(
@@ -100,6 +102,8 @@ class ParentPermissionDialog {
       gfx::NativeWindow window,
       const gfx::ImageSkia& icon,
       const extensions::Extension* extension,
+      SupervisedUserExtensionParentApprovalEntryPoint
+          extension_approval_entry_point,
       ParentPermissionDialog::DoneCallback done_callback);
 };
 

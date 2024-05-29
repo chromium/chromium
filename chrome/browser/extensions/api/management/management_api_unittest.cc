@@ -948,6 +948,8 @@ class TestSupervisedUserExtensionsDelegate
       const extensions::Extension& extension,
       content::WebContents* contents,
       const gfx::ImageSkia& icon,
+      SupervisedUserExtensionParentApprovalEntryPoint
+          extension_approval_entry_point,
       ExtensionApprovalDoneCallback extension_approval_callback) override {
     // Preconditions.
     DCHECK(IsChild());
@@ -969,6 +971,8 @@ class TestSupervisedUserExtensionsDelegate
   void RequestToEnableExtensionOrShowError(
       const extensions::Extension& extension,
       content::WebContents* contents,
+      SupervisedUserExtensionParentApprovalEntryPoint
+          extension_approval_entry_point,
       ExtensionApprovalDoneCallback extension_approval_callback) override {
     // Preconditions.
     DCHECK(IsChild());

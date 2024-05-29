@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_EXTENSIONS_METRICS_RECORDER_H_
 
 #include "chrome/browser/extensions/extension_install_prompt.h"
+#include "extensions/browser/supervised_user_extensions_delegate.h"
 
 // Records UMA metrics for supervised users using extensions.
 class SupervisedUserExtensionsMetricsRecorder
@@ -162,6 +163,7 @@ class SupervisedUserExtensionsMetricsRecorder
 
   // UMA metrics for tracking approval entry points.
   static const char kImplicitParentApprovalGrantEntryPointHistogramName[];
+  static const char kExtensionParentApprovalEntryPointHistogramName[];
 
   SupervisedUserExtensionsMetricsRecorder();
   ~SupervisedUserExtensionsMetricsRecorder() override = default;
@@ -190,6 +192,12 @@ class SupervisedUserExtensionsMetricsRecorder
   // approval to an extension.
   static void RecordImplicitParentApprovalGrantEntryPointEntryPointUmaMetrics(
       ImplicitExtensionApprovalEntryPoint extension_approval_entry_point);
+
+  // Record UMA metrics related to the entry point leading to the display of the
+  // Parent Approval Dialog.
+  static void RecordExtensionParentApprovalDialogEntryPointUmaMetrics(
+      SupervisedUserExtensionParentApprovalEntryPoint
+          extension_approval_entry_point);
 
   // Records when the supervised user enables or disables an approved extension.
   static void RecordEnablementUmaMetrics(EnablementState state);

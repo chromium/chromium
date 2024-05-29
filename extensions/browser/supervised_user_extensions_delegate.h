@@ -16,6 +16,30 @@ namespace gfx {
 class ImageSkia;
 }  // namespace gfx
 
+// These enum values represent the supervised user flows that lead to
+// displaying the Extensions parent approval dialog.
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SupervisedUserExtensionParentApprovalEntryPoint)
+enum class SupervisedUserExtensionParentApprovalEntryPoint : int {
+  // Recorded when the dialog appears as part of installing a new extension
+  // from Webstore.
+  kOnWebstoreInstallation = 0,
+  // Recorded when the dialog appears on enabling an existing extension which
+  // is missing parent approval from the extension management page.
+  kOnExtensionManagementSetEnabledOperation = 1,
+  // Recorded the dialog appears on enabling an existing disabled/terminated
+  // extension which is missing parent approval through the extension enable
+  // flow.
+  kOnTerminatedExtensionEnableFlowOperation = 2,
+  // Add future entries above this comment, in sync with
+  // "SupervisedUserExtensionParentApprovalEntryPoint" in
+  // src/tools/metrics/histograms/metadata/families/enums.xml.
+  // Update kMaxValue to the last value.
+  kMaxValue = kOnTerminatedExtensionEnableFlowOperation
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:SupervisedUserExtensionParentApprovalEntryPoint)
+
 namespace extensions {
 
 class SupervisedUserExtensionsDelegate {
@@ -50,10 +74,14 @@ class SupervisedUserExtensionsDelegate {
   // complete call |extension_approval_callback|.
   // The icon must be supplied for installing new extensions because they are
   // fetched via a network request.
+  // The extension approval dialog entry point indicates who invokes this method
+  // and is persistent in metrics.
   virtual void RequestToAddExtensionOrShowError(
       const extensions::Extension& extension,
       content::WebContents* web_contents,
       const gfx::ImageSkia& icon,
+      SupervisedUserExtensionParentApprovalEntryPoint
+          extension_approval_entry_point,
       ExtensionApprovalDoneCallback extension_approval_callback) = 0;
 
   // Similar to RequestToAddExtensionOrShowError except for enabling already
@@ -61,6 +89,8 @@ class SupervisedUserExtensionsDelegate {
   virtual void RequestToEnableExtensionOrShowError(
       const extensions::Extension& extension,
       content::WebContents* web_contents,
+      SupervisedUserExtensionParentApprovalEntryPoint
+          extension_approval_entry_point,
       ExtensionApprovalDoneCallback extension_approval_callback) = 0;
 
   // Returns true if the primary account represents a supervised child account
