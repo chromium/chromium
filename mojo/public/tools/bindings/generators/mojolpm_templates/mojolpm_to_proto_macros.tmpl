@@ -117,7 +117,7 @@ bool ToProto(
 {{- define_array(type ~ "Entry", kind.kind)}}
 {%-   elif kind.kind|is_map_kind %}
 {{- define_map(type ~ "Entry", kind.kind)}}
-{%-   elif kind.kind|is_nullable_kind %}
+{%-   elif kind.kind|is_nullable_kind and not kind.kind|is_value_kind %}
 bool ToProto(
     {{maybe_const}}{{maybe_mojom_type}} input,
     {{type}}Entry& output) {
@@ -132,10 +132,17 @@ bool ToProto(
     {{maybe_const}}{{mojom_type}} input,
     {{type}}Entry& output) {
 {%-     if kind.kind|is_value_kind %}
-  bool mojolpm_result;
+  bool mojolpm_result = true;
   {{kind.kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} value;
+  {%-     if kind.kind|is_nullable_kind %}
+  if (input.has_value()) {
+    mojolpm_result = ToProto(input.value(), value);
+    output.set_value(value);
+  }
+  {%-     else %}
   mojolpm_result = ToProto(input, value);
   output.set_value(value);
+  {%-     endif %}
   return mojolpm_result;
 {%-     elif kind.kind|is_any_interface_kind %}
   bool mojolpm_result;
@@ -243,10 +250,17 @@ bool ToProto(
     {{mojom_value_type}} input,
     {{type}}Value& output) {
 {%-     if kind.value_kind|is_value_kind %}
-  bool mojolpm_result;
+  bool mojolpm_result = true;
   {{kind.value_kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} value;
+{%-       if kind.value_kind|is_nullable_kind %}
+  if (input.has_value()) {
+    mojolpm_result = ToProto(input.value(), value);
+    output.set_value(value);
+  }
+{%-       else %}
   mojolpm_result = ToProto(input, value);
   output.set_value(value);
+{%-       endif %}
   return mojolpm_result;
 {%-     elif kind.value_kind|is_any_interface_kind %}
   bool mojolpm_result;
