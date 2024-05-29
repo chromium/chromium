@@ -729,6 +729,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     private void updateToolbarLayoutMargin() {
+        // TODO(crbug.com/335609494): Differentiate between isOffTheRecord() & isIncognitoBranded().
         final boolean shouldShowIncognitoIcon = getToolbarDataProvider().isIncognito();
         mIncognitoImageView.setVisibility(shouldShowIncognitoIcon ? VISIBLE : GONE);
 

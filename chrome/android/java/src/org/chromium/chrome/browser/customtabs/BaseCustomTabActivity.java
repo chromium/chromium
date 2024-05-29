@@ -252,11 +252,13 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
             @Nullable
             @Override
             protected OTRProfileID createOffTheRecordProfileID() {
-                if (getIntentDataProvider().isIncognito()) {
+                if (getIntentDataProvider().isIncognitoBranded()) {
                     return OTRProfileID.createUnique("CCT:Incognito");
+                } else if (getIntentDataProvider().isOffTheRecord()) {
+                    return OTRProfileID.createUnique("CCT:Ephemeral");
                 } else {
                     throw new IllegalStateException(
-                            "Attempting to create an incogntio profile in a non-incognito session");
+                            "Attempting to create an OTR profile in a non-OTR session");
                 }
             }
         };
@@ -331,7 +333,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
         BrowserServicesIntentDataProvider intentDataProvider = getIntentDataProvider();
 
-        if (intentDataProvider.isIncognito()) {
+        if (intentDataProvider.isIncognitoBranded()) {
             component.resolveCustomTabIncognitoManager();
         }
 
@@ -542,7 +544,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 mIntentDataProvider.shouldShowShareMenuItem(),
                 mIntentDataProvider.shouldShowStarButton(),
                 mIntentDataProvider.shouldShowDownloadButton(),
-                mIntentDataProvider.isIncognito(),
+                mIntentDataProvider.isIncognitoBranded(),
                 isMenuIconAtStart,
                 mBaseCustomTabRootUiCoordinator::isPageInsightsHubEnabled,
                 mBaseCustomTabRootUiCoordinator.getReadAloudControllerSupplier(),

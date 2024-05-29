@@ -1073,7 +1073,7 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
-    public void searchInCCT_notAllowedInIncognitoMode() {
+    public void searchInCCT_notAllowedInOffTheRecordMode() {
         CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
@@ -1081,7 +1081,7 @@ public class CustomTabIntentDataProviderTest {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         var dataProvider =
                 spy(new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT));
-        when(dataProvider.isIncognito()).thenReturn(true);
+        when(dataProvider.isOffTheRecord()).thenReturn(true);
 
         when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
         assertFalse(dataProvider.isInteractiveOmniboxAllowed());

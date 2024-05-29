@@ -338,8 +338,25 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
-     * @return Whether the Activity should be opened in incognito mode.
+     * @return Whether the Activity should be opened in off-the-record mode.
      */
+    public boolean isOffTheRecord() {
+        return false;
+    }
+
+    /**
+     * @return Whether the Activity should be opened in off-the-record with incognito theme.
+     */
+    public boolean isIncognitoBranded() {
+        return false;
+    }
+
+    /**
+     * @return Whether the Activity should be opened in incognito mode.
+     * @deprecated in favor of {@link #isOffTheRecord()} and {@link #isIncognitoBranded()}.
+     */
+    // TODO(crbug.com/335609494): Remove after updating internal usages.
+    @Deprecated
     public boolean isIncognito() {
         return false;
     }
