@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/url_features.h"
 #include "url/url_util.h"
 
 namespace crosapi {
@@ -32,15 +33,36 @@ TEST(GurlOsHandlerUtilsTest, GetAshUrlFromLacrosUrl) {
             GURL("chrome://os-settings/def/ghi?jkl#mno"));
 }
 
-TEST(GurlOsHandlerUtilsTest, SanitizeAshUrl) {
+class GurlOsHandlerUtilsParamTest : public ::testing::TestWithParam<bool> {
+ public:
+  GurlOsHandlerUtilsParamTest()
+      : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
+    scoped_feature_list_.InitWithFeatureState(
+        url::kStandardCompliantNonSpecialSchemeURLParsing,
+        use_standard_compliant_non_special_scheme_url_parsing_);
+  }
+
+ protected:
+  bool use_standard_compliant_non_special_scheme_url_parsing_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(GurlOsHandlerUtilsParamTest, SanitizeAshUrl) {
   // To allow the "chrome" scheme, we need to add it to the registry.
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme("chrome", url::SCHEME_WITH_HOST);
   CHECK(GURL("chrome://version").has_host());
 
   // Invalid examples.
-  EXPECT_EQ(SanitizeAshUrl(GURL("os://version")), GURL());  // Unknown scheme.
-  EXPECT_EQ(SanitizeAshUrl(GURL("chrome://")), GURL());     // No host.
+  if (use_standard_compliant_non_special_scheme_url_parsing_) {
+    // Non-special URLs are supported when the feature is enabled.
+    EXPECT_EQ(SanitizeAshUrl(GURL("os://version")), GURL("os://version"));
+  } else {
+    EXPECT_EQ(SanitizeAshUrl(GURL("os://version")), GURL());  // Unknown scheme.
+  }
+  EXPECT_EQ(SanitizeAshUrl(GURL("chrome://")), GURL());  // No host.
 
   // Valid examples.
   EXPECT_EQ(SanitizeAshUrl(GURL("chrome://version")), GURL("chrome://version"));
@@ -51,6 +73,8 @@ TEST(GurlOsHandlerUtilsTest, SanitizeAshUrl) {
   EXPECT_EQ(SanitizeAshUrl(GURL("https://abc:123/def/ghi?jkl#mno")),
             GURL("https://abc/def/ghi?jkl"));  // Here too.
 }
+
+INSTANTIATE_TEST_SUITE_P(All, GurlOsHandlerUtilsParamTest, ::testing::Bool());
 
 TEST(GurlOsHandlerUtilsTest, IsAshUrlInList) {
   // To allow the "chrome" scheme, we need to add it to the registry.
