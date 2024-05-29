@@ -1,8 +1,8 @@
-# Primary OWNERS
+# Primary Owners
+file://chromeos/ash/services/cros_healthd/OWNERS
+
+# Backup OWNERS
 jimmyxgong@chromium.org
 michaelcheco@google.com
 gavinwill@chromium.org
 ashleydp@google.com
-
-# Backup OWNERS
-zentaro@chromium.org
