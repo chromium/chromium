@@ -741,7 +741,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)start {
   ChromeBrowserState* browser_state = self.regularBrowser->GetBrowserState();
   _mediator = [[TabGridMediator alloc]
-           initWithPrefService:browser_state->GetPrefs()
+       initWithIdentityManager:IdentityManagerFactory::GetForBrowserState(
+                                   browser_state)
+                   prefService:browser_state->GetPrefs()
       featureEngagementTracker:feature_engagement::TrackerFactory::
                                    GetForBrowserState(browser_state)];
 
@@ -830,6 +832,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [_incognitoGridCoordinator start];
 
   self.incognitoTabsMediator = _incognitoGridCoordinator.incognitoGridMediator;
+  [self.incognitoTabsMediator
+      initializeSupervisedUserCapabilitiesObserver:
+          IdentityManagerFactory::GetForBrowserState(browser_state)];
   self.incognitoTabsMediator.toolbarTabGridDelegate = baseViewController;
 
   baseViewController.incognitoGridHandler =

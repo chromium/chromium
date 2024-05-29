@@ -59,6 +59,8 @@ source_set("capabilities") {
   sources = [
     "supervised_user_capabilities.h",
     "supervised_user_capabilities.mm",
+    "supervised_user_capabilities_observer_bridge.h",
+    "supervised_user_capabilities_observer_bridge.mm",
   ]
   deps = [
     "//base",

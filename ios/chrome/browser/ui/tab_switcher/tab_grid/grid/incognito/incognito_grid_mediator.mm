@@ -4,11 +4,15 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator.h"
 
+#import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/tribool.h"
+#import "components/supervised_user/core/browser/supervised_user_capabilities.h"
 #import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/pref_names.h"
@@ -16,6 +20,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities_observer_bridge.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
@@ -33,7 +38,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 
 @interface IncognitoGridMediator () <IncognitoReauthObserver,
-                                     PrefObserverDelegate>
+                                     PrefObserverDelegate,
+                                     SupervisedUserCapabilitiesObserving>
 @end
 
 @implementation IncognitoGridMediator {
@@ -43,8 +49,17 @@
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
   // YES if incognito is disabled.
   BOOL _incognitoDisabled;
+  // YES if parental supervision is enabled.
+  BOOL _isSubjectToParentalControl;
   // Whether this grid is currently selected.
   BOOL _selected;
+  // Identity manager providing AccountInfo capabilities to determine
+  // supervision status. This identity manager is not available for
+  // the incognito browser state and need to be passed in.
+  raw_ptr<signin::IdentityManager> _identityManager;
+  // Observer to track changes to supervision-related capabilities.
+  std::unique_ptr<supervised_user::SupervisedUserCapabilitiesObserverBridge>
+      _supervisedUserCapabilitiesObserver;
 }
 
 // TODO(crbug.com/40273478): Refactor the grid commands to have the same
@@ -131,6 +146,8 @@
 - (void)disconnect {
   _prefChangeRegistrar.reset();
   _prefObserverBridge.reset();
+  _supervisedUserCapabilitiesObserver.reset();
+  _identityManager = nil;
   [_reauthSceneAgent removeObserver:self];
   [super disconnect];
 }
@@ -179,7 +196,10 @@
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName == prefs::kSupervisedUserId) {
+  if (!base::FeatureList::IsEnabled(
+          supervised_user::
+              kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS) &&
+      preferenceName == prefs::kSupervisedUserId) {
     BOOL isDisabled = [self isIncognitoModeDisabled];
     if (_incognitoDisabled != isDisabled) {
       _incognitoDisabled = isDisabled;
@@ -202,13 +222,17 @@
     PrefService* prefService = browser->GetBrowserState()->GetPrefs();
     DCHECK(prefService);
 
-    _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
-    _prefChangeRegistrar->Init(prefService);
+    if (!base::FeatureList::IsEnabled(
+            supervised_user::
+                kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS)) {
+      _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
+      _prefChangeRegistrar->Init(prefService);
 
-    // Register to observe any changes on supervised_user status.
-    _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
-    _prefObserverBridge->ObserveChangesForPreference(
-        prefs::kSupervisedUserId, _prefChangeRegistrar.get());
+      // Register to observe any changes on supervised_user status.
+      _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
+      _prefObserverBridge->ObserveChangesForPreference(
+          prefs::kSupervisedUserId, _prefChangeRegistrar.get());
+    }
 
     _incognitoDisabled = [self isIncognitoModeDisabled];
   }
@@ -245,18 +269,62 @@
   }
 }
 
+#pragma mark - SupervisedUserCapabilitiesObserving
+
+- (void)onIsSubjectToParentalControlsCapabilityChanged:
+    (supervised_user::CapabilityUpdateState)capabilityUpdateState {
+  if (base::FeatureList::IsEnabled(
+          supervised_user::
+              kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS)) {
+    BOOL isSubjectToParentalControl =
+        (capabilityUpdateState ==
+         supervised_user::CapabilityUpdateState::kSetToTrue);
+    if (_isSubjectToParentalControl != isSubjectToParentalControl) {
+      _isSubjectToParentalControl = isSubjectToParentalControl;
+      _incognitoDisabled = [self isIncognitoModeDisabled];
+      [self.incognitoDelegate shouldDisableIncognito:_incognitoDisabled];
+    }
+
+    [self configureToolbarsButtons];
+  }
+}
+
+#pragma mark - Public
+
+- (void)initializeSupervisedUserCapabilitiesObserver:
+    (signin::IdentityManager*)identityManager {
+  if (base::FeatureList::IsEnabled(
+          supervised_user::
+              kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS)) {
+    DCHECK(identityManager);
+    _identityManager = identityManager;
+    _supervisedUserCapabilitiesObserver = std::make_unique<
+        supervised_user::SupervisedUserCapabilitiesObserverBridge>(
+        _identityManager, self);
+    _incognitoDisabled = [self isIncognitoModeDisabled];
+  }
+}
+
 #pragma mark - Private
 
 // Returns YES if incognito is disabled.
 - (BOOL)isIncognitoModeDisabled {
   DCHECK(self.browser);
   PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
-
   if (IsIncognitoModeDisabled(prefService)) {
     return YES;
   }
 
-  return supervised_user::IsSubjectToParentalControls(*prefService);
+  // Incognito mode is disabled for supervised users.
+  if (base::FeatureList::IsEnabled(
+          supervised_user::
+              kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS)) {
+    return _identityManager &&
+           supervised_user::IsPrimaryAccountSubjectToParentalControls(
+               _identityManager) == signin::Tribool::kTrue;
+  } else {
+    return supervised_user::IsSubjectToParentalControls(*prefService);
+  }
 }
 
 @end

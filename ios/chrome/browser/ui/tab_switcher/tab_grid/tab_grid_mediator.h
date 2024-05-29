@@ -18,6 +18,10 @@ namespace feature_engagement {
 class Tracker;
 }  // namespace feature_engagement
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 class PrefService;
 
 // Mediates between model layer and tab grid UI layer.
@@ -37,8 +41,10 @@ class PrefService;
 // Consumer for state changes in tab grid.
 @property(nonatomic, weak) id<TabGridConsumer> consumer;
 
-- (instancetype)initWithPrefService:(PrefService*)prefService
-           featureEngagementTracker:(feature_engagement::Tracker*)tracker
+- (instancetype)initWithIdentityManager:
+                    (signin::IdentityManager*)identityManager
+                            prefService:(PrefService*)prefService
+               featureEngagementTracker:(feature_engagement::Tracker*)tracker
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -22,6 +22,10 @@ namespace ios {
 class AccountCapabilitiesFetcherIOS;
 }  // namespace ios
 
+namespace supervised_user {
+class SupervisedUserCapabilitiesObserver;
+}  // namespace supervised_user
+
 // Stores the information about account capabilities. Capabilities provide
 // information about state and features of Gaia accounts.
 class AccountCapabilities {
@@ -119,6 +123,7 @@ class AccountCapabilities {
 #endif
   friend class AccountCapabilitiesTestMutator;
   friend class AccountTrackerService;
+  friend class supervised_user::SupervisedUserCapabilitiesObserver;
 
   // Returns the capability state using the service name.
   signin::Tribool GetCapabilityByName(const std::string& name) const;
