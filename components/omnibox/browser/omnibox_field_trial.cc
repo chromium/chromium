@@ -987,11 +987,6 @@ MLConfig::MLConfig() {
       kMlUrlScoringMaxMatchesByProvider.Get();
 
   // `kMlUrlSearchBlending` parameters.
-  stable_search_blending =
-      base::FeatureParam<bool>(&omnibox::kMlUrlSearchBlending,
-                               "MlUrlSearchBlending_StableSearchBlending",
-                               stable_search_blending)
-          .Get();
   mapped_search_blending =
       base::FeatureParam<bool>(&omnibox::kMlUrlSearchBlending,
                                "MlUrlSearchBlending_MappedSearchBlending",

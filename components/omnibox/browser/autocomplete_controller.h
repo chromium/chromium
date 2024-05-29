@@ -429,10 +429,7 @@ class AutocompleteController : public AutocompleteProviderListener,
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Runs the batch scoring for all the eligible matches in `results_.matches_`.
-  // `*WithStableSearches` avoids swapping the default suggestion from a search
-  // to a URL or vice versa. See `stable_search_blending`'s comment for details.
   void RunBatchUrlScoringModel(OldResult& old_result);
-  void RunBatchUrlScoringModelWithStableSearches(OldResult& old_result);
   void RunBatchUrlScoringModelMappedSearchBlending(OldResult& old_result);
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
