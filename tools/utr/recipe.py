@@ -42,14 +42,14 @@ def check_rdb_auth():
     return False
   cmd = [rdb_path, 'auth-info']
   try:
-    p = subprocess.run(cmd,
-                       stdout=subprocess.PIPE,
-                       stderr=subprocess.STDOUT,
-                       text=True,
-                       check=True)
-  except subprocess.CalledProcessError:
+    subprocess.run(cmd,
+                   stdout=subprocess.PIPE,
+                   stderr=subprocess.STDOUT,
+                   text=True,
+                   check=True)
+  except subprocess.CalledProcessError as e:
     logging.error('No rdb auth available:')
-    logging.error(p.stdout.strip())
+    logging.error(e.output.strip())
     logging.error("Please run 'rdb auth-login' to authenticate")
     return False
   return True
