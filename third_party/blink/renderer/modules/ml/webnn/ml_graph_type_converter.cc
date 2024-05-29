@@ -467,9 +467,10 @@ std::optional<String> ValidateConv2dDefaultFilterLayout(
 }
 
 template <typename MLConv2dOptionsType>
-base::expected<OperationPtr, String> CreateConv2dOperation(
+std::optional<String> SerializeConv2dOperation(
     const OperandToIdMap& operand_to_id_map,
-    const MLOperator* conv2d) {
+    const MLOperator* conv2d,
+    blink_mojom::GraphInfo* graph_info) {
   auto conv2d_mojo = blink_mojom::Conv2d::New();
   conv2d_mojo->input_operand_id =
       GetOperatorInputId(conv2d, operand_to_id_map, 0);
@@ -505,7 +506,7 @@ base::expected<OperationPtr, String> CreateConv2dOperation(
     // https://github.com/webmachinelearning/webnn/issues/324.
     const auto validation_result = ValidateConv2dDefaultFilterLayout(conv2d);
     if (validation_result) {
-      return base::unexpected(validation_result.value());
+      return validation_result.value();
     }
   } else if constexpr (std::is_same<MLConv2dOptionsType,
                                     MLConvTranspose2dOptions>::value) {
@@ -516,9 +517,8 @@ base::expected<OperationPtr, String> CreateConv2dOperation(
       // The filter layout is being discussed to simplify other variants in
       // WebNN working group
       // https://github.com/webmachinelearning/webnn/issues/324.
-      return base::unexpected(
-          String::Format("The filter layout %s is not supported.",
-                         options->filterLayout().AsCStr()));
+      return String::Format("The filter layout %s is not supported.",
+                            options->filterLayout().AsCStr());
     }
   } else {
     NOTREACHED_NORETURN();
@@ -538,7 +538,10 @@ base::expected<OperationPtr, String> CreateConv2dOperation(
     conv2d_mojo->activation =
         CreateActivation(operand_to_id_map, options->activation());
   }
-  return blink_mojom::Operation::NewConv2d(std::move(conv2d_mojo));
+
+  graph_info->operations.push_back(
+      blink_mojom::Operation::NewConv2d(std::move(conv2d_mojo)));
+  return std::nullopt;
 }
 
 OperationPtr CreateElementWiseBinaryOperator(
@@ -1244,110 +1247,193 @@ OperationPtr CreateWhereOperation(const OperandToIdMap& operand_to_id_map,
 }  // namespace
 
 // TODO(crbug.com/1504405): Use a lookup table to simplifie the switch logic.
-base::expected<OperationPtr, String> ConvertToMojoOperation(
-    const OperandToIdMap& operand_to_id_map,
-    const MLOperator* op) {
+std::optional<String> SerializeMojoOperation(
+    const HeapHashMap<Member<const MLOperand>, uint64_t>& operand_to_id_map,
+    const MLOperator* op,
+    webnn::mojom::blink::GraphInfo* graph_info) {
   switch (op->Kind()) {
     case blink_mojom::Operation::Tag::kArgMinMax:
-      return CreateArgMinMaxOperation(
-          operand_to_id_map, op, op->SubKind<blink_mojom::ArgMinMax::Kind>());
+      graph_info->operations.push_back(CreateArgMinMaxOperation(
+          operand_to_id_map, op, op->SubKind<blink_mojom::ArgMinMax::Kind>()));
+      break;
     case blink_mojom::Operation::Tag::kBatchNormalization:
-      return CreateBatchNormalizationOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateBatchNormalizationOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kClamp:
-      return blink_mojom::Operation::NewClamp(
-          CreateClamp(operand_to_id_map, op, false));
+      graph_info->operations.push_back(blink_mojom::Operation::NewClamp(
+          CreateClamp(operand_to_id_map, op, false)));
+      break;
     case blink_mojom::Operation::Tag::kConcat:
-      return CreateConcatOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateConcatOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kConv2d: {
+      std::optional<String> error;
       switch (op->SubKind<blink_mojom::Conv2d::Kind>()) {
-        case blink_mojom::Conv2d::Kind::kDirect:
-          return CreateConv2dOperation<MLConv2dOptions>(operand_to_id_map, op);
-        case blink_mojom::Conv2d::Kind::kTransposed:
-          return CreateConv2dOperation<MLConvTranspose2dOptions>(
-              operand_to_id_map, op);
+        case blink_mojom::Conv2d::Kind::kDirect: {
+          error = SerializeConv2dOperation<MLConv2dOptions>(operand_to_id_map,
+                                                            op, graph_info);
+          break;
+        }
+        case blink_mojom::Conv2d::Kind::kTransposed: {
+          error = SerializeConv2dOperation<MLConvTranspose2dOptions>(
+              operand_to_id_map, op, graph_info);
+          break;
+        }
       }
+      if (error) {
+        return error.value();
+      }
+      break;
     }
     case blink_mojom::Operation::Tag::kElementWiseBinary:
-      return CreateElementWiseBinaryOperator(
+      graph_info->operations.push_back(CreateElementWiseBinaryOperator(
           operand_to_id_map, op,
-          op->SubKind<blink_mojom::ElementWiseBinary::Kind>());
+          op->SubKind<blink_mojom::ElementWiseBinary::Kind>()));
+      break;
     case blink_mojom::Operation::Tag::kElementWiseUnary:
-      return CreateElementWiseUnaryOperator(
+      graph_info->operations.push_back(CreateElementWiseUnaryOperator(
           operand_to_id_map, op,
-          op->SubKind<blink_mojom::ElementWiseUnary::Kind>());
+          op->SubKind<blink_mojom::ElementWiseUnary::Kind>()));
+      break;
     case blink_mojom::Operation::Tag::kElu:
-      return blink_mojom::Operation::NewElu(
-          CreateElu(operand_to_id_map, op, false));
+      graph_info->operations.push_back(blink_mojom::Operation::NewElu(
+          CreateElu(operand_to_id_map, op, false)));
+      break;
     case blink_mojom::Operation::Tag::kExpand:
-      return CreateExpandOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateExpandOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kGather:
-      return CreateGatherOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateGatherOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kGelu:
-      return CreateGeluOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateGeluOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kGemm:
-      return CreateGemmOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateGemmOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kGru:
-      return CreateGruOperation(operand_to_id_map, op);
-    case blink_mojom::Operation::Tag::kGruCell:
-      return CreateGruCellOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateGruOperation(operand_to_id_map, op));
+      break;
+    case blink_mojom::Operation::Tag::kGruCell: {
+      ASSIGN_OR_RETURN(auto mojo_op,
+                       CreateGruCellOperation(operand_to_id_map, op));
+      graph_info->operations.push_back(std::move(mojo_op));
+      break;
+    }
     case blink_mojom::Operation::Tag::kHardSigmoid:
-      return blink_mojom::Operation::NewHardSigmoid(
-          CreateHardSigmoid(operand_to_id_map, op, false));
+      graph_info->operations.push_back(blink_mojom::Operation::NewHardSigmoid(
+          CreateHardSigmoid(operand_to_id_map, op, false)));
+      break;
     case blink_mojom::Operation::Tag::kHardSwish:
-      return CreateHardSwishOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateHardSwishOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kInstanceNormalization:
-      return CreateInstanceNormalizationOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateInstanceNormalizationOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kLayerNormalization:
-      return CreateLayerNormalizationOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateLayerNormalizationOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kLeakyRelu:
-      return blink_mojom::Operation::NewLeakyRelu(
-          CreateLeakyRelu(operand_to_id_map, op, false));
+      graph_info->operations.push_back(blink_mojom::Operation::NewLeakyRelu(
+          CreateLeakyRelu(operand_to_id_map, op, false)));
+      break;
     case blink_mojom::Operation::Tag::kLinear:
-      return blink_mojom::Operation::NewLinear(
-          CreateLinear(operand_to_id_map, op, false));
+      graph_info->operations.push_back(blink_mojom::Operation::NewLinear(
+          CreateLinear(operand_to_id_map, op, false)));
+      break;
     case blink_mojom::Operation::Tag::kLstm:
-      return CreateLstmOperation(operand_to_id_map, op);
-    case blink_mojom::Operation::Tag::kLstmCell:
-      return CreateLstmCellOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateLstmOperation(operand_to_id_map, op));
+      break;
+    case blink_mojom::Operation::Tag::kLstmCell: {
+      ASSIGN_OR_RETURN(auto mojo_op,
+                       CreateLstmCellOperation(operand_to_id_map, op));
+      graph_info->operations.push_back(std::move(mojo_op));
+      break;
+    }
     case blink_mojom::Operation::Tag::kMatmul:
-      return CreateMatmulOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateMatmulOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kPad:
-      return CreatePadOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreatePadOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kPool2d:
-      return CreatePool2dOperation(operand_to_id_map, op,
-                                   op->SubKind<blink_mojom::Pool2d::Kind>());
+      graph_info->operations.push_back(CreatePool2dOperation(
+          operand_to_id_map, op, op->SubKind<blink_mojom::Pool2d::Kind>()));
+      break;
     case blink_mojom::Operation::Tag::kPrelu:
-      return CreatePreluOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreatePreluOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kReduce:
-      return CreateReduceOperator(operand_to_id_map, op,
-                                  op->SubKind<blink_mojom::Reduce::Kind>());
+      graph_info->operations.push_back(CreateReduceOperator(
+          operand_to_id_map, op, op->SubKind<blink_mojom::Reduce::Kind>()));
+      break;
     case blink_mojom::Operation::Tag::kResample2d:
-      return CreateResample2dOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateResample2dOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kRelu:
-      return CreateReluOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateReluOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kReshape:
-      return CreateReshapeOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateReshapeOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kSigmoid:
-      return CreateSigmoidOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateSigmoidOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kSlice:
-      return CreateSliceOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateSliceOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kSoftmax:
-      return CreateSoftmaxOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateSoftmaxOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kSoftplus:
-      return CreateSoftplus(operand_to_id_map, op);
+      graph_info->operations.push_back(CreateSoftplus(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kSoftsign:
-      return CreateSoftsignOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateSoftsignOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kSplit:
-      return CreateSplitOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateSplitOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kTanh:
-      return CreateTanhOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateTanhOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kTranspose:
-      return CreateTransposeOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateTransposeOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kTriangular:
-      return CreateTriangularOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateTriangularOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kWhere:
-      return CreateWhereOperation(operand_to_id_map, op);
+      graph_info->operations.push_back(
+          CreateWhereOperation(operand_to_id_map, op));
+      break;
   }
+  return std::nullopt;
 }
 
 }  // namespace blink

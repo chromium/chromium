@@ -22,21 +22,24 @@ namespace {
 
 namespace blink_mojom = webnn::mojom::blink;
 
+uint64_t NextOperandId(const webnn::mojom::blink::GraphInfo& graph_info) {
+  // This count must start at 1 because 0 is a reserved element in a
+  // WTF::HashMap (yes, really).
+  return graph_info.id_to_operand_map.size() + 1;
+}
+
 base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
     const MLNamedOperands& named_outputs) {
   // The `GraphInfo` represents an entire information of WebNN graph.
   auto graph_info = blink_mojom::GraphInfo::New();
-  // The id used to identify operand on the server side. Each operation
-  // generates an output operand that will be inserted in a hash map with the
-  // MLOperand and id, incrementing the id by one.
-  uint64_t operand_id = 0;
+
   HeapHashMap<Member<const MLOperand>, uint64_t> operand_to_id_map;
   for (const auto& [name, operand] : named_outputs) {
     // Create `mojo::Operand` for output operands of graph with the name.
     auto output_operand =
         mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get());
     output_operand->name = name;
-    operand_id++;
+    uint64_t operand_id = NextOperandId(*graph_info);
     graph_info->id_to_operand_map.insert(operand_id, std::move(output_operand));
     graph_info->output_operands.push_back(operand_id);
     operand_to_id_map.insert(operand, operand_id);
@@ -56,7 +59,7 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
       switch (operand->Kind()) {
         case webnn::mojom::blink::Operand::Kind::kInput: {
           // Create `mojo::Operand` for the input MLOperand.
-          operand_id++;
+          uint64_t operand_id = NextOperandId(*graph_info);
           graph_info->id_to_operand_map.insert(
               operand_id,
               mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get()));
@@ -67,7 +70,7 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
         }
         case webnn::mojom::blink::Operand::Kind::kConstant: {
           // Convert `mojo::Operand` for constant operand.
-          operand_id++;
+          uint64_t operand_id = NextOperandId(*graph_info);
           graph_info->id_to_operand_map.insert(
               operand_id,
               mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get()));
@@ -98,20 +101,19 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
       // Because the graph's output operands are already converted before, this
       // operand should be an intermediate operand that connects with two
       // operators. Create `mojo::Operand` for this operand.
-      operand_id++;
+      uint64_t operand_id = NextOperandId(*graph_info);
       graph_info->id_to_operand_map.insert(
           operand_id, mojo::ConvertTo<blink_mojom::OperandPtr>(operand.Get()));
       operand_to_id_map.insert(operand, operand_id);
     }
 
     // Create `mojo::Operation` with the id of the input and output operands.
-    auto mojo_operation =
-        ConvertToMojoOperation(operand_to_id_map, current_operator.Get());
-    if (!mojo_operation.has_value()) {
+    std::optional<String> error = SerializeMojoOperation(
+        operand_to_id_map, current_operator.Get(), graph_info.get());
+    if (error.has_value()) {
       // Return here if the operator is not implemented.
-      return base::unexpected(mojo_operation.error());
+      return base::unexpected(*error);
     }
-    graph_info->operations.emplace_back(std::move(mojo_operation.value()));
   }
 
   return graph_info;
