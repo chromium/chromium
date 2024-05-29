@@ -91,6 +91,7 @@
 #import "ios/chrome/browser/tabs/model/tab_pickup/features.h"
 #import "ios/chrome/browser/text_selection/model/text_selection_util.h"
 #import "ios/chrome/browser/ui/download/features.h"
+#import "ios/chrome/browser/ui/lens/features.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/page_info/features.h"
@@ -1600,6 +1601,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"tab-group-sync", flag_descriptions::kTabGroupSync,
      flag_descriptions::kTabGroupSync, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabGroupSync)},
+    {"lens-web-page-early-transition-enabled",
+     flag_descriptions::kLensWebPageEarlyTransitionEnabledName,
+     flag_descriptions::kLensWebPageEarlyTransitionEnabledDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensWebPageEarlyTransitionEnabled)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

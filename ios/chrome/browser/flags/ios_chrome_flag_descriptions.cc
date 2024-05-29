@@ -655,6 +655,11 @@ const char kIPHiOSTabGridSwipeRightForIncognitoDescription[] =
     "Enables displaying the gesture IPH instructing users to swipe right on "
     "regular tab grid to view incognito tabs to new users.";
 
+const char kLensWebPageEarlyTransitionEnabledName[] =
+    "Lens web page early transition";
+const char kLensWebPageEarlyTransitionEnabledDescription[] =
+    "Enables earlier transitions from Lens UI to web page.";
+
 const char kLinkedServicesSettingIosName[] = "Linked Services Setting";
 const char kLinkedServicesSettingIosDescription[] =
     "Add Linked Services Setting to the Sync Settings page.";

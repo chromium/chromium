@@ -10,6 +10,7 @@ source_set("coordinator") {
     "lens_modal_animator.mm",
   ]
   deps = [
+    ":features",
     ":lens_availability",
     ":lens_entrypoint",
     "//base",
@@ -40,6 +41,14 @@ source_set("coordinator") {
     "//ios/web/public/navigation",
     "//ui/base",
   ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
 }
 
 source_set("lens_availability") {
