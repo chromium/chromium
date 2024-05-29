@@ -963,6 +963,8 @@ extern const char kIPHExtensionsMenuFeatureName[];
 extern const char kIPHExtensionsMenuFeatureDescription[];
 extern const char kIPHExtensionsRequestAccessButtonFeatureName[];
 extern const char kIPHExtensionsRequestAccessButtonFeatureDescription[];
+extern const char kExtensionManifestV2DeprecationWarningName[];
+extern const char kExtensionManifestV2DeprecationWarningDescription[];
 
 extern const char kWebAuthFlowInBrowserTabName[];
 extern const char kWebAuthFlowInBrowserTabDescription[];

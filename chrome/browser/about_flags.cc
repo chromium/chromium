@@ -9382,6 +9382,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          feature_engagement::kIPHExtensionsRequestAccessButtonFeature)},
 
+    {"extension-manifest-v2-deprecation-warning",
+     flag_descriptions::kExtensionManifestV2DeprecationWarningName,
+     flag_descriptions::kExtensionManifestV2DeprecationWarningDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         extensions_features::kExtensionManifestV2DeprecationWarning)},
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"extension-web-file-handlers",
      flag_descriptions::kExtensionWebFileHandlersName,

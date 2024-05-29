@@ -22122,6 +22122,7 @@ from previous Chrome versions.
       label="AutofillSendExperimentIdsInPaymentsRPCs:disabled"/>
   <int value="417742858" label="ImprovedSemanticsActivityIndicators:enabled"/>
   <int value="418769094" label="MixedContentSiteSetting:enabled"/>
+  <int value="419984818" label="ExtensionManifestV2DeprecationWarning:enabled"/>
   <int value="420160748" label="CornerShortcuts:enabled"/>
   <int value="420200188" label="JapaneseOSSettings:disabled"/>
   <int value="420356964" label="OobeJelly:enabled"/>
@@ -22774,6 +22775,8 @@ from previous Chrome versions.
   <int value="719614898" label="LensEnableRegionSearchOnPdfViewer:enabled"/>
   <int value="719922283" label="MessagesForAndroidSaveCard:enabled"/>
   <int value="720931007" label="WebAuthenticationBle:enabled"/>
+  <int value="721715561"
+      label="ExtensionManifestV2DeprecationWarning:disabled"/>
   <int value="722313909" label="PriceChangeModule:enabled"/>
   <int value="722334179" label="NoncedPartitionedCookies:disabled"/>
   <int value="722614233" label="TrackingProtectionOnboardingRollback:disabled"/>
