@@ -24,7 +24,7 @@ function updateMaterializedViewsReducer(currentState: State, payload: {
       id: view.viewId.toString(),
       key: `materialized-view://${view.viewId}/`,
       label: view.name,
-      icon: ICON_TYPES.DRIVE_OFFLINE,
+      icon: ICON_TYPES.STAR,
       isRoot: true,
     });
   }

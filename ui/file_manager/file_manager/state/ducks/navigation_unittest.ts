@@ -674,7 +674,7 @@ export async function testNavigationRootsWithMaterializedViews(
     id: '1',
     key: viewKey,
     label: 'test view',
-    icon: ICON_TYPES.DRIVE_OFFLINE,
+    icon: ICON_TYPES.STAR,
     isRoot: true,
   };
   await waitDeepEquals(store, [wantView], (state) => state.materializedViews);

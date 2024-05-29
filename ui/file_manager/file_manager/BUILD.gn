@@ -79,6 +79,7 @@ generate_grd("build_static_grdp") {
     "foreground/images/files/ui/shortcut.svg",
     "foreground/images/files/ui/sort_desc.svg",
     "foreground/images/files/ui/sorting_ng.svg",
+    "foreground/images/files/ui/star.svg",
     "foreground/images/files/ui/state_banner_icon.svg",
     "foreground/images/files/ui/view_list.svg",
     "foreground/images/files/ui/view_thumbnail.svg",
