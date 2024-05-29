@@ -965,6 +965,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="93" label="timelineDebugMode"/>
   <int value="94" label="timelineAnnotations"/>
   <int value="95" label="timeline-rpp-sidebar"/>
+  <int value="96" label="timelineObservations"/>
 </enum>
 
 <enum name="DevToolsIssueCreated">
