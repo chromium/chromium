@@ -241,12 +241,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define GRAPHITE_USE_APPROX_FIT_FOR_FILTERS
 
-/* When --disable-skia-runtime-opts is set in Chrome (or when SkGraphics::Init
-   is not called), Skia will prefer precision over performance when computing
-   reciprocals and inverse-square roots.
-*/
-#define SK_IMPROVE_RASTER_PIPELINE_PRECISION
-
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,
