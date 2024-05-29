@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <queue>
 #include <string>
 #include <vector>
 
@@ -39,31 +40,71 @@ class SchedulingEmbedder : public Embedder {
   void SetOnEmbedderReady(OnEmbedderReadyCallback callback) override;
 
  private:
-  // Invoked after the embedding for the original search query has been
-  // computed. Continues processing next query if one is pending.
-  void OnQueryEmbeddingComputed(ComputePassagesEmbeddingsCallback callback,
-                                std::vector<std::string> query_passages,
-                                std::vector<Embedding> query_embedding,
-                                ComputeEmbeddingsStatus status);
+  // A job consists of multiple passages, and each passage must have its
+  // embedding computed. When all are finished, the job is done and its
+  // callback will be invoked. Multiple jobs may be batched together when
+  // when submitting work to the `embedder_`, and jobs can also be broken
+  // down so that partial progress is made across multiple work submissions.
+  struct Job {
+    Job(PassageKind kind,
+        std::vector<std::string> passages,
+        ComputePassagesEmbeddingsCallback callback);
+    ~Job();
+    Job(const Job&) = delete;
+    Job& operator=(const Job&) = delete;
+    Job(Job&&);
+    Job& operator=(Job&&);
 
-  // Requests the embedder to embed the next query if one is pending.
-  void SubmitQueryToEmbedder();
+    PassageKind kind;
+    std::vector<std::string> passages;
+    ComputePassagesEmbeddingsCallback callback;
 
-  // Time when last query was submitted, if awaiting an embedder response;
-  // or nullopt if no query is currently submitted.
-  std::optional<base::Time> query_submission_time_;
+    // Completed embeddings; may be partial.
+    std::vector<Embedding> embeddings;
+  };
+  struct JobComparator {
+    bool operator()(const Job& a, const Job& b) { return a.kind > b.kind; }
+  };
 
-  // The next query to submit for embedding. Empty query strings are allowed,
-  // so optional is used to determine whether a query is pending.
-  std::optional<std::string> next_query_;
+  // Intercepts metadata so that work can be queued up while the primary
+  // embedder isn't ready. For the MlEmbedder, this avoids failing when the
+  // model hasn't loaded yet. We just wait until it's ready, then start work.
+  void OnEmbedderReady(OnEmbedderReadyCallback callback,
+                       EmbedderMetadata metadata);
 
-  // The callback associated with `next_query_` is also saved until it's
-  // submitted to the embedder.
-  ComputePassagesEmbeddingsCallback next_query_callback_;
+  // Invoked after the embedding for the current job has been computed.
+  // Continues processing next job if one is pending.
+  void OnEmbeddingsComputed(std::vector<std::string> passages,
+                            std::vector<Embedding> embedding,
+                            ComputeEmbeddingsStatus status);
+
+  // Pop top priority job from `waiting_jobs_` and return it.
+  Job PopTopJob();
+
+  // Pull jobs into work queue as needed, and submit work to embedder.
+  void SubmitWorkToEmbedder();
+
+  // Jobs that haven't started yet, organized by priority.
+  // TODO: b/343523145 - Simplify SchedulingEmbedder to use a single dequeue
+  //  instead of dequeue + priority_queue. We can append work to the
+  //  back of a single dequeue, reorder it in between work submissions,
+  //  and then submit work batches from the front of the queue.
+  std::priority_queue<Job, std::vector<Job>, JobComparator> waiting_jobs_;
+
+  // Jobs that have started, organized in order of submission to embedder.
+  // When this is non-empty, the embedder is working and its results will
+  // be applied from front to back when `OnEmbeddingsComputed` is called.
+  // Not all jobs in `working_jobs_` are necessarily being worked on by the
+  // embedder. `working_jobs_` will contain jobs that were partially
+  // completed, since a subset of a job's passages may be sent in each batch.
+  std::deque<Job> working_jobs_;
 
   // The primary embedder that does the actual embedding computations.
   // This may be slow, and we await results before sending the next request.
   std::unique_ptr<Embedder> embedder_;
+
+  // Starts false; set true when valid metadata is received from `embedder_`.
+  bool embedder_ready_{false};
 
   // The minimum and maximum number of embeddings to submit to the primary
   // embedder via the scheduling embedder. Controlling these allows embedding
