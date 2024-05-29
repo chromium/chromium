@@ -116,7 +116,8 @@
         {{category.id}}
       </div>
       <div id="appsList">
-          <template is="dom-repeat" rendered-item-count="{{category.count}}"
+          <template is="dom-repeat"
+                rendered-item-count="{{category.count::dom-change}}"
                 items="{{getApps(category.id)}}">
             <div id="[[getAppId(item.appId)]]"
                 class="app-item"
@@ -124,6 +125,7 @@
                 aria-checked="[[item.selected]]">
               <div class="content flex horizontal layout">
                 <div class="logo-container">
+                  <!-- TODO(b/343402671): Migrate from WebView to cr-auto-img. -->
                   <webview
                       id="[[getWebViewId(item.appId)]]"
                       role="img"

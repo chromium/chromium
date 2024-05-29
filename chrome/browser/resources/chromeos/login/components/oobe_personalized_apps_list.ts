@@ -114,6 +114,14 @@ export class OobePersonalizedAppsList extends OobePersonalizedAppsListBase {
     }
   }
 
+  reset(): void {
+    this.catgoriesMapApps = {};
+    this.selectedAppsCount = 0;
+    this.loadedIconsCount = 0;
+    this.categoriesItemRendered = [];
+    this.appsList = [];
+  }
+
   itemRenderedChanged(_itemRendered: CategoriesItemList): void {
     let count = 0;
     this.categoriesItemRendered.forEach((element) => {

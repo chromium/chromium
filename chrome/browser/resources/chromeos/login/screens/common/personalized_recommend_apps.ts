@@ -104,6 +104,12 @@ export class PersonalizedRecommedAppsElement extends
     this.setUIStep(PersonalizedAppsStep.LOADING);
   }
 
+  onBeforeHide(): void {
+    this.shadowRoot!
+        .querySelector<OobePersonalizedAppsList>(
+            '#categoriesAppsList')!.reset();
+  }
+
   setCategoriesAppsMapData(categoriesData: CategoriesAppsMap): void {
     assert(categoriesData !== null);
     this.shadowRoot!
