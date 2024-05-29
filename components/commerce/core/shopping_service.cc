@@ -26,6 +26,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/compare/cluster_manager.h"
+#include "components/commerce/core/compare/cluster_server_proxy.h"
 #include "components/commerce/core/compare/product_group.h"
 #include "components/commerce/core/compare/product_specifications_server_proxy.h"
 #include "components/commerce/core/discounts_storage.h"
@@ -307,9 +308,12 @@ ShoppingService::ShoppingService(
         std::make_unique<ProductSpecificationsUrlObserver>(
             &commerce_info_cache_, product_specifications_service_);
 
-    if (IsProductSpecificationsEnabled(account_checker_.get())) {
+    if (identity_manager &&
+        IsProductSpecificationsEnabled(account_checker_.get())) {
       cluster_manager_ = std::make_unique<ClusterManager>(
           product_specifications_service_,
+          std::make_unique<ClusterServerProxy>(identity_manager,
+                                               url_loader_factory),
           base::BindRepeating(&ShoppingService::GetProductInfoForUrl,
                               weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(&ShoppingService::GetUrlInfosForActiveWebWrappers,

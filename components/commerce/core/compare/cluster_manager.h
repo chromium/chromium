@@ -20,6 +20,7 @@
 #include "url/gurl.h"
 
 namespace commerce {
+class ClusterServerProxy;
 class ProductSpecificationsService;
 struct CandidateProduct;
 struct ProductGroup;
@@ -33,6 +34,7 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
       base::RepeatingCallback<const std::vector<UrlInfo>()>;
   using GetEntryPointInfoCallback =
       base::OnceCallback<void(std::optional<EntryPointInfo>)>;
+  using GetComparableUrlsCallback = base::OnceCallback<void(std::set<GURL>)>;
 
   class Observer : public base::CheckedObserver {
    public:
@@ -42,6 +44,7 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
   };
 
   ClusterManager(ProductSpecificationsService* product_specification_service,
+                 std::unique_ptr<ClusterServerProxy> cluster_server_proxy,
                  const GetProductInfoCallback& get_product_info_cb,
                  const GetOpenUrlInfosCallback& get_open_url_infos_cb);
   ~ClusterManager() override;
@@ -92,6 +95,10 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
   std::vector<GURL> FindSimilarCandidateProductsForProductGroup(
       const base::Uuid& uuid);
 
+  // Finds comparable URLs for a list of URLs.
+  void GetComparableUrls(const std::set<GURL>& product_urls,
+                         GetComparableUrlsCallback callback);
+
   // Registers an observer for cluster manager.
   void AddObserver(Observer* observer);
 
@@ -123,6 +130,12 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
   // Finds similar candidate products for a candidate product. The returned
   // URLs doesn't include the `product_url`.
   std::set<GURL> FindSimilarCandidateProducts(const GURL& product_url);
+
+  void OnGetComparableUrls(GetComparableUrlsCallback callback,
+                           bool success,
+                           const std::set<GURL>& comparable_urls);
+
+  std::unique_ptr<ClusterServerProxy> cluster_server_proxy_;
 
   // Callback to get product info.
   GetProductInfoCallback get_product_info_cb_;

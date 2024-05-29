@@ -11,6 +11,7 @@
 
 #include "base/barrier_callback.h"
 #include "components/commerce/core/compare/candidate_product.h"
+#include "components/commerce/core/compare/cluster_server_proxy.h"
 #include "components/commerce/core/compare/product_group.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 
@@ -131,9 +132,11 @@ bool IsCandidateProductInProductGroup(
 
 ClusterManager::ClusterManager(
     ProductSpecificationsService* product_specification_service,
+    std::unique_ptr<ClusterServerProxy> cluster_server_proxy,
     const GetProductInfoCallback& get_product_info_cb,
     const GetOpenUrlInfosCallback& get_open_url_infos_cb)
-    : get_product_info_cb_(get_product_info_cb),
+    : cluster_server_proxy_(std::move(cluster_server_proxy)),
+      get_product_info_cb_(get_product_info_cb),
       get_open_url_infos_cb_(get_open_url_infos_cb) {
   const std::vector<ProductSpecificationsSet> product_specifications_sets =
       product_specification_service->GetAllProductSpecifications();
@@ -322,6 +325,14 @@ void ClusterManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void ClusterManager::GetComparableUrls(const std::set<GURL>& product_urls,
+                                       GetComparableUrlsCallback callback) {
+  cluster_server_proxy_->GetComparableUrls(
+      product_urls,
+      base::BindOnce(&ClusterManager::OnGetComparableUrls,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 std::set<GURL> ClusterManager::FindSimilarCandidateProducts(
     const GURL& product_url) {
   std::set<GURL> similar_candidate_products;
@@ -355,9 +366,9 @@ void ClusterManager::GetEntryPointInfoForNavigation(
   }
 
   similar_urls.insert(url);
+
   std::optional<std::string> title =
       GetShortestLabelAtBottom(candidate_product_map_[url]->category_data);
-  // TODO(qinmin): Call server to check if the products can be clustered.
   std::move(callback).Run(std::make_optional<EntryPointInfo>(
       title ? title.value() : "", std::move(similar_urls)));
 }
@@ -377,6 +388,7 @@ void ClusterManager::GetEntryPointInfoForSelection(
     return;
   }
   similar_urls.merge(similar_urls_new);
+
   std::optional<std::string> title_old =
       GetShortestLabelAtBottom(candidate_product_map_[old_url]->category_data);
   std::optional<std::string> title_new =
@@ -390,9 +402,31 @@ void ClusterManager::GetEntryPointInfoForSelection(
   } else {
     title = std::move(title_old);
   }
-  // TODO(qinmin): Call server to check if the products can be clustered.
   std::move(callback).Run(std::make_optional<EntryPointInfo>(
       title ? title.value() : "", std::move(similar_urls)));
+}
+
+void ClusterManager::OnGetComparableUrls(
+    GetComparableUrlsCallback callback,
+    bool success,
+    const std::set<GURL>& comparable_urls) {
+  if (!success) {
+    std::move(callback).Run(std::set<GURL>());
+    return;
+  }
+
+  std::set<GURL> open_urls;
+  const std::vector<UrlInfo> url_infos = get_open_url_infos_cb_.Run();
+  for (const auto& url : comparable_urls) {
+    for (const UrlInfo& url_info : url_infos) {
+      if (url == url_info.url) {
+        open_urls.emplace(url);
+        break;
+      }
+    }
+  }
+
+  std::move(callback).Run(std::move(open_urls));
 }
 
 }  // namespace commerce

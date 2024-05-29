@@ -5,6 +5,7 @@
 #include "components/commerce/core/mock_cluster_manager.h"
 
 #include "base/task/sequenced_task_runner.h"
+#include "components/commerce/core/compare/cluster_server_proxy.h"
 
 namespace commerce {
 
@@ -12,6 +13,7 @@ MockClusterManager::MockClusterManager(
     ProductSpecificationsService* product_specifications_service)
     : ClusterManager(
           product_specifications_service,
+          nullptr,
           base::RepeatingCallback<void(const GURL&, ProductInfoCallback)>(),
           base::RepeatingCallback<const std::vector<UrlInfo>()>()) {}
 

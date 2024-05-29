@@ -15,11 +15,13 @@
 #include "base/test/task_environment.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/compare/candidate_product.h"
+#include "components/commerce/core/compare/cluster_server_proxy.h"
 #include "components/commerce/core/compare/product_group.h"
 #include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/proto/product_category.pb.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -57,6 +59,7 @@ class ClusterManagerTest : public testing::Test {
         .Times(1);
     cluster_manager_ = std::make_unique<ClusterManager>(
         product_specification_service_.get(),
+        std::make_unique<ClusterServerProxy>(nullptr, nullptr),
         base::BindRepeating(&ClusterManagerTest::GetProductInfo,
                             base::Unretained(this)),
         base::BindRepeating(&ClusterManagerTest::url_infos,
@@ -165,6 +168,18 @@ class ClusterManagerTest : public testing::Test {
     run_loop.Run();
   }
 
+  void GetComparableUrls(const std::set<GURL> urls_to_compare,
+                         std::set<GURL>* result) {
+    base::RunLoop run_loop;
+    cluster_manager_->GetComparableUrls(
+        urls_to_compare,
+        base::BindOnce([](std::set<GURL>* ret,
+                          std::set<GURL> urls) { *ret = std::move(urls); },
+                       result)
+            .Then(run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MockProductSpecificationsService>
       product_specification_service_;
@@ -200,6 +215,7 @@ TEST_F(ClusterManagerTest,
       .Times(1);
   cluster_manager_ = std::make_unique<ClusterManager>(
       product_specification_service_.get(),
+      std::make_unique<ClusterServerProxy>(nullptr, nullptr),
       base::BindRepeating(&ClusterManagerTest::GetProductInfo,
                           base::Unretained(this)),
       base::BindRepeating(&ClusterManagerTest::url_infos,
@@ -709,4 +725,23 @@ TEST_F(ClusterManagerTest, ClusterManagerObserver) {
   cluster_manager_->DidNavigatePrimaryMainFrame(foo2);
   base::RunLoop().RunUntilIdle();
 }
+
+TEST_F(ClusterManagerTest, TabClosedWhenGetComparableUrls) {
+  GURL foo1(kTestUrl1);
+  GURL foo2(kTestUrl2);
+  GURL foo3(kTestUrl3);
+  std::set<GURL> comparable_urls{foo1, foo2, foo3};
+  UpdateUrlInfos(
+      std::vector<GURL>(comparable_urls.begin(), comparable_urls.end()));
+  std::set<GURL> result_urls;
+  GetComparableUrls(comparable_urls, &result_urls);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(result_urls, comparable_urls);
+
+  UpdateUrlInfos(std::vector<GURL>{foo1, foo2});
+  GetComparableUrls(comparable_urls, &result_urls);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(result_urls, (std::set<GURL>{foo1, foo2}));
+}
+
 }  // namespace commerce
