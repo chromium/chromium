@@ -40,6 +40,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -58,8 +59,10 @@ namespace plus_addresses {
 
 namespace {
 const float kDescriptionWidthPercent = 0.8;
+const int kPlusAddressIconWidth = 24;
 const int kGoogleGLogoWidth = 50;
 const int kPlusAddressLogoWidth = 100;
+const int kPlusAddressIconColumnWidth = 64;
 const int kPlusAddressRefreshColumnWidth = 48;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const gfx::VectorIcon& kGoogleGLogoIcon = vector_icons::kGoogleGLogoIcon;
@@ -218,23 +221,45 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
       primary_view->AddChildView(views::Builder<views::TableLayoutView>()
                                      .SetBackground(std::move(background))
                                      .Build());
+
+  const bool add_plus_address_icon =
+      base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign);
   label_container->SetProperty(
       views::kMarginsKey,
       gfx::Insets::VH(GetPlusAddressLabelVerticalMargin(), 0));
-  if (offer_refresh) {
+  if (add_plus_address_icon) {
+    label_container->AddColumn(
+        views::LayoutAlignment::kCenter, views::LayoutAlignment::kCenter,
+        views::TableLayout::kFixedSize, views::TableLayout::ColumnSize::kFixed,
+        kPlusAddressIconColumnWidth, 0);
+  } else if (offer_refresh) {
     label_container->AddPaddingColumn(views::TableLayout::kFixedSize,
                                       kPlusAddressRefreshColumnWidth);
   }
   label_container->AddColumn(
-      views::LayoutAlignment::kCenter, views::LayoutAlignment::kCenter, 1.0f,
+      add_plus_address_icon ? views::LayoutAlignment::kStart
+                            : views::LayoutAlignment::kCenter,
+      views::LayoutAlignment::kCenter, 1.0f,
       views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
   if (offer_refresh) {
     label_container->AddColumn(
         views::LayoutAlignment::kStart, views::LayoutAlignment::kStretch,
         views::TableLayout::kFixedSize, views::TableLayout::ColumnSize::kFixed,
         kPlusAddressRefreshColumnWidth, 0);
+  } else if (add_plus_address_icon) {
+    label_container->AddPaddingColumn(views::TableLayout::kFixedSize,
+                                      kPlusAddressIconColumnWidth);
   }
   label_container->AddRows(1, views::TableLayout::kFixedSize);
+
+  if (add_plus_address_icon) {
+    label_container->AddChildView(
+        views::Builder<views::ImageView>()
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                // TODO(b/342330801): Use plus address icon when it's designed.
+                kPlusAddressLogoIcon, ui::kColorIcon, kPlusAddressIconWidth))
+            .Build());
+  }
 
   plus_address_label_ = label_container->AddChildView(
       views::Builder<views::Label>()
