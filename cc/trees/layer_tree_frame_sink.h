@@ -37,6 +37,8 @@ struct BeginFrameAck;
 }  // namespace viz
 
 namespace cc {
+
+class LayerContext;
 class LayerTreeFrameSinkClient;
 
 // An interface for submitting CompositorFrames to a display compositor
@@ -49,6 +51,9 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
                                      public viz::ContextLostObserver,
                                      public gpu::GpuChannelLostObserver {
  public:
+  // Constructor for a frame sink local to the GPU process.
+  LayerTreeFrameSink();
+
   // Constructor for GL-based and/or software resources.
   //
   // |compositor_task_runner| is used to post worker context lost callback and
@@ -138,6 +143,10 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
   // the client did not lead to a CompositorFrame submission.
   virtual void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                                   FrameSkippedReason reason) = 0;
+
+  // Creates a new LayerContext through which the client can control layers in
+  // a GPU-side display tree.
+  virtual std::unique_ptr<LayerContext> CreateLayerContext();
 
   // viz::SharedBitmapReporter implementation.
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,

@@ -16,6 +16,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "cc/base/histograms.h"
+#include "cc/mojo_embedder/viz_layer_context.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -276,6 +277,11 @@ void AsyncLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
         data->set_frame_skipped_reason(to_proto_enum(reason));
       });
   compositor_frame_sink_ptr_->DidNotProduceFrame(ack);
+}
+
+std::unique_ptr<LayerContext> AsyncLayerTreeFrameSink::CreateLayerContext() {
+  CHECK(compositor_frame_sink_ptr_);
+  return std::make_unique<VizLayerContext>(*compositor_frame_sink_ptr_);
 }
 
 void AsyncLayerTreeFrameSink::DidAllocateSharedBitmap(

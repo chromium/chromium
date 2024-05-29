@@ -223,6 +223,10 @@ CC_BASE_EXPORT extern const char
     kScrollEventDispatchModeDispatchScrollEventsImmediately[];
 CC_BASE_EXPORT extern const char
     kScrollEventDispatchModeUseScrollPredictorForEmptyQueue[];
+
+// Enables GPU-side layer trees for content rendering.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kVizLayers);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

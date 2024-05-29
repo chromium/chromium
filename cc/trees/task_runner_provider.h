@@ -33,6 +33,13 @@ class CC_EXPORT TaskRunnerProvider {
         new TaskRunnerProvider(main_task_runner, impl_task_runner));
   }
 
+  static std::unique_ptr<TaskRunnerProvider> CreateForDisplayTree(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    auto provider = Create(task_runner, task_runner);
+    provider->for_display_tree_ = true;
+    return provider;
+  }
+
   TaskRunnerProvider(const TaskRunnerProvider&) = delete;
   TaskRunnerProvider& operator=(const TaskRunnerProvider&) = delete;
 
@@ -71,6 +78,13 @@ class CC_EXPORT TaskRunnerProvider {
   bool impl_thread_is_overridden_;
   bool is_main_thread_blocked_;
 #endif
+
+  // For GPU-side display trees, TaskRunnerProvider treats the main thread as
+  // both the "main" thread and the "impl" thread to placate various assertions
+  // about which thread is doing what inside the layer tree. This is a
+  // sufficient adaptation since the display tree consists only of a manually
+  // driven LayerTreeHostImpl on a single thread with no Proxy or Scheduler.
+  bool for_display_tree_ = false;
 };
 
 #if DCHECK_IS_ON()

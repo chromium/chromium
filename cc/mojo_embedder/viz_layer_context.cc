@@ -6,16 +6,12 @@
 
 #include <utility>
 
-#include "base/check.h"
-#include "cc/trees/layer_context_client.h"
+#include "cc/trees/layer_tree_impl.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
 
 namespace cc::mojo_embedder {
 
-VizLayerContext::VizLayerContext(viz::mojom::CompositorFrameSink& frame_sink,
-                                 cc::LayerContextClient* client)
-    : client_(client) {
-  CHECK(client_);
+VizLayerContext::VizLayerContext(viz::mojom::CompositorFrameSink& frame_sink) {
   auto context = viz::mojom::PendingLayerContext::New();
   context->receiver = service_.BindNewEndpointAndPassReceiver();
   context->client = client_receiver_.BindNewEndpointAndPassRemote();
@@ -24,26 +20,18 @@ VizLayerContext::VizLayerContext(viz::mojom::CompositorFrameSink& frame_sink,
 
 VizLayerContext::~VizLayerContext() = default;
 
-void VizLayerContext::SetTargetLocalSurfaceId(const viz::LocalSurfaceId& id) {
-  service_->SetTargetLocalSurfaceId(id);
-}
-
 void VizLayerContext::SetVisible(bool visible) {
   service_->SetVisible(visible);
 }
 
-void VizLayerContext::Commit(const CommitState& state) {
-  // TODO(crbug.com/40902503): Push actual commit data. For now we only
-  // update basic parameters required for any LayerTreeHost drawing.
+void VizLayerContext::UpdateDisplayTreeFrom(LayerTreeImpl& tree) {
+  // TODO(crbug.com/40902503): Push actual tree updates.
   auto update = viz::mojom::LayerTreeUpdate::New();
-  update->device_viewport = state.device_viewport_rect;
-  update->device_scale_factor = state.device_scale_factor;
-  update->local_surface_id_from_parent = state.local_surface_id_from_parent;
+  update->local_surface_id_from_parent = tree.local_surface_id_from_parent();
   service_->Commit(std::move(update));
 }
 
 void VizLayerContext::OnRequestCommitForFrame(const viz::BeginFrameArgs& args) {
-  client_->OnRequestCommitForFrame(args);
 }
 
 }  // namespace cc::mojo_embedder

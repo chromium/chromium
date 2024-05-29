@@ -184,6 +184,8 @@ SchedulerStateMachine::ActionToProtozeroEnum(Action action) {
       return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_DRAW_FORCED;
     case Action::DRAW_ABORT:
       return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_DRAW_ABORT;
+    case Action::UPDATE_DISPLAY_TREE:
+      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_UPDATE_DISPLAY_TREE;
     case Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION:
       return pbzeroSchedulerAction::
           CC_SCHEDULER_ACTION_V2_BEGIN_LAYER_TREE_FRAME_SINK_CREATION;
@@ -365,6 +367,10 @@ bool SchedulerStateMachine::ShouldBeginLayerTreeFrameSinkCreation() const {
 }
 
 bool SchedulerStateMachine::ShouldDraw() const {
+  if (settings_.use_layer_context_for_display) {
+    return false;
+  }
+
   // If we need to abort draws, we should do so ASAP since the draw could
   // be blocking other important actions (like output surface initialization),
   // from occurring. If we are waiting for the first draw, then perform the
@@ -413,6 +419,22 @@ bool SchedulerStateMachine::ShouldDraw() const {
     return true;
 
   return needs_redraw_;
+}
+
+bool SchedulerStateMachine::ShouldUpdateDisplayTree() const {
+  if (!settings_.use_layer_context_for_display) {
+    return false;
+  }
+
+  if (did_update_display_tree_) {
+    return false;
+  }
+
+  if (layer_tree_frame_sink_state_ != LayerTreeFrameSinkState::ACTIVE) {
+    return false;
+  }
+
+  return needs_update_display_tree_;
 }
 
 bool SchedulerStateMachine::ShouldActivateSyncTree() const {
@@ -731,6 +753,9 @@ SchedulerStateMachine::Action SchedulerStateMachine::NextAction() const {
     else
       return Action::DRAW_IF_POSSIBLE;
   }
+  if (ShouldUpdateDisplayTree()) {
+    return Action::UPDATE_DISPLAY_TREE;
+  }
   if (ShouldPerformImplSideInvalidation())
     return Action::PERFORM_IMPL_SIDE_INVALIDATION;
   if (ShouldPrepareTiles())
@@ -994,7 +1019,12 @@ void SchedulerStateMachine::WillActivate() {
   pending_tree_is_ready_for_activation_ = false;
   active_tree_needs_first_draw_ = pending_tree_needs_first_draw_on_activation_;
   pending_tree_needs_first_draw_on_activation_ = false;
-  needs_redraw_ = true;
+  if (settings_.use_layer_context_for_display) {
+    needs_update_display_tree_ = true;
+    did_update_display_tree_ = false;
+  } else {
+    needs_redraw_ = true;
+  }
   waiting_for_activation_after_rendering_resumed_ = false;
 
   previous_pending_tree_was_impl_side_ = current_pending_tree_is_impl_side_;
@@ -1078,6 +1108,11 @@ void SchedulerStateMachine::WillDraw() {
   // in WillDrawInternal because AbortDraw calls WillDrawInternal but shouldn't
   // request another frame.
   did_attempt_draw_in_last_frame_ = true;
+}
+
+void SchedulerStateMachine::WillUpdateDisplayTree() {
+  needs_update_display_tree_ = false;
+  did_update_display_tree_ = true;
 }
 
 void SchedulerStateMachine::DidDraw(DrawResult draw_result) {
@@ -1517,6 +1552,11 @@ void SchedulerStateMachine::SetNeedsRedraw() {
   needs_redraw_ = true;
 }
 
+void SchedulerStateMachine::SetNeedsUpdateDisplayTree() {
+  needs_update_display_tree_ = true;
+  did_update_display_tree_ = false;
+}
+
 void SchedulerStateMachine::SetNeedsPrepareTiles() {
   if (!needs_prepare_tiles_) {
     TRACE_EVENT0("cc", "SchedulerStateMachine::SetNeedsPrepareTiles");
@@ -1640,6 +1680,7 @@ void SchedulerStateMachine::DidLoseLayerTreeFrameSink() {
     return;
   layer_tree_frame_sink_state_ = LayerTreeFrameSinkState::NONE;
   needs_redraw_ = false;
+  needs_update_display_tree_ = false;
 }
 
 bool SchedulerStateMachine::NotifyReadyToActivate() {

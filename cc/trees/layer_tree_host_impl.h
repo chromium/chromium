@@ -88,6 +88,7 @@ class ImageAnimationController;
 class ImageDecodeCache;
 class LCDTextMetricsReporter;
 class LatencyInfoSwapPromiseMonitor;
+class LayerContext;
 class LayerImpl;
 class LayerTreeFrameSink;
 class LayerTreeImpl;
@@ -122,6 +123,7 @@ class LayerTreeHostImplClient {
   // LayerTreeHostImpl's SetNeedsRedraw() and SetNeedsOneBeginImplFrame().
   virtual void SetNeedsRedrawOnImplThread() = 0;
   virtual void SetNeedsOneBeginImplFrameOnImplThread() = 0;
+  virtual void SetNeedsUpdateDisplayTreeOnImplThread() = 0;
   virtual void SetNeedsCommitOnImplThread() = 0;
   virtual void SetNeedsPrepareTilesOnImplThread() = 0;
   virtual void SetVideoNeedsBeginFrames(bool needs_begin_frames) = 0;
@@ -484,6 +486,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Must be called if and only if PrepareToDraw was called.
   void DidDrawAllLayers(const FrameData& frame);
 
+  // Pushes differential updates to the display tree via a LayerContext.
+  void UpdateDisplayTree(FrameData& frame);
+
   const LayerTreeSettings& settings() const { return settings_; }
 
   // Evict all textures by enforcing a memory policy with an allocation of 0.
@@ -696,6 +701,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void SetNeedsOneBeginImplFrame();
   void SetNeedsRedraw();
+  void SetNeedsUpdateDisplayTree();
 
   ManagedMemoryPolicy ActualManagedMemoryPolicy() const;
 
@@ -940,6 +946,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   BeginFrameTracker current_begin_frame_tracker_;
 
  private:
+  void UpdateChildLocalSurfaceId();
+
   void CollectScrollbarUpdatesForCommit(
       CompositorCommitData* commit_data) const;
 
@@ -1051,11 +1059,16 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Returns whether the LayerTreeHostImpl is running on a renderer process.
   bool RunningOnRendererProcess() const;
 
+  // Flags the tree as needing either a redraw or a display tree updating,
+  // depending on whether or not it has a display tree.
+  void SetNeedsRedrawOrUpdateDisplayTree();
+
   // Once bound, this instance owns the InputHandler. However, an InputHandler
   // need not be bound so this should be null-checked before dereferencing.
   std::unique_ptr<InputDelegateForCompositor> input_delegate_;
 
   const LayerTreeSettings settings_;
+  const bool use_layer_context_for_display_;
 
   // This is set to true only if:
   //  . The compositor is running single-threaded (i.e. there is no separate
@@ -1082,6 +1095,11 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // A pointer used for communicating with and submitting output to the display
   // compositor.
   raw_ptr<LayerTreeFrameSink> layer_tree_frame_sink_ = nullptr;
+
+  // Valid when we have a LayerTreeFrameSink and
+  // `use_layer_context_for_display_` is true. This object pushes updates to a
+  // remote display tree.
+  std::unique_ptr<LayerContext> layer_context_;
 
   // The following scoped variables must not outlive the
   // |layer_tree_frame_sink_|.

@@ -59,6 +59,10 @@ class CC_EXPORT SchedulerSettings {
   bool scroll_deadline_mode_enabled = false;
   double scroll_deadline_ratio = 0.333;
 
+  // Whether the tree is pushing updates to a separate display tree via a
+  // LayerContext, rather than drawing directly to a compositor frame.
+  bool use_layer_context_for_display = false;
+
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> AsValue() const;
 };
 

@@ -24,6 +24,11 @@ LayerTreeSettings::LayerTreeSettings()
 LayerTreeSettings::LayerTreeSettings(const LayerTreeSettings& other) = default;
 LayerTreeSettings::~LayerTreeSettings() = default;
 
+bool LayerTreeSettings::UseLayerContextForDisplay() const {
+  return use_layer_lists && !is_display_tree &&
+         base::FeatureList::IsEnabled(features::kVizLayers);
+}
+
 SchedulerSettings LayerTreeSettings::ToSchedulerSettings() const {
   SchedulerSettings scheduler_settings;
   scheduler_settings.main_frame_before_activation_enabled =
@@ -33,6 +38,8 @@ SchedulerSettings LayerTreeSettings::ToSchedulerSettings() const {
   scheduler_settings.wait_for_all_pipeline_stages_before_draw =
       wait_for_all_pipeline_stages_before_draw;
   scheduler_settings.disable_frame_rate_limit = disable_frame_rate_limit;
+  scheduler_settings.use_layer_context_for_display =
+      UseLayerContextForDisplay();
 
   if (!single_thread_proxy_scheduler) {
     const std::string mode_name = ::features::kScrollEventDispatchMode.Get();

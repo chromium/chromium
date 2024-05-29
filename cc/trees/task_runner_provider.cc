@@ -12,14 +12,17 @@ base::SingleThreadTaskRunner* TaskRunnerProvider::MainThreadTaskRunner() const {
 }
 
 bool TaskRunnerProvider::HasImplThread() const {
-  return !!impl_task_runner_.get();
+  return for_display_tree_ || !!impl_task_runner_.get();
 }
 
 base::SingleThreadTaskRunner* TaskRunnerProvider::ImplThreadTaskRunner() const {
-  return impl_task_runner_.get();
+  return for_display_tree_ ? main_task_runner_.get() : impl_task_runner_.get();
 }
 
 bool TaskRunnerProvider::IsMainThread() const {
+  if (for_display_tree_) {
+    return true;
+  }
 #if DCHECK_IS_ON()
   if (impl_thread_is_overridden_)
     return false;
@@ -35,6 +38,9 @@ bool TaskRunnerProvider::IsMainThread() const {
 }
 
 bool TaskRunnerProvider::IsImplThread() const {
+  if (for_display_tree_) {
+    return true;
+  }
 #if DCHECK_IS_ON()
   if (impl_thread_is_overridden_)
     return true;
@@ -53,6 +59,13 @@ void TaskRunnerProvider::SetCurrentThreadIsImplThread(bool is_impl_thread) {
 #endif
 
 bool TaskRunnerProvider::IsMainThreadBlocked() const {
+  if (for_display_tree_) {
+    // There's no need for thread blocking on the display tree. Since this
+    // method is used in various places only to assert that the thread is
+    // blocked (never to assert that it's *not* blocked), we lie to bypass such
+    // assertions.
+    return true;
+  }
 #if DCHECK_IS_ON()
   return is_main_thread_blocked_;
 #else

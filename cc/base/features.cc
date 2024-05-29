@@ -226,4 +226,6 @@ constexpr const char kScrollEventDispatchModeDispatchScrollEventsImmediately[] =
 constexpr const char kScrollEventDispatchModeUseScrollPredictorForEmptyQueue[] =
     "UseScrollPredictorForEmptyQueue";
 
+BASE_FEATURE(kVizLayers, "VizLayers", base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

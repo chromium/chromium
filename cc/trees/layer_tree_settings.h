@@ -30,6 +30,17 @@ class CC_EXPORT LayerTreeSettings {
   SchedulerSettings ToSchedulerSettings() const;
   TileManagerSettings ToTileManagerSettings() const;
 
+  // If true, this tree doesn't draw itself. Instead upon activation it pushes
+  // differential updates to a remote (GPU-side) display tree which is drawn
+  // using tile resources prepared by this tree.
+  bool UseLayerContextForDisplay() const;
+
+  // If true, this is a GPU-side display tree receiving updates from a remote
+  // client via the LayerContext API. Such trees do no raster work of their own
+  // and submit compositor frames directly within Viz using tiles rastered by
+  // the remote client.
+  bool is_display_tree = false;
+
   bool single_thread_proxy_scheduler = true;
   bool main_frame_before_activation_enabled = false;
   bool using_synchronous_renderer_compositor = false;

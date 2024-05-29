@@ -18,16 +18,11 @@ class CC_EXPORT LayerContext {
  public:
   virtual ~LayerContext() = default;
 
-  // Indicates that a new LocalSurfaceId has been set for the frame sink hosting
-  // this tree.
-  virtual void SetTargetLocalSurfaceId(const viz::LocalSurfaceId& id) = 0;
-
   // Globally controls the visibility of layers within the tree.
   virtual void SetVisible(bool visible) = 0;
 
-  // Flushes pending updates to the backing LayerTreeHostImpl. `state`
-  // represents the pending CommitState for the client-side LayerTreeHost.
-  virtual void Commit(const CommitState& state) = 0;
+  // Pushes updates from `tree` into the the context's display tree.
+  virtual void UpdateDisplayTreeFrom(LayerTreeImpl& tree) = 0;
 };
 
 }  // namespace cc

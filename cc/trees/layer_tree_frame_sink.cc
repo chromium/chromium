@@ -5,6 +5,7 @@
 #include "cc/trees/layer_tree_frame_sink.h"
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/feature_list.h"
@@ -12,6 +13,7 @@
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/trees/layer_context.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
@@ -45,6 +47,10 @@ class LayerTreeFrameSink::ContextLostForwarder
   base::WeakPtr<LayerTreeFrameSink> frame_sink_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
+
+LayerTreeFrameSink::LayerTreeFrameSink()
+    : LayerTreeFrameSink(nullptr, nullptr, nullptr, nullptr, nullptr) {}
+
 LayerTreeFrameSink::LayerTreeFrameSink(
     scoped_refptr<viz::RasterContextProvider> context_provider,
     scoped_refptr<RasterContextProviderWrapper> worker_context_provider_wrapper,
@@ -151,6 +157,10 @@ void LayerTreeFrameSink::DetachFromClient() {
     shared_image_interface_.reset();
     client_task_runner_.reset();
   }
+}
+
+std::unique_ptr<LayerContext> LayerTreeFrameSink::CreateLayerContext() {
+  return nullptr;
 }
 
 void LayerTreeFrameSink::OnContextLost() {

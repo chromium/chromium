@@ -90,6 +90,7 @@
 #include "cc/trees/effect_node.h"
 #include "cc/trees/image_animation_controller.h"
 #include "cc/trees/latency_info_swap_promise_monitor.h"
+#include "cc/trees/layer_context.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/mobile_optimized_viewport_util.h"
@@ -301,12 +302,12 @@ void LayerTreeHostImpl::DidEndPinchZoom() {
   // so updating draw properties and drawing will ensure we are using the right
   // scales that we want when we're not inside a pinch.
   active_tree_->set_needs_update_draw_properties();
-  SetNeedsRedraw();
+  SetNeedsRedrawOrUpdateDisplayTree();
   frame_trackers_.StopSequence(FrameSequenceTrackerType::kPinchZoom);
 }
 
 void LayerTreeHostImpl::DidUpdatePinchZoom() {
-  SetNeedsRedraw();
+  SetNeedsRedrawOrUpdateDisplayTree();
   client_->RenewTreePriority();
 }
 
@@ -342,7 +343,7 @@ void LayerTreeHostImpl::SetNeedsFullViewportRedraw() {
   // TODO(bokan): Do these really need to be manually called? (Rather than
   // damage/redraw being set from scroll offset changes).
   SetFullViewportDamage();
-  SetNeedsRedraw();
+  SetNeedsRedrawOrUpdateDisplayTree();
 }
 
 void LayerTreeHostImpl::SetDeferBeginMainFrame(
@@ -420,8 +421,11 @@ LayerTreeHostImpl::LayerTreeHostImpl(
       task_runner_provider_(task_runner_provider),
       current_begin_frame_tracker_(FROM_HERE),
       settings_(settings),
-      is_synchronous_single_threaded_(!task_runner_provider->HasImplThread() &&
-                                      !settings_.single_thread_proxy_scheduler),
+      use_layer_context_for_display_(settings_.UseLayerContextForDisplay()),
+      is_synchronous_single_threaded_(
+          !task_runner_provider->HasImplThread() &&
+          !settings_.single_thread_proxy_scheduler &&
+          !use_layer_context_for_display_),
       cached_managed_memory_policy_(settings.memory_policy),
       // Must be initialized after is_synchronous_single_threaded_ and
       // task_runner_provider_.
@@ -708,6 +712,8 @@ void LayerTreeHostImpl::RecordGpuRasterizationHistogram() {
 }
 
 void LayerTreeHostImpl::CommitComplete() {
+  DCHECK(!settings_.is_display_tree);
+
   TRACE_EVENT0("cc", "LayerTreeHostImpl::CommitComplete");
 
   if (input_delegate_)
@@ -771,6 +777,8 @@ void LayerTreeHostImpl::CommitComplete() {
 }
 
 void LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation() {
+  DCHECK(!settings_.is_display_tree);
+
   sync_tree()->set_needs_update_draw_properties();
 
   // We need an update immediately post-commit to have the opportunity to create
@@ -928,7 +936,7 @@ void LayerTreeHostImpl::OnPaintWorkletResultsReady(PaintWorkletJobMap results) {
 
 void LayerTreeHostImpl::NotifyPendingTreeFullyPainted() {
   // The pending tree must be fully painted at this point.
-  DCHECK(pending_tree_fully_painted_);
+  DCHECK(pending_tree_fully_painted_ && !settings_.is_display_tree);
 
   // Nobody should claim the pending tree is fully painted if there is an
   // ongoing dispatch.
@@ -1043,11 +1051,13 @@ void LayerTreeHostImpl::AnimateInternal() {
 
     // If the tree changed, then we want to draw at the end of the current
     // frame.
-    SetNeedsRedraw();
+    SetNeedsRedrawOrUpdateDisplayTree();
   }
 }
 
 bool LayerTreeHostImpl::PrepareTiles() {
+  DCHECK(!settings_.is_display_tree);
+
   if (!tile_priorities_dirty_)
     return false;
 
@@ -1153,7 +1163,8 @@ std::string LayerTreeHostImpl::FrameData::ToString() const {
 DrawMode LayerTreeHostImpl::GetDrawMode() const {
   if (resourceless_software_draw_) {
     return DRAW_MODE_RESOURCELESS_SOFTWARE;
-  } else if (layer_tree_frame_sink_->context_provider()) {
+  } else if (layer_tree_frame_sink_->context_provider() ||
+             settings_.is_display_tree) {
     return DRAW_MODE_HARDWARE;
   } else {
     return DRAW_MODE_SOFTWARE;
@@ -1525,7 +1536,7 @@ void LayerTreeHostImpl::SetViewportDamage(const gfx::Rect& damage_rect) {
 }
 
 void LayerTreeHostImpl::InvalidateContentOnImplSide() {
-  DCHECK(!pending_tree_);
+  DCHECK(!pending_tree_ && !settings_.is_display_tree);
   // Invalidation should never be ran outside the impl frame for non
   // synchronous compositor mode. For devices that use synchronous compositor,
   // e.g. Android Webview, the assertion is not guaranteed because it may ask
@@ -1548,6 +1559,8 @@ void LayerTreeHostImpl::InvalidateLayerTreeFrameSink(bool needs_redraw) {
 }
 
 DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame) {
+  DCHECK(!use_layer_context_for_display_);
+
   TRACE_EVENT1("cc", "LayerTreeHostImpl::PrepareToDraw", "SourceFrameNumber",
                active_tree_->source_frame_number());
   TRACE_EVENT(
@@ -1589,10 +1602,12 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame) {
   bool ok = active_tree_->UpdateDrawProperties();
   DCHECK(ok) << "UpdateDrawProperties failed during draw";
 
-  // This will cause NotifyTileStateChanged() to be called for any tiles that
-  // completed, which will add damage for visible tiles to the frame for them so
-  // they appear as part of the current frame being drawn.
-  tile_manager_.PrepareToDraw();
+  if (!settings_.is_display_tree) {
+    // This will cause NotifyTileStateChanged() to be called for any tiles that
+    // completed, which will add damage for visible tiles to the frame for them
+    // so they appear as part of the current frame being drawn.
+    tile_manager_.PrepareToDraw();
+  }
 
   frame->render_surface_list = &active_tree_->GetRenderSurfaceList();
   frame->render_passes.clear();
@@ -1817,6 +1832,10 @@ void LayerTreeHostImpl::UpdateTileManagerMemoryPolicy(
 }
 
 void LayerTreeHostImpl::DidModifyTilePriorities() {
+  if (settings_.is_display_tree) {
+    return;
+  }
+
   // Mark priorities as dirty and schedule a PrepareTiles().
   tile_priorities_dirty_ = true;
   tile_manager_.DidModifyTilePriorities();
@@ -2002,6 +2021,8 @@ void LayerTreeHostImpl::NotifyReadyToDraw() {
 }
 
 void LayerTreeHostImpl::NotifyAllTileTasksCompleted() {
+  DCHECK(!settings_.is_display_tree);
+
   // The tile tasks started by the most recent call to PrepareTiles have
   // completed. Now is a good time to free resources if necessary.
   if (global_tile_state_.hard_memory_limit_in_bytes == 0) {
@@ -2016,6 +2037,8 @@ void LayerTreeHostImpl::NotifyAllTileTasksCompleted() {
 }
 
 void LayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile) {
+  DCHECK(!settings_.is_display_tree);
+
   TRACE_EVENT0("cc", "LayerTreeHostImpl::NotifyTileStateChanged");
 
   LayerImpl* layer_impl = nullptr;
@@ -2032,7 +2055,7 @@ void LayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile) {
   if (!client_->IsInsideDraw() && tile->required_for_draw()) {
     // The LayerImpl::NotifyTileStateChanged() should damage the layer, so this
     // redraw will make those tiles be displayed.
-    SetNeedsRedraw();
+    SetNeedsRedrawOrUpdateDisplayTree();
   }
 }
 
@@ -2110,7 +2133,7 @@ void LayerTreeHostImpl::SetExternalTilePriorityConstraints(
     // Compositor, not LayerTreeFrameSink, is responsible for setting damage
     // and triggering redraw for constraint changes.
     SetFullViewportDamage();
-    SetNeedsRedraw();
+    SetNeedsRedrawOrUpdateDisplayTree();
   }
 }
 
@@ -2524,6 +2547,7 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
 }
 
 std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
+  DCHECK(!use_layer_context_for_display_);
   DCHECK(CanDraw());
   DCHECK_EQ(frame->has_no_damage, frame->render_passes.empty());
   ResetRequiresHighResToDraw();
@@ -2665,7 +2689,9 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   rendering_stats_instrumentation_->IncrementFrameCount(1);
 
-  memory_history_->SaveEntry(tile_manager_.memory_stats_from_last_assign());
+  if (!settings_.is_display_tree) {
+    memory_history_->SaveEntry(tile_manager_.memory_stats_from_last_assign());
+  }
 
   if (debug_state_.ShowDebugRects()) {
     debug_rect_history_->SaveDebugRectsForCurrentFrame(
@@ -2833,9 +2859,11 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   viz::CompositorFrame compositor_frame;
   compositor_frame.metadata = std::move(metadata);
-  resource_provider_->PrepareSendToParent(
-      resources, &compositor_frame.resource_list,
-      layer_tree_frame_sink_->context_provider());
+  if (!settings_.is_display_tree) {
+    resource_provider_->PrepareSendToParent(
+        resources, &compositor_frame.resource_list,
+        layer_tree_frame_sink_->context_provider());
+  }
   compositor_frame.render_pass_list = std::move(frame->render_passes);
 
   // We should always have a valid LocalSurfaceId in LayerTreeImpl unless we
@@ -2845,6 +2873,10 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   // matter.
   CHECK(!settings_.single_thread_proxy_scheduler ||
         active_tree()->local_surface_id_from_parent().is_valid());
+
+  if (settings_.is_display_tree) {
+    UpdateChildLocalSurfaceId();
+  }
   layer_tree_frame_sink_->SetLocalSurfaceId(
       child_local_surface_id_allocator_.GetCurrentLocalSurfaceId());
 
@@ -2874,6 +2906,18 @@ void LayerTreeHostImpl::DidDrawAllLayers(const FrameData& frame) {
   for (VideoFrameController* it : video_frame_controllers_) {
     it->DidDrawFrame();
   }
+}
+
+void LayerTreeHostImpl::UpdateDisplayTree(FrameData& frame) {
+  DCHECK(use_layer_context_for_display_);
+  DCHECK(layer_context_);
+
+  bool ok = active_tree()->UpdateDrawProperties();
+  DCHECK(ok) << "UpdateDrawProperties failed during display tree update";
+
+  tile_manager_.PrepareToDraw();
+  layer_context_->UpdateDisplayTreeFrom(*active_tree());
+  active_tree()->ResetAllChangeTracking();
 }
 
 int LayerTreeHostImpl::RequestedMSAASampleCount() const {
@@ -3464,24 +3508,7 @@ void LayerTreeHostImpl::ActivateSyncTree() {
         << "Cannot issue a copy because the previous surface is invalid.";
   }
 
-  // Update the child's LocalSurfaceId.
-  if (active_tree()->local_surface_id_from_parent().is_valid()) {
-    child_local_surface_id_allocator_.UpdateFromParent(
-        active_tree()->local_surface_id_from_parent());
-    if (active_tree()->TakeNewLocalSurfaceIdRequest()) {
-      AllocateLocalSurfaceId();
-    }
-
-    // We have a newer surface than the evicted one, or the embedding has
-    // changed, clear eviction state resume drawing.
-    if (evicted_local_surface_id_.is_valid() &&
-        child_local_surface_id_allocator_.GetCurrentLocalSurfaceId()
-            .IsNewerThanOrEmbeddingChanged(evicted_local_surface_id_)) {
-      evicted_local_surface_id_ = viz::LocalSurfaceId();
-      resource_provider_->SetEvicted(false);
-    }
-  }
-
+  UpdateChildLocalSurfaceId();
   client_->OnCanDrawStateChanged(CanDraw());
   client_->DidActivateSyncTree();
   if (!tree_activation_callback_.is_null())
@@ -3508,12 +3535,20 @@ void LayerTreeHostImpl::ActivateSyncTree() {
 }
 
 void LayerTreeHostImpl::ActivateStateForImages() {
+  if (settings_.is_display_tree) {
+    return;
+  }
+
   image_animation_controller_.DidActivate();
   tile_manager_.DidActivateSyncTree();
 }
 
 void LayerTreeHostImpl::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
+  if (settings_.is_display_tree) {
+    return;
+  }
+
   // Only work for low-end devices for now.
   if (!base::SysInfo::IsLowEndDevice())
     return;
@@ -3553,6 +3588,11 @@ void LayerTreeHostImpl::SetVisible(bool visible) {
   if (visible_ == visible)
     return;
   visible_ = visible;
+
+  if (layer_context_) {
+    layer_context_->SetVisible(visible);
+  }
+
   if (visible_) {
     auto now = base::TimeTicks::Now();
     total_frame_counter_.OnShow(now);
@@ -3572,7 +3612,10 @@ void LayerTreeHostImpl::SetVisible(bool visible) {
   // Notify reporting controller of transition between visible and invisible
   compositor_frame_reporting_controller_->SetVisible(visible_);
   DidVisibilityChange(this, visible_);
-  UpdateTileManagerMemoryPolicy(ActualManagedMemoryPolicy());
+
+  if (!settings_.is_display_tree) {
+    UpdateTileManagerMemoryPolicy(ActualManagedMemoryPolicy());
+  }
 
   // If we just became visible, we have to ensure that we draw high res tiles,
   // to prevent checkerboard/low res flashes.
@@ -3588,9 +3631,9 @@ void LayerTreeHostImpl::SetVisible(bool visible) {
     // draw anything even if this is not the first time we become visible.
     if (!active_tree_->LayerListIsEmpty()) {
       SetFullViewportDamage();
-      SetNeedsRedraw();
+      SetNeedsRedrawOrUpdateDisplayTree();
     }
-  } else {
+  } else if (!settings_.is_display_tree) {
     EvictAllUIResources();
     // Call PrepareTiles to evict tiles when we become invisible.
     PrepareTiles();
@@ -3611,6 +3654,10 @@ void LayerTreeHostImpl::SetNeedsRedraw() {
   NotifyLatencyInfoSwapPromiseMonitors();
   events_metrics_manager_.SaveActiveEventMetrics();
   client_->SetNeedsRedrawOnImplThread();
+}
+
+void LayerTreeHostImpl::SetNeedsUpdateDisplayTree() {
+  client_->SetNeedsUpdateDisplayTreeOnImplThread();
 }
 
 ManagedMemoryPolicy LayerTreeHostImpl::ActualManagedMemoryPolicy() const {
@@ -3639,6 +3686,10 @@ void LayerTreeHostImpl::ReleaseTreeResources() {
 }
 
 void LayerTreeHostImpl::ReleaseTileResources() {
+  if (settings_.is_display_tree) {
+    return;
+  }
+
   active_tree_->ReleaseTileResources();
   if (pending_tree_)
     pending_tree_->ReleaseTileResources();
@@ -3651,6 +3702,10 @@ void LayerTreeHostImpl::ReleaseTileResources() {
 }
 
 void LayerTreeHostImpl::RecreateTileResources() {
+  if (settings_.is_display_tree) {
+    return;
+  }
+
   active_tree_->RecreateTileResources();
   if (pending_tree_) {
     pending_tree_->RecreateTileResources();
@@ -3661,6 +3716,7 @@ void LayerTreeHostImpl::RecreateTileResources() {
 }
 
 void LayerTreeHostImpl::CreateTileManagerResources() {
+  DCHECK(!settings_.is_display_tree);
   const bool gpu_compositing = !!layer_tree_frame_sink_->context_provider();
   image_decode_cache_holder_ = std::make_unique<ImageDecodeCacheHolder>(
       settings_.enable_shared_image_cache_for_gpu, raster_caps(),
@@ -3697,6 +3753,7 @@ void LayerTreeHostImpl::CreateTileManagerResources() {
 
 std::unique_ptr<RasterBufferProvider>
 LayerTreeHostImpl::CreateRasterBufferProvider() {
+  DCHECK(!settings_.is_display_tree);
   DCHECK(GetTaskRunner());
   viz::RasterContextProvider* compositor_context_provider =
       layer_tree_frame_sink_->context_provider();
@@ -3754,6 +3811,7 @@ void LayerTreeHostImpl::SetPaintWorkletLayerPainter(
 
 void LayerTreeHostImpl::QueueImageDecode(int request_id,
                                          const PaintImage& image) {
+  DCHECK(!settings_.is_display_tree);
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "LayerTreeHostImpl::QueueImageDecode", "frame_key",
                image.GetKeyForFrame(PaintImage::kDefaultFrameIndex).ToString());
@@ -3769,6 +3827,7 @@ void LayerTreeHostImpl::QueueImageDecode(int request_id,
 
 void LayerTreeHostImpl::ImageDecodeFinished(int request_id,
                                             bool decode_succeeded) {
+  DCHECK(!settings_.is_display_tree);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "LayerTreeHostImpl::ImageDecodeFinished");
   completed_image_decode_requests_.emplace_back(request_id, decode_succeeded);
@@ -3820,6 +3879,7 @@ void LayerTreeHostImpl::DidChangeScrollbarVisibility() {
 }
 
 void LayerTreeHostImpl::CleanUpTileManagerResources() {
+  DCHECK(!settings_.is_display_tree);
   tile_manager_.FinishTasksAndCleanUp();
   single_thread_synchronous_task_graph_runner_ = nullptr;
   image_decode_cache_holder_ = nullptr;
@@ -3893,6 +3953,7 @@ void LayerTreeHostImpl::ReleaseLayerTreeFrameSink() {
   // the new LayerTreeFrameSink succeeds or not.
   layer_tree_frame_sink_->DetachFromClient();
   layer_tree_frame_sink_ = nullptr;
+  layer_context_.reset();
 
   // If gpu compositing, then any resources created with the gpu context in the
   // LayerTreeFrameSink were exported to the display compositor may be modified
@@ -3946,13 +4007,11 @@ bool LayerTreeHostImpl::InitializeFrameSink(
 
   layer_tree_frame_sink_ = layer_tree_frame_sink;
   has_valid_layer_tree_frame_sink_ = true;
+  if (use_layer_context_for_display_) {
+    layer_context_ = layer_tree_frame_sink_->CreateLayerContext();
+  }
 
   UpdateRasterCapabilities();
-
-  resource_pool_ = std::make_unique<ResourcePool>(
-      resource_provider_.get(), layer_tree_frame_sink_->context_provider(),
-      GetTaskRunner(), ResourcePool::kDefaultExpirationDelay,
-      settings_.disallow_non_exact_resource_reuse);
 
   // See note in LayerTreeImpl::UpdateDrawProperties, new LayerTreeFrameSink
   // means a new max texture size which affects draw properties. Also, if the
@@ -3962,8 +4021,15 @@ bool LayerTreeHostImpl::InitializeFrameSink(
   if (pending_tree_)
     pending_tree_->set_needs_update_draw_properties();
 
-  CreateTileManagerResources();
-  RecreateTileResources();
+  if (!settings_.is_display_tree) {
+    resource_pool_ = std::make_unique<ResourcePool>(
+        resource_provider_.get(), layer_tree_frame_sink_->context_provider(),
+        GetTaskRunner(), ResourcePool::kDefaultExpirationDelay,
+        settings_.disallow_non_exact_resource_reuse);
+
+    CreateTileManagerResources();
+    RecreateTileResources();
+  }
 
   client_->OnCanDrawStateChanged(CanDraw());
   SetFullViewportDamage();
@@ -3996,7 +4062,7 @@ void LayerTreeHostImpl::DidChangeBrowserControlsPosition() {
   active_tree_->UpdateViewportContainerSizes();
   if (pending_tree_)
     pending_tree_->UpdateViewportContainerSizes();
-  SetNeedsRedraw();
+  SetNeedsRedrawOrUpdateDisplayTree();
   SetNeedsOneBeginImplFrame();
   SetFullViewportDamage();
 }
@@ -4210,6 +4276,29 @@ ScrollTree& LayerTreeHostImpl::GetScrollTree() const {
 
 bool LayerTreeHostImpl::HasAnimatedScrollbars() const {
   return !scrollbar_animation_controllers_.empty();
+}
+
+void LayerTreeHostImpl::UpdateChildLocalSurfaceId() {
+  if (!active_tree()->local_surface_id_from_parent().is_valid()) {
+    return;
+  }
+
+  child_local_surface_id_allocator_.UpdateFromParent(
+      active_tree()->local_surface_id_from_parent());
+  if (active_tree()->TakeNewLocalSurfaceIdRequest()) {
+    AllocateLocalSurfaceId();
+  }
+
+  // We have a newer surface than the evicted one, or the embedding has
+  // changed, clear eviction state resume drawing.
+  if (evicted_local_surface_id_.is_valid() &&
+      child_local_surface_id_allocator_.GetCurrentLocalSurfaceId()
+          .IsNewerThanOrEmbeddingChanged(evicted_local_surface_id_)) {
+    evicted_local_surface_id_ = viz::LocalSurfaceId();
+    if (resource_provider_) {
+      resource_provider_->SetEvicted(false);
+    }
+  }
 }
 
 void LayerTreeHostImpl::CollectScrollbarUpdatesForCommit(
@@ -5337,6 +5426,14 @@ bool LayerTreeHostImpl::RunningOnRendererProcess() const {
   // |ProxyMain|. This is more of an implementation detail, but we can use
   // that here to determine the process type.
   return !settings().single_thread_proxy_scheduler;
+}
+
+void LayerTreeHostImpl::SetNeedsRedrawOrUpdateDisplayTree() {
+  if (use_layer_context_for_display_) {
+    SetNeedsUpdateDisplayTree();
+  } else {
+    SetNeedsRedraw();
+  }
 }
 
 }  // namespace cc

@@ -25,6 +25,7 @@ class FakeLayerTreeHostImplClient : public LayerTreeHostImplClient {
   void NotifyReadyToDraw() override;
   void SetNeedsRedrawOnImplThread() override {}
   void SetNeedsOneBeginImplFrameOnImplThread() override {}
+  void SetNeedsUpdateDisplayTreeOnImplThread() override {}
   void SetNeedsCommitOnImplThread() override {}
   void SetNeedsPrepareTilesOnImplThread() override {}
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override {}
