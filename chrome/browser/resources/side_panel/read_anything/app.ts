@@ -961,11 +961,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   // TODO(b/325962407): replace toast with system notification
   private showToast_(): void {
-    if (!this.shadowRoot) {
-      return;
-    }
-
-    const toast = this.shadowRoot.querySelector<CrToastElement>('#toast')!;
+    const toast = document.querySelector<CrToastElement>('#toast')!;
     toast.show();
   }
 
