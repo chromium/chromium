@@ -583,8 +583,7 @@ MLOperand* BuildArgMinMax(MLGraphBuilder* builder,
   const auto validated_output = webnn::ValidateArgMinMaxAndInferOutput(
       BlinkOperandToComponent(input), axes, options->keepDimensions());
   if (!validated_output.has_value()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
+    exception_state.ThrowTypeError(
         WTF::String::FromUTF8(validated_output.error()));
     return nullptr;
   }
@@ -596,8 +595,7 @@ MLOperand* BuildArgMinMax(MLGraphBuilder* builder,
       builder, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), arg_min_max);
   if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
+    exception_state.ThrowTypeError(output.error());
     return nullptr;
   }
   arg_min_max->Connect({input}, {output.value()});
