@@ -570,9 +570,6 @@ EXCLUDED_PATHS = [
     # Don't check generated files
     re.compile('^out/'),
 
-    # Don't check downloaded goma client binaries
-    re.compile('^build/goma/client/'),
-
     # Don't check sysroot directories
     re.compile('^build/linux/.+-sysroot/'),
 ]
