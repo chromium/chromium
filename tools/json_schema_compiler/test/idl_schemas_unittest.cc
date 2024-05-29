@@ -47,6 +47,7 @@ bool ParseManifestKeys(const std::string& key_values,
       R"({
            "key_str": "my key",
            "key_ref": {"x": "my ref"},
+           "inline_choice": 3,
            "choice_with_arrays": {"entries": "choice"},
            "choice_with_optional": {"entries": "choice"}
          })";
@@ -272,6 +273,16 @@ TEST(IdlCompiler, ObjectTypes) {
 // Tests using IDL "choices" in manifest key-specified types.
 TEST(IdlCompiler, ManifestKeys_Choices) {
   {
+    // String entry for an inline choice.
+    static constexpr char kManifestKeys[] =
+        R"({"inline_choice": "string value"})";
+    test::api::idl_basics::ManifestKeys manifest_keys =
+        ParseManifestKeysAndReturnValue(kManifestKeys);
+    EXPECT_EQ("string value", manifest_keys.inline_choice.as_string);
+    EXPECT_EQ(std::nullopt, manifest_keys.inline_choice.as_integer);
+  }
+
+  {
     // Single entry for non-optional choices.
     static constexpr char kManifestKeys[] =
         R"({"choice_with_arrays": {"entries": "single entry"}})";
@@ -294,6 +305,15 @@ TEST(IdlCompiler, ManifestKeys_Choices) {
               manifest_keys.choice_with_optional.entries->as_string);
     EXPECT_EQ(std::nullopt,
               manifest_keys.choice_with_optional.entries->as_strings);
+  }
+
+  {
+    // Integer entry for an inline choice.
+    static constexpr char kManifestKeys[] = R"({"inline_choice": 42})";
+    test::api::idl_basics::ManifestKeys manifest_keys =
+        ParseManifestKeysAndReturnValue(kManifestKeys);
+    EXPECT_EQ(std::nullopt, manifest_keys.inline_choice.as_string);
+    EXPECT_EQ(42, manifest_keys.inline_choice.as_integer);
   }
 
   {
@@ -326,6 +346,15 @@ TEST(IdlCompiler, ManifestKeys_Choices) {
     test::api::idl_basics::ManifestKeys manifest_keys =
         ParseManifestKeysAndReturnValue(kManifestKeys);
     EXPECT_EQ(std::nullopt, manifest_keys.choice_with_optional.entries);
+  }
+
+  {
+    // Invalid entry for an inline choice.
+    static constexpr char kManifestKeys[] = R"({"inline_choice": ["a", "b"]})";
+    EXPECT_EQ(
+        "Error at key 'inline_choice'. "
+        "Provided value matches none of the allowed options.",
+        ParseManifestKeysAndReturnError(kManifestKeys));
   }
 
   {

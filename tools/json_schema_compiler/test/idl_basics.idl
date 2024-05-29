@@ -56,11 +56,11 @@
     DOMString x;
   };
 
-  // TODO(https://crbug.com/342445415): Support inline choices.
   dictionary ManifestKeys {
     // String manifest key.
     DOMString key_str;
     MyType2 key_ref;
+    (DOMString or long) inline_choice;
     ChoiceWithArraysType choice_with_arrays;
     ChoiceWithOptionalType choice_with_optional;
   };

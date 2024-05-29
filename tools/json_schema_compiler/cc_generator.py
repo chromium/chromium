@@ -159,6 +159,17 @@ class _Generator(object):
         c.Cblock(
           self._GenerateManifestKeyConstants(
             classname_in_namespace, type_.properties.values()))
+        # Manifest key parsing for CHOICES types relies on the Populate()
+        # method. Thus, if it wouldn't be generated below, ensure it's
+        # created here.
+        # TODO(devlin): This gets precarious. Instead of having complex if-
+        # branches determining which values to construct here, we should pull
+        # this out to a helper that just returns a set of method categories to
+        # generate.
+        if (type_.property_type is PropertyType.CHOICES and
+            not type_.origin.from_json):
+          c.Cblock(self._GenerateTypePopulateFromValue(
+            classname_in_namespace, type_))
 
       if type_.origin.from_json:
         c.Cblock(self._GenerateClone(classname_in_namespace, type_))

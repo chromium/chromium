@@ -267,7 +267,9 @@ class _Generator(object):
                     if type_.property_type is PropertyType.CHOICES else
                     'base::Value::Dict')
 
-      if type_.origin.from_json:
+      if (type_.origin.from_json or
+          (type_.origin.from_manifest_keys and
+               type_.property_type is PropertyType.CHOICES)):
         (c.Append()
           .Comment('Populates a %s object from a base::Value& instance. Returns'
                    ' whether |out| was successfully populated.' %  classname)
