@@ -2563,14 +2563,6 @@ crbug.com/343338109 external/wpt/css/css-borders/tentative/corner-shape/corner-s
 crbug.com/343338109 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-round-top-left-002.html [ Failure ]
 crbug.com/343338109 external/wpt/css/css-borders/tentative/corner-shape/corner-shape-round-top-right-001.html [ Failure ]
 crbug.com/343263984 external/wpt/css/css-masking/mask-image/mask-mode-luminance-with-mask-size.html [ Failure ]
-crbug.com/343338107 [ Mac14-arm64 ] external/wpt/html/semantics/forms/the-input-element/show-picker-disabled-readonly.html [ Failure Timeout ]
-crbug.com/343338107 [ Mac14 ] external/wpt/html/semantics/forms/the-input-element/show-picker-disabled-readonly.html [ Timeout ]
-crbug.com/343338107 [ Mac13-arm64 ] external/wpt/html/semantics/forms/the-input-element/show-picker-disabled-readonly.html [ Failure Timeout ]
-crbug.com/343338107 [ Mac13 ] external/wpt/html/semantics/forms/the-input-element/show-picker-disabled-readonly.html [ Failure Timeout ]
-crbug.com/343338107 [ Mac12-arm64 ] external/wpt/html/semantics/forms/the-input-element/show-picker-disabled-readonly.html [ Failure Timeout ]
-crbug.com/343338107 [ Mac12 ] external/wpt/html/semantics/forms/the-input-element/show-picker-disabled-readonly.html [ Failure Timeout ]
-crbug.com/343338107 [ Mac11-arm64 ] external/wpt/html/semantics/forms/the-input-element/show-picker-disabled-readonly.html [ Failure Timeout ]
-crbug.com/343338107 [ Mac11 ] external/wpt/html/semantics/forms/the-input-element/show-picker-disabled-readonly.html [ Failure Timeout ]
 crbug.com/341151623 [ Win11-arm64 ] external/wpt/fetch/api/basic/request-headers.any.sharedworker.html [ Failure Timeout ]
 external/wpt/notifications/instance.https.window.html [ Timeout ]
 crbug.com/340657191 [ Linux ] external/wpt/html/semantics/forms/the-select-element/stylable-select/native-popup-with-datalist.tentative.html [ Failure ]
@@ -5623,7 +5615,6 @@ crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/metadata/generated/audioworklet
 crbug.com/1385870 [ Win ] external/wpt/screen-capture/getdisplaymedia.https.html [ Skip Timeout ]
 crbug.com/1385870 [ Win ] external/wpt/screen-capture/getdisplaymedia-capture-controller.https.window.html [ Skip Timeout ]
 crbug.com/1386214 [ Win ] external/wpt/html/semantics/forms/the-input-element/selection-pointer.html [ Skip Timeout ]
-crbug.com/1386214 [ Win ] external/wpt/html/semantics/forms/the-input-element/show-picker-user-gesture.html [ Skip Timeout ]
 crbug.com/1375147 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/singletap-on-overlay-closes-overflow-menu.html [ Failure ]
 crbug.com/1396079 [ Mac ] inspector-protocol/memory/forcibly-purge-javascript-memory.js [ Crash Failure ]
 crbug.com/1406027 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/overflow-menu-hide-on-resize.html [ Failure ]
@@ -7508,3 +7499,9 @@ crbug.com/331358162 [ Win ] http/tests/navigation/back-to-redirect-with-frame.ph
 
 # TODO(crbug.com/343094170): Re-enable this test
 fast/events/scroll-event-handler-reused-window.html [ Failure Pass ]
+
+# Gardener 2024-05-29
+crbug.com/343473478 external/wpt/html/semantics/forms/the-input-element/click-user-gesture.html [ Failure Pass ]
+crbug.com/343473478 external/wpt/html/semantics/forms/the-input-element/show-picker-disabled-readonly.html [ Failure Timeout Pass ]
+crbug.com/343473478 external/wpt/html/semantics/forms/the-input-element/show-picker-user-gesture.html [ Skip Failure Timeout Pass ]
+crbug.com/343473478 external/wpt/html/semantics/forms/the-select-element/show-picker-user-gesture.html [ Failure Pass ]
