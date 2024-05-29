@@ -84,8 +84,6 @@ AudioParameters CreateOpusCompatibleParams(const AudioParameters& params,
 
 }  // namespace
 
-// TODO: Remove after switching to C++17
-constexpr int AudioOpusEncoder::kMinBitrate;
 
 AudioOpusEncoder::AudioOpusEncoder()
     : opus_encoder_(nullptr, OpusEncoderDeleter) {}
