@@ -79,6 +79,7 @@ std::optional<syncer::ModelError>
 PlusAddressSettingSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
@@ -104,6 +105,15 @@ PlusAddressSettingSyncBridge::ApplyIncrementalSyncChanges(
       base::BindOnce(&PlusAddressSettingSyncBridge::ReportErrorIfSet,
                      weak_factory_.GetWeakPtr()));
   return std::nullopt;
+}
+
+void PlusAddressSettingSyncBridge::ApplyDisableSyncChanges(
+    std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  store_->DeleteAllDataAndMetadata(
+      base::BindOnce(&PlusAddressSettingSyncBridge::ReportErrorIfSet,
+                     weak_factory_.GetWeakPtr()));
+  settings_.clear();
 }
 
 void PlusAddressSettingSyncBridge::GetData(StorageKeyList storage_keys,

@@ -193,8 +193,12 @@ TEST_F(PlusAddressSettingSyncBridgeTest,
 
 TEST_F(PlusAddressSettingSyncBridgeTest, ApplyIncrementalSyncChanges_Remove) {
   ASSERT_TRUE(
-      StartSyncingWithServerData({CreateSettingSpecifics("name", true),
+      StartSyncingWithServerData({CreateSettingSpecifics("name1", true),
                                   CreateSettingSpecifics("name2", "string")}));
+  ASSERT_THAT(bridge().GetSetting("name1"),
+              Optional(HasBoolSetting("name1", true)));
+  ASSERT_THAT(bridge().GetSetting("name2"),
+              Optional(HasStringSetting("name2", "string")));
 
   syncer::EntityChangeList change_list;
   change_list.push_back(syncer::EntityChange::CreateDelete("name1"));
@@ -209,6 +213,19 @@ TEST_F(PlusAddressSettingSyncBridgeTest, ApplyIncrementalSyncChanges_Remove) {
   EXPECT_FALSE(bridge().GetSetting("name1"));
   EXPECT_THAT(bridge().GetSetting("name2"),
               Optional(HasStringSetting("name2", "string")));
+}
+
+TEST_F(PlusAddressSettingSyncBridgeTest, ApplyDisableSyncChanges) {
+  ASSERT_TRUE(
+      StartSyncingWithServerData({CreateSettingSpecifics("name", "value")}));
+  ASSERT_THAT(bridge().GetSetting("name"),
+              Optional(HasStringSetting("name", "value")));
+  bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
+  // Expect that the change was applied immediately.
+  EXPECT_FALSE(bridge().GetSetting("name"));
+  // Recreate the bridge, reloading from the `store()`.
+  RecreateBridge();
+  EXPECT_FALSE(bridge().GetSetting("name"));
 }
 
 TEST_F(PlusAddressSettingSyncBridgeTest, GetAllDataForDebugging) {
