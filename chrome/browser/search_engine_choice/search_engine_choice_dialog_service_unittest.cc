@@ -11,7 +11,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/dialog_test_browser_window.h"
@@ -95,14 +94,6 @@ class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    // The `SearchEngineChoiceServiceFactory` should be set before the
-    // `TemplateURLServiceFactory` because the initialization of the latter
-    // depends on the `SearchEngineChoiceService` created by the former.
-    search_engines::SearchEngineChoiceServiceFactory::GetInstance()
-        ->SetTestingFactoryAndUse(
-            profile(), search_engines::SearchEngineChoiceServiceFactory::
-                           GetDefaultFactory());
-
     TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(),
         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
