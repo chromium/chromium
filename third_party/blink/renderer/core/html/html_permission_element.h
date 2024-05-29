@@ -218,18 +218,19 @@ class CORE_EXPORT HTMLPermissionElement final
   bool IsStyleValid();
 
   // Returns an adjusted bounded length that takes in the site-provided length
-  // and creates an expression-type length of the form:
-  // `min|max(|length|, (|fit-content-size| *)? |bound|)`,
-  // |is_lower_bound| determines whether `min` or `max` should be used.
-  // |should_multiply_by_content_size| determines whether the |bound| is
-  // multiplied by the permission element's content size or is simply a fixed
-  // pixel length.
+  // and creates an expression-type length that is bounded on upper or lower
+  // sides by the provided bounds. The expression uses min|max|clamp depending
+  // on which bound(s) is/are present. The bounds will be multiplied by
+  // |fit-content-size| if |should_multiply_by_content_size| is true. At least
+  // one of the bounds must be specified.
 
-  // If |length| is not a specified length, it is ignored, together with
-  // |is_lower_bound|.
+  // If |length| is not a "specified" length, it is ignored and the returned
+  // length will be |lower_bound| or |upper_bound| (if both are specified,
+  // |lower_bound| is used), optionally multiplied by |fit-content-size| as
+  // described above.
   Length AdjustedBoundedLength(const Length& length,
-                               float bound,
-                               bool is_lower_bound,
+                               std::optional<float> lower_bound,
+                               std::optional<float> upper_bound,
                                bool should_multiply_by_content_size);
 
   // LocalFrameView::LifecycleNotificationObserver

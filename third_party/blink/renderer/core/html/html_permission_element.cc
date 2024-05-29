@@ -229,16 +229,40 @@ scoped_refptr<const CalculationExpressionNode> BuildFitContentExpr(
       CalculationOperator::kMultiply);
 }
 
-// Builds an expression that takes a |length| and bounds it either lower or
-// higher with the provided |bound_expr|.
+// Builds an expression that takes a |length| and bounds it lower, higher, or on
+// both sides with the provided expressions.
 scoped_refptr<const CalculationExpressionNode> BuildLengthBoundExpr(
     const Length& length,
-    scoped_refptr<const CalculationExpressionNode> bound_expr,
-    bool is_lower_bound) {
-  return CalculationExpressionOperationNode::CreateSimplified(
-      CalculationExpressionOperationNode::Children(
-          {bound_expr, length.AsCalculationValue()->GetOrCreateExpression()}),
-      is_lower_bound ? CalculationOperator::kMax : CalculationOperator::kMin);
+    std::optional<scoped_refptr<const CalculationExpressionNode>>
+        lower_bound_expr,
+    std::optional<scoped_refptr<const CalculationExpressionNode>>
+        upper_bound_expr) {
+  if (lower_bound_expr.has_value() && upper_bound_expr.has_value()) {
+    return CalculationExpressionOperationNode::CreateSimplified(
+        CalculationExpressionOperationNode::Children(
+            {lower_bound_expr.value(),
+             length.AsCalculationValue()->GetOrCreateExpression(),
+             upper_bound_expr.value()}),
+        CalculationOperator::kClamp);
+  }
+
+  if (lower_bound_expr.has_value()) {
+    return CalculationExpressionOperationNode::CreateSimplified(
+        CalculationExpressionOperationNode::Children(
+            {lower_bound_expr.value(),
+             length.AsCalculationValue()->GetOrCreateExpression()}),
+        CalculationOperator::kMax);
+  }
+
+  if (upper_bound_expr.has_value()) {
+    return CalculationExpressionOperationNode::CreateSimplified(
+        CalculationExpressionOperationNode::Children(
+            {upper_bound_expr.value(),
+             length.AsCalculationValue()->GetOrCreateExpression()}),
+        CalculationOperator::kMin);
+  }
+
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -536,21 +560,24 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
   }
 
   builder.SetMinHeight(AdjustedBoundedLength(
-      builder.MinHeight(), builder.FontSize() * kMinLengthToFontSizeRatio,
-      /*is_lower_bound=*/true,
+      builder.MinHeight(),
+      /*lower_bound=*/builder.FontSize() * kMinLengthToFontSizeRatio,
+      /*upper_bound=*/builder.FontSize() * kMaxLengthToFontSizeRatio,
       /*should_multiply_by_content_size=*/false));
   builder.SetMaxHeight(AdjustedBoundedLength(
-      builder.MaxHeight(), builder.FontSize() * kMaxLengthToFontSizeRatio,
-      /*is_lower_bound=*/false,
+      builder.MaxHeight(),
+      /*lower_bound=*/std::nullopt,
+      /*upper_bound=*/builder.FontSize() * kMaxLengthToFontSizeRatio,
       /*should_multiply_by_content_size=*/false));
   builder.SetMinWidth(
-      AdjustedBoundedLength(builder.MinWidth(), kMinLengthToFontSizeRatio,
-                            /*is_lower_bound=*/true,
+      AdjustedBoundedLength(builder.MinWidth(),
+                            /*lower_bound=*/kMinLengthToFontSizeRatio,
+                            /*upper_bound=*/kMaxLengthToFontSizeRatio,
                             /*should_multiply_by_content_size=*/true));
-  builder.SetMaxWidth(
-      AdjustedBoundedLength(builder.MaxWidth(), kMaxLengthToFontSizeRatio,
-                            /*is_lower_bound=*/false,
-                            /*should_multiply_by_content_size=*/true));
+  builder.SetMaxWidth(AdjustedBoundedLength(
+      builder.MaxWidth(),
+      /*lower_bound=*/std::nullopt, /*upper_bound=*/kMaxLengthToFontSizeRatio,
+      /*should_multiply_by_content_size=*/true));
 
   // If width is set to auto and there is left padding specified, we will
   // respect the padding (up to a certain maximum), otherwise the padding has no
@@ -565,10 +592,12 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
           "'padding-right' is always set to be identical to 'padding-left'.");
     }
 
-    builder.SetPaddingLeft(AdjustedBoundedLength(
-        builder.PaddingLeft(),
-        builder.FontSize() * kMaxHorizontalPaddingToFontSizeRatio,
-        /*is_lower_bound=*/false, /*should_multiply_by_content_size=*/false));
+    builder.SetPaddingLeft(
+        AdjustedBoundedLength(builder.PaddingLeft(),
+                              /*lower_bound=*/std::nullopt,
+                              /*upper_bound=*/builder.FontSize() *
+                                  kMaxHorizontalPaddingToFontSizeRatio,
+                              /*should_multiply_by_content_size=*/false));
     builder.SetPaddingRight(builder.PaddingLeft());
   } else {
     builder.ResetPaddingLeft();
@@ -586,8 +615,9 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
     }
     builder.SetPaddingTop(AdjustedBoundedLength(
         builder.PaddingTop(),
-        builder.FontSize() * kMaxVerticalPaddingToFontSizeRatio,
-        /*is_lower_bound=*/false, /*should_multiply_by_content_size=*/false));
+        /*lower_bound=*/std::nullopt,
+        /*upper_bound=*/builder.FontSize() * kMaxVerticalPaddingToFontSizeRatio,
+        /*should_multiply_by_content_size=*/false));
     builder.SetPaddingBottom(builder.PaddingTop());
   } else {
     builder.ResetPaddingTop();
@@ -907,9 +937,10 @@ bool HTMLPermissionElement::IsStyleValid() {
 
 Length HTMLPermissionElement::AdjustedBoundedLength(
     const Length& length,
-    float bound,
-    bool is_lower_bound,
+    std::optional<float> lower_bound,
+    std::optional<float> upper_bound,
     bool should_multiply_by_content_size) {
+  CHECK(lower_bound.has_value() || upper_bound.has_value());
   bool is_content_or_stretch =
       length.HasContentOrIntrinsic() || length.HasStretch();
   if (is_content_or_stretch && !length_console_error_sent_) {
@@ -925,29 +956,55 @@ Length HTMLPermissionElement::AdjustedBoundedLength(
   // If the |length| is not supported and the |bound| is static, return a simple
   // fixed length.
   if (length_to_use.IsAuto() && !should_multiply_by_content_size) {
-    return Length(bound, Length::Type::kFixed);
+    return Length(
+        lower_bound.has_value() ? lower_bound.value() : upper_bound.value(),
+        Length::Type::kFixed);
   }
 
-  // If the |length| is supported and the |bound| is static, return a min|max
-  // expression-type length.
+  // If the |length| is supported and the |bound| is static, return a
+  // min|max|clamp expression-type length.
   if (!should_multiply_by_content_size) {
-    auto bound_expr =
-        base::MakeRefCounted<blink::CalculationExpressionPixelsAndPercentNode>(
-            PixelsAndPercent(bound));
+    auto lower_bound_expr =
+        lower_bound.has_value()
+            ? std::optional(base::MakeRefCounted<
+                            blink::CalculationExpressionPixelsAndPercentNode>(
+                  PixelsAndPercent(lower_bound.value())))
+            : std::nullopt;
 
-    // expr = min|max(bound, length)
-    auto expr = BuildLengthBoundExpr(length_to_use, bound_expr, is_lower_bound);
+    auto upper_bound_expr =
+        upper_bound.has_value()
+            ? std::optional(base::MakeRefCounted<
+                            blink::CalculationExpressionPixelsAndPercentNode>(
+                  PixelsAndPercent(upper_bound.value())))
+            : std::nullopt;
+
+    // expr = min|max|clamp(bound, length, [bound2])
+    auto expr =
+        BuildLengthBoundExpr(length_to_use, lower_bound_expr, upper_bound_expr);
     return Length(CalculationValue::CreateSimplified(
         std::move(expr), Length::ValueRange::kNonNegative));
   }
 
   // bound_expr = size * bound.
-  auto bound_expr = BuildFitContentExpr(bound);
+  auto lower_bound_expr =
+      lower_bound.has_value()
+          ? std::optional(BuildFitContentExpr(lower_bound.value()))
+          : std::nullopt;
+  auto upper_bound_expr =
+      upper_bound.has_value()
+          ? std::optional(BuildFitContentExpr(upper_bound.value()))
+          : std::nullopt;
+
+  scoped_refptr<const CalculationExpressionNode> bound_expr;
 
   if (!length_to_use.IsAuto()) {
-    // bound_expr = min|max(size * bound, length)
+    // bound_expr = min|max|clamp(size * bound, length, [size * bound2])
     bound_expr =
-        BuildLengthBoundExpr(length_to_use, bound_expr, is_lower_bound);
+        BuildLengthBoundExpr(length_to_use, lower_bound_expr, upper_bound_expr);
+  } else {
+    bound_expr = lower_bound_expr.has_value()
+                     ? std::move(lower_bound_expr.value())
+                     : std::move(upper_bound_expr.value());
   }
 
   // This uses internally the CalculationExpressionSizingKeywordNode to create
