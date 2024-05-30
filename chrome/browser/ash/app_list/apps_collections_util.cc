@@ -32,6 +32,7 @@ AppCollectionMap GetAppCollectionsMap() {
 
       // Essentials.
       {app_constants::kChromeAppId, ash::AppCollection::kEssentials},
+      {app_constants::kLacrosAppId, ash::AppCollection::kEssentials},
       {arc::kPlayStoreAppId, ash::AppCollection::kEssentials},
       {extension_misc::kFilesManagerAppId, ash::AppCollection::kEssentials},
       {file_manager::kFileManagerSwaAppId, ash::AppCollection::kEssentials},
@@ -60,14 +61,20 @@ AppCollectionMap GetAppCollectionsMap() {
       {extension_misc::kCalendarAppId, ash::AppCollection::kProductivity},
       {web_app::kGoogleCalendarAppId, ash::AppCollection::kProductivity},
       {web_app::kMessagesAppId, ash::AppCollection::kProductivity},
+      {extension_misc::kGooglePlusAppId, ash::AppCollection::kProductivity},
 
       // Creativity.
       {arc::kGooglePhotosAppId, ash::AppCollection::kCreativity},
       {extension_misc::kGooglePhotosAppId, ash::AppCollection::kCreativity},
-      {web_app::kCanvasAppId, ash::AppCollection::kCreativity},
+      {web_app::kMediaAppId, ash::AppCollection::kCreativity},
       {web_app::kCursiveAppId, ash::AppCollection::kCreativity},
+      {web_app::kCanvasAppId, ash::AppCollection::kCreativity},
       {ash::kChromeUIUntrustedProjectorSwaAppId,
        ash::AppCollection::kCreativity},
+      {web_app::kAdobeExpressAppId, ash::AppCollection::kCreativity},
+      {arc::kLightRoomAppId, ash::AppCollection::kCreativity},
+      {arc::kInfinitePainterAppId, ash::AppCollection::kCreativity},
+      {web_app::kShowtimeAppId, ash::AppCollection::kCreativity},
 
       // Entertainment.
       {arc::kYoutubeAppId, ash::AppCollection::kEntertainment},
@@ -76,23 +83,33 @@ AppCollectionMap GetAppCollectionsMap() {
       {arc::kYoutubeMusicAppId, ash::AppCollection::kEntertainment},
       {web_app::kYoutubeMusicAppId, ash::AppCollection::kEntertainment},
       {arc::kYoutubeMusicWebApkAppId, ash::AppCollection::kEntertainment},
+      {arc::kPlayMoviesAppId, ash::AppCollection::kEntertainment},
+      {extension_misc::kGooglePlayMoviesAppId,
+       ash::AppCollection::kEntertainment},
       {arc::kGoogleTVAppId, ash::AppCollection::kEntertainment},
+      {arc::kPlayMusicAppId, ash::AppCollection::kEntertainment},
+      {extension_misc::kGooglePlayMusicAppId,
+       ash::AppCollection::kEntertainment},
       {arc::kPlayBooksAppId, ash::AppCollection::kEntertainment},
       {extension_misc::kGooglePlayBooksAppId,
        ash::AppCollection::kEntertainment},
       {web_app::kPlayBooksAppId, ash::AppCollection::kEntertainment},
+      {web_app::kYoutubeTVAppId, ash::AppCollection::kEntertainment},
 
       // Utilities.
+      {arc::kGoogleMapsAppId, ash::AppCollection::kUtilities},
+      {web_app::kGoogleMapsAppId, ash::AppCollection::kUtilities},
       {web_app::kHelpAppId, ash::AppCollection::kUtilities},
+      {web_app::kMallAppId, ash::AppCollection::kUtilities},
       {web_app::kCalculatorAppId, ash::AppCollection::kUtilities},
       {extension_misc::kCalculatorAppId, ash::AppCollection::kUtilities},
       {extension_misc::kTextEditorAppId, ash::AppCollection::kUtilities},
       {web_app::kPrintManagementAppId, ash::AppCollection::kUtilities},
       {web_app::kScanningAppId, ash::AppCollection::kUtilities},
+      {web_app::kShortcutCustomizationAppId, ash::AppCollection::kUtilities},
       {guest_os::kTerminalSystemAppId, ash::AppCollection::kUtilities},
+      {web_app::kGoogleNewsAppId, ash::AppCollection::kUtilities},
       {extensions::kWebStoreAppId, ash::AppCollection::kUtilities},
-      {arc::kGoogleMapsAppId, ash::AppCollection::kUtilities},
-      {web_app::kGoogleMapsAppId, ash::AppCollection::kUtilities},
   };
 }
 }  // namespace
