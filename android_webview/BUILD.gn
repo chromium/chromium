@@ -1085,6 +1085,7 @@ android_resources("resources") {
     "java/res/drawable-xxhdpi/ic_play_circle_outline_black_48dp.png",
     "java/res/drawable-xxxhdpi/ic_play_circle_outline_black_48dp.png",
     "java/res/raw/histograms_allowlist.txt",
+    "java/res/values/styles.xml",
   ]
   deps = [ ":strings_grd" ]
 }
