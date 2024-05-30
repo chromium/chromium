@@ -355,6 +355,8 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
   // The TaskRunner to run file IO on.
   scoped_refptr<base::SequencedTaskRunner> cache_task_runner_;
 
+  size_t handle_ref_count_ = 0;
+
   // Performs backend specific operations (memory vs disk).
   std::unique_ptr<CacheLoader> cache_loader_;
 
@@ -374,7 +376,6 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
   raw_ptr<CacheStorageManager> cache_storage_manager_;
 
   base::CancelableOnceClosure index_write_task_;
-  size_t handle_ref_count_ = 0;
 
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<base::android::ApplicationStatusListener>
