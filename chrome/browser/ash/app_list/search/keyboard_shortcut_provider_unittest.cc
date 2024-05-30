@@ -164,8 +164,8 @@ class CustomizableKeyboardShortcutProviderTest : public ChromeAshTestBase {
     // Initialize provider_;
     profile_ = std::make_unique<TestingProfile>();
     auto provider = std::make_unique<KeyboardShortcutProvider>(profile_.get());
+    provider->Initialize(search_handler_.get());
     provider_ = provider.get();
-    provider_->SetSearchHandlerForTesting(search_handler_.get());
 
     // Initialize search_controller_;
     search_controller_ = std::make_unique<TestSearchController>();

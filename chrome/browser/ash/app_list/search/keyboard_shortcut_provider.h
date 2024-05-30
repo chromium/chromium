@@ -8,14 +8,19 @@
 #include "ash/webui/shortcut_customization_ui/backend/search/search_handler.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 
 class Profile;
 
 namespace app_list {
 
-class KeyboardShortcutProvider : public SearchProvider {
+class KeyboardShortcutProvider
+    : public SearchProvider,
+      public session_manager::SessionManagerObserver {
  public:
   explicit KeyboardShortcutProvider(Profile* profile);
   ~KeyboardShortcutProvider() override;
@@ -23,14 +28,19 @@ class KeyboardShortcutProvider : public SearchProvider {
   KeyboardShortcutProvider(const KeyboardShortcutProvider&) = delete;
   KeyboardShortcutProvider& operator=(const KeyboardShortcutProvider&) = delete;
 
+  // Initialize the provider. It should be called when:
+  //    1. User session start up tasks has completed.
+  //    2. In tests with fake search handler provided.
+  void Initialize(
+      ash::shortcut_ui::SearchHandler* fake_search_handler = nullptr);
+
   // SearchProvider:
   void Start(const std::u16string& query) override;
   void StopQuery() override;
   ash::AppListSearchResultType ResultType() const override;
-  // Allow a test class to inject a fake or mock search handler.
-  void SetSearchHandlerForTesting(ash::shortcut_ui::SearchHandler* handler) {
-    search_handler_ = handler;
-  }
+
+  // session_manager::SessionManagerObserver:
+  void OnUserSessionStartUpTaskCompleted() override;
 
  private:
   // When results are returned from `search_handler_`, re-calculates the
@@ -44,7 +54,11 @@ class KeyboardShortcutProvider : public SearchProvider {
 
   // The |search_handler_| is managed by ShortcutsAppManager which is
   // implemented as a KeyedService, active for the lifetime of a logged-in user.
-  raw_ptr<ash::shortcut_ui::SearchHandler> search_handler_;
+  raw_ptr<ash::shortcut_ui::SearchHandler> search_handler_ = nullptr;
+
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_manager_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<KeyboardShortcutProvider> weak_factory_{this};

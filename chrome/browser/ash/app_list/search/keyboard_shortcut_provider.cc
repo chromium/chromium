@@ -29,6 +29,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/ash/components/string_matching/tokenized_string_match.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace app_list {
@@ -56,19 +58,43 @@ void RemoveDisabledShortcuts(
 
 KeyboardShortcutProvider::KeyboardShortcutProvider(Profile* profile)
     : SearchProvider(SearchCategory::kHelp), profile_(profile) {
-  DCHECK(profile_);
+  CHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto* shortcuts_app_manager_factory =
-      ash::shortcut_ui::ShortcutsAppManagerFactory::GetForBrowserContext(
-          profile_);
-  // The factory is null in unit tests.
-  if (shortcuts_app_manager_factory) {
-    search_handler_ = shortcuts_app_manager_factory->search_handler();
+  auto* session_manager = session_manager::SessionManager::Get();
+  if (session_manager->IsUserSessionStartUpTaskCompleted()) {
+    // If user session start up task has completed, the initialization can
+    // start.
+    Initialize();
+  } else {
+    // Wait for the user session start up task completion to prioritize
+    // resources for them.
+    session_manager_observation_.Observe(session_manager);
   }
 }
 
 KeyboardShortcutProvider::~KeyboardShortcutProvider() = default;
+
+void KeyboardShortcutProvider::Initialize(
+    ash::shortcut_ui::SearchHandler* fake_search_handler) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Initialization is happening, so we no longer need to wait for user session
+  // start up task completion.
+  session_manager_observation_.Reset();
+
+  // Use fake search handler if provided in tests, or get it from
+  // `shortcuts_app_manager`.
+  if (fake_search_handler) {
+    search_handler_ = fake_search_handler;
+    return;
+  }
+
+  auto* shortcuts_app_manager =
+      ash::shortcut_ui::ShortcutsAppManagerFactory::GetForBrowserContext(
+          profile_);
+  CHECK(shortcuts_app_manager);
+  search_handler_ = shortcuts_app_manager->search_handler();
+}
 
 void KeyboardShortcutProvider::Start(const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -99,6 +125,10 @@ void KeyboardShortcutProvider::StopQuery() {
 
 ash::AppListSearchResultType KeyboardShortcutProvider::ResultType() const {
   return ash::AppListSearchResultType::kKeyboardShortcut;
+}
+
+void KeyboardShortcutProvider::OnUserSessionStartUpTaskCompleted() {
+  Initialize();
 }
 
 void KeyboardShortcutProvider::OnShortcutsSearchComplete(
