@@ -2546,4 +2546,18 @@ public class TabGroupModelFilterUnitTest {
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
     }
+
+    @Test
+    public void testWillCreateNewGroup_NewGroup() {
+        // Mock a merge between mTab1 and mTab4, neither of which are in a group.
+        List<Tab> tabsToMerge = List.of(mTab1, mTab4);
+        assertTrue(mTabGroupModelFilter.willCreateNewGroup(tabsToMerge));
+    }
+
+    @Test
+    public void testWillCreateNewGroup_ExistingGroup() {
+        // Mock a merge between mTab1, mTab2 and mTab3, of which the latter 2 are in a group.
+        List<Tab> tabsToMerge = List.of(mTab1, mTab2, mTab3);
+        assertFalse(mTabGroupModelFilter.willCreateNewGroup(tabsToMerge));
+    }
 }
