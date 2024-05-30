@@ -123,6 +123,11 @@ MEDIA_SHMEM_EXPORT std::ostream& operator<<(std::ostream& os,
 // "0x66616b00".
 MEDIA_SHMEM_EXPORT std::string FourccToString(uint32_t fourcc);
 
+// Returns the VideoChromaSampling corresponding to the VideoPixelFormat passed
+// in.
+MEDIA_SHMEM_EXPORT VideoChromaSampling
+VideoPixelFormatToChromaSampling(VideoPixelFormat format);
+
 // Returns true if |format| is a YUV format with multiple planes.
 MEDIA_SHMEM_EXPORT bool IsYuvPlanar(VideoPixelFormat format);
 
