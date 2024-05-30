@@ -234,7 +234,7 @@
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
 #include "components/password_manager/content/browser/password_requirements_service_factory.h"
-#include "components/payments/content/can_make_payment_query_factory.h"
+#include "components/payments/content/has_enrolled_instrument_query_factory.h"
 #include "components/permissions/features.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/content/safe_search_service.h"
@@ -853,6 +853,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   GlobalErrorServiceFactory::GetInstance();
 #endif
   GoogleGroupsUpdaterServiceFactory::GetInstance();
+  HatsServiceFactory::GetInstance();
   HeavyAdServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   HidChooserContextFactory::GetInstance();
@@ -1006,9 +1007,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   PasswordStatusCheckServiceFactory::GetInstance();
 #endif
-  ProfilePasswordStoreFactory::GetInstance();
-  payments::CanMakePaymentQueryFactory::GetInstance();
-  HatsServiceFactory::GetInstance();
+  payments::HasEnrolledInstrumentQueryFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   payments::PaymentRequestDisplayManagerFactory::GetInstance();
   performance_manager::SiteDataCacheFacadeFactory::GetInstance();
@@ -1080,6 +1079,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   ProfileAccountManagerFactory::GetInstance();
 #endif
   ProfileNetworkContextServiceFactory::GetInstance();
+  ProfilePasswordStoreFactory::GetInstance();
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   ProfileStatisticsFactory::GetInstance();
 #endif

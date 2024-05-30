@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/core/can_make_payment_query.h"
+#include "components/payments/core/has_enrolled_instrument_query.h"
 
 #include <utility>
 
@@ -15,11 +15,11 @@
 
 namespace payments {
 
-CanMakePaymentQuery::CanMakePaymentQuery() {}
+HasEnrolledInstrumentQuery::HasEnrolledInstrumentQuery() {}
 
-CanMakePaymentQuery::~CanMakePaymentQuery() {}
+HasEnrolledInstrumentQuery::~HasEnrolledInstrumentQuery() {}
 
-bool CanMakePaymentQuery::CanQuery(
+bool HasEnrolledInstrumentQuery::CanQuery(
     const GURL& top_level_origin,
     const GURL& frame_origin,
     const std::map<std::string, std::set<std::string>>& query) {
@@ -28,9 +28,10 @@ bool CanMakePaymentQuery::CanQuery(
   const auto& it = queries_.find(id);
   if (it == queries_.end()) {
     auto timer = std::make_unique<base::OneShotTimer>();
-    timer->Start(FROM_HERE, base::Minutes(30),
-                 base::BindOnce(&CanMakePaymentQuery::ExpireQuotaForFrameOrigin,
-                                weak_ptr_factory_.GetWeakPtr(), id));
+    timer->Start(
+        FROM_HERE, base::Minutes(30),
+        base::BindOnce(&HasEnrolledInstrumentQuery::ExpireQuotaForFrameOrigin,
+                       weak_ptr_factory_.GetWeakPtr(), id));
     timers_.insert(std::make_pair(id, std::move(timer)));
     queries_.insert(std::make_pair(id, query));
     return true;
@@ -39,12 +40,13 @@ bool CanMakePaymentQuery::CanQuery(
   return it->second == query;
 }
 
-void CanMakePaymentQuery::Shutdown() {
+void HasEnrolledInstrumentQuery::Shutdown() {
   // OneShotTimer cancels the timer when it is destroyed.
   timers_.clear();
 }
 
-void CanMakePaymentQuery::ExpireQuotaForFrameOrigin(const std::string& id) {
+void HasEnrolledInstrumentQuery::ExpireQuotaForFrameOrigin(
+    const std::string& id) {
   timers_.erase(id);
   queries_.erase(id);
 }

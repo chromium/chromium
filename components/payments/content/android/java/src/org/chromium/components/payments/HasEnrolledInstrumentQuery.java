@@ -13,11 +13,11 @@ import org.chromium.payments.mojom.PaymentMethodData;
 
 import java.util.Map;
 
-/** Checks whether canMakePayment() can be queried. */
+/** Checks whether hasEnrolledInstrument() can be queried. */
 @JNINamespace("payments")
-public class CanMakePaymentQuery {
+public class HasEnrolledInstrumentQuery {
     /**
-     * Checks whether the given canMakePayment() query is allowed.
+     * Checks whether the given hasEnrolledInstrument() query is allowed.
      *
      * @param webContents    The web contents where the query is being performed, cannot be null.
      * @param topLevelOrigin The top level origin using the Payment Request API, cannot be null.
@@ -25,7 +25,7 @@ public class CanMakePaymentQuery {
      * @param query          The payment method identifiers and payment method specific data, cannot
      *         be null.
      *
-     * @return True if the given query for canMakePayment() is allowed.
+     * @return True if the given query for hasEnrolledInstrument() is allowed.
      */
     public static boolean canQuery(
             WebContents webContents,
@@ -36,7 +36,7 @@ public class CanMakePaymentQuery {
         assert topLevelOrigin != null;
         assert frameOrigin != null;
         assert query != null;
-        return CanMakePaymentQueryJni.get()
+        return HasEnrolledInstrumentQueryJni.get()
                 .canQuery(webContents, topLevelOrigin, frameOrigin, query);
     }
 
@@ -52,7 +52,7 @@ public class CanMakePaymentQuery {
         return query.get(methodIdentifier).stringifiedData;
     }
 
-    private CanMakePaymentQuery() {} // Do not instantiate.
+    private HasEnrolledInstrumentQuery() {} // Do not instantiate.
 
     @NativeMethods
     interface Natives {

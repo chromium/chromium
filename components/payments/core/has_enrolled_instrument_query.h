@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PAYMENTS_CORE_CAN_MAKE_PAYMENT_QUERY_H_
-#define COMPONENTS_PAYMENTS_CORE_CAN_MAKE_PAYMENT_QUERY_H_
+#ifndef COMPONENTS_PAYMENTS_CORE_HAS_ENROLLED_INSTRUMENT_QUERY_H_
+#define COMPONENTS_PAYMENTS_CORE_HAS_ENROLLED_INSTRUMENT_QUERY_H_
 
 #include <map>
 #include <memory>
@@ -18,20 +18,21 @@ class GURL;
 
 namespace payments {
 
-// Keeps track of canMakePayment() queries per browser context.
-class CanMakePaymentQuery : public KeyedService {
+// Keeps track of hasEnrolledInstrument() queries per browser context.
+class HasEnrolledInstrumentQuery : public KeyedService {
  public:
-  CanMakePaymentQuery();
+  HasEnrolledInstrumentQuery();
 
-  CanMakePaymentQuery(const CanMakePaymentQuery&) = delete;
-  CanMakePaymentQuery& operator=(const CanMakePaymentQuery&) = delete;
+  HasEnrolledInstrumentQuery(const HasEnrolledInstrumentQuery&) = delete;
+  HasEnrolledInstrumentQuery& operator=(
+      const HasEnrolledInstrumentQuery&) = delete;
 
-  ~CanMakePaymentQuery() override;
+  ~HasEnrolledInstrumentQuery() override;
 
   // Returns whether |top_level_origin| and |frame_origin| can call
-  // canMakePayment() with |query|, which is a mapping of payment method names
-  // to the corresponding JSON-stringified payment method data. Remembers the
-  // origins-to-query mapping for 30 minutes to enforce the quota.
+  // hasEnrolledInstrument() with |query|, which is a mapping of payment method
+  // names to the corresponding JSON-stringified payment method data. Remembers
+  // the origins-to-query mapping for 30 minutes to enforce the quota.
   //
   // GURL type is used instead of url::Origin to represent origins, because they
   // need to be serialized into map keys and url::Origin serializations must not
@@ -55,7 +56,7 @@ class CanMakePaymentQuery : public KeyedService {
   void ExpireQuotaForFrameOrigin(const std::string& id);
 
   // A mapping of an identififer to the timer that, when fired, allows the frame
-  // to invoke canMakePayment() with the same identifier again.
+  // to invoke hasEnrolledInstrument() with the same identifier again.
   std::map<std::string, std::unique_ptr<base::OneShotTimer>> timers_;
 
   // A mapping of frame origin and top level origin to its last query. Each
@@ -63,9 +64,9 @@ class CanMakePaymentQuery : public KeyedService {
   // JSON-stringified payment method data.
   std::map<std::string, std::map<std::string, std::set<std::string>>> queries_;
 
-  base::WeakPtrFactory<CanMakePaymentQuery> weak_ptr_factory_{this};
+  base::WeakPtrFactory<HasEnrolledInstrumentQuery> weak_ptr_factory_{this};
 };
 
 }  // namespace payments
 
-#endif  // COMPONENTS_PAYMENTS_CORE_CAN_MAKE_PAYMENT_QUERY_H_
+#endif  // COMPONENTS_PAYMENTS_CORE_HAS_ENROLLED_INSTRUMENT_QUERY_H_

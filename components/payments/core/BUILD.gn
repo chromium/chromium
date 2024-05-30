@@ -10,8 +10,6 @@ static_library("core") {
     "android_app_description.h",
     "android_app_description_tools.cc",
     "android_app_description_tools.h",
-    "can_make_payment_query.cc",
-    "can_make_payment_query.h",
     "csp_checker.h",
     "currency_formatter.cc",
     "currency_formatter.h",
@@ -21,6 +19,8 @@ static_library("core") {
     "error_message_util.h",
     "features.cc",
     "features.h",
+    "has_enrolled_instrument_query.cc",
+    "has_enrolled_instrument_query.h",
     "journey_logger.cc",
     "journey_logger.h",
     "payer_data.cc",
@@ -160,9 +160,9 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "android_app_description_tools_unittest.cc",
-    "can_make_payment_query_unittest.cc",
     "const_csp_checker_unittest.cc",
     "currency_formatter_unittest.cc",
+    "has_enrolled_instrument_query_unittest.cc",
     "journey_logger_unittest.cc",
     "payment_currency_amount_unittest.cc",
     "payment_details_modifier_unittest.cc",

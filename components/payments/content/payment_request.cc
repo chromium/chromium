@@ -13,17 +13,17 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
-#include "components/payments/content/can_make_payment_query_factory.h"
 #include "components/payments/content/content_payment_request_delegate.h"
+#include "components/payments/content/has_enrolled_instrument_query_factory.h"
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/payment_details_converter.h"
 #include "components/payments/content/payment_request_converter.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
 #include "components/payments/content/secure_payment_confirmation_no_creds.h"
-#include "components/payments/core/can_make_payment_query.h"
 #include "components/payments/core/error_message_util.h"
 #include "components/payments/core/error_strings.h"
 #include "components/payments/core/features.h"
+#include "components/payments/core/has_enrolled_instrument_query.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/payment_details.h"
@@ -1020,7 +1020,7 @@ void PaymentRequest::HasEnrolledInstrumentCallback(
   VLOG(2) << "PaymentRequest (" << *spec_->details().id
           << "): hasEnrolledInstrument = " << has_enrolled_instrument;
 
-  if (!spec_ || CanMakePaymentQueryFactory::GetInstance()
+  if (!spec_ || HasEnrolledInstrumentQueryFactory::GetInstance()
                     ->GetForContext(render_frame_host().GetBrowserContext())
                     ->CanQuery(top_level_origin_, frame_origin_,
                                spec_->query_for_quota())) {

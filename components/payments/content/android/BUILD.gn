@@ -11,12 +11,12 @@ import("//third_party/jni_zero/jni_zero.gni")
 static_library("android") {
   sources = [
     "byte_buffer_helper.h",
-    "can_make_payment_query_android.cc",
     "csp_checker_android.cc",
     "csp_checker_android.h",
     "currency_formatter_android.cc",
     "currency_formatter_android.h",
     "error_message_util.cc",
+    "has_enrolled_instrument_query_android.cc",
     "jni_payment_app.cc",
     "jni_payment_app.h",
     "journey_logger_android.cc",
@@ -70,9 +70,9 @@ static_library("android") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/payments/CSPCheckerBridge.java",
-    "java/src/org/chromium/components/payments/CanMakePaymentQuery.java",
     "java/src/org/chromium/components/payments/CurrencyFormatter.java",
     "java/src/org/chromium/components/payments/ErrorMessageUtil.java",
+    "java/src/org/chromium/components/payments/HasEnrolledInstrumentQuery.java",
     "java/src/org/chromium/components/payments/JniPaymentApp.java",
     "java/src/org/chromium/components/payments/JourneyLogger.java",
     "java/src/org/chromium/components/payments/OriginSecurityChecker.java",
@@ -168,9 +168,9 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/AndroidPaymentAppFinder.java",
     "java/src/org/chromium/components/payments/BrowserPaymentRequest.java",
     "java/src/org/chromium/components/payments/CSPCheckerBridge.java",
-    "java/src/org/chromium/components/payments/CanMakePaymentQuery.java",
     "java/src/org/chromium/components/payments/CurrencyFormatter.java",
     "java/src/org/chromium/components/payments/ErrorMessageUtil.java",
+    "java/src/org/chromium/components/payments/HasEnrolledInstrumentQuery.java",
     "java/src/org/chromium/components/payments/InputProtector.java",
     "java/src/org/chromium/components/payments/InvalidPaymentRequest.java",
     "java/src/org/chromium/components/payments/JniPaymentApp.java",

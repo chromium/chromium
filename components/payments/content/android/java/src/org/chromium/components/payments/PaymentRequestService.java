@@ -1206,7 +1206,7 @@ public class PaymentRequestService
         mIsHasEnrolledInstrumentResponsePending = false;
 
         int result;
-        if (CanMakePaymentQuery.canQuery(
+        if (HasEnrolledInstrumentQuery.canQuery(
                 mWebContents, mTopLevelOrigin, mPaymentRequestOrigin, mQueryForQuota)) {
             result =
                     response
