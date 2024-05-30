@@ -29,6 +29,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSize;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
@@ -343,6 +344,66 @@ public class FinancialAccountsManagementFragmentTest {
         // Verify that the bank account preference is now not null.
         bankAccountPref = getBankAccountPreference(activity, PIX_BANK_ACCOUNT);
         assertThat(bankAccountPref).isNotNull();
+    }
+
+    @Test
+    @MediumTest
+    public void testFragmentShown_histogramLogged() {
+        var fragmentShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FinancialAccountsManagementFragment.FRAGMENT_SHOWN_HISTOGRAM, true);
+
+        mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+
+        fragmentShownHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testPixToggleTurnedOn_histogramLogged() {
+        AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_PIX, false);
+                });
+        var pixToggleEnabledHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FinancialAccountsManagementFragment
+                                .FACILITATED_PAYMENTS_TOGGLE_UPDATED_HISTOGRAM,
+                        true);
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
+        assertThat(pixSwitch.isChecked()).isFalse();
+
+        // Set the Pix toggle to on.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    pixSwitch.performClick();
+                });
+
+        pixToggleEnabledHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testPixToggleTurnedOff_histogramLogged() {
+        AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
+        var pixToggleDisabledHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FinancialAccountsManagementFragment
+                                .FACILITATED_PAYMENTS_TOGGLE_UPDATED_HISTOGRAM,
+                        false);
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
+        assertThat(pixSwitch.isChecked()).isTrue();
+
+        // Set the Pix toggle to off.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    pixSwitch.performClick();
+                });
+
+        pixToggleDisabledHistogram.assertExpected();
     }
 
     private static PreferenceScreen getPreferenceScreen(SettingsActivity activity) {

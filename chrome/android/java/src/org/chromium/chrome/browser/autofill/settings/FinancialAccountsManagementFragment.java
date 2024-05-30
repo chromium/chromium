@@ -17,6 +17,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -34,6 +35,16 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
         implements PersonalDataManagerObserver, Preference.OnPreferenceChangeListener {
     private static Callback<Fragment> sObserverForTest;
 
+    // Histograms
+    @VisibleForTesting
+    static final String FRAGMENT_SHOWN_HISTOGRAM = "FacilitatedPayments.SettingsPage.Shown";
+
+    // TODO(b/337929926): Remove hardcoding for Pix and use  FacilitatedPaymentsType enum.
+    @VisibleForTesting
+    static final String FACILITATED_PAYMENTS_TOGGLE_UPDATED_HISTOGRAM =
+            "FacilitatedPayments.SettingsPage.Pix.ToggleUpdated";
+
+    // Preference keys
     @VisibleForTesting static final String PREFERENCE_KEY_PIX = "pix";
     @VisibleForTesting static final String PREFERENCE_KEY_PIX_BANK_ACCOUNT = "pix_bank_account:%s";
 
@@ -61,6 +72,7 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
         if (sObserverForTest != null) {
             sObserverForTest.onResult(this);
         }
+        RecordHistogram.recordBooleanHistogram(FRAGMENT_SHOWN_HISTOGRAM, /* sample= */ true);
     }
 
     // ChromeBaseSettingsFramgent override.
@@ -190,6 +202,8 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         if (preference.getKey().equals(PREFERENCE_KEY_PIX)) {
             boolean isPixEnabled = (boolean) newValue;
+            RecordHistogram.recordBooleanHistogram(
+                    FACILITATED_PAYMENTS_TOGGLE_UPDATED_HISTOGRAM, /* sample= */ isPixEnabled);
             mPersonalDataManager.setFacilitatedPaymentsPixPref(isPixEnabled);
             if (isPixEnabled) {
                 addPixAccountPreferences();

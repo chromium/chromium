@@ -26,6 +26,36 @@ reviewer.
       summary="Facilitate a Pix based payment using Google Pay."/>
 </variants>
 
+<histogram name="FacilitatedPayments.SettingsPage.Shown" enum="BooleanShown"
+    expires_after="2024-09-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits true when the FacilitatedPayments settings page is shown. Does not
+    emit any other value.[Trigger] User selects the Pay with a facilitated
+    payment type preference from the Payment Methods settings page. [Frequency]
+    Logged once for every time the page is shown.
+  </summary>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.SettingsPage.{FacilitatedPaymentsType}.ToggleUpdated"
+    enum="Boolean" expires_after="2024-09-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs true when the toggle for {FacilitatedPaymentsType} is enabled and false
+    otherwise. Does not log if the toggle is not updated. [Trigger] User updates
+    the toggle for {FacilitatedPaymentsType} from the facilitated payments
+    settings page. [Frequency] Logged once per toggle update.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
 <histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.GetClientToken.Latency"
     units="ms" expires_after="2024-09-01">
