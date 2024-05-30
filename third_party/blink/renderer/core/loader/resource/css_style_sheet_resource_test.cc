@@ -11,13 +11,19 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_request.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -122,8 +128,7 @@ TEST_F(CSSStyleSheetResourceTest, CreateFromCacheRestoresOriginalSheet) {
   ASSERT_EQ(contents, parsed_stylesheet);
 }
 
-TEST_F(CSSStyleSheetResourceTest,
-       CreateFromCacheWithMediaQueriesCopiesOriginalSheet) {
+TEST_F(CSSStyleSheetResourceTest, CreateFromCacheWithMediaQueries) {
   CSSStyleSheetResource* css_resource = CreateAndSaveTestStyleSheetResource();
 
   auto* parser_context = MakeGarbageCollected<CSSParserContext>(
@@ -153,14 +158,106 @@ TEST_F(CSSStyleSheetResourceTest,
   ASSERT_TRUE(sheet);
 
   EXPECT_TRUE(contents->HasSingleOwnerDocument());
-  EXPECT_EQ(0U, contents->ClientSize());
+  EXPECT_EQ(1U, contents->ClientSize());
   EXPECT_TRUE(contents->IsReferencedFromResource());
   EXPECT_TRUE(contents->HasRuleSet());
 
   EXPECT_TRUE(parsed_stylesheet->HasSingleOwnerDocument());
   EXPECT_TRUE(parsed_stylesheet->HasOneClient());
-  EXPECT_FALSE(parsed_stylesheet->IsReferencedFromResource());
-  EXPECT_FALSE(parsed_stylesheet->HasRuleSet());
+  EXPECT_TRUE(parsed_stylesheet->IsReferencedFromResource());
+  EXPECT_TRUE(parsed_stylesheet->HasRuleSet());
+}
+
+class CSSStyleSheetResourceSimTest : public SimTest {};
+
+TEST_F(CSSStyleSheetResourceSimTest, CachedWithDifferentMQEval) {
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  SimRequest frame1_resource("https://example.com/frame1.html", "text/html");
+  SimRequest frame2_resource("https://example.com/frame2.html", "text/html");
+
+  SimRequest::Params params;
+  params.response_http_headers = {{"Cache-Control", "max-age=3600"}};
+  SimSubresourceRequest css_resource("https://example.com/frame.css",
+                                     "text/css", params);
+
+  LoadURL("https://example.com/test.html");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      #frame1 {
+        width: 200px;
+        height: 200px;
+      }
+      #frame2 {
+        width: 400px;
+        height: 200px;
+      }
+    </style>
+    <div></div>
+    <iframe id="frame1" src="frame1.html"></iframe>
+    <iframe id="frame2" src="frame2.html"></iframe>
+  )HTML");
+
+  frame1_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <link rel="stylesheet" href="frame.css">
+    <div id="target"></div>
+  )HTML");
+
+  css_resource.Complete(R"HTML(
+    #target { opacity: 0; }
+    @media (width > 300px) {
+      #target { opacity: 0.3; }
+    }
+    @media (width > 500px) {
+      #target { opacity: 0.5; }
+    }
+  )HTML");
+
+  test::RunPendingTasks();
+
+  frame2_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <link rel="stylesheet" href="frame.css">
+    <div id="target"></div>
+  )HTML");
+
+  test::RunPendingTasks();
+
+  Compositor().BeginFrame();
+
+  Document* frame1_doc = To<HTMLIFrameElement>(GetDocument().getElementById(
+                                                   AtomicString("frame1")))
+                             ->contentDocument();
+  Document* frame2_doc = To<HTMLIFrameElement>(GetDocument().getElementById(
+                                                   AtomicString("frame2")))
+                             ->contentDocument();
+  ASSERT_TRUE(frame1_doc);
+  ASSERT_TRUE(frame2_doc);
+  frame1_doc->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  frame2_doc->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  const ActiveStyleSheetVector& frame1_sheets =
+      frame1_doc->GetScopedStyleResolver()->GetActiveStyleSheets();
+  const ActiveStyleSheetVector& frame2_sheets =
+      frame2_doc->GetScopedStyleResolver()->GetActiveStyleSheets();
+  ASSERT_EQ(frame1_sheets.size(), 1u);
+  ASSERT_EQ(frame2_sheets.size(), 1u);
+
+  // The two frames should share the same cached StyleSheetContents ...
+  EXPECT_EQ(frame1_sheets[0].first->Contents(),
+            frame2_sheets[0].first->Contents());
+
+  // ... but have different RuleSets due to different media query evaluation.
+  EXPECT_NE(frame1_sheets[0].second, frame2_sheets[0].second);
+
+  // Verify styling based on MQ evaluation.
+  Element* target1 = frame1_doc->getElementById(AtomicString("target"));
+  ASSERT_TRUE(target1);
+  EXPECT_EQ(target1->GetComputedStyle()->Opacity(), 0);
+  Element* target2 = frame2_doc->getElementById(AtomicString("target"));
+  ASSERT_TRUE(target2);
+  EXPECT_EQ(target2->GetComputedStyle()->Opacity(), 0.3f);
 }
 
 }  // namespace

@@ -224,8 +224,9 @@ bool CSSStyleSheetResource::CanUseSheet(const CSSParserContext* parser_context,
 
 StyleSheetContents* CSSStyleSheetResource::CreateParsedStyleSheetFromCache(
     const CSSParserContext* context) {
-  if (!parsed_style_sheet_cache_)
+  if (!parsed_style_sheet_cache_) {
     return nullptr;
+  }
   if (parsed_style_sheet_cache_->HasFailedOrCanceledSubresources()) {
     SetParsedStyleSheetCache(nullptr);
     return nullptr;
@@ -236,16 +237,22 @@ StyleSheetContents* CSSStyleSheetResource::CreateParsedStyleSheetFromCache(
 
   // Contexts must be identical so we know we would get the same exact result if
   // we parsed again.
-  if (*parsed_style_sheet_cache_->ParserContext() != *context)
+  if (*parsed_style_sheet_cache_->ParserContext() != *context) {
     return nullptr;
+  }
+
+  // StyleSheetContents with @media queries are shared between different
+  // documents, in the same rendering process, which may evaluate these media
+  // queries differently. For instance, two documents rendered in different tabs
+  // or iframes with different sizes. In that case, an active stylesheet update
+  // in one document may clear the cached RuleSet in StyleSheetContents, that
+  // would otherwise be a valid cache for the other document.
+  //
+  // This should not be problematic as the case of continuously modifying,
+  // adding, or removing stylesheets, while at the same time have different
+  // media query evaluations in the different documents should be quite rare.
 
   DCHECK(!parsed_style_sheet_cache_->IsLoading());
-
-  // If the stylesheet has a media query, we need to clone the cached sheet
-  // due to potential differences in the rule set.
-  if (parsed_style_sheet_cache_->HasMediaQueries())
-    return parsed_style_sheet_cache_->Copy();
-
   return parsed_style_sheet_cache_.Get();
 }
 
