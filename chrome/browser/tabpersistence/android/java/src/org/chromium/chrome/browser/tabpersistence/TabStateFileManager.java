@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -653,8 +654,16 @@ public class TabStateFileManager {
         if (stateDirectory == null || stateDirectory.listFiles() == null) {
             return;
         }
-        for (File file : stateDirectory.listFiles()) {
-            if (file.getName().startsWith(FLATBUFFER_PREFIX) && !file.delete()) {
+        for (String filename :
+                stateDirectory.list(
+                        new FilenameFilter() {
+                            @Override
+                            public boolean accept(File dir, String name) {
+                                return name != null && name.startsWith(FLATBUFFER_PREFIX);
+                            }
+                        })) {
+            File file = new File(stateDirectory, filename);
+            if (!file.delete()) {
                 Log.e(TAG, "Failed to delete FlatBuffer TabState: " + file);
             }
         }
