@@ -24,7 +24,6 @@ build_webui("build") {
   ]
 
   web_component_files = [
-    "app.ts",
     "infinite_list.ts",
     "tab_organization_failure.ts",
     "tab_organization_group.ts",
@@ -41,6 +40,8 @@ build_webui("build") {
   ]
 
   non_web_component_files = [
+    "app.html.ts",
+    "app.ts",
     "bimap.ts",
     "fuzzy_search.ts",
     "tab_data.ts",
@@ -53,6 +54,7 @@ build_webui("build") {
   ]
 
   css_files = [
+    "app.css",
     "tab_group_shared_vars.css",
     "tab_organization_shared_style.css",
     "tab_search_group_item.css",

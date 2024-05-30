@@ -1,0 +1,38 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/mwb_shared_style_lit.css.js
+ * #scheme=relative
+ * #include=mwb-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-primary-text-color: var(--color-tab-search-primary-foreground);
+  --cr-secondary-text-color: var(--color-tab-search-secondary-foreground);
+  --cr-separator-color: var(--color-tab-search-divider);
+  --cr-tabs-flex: 1;
+  --cr-tabs-focus-outline-offset: -4px;
+  --cr-tabs-font-size: 12px;
+  --cr-tabs-icon-margin-end: 4px;
+  --cr-tabs-icon-size: 16px;
+  --cr-tabs-selected-color: var(--color-tab-search-selected);
+  --cr-tabs-selection-bar-radius: 0;
+  --cr-tabs-selection-bar-unselected-opacity: 1;
+  --cr-tabs-unselected-color: var(--color-tab-search-divider);
+  --mwb-background-color: var(--color-tab-search-background);
+  --mwb-icon-button-fill-color: var(--color-tab-search-secondary-foreground);
+  --mwb-list-item-hover-background-color: var(--cr-hover-background-color);
+  --mwb-list-item-selected-background-color: var(--cr-active-background-color);
+  --mwb-primary-text-font-size: 12px;
+  --mwb-primary-text-font-weight: 500;
+  --mwb-secondary-text-font-size: 11px;
+  --mwb-secondary-text-font-weight: 400;
+  --mwb-scrollbar-thumb-color: var(--color-tab-search-scrollbar-thumb);
+  --mwb-scrollbar-thumb-hover-color: var(--color-tab-search-scrollbar-thumb);
+  --mwb-scrollbar-track-color: transparent;
+
+  user-select: none;
+}

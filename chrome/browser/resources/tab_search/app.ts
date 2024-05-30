@@ -5,56 +5,48 @@
 import './tab_organization_page.js';
 import './tab_search_page.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
-import 'chrome://resources/cr_elements/mwb_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
+import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './app.html.js';
+import {getCss} from './app.css.js';
+import {getHtml} from './app.html.js';
 import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
-export class TabSearchAppElement extends PolymerElement {
+export class TabSearchAppElement extends CrLitElement {
   static get is() {
     return 'tab-search-app';
   }
 
-  static get properties() {
+  static override get properties() {
     return {
-      selectedTabIndex_: {
-        type: Number,
-        value: () => loadTimeData.getInteger('tabIndex'),
-      },
-
-      tabNames_: {
-        type: Array,
-        value: () =>
-            [loadTimeData.getString('tabSearchTabName'),
-             loadTimeData.getString('tabOrganizationTabName')],
-      },
-
-      tabIcons_: {
-        type: Array,
-        value: () => ['images/tab_search.svg', 'images/auto_tab_groups.svg'],
-      },
-
-      tabOrganizationEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('tabOrganizationEnabled'),
-      },
+      selectedTabIndex_: {type: Number},
+      tabNames_: {type: Array},
+      tabIcons_: {type: Array},
+      tabOrganizationEnabled_: {type: Boolean},
     };
   }
 
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
-  private selectedTabIndex_: number;
-  private tabNames_: string[];
-  private tabIcons_: string[];
-  private tabOrganizationEnabled_: boolean;
+  protected selectedTabIndex_: number = loadTimeData.getInteger('tabIndex');
+  protected tabNames_: string[] = [
+    loadTimeData.getString('tabSearchTabName'),
+    loadTimeData.getString('tabOrganizationTabName'),
+  ];
+  protected tabIcons_: string[] =
+      ['images/tab_search.svg', 'images/auto_tab_groups.svg'];
+  protected tabOrganizationEnabled_: boolean =
+      loadTimeData.getBoolean('tabOrganizationEnabled');
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   override connectedCallback() {
@@ -82,13 +74,14 @@ export class TabSearchAppElement extends PolymerElement {
     this.tabOrganizationEnabled_ = enabled;
   }
 
-  private onSelectedTabChanged_(event: CustomEvent<{value: number}>) {
-    if (event.detail.value === 1) {
+  protected onSelectedTabChanged_(e: CustomEvent<{value: number}>) {
+    this.selectedTabIndex_ = e.detail.value;
+    if (this.selectedTabIndex_ === 1) {
       const tabOrganizationPage =
           this.shadowRoot!.querySelector('tab-organization-page')!;
       tabOrganizationPage.classList.toggle('changed-state', false);
     }
-    this.apiProxy_.setTabIndex(event.detail.value);
+    this.apiProxy_.setTabIndex(this.selectedTabIndex_);
   }
 }
 
