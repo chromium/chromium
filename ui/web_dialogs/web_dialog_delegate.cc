@@ -172,16 +172,4 @@ WebDialogDelegate::FrameKind WebDialogDelegate::GetWebDialogFrameKind() const {
   return frame_kind_;
 }
 
-content::KeyboardEventProcessingResult
-WebDialogDelegate::PreHandleKeyboardEvent(
-    content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
-  return content::KeyboardEventProcessingResult::NOT_HANDLED;
-}
-
-bool WebDialogDelegate::IsFullscreenForTabOrPending(
-    const content::WebContents* web_contents) {
-  return false;
-}
-
 }  // namespace ui
