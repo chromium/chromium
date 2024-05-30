@@ -36,7 +36,6 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_notes/user_notes_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/actions/actions.h"
@@ -145,14 +144,6 @@ void BrowserActions::InitializeBrowserActions() {
         SidePanelAction(SidePanelEntryId::kReadAnything, IDS_READING_MODE_TITLE,
                         IDS_READING_MODE_TITLE, kMenuBookChromeRefreshIcon,
                         kActionSidePanelShowReadAnything, browser, true)
-            .Build());
-  }
-
-  if (user_notes::IsUserNotesEnabled()) {
-    root_action_item_->AddChild(
-        SidePanelAction(SidePanelEntryId::kUserNote, IDS_USER_NOTE_TITLE,
-                        IDS_USER_NOTE_TITLE, kNoteOutlineIcon,
-                        kActionSidePanelShowUserNote, browser, true)
             .Build());
   }
 

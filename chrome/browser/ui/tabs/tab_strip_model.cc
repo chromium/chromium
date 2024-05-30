@@ -55,7 +55,6 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/user_notes/user_notes_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
@@ -1346,16 +1345,6 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandSendTabToSelf:
       return true;
 
-    case CommandAddNote: {
-      DCHECK(UserNotesController::IsUserNotesSupported(profile()));
-      std::vector<int> indices = GetIndicesForCommand(context_index);
-      if (indices.size() != 1) {
-        return false;
-      }
-      content::WebContents* web_contents = GetWebContentsAt(indices[0]);
-      return UserNotesController::IsUserNotesSupported(web_contents);
-    }
-
     case CommandAddToReadLater:
       return true;
 
@@ -1551,15 +1540,6 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
             UserMetricsAction("SoundContentSetting.UnmuteBy.TabStrip"));
       }
       SetSitesMuted(GetIndicesForCommand(context_index), mute);
-      break;
-    }
-
-    case CommandAddNote: {
-      std::vector<int> indices = GetIndicesForCommand(context_index);
-      DCHECK(indices.size() == 1);
-      Browser* browser =
-          chrome::FindBrowserWithTab(GetWebContentsAt(indices.front()));
-      UserNotesController::InitiateNoteCreationForTab(browser, indices.front());
       break;
     }
 

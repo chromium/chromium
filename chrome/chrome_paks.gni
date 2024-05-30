@@ -194,7 +194,6 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/side_panel_read_anything_resources.pak",
         "$root_gen_dir/chrome/side_panel_reading_list_resources.pak",
         "$root_gen_dir/chrome/side_panel_shared_resources.pak",
-        "$root_gen_dir/chrome/side_panel_user_notes_resources.pak",
         "$root_gen_dir/chrome/signin_resources.pak",
         "$root_gen_dir/chrome/suggest_internals_resources.pak",
         "$root_gen_dir/chrome/support_tool_resources.pak",

@@ -110,7 +110,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/user_notes/user_notes_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -499,7 +498,7 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        // Removed: {IDC_UNFOLLOW, 120},
        // Removed: {IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST, 121},
        {IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE, 123},
-       {IDC_CONTENT_CONTEXT_ADD_A_NOTE, 124},
+       // Removed: {IDC_CONTENT_CONTEXT_ADD_A_NOTE, 124},
        {IDC_LIVE_CAPTION, 125},
        {IDC_CONTENT_CONTEXT_PDF_OCR, 126},
        // Removed: {IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS, 127},
@@ -562,7 +561,7 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH, 23},
        {IDC_CONTENT_CONTEXT_RESHARELINKTOTEXT, 24},
        {IDC_OPEN_LINK_IN_PROFILE_FIRST, 25},
-       {IDC_CONTENT_CONTEXT_ADD_A_NOTE, 26},
+       // Removed: {IDC_CONTENT_CONTEXT_ADD_A_NOTE, 26},
        {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB, 27},
        {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS, 28},
        {IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB, 29},
@@ -1197,11 +1196,6 @@ void RenderViewContextMenu::InitMenu() {
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_EXISTING_LINK_TO_TEXT)) {
     AppendLinkToTextItems();
-  }
-
-  if (user_notes::IsUserNotesEnabled() && GetBrowser() &&
-      GetBrowser()->is_type_normal()) {
-    AppendUserNotesItems();
   }
 
   if (!content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_LINK)) {
@@ -3021,9 +3015,6 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE:
       return navigation_allowed;
 
-    case IDC_CONTENT_CONTEXT_ADD_A_NOTE:
-      return IsAddANoteEnabled();
-
     case IDC_CONTENT_CONTEXT_EXIT_FULLSCREEN:
       return true;
 
@@ -3294,10 +3285,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE:
       ExecOpenInReadAnything();
-      break;
-
-    case IDC_CONTENT_CONTEXT_ADD_A_NOTE:
-      ExecAddANote();
       break;
 
     case IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH:
@@ -3924,18 +3911,6 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 }
 
-bool RenderViewContextMenu::IsAddANoteEnabled() const {
-  DCHECK(user_notes::IsUserNotesEnabled());
-
-  // Generating a user note in an iframe is not currently supported.
-  if (!GetRenderFrameHost() ||
-      GetRenderFrameHost()->GetParentOrOuterDocument()) {
-    return false;
-  }
-
-  return UserNotesController::IsUserNotesSupported(source_web_contents_);
-}
-
 // Returns true if the item was appended.
 bool RenderViewContextMenu::AppendQRCodeGeneratorItem(bool for_image,
                                                       bool draw_icon,
@@ -3978,11 +3953,6 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
       l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF),
       ui::ImageModel::FromVectorIcon(kDevicesIcon));
 #endif
-}
-
-void RenderViewContextMenu::AppendUserNotesItems() {
-  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_ADD_A_NOTE,
-                                  IDS_CONTENT_CONTEXT_ADD_A_NOTE);
 }
 
 std::unique_ptr<ui::DataTransferEndpoint>
@@ -4376,14 +4346,6 @@ void RenderViewContextMenu::OpenLensOverlayWithBounds(
       lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
       lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
           tab_bounds, view_bounds, scaled_image_bounds));
-}
-
-void RenderViewContextMenu::ExecAddANote() {
-  Browser* browser = chrome::FindBrowserWithTab(source_web_contents_);
-  if (!browser) {
-    return;
-  }
-  UserNotesController::InitiateNoteCreationForCurrentTab(browser);
 }
 
 void RenderViewContextMenu::ExecRegionSearch(

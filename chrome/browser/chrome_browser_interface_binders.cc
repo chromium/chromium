@@ -205,8 +205,6 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
-#include "chrome/browser/ui/webui/side_panel/user_notes/user_notes.mojom.h"
-#include "chrome/browser/ui/webui/side_panel/user_notes/user_notes_side_panel_ui.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/browser/ui/webui/webui_gallery/webui_gallery_ui.h"
@@ -1398,12 +1396,6 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<
         side_panel::customize_chrome::mojom::CustomizeToolbarHandlerFactory,
         CustomizeChromeUI>(map);
-  }
-
-  if (user_notes::IsUserNotesEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        side_panel::mojom::UserNotesPageHandlerFactory, UserNotesSidePanelUI>(
-        map);
   }
 
   if (features::IsReadAnythingEnabled()) {

@@ -9279,50 +9279,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
          (loading)
       </message>
 
-      <!-- User note strings -->
-      <message name="IDS_USER_NOTE_TITLE" desc="Title of the User note feature, which gives users access to private user notes.">
-        Notes
-      </message>
-      <message name="IDS_ADD_NEW_USER_NOTE_PLACEHOLDER_TEXT" desc="Placeholder for textarea, where users can add a new user note.">
-        Add a note
-      </message>
-      <message name="IDS_USER_NOTES_SORT_MENU_A11Y_LABEL" is_accessibility_with_no_ui="true" desc="Screen reader label for the button which opens the sort menu in the user notes side panel.">
-        Order
-      </message>
-      <message name="IDS_LEARN_MORE_USER_NOTE" desc="User note menu label, which allows users to learn more about the user note feature.">
-        Learn more
-      </message>
-      <message name="IDS_ALL_NOTES" desc="The text label of a button in the side panel user notes UI, when clicked, takes the user to the notes overviews UI.">
-        All Notes
-      </message>
-      <message name="IDS_USER_NOTES_CURRENT_TAB_HEADER" desc="A header label in the list of all pages with notes for the current tab if it has notes.">
-        Current Tab
-      </message>
-      <message name="IDS_NOTES_COUNT" desc="Text description for the number of notes for a note overview item showing the number of notes on a page">
-        {NUM_NOTES, plural, =1 {1 Note} other {# Notes}}
-      </message>
-      <message name="IDS_USER_NOTES_MENU_OPEN_IN_NEW_TAB" desc="Menu description for opening a page with notes in a new tab.">
-        Open in New Tab
-      </message>
-      <message name="IDS_USER_NOTES_MENU_OPEN_IN_NEW_WINDOW" desc="Menu description for opening a page with notes in a new window.">
-        Open in New Window
-      </message>
-      <message name="IDS_USER_NOTES_MENU_OPEN_IN_INCOGNITO" desc="Menu description for opening a page with notes in an incognito window.">
-        Open in Incognito Window
-      </message>
-      <message name="IDS_USER_NOTES_EMPTY_STATE_TITLE" desc="Title for the user notes side panel empty state">
-        Add Notes About This Page
-      </message>
-      <message name="IDS_USER_NOTES_EMPTY_STATE_BODY" desc="Body text for the user notes side panel empty state">
-        Add a note or thought about this page to revisit later.
-      </message>
-      <message name="IDS_USER_NOTES_EMPTY_STATE_TITLE_GUEST" desc="Title for the user notes side panel empty state in guest mode">
-        Not Available in Guest Mode
-      </message>
-      <message name="IDS_USER_NOTES_EMPTY_STATE_BODY_GUEST" desc="Body text for the user notes side panel empty state in guest mode">
-        Log in as another user to view and take notes on this page.
-      </message>
-
       <!-- Google Lens side panel -->
       <message name="IDS_GOOGLE_LENS_TITLE" desc="Title of the Google Lens side panel">
         Google Lens

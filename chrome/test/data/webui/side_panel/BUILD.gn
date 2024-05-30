@@ -30,10 +30,6 @@ build_webui_tests("build") {
     "performance_controls/test_memory_saver_card_api_proxy.ts",
     "reading_list/reading_list_app_test.ts",
     "reading_list/test_reading_list_api_proxy.ts",
-    "user_notes/app_test.ts",
-    "user_notes/test_user_notes_api_proxy.ts",
-    "user_notes/user_note_overviews_list_test.ts",
-    "user_notes/user_notes_list_test.ts",
   ]
 
   ts_path_mappings = [
@@ -50,9 +46,6 @@ build_webui_tests("build") {
             target_gen_dir),
     "chrome://read-later.top-chrome/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/side_panel/reading_list/tsc/*",
-            target_gen_dir),
-    "chrome://user-notes-side-panel.top-chrome/*|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/side_panel/user_notes/tsc/*",
             target_gen_dir),
     "chrome://shopping-insights-side-panel.top-chrome/*|" +
         rebase_path(
@@ -76,7 +69,6 @@ build_webui_tests("build") {
     "//chrome/browser/resources/side_panel/performance_controls:build_ts",
     "//chrome/browser/resources/side_panel/reading_list:build_ts",
     "//chrome/browser/resources/side_panel/shared:build_ts",
-    "//chrome/browser/resources/side_panel/user_notes:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/commerce:build_ts",
     "//ui/webui/resources/cr_components/page_image_service:build_ts",

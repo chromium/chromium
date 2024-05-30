@@ -483,7 +483,6 @@
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/usb/usb_connection_tracker_factory.h"
-#include "chrome/browser/user_notes/user_note_service_factory.h"
 #include "components/manta/features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #endif
@@ -1269,7 +1268,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   UsbConnectionTrackerFactory::GetInstance();
 #endif
 #if !BUILDFLAG(IS_ANDROID)
-  user_notes::UserNoteServiceFactory::EnsureFactoryBuilt();
   UserEducationServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)

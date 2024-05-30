@@ -107,7 +107,6 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
-#include "chrome/browser/user_notes/user_notes_tab_helper.h"
 #include "chrome/browser/v8_compile_hints/v8_compile_hints_tab_helper.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/buildflags.h"
@@ -730,9 +729,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     HatsHelper::CreateForWebContents(web_contents);
   }
   SharedHighlightingPromo::CreateForWebContents(web_contents);
-  if (user_notes::IsUserNotesEnabled() && !profile->IsOffTheRecord()) {
-    user_notes::UserNotesTabHelper::CreateForWebContents(web_contents);
-  }
 
   if (!profile->IsIncognitoProfile()) {
     // TODO(crbug.com/40863325): Consider using the in-memory cache instead.
