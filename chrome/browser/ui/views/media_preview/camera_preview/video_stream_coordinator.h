@@ -58,6 +58,8 @@ class VideoStreamCoordinator
   void OnCameraVideoFrame(scoped_refptr<media::VideoFrame> frame) override;
   void OnFatalErrorOrDisconnection() override;
 
+  void OnPermissionChange(bool has_permission);
+
   void SetFrameReceivedCallbackForTest(base::RepeatingClosure callback) {
     frame_received_callback_for_test_ = std::move(callback);
   }
@@ -81,6 +83,8 @@ class VideoStreamCoordinator
   const media_preview_metrics::Context metrics_context_;
   size_t video_stream_total_frames_;
   std::optional<base::TimeTicks> video_stream_start_time_;
+
+  bool has_permission_ = false;
 
   std::optional<std::pair<media::VideoCaptureDeviceInfo,
                           mojo::Remote<video_capture::mojom::VideoSource>>>

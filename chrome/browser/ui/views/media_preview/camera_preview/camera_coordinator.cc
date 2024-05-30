@@ -105,6 +105,10 @@ void CameraCoordinator::OnVideoSourceChanged(
                                              std::move(video_source));
 }
 
+void CameraCoordinator::OnPermissionChange(bool has_permission) {
+  video_stream_coordinator_->OnPermissionChange(has_permission);
+}
+
 void CameraCoordinator::UpdateDevicePreferenceRanking() {
   if (active_device_id_.empty()) {
     return;

@@ -34,6 +34,8 @@ class CameraCoordinator {
   // Invoked from the ViewController when a combobox selection has been made.
   void OnVideoSourceChanged(std::optional<size_t> selected_index);
 
+  void OnPermissionChange(bool has_permission);
+
   void UpdateDevicePreferenceRanking();
 
   const ui::SimpleComboboxModel& GetComboboxModelForTest() const {

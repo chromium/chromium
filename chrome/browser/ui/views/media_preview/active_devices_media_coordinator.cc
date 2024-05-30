@@ -65,6 +65,7 @@ ActiveDevicesMediaCoordinator::ActiveDevicesMediaCoordinator(
                        ? blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE
                        : blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE),
       media_preview_metrics_context_(metrics_context) {
+  CHECK_NE(view_type_, MediaCoordinator::ViewType::kBoth);
   CHECK(container_);
   media_devices_dispatcher_observer_.Observe(
       MediaCaptureDevicesDispatcher::GetInstance());
@@ -207,8 +208,10 @@ void ActiveDevicesMediaCoordinator::OnRequestUpdate(
 
 void ActiveDevicesMediaCoordinator::OnPermissionChange(bool has_permission) {
   permission_allowed_ = has_permission;
-  for (const auto& [_, media_coordinator] : media_coordinators_) {
-    media_coordinator->OnPermissionChange(has_permission);
+  if (view_type_ == MediaCoordinator::ViewType::kCameraOnly) {
+    for (const auto& [_, media_coordinator] : media_coordinators_) {
+      media_coordinator->OnCameraPermissionChange(has_permission);
+    }
   }
 }
 

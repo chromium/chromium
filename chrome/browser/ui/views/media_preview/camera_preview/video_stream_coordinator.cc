@@ -128,7 +128,7 @@ void VideoStreamCoordinator::StopInternal(
                                                          actual_fps);
       video_stream_start_time_.reset();
 
-      if (GetVideoStreamView()) {
+      if (video_stream_view_) {
         float rendered_percent = static_cast<double>(rendered_frame_count) /
                                  video_stream_total_frames_;
         media_preview_metrics::RecordPreviewVideoFramesRenderedPercent(
@@ -160,4 +160,8 @@ void VideoStreamCoordinator::OnViewBoundsChanged(views::View* observed_view) {
                     std::move(connect_to_device_params_->second));
     connect_to_device_params_.reset();
   }
+}
+
+void VideoStreamCoordinator::OnPermissionChange(bool has_permission) {
+  has_permission_ = has_permission;
 }

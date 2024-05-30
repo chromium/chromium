@@ -50,7 +50,7 @@ class MediaCoordinator {
 
   void UpdateDevicePreferenceRanking();
 
-  void OnPermissionChange(bool has_permission);
+  void OnCameraPermissionChange(bool has_permission);
 
  private:
   raw_ptr<MediaView> media_view_ = nullptr;

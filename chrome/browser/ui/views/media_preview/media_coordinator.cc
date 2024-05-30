@@ -83,9 +83,9 @@ void MediaCoordinator::UpdateDevicePreferenceRanking() {
   }
 }
 
-void MediaCoordinator::OnPermissionChange(bool has_permission) {
+void MediaCoordinator::OnCameraPermissionChange(bool has_permission) {
   if (camera_coordinator_) {
-    // TODO(b/332976491): Plumb permission state to VideoStream.
+    camera_coordinator_->OnPermissionChange(has_permission);
   }
 }
 
