@@ -200,3 +200,11 @@ source_set("unit_tests_mobile") {
     deps += [ ":real_time_url_checks_allowlist" ]
   }
 }
+
+source_set("referring_app_info") {
+  sources = [ "referring_app_info.h" ]
+  deps = [
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//url",
+  ]
+}

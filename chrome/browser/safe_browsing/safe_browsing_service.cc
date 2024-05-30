@@ -319,8 +319,8 @@ SafeBrowsingService::GetReferrerChainProviderFromBrowserContext(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-LoginReputationClientRequest::ReferringAppInfo
-SafeBrowsingService::GetReferringAppInfo(content::WebContents* web_contents) {
+ReferringAppInfo SafeBrowsingService::GetReferringAppInfo(
+    content::WebContents* web_contents) {
   return safe_browsing::GetReferringAppInfo(web_contents);
 }
 #endif

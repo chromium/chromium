@@ -700,8 +700,7 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
       content::BrowserContext* browser_context);
 
 #if BUILDFLAG(IS_ANDROID)
-  LoginReputationClientRequest::ReferringAppInfo GetReferringAppInfo(
-      content::WebContents* web_contents);
+  ReferringAppInfo GetReferringAppInfo(content::WebContents* web_contents);
 #endif
 
   void set_safe_browsing_service(SafeBrowsingServiceInterface* sb_service) {

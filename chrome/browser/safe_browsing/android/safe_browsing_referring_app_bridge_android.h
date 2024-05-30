@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_ANDROID_SAFE_BROWSING_REFERRING_APP_BRIDGE_ANDROID_H_
 #define CHROME_BROWSER_SAFE_BROWSING_ANDROID_SAFE_BROWSING_REFERRING_APP_BRIDGE_ANDROID_H_
 
+#include "components/safe_browsing/android/referring_app_info.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace content {
@@ -14,8 +15,7 @@ class WebContents;
 namespace safe_browsing {
 
 // Get referring app info from Java side.
-LoginReputationClientRequest::ReferringAppInfo GetReferringAppInfo(
-    content::WebContents* web_contents);
+ReferringAppInfo GetReferringAppInfo(content::WebContents* web_contents);
 
 }  // namespace safe_browsing
 

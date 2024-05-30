@@ -7,6 +7,7 @@ include_rules = [
   "+components/optimization_guide/proto",
   "+components/page_info",
   "+components/permissions/permission_request_manager.h",
+  "+components/safe_browsing/android/referring_app_info.h",
   "+components/safe_browsing/core/browser",
   "+components/safe_browsing/core/common",
   "+components/security_interstitials/content",

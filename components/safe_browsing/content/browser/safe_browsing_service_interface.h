@@ -10,7 +10,7 @@
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/safe_browsing/android/referring_app_info.h"
 #endif
 
 namespace content {
@@ -56,7 +56,7 @@ class SafeBrowsingServiceInterface
       content::BrowserContext* browser_context) = 0;
 
 #if BUILDFLAG(IS_ANDROID)
-  virtual LoginReputationClientRequest::ReferringAppInfo GetReferringAppInfo(
+  virtual ReferringAppInfo GetReferringAppInfo(
       content::WebContents* web_contents) = 0;
 #endif
 
@@ -94,4 +94,4 @@ class SafeBrowsingServiceFactory {
 
 }  // namespace safe_browsing
 
-#endif  //  COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_SERVICE_INTERFACE_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_SERVICE_INTERFACE_H_

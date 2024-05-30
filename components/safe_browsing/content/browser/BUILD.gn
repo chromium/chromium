@@ -24,6 +24,10 @@ source_set("safe_browsing_service") {
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//content/public/browser",
   ]
+
+  if (is_android) {
+    deps += [ "//components/safe_browsing/android:referring_app_info" ]
+  }
 }
 
 # NOTE: This target is separated from :browser as
