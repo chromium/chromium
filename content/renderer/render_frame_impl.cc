@@ -4846,8 +4846,6 @@ void RenderFrameImpl::DidCommitNavigationInternal(
   auto params = MakeDidCommitProvisionalLoadParams(
       commit_type, transition, permissions_policy_header,
       document_policy_header, embedding_token);
-
-  mojo::internal::AutoRecordReplayAssertBufferAllocations assertsEnabled("TT-492-1124");
   if (same_document_params) {
     GetFrameHost()->DidCommitSameDocumentNavigation(
         std::move(params), std::move(same_document_params));

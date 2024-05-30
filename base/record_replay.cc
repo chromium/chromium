@@ -45,6 +45,7 @@ namespace recordreplay {
   Macro(V8IsMainThread, (), (), bool, false)                            \
   Macro(V8RecordReplayIsInReplayCode,                                   \
         (const char* why), (why), bool, false)                          \
+  Macro(V8RecordReplayHasAsserts, (), (), bool, false)                  \
   Macro(V8RecordReplayHadMismatch, (), (), bool, false)
 
 #define ForEachV8APIVoid(Macro)                                         \
@@ -241,6 +242,10 @@ char* GetRecordingId() {
 
 bool HadMismatch() {
   return V8RecordReplayHadMismatch();
+}
+
+bool HasAsserts() {
+  return V8RecordReplayHasAsserts();
 }
 
 void Assert(const char* format, ...) {

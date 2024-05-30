@@ -22,6 +22,8 @@ scoped_refptr<SerializedScriptValue> PostMessageHelper::SerializeMessageByMove(
     const StructuredSerializeOptions* options,
     Transferables& transferables,
     ExceptionState& exception_state) {
+  REPLAY_ASSERT("[TT-1286] PostMessageHelper::SerializeMessageByMove %d %d",
+    options->hasTransfer(), options->hasTransfer() && !options->transfer().empty());
   if (options->hasTransfer() && !options->transfer().empty()) {
     if (!SerializedScriptValue::ExtractTransferables(
             isolate, options->transfer(), transferables, exception_state)) {
@@ -29,7 +31,7 @@ scoped_refptr<SerializedScriptValue> PostMessageHelper::SerializeMessageByMove(
     }
   }
 
-  recordreplay::AutoAssertBufferAllocations bufferAssets("TT-358-1249");
+  REPLAY_ASSERT("[TT-1286] PostMessageHelper::SerializeMessageByMove B");
   SerializedScriptValue::SerializeOptions serialize_options;
   serialize_options.transferables = &transferables;
   scoped_refptr<SerializedScriptValue> serialized_message =

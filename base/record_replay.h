@@ -12,6 +12,8 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 
+#include "v8/include/replayio-macros.h"
+
 #include <cstdint>
 #include <memory>
 
@@ -28,14 +30,15 @@ bool IsReplaying();
 char* GetRecordingId();
 void FinishRecording();
 
-bool HadMismatch();
-
 void Print(const char* format, ...);
 void Diagnostic(const char* format, ...);
 void CommandDiagnostic(const char* format, ...);
 void CommandDiagnosticTrace(const char* format, ...);
 void Warning(const char* format, ...);
 void Trace(const char* format, ...);
+
+bool HadMismatch();
+bool HasAsserts();
 void Assert(const char* format, ...);
 void AssertMaybeEventsDisallowed(const char* format, ...);
 void AssertBytes(const char* why, const void* buf, size_t size);
