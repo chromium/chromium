@@ -938,8 +938,10 @@ Status ExecuteSwitchToWindow(Session* session,
       std::unique_ptr<base::Value> result;
       WebView* web_view;
       status = session->chrome->GetWebViewById(*it, &web_view);
+      // `CallFunction(...)` below may remove web views that detach during this
+      // loop. In that case, continue searching.
       if (status.IsError())
-        return status;
+        continue;
       status = web_view->CallFunction(
           std::string(), kGetWindowNameScript, args, &result);
       if (status.IsError())
