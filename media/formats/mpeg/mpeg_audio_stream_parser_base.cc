@@ -100,12 +100,11 @@ bool MPEGAudioStreamParserBase::GetGenerateTimestampsFlag() const {
   return true;
 }
 
-bool MPEGAudioStreamParserBase::AppendToParseBuffer(const uint8_t* buf,
-                                                    size_t size) {
-  DVLOG(1) << __func__ << "(" << size << ")";
+bool MPEGAudioStreamParserBase::AppendToParseBuffer(
+    base::span<const uint8_t> buf) {
+  DVLOG(1) << __func__ << "(" << buf.size() << ")";
 
-  DCHECK(buf);
-  DCHECK_GT(size, 0UL);
+  DCHECK(!buf.empty());
   DCHECK_NE(state_, UNINITIALIZED);
 
   if (state_ == PARSE_ERROR) {
@@ -130,9 +129,10 @@ bool MPEGAudioStreamParserBase::AppendToParseBuffer(const uint8_t* buf,
   // could lead to memory corruption, preferring CHECK.
   CHECK_EQ(uninspected_pending_bytes_, 0);
 
-  uninspected_pending_bytes_ = base::checked_cast<int>(size);
-  if (!queue_.Push(buf, uninspected_pending_bytes_)) {
-    DVLOG(2) << "AppendToParseBuffer(): Failed to push buf of size " << size;
+  uninspected_pending_bytes_ = base::checked_cast<int>(buf.size());
+  if (!queue_.Push(buf)) {
+    DVLOG(2) << "AppendToParseBuffer(): Failed to push buf of size "
+             << buf.size();
     return false;
   }
 

@@ -141,7 +141,7 @@ bool MP4StreamParser::GetGenerateTimestampsFlag() const {
   return false;
 }
 
-bool MP4StreamParser::AppendToParseBuffer(const uint8_t* buf, size_t size) {
+bool MP4StreamParser::AppendToParseBuffer(base::span<const uint8_t> buf) {
   DCHECK_NE(state_, kWaitingForInit);
 
   if (state_ == kError) {
@@ -164,8 +164,9 @@ bool MP4StreamParser::AppendToParseBuffer(const uint8_t* buf, size_t size) {
   // could lead to memory corruption, preferring CHECK.
   CHECK_EQ(queue_.tail(), max_parse_offset_);
 
-  if (!queue_.Push(buf, base::checked_cast<int>(size))) {
-    DVLOG(2) << "AppendToParseBuffer(): Failed to push buf of size " << size;
+  if (!queue_.Push(buf)) {
+    DVLOG(2) << "AppendToParseBuffer(): Failed to push buf of size "
+             << buf.size();
     return false;
   }
 

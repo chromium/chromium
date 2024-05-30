@@ -978,13 +978,12 @@ bool ChunkDemuxer::EvictCodedFrames(const std::string& id,
 }
 
 bool ChunkDemuxer::AppendToParseBuffer(const std::string& id,
-                                       const uint8_t* data,
-                                       size_t length) {
-  DVLOG(1) << "AppendToParseBuffer(" << id << ", " << length << ")";
+                                       base::span<const uint8_t> data) {
+  DVLOG(1) << "AppendToParseBuffer(" << id << ", " << data.size() << ")";
 
   DCHECK(!id.empty());
 
-  if (length == 0u) {
+  if (data.empty()) {
     // We don't DCHECK that |state_| != ENDED here, since |state_| is protected
     // by |lock_|. However, transition into ENDED can happen only on
     // MarkEndOfStream called by the MediaSource object on parse failure or on
@@ -992,8 +991,6 @@ bool ChunkDemuxer::AppendToParseBuffer(const std::string& id,
     // nonzero-length appends, we still DCHECK within the lock, below.
     return true;
   }
-
-  DCHECK(data);
 
   {
     base::AutoLock auto_lock(lock_);
@@ -1003,7 +1000,7 @@ bool ChunkDemuxer::AppendToParseBuffer(const std::string& id,
       case INITIALIZING:
       case INITIALIZED:
         DCHECK(IsValidId_Locked(id));
-        if (!source_state_map_[id]->AppendToParseBuffer(data, length)) {
+        if (!source_state_map_[id]->AppendToParseBuffer(data)) {
           // Just indicate that the append failed. Let the caller give app an
           // error so that it may adapt. This is different from
           // RunSegmentParserLoop(), where fatal MediaSource failure should

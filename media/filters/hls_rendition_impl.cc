@@ -384,7 +384,8 @@ void HlsRenditionImpl::OnSegmentData(base::OnceClosure cb,
 
   if (!engine_host_->AppendAndParseData(
           role_, base::TimeDelta(), parse_end + base::Seconds(1),
-          &parse_offset_, stream->raw_data(), stream->buffer_size())) {
+          &parse_offset_,
+          base::span(stream->raw_data(), stream->buffer_size()))) {
     return engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
   }
 

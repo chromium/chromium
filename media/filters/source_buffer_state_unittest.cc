@@ -112,17 +112,17 @@ class SourceBufferStateTest : public ::testing::Test {
   // OnNewConfigs can only be invoked when parse is in progress.
   bool AppendDataAndReportTracks(const std::unique_ptr<SourceBufferState>& sbs,
                                  std::unique_ptr<MediaTracks> tracks) {
-    const uint8_t stream_data[] = "stream_data";
-    const int data_size = sizeof(stream_data);
+    const uint8_t kStreamData[] = "stream_data";
+    base::span<const uint8_t> stream_data = base::make_span(kStreamData);
     base::TimeDelta t;
 
     // Ensure `stream_data` fits within one StreamParser::Parse() call.
-    CHECK_GT(StreamParser::kMaxPendingBytesPerParse, data_size);
+    CHECK_GT(StreamParser::kMaxPendingBytesPerParse,
+             static_cast<int>(stream_data.size_bytes()));
 
     bool new_configs_result = false;
 
-    EXPECT_CALL(*mock_stream_parser_,
-                AppendToParseBuffer(stream_data, data_size))
+    EXPECT_CALL(*mock_stream_parser_, AppendToParseBuffer(stream_data))
         .WillOnce(Return(true));
     EXPECT_CALL(*mock_stream_parser_,
                 Parse(StreamParser::kMaxPendingBytesPerParse))
@@ -133,7 +133,7 @@ class SourceBufferStateTest : public ::testing::Test {
                   /* Indicate successful parse with no uninspected data. */
                   Return(StreamParser::ParseStatus::kSuccess)));
 
-    EXPECT_TRUE(sbs->AppendToParseBuffer(stream_data, data_size));
+    EXPECT_TRUE(sbs->AppendToParseBuffer(stream_data));
     EXPECT_EQ(StreamParser::ParseStatus::kSuccess,
               sbs->RunSegmentParserLoop(t, t, &t));
 

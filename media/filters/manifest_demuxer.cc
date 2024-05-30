@@ -379,11 +379,9 @@ bool ManifestDemuxer::AppendAndParseData(std::string_view role,
                                          base::TimeDelta start,
                                          base::TimeDelta end,
                                          base::TimeDelta* offset,
-                                         const uint8_t* data,
-                                         size_t data_size) {
+                                         base::span<const uint8_t> data) {
   CHECK(chunk_demuxer_);
-  if (!chunk_demuxer_->AppendToParseBuffer(std::string(role), data,
-                                           data_size)) {
+  if (!chunk_demuxer_->AppendToParseBuffer(std::string(role), data)) {
     return false;
   }
   while (true) {

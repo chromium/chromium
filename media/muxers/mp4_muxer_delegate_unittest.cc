@@ -225,7 +225,7 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
         &media_log_);
 
     bool result = mp4_stream_parser.AppendToParseBuffer(
-        total_written_data.data(), total_written_data.size());
+        base::make_span(total_written_data));
     EXPECT_TRUE(result);
 
     // `MP4StreamParser::Parse` validates the MP4 format.
@@ -524,7 +524,7 @@ TEST_F(Mp4MuxerDelegateTest, AddAudioFrame) {
         &media_log_);
 
     bool result = mp4_stream_parser.AppendToParseBuffer(
-        total_written_data.data(), total_written_data.size());
+        base::make_span(total_written_data));
     EXPECT_TRUE(result);
 
     // `MP4StreamParser::Parse` validates the MP4 format.

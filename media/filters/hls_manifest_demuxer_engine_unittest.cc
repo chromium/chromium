@@ -448,7 +448,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestLivePlaybackManifestUpdates) {
 
   // Assume that anything appended is valid, because we actually have no valid
   // media for this test.
-  EXPECT_CALL(*mock_mdeh_, AppendAndParseData("primary", _, _, _, _, _))
+  EXPECT_CALL(*mock_mdeh_, AppendAndParseData("primary", _, _, _, _))
       .WillRepeatedly(Return(true));
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/a.ts", "Cheese in a cstring is string cheese.");
@@ -853,6 +853,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestEndOfStreamAfterAllFetched) {
   // - manifest.m3u8 - main manifest
   // - first.ts      - request for the first few bytes to do codec detection
   // - first.ts      - request for chunks of data to add to ChunkDemuxer
+  std::string bitstream = "hey, this isn't a bitstream!";
   EXPECT_CALL(*mock_dsp_,
               ReadFromCombinedUrlQueue(
                   SingleSegmentQueue("http://media.example.com/manifest.m3u8",
@@ -865,9 +866,8 @@ TEST_F(HlsManifestDemuxerEngineTest, TestEndOfStreamAfterAllFetched) {
       ReadFromCombinedUrlQueue(
           SingleSegmentQueue("http://media.example.com/first.ts", std::nullopt),
           _))
-      .WillOnce(
-          RunOnceCallback<1>(StringHlsDataSourceStreamFactory::CreateStream(
-              "hey, this isn't a bitstream!")));
+      .WillOnce(RunOnceCallback<1>(
+          StringHlsDataSourceStreamFactory::CreateStream(bitstream)));
 
   // `GetBufferedRanges` gets called many times during this process:
   // - HlsVodRendition::CheckState (1) => empty ranges, nothing loaded.
@@ -882,8 +882,8 @@ TEST_F(HlsManifestDemuxerEngineTest, TestEndOfStreamAfterAllFetched) {
 
   // The first call to `OnTimeUpdate` should trigger the append function,
   // and our data was 30 characters long.
-  EXPECT_CALL(*mock_mdeh_,
-              AppendAndParseData("primary", base::Seconds(0), _, _, _, 28))
+  EXPECT_CALL(*mock_mdeh_, AppendAndParseData("primary", base::Seconds(0), _, _,
+                                              base::as_byte_span(bitstream)))
       .WillOnce(Return(true));
 
   // Finally, and EndOfStream call happens:

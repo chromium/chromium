@@ -320,8 +320,8 @@ bool Mp2tStreamParser::GetGenerateTimestampsFlag() const {
   return false;
 }
 
-bool Mp2tStreamParser::AppendToParseBuffer(const uint8_t* buf, size_t size) {
-  DVLOG(1) << __func__ << " size=" << size;
+bool Mp2tStreamParser::AppendToParseBuffer(base::span<const uint8_t> buf) {
+  DVLOG(1) << __func__ << " size=" << buf.size();
 
   // Ensure that we are not still in the middle of iterating Parse calls for
   // previously appended data. May consider changing this to a DCHECK once
@@ -330,9 +330,10 @@ bool Mp2tStreamParser::AppendToParseBuffer(const uint8_t* buf, size_t size) {
   CHECK_EQ(uninspected_pending_bytes_, 0);
 
   // Add the data to the parser state.
-  uninspected_pending_bytes_ = base::checked_cast<int>(size);
-  if (!ts_byte_queue_.Push(buf, uninspected_pending_bytes_)) {
-    DVLOG(2) << "AppendToParseBuffer(): Failed to push buf of size " << size;
+  uninspected_pending_bytes_ = base::checked_cast<int>(buf.size());
+  if (!ts_byte_queue_.Push(buf)) {
+    DVLOG(2) << "AppendToParseBuffer(): Failed to push buf of size "
+             << buf.size();
     return false;
   }
 

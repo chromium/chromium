@@ -19,9 +19,9 @@ void OffsetByteQueue::Reset() {
   head_ = 0;
 }
 
-bool OffsetByteQueue::Push(const uint8_t* buf, int size) {
-  if (!queue_.Push(buf, size)) {
-    DVLOG(4) << "Failed to push buf of size " << size;
+bool OffsetByteQueue::Push(base::span<const uint8_t> buf) {
+  if (!queue_.Push(buf)) {
+    DVLOG(4) << "Failed to push buf of size " << buf.size();
     Sync();
     return false;
   }

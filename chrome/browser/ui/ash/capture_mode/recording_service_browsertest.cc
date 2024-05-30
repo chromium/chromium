@@ -115,8 +115,7 @@ class WebmVerifier {
   // Parses the given |webm_file_content| and returns true on success.
   bool Verify(const std::string& webm_file_content) {
     if (!webm_parser_.AppendToParseBuffer(
-            reinterpret_cast<const uint8_t*>(webm_file_content.data()),
-            webm_file_content.size())) {
+            base::as_byte_span(webm_file_content))) {
       return false;
     }
 

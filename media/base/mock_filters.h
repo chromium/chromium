@@ -859,7 +859,7 @@ class MockStreamParser : public StreamParser {
                     MediaLog* media_log));
   MOCK_METHOD0(Flush, void());
   MOCK_CONST_METHOD0(GetGenerateTimestampsFlag, bool());
-  MOCK_METHOD2(AppendToParseBuffer, bool(const uint8_t*, size_t));
+  MOCK_METHOD1(AppendToParseBuffer, bool(base::span<const uint8_t>));
   MOCK_METHOD1(Parse, ParseStatus(int));
 };
 

@@ -131,6 +131,20 @@ bool DecoderBuffer::DoSubsamplesMatch(const DecoderBuffer& buffer) {
   return VerifySubsamplesMatchSize(subsamples, buffer.size());
 }
 
+base::span<const uint8_t> DecoderBuffer::AsSpan() const {
+  DCHECK(!end_of_stream());
+  if (read_only_mapping_.IsValid()) {
+    return read_only_mapping_.GetMemoryAsSpan<const uint8_t>().first(size_);
+  }
+  if (writable_mapping_.IsValid()) {
+    return writable_mapping_.GetMemoryAsSpan<const uint8_t>().first(size_);
+  }
+  if (external_memory_) {
+    return external_memory_->span().first(size_);
+  }
+  return data_.first(size_);
+}
+
 DecoderBufferSideData& DecoderBuffer::WritableSideData() {
   if (!side_data_.has_value()) {
     side_data_.emplace();

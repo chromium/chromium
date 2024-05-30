@@ -196,9 +196,8 @@ void SourceBufferState::SetParseWarningCallback(
   frame_processor_->SetParseWarningCallback(std::move(parse_warning_cb));
 }
 
-bool SourceBufferState::AppendToParseBuffer(const uint8_t* data,
-                                            size_t length) {
-  return stream_parser_->AppendToParseBuffer(data, length);
+bool SourceBufferState::AppendToParseBuffer(base::span<const uint8_t> data) {
+  return stream_parser_->AppendToParseBuffer(data);
 }
 
 StreamParser::ParseStatus SourceBufferState::RunSegmentParserLoop(

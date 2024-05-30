@@ -78,7 +78,9 @@ bool TsSectionPsi::Parse(bool payload_unit_start_indicator,
     return true;
 
   // Add the data to the parser state.
-  RCHECK(psi_byte_queue_.Push(buf, size));  // Can fail if allocation fails.
+  RCHECK(psi_byte_queue_.Push(base::make_span(
+      buf,
+      base::checked_cast<size_t>(size))));  // Can fail if allocation fails.
   int raw_psi_size;
   const uint8_t* raw_psi;
   psi_byte_queue_.Peek(&raw_psi, &raw_psi_size);

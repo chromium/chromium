@@ -77,7 +77,7 @@ bool WebMStreamParser::GetGenerateTimestampsFlag() const {
   return false;
 }
 
-bool WebMStreamParser::AppendToParseBuffer(const uint8_t* buf, size_t size) {
+bool WebMStreamParser::AppendToParseBuffer(base::span<const uint8_t> buf) {
   DCHECK_NE(state_, kWaitingForInit);
 
   if (state_ == kError) {
@@ -100,9 +100,10 @@ bool WebMStreamParser::AppendToParseBuffer(const uint8_t* buf, size_t size) {
   // could lead to memory corruption, preferring CHECK.
   CHECK_EQ(uninspected_pending_bytes_, 0);
 
-  uninspected_pending_bytes_ = base::checked_cast<int>(size);
-  if (!byte_queue_.Push(buf, uninspected_pending_bytes_)) {
-    DVLOG(2) << "AppendToParseBuffer(): Failed to push buf of size " << size;
+  uninspected_pending_bytes_ = base::checked_cast<int>(buf.size());
+  if (!byte_queue_.Push(buf)) {
+    DVLOG(2) << "AppendToParseBuffer(): Failed to push buf of size "
+             << buf.size();
     return false;
   }
 

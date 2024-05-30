@@ -78,7 +78,9 @@ bool TsSectionPes::Parse(bool payload_unit_start_indicator,
 
   // Add the data to the parser state.
   if (size > 0) {
-    RCHECK(pes_byte_queue_.Push(buf, size));  // Can fail if allocation fails.
+    RCHECK(pes_byte_queue_.Push(base::make_span(
+        buf,
+        base::checked_cast<size_t>(size))));  // Can fail if allocation fails.
   }
 
   // Try emitting the current PES packet.

@@ -400,7 +400,7 @@ class WebmMuxerTestUnparametrized : public testing::Test {
         base::BindRepeating(&WebmMuxerTestUnparametrized::OnEndMediaSegment,
                             base::Unretained(this)),
         &media_log_);
-    if (!parser.AppendToParseBuffer(muxed_data_.data(), muxed_data_.size())) {
+    if (!parser.AppendToParseBuffer(base::make_span(muxed_data_))) {
       return false;
     }
 

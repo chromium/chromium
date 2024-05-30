@@ -328,10 +328,8 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   // per the MSE specification. App could use a back-off and retry strategy or
   // otherwise alter their behavior to attempt to buffer media for further
   // playback.
-  // TODO(b/341763066): use base::span instead of a ptr+size.
   [[nodiscard]] bool AppendToParseBuffer(const std::string& id,
-                                         const uint8_t* data,
-                                         size_t length);
+                                         base::span<const uint8_t> data);
 
   // Tells the stream parser for the source buffer associated with `id` to parse
   // more of the data previously sent to it from this object's

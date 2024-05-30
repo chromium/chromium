@@ -10,6 +10,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/process/memory.h"
 #include "media/base/media_export.h"
 
@@ -36,7 +37,7 @@ class MEDIA_EXPORT ByteQueue {
   // Appends new bytes onto the end of the queue. If allocation failure occurs,
   // then the append of `data` is not done and returns false. Otherwise, returns
   // true.
-  [[nodiscard]] bool Push(const uint8_t* data, int size);
+  [[nodiscard]] bool Push(base::span<const uint8_t> data);
 
   // Get a pointer to the front of the queue and the queue size. These values
   // are only valid until the next Push() or Pop() call.

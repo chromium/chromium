@@ -37,12 +37,11 @@ void ByteQueue::Reset() {
   used_ = 0;
 }
 
-bool ByteQueue::Push(const uint8_t* data, int size) {
-  DCHECK(data);
-  DCHECK_GT(size, 0);
+bool ByteQueue::Push(base::span<const uint8_t> data) {
+  DCHECK(!data.empty());
 
   // This can never overflow since used and size are both ints.
-  const size_t size_needed = static_cast<size_t>(used_) + size;
+  const size_t size_needed = static_cast<size_t>(used_) + data.size();
 
   // Check to see if we need a bigger buffer.
   if (size_needed > size_) {
@@ -75,14 +74,14 @@ bool ByteQueue::Push(const uint8_t* data, int size) {
     buffer_.reset(new_buffer);  // This also frees the previous `buffer_`.
     size_ = new_size;
     offset_ = 0;
-  } else if ((offset_ + used_ + size) > size_) {
+  } else if ((offset_ + used_ + data.size()) > size_) {
     // The buffer is big enough, but we need to move the data in the queue.
     memmove(buffer_.get(), Front(), used_);
     offset_ = 0;
   }
 
-  memcpy(Front() + used_, data, size);
-  used_ += size;
+  memcpy(Front() + used_, data.data(), data.size());
+  used_ += data.size();
 
   return true;
 }

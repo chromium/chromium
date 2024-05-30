@@ -171,6 +171,8 @@ class MEDIA_EXPORT DecoderBuffer
     return data_.data();
   }
 
+  base::span<const uint8_t> AsSpan() const;
+
   // The number of bytes in the buffer.
   size_t size() const {
     DCHECK(!end_of_stream());

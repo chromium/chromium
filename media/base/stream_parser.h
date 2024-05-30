@@ -13,6 +13,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -157,8 +158,8 @@ class MEDIA_EXPORT StreamParser {
   // `QuotaExceededErr` exception per the MSE specification. App could use a
   // back-off and retry strategy or otherwise alter their behavior to attempt to
   // buffer media for further playback.
-  [[nodiscard]] virtual bool AppendToParseBuffer(const uint8_t* buf,
-                                                 size_t size) = 0;
+  [[nodiscard]] virtual bool AppendToParseBuffer(
+      base::span<const uint8_t> buf) = 0;
 
   // Attempts to parse more data previously provided via AppendToParseBuffer().
   // May not attempt to parse all of it in one pass;

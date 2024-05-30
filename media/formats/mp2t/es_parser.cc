@@ -47,7 +47,8 @@ bool EsParser::Parse(const uint8_t* buf,
   }
 
   // Add the incoming bytes to the ES queue.
-  if (!es_queue_->Push(buf, size)) {
+  if (!es_queue_->Push(
+          base::make_span(buf, base::checked_cast<size_t>(size)))) {
     DVLOG(2) << "Failed to push buf of size " << size;
     return false;
   }

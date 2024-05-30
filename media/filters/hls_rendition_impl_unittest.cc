@@ -69,6 +69,7 @@ const std::string kSecondFetchLivePlaylist =
 }  // namespace
 
 using testing::_;
+using testing::ElementsAreArray;
 using testing::Return;
 
 MATCHER_P(MediaSegmentHasUrl, urlstr, "MediaSegment has provided URL") {
@@ -124,8 +125,9 @@ class HlsRenditionImplUnittest : public testing::Test {
                           base::Unretained(this));
   }
 
-  void RequireAppend(size_t data_length, bool return_value = true) {
-    EXPECT_CALL(*mock_mdeh_, AppendAndParseData(_, _, _, _, _, data_length))
+  void RequireAppend(base::span<const uint8_t> data, bool return_value = true) {
+    EXPECT_CALL(*mock_mdeh_,
+                AppendAndParseData(_, _, _, _, base::as_byte_span(data)))
         .WillOnce(Return(return_value));
   }
 
@@ -160,13 +162,16 @@ class HlsRenditionImplUnittest : public testing::Test {
                                base::TimeDelta fetch_expected_time) {
     std::string junk_content = "abcdefg, I dont like to sing rhyming songs";
     EXPECT_CALL(*mock_hrh_, ReadMediaSegment(_, _, _, _))
-        .WillOnce([content = std::move(junk_content), host = mock_hrh_.get()](
+        .WillOnce([content = junk_content, host = mock_hrh_.get()](
                       const hls::MediaSegment&, bool, bool,
                       HlsDataSourceProvider::ReadCb cb) {
           auto stream = StringHlsDataSourceStreamFactory::CreateStream(content);
           std::move(cb).Run(std::move(stream));
         });
-    EXPECT_CALL(*mock_mdeh_, AppendAndParseData("test", _, _, _, _, 42))
+    EXPECT_CALL(
+        *mock_mdeh_,
+        AppendAndParseData("test", _, _, _,
+                           ElementsAreArray(base::as_byte_span(junk_content))))
         .WillOnce(Return(true));
     Ranges<base::TimeDelta> initial_range;
     Ranges<base::TimeDelta> appended_range;
@@ -275,9 +280,11 @@ TEST_F(HlsRenditionImplUnittest, TestCreateRenditionPaused) {
   RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
                         base::Seconds(5));
   // The first segment will be queried
-  RespondToUrl("http://example.com/playlist_4500Kb_14551245.ts", "tscontent");
+  std::string tscontent = "tscontent";
+  RespondToUrl("http://example.com/playlist_4500Kb_14551245.ts", tscontent);
   // Then appended.
-  EXPECT_CALL(*mock_mdeh_, AppendAndParseData(_, _, _, _, _, 9))
+  EXPECT_CALL(*mock_mdeh_,
+              AppendAndParseData(_, _, _, _, base::as_byte_span(tscontent)))
       .WillOnce(Return(true));
   // CheckState should in this case respond with a delay of zero seconds.
   rendition->CheckState(base::Seconds(0), 0.0,
@@ -298,9 +305,11 @@ TEST_F(HlsRenditionImplUnittest, TestPausedRenditionHasSomeData) {
                         base::Seconds(16));
 
   // The next unqueried segment will be queried
-  RespondToUrl("http://example.com/playlist_4500Kb_14551245.ts", "tscontent");
+  std::string tscontent = "tscontent";
+  RespondToUrl("http://example.com/playlist_4500Kb_14551245.ts", tscontent);
   // Then appended.
-  EXPECT_CALL(*mock_mdeh_, AppendAndParseData(_, _, _, _, _, 9))
+  EXPECT_CALL(*mock_mdeh_,
+              AppendAndParseData(_, _, _, _, base::as_byte_span(tscontent)))
       .WillOnce(Return(true));
   // CheckState should in this case respond with a delay of zero seconds.
   rendition->CheckState(base::Seconds(0), 0.0,
@@ -413,8 +422,9 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   // be checked again. It will report 2 seconds of content, which contains
   // the media time (0.0), and so a response to check state again in 0 seconds
   // will happen.
-  RespondToUrl("http://example.com/playlist_4500Kb_14551245.ts", "tscontent");
-  RequireAppend(9);  // len("tscontent")
+  std::string tscontent = "tscontent";
+  RespondToUrl("http://example.com/playlist_4500Kb_14551245.ts", tscontent);
+  RequireAppend(base::as_byte_span(tscontent));
   RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
                         base::Seconds(2));
   rendition->CheckState(base::Seconds(0), 0.0,
@@ -480,8 +490,9 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   // the response to check state is to run it again in 0 seconds.
   RespondWithRangeTwice(base::Seconds(0), base::Seconds(32), base::Seconds(0),
                         base::Seconds(202));
-  RespondToUrl("http://example.com/playlist_4500Kb_14551349.ts", "newcontent");
-  RequireAppend(10);  // len("newcontent")
+  std::string newcontent = "newcontent";
+  RespondToUrl("http://example.com/playlist_4500Kb_14551349.ts", newcontent);
+  RequireAppend(base::as_byte_span(newcontent));
   rendition->CheckState(base::Seconds(200), 1.0,
                         BindCheckState(base::Seconds(0)));
   task_environment_.RunUntilIdle();
@@ -492,8 +503,9 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   // response will still be 0 seconds.
   RespondWithRangeTwice(base::Seconds(0), base::Seconds(202), base::Seconds(0),
                         base::Seconds(222));
+  newcontent = "blah";
   RespondToUrl("http://example.com/playlist_4500Kb_14551350.ts", "blah");
-  RequireAppend(4);  // len("blah")
+  RequireAppend(base::as_byte_span(newcontent));
   rendition->CheckState(base::Seconds(200), 1.0,
                         BindCheckState(base::Seconds(0)));
   task_environment_.RunUntilIdle();

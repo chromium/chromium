@@ -148,7 +148,7 @@ void TestMediaSource::AppendData(size_t size) {
   // expectations verified later in this method after RunSegmentParserLoop()
   // call(s) are completed.
   ASSERT_TRUE(chunk_demuxer_->AppendToParseBuffer(
-      kSourceId, file_data_->data() + current_position_, size));
+      kSourceId, file_data_->AsSpan().subspan(current_position_, size)));
 
   // Note that large StreamParser::kMaxPendingBytesPerParse makes these just 1
   // iteration frequently.
@@ -176,11 +176,10 @@ void TestMediaSource::AppendData(size_t size) {
 }
 
 bool TestMediaSource::AppendAtTime(base::TimeDelta timestamp_offset,
-                                   const uint8_t* pData,
-                                   int size) {
+                                   base::span<const uint8_t> data) {
   CHECK(!chunk_demuxer_->IsParsingMediaSegment(kSourceId));
 
-  EXPECT_TRUE(chunk_demuxer_->AppendToParseBuffer(kSourceId, pData, size));
+  EXPECT_TRUE(chunk_demuxer_->AppendToParseBuffer(kSourceId, data));
 
   // Note that large StreamParser::kMaxPendingBytesPerParse makes these just 1
   // iteration frequently.
@@ -204,11 +203,10 @@ void TestMediaSource::AppendAtTimeWithWindow(
     base::TimeDelta timestamp_offset,
     base::TimeDelta append_window_start,
     base::TimeDelta append_window_end,
-    const uint8_t* pData,
-    int size) {
+    base::span<const uint8_t> data) {
   CHECK(!chunk_demuxer_->IsParsingMediaSegment(kSourceId));
 
-  EXPECT_TRUE(chunk_demuxer_->AppendToParseBuffer(kSourceId, pData, size));
+  EXPECT_TRUE(chunk_demuxer_->AppendToParseBuffer(kSourceId, data));
 
   // Note that large StreamParser::kMaxPendingBytesPerParse makes these just 1
   // iteration frequently.

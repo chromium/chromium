@@ -641,7 +641,7 @@ class ChunkDemuxerTest : public ::testing::Test {
                   base::span<const uint8_t> data) {
     EXPECT_CALL(host_, OnBufferedTimeRangesChanged(_)).Times(AnyNumber());
 
-    if (!demuxer_->AppendToParseBuffer(source_id, data.data(), data.size())) {
+    if (!demuxer_->AppendToParseBuffer(source_id, data)) {
       return false;
     }
 
@@ -1598,8 +1598,7 @@ TEST_F(ChunkDemuxerTest, AppendToParseBufferBeforeInit) {
   // CHECK added to fail if called before Init(), this test case will need to be
   // changed. For now, the demuxer silently allows the append to succeed, but
   // any RunSegmentParserLoop() will fail if it's still before Init().
-  ASSERT_TRUE(demuxer_->AppendToParseBuffer(kSourceId, info_tracks.data(),
-                                            info_tracks.size()));
+  ASSERT_TRUE(demuxer_->AppendToParseBuffer(kSourceId, info_tracks));
 
   ASSERT_EQ(StreamParser::ParseStatus::kFailed,
             demuxer_->RunSegmentParserLoop(kSourceId,
