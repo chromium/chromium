@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_FILTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_FILTER_H_
 
-#include "cc/paint/paint_filter.h"
+#include "cc/paint/paint_filter.h"  // IWYU pragma: export
 
 namespace blink {
 using cc::AlphaThresholdPaintFilter;

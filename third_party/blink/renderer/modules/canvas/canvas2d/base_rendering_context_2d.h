@@ -5,57 +5,119 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_BASE_RENDERING_CONTEXT_2D_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_BASE_RENDERING_CONTEXT_2D_H_
 
-#include <memory>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <optional>
+#include <utility>
 
+#include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/lru_cache.h"
-#include "base/functional/bind.h"
+#include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/task/single_thread_task_runner.h"
+#include "cc/paint/paint_canvas.h"
+#include "cc/paint/paint_flags.h"
+#include "cc/paint/paint_record.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
-#include "third_party/blink/renderer/core/geometry/dom_matrix.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
-#include "third_party/blink/renderer/core/html/canvas/image_data.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_image_source_util.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_path.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/graphics/image_orientation.h"
-#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/timer.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/skia/include/core/SkBlendMode.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkM44.h"
+#include "third_party/skia/include/core/SkRect.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+
+// IWYU pragma: no_include "third_party/blink/renderer/platform/heap/visitor.h"
+
+enum class SkPathFillType;
+class SkPixmap;
+struct SkSamplingOptions;
+
+namespace base {
+class SingleThreadTaskRunner;
+}  // namespace base
+
+namespace gfx {
+class Rect;
+class Vector2d;
+}  // namespace gfx
 
 namespace ui {
 class ColorProvider;
 }  // namespace ui
+
+namespace v8 {
+class Isolate;
+class Value;
+template <class T>
+class Local;
+}  // namespace v8
 
 namespace blink {
 
 MODULES_EXPORT BASE_DECLARE_FEATURE(kDisableCanvasOverdrawOptimization);
 
 class BeginLayerOptions;
+class CanvasGradient;
 class CanvasImageSource;
 class Canvas2dWebGPUTransferOption;
-class Color;
+class CanvasPattern;
+class CanvasRenderingContextHost;
+class CanvasResourceProvider;
+class DOMMatrix;
+class DOMMatrixInit;
+class ExceptionState;
+class ExecutionContext;
+class Font;
+class FontSelector;
+class GPUTexture;
+class HTMLCanvasElement;
 class Image;
+class ImageData;
+class ImageDataSettings;
+class MemoryManagedPaintRecorder;
 class Mesh2DVertexBuffer;
 class Mesh2DUVBuffer;
 class Mesh2DIndexBuffer;
 class OffscreenCanvas;
+class Path;
 class Path2D;
+class ScriptState;
+class SimpleFontData;
 class TextMetrics;
-struct V8CanvasStyle;
-enum class V8CanvasStyleType;
-class GPUTexture;
+class V8GPUTextureFormat;
 class V8UnionCanvasFilterOrString;
+struct V8CanvasStyle;
+enum class CanvasOps;
+enum class ColorParseResult;
+enum RespectImageOrientationEnum : uint8_t;
+template <typename T>
+class NotShared;
 
 class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
  public:

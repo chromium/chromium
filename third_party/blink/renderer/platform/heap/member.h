@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
-#include "v8/include/cppgc/member.h"
+#include "v8/include/cppgc/member.h"  // IWYU pragma: export
 
 namespace blink {
 
