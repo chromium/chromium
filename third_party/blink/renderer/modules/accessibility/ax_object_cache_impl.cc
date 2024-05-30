@@ -2207,6 +2207,20 @@ bool AXObjectCacheImpl::HasBadAriaHidden(const AXObject& obj) const {
 }
 
 void AXObjectCacheImpl::DiscardBadAriaHidden(AXObject& obj) {
+  // aria-hidden markup requires an element.
+  Element& element = *obj.GetElement();
+  element.AddConsoleMessage(
+      mojom::blink::ConsoleMessageSource::kRendering,
+      mojom::blink::ConsoleMessageLevel::kError,
+      String::Format(
+          "Blocked aria-hidden on a <%s> element because the element that just "
+          "received focus must not be hidden from assistive technology users. "
+          "Avoid using aria-hidden on a focused element or its ancestor. "
+          "Consider using the inert attribute instead, which will also prevent "
+          "focus. For more details, see the aria-hidden section of the "
+          "WAI-ARIA specification at https://w3c.github.io/aria/#aria-hidden.",
+          element.TagQName().ToString().Ascii().c_str()));
+
   // Traverse all the way to the root in case there are multiple
   // ancestors with aria-hidden. Any aria-hidden="true" on any ancestor will
   // be ignored.
