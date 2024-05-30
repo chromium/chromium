@@ -15,7 +15,8 @@
     type="text"></cr-input>
   </div>
   <template is="dom-repeat" items="[[dict.entries]]" as="entry">
-    <os-japanese-dictionary-entry-row entry="[[entry]]">
+    <os-japanese-dictionary-entry-row
+      dict-id="[[dict.id]]" index="[[index]]" entry="[[entry]]">
     </os-japanese-dictionary-entry-row>
   </template>
 </iron-collapse>
