@@ -271,9 +271,11 @@ void FocusController::FocusAndActivateWindow(
 void FocusController::SetFocusedWindow(aura::Window* window) {
   if (updating_focus_ || window == focused_window_)
     return;
+
   DCHECK(rules_->CanFocusWindow(window, nullptr));
-  if (window)
+  if (window) {
     DCHECK_EQ(window, rules_->GetFocusableWindow(window));
+  }
 
   base::AutoReset<bool> updating_focus(&updating_focus_, true);
   aura::Window* lost_focus = focused_window_;
