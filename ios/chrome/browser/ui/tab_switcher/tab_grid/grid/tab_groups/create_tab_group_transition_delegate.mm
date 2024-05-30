@@ -10,7 +10,7 @@
 namespace {
 const CGFloat kPresentationDuration = 0.25;
 const CGFloat kDismissalDuration = 0.20;
-const CGFloat kBackgroundAlpha = 0.6;
+const CGFloat kBackgroundAlpha = 0.1;
 const CGFloat kScaleFactor = 0.8;
 const CGFloat kShortDurationFactor = 0.9;
 
@@ -69,7 +69,7 @@ UIView* ViewWithTag(NSInteger tag, UIView* superview) {
       blurEffectView.frame = backgroundView.bounds;
       blurEffectView.autoresizingMask =
           UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-      backgroundView.backgroundColor = [[UIColor colorNamed:kGrey900Color]
+      backgroundView.backgroundColor = [[UIColor colorNamed:kSolidBlackColor]
           colorWithAlphaComponent:kBackgroundAlpha];
       [backgroundView addSubview:blurEffectView];
     } else {
@@ -100,7 +100,8 @@ UIView* ViewWithTag(NSInteger tag, UIView* superview) {
                         options:UIViewAnimationCurveEaseOut
                      animations:^{
                        UIBlurEffect* blurEffect = [UIBlurEffect
-                           effectWithStyle:UIBlurEffectStyleRegular];
+                           effectWithStyle:
+                               UIBlurEffectStyleSystemUltraThinMaterial];
                        blurEffectView.effect = blurEffect;
                        backgroundView.alpha = 1;
                      }

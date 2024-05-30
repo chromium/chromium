@@ -37,6 +37,7 @@ const CGFloat kDotAndFieldContainerMargin = 24;
 const CGFloat kDotTitleSeparationMargin = 12;
 const CGFloat kSyncGroupTopConstant = 8;
 const CGFloat kContainersMaxWidth = 400;
+const CGFloat kBackgroundAlpha = 0.1;
 
 // Group color selection constants.
 const CGFloat kColoredButtonSize = 24;
@@ -272,7 +273,8 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
 - (UIView*)configuredDotAndFieldContainer {
   UIView* titleBackground = [[UIView alloc] initWithFrame:CGRectZero];
   titleBackground.translatesAutoresizingMaskIntoConstraints = NO;
-  titleBackground.backgroundColor = [UIColor colorWithWhite:1 alpha:0.1];
+  titleBackground.backgroundColor = [[UIColor colorNamed:kSolidBlackColor]
+      colorWithAlphaComponent:kBackgroundAlpha];
   titleBackground.layer.cornerRadius = kTitleBackgroundCornerRadius;
   titleBackground.opaque = NO;
 
@@ -798,7 +800,8 @@ const CGFloat kKeyboardToolbarHeightThreshold = 70;
 - (UIView*)configuredSnapshotsContainer {
   UIView* snapshotsBackground = [[UIView alloc] init];
   snapshotsBackground.translatesAutoresizingMaskIntoConstraints = NO;
-  snapshotsBackground.backgroundColor = [UIColor colorWithWhite:1 alpha:0.1];
+  snapshotsBackground.backgroundColor = [[UIColor colorNamed:kSolidBlackColor]
+      colorWithAlphaComponent:kBackgroundAlpha];
   snapshotsBackground.layer.cornerRadius = kSnapshotViewCornerRadius;
   snapshotsBackground.opaque = NO;
 
