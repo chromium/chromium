@@ -9,13 +9,11 @@
 #include <iterator>
 
 #include "base/functional/bind.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
-#include "cc/base/features.h"
 #include "cc/metrics/custom_metrics_recorder.h"
 #include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/total_frame_counter.h"
@@ -24,7 +22,6 @@
 namespace cc {
 namespace {
 
-const char kSlidingWindowForDroppedFrameCounterSeconds[] = "seconds";
 const base::TimeDelta kDefaultSlidingWindowInterval = base::Seconds(1);
 
 // The start ranges of each bucket, up to but not including the start of the
@@ -129,15 +126,6 @@ std::ostream& operator<<(
 DroppedFrameCounter::DroppedFrameCounter()
     : frame_sorter_(base::BindRepeating(&DroppedFrameCounter::NotifyFrameResult,
                                         base::Unretained(this))) {
-  sliding_window_interval_ = kDefaultSlidingWindowInterval;
-  if (base::FeatureList::IsEnabled(
-          features::kSlidingWindowForDroppedFrameCounter)) {
-    int sliding_window_seconds = base::GetFieldTrialParamByFeatureAsInt(
-        features::kSlidingWindowForDroppedFrameCounter,
-        kSlidingWindowForDroppedFrameCounterSeconds, 0);
-    if (sliding_window_seconds)
-      sliding_window_interval_ = base::Seconds(sliding_window_seconds);
-  }
 }
 DroppedFrameCounter::~DroppedFrameCounter() = default;
 
@@ -177,7 +165,7 @@ void DroppedFrameCounter::ResetPendingFrames(base::TimeTicks timestamp) {
   // Before resetting the pending frames, update the measurements for the
   // sliding windows.
   if (!latest_sliding_window_start_.is_null()) {
-    const auto report_until = timestamp - sliding_window_interval_;
+    const auto report_until = timestamp - kDefaultSlidingWindowInterval;
     // Report the sliding window metrics for frames that have already been
     // completed (and some of which may have been dropped).
     while (!sliding_window_.empty()) {
@@ -230,8 +218,6 @@ void DroppedFrameCounter::ResetPendingFrames(base::TimeTicks timestamp) {
 
 void DroppedFrameCounter::EnableReporForUI() {
   report_for_ui_ = true;
-  // We do not allow parameterized sliding windows for UI reports.
-  sliding_window_interval_ = base::Seconds(1);
 }
 
 void DroppedFrameCounter::OnBeginFrame(const viz::BeginFrameArgs& args) {
@@ -244,7 +230,7 @@ void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
                                      const FrameInfo& frame_info) {
   const bool is_dropped = frame_info.IsDroppedAffectingSmoothness();
   if (!args.interval.is_zero())
-    total_frames_in_window_ = sliding_window_interval_ / args.interval;
+    total_frames_in_window_ = kDefaultSlidingWindowInterval / args.interval;
 
   // Don't measure smoothness for frames that start before FCP is received, or
   // that have already been reported as dropped.
@@ -443,8 +429,9 @@ void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
   // these are violating the assumptions in the below code and should
   // only occur with external frame control, where dropped frame stats
   // are not relevant.
-  if (args.interval >= sliding_window_interval_)
+  if (args.interval >= kDefaultSlidingWindowInterval) {
     return;
+  }
 
   if (sorted_frame_callback_)
     sorted_frame_callback_->Run(args, frame_info);
@@ -465,8 +452,9 @@ void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
     in_dropping_ = false;
   }
 
-  if (ComputeCurrentWindowSize() < sliding_window_interval_)
+  if (ComputeCurrentWindowSize() < kDefaultSlidingWindowInterval) {
     return;
+  }
 
   DCHECK_GE(
       dropped_frame_count_in_window_[SmoothnessStrategy::kDefaultStrategy], 0u);
@@ -474,7 +462,7 @@ void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
       sliding_window_.size(),
       dropped_frame_count_in_window_[SmoothnessStrategy::kDefaultStrategy]);
 
-  while (ComputeCurrentWindowSize() > sliding_window_interval_) {
+  while (ComputeCurrentWindowSize() > kDefaultSlidingWindowInterval) {
     PopSlidingWindow();
   }
   DCHECK(!sliding_window_.empty());
@@ -494,7 +482,7 @@ void DroppedFrameCounter::PopSlidingWindow() {
       sliding_window_.back().second.IsDroppedAffectingSmoothness();
 
   uint32_t invalidated_frames = 0;
-  if (ComputeCurrentWindowSize() > sliding_window_interval_ &&
+  if (ComputeCurrentWindowSize() > kDefaultSlidingWindowInterval &&
       newest_was_dropped) {
     invalidated_frames++;
   }
@@ -502,9 +490,9 @@ void DroppedFrameCounter::PopSlidingWindow() {
   // If two consecutive 'completed' frames are far apart from each other (in
   // time), then report the 'dropped frame count' for the sliding window(s) in
   // between. Note that the window-size still needs to be at least
-  // sliding_window_interval_.
+  // kDefaultSlidingWindowInterval.
   const auto max_sliding_window_start =
-      newest_args.frame_time - sliding_window_interval_;
+      newest_args.frame_time - kDefaultSlidingWindowInterval;
   const auto max_difference = newest_args.interval * 1.5;
   const auto& remaining_oldest_args = sliding_window_.front().first;
   const auto last_timestamp =

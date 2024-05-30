@@ -79,10 +79,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNonBlockingCommit);
 // this should improve performance and reduce technical complexity.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNoPreserveLastMutation);
 
-// When enabled, DroppedFrameCounter will use an adjusted sliding window
-// interval specified by field trial params.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSlidingWindowForDroppedFrameCounter);
-
 // When enabled, SupportsBackgroundThreadPriority is set to kNo for
 // GpuImageDecodeTaskImpl and SoftwareImageDecodeTaskImpl.
 // Introduced to fix https://crbug.com/1116624

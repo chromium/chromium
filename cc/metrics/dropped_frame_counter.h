@@ -178,7 +178,6 @@ class CC_EXPORT DroppedFrameCounter {
   // Adds count to dropped_frame_count_in_window_ of each strategy.
   void UpdateDroppedFrameCountInWindow(const FrameInfo& frame_info, int count);
 
-  base::TimeDelta sliding_window_interval_;
   std::queue<std::pair<const viz::BeginFrameArgs, FrameInfo>> sliding_window_;
   uint32_t dropped_frame_count_in_window_[SmoothnessStrategy::kStrategyCount] =
       {0};
