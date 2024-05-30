@@ -198,7 +198,10 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
                     mActivityTabSupplier.set(null);
                 });
         Assert.assertTrue(mHandler.getHandleBackPressChangedSupplier().get());
-        mHandler.handleBackPress();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mHandler.handleBackPress();
+                });
 
         verify(mSendToBackground).onResult(null);
         verify(
