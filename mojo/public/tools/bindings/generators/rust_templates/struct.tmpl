@@ -5,3 +5,8 @@ pub struct {{struct.name}} {
     pub r#{{field.name}}: {{field.kind|rust_field_type}},
 {%- endfor %}
 }
+
+{%- for enum in struct.enums %}
+{%   set name = struct.name + "_" + enum.name %}
+{%   include "enum.tmpl" %}
+{%- endfor %}

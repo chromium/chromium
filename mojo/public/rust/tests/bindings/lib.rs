@@ -8,12 +8,13 @@
 use rust_gtest_interop::prelude::*;
 
 chromium::import! {
-    "//mojo/public/interfaces/bindings/tests:test_mojom_import_rust" as mojom;
+    "//mojo/public/interfaces/bindings/tests:test_mojom_import_rust" as test_mojom_import;
+    "//mojo/public/interfaces/bindings/tests:test_interfaces_rust" as test_interfaces;
 }
 
 #[gtest(MojoBindingsTest, Basic)]
 fn test() {
-    use mojom::sample_import::*;
+    use test_mojom_import::sample_import::*;
 
     expect_eq!(Shape::RECTANGLE.0, 1);
     expect_eq!(Shape::CIRCLE.0, 2);
@@ -29,4 +30,10 @@ fn test() {
     expect_eq!(YetAnotherShape::TRIANGLE.0, 22);
 
     let _point = Point { x: 1i32, y: 1i32 };
+
+    use test_interfaces::rect::*;
+    use test_interfaces::test_structs::*;
+
+    let _rect_pair =
+        RectPair { first: Some(Box::new(Rect { x: 1, y: 1, width: 1, height: 1 })), second: None };
 }

@@ -86,6 +86,7 @@ if (enable_rust_mojom_bindings) {
     sources = [ "bindings/lib.rs" ]
 
     deps = [
+      "//mojo/public/interfaces/bindings/tests:test_interfaces_rust",
       "//mojo/public/interfaces/bindings/tests:test_mojom_import_rust",
       "//testing/rust_gtest_interop",
     ]

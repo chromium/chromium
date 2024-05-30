@@ -1,8 +1,10 @@
+#[allow(non_camel_case_types)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub struct {{enum.name}}(pub i32);
+pub struct {{name}}(pub i32);
 
-impl {{enum.name}} {
+impl {{name}} {
 {%- for field in enum.fields %}
+    #[allow(non_upper_case_globals)]
     pub const r#{{field.name}}: Self = Self({{field.numeric_value}});
 {%- endfor %}
 }

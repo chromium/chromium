@@ -1,4 +1,11 @@
+chromium::import! {
+  {%- for imp in imports %}
+  "{{imp.target}}" as {{imp.use_name}};
+  {% endfor %}
+}
+
 {%- for enum in module.enums %}
+{%   set name = enum.name %}
 {%   include "enum.tmpl" %}
 {% endfor %}
 
