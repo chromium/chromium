@@ -94,10 +94,6 @@ void TranslateIconView::UpdateImpl() {
           ->GetLanguageState();
   bool enabled = language_state.translate_enabled();
 
-  if (!features::IsChromeRefresh2023()) {
-    // Enable Translate page command or disable icon.
-    enabled &= SetCommandEnabled(enabled);
-  }
   if (features::IsToolbarPinningEnabled()) {
     CHECK(browser_);
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);

@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_ui_helpers.h"
 #include "components/vector_icons/vector_icons.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -22,8 +21,7 @@ constexpr int kFolderIconSize = 16;
 constexpr int kFilenameAreaMargin = 12;
 constexpr int kBetweenFilenameSpacing = 6;
 constexpr int kMaxFilenamesInViewPort = 3;
-constexpr float kCornerRadius = 4.0f;
-constexpr float kCornerRadiusForChromeRefresh2023 = 8.0f;
+constexpr float kCornerRadius = 8.0f;
 
 }  // namespace
 
@@ -64,9 +62,8 @@ std::unique_ptr<views::ScrollView> FileSystemAccessScrollPanel::Create(
           : file_list_container->children()[0]->GetPreferredSize().height();
   scroll_view->SetContents(std::move(file_list_container));
   scroll_view->SetPaintToLayer();
-  scroll_view->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(
-      features::IsChromeRefresh2023() ? kCornerRadiusForChromeRefresh2023
-                                      : kCornerRadius));
+  scroll_view->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(kCornerRadius));
   // 1 pixel correction per item in the `ScrollView` helps avoid showing
   // pixels from the next/previous entry that is outside the viewport.
   int max_scroll_view_height = 2 * kFilenameAreaMargin +

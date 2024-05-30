@@ -21,7 +21,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
@@ -217,14 +216,12 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
   const std::u16string title = model()->GetStepTitle();
   if (!title.empty()) {
     auto title_label = std::make_unique<views::Label>(
-        title, views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY);
+        title, views::style::CONTEXT_DIALOG_TITLE,
+        views::style::STYLE_HEADLINE_4);
     title_label->SetMultiLine(true);
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     title_label->SetAccessibleRole(ax::mojom::Role::kHeading);
     title_label->SetAllowCharacterBreak(true);
-    if (features::IsChromeRefresh2023()) {
-      title_label->SetTextStyle(views::style::STYLE_HEADLINE_4);
-    }
     if (accessibility_state_utils::IsScreenReaderEnabled() &&
         should_focus_step_specific_content_ == AutoFocus::kNo) {
       title_label->SetFocusBehavior(FocusBehavior::ALWAYS);

@@ -104,13 +104,12 @@ WebAuthnHoverButton::WebAuthnHoverButton(
   }
 
   const int title_row_span = force_two_line && subtitle_text.empty() ? 2 : 1;
-  title_ = AddChildView(std::make_unique<views::Label>(title_text));
+  title_ = AddChildView(
+      std::make_unique<views::Label>(title_text, views::style::CONTEXT_LABEL,
+                                     views::style::STYLE_BODY_3_BOLD));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetProperty(views::kTableColAndRowSpanKey,
                       gfx::Size(/*width=*/1, title_row_span));
-  if (features::IsChromeRefresh2023()) {
-    title_->SetTextStyle(views::style::STYLE_BODY_3_BOLD);
-  }
 
   if (secondary_icon) {
     secondary_icon_view_ =
@@ -120,30 +119,25 @@ WebAuthnHoverButton::WebAuthnHoverButton(
   }
 
   if (is_two_line && !subtitle_text.empty()) {
-    subtitle_ = AddChildView(std::make_unique<views::Label>(subtitle_text));
+    subtitle_ = AddChildView(std::make_unique<views::Label>(
+        subtitle_text, views::style::CONTEXT_LABEL,
+        views::style::STYLE_BODY_3_EMPHASIS));
     subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    if (features::IsChromeRefresh2023()) {
-      subtitle_->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
-    }
   }
 
   SetAccessibleName(subtitle_text.empty()
                         ? title_text
                         : base::JoinString({title_text, subtitle_text}, u"\n"));
 
-  // Per WebAuthn UI specs, the top/bottom insets of hover buttons are 12dp for
-  // a one-line button, and 8dp for a two-line button. Left/right insets are
-  // 8dp assuming a 20dp primary icon, or no icon at all. (With a 24dp primary
+  // Per WebAuthn UI specs, the top/bottom insets of hover buttons are 16dp for
+  // a one-line button, and 10dp for a two-line button. Left/right insets are
+  // 8dp assuming a 16dp primary icon, or no icon at all. (With a 24dp primary
   // icon, the left inset would be 12dp, but we don't currently have a button
   // with such an icon.)
 
-  int vert_inset = is_two_line ? 8 : 12;
+  int vert_inset = is_two_line ? 10 : 16;
   int left_inset = 8;
-  int right_inset = 8;
-  if (features::IsChromeRefresh2023()) {
-    vert_inset = is_two_line ? 10 : 16;
-    right_inset = 16;
-  }
+  int right_inset = 16;
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(vert_inset, left_inset, vert_inset, right_inset)));
 }
