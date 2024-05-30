@@ -137,9 +137,9 @@ bool IsExplicitBrowserSigninUIOnDesktopEnabled() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
-// Desktop is being launched (enabled by default), remaining platforms still
-// pending.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+// Desktop and Android are being launched (enabled by default), iOS is pending.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
 #define MINOR_MODE_FEATURE_DEFAULT_STATUS base::FEATURE_ENABLED_BY_DEFAULT
 #else
 #define MINOR_MODE_FEATURE_DEFAULT_STATUS base::FEATURE_DISABLED_BY_DEFAULT
@@ -152,7 +152,7 @@ BASE_FEATURE(kMinorModeRestrictionsForHistorySyncOptIn,
 constexpr int kMinorModeRestrictionsFetchDeadlineDefaultValueMs =
 #if BUILDFLAG(IS_ANDROID)
     // Based on Signin.AccountCapabilities.UserVisibleLatency
-    400;
+    1000;
 #elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
     // Based on Signin.SyncOptIn.PreSyncConfirmationLatency
     1000;

@@ -87,6 +87,38 @@ public class AccountManagerTestRule implements TestRule {
                                     .build())
                     .build();
 
+    private static final AccountCapabilities MINOR_MODE_NOT_REQUIRED =
+            new AccountCapabilitiesBuilder()
+                    .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(true)
+                    .build();
+
+    private static final AccountCapabilities MINOR_MODE_REQUIRED =
+            new AccountCapabilitiesBuilder()
+                    .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(false)
+                    .build();
+
+    public static final AccountInfo AADC_MINOR_ACCOUNT =
+            new AccountInfo.Builder(
+                            "aadc.minor.account@gmail.com",
+                            FakeAccountManagerFacade.toGaiaId("aadc.minor.account@gmail.com"))
+                    .fullName("AADC Minor")
+                    .givenName("AADC Minor Account")
+                    .accountImage(createAvatar())
+                    .accountCapabilities(MINOR_MODE_REQUIRED)
+                    .build();
+
+    public static final AccountInfo AADC_ADULT_ACCOUNT =
+            new AccountInfo.Builder(
+                            "aadc.adult.account@gmail.com",
+                            FakeAccountManagerFacade.toGaiaId("aadc.adult.account@gmail.com"))
+                    .fullName("AADC Adult")
+                    .givenName("AADC Adult Account")
+                    .accountImage(createAvatar())
+                    .accountCapabilities(MINOR_MODE_NOT_REQUIRED)
+                    .build();
+
+    public static final AccountInfo AADC_UNRESOLVED_ACCOUNT = TEST_ACCOUNT_1;
+
     // TODO(crbug.com/40890215): Use TEST_ACCOUNT_1 instead.
     @Deprecated public static final String TEST_ACCOUNT_EMAIL = "test@gmail.com";
 
@@ -283,7 +315,7 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /** Returns an avatar image created from test resource. */
-    private static Bitmap createAvatar() {
+    protected static Bitmap createAvatar() {
         Drawable drawable =
                 AppCompatResources.getDrawable(
                         ContextUtils.getApplicationContext(), R.drawable.test_profile_picture);
@@ -299,10 +331,24 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * Replaces any capabilities that have been previously set with the given accountCapabilities.
+     * Resolves the minor mode of {@param accountInfo} to restricted, so that the UI will be safe to
+     * show to minors.
      */
-    public void setAccountCapabilities(
-            CoreAccountId accountId, AccountCapabilities accountCapabilities) {
-        mFakeAccountManagerFacade.setAccountCapabilities(accountId, accountCapabilities);
+    public void resolveMinorModeToRestricted(CoreAccountId accountId) {
+        // TODO(b/343384614): append instead of overriding
+        overrideCapabilities(accountId, MINOR_MODE_REQUIRED);
+    }
+
+    /**
+     * Resolves the minor mode of {@param accountInfo} to unrestricted, so that the UI will not have
+     * any minor restrictions.
+     */
+    public void resolveMinorModeToUnrestricted(CoreAccountId accountId) {
+        // TODO(b/343384614): append instead of overriding
+        overrideCapabilities(accountId, MINOR_MODE_NOT_REQUIRED);
+    }
+
+    private void overrideCapabilities(CoreAccountId accountId, AccountCapabilities capabilities) {
+        mFakeAccountManagerFacade.setAccountCapabilities(accountId, capabilities);
     }
 }
