@@ -139,14 +139,9 @@ gfx::Insets GetPrimaryViewMargin() {
 }
 
 gfx::Insets GetSecurityViewMargin() {
-  if (features::IsChromeRefresh2023()) {
-    return gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                               views::DISTANCE_RELATED_CONTROL_VERTICAL),
-                           0);
-  }
-
-  return gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_RELATED_CONTROL_VERTICAL));
+  return gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                             views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                         0);
 }
 }  // namespace
 
@@ -162,9 +157,7 @@ DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
                               base::Unretained(this))) {
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
-  SetVectorIcons(features::IsChromeRefresh2023()
-                     ? kDownloadToolbarButtonChromeRefreshIcon
-                     : kDownloadToolbarButtonIcon,
+  SetVectorIcons(kDownloadToolbarButtonChromeRefreshIcon,
                  kDownloadToolbarButtonIcon);
   GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kDialog);
   tooltip_texts_[0] = l10n_util::GetStringUTF16(IDS_TOOLTIP_DOWNLOAD_ICON);
@@ -493,14 +486,10 @@ void DownloadToolbarButtonView::UpdateIcon() {
   bool is_touch_mode = ui::TouchUiController::Get()->touch_ui();
   if (state_ == IconState::kProgress || state_ == IconState::kDeepScanning) {
     new_icon = is_touch_mode ? &kDownloadInProgressTouchIcon
-                             : (features::IsChromeRefresh2023()
-                                    ? &kDownloadInProgressChromeRefreshIcon
-                                    : &kDownloadInProgressIcon);
+                             : &kDownloadInProgressChromeRefreshIcon;
   } else {
     new_icon = is_touch_mode ? &kDownloadToolbarButtonTouchIcon
-                             : (features::IsChromeRefresh2023()
-                                    ? &kDownloadToolbarButtonChromeRefreshIcon
-                                    : &kDownloadToolbarButtonIcon);
+                             : &kDownloadToolbarButtonChromeRefreshIcon;
   }
 
   SetImageModel(ButtonState::STATE_NORMAL,

@@ -30,7 +30,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -220,20 +219,12 @@ void DownloadBubbleSecurityView::AddHeader() {
   auto* header = AddChildView(std::make_unique<views::View>());
   header->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal);
-  if (!features::IsChromeRefresh2023()) {
-    header->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
-            views::DISTANCE_RELATED_CONTROL_VERTICAL)));
-  }
 
   back_button_ =
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(&DownloadBubbleSecurityView::BackButtonPressed,
                               base::Unretained(this)),
-          features::IsChromeRefresh2023()
-              ? vector_icons::kArrowBackChromeRefreshIcon
-              : vector_icons::kArrowBackIcon,
+          vector_icons::kArrowBackChromeRefreshIcon,
           GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
   views::InstallCircleHighlightPathGenerator(back_button_);
   back_button_->SetTooltipText(
@@ -254,17 +245,13 @@ void DownloadBubbleSecurityView::AddHeader() {
   title_->SetProperty(views::kMarginsKey,
                       gfx::Insets::VH(0, icon_label_spacing));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  if (features::IsChromeRefresh2023()) {
-    title_->SetDefaultTextStyle(views::style::STYLE_HEADLINE_4);
-  }
+  title_->SetDefaultTextStyle(views::style::STYLE_HEADLINE_4);
 
   auto* close_button =
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(&DownloadBubbleSecurityView::CloseBubble,
                               base::Unretained(this)),
-          features::IsChromeRefresh2023()
-              ? vector_icons::kCloseChromeRefreshIcon
-              : vector_icons::kCloseRoundedIcon,
+          vector_icons::kCloseChromeRefreshIcon,
           GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
   close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   InstallCircleHighlightPathGenerator(close_button);
@@ -370,12 +357,8 @@ void DownloadBubbleSecurityView::AddIconAndContents() {
   icon_text_row->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  icon_text_row->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::VH(
-          side_margin,
-          // In CR2023 the horizontal margin is added to the parent view.
-          features::IsChromeRefresh2023() ? 0 : side_margin));
+  icon_text_row->SetProperty(views::kMarginsKey,
+                             gfx::Insets::VH(side_margin, 0));
 
   icon_ = icon_text_row->AddChildView(std::make_unique<views::ImageView>());
   icon_->SetProperty(views::kMarginsKey, GetLayoutInsets(DOWNLOAD_ICON));
@@ -406,15 +389,13 @@ void DownloadBubbleSecurityView::AddIconAndContents() {
                                views::MaximumFlexSizeRule::kUnbounded,
                                /*adjust_height_for_width=*/true));
   paragraphs_->SetAfterParagraph(kAfterParagraphSpacing);
-  if (features::IsChromeRefresh2023()) {
-    paragraphs_->SetDefaultTextStyle(views::style::STYLE_BODY_3);
-    // Align the centers of icon and the first line of label.
-    paragraphs_->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets().set_top(icon_size / 2 +
-                              GetLayoutInsets(DOWNLOAD_ICON).top() -
-                              paragraphs_->GetLineHeight() / 2));
-  }
+  paragraphs_->SetDefaultTextStyle(views::style::STYLE_BODY_3);
+  // Align the centers of icon and the first line of label.
+  paragraphs_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets().set_top(icon_size / 2 +
+                            GetLayoutInsets(DOWNLOAD_ICON).top() -
+                            paragraphs_->GetLineHeight() / 2));
 
   learn_more_link_ =
       wrapper->AddChildView(std::make_unique<views::StyledLabel>());
@@ -438,12 +419,8 @@ void DownloadBubbleSecurityView::AddSecondaryIconAndText() {
   icon_text_row->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  icon_text_row->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::VH(side_margin,
-                      // In CR2023 the horizontal margin is added to the
-                      // parent view.
-                      features::IsChromeRefresh2023() ? 0 : side_margin));
+  icon_text_row->SetProperty(views::kMarginsKey,
+                             gfx::Insets::VH(side_margin, 0));
 
   secondary_icon_ =
       icon_text_row->AddChildView(std::make_unique<views::ImageView>());
@@ -476,9 +453,7 @@ void DownloadBubbleSecurityView::AddSecondaryIconAndText() {
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded,
                                /*adjust_height_for_width=*/true));
-  if (features::IsChromeRefresh2023()) {
-    secondary_styled_label_->SetDefaultTextStyle(views::style::STYLE_BODY_3);
-  }
+  secondary_styled_label_->SetDefaultTextStyle(views::style::STYLE_BODY_3);
 }
 
 void DownloadBubbleSecurityView::AddProgressBar() {
@@ -753,9 +728,8 @@ DownloadBubbleSecurityView::DownloadBubbleSecurityView(
   info_->AddObserver(this);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
-  if (features::IsChromeRefresh2023()) {
-    SetProperty(views::kMarginsKey, GetLayoutInsets(DOWNLOAD_ROW));
-  }
+  SetProperty(views::kMarginsKey, GetLayoutInsets(DOWNLOAD_ROW));
+
   AddHeader();
   AddIconAndContents();
   AddSecondaryIconAndText();
