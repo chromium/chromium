@@ -63,10 +63,24 @@ class LocalDataSource : public mojom::DataSource {
                                 const uint64_t default_timestamp,
                                 const proto::LogSeverity& default_severity);
 
+  // Returns the regex that should be used to parse every line of data.
+  // Note: this regex is expected to contain three groups, marked with
+  // parentheses, in the following order: a timestamp, a severity level,
+  // and the rest of the message. Failure to provide three groups will
+  // render the regex invalid, and defaults for time/severity will
+  // be used.
+  virtual RE2& GetLogLineRegex();
+
+  // Converts a parsed timestamp string to microseconds since the UNIX epoch.
+  virtual uint64_t TimestampStringToUnixTime(const std::string& timestamp);
+
+  // Returns true if this data source is expected to contain timestamps,
+  // and returns false otherwise.
+  virtual bool AreTimestampsExpected() const;
+
  private:
   bool IsDataBufferOverMaxLimit();
   void RedactDataBuffer(std::vector<std::string>& buffer);
-  uint64_t TimestampStringToUnixTime(const std::string& timestamp);
   proto::LogSeverity SeverityStringToEnum(const std::string& severity);
   bool IsWatchDogFilterValid(mojom::DataFilterPtr& filter);
   void FireChangeWatchdogCallbacks(const std::string& data);
@@ -97,6 +111,11 @@ class LocalDataSource : public mojom::DataSource {
   // Contains the most recent unique data from GetNextData(). Only used
   // for non-incremental sources to avoid spamming the same data.
   std::vector<std::string> last_unique_data_;
+
+  // Contains a copy of the most recently seen timestamp. This timestamp
+  // be "applied forward" to subsequent logs that don't have a timestamp.
+  // This is needed to support timestamped logs that contain newlines.
+  uint64_t last_recorded_timestamp_ = 0;
 
   // Contains a set of watchdogs to be fired when the output contains
   // any change since the previous output.

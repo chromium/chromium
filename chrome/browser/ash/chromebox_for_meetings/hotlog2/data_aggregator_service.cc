@@ -6,7 +6,9 @@
 
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/log_source.h"
 #include "chrome/browser/ash/chromebox_for_meetings/hotlog2/persistent_db.h"
+#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/specialized_log_sources.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -33,7 +35,9 @@ const char* kLocalCommandSources[] = {
 };
 
 const char* kLocalLogSources[] = {
-    "/var/log/messages",
+    kCfmAuditLogFile,
+    kCfmBiosInfoLogFile,
+    kCfmSyslogLogFile,
 };
 
 }  // namespace
@@ -193,8 +197,8 @@ void DataAggregatorService::AddLocalLogSource(const std::string& filepath) {
       base::BindOnce(
           [](mojo::PendingReceiver<mojom::DataSource> pending_receiver,
              const std::string& filepath) {
-            auto source = std::make_unique<LogSource>(
-                filepath, kDefaultLogPollFrequency, kDefaultLogBatchSize);
+            auto source = LogSource::Create(filepath, kDefaultLogPollFrequency,
+                                            kDefaultLogBatchSize);
             source->StartCollectingData();
 
             mojo::MakeSelfOwnedReceiver(std::move(source),

@@ -13,6 +13,8 @@
 
 namespace ash::cfm {
 
+inline constexpr char kCfmSyslogLogFile[] = "/var/log/messages";
+
 // Dummy value for when a call to stat() fails to obtain
 // a valid inode. Unlikely to be used, but be defensive.
 inline constexpr int kInvalidFileInode = -1;
@@ -32,6 +34,12 @@ class LogSource : public LocalDataSource {
   void Flush() override;
   const std::string& GetDisplayName() override;
   std::vector<std::string> GetNextData() override;
+
+  // Getter that returns the proper LogSource child class depending
+  // on the provided filename.
+  static std::unique_ptr<LogSource> Create(const std::string& filename,
+                                           base::TimeDelta poll_rate,
+                                           size_t batch_size);
 
  protected:
   int GetCurrentFileInode();

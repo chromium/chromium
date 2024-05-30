@@ -273,8 +273,9 @@ TEST(HotlogLocalDataSourceTest, TestRedactionWorksAsExpected) {
 }
 
 TEST(HotlogLocalDataSourceTest, TestTimestampAndSeverityParser) {
+  // Test non-incremental sources first
   auto source =
-      LocalDataSourcePeer(kPollFrequency, kRedactData, kIsIncremental);
+      LocalDataSourcePeer(kPollFrequency, kRedactData, kIsNotIncremental);
 
   const std::string timestamp_str = "2000-01-01T22:34:56.789987Z";
   const std::string severity_str = "ERROR";
@@ -321,6 +322,40 @@ TEST(HotlogLocalDataSourceTest, TestTimestampAndSeverityParser) {
                                             default_severity);
   EXPECT_EQ(entry.timestamp_micros(), default_timestamp);
   EXPECT_EQ(entry.severity(), default_severity);
+  EXPECT_EQ(entry.text_payload(), text_payload);
+
+  // Instantiate a new incremental source and verify that timestamps
+  // are "carried forward" for logs that contain newlines.
+  auto source_incr =
+      LocalDataSourcePeer(kPollFrequency, kRedactData, kIsIncremental);
+
+  // Initial log line is normal, expect the provided timestamp.
+  log_line = timestamp_str + " " + text_payload;
+  source_incr.BuildLogEntryFromLogLineForTesting(
+      entry, log_line, default_timestamp, default_severity);
+  EXPECT_EQ(entry.timestamp_micros(), timestamp);
+  EXPECT_EQ(entry.text_payload(), text_payload);
+
+  // Next log line contains no timestamp, so it should inherit the
+  // previously seen timestamp above, plus one microsecond.
+  log_line = text_payload;
+  source_incr.BuildLogEntryFromLogLineForTesting(
+      entry, log_line, default_timestamp, default_severity);
+  EXPECT_EQ(entry.timestamp_micros(), timestamp + 1);
+  EXPECT_EQ(entry.text_payload(), text_payload);
+
+  // Try one more line with no timestamp to verify incrementation.
+  log_line = text_payload;
+  source_incr.BuildLogEntryFromLogLineForTesting(
+      entry, log_line, default_timestamp, default_severity);
+  EXPECT_EQ(entry.timestamp_micros(), timestamp + 2);
+  EXPECT_EQ(entry.text_payload(), text_payload);
+
+  // Verify that a new line with a timestamp works as expected again.
+  log_line = timestamp_str + " " + text_payload;
+  source_incr.BuildLogEntryFromLogLineForTesting(
+      entry, log_line, default_timestamp, default_severity);
+  EXPECT_EQ(entry.timestamp_micros(), timestamp);
   EXPECT_EQ(entry.text_payload(), text_payload);
 }
 

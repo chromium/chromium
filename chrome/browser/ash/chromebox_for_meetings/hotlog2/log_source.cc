@@ -11,6 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/specialized_log_sources.h"
 
 namespace ash::cfm {
 
@@ -35,6 +36,18 @@ LogSource::LogSource(const std::string& filepath,
 }
 
 LogSource::~LogSource() = default;
+
+std::unique_ptr<LogSource> LogSource::Create(const std::string& filename,
+                                             base::TimeDelta poll_rate,
+                                             size_t batch_size) {
+  if (filename == kCfmAuditLogFile) {
+    return std::make_unique<AuditLogSource>(poll_rate, batch_size);
+  } else if (filename == kCfmBiosInfoLogFile) {
+    return std::make_unique<BiosInfoLogSource>(poll_rate, batch_size);
+  }
+
+  return std::make_unique<LogSource>(filename, poll_rate, batch_size);
+}
 
 void LogSource::Fetch(FetchCallback callback) {
   // Cache the current offset to use as a recovery offset in the
