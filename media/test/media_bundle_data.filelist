@@ -430,6 +430,7 @@ data/rapid_video_change_test.html
 data/red-a500hz.webm
 data/red-green.h264
 data/red_green_gradient_lossy.webp
+data/reference-frame-scaling-test.ivf
 data/sfx-flac.mp4
 data/sfx-flac_frag.mp4
 data/sfx-opus-441.webm

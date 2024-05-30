@@ -1702,5 +1702,12 @@ avc-bitstream-format-1.h264: Non-IDR
 - manually convert one of created Non-IDR annexb file to avc bitstream.
   (replace annexb start code with length)
 
+### reference-frame-scaling-test.ivf
+Video stream for testing reference frame scaling in AV1 files where resolution changes at various stages in a AV1 video stream.
+- 300 frames. 
+- First 100 frames Resolution: 1920 x 1080.
+- Next 100 frames Resolution: 1280 x 720. 
+- Last 100 frames Resolution: 960 x 540.
+
 ### hls/ directory
 This directory contains all the HLS files needed to run pipeline integration tests against the HLS demuxer. The readme file in this directory contains specific steps to regenerate media and manifest files.

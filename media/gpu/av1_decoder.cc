@@ -430,26 +430,33 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
     const gfx::Size current_frame_size(
         base::strict_cast<int>(frame_header.width),
         base::strict_cast<int>(frame_header.height));
+    // As per the AV1 spec input video frames can be encoded at a lower
+    // resolution and then the decoder reconstructs the frames back at the
+    // scaled resolution. This is called as reference frame scaling.
+    // In our case the scaled resolution is the one which is specified by
+    // the sequence header.
+    // https://gitlab.com/AOMediaCodec/SVT-AV1/-/blob/master/Docs/Appendix-Reference-Scaling.md
     if (current_frame_size != frame_size_) {
-      // TODO(hiroh): This must be handled in decoding spatial layer.
-      DVLOG(1) << "Resolution change in the middle of video sequence (i.e."
-               << " between sequence headers) is not supported";
-      return kDecodeError;
+      DVLOG(2) << "Resolution change in the middle of video sequence. "
+               << "Frames encoded using reference frame scaling.";
     }
     if (current_frame_size.width() !=
         base::strict_cast<int>(frame_header.upscaled_width)) {
       DVLOG(1) << "Super resolution is not supported";
       return kDecodeError;
     }
+
+    // As per the comments in third_party/libgav1/src/src/utils/types.h
+    // for the ObuFrameHeader structure, the render_width and
+    // render_height are hints to the application about the desired display
+    // size. It has no effect on the decoding process. The visible rect should
+    // be set to the current frames width and height.
     const gfx::Rect current_visible_rect(
-        base::strict_cast<int>(frame_header.render_width),
-        base::strict_cast<int>(frame_header.render_height));
+        base::strict_cast<int>(frame_header.width),
+        base::strict_cast<int>(frame_header.height));
     if (current_visible_rect != visible_rect_) {
-      // TODO(andrescj): Handle the visible rectangle change in the middle of
-      // video sequence.
-      DVLOG(1) << "Visible rectangle change in the middle of video sequence"
-               << "(i.e. between sequence headers) is not supported";
-      return kDecodeError;
+      DVLOG(2) << "Visible rectangle change in the middle of video sequence.";
+      visible_rect_ = current_visible_rect;
     }
 
     // AV1 HDR metadata may appears in the below places:

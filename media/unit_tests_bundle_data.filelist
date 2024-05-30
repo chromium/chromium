@@ -442,6 +442,7 @@
 //media/test/data/red-a500hz.webm
 //media/test/data/red-green.h264
 //media/test/data/red_green_gradient_lossy.webp
+//media/test/data/reference-frame-scaling-test.ivf
 //media/test/data/sfx-flac.mp4
 //media/test/data/sfx-flac_frag.mp4
 //media/test/data/sfx-opus-441.webm
