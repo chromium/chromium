@@ -851,9 +851,7 @@ MLOperand* MLGraphBuilder::batchNormalization(
       BlinkOperandToComponent(variance),
       ConvertToBatchNormalizationAttributes(options));
   if (!validated_output.has_value()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        WTF::String::FromUTF8(validated_output.error()));
+    exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
     return nullptr;
   }
 
@@ -866,8 +864,7 @@ MLOperand* MLGraphBuilder::batchNormalization(
       this, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), batch_normalization);
   if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
+    exception_state.ThrowTypeError(output.error());
     return nullptr;
   }
   batch_normalization->Connect(std::move(inputs), {output.value()});
