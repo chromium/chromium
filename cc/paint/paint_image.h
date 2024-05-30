@@ -294,6 +294,7 @@ class CC_PAINT_EXPORT PaintImage {
     return paint_record_ || paint_image_generator_;
   }
   bool IsPaintWorklet() const { return !!paint_worklet_input_; }
+  bool NeedsLayer() const;
   bool IsTextureBacked() const;
   // Skia internally buffers commands and flushes them as necessary but there
   // are some cases where we need to force a flush.

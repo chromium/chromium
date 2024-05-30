@@ -22,6 +22,7 @@ class TestPaintWorkletInput : public PaintWorkletInput {
   const std::vector<PaintWorkletInput::PropertyKey>& GetPropertyKeys()
       const override;
 
+  bool NeedsLayer() const override;
   bool IsCSSPaintWorkletInput() const override;
 
  protected:

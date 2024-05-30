@@ -78,6 +78,10 @@ bool PaintWorkletInput::KnownToBeOpaque() const {
   return false;
 }
 
+bool PaintWorkletInput::NeedsLayer() const {
+  return false;
+}
+
 bool PaintWorkletInput::ValueChangeShouldCauseRepaint(
     const PropertyValue& val1,
     const PropertyValue& val2) const {

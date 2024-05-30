@@ -88,6 +88,9 @@ class CC_PAINT_EXPORT PaintWorkletInput
   using PropertyKeys = std::vector<PropertyKey>;
   virtual const PropertyKeys& GetPropertyKeys() const = 0;
 
+  virtual bool NeedsLayer() const;
+
+  // Includes JavaScript and native paint worklets.
   virtual bool IsCSSPaintWorkletInput() const = 0;
 
   // True if all the animated frames are opaque. Can be false only if animated

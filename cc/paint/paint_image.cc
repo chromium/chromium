@@ -368,6 +368,10 @@ bool PaintImage::IsYuv(
   }
 }
 
+bool PaintImage::NeedsLayer() const {
+  return paint_worklet_input_ && paint_worklet_input_->NeedsLayer();
+}
+
 const std::vector<FrameMetadata>& PaintImage::GetFrameMetadata() const {
   DCHECK_EQ(animation_type_, AnimationType::kAnimated);
   DCHECK(paint_image_generator_);

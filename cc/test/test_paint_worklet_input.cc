@@ -36,4 +36,8 @@ bool TestPaintWorkletInput::IsCSSPaintWorkletInput() const {
   return false;
 }
 
+bool TestPaintWorkletInput::NeedsLayer() const {
+  return true;
+}
+
 }  // namespace cc

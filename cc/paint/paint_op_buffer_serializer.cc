@@ -283,6 +283,8 @@ bool PaintOpBufferSerializer::WillSerializeNextOp<float>(
 
   if (op.GetType() == PaintOpType::kDrawImageRect &&
       static_cast<const DrawImageRectOp&>(op).image.IsPaintWorklet()) {
+    // Note: This check must be kept in sync with the check in
+    // DrawImageRectOp::RasterWithFlags.
     DCHECK(options_.image_provider);
     const DrawImageRectOp& draw_op = static_cast<const DrawImageRectOp&>(op);
     ImageProvider::ScopedResult result =
@@ -307,13 +309,18 @@ bool PaintOpBufferSerializer::WillSerializeNextOp<float>(
     if (!success)
       return false;
 
-    // In DrawImageRectOp::RasterWithFlags, the save layer uses the
-    // flags_to_serialize or default (PaintFlags()) flags. At this point in the
-    // serialization, flags_to_serialize is always null as well.
-    SaveLayerOp save_layer_op(draw_op.src, PaintFlags());
-    success = SerializeOpWithFlags(canvas, save_layer_op, params, 1.0f);
-    if (!success)
-      return false;
+    if (static_cast<const DrawImageRectOp&>(op).image.NeedsLayer()) {
+      // In DrawImageRectOp::RasterWithFlags, the save layer uses the
+      // flags_to_serialize or default (PaintFlags()) flags. At this point in
+      // the serialization, flags_to_serialize is always null as well.
+      // TODO(crbug.com/343439032): See if we can be less aggressive about use
+      // of a save layer operation for CSS paint worklets since expensive.
+      SaveLayerOp save_layer_op(draw_op.src, PaintFlags());
+      success = SerializeOpWithFlags(canvas, save_layer_op, params, 1.0f);
+      if (!success) {
+        return false;
+      }
+    }
 
     SerializeBuffer(canvas, result.ReleaseAsRecord().buffer(), nullptr);
     RestoreToCount(canvas, save_count, params);

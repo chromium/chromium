@@ -1348,7 +1348,12 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
     SkAutoCanvasRestore save_restore(canvas, true);
     canvas->concat(SkMatrix::RectToRect(op->src, op->dst));
     canvas->clipRect(op->src);
-    canvas->saveLayer(&op->src, &paint);
+    if (op->image.NeedsLayer()) {
+      // TODO(crbug.com/343439032): See if we can be less aggressive about use
+      // of a save layer operation for CSS paint worklets since expensive.
+      canvas->saveLayer(&op->src, &paint);
+    }
+
     // Compositor thread animations can cause PaintWorklet jobs to be dispatched
     // to the worklet thread even after main has torn down the worklet (e.g.
     // because a navigation is happening). In that case the PaintWorklet jobs
