@@ -141,6 +141,9 @@ extern const char kCoralFeatureKeyDescription[];
 extern const char kCssGamutMappingName[];
 extern const char kCssGamutMappingDescription[];
 
+extern const char kCssTextBoxTrimName[];
+extern const char kCssTextBoxTrimDescription[];
+
 extern const char kCustomizeChromeSidePanelExtensionsCardName[];
 extern const char kCustomizeChromeSidePanelExtensionsCardDescription[];
 

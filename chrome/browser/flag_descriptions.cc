@@ -178,6 +178,10 @@ const char kCssGamutMappingName[] = "CSS Gamut Mapping";
 const char kCssGamutMappingDescription[] =
     "Enable experimental CSS gamut mapping implementation.";
 
+const char kCssTextBoxTrimName[] = "CSS text-box-trim";
+const char kCssTextBoxTrimDescription[] =
+    "Enable experimental CSS text-box-trim property.";
+
 const char kCustomizeChromeSidePanelExtensionsCardName[] =
     "Customize Chrome Side Panel Extension Card";
 const char kCustomizeChromeSidePanelExtensionsCardDescription[] =

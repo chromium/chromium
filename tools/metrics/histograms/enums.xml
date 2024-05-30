@@ -19197,6 +19197,7 @@ from previous Chrome versions.
       label="UseSyncInvalidationsForWalletAndOffer:enabled"/>
   <int value="-866097797"
       label="ExperimentalAccessibilityDictationOffline:disabled"/>
+  <int value="-865066703" label="CSSTextBoxTrim:disabled"/>
   <int value="-864481314" label="FeedVideoInlinePlayback:disabled"/>
   <int value="-864266073" label="cros-regions-mode"/>
   <int value="-864234985" label="UseDdljsonApi:enabled"/>
@@ -22425,6 +22426,7 @@ from previous Chrome versions.
   <int value="547654419" label="CrOSEnforceSystemAecAgc:enabled"/>
   <int value="548028412" label="AutofillEnableVcn3dsAuthentication:enabled"/>
   <int value="548503129" label="ImpulseScrollAnimations:enabled"/>
+  <int value="548613700" label="CSSTextBoxTrim:enabled"/>
   <int value="548618823" label="SyncAndroidPromosWithSingleButton:enabled"/>
   <int value="549168649"
       label="AutofillEnableStickyManualFallbackForCards:disabled"/>
