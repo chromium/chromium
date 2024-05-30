@@ -48,13 +48,6 @@ class COMPONENT_EXPORT(COLOR) ColorProvider {
   // |id|.
   SkColor GetColor(ColorId id) const;
 
-  // Returns true if mixers is not empty. It's the case for some browser
-  // tests that run in single process mode but access colors that are
-  // initialized on renderer process launch, for example, controls in
-  // NaiveThemeBase and its children classes. Please see more details:
-  // https://crbug.com/1376775.
-  bool HasMixers() const;
-
   void SetColorForTesting(ColorId id, SkColor color);
   void GenerateColorMapForTesting();
   const ColorMap& color_map_for_testing();

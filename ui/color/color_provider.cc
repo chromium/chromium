@@ -88,8 +88,6 @@ class ColorProvider::ColorProviderInternal {
     return (it == mixers_.cend()) ? nullptr : &(*it);
   }
 
-  bool HasMixers() const { return !mixers_.empty(); }
-
   void SetColorForTesting(ColorId id, SkColor color) { color_map_[id] = color; }
 
   void GenerateColorMapForTesting() {
@@ -137,10 +135,6 @@ ColorMixer& ColorProvider::AddPostprocessingMixer() {
 
 SkColor ColorProvider::GetColor(ColorId id) const {
   return internal_->GetColor(id);
-}
-
-bool ColorProvider::HasMixers() const {
-  return internal_->HasMixers();
 }
 
 void ColorProvider::SetColorForTesting(ColorId id, SkColor color) {

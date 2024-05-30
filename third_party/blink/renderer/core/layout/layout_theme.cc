@@ -695,7 +695,6 @@ Color LayoutTheme::SystemColorFromColorProvider(
     CSSValueID css_value_id,
     mojom::blink::ColorScheme color_scheme,
     const ui::ColorProvider* color_provider) const {
-  CHECK(color_provider->HasMixers());
   SkColor system_theme_color;
   switch (css_value_id) {
     case CSSValueID::kActivetext:

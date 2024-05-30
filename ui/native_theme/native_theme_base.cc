@@ -1765,7 +1765,7 @@ bool NativeThemeBase::IsColorPipelineSupportedForControlColorId(
     ControlColorId color_id) const {
   // Color providers are not yet supported on Android so we need to check that
   // the color_provider is not null here.
-  if (!color_provider || !color_provider->HasMixers()) {
+  if (!color_provider) {
     return false;
   }
 
