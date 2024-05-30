@@ -25,8 +25,7 @@ using HelpBubbleKey = raw_ptr<const void>;
 // help bubbles to avoid spamming the user.
 enum class HelpBubbleId {
   kMinValue,
-  kHoldingSpaceWallpaperNudge = kMinValue,
-  kTest,
+  kTest = kMinValue,
   kWelcomeTourExploreApp,
   kWelcomeTourHomeButton,
   kWelcomeTourSearchBox,
