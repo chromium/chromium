@@ -110,6 +110,7 @@
 /node/*.tar.gz
 /node/linux/
 /node/mac/
+/node/mac_arm64/
 /node/node_modules/
 /node/win
 /nss
