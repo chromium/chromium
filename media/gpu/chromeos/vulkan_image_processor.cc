@@ -1298,6 +1298,8 @@ void VulkanImageProcessor::Process(gpu::VulkanImage& in_image,
          std::unique_ptr<VulkanTextureImage> out_texture,
          gpu::VulkanDeviceQueue* device_queue, bool device_lost) {},
       std::move(in_texture), std::move(out_texture)));
+
+  fence_helper->ProcessCleanupTasks();
 }
 
 gpu::VulkanDeviceQueue* VulkanImageProcessor::GetVulkanDeviceQueue() {
