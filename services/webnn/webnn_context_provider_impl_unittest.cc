@@ -93,8 +93,8 @@ TEST_F(WebNNContextProviderImplTest, CPUIsSupported) {
           /*thread_count_hint=*/0),
       future.GetCallback());
   mojom::CreateContextResultPtr result = future.Take();
-  ASSERT_TRUE(result->is_context_remote());
-  EXPECT_TRUE(result->get_context_remote().is_valid());
+  ASSERT_TRUE(result->is_success());
+  EXPECT_TRUE(result->get_success()->context_remote.is_valid());
 }
 
 // Checking for GPU compatibility is Windows-specific because only the DirectML

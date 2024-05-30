@@ -56,6 +56,18 @@ struct CreateContextOptions {
   uint8 thread_count_hint;
 };
 
+// Represents properties of the `WebNNContext` implementation that has been
+// provided.
+struct ContextProperties {
+  InputOperandLayout? preferred_conv2d_input_layout;
+};
+
+// Represents a successful call to `WebNNContextProvider::CreateWebNNContext`.
+struct CreateContextSuccess {
+  pending_remote<WebNNContext>? context_remote;
+  ContextProperties context_properties;
+};
+
 // Represents the return value of `WebNNContext::CreateGraph()`. Let it be
 // `graph_remote` if the graph was successfully created and `error` otherwise.
 union CreateGraphResult {
@@ -64,10 +76,10 @@ union CreateGraphResult {
 };
 
 // Represents the return value of `WebNNContextProvider::CreateWebNNContext()`.
-// Let it be `context_remote` if WebNNContext was successfully created and
-// `error` otherwise.
+// Let it be `success` if a WebNNContext was successfully created and `error`
+// otherwise.
 union CreateContextResult {
-  pending_remote<WebNNContext>? context_remote;
+  CreateContextSuccess success;
   Error error;
 };
 

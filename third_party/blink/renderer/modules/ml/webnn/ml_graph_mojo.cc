@@ -29,7 +29,8 @@ uint64_t NextOperandId(const webnn::mojom::blink::GraphInfo& graph_info) {
 }
 
 base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
-    const MLNamedOperands& named_outputs) {
+    const MLNamedOperands& named_outputs,
+    const webnn::mojom::blink::ContextProperties& context_properties) {
   // The `GraphInfo` represents an entire information of WebNN graph.
   auto graph_info = blink_mojom::GraphInfo::New();
 
@@ -108,8 +109,9 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
     }
 
     // Create `mojo::Operation` with the id of the input and output operands.
-    std::optional<String> error = SerializeMojoOperation(
-        operand_to_id_map, current_operator.Get(), graph_info.get());
+    std::optional<String> error =
+        SerializeMojoOperation(operand_to_id_map, context_properties,
+                               current_operator.Get(), graph_info.get());
     if (error.has_value()) {
       // Return here if the operator is not implemented.
       return base::unexpected(*error);
@@ -148,7 +150,7 @@ void MLGraphMojo::Trace(Visitor* visitor) const {
 void MLGraphMojo::BuildImpl(ScopedMLTrace scoped_trace,
                             const MLNamedOperands& outputs,
                             ScriptPromiseResolver<MLGraph>* resolver) {
-  auto graph_info = BuildWebNNGraphInfo(outputs);
+  auto graph_info = BuildWebNNGraphInfo(outputs, ml_context_->GetProperties());
   if (!graph_info.has_value()) {
     resolver->RejectWithDOMException(
         DOMExceptionCode::kNotSupportedError,

@@ -6,6 +6,7 @@
 
 #include "base/types/expected_macros.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/public/mojom/webnn_graph.mojom-shared.h"
 #include "services/webnn/tflite/buffer_impl_tflite.h"
 #include "services/webnn/tflite/graph_impl_tflite.h"
 
@@ -19,6 +20,13 @@ ContextImplTflite::ContextImplTflite(
       options_(std::move(options)) {}
 
 ContextImplTflite::~ContextImplTflite() = default;
+
+mojom::ContextPropertiesPtr ContextImplTflite::GetProperties() {
+  auto properties = mojom::ContextProperties::New();
+  properties->preferred_conv2d_input_layout =
+      mojom::InputOperandLayout::kChannelsLast;
+  return properties;
+}
 
 void ContextImplTflite::CreateGraphImpl(
     mojom::GraphInfoPtr graph_info,

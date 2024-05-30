@@ -11,6 +11,8 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
 
@@ -180,10 +182,10 @@ void WebNNContextProviderImpl::CreateWebNNContext(
                                               std::move(callback));
     return;
   }
-  // The remote sent to the renderer.
-  mojo::PendingRemote<mojom::WebNNContext> blink_remote;
-  // The receiver bound to WebNNContextImpl.
-  auto receiver = blink_remote.InitWithNewPipeAndPassReceiver();
+
+  WebNNContextImpl* context_impl = nullptr;
+  mojo::PendingRemote<mojom::WebNNContext> remote;
+  auto receiver = remote.InitWithNewPipeAndPassReceiver();
 
 #if BUILDFLAG(IS_WIN)
   if (ShouldCreateDmlContext(*options)) {
@@ -230,13 +232,9 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       return;
     }
 
-    auto* context_impl =
+    context_impl =
         new dml::ContextImplDml(std::move(adapter), std::move(receiver), this,
                                 std::move(command_recorder), gpu_feature_info_);
-    impls_.push_back(base::WrapUnique<WebNNContextImpl>(context_impl));
-    std::move(callback).Run(
-        mojom::CreateContextResult::NewContextRemote(std::move(blink_remote)));
-    return;
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -245,33 +243,36 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   // with TFLite or a more restrictive implementation on CoreML.
   if (__builtin_available(macOS 14, *)) {
     // TODO: crbug.com/41481333 - Create the CoreML context using `options`.
-    auto* context_impl =
-        new coreml::ContextImplCoreml(std::move(receiver), this);
-    impls_.push_back(base::WrapUnique<WebNNContextImpl>(context_impl));
-    std::move(callback).Run(
-        mojom::CreateContextResult::NewContextRemote(std::move(blink_remote)));
-    return;
+    context_impl = new coreml::ContextImplCoreml(std::move(receiver), this);
   }
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(WEBNN_USE_TFLITE)
 // TODO: crbug.com/41486052 - Create the TFLite context using `options`.
 #if BUILDFLAG(IS_CHROMEOS)
-  auto* context_impl = new tflite::ContextImplCrOS(std::move(receiver), this);
+  context_impl = new tflite::ContextImplCrOS(std::move(receiver), this);
 #else
-  auto* context_impl = new tflite::ContextImplTflite(std::move(receiver), this,
-                                                     std::move(options));
+  context_impl = new tflite::ContextImplTflite(std::move(receiver), this,
+                                               std::move(options));
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  impls_.push_back(base::WrapUnique<WebNNContextImpl>(context_impl));
-  std::move(callback).Run(
-      mojom::CreateContextResult::NewContextRemote(std::move(blink_remote)));
-#else
-  // TODO(crbug.com/40206287): Supporting WebNN Service on the platform.
-  std::move(callback).Run(ToError<mojom::CreateContextResult>(
-      mojom::Error::Code::kNotSupportedError,
-      "WebNN Service is not supported on this platform."));
-  LOG(ERROR) << "[WebNN] Service is not supported on this platform.";
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
+
+  if (!context_impl) {
+    // TODO(crbug.com/40206287): Supporting WebNN Service on the platform.
+    std::move(callback).Run(ToError<mojom::CreateContextResult>(
+        mojom::Error::Code::kNotSupportedError,
+        "WebNN Service is not supported on this platform."));
+    LOG(ERROR) << "[WebNN] Service is not supported on this platform.";
+    return;
+  }
+
+  mojom::ContextPropertiesPtr properties = context_impl->GetProperties();
+  impls_.push_back(base::WrapUnique<WebNNContextImpl>(context_impl));
+
+  auto success = mojom::CreateContextSuccess::New(std::move(remote),
+                                                  std::move(properties));
+  std::move(callback).Run(
+      mojom::CreateContextResult::NewSuccess(std::move(success)));
 }
 
 }  // namespace webnn

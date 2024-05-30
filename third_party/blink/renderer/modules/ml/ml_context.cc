@@ -202,9 +202,11 @@ void MLContext::OnCreateWebNNContext(
     return;
   }
 
-  remote_context_.Bind(std::move(result->get_context_remote()),
+  auto success = std::move(result->get_success());
+  remote_context_.Bind(std::move(success->context_remote),
                        ExecutionContext::From(script_state)
                            ->GetTaskRunner(TaskType::kMiscPlatformAPI));
+  properties_ = std::move(success->context_properties);
 
   resolver->Resolve(this);
 }

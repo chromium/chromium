@@ -255,8 +255,10 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
         std::make_unique<FakeWebNNContext>(*helper_),
         blink_remote.InitWithNewPipeAndPassReceiver());
 
-    std::move(callback).Run(blink_mojom::CreateContextResult::NewContextRemote(
-        std::move(blink_remote)));
+    auto success = blink_mojom::CreateContextSuccess::New(
+        std::move(blink_remote), blink_mojom::ContextProperties::New());
+    std::move(callback).Run(
+        blink_mojom::CreateContextResult::NewSuccess(std::move(success)));
   }
 
   const raw_ref<MLGraphTestMojo> helper_;

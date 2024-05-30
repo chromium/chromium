@@ -103,6 +103,10 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
       : WebNNContextImpl(std::move(receiver), context_provider) {}
   ~FakeWebNNContextImpl() override = default;
 
+  mojom::ContextPropertiesPtr GetProperties() override {
+    return mojom::ContextProperties::New();
+  }
+
  private:
   void CreateGraphImpl(
       mojom::GraphInfoPtr graph_info,
@@ -130,12 +134,16 @@ class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
       mojom::CreateContextOptionsPtr options,
       mojom::WebNNContextProvider::CreateWebNNContextCallback callback)
       override {
-    mojo::PendingRemote<mojom::WebNNContext> blink_remote;
+    mojo::PendingRemote<mojom::WebNNContext> remote;
+    auto context_impl = std::make_unique<FakeWebNNContextImpl>(
+        remote.InitWithNewPipeAndPassReceiver(), context_provider_impl);
+    auto context_properties = context_impl->GetProperties();
     // The receiver bound to FakeWebNNContext.
-    context_impls.push_back(std::make_unique<FakeWebNNContextImpl>(
-        blink_remote.InitWithNewPipeAndPassReceiver(), context_provider_impl));
+    context_impls.push_back(std::move(context_impl));
+    auto success = mojom::CreateContextSuccess::New(
+        std::move(remote), std::move(context_properties));
     std::move(callback).Run(
-        mojom::CreateContextResult::NewContextRemote(std::move(blink_remote)));
+        mojom::CreateContextResult::NewSuccess(std::move(success)));
   }
 };
 
@@ -153,7 +161,8 @@ bool ValidateInputsForComputing(
   mojom::CreateContextResultPtr create_context_result =
       create_context_future.Take();
   mojo::Remote<mojom::WebNNContext> webnn_context;
-  webnn_context.Bind(std::move(create_context_result->get_context_remote()));
+  webnn_context.Bind(
+      std::move(create_context_result->get_success()->context_remote));
 
   // Creates WebNN Graph mojo interface with the graph information which is
   // validated before compiling.
@@ -209,7 +218,8 @@ bool ValidateDispatch(mojom::GraphInfoPtr graph_info,
   mojom::CreateContextResultPtr create_context_result =
       create_context_future.Take();
   mojo::Remote<mojom::WebNNContext> webnn_context;
-  webnn_context.Bind(std::move(create_context_result->get_context_remote()));
+  webnn_context.Bind(
+      std::move(create_context_result->get_success()->context_remote));
 
   // Creates WebNN Graph mojo interface with the graph information which is
   // validated before compiling.

@@ -37,6 +37,17 @@ ContextImplDml::ContextImplDml(
 
 ContextImplDml::~ContextImplDml() = default;
 
+mojom::ContextPropertiesPtr ContextImplDml::GetProperties() {
+  auto properties = mojom::ContextProperties::New();
+  // TODO: Remove the code from `GraphImpl::CreateOperatorNodeForConv2d()`
+  // which handles `kChannelsLast` and rely on the renderer to insert the
+  // necessary transpose operations by setting:
+  //
+  // properties->preferred_conv2d_input_layout =
+  // mojom::InputOperandLayout::kChannelsFirst;
+  return properties;
+}
+
 void ContextImplDml::CreateGraphImpl(
     mojom::GraphInfoPtr graph_info,
     mojom::WebNNContext::CreateGraphCallback callback) {

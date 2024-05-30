@@ -53,6 +53,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   base::optional_ref<WebNNBufferImpl> GetWebNNBufferImpl(
       const base::UnguessableToken& handle);
 
+  virtual mojom::ContextPropertiesPtr GetProperties() = 0;
+
  protected:
   void OnConnectionError();
 

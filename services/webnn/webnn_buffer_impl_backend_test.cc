@@ -180,9 +180,9 @@ bool WebNNBufferImplBackendTest::CreateWebNNContext(
           /*thread_count_hint=*/0),
       create_context_future.GetCallback());
   auto create_context_result = create_context_future.Take();
-  if (create_context_result->is_context_remote()) {
+  if (create_context_result->is_success()) {
     webnn_context_remote.Bind(
-        std::move(create_context_result->get_context_remote()));
+        std::move(create_context_result->get_success()->context_remote));
   } else {
     is_platform_supported = create_context_result->get_error()->code !=
                             mojom::Error::Code::kNotSupportedError;

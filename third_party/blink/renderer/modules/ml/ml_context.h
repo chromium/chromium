@@ -63,6 +63,9 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   void LogConsoleWarning(const String& message);
 
   ML* GetML();
+  const webnn::mojom::blink::ContextProperties& GetProperties() {
+    return *properties_;
+  }
 
   void Trace(Visitor* visitor) const override;
 
@@ -162,6 +165,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   // The `WebNNContext` is a initialized context that can be used by the
   // hardware accelerated OS machine learning API.
   HeapMojoRemote<webnn::mojom::blink::WebNNContext> remote_context_;
+  webnn::mojom::blink::ContextPropertiesPtr properties_;
 };
 
 }  // namespace blink

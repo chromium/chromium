@@ -469,6 +469,7 @@ std::optional<String> ValidateConv2dDefaultFilterLayout(
 template <typename MLConv2dOptionsType>
 std::optional<String> SerializeConv2dOperation(
     const OperandToIdMap& operand_to_id_map,
+    const webnn::mojom::blink::ContextProperties& context_properties,
     const MLOperator* conv2d,
     blink_mojom::GraphInfo* graph_info) {
   auto conv2d_mojo = blink_mojom::Conv2d::New();
@@ -1249,6 +1250,7 @@ OperationPtr CreateWhereOperation(const OperandToIdMap& operand_to_id_map,
 // TODO(crbug.com/1504405): Use a lookup table to simplifie the switch logic.
 std::optional<String> SerializeMojoOperation(
     const HeapHashMap<Member<const MLOperand>, uint64_t>& operand_to_id_map,
+    const webnn::mojom::blink::ContextProperties& context_properties,
     const MLOperator* op,
     webnn::mojom::blink::GraphInfo* graph_info) {
   switch (op->Kind()) {
@@ -1272,13 +1274,13 @@ std::optional<String> SerializeMojoOperation(
       std::optional<String> error;
       switch (op->SubKind<blink_mojom::Conv2d::Kind>()) {
         case blink_mojom::Conv2d::Kind::kDirect: {
-          error = SerializeConv2dOperation<MLConv2dOptions>(operand_to_id_map,
-                                                            op, graph_info);
+          error = SerializeConv2dOperation<MLConv2dOptions>(
+              operand_to_id_map, context_properties, op, graph_info);
           break;
         }
         case blink_mojom::Conv2d::Kind::kTransposed: {
           error = SerializeConv2dOperation<MLConvTranspose2dOptions>(
-              operand_to_id_map, op, graph_info);
+              operand_to_id_map, context_properties, op, graph_info);
           break;
         }
       }

@@ -87,9 +87,9 @@ void BuildAndCompute(
       create_context_future.GetCallback());
   mojom::CreateContextResultPtr create_context_result =
       create_context_future.Take();
-  if (create_context_result->is_context_remote()) {
+  if (create_context_result->is_success()) {
     webnn_context_remote.Bind(
-        std::move(create_context_result->get_context_remote()));
+        std::move(create_context_result->get_success()->context_remote));
   }
   EXPECT_FALSE(create_context_result->is_error())
       << create_context_result->get_error()->message;
@@ -6194,9 +6194,9 @@ TEST_F(WebNNGraphImplBackendTest, BuildOneGraphToComputeMultipleTimes) {
       create_context_future.GetCallback());
   mojom::CreateContextResultPtr create_context_result =
       create_context_future.Take();
-  if (create_context_result->is_context_remote()) {
+  if (create_context_result->is_success()) {
     webnn_context_remote.Bind(
-        std::move(create_context_result->get_context_remote()));
+        std::move(create_context_result->get_success()->context_remote));
   }
   EXPECT_TRUE(webnn_context_remote.is_bound());
 

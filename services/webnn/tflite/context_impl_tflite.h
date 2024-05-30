@@ -25,6 +25,8 @@ class ContextImplTflite final : public WebNNContextImpl {
 
   const mojom::CreateContextOptions& options() const { return *options_; }
 
+  mojom::ContextPropertiesPtr GetProperties() override;
+
  private:
   void CreateGraphImpl(mojom::GraphInfoPtr graph_info,
                        CreateGraphCallback callback) override;
