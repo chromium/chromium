@@ -46,6 +46,24 @@ namespace WTF {
 
 class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
  public:
+  class Segment {
+   public:
+    Segment(size_t start_position, Vector<char>&& data)
+        : start_position_(start_position), data_(std::move(data)) {}
+    ~Segment() = default;
+    Segment(const Segment&) = delete;
+    Segment& operator=(const Segment&) = delete;
+    Segment(Segment&&) = default;
+    Segment& operator=(Segment&&) = default;
+
+    size_t start_position() const { return start_position_; }
+    const Vector<char>& data() const { return data_; }
+
+   private:
+    size_t start_position_;
+    Vector<char> data_;
+  };
+
   // Iterator for ShreadBuffer contents. An Iterator will get invalid once the
   // associated SharedBuffer is modified (e.g., Append() is called). An Iterator
   // doesn't retain the associated container.
@@ -76,25 +94,19 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
    private:
     friend class SharedBuffer;
     // for end()
-    Iterator(const SharedBuffer* buffer);
-    // for the consecutive part
-    Iterator(size_t offset, const SharedBuffer* buffer);
+    explicit Iterator(const SharedBuffer* buffer);
     // for the rest
-    Iterator(wtf_size_t segment_index,
+    Iterator(Vector<Segment>::const_iterator segment_it,
              size_t offset,
              const SharedBuffer* buffer);
 
     void Init(size_t offset);
-    bool IsEnd() const { return index_ == buffer_->segments_.size() + 1; }
+    bool IsEnd() const { return segment_it_ == buffer_->segments_.end(); }
 
-    // It represents |buffer_->buffer| if |index_| is 0, and
-    // |buffer_->segments[index_ - 1]| otherwise.
-    wtf_size_t index_;
+    Vector<Segment>::const_iterator segment_it_;
     base::span<const char> value_;
     const SharedBuffer* buffer_;
   };
-
-  static constexpr unsigned kSegmentSize = 0x1000;
 
   static scoped_refptr<SharedBuffer> Create() {
     return base::AdoptRef(new SharedBuffer);
@@ -107,13 +119,6 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
   static scoped_refptr<SharedBuffer> Create(
       base::span<const unsigned char> data) {
     return base::AdoptRef(new SharedBuffer(data));
-  }
-
-  HAS_STRICTLY_TYPED_ARG
-  static scoped_refptr<SharedBuffer> Create(STRICTLY_TYPED_ARG(size)) {
-    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    return base::AdoptRef(
-        new SharedBuffer(base::checked_cast<wtf_size_t>(size)));
   }
 
   HAS_STRICTLY_TYPED_ARG
@@ -173,6 +178,7 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
   void Append(base::span<const unsigned char> data) {
     Append(base::as_chars(data));
   }
+  void Append(Vector<char>&& vector);
 
   void Clear();
 
@@ -229,10 +235,6 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
   friend class RefCounted<SharedBuffer>;
   ~SharedBuffer();
 
-  struct SegmentDeleter;
-  using Segment = std::unique_ptr<char[], SegmentDeleter>;
-  static Segment CreateSegment();
-
   SharedBuffer();
   explicit SharedBuffer(wtf_size_t);
   explicit SharedBuffer(base::span<const char>);
@@ -243,13 +245,8 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
 
   bool GetBytesInternal(void* dest, size_t) const;
   Iterator GetIteratorAtInternal(size_t position) const;
-  size_t GetLastSegmentSize() const {
-    DCHECK(!segments_.empty());
-    return (size_ - buffer_.size() + kSegmentSize - 1) % kSegmentSize + 1;
-  }
 
-  size_t size_;
-  Vector<char> buffer_;
+  size_t size_ = 0;
   Vector<Segment> segments_;
 };
 

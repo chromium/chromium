@@ -142,18 +142,6 @@ TEST(SharedBufferTest, copy) {
   ASSERT_EQ(length * 5, clone.size());
 }
 
-TEST(SharedBufferTest, constructorWithSizeOnly) {
-  size_t length = 10000;
-  scoped_refptr<SharedBuffer> shared_buffer = SharedBuffer::Create(length);
-  ASSERT_EQ(length, shared_buffer->size());
-
-  // The internal flat buffer should have been resized to |length| therefore
-  // the buffer consists of one big buffer.
-  const auto it = shared_buffer->cbegin();
-  ASSERT_NE(it, shared_buffer->cend());
-  ASSERT_EQ(length, it->size());
-}
-
 TEST(SharedBufferTest, constructorWithFlatData) {
   Vector<char> data;
 
@@ -201,11 +189,13 @@ TEST(SharedBufferTest, FlatData) {
 }
 
 TEST(SharedBufferTest, GetIteratorAt) {
-  Vector<char> data(SharedBuffer::kSegmentSize + 256);
+  Vector<char> data(300);
   std::generate(data.begin(), data.end(), &std::rand);
   auto buffer = SharedBuffer::Create();
-  buffer->Append(data.data(), static_cast<size_t>(127));
-  buffer->Append(data.data() + 127, data.size() - 127);
+  const size_t first_segment_size = 127;
+  const size_t second_segment_size = data.size() - first_segment_size;
+  buffer->Append(data.data(), first_segment_size);
+  buffer->Append(data.data() + first_segment_size, second_segment_size);
 
   const auto it0 = buffer->GetIteratorAt(static_cast<size_t>(0));
   EXPECT_EQ(it0, buffer->cbegin());
@@ -228,42 +218,24 @@ TEST(SharedBufferTest, GetIteratorAt) {
   const auto it127 = buffer->GetIteratorAt(static_cast<size_t>(127));
   EXPECT_NE(it127, buffer->cbegin());
   ASSERT_NE(it127, buffer->cend());
-  ASSERT_EQ(it127->size(), SharedBuffer::kSegmentSize);
+  ASSERT_EQ(it127->size(), second_segment_size);
   EXPECT_EQ(0, memcmp(it127->data(), data.data() + 127, it127->size()));
 
   const auto it128 = buffer->GetIteratorAt(static_cast<size_t>(128));
   EXPECT_NE(it128, buffer->cbegin());
   ASSERT_NE(it128, buffer->cend());
-  ASSERT_EQ(it128->size(), SharedBuffer::kSegmentSize - 1);
+  ASSERT_EQ(it128->size(), second_segment_size - 1);
   EXPECT_EQ(0, memcmp(it128->data(), data.data() + 128, it128->size()));
 
-  const auto it4222 = buffer->GetIteratorAt(static_cast<size_t>(4222));
-  EXPECT_NE(it4222, buffer->cbegin());
-  ASSERT_NE(it4222, buffer->cend());
-  ASSERT_EQ(it4222->size(), 1u);
-  EXPECT_EQ(0, memcmp(it4222->data(), data.data() + 4222, it4222->size()));
-
-  const auto it4223 = buffer->GetIteratorAt(static_cast<size_t>(4223));
-  EXPECT_NE(it4223, buffer->cbegin());
-  ASSERT_NE(it4223, buffer->cend());
-  ASSERT_EQ(it4223->size(), 129u);
-  EXPECT_EQ(0, memcmp(it4223->data(), data.data() + 4223, it4223->size()));
-
-  const auto it4224 = buffer->GetIteratorAt(static_cast<size_t>(4224));
-  EXPECT_NE(it4224, buffer->cbegin());
-  ASSERT_NE(it4224, buffer->cend());
-  ASSERT_EQ(it4224->size(), 128u);
-  EXPECT_EQ(0, memcmp(it4224->data(), data.data() + 4224, it4224->size()));
-
-  const auto it4351 = buffer->GetIteratorAt(static_cast<size_t>(4351));
-  EXPECT_NE(it4351, buffer->cbegin());
-  ASSERT_NE(it4351, buffer->cend());
-  ASSERT_EQ(it4351->size(), 1u);
-  EXPECT_EQ(0, memcmp(it4351->data(), data.data() + 4351, it4351->size()));
+  const auto it299 = buffer->GetIteratorAt(static_cast<size_t>(299));
+  EXPECT_NE(it299, buffer->cbegin());
+  ASSERT_NE(it299, buffer->cend());
+  ASSERT_EQ(it299->size(), 1u);
+  EXPECT_EQ(0, memcmp(it299->data(), data.data() + 299, it299->size()));
 
   // All of the iterators above are different each other.
   const SharedBuffer::Iterator iters[] = {
-      it0, it1, it126, it127, it128, it4222, it4223, it4224, it4351,
+      it0, it1, it126, it127, it128, it299,
   };
   for (size_t i = 0; i < std::size(iters); ++i) {
     for (size_t j = 0; j < std::size(iters); ++j) {
@@ -285,25 +257,17 @@ TEST(SharedBufferTest, GetIteratorAt) {
 
   it = it127;
   ++it;
-  EXPECT_EQ(it, it4223);
+  EXPECT_EQ(it, buffer->cend());
 
-  it = it4222;
-  ++it;
-  EXPECT_EQ(it, it4223);
-
-  it = it4223;
+  it = it128;
   ++it;
   EXPECT_EQ(it, buffer->cend());
 
-  it = it4224;
-  ++it;
-  EXPECT_EQ(it, buffer->cend());
+  const auto it300 = buffer->GetIteratorAt(static_cast<size_t>(300));
+  EXPECT_EQ(it300, buffer->cend());
 
-  const auto it4352 = buffer->GetIteratorAt(static_cast<size_t>(4352));
-  EXPECT_EQ(it4352, buffer->cend());
-
-  const auto it4353 = buffer->GetIteratorAt(static_cast<size_t>(4353));
-  EXPECT_EQ(it4353, buffer->cend());
+  const auto it301 = buffer->GetIteratorAt(static_cast<size_t>(301));
+  EXPECT_EQ(it301, buffer->cend());
 }
 
 TEST(SharedBufferIteratorTest, Empty) {
@@ -311,9 +275,11 @@ TEST(SharedBufferIteratorTest, Empty) {
 
   EXPECT_EQ(buffer->begin(), buffer->end());
   EXPECT_EQ(buffer->cbegin(), buffer->cend());
+  EXPECT_EQ(buffer->GetIteratorAt(static_cast<size_t>(0)), buffer->end());
+  EXPECT_EQ(buffer->GetIteratorAt(static_cast<size_t>(1)), buffer->end());
 }
 
-TEST(SharedBufferIteratorTest, ConsecutivePartOnly) {
+TEST(SharedBufferIteratorTest, SingleSegment) {
   auto buffer = SharedBuffer::Create("hello", static_cast<size_t>(5));
 
   EXPECT_EQ(buffer->begin(), buffer->cbegin());
@@ -327,74 +293,15 @@ TEST(SharedBufferIteratorTest, ConsecutivePartOnly) {
   ++it;
 
   EXPECT_EQ(it, buffer->cend());
-}
 
-TEST(SharedBufferIteratorTest, SegmentedPartOnly) {
-  Vector<char> data(SharedBuffer::kSegmentSize * 2 + 256);
-  std::generate(data.begin(), data.end(), &std::rand);
-  auto buffer = SharedBuffer::Create();
-  buffer->Append(data);
+  it = buffer->GetIteratorAt(static_cast<size_t>(0));
+  EXPECT_EQ(String(it->data(), it->size()), "hello");
 
-  EXPECT_EQ(buffer->begin(), buffer->cbegin());
-  EXPECT_EQ(buffer->end(), buffer->cend());
-
-  auto it = buffer->cbegin();
-  ASSERT_NE(it, buffer->cend());
-
-  ASSERT_EQ(it->size(), SharedBuffer::kSegmentSize);
-  EXPECT_EQ(0, memcmp(data.data(), it->data(), it->size()));
-
-  ++it;
-  ASSERT_NE(it, buffer->cend());
-  ASSERT_EQ(it->size(), SharedBuffer::kSegmentSize);
-  EXPECT_EQ(0, memcmp(data.data() + SharedBuffer::kSegmentSize, it->data(),
-                      it->size()));
-
-  ++it;
-  ASSERT_NE(it, buffer->cend());
-  ASSERT_EQ(it->size(), 256u);
-  EXPECT_EQ(0, memcmp(data.data() + 2 * SharedBuffer::kSegmentSize, it->data(),
-                      it->size()));
-
-  ++it;
-  EXPECT_EQ(it, buffer->cend());
-}
-
-TEST(SharedBufferIteratorTest, ConsecutivePartAndSegmentedPart) {
-  Vector<char> data(SharedBuffer::kSegmentSize * 2 + 256);
-  std::generate(data.begin(), data.end(), &std::rand);
-  auto buffer = SharedBuffer::Create();
-  buffer->Append(data.data(), static_cast<size_t>(128));
-  buffer->Append(data.data() + 128, data.size() - 128);
-
-  EXPECT_EQ(buffer->begin(), buffer->cbegin());
-  EXPECT_EQ(buffer->end(), buffer->cend());
-
-  auto it = buffer->cbegin();
-  ASSERT_NE(it, buffer->cend());
-
-  ASSERT_EQ(it->size(), 128u);
-  EXPECT_EQ(0, memcmp(data.data(), it->data(), it->size()));
-
-  ++it;
-  ASSERT_NE(it, buffer->cend());
-  ASSERT_EQ(it->size(), SharedBuffer::kSegmentSize);
-  EXPECT_EQ(0, memcmp(data.data() + 128, it->data(), it->size()));
-
-  ++it;
-  ASSERT_NE(it, buffer->cend());
-  ASSERT_EQ(it->size(), SharedBuffer::kSegmentSize);
-  EXPECT_EQ(0, memcmp(data.data() + 128 + SharedBuffer::kSegmentSize,
-                      it->data(), it->size()));
-
-  ++it;
-  ASSERT_NE(it, buffer->cend());
-  ASSERT_EQ(it->size(), 128u);
-  EXPECT_EQ(0, memcmp(data.data() + 128 + 2 * SharedBuffer::kSegmentSize,
-                      it->data(), it->size()));
-
-  ++it;
-  EXPECT_EQ(it, buffer->cend());
+  it = buffer->GetIteratorAt(static_cast<size_t>(1));
+  EXPECT_EQ(String(it->data(), it->size()), "ello");
+  it = buffer->GetIteratorAt(static_cast<size_t>(4));
+  EXPECT_EQ(String(it->data(), it->size()), "o");
+  EXPECT_EQ(buffer->GetIteratorAt(static_cast<size_t>(5)), buffer->cend());
 }
 
 }  // namespace blink

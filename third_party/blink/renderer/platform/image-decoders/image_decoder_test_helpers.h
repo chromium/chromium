@@ -19,7 +19,8 @@ namespace blink {
 class ImageDecoder;
 
 const char kDecodersTestingDir[] = "renderer/platform/image-decoders/testing";
-const unsigned kDefaultTestSize = 4 * SharedBuffer::kSegmentSize;
+const unsigned kDefaultSegmentTestSize = 0x1000;
+const unsigned kDefaultTestSize = 4 * kDefaultSegmentTestSize;
 
 using DecoderCreator = std::unique_ptr<ImageDecoder> (*)();
 using DecoderCreatorWithAlpha =
