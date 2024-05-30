@@ -1884,6 +1884,14 @@ message AnimationFrameScriptTimingInfo {
     PROMISE_REJECT = 6;
   }
   optional InvokerType invoker_type = 9;
+  enum ThirdPartyTechnology {
+    UNSPECIFIED = 0;
+    NONE = 1;
+    WORD_PRESS = 2;
+    GOOGLE_ANALYTICS = 3;
+    GOOGLE_FONT_API = 4;
+  }
+  optional ThirdPartyTechnology third_party_technology = 10;
 }
 
 message ChromeTrackEvent {

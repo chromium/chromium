@@ -259,6 +259,31 @@ ToProtoEnum(ScriptTimingInfo::InvokerType type) {
   }
   return ProtoType::UNDEFINED;
 }
+
+perfetto::protos::pbzero::AnimationFrameScriptTimingInfo::ThirdPartyTechnology
+ToProtoEnum(ThirdPartyScriptDetector::Technology technology) {
+  // The technology detector is a bitset so that multiple technologies can be
+  // reported to UKM for all the scripts that ran in a long animation frame.
+  // But for tracing, we report the detected technology of each script. So we
+  // return the first technology found in the bitset, or none if none are found.
+  using ProtoType = perfetto::protos::pbzero::AnimationFrameScriptTimingInfo::
+      ThirdPartyTechnology;
+  uint64_t technology_bits = static_cast<uint64_t>(technology);
+  if (technology_bits &
+      static_cast<uint64_t>(ThirdPartyScriptDetector::Technology::kWordPress)) {
+    return ProtoType::WORD_PRESS;
+  } else if (technology_bits &
+             static_cast<uint64_t>(
+                 ThirdPartyScriptDetector::Technology::kGoogleAnalytics)) {
+    return ProtoType::GOOGLE_ANALYTICS;
+  } else if (technology_bits &
+             static_cast<uint64_t>(
+                 ThirdPartyScriptDetector::Technology::kGoogleFontApi)) {
+    return ProtoType::GOOGLE_FONT_API;
+  }
+  return ProtoType::NONE;
+}
+
 }  // namespace
 
 void AnimationFrameTimingMonitor::ReportPresentationTimeToTrace(
@@ -304,6 +329,9 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameTrace(
       TRACE_EVENT_END("devtools.timeline", track_id,
                       script->ExecutionStartTime());
     }
+    ThirdPartyScriptDetector::Technology third_party_technology =
+        ThirdPartyScriptDetector::From(*(script->Window()))
+            .Detect(script->GetSourceLocation().url);
     TRACE_EVENT_BEGIN(
         "devtools.timeline", "AnimationFrame::Script::Execute", track_id,
         script->ExecutionStartTime(), [&](perfetto::EventContext ctx) {
@@ -315,9 +343,13 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameTrace(
           data->set_pause_duration_ms(script->PauseDuration().InMilliseconds());
           data->set_class_like_name(script->ClassLikeName().Utf8());
           data->set_property_like_name(script->PropertyLikeName().Utf8());
+          data->set_source_location_url(script->GetSourceLocation().url.Utf8());
+          data->set_source_location_function_name(
+              script->GetSourceLocation().function_name.Utf8());
           data->set_source_location_char_position(
               script->GetSourceLocation().char_position);
           data->set_invoker_type(ToProtoEnum(script->GetInvokerType()));
+          data->set_third_party_technology(ToProtoEnum(third_party_technology));
         });
     TRACE_EVENT_END("devtools.timeline", track_id, script->EndTime());
   }

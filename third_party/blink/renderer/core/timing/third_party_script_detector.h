@@ -37,6 +37,9 @@ class ThirdPartyScriptDetector final
     kGoogleFontApi = 1 << 2,
     kLast = kGoogleFontApi
     // If adding new technologies, add above kLast and shift kLast accordingly.
+    // Keep in sync with `ThirdPartyTechnology` in
+    // base/tracing/protos/chrome_track_event.proto and `ToProtoEnum` in
+    // third_party/blink/renderer/core/frame/animation_frame_timing_monitor.cc
     // Max value allowed: 1 << 63. Limited by UKM bitfield.
   };
 
