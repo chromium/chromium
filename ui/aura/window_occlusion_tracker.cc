@@ -391,8 +391,10 @@ void WindowOcclusionTracker::MaybeComputeOcclusion() {
   }
 
   // Sanity check: Occlusion states in |tracked_windows_| should match those
-  // returned by Window::GetOcclusionState().
-  DCHECK(OcclusionStatesMatch(tracked_windows_));
+  // returned by Window::GetOcclusionState() if the default
+  // `WindowOcclusionChangeBuilder` is being used.
+  DCHECK(occlusion_change_builder_factory_ ||
+         OcclusionStatesMatch(tracked_windows_));
 }
 
 bool WindowOcclusionTracker::RecomputeOcclusionImpl(
