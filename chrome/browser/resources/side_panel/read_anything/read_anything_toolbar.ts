@@ -23,7 +23,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {Debouncer, PolymerElement, timeOut} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout, validatedFontName} from './common.js';
+import {minOverflowLengthToScroll, openMenu, ReadAloudSettingsChange, SPEECH_SETTINGS_CHANGE_UMA, spinnerDebounceTimeout, validatedFontName} from './common.js';
 import {getTemplate} from './read_anything_toolbar.html.js';
 import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
 
@@ -81,7 +81,7 @@ enum ReadAnythingSettingsChange {
   COUNT = 6,
 }
 
-const SETTINGS_CHANGE_UMA = 'Accessibility.ReadAnything.SettingsChange';
+const TEXT_SETTINGS_CHANGE_UMA = 'Accessibility.ReadAnything.SettingsChange';
 export const moreOptionsClass = '.more-options-icon';
 
 // Link toggle button constants.
@@ -672,6 +672,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private onHighlightClick_() {
+    chrome.metricsPrivate.recordEnumerationValue(
+        SPEECH_SETTINGS_CHANGE_UMA, ReadAloudSettingsChange.HIGHLIGHT_CHANGE,
+        ReadAloudSettingsChange.COUNT);
     if (this.isHighlightOn_) {
       chrome.readingMode.turnedHighlightOff();
     } else {
@@ -721,7 +724,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       emitEventName: string) {
     event.model.item.callback();
     chrome.metricsPrivate.recordEnumerationValue(
-        SETTINGS_CHANGE_UMA, logVal, ReadAnythingSettingsChange.COUNT);
+        TEXT_SETTINGS_CHANGE_UMA, logVal, ReadAnythingSettingsChange.COUNT);
     this.emitEvent_(emitEventName, {data: event.model.item.data});
     this.setCheckMarkForMenu_(menuClicked, event.model.index);
     this.closeMenus_();
@@ -729,7 +732,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private onFontClick_(event: DomRepeatEvent<string>) {
     chrome.metricsPrivate.recordEnumerationValue(
-        SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_CHANGE,
+        TEXT_SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_CHANGE,
         ReadAnythingSettingsChange.COUNT);
     const fontName = event.model.item;
     this.propagateFontChange_(fontName);
@@ -752,6 +755,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private onRateClick_(event: DomRepeatEvent<number>) {
+    chrome.metricsPrivate.recordEnumerationValue(
+        SPEECH_SETTINGS_CHANGE_UMA, ReadAloudSettingsChange.VOICE_SPEED_CHANGE,
+        ReadAloudSettingsChange.COUNT);
     chrome.readingMode.onSpeechRateChange(event.model.item);
     this.emitEvent_(RATE_EVENT, {
       rate: event.model.item,
@@ -811,7 +817,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     }
 
     chrome.metricsPrivate.recordEnumerationValue(
-        SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.LINKS_ENABLED_CHANGE,
+        TEXT_SETTINGS_CHANGE_UMA,
+        ReadAnythingSettingsChange.LINKS_ENABLED_CHANGE,
         ReadAnythingSettingsChange.COUNT);
 
     chrome.readingMode.onLinksEnabledToggled();
@@ -833,7 +840,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private updateFontSize_(increase: boolean) {
     chrome.metricsPrivate.recordEnumerationValue(
-        SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_SIZE_CHANGE,
+        TEXT_SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_SIZE_CHANGE,
         ReadAnythingSettingsChange.COUNT);
     chrome.readingMode.onFontSizeChanged(increase);
     this.emitEvent_(FONT_SIZE_EVENT);
@@ -842,7 +849,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private onFontResetClick_() {
     chrome.metricsPrivate.recordEnumerationValue(
-        SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_SIZE_CHANGE,
+        TEXT_SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_SIZE_CHANGE,
         ReadAnythingSettingsChange.COUNT);
     chrome.readingMode.onFontSizeReset();
     this.emitEvent_(FONT_SIZE_EVENT);

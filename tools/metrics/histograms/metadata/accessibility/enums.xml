@@ -1360,6 +1360,12 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Very Loose"/>
 </enum>
 
+<enum name="ReadAnythingReadAloudSettingsChange">
+  <int value="0" label="Voice speed change"/>
+  <int value="1" label="Voice name change"/>
+  <int value="2" label="Highlight change"/>
+</enum>
+
 <enum name="ReadAnythingScrollEvent">
   <int value="0" label="Side panel selected"/>
   <int value="1" label="Main panel selected"/>

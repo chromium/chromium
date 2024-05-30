@@ -2377,6 +2377,16 @@ even if they fit the naming pattern. -->
   <summary>Records when the Read Anything omnibox icon is shown.</summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.ReadAloud.SettingsChange"
+    enum="ReadAnythingReadAloudSettingsChange" expires_after="2025-02-28">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records when the user changes a read aloud speech setting in the Read
+    Anything panel.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.ReadAloud{Action}SessionCount"
     units="count" expires_after="2024-09-30">
   <owner>lwinston@google.com</owner>

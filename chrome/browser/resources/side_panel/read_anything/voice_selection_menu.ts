@@ -18,7 +18,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {openMenu} from './common.js';
+import {openMenu, ReadAloudSettingsChange, SPEECH_SETTINGS_CHANGE_UMA} from './common.js';
 import type {LanguageMenuElement} from './language_menu.js';
 import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, isNatural, VoicePackStatus} from './voice_language_util.js';
 import {getTemplate} from './voice_selection_menu.html.js';
@@ -172,6 +172,9 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   }
 
   private onVoiceSelectClick_(event: DomRepeatEvent<VoiceDropdownItem>) {
+    chrome.metricsPrivate.recordEnumerationValue(
+        SPEECH_SETTINGS_CHANGE_UMA, ReadAloudSettingsChange.VOICE_NAME_CHANGE,
+        ReadAloudSettingsChange.COUNT);
     const selectedVoice = event.model.item.voice;
 
     this.dispatchEvent(new CustomEvent('select-voice', {
