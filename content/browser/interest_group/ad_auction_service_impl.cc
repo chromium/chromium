@@ -1183,7 +1183,6 @@ void AdAuctionServiceImpl::OnGotAuctionDataAndKey(base::Uuid request_id) {
   std::memcpy(&buf.data()[start_offset], data.data(), data.size());
 
   std::move(state.callback).Run(std::move(buf), state.request_id, "");
-  ba_data_callbacks_.pop();
 
   // Request sizes only increase by factors of two so we only need to sample
   // the powers of two. The maximum of 1 GB size is much larger than it should
@@ -1194,6 +1193,7 @@ void AdAuctionServiceImpl::OnGotAuctionDataAndKey(base::Uuid request_id) {
   base::UmaHistogramTimes(/*name=*/"Ads.InterestGroup.BaDataConstructionTime",
                           /*sample=*/base::TimeTicks::Now() - state.start_time);
 
+  ba_data_callbacks_.pop();
   if (!ba_data_callbacks_.empty()) {
     LoadAuctionDataAndKeyForNextQueuedRequest();
   }
