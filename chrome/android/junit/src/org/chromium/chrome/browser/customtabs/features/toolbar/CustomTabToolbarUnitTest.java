@@ -67,7 +67,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
-import org.chromium.chrome.browser.customtabs.features.partialcustomtab.SimpleHandleStrategy;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -488,22 +487,6 @@ public class CustomTabToolbarUnitTest {
                 "Close button should be visible",
                 View.VISIBLE,
                 closeMinimizeLayout.getChildAt(0).getVisibility());
-    }
-
-    @Test
-    public void testHandleStrategy_ClickCloseListener() {
-        var strategy1 = new SimpleHandleStrategy(r -> {});
-        mToolbar.setHandleStrategy(strategy1);
-
-        View.OnClickListener listener = v -> {};
-        mToolbar.setCustomTabCloseClickHandler(listener);
-        assertNotNull(strategy1.getClickCloseHandlerForTesting());
-
-        var strategy2 = new SimpleHandleStrategy(r -> {});
-        // Another call to #setHandleStrategy which can come from device rotation.
-        // HandleStrategy should be initialized properly in response.
-        mToolbar.setHandleStrategy(strategy2);
-        assertNotNull(strategy2.getClickCloseHandlerForTesting());
     }
 
     @Test

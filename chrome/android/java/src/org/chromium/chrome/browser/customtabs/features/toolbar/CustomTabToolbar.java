@@ -197,17 +197,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
          *
          * @param handler The handler for closing the current tab.
          */
-        void setCloseClickHandler(OnClickListener handler);
-
-        /**
-         * Start the closing animation. This should be invoked before the close click handler
-         * set via {@link #setCloseClickHandler} to avoid seeing a blank content during
-         * the animation.
-         */
-        void startCloseAnimation();
-
-        /** Close the toolbar and the tab. */
-        void close();
+        void setCloseClickHandler(Runnable handler);
     }
 
     private HandleStrategy mHandleStrategy;
@@ -269,20 +259,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     @Override
     protected void setCustomTabCloseClickHandler(OnClickListener listener) {
-        mCloseClickListener = listener;
-        if (mHandleStrategy == null) {
-            // Normal CCT does not have HandleStrategy.
-            mCloseButton.setOnClickListener(listener);
-        } else {
-            setHandleStrategyCloseClickHandler(listener);
-        }
-    }
-
-    private void setHandleStrategyCloseClickHandler(OnClickListener listener) {
-        // Let the close button click initiate the closing animation first. The actual
-        // closing task will follow the animation.
-        mCloseButton.setOnClickListener(v -> mHandleStrategy.startCloseAnimation());
-        mHandleStrategy.setCloseClickHandler(listener);
+        mCloseButton.setOnClickListener(listener);
     }
 
     @Override
@@ -603,11 +580,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     public void setHandleStrategy(HandleStrategy strategy) {
         mHandleStrategy = strategy;
-        if (mCloseClickListener != null) setHandleStrategyCloseClickHandler(mCloseClickListener);
+        mHandleStrategy.setCloseClickHandler(mCloseButton::callOnClick);
     }
 
     /**
      * Sets the close button position for this toolbar.
+     *
      * @param closeButtonPosition The {@link CloseButtonPosition}.
      */
     public void setCloseButtonPosition(@CloseButtonPosition int closeButtonPosition) {

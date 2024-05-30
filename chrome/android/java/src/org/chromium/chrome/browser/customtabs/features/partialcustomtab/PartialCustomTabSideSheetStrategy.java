@@ -150,18 +150,9 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
         super.onToolbarInitialized(coordinatorView, toolbar, toolbarCornerRadius);
 
-        CustomTabToolbar.HandleStrategy handleStrategy =
-                mHandleStrategyFactory.create(
-                        getStrategyType(),
-                        mActivity,
-                        this::isFullHeight,
-                        () -> 0,
-                        null,
-                        this::handleCloseAnimation);
         if (mShowMaximizeButton) {
             toolbar.initSideSheetMaximizeButton(mIsMaximized, () -> toggleMaximize(true));
         }
-        toolbar.setHandleStrategy(handleStrategy);
         toolbar.setMinimizeButtonEnabled(false);
         updateDragBarVisibility(/* dragHandlebarVisibility= */ View.GONE);
     }
