@@ -21,8 +21,14 @@
   }
 
   .category-label {
+    /* TODO(b/340393256): Use a var(..) from cros */
     font-size: 11px;
     line-height: 16px;
+  }
+
+  .delete-icon {
+    /* TODO(b/340393256): Make this a calculated value */ 
+    margin-top: 26px;
   }
 </style>
 
@@ -51,5 +57,9 @@
      label="Comment"
      type="text" class="entry-input"
      on-change="saveComment_"></cr-input>
+  <cr-icon-button class="delete-icon"
+     iron-icon="cr:close"
+     on-click="deleteEntry_"
+     title="DeleteEntry"></cr-icon-button>
 </div>
 

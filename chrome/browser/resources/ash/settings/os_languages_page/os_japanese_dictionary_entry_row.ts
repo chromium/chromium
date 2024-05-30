@@ -69,6 +69,16 @@ class OsJapaneseDictionaryEntryRowElement extends PolymerElement {
     this.saveEntryToDictionary_();
   }
 
+  private async deleteEntry_(): Promise<void> {
+    const dictionarySaved =
+        (await UserDataServiceProvider.getRemote()
+             .deleteJapaneseDictionaryEntry(this.dictId, this.index))
+            .status.success;
+    if (dictionarySaved) {
+      this.dispatchSavedEvent_();
+    }
+  }
+
   private async saveEntryToDictionary_(): Promise<void> {
     if (this.entry.key === '' || this.entry.value === '') {
       return;
@@ -100,9 +110,13 @@ class OsJapaneseDictionaryEntryRowElement extends PolymerElement {
     }
 
     if (dictionarySaved) {
-      this.dispatchEvent(
-          new CustomEvent('dictionary-saved', {bubbles: true, composed: true}));
+      this.dispatchSavedEvent_();
     }
+  }
+
+  private dispatchSavedEvent_(): void {
+    this.dispatchEvent(
+        new CustomEvent('dictionary-saved', {bubbles: true, composed: true}));
   }
 }
 
