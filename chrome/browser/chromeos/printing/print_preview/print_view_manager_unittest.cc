@@ -54,7 +54,7 @@ TEST_F(PrintViewManagerCrosTest, UseCrosViewManager) {
                    ui::DomCode::US_P, ui::VKEY_P, /*control=*/true,
                    /*shift=*/false, /*alt=*/false, /*command=*/false);
   ASSERT_TRUE(PrintViewManagerCros::FromWebContents(web_contents));
-  ASSERT_FALSE(::printing::PrintViewManager::FromWebContents(web_contents));
+  ASSERT_FALSE(printing::PrintViewManager::FromWebContents(web_contents));
 }
 
 TEST_F(PrintViewManagerCrosTest, UseBrowserViewManager) {
@@ -71,7 +71,7 @@ TEST_F(PrintViewManagerCrosTest, UseBrowserViewManager) {
                    ui::DomCode::US_P, ui::VKEY_P, /*control=*/true,
                    /*shift=*/false, /*alt=*/false, /*command=*/false);
   ASSERT_FALSE(PrintViewManagerCros::FromWebContents(web_contents));
-  ASSERT_TRUE(::printing::PrintViewManager::FromWebContents(web_contents));
+  ASSERT_TRUE(printing::PrintViewManager::FromWebContents(web_contents));
 }
 
 TEST_F(PrintViewManagerCrosTest, PrintPreviewNow) {

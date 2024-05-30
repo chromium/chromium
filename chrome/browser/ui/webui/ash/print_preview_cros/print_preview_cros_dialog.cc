@@ -65,8 +65,6 @@ void PrintPreviewCrosDialog::OnDialogClosed(const std::string& json_retval) {
   for (auto& observer : observer_list_) {
     observer.OnDialogClosed(dialog_id_);
   }
-
-  SystemWebDialogDelegate::OnDialogClosed(json_retval);
 }
 
 gfx::NativeWindow PrintPreviewCrosDialog::GetDialogWindowForTesting() {

@@ -39,11 +39,6 @@ class FakePrintPreviewBrowserMojoClient : public mojom::PrintPreviewCrosClient {
     std::move(callback).Run(/*success=*/true);
   }
 
-  void HandleDialogClosed(const base::UnguessableToken& token,
-                          HandleDialogClosedCallback callback) override {
-    std::move(callback).Run(/*success=*/true);
-  }
-
   mojo::Receiver<mojom::PrintPreviewCrosClient> receiver_{this};
   mojo::Remote<mojom::PrintPreviewCrosDelegate> remote_;
 };
@@ -112,16 +107,11 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewLacrosBrowserTest, ApiCalls) {
   // No crashes.
   CallPrintPreviewBrowserDelegateMethods(mojo_client);
 
-  base::UnguessableToken token = base::UnguessableToken::Create();
   base::test::TestFuture<bool> future2;
   mojo_client.GeneratePrintPreview(
-      token, chromeos::CreatePrintSettings(/*preview_id=*/0),
-      future2.GetCallback());
+      base::UnguessableToken::Create(),
+      chromeos::CreatePrintSettings(/*preview_id=*/0), future2.GetCallback());
   EXPECT_TRUE(future2.Wait());
-
-  base::test::TestFuture<bool> future3;
-  mojo_client.HandleDialogClosed(token, future3.GetCallback());
-  EXPECT_TRUE(future3.Wait());
 }
 
 }  // namespace

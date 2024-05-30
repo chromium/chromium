@@ -27,8 +27,7 @@ namespace ash::printing {
 // ash-chrome via delegate.
 class PrintPreviewWebcontentsAdapterAsh
     : public PrintPreviewDelegate,
-      public crosapi::mojom::PrintPreviewCrosDelegate,
-      public PrintPreviewDialogControllerCros::DialogControllerObserver {
+      public crosapi::mojom::PrintPreviewCrosDelegate {
  public:
   PrintPreviewWebcontentsAdapterAsh();
   PrintPreviewWebcontentsAdapterAsh(const PrintPreviewWebcontentsAdapterAsh&) =
@@ -57,11 +56,6 @@ class PrintPreviewWebcontentsAdapterAsh
   void StartGetPreview(const base::UnguessableToken& token,
                        crosapi::mojom::PrintSettingsPtr settings,
                        base::OnceCallback<void(bool)> callback) override;
-
-  // PrintPreviewDialogControllerCros::DialogControllerObserver:
-  void OnDialogClosed(const base::UnguessableToken& token) override;
-
-  void OnDialogClosedCallback(bool success);
 
   // Ash-chrome clients do not require a mojom endpoint, instead can directly
   // access the client.

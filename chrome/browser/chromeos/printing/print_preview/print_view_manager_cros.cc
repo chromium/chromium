@@ -95,16 +95,6 @@ bool PrintViewManagerCros::PrintPreviewNow(content::RenderFrameHost* rfh,
 
 void PrintViewManagerCros::PrintPreviewDone() {
   PrintPreviewWebcontentsManager::Get()->PrintPreviewDone(token_);
-  HandlePrintPreviewRemoved();
-}
-
-void PrintViewManagerCros::HandlePrintPreviewRemoved() {
-  CHECK(render_frame_host_);
-
-  if (render_frame_host_->IsRenderFrameLive() &&
-      IsPrintRenderFrameConnected(render_frame_host_)) {
-    GetPrintRenderFrame(render_frame_host_)->OnPrintPreviewDialogClosed();
-  }
   render_frame_host_ = nullptr;
 }
 
