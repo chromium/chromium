@@ -200,15 +200,17 @@ void V4L2StatelessVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-  if (!CreateDecoder(config.profile(), config.color_space_info())) {
+  aspect_ratio_ = config.aspect_ratio();
+  profile_ = config.profile();
+  color_space_info_ = config.color_space_info();
+
+  if (!CreateDecoder()) {
     std::move(init_cb).Run(
         DecoderStatus(DecoderStatus::Codes::kNotInitialized)
             .AddCause(
                 V4L2Status(V4L2Status::Codes::kNoDriverSupportForFourcc)));
     return;
   }
-
-  aspect_ratio_ = config.aspect_ratio();
 
   resolution_changing_ = false;
 
@@ -219,6 +221,7 @@ void V4L2StatelessVideoDecoder::Initialize(const VideoDecoderConfig& config,
 void V4L2StatelessVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                        DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+  CHECK(decoder_);
   DVLOGF(4) << buffer->AsHumanReadableString(/*verbose=*/false);
 
   const int32_t bitstream_id =
@@ -249,8 +252,11 @@ void V4L2StatelessVideoDecoder::Reset(base::OnceClosure reset_cb) {
             FROM_HERE, std::move(reset_cb));
       };
 
+  // Order is important. Reset() the |decoder_| and ClearPendingRequests() so
+  // that the reference frames are freed. This allows for the buffers allocated
+  // by the driver to be returned. Doing so also prepares for the resolution
+  // change to continue if it was interrupted.
   decoder_->Reset();
-
   ClearPendingRequests(DecoderStatus::Codes::kAborted);
 
   // If a reset occurs during a resolution change, followed by a reset before
@@ -262,6 +268,12 @@ void V4L2StatelessVideoDecoder::Reset(base::OnceClosure reset_cb) {
   if (resolution_changing_) {
     ApplyResolutionChange();
   }
+
+  // It isn't enough to just decoder_->Reset() some delegates. The backing
+  // parser may not be able to recover from an error. This is done after
+  // the resolution change so that all servicing of the |request_queue_| has
+  // been completed.
+  CreateDecoder();
 
   // If the reset happened in the middle of a flush the flush will not be
   // completed.
@@ -603,40 +615,40 @@ void V4L2StatelessVideoDecoder::ServiceDisplayQueue() {
   }
 }
 
-bool V4L2StatelessVideoDecoder::CreateDecoder(VideoCodecProfile profile,
-                                              VideoColorSpace color_space) {
+bool V4L2StatelessVideoDecoder::CreateDecoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(3);
 
-  switch (VideoCodecProfileToVideoCodec(profile)) {
+  switch (VideoCodecProfileToVideoCodec(profile_)) {
 #if BUILDFLAG(IS_CHROMEOS)
     case VideoCodec::kAV1:
       decoder_ = std::make_unique<AV1Decoder>(
-          std::make_unique<AV1Delegate>(this), profile, color_space);
+          std::make_unique<AV1Delegate>(this), profile_, color_space_info_);
       break;
 #endif
     case VideoCodec::kH264:
       decoder_ = std::make_unique<H264Decoder>(
-          std::make_unique<H264Delegate>(this), profile, color_space);
+          std::make_unique<H264Delegate>(this), profile_, color_space_info_);
       break;
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     case VideoCodec::kHEVC:
       decoder_ = std::make_unique<H265Decoder>(
-          std::make_unique<H265Delegate>(this), profile, color_space);
+          std::make_unique<H265Delegate>(this), profile_, color_space_info_);
       break;
 #endif
     case VideoCodec::kVP8:
       decoder_ = std::make_unique<VP8Decoder>(
-          std::make_unique<VP8Delegate>(this), color_space);
+          std::make_unique<VP8Delegate>(this), color_space_info_);
       break;
     case VideoCodec::kVP9:
       decoder_ = std::make_unique<VP9Decoder>(
           std::make_unique<VP9Delegate>(
               this, device_->IsCompressedVP9HeaderSupported()),
-          profile, color_space);
+          profile_, color_space_info_);
       break;
     default:
-      LogError(media_log_, GetCodecName(VideoCodecProfileToVideoCodec(profile)),
+      LogError(media_log_,
+               GetCodecName(VideoCodecProfileToVideoCodec(profile_)),
                " not supported.");
       return false;
   }
@@ -775,7 +787,7 @@ void V4L2StatelessVideoDecoder::ClearPendingRequests(DecoderStatus status) {
 void V4L2StatelessVideoDecoder::ServiceDecodeRequestQueue() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(5);
-  DCHECK(decoder_);
+  CHECK(decoder_);
 
   // Prevent further processing of encoded chunks until the resolution change
   // event is done.
