@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/public/mojom/ai/ai_text_session.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -15,20 +16,11 @@ const char kExceptionMessageExecutionContextInvalid[] =
 const char kExceptionMessageServiceUnavailable[] =
     "Model execution service is not available.";
 
-const char kExceptionMessageUnknown[] = "An unknown error occurred.";
-const char kExceptionMessageInvalidRequest[] = "The request was invalid.";
-const char kExceptionMessageRequestThrottled[] = "The request was throttled.";
 const char kExceptionMessagePermissionDenied[] =
     "A user permission error occurred, such as not signed-in or not "
     "allowed to execute model.";
-const char kExceptionMessageGenericError[] =
-    "Some other generic failure occurred.";
 const char kExceptionMessageRetryableError[] =
     "A retryable error occurred in the server.";
-const char kExceptionMessageNonRetryableError[] =
-    "A non-retryable error occurred in the server.";
-const char kExceptionMessageUnsupportedLanguage[] =
-    "The language was unsupported.";
 const char kExceptionMessageFiltered[] =
     "The execution yielded a bad response.";
 const char kExceptionMessageDisabled[] = "The response was disabled.";
@@ -53,41 +45,47 @@ void RejectPromiseWithInternalError(ScriptPromiseResolverBase* resolver) {
       DOMException::GetErrorName(DOMExceptionCode::kOperationError)));
 }
 
+namespace {
+// Create an UnknownError exception, include `error` in the exception
+// message. This is intended for handling values of
+// `ModelStreamingResponseStatus` that we do not expect to ever see when
+// using an on-device model, e.g. errors related to servers.
+DOMException* CreateUnknown(const char* error) {
+  return DOMException::Create(
+      String("An unknown error occurred: ") + error,
+      DOMException::GetErrorName(DOMExceptionCode::kUnknownError));
+}
+}  // namespace
+
 DOMException* ConvertModelStreamingResponseErrorToDOMException(
     ModelStreamingResponseStatus error) {
   switch (error) {
     case ModelStreamingResponseStatus::kErrorUnknown:
-      return DOMException::Create(
-          kExceptionMessageUnknown,
-          DOMException::GetErrorName(DOMExceptionCode::kUnknownError));
+      base::debug::DumpWithoutCrashing();
+      return CreateUnknown("kErrorUnknown");
     case ModelStreamingResponseStatus::kErrorInvalidRequest:
-      return DOMException::Create(
-          kExceptionMessageInvalidRequest,
-          DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError));
+      base::debug::DumpWithoutCrashing();
+      return CreateUnknown("kErrorInvalidRequest");
     case ModelStreamingResponseStatus::kErrorRequestThrottled:
-      return DOMException::Create(
-          kExceptionMessageRequestThrottled,
-          DOMException::GetErrorName(DOMExceptionCode::kQuotaExceededError));
+      base::debug::DumpWithoutCrashing();
+      return CreateUnknown("kErrorRequestThrottled");
     case ModelStreamingResponseStatus::kErrorPermissionDenied:
       return DOMException::Create(
           kExceptionMessagePermissionDenied,
           DOMException::GetErrorName(DOMExceptionCode::kNotAllowedError));
     case ModelStreamingResponseStatus::kErrorGenericFailure:
       return DOMException::Create(
-          kExceptionMessageGenericError,
-          DOMException::GetErrorName(DOMExceptionCode::kUnknownError));
-    case ModelStreamingResponseStatus::kErrorRetryableError:
-      return DOMException::Create(
           kExceptionMessageRetryableError,
           DOMException::GetErrorName(DOMExceptionCode::kNotReadableError));
+    case ModelStreamingResponseStatus::kErrorRetryableError:
+      base::debug::DumpWithoutCrashing();
+      return CreateUnknown("kErrorRetryableError");
     case ModelStreamingResponseStatus::kErrorNonRetryableError:
-      return DOMException::Create(
-          kExceptionMessageNonRetryableError,
-          DOMException::GetErrorName(DOMExceptionCode::kNotReadableError));
+      base::debug::DumpWithoutCrashing();
+      return CreateUnknown("kErrorNonRetryableError");
     case ModelStreamingResponseStatus::kErrorUnsupportedLanguage:
-      return DOMException::Create(
-          kExceptionMessageUnsupportedLanguage,
-          DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError));
+      base::debug::DumpWithoutCrashing();
+      return CreateUnknown("kErrorUnsupportedLanguage");
     case ModelStreamingResponseStatus::kErrorFiltered:
       return DOMException::Create(
           kExceptionMessageFiltered,
