@@ -9,7 +9,9 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/script/import_map_error.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/parsed_specifier.h"
@@ -159,7 +161,7 @@ void SpecifierMapToStringForTesting(
 // the console |logger|.
 ImportMap* ImportMap::Parse(const String& input,
                             const KURL& base_url,
-                            ConsoleLogger& logger,
+                            ExecutionContext& context,
                             std::optional<ImportMapError>* error_to_rethrow) {
   DCHECK(error_to_rethrow);
 
@@ -205,7 +207,7 @@ ImportMap* ImportMap::Parse(const String& input,
     // and normalizing a specifier map given parsed["imports"] and
     // baseURL.</spec>
     sorted_and_normalized_imports =
-        SortAndNormalizeSpecifierMap(imports, base_url, logger);
+        SortAndNormalizeSpecifierMap(imports, base_url, context);
   }
 
   // <spec step="5">Let sortedAndNormalizedScopes be an empty map.</spec>
@@ -263,7 +265,7 @@ ImportMap* ImportMap::Parse(const String& input,
       if (!prefix_url.IsValid()) {
         // <spec label="sort-and-normalize-scopes" step="2.3.1">Report a warning
         // to the console that the scope prefix URL was not parseable.</spec>
-        logger.AddConsoleMessage(
+        context.AddConsoleMessage(
             mojom::ConsoleMessageSource::kOther,
             mojom::ConsoleMessageLevel::kWarning,
             "Ignored scope \"" + entry.first + "\": not parsable as a URL.");
@@ -281,7 +283,7 @@ ImportMap* ImportMap::Parse(const String& input,
       // baseURL.</spec>
       sorted_and_normalized_scopes.push_back(std::make_pair(
           prefix_url.GetString(),
-          SortAndNormalizeSpecifierMap(specifier_map, base_url, logger)));
+          SortAndNormalizeSpecifierMap(specifier_map, base_url, context)));
     }
     // <spec label="sort-and-normalize-scopes" step="3">Return the result of
     // sorting normalized, with an entry a being less than an entry b if b’s key
@@ -298,6 +300,7 @@ ImportMap* ImportMap::Parse(const String& input,
   // <spec step="8">If parsed["integrity"] exists, then:</spec>
   if (RuntimeEnabledFeatures::ImportMapIntegrityEnabled() &&
       parsed_map->Get("integrity")) {
+    context.CountUse(WebFeature::kImportMapIntegrity);
     // <spec step="8.1">If parsed["integrity"] is not a map, then throw a
     // TypeError indicating that the "scopes" top-level key must be a JSON
     // object.</spec>
@@ -336,7 +339,7 @@ ImportMap* ImportMap::Parse(const String& input,
       // If normalizedSpecifierKey is null, then continue.
       if (resolved_url.IsNull()) {
         AddIgnoredValueMessage(
-            logger, entry.first,
+            context, entry.first,
             "Integrity key is not a valid absolute URL or relative URL "
             "starting with '/', './', or '../'");
         continue;
@@ -345,7 +348,7 @@ ImportMap* ImportMap::Parse(const String& input,
       // <spec label="normalize-a-module-integrity-map" step="2.3">
       // If value is not a string, then continue.</spec>
       if (entry.second->GetType() != JSONValue::ValueType::kTypeString) {
-        AddIgnoredValueMessage(logger, entry.first,
+        AddIgnoredValueMessage(context, entry.first,
                                "Integrity value is not a string.");
         continue;
       }
@@ -357,7 +360,7 @@ ImportMap* ImportMap::Parse(const String& input,
       if (integrity->GetString(entry.first, &value_string)) {
         normalized_integrity_map.Set(resolved_url, value_string);
       } else {
-        AddIgnoredValueMessage(logger, entry.first,
+        AddIgnoredValueMessage(context, entry.first,
                                "Internal error in GetString().");
       }
     }

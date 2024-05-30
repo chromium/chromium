@@ -18,6 +18,7 @@
 namespace blink {
 
 class ConsoleLogger;
+class ExecutionContext;
 class ImportMapError;
 class JSONObject;
 class ParsedSpecifier;
@@ -28,7 +29,7 @@ class CORE_EXPORT ImportMap final : public GarbageCollected<ImportMap> {
  public:
   static ImportMap* Parse(const String& text,
                           const KURL& base_url,
-                          ConsoleLogger& logger,
+                          ExecutionContext& context,
                           std::optional<ImportMapError>* error_to_rethrow);
 
   // <spec href="https://html.spec.whatwg.org/C#module-specifier-map">A
