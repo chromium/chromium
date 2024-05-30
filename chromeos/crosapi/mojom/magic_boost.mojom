@@ -1,0 +1,24 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// This API is used to forward requests to conduct Magic Boost opt-in flow
+// from Lacros (Client) to the actual implementation in Ash-Chrome.
+[Stable, Uuid="7045789d-b1df-422c-a9c2-39990e977b2b"]
+interface MagicBoostController {
+  // Specifies which action to complete after the opt-in flow has been
+  // completed, transitioning from the opt-in experience to the main feature.
+  [Stable, Extensible]
+  enum TransitionAction {
+    // Default option. Not do anything.
+    [Default] kDoNothing = 0,
+
+    // Show the editor panel after completing the opt-in flow.
+    kShowEditorPanel,
+  };
+
+  // Shows the disclaimer UI in the given `display_id`.
+  ShowDisclaimerUi@0(int64 display_id, TransitionAction action);
+};

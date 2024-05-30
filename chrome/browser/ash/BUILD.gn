@@ -3776,6 +3776,7 @@ source_set("ash") {
     "//chrome/browser/ash/login/oobe_quick_start:oobe_quick_start",
     "//chrome/browser/ash/login/oobe_quick_start:oobe_quick_start_pref_names",
     "//chrome/browser/ash/login/oobe_quick_start/connectivity:connectivity",
+    "//chrome/browser/ash/magic_boost:magic_boost_ash",
     "//chrome/browser/ash/mahi:mahi_ash",
     "//chrome/browser/ash/nearby:quick_start_connectivity_service",
     "//chrome/browser/ash/power/ml/smart_dim",

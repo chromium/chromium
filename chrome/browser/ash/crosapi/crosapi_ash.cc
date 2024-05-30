@@ -123,6 +123,7 @@
 #include "chrome/browser/ash/crosapi/web_page_info_ash.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
 #include "chrome/browser/ash/printing/print_preview/print_preview_webcontents_adapter_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -166,6 +167,7 @@
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
+#include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
@@ -294,6 +296,8 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       login_ash_(std::make_unique<LoginAsh>()),
       login_screen_storage_ash_(std::make_unique<LoginScreenStorageAsh>()),
       login_state_ash_(std::make_unique<LoginStateAsh>()),
+      magic_boost_controller_ash_(
+          std::make_unique<ash::MagicBoostControllerAsh>()),
       mahi_browser_delegate_ash_(
           std::make_unique<ash::MahiBrowserDelegateAsh>()),
       media_ui_ash_(std::make_unique<MediaUIAsh>()),
@@ -819,6 +823,11 @@ void CrosapiAsh::BindMachineLearningService(
 void CrosapiAsh::BindMahiBrowserDelegate(
     mojo::PendingReceiver<mojom::MahiBrowserDelegate> receiver) {
   mahi_browser_delegate_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindMagicBoostController(
+    mojo::PendingReceiver<mojom::MagicBoostController> receiver) {
+  magic_boost_controller_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindMediaUI(mojo::PendingReceiver<mojom::MediaUI> receiver) {

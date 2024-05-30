@@ -28,6 +28,7 @@
 #include "chromeos/crosapi/mojom/automation.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/device_attributes.mojom.h"
+#include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
 #include "chromeos/crosapi/mojom/nonclosable_app_toast_service.mojom.h"
 #include "chromeos/crosapi/mojom/one_drive_notification_service.mojom.h"
@@ -218,6 +219,10 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   void BindMachineLearningService(
       mojo::PendingReceiver<
           chromeos::machine_learning::mojom::MachineLearningService> receiver);
+
+  // This may be called on any thread.
+  void BindMagicBoostController(
+      mojo::PendingReceiver<crosapi::mojom::MagicBoostController> receiver);
 
   // Binds the mahi browser delegate to the mahi browser client.
   void BindMahiBrowserDelegate(

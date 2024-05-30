@@ -35,6 +35,7 @@ include_rules = [
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/input_method",
   "+chrome/browser/ash/login",
+  "+chrome/browser/ash/magic_boost",
   "+chrome/browser/ash/mahi",
   "+chrome/browser/ash/net",
   "+chrome/browser/ash/network_change_manager_client.h",

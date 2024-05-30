@@ -4440,6 +4440,7 @@ if (!is_android) {
         "../browser/ash/crosapi/browser_data_back_migrator_browsertest.cc",
         "../browser/ash/crosapi/browser_data_migrator_browsertest.cc",
         "../browser/ash/crosapi/file_change_service_bridge_ash_browsertest.cc",
+        "../browser/ash/crosapi/magic_boost_ash_browsertest.cc",
         "../browser/ash/crosapi/mahi_ash_browsertest.cc",
         "../browser/ash/crosapi/media_ui_ash_browsertest.cc",
         "../browser/ash/crosapi/network_settings_service_ash_browsertest.cc",
@@ -4453,6 +4454,7 @@ if (!is_android) {
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",
       ]
       deps += [
+        "//chrome/browser/ash/magic_boost:magic_boost_ash",
         "//chrome/browser/ash/mahi:mahi_ash",
         "//chromeos/printing:test_support",
         "//components/global_media_controls:test_support",
@@ -5721,6 +5723,7 @@ if (is_chromeos_lacros) {
       "../browser/lacros/login_screen_storage_lacros_browsertest.cc",
       "../browser/lacros/login_state_lacros_browsertest.cc",
       "../browser/lacros/machine_learning_service_lacros_browsertest.cc",
+      "../browser/lacros/magic_boost_lacros_browsertest.cc",
       "../browser/lacros/mahi_lacros_browsertest.cc",
       "../browser/lacros/media_session_lacros_browsertest.cc",
       "../browser/lacros/message_center_lacros_browsertest.cc",

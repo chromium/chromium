@@ -86,6 +86,7 @@
 #include "chromeos/crosapi/mojom/login.mojom.h"
 #include "chromeos/crosapi/mojom/login_screen_storage.mojom.h"
 #include "chromeos/crosapi/mojom/login_state.mojom.h"
+#include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "chromeos/crosapi/mojom/media_ui.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
@@ -501,6 +502,10 @@ LacrosService::LacrosService()
       &crosapi::mojom::Crosapi::BindMachineLearningService,
       Crosapi::MethodMinVersions::kBindMachineLearningServiceMinVersion>();
   ConstructRemote<
+      crosapi::mojom::MagicBoostController,
+      &crosapi::mojom::Crosapi::BindMagicBoostController,
+      Crosapi::MethodMinVersions::kBindMagicBoostControllerMinVersion>();
+  ConstructRemote<
       crosapi::mojom::MahiBrowserDelegate,
       &crosapi::mojom::Crosapi::BindMahiBrowserDelegate,
       Crosapi::MethodMinVersions::kBindMahiBrowserDelegateMinVersion>();
@@ -804,6 +809,16 @@ void LacrosService::BindMachineLearningService(
           chromeos::machine_learning::mojom::MachineLearningService>,
       &crosapi::mojom::Crosapi::BindMachineLearningService>(
       std::move(receiver));
+}
+
+void LacrosService::BindMagicBoostController(
+    mojo::PendingReceiver<crosapi::mojom::MagicBoostController>
+        pending_receiver) {
+  DCHECK(IsSupported<crosapi::mojom::MagicBoostController>());
+  BindPendingReceiverOrRemote<
+      mojo::PendingReceiver<crosapi::mojom::MagicBoostController>,
+      &crosapi::mojom::Crosapi::BindMagicBoostController>(
+      std::move(pending_receiver));
 }
 
 void LacrosService::BindMahiBrowserDelegate(

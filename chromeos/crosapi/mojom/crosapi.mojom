@@ -77,6 +77,7 @@ import "chromeos/crosapi/mojom/login_state.mojom";
 import "chromeos/crosapi/mojom/policy_namespace.mojom";
 import "chromeos/crosapi/mojom/policy_service.mojom";
 import "chromeos/crosapi/mojom/message_center.mojom";
+import "chromeos/crosapi/mojom/magic_boost.mojom";
 import "chromeos/crosapi/mojom/mahi.mojom";
 import "chromeos/crosapi/mojom/metrics.mojom";
 import "chromeos/crosapi/mojom/metrics_reporting.mojom";
@@ -168,8 +169,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 142
-// Next method id: 144
+// Next version: 143
+// Next method id: 145
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -546,6 +547,12 @@ interface Crosapi {
   // Added in M90.
   [MinVersion=17] BindMachineLearningService@22(
       pending_receiver<chromeos.machine_learning.mojom.MachineLearningService> receiver);
+
+  // MagicBoostController is a service to allow lacros to open the magic boost
+  // opt-in flow.
+  // Added in M127.
+  [MinVersion=142] BindMagicBoostController@144(
+      pending_receiver<MagicBoostController> receiver);
 
   // Binds the mahi browser delegate to the mahi browser client.
   // Added in M123.
