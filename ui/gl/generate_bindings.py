@@ -2844,6 +2844,11 @@ EGL_FUNCTIONS = [
                  'extensions': ['EGL_ANDROID_blob_cache'] }],
   'arguments':
       'EGLDisplay dpy, EGLSetBlobFuncANDROID set, EGLGetBlobFuncANDROID get' },
+{ 'return_type': 'void',
+  'versions': [{ 'name': 'eglSetValidationEnabledANGLE',
+                 'extensions': ['EGL_ANGLE_no_error'] }],
+  'arguments':
+      'EGLBoolean validationState' },
 { 'return_type': 'EGLBoolean',
   'versions': [{ 'name': 'eglStreamAttribKHR',
                  'extensions': ['EGL_KHR_stream'] }],
@@ -2918,6 +2923,7 @@ EGL_FUNCTIONS = [
 # EGL client extensions that may not add a function but are still queried.
 EGL_CLIENT_EXTENSIONS_EXTRA = [
   'EGL_ANGLE_display_power_preference',
+  'EGL_ANGLE_no_error',
   'EGL_ANGLE_platform_angle',
   'EGL_ANGLE_platform_angle_d3d',
   'EGL_ANGLE_platform_angle_device_id',

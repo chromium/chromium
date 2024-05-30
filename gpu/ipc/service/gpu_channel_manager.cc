@@ -914,10 +914,6 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
       gpu_driver_bug_workarounds_.use_virtualized_gl_contexts;
 
   bool enable_angle_validation = features::IsANGLEValidationEnabled();
-#if DCHECK_IS_ON()
-  // Force validation on for all debug builds and testing
-  enable_angle_validation = true;
-#endif
 
   scoped_refptr<gl::GLShareGroup> share_group;
   bool use_passthrough_decoder = use_passthrough_cmd_decoder();

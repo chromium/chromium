@@ -672,6 +672,12 @@ MockEGLInterface::Mock_eglSetBlobCacheFuncsANDROID(EGLDisplay dpy,
   interface_->SetBlobCacheFuncsANDROID(dpy, set, get);
 }
 
+void GL_BINDING_CALL MockEGLInterface::Mock_eglSetValidationEnabledANGLE(
+    EGLBoolean validationState) {
+  MakeEglMockFunctionUnique("eglSetValidationEnabledANGLE");
+  interface_->SetValidationEnabledANGLE(validationState);
+}
+
 EGLBoolean GL_BINDING_CALL
 MockEGLInterface::Mock_eglStreamAttribKHR(EGLDisplay dpy,
                                           EGLStreamKHR stream,
@@ -992,6 +998,10 @@ MockEGLInterface::GetGLProcAddress(const char* name) {
   if (strcmp(name, "eglSetBlobCacheFuncsANDROID") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglSetBlobCacheFuncsANDROID);
+  if (strcmp(name, "eglSetValidationEnabledANGLE") == 0) {
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_eglSetValidationEnabledANGLE);
+  }
   if (strcmp(name, "eglStreamAttribKHR") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglStreamAttribKHR);
   if (strcmp(name, "eglStreamConsumerAcquireKHR") == 0)
