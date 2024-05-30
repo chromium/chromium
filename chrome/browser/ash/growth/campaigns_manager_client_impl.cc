@@ -38,6 +38,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trials.h"
 
 namespace {
@@ -106,6 +107,10 @@ const std::string& CampaignsManagerClientImpl::GetUserLocale() const {
   // resolved using `l10n_util::CheckAndResolveLocale`.
   return GetProfile()->GetPrefs()->GetString(
       language::prefs::kApplicationLocale);
+}
+
+const std::string CampaignsManagerClientImpl::GetCountryCode() const {
+  return g_browser_process->variations_service()->GetStoredPermanentCountry();
 }
 
 const base::Version& CampaignsManagerClientImpl::GetDemoModeAppVersion() const {

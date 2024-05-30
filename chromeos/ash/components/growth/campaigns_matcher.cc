@@ -388,6 +388,18 @@ bool CampaignsMatcher::MatchDeviceTargeting(
     return false;
   }
 
+  const auto* included_countries = targeting.GetIncludedCountries();
+  if (included_countries &&
+      !Contains(*included_countries, client_->GetCountryCode())) {
+    return false;
+  }
+
+  const auto* excluded_countries = targeting.GetExcludedCountries();
+  if (excluded_countries &&
+      Contains(*excluded_countries, client_->GetCountryCode())) {
+    return false;
+  }
+
   return MatchMilestone(targeting) && MatchMilestoneVersion(targeting);
 }
 

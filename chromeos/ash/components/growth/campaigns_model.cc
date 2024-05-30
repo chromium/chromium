@@ -52,6 +52,8 @@ inline constexpr char kMaxDemoModeAppVersion[] = "appVersion.max";
 inline constexpr char kDeviceTargeting[] = "device";
 inline constexpr char kApplicationLocales[] = "locales";
 inline constexpr char kUserLocales[] = "userLocales";
+inline constexpr char kIncludedCountries[] = "includedCountries";
+inline constexpr char kExcludedCountries[] = "excludedCountries";
 inline constexpr char kMinMilestone[] = "milestone.min";
 inline constexpr char kMaxMilestone[] = "milestone.max";
 inline constexpr char kMinVersion[] = "version.min";
@@ -334,6 +336,14 @@ const base::Value::List* DeviceTargeting::GetLocales() const {
 
 const base::Value::List* DeviceTargeting::GetUserLocales() const {
   return GetListCriteria(kUserLocales);
+}
+
+const base::Value::List* DeviceTargeting::GetIncludedCountries() const {
+  return GetListCriteria(kIncludedCountries);
+}
+
+const base::Value::List* DeviceTargeting::GetExcludedCountries() const {
+  return GetListCriteria(kExcludedCountries);
 }
 
 const std::optional<int> DeviceTargeting::GetMinMilestone() const {

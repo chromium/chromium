@@ -285,12 +285,15 @@ class CampaignsManagerTest : public testing::Test {
   }
 
   void MockLocales(const std::string& user_locale,
-                   const std::string& application_locale) {
+                   const std::string& application_locale,
+                   const std::string& country) {
     EXPECT_CALL(mock_client_, GetUserLocale())
         .WillRepeatedly(testing::ReturnRefOfCopy(std::string(user_locale)));
     EXPECT_CALL(mock_client_, GetApplicationLocale())
         .WillRepeatedly(
             testing::ReturnRefOfCopy(std::string(application_locale)));
+    EXPECT_CALL(mock_client_, GetCountryCode())
+        .WillRepeatedly(testing::Return(std::string(country)));
   }
 
   void InitilizeCampaignsExperimentTag(const std::string& exp_tag) {
@@ -346,6 +349,18 @@ class CampaignsManagerTest : public testing::Test {
             }
           )",
                                                locales.c_str());
+    LoadComponentAndVerifyLoadComplete(base::StringPrintf(
+        kValidCampaignsFileTemplate, device_targeting.c_str()));
+  }
+
+  void LoadComponentWithCountryTargetings(const std::string& countries) {
+    std::string feature_aware_targeting = "";
+    auto device_targeting = base::StringPrintf(R"(
+            "device": {
+              %s
+            }
+          )",
+                                               countries.c_str());
     LoadComponentAndVerifyLoadComplete(base::StringPrintf(
         kValidCampaignsFileTemplate, device_targeting.c_str()));
   }
@@ -978,14 +993,16 @@ TEST_F(CampaignsManagerTest, GetCampaignDeviceTargeting) {
       "max": %d
     )",
       current_version, current_version + 1));
-  MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US");
+  MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US",
+              /*country=*/"us");
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignUserLocaleTargeting) {
-  MockLocales(/*user_locale=*/"en-IN", /*application_locale=*/"en-GB");
+  MockLocales(/*user_locale=*/"en-IN", /*application_locale=*/"en-GB",
+              /*country=*/"in");
   LoadComponentWithUserLocaleTargetings(R"(["en-AU", "en-IN"])");
 
   VerifyDemoModePayload(
@@ -993,8 +1010,43 @@ TEST_F(CampaignsManagerTest, GetCampaignUserLocaleTargeting) {
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignUserLocaleTargetingMismatch) {
-  MockLocales(/*user_locale=*/"en-IN", /*application_locale=*/"en-GB");
+  MockLocales(/*user_locale=*/"en-IN", /*application_locale=*/"en-GB",
+              /*country=*/"in");
   LoadComponentWithUserLocaleTargetings(R"(["en-GB", "en-AU"])");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignWithIncludedCountryTargeting) {
+  MockLocales(/*user_locale=*/"en-IN", /*application_locale=*/"en-GB",
+              /*country=*/"in");
+  LoadComponentWithCountryTargetings(R"("includedCountries": ["us", "in"])");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignIncludedCountryTargetingMismatch) {
+  MockLocales(/*user_locale=*/"en-IN", /*application_locale=*/"en-GB",
+              /*country=*/"in");
+  LoadComponentWithCountryTargetings(R"("includedCountries": ["us", "ca"])");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, CampaignWithExcludedCountryTargeting) {
+  MockLocales(/*user_locale=*/"en-IN", /*application_locale=*/"en-GB",
+              /*country=*/"in");
+  LoadComponentWithCountryTargetings(R"("excludedCountries": ["us", "ca"])");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignExcludedCountryTargetingMismatch) {
+  MockLocales(/*user_locale=*/"en-IN", /*application_locale=*/"en-GB",
+              /*country=*/"in");
+  LoadComponentWithCountryTargetings(R"("excludedCountries": ["us", "in"])");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
@@ -1010,13 +1062,15 @@ TEST_F(CampaignsManagerTest, GetCampaignMilestoneMinMismatch) {
       "max": %d
     )",
       current_version + 1, current_version + 1));
-  MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US");
+  MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US",
+              /*country=*/"us");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignMilestoneMaxMismatch) {
-  MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US");
+  MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US",
+              /*country=*/"us");
 
   auto current_version = version_info::GetMajorVersionNumberAsInt();
   LoadComponentWithBasicDeviceTargetings(base::StringPrintf(
@@ -1034,7 +1088,8 @@ TEST_F(CampaignsManagerTest, GetCampaignMinMilestoneOnly) {
       .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
 
   auto current_version = version_info::GetMajorVersionNumberAsInt();
-  MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US");
+  MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US",
+              /*country=*/"us");
   LoadComponentWithBasicDeviceTargetings(
       base::StringPrintf(R"("min": %d)", current_version));
 
@@ -1043,7 +1098,8 @@ TEST_F(CampaignsManagerTest, GetCampaignMinMilestoneOnly) {
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignMinMilestoneOnlyMismatch) {
-  MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US");
+  MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US",
+              /*country=*/"us");
 
   auto current_version = version_info::GetMajorVersionNumberAsInt();
   LoadComponentWithBasicDeviceTargetings(
@@ -1053,7 +1109,8 @@ TEST_F(CampaignsManagerTest, GetCampaignMinMilestoneOnlyMismatch) {
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignMaxMilestoneOnly) {
-  MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US");
+  MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US",
+              /*country=*/"us");
 
   auto current_version = version_info::GetMajorVersionNumberAsInt();
   LoadComponentWithBasicDeviceTargetings(
@@ -1064,7 +1121,8 @@ TEST_F(CampaignsManagerTest, GetCampaignMaxMilestoneOnly) {
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignMaxMilestoneOnlyMismatch) {
-  MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US");
+  MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US",
+              /*country=*/"us");
 
   auto current_version = version_info::GetMajorVersionNumberAsInt();
   LoadComponentWithBasicDeviceTargetings(
@@ -1216,7 +1274,8 @@ TEST_F(CampaignsManagerTest, GetCampaignTargetFeatureAwareDevice) {
   LoadComponentWithBasicDeviceTargetings(
       base::StringPrintf(R"("max": %d)", current_version),
       /*target_feature_aware_device=*/true);
-  MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US");
+  MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US",
+              /*country=*/"us");
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
@@ -1252,7 +1311,8 @@ TEST_F(CampaignsManagerTest, GetCampaignTargetNotFeatureAwareDevice) {
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignTargetNotFeatureAwareDeviceMismatch) {
-  MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US");
+  MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US",
+              /*country=*/"us");
 
   scoped_feature_list_.InitWithFeatures(
       {}, {ash::features::kFeatureManagementGrowthFramework});
@@ -1823,7 +1883,8 @@ TEST_F(CampaignsManagerTest, GetCampaignMatchMultiTargetingsMismatch) {
 }
 
 TEST_F(CampaignsManagerTest, CampaignsFilteringTest) {
-  MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US");
+  MockLocales(/*user_locale=*/"en-US", /*application_locale=*/"en-US",
+              /*country=*/"us");
 
   LoadComponentAndVerifyLoadComplete(
       R"({

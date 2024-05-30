@@ -42,6 +42,11 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
   bool IsFeatureAwareDevice() const override;
   const std::string& GetApplicationLocale() const override;
   const std::string& GetUserLocale() const override;
+
+  // Returns the permanent country code stored for this client. See
+  // chrome://translate-internal. Country code is in the format of lowercase ISO
+  // 3166-1 alpha-2. Example: `us`, `br`, `in`.
+  const std::string GetCountryCode() const override;
   const base::Version& GetDemoModeAppVersion() const override;
   growth::ActionMap GetCampaignsActions() override;
   void RegisterSyntheticFieldTrial(
