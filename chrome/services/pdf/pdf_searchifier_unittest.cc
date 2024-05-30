@@ -9,17 +9,15 @@
 #include <utility>
 #include <vector>
 
-#include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/services/pdf/pdf_searchifier.h"
-#include "chrome/services/pdf/public/mojom/pdf_searchifier.mojom.h"
+#include "chrome/services/pdf/public/mojom/pdf_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,8 +56,8 @@ class PdfSearchifierTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  PdfSearchifier searchifier_;
   Ocr ocr_;
+  PdfSearchifier searchifier_{ocr_.CreateRemote()};
   base::FilePath test_data_dir_;
 };
 
@@ -71,8 +69,7 @@ TEST_F(PdfSearchifierTest, Searchify) {
   base::RunLoop run_loop;
   std::vector<uint8_t> result_pdf;
   searchifier_.Searchify(
-      *pdf, ocr_.CreateRemote(),
-      base::BindLambdaForTesting([&](const std::vector<uint8_t>& result) {
+      *pdf, base::BindLambdaForTesting([&](const std::vector<uint8_t>& result) {
         result_pdf = std::move(result);
         run_loop.Quit();
       }));

@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/services/pdf/public/mojom/pdf_searchifier.mojom.h"
+#include "chrome/services/pdf/public/mojom/pdf_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "pdf/pdf.h"
@@ -16,14 +17,13 @@
 
 namespace pdf {
 
-PdfSearchifier::PdfSearchifier() = default;
+PdfSearchifier::PdfSearchifier(mojo::PendingRemote<mojom::Ocr> ocr)
+    : ocr_remote_(std::move(ocr)) {}
 
 PdfSearchifier::~PdfSearchifier() = default;
 
 void PdfSearchifier::Searchify(const std::vector<uint8_t>& pdf,
-                               mojo::PendingRemote<mojom::Ocr> ocr,
                                SearchifyCallback searchified_callback) {
-  ocr_remote_.Bind(std::move(ocr));
   // `base::Unretained(this)` is used because the return type is not void. It's
   // safe since `PdfSearchifier` will outlive the entire `chrome_pdf::Searchify`
   // work.
@@ -31,7 +31,6 @@ void PdfSearchifier::Searchify(const std::vector<uint8_t>& pdf,
       base::BindRepeating(&PdfSearchifier::PerformOcr, base::Unretained(this));
   std::vector<uint8_t> searchified_pdf =
       chrome_pdf::Searchify(pdf, std::move(perform_ocr_callback));
-  ocr_remote_.reset();
   std::move(searchified_callback).Run(std::move(searchified_pdf));
 }
 

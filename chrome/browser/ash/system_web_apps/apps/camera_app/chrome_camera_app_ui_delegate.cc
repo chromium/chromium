@@ -342,7 +342,7 @@ void ChromeCameraAppUIDelegate::PdfServiceManager::Searchify(
   mojo::Remote<pdf::mojom::PdfService> pdf_service = LaunchPdfService();
   mojo::PendingRemote<pdf::mojom::PdfSearchifier> pdf_searchifier;
   pdf_service->BindPdfSearchifier(
-      pdf_searchifier.InitWithNewPipeAndPassReceiver());
+      pdf_searchifier.InitWithNewPipeAndPassReceiver(), CreateOcrRemote());
   mojo::RemoteSetElementId pdf_service_id =
       pdf_services_.Add(std::move(pdf_service));
   mojo::RemoteSetElementId pdf_searchifier_id =
@@ -350,7 +350,7 @@ void ChromeCameraAppUIDelegate::PdfServiceManager::Searchify(
   pdf_searchifier_callbacks_[pdf_searchifier_id] = std::move(callback);
   pdf_searchifiers_.Get(pdf_searchifier_id)
       ->Searchify(
-          pdf, CreateOcrRemote(),
+          pdf,
           base::BindOnce(
               &ChromeCameraAppUIDelegate::PdfServiceManager::Searchified,
               weak_factory_.GetWeakPtr(), pdf_service_id, pdf_searchifier_id));

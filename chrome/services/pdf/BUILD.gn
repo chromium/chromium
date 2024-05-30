@@ -46,7 +46,6 @@ source_set("pdf_searchifier_test") {
   deps = [
     ":lib",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//chrome/common:constants",
     "//chrome/services/pdf/public/mojom",
     "//mojo/public/cpp/bindings",
