@@ -48,6 +48,29 @@ const char kGaiaID[] = "22222";
 
 constexpr char kUserIdHash[] = "abcdefg";
 
+// This creates <profile directory>/Preferences file for the account so that
+// when `Profile` instance is created, it is considered a profile for an
+// existing user. This is to avoid profile migration being marked as completed
+// for a new user.
+bool CreatePreferenceFileForProfile(const AccountId& account_id) {
+  base::FilePath user_data_dir;
+  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+  const base::FilePath profile_data_dir =
+      ProfileHelper::GetProfilePathByUserIdHash(
+          user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
+  {
+    base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+    if (!(base::CreateDirectory(user_data_dir) &&
+          base::CreateDirectory(profile_data_dir) &&
+          base::WriteFile(profile_data_dir.Append("Preferences"), "{}"))) {
+      LOG(ERROR) << "Creating `Preferences` file failed.";
+      return false;
+    }
+  }
+
+  return true;
+}
+
 void SetLacrosAvailability(
     ash::standalone_browser::LacrosAvailability lacros_availability) {
   policy::PolicyMap policy;
@@ -76,8 +99,7 @@ class BrowserDataMigratorOnSignIn : public ash::LoginManagerTest {
       AccountId::FromUserEmailGaiaId(kUserEmail, kGaiaID)};
 
   bool LoginAsExistingRegularUser() {
-    return LoginManagerMixin::CreatePreferenceFileForProfile(
-               regular_user_.account_id) &&
+    return CreatePreferenceFileForProfile(regular_user_.account_id) &&
            LoginAsRegularUser();
   }
 
@@ -177,9 +199,6 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMoveMigrateOnSignInByFeature,
 IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMoveMigrateOnSignInByFeature,
                        SkipMigrateOnSignInForNewUser) {
   ash::test::ProfilePreparedWaiter profile_prepared(regular_user_.account_id);
-  // Delete the profile prefs since the user is supposed to be new.
-  ASSERT_TRUE(LoginManagerMixin::RemovePreferenceFileForProfile(
-      regular_user_.account_id));
   ASSERT_TRUE(LoginAsRegularUser());
   // Note that `ProfilePreparedWaiter` waits for
   // `ExistingUserController::OnProfilePrepared()` to be called and this is
@@ -419,8 +438,7 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorForKiosk, MigrateOnKioskLaunch) {
 
   // Register app in `KioskController` so its `AccountId` can be retrieved.
   PrepareAppLaunch();
-  LoginManagerMixin::CreatePreferenceFileForProfile(
-      test_kiosk_app().id().account_id);
+  CreatePreferenceFileForProfile(test_kiosk_app().id().account_id);
 
   base::test::TestFuture<void> future;
   ScopedRestartAttemptForTesting scoped_restart_attempt(

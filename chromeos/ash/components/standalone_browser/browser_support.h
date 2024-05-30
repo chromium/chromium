@@ -54,9 +54,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
   // Returns true if the standalone browser is allowed to be enabled.
   bool IsAllowed() const { return is_allowed_; }
 
-  // Verifies the consistency of profile state flags.
-  void VerifyProfileCondition(bool is_new_profile, bool is_regular_profile);
-
   // Temporarily exposing internal function for transition period.
   // TODO(crbug.com/40286020): Hide the function along with refactoring.
   static bool IsEnabledInternal(const user_manager::User* user,
@@ -64,17 +61,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
                                 bool check_migration_status);
 
  private:
-  BrowserSupport(bool is_allowed, bool is_new_profile, bool is_regular_profile);
+  BrowserSupport(bool is_allowed);
   ~BrowserSupport();
 
   const bool is_allowed_;
-
-  // Used to double check that the information retrieved from the active user is
-  // the same as the one given later by the profile.
-  // TODO(b/338016928): Remove these when we find a better way to cache the
-  // value at profile creation.
-  bool is_new_profile_;
-  bool is_regular_profile_;
 };
 
 }  // namespace ash::standalone_browser

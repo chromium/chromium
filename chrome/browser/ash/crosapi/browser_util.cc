@@ -416,25 +416,6 @@ void CacheLacrosDataBackwardMigrationMode(const policy::PolicyMap& map) {
       value ? value->GetString() : std::string_view());
 }
 
-void CacheLacrosNonDynamicPolicies(const policy::PolicyMap& map,
-                                   bool is_new_profile,
-                                   bool is_regular_profile) {
-  if (g_lacros_availability_cache.has_value()) {
-    // TODO(b/338016928): Add an error log when we figure out a way to call
-    // this function only once.
-    return;
-  }
-  // This call is normally separate in logic from CacheLacros* functions,
-  // but since we need it to be called just once we include it in this method.
-  // TODO(b/338016928): Move the call from browser support in a separate
-  // location since logically it doesn't belong here.
-  ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
-      map, is_new_profile, is_regular_profile);
-  CacheLacrosAvailability(map);
-  CacheLacrosDataBackwardMigrationMode(map);
-  ash::standalone_browser::CacheLacrosSelection(map);
-}
-
 LacrosAvailability GetCachedLacrosAvailabilityForTesting() {
   return GetCachedLacrosAvailability();
 }

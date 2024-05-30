@@ -262,9 +262,6 @@
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-using ash::standalone_browser::BrowserSupport;
-#endif
 using bookmarks::BookmarkModel;
 using content::BrowserThread;
 using content::DownloadManagerDelegate;
@@ -670,8 +667,11 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
       ash::ProfileHelper::IsPrimaryProfile(this)) {
     auto& map = profile_policy_connector_->policy_service()->GetPolicies(
         policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
-    crosapi::browser_util::CacheLacrosNonDynamicPolicies(map, IsNewProfile(),
-                                                         IsRegularProfile());
+    ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
+        map, IsNewProfile(), IsRegularProfile());
+    crosapi::browser_util::CacheLacrosAvailability(map);
+    crosapi::browser_util::CacheLacrosDataBackwardMigrationMode(map);
+    ash::standalone_browser::CacheLacrosSelection(map);
   }
 #endif
 }
@@ -1168,14 +1168,11 @@ void ProfileImpl::OnPrefsLoaded(CreateMode create_mode, bool success) {
     if (ash::ProfileHelper::IsPrimaryProfile(this)) {
       auto& map = profile_policy_connector_->policy_service()->GetPolicies(
           policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
-      bool is_new_profile = IsNewProfile();
-      bool is_regular_profile = IsRegularProfile();
-      crosapi::browser_util::CacheLacrosNonDynamicPolicies(map, is_new_profile,
-                                                           is_regular_profile);
-      if (BrowserSupport::IsInitializedForPrimaryUser()) {
-        BrowserSupport::GetForPrimaryUser()->VerifyProfileCondition(
-            is_new_profile, is_regular_profile);
-      }
+      ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
+          map, IsNewProfile(), IsRegularProfile());
+      crosapi::browser_util::CacheLacrosAvailability(map);
+      crosapi::browser_util::CacheLacrosDataBackwardMigrationMode(map);
+      ash::standalone_browser::CacheLacrosSelection(map);
     }
 
     ash::UserSessionManager::GetInstance()->RespectLocalePreferenceWrapper(

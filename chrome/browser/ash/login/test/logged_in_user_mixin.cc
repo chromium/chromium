@@ -157,9 +157,6 @@ void LoggedInUserMixin::LogInUser(
       login_manager_.LoginAsNewRegularUser(user_context);
     }
   } else {
-    // Since this requires the initial user to be present, we create the
-    // prefs for it.
-    LoginManagerMixin::CreatePreferenceFileForProfile(user_.account_id);
     login_manager_.AttemptLoginUsingAuthenticator(
         user_context, std::make_unique<StubAuthenticatorBuilder>(user_context));
   }

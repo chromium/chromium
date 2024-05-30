@@ -85,20 +85,6 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
   // Convenience method for creating several test accounts.
   static AccountId CreateConsumerAccountId(int unique_number);
 
-  // This creates <profile directory>/Preferences file for the account so that
-  // when `Profile` instance is created, it is considered a profile for an
-  // existing user. This is to avoid profile migration being marked as completed
-  // for a new user. If the file exists already, does nothing and returns true.
-  static bool CreatePreferenceFileForEmail(const std::string& email);
-
-  // Same as CreatePreferenceFileForEmail, for email corresponding to the
-  // account.
-  static bool CreatePreferenceFileForProfile(const AccountId& account_id);
-
-  // Delete the profile prefs when need to set the user as new. Does nothing
-  // if the prefs don't exist.
-  static bool RemovePreferenceFileForProfile(const AccountId& account_id);
-
   // Should be called before any InProcessBrowserTestMixin functions.
   void AppendRegularUsers(int n);
   void AppendChildUsers(int n);

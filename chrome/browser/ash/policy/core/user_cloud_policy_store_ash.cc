@@ -13,13 +13,11 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/policy/core/cached_policy_key_loader.h"
 #include "chrome/browser/ash/policy/value_validation/onc_user_policy_value_validator.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 using RetrievePolicyResponseType =
@@ -262,13 +260,6 @@ void UserCloudPolicyStoreAsh::OnRetrievedPolicyValidated(
                 cached_policy_key_loader_->cached_policy_key());
   status_ = STATUS_OK;
 
-  // The first time a valid policy is installed for the user, we need
-  // to cache the non-dynamic policies.
-  // Note, the store is marked as initialized in NotifyStoreLoaded() method.
-  if (!is_initialized()) {
-    CacheNonDynamicPolicies();
-  }
-
   NotifyStoreLoaded();
 }
 
@@ -283,34 +274,6 @@ UserCloudPolicyStoreAsh::CreateValidatorForLoad(
   // data that was stored without a verification key.
   validator->ValidateSignature(cached_policy_key_loader_->cached_policy_key());
   return validator;
-}
-
-void UserCloudPolicyStoreAsh::CacheNonDynamicPolicies() {
-  // This would be unexpected but to be on the safe side, we check is user
-  // is initialized
-  if (!user_manager::UserManager::IsInitialized()) {
-    LOG(ERROR) << "User not initialized when policy store is used";
-    return;
-  }
-
-  auto* user_manager = user_manager::UserManager::Get();
-  auto* user = user_manager->GetActiveUser();
-  if (user && user->GetAccountId() != account_id_) {
-    return;
-  }
-
-  // Cache the values only if there's a single user session. Note, in case of
-  // Ash crash+restart the values are populated by ProfileImpl before this
-  // method is called. So, even if this gets called in a multi-user setup
-  // the method call will be ignored by browser_util because the cache is
-  // already populated.
-  // TODO(b/338016928): Make this method be called only once per user session.
-  if (user_manager->GetLoggedInUsers().size() == 1) {
-    crosapi::browser_util::CacheLacrosNonDynamicPolicies(
-        policy_map(), /*is_new_profile=*/user_manager->IsCurrentUserNew(),
-        /*is_regular_profile=*/user_manager->GetActiveUser()->GetType() !=
-            user_manager::UserType::kGuest);
-  }
 }
 
 }  // namespace policy

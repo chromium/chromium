@@ -10,11 +10,8 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/files/file_util.h"
-#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
@@ -31,8 +28,6 @@
 #include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
-#include "chrome/common/chrome_paths.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/public/auth_types.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
@@ -40,7 +35,6 @@
 #include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/known_user.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -53,10 +47,6 @@ bool g_instance_created = false;
 
 constexpr char kGmailDomain[] = "@gmail.com";
 constexpr char kManagedDomain[] = "@example.com";
-
-constexpr char kDefaultPrefValue[] =
-    "{ \"account_info\": [{\"account_id\": \"fake-gaia-id\", \"gaia\": "
-    "\"fake-gaia-id\"}]}";
 
 AccountId CreateAccountId(int id, const std::string& domain) {
   const std::string email = "test_user_" + base::NumberToString(id) + domain;
@@ -103,56 +93,6 @@ UserContext LoginManagerMixin::CreateDefaultUserContext(
         LocalPasswordInput(user_info.auth_config.local_password));
   }
   return user_context;
-}
-
-// static
-bool LoginManagerMixin::CreatePreferenceFileForEmail(const std::string& email) {
-  return CreatePreferenceFileForProfile(AccountId::FromUserEmail(email));
-}
-
-// static
-bool LoginManagerMixin::CreatePreferenceFileForProfile(
-    const AccountId& account_id) {
-  base::FilePath user_data_dir;
-  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-  base::FilePath profile_data_dir =
-      user_data_dir.Append(BrowserContextHelper::GetUserBrowserContextDirName(
-          user_manager::FakeUserManager::GetFakeUsernameHash(account_id)));
-  const base::FilePath profile_data_file =
-      profile_data_dir.Append("Preferences");
-  {
-    base::ScopedAllowBlockingForTesting scoped_allow_blocking;
-    if (base::PathExists(profile_data_file)) {
-      return true;
-    }
-    if (!(base::CreateDirectory(user_data_dir) &&
-          base::CreateDirectory(profile_data_dir) &&
-          base::WriteFile(profile_data_file, kDefaultPrefValue))) {
-      LOG(ERROR) << "Creating `Preferences` file failed.";
-      return false;
-    }
-  }
-
-  return true;
-}
-
-// static
-bool LoginManagerMixin::RemovePreferenceFileForProfile(
-    const AccountId& account_id) {
-  base::FilePath user_data_dir;
-  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-  base::FilePath profile_data_dir =
-      user_data_dir.Append(BrowserContextHelper::GetUserBrowserContextDirName(
-          user_manager::FakeUserManager::GetFakeUsernameHash(account_id)));
-  const base::FilePath profile_data_file =
-      profile_data_dir.Append("Preferences");
-  {
-    base::ScopedAllowBlockingForTesting scoped_allow_blocking;
-    if (base::PathExists(profile_data_file)) {
-      return base::DeleteFile(profile_data_file);
-    }
-  }
-  return true;
 }
 
 void LoginManagerMixin::AppendRegularUsers(int n) {
@@ -249,8 +189,6 @@ void LoginManagerMixin::SetUpLocalState() {
                                            user.account_id.GetUserEmail()))) {
       known_user.SetIsEnterpriseManaged(user.account_id, true);
     }
-
-    CreatePreferenceFileForProfile(user.account_id);
   }
 
   StartupUtils::MarkOobeCompleted();
