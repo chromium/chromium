@@ -62,6 +62,10 @@ extern const base::FeatureParam<bool> kSendQualityLog;
 // to use the default number of threads.
 extern const base::FeatureParam<int> kEmbedderNumThreads;
 
+// The size of the cache the embedder uses to limit execution on the same
+// passage.
+extern const base::FeatureParam<int> kEmbedderCacheSize;
+
 }  // namespace history_embeddings
 
 #endif  // COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_FEATURES_H_

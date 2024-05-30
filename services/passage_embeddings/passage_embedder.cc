@@ -16,7 +16,8 @@ namespace passage_embeddings {
 
 PassageEmbedder::PassageEmbedder(
     mojo::PendingReceiver<mojom::PassageEmbedder> receiver)
-    : receiver_(this, std::move(receiver)) {}
+    : receiver_(this, std::move(receiver)),
+      embeddings_cache_(history_embeddings::kEmbedderCacheSize.Get()) {}
 
 PassageEmbedder::~PassageEmbedder() = default;
 
@@ -128,11 +129,25 @@ void PassageEmbedder::GenerateEmbeddings(
     const std::vector<std::string>& inputs,
     PassageEmbedder::GenerateEmbeddingsCallback callback) {
   std::vector<mojom::PassageEmbeddingsResultPtr> results;
+  if (!sp_processor_ || !sp_processor_->status().ok()) {
+    std::move(callback).Run({});
+    return;
+  }
+
   for (const std::string& input : inputs) {
-    if (!sp_processor_ || !sp_processor_->status().ok()) {
-      std::move(callback).Run({});
-      return;
+    mojom::PassageEmbeddingsResultPtr result =
+        mojom::PassageEmbeddingsResult::New();
+    result->passage = input;
+
+    auto cache_value = embeddings_cache_.Get(input);
+    bool cache_hit = cache_value != embeddings_cache_.end();
+    base::UmaHistogramBoolean(kCacheHitMetricName, cache_hit);
+    if (cache_hit) {
+      result->embeddings = cache_value->second;
+      results.push_back(std::move(result));
+      continue;
     }
+
     std::vector<int> tokenized;
     base::ElapsedTimer tokenize_timer;
     auto status = sp_processor_->Encode(input, &tokenized);
@@ -173,10 +188,9 @@ void PassageEmbedder::GenerateEmbeddings(
         "History.Embeddings.Embedder.EmbeddingsGenerationDuration",
         execute_timer.Elapsed());
 
-    mojom::PassageEmbeddingsResultPtr result =
-        mojom::PassageEmbeddingsResult::New();
     result->embeddings = *embeddings;
-    result->passage = input;
+    embeddings_cache_.Put({input, *embeddings});
+
     results.push_back(std::move(result));
   }
   std::move(callback).Run(std::move(results));

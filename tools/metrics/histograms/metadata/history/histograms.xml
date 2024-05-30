@@ -1742,6 +1742,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.Embedder.CacheHit" enum="Boolean"
+    expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    Whether one embeddings generation attempt involves a passage in the cache.
+    Logged each time the embedder attempts to generate one embeddings vector. On
+    a cache hit, no tokenization or model execution will be attempted so the
+    relevant histograms won't be recorded either.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Embedder.EmbeddingsGenerationDuration"
     units="ms" expires_after="2024-12-31">
   <owner>sophiechang@chromium.org</owner>

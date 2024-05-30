@@ -6,6 +6,7 @@
 #define SERVICES_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDER_H_
 
 #include "base/containers/heap_array.h"
+#include "base/containers/lru_cache.h"
 #include "base/files/file.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/passage_embeddings/passage_embedder_execution_task.h"
@@ -14,6 +15,9 @@
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
 
 namespace passage_embeddings {
+
+inline constexpr char kCacheHitMetricName[] =
+    "History.Embeddings.Embedder.CacheHit";
 
 // Class implementation of the passage embedder mojo interface.
 class PassageEmbedder : public mojom::PassageEmbedder {
@@ -69,6 +73,8 @@ class PassageEmbedder : public mojom::PassageEmbedder {
 
   // The input window size that the embeddings model expects.
   uint32_t embeddings_input_window_size_;
+
+  base::LRUCache<std::string, std::vector<float>> embeddings_cache_;
 };
 
 }  // namespace passage_embeddings

@@ -67,4 +67,8 @@ const base::FeatureParam<int> kEmbedderNumThreads(&kHistoryEmbeddings,
                                                   "EmbeddingsNumThreads",
                                                   4);
 
+const base::FeatureParam<int> kEmbedderCacheSize(&kHistoryEmbeddings,
+                                                 "EmbedderCacheSize",
+                                                 1000);
+
 }  // namespace history_embeddings

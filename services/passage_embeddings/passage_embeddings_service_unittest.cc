@@ -6,6 +6,7 @@
 
 #include "base/path_service.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/passage_embeddings/passage_embedder.h"
@@ -52,6 +53,7 @@ class PassageEmbeddingsServiceTest : public testing::Test {
  protected:
   base::FilePath embeddings_path_;
   base::FilePath sp_path_;
+  base::HistogramTester histogram_tester_;
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -144,6 +146,46 @@ TEST_F(PassageEmbeddingsServiceTest, RespondsWithEmbeddings) {
             generate_embeddings_run_loop.Quit();
           }));
   generate_embeddings_run_loop.Run();
+  histogram_tester_.ExpectUniqueSample(kCacheHitMetricName, false, 2);
+}
+
+TEST_F(PassageEmbeddingsServiceTest, CacheHits) {
+  base::RunLoop load_models_run_loop;
+  mojom::PassageEmbeddingsLoadModelsParamsPtr params =
+      MakeParams(embeddings_path_, sp_path_, kInputWindowSize);
+  mojo::Remote<mojom::PassageEmbedder> embedder_remote;
+  service()->LoadModels(
+      std::move(params), embedder_remote.BindNewPipeAndPassReceiver(),
+      base::BindLambdaForTesting([&](bool load_model_success) {
+        EXPECT_TRUE(load_model_success);
+        load_models_run_loop.Quit();
+      }));
+  load_models_run_loop.Run();
+
+  base::RunLoop generate_embeddings_run_loop;
+  embedder_remote->GenerateEmbeddings(
+      {"hello", "world", "hello", "world", "foo"},
+      base::BindLambdaForTesting(
+          [&](const std::vector<mojom::PassageEmbeddingsResultPtr> results) {
+            EXPECT_EQ(results.size(), 5u);
+            EXPECT_EQ(results[0]->passage, "hello");
+            EXPECT_EQ(results[1]->passage, "world");
+            EXPECT_EQ(results[2]->passage, "hello");
+            EXPECT_EQ(results[3]->passage, "world");
+
+            EXPECT_EQ(results[0]->embeddings, results[2]->embeddings);
+            EXPECT_EQ(results[1]->embeddings, results[3]->embeddings);
+
+            for (const auto& result : results) {
+              EXPECT_EQ(result->embeddings.size(), kEmbeddingsOutputSize);
+            }
+
+            generate_embeddings_run_loop.Quit();
+          }));
+  generate_embeddings_run_loop.Run();
+  histogram_tester_.ExpectTotalCount(kCacheHitMetricName, 5);
+  histogram_tester_.ExpectBucketCount(kCacheHitMetricName, true, 2);
+  histogram_tester_.ExpectBucketCount(kCacheHitMetricName, false, 3);
 }
 
 }  // namespace
