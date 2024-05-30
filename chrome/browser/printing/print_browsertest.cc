@@ -23,7 +23,6 @@
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"

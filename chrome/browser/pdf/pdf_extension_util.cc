@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"

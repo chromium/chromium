@@ -6,13 +6,13 @@
 #include <initializer_list>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/functional/function_ref.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/badging/badge_manager.h"

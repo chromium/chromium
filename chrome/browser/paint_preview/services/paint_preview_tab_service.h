@@ -15,7 +15,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/browser/paint_preview_policy.h"

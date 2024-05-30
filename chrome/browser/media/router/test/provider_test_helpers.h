@@ -10,7 +10,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/media/router/discovery/dial/device_description_fetcher.h"

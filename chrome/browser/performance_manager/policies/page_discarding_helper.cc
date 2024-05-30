@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

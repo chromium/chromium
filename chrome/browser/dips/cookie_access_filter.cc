@@ -4,7 +4,6 @@
 
 #include "chrome/browser/dips/cookie_access_filter.h"
 
-#include "base/strings/string_piece.h"
 #include "chrome/browser/dips/dips_utils.h"
 
 CookieAccessFilter::CookieAccessFilter() = default;

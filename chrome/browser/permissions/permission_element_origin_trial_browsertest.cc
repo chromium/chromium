@@ -26,7 +26,7 @@ namespace {
 // tools/origin_trials/generate_token.py https://example.test
 // PermissionElement
 // --expire-days 5000
-std::string_view kOriginTrialToken =
+constexpr std::string_view kOriginTrialToken =
     "AyhOIRw/ha6vGsSq2BU78sDZ49hP+Cv6OC191Ae7YQHf3pYW8UJ5bwCOOuUXjfA/"
     "QmXR6y1+4cv+"
     "Uy6utB3FJw0AAABceyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLnRlc3Q6NDQzIiwgImZlYX"

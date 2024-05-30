@@ -6,7 +6,6 @@
 
 #include "base/base64.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 

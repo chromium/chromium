@@ -4,7 +4,6 @@
 
 #include "chrome/browser/supervised_user/supervised_user_google_auth_navigation_throttle.h"
 
-#include "base/strings/string_piece.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
