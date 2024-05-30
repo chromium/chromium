@@ -472,8 +472,12 @@ void PrerenderHost::ReadyToCommitNavigation(
   // No-Vary-Search header.
   auto* navigation_request = NavigationRequest::From(navigation_handle);
   CHECK(navigation_request->IsInPrerenderedMainFrame());
+
+  if (!IsInitialNavigation(*navigation_request)) {
+    return;
+  }
+
   if (base::FeatureList::IsEnabled(blink::features::kPrerender2NoVarySearch) &&
-      IsInitialNavigation(*navigation_request) &&
       navigation_request->response() &&
       navigation_request->response()->parsed_headers &&
       navigation_request->response()
@@ -485,6 +489,12 @@ void PrerenderHost::ReadyToCommitNavigation(
         navigation_request->response()
             ->parsed_headers->no_vary_search_with_parse_error
             ->get_no_vary_search()));
+  }
+
+  // ReadyToCommitNavigation is called when the headers are received.
+  were_headers_received_ = true;
+  for (auto& observer : observers_) {
+    observer.OnHeadersReceived();
   }
 }
 
@@ -872,6 +882,9 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   } else if (no_vary_search_.has_value()) {
     CHECK(no_vary_search_->AreEquivalent(potential_activation.url,
                                          common_params_->url));
+  } else if (no_vary_search_expected().has_value()) {
+    CHECK(no_vary_search_expected()->AreEquivalent(potential_activation.url,
+                                                   common_params_->url));
   } else {
     CHECK_EQ(potential_activation.url, common_params_->url);
   }
@@ -1202,6 +1215,32 @@ bool PrerenderHost::IsUrlMatch(const GURL& url) const {
   // Check No-Vary-Search header and try and match.
   return no_vary_search_.has_value() &&
          no_vary_search_->AreEquivalent(GetInitialUrl(), url);
+}
+
+bool PrerenderHost::IsNoVarySearchHintUrlMatch(const GURL& url) const {
+  // Triggers are not allowed to treat a cross-origin url as a matched url. It
+  // would cause security risks.
+  if (!url::IsSameOriginWith(attributes_.prerendering_url, url)) {
+    return false;
+  }
+
+  // We don't care about url_match_predicate here because it is applied only
+  // if we know for sure url is a match. This is a "potential"
+  // match depending on the No-Vary-Search header that will be received.
+  if (attributes_.url_match_predicate) {
+    return false;
+  }
+
+  // Let's check if this PrerenderHost would match by
+  // No-Vary-Search hint. We need to check if the headers were already received.
+  if (!were_headers_received()) {
+    if (no_vary_search_expected().has_value() &&
+        no_vary_search_expected()->AreEquivalent(GetInitialUrl(), url)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void PrerenderHost::OnAcceptClientHintChanged(

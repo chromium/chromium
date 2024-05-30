@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/functional/callback_forward.h"
 #include "content/browser/renderer_host/navigation_type.h"
 #include "content/public/browser/commit_deferring_condition.h"
 

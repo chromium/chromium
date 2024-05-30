@@ -81,6 +81,12 @@ PrerenderNoVarySearchCommitDeferringCondition::WillCommitNavigation(
   // via No Vary Search to the prerender URL.
   PrerenderHost& prerender_host =
       PrerenderHost::GetFromFrameTreeNode(*prerender_frame_tree_node);
+  // If we cannot match the navigation URL the prerender activation is allowed
+  // to continue here but will fail soon. This can happen when matching
+  // by No-Vary-Search hint and the No-Vary-Search header doesn't agree.
+  if (!prerender_host.IsUrlMatch(GetNavigationHandle().GetURL())) {
+    return Result::kProceed;
+  }
   // If the prerender has been redirected or navigated, we do not change URL.
   // A prerendered page can navigate to another same-site URL during
   // prerendering. E.g. a prerendered page navigates from

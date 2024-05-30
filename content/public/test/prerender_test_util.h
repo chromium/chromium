@@ -12,6 +12,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,6 +68,10 @@ class PrerenderHostObserver {
   // Returns immediately if the PrerenderHost was already activated, otherwise
   // spins a RunLoop until the observed host is activated.
   void WaitForActivation();
+
+  // Returns immediately if the PrerenderHost has already received headers,
+  // otherwise spins a RunLoop until the observed host receives headers.
+  void WaitForHeaders();
 
   // Returns immediately if the PrerenderHost was already destroyed, otherwise
   // spins a RunLoop until the observed host is destroyed.
@@ -197,6 +202,14 @@ class PrerenderTestHelper {
   // could access a navigating frame being destroyed during activation and fail.
   static void NavigatePrimaryPage(WebContents& web_contents, const GURL& gurl);
   void NavigatePrimaryPage(const GURL& gurl);
+
+  // Navigates the primary page to the URL but does not wait until the
+  // completion of the navigation. Instead it returns a
+  // content::TestNavigationObserver.
+  static std::unique_ptr<content::TestNavigationObserver>
+  NavigatePrimaryPageAsync(WebContents& web_contents, const GURL& gurl);
+  std::unique_ptr<content::TestNavigationObserver> NavigatePrimaryPageAsync(
+      const GURL& gurl);
 
   // Opens a new window without an opener on the primary page of `web_contents`.
   // This is intended for activating a prerendered page initiated for a new

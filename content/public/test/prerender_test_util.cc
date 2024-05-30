@@ -221,6 +221,13 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
       std::move(waiting_for_activation_).Run();
   }
 
+  void OnHeadersReceived() override {
+    received_headers_ = true;
+    if (waiting_for_headers_) {
+      std::move(waiting_for_headers_).Run();
+    }
+  }
+
   void OnHostDestroyed(PrerenderFinalStatus final_status) override {
     observation_.Reset();
     last_status_ = final_status;
@@ -246,6 +253,25 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
 
     base::RunLoop loop;
     waiting_for_activation_ = loop.QuitClosure();
+    loop.Run();
+
+    EXPECT_TRUE(did_observe_) << "No prerender was triggered.";
+  }
+
+  void WaitForHeaders() {
+    if (received_headers_) {
+      return;
+    }
+    EXPECT_FALSE(waiting_for_headers_);
+
+    EXPECT_FALSE(did_observe_ && !observation_.IsObserving())
+        << "A prerender was destroyed, with status "
+        << base::to_underlying(
+               last_status_.value_or(PrerenderFinalStatus::kDestroyed))
+        << ", before waiting for headers.";
+
+    base::RunLoop loop;
+    waiting_for_headers_ = loop.QuitClosure();
     loop.Run();
 
     EXPECT_TRUE(did_observe_) << "No prerender was triggered.";
@@ -282,9 +308,11 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
   base::ScopedObservation<PrerenderHost, PrerenderHost::Observer> observation_{
       this};
   base::OnceClosure waiting_for_activation_;
+  base::OnceClosure waiting_for_headers_;
   base::OnceClosure waiting_for_destruction_;
   std::unique_ptr<PrerenderHostRegistryObserver> registry_observer_;
   bool was_activated_ = false;
+  bool received_headers_ = false;
   bool did_observe_ = false;
   std::optional<PrerenderFinalStatus> last_status_;
 };
@@ -303,6 +331,11 @@ PrerenderHostObserver::~PrerenderHostObserver() = default;
 void PrerenderHostObserver::WaitForActivation() {
   TRACE_EVENT("test", "PrerenderHostObserver::WaitForActivation");
   impl_->WaitForActivation();
+}
+
+void PrerenderHostObserver::WaitForHeaders() {
+  TRACE_EVENT("test", "PrerenderHostObserver::WaitForHeaders");
+  impl_->WaitForHeaders();
 }
 
 void PrerenderHostObserver::WaitForDestroyed() {
@@ -567,7 +600,8 @@ void PrerenderTestHelper::CancelPrerenderedPage(int host_id) {
 }
 
 // static
-void PrerenderTestHelper::NavigatePrimaryPage(WebContents& web_contents,
+std::unique_ptr<content::TestNavigationObserver>
+PrerenderTestHelper::NavigatePrimaryPageAsync(WebContents& web_contents,
                                               const GURL& gurl) {
   TRACE_EVENT("test", "PrerenderTestHelper::NavigatePrimaryPage",
               "web_contents", web_contents, "url", gurl);
@@ -582,8 +616,9 @@ void PrerenderTestHelper::NavigatePrimaryPage(WebContents& web_contents,
   }
 
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
-  content::TestNavigationObserver observer(&web_contents);
-  observer.set_wait_event(
+  std::unique_ptr<content::TestNavigationObserver> observer =
+      std::make_unique<content::TestNavigationObserver>(&web_contents);
+  observer->set_wait_event(
       content::TestNavigationObserver::WaitEvent::kLoadStopped);
   // Ignore the result of ExecJs().
   //
@@ -592,7 +627,18 @@ void PrerenderTestHelper::NavigatePrimaryPage(WebContents& web_contents,
   // even when the navigation succeeded.
   std::ignore = ExecJs(web_contents.GetPrimaryMainFrame(),
                        JsReplace("location = $1", gurl));
-  observer.Wait();
+  return observer;
+}
+
+std::unique_ptr<content::TestNavigationObserver>
+PrerenderTestHelper::NavigatePrimaryPageAsync(const GURL& gurl) {
+  return NavigatePrimaryPageAsync(*GetWebContents(), gurl);
+}
+
+// static
+void PrerenderTestHelper::NavigatePrimaryPage(WebContents& web_contents,
+                                              const GURL& gurl) {
+  NavigatePrimaryPageAsync(web_contents, gurl)->Wait();
 }
 
 void PrerenderTestHelper::NavigatePrimaryPage(const GURL& gurl) {

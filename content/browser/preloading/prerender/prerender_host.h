@@ -91,6 +91,10 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
     // Called on the page activation.
     virtual void OnActivated() {}
 
+    // Called from PrerenderHost::ReadyToCommitNavigation when headers are
+    // received for the initial navigation.
+    virtual void OnHeadersReceived() {}
+
     // Called from the PrerenderHost's destructor. The observer should drop any
     // reference to the host.
     virtual void OnHostDestroyed(PrerenderFinalStatus status) {}
@@ -264,6 +268,10 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // initial_url.
   bool IsUrlMatch(const GURL& url) const;
 
+  // Returns true if the given `url` might indicate the same destination to the
+  // initial_url based on `no_vary_search_expected`.
+  bool IsNoVarySearchHintUrlMatch(const GURL& url) const;
+
   // Called when the prerender pages asks the client to change the Accept Client
   // Hints. The instruction applies to the prerendering page before activation,
   // and will be persisted to the global setting upon activation.
@@ -332,6 +340,8 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   }
 
   bool IsInitialNavigation(const NavigationRequest& navigation_request) const;
+
+  bool were_headers_received() const { return were_headers_received_; }
 
  private:
   void RecordFailedFinalStatusImpl(const PrerenderCancellationReason& reason);
@@ -411,6 +421,9 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // No-Vary-Search header information for the main frame of the prerendered
   // page.
   std::optional<net::HttpNoVarySearchData> no_vary_search_;
+
+  // True if headers were received.
+  bool were_headers_received_ = false;
 };
 
 }  // namespace content
