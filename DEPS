@@ -1578,7 +1578,7 @@ deps = {
   },
 
   'src/third_party/fp16/src':
-    Var('chromium_git') + '/external/github.com/Maratyszcza/FP16.git' + '@' + '95163a75c51bc8dc29f72d0d7419ec50132984ff',
+    Var('chromium_git') + '/external/github.com/Maratyszcza/FP16.git' + '@' + '0a92994d729ff76a58f692d3028ca1b64b145d91',
 
   'src/third_party/gemmlowp/src':
     Var('chromium_git') + '/external/github.com/google/gemmlowp.git' + '@' + '13d57703abca3005d97b19df1f2db731607a7dc2',
@@ -2264,7 +2264,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'c036420683f672d685e27415de0a5f5e85bdc23f',
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + 'd0e577447a11533887249e87e0f9b701d00d527c',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '4eb7c12653a69e11f43f8010686d288c782aa301',
 
   'src/third_party/turbine': {
       'packages': [
@@ -2351,7 +2351,7 @@ deps = {
   },
 
   'src/third_party/xnnpack/src':
-    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + 'fcb36699c67201ceff7358df42730809e8f2c9cc',
+    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + 'd669b02644f10ad112b6cf2e2ed6cdfe8877e3b5',
 
   'src/tools/page_cycler/acid3':
     Var('chromium_git') + '/chromium/deps/acid3.git' + '@' + 'a926d0a32e02c4c03ae95bb798e6c780e0e184ba',
