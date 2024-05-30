@@ -2930,10 +2930,16 @@ void SkiaOutputSurfaceImplOnGpu::DetileOverlay(
     gpu::Mailbox output,
     const gfx::RectF& display_rect,
     const gfx::RectF& crop_rect,
-    gfx::OverlayTransform transform) {
-  if (!vulkan_image_processor_) {
-    vulkan_image_processor_ =
-        media::VulkanImageProcessor::Create(/*is_protected=*/true);
+    gfx::OverlayTransform transform,
+    bool is_10bit) {
+  // TODO(greenjustin): Ideally we wouldn't have to recreate the entire
+  // VulkanImageProcessor when we change from MM21 to MT2T, since only the
+  // shaders really need swapped out.
+  if (!vulkan_image_processor_ ||
+      (is_10bit && vulkan_image_processor_->GetTileFormat() == media::kMM21) ||
+      (!is_10bit && vulkan_image_processor_->GetTileFormat() == media::kMT2T)) {
+    vulkan_image_processor_ = media::VulkanImageProcessor::Create(
+        true, is_10bit ? media::kMT2T : media::kMM21);
   }
 
   // Note that we don't want to get the device queue from the
@@ -2942,11 +2948,13 @@ void SkiaOutputSurfaceImplOnGpu::DetileOverlay(
   auto input_representation =
       shared_image_representation_factory_->ProduceVulkan(
           input, vulkan_image_processor_->GetVulkanDeviceQueue(),
-          vulkan_image_processor_->GetVulkanImplementation());
+          vulkan_image_processor_->GetVulkanImplementation(),
+          /*needs_detiling=*/true);
   auto output_representation =
       shared_image_representation_factory_->ProduceVulkan(
           output, vulkan_image_processor_->GetVulkanDeviceQueue(),
-          vulkan_image_processor_->GetVulkanImplementation());
+          vulkan_image_processor_->GetVulkanImplementation(),
+          /*needs_detiling=*/true);
 
   if (!input_representation || !output_representation) {
     LOG(ERROR) << "Error creating Vulkan representations for detiling.";

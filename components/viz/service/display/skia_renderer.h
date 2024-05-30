@@ -574,7 +574,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   bool is_protected_pool_idle_ = true;
   std::unique_ptr<BufferQueue> protected_buffer_queue_ = nullptr;
 
-  gpu::Mailbox GetProtectedSharedImage();
+  gpu::Mailbox GetProtectedSharedImage(bool is_10bit);
   void MaybeFreeProtectedPool();
 #endif
 };

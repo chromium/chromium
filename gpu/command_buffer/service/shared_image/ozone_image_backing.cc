@@ -521,11 +521,39 @@ std::unique_ptr<VulkanImageRepresentation> OzoneImageBacking::ProduceVulkan(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     gpu::VulkanDeviceQueue* vulkan_device_queue,
-    gpu::VulkanImplementation& vulkan_impl) {
+    gpu::VulkanImplementation& vulkan_impl,
+    bool needs_detiling) {
+  viz::SharedImageFormat image_format = format();
+  gfx::Size image_size = size();
+  gfx::GpuMemoryBufferHandle gmb_handle = GetGpuMemoryBufferHandle();
+  if (needs_detiling && image_format == viz::MultiPlaneFormat::kP010) {
+    // This buffer is actually an MT2T buffer. MT2T is a 10-bit pixel format
+    // that only occupies 1.25 bytes per element. We plumb it as P010 since
+    // that's the closest existing pixel format, but import it into Vulkan as a
+    // "tall" NV12 image. The height adjustment is designed to make the plane
+    // size math work out, since NV12 is an 8-bit pixel format. This is how
+    // downstream detiling shaders expect the VkImage to be constructed.
+
+    CHECK(image_size.height() % 4 == 0);
+    constexpr int kMT2TBppNumerator = 5;
+    constexpr int kMT2TBppDenominator = 4;
+    image_format = viz::MultiPlaneFormat::kNV12;
+    image_format.SetPrefersExternalSampler();
+    image_size =
+        gfx::Size(image_size.width(), image_size.height() * kMT2TBppNumerator /
+                                          kMT2TBppDenominator);
+    gmb_handle.native_pixmap_handle.planes[0].stride /= 2;
+    gmb_handle.native_pixmap_handle.planes[1].stride =
+        gmb_handle.native_pixmap_handle.planes[0].stride;
+    gmb_handle.native_pixmap_handle.planes[0].size = image_size.GetArea();
+    gmb_handle.native_pixmap_handle.planes[1].offset = image_size.GetArea();
+    gmb_handle.native_pixmap_handle.planes[1].size = image_size.GetArea() / 2;
+  }
   auto vulkan_image = vulkan_impl.CreateImageFromGpuMemoryHandle(
-      vulkan_device_queue, GetGpuMemoryBufferHandle(), size(),
-      format().PrefersExternalSampler() ? ToVkFormatExternalSampler(format())
-                                        : ToVkFormatSinglePlanar(format()),
+      vulkan_device_queue, std::move(gmb_handle), image_size,
+      image_format.PrefersExternalSampler()
+          ? ToVkFormatExternalSampler(image_format)
+          : ToVkFormatSinglePlanar(image_format),
       color_space());
 
   if (!vulkan_image) {

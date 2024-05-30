@@ -238,7 +238,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
                              gpu::Mailbox output,
                              const gfx::RectF& display_rect,
                              const gfx::RectF& crop_rect,
-                             gfx::OverlayTransform transform) = 0;
+                             gfx::OverlayTransform transform,
+                             bool is_10bit) = 0;
 
   virtual void CleanupImageProcessor() = 0;
 #endif

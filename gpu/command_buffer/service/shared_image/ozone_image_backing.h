@@ -102,7 +102,8 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       gpu::VulkanDeviceQueue* vulkan_device_queue,
-      gpu::VulkanImplementation& vulkan_impl) override;
+      gpu::VulkanImplementation& vulkan_impl,
+      bool needs_detiling) override;
 #endif
 
  private:

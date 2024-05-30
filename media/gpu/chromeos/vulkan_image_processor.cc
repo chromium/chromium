@@ -833,7 +833,8 @@ VulkanImageProcessor::VulkanImageProcessor(
     std::unique_ptr<VulkanImageProcessor::VulkanSampler> sampler,
     std::unique_ptr<gpu::VulkanImage> pivot_image,
     std::unique_ptr<VulkanImageProcessor::VulkanTextureImage> pivot_texture,
-    bool is_protected)
+    bool is_protected,
+    TiledImageFormat tile_format)
     : vulkan_implementation_(std::move(vulkan_implementation)),
       vulkan_device_queue_(std::move(vulkan_device_queue)),
       command_pool_(std::move(command_pool)),
@@ -846,7 +847,8 @@ VulkanImageProcessor::VulkanImageProcessor(
       sampler_(std::move(sampler)),
       pivot_image_(std::move(pivot_image)),
       pivot_texture_(std::move(pivot_texture)),
-      is_protected_(is_protected) {}
+      is_protected_(is_protected),
+      tile_format_(tile_format) {}
 
 VulkanImageProcessor::~VulkanImageProcessor() {
   // Make sure there aren't any pending cleanup jobs before we start destroying
@@ -1009,7 +1011,7 @@ std::unique_ptr<VulkanImageProcessor> VulkanImageProcessor::Create(
       std::move(transform_render_pass), std::move(convert_pipeline),
       std::move(transform_pipeline), std::move(convert_descriptor_pool),
       std::move(transform_descriptor_pool), std::move(sampler),
-      std::move(pivot_image), std::move(pivot_texture), is_protected));
+      std::move(pivot_image), std::move(pivot_texture), is_protected, format));
 }
 
 void VulkanImageProcessor::Process(gpu::VulkanImage& in_image,
@@ -1308,6 +1310,10 @@ gpu::VulkanDeviceQueue* VulkanImageProcessor::GetVulkanDeviceQueue() {
 
 gpu::VulkanImplementation& VulkanImageProcessor::GetVulkanImplementation() {
   return *vulkan_implementation_;
+}
+
+TiledImageFormat VulkanImageProcessor::GetTileFormat() const {
+  return tile_format_;
 }
 
 }  // namespace media

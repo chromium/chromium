@@ -1759,11 +1759,12 @@ void SkiaOutputSurfaceImpl::DetileOverlay(gpu::Mailbox input,
                                           gpu::Mailbox output,
                                           const gfx::RectF& display_rect,
                                           const gfx::RectF& crop_rect,
-                                          gfx::OverlayTransform transform) {
+                                          gfx::OverlayTransform transform,
+                                          bool is_10bit) {
   auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::DetileOverlay,
                              base::Unretained(impl_on_gpu_.get()), input,
                              input_visible_size, output, display_rect,
-                             crop_rect, transform);
+                             crop_rect, transform, is_10bit);
   EnqueueGpuTask(std::move(task), {input_sync_token}, /*make_current=*/false,
                  /*need_framebuffer=*/false);
 }

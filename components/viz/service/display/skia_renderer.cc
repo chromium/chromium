@@ -1197,12 +1197,14 @@ void SkiaRenderer::FinishDrawingFrame() {
 // Simple scheme for de-allocating protected buffers: if we go one SwapBuffer
 // cycle without needing a protected shared image, we can delete the protected
 // buffer queue.
-gpu::Mailbox SkiaRenderer::GetProtectedSharedImage() {
+gpu::Mailbox SkiaRenderer::GetProtectedSharedImage(bool is_10bit) {
   is_protected_pool_idle_ = false;
 
   protected_buffer_queue_->Reshape(
       gfx::Size(kMaxProtectedContentWidth, kMaxProtectedContentHeight),
-      gfx::ColorSpace::CreateSRGB(), gfx::BufferFormat::BGRA_8888);
+      gfx::ColorSpace::CreateSRGB(),
+      is_10bit ? gfx::BufferFormat::BGRA_1010102
+               : gfx::BufferFormat::BGRA_8888);
 
   return protected_buffer_queue_->GetCurrentBuffer();
 }
@@ -2972,18 +2974,20 @@ void SkiaRenderer::ScheduleOverlays() {
       locks.emplace_back(resource_provider(), overlay.resource_id);
       auto& lock = locks.back();
 
-      gpu::Mailbox detiled_image = GetProtectedSharedImage();
+      bool is_10bit = overlay.format == gfx::BufferFormat::P010;
+      gpu::Mailbox detiled_image = GetProtectedSharedImage(is_10bit);
       skia_output_surface_->DetileOverlay(
           overlay.mailbox, overlay.resource_size_in_pixels, lock.sync_token(),
           detiled_image, overlay.display_rect, overlay.uv_rect,
-          absl::get<gfx::OverlayTransform>(overlay.transform));
+          absl::get<gfx::OverlayTransform>(overlay.transform), is_10bit);
       overlay.uv_rect = gfx::RectF(
           static_cast<float>(overlay.display_rect.width()) /
               static_cast<float>(kMaxProtectedContentWidth),
           static_cast<float>(overlay.display_rect.height() /
                              static_cast<float>(kMaxProtectedContentHeight)));
       overlay.mailbox = detiled_image;
-      overlay.format = gfx::BufferFormat::BGRA_8888;
+      overlay.format = is_10bit ? gfx::BufferFormat::BGRA_1010102
+                                : gfx::BufferFormat::BGRA_8888;
       overlay.transform = gfx::OVERLAY_TRANSFORM_NONE;
 
       continue;

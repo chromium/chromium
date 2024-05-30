@@ -376,7 +376,8 @@ std::unique_ptr<VulkanImageRepresentation> SharedImageManager::ProduceVulkan(
     const Mailbox& mailbox,
     MemoryTypeTracker* tracker,
     gpu::VulkanDeviceQueue* vulkan_device_queue,
-    gpu::VulkanImplementation& vulkan_impl) {
+    gpu::VulkanImplementation& vulkan_impl,
+    bool needs_detiling) {
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
@@ -389,7 +390,7 @@ std::unique_ptr<VulkanImageRepresentation> SharedImageManager::ProduceVulkan(
   }
 
   return (*found)->ProduceVulkan(this, tracker, vulkan_device_queue,
-                                 vulkan_impl);
+                                 vulkan_impl, needs_detiling);
 }
 #endif
 

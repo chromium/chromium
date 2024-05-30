@@ -51,6 +51,7 @@ class MEDIA_GPU_EXPORT VulkanImageProcessor {
 
   gpu::VulkanDeviceQueue* GetVulkanDeviceQueue();
   gpu::VulkanImplementation& GetVulkanImplementation();
+  TiledImageFormat GetTileFormat() const;
 
  private:
   class VulkanRenderPass;
@@ -82,7 +83,8 @@ class MEDIA_GPU_EXPORT VulkanImageProcessor {
       std::unique_ptr<VulkanImageProcessor::VulkanSampler> sampler,
       std::unique_ptr<gpu::VulkanImage> pivot_image,
       std::unique_ptr<VulkanImageProcessor::VulkanTextureImage> pivot_texture,
-      bool is_protected);
+      bool is_protected,
+      TiledImageFormat tile_format);
 
   std::unique_ptr<gpu::VulkanImplementation> vulkan_implementation_;
   std::unique_ptr<VulkanImageProcessor::VulkanDeviceQueueWrapper>
@@ -103,6 +105,7 @@ class MEDIA_GPU_EXPORT VulkanImageProcessor {
   std::unique_ptr<VulkanImageProcessor::VulkanTextureImage> pivot_texture_;
 
   bool is_protected_;
+  const TiledImageFormat tile_format_;
 };
 
 }  // namespace media

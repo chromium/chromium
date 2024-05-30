@@ -907,10 +907,12 @@ TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
 
   auto input_vulkan_representation = shared_image_manager.ProduceVulkan(
       input_mailbox, nullptr, vulkan_image_processor->GetVulkanDeviceQueue(),
-      vulkan_image_processor->GetVulkanImplementation());
+      vulkan_image_processor->GetVulkanImplementation(),
+      /*needs_detiling=*/true);
   auto output_vulkan_representation = shared_image_manager.ProduceVulkan(
       output_mailbox, nullptr, vulkan_image_processor->GetVulkanDeviceQueue(),
-      vulkan_image_processor->GetVulkanImplementation());
+      vulkan_image_processor->GetVulkanImplementation(),
+      /*needs_detiling=*/true);
   {
     std::vector<VkSemaphore> begin_semaphores;
     std::vector<VkSemaphore> end_semaphores;
@@ -1129,10 +1131,12 @@ TEST(ImageProcessorBackendTest, VulkanMT2TDetileScaleTest) {
 
   auto input_vulkan_representation = shared_image_manager.ProduceVulkan(
       input_mailbox, nullptr, vulkan_image_processor->GetVulkanDeviceQueue(),
-      vulkan_image_processor->GetVulkanImplementation());
+      vulkan_image_processor->GetVulkanImplementation(),
+      /*needs_detiling=*/true);
   auto output_vulkan_representation = shared_image_manager.ProduceVulkan(
       output_mailbox, nullptr, vulkan_image_processor->GetVulkanDeviceQueue(),
-      vulkan_image_processor->GetVulkanImplementation());
+      vulkan_image_processor->GetVulkanImplementation(),
+      /*needs_detiling=*/true);
   {
     std::vector<VkSemaphore> begin_semaphores;
     std::vector<VkSemaphore> end_semaphores;

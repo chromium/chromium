@@ -987,11 +987,13 @@ TEST_P(VulkanImageProcessorPerfTest, Detile) {
     auto input_representation = shared_image_manager.ProduceVulkan(
         input_mailboxes[i % kNumberOfTestFrames], nullptr,
         vulkan_image_processor->GetVulkanDeviceQueue(),
-        vulkan_image_processor->GetVulkanImplementation());
+        vulkan_image_processor->GetVulkanImplementation(),
+        /*needs_detiling=*/true);
     auto output_representation = shared_image_manager.ProduceVulkan(
         output_mailboxes[i % kNumberOfTestFrames], nullptr,
         vulkan_image_processor->GetVulkanDeviceQueue(),
-        vulkan_image_processor->GetVulkanImplementation());
+        vulkan_image_processor->GetVulkanImplementation(),
+        /*needs_detiling=*/true);
 
     {
       std::vector<VkSemaphore> begin_semaphores;

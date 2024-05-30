@@ -1148,9 +1148,10 @@ std::unique_ptr<VulkanImageRepresentation>
 SharedImageRepresentationFactory::ProduceVulkan(
     const gpu::Mailbox& mailbox,
     gpu::VulkanDeviceQueue* vulkan_device_queue,
-    gpu::VulkanImplementation& vulkan_impl) {
+    gpu::VulkanImplementation& vulkan_impl,
+    bool needs_detiling) {
   return manager_->ProduceVulkan(mailbox, tracker_.get(), vulkan_device_queue,
-                                 vulkan_impl);
+                                 vulkan_impl, needs_detiling);
 }
 #endif
 

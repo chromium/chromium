@@ -214,7 +214,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
                      gpu::Mailbox output,
                      const gfx::RectF& display_rect,
                      const gfx::RectF& crop_rect,
-                     gfx::OverlayTransform transform) override;
+                     gfx::OverlayTransform transform,
+                     bool is_10bit) override;
 
   void CleanupImageProcessor() override;
 #endif
