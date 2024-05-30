@@ -19,6 +19,7 @@ class FakeGlanceablesClassroomClient : public GlanceablesClassroomClient {
   ~FakeGlanceablesClassroomClient() override;
 
   // GlanceablesClassroomClient:
+  bool IsDisabledByAdmin() const override;
   void IsStudentRoleActive(IsRoleEnabledCallback callback) override;
   void GetCompletedStudentAssignments(GetAssignmentsCallback callback) override;
   void GetStudentAssignmentsWithApproachingDueDate(
@@ -28,6 +29,13 @@ class FakeGlanceablesClassroomClient : public GlanceablesClassroomClient {
   void GetStudentAssignmentsWithoutDueDate(
       GetAssignmentsCallback callback) override;
   void OnGlanceablesBubbleClosed() override;
+
+  void set_is_disabled_by_admin(bool is_disabled_by_admin) {
+    is_disabled_by_admin_ = is_disabled_by_admin;
+  }
+
+ private:
+  bool is_disabled_by_admin_ = false;
 };
 
 }  // namespace ash

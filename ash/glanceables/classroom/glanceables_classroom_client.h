@@ -29,6 +29,13 @@ class ASH_EXPORT GlanceablesClassroomClient {
 
   virtual ~GlanceablesClassroomClient() = default;
 
+  // Verifies if the Classroom integration is disabled by admin by checking:
+  // 1) if the integration is not listed in
+  //    `prefs::kGoogleCalendarIntegrationName`,
+  // 2) if the Classroom app is disabled by policy,
+  // 3) if access to the Classroom web UI (URLs) is blocked by policy.
+  virtual bool IsDisabledByAdmin() const = 0;
+
   // Returns `true` if current user is enrolled in at least one classroom course
   // as a student.
   virtual void IsStudentRoleActive(IsRoleEnabledCallback callback) = 0;

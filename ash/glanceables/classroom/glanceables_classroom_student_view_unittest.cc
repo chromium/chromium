@@ -45,6 +45,8 @@ using ::testing::_;
 
 class TestClient : public GlanceablesClassroomClient {
  public:
+  bool IsDisabledByAdmin() const override { return false; }
+
   MOCK_METHOD(void,
               IsStudentRoleActive,
               (GlanceablesClassroomClient::IsRoleEnabledCallback),

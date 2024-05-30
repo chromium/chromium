@@ -180,7 +180,7 @@ void GlanceableTrayBubbleView::InitializeContents() {
       features::IsGlanceablesTimeManagementClassroomStudentViewEnabled() ||
       features::AreGlanceablesV2Enabled();
   if (should_show_non_calendar_glanceables && is_classroom_enabled_via_flags &&
-      classroom_client) {
+      classroom_client && !classroom_client->IsDisabledByAdmin()) {
     CHECK(!classroom_bubble_student_view_);
     classroom_client->IsStudentRoleActive(base::BindOnce(
         &GlanceableTrayBubbleView::AddClassroomBubbleStudentViewIfNeeded,

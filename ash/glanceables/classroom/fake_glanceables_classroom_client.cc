@@ -40,6 +40,10 @@ FakeGlanceablesClassroomClient::FakeGlanceablesClassroomClient() = default;
 
 FakeGlanceablesClassroomClient::~FakeGlanceablesClassroomClient() = default;
 
+bool FakeGlanceablesClassroomClient::IsDisabledByAdmin() const {
+  return is_disabled_by_admin_;
+}
+
 void FakeGlanceablesClassroomClient::IsStudentRoleActive(
     IsRoleEnabledCallback callback) {
   std::move(callback).Run(true);

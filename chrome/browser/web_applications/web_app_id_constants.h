@@ -57,6 +57,11 @@ inline constexpr char kGoogleCalendarAppId[] =
 //     "https://mail.google.com/chat/"))
 inline constexpr char kGoogleChatAppId[] = "mdpkiolbdkhdjpekfbkbmhigcaggjagi";
 
+// Generated as: web_app::GenerateAppIdFromManifestId(webapps::ManifestId(
+//     "https://classroom.google.com/?lfhs=2"))
+inline constexpr char kGoogleClassroomAppId[] =
+    "kjcjfjccmpngedeildfijeanhihmolck";
+
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
 //     "https://docs.google.com/document/?usp=installed_webapp"))
 inline constexpr char kGoogleDocsAppId[] = "mpnpojknpmmopombnjdcgaaiekajbnjb";

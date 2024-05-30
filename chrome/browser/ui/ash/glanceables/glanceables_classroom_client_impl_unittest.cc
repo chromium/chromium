@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -23,6 +24,19 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/default_clock.h"
+#include "base/values.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
+#include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/services/app_service/public/cpp/app.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/dummy_auth_service.h"
@@ -107,9 +121,103 @@ std::string CreateSubmissionsListResponse(const std::string& course_work_id,
 
 }  // namespace
 
+class GlanceablesClassroomClientImplIsDisabledByAdminTest
+    : public testing::Test {
+ public:
+  GlanceablesClassroomClientImplIsDisabledByAdminTest()
+      : profile_manager_(
+            TestingProfileManager(TestingBrowserProcess::GetGlobal())) {}
+
+  void SetUp() override { ASSERT_TRUE(profile_manager_.SetUp()); }
+
+  std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
+  GetDefaultPrefs() const {
+    auto prefs =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+    RegisterUserProfilePrefs(prefs->registry());
+    return prefs;
+  }
+
+  TestingProfile* CreateTestingProfile(
+      std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> prefs) {
+    return profile_manager_.CreateTestingProfile(
+        "profile@example.com", std::move(prefs), u"User Name", /*avatar_id=*/0,
+        TestingProfile::TestingFactories());
+  }
+
+  GlanceablesClassroomClientImpl CreateClientForProfile(
+      Profile* profile) const {
+    return GlanceablesClassroomClientImpl(
+        profile, base::DefaultClock::GetInstance(),
+        base::BindLambdaForTesting(
+            [](const std::vector<std::string>& scopes,
+               const net::NetworkTrafficAnnotationTag& traffic_annotation_tag)
+                -> std::unique_ptr<google_apis::RequestSender> {
+              return nullptr;
+            }));
+  }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfileManager profile_manager_;
+};
+
+TEST_F(GlanceablesClassroomClientImplIsDisabledByAdminTest, Default) {
+  auto* const profile = CreateTestingProfile(GetDefaultPrefs());
+  EXPECT_FALSE(CreateClientForProfile(profile).IsDisabledByAdmin());
+}
+
+TEST_F(GlanceablesClassroomClientImplIsDisabledByAdminTest,
+       NoClassroomInContextualGoogleIntegrationsPref) {
+  auto prefs = GetDefaultPrefs();
+  base::Value::List enabled_integrations;
+  enabled_integrations.Append(prefs::kGoogleCalendarIntegrationName);
+  enabled_integrations.Append(prefs::kGoogleTasksIntegrationName);
+  prefs->SetList(prefs::kContextualGoogleIntegrationsConfiguration,
+                 std::move(enabled_integrations));
+
+  auto* const profile = CreateTestingProfile(std::move(prefs));
+  EXPECT_TRUE(CreateClientForProfile(profile).IsDisabledByAdmin());
+}
+
+TEST_F(GlanceablesClassroomClientImplIsDisabledByAdminTest,
+       DisabledClassroomApp) {
+  auto* const profile = CreateTestingProfile(GetDefaultPrefs());
+
+  std::vector<apps::AppPtr> app_deltas;
+  app_deltas.push_back(apps::AppPublisher::MakeApp(
+      apps::AppType::kWeb, web_app::kGoogleClassroomAppId,
+      apps::Readiness::kDisabledByPolicy, "Classroom",
+      apps::InstallReason::kUser, apps::InstallSource::kBrowser));
+
+  apps::AppServiceProxyFactory::GetForProfile(profile)->OnApps(
+      std::move(app_deltas), apps::AppType::kWeb,
+      /*should_notify_initialized=*/true);
+
+  EXPECT_TRUE(CreateClientForProfile(profile).IsDisabledByAdmin());
+}
+
+TEST_F(GlanceablesClassroomClientImplIsDisabledByAdminTest,
+       BlockedClassroomUrl) {
+  auto prefs = GetDefaultPrefs();
+  base::Value::List blocklist;
+  blocklist.Append("classroom.google.com");
+  prefs->SetManagedPref(policy::policy_prefs::kUrlBlocklist,
+                        std::move(blocklist));
+
+  auto* const profile = CreateTestingProfile(std::move(prefs));
+  EXPECT_TRUE(CreateClientForProfile(profile).IsDisabledByAdmin());
+}
+
 class GlanceablesClassroomClientImplTest : public testing::Test {
  public:
+  GlanceablesClassroomClientImplTest()
+      : profile_manager_(
+            TestingProfileManager(TestingBrowserProcess::GetGlobal())) {}
+
   void SetUp() override {
+    ASSERT_TRUE(profile_manager_.SetUp());
+
     // This is the time most of the test expect.
     OverrideTime("10 Apr 2023 00:00 GMT");
 
@@ -122,6 +230,9 @@ class GlanceablesClassroomClientImplTest : public testing::Test {
               "test-user-agent", TRAFFIC_ANNOTATION_FOR_TESTS);
         });
     client_ = std::make_unique<GlanceablesClassroomClientImpl>(
+        profile_manager_.CreateTestingProfile("profile@example.com",
+                                              /*is_main_profile=*/true,
+                                              url_loader_factory_),
         &test_clock_, create_request_sender_callback);
 
     test_server_.RegisterRequestHandler(
@@ -170,6 +281,7 @@ class GlanceablesClassroomClientImplTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
+  TestingProfileManager profile_manager_;
   net::EmbeddedTestServer test_server_;
   scoped_refptr<network::TestSharedURLLoaderFactory> url_loader_factory_ =
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>(

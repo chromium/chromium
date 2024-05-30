@@ -75,6 +75,7 @@ class TestGlanceablesClassroomClient : public GlanceablesClassroomClient {
   }
 
   // GlanceablesClassroomClient:
+  bool IsDisabledByAdmin() const override { return false; }
   void IsStudentRoleActive(
       GlanceablesClassroomClient::IsRoleEnabledCallback cb) override {
     pending_is_student_role_enabled_callbacks_.push_back(std::move(cb));

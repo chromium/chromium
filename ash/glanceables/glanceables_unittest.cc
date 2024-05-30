@@ -30,8 +30,16 @@
 
 namespace ash {
 
-class GlanceablesTest : public AshTestBase {
+class GlanceablesBaseTest : public AshTestBase {
  public:
+  GlanceablesBaseTest() {
+    features_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kGlanceablesTimeManagementTasksView,
+         features::kGlanceablesTimeManagementClassroomStudentView},
+        /*disabled_features=*/{});
+  }
+
   void SetUp() override {
     AshTestBase::SetUp();
 
@@ -39,32 +47,69 @@ class GlanceablesTest : public AshTestBase {
         AccountId::FromUserEmailGaiaId("test_user@gmail.com", "123456");
     SimulateUserLogin(account_id);
 
+    classroom_client_ = std::make_unique<FakeGlanceablesClassroomClient>();
     tasks_client_ = glanceables_tasks_test_util::InitializeFakeTasksClient(
         base::Time::Now());
     Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
         account_id, GlanceablesController::ClientsRegistration{
+                        .classroom_client = classroom_client_.get(),
                         .tasks_client = tasks_client_.get()});
+    ASSERT_TRUE(Shell::Get()->glanceables_controller()->GetClassroomClient());
+    ASSERT_TRUE(Shell::Get()->glanceables_controller()->GetTasksClient());
   }
 
+  FakeGlanceablesClassroomClient* classroom_client() const {
+    return classroom_client_.get();
+  }
   api::FakeTasksClient* tasks_client() const { return tasks_client_.get(); }
+  DateTray* date_tray() const {
+    return StatusAreaWidgetTestHelper::GetStatusAreaWidget()->date_tray();
+  }
 
  private:
-  base::test::ScopedFeatureList features{
-      features::kGlanceablesTimeManagementTasksView};
+  base::test::ScopedFeatureList features_;
+  std::unique_ptr<FakeGlanceablesClassroomClient> classroom_client_;
   std::unique_ptr<api::FakeTasksClient> tasks_client_;
 };
 
-TEST_F(GlanceablesTest, DoesNotAddTasksViewWhenDisabledByAdmin) {
-  auto* const date_tray =
-      StatusAreaWidgetTestHelper::GetStatusAreaWidget()->date_tray();
-
+TEST_F(GlanceablesBaseTest, DoesNotAddClassroomViewWhenDisabledByAdmin) {
   // Open Glanceables via Search + C, make sure the bubble is shown with the
-  // Tasks view available.
-  EXPECT_FALSE(date_tray->is_active());
+  // Classroom view available.
+  EXPECT_FALSE(date_tray()->is_active());
   ShellTestApi().PressAccelerator(
       ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
-  EXPECT_TRUE(date_tray->is_active());
-  EXPECT_TRUE(date_tray->glanceables_bubble_for_test()->GetTasksView());
+  EXPECT_TRUE(date_tray()->is_active());
+  EXPECT_TRUE(
+      date_tray()->glanceables_bubble_for_test()->GetClassroomStudentView());
+
+  // Close Glanceables.
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+
+  // Simulate that admin disables the integration.
+  classroom_client()->set_is_disabled_by_admin(true);
+
+  // Open Glanceables via Search + C again, make sure the bubble no longer
+  // contains the Classroom view.
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+  EXPECT_TRUE(date_tray()->is_active());
+  EXPECT_FALSE(
+      date_tray()->glanceables_bubble_for_test()->GetClassroomStudentView());
+
+  // Close Glanceables.
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+}
+
+TEST_F(GlanceablesBaseTest, DoesNotAddTasksViewWhenDisabledByAdmin) {
+  // Open Glanceables via Search + C, make sure the bubble is shown with the
+  // Tasks view available.
+  EXPECT_FALSE(date_tray()->is_active());
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+  EXPECT_TRUE(date_tray()->is_active());
+  EXPECT_TRUE(date_tray()->glanceables_bubble_for_test()->GetTasksView());
 
   // Close Glanceables.
   ShellTestApi().PressAccelerator(
@@ -77,51 +122,29 @@ TEST_F(GlanceablesTest, DoesNotAddTasksViewWhenDisabledByAdmin) {
   // contains the Tasks view.
   ShellTestApi().PressAccelerator(
       ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
-  EXPECT_TRUE(date_tray->is_active());
-  EXPECT_FALSE(date_tray->glanceables_bubble_for_test()->GetTasksView());
+  EXPECT_TRUE(date_tray()->is_active());
+  EXPECT_FALSE(date_tray()->glanceables_bubble_for_test()->GetTasksView());
 
   // Close Glanceables.
   ShellTestApi().PressAccelerator(
       ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
 }
 
-class GlanceablesTasksAndClassroomTest : public AshTestBase {
+class GlanceablesTasksAndClassroomTest : public GlanceablesBaseTest {
  public:
-  GlanceablesTasksAndClassroomTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kGlanceablesTimeManagementTasksView,
-         features::kGlanceablesTimeManagementClassroomStudentView},
-        /*disabled_features=*/{});
-  }
-
   void SetUp() override {
-    AshTestBase::SetUp();
-    SimulateUserLogin(account_id_);
-    fake_glanceables_tasks_client_ =
-        glanceables_tasks_test_util::InitializeFakeTasksClient(
-            base::Time::Now());
-    fake_glanceables_classroom_client_ =
-        std::make_unique<FakeGlanceablesClassroomClient>();
-    Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
-        account_id_,
-        GlanceablesController::ClientsRegistration{
-            .classroom_client = fake_glanceables_classroom_client_.get(),
-            .tasks_client = fake_glanceables_tasks_client_.get()});
-    ASSERT_TRUE(Shell::Get()->glanceables_controller()->GetTasksClient());
+    GlanceablesBaseTest::SetUp();
 
-    date_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()->date_tray();
-    date_tray_->ShowGlanceableBubble(/*from_keyboard=*/false);
+    date_tray()->ShowGlanceableBubble(/*from_keyboard=*/false);
     view_ = views::AsViewClass<GlanceableTrayBubbleView>(
-        date_tray_->glanceables_bubble_for_test()->GetBubbleView());
+        date_tray()->glanceables_bubble_for_test()->GetBubbleView());
 
     glanceables_util::SetIsNetworkConnectedForTest(true);
   }
 
   void TearDown() override {
-    date_tray_->HideGlanceableBubble();
+    date_tray()->HideGlanceableBubble();
     view_ = nullptr;
-    date_tray_ = nullptr;
     AshTestBase::TearDown();
   }
 
@@ -129,19 +152,18 @@ class GlanceablesTasksAndClassroomTest : public AshTestBase {
   void PopulateTasks(size_t num) {
     for (size_t i = 0; i < num; ++i) {
       auto num_string = base::NumberToString(i);
-      fake_glanceables_tasks_client_->AddTask(
-          "TaskListID1", base::StrCat({"title_", num_string}),
-          base::DoNothing());
+      tasks_client()->AddTask("TaskListID1",
+                              base::StrCat({"title_", num_string}),
+                              base::DoNothing());
     }
 
     // Simulate closing the glanceables bubble to cache the tasks.
-    fake_glanceables_tasks_client_->OnGlanceablesBubbleClosed(
-        base::DoNothing());
+    tasks_client()->OnGlanceablesBubbleClosed(base::DoNothing());
 
     // Recreate the tasks view to update the task views.
-    date_tray_->ShowGlanceableBubble(/*from_keyboard=*/false);
+    date_tray()->ShowGlanceableBubble(/*from_keyboard=*/false);
     view_ = views::AsViewClass<GlanceableTrayBubbleView>(
-        date_tray_->glanceables_bubble_for_test()->GetBubbleView());
+        date_tray()->glanceables_bubble_for_test()->GetBubbleView());
   }
 
   GlanceablesTasksView* GetTasksView() const {
@@ -178,15 +200,6 @@ class GlanceablesTasksAndClassroomTest : public AshTestBase {
   GlanceableTrayBubbleView* view() const { return view_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-
-  AccountId account_id_ =
-      AccountId::FromUserEmailGaiaId("test_user@gmail.com", "123456");
-  std::unique_ptr<api::FakeTasksClient> fake_glanceables_tasks_client_;
-  std::unique_ptr<FakeGlanceablesClassroomClient>
-      fake_glanceables_classroom_client_;
-
-  raw_ptr<DateTray> date_tray_ = nullptr;
   raw_ptr<GlanceableTrayBubbleView> view_ = nullptr;
 };
 

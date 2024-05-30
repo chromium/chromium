@@ -14,9 +14,12 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
+#include "ash/glanceables/glanceables_metrics.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -27,7 +30,15 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_classroom_course_work_item.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "components/policy/content/policy_blocklist_service.h"
+#include "components/policy/core/browser/url_blocklist_manager.h"
+#include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "google_apis/classroom/classroom_api_course_work_response_types.h"
 #include "google_apis/classroom/classroom_api_courses_response_types.h"
 #include "google_apis/classroom/classroom_api_list_course_work_request.h"
@@ -61,6 +72,8 @@ constexpr char kOwnCoursesFilterValue[] = "me";
 // Special parameter value to request student submissions for all course work in
 // the specified course.
 constexpr char kAllStudentSubmissionsParameterValue[] = "-";
+
+constexpr char kClassroomUrl[] = "https://classroom.google.com/";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("glanceables_classroom_integration", R"(
@@ -194,13 +207,65 @@ bool GlanceablesClassroomClientImpl::CourseWorkRequest::RespondIfComplete() {
 }
 
 GlanceablesClassroomClientImpl::GlanceablesClassroomClientImpl(
+    Profile* profile,
     base::Clock* clock,
     const GlanceablesClassroomClientImpl::CreateRequestSenderCallback&
         create_request_sender_callback)
-    : clock_(clock),
+    : profile_(profile),
+      clock_(clock),
       create_request_sender_callback_(create_request_sender_callback) {}
 
 GlanceablesClassroomClientImpl::~GlanceablesClassroomClientImpl() = default;
+
+bool GlanceablesClassroomClientImpl::IsDisabledByAdmin() const {
+  // 1) Check the pref.
+  const auto* const pref_service = profile_->GetPrefs();
+  if (!pref_service ||
+      !base::Contains(pref_service->GetList(
+                          prefs::kContextualGoogleIntegrationsConfiguration),
+                      prefs::kGoogleClassroomIntegrationName)) {
+    RecordContextualGoogleIntegrationStatus(
+        prefs::kGoogleClassroomIntegrationName,
+        ContextualGoogleIntegrationStatus::kDisabledByPolicy);
+    return true;
+  }
+
+  // 2) Check if the Classroom app is disabled by policy.
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+          profile_)) {
+    return true;
+  }
+  auto classroom_app_readiness = apps::Readiness::kUnknown;
+  apps::AppServiceProxyFactory::GetForProfile(profile_)
+      ->AppRegistryCache()
+      .ForOneApp(web_app::kGoogleClassroomAppId,
+                 [&classroom_app_readiness](const apps::AppUpdate& update) {
+                   classroom_app_readiness = update.Readiness();
+                 });
+  if (classroom_app_readiness == apps::Readiness::kDisabledByPolicy) {
+    RecordContextualGoogleIntegrationStatus(
+        prefs::kGoogleClassroomIntegrationName,
+        ContextualGoogleIntegrationStatus::kDisabledByAppBlock);
+    return true;
+  }
+
+  // 3) Check if the Classroom URL is blocked by policy.
+  const auto* const policy_blocklist_service =
+      PolicyBlocklistFactory::GetForBrowserContext(profile_);
+  if (!policy_blocklist_service ||
+      policy_blocklist_service->GetURLBlocklistState(GURL(kClassroomUrl)) ==
+          policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
+    RecordContextualGoogleIntegrationStatus(
+        prefs::kGoogleClassroomIntegrationName,
+        ContextualGoogleIntegrationStatus::kDisabledByUrlBlock);
+    return true;
+  }
+
+  RecordContextualGoogleIntegrationStatus(
+      prefs::kGoogleClassroomIntegrationName,
+      ContextualGoogleIntegrationStatus::kEnabled);
+  return false;
+}
 
 void GlanceablesClassroomClientImpl::IsStudentRoleActive(
     IsRoleEnabledCallback callback) {

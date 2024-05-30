@@ -23,6 +23,8 @@
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
 
+class Profile;
+
 namespace base {
 class Clock;
 class Time;
@@ -55,6 +57,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       const GlanceablesClassroomCourseWorkItem* rhs)>;
 
   GlanceablesClassroomClientImpl(
+      Profile* profile,
       base::Clock* clock,
       const CreateRequestSenderCallback& create_request_sender_callback);
   GlanceablesClassroomClientImpl(const GlanceablesClassroomClientImpl&) =
@@ -64,6 +67,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   ~GlanceablesClassroomClientImpl() override;
 
   // GlanceablesClassroomClient:
+  bool IsDisabledByAdmin() const override;
   void IsStudentRoleActive(IsRoleEnabledCallback callback) override;
   void GetCompletedStudentAssignments(GetAssignmentsCallback callback) override;
   void GetStudentAssignmentsWithApproachingDueDate(
@@ -387,6 +391,9 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
 
   // Returns lazily initialized `request_sender_`.
   google_apis::RequestSender* GetRequestSender();
+
+  // The profile for which this instance was created.
+  const raw_ptr<Profile> profile_;
 
   // Clock to be used to retrieve current time - expected to be default clock in
   // production.
