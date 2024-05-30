@@ -13,6 +13,14 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 
+namespace ui {
+
+OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperWayland() {
+  return new wl::WaylandOzoneUIControlsTestHelper();
+}
+
+}  // namespace ui
+
 namespace wl {
 
 namespace {

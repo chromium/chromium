@@ -697,7 +697,6 @@ source_set("ui_test_support") {
   sources = [
     "emulate/wayland_input_emulate.cc",
     "emulate/wayland_input_emulate.h",
-    "test/ozone_ui_controls_test_helper.cc",
     "test/wayland_ozone_ui_controls_test_helper.cc",
     "test/wayland_ozone_ui_controls_test_helper.h",
   ]
