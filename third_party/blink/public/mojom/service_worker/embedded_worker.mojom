@@ -154,6 +154,11 @@ struct EmbeddedWorkerStartParams {
 
   // The StorageKey of the scope where the service worker is created.
   blink.mojom.StorageKey storage_key;
+
+  // The cors exempt header list to start ServiceWorker in the renderer. As the
+  // service worker thread could try to access cors_exempt_headers before its
+  // set on the main thread, directly pass the list from the browser process.
+  array<string> cors_exempt_header_list;
 };
 
 // Holds timing information about the start worker sequence for UMA.

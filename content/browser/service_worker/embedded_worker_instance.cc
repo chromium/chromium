@@ -304,6 +304,10 @@ void EmbeddedWorkerInstance::Start(
   {
     auto* storage_partition =
         static_cast<StoragePartitionImpl*>(rph->GetStoragePartition());
+
+    params->cors_exempt_header_list =
+        storage_partition->cors_exempt_header_list();
+
     // Create COEP reporter if COEP value is already available (= this worker is
     // not a worker which is going to be newly registered). The Mojo remote
     // `coep_reporter_` has the onwership of the instance. The `coep_reporter`

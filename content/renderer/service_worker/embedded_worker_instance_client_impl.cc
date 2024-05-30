@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -13,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "content/child/child_thread_impl.h"
 #include "content/child/scoped_child_process_reference.h"
+#include "content/common/features.h"
 #include "content/public/common/content_client.h"
 #include "content/renderer/policy_container_util.h"
 #include "content/renderer/service_worker/service_worker_context_client.h"
@@ -61,6 +64,28 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
                "EmbeddedWorkerInstanceClientImpl::StartWorker");
   auto start_timing = blink::mojom::EmbeddedWorkerStartTiming::New();
   start_timing->start_worker_received_time = base::TimeTicks::Now();
+
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerAvoidMainThreadForInitialization)) {
+    // If ServiceWorkerAvoidMainThreadForInitialization feature is enabled, the
+    // fake empty list is set to `cors_exempt_header_list_` here, so override it
+    // with the actual list which is from mojom::EmbeddedWorkerStartParams.
+    cors_exempt_header_list_ = std::move(params->cors_exempt_header_list);
+  } else {
+    // When the feature is not enabled, `cors_exempt_header_list_` and
+    // `params->cors_exempt_header_list` should have same list of headers.
+    if (cors_exempt_header_list_ != params->cors_exempt_header_list) {
+      static bool has_dumped_without_crashing = false;
+      if (!has_dumped_without_crashing) {
+        has_dumped_without_crashing = true;
+        SCOPED_CRASH_KEY_NUMBER("SWInit", "header_list_size",
+                                cors_exempt_header_list_.size());
+        SCOPED_CRASH_KEY_NUMBER("SWInit", "header_list_size_via_mojo",
+                                params->cors_exempt_header_list.size());
+        base::debug::DumpWithoutCrashing();
+      }
+    }
+  }
 
   std::unique_ptr<blink::WebEmbeddedWorkerStartData> start_data =
       BuildStartData(*params);

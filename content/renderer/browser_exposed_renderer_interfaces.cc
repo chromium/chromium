@@ -17,7 +17,9 @@
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "content/common/features.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/resource_usage_reporter.mojom.h"
@@ -145,11 +147,12 @@ void CreateResourceUsageReporter(
       std::move(receiver));
 }
 
-void CreateEmbeddedWorker(
+void CreateEmbeddedWorkerWithRenderMainThread(
     scoped_refptr<base::SingleThreadTaskRunner> initiator_task_runner,
     base::WeakPtr<RenderThreadImpl> render_thread,
     mojo::PendingReceiver<blink::mojom::EmbeddedWorkerInstanceClient>
         receiver) {
+  TRACE_EVENT0("ServiceWorker", "CreateEmbeddedWorkerWithRenderMainThread");
   initiator_task_runner->PostTask(
       FROM_HERE, base::BindOnce(&EmbeddedWorkerInstanceClientImpl::Create,
                                 initiator_task_runner,
@@ -157,6 +160,25 @@ void CreateEmbeddedWorker(
                                 std::move(receiver)));
 }
 
+void CreateEmbeddedWorker(
+    scoped_refptr<base::SingleThreadTaskRunner> initiator_task_runner,
+    mojo::PendingReceiver<blink::mojom::EmbeddedWorkerInstanceClient>
+        receiver) {
+  TRACE_EVENT0("ServiceWorker", "CreateEmbeddedWorker");
+  // An empty fake list is passed to
+  // `EmbeddedWorkerInstanceClientImpl::Create()`. That will be overridden by
+  // the actual cors exempt header list in
+  // `EmbeddedWorkerInstanceClientImpl::StartWorker()`.
+  //
+  // TODO(crbug.com/40753993): Remove this fake empty list once we confirmed
+  // this approach is fine.
+  const std::vector<std::string> fake_cors_exempt_header_list;
+  initiator_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&EmbeddedWorkerInstanceClientImpl::Create,
+                     initiator_task_runner, fake_cors_exempt_header_list,
+                     std::move(receiver)));
+}
 }  // namespace
 
 void ExposeRendererInterfacesToBrowser(
@@ -181,15 +203,30 @@ void ExposeRendererInterfacesToBrowser(
       base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-  // TODO(crbug.com/40753993): Bind on `task_runner_for_service_worker_startup`
-  // instead of the main thread, so startup isn't blocked on the main thread.
-  // Currently it's on the main thread as CreateEmbeddedWorker accesses
-  // `cors_exempt_header_list` from `render_thread`.
-  binders->Add<blink::mojom::EmbeddedWorkerInstanceClient>(
-      base::BindRepeating(&CreateEmbeddedWorker,
-                          task_runner_for_service_worker_startup,
-                          render_thread),
-      base::SingleThreadTaskRunner::GetCurrentDefault());
+  // TODO(crbug.com/40753993): Remove the feature flag and
+  // `CreateEmbeddedWorkerWithRenderMainThread()` once we confirmed this
+  // approach is fine.
+  //
+  // The kServiceWorkerAvoidMainThreadForInitialization feature flag is the
+  // experimental flag to avoid the additional thread hop over the main thread
+  // for the ServiceWorker initialization. Currently it's on the main thread as
+  // CreateEmbeddedWorker accesses `cors_exempt_header_list` from
+  // `render_thread`. When this feature flag is enabled, binds on
+  // `task_runner_for_service_worker_startup` instead of the main thread, so
+  // startup isn't blocked on the main thread.
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerAvoidMainThreadForInitialization)) {
+    binders->Add<blink::mojom::EmbeddedWorkerInstanceClient>(
+        base::BindRepeating(&CreateEmbeddedWorker,
+                            task_runner_for_service_worker_startup),
+        task_runner_for_service_worker_startup);
+  } else {
+    binders->Add<blink::mojom::EmbeddedWorkerInstanceClient>(
+        base::BindRepeating(&CreateEmbeddedWorkerWithRenderMainThread,
+                            task_runner_for_service_worker_startup,
+                            render_thread),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+  }
 
   GetContentClient()->renderer()->ExposeInterfacesToBrowser(binders);
 }

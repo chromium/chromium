@@ -238,6 +238,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.CorsExemptHeaderListSize" units="count"
+    expires_after="2024-08-28">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The size of `cors_exempt_header_list` passed from the browser in the
+    ServiceWorker startup.
+
+    This is recorded in `WebServiceWorkerFetchContext::Create()`, in order to
+    ensure the fix for crbug.com/40753993 doesn't introduce any changes to the
+    given `cors_exempt_header_list` used in the ServiceWorker.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.CountUse.CallerInterface"
     enum="WorkerOrWorkletInterfaceNameType" expires_after="2024-10-01">
   <owner>yyanagisawa@chromium.org</owner>

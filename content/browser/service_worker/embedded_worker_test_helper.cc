@@ -315,6 +315,11 @@ EmbeddedWorkerTestHelper::CreateStartParams(
   params->installed_scripts_info = GetInstalledScriptsInfoPtr();
   params->provider_info = CreateProviderInfo(std::move(version));
   params->policy_container = CreateStubPolicyContainer();
+  // Set a fake cors_exempt_header_list here instead of taking from the browser
+  // because the current ServiceWorkerContextWrapper doesn't have
+  // storage_partition. It's possible to set the storage partition but prefer
+  // this simple list for testing.
+  params->cors_exempt_header_list = std::vector<std::string>{"X-Exempt-Test"};
   return params;
 }
 

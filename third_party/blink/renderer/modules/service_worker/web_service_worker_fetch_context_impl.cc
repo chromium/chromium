@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/service_worker/web_service_worker_fetch_context_impl.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
@@ -42,6 +44,10 @@ WebServiceWorkerFetchContext::Create(
         pending_subresource_loader_updater,
     const WebVector<WebString>& web_cors_exempt_header_list,
     const bool is_third_party_context) {
+  base::UmaHistogramCounts100(
+      "ServiceWorker.CorsExemptHeaderListSize",
+      base::saturated_cast<int>(web_cors_exempt_header_list.size()));
+
   Vector<String> cors_exempt_header_list(
       base::checked_cast<wtf_size_t>(web_cors_exempt_header_list.size()));
   base::ranges::transform(web_cors_exempt_header_list,
