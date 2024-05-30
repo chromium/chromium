@@ -444,6 +444,8 @@ chromium-metrics-reviews@google.com.
   <int value="41" label="THROTTLING_UNKNOWN"/>
   <int value="42" label="FROZEN_ACCOUNT"/>
   <int value="43" label="HTTP_PRECONDITION_FAILED"/>
+  <int value="44" label="INVALID_RANGE"/>
+  <int value="45" label="UPLOADED_FRAGMENT_ALREADY_RECEIVED"/>
 </enum>
 
 <enum name="FileSystemProviderMountType">
