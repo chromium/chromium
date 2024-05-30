@@ -63,15 +63,19 @@ void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
     DVLOG(1) << "Invalid session params or failed to serialize session params.";
     return;
   }
-  // New session should override an existing one.
-  if (cookie_controller_) {
-    bool clear_params = cookie_controller_->url().spec() != params.site() ||
-                        cookie_controller_->session_id() != params.session_id();
+  // Only one session is supported at the moment. New session should override an
+  // existing one.
+  // TODO(http://b/325451275): only remove a session that has a matching key.
+  if (BoundSessionCookieController* controller = cookie_controller();
+      controller) {
+    bool clear_params = controller->url().spec() != params.site() ||
+                        controller->session_id() != params.session_id();
     if (clear_params) {
-      session_params_storage_->ClearParams(cookie_controller_->url().spec(),
-                                           cookie_controller_->session_id());
+      session_params_storage_->ClearParams(controller->url().spec(),
+                                           controller->session_id());
     }
-    cookie_controller_.reset();
+    cookie_controllers_.clear();
+    // `controller` is no longer valid and must not be used.
     RecordSessionTerminationTrigger(
         SessionTerminationTrigger::kSessionOverride);
     // Note: `NotifyBoundSessionTerminated()` is not called as new session is
@@ -87,25 +91,29 @@ void BoundSessionCookieRefreshServiceImpl::MaybeTerminateSession(
   }
 
   std::string session_id;
-  if (headers->GetNormalizedHeader(kGoogleSessionTerminationHeader,
-                                   &session_id)) {
-    if (session_id == cookie_controller_->session_id()) {
-      TerminateSession(SessionTerminationTrigger::kSessionTerminationHeader);
-    } else {
-      DVLOG(1) << "Session id on session termination header (" << session_id
-               << ") doesn't match with the current session id ("
-               << cookie_controller_->session_id() << ")";
-    }
+  if (!headers->GetNormalizedHeader(kGoogleSessionTerminationHeader,
+                                    &session_id)) {
+    return;
+  }
+
+  if (BoundSessionCookieController* controller = cookie_controller();
+      controller && controller->session_id() == session_id) {
+    TerminateSession(SessionTerminationTrigger::kSessionTerminationHeader);
+  } else {
+    DVLOG(1) << "Session termination header (session_id=" << session_id
+             << ") doesn't match any current session";
   }
 }
 
 chrome::mojom::BoundSessionThrottlerParamsPtr
 BoundSessionCookieRefreshServiceImpl::GetBoundSessionThrottlerParams() const {
-  if (!cookie_controller_) {
+  if (cookie_controllers_.empty()) {
     return chrome::mojom::BoundSessionThrottlerParamsPtr();
   }
 
-  return cookie_controller_->bound_session_throttler_params();
+  // TODO(http://b/325451269): update BoundSessionThrottlerParams to include
+  // include a list of bound sessions.
+  return cookie_controller()->bound_session_throttler_params();
 }
 
 void BoundSessionCookieRefreshServiceImpl::
@@ -129,14 +137,16 @@ void BoundSessionCookieRefreshServiceImpl::
 
 void BoundSessionCookieRefreshServiceImpl::HandleRequestBlockedOnCookie(
     HandleRequestBlockedOnCookieCallback resume_blocked_request) {
-  if (!cookie_controller_) {
+  if (cookie_controllers_.empty()) {
     // Session has been terminated.
     std::move(resume_blocked_request)
         .Run(chrome::mojom::ResumeBlockedRequestsTrigger::
                  kShutdownOrSessionTermination);
     return;
   }
-  cookie_controller_->HandleRequestBlockedOnCookie(
+  // TODO(http://b/325450696): propagate the callback to all relevant
+  // controllers.
+  cookie_controller()->HandleRequestBlockedOnCookie(
       std::move(resume_blocked_request));
 }
 
@@ -191,6 +201,14 @@ void BoundSessionCookieRefreshServiceImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+BoundSessionCookieController*
+BoundSessionCookieRefreshServiceImpl::cookie_controller() const {
+  if (cookie_controllers_.empty()) {
+    return nullptr;
+  }
+  return cookie_controllers_.begin()->second.get();
+}
+
 void BoundSessionCookieRefreshServiceImpl::OnRegistrationRequestComplete(
     std::optional<bound_session_credentials::BoundSessionParams>
         bound_session_params) {
@@ -215,8 +233,9 @@ void BoundSessionCookieRefreshServiceImpl::OnStorageKeyDataCleared(
     content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
     const base::Time begin,
     const base::Time end) {
+  BoundSessionCookieController* controller = cookie_controller();
   // No active session is running. Nothing to terminate.
-  if (!cookie_controller_) {
+  if (!controller) {
     return;
   }
 
@@ -227,8 +246,7 @@ void BoundSessionCookieRefreshServiceImpl::OnStorageKeyDataCleared(
   }
 
   // Only terminate a session if it was created within the specified time range.
-  base::Time session_creation_time =
-      cookie_controller_->session_creation_time();
+  base::Time session_creation_time = controller->session_creation_time();
   if (session_creation_time < begin || session_creation_time > end) {
     return;
   }
@@ -237,7 +255,7 @@ void BoundSessionCookieRefreshServiceImpl::OnStorageKeyDataCleared(
   // Bound sessions are only supported in first-party contexts, so it's
   // acceptable to use `blink::StorageKey::CreateFirstParty()`.
   if (!storage_key_matcher.Run(blink::StorageKey::CreateFirstParty(
-          url::Origin::Create(cookie_controller_->url())))) {
+          url::Origin::Create(controller->url())))) {
     return;
   }
 
@@ -258,10 +276,18 @@ BoundSessionCookieRefreshServiceImpl::CreateBoundSessionCookieController(
 
 void BoundSessionCookieRefreshServiceImpl::InitializeBoundSession(
     const bound_session_credentials::BoundSessionParams& bound_session_params) {
-  CHECK(!cookie_controller_);
-  cookie_controller_ = CreateBoundSessionCookieController(
-      bound_session_params, is_off_the_record_profile_);
-  cookie_controller_->Initialize();
+  // TODO(http://b/325451275): remove this CHECK once multiple sessions are
+  // supported.
+  CHECK(cookie_controllers_.empty());
+  std::unique_ptr<BoundSessionCookieController> controller =
+      CreateBoundSessionCookieController(bound_session_params,
+                                         is_off_the_record_profile_);
+  BoundSessionKey key = {.site = controller->url(),
+                         .session_id = controller->session_id()};
+  auto [it, inserted] =
+      cookie_controllers_.emplace(std::move(key), std::move(controller));
+  CHECK(inserted);
+  it->second->Initialize();
   UpdateAllRenderers();
 }
 
@@ -276,11 +302,15 @@ void BoundSessionCookieRefreshServiceImpl::UpdateAllRenderers() {
 
 void BoundSessionCookieRefreshServiceImpl::TerminateSession(
     SessionTerminationTrigger trigger) {
-  CHECK(cookie_controller_);
-  GURL session_url = cookie_controller_->url();
+  BoundSessionCookieController* controller = cookie_controller();
+  CHECK(controller);
+  // Save some values locally on the stack before destroying `controller`.
+  GURL session_url = controller->url();
   base::flat_set<std::string> bound_cookie_names =
-      cookie_controller_->bound_cookie_names();
-  cookie_controller_.reset();
+      controller->bound_cookie_names();
+  cookie_controllers_.clear();
+  // `controller` is no longer valid and must not be used.
+
   // TODO(b/300627729): stop clearing all params once multiple sessions are
   // supported.
   session_params_storage_->ClearAllParams();

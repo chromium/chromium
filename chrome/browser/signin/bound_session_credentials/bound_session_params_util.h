@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/time/time.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_key.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 
 class GURL;
@@ -21,6 +22,9 @@ base::Time TimestampToTime(const Timestamp& timestamp);
 bool AreParamsValid(const BoundSessionParams& bound_session_params);
 
 bool IsCookieCredentialValid(const Credential& credential, const GURL& site);
+
+BoundSessionKey GetBoundSessionKey(
+    const BoundSessionParams& bound_session_params);
 
 bool AreSameSessionParams(const BoundSessionParams& lhs,
                           const BoundSessionParams& rhs);

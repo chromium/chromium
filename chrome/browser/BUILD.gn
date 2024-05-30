@@ -7319,6 +7319,7 @@ static_library("browser") {
       "signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h",
       "signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.cc",
       "signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h",
+      "signin/bound_session_credentials/bound_session_key.h",
       "signin/bound_session_credentials/bound_session_params_storage.cc",
       "signin/bound_session_credentials/bound_session_params_storage.h",
       "signin/bound_session_credentials/bound_session_params_util.cc",
