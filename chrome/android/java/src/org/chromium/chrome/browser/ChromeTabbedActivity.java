@@ -233,6 +233,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceDelegate;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
@@ -932,20 +933,23 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private @Nullable ObservableSupplier<Integer> getHubOverviewColorSupplier() {
         if (!HubFieldTrial.isHubEnabled()) return null;
 
-        ObservableSupplierImpl<Integer> overviewIncognitoSupplier = new ObservableSupplierImpl<>();
+        // Prior to Hub creation we don't know what color to use. Default to the background color
+        // since this shouldn't be visible.
+        ObservableSupplierImpl<Integer> overviewColorSupplier =
+                new ObservableSupplierImpl<>(SemanticColorUtils.getDefaultBgColor(this));
         mHubManagerSupplier.onAvailable(
                 (hubManager) -> {
                     ObservableSupplier<Pane> paneSupplier =
                             hubManager.getPaneManager().getFocusedPaneSupplier();
                     Callback<Pane> paneObserver =
                             pane ->
-                                    overviewIncognitoSupplier.set(
+                                    overviewColorSupplier.set(
                                             hubManager.getHubController().getBackgroundColor(pane));
                     paneSupplier.addObserver(paneObserver);
                     mCleanUpHubOverviewColorObserver =
                             () -> paneSupplier.removeObserver(paneObserver);
                 });
-        return overviewIncognitoSupplier;
+        return overviewColorSupplier;
     }
 
     private Pane createTabSwitcherPane(boolean isIncognito) {

@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -281,6 +282,13 @@ public class ToolbarTest {
                                         .getContainerViewForTesting()
                                         .getHeight(),
                                 Matchers.equalTo(toolbarLayoutHeight)));
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                activity.getToolbarManager()
+                                        .getStatusBarColorController()
+                                        .getStatusBarColorWithoutStatusIndicator(),
+                                Matchers.equalTo(activity.getToolbarManager().getPrimaryColor())));
 
         TabStripTransitionCoordinator.setMinScreenWidthForTesting(1);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -295,6 +303,15 @@ public class ToolbarTest {
                                         .getContainerViewForTesting()
                                         .getHeight(),
                                 Matchers.equalTo(toolbarLayoutHeight + tabStripHeightResource)));
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                activity.getToolbarManager()
+                                        .getStatusBarColorController()
+                                        .getStatusBarColorWithoutStatusIndicator(),
+                                Matchers.equalTo(
+                                        TabUiThemeUtil.getTabStripBackgroundColor(
+                                                activity, /* isIncognito= */ false))));
     }
 
     private void checkTabStripHeightOnUiThread(int tabStripHeight) {
