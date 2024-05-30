@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/display/screen_orientation_controller.h"
+#include "ash/shell.h"
 #include "ash/webui/demo_mode_app_ui/demo_mode_app_untrusted_ui.h"
 #include "ash/webui/demo_mode_app_ui/url_constants.h"
 #include "ash/webui/web_applications/test/sandboxed_web_ui_test_base.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -28,6 +31,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -342,6 +346,8 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
                       content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1));
 }
 
+// Launch the demo mode web app from the component content, and verify that
+// the orientation is locked to landscape.
 IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
                        LaunchWebAppFromComponentContent) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -379,6 +385,37 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   LaunchApp(std::move(params));
   run_loop.Run();
+
+  // Set up the display.
+  display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+  ash::ScreenOrientationController* screen_orientation_controller =
+      ash::Shell::Get()->screen_orientation_controller();
+
+  // Enable the tablet mode to allow the auto rotation and the screen
+  // orientation lock.
+  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
+  tablet_mode_controller->SetEnabledForTest(true);
+  EXPECT_TRUE(tablet_mode_controller->is_in_tablet_physical_state());
+  EXPECT_TRUE(screen_orientation_controller->IsAutoRotationAllowed());
+
+  // The rotation is locked because we locked the orientation of the app.
+  EXPECT_TRUE(screen_orientation_controller->rotation_locked());
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
+            screen_orientation_controller->GetCurrentOrientation());
+
+  // We locked the orientation of the app, but we did not lock the orientation
+  // of the device.
+  EXPECT_FALSE(screen_orientation_controller->user_rotation_locked());
+
+  // Simulate rotating device to portrait.
+  screen_orientation_controller->SetLockToRotation(display::Display::ROTATE_90);
+
+  // The app orientation is locked to landscape so remains unchanged.
+  EXPECT_EQ(chromeos::OrientationType::kLandscapePrimary,
+            screen_orientation_controller->GetCurrentOrientation());
+  // Since we locked the device to 90 degrees, the device rotation is locked.
+  EXPECT_TRUE(screen_orientation_controller->user_rotation_locked());
 }
 
 // Test that the Demo Mode Highlight App has a minimum window size of 800 pixels
