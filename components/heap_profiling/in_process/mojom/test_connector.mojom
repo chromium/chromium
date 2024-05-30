@@ -11,12 +11,14 @@ import "components/metrics/public/mojom/call_stack_profile_collector.mojom";
 // metrics.mojom.CallStacksProfileCollector (child->browser) connections in a
 // multiprocess test.
 interface TestConnector {
-  // Passes interfaces to the child, which should reply once they're bound.
-  Connect(
-      pending_receiver<heap_profiling.mojom.SnapshotController>
-          snapshot_controller,
-      pending_remote<metrics.mojom.CallStackProfileCollector>
-          profile_collector) => ();
+  // Passes `controller` to the child, which should reply once it's bound.
+  ConnectSnapshotController(
+      pending_receiver<heap_profiling.mojom.SnapshotController> controller) =>
+      ();
+
+  // Passes `collector` to the child, which should reply once it's bound.
+  ConnectProfileCollector(
+      pending_remote<metrics.mojom.CallStackProfileCollector> collector) => ();
 
   // Tells the child the test is over.
   Disconnect();

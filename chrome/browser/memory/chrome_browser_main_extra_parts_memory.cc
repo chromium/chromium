@@ -16,6 +16,7 @@
 #include "components/heap_profiling/in_process/browser_process_snapshot_controller.h"
 #include "components/heap_profiling/in_process/mojom/snapshot_controller.mojom.h"
 #include "content/public/browser/browser_child_process_host.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -35,12 +36,12 @@ void BindHeapSnapshotControllerToProcessHost(
     mojo::PendingReceiver<heap_profiling::mojom::SnapshotController> receiver) {
   // `child_process_id` could refer to a BrowserChildProcessHost or
   // RenderProcessHost.
-  if (auto* browser_child_process_host =
-          content::BrowserChildProcessHost::FromID(child_process_id)) {
-    browser_child_process_host->GetHost()->BindReceiver(std::move(receiver));
-  } else if (auto* render_process_host =
-                 content::RenderProcessHost::FromID(child_process_id)) {
-    render_process_host->BindReceiver(std::move(receiver));
+  if (auto* bcph = content::BrowserChildProcessHost::FromID(child_process_id)) {
+    bcph->GetHost()->BindReceiver(std::move(receiver));
+  } else if (auto* rph = content::RenderProcessHost::FromID(child_process_id)) {
+    if (!rph->GetBrowserContext()->IsOffTheRecord()) {
+      rph->BindReceiver(std::move(receiver));
+    }
   }
 }
 
