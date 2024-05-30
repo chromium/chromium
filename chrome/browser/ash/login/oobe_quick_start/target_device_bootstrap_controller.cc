@@ -89,7 +89,12 @@ TargetDeviceBootstrapController::GetAsWeakPtrForClient() {
 }
 
 void TargetDeviceBootstrapController::StartAdvertisingAndMaybeGetQRCode() {
-  CHECK_EQ(status_.step, Step::NONE);
+  // Status may be SETUP_COMPLETE here if a user "completed" Quick Start upon
+  // selecting an unsupported account type (edu, enterprise, or unicorn), but
+  // then goes back and attempts to setup with Quick Start again.
+  constexpr Step kPossibleSteps[] = {Step::NONE, Step::SETUP_COMPLETE};
+  CHECK(base::Contains(kPossibleSteps, status_.step))
+      << "Unexpected status step: " << status_.step;
   session_context_.FillOrResetSession();
 
   bool use_pin_authentication =

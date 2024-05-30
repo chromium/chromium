@@ -333,6 +333,7 @@ void QuickStartController::AbortFlow(AbortFlowReason reason) {
       AbortFlowReason::ENTERPRISE_ENROLLMENT, AbortFlowReason::SIGNIN_SCHOOL,
       AbortFlowReason::ADD_CHILD};
   if (base::Contains(kUnsupportedUserTypes, reason)) {
+    QS_LOG(INFO) << "Aborting flow due to unsupported user type: " << reason;
     bootstrap_controller_->OnSetupComplete();
     return;
   }
