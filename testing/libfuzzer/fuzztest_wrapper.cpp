@@ -28,6 +28,9 @@ void HandleReplayMode(auto& args) {
   // We're handling a centipede based fuzzer. If the last argument is a
   // filepath, we're trying to replay a testcase, since it doesn't make sense
   // to get a filepath when running with the centipede binary.
+  if (args.size() <= 1) {
+    return;
+  }
   base::FilePath test_case(args.back());
   if (!base::PathExists(test_case)) {
     return;
