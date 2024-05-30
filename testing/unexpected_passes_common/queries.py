@@ -139,27 +139,17 @@ class BigQueryQuerier(object):
     # produce data we care about.
     builders = self._FilterOutInactiveBuilders(builders, builder_type)
 
-    # If we don't have an explicit number of jobs set, spin up a separate
-    # process for each query/add step. This is wasteful in the sense that we'll
-    # have a bunch of idle processes once faster steps start finishing, but
-    # ensures that we start slow queries early and avoids the overhead of
-    # passing large amounts of data between processes. See crbug.com/1182459 for
-    # more information on performance considerations.
     num_jobs = self._num_jobs or len(builders)
-    args = [(b, expectation_map) for b in builders]
+    expectation_map_lock = threading.Lock()
+    args = [(b, expectation_map, expectation_map_lock) for b in builders]
 
-    tmp_expectation_map = data_types.TestExpectationMap()
     all_unmatched_results = {}
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=num_jobs) as pool:
       for result in pool.map(self._QueryAddCombined, args):
-        unmatched_results, prefixed_builder_name, merge_map = result
-        tmp_expectation_map.Merge(merge_map, expectation_map)
+        unmatched_results, prefixed_builder_name = result
         if unmatched_results:
           all_unmatched_results[prefixed_builder_name] = unmatched_results
-
-    expectation_map.clear()
-    expectation_map.update(tmp_expectation_map)
 
     logging.debug('Filling expectation map took %f', time.time() - start_time)
     return all_unmatched_results
@@ -210,21 +200,26 @@ class BigQueryQuerier(object):
     return filtered_builders
 
   def _QueryAddCombined(
-      self,
-      inputs: Tuple[data_types.BuilderEntry, data_types.TestExpectationMap]
-  ) -> Tuple[data_types.ResultListType, str, data_types.TestExpectationMap]:
+      self, inputs: Tuple[data_types.BuilderEntry,
+                          data_types.TestExpectationMap, threading.Lock]
+  ) -> Tuple[data_types.ResultListType, str]:
     """Combines the query and add steps for use in a process pool.
 
     Args:
       inputs: An iterable of inputs for QueryBuilder() and
           data_types.TestExpectationMap.AddResultList(). Should be in the order:
-          builder expectation_map
+          builder expectation_map expectation_map_lock
+
+          |expectation_map| will be modified in place.
 
     Returns:
-      The output of data_types.TestExpectationMap.AddResultList().
+      A tuple (unmatched_results, prefixed_builder_name). |unmatched_results| is
+      the output of data_types.TestExpectationMap.AddResultList().
+      |prefixed_builder_name| is a string representation of |builder| prefixed
+      with the project and builder type.
     """
     start_time = time.time()
-    builder, expectation_map = inputs
+    builder, expectation_map, expectation_map_lock = inputs
     logging.debug('Starting query for builder %s', builder.name)
     results, expectation_files = self.QueryBuilder(builder)
     logging.debug('Query for builder %s took %f', builder.name,
@@ -234,13 +229,14 @@ class BigQueryQuerier(object):
     prefixed_builder_name = '%s/%s:%s' % (builder.project, builder.builder_type,
                                           builder.name)
     logging.debug('Starting data processing for builder %s', builder.name)
-    unmatched_results = expectation_map.AddResultList(prefixed_builder_name,
-                                                      results,
-                                                      expectation_files)
+    with expectation_map_lock:
+      unmatched_results = expectation_map.AddResultList(prefixed_builder_name,
+                                                        results,
+                                                        expectation_files)
     logging.debug('Data processing for builder %s took %f', builder.name,
                   time.time() - start_time)
 
-    return unmatched_results, prefixed_builder_name, expectation_map
+    return unmatched_results, prefixed_builder_name
 
   def QueryBuilder(self, builder: data_types.BuilderEntry
                    ) -> Tuple[data_types.ResultListType, Optional[List[str]]]:

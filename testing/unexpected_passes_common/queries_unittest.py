@@ -426,6 +426,46 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
                                       constants.BuilderTypes.CI, False)
           ])
 
+  def testForConcurrencyIssues(self):
+    """Tests that there are no concurrency issues. crbug.com/343631046."""
+
+    self._query_mock.return_value = ([
+        data_types.Result('foo', ['win'], 'Pass', 'step_name', 'build_id')
+    ], None)
+
+    expectation = data_types.Expectation('foo', ['win'], 'RetryOnFailure')
+    expectation_map = data_types.TestExpectationMap({
+        'foo':
+        data_types.ExpectationBuilderMap({
+            expectation:
+            data_types.BuilderStepMap(),
+        }),
+    })
+
+    num_builders = 100
+    builder_list = []
+    for i in range(num_builders):
+      builder_list.append(
+          data_types.BuilderEntry(str(i), constants.BuilderTypes.CI, False))
+
+    stats = data_types.BuildStats()
+    stats.AddPassedBuild(frozenset(['win']))
+
+    expected_expectation_map = {
+        'foo': {
+            expectation: {},
+        }
+    }
+    for i in range(num_builders):
+      expected_expectation_map['foo'][expectation][f'chromium/ci:{i}'] = {
+          'step_name': stats,
+      }
+
+    _ = self._querier.FillExpectationMapForBuilders(expectation_map,
+                                                    builder_list)
+    self.assertEqual(expectation_map, expected_expectation_map)
+
+
 
 class FilterOutInactiveBuildersUnittest(unittest.TestCase):
   def setUp(self) -> None:
