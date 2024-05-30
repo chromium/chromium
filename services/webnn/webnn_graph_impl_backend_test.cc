@@ -2997,7 +2997,6 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {log(0.f), log(3.f), log(10.f)}}}
         .Test(*this);
   }
-#if !BUILDFLAG(IS_MAC)
   {
     ElementWiseUnaryTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -3009,7 +3008,6 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {1, 0, -1.1, 2.2, 0, -2}}}
         .Test(*this);
   }
-#endif
   {
     ElementWiseUnaryTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,

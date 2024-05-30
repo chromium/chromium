@@ -39,6 +39,7 @@
 #include "services/webnn/webnn_utils.h"
 #include "third_party/coremltools/mlmodel/format/FeatureTypes.pb.h"
 #include "third_party/coremltools/mlmodel/format/MIL.pb.h"
+#include "third_party/fp16/src/include/fp16.h"
 
 namespace webnn::coreml {
 
@@ -366,6 +367,11 @@ struct MilDataTypeMap<int32_t> {
       CoreML::Specification::MILSpec::DataType::INT32;
 };
 template <>
+struct MilDataTypeMap<int8_t> {
+  static constexpr CoreML::Specification::MILSpec::DataType value =
+      CoreML::Specification::MILSpec::DataType::INT8;
+};
+template <>
 struct MilDataTypeMap<Float16> {
   static constexpr CoreML::Specification::MILSpec::DataType value =
       CoreML::Specification::MILSpec::DataType::FLOAT16;
@@ -399,6 +405,13 @@ template <>
 void SetTensorValueForImmediateValue<Float16>(
     CoreML::Specification::MILSpec::TensorValue& tensor,
     base::span<const Float16> value) {
+  tensor.mutable_bytes()->mutable_values()->assign(
+      base::as_string_view(base::as_bytes(value)));
+}
+template <>
+void SetTensorValueForImmediateValue<int8_t>(
+    CoreML::Specification::MILSpec::TensorValue& tensor,
+    base::span<const int8_t> value) {
   tensor.mutable_bytes()->mutable_values()->assign(
       base::as_string_view(base::as_bytes(value)));
 }
@@ -1579,12 +1592,42 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
                                                 /*epsilon=*/0, block,
                                                 operand_op_name);
     }
-    case mojom::ElementWiseUnary::Kind::kNeg:
+    case mojom::ElementWiseUnary::Kind::kNeg: {
       CHECK(kFloatDataTypes.contains(input_data_type) ||
             input_data_type ==
                 CoreML::Specification::MILSpec::DataType::INT32 ||
             input_data_type == CoreML::Specification::MILSpec::DataType::INT8);
-      return NewNotSupportedError(NotSupportedOperatorError(operation));
+
+      // Implement this as mul(a, -1)
+      ASSIGN_OR_RETURN(uint64_t negative_one_operand_id,
+                       GenerateInternalOperandInfo(input_data_type,
+                                                   /*dimensions=*/{}));
+      CoreML::Specification::MILSpec::Value negative_one_value;
+      switch (input_data_type) {
+        case CoreML::Specification::MILSpec::DataType::FLOAT32:
+          negative_one_value = CreateScalarImmediateValue<float>(-1.0f);
+          break;
+        case CoreML::Specification::MILSpec::DataType::FLOAT16:
+          negative_one_value = CreateScalarImmediateValue<Float16>(
+              static_cast<Float16>(fp16_ieee_from_fp32_value(-1.0f)));
+          break;
+        case CoreML::Specification::MILSpec::DataType::INT32:
+          negative_one_value = CreateScalarImmediateValue<int32_t>(-1);
+          break;
+        case CoreML::Specification::MILSpec::DataType::INT8:
+          negative_one_value = CreateScalarImmediateValue<int8_t>(-1);
+          break;
+        default:
+          NOTREACHED_NORETURN();
+      }
+      RETURN_IF_ERROR(AddInternalConstantWithValue(negative_one_operand_id,
+                                                   negative_one_value, block));
+      return AddOperationForElementwiseBinary(
+          /*lhs_operand_id=*/operation.input_operand_id,
+          /*rhs_operand_id=*/negative_one_operand_id,
+          /*output_operand_id=*/operation.output_operand_id,
+          mojom::ElementWiseBinary::Kind::kMul, block);
+    }
     case mojom::ElementWiseUnary::Kind::kLogicalNot:
       CHECK_EQ(input_data_type,
                CoreML::Specification::MILSpec::DataType::UINT8);

@@ -32,12 +32,8 @@ namespace internal {
 template <typename T, typename... U>
 concept IsAnyOf = (std::same_as<T, U> || ...);
 template <typename T>
-concept IsSupportedTensorType = IsAnyOf<T,
-                                        Float16,
-                                        float,
-                                        int32_t,
-                                        char,
-                                        bool>;
+concept IsSupportedTensorType =
+    IsAnyOf<T, Float16, float, int32_t, int8_t, char, bool>;
 }  // namespace internal
 
 inline constexpr char kPlaceholderInputName[] = "placeholder";

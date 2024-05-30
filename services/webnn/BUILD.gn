@@ -26,6 +26,7 @@ if (is_posix) {
       "//base",
       "//services/webnn/public/mojom",
       "//third_party/coremltools:modelformat_proto",
+      "//third_party/fp16",
     ]
   }
 }
@@ -224,7 +225,6 @@ source_set("tests") {
 
   if (is_win) {
     deps += [
-      "//third_party/fp16",
       "//ui/gl",
       "//ui/gl/init",
     ]
