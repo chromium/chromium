@@ -54,6 +54,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinTSF
   // TSF event router and observer.
   std::unique_ptr<TSFEventObserver> tsf_event_observer_;
   std::unique_ptr<TSFEventRouter> tsf_event_router_;
+
+  bool is_focused_ = false;
 };
 
 }  // namespace ui
