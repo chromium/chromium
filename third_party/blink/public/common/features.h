@@ -781,6 +781,17 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 // If enabled, unused preload requests are deferred to the timing on LCP.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPDeferUnusedPreload);
 
+// The resource type which is excluded from the DeferUnusedPreload target.
+enum class LcppDeferUnusedPreloadExcludedResourceType {
+  kNone,
+  kStyleSheet,
+  kScript,
+  kMock,  // Only for testing.
+};
+BLINK_COMMON_EXPORT extern const base::FeatureParam<
+    LcppDeferUnusedPreloadExcludedResourceType>
+    kLcppDeferUnusedPreloadExcludedResourceType;
+
 // Unused preload requests are deferred if frequencies are above this threshold.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
     kLCPPDeferUnusedPreloadFrequencyThreshold;

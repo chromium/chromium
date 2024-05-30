@@ -1309,6 +1309,20 @@ BASE_FEATURE(kLCPPDeferUnusedPreload,
              "LCPPDeferUnusedPreload",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<LcppDeferUnusedPreloadExcludedResourceType>::Option
+    lcpp_defer_unused_preload_excluded_resource_type[] = {
+        {LcppDeferUnusedPreloadExcludedResourceType::kNone, "none"},
+        {LcppDeferUnusedPreloadExcludedResourceType::kStyleSheet, "stylesheet"},
+        {LcppDeferUnusedPreloadExcludedResourceType::kScript, "script"},
+        {LcppDeferUnusedPreloadExcludedResourceType::kMock, "mock"},
+};
+
+const base::FeatureParam<LcppDeferUnusedPreloadExcludedResourceType>
+    kLcppDeferUnusedPreloadExcludedResourceType{
+        &kLCPPDeferUnusedPreload, "excluded_resource_type",
+        LcppDeferUnusedPreloadExcludedResourceType::kNone,
+        &lcpp_defer_unused_preload_excluded_resource_type};
+
 const base::FeatureParam<double> kLCPPDeferUnusedPreloadFrequencyThreshold{
     &kLCPPDeferUnusedPreload, "lcpp_unused_preload_frequency_threshold", 0.5};
 

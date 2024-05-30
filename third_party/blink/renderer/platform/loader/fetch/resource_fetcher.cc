@@ -850,7 +850,7 @@ ResourceFetcher::DeferPolicy ResourceFetcher::GetDeferPolicy(
   }
 
   // Check if the resource is marked as a potentially unused preload request.
-  if (IsPotentiallyUnusedPreload(params)) {
+  if (IsPotentiallyUnusedPreload(type, params)) {
     return DeferPolicy::kDeferAndSchedule;
   }
 
@@ -3023,6 +3023,7 @@ void ResourceFetcher::MarkEarlyHintConsumedIfNeeded(
 }
 
 bool ResourceFetcher::IsPotentiallyUnusedPreload(
+    ResourceType type,
     const FetchParameters& params) const {
   static const bool kDeferUnusedPreload =
       base::FeatureList::IsEnabled(features::kLCPPDeferUnusedPreload);
@@ -3057,6 +3058,36 @@ bool ResourceFetcher::IsPotentiallyUnusedPreload(
   }
   if (!reason_matched) {
     return false;
+  }
+
+  static const LcppDeferUnusedPreloadExcludedResourceType
+      kExcludedResourceType =
+          features::kLcppDeferUnusedPreloadExcludedResourceType.Get();
+  LcppDeferUnusedPreloadExcludedResourceType excluded_resource_type;
+  if (defer_unused_preload_enabled_for_testing_) {
+    excluded_resource_type =
+        defer_unused_preload_excluded_resource_type_for_testing_;
+  } else {
+    excluded_resource_type = kExcludedResourceType;
+  }
+  switch (excluded_resource_type) {
+    case LcppDeferUnusedPreloadExcludedResourceType::kNone:
+      break;
+    case LcppDeferUnusedPreloadExcludedResourceType::kStyleSheet:
+      if (type == ResourceType::kCSSStyleSheet) {
+        return false;
+      }
+      break;
+    case LcppDeferUnusedPreloadExcludedResourceType::kScript:
+      if (type == ResourceType::kScript) {
+        return false;
+      }
+      break;
+    case LcppDeferUnusedPreloadExcludedResourceType::kMock:
+      if (type == ResourceType::kMock) {
+        return false;
+      }
+      break;
   }
 
   return base::Contains(context_->GetPotentiallyUnusedPreloads(), params.Url());
