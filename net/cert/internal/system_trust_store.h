@@ -36,10 +36,16 @@ class SystemTrustStore {
   // IsKnownRoot() returns true if the given certificate originated from the
   // system trust store and is a "standard" one. The meaning of "standard" is
   // that it is one of default trust anchors for the system, as opposed to a
-  // user-installed one.
+  // user-installed one. (It may *also* be trusted as a user-installed root.)
   virtual bool IsKnownRoot(const bssl::ParsedCertificate* cert) const = 0;
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  // IsLocallyTrustedRoot returns true if the given certificate is trusted in
+  // the user-installed root store. (It may *also* be trusted in the Chrome
+  // Root Store.)
+  virtual bool IsLocallyTrustedRoot(
+      const bssl::ParsedCertificate* trust_anchor) = 0;
+
   // Returns the current version of the Chrome Root Store being used. If
   // Chrome Root Store is not in use, returns 0.
   virtual int64_t chrome_root_store_version() const = 0;

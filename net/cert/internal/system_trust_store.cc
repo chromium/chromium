@@ -119,11 +119,15 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
 #if BUILDFLAG(IS_CHROMEOS)
     if (GetChromeOSTestTrustStore()) {
       trust_store_collection_.AddTrustStore(GetChromeOSTestTrustStore());
+      non_crs_trust_store_collection_.AddTrustStore(
+          GetChromeOSTestTrustStore());
     }
 #endif
     if (trust_store_system) {
       trust_store_collection_.AddTrustStore(trust_store_system);
+      non_crs_trust_store_collection_.AddTrustStore(trust_store_system);
     }
+
     trust_store_collection_.AddTrustStore(trust_store_chrome_.get());
   }
 
@@ -135,6 +139,12 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
   // opposed to a user-installed root)
   bool IsKnownRoot(const bssl::ParsedCertificate* trust_anchor) const override {
     return trust_store_chrome_->Contains(trust_anchor);
+  }
+
+  bool IsLocallyTrustedRoot(
+      const bssl::ParsedCertificate* trust_anchor) override {
+    return non_crs_trust_store_collection_.GetTrust(trust_anchor)
+        .IsTrustAnchor();
   }
 
   int64_t chrome_root_store_version() const override {
@@ -149,6 +159,7 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
  private:
   std::unique_ptr<TrustStoreChrome> trust_store_chrome_;
   bssl::TrustStoreCollection trust_store_collection_;
+  bssl::TrustStoreCollection non_crs_trust_store_collection_;
 };
 
 std::unique_ptr<SystemTrustStore> CreateChromeOnlySystemTrustStore(

@@ -224,6 +224,12 @@ class CertVerifyProcTrustStore {
       const bssl::ParsedCertificate* cert) const {
     return system_trust_store_->GetChromeRootConstraints(cert);
   }
+
+  bool IsNonChromeRootStoreTrustAnchor(
+      const bssl::ParsedCertificate* trust_anchor) const {
+    return IsAdditionalTrustAnchor(trust_anchor) ||
+           system_trust_store_->IsLocallyTrustedRoot(trust_anchor);
+  }
 #endif
 
   bool IsAdditionalTrustAnchor(
@@ -482,6 +488,13 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
   }
 
   void CheckChromeRootConstraints(bssl::CertPathBuilderResultPath* path) {
+    // If the root is trusted locally, do not enforce CRS constraints, even if
+    // some exist.
+    if (trust_store_->IsNonChromeRootStoreTrustAnchor(
+            path->certs.back().get())) {
+      return;
+    }
+
     if (base::span<const ChromeRootCertConstraints> constraints =
             trust_store_->GetChromeRootConstraints(path->certs.back().get());
         !constraints.empty()) {
