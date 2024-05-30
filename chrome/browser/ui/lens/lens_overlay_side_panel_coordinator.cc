@@ -236,6 +236,7 @@ void LensOverlaySidePanelCoordinator::RegisterEntry() {
         base::BindRepeating(
             &LensOverlaySidePanelCoordinator::GetOpenInNewTabUrl,
             base::Unretained(this)));
+    entry->SetProperty(kShouldShowTitleInSidePanelHeaderKey, false);
     registry->Register(std::move(entry));
 
     // Observe the side panel entry.

@@ -66,7 +66,7 @@ actions::ActionItem::ActionItemBuilder ChromeMenuAction(
 
 actions::ActionItem::ActionItemBuilder SidePanelAction(
     SidePanelEntryId id,
-    std::optional<int> title_id,
+    int title_id,
     int tooltip_id,
     const gfx::VectorIcon& icon,
     actions::ActionId action_id,
@@ -80,9 +80,7 @@ actions::ActionItem::ActionItemBuilder SidePanelAction(
              SidePanelUtil::CreateToggleSidePanelActionCallback(
                  SidePanelEntryKey(id), browser))
       .SetActionId(action_id)
-      .SetText(title_id.has_value()
-                   ? l10n_util::GetStringUTF16(title_id.value())
-                   : std::u16string())
+      .SetText(l10n_util::GetStringUTF16(title_id))
       .SetTooltipText(l10n_util::GetStringUTF16(tooltip_id))
       .SetImage(ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon,
                                                side_panel_icon_size))
@@ -198,7 +196,7 @@ void BrowserActions::InitializeBrowserActions() {
     root_action_item_->AddChild(
         actions::ActionItem::Builder(callback)
             .SetActionId(kActionSidePanelShowLensOverlayResults)
-            .SetText(std::u16string())
+            .SetText(l10n_util::GetStringUTF16(IDS_SHOW_LENS_OVERLAY))
             .SetTooltipText(l10n_util::GetStringUTF16(
                 IDS_SIDE_PANEL_LENS_OVERLAY_TOOLBAR_TOOLTIP))
             .SetImage(ui::ImageModel::FromVectorIcon(

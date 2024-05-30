@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "extensions/common/extension_id.h"
+#include "ui/base/class_property.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/view.h"
 
@@ -24,7 +25,7 @@ class SidePanelEntryObserver;
 
 // This class represents an entry inside the side panel. These are owned by
 // a SidePanelRegistry (either a per-tab or a per-window registry).
-class SidePanelEntry final {
+class SidePanelEntry final : public ui::PropertyHandler {
  public:
   using Id = SidePanelEntryId;
   using Key = SidePanelEntryKey;
@@ -48,7 +49,7 @@ class SidePanelEntry final {
                      create_content_callback);
   SidePanelEntry(const SidePanelEntry&) = delete;
   SidePanelEntry& operator=(const SidePanelEntry&) = delete;
-  ~SidePanelEntry();
+  ~SidePanelEntry() override;
 
   // Creates the content to be shown inside the side panel when this entry is
   // shown.
@@ -109,5 +110,8 @@ class SidePanelEntry final {
 
   base::WeakPtrFactory<SidePanelEntry> weak_factory_{this};
 };
+
+extern const ui::ClassProperty<bool>* const
+    kShouldShowTitleInSidePanelHeaderKey;
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ENTRY_H_

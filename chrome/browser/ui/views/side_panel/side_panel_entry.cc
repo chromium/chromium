@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kShouldShowTitleInSidePanelHeaderKey, true)
+
 SidePanelEntry::SidePanelEntry(
     Id id,
     std::u16string name,
