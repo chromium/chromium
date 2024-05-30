@@ -57,7 +57,10 @@ std::unique_ptr<syncer::EntityData> CreateSyncEntityData(
 
 webapps::AppId ManifestIdStrToAppId(const std::string& manifest_id) {
   GURL manifest_id_gurl(manifest_id);
-  CHECK(manifest_id_gurl.is_valid()) << "manifest_id: " << manifest_id;
+  if (!manifest_id_gurl.is_valid()) {
+    LOG(ERROR) << "Invalid manifest_id: " << manifest_id;
+    return "";
+  }
   return GenerateAppIdFromManifestId(manifest_id_gurl.GetWithoutRef());
 }
 
@@ -151,6 +154,14 @@ std::unique_ptr<webapps::ShortcutInfo> CreateShortcutInfoFromSpecifics(
   return shortcut_info;
 }
 
+// Legacy (pre-manifest-id) WebAPKs can have empty manifest_ids. These, in turn,
+// get translated into empty app_ids via ManifestIdStrToAppId(). If we end up
+// with an empty app_id, generally we need to abort Sync-handling and ignore
+// that WebAPK for Sync purposes.
+bool IsLegacyAppId(webapps::AppId app_id) {
+  return app_id.empty();
+}
+
 }  // anonymous namespace
 
 WebApkSyncBridge::WebApkSyncBridge(
@@ -235,6 +246,10 @@ void WebApkSyncBridge::ApplyIncrementalSyncChangesToRegistry(
   for (auto& app : update_data->apps_to_create) {
     webapps::AppId app_id =
         ManifestIdStrToAppId(app->sync_data().manifest_id());
+    if (IsLegacyAppId(app_id)) {
+      continue;
+    }
+
     auto it = registry_.find(app_id);
     if (it != registry_.end()) {
       registry_.erase(it);
@@ -257,7 +272,9 @@ bool WebApkSyncBridge::SyncDataContainsNewApps(
   for (const std::unique_ptr<sync_pb::WebApkSpecifics>& sync_update :
        installed_apps) {
     webapps::AppId app_id = ManifestIdStrToAppId(sync_update->manifest_id());
-    sync_update_from_installed_set.insert(app_id);
+    if (!IsLegacyAppId(app_id)) {
+      sync_update_from_installed_set.insert(app_id);
+    }
   }
 
   for (const auto& sync_change : sync_changes) {
@@ -404,6 +421,9 @@ void WebApkSyncBridge::OnWebApkUninstalled(const std::string& manifest_id) {
   }
 
   webapps::AppId app_id = ManifestIdStrToAppId(manifest_id);
+  if (IsLegacyAppId(app_id)) {
+    return;
+  }
   WebApkProto* app = GetAppByIdMutable(registry_, app_id);
 
   if (app == nullptr) {
@@ -522,6 +542,9 @@ void WebApkSyncBridge::RemoveOldWebAPKsFromSync(
 void WebApkSyncBridge::AddOrModifyAppInSync(std::unique_ptr<WebApkProto> app,
                                             bool is_install) {
   webapps::AppId app_id = ManifestIdStrToAppId(app->sync_data().manifest_id());
+  if (IsLegacyAppId(app_id)) {
+    return;
+  }
   RecordSyncedWebApkAdditionHistogram(is_install, registry_.count(app_id) > 0);
 
   std::unique_ptr<syncer::EntityData> entity_data =

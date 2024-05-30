@@ -159,6 +159,12 @@ class WebApkSyncBridgeTest : public ::testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
+TEST_F(WebApkSyncBridgeTest,
+       ManifestIdStrToAppId_DoesNotCrashOnEmptyStringOrInvalidManifestId) {
+  EXPECT_EQ(ManifestIdStrToAppId(""), "");
+  EXPECT_EQ(ManifestIdStrToAppId("%%"), "");
+}
+
 TEST_F(WebApkSyncBridgeTest, AppWasUsedRecently) {
   InitSyncBridge();
 
@@ -874,6 +880,18 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_CreateNewSyncEntry) {
                 .last_used_time_windows_epoch_micros());
   EXPECT_TRUE(db_registry.at(ManifestIdStrToAppId(manifest_id))
                   ->is_locally_installed());
+}
+
+TEST_F(WebApkSyncBridgeTest,
+       OnWebApkUninstalled_DoesNotCrashOnEmptyStringOrInvalidManifestId) {
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
+
+  InitSyncBridge();
+
+  sync_bridge().OnWebApkUninstalled("");
+  sync_bridge().OnWebApkUninstalled("%%");
 }
 
 TEST_F(WebApkSyncBridgeTest, OnWebApkUninstalled_AppTooOld) {

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import android.text.TextUtils;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
@@ -35,14 +37,17 @@ public class WebApkUninstallTracker {
             WebappDataStorage webappDataStorage =
                     WebappRegistry.getInstance().getWebappDataStorage(webApkId);
             if (webappDataStorage != null) {
-                WebApkSyncService.onWebApkUninstalled(webappDataStorage.getWebApkManifestId());
+                String manifestId = webappDataStorage.getWebApkManifestId();
+                if (!TextUtils.isEmpty(manifestId)) {
+                    WebApkSyncService.onWebApkUninstalled(manifestId);
+                }
 
                 long uninstallTimestamp = webappDataStorage.getWebApkUninstallTimestamp();
                 if (uninstallTimestamp == 0) {
                     uninstallTimestamp = fallbackUninstallTimestamp;
                 }
                 WebApkUkmRecorder.recordWebApkUninstall(
-                        webappDataStorage.getWebApkManifestId(),
+                        manifestId,
                         WebApkDistributor.BROWSER,
                         webappDataStorage.getWebApkVersionCode(),
                         webappDataStorage.getLaunchCount(),
