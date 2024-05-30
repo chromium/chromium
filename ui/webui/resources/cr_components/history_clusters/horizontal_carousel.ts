@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './history_clusters_shared_style.css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './horizontal_carousel.html.js';
+import {getCss} from './horizontal_carousel.css.js';
+import {getHtml} from './horizontal_carousel.html.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a horizontal
@@ -22,8 +21,6 @@ declare global {
   }
 }
 
-const HorizontalCarouselElementBase = I18nMixin(PolymerElement);
-
 export interface HorizontalCarouselElement {
   $: {
     carouselBackButton: HTMLElement,
@@ -32,27 +29,29 @@ export interface HorizontalCarouselElement {
   };
 }
 
-export class HorizontalCarouselElement extends HorizontalCarouselElementBase {
+export class HorizontalCarouselElement extends CrLitElement {
   static get is() {
     return 'horizontal-carousel';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       showForwardButton_: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       showBackButton_: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
@@ -63,8 +62,8 @@ export class HorizontalCarouselElement extends HorizontalCarouselElementBase {
 
   private resizeObserver_: ResizeObserver|null = null;
   private eventTracker_: EventTracker = new EventTracker();
-  private showBackButton_: boolean;
-  private showForwardButton_: boolean;
+  protected showBackButton_: boolean = false;
+  protected showForwardButton_: boolean = false;
 
   //============================================================================
   // Overridden methods
@@ -91,7 +90,7 @@ export class HorizontalCarouselElement extends HorizontalCarouselElementBase {
   // Event handlers
   //============================================================================
 
-  private onCarouselBackClick_() {
+  protected onCarouselBackClick_() {
     const targetPosition = this.calculateTargetPosition_(-1);
     this.$.carouselContainer.scrollTo(
         {left: targetPosition, behavior: 'smooth'});
@@ -99,7 +98,7 @@ export class HorizontalCarouselElement extends HorizontalCarouselElementBase {
     this.showForwardButton_ = true;
   }
 
-  private onCarouselForwardClick_() {
+  protected onCarouselForwardClick_() {
     const targetPosition = this.calculateTargetPosition_(1);
     this.$.carouselContainer.scrollTo(
         {left: targetPosition, behavior: 'smooth'});
