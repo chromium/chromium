@@ -8,12 +8,16 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/test/content_settings_mock_provider.h"
+#include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -89,6 +93,19 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
 
   void AllowUnsafeSitesForSupervisedUser(Profile* profile) {
     profile->GetPrefs()->SetBoolean(prefs::kSupervisedUserSafeSites, false);
+  }
+
+  void SetPermissionsToggleForSupervisedUser(Profile* profile, bool enabled) {
+    auto supervised_content_provider =
+        std::make_unique<content_settings::MockProvider>();
+    content_settings::TestUtils::OverrideProvider(
+        HostContentSettingsMapFactory::GetForProfile(profile),
+        std::move(supervised_content_provider),
+        content_settings::ProviderType::kSupervisedProvider);
+    HostContentSettingsMapFactory::GetForProfile(profile)
+        ->SetDefaultContentSetting(
+            ContentSettingsType::GEOLOCATION,
+            enabled ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
   }
 
  private:
@@ -237,6 +254,52 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   histogram_tester.ExpectUniqueSample(
       supervised_user::kFamilyLinkUserLogSegmentWebFilterHistogramName,
       supervised_user::WebFilterType::kMixed,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(FamilyLinkUserMetricsProviderTest,
+       AdultProfileDoesNotHavePermissionLogged) {
+  CreateTestingProfile(kTestEmail1, kTestProfile1,
+                       /*is_subject_to_parental_controls=*/false,
+                       /*is_opted_in_to_parental_supervision=*/false);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectBucketCount(
+      supervised_user::kSitesMayRequestCameraMicLocationHistogramName,
+      supervised_user::ToggleState::kDisabled,
+      /*expected_bucket_count=*/0);
+}
+
+TEST_F(FamilyLinkUserMetricsProviderTest,
+       SupervisedProfileWithBlockedGeolocationLoggedAsPermissionsDisabled) {
+  Profile* profile1 =
+      CreateTestingProfile(kTestEmail1, kTestProfile1,
+                           /*is_subject_to_parental_controls=*/true,
+                           /*is_opted_in_to_parental_supervision=*/false);
+  SetPermissionsToggleForSupervisedUser(profile1, false);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kSitesMayRequestCameraMicLocationHistogramName,
+      supervised_user::ToggleState::kDisabled,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(FamilyLinkUserMetricsProviderTest,
+       SupervisedProfileWithAllowedGeolocationLoggedAsPermissionsEnabled) {
+  Profile* profile1 =
+      CreateTestingProfile(kTestEmail1, kTestProfile1,
+                           /*is_subject_to_parental_controls=*/true,
+                           /*is_opted_in_to_parental_supervision=*/false);
+  SetPermissionsToggleForSupervisedUser(profile1, true);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kSitesMayRequestCameraMicLocationHistogramName,
+      supervised_user::ToggleState::kEnabled,
       /*expected_bucket_count=*/1);
 }
 

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -30,6 +31,17 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
   FamilyLinkUserLogRecordTest() {
     PrefRegistrySimple* registry = pref_service_.registry();
     supervised_user::RegisterProfilePrefs(registry);
+    HostContentSettingsMap::RegisterProfilePrefs(pref_service_.registry());
+    host_content_settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
+        &pref_service_,
+        /*is_off_the_record=*/false,
+        /*store_last_modified=*/false,
+        /*restore_session=*/false,
+        /*should_record_metrics=*/false);
+  }
+
+  ~FamilyLinkUserLogRecordTest() override {
+    host_content_settings_map_->ShutdownOnUIThread();
   }
 
   signin::IdentityTestEnvironment* GetIdentityTestEnv() {
@@ -44,7 +56,8 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
 
     return std::make_unique<FamilyLinkUserLogRecord>(
         FamilyLinkUserLogRecord::Create(identity_test_env_.identity_manager(),
-                                        pref_service_, &filter));
+                                        pref_service_,
+                                        *host_content_settings_map_, &filter));
   }
 
   std::unique_ptr<FamilyLinkUserLogRecord> CreateSupervisedUserWithWebFilter(
@@ -82,13 +95,15 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
 
     return std::make_unique<FamilyLinkUserLogRecord>(
         FamilyLinkUserLogRecord::Create(identity_test_env_.identity_manager(),
-                                        pref_service_, &filter));
+                                        pref_service_,
+                                        *host_content_settings_map_, &filter));
   }
 
  private:
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
+  scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
 };
 
 TEST_F(FamilyLinkUserLogRecordTest, SignedOutIsUnsupervised) {

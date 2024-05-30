@@ -10,6 +10,7 @@
 #import "components/supervised_user/core/browser/family_link_user_log_record.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
+#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
@@ -31,6 +32,7 @@ bool IOSFamilyLinkUserMetricsProvider::ProvideHistograms() {
     records.push_back(supervised_user::FamilyLinkUserLogRecord::Create(
         IdentityManagerFactory::GetForBrowserState(browser_state),
         *browser_state->GetPrefs(),
+        *ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state),
         service ? service->GetURLFilter() : nullptr));
   }
   return supervised_user::EmitLogRecordHistograms(records);

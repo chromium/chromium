@@ -689,27 +689,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SupervisedUsers.ExtensionsMayRequestPermissions"
-    enum="BooleanEnabled" expires_after="2024-11-03">
-  <owner>courtneywong@chromium.org</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <summary>
-    Records the state of the &quot;Permissions for sites, apps and
-    extensions&quot; toggle. When parents/custodians have the toggle enabled,
-    supervised users may install extensions with parent/custodian approval, and
-    can approve permission updates by themselves. Otherwise, supervised users
-    cannot install extensions and cannot approve permission updates. If the
-    toggle is disabled and an extension has permissions updates, the extension
-    would remain force-disabled. The Disabled count increments when the parent
-    flips the toggle off, and increments twice if the supervised user logs in
-    while the toggle is in the off state. The Enabled count increments when the
-    parent flips the toggle on, and increments twice if the supervised user logs
-    in while the toggle is in the on state. While the double counting upon
-    logging in is less than ideal, at least the counts are balanced relative to
-    each other.
-  </summary>
-</histogram>
-
 <histogram name="SupervisedUsers.ImplicitParentApprovalGrantEntryPoint"
     enum="SupervisedUserImplicitParentApprovalGrantEntryPoint"
     expires_after="2024-12-12">
@@ -791,6 +770,21 @@ chromium-metrics-reviews@google.com.
   <summary>
     The total number of PerAppTimeLimits policy changes seen in a session.
     Recorded once at the end of the session.
+  </summary>
+</histogram>
+
+<histogram name="SupervisedUsers.SitesMayRequestCameraMicLocation.PerRecord"
+    enum="SupervisedUserToggleState" expires_after="2024-11-03">
+  <owner>courtneywong@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records the state of the &quot;Permissions for sites&quot; toggle. When
+    parents/custodians have the toggle enabled websites may ask for camera,
+    microphone and location permission (and the supervised user can grant
+    these). When the toggle is disabled, requests for these permissions are
+    blocked. The value is recorded with every UMA record upload from the current
+    session. It should therefore be used as a filter, or looking at unique
+    client counts (raw counts are not meaningful).
   </summary>
 </histogram>
 

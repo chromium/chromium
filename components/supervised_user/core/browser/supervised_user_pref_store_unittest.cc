@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/supervised_user/core/browser/supervised_user_pref_store.h"
+
 #include <set>
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/safe_search_api/safe_search_util.h"
-#include "components/supervised_user/core/browser/supervised_user_pref_store.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -160,19 +160,10 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // The custodian can allow sites and apps to request permissions.
   // Currently tested indirectly by enabling geolocation requests.
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(
-      "SupervisedUsers.ExtensionsMayRequestPermissions", 0);
-
   fixture.changed_prefs()->clear();
   service_.SetLocalSetting(supervised_user::kGeolocationDisabled,
                            base::Value(false));
   EXPECT_EQ(0u, fixture.changed_prefs()->size());
-
-  histogram_tester.ExpectUniqueSample(
-      "SupervisedUsers.ExtensionsMayRequestPermissions", /*enabled=*/true, 1);
-  histogram_tester.ExpectTotalCount(
-      "SupervisedUsers.ExtensionsMayRequestPermissions", 1);
 
   fixture.changed_prefs()->clear();
   service_.SetLocalSetting(supervised_user::kGeolocationDisabled,
@@ -181,11 +172,6 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
                   prefs::kSupervisedUserExtensionsMayRequestPermissions),
               Optional(false));
-
-  histogram_tester.ExpectBucketCount(
-      "SupervisedUsers.ExtensionsMayRequestPermissions", /*enabled=*/false, 1);
-  histogram_tester.ExpectTotalCount(
-      "SupervisedUsers.ExtensionsMayRequestPermissions", 2);
 
   // The custodian allows extension installation without parental approval.
   // TODO(b/321240396): test suitable metrics.

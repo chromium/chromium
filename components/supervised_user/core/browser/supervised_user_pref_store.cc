@@ -168,11 +168,8 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
               .value_or(false);
       prefs_->SetBoolean(prefs::kSupervisedUserExtensionsMayRequestPermissions,
                          !permissions_disallowed);
-      base::UmaHistogramBoolean(
-          "SupervisedUsers.ExtensionsMayRequestPermissions",
-          !permissions_disallowed);
     }
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
 
   if (!old_prefs) {

@@ -125,6 +125,9 @@ extern const char kFamilyLinkUserLogSegmentHistogramName[];
 // This filter only applies to supervised user accounts.
 extern const char kFamilyLinkUserLogSegmentWebFilterHistogramName[];
 
+// Histogram name to log Family Link site permissions toggle state.
+extern const char kSitesMayRequestCameraMicLocationHistogramName[];
+
 // Histogram name to log Family Link extensions permissions toggle state.
 extern const char kSkipParentApprovalToInstallExtensionsHistogramName[];
 

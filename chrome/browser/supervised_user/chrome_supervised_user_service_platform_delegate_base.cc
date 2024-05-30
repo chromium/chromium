@@ -6,6 +6,7 @@
 
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -37,6 +38,7 @@ void ChromeSupervisedUserServicePlatformDelegateBase::
           supervised_user::FamilyLinkUserLogRecord::Create(
               IdentityManagerFactory::GetForProfile(&profile_.get()),
               *profile_->GetPrefs(),
+              *HostContentSettingsMapFactory::GetForProfile(&profile_.get()),
               supervised_user_service ? supervised_user_service->GetURLFilter()
                                       : nullptr)
               .GetSupervisionStatusForPrimaryAccount();
