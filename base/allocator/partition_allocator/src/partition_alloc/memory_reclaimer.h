@@ -51,6 +51,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) MemoryReclaimer {
 
   // Triggers an explicit reclaim now reclaiming all free memory
   void ReclaimAll();
+  // Same as ReclaimNormal(), but return early if reclaim takes too long.
+  void ReclaimFast();
 
  private:
   MemoryReclaimer();

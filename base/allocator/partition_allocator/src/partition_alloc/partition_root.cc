@@ -1508,6 +1508,8 @@ void PartitionRoot::PurgeMemory(int flags) {
   {
     ::partition_alloc::internal::ScopedGuard guard{
         internal::PartitionRootLock(this)};
+    auto start = now_maybe_overridden_for_testing();
+
 #if PA_BUILDFLAG(USE_STARSCAN)
     // Avoid purging if there is PCScan task currently scheduled. Since pcscan
     // takes snapshot of all allocated pages, decommitting pages here (even
@@ -1520,9 +1522,16 @@ void PartitionRoot::PurgeMemory(int flags) {
 
     if (flags & PurgeFlags::kDecommitEmptySlotSpans) {
       DecommitEmptySlotSpans();
+
+      if (flags & PurgeFlags::kLimitDuration &&
+          (now_maybe_overridden_for_testing() - start > kMaxPurgeDuration)) {
+        return;
+      }
     }
     if (flags & PurgeFlags::kDiscardUnusedSystemPages) {
-      for (Bucket& bucket : buckets) {
+      for (unsigned int bucket_index = purge_next_bucket_index;
+           bucket_index < internal::kNumBuckets; bucket_index++) {
+        Bucket& bucket = buckets[bucket_index];
         if (bucket.slot_size == internal::kInvalidBucketSize) {
           continue;
         }
@@ -1542,7 +1551,14 @@ void PartitionRoot::PurgeMemory(int flags) {
         if (sort_active_slot_spans_) {
           bucket.SortActiveSlotSpans();
         }
+        if (flags & PurgeFlags::kLimitDuration &&
+            (now_maybe_overridden_for_testing() - start > kMaxPurgeDuration)) {
+          // Pick up where we stopped next time.
+          purge_next_bucket_index = (bucket_index + 1) % kNumBuckets;
+          return;
+        }
       }
+      purge_next_bucket_index = 0;
     }
   }
 }

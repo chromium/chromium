@@ -264,6 +264,12 @@ BASE_FEATURE(kDisableMemoryReclaimerInBackground,
              "DisableMemoryReclaimerInBackground",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, limit the time memory reclaimer may take, returning early when
+// exceeded.
+BASE_FEATURE(kPartitionAllocShortMemoryReclaim,
+             "PartitionAllocShortMemoryReclaim",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // static
 MemoryReclaimerSupport& MemoryReclaimerSupport::Instance() {
   static base::NoDestructor<MemoryReclaimerSupport> instance;
@@ -328,7 +334,11 @@ void MemoryReclaimerSupport::Run() {
   {
     // Micros, since memory reclaiming should typically take at most a few ms.
     SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Memory.PartitionAlloc.MemoryReclaim");
-    ::partition_alloc::MemoryReclaimer::Instance()->ReclaimNormal();
+    if (base::FeatureList::IsEnabled(kPartitionAllocShortMemoryReclaim)) {
+      ::partition_alloc::MemoryReclaimer::Instance()->ReclaimFast();
+    } else {
+      ::partition_alloc::MemoryReclaimer::Instance()->ReclaimNormal();
+    }
   }
 
   MaybeScheduleTask();

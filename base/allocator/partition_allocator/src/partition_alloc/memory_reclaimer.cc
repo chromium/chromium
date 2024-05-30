@@ -52,6 +52,13 @@ void MemoryReclaimer::ReclaimNormal() {
   Reclaim(kFlags);
 }
 
+void MemoryReclaimer::ReclaimFast() {
+  constexpr int kFlags = PurgeFlags::kDecommitEmptySlotSpans |
+                         PurgeFlags::kDiscardUnusedSystemPages |
+                         PurgeFlags::kLimitDuration;
+  Reclaim(kFlags);
+}
+
 void MemoryReclaimer::Reclaim(int flags) {
   internal::ScopedGuard lock(
       lock_);  // Has to protect from concurrent (Un)Register calls.

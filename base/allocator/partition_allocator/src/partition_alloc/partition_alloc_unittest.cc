@@ -5674,6 +5674,47 @@ TEST_P(PartitionAllocTest, GlobalEmptySlotSpanRingIndexResets) {
 }
 #endif
 
+TEST_P(PartitionAllocTest, FastReclaim) {
+  static base::TimeTicks now = base::TimeTicks();
+  // Advances times by the same amount every time.
+  allocator.root()->now_maybe_overridden_for_testing = []() {
+    now += PartitionRoot::kMaxPurgeDuration / 10;
+    return now;
+  };
+
+  constexpr int kFlags = PurgeFlags::kDecommitEmptySlotSpans |
+                         PurgeFlags::kDiscardUnusedSystemPages;
+  allocator.root()->PurgeMemory(kFlags);
+  ASSERT_GT(now, base::TimeTicks());
+  // Here and below, using TS_UNCHECKED_READ since the root is not used
+  // conccurently.
+  //
+  // Went around all buckets.
+  EXPECT_EQ(TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index), 0u);
+
+  allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration);
+  // Ran out of time.
+  unsigned int next_bucket =
+      TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index);
+  EXPECT_NE(next_bucket, 0u);
+  allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration);
+  // Make some progress, but not through all buckets yet.
+  EXPECT_GT(TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index),
+            next_bucket);
+
+  allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration);
+  // Ran out of time.
+  EXPECT_NE(TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index), 0u);
+
+  // But eventually we make it through all buckets.
+  while (TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index) != 0) {
+    allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration);
+  }
+  // No expectation, test will time out if it's incorrect.
+
+  allocator.root()->now_maybe_overridden_for_testing = base::TimeTicks::Now;
+}
+
 }  // namespace partition_alloc::internal
 
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
