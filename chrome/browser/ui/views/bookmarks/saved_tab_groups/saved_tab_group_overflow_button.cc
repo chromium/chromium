@@ -38,7 +38,7 @@ SavedTabGroupOverflowButton::SavedTabGroupOverflowButton(
     PressedCallback callback)
     : views::MenuButton(std::move(callback)) {
   SetAccessibilityProperties(
-      ax::mojom::Role::kMenu,
+      ax::mojom::Role::kButton,
       l10n_util::GetStringUTF16(IsTabGroupsSaveUIUpdateEnabled()
                                     ? IDS_ACCNAME_TAB_GROUPS_EVERYTHING
                                     : IDS_ACCNAME_SAVED_TAB_GROUPS_CHEVRON));
@@ -55,14 +55,6 @@ SavedTabGroupOverflowButton::SavedTabGroupOverflowButton(
 }
 
 SavedTabGroupOverflowButton::~SavedTabGroupOverflowButton() = default;
-
-void SavedTabGroupOverflowButton::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  views::MenuButton::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kMenu;
-  node_data->SetNameChecked(
-      l10n_util::GetStringUTF8(IDS_ACCNAME_SAVED_TAB_GROUPS_CHEVRON));
-}
 
 std::unique_ptr<views::LabelButtonBorder>
 SavedTabGroupOverflowButton::CreateDefaultBorder() const {

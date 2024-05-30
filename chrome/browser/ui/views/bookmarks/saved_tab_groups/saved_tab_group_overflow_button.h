@@ -22,7 +22,6 @@ class SavedTabGroupOverflowButton : public views::MenuButton {
   SavedTabGroupOverflowButton& operator=(const SavedTabGroupOverflowButton&) =
       delete;
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::unique_ptr<views::LabelButtonBorder> CreateDefaultBorder()
       const override;
   void OnThemeChanged() override;
