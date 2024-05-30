@@ -11,10 +11,12 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -351,6 +353,7 @@ scoped_refptr<gpu::GpuChannelHost> Gpu::EstablishGpuChannelSync() {
   if (channel)
     return channel;
 
+  base::ElapsedTimer timer;
   SCOPED_UMA_HISTOGRAM_TIMER("GPU.EstablishGpuChannelSyncTime");
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
                             base::WaitableEvent::InitialState::SIGNALED);
@@ -361,6 +364,12 @@ scoped_refptr<gpu::GpuChannelHost> Gpu::EstablishGpuChannelSync() {
   // from calls to EstablishGpuChannel() before we return from here.
   pending_request_->FinishOnMain();
 
+  static bool first_run_in_process = true;
+  if (first_run_in_process) {
+    first_run_in_process = false;
+    base::UmaHistogramTimes("GPU.EstablishGpuChannelSyncTime.FirstRun",
+                            timer.Elapsed());
+  }
   return gpu_channel_;
 }
 

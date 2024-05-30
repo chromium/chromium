@@ -862,6 +862,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.EstablishGpuChannelSyncTime.FirstRun" units="ms"
+    expires_after="2024-08-27">
+  <owner>chikamune@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Measures the time it takes to synchronously establish the GPU channel.
+    Logged on the first run of a sync call to EstableGpuChannelSync is made.
+  </summary>
+</histogram>
+
 <histogram name="GPU.FallbackEventCause" enum="GPUFallbackEventCauseType"
     expires_after="2024-09-22">
   <owner>blundell@chromium.org</owner>
