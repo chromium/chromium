@@ -2301,6 +2301,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
         GetDidSwapBuffersCompleteCallback());
     return !!output_device_;
   }
+  NOTREACHED_NORETURN();
 
 #elif BUILDFLAG(IS_WIN)
   presenter_ = dependency_->CreatePresenter();
@@ -2354,8 +2355,9 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
 
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_CHROMEOS)
-#endif  // BUILDFLAG(SKIA_USE_DAWN)
+#else
   NOTREACHED_NORETURN();
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
 }
 
 bool SkiaOutputSurfaceImplOnGpu::InitializeForMetal() {
