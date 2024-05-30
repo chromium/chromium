@@ -285,6 +285,10 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     // extras.
     static inline constexpr uint32_t extras_size = 0;
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)
+
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+    std::ptrdiff_t shadow_pool_offset_ = 0;
+#endif
   };
 
   Settings settings;
@@ -390,7 +394,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // using. This is needed because many tests create and destroy many
   // PartitionRoots over the lifetime of a process, which can exhaust the
   // pool and cause tests to fail.
-  void DestructForTesting();
+  void DestructForTesting()
+      PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
 
   void DecommitEmptySlotSpansForTesting();
 
@@ -906,6 +911,18 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return internal::PartitionFreelistDispatcher::Create(
         internal::PartitionFreelistEncoding::kEncodedFreeList);
   }
+
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+  static void EnableShadowMetadata(internal::PoolHandleMask mask);
+
+  PA_ALWAYS_INLINE std::ptrdiff_t ShadowPoolOffset() const {
+    return settings.shadow_pool_offset_;
+  }
+#else
+  PA_ALWAYS_INLINE constexpr std::ptrdiff_t ShadowPoolOffset() const {
+    return 0;
+  }
+#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 
  private:
   static inline StraightenLargerSlotSpanFreeListsMode

@@ -303,6 +303,19 @@ enum pool_handle : unsigned {
 // kNullPoolHandle doesn't have metadata, hence - 1
 constexpr size_t kNumPools = kMaxPoolHandle - 1;
 
+enum class PoolHandleMask {
+  kNone = 0u,
+  kRegular = 1u << (kRegularPoolHandle - 1),
+  kBRP = 1u << (kBRPPoolHandle - 1),
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+  kConfigurable = 1u << (kConfigurablePoolHandle - 1),
+  kMaxValue = kConfigurable
+#else
+  kMaxValue = kBRP
+#endif
+};
+PA_DEFINE_OPERATORS_FOR_FLAGS(PoolHandleMask);
+
 // Maximum pool size. With exception of Configurable Pool, it is also
 // the actual size, unless PA_DYNAMICALLY_SELECT_POOL_SIZE is set, which
 // allows to choose a different size at initialization time for certain

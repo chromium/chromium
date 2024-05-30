@@ -46,17 +46,6 @@ namespace partition_alloc::internal {
 
 namespace {
 
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-PA_ALWAYS_INLINE uintptr_t ShadowMetadataStart(uintptr_t super_page,
-                                               pool_handle pool) {
-  uintptr_t shadow_metadata_start =
-      super_page + SystemPageSize() + ShadowPoolOffset(pool);
-  PA_DCHECK(!PartitionAddressSpace::IsInRegularPool(shadow_metadata_start));
-  PA_DCHECK(!PartitionAddressSpace::IsInBRPPool(shadow_metadata_start));
-  return shadow_metadata_start;
-}
-#endif
-
 [[noreturn]] PA_NOINLINE void PartitionOutOfMemoryMappingFailure(
     PartitionRoot* root,
     size_t size) PA_LOCKS_EXCLUDED(PartitionRootLock(root)) {
@@ -300,21 +289,27 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
 
     {
       ScopedSyscallTimer timer{root};
-      RecommitSystemPages(reservation_start + SystemPageSize(),
-                          SystemPageSize(),
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
-                          root->PageAccessibilityWithThreadIsolationIfEnabled(
-                              PageAccessibilityConfiguration::kRead),
-#else
-                          root->PageAccessibilityWithThreadIsolationIfEnabled(
-                              PageAccessibilityConfiguration::kReadWrite),
-#endif
-                          PageAccessibilityDisposition::kRequireUpdate);
+      if (PartitionAddressSpace::IsShadowMetadataEnabled(root->ChoosePool())) {
+        PartitionAddressSpace::MapMetadata(reservation_start,
+                                           /*copy_metadata=*/false);
+      } else
+#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
+      {
+        RecommitSystemPages(reservation_start + SystemPageSize(),
+                            SystemPageSize(),
+                            root->PageAccessibilityWithThreadIsolationIfEnabled(
+                                PageAccessibilityConfiguration::kReadWrite),
+                            PageAccessibilityDisposition::kRequireUpdate);
+      }
     }
 
     if (pool == kBRPPoolHandle) {
-      // Allocate a system page for BRP ref-count table (only one of its
-      // elements will be used).
+      // Allocate a system page for InSlotMetadata table (only one of its
+      // elements will be used). Shadow metadata does not need to protect
+      // this table, because (1) corrupting the table won't help with the
+      // pool escape and (2) accessing the table is on the BRP hot path.
+      // The protection will cause significant performance regression.
       ScopedSyscallTimer timer{root};
       RecommitSystemPages(reservation_start + SystemPageSize() * 2,
                           SystemPageSize(),
@@ -322,17 +317,6 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
                               PageAccessibilityConfiguration::kReadWrite),
                           PageAccessibilityDisposition::kRequireUpdate);
     }
-
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-    {
-      ScopedSyscallTimer timer{root};
-      RecommitSystemPages(ShadowMetadataStart(reservation_start, pool),
-                          SystemPageSize(),
-                          root->PageAccessibilityWithThreadIsolationIfEnabled(
-                              PageAccessibilityConfiguration::kReadWrite),
-                          PageAccessibilityDisposition::kRequireUpdate);
-    }
-#endif
 
     // No need to hold root->lock_. Now that memory is reserved, no other
     // overlapping region can be allocated (because of how pools work),
@@ -832,36 +816,31 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
   // also a tiny amount of extent metadata.
   {
     ScopedSyscallTimer timer{root};
-    RecommitSystemPages(super_page + SystemPageSize(), SystemPageSize(),
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
-                        root->PageAccessibilityWithThreadIsolationIfEnabled(
-                            PageAccessibilityConfiguration::kRead),
-#else
-                        root->PageAccessibilityWithThreadIsolationIfEnabled(
-                            PageAccessibilityConfiguration::kReadWrite),
-#endif
-                        PageAccessibilityDisposition::kRequireUpdate);
+    if (PartitionAddressSpace::IsShadowMetadataEnabled(root->ChoosePool())) {
+      PartitionAddressSpace::MapMetadata(super_page, /*copy_metadata=*/false);
+    } else
+#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
+    {
+      RecommitSystemPages(super_page + SystemPageSize(), SystemPageSize(),
+                          root->PageAccessibilityWithThreadIsolationIfEnabled(
+                              PageAccessibilityConfiguration::kReadWrite),
+                          PageAccessibilityDisposition::kRequireUpdate);
+    }
   }
 
   if (root->ChoosePool() == kBRPPoolHandle) {
-    // Allocate a system page for BRP ref-count table.
+    // Allocate a system page for InSlotMetadata table (only one of its
+    // elements will be used). Shadow metadata does not need to protect
+    // this table, because (1) corrupting the table won't help with the
+    // pool escape and (2) accessing the table is on the BRP hot path.
+    // The protection will cause significant performance regression.
     ScopedSyscallTimer timer{root};
     RecommitSystemPages(super_page + SystemPageSize() * 2, SystemPageSize(),
                         root->PageAccessibilityWithThreadIsolationIfEnabled(
                             PageAccessibilityConfiguration::kReadWrite),
                         PageAccessibilityDisposition::kRequireUpdate);
   }
-
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-  {
-    ScopedSyscallTimer timer{root};
-    RecommitSystemPages(ShadowMetadataStart(super_page, root->ChoosePool()),
-                        SystemPageSize(),
-                        root->PageAccessibilityWithThreadIsolationIfEnabled(
-                            PageAccessibilityConfiguration::kReadWrite),
-                        PageAccessibilityDisposition::kRequireUpdate);
-  }
-#endif
 
   // If we were after a specific address, but didn't get it, assume that
   // the system chose a lousy address. Here most OS'es have a default

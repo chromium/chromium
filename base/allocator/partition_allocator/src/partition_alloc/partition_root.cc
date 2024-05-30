@@ -119,7 +119,8 @@ namespace internal {
 
 class PartitionRootEnumerator {
  public:
-  using EnumerateCallback = void (*)(PartitionRoot* root, bool in_child);
+  template <typename T>
+  using EnumerateCallback = void (*)(PartitionRoot* root, T param);
   enum EnumerateOrder {
     kNormal,
     kReverse,
@@ -130,21 +131,22 @@ class PartitionRootEnumerator {
     return instance;
   }
 
-  void Enumerate(EnumerateCallback callback,
-                 bool in_child,
+  template <typename T>
+  void Enumerate(EnumerateCallback<T> callback,
+                 T param,
                  EnumerateOrder order) PA_NO_THREAD_SAFETY_ANALYSIS {
     if (order == kNormal) {
       PartitionRoot* root;
       for (root = Head(partition_roots_); root != nullptr;
            root = root->next_root) {
-        callback(root, in_child);
+        callback(root, param);
       }
     } else {
       PA_DCHECK(order == kReverse);
       PartitionRoot* root;
       for (root = Tail(partition_roots_); root != nullptr;
            root = root->prev_root) {
-        callback(root, in_child);
+        callback(root, param);
       }
     }
   }
@@ -325,6 +327,64 @@ void PartitionAllocMallocHookOnAfterForkInChild() {
 #endif  // BUILDFLAG(IS_APPLE)
 
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+namespace {
+
+void MakeSuperPageExtentEntriesShared(PartitionRoot* root,
+                                      internal::PoolHandleMask mask)
+    PA_NO_THREAD_SAFETY_ANALYSIS {
+  PA_DCHECK(root);
+  switch (root->ChoosePool()) {
+    case internal::kRegularPoolHandle:
+      if (!ContainsFlags(mask, internal::PoolHandleMask::kRegular)) {
+        return;
+      }
+      root->settings.shadow_pool_offset_ =
+          internal::PartitionAddressSpace::RegularPoolShadowOffset();
+      break;
+    case internal::kBRPPoolHandle:
+      if (!ContainsFlags(mask, internal::PoolHandleMask::kBRP)) {
+        return;
+      }
+      root->settings.shadow_pool_offset_ =
+          internal::PartitionAddressSpace::BRPPoolShadowOffset();
+      break;
+    case internal::kConfigurablePoolHandle:
+      if (!ContainsFlags(mask, internal::PoolHandleMask::kConfigurable)) {
+        return;
+      }
+      root->settings.shadow_pool_offset_ =
+          internal::PartitionAddressSpace::ConfigurablePoolShadowOffset();
+      break;
+    default:
+      return;
+  }
+
+  // For normal-bucketed.
+  for (internal::PartitionSuperPageExtentEntry* extent = root->first_extent;
+       extent != nullptr; extent = extent->next) {
+    //  The page which contains the extent is in-used and shared mapping.
+    uintptr_t super_page = SuperPagesBeginFromExtent(extent);
+    for (size_t i = 0; i < extent->number_of_consecutive_super_pages; ++i) {
+      internal::PartitionAddressSpace::MapMetadata(super_page,
+                                                   /*copy_metadata=*/true);
+      super_page += kSuperPageSize;
+    }
+    PA_DCHECK(extent->root == root);
+  }
+
+  // For direct-mapped.
+  for (const internal::PartitionDirectMapExtent* extent = root->direct_map_list;
+       extent != nullptr; extent = extent->next_extent) {
+    internal::PartitionAddressSpace::MapMetadata(
+        reinterpret_cast<uintptr_t>(extent) & internal::kSuperPageBaseMask,
+        /*copy_metadata=*/true);
+  }
+}
+
+}  // namespace
+#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 
 namespace internal {
 
@@ -854,7 +914,8 @@ void PartitionRoot::DecommitEmptySlotSpansForTesting() {
   DecommitEmptySlotSpans();
 }
 
-void PartitionRoot::DestructForTesting() {
+void PartitionRoot::DestructForTesting()
+    PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this)) {
   // We need to destruct the thread cache before we unreserve any of the super
   // pages below, which we currently are not doing. So, we should only call
   // this function on PartitionRoots without a thread cache.
@@ -871,20 +932,73 @@ void PartitionRoot::DestructForTesting() {
   PA_DCHECK(pool_handle <= internal::kNumPools);
 #endif
 
-  auto* curr = first_extent;
-  while (curr != nullptr) {
-    auto* next = curr->next;
-    uintptr_t address = SuperPagesBeginFromExtent(curr);
-    size_t size =
-        internal::kSuperPageSize * curr->number_of_consecutive_super_pages;
+  {
+    auto* curr = first_extent;
+    while (curr != nullptr) {
+      auto* next = curr->next;
+      uintptr_t address = SuperPagesBeginFromExtent(curr);
+      size_t size =
+          internal::kSuperPageSize * curr->number_of_consecutive_super_pages;
 #if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-    internal::AddressPoolManager::GetInstance().MarkUnused(pool_handle, address,
-                                                           size);
+      internal::AddressPoolManager::GetInstance().MarkUnused(pool_handle,
+                                                             address, size);
 #endif
-    internal::AddressPoolManager::GetInstance().UnreserveAndDecommit(
-        pool_handle, address, size);
-    curr = next;
+      internal::AddressPoolManager::GetInstance().UnreserveAndDecommit(
+          pool_handle, address, size);
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+      if (internal::PartitionAddressSpace::IsShadowMetadataEnabled(
+              pool_handle)) {
+        internal::PartitionAddressSpace::UnmapShadowMetadata(address,
+                                                             pool_handle);
+      }
+#endif
+      curr = next;
+    }
   }
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+  // Decommit direct-mapped allocations too.
+  if (internal::PartitionAddressSpace::IsShadowMetadataEnabled(pool_handle)) {
+    auto* curr = direct_map_list;
+    while (curr != nullptr) {
+      auto* next = curr->next_extent;
+      uintptr_t reservation_start = internal::base::bits::AlignDown(
+          reinterpret_cast<uintptr_t>(curr), kSuperPageSize);
+      size_t reservation_size = curr->reservation_size;
+
+      {
+        uintptr_t reservation_end = reservation_start + reservation_size;
+        auto* offset_ptr =
+            internal::ReservationOffsetPointer(reservation_start);
+        // Reset the offset table entries for the given memory before
+        // unreserving it. Since the memory is not unreserved and not available
+        // for other threads, the table entries for the memory are not modified
+        // by other threads either. So we can update the table entries without
+        // race condition.
+        uint16_t i = 0;
+        for (uintptr_t address = reservation_start; address < reservation_end;
+             address += kSuperPageSize) {
+          PA_DCHECK(offset_ptr <
+                    internal::GetReservationOffsetTableEnd(address));
+          PA_DCHECK(*offset_ptr == i++);
+          *offset_ptr++ = internal::kOffsetTagNotAllocated;
+        }
+      }
+#if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+      internal::AddressPoolManager::GetInstance().MarkUnused(
+          pool_handle, reservation_start, reservation_size);
+#endif  // !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+
+      // After resetting the table entries, unreserve and decommit the memory.
+      internal::AddressPoolManager::GetInstance().UnreserveAndDecommit(
+          pool_handle, reservation_start, reservation_size);
+
+      internal::PartitionAddressSpace::UnmapShadowMetadata(reservation_start,
+                                                           pool_handle);
+      curr = next;
+    }
+    direct_map_list = nullptr;
+  }
+#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 }
 
 #if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
@@ -1129,6 +1243,28 @@ void PartitionRoot::Init(PartitionOptions opts) {
 #if PA_CONFIG(USE_PARTITION_ROOT_ENUMERATOR)
     internal::PartitionRootEnumerator::Instance().Register(this);
 #endif
+
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+    if (internal::PartitionAddressSpace::IsShadowMetadataEnabled(
+            ChoosePool())) {
+      switch (ChoosePool()) {
+        case internal::kRegularPoolHandle:
+          settings.shadow_pool_offset_ =
+              internal::PartitionAddressSpace::RegularPoolShadowOffset();
+          break;
+        case internal::kBRPPoolHandle:
+          settings.shadow_pool_offset_ =
+              internal::PartitionAddressSpace::BRPPoolShadowOffset();
+          break;
+        case internal::kConfigurablePoolHandle:
+          settings.shadow_pool_offset_ =
+              internal::PartitionAddressSpace::ConfigurablePoolShadowOffset();
+          break;
+        default:
+          break;
+      }
+    }
+#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 
     initialized = true;
   }
@@ -1579,7 +1715,11 @@ void PartitionRoot::DeleteForTesting(PartitionRoot* partition_root) {
     partition_root->settings.with_thread_cache = false;
   }
 
-  partition_root->DestructForTesting();  // IN-TEST
+  {
+    ::partition_alloc::internal::ScopedGuard guard{
+        internal::PartitionRootLock(partition_root)};
+    partition_root->DestructForTesting();  // IN-TEST
+  }
 
   delete partition_root;
 }
@@ -1732,6 +1872,27 @@ PA_NOINLINE void PartitionRoot::QuarantineForBrp(
   }
 }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+
+// static
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+void PartitionRoot::EnableShadowMetadata(internal::PoolHandleMask mask) {
+  internal::ScopedGuard guard(g_root_enumerator_lock);
+  // Must lock all PartitionRoot-s and ThreadCache.
+  internal::PartitionRootEnumerator::Instance().Enumerate(
+      LockRoot, false,
+      internal::PartitionRootEnumerator::EnumerateOrder::kNormal);
+  {
+    internal::ScopedGuard thread_cache_guard(ThreadCacheRegistry::GetLock());
+    internal::PartitionAddressSpace::InitShadowMetadata(mask);
+    internal::PartitionRootEnumerator::Instance().Enumerate(
+        MakeSuperPageExtentEntriesShared, mask,
+        internal::PartitionRootEnumerator::EnumerateOrder::kNormal);
+  }
+  internal::PartitionRootEnumerator::Instance().Enumerate(
+      UnlockOrReinitRoot, false,
+      internal::PartitionRootEnumerator::EnumerateOrder::kReverse);
+}
+#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 
 // Explicitly define common template instantiations to reduce compile time.
 #define EXPORT_TEMPLATE \
