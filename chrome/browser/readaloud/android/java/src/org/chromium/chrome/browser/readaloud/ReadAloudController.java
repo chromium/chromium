@@ -533,7 +533,9 @@ public class ReadAloudController
                             // url and then the destination url. Because of that we should not use
                             // this method to trigger readability.
                             super.onTabSelected(tab);
-                            if (tab != null && !GURL.isEmptyOrInvalid(tab.getUrl())) {
+                            if (tab != null
+                                    && !tab.isDestroyed()
+                                    && !GURL.isEmptyOrInvalid(tab.getUrl())) {
                                 if (mPausedForIncognito) {
                                     mPausedForIncognito = false;
                                     if (mPlayback != null) {
