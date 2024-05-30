@@ -1301,6 +1301,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Missive.ConfigFileRecordBlocked"
+    enum="EnterpriseCloudReportingDestination" expires_after="2025-01-01">
+  <owner>albertojuarez@google.com</owner>
+  <owner>cros-reporting-eng@google.com</owner>
+  <summary>
+    Recorded when missive blocks a record being processed and sent to the
+    server. Recorded by the Missive daemon at the moment the record is received
+    by `Storage::Write`. It counts occurrences of number of times it has been
+    called per Destination.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Missive.CpuUsage" units="%"
     expires_after="2024-12-20">
   <owner>xuhong@chromium.org</owner>
