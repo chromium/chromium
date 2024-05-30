@@ -171,8 +171,7 @@ TEST_P(AudioDestinationTest, ResamplingTest) {
     InSequence s;
 
     EXPECT_CALL(platform->web_audio_device(), Start).Times(1);
-    if (base::FeatureList::IsEnabled(
-            blink::features::kWebAudioHandleOnRenderError)) {
+    if (base::FeatureList::IsEnabled(blink::features::kAudioContextOnError)) {
       EXPECT_CALL(callback_, OnRenderError).Times(1);
     }
     EXPECT_CALL(platform->web_audio_device(), Stop).Times(1);

@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_source_node.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_node.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
@@ -1195,17 +1196,19 @@ bool AudioContext::IsValidSinkDescriptor(
 }
 
 void AudioContext::OnRenderError() {
-  if (base::FeatureList::IsEnabled(features::kWebAudioHandleOnRenderError)) {
-    DCHECK(IsMainThread());
+  if (!RuntimeEnabledFeatures::AudioContextOnErrorEnabled()) {
+    return;
+  }
 
-    CHECK(GetExecutionContext());
-    LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
-    if (window && window->GetFrame()) {
-      window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kOther,
-          mojom::blink::ConsoleMessageLevel::kError,
-          "The AudioContext encountered a render error."));
-    }
+  DCHECK(IsMainThread());
+
+  CHECK(GetExecutionContext());
+  LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
+  if (window && window->GetFrame()) {
+    window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "The AudioContext encountered a render error."));
   }
 }
 

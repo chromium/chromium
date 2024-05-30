@@ -2507,11 +2507,6 @@ BASE_FEATURE(kWebAudioBypassOutputBuffering,
              "WebAudioBypassOutputBuffering",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allow OnRenderError callback to propagate in WebAudio
-BASE_FEATURE(kWebAudioHandleOnRenderError,
-             "WebAudioHandleOnRenderError",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 /// Enables cache-aware WebFonts loading. See https://crbug.com/570205.
 // The feature is disabled on Android for WebView API issue discussed at
 // https://crbug.com/942440.

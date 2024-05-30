@@ -175,8 +175,10 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
     original_sink_params_.Reset(media::AudioParameters::AUDIO_FAKE,
                                 media::ChannelLayoutConfig::Stereo(), 48000,
                                 480);
-    if (base::FeatureList::IsEnabled(
-            blink::features::kWebAudioHandleOnRenderError)) {
+
+    // Inform the Blink client (e.g. AudioContext) that we have invalid device
+    // parameters.
+    if (base::FeatureList::IsEnabled(blink::features::kAudioContextOnError)) {
       RenderFrame::FromWebFrame(WebLocalFrame::FromFrameToken(frame_token_))
           ->GetTaskRunner(blink::TaskType::kInternalMediaRealTime)
           ->PostTask(FROM_HERE,

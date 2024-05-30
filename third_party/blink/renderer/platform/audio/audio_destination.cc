@@ -223,9 +223,11 @@ int AudioDestination::Render(base::TimeDelta delay,
 }
 
 void AudioDestination::OnRenderError() {
-  if (base::FeatureList::IsEnabled(features::kWebAudioHandleOnRenderError)) {
-    callback_->OnRenderError();
+  if (!base::FeatureList::IsEnabled(blink::features::kAudioContextOnError)) {
+    return;
   }
+
+  callback_->OnRenderError();
 }
 
 void AudioDestination::Start() {

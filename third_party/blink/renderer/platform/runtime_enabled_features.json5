@@ -364,6 +364,10 @@
       base_feature: "none",
     },
     {
+      name: "AudioContextOnError",
+      status: "experimental",
+    },
+    {
       // AudioContext.playoutStats interface.
       // https://chromestatus.com/feature/5172818344148992
       name: "AudioContextPlayoutStats",
