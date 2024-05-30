@@ -238,6 +238,11 @@ ServiceWorkerContextAdapter::GetRemoteAssociatedInterfaces(
   NOTREACHED_NORETURN();
 }
 
+void ServiceWorkerContextAdapter::SetForceUpdateOnPageLoadForTesting(
+    bool force_update_on_page_load) {
+  NOTREACHED_NORETURN();
+}
+
 void ServiceWorkerContextAdapter::StartServiceWorkerAndDispatchMessage(
     const GURL& scope,
     const blink::StorageKey& key,

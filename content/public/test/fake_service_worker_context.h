@@ -89,6 +89,8 @@ class FakeServiceWorkerContext : public ServiceWorkerContext {
       int64_t service_worker_version_id) override;
   blink::AssociatedInterfaceProvider& GetRemoteAssociatedInterfaces(
       int64_t service_worker_version_id) override;
+  void SetForceUpdateOnPageLoadForTesting(
+      bool force_update_on_page_load) override;
   void StartServiceWorkerAndDispatchMessage(
       const GURL& scope,
       const blink::StorageKey& key,

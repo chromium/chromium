@@ -135,6 +135,11 @@ FakeServiceWorkerContext::GetRemoteAssociatedInterfaces(
   NOTREACHED_NORETURN();
 }
 
+void FakeServiceWorkerContext::SetForceUpdateOnPageLoadForTesting(
+    bool force_update_on_page_load) {
+  NOTREACHED_NORETURN();
+}
+
 void FakeServiceWorkerContext::StartServiceWorkerForNavigationHint(
     const GURL& document_url,
     const blink::StorageKey& key,

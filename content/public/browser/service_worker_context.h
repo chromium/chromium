@@ -331,6 +331,11 @@ class CONTENT_EXPORT ServiceWorkerContext {
   virtual blink::AssociatedInterfaceProvider& GetRemoteAssociatedInterfaces(
       int64_t service_worker_version_id) = 0;
 
+  // Sets the devtools force update on page load flag for service workers. See
+  // ServiceWorkerContextCore::force_update_on_page_load() for details.
+  virtual void SetForceUpdateOnPageLoadForTesting(
+      bool force_update_on_page_load) = 0;
+
  protected:
   ServiceWorkerContext() {}
   virtual ~ServiceWorkerContext() {}
