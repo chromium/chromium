@@ -201,6 +201,10 @@
     mask-image: url('translate.svg');
   }
 
+  .menu-item-icon.text {
+    mask-image: url('text.svg');
+  }
+
   .menu-item-label {
     color: var(--color-scrim);
     font-size: 13px;
@@ -277,7 +281,8 @@
         on-pointerleave="handlePointerLeaveContextMenu">
       <div class="context-menu-item" role="menuitem"
           on-pointerup="handleSelectText">
-        <span class="menu-item-label">Select text</span>
+        <span class="menu-item-icon text"></span>
+        <span class="menu-item-label">$i18n{selectText}</span>
       </div>
     </div>
   </div>

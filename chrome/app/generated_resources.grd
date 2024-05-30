@@ -16910,6 +16910,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_LENS_OVERLAY_TRANSLATE" desc="Command in the Lens Overlay context menu to translate text.">
       Translate
     </message>
+    <message name="IDS_LENS_OVERLAY_SELECT_TEXT" desc="Command in the Lens Overlay context menu to select text.">
+      Select text
+    </message>
     <message name="IDS_LENS_OVERLAY_LEARN_MORE" desc="Text that is shown in the more options menu to open the help center article.">
       Learn more
     </message>
