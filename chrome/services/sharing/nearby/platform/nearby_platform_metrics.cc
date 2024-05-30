@@ -65,10 +65,30 @@ void RecordStartScanningFailureReason(StartScanningFailureReason reason) {
   base::UmaHistogramEnumeration(
       "Nearby.Connections.BleV2.StartScanning.FailureReason", reason);
 }
+
 void RecordStartScanningResult(bool success) {
   // Record the StartScanning success rate.
   base::UmaHistogramBoolean("Nearby.Connections.BleV2.StartScanning.Result",
                             success);
+}
+
+void RecordConnectToRemoteGattServerResult(bool success) {
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.BleV2.ConnectToGattServer.Result", success);
+}
+
+void RecordConnectToRemoteGattServerFailureReason(
+    bluetooth::mojom::ConnectResult failure_reason) {
+  CHECK(failure_reason != bluetooth::mojom::ConnectResult::SUCCESS)
+      << __func__ << ": Only failure reasons are expected in metric logging";
+  base::UmaHistogramEnumeration(
+      "Nearby.Connections.BleV2.ConnectToGattServer.FailureReason",
+      failure_reason);
+}
+
+void RecordConnectToRemoteGattServerDuration(base::TimeDelta duration) {
+  base::UmaHistogramTimes(
+      "Nearby.Connections.BleV2.ConnectToGattServer.Duration", duration);
 }
 
 }  // namespace nearby::chrome::metrics

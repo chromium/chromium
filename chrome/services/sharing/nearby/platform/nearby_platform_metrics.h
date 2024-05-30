@@ -5,7 +5,9 @@
 #ifndef CHROME_SERVICES_SHARING_NEARBY_PLATFORM_NEARBY_PLATFORM_METRICS_H_
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_NEARBY_PLATFORM_METRICS_H_
 
+#include "base/time/time.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
+#include "device/bluetooth/public/mojom/adapter.mojom.h"
 
 namespace nearby::chrome::metrics {
 
@@ -44,6 +46,10 @@ void RecordStartAdvertisingFailureReason(StartAdvertisingFailureReason reason,
 void RecordStartAdvertisingResult(bool success, bool is_extended_advertisement);
 void RecordStartScanningFailureReason(StartScanningFailureReason reason);
 void RecordStartScanningResult(bool success);
+void RecordConnectToRemoteGattServerResult(bool success);
+void RecordConnectToRemoteGattServerFailureReason(
+    bluetooth::mojom::ConnectResult failure_reason);
+void RecordConnectToRemoteGattServerDuration(base::TimeDelta duration);
 
 }  // namespace nearby::chrome::metrics
 

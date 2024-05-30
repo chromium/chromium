@@ -850,6 +850,11 @@ TEST_F(BleV2MediumTest, ConnectToGattServer_Success) {
                          base::Unretained(this), /*expected_result=*/true),
           run_loop.QuitClosure());
   run_loop.Run();
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.ConnectToGattServer.Result",
+      /*bucket: success=*/1, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Connections.BleV2.ConnectToGattServer.Duration", 1);
 }
 
 TEST_F(BleV2MediumTest, ConnectToGattServer_Failure) {
@@ -868,6 +873,14 @@ TEST_F(BleV2MediumTest, ConnectToGattServer_Failure) {
                          base::Unretained(this), /*expected_result=*/false),
           run_loop.QuitClosure());
   run_loop.Run();
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.ConnectToGattServer.Result",
+      /*bucket: failure=*/0, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.ConnectToGattServer.FailureReason",
+      /*bucket: FAILED=*/5, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Connections.BleV2.ConnectToGattServer.Duration", 0);
 }
 
 }  // namespace nearby::chrome

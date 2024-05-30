@@ -12,6 +12,10 @@ import "device/bluetooth/public/mojom/gatt_service_error_code.mojom";
 
 // Possible errors sent as a response by Adapter.ConnectToDevice on a Device
 // connection request.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This enum should be kept in sync
+// with the NearbyConnectionsConnectResult enum in
+// src/tools/metrics/metadata/nearby/enums.xml.
 enum ConnectResult {
   SUCCESS,
   AUTH_CANCELED,

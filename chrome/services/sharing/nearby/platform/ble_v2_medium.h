@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/services/sharing/nearby/platform/ble_v2_remote_peripheral.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -133,6 +134,7 @@ class BleV2Medium : public ::nearby::api::ble_v2::BleMedium,
       const std::string& address,
       base::WaitableEvent* connect_to_gatt_server_waitable_event);
   void OnConnectToGattServer(
+      base::TimeTicks gatt_connection_start_time,
       mojo::PendingRemote<bluetooth::mojom::Device>* out_device,
       base::WaitableEvent* connect_to_gatt_server_waitable_event,
       bluetooth::mojom::ConnectResult result,

@@ -508,8 +508,11 @@ std::unique_ptr<api::ble_v2::GattClient> BleV2Medium::ConnectToGattServer(
 
   if (!device) {
     LOG(WARNING) << __func__ << ": could not connect to the GATT server";
+    metrics::RecordConnectToRemoteGattServerResult(/*success=*/false);
     return nullptr;
   }
+
+  metrics::RecordConnectToRemoteGattServerResult(/*success=*/true);
 
   // `tx_power_level` has no equivalent parameter in the Bluetooth Adapter
   // layer, so it is ignored.
@@ -756,12 +759,14 @@ void BleV2Medium::DoConnectToGattServer(
       connect_to_gatt_server_waitable_event);
   CHECK(adapter_.is_bound());
   adapter_->ConnectToDevice(
-      address, base::BindOnce(&BleV2Medium::OnConnectToGattServer,
-                              base::Unretained(this), device,
-                              connect_to_gatt_server_waitable_event));
+      address, base::BindOnce(
+                   &BleV2Medium::OnConnectToGattServer, base::Unretained(this),
+                   /*gatt_connection_start_time*/ base::TimeTicks::Now(),
+                   device, connect_to_gatt_server_waitable_event));
 }
 
 void BleV2Medium::OnConnectToGattServer(
+    base::TimeTicks gatt_connection_start_time,
     mojo::PendingRemote<bluetooth::mojom::Device>* out_device,
     base::WaitableEvent* connect_to_gatt_server_waitable_event,
     bluetooth::mojom::ConnectResult result,
@@ -777,6 +782,14 @@ void BleV2Medium::OnConnectToGattServer(
 
   VLOG(1) << __func__
           << ": ConnectToDevice() result = " << ConnectResultToString(result);
+
+  if (result != bluetooth::mojom::ConnectResult::SUCCESS) {
+    CHECK(!in_device);
+    metrics::RecordConnectToRemoteGattServerFailureReason(result);
+  } else {
+    metrics::RecordConnectToRemoteGattServerDuration(
+        /*duration=*/base::TimeTicks::Now() - gatt_connection_start_time);
+  }
 
   if (!connect_to_gatt_server_waitable_event->IsSignaled()) {
     connect_to_gatt_server_waitable_event->Signal();

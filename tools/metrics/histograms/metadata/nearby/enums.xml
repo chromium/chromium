@@ -31,6 +31,26 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Upgraded"/>
 </enum>
 
+<enum name="NearbyConnectionsConnectResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Auth Canceled"/>
+  <int value="2" label="Auth Failed"/>
+  <int value="3" label="Auth Rejected"/>
+  <int value="4" label="Auth Timeout"/>
+  <int value="5" label="Failed"/>
+  <int value="6" label="In Progress"/>
+  <int value="7" label="Unknown"/>
+  <int value="8" label="Unsupported Device"/>
+  <int value="9" label="Device No Longer In Range"/>
+  <int value="10" label="Not Ready"/>
+  <int value="11" label="Already Connected"/>
+  <int value="12" label="Already Exists"/>
+  <int value="13" label="Not Connected"/>
+  <int value="14" label="Does Not Exist"/>
+  <int value="15" label="Invalid Args"/>
+  <int value="16" label="Non Auth Timeout"/>
+</enum>
+
 <enum name="NearbyConnectionsMedium">
   <int value="0" label="Unknown"/>
   <int value="1" label="mDNS (deprecated)"/>

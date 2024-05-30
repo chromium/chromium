@@ -30,6 +30,43 @@ chromium-metrics-reviews@google.com.
   <variant name=".WifiLan" summary="Wi-Fi LAN"/>
 </variants>
 
+<histogram name="Nearby.Connections.BleV2.ConnectToGattServer.Duration"
+    units="ms" expires_after="2025-04-30">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the duration of successfully connecting to a remote GATT server.
+    Emitted when the local ChromeOS device is in the GATT client role, and has
+    discovered a remote device via scanning to connect to; this occurs during
+    the BLE V2 scanning flow. No metric is emitted on failures.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Connections.BleV2.ConnectToGattServer.FailureReason"
+    enum="NearbyConnectionsConnectResult" expires_after="2025-04-30">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the error code of a failure connecting to a remote GATT server.
+    Emitted when the local ChromeOS device is in the GATT client role, and has
+    discovered a remote device via scanning to connect to; this occurs during
+    the BLE V2 scanning flow. Note: because this metric is solely about failure
+    reason, there are no metrics expected to be emitted to the Success bucket.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Connections.BleV2.ConnectToGattServer.Result"
+    enum="BooleanSuccess" expires_after="2025-04-30">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of connecting to a remote GATT server.
+    Emitted when the local ChromeOS device is in the GATT client role, and has
+    discovered a remote device via scanning to connect to; this occurs during
+    the BLE V2 scanning flow.
+  </summary>
+</histogram>
+
 <histogram
     name="Nearby.Connections.BleV2.GattServer.CreateLocalGattService.Result"
     enum="BooleanSuccess" expires_after="2025-04-30">
