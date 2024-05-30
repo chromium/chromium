@@ -57,6 +57,7 @@ IntentPickerDialogGridViewTest.*
 InteractionTestUtilBrowserTest.CompareScreenshot_*
 InteractionTestUtilBrowserUiTest.CompareScreenshot_*
 IsolatedWebAppInstallerViewUiPixelTest.*
+LHSIndicatorsUiBrowserTest.*
 LocalCardMigrationBrowserUiTest.*
 *MemorySaverChipInteractiveTest.*
 *MemorySaverFaviconTreatmentTest.*
