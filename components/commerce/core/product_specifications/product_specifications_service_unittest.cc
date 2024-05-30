@@ -228,21 +228,58 @@ TEST_F(ProductSpecificationsServiceTest, TestGetProductSpecificationsAsync) {
   }
   base::RunLoop run_loop;
 
-  service()->GetAllProductSpecifications(base::BindOnce(
-      [](base::OnceClosure done,
-         const std::vector<ProductSpecificationsSet> specifications) {
+  service()->GetAllProductSpecifications(
+      base::BindOnce([](const std::vector<ProductSpecificationsSet>
+                            specifications) {
         EXPECT_EQ(2u, specifications.size());
         for (uint64_t i = 0; i < specifications.size(); i++) {
           CheckSpecsAgainstSpecifics(specifications[i],
                                      kProductComparisonSpecifics[i]);
         }
-
-        std::move(done).Run();
-      },
-      run_loop.QuitClosure()));
+      }).Then(run_loop.QuitClosure()));
 
   EXPECT_EQ(1u, GetDeferredOperationsSize());
   OnInit();
+  run_loop.Run();
+}
+
+TEST_F(ProductSpecificationsServiceTest, TestGetSetByUuidAsync) {
+  SetIsInitialized(false);
+  for (const sync_pb::ProductComparisonSpecifics& specifics :
+       kProductComparisonSpecifics) {
+    AddCompareSpecificsForTesting(specifics);
+  }
+  base::RunLoop run_loop;
+
+  service()->GetSetByUuid(
+      base::Uuid::ParseLowercase(kProductComparisonSpecifics[0].uuid()),
+      base::BindOnce([](std::optional<ProductSpecificationsSet> specification) {
+        EXPECT_TRUE(specification.has_value());
+        CheckSpecsAgainstSpecifics(specification.value(),
+                                   kProductComparisonSpecifics[0]);
+      }).Then(run_loop.QuitClosure()));
+
+  EXPECT_EQ(1u, GetDeferredOperationsSize());
+  OnInit();
+  run_loop.Run();
+}
+
+TEST_F(ProductSpecificationsServiceTest,
+       TestGetSetByUuidAsyncAlreadyInitialized) {
+  SetIsInitialized(true);
+  for (const sync_pb::ProductComparisonSpecifics& specifics :
+       kProductComparisonSpecifics) {
+    AddCompareSpecificsForTesting(specifics);
+  }
+  base::RunLoop run_loop;
+
+  service()->GetSetByUuid(
+      base::Uuid::ParseLowercase(kProductComparisonSpecifics[0].uuid()),
+      base::BindOnce([](std::optional<ProductSpecificationsSet> specification) {
+        EXPECT_TRUE(specification.has_value());
+        CheckSpecsAgainstSpecifics(specification.value(),
+                                   kProductComparisonSpecifics[0]);
+      }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 

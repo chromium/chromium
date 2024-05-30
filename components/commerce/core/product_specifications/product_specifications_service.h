@@ -39,6 +39,11 @@ class ProductSpecificationsService : public KeyedService {
   virtual const std::optional<ProductSpecificationsSet> GetSetByUuid(
       const base::Uuid& uuid);
 
+  virtual void GetSetByUuid(
+      const base::Uuid& uuid,
+      base::OnceCallback<void(std::optional<ProductSpecificationsSet>)>
+          callback);
+
   // Add new product specifications set called |name| with product pages
   // corresponding to |urls|.
   virtual const std::optional<ProductSpecificationsSet>

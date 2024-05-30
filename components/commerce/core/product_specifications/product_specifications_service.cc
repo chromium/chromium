@@ -81,6 +81,31 @@ ProductSpecificationsService::GetSetByUuid(const base::Uuid& uuid) {
   return ProductSpecificationsSet::FromProto(it->second);
 }
 
+void ProductSpecificationsService::GetSetByUuid(
+    const base::Uuid& uuid,
+    base::OnceCallback<void(std::optional<ProductSpecificationsSet>)>
+        callback) {
+  if (is_initialized_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), GetSetByUuid(uuid)));
+  } else {
+    deferred_operations_.push_back(base::BindOnce(
+        [](base::WeakPtr<ProductSpecificationsService>
+               product_specifications_service,
+           base::OnceCallback<void(std::optional<ProductSpecificationsSet>)>
+               callback,
+           const base::Uuid& uuid) {
+          if (product_specifications_service) {
+            std::move(callback).Run(
+                product_specifications_service.get()->GetSetByUuid(uuid));
+          } else {
+            std::move(callback).Run(std::nullopt);
+          }
+        },
+        weak_ptr_factory_.GetWeakPtr(), std::move(callback), uuid));
+  }
+}
+
 const std::optional<ProductSpecificationsSet>
 ProductSpecificationsService::AddProductSpecificationsSet(
     const std::string& name,
