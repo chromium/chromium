@@ -4029,8 +4029,8 @@ TEST_F(SplitViewControllerTest,
       SplitViewMetricsController::DeviceOrientation::kPortrait,
       faster_split_screen_enabled() ? 1 : 0);
 
-  // Snap `window2` to the right. With windows snapped to both side, split view
-  // metric controller should start recording metrics.
+  // Activate `window2` to snap to the right. With windows snapped to both side,
+  // split view metric controller should start recording metrics.
   wm::ActivateWindow(window2.get());
   WindowState::Get(window2.get())->OnWMEvent(&wm_secondary_snap_event);
   histogram_tester.ExpectBucketCount(
@@ -4063,21 +4063,20 @@ TEST_F(SplitViewControllerTest,
       kDeviceOrientationEntryPoint,
       SplitViewMetricsController::DeviceOrientation::kLandscape, 0);
 
-  // Unsnap `window1` by making it fullscreen and snap back to the left to
-  // trigger recording split view metrics.
+  // Maximize both `window1` and `window2` to unsnap and re-snap `window1` to
+  // the left to trigger the split view metrics recording.
   WindowState::Get(window1.get())->OnWMEvent(&fullscreen_event);
+  WindowState::Get(window2.get())->OnWMEvent(&fullscreen_event);
   WindowState::Get(window1.get())->OnWMEvent(&wm_primary_snap_event);
   histogram_tester.ExpectBucketCount(
       kDeviceOrientationClamshell,
-      SplitViewMetricsController::DeviceOrientation::kLandscape,
-      faster_split_screen_enabled() ? 1 : 2);
+      SplitViewMetricsController::DeviceOrientation::kLandscape, 2);
   histogram_tester.ExpectBucketCount(
       kDeviceOrientationInSplitView,
       SplitViewMetricsController::DeviceOrientation::kLandscape, 1);
   histogram_tester.ExpectBucketCount(
       kDeviceOrientationEntryPoint,
-      SplitViewMetricsController::DeviceOrientation::kLandscape,
-      faster_split_screen_enabled() ? 0 : 1);
+      SplitViewMetricsController::DeviceOrientation::kLandscape, 1);
 }
 
 // Test that there will be no crash when disabling a tablet mode when a window
