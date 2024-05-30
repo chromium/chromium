@@ -6153,5 +6153,44 @@ TEST_F(PrefetchServiceClientHintsTest, CrossSiteAll) {
   EXPECT_TRUE(pending->request.headers.HasHeader("Sec-CH-Viewport-Width"));
 }
 
+TEST_F(PrefetchServiceTest, CancelWhileBlockedOnHead) {
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+  NavigateAndCommit(GURL("https://example.com/"));
+
+  GURL next_url("https://example.com/two");
+  MakePrefetchOnMainFrame(
+      next_url,
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false,
+                   blink::mojom::SpeculationEagerness::kEager),
+      blink::mojom::Referrer(GURL("https://example.com/"),
+                             network::mojom::ReferrerPolicy::kStrictOrigin));
+  task_environment()->RunUntilIdle();
+
+  // Start a navigation to the URL (one must be running for GetPrefetchToServe
+  // to work, at present).
+  NavigateInitiatedByRenderer(next_url);
+
+  // Try to access the outcome of the prefetch, like the serving path does.
+  base::test::TestFuture<PrefetchContainer::Reader> future;
+  GetPrefetchToServe(future, next_url, MainDocumentToken());
+  EXPECT_FALSE(future.IsReady());
+
+  // Cancel the prefetch.
+  auto* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  prefetch_document_manager->ProcessCandidates(candidates, nullptr);
+  task_environment()->RunUntilIdle();
+
+  // If all goes well, the service has reported that the prefetch cannot be
+  // served. This could be changed in the future to instead wait for the
+  // prefetch rather than cancelling it, but what's key here is that it doesn't
+  // hang.
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get());
+}
+
 }  // namespace
 }  // namespace content

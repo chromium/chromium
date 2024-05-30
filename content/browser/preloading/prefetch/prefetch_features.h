@@ -69,6 +69,11 @@ CONTENT_EXPORT extern const base::FeatureParam<bool>
 // If explicitly disabled, prefetch proxy is not used.
 BASE_DECLARE_FEATURE(kPrefetchProxy);
 
+// Stops waiting for response head when a prefetch is cancelled.
+// TOOD(https://crbug.com/342197918): This should be inlined fairly briskly;
+// it's only here to make shipping aggressively safer.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchUnblockOnCancel);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_

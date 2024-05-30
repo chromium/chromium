@@ -1511,6 +1511,7 @@ test("content_browsertests") {
     "../browser/power_monitor_browsertest.cc",
     "../browser/preloading/anchor_element_interaction_browsertest.cc",
     "../browser/preloading/prefetch/contamination_delay_browsertest.cc",
+    "../browser/preloading/prefetch/nav_prefetch_browsertest.cc",
     "../browser/preloading/preloading_decider_browsertest.cc",
     "../browser/preloading/prerender/prerender_browsertest.cc",
     "../browser/private_aggregation/private_aggregation_internals_browsertest.cc",
