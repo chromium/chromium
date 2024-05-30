@@ -21,7 +21,7 @@
 
 class ChromePermissionsClient;
 class DIPSNavigationHandle;
-class DIPSService;
+class DIPSServiceImpl;
 class PermissionUmaUtil;
 class PlatformNotificationServiceImpl;
 
@@ -134,9 +134,9 @@ class METRICS_EXPORT UkmRecorder {
       const GURL& extension_url);
 
   // Gets a new SourceId of REDIRECT_ID type and updates the source URL to the
-  // given domain. This method should only be called in the DIPSService class
-  // for sites in the DIPS database. `site` must be a registrable domain.
-  static SourceId GetSourceIdForDipsSite(base::PassKey<DIPSService>,
+  // given domain. This method should only be called in the DIPSServiceImpl
+  // class for sites in the DIPS database. `site` must be a registrable domain.
+  static SourceId GetSourceIdForDipsSite(base::PassKey<DIPSServiceImpl>,
                                          const std::string& site);
 
   // Gets a new SourceId of CHROMEOS_WEBSITE_ID type. This should be only

@@ -25,7 +25,7 @@ RedirectHeuristicTabHelper::RedirectHeuristicTabHelper(
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<RedirectHeuristicTabHelper>(*web_contents),
       detector_(RedirectChainDetector::FromWebContents(web_contents)),
-      dips_service_(DIPSService::Get(web_contents->GetBrowserContext())),
+      dips_service_(DIPSServiceImpl::Get(web_contents->GetBrowserContext())),
       cookie_settings_(CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
   obs_.Observe(detector_);

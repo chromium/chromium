@@ -29,6 +29,7 @@
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_storage.h"
+#include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
@@ -496,6 +497,11 @@ class DevToolsProtocolTest_BounceTrackingMitigations
     DevToolsProtocolTest::SetUp();
   }
 
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    DevToolsProtocolTest::SetUpOnMainThread();
+  }
+
   void SetBlockThirdPartyCookies(bool value) {
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
@@ -519,13 +525,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_BounceTrackingMitigations,
   const GURL bouncer(
       embedded_test_server()->GetURL("example.test", "/title1.html"));
 
-  // Get DIPS Service
-  DIPSService* dips_service = DIPSService::Get(browser()->profile());
   // Record a stateful bounce for `bouncer`.
-  dips_service->storage()
-      ->AsyncCall(&DIPSStorage::RecordBounce)
-      .WithArgs(bouncer, base::Time::Now(), true);
-  dips_service->storage()->FlushPostedTasksForTesting();
+  ASSERT_TRUE(SimulateDipsBounce(
+      web_contents(), embedded_test_server()->GetURL("a.test", "/empty.html"),
+      bouncer, embedded_test_server()->GetURL("b.test", "/empty.html"),
+      embedded_test_server()->GetURL("c.test", "/empty.html")));
 
   SendCommandSync("Storage.runBounceTrackingMitigations");
 
