@@ -2566,6 +2566,24 @@ public class ReadAloudControllerUnitTest {
         histogram.assertExpected();
     }
 
+    @Test
+    public void testNoReadabilityUpdateAfterDestroy() {
+        Runnable readabilityObserver = Mockito.mock(Runnable.class);
+        mController.addReadabilityUpdateListener(readabilityObserver);
+
+        // Check readability
+        mController.maybeCheckReadability(sTestGURL);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        assertFalse(mController.isReadable(mTab));
+
+        // Simulate response coming back after ReadAloudController being destroyed.
+        mController.destroy();
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), true, false);
+
+        verify(readabilityObserver, never()).run();
+    }
+
     private void requestAndStartPlayback() {
         mFakeTranslateBridge.setCurrentLanguage("en");
         mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));

@@ -130,6 +130,7 @@ public class ReadAloudController
 
     private boolean mOnUserLeaveHint;
     private boolean mRestoringPlayer;
+    private boolean mIsDestroyed;
 
     /**
      * ReadAloud entrypoint defined in readaloud/enums.xml.
@@ -400,10 +401,14 @@ public class ReadAloudController
                         assert false;
                         return;
                     }
+
                     Log.d(TAG, "onSuccess called for %s", url);
                     ReadAloudMetrics.recordIsPageReadable(isReadable);
                     ReadAloudMetrics.recordServerReadabilityResult(isReadable);
                     ReadAloudMetrics.recordIsPageReadabilitySuccessful(true);
+
+                    // If destroy() was already called, stop now. Recording metrics should be okay.
+                    if (mIsDestroyed) return;
 
                     // Register _KnownReadable trial before checking more playback conditions
                     if (isReadable) {
@@ -943,6 +948,7 @@ public class ReadAloudController
 
     /** Cleanup: unregister listeners. */
     public void destroy() {
+        mIsDestroyed = true;
         if (mVoicePreviewPlayback != null) {
             destroyVoicePreview();
         }
@@ -970,6 +976,7 @@ public class ReadAloudController
         }
         mActivityLifecycleDispatcher.unregister(this);
         mRestoringPlayer = false;
+        mReadabilityUpdateObserverList.clear();
     }
 
     private void maybeSetUpHighlighter(Playback.Metadata metadata) {
