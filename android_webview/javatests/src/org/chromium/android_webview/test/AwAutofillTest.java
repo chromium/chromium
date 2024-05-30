@@ -338,10 +338,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                     mTest.waitForCallbackAndVerifyTypes(
                             mCnt,
                             new Integer[] {
-                                AUTOFILL_VIEW_EXITED,
-                                AUTOFILL_VALUE_CHANGED,
-                                AUTOFILL_COMMIT,
-                                AUTOFILL_CANCEL
+                                AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT, AUTOFILL_CANCEL
                             });
         }
 
@@ -1324,11 +1321,7 @@ public class AwAutofillTest extends AwParameterizedTest {
         waitForCallbackAndVerifyTypes(
                 cnt,
                 new Integer[] {
-                    AUTOFILL_VIEW_EXITED,
-                    AUTOFILL_VALUE_CHANGED,
-                    AUTOFILL_VALUE_CHANGED,
-                    AUTOFILL_COMMIT,
-                    AUTOFILL_CANCEL
+                    AUTOFILL_VALUE_CHANGED, AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT, AUTOFILL_CANCEL
                 });
         assertEquals(SubmissionSource.PROBABLY_FORM_SUBMITTED, mSubmissionSource);
     }
