@@ -309,12 +309,25 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
 // Returns true if `kGetUserMediaDeferredDeviceSettingsSelection` is enabled,
 // but gates it on `kCameraMicPreview` also being being enabled. This only
 // applies to user media requests.
-bool ShouldDeferDeviceSettingsSelection(UserMediaRequestType request_type) {
+bool ShouldDeferDeviceSettingsSelection(
+    UserMediaRequestType request_type,
+    mojom::blink::MediaStreamType media_stream_type) {
   // The new behavior shouldn't be applied for anything except for user media
   // requests.
   // TODO(crbug.com/341136036): Find a better long-term solution for keeping
   // both code paths happy.
   if (request_type != UserMediaRequestType::kUserMedia) {
+    return false;
+  }
+
+  // The new behavior shouldn't be applied for anything except for device
+  // capture streams
+  // TODO(crbug.com/343505105): Find a better long-term solution for keeping
+  // both code paths happy.
+  if (media_stream_type !=
+          mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
+      media_stream_type !=
+          mojom::blink::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
     return false;
   }
 
@@ -324,7 +337,9 @@ bool ShouldDeferDeviceSettingsSelection(UserMediaRequestType request_type) {
              features::kGetUserMediaDeferredDeviceSettingsSelection);
 }
 #else
-bool ShouldDeferDeviceSettingsSelection(UserMediaRequestType request_type) {
+bool ShouldDeferDeviceSettingsSelection(
+    UserMediaRequestType request_type,
+    mojom::blink::MediaStreamType media_stream_type) {
   return false;
 }
 #endif
@@ -759,7 +774,8 @@ void UserMediaProcessor::SelectAudioSettings(
   SendLogMessage(base::StringPrintf("SelectAudioSettings({request_id=%d})",
                                     current_request_info_->request_id()));
   if (ShouldDeferDeviceSettingsSelection(
-          user_media_request->MediaRequestType())) {
+          user_media_request->MediaRequestType(),
+          user_media_request->AudioMediaStreamType())) {
     base::expected<Vector<blink::AudioCaptureSettings>, std::string>
         eligible_settings = SelectEligibleSettingsAudioCapture(
             capabilities, user_media_request->AudioConstraints(),
@@ -977,7 +993,8 @@ void UserMediaProcessor::SelectVideoDeviceSettings(
                                                std::optional<bool>(true),
                                                std::optional<bool>(false)};
   if (ShouldDeferDeviceSettingsSelection(
-          user_media_request->MediaRequestType())) {
+          user_media_request->MediaRequestType(),
+          user_media_request->VideoMediaStreamType())) {
     auto eligible_settings = SelectEligibleSettingsVideoDeviceCapture(
         std::move(capabilities), user_media_request->VideoConstraints(),
         blink::MediaStreamVideoSource::kDefaultWidth,
@@ -1189,42 +1206,47 @@ void UserMediaProcessor::OnStreamsGenerated(
   }
 
   if (ShouldDeferDeviceSettingsSelection(
-          current_request_info_->request()->MediaRequestType())) {
-    if (!current_request_info_->eligible_audio_settings().empty()) {
-      const std::string selected_id =
-          stream_devices_set->stream_devices.front()->audio_device->id;
-      const auto& eligible_audio_settings =
-          current_request_info_->eligible_audio_settings();
-      const auto* selected_audio_settings = std::find_if(
-          eligible_audio_settings.begin(), eligible_audio_settings.end(),
-          [selected_id](const auto& settings) {
-            return settings.device_id() == selected_id;
-          });
-      CHECK_NE(selected_audio_settings, eligible_audio_settings.end());
-      current_request_info_->SetAudioCaptureSettings(
-          *selected_audio_settings,
-          /*is_content_capture=*/false);
-      if (current_request_info_->stream_controls()->audio.stream_type !=
-          MediaStreamType::DISPLAY_AUDIO_CAPTURE) {
-        current_request_info_->stream_controls()->disable_local_echo =
-            selected_audio_settings->disable_local_echo();
-      }
+          current_request_info_->request()->MediaRequestType(),
+          current_request_info_->request()->AudioMediaStreamType()) &&
+      !current_request_info_->eligible_audio_settings().empty() &&
+      stream_devices_set->stream_devices.front()->audio_device.has_value()) {
+    const std::string selected_id =
+        stream_devices_set->stream_devices.front()->audio_device->id;
+    const auto& eligible_audio_settings =
+        current_request_info_->eligible_audio_settings();
+    const auto* selected_audio_settings = std::find_if(
+        eligible_audio_settings.begin(), eligible_audio_settings.end(),
+        [selected_id](const auto& settings) {
+          return settings.device_id() == selected_id;
+        });
+    CHECK_NE(selected_audio_settings, eligible_audio_settings.end());
+    current_request_info_->SetAudioCaptureSettings(
+        *selected_audio_settings,
+        /*is_content_capture=*/false);
+    if (current_request_info_->stream_controls()->audio.stream_type !=
+        MediaStreamType::DISPLAY_AUDIO_CAPTURE) {
+      current_request_info_->stream_controls()->disable_local_echo =
+          selected_audio_settings->disable_local_echo();
     }
-    if (!current_request_info_->eligible_video_settings().empty()) {
-      const std::string selected_id =
-          stream_devices_set->stream_devices.front()->video_device->id;
-      const auto& eligible_video_settings =
-          current_request_info_->eligible_video_settings();
-      const auto* selected_video_settings = std::find_if(
-          eligible_video_settings.begin(), eligible_video_settings.end(),
-          [selected_id](const auto& settings) {
-            return settings.device_id() == selected_id;
-          });
-      CHECK_NE(selected_video_settings, eligible_video_settings.end());
-      current_request_info_->SetVideoCaptureSettings(
-          *selected_video_settings,
-          /*is_content_capture=*/false);
-    }
+  }
+  if (ShouldDeferDeviceSettingsSelection(
+          current_request_info_->request()->MediaRequestType(),
+          current_request_info_->request()->VideoMediaStreamType()) &&
+      !current_request_info_->eligible_video_settings().empty() &&
+      stream_devices_set->stream_devices.front()->video_device.has_value()) {
+    const std::string selected_id =
+        stream_devices_set->stream_devices.front()->video_device->id;
+    const auto& eligible_video_settings =
+        current_request_info_->eligible_video_settings();
+    const auto* selected_video_settings = std::find_if(
+        eligible_video_settings.begin(), eligible_video_settings.end(),
+        [selected_id](const auto& settings) {
+          return settings.device_id() == selected_id;
+        });
+    CHECK_NE(selected_video_settings, eligible_video_settings.end());
+    current_request_info_->SetVideoCaptureSettings(
+        *selected_video_settings,
+        /*is_content_capture=*/false);
   }
 
   current_request_info_->set_state(RequestInfo::State::kGenerated);
