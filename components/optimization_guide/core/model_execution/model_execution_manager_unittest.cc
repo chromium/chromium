@@ -239,10 +239,10 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
             EXPECT_NE(log_entry, nullptr);
             EXPECT_TRUE(log_entry->log_ai_data_request()
                             ->mutable_compose()
-                            ->has_request_data());
+                            ->has_request());
             EXPECT_TRUE(log_entry->log_ai_data_request()
                             ->mutable_compose()
-                            ->has_response_data());
+                            ->has_response());
             EXPECT_EQ(log_entry->log_ai_data_request()
                           ->model_execution_info()
                           .execution_id(),
@@ -390,10 +390,10 @@ TEST_F(ModelExecutionManagerTest,
                      EXPECT_NE(result.log_entry, nullptr);
                      EXPECT_TRUE(result.log_entry->log_ai_data_request()
                                      ->mutable_compose()
-                                     ->has_request_data());
+                                     ->has_request());
                      EXPECT_TRUE(result.log_entry->log_ai_data_request()
                                      ->mutable_compose()
-                                     ->has_response_data());
+                                     ->has_response());
                      run_loop->Quit();
                    },
                    &run_loop));
@@ -435,10 +435,10 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
                      EXPECT_NE(result.log_entry, nullptr);
                      EXPECT_TRUE(result.log_entry->log_ai_data_request()
                                      ->mutable_compose()
-                                     ->has_request_data());
+                                     ->has_request());
                      EXPECT_TRUE(result.log_entry->log_ai_data_request()
                                      ->mutable_compose()
-                                     ->has_response_data());
+                                     ->has_response());
                      run_loop->Quit();
                    },
                    &run_loop));
@@ -629,10 +629,10 @@ TEST_F(ModelExecutionManagerTest, TestMultipleParallelRequests) {
             EXPECT_NE(log_entry, nullptr);
             EXPECT_TRUE(log_entry->log_ai_data_request()
                             ->mutable_compose()
-                            ->has_request_data());
+                            ->has_request());
             EXPECT_TRUE(log_entry->log_ai_data_request()
                             ->mutable_compose()
-                            ->has_response_data());
+                            ->has_response());
             EXPECT_EQ(log_entry->log_ai_data_request()
                           ->model_execution_info()
                           .execution_id(),

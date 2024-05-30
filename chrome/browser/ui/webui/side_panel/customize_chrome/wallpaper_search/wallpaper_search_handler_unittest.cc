@@ -632,11 +632,11 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
                            log_entry) {
             EXPECT_TRUE(log_entry->log_ai_data_request()
                             ->mutable_wallpaper_search()
-                            ->has_quality_data());
+                            ->has_quality());
             // Images should be cleared for logging.
             EXPECT_EQ(log_entry->log_ai_data_request()
                           ->mutable_wallpaper_search()
-                          ->mutable_response_data()
+                          ->mutable_response()
                           ->images_size(),
                       0);
 
@@ -645,7 +645,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
                     optimization_guide::proto::WallpaperSearchQuality>(
                     log_entry->log_ai_data_request()
                         ->mutable_wallpaper_search()
-                        ->quality_data()));
+                        ->quality()));
           }));
 
   // Quality logs on destruction.
@@ -794,13 +794,13 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
                            log_entry) {
             EXPECT_TRUE(log_entry->log_ai_data_request()
                             ->mutable_wallpaper_search()
-                            ->has_quality_data());
+                            ->has_quality());
             qualities.push_back(
                 std::make_unique<
                     optimization_guide::proto::WallpaperSearchQuality>(
                     log_entry->log_ai_data_request()
                         ->mutable_wallpaper_search()
-                        ->quality_data()));
+                        ->quality()));
           }));
 
   // Simulate that front-end has received the images and rendered them.
@@ -959,13 +959,13 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoResponse) {
                            log_entry) {
             EXPECT_TRUE(log_entry->log_ai_data_request()
                             ->mutable_wallpaper_search()
-                            ->has_quality_data());
+                            ->has_quality());
             qualities.push_back(
                 std::make_unique<
                     optimization_guide::proto::WallpaperSearchQuality>(
                     log_entry->log_ai_data_request()
                         ->mutable_wallpaper_search()
-                        ->quality_data()));
+                        ->quality()));
           }));
 
   // Quality logs on destruction.
@@ -1035,13 +1035,13 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoImages) {
                            log_entry) {
             EXPECT_TRUE(log_entry->log_ai_data_request()
                             ->mutable_wallpaper_search()
-                            ->has_quality_data());
+                            ->has_quality());
             qualities.push_back(
                 std::make_unique<
                     optimization_guide::proto::WallpaperSearchQuality>(
                     log_entry->log_ai_data_request()
                         ->mutable_wallpaper_search()
-                        ->quality_data()));
+                        ->quality()));
           }));
 
   EXPECT_EQ(status,
@@ -1119,13 +1119,13 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_RequestThrottled) {
                            log_entry) {
             EXPECT_TRUE(log_entry->log_ai_data_request()
                             ->mutable_wallpaper_search()
-                            ->has_quality_data());
+                            ->has_quality());
             qualities.push_back(
                 std::make_unique<
                     optimization_guide::proto::WallpaperSearchQuality>(
                     log_entry->log_ai_data_request()
                         ->mutable_wallpaper_search()
-                        ->quality_data()));
+                        ->quality()));
           }));
 
   // Quality logs on destruction.
@@ -1402,13 +1402,13 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
                            log_entry) {
             EXPECT_TRUE(log_entry->log_ai_data_request()
                             ->mutable_wallpaper_search()
-                            ->has_quality_data());
+                            ->has_quality());
             qualities.push_back(
                 std::make_unique<
                     optimization_guide::proto::WallpaperSearchQuality>(
                     log_entry->log_ai_data_request()
                         ->mutable_wallpaper_search()
-                        ->quality_data()));
+                        ->quality()));
           }));
 
   // Advance clock to test complete latency.
@@ -1536,13 +1536,13 @@ TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
                            log_entry) {
             EXPECT_TRUE(log_entry->log_ai_data_request()
                             ->mutable_wallpaper_search()
-                            ->has_quality_data());
+                            ->has_quality());
             qualities.push_back(
                 std::make_unique<
                     optimization_guide::proto::WallpaperSearchQuality>(
                     log_entry->log_ai_data_request()
                         ->mutable_wallpaper_search()
-                        ->quality_data()));
+                        ->quality()));
           }));
 
   // Quality logs on destruction.

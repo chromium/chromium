@@ -14,11 +14,11 @@ option java_package = "org.chromium.components.optimization_guide.features.proto
 option java_outer_classname = "WallpaperSearchProto";
 
 message WallpaperSearchLoggingData {
-  WallpaperSearchRequest request_data = 1;
+  WallpaperSearchRequest request = 1;
 
-  WallpaperSearchResponse response_data = 2;
+  WallpaperSearchResponse response = 2;
 
-  WallpaperSearchQuality quality_data = 3;
+  WallpaperSearchQuality quality = 3;
 }
 
 // Next ID: 3

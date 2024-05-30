@@ -261,14 +261,14 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
       EXPECT_EQ(log_ai_data_request->feature_case(),
                 proto::LogAiDataRequest::FeatureCase::kCompose);
       EXPECT_TRUE(log_ai_data_request->has_compose());
-      EXPECT_TRUE(log_ai_data_request->mutable_compose()->has_request_data());
+      EXPECT_TRUE(log_ai_data_request->mutable_compose()->has_request());
     }
 
     if (result.has_value()) {
       EXPECT_TRUE(log_entry.get()
                       ->log_ai_data_request()
                       ->mutable_compose()
-                      ->has_response_data());
+                      ->has_response());
       model_execution_result_ = base::ok(result.value());
     } else {
       model_execution_result_ = base::unexpected(result.error());

@@ -22,8 +22,7 @@ std::optional<UserVisibleFeatureKey> GetModelExecutionFeature(
 template <typename FeatureType>
 FeatureType::Quality* GetModelQualityData(
     proto::LogAiDataRequest* log_ai_data_request) {
-  return FeatureType::GetLoggingData(*log_ai_data_request)
-      ->mutable_quality_data();
+  return FeatureType::GetLoggingData(*log_ai_data_request)->mutable_quality();
 }
 
 }  // namespace optimization_guide

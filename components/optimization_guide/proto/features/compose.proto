@@ -14,11 +14,11 @@ option java_package = "org.chromium.components.optimization_guide.features.proto
 option java_outer_classname = "ComposeProto";
 
 message ComposeLoggingData {
-  ComposeRequest request_data = 1;
+  ComposeRequest request = 1;
 
-  ComposeResponse response_data = 2;
+  ComposeResponse response = 2;
 
-  ComposeQuality quality_data = 3;
+  ComposeQuality quality = 3;
 }
 
 // Stores all data associated with a single call to the model execution run for

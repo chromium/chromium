@@ -35,7 +35,7 @@ class ModelQualityLogEntry {
   template <typename FeatureType>
   FeatureType::Quality* quality_data() {
     return FeatureType::GetLoggingData(*log_ai_data_request_)
-        ->mutable_quality_data();
+        ->mutable_quality();
   }
 
   void set_model_execution_id(const std::string& execution_id) {

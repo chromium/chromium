@@ -14,11 +14,11 @@ option java_package = "org.chromium.components.optimization_guide.features.proto
 option java_outer_classname = "TabOrganizationProto";
 
 message TabOrganizationLoggingData {
-  TabOrganizationRequest request_data = 1;
+  TabOrganizationRequest request = 1;
 
-  TabOrganizationResponse response_data = 2;
+  TabOrganizationResponse response = 2;
 
-  TabOrganizationQuality quality_data = 3;
+  TabOrganizationQuality quality = 3;
 }
 
 // Next ID: 5

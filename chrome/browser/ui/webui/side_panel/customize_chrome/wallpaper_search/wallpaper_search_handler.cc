@@ -913,7 +913,7 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
     // Clear out images in response to save bytes for logging.
     log_entry->log_ai_data_request()
         ->mutable_wallpaper_search()
-        ->mutable_response_data()
+        ->mutable_response()
         ->clear_images();
     log_entries_.emplace_back(std::move(log_entry), std::nullopt);
   }

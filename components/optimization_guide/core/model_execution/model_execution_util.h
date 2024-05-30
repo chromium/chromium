@@ -29,7 +29,7 @@ void SetExecutionRequestTemplate(
   // Request is set by the feature and should always be typed.
   auto typed_request =
       static_cast<const FeatureType::Request&>(request_metadata);
-  *(logging_data->mutable_request_data()) = typed_request;
+  *(logging_data->mutable_request()) = typed_request;
 }
 
 // Sets response data corresponding the feature's LogAiDataRequest.
@@ -50,8 +50,8 @@ void SetExecutionResponseTemplate(proto::LogAiDataRequest& log_ai_request,
   }
 
   // Set the response data to feature LoggingData if exists.
-  *(logging_data->mutable_response_data()) = std::move(*response_data);
-  CHECK(logging_data->has_response_data()) << "Response data is not set\n";
+  *(logging_data->mutable_response()) = std::move(*response_data);
+  CHECK(logging_data->has_response()) << "Response data is not set\n";
 }
 
 // Helper method matches feature to corresponding FeatureTypeMap to set

@@ -60,9 +60,9 @@ std::unique_ptr<proto::LogAiDataRequest> BuildComposeLogAiDataReuqest() {
   quality.set_final_status(
       optimization_guide::proto::FinalStatus::STATUS_INSERTED);
 
-  *(compose_logging_data.mutable_request_data()) = request;
-  *(compose_logging_data.mutable_response_data()) = response;
-  *(compose_logging_data.mutable_quality_data()) = quality;
+  *(compose_logging_data.mutable_request()) = request;
+  *(compose_logging_data.mutable_response()) = response;
+  *(compose_logging_data.mutable_quality()) = quality;
 
   *(log_ai_data_request->mutable_compose()) = compose_logging_data;
   return log_ai_data_request;
@@ -360,7 +360,7 @@ TEST_F(ModelQualityLogsUploaderServiceTest,
 
   proto::TabOrganizationRequest tab_request;
 
-  *(tab_organization_logging_data.mutable_request_data()) = tab_request;
+  *(tab_organization_logging_data.mutable_request()) = tab_request;
   *(log_ai_data_request_1->mutable_tab_organization()) =
       tab_organization_logging_data;
   std::unique_ptr<ModelQualityLogEntry> log_entry_1 =

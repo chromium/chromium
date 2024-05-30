@@ -2178,15 +2178,13 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
   EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
   EXPECT_EQ(log_entry_received_->log_ai_data_request()
                 ->compose()
-                .request_data()
+                .request()
                 .page_metadata()
                 .page_url(),
             "baz");
-  EXPECT_EQ(log_entry_received_->log_ai_data_request()
-                ->compose()
-                .response_data()
-                .output(),
-            "Context: ctx:foo off:0 max:10\nInput: execute:foobaz\n");
+  EXPECT_EQ(
+      log_entry_received_->log_ai_data_request()->compose().response().output(),
+      "Context: ctx:foo off:0 max:10\nInput: execute:foobaz\n");
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
@@ -2234,15 +2232,13 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
   EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses1));
   EXPECT_EQ(log_entry_received_->log_ai_data_request()
                 ->compose()
-                .request_data()
+                .request()
                 .page_metadata()
                 .page_url(),
             "2");
-  EXPECT_EQ(log_entry_received_->log_ai_data_request()
-                ->compose()
-                .response_data()
-                .output(),
-            "Context: ctx:bar off:0 max:10\nInput: execute:bar2\n");
+  EXPECT_EQ(
+      log_entry_received_->log_ai_data_request()->compose().response().output(),
+      "Context: ctx:bar off:0 max:10\nInput: execute:bar2\n");
   response_received_.reset();
   streamed_responses_.clear();
   log_entry_received_.reset();
@@ -2258,15 +2254,13 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
   EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses2));
   EXPECT_EQ(log_entry_received_->log_ai_data_request()
                 ->compose()
-                .request_data()
+                .request()
                 .page_metadata()
                 .page_url(),
             "1");
-  EXPECT_EQ(log_entry_received_->log_ai_data_request()
-                ->compose()
-                .response_data()
-                .output(),
-            "Context: ctx:foo off:0 max:10\nInput: execute:foo1\n");
+  EXPECT_EQ(
+      log_entry_received_->log_ai_data_request()->compose().response().output(),
+      "Context: ctx:foo off:0 max:10\nInput: execute:foo1\n");
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
@@ -2376,12 +2370,11 @@ TEST_F(OnDeviceModelServiceControllerTest, FallbackToServerAfterDelay) {
   EXPECT_EQ("2z", compose_request.page_metadata().page_url());
   ASSERT_TRUE(log_ai_data_request_passed_to_remote_);
   EXPECT_EQ(log_ai_data_request_passed_to_remote_->compose()
-                .request_data()
+                .request()
                 .page_metadata()
                 .page_url(),
             "2z");
-  EXPECT_FALSE(
-      log_ai_data_request_passed_to_remote_->compose().has_response_data());
+  EXPECT_FALSE(log_ai_data_request_passed_to_remote_->compose().has_response());
   EXPECT_FALSE(provided_by_on_device_.has_value());
 }
 
@@ -2403,12 +2396,11 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_TRUE(remote_execute_called_);
   ASSERT_TRUE(log_ai_data_request_passed_to_remote_);
   EXPECT_EQ(log_ai_data_request_passed_to_remote_->compose()
-                .request_data()
+                .request()
                 .page_metadata()
                 .page_url(),
             "foo");
-  EXPECT_FALSE(
-      log_ai_data_request_passed_to_remote_->compose().has_response_data());
+  EXPECT_FALSE(log_ai_data_request_passed_to_remote_->compose().has_response());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
