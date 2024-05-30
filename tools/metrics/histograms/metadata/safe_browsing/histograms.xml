@@ -206,6 +206,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.AndroidTelemetry.DownloadDirectlyTriggeredByIntent"
+    enum="Boolean" expires_after="2024-11-29">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records whether an APK download on Android was triggered by an intent.
+    It is true even when the intent URL does server-side redirects to the final
+    redirect URL. It is false however in the case of any client-side navigation,
+    whether triggered by the user or not. This is logged on every suspicious APK
+    download.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.AsyncCheck.CommittedNavigationIdsSize"
     units="count" expires_after="2024-09-22">
   <owner>xinghuilu@chromium.org</owner>
@@ -3470,7 +3484,7 @@ failing to fetch the updates which puts users' security at risk. -->
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    This record how long it took for the request to get the FCM token. It is
+    This records how long it took for the request to get the FCM token. It is
     logged every time a deep scanning request successfully gets a token.
   </summary>
 </histogram>

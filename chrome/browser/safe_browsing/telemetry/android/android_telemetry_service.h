@@ -100,6 +100,7 @@ class AndroidTelemetryService
   struct ReferrerChainResult {
     ApkDownloadTelemetryIncompleteReason missing_reason;
     SafeBrowsingNavigationObserverManager::AttributionResult result;
+    bool triggered_by_intent = false;
   };
 
   // Whether the ping can be sent, based on empty web_contents, or incognito

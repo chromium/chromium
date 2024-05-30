@@ -18,6 +18,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/safe_browsing/android/safe_browsing_referring_app_bridge_android.h"
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -171,6 +172,12 @@ void AndroidTelemetryService::FillReferrerChain(download::DownloadItem* item) {
                 web_contents->GetBrowserContext())
           : nullptr;
 
+  if (web_contents) {
+    GURL intent_url = GetReferringAppInfo(web_contents).target_url;
+    referrer_chain_result_[item].triggered_by_intent =
+        intent_url == item->GetOriginalUrl();
+  }
+
   if (!web_contents) {
     referrer_chain_result_[item].missing_reason = MISSING_WEB_CONTENTS;
     return;
@@ -241,6 +248,9 @@ AndroidTelemetryService::GetReport(download::DownloadItem* item) {
   UMA_HISTOGRAM_ENUMERATION(
       "SafeBrowsing.AndroidTelemetry.ApkDownload.IncompleteReason",
       referrer_chain_result_[item].missing_reason);
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.AndroidTelemetry.DownloadDirectlyTriggeredByIntent",
+      referrer_chain_result_[item].triggered_by_intent);
 
   // Fill DownloadItemInfo
   ClientSafeBrowsingReportRequest::DownloadItemInfo*
