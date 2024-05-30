@@ -131,6 +131,7 @@
 <translation id="1420408895951708260">Превключване на функцията за нощно осветление. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1435537621343861112">Функцията за диктуване не може да стартира. Микрофонът ви е изключен.</translation>
+<translation id="1447907279406111651">В момента ⋅ Приключва в <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Точките за достъп на устройството ви</translation>
 <translation id="1455242230282523554">Показване на езиковите настройки</translation>
 <translation id="1460620680449458626">Звукът е спрян.</translation>
@@ -481,6 +482,7 @@
 <translation id="2894949423239620203">Кабелът може да се отразява на ефективността</translation>
 <translation id="2914580577416829331">Екранни снимки</translation>
 <translation id="2924416280450782352">Елементите не могат да се покажат. Опитайте да отворите отново този панел.</translation>
+<translation id="292506373491190801">От събитие, което тече в момента</translation>
 <translation id="2931572158271115754">В този списък със задачи няма нищо.</translation>
 <translation id="2932487126591186298">Добавихте 10 минути. Оставащо време: <ph name="REMAINING_TIME" />.</translation>
 <translation id="2935225303485967257">Управление на потребителските профили</translation>
@@ -767,6 +769,7 @@
 <translation id="3950272133184491871">Искате ли да излезете от профила си сега?</translation>
 <translation id="3950820424414687140">Вход</translation>
 <translation id="3953130726459169782">Още няма завършени задачи.</translation>
+<translation id="3958714870339660776">Целият ден</translation>
 <translation id="3962859241508114581">Предишен запис</translation>
 <translation id="3969043077941541451">Изключено</translation>
 <translation id="3970324493235864154">Преглед на известията на телефона ви</translation>
@@ -863,6 +866,7 @@
 <translation id="4302592941791324970">Не е налице</translation>
 <translation id="4303223480529385476">Разгъване на лентата на състоянието</translation>
 <translation id="4305133312001648038">Нулиране на нивото на мащаба на страницата</translation>
+<translation id="4305817255990598646">Превключване</translation>
 <translation id="4307713728991152670">Настройване на прегледа на скорошните снимки, мултимедийни файлове и приложения на телефона ви</translation>
 <translation id="4312840429157639164">Картината от камерата е прилепена към горния десен ъгъл. Възникна конфликт с интерфейса на системата.</translation>
 <translation id="4316910396681052118">ВСИЧКИ ПРИЛОЖЕНИЯ</translation>
@@ -1219,6 +1223,7 @@
 <translation id="5599242528220103262">Клавишната комбинация е изключена</translation>
 <translation id="5600415762228455511">Режимът за концентрация е включен, оставащо време: <ph name="REMAINING_TIME" />, задача: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Натиснете Ctrl + Alt + Z, за да деактивирате обратната връзка с говор.</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{Преди по-малко от 1 час}=1{Преди 1 час}other{Преди # часа}}</translation>
 <translation id="5601503069213153581">ПИН код</translation>
 <translation id="5618148318840095371">Превключихме ви към по-добра мрежа</translation>
 <translation id="5619862035903135339">Заснемането на екрана е деактивирано чрез администраторско правило</translation>
@@ -1395,6 +1400,7 @@
 <translation id="6228457605945141550">Намаляване на яркостта</translation>
 <translation id="623116199192908855">Предаване на екрана ви от вашия Chromebook</translation>
 <translation id="6231419273573514727">Ефективността на периферните устройства може да е ограничена</translation>
+<translation id="6232416233079464213">От <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217">Понастоящем <ph name="APP_NAME" /> използва камерата и микрофона ви</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Батерията е изтощена. Режимът за запазването ѝ е включен.</translation>
@@ -1516,6 +1522,7 @@
 <translation id="6696025732084565524">Вашата отделяща се клавиатура се нуждае от критична актуализация</translation>
 <translation id="6697913454192220372">Добавяне на нов работен кът</translation>
 <translation id="6700713906295497288">Бутон за меню на редактора за метод на въвеждане</translation>
+<translation id="6706742084323792866">Фиксиране на клавиатурата</translation>
 <translation id="6707693040195709527">Срокът за връщане на устройството към предишна версия е изтекъл</translation>
 <translation id="6710213216561001401">Предишно</translation>
 <translation id="6723839937902243910">Захранване</translation>
@@ -1796,6 +1803,7 @@
 <translation id="780301667611848630">Не, благодаря</translation>
 <translation id="7807067443225230855">Търсене и Асистент</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> и <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">От предстоящо събитие от календара</translation>
 <translation id="7829386189513694949">силен сигнал</translation>
 <translation id="7830453190047749513">Можете да персонализирате действията за бутоните, скоростта на курсора и др. за <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Времето изтече</translation>
@@ -2113,6 +2121,7 @@
 <translation id="899350903320462459">Отключете устройството като <ph name="LOGIN_ID" />, за да се изпълни действието от известието</translation>
 <translation id="8993733019280019776">Говорите ли? Микрофонът ви е изключен. Изберете го, за да го включите.</translation>
 <translation id="9000771174482730261">УПРАВЛЕНИЕ НА ХРАНИЛИЩЕТО</translation>
+<translation id="9002204506712855687">Разгледайте най-новите функции</translation>
 <translation id="9005984960510803406">Отваряне на прозорец на Crosh</translation>
 <translation id="9017320285115481645">Въведете кода за достъп на родител от Family Link.</translation>
 <translation id="9022774213089566801">Често посещавани</translation>
@@ -2144,6 +2153,7 @@
 <translation id="9098969848082897657">Заглушаване на телефона</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> или <ph name="CTRL" /> <ph name="SEPARATOR1" /> <ph name="SHIFT" /> <ph name="SEPARATOR2" /> <ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Отмяна на последното действие</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{След 1 мин}other{След # мин}}</translation>
 <translation id="9129245940793250979">Заден бутон</translation>
 <translation id="9133335900048457298">Не е възможно записване на защитено съдържание</translation>
 <translation id="9139720510312328767">Изтриване на следващата буква</translation>
@@ -2156,6 +2166,7 @@
 <translation id="9183456764293710005">Лупа за увеличаване на целия екран</translation>
 <translation id="9193626018745640770">Предава се към неизвестен приемник</translation>
 <translation id="9194617393863864469">Влизане в профила на друг потребител...</translation>
+<translation id="9195990613383871904">Утре</translation>
 <translation id="9198992156681343238">Разделителната способност на <ph name="DISPLAY_NAME" /> бе променена на <ph name="RESOLUTION" />. Кликнете върху бутона за потвърждаване, за да запазите промените. Предишните настройки ще бъдат възстановени след <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Свържете <ph name="NAME" /> с този Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, управлява се от администратора ви</translation>

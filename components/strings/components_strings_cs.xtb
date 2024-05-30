@@ -191,6 +191,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
           <ph name="LIST_ITEM" />váš zaměstnavatel nebo škola,
           <ph name="LIST_ITEM" />váš poskytovatel internetových služeb.
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">Sledovat tuto položku</translation>
 <translation id="1337692097987160377">Sdílet tuto kartu</translation>
 <translation id="1339601241726513588">Doména registrace:</translation>
 <translation id="1340482604681802745">Adresa vyzvednutí</translation>
@@ -2607,6 +2608,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6035491133925068289">Lehká atletika</translation>
 <translation id="6039846035001940113">Pokud problém přetrvává, kontaktujte vlastníka webu.</translation>
 <translation id="6040143037577758943">Zavřít</translation>
+<translation id="6040539895181423374">Informace o ceně</translation>
 <translation id="604124094241169006">Automaticky</translation>
 <translation id="6041777658117377052">Teplota komory</translation>
 <translation id="6042308850641462728">Více</translation>

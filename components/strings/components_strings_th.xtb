@@ -456,6 +456,7 @@
 <translation id="1812527064848182527">แนวนอน</translation>
 <translation id="1812975699435941848">การศึกษาด้านสุขภาพและการฝึกอบรมทางการแพทย์</translation>
 <translation id="1816436748874040213">สามารถขอเลื่อนและซูมแท็บที่แชร์</translation>
+<translation id="1817364650920811003">บทบาท: เคล็ดลับสำหรับ Chrome ป้ายกำกับการเข้าถึง: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">เลิกบล็อก</translation>
 <translation id="1818585559878922121">ภาพยนตร์สารคดี</translation>
 <translation id="182139138257690338">การดาวน์โหลดอัตโนมัติ</translation>
@@ -1397,6 +1398,7 @@
 <translation id="3642638418806704195">แอปพลิเคชัน:</translation>
 <translation id="3646643500201740985">การวัดประสิทธิภาพของโฆษณา</translation>
 <translation id="3647286794400715637">แต่ละรายการในสตริง URL ต้องมี URL 1-2 รายการ</translation>
+<translation id="3647400963805615193">ปุ่ม "ปิดเคล็ดลับสำหรับ Chrome" กด Enter เพื่อปิด <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">การตรวจสอบสำเร็จ</translation>
 <translation id="3650594806107685466">ป้อน CVC ที่<ph name="SIDE_OF_CARD" />เพื่อช่วยรักษาบัตรให้ปลอดภัยอยู่เสมอ</translation>
 <translation id="3650917416636556301">การเดินเขาและแคมปิ้ง</translation>
@@ -2297,6 +2299,7 @@
 <translation id="541416427766103491">สแต็กเกอร์ 4</translation>
 <translation id="5414446060143308245">ต้องตรวจสอบก่อนโอน</translation>
 <translation id="5414511064953050917">ย้ายเลย</translation>
+<translation id="5419311651396341287">ผู้ดูแลระบบอาจดูข้อมูลต่อไปนี้ได้</translation>
 <translation id="5421408724705443535">เพลงร็อก</translation>
 <translation id="5423269318075950257">ติดตามราคา</translation>
 <translation id="5425082381151187189">การจัดบ้านและตกแต่งภายใน</translation>
@@ -3369,6 +3372,7 @@
 <translation id="7481312909269577407">ส่งต่อ</translation>
 <translation id="7481603210197454575">Envelope Italian</translation>
 <translation id="7483482939016730822">เครื่องเขียนและอุปกรณ์ในห้องเรียน</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" /> กด Tab ตามด้วย Enter เพื่อปิดเคล็ดลับสำหรับ Chrome</translation>
 <translation id="7485085230273446323">ธุรกิจและอุตสาหกรรม</translation>
 <translation id="7485870689360869515">ไม่พบข้อมูล</translation>
 <translation id="7489392576326061356">แชมพูและครีมนวด</translation>

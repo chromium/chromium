@@ -2039,7 +2039,6 @@
 <translation id="2469259292033957819">保存済みのプリンタはありません。</translation>
 <translation id="2469375675106140201">スペルチェックをカスタマイズ</translation>
 <translation id="247051149076336810">ファイル共有 URL</translation>
-<translation id="2470702053775288986">サポートされていない拡張機能が無効</translation>
 <translation id="2471469610750100598">黒（デフォルト）</translation>
 <translation id="2471506181342525583">位置情報へのアクセスが許可されています</translation>
 <translation id="2473195200299095979">このページを翻訳</translation>
@@ -3012,7 +3011,7 @@
 <translation id="3201237270673604992">降順</translation>
 <translation id="3201422919974259695">使用可能な USB デバイスがここに表示されます。</translation>
 <translation id="3202499879214571401"><ph name="DEVICE_NAME" /> への画面のキャストを一時停止する</translation>
-<translation id="3202578601642193415">最新</translation>
+<translation id="3202578601642193415">新しい順</translation>
 <translation id="3204648577100496185">このアプリに関連付けられているデータがこのデバイスから削除される可能性があります</translation>
 <translation id="3207344462385471911">最近のアクティビティに基づいて、興味のありそうな検索候補とショッピングの割引が表示されています。
         <ph name="BREAK" />
@@ -4180,6 +4179,7 @@
 <translation id="4050534976465737778">両方のデバイスでロックが解除されていること、お互いが近くにあること、Bluetooth が有効になっていることを確認してください。連絡先に登録されていない Chromebook とファイルを共有する場合は、その Chromebook で周辺ユーザーによる検出がオンになっていることも確認してください（ステータス領域を開いて、周辺ユーザーによる検出をオンにします）。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">前回使用した入力方法に切り替えるには、<ph name="KEY_CODES" /> キーを押します</translation>
 <translation id="4051177682900543628">検索+右矢印</translation>
+<translation id="405181879009056822">ChromeOS 設定</translation>
 <translation id="4052120076834320548">極小</translation>
 <translation id="4052913941260326985">QR コードを作成(&amp;Q)</translation>
 <translation id="405365679581583349">Google Play 開発者サービスの更新</translation>
@@ -4827,6 +4827,7 @@
 <translation id="4562091353415772246">アップデートやアプリをインストールします。続行すると、Google、ご利用の携帯通信会社、デバイスの製造元からのアップデートやアプリもデバイスで自動的にダウンロードおよびインストールされる場合があることについて、同意したものと見なされます（ダウンロードの際にはモバイルデータ通信が使用される可能性もあります）。こうしたアプリの一部ではアプリ内購入が提案される場合もあります。<ph name="BEGIN_LINK1" />Play 自動インストールの詳細<ph name="BEGIN_LINK1_END" />詳細<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">指紋を追加</translation>
 <translation id="4562155266774382038">候補を却下</translation>
+<translation id="4562364000855074606">この <ph name="DEVICE_TYPE" /> でアプリのインストールをブロックします。アプリやコンテンツのダウンロードを制限するには、Google Play の設定にアクセスしてください。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">初期の入力言語を中国語にする</translation>
 <translation id="4563382028841851106">アカウントから削除</translation>
 <translation id="4563880231729913339">指 3</translation>
@@ -5202,7 +5203,6 @@
 <translation id="4853020600495124913">新しいウィンドウで開く(&amp;N)</translation>
 <translation id="4854317507773910281">承認してもらう保護者のアカウントを選択</translation>
 <translation id="485480310608090163">その他の設定と権限</translation>
-<translation id="4858599593306712511">保護者によるアプリの使用制限</translation>
 <translation id="4858913220355269194">フリッツ</translation>
 <translation id="486213875233855629">管理者によってミュートされています</translation>
 <translation id="4862642413395066333">OCSP 応答の署名</translation>
@@ -5712,6 +5712,7 @@
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> は、ユーザーの現在地情報を使用して地域のコンテンツを提供します。この設定は [<ph name="SETTINGS_LINK" />] で変更できます。</translation>
 <translation id="5252496130205799136">Google アカウントを使用してパスワードを保存、入力しますか？</translation>
 <translation id="5252653240322147470">PIN は <ph name="MAXIMUM" /> 桁未満で指定してください</translation>
+<translation id="5253554634804500860"><ph name="DEVICE_NAME" /> を使用</translation>
 <translation id="5254233580564156835">メモリ使用量: <ph name="MEMORY_USAGE" /></translation>
 <translation id="52550593576409946">キオスク アプリケーションを起動できませんでした。</translation>
 <translation id="5255726914791076208">パスキーを編集しても、<ph name="RP_ID" /> のアカウントは変更されません</translation>
@@ -5786,6 +5787,7 @@
 <translation id="5300719150368506519">アクセスしたページの URL を Google に送信</translation>
 <translation id="5301751748813680278">ゲストとしてログインしています。</translation>
 <translation id="5301954838959518834">OK</translation>
+<translation id="5302032366299160685">ファイルが開くのを待ってから、もう一度お試しください</translation>
 <translation id="5302048478445481009">言語</translation>
 <translation id="5302932258331363306">置換するテキストを表示</translation>
 <translation id="5305145881844743843">このアカウントは <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> によって管理されています</translation>
@@ -6283,6 +6285,7 @@
 <translation id="5678955352098267522"><ph name="WEBSITE_1" /> でのユーザーデータの読み取り</translation>
 <translation id="5679785611070310751"><ph name="MONTH_AND_YEAR" /> 以降、この Chromebook ではセキュリティ アップデートが提供されなくなります。最新のセキュリティとソフトウェアにアップグレードしましょう。特典の利用規約が適用されます。</translation>
 <translation id="5680050361008726776">「<ph name="ESIM_PROFILE_NAME" />」を削除しますか？</translation>
+<translation id="5681586175480958839">ファイルはすでに開かれています</translation>
 <translation id="5684181005476681636">Wi-Fi の詳細</translation>
 <translation id="5684661240348539843">アセット ID</translation>
 <translation id="5684950556880280580">パスワードが更新されました</translation>
@@ -6447,6 +6450,7 @@
 <translation id="5806447147478173900">表示されたサイトの合計ストレージ使用状況: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0°（デフォルト）</translation>
 <translation id="5809835394668218762"><ph name="WEBSITE" /> に対するその他の操作</translation>
+<translation id="5809840528400421362">PIN は 6 桁にしてください</translation>
 <translation id="5810809306422959727">このアカウントでは保護者による使用制限を設定できません</translation>
 <translation id="5811614940486072060">このファイルは一般的にダウンロードされているファイルではなく、危害を及ぼす可能性があります</translation>
 <translation id="5812674658566766066">すべて展開</translation>
@@ -8031,6 +8035,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> がカメラを使用しています</translation>
 <translation id="701080569351381435">ソースを表示</translation>
 <translation id="7011797924920577670">興味 / 関心を推定</translation>
+<translation id="7012430956470647760">アプリの保護者による使用制限</translation>
 <translation id="7013762323294215682">このパスキーはパスワード マネージャーに保存されます。パスワード マネージャーにアクセスできるユーザーなら誰でも、このパスキーを使用できます。</translation>
 <translation id="7014174261166285193">インストールできませんでした。</translation>
 <translation id="7014480873681694324">テキストの選択を解除</translation>

@@ -2052,7 +2052,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2469259292033957819">Du har ingen lagrede skrivere.</translation>
 <translation id="2469375675106140201">Tilpass stavekontrollen</translation>
 <translation id="247051149076336810">Nettadresse for fildeling</translation>
-<translation id="2470702053775288986">Ustøttede utvidelser slått av</translation>
 <translation id="2471469610750100598">Svart (standard)</translation>
 <translation id="2471506181342525583">Posisjonstilgang tillates</translation>
 <translation id="2473195200299095979">Oversett denne siden</translation>
@@ -4845,6 +4844,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4562091353415772246">Installer oppdateringer og apper. Ved å fortsette godtar du at denne enheten også kan laste ned og installere oppdateringer automatisk fra Google, operatøren din og enhetens produsent. Dette bruker muligens mobildata. Noen av disse appene kan tilby kjøp i appen. <ph name="BEGIN_LINK1" />Finn ut mer om automatisk Play-installering<ph name="BEGIN_LINK1_END" />Finn ut mer<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">Legg til fingeravtrykk</translation>
 <translation id="4562155266774382038">Avvis forslaget</translation>
+<translation id="4562364000855074606">Blokker apper som er installert på <ph name="DEVICE_TYPE" />. For å begrense nedlasting av apper eller innhold, gå til Google Play-innstillingene. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Det opprinnelige inndataspråket er kinesisk</translation>
 <translation id="4563382028841851106">Fjern fra kontoen</translation>
 <translation id="4563880231729913339">Finger 3</translation>
@@ -5220,7 +5220,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4853020600495124913">Åpne i &amp;nytt vindu</translation>
 <translation id="4854317507773910281">Velg foreldrekonto for godkjenning</translation>
 <translation id="485480310608090163">Flere innstillinger og tillatelser</translation>
-<translation id="4858599593306712511">Foreldrekontroll for apper</translation>
 <translation id="4858913220355269194">Drible</translation>
 <translation id="486213875233855629">Dempet av administratoren din</translation>
 <translation id="4862642413395066333">Signering av OCSP-svar</translation>
@@ -8052,6 +8051,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7009709314043432820"><ph name="APP_NAME" /> bruker kameraet ditt</translation>
 <translation id="701080569351381435">Se kilde</translation>
 <translation id="7011797924920577670">beregner også interessene dine</translation>
+<translation id="7012430956470647760">Foreldrekontroll for apper</translation>
 <translation id="7013762323294215682">Denne passnøkkelen lagres i passordlagringen. Alle som har tilgang til den, kan bruke denne passnøkkelen.</translation>
 <translation id="7014174261166285193">Installeringen mislyktes.</translation>
 <translation id="7014480873681694324">Fjern markering</translation>

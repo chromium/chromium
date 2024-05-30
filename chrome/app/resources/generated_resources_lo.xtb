@@ -2056,7 +2056,6 @@
 <translation id="2469259292033957819">ທ່ານບໍ່ມີເຄື່ອງພິມທີ່ບັນທຶກໄວ້ໃດໆ.</translation>
 <translation id="2469375675106140201">ປັບແຕ່ງການກວດການສະກົດຄຳ</translation>
 <translation id="247051149076336810">URL ການແບ່ງປັນໄຟລ໌</translation>
-<translation id="2470702053775288986">ປິດໃຊ້ງານສ່ວນຂະຫຍາຍທີ່ບໍ່ຮອງຮັບ</translation>
 <translation id="2471469610750100598">ສີດຳ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="2471506181342525583">ອະນຸຍາດສິດເຂົ້າເຖິງສະຖານທີ່ແລ້ວ</translation>
 <translation id="2473195200299095979">ແປ​​ຫນ້າ​ນີ້</translation>
@@ -4202,6 +4201,7 @@
 <translation id="4050534976465737778">ກະລຸນາກວດສອບວ່າອຸປະກອນທັງສອງປົດລັອກແລ້ວ, ຢູ່ໃກ້ກັນ ແລະ ເປີດ Bluetooth. ຖ້າທ່ານກຳລັງແບ່ງປັນກັບ Chromebook ທີ່ບໍ່ໄດ້ຢູ່ໃນລາຍຊື່ຜູ້ຕິດຕໍ່ຂອງທ່ານ, ກະລຸນາກວດໃຫ້ແນ່ໃຈວ່າມັນໄດ້ເປີດການແບ່ງປັນ Nearby (ເປີດພື້ນທີ່ສະຖານະ, ຈາກນັ້ນເປີດການແບ່ງປັນ Nearby). <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">ເພື່ອປ່ຽນວິທີການປ້ອນຂໍ້ມູນທີ່ໃຊ້ເທື່ອຫຼ້າສຸດ, ໃຫ້ກົດ <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">ຊອກຫາ + ລູກສອນຂວາ</translation>
+<translation id="405181879009056822">ການຕັ້ງຄ່າ ChromeOS</translation>
 <translation id="4052120076834320548">ບາງ</translation>
 <translation id="4052913941260326985">ສ້າງລະຫັດ QR</translation>
 <translation id="405365679581583349">ອັບເດດບໍລິການ Google Play</translation>
@@ -4851,6 +4851,7 @@
 <translation id="4562091353415772246">ຕິດຕັ້ງການອັບເດດ ແລະ ແອັບ. ໂດຍການສືບຕໍ່, ແມ່ນຖືວ່າທ່ານຍອມຮັບວ່າອຸປະກອນນີ້ອາດໃຊ້ອິນເຕີເນັດມືຖືດາວໂຫຼດ ແລະ ຕິດຕັ້ງການອັບເດດ ແລະ ແອັບຈາກ Google, ຜູ້ໃຫ້ບໍລິການຂອງທ່ານ ແລະ ຜູ້ຜະລິດອຸປະກອນຂອງທ່ານໂດຍອັດຕະໂນມັດນຳ. ແອັບເຫຼົ່ານີ້ບາງແອັບອາດສະເໜີການຊື້ໃນແອັບ. <ph name="BEGIN_LINK1" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການຕິດຕັ້ງອັດຕະໂນມັດຜ່ານ Play<ph name="BEGIN_LINK1_END" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">ເພີ່ມລາຍນິ້ວມື</translation>
 <translation id="4562155266774382038">ປິດຄຳແນະນຳ</translation>
+<translation id="4562364000855074606">ບລັອກແອັບທີ່ຕິດຕັ້ງຢູ່ <ph name="DEVICE_TYPE" /> ນີ້. ເພື່ອຈຳກັດການດາວໂຫຼດແອັບ ຫຼື ເນື້ອຫາ, ໃຫ້ໄປທີ່ການຕັ້ງຄ່າ Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">ພາສາປ້ອນເຂົ້າເບື້ອງຕົ້ນແມ່ນພາສາຈີນ</translation>
 <translation id="4563382028841851106">ລຶບອອກຈາກບັນຊີ</translation>
 <translation id="4563880231729913339">ນິ້ວ 3</translation>
@@ -5226,7 +5227,6 @@
 <translation id="4853020600495124913">ເປີດ​ຢູ່​ໃນໜ້າ​ຕ່າງ​ໃຫມ່</translation>
 <translation id="4854317507773910281">ເລືອກບັນຊີພໍ່ແມ່ສຳລັບການອະນຸມັດ</translation>
 <translation id="485480310608090163">ການຕັ້ງຄ່າ ແລະ ການອະນຸຍາດເພີ່ມເຕີມ</translation>
-<translation id="4858599593306712511">ການຄວບຄຸມຂອງພໍ່ແມ່ໃນແອັບ</translation>
 <translation id="4858913220355269194">ຖືກທໍາລາຍ</translation>
 <translation id="486213875233855629">ຖືກປິດສຽງໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="4862642413395066333">ການເຊັນການຕອບຮັບ OCSP</translation>
@@ -5737,6 +5737,7 @@
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> ໃຊ້ສະຖານທີ່ຂອງທ່ານເພື່ອໃຫ້ເນື້ອຫາທ້ອງຖິ່ນແກ່ທ່ານ. ທ່ານສາມາດປ່ຽນສິ່ງນີ້ໄດ້ໃນ <ph name="SETTINGS_LINK" />.</translation>
 <translation id="5252496130205799136">ໃຊ້ບັນຊີ Google ຂອງທ່ານເພື່ອບັນທຶກ ແລະ ປະກອບຂໍ້ມູນລະຫັດຜ່ານບໍ?</translation>
 <translation id="5252653240322147470">PIN ຕ້ອງມີໜ້ອຍກວ່າ <ph name="MAXIMUM" /> ຕົວເລກ</translation>
+<translation id="5253554634804500860">ໃຊ້ <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">ການໃຊ້ໜ່ວຍຄວາມຈຳ: <ph name="MEMORY_USAGE" /></translation>
 <translation id="52550593576409946">ບໍ່​ສາ​ມາດເປີດໃຊ້ແອັບພລິເຄຊັນ Kiosk ໄດ້.</translation>
 <translation id="5255726914791076208">ເມື່ອທ່ານແກ້ໄຂກະແຈຜ່ານຂອງທ່ານ, ບັນຊີ <ph name="RP_ID" /> ຂອງທ່ານຈະບໍ່ມີການປ່ຽນແປງ</translation>
@@ -6473,6 +6474,7 @@
 <translation id="5806447147478173900">ການໃຊ້ບ່ອນຈັດເກັບຂໍ້ມູນທັງໝົດຕາມເວັບໄຊທີ່ສະແດງ: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (ຕາມຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="5809835394668218762">ຄຳສັ່ງເພີ່ມເຕີມສຳລັບ <ph name="WEBSITE" /></translation>
+<translation id="5809840528400421362">PIN ຕ້ອງເປັນ 6 ຕົວເລກ</translation>
 <translation id="5810809306422959727">ບັນຊີນີ້ບໍ່ມີສິດນຳໃຊ້ການຄວບຄຸມຂອງພໍ່ແມ່</translation>
 <translation id="5811614940486072060">ໄຟລ໌ນີ້ບໍ່ໄດ້ດາວໂຫຼດໂດຍທົ່ວໄປ ແລະ ອາດເປັນອັນຕະລາຍໄດ້</translation>
 <translation id="5812674658566766066">ຂະຫຍາຍອອກທັງໝົດ</translation>
@@ -8059,6 +8061,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> ກຳລັງໃຊ້ກ້ອງຂອງທ່ານຢູ່</translation>
 <translation id="701080569351381435">ເບິ່ງແຫຼ່ງທີ່ມາ</translation>
 <translation id="7011797924920577670">ຄາດຄະເນຄວາມສົນໃຈຂອງທ່ານ</translation>
+<translation id="7012430956470647760">ການຄວບຄຸມຂອງພໍ່ແມ່ສຳລັບແອັບ</translation>
 <translation id="7013762323294215682">ກະແຈຜ່ານນີ້ຈະຖືກບັນທຶກໄວ້ໃນຕົວຈັດການລະຫັດຜ່ານຂອງທ່ານ. ທຸກຄົນທີ່ມີສິດເຂົ້າເຖິງຈະສາມາດໃຊ້ກະແຈຜ່ານນີ້ໄດ້.</translation>
 <translation id="7014174261166285193">ການ​ຕິດ​ຕັ້ງ​ບໍ່ສໍາເລັດ.</translation>
 <translation id="7014480873681694324">ລຶບໄຮໄລ້ອອກ</translation>

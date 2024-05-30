@@ -75,6 +75,7 @@ Chromium təcrübənizi təkmilləşdirmək məqsədilə data istifadə edən di
 <translation id="2942241131342758843">Defolt olaraq keçidləri açmaq, vidcetlərdən axtarış etmək və digər tətbiqlərdə parolları avtomatik doldurmaq üçün Chromium istifadə edin</translation>
 <translation id="2977470724722393594">Chromium güncəldir</translation>
 <translation id="3044857325852340337">Chromium datası silindi</translation>
+<translation id="3049211156275642309">Chromium-u ayarlamağı tamamlayın</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium yeni tab səhifəsində bu paketi izləməyə kömək edə bilər.}other{Chromium yeni tab səhifəsində bu paketləri izləməyə kömək edə bilər.}}</translation>
 <translation id="3102849287235003384">Bütün vebsaytlarda Google Hesabınızdan çıxmaq üçün <ph name="BEGIN_LINK" />Chromium'dan çıxın<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Chromium-da səs ilə axtarın</translation>
@@ -273,6 +274,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="8754966941001340678">Chromium təkmil qoruma tövsiyə edir</translation>
 <translation id="8759037115129007407">Ailə üzvü parol qəbul edə bilmir. Chromium-u güncəlləməsini və parolları sinxronlaşdırmasını istəyin. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Bu hesab və bütün saxlanmamış data Chromium'dan silinəcək.</translation>
+<translation id="8826789549860004832">Brauzeri ayarlayaraq Chromium-dan maksimum yararlanın.</translation>
 <translation id="88376265765385899">Chromium əlfəcinlərini açır.</translation>
 <translation id="8860548555286245440">URL-ləri Chromium-da Anonim rejimdə açın</translation>
 <translation id="8866191443434488382">Chromium daxil olduğunuz saytlarda izləmə nömrələrini aşkar edəcək və Yeni tab səhifəsində bağlama yeniləmələrini göstərəcək. Bu funksiyanı təmin etmək və alış-veriş funksiyalarını təkmilləşdirmək üçün bağlamanın izlənilməsi nömrəsi və veb-sayt adı Chromium-a göndəriləcək. Bunu <ph name="BEGIN_LINK" />Bağlamanın izlənilməsi ayarlarında<ph name="END_LINK" /> güncəlləyə bilərsiniz.</translation>

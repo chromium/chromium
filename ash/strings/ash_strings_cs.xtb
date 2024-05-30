@@ -183,6 +183,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1654477262762802994">Zahájit hlasový dotaz</translation>
 <translation id="1668469839109562275">Vestavěná VPN</translation>
 <translation id="1673232940951031776">Ukončit soustředění. Zbývající čas: <ph name="REMAINING_TIME" />.</translation>
+<translation id="1675570947608765064">Změny, které u tohoto úkolu provedete, uvidí ostatní</translation>
 <translation id="1675844249244994876">Aktualizovat pravé okno</translation>
 <translation id="1677472565718498478">zbývající čas: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Funkce <ph name="FEATURE_NAME" /> není připojena.</translation>
@@ -862,6 +863,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4302592941791324970">Nedostupné</translation>
 <translation id="4303223480529385476">Rozbalit stavovou oblast</translation>
 <translation id="4305133312001648038">Obnovit úroveň přiblížení na stránce</translation>
+<translation id="4305817255990598646">Přejít</translation>
 <translation id="4307713728991152670">Nastavit zobrazování nedávných fotek, médií a aplikací z telefonu</translation>
 <translation id="4312840429157639164">Kamera byla připnuta do pravého horního rohu Konflikt s platformou systému.</translation>
 <translation id="4316910396681052118">VŠECHNY APLIKACE</translation>

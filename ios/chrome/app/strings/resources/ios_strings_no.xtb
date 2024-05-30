@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Logg</translation>
 <translation id="164673457281113247">{count,plural, =1{Bokmerket er lagret}other{Bokmerkene er lagret}}</translation>
 <translation id="1650222530560417226">Trykk på «Start logging»-knappen for å samle inn fremtidige JavaScript-konsollogger og -feil fra alle faner. Loggene samles inn (og lagres bare i minnet) frem til denne siden lukkes eller du trykker på «Stopp logging».</translation>
+<translation id="1652333207707886577">Tilpass menyen</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} lagret passord er tilgjengelig over tastaturet.}other{{count} lagrede passord er tilgjengelige over tastaturet.}}</translation>
 <translation id="1657011748321897393">Delingen mislyktes fordi du ikke er tilkoblet nettverket.</translation>
 <translation id="165877110639533037">Ingen åpne faner</translation>
@@ -240,6 +241,7 @@
 <translation id="2267753748892043616">Legg til konto</translation>
 <translation id="2268044343513325586">Finstem</translation>
 <translation id="2269277877025820298">Se mer</translation>
+<translation id="2271452184061378400">Fanegruppene dine lagres her</translation>
 <translation id="2273327106802955778">Mer-menyen</translation>
 <translation id="2274800392139890332">Slutt å spore denne pakken</translation>
 <translation id="2275480389219976105">Fant adressen</translation>
@@ -530,6 +532,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3738428049780661523">Opprettet <ph name="DATE" /></translation>
 <translation id="374357899112510277">Skjul nedlastinger</translation>
 <translation id="3745190878148784130">Skjul Zoom inn på teksten</translation>
+<translation id="3747231889390582072">For å ivareta organisasjonens sikkerhet blir data som ikke er lagret, slettet fra denne enheten. Dette kan inkludere passord, nettleserloggen, informasjonskapsler med mer.</translation>
 <translation id="3762232513783804601">Laget for iPaden din</translation>
 <translation id="3768725474733206671">Åpne sist lukkede fane på nytt</translation>
 <translation id="3771033907050503522">Inkognitofaner</translation>
@@ -1480,6 +1483,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8446884382197647889">Les mer</translation>
 <translation id="8449347986464073209">Slett og logg av</translation>
 <translation id="8459333855531264009">Ikke sikker</translation>
+<translation id="8466300942149667917">Ulagrede kontodata slettes</translation>
 <translation id="8473863474539038330">Adresser med mer</translation>
 <translation id="8487667956631253959">På</translation>
 <translation id="8487700953926739672">Tilgjengelig utenfor nettet</translation>

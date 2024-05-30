@@ -191,6 +191,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
           <ph name="LIST_ITEM" />Tu empleador o institución educativa
           <ph name="LIST_ITEM" />El proveedor de servicios de Internet
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">Seguir este elemento</translation>
 <translation id="1337692097987160377">Compartir esta pestaña</translation>
 <translation id="1339601241726513588">Inscripción de dominio:</translation>
 <translation id="1340482604681802745">Dirección de retiro</translation>
@@ -2612,6 +2613,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6035491133925068289">Atletismo</translation>
 <translation id="6039846035001940113">Si el problema persiste, comunícate con el propietario del sitio.</translation>
 <translation id="6040143037577758943">Cerrar</translation>
+<translation id="6040539895181423374">Información sobre precios</translation>
 <translation id="604124094241169006">Automático</translation>
 <translation id="6041777658117377052">Temperatura de la cámara</translation>
 <translation id="6042308850641462728">Más</translation>

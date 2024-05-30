@@ -75,6 +75,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromiumu id
 <translation id="2942241131342758843">Koristite Chromium prema zadanim postavkama da otvarate linkove, pretražujete iz vidžeta i automatski popunjavate lozinke u drugim aplikacijama</translation>
 <translation id="2977470724722393594">Chromium je ažuriran</translation>
 <translation id="3044857325852340337">Izbrisani su podaci Chromiuma</translation>
+<translation id="3049211156275642309">Završite postavljanje Chromiuma</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium vam može pomoći da pratite ovaj paket na stranici na novoj kartici.}one{Chromium vam može pomoći da pratite ove pakete na stranici na novoj kartici.}few{Chromium vam može pomoći da pratite ove pakete na stranici na novoj kartici.}other{Chromium vam može pomoći da pratite ove pakete na stranici na novoj kartici.}}</translation>
 <translation id="3102849287235003384">Da se odjavite s Google računa na svim web lokacijama, <ph name="BEGIN_LINK" />odjavite se iz Chromiuma<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Pretražujte glasom u Chromiumu</translation>
@@ -273,6 +274,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="8754966941001340678">Chromium preporučuje poboljšanu zaštitu</translation>
 <translation id="8759037115129007407">Član porodice trenutno ne može primiti lozinke. Zatražite da ažurira Chromium i sinhronizira lozinke. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Ovaj račun i svi podaci koji nisu sačuvani će se ukloniti iz Chromiuma.</translation>
+<translation id="8826789549860004832">Iskoristite sve prednosti Chromiuma nastavljanjem s postavljanjem preglednika.</translation>
 <translation id="88376265765385899">Otvaranje oznaka u Chromiumu.</translation>
 <translation id="8860548555286245440">Otvorite URL-ove u Chromiumu u anonimnom načinu rada</translation>
 <translation id="8866191443434488382">Chromium će otkrivati brojeve za praćenje na web lokacijama koje posjetite i prikazivat će vam novosti o paketima na stranici Nova kartica. Broj za praćenje paketa i naziv web lokacije će se slati Chromiumu radi pružanja ove funkcije i poboljšanja funkcija kupovine za sve. Možete ažurirati ovo bilo kada u <ph name="BEGIN_LINK" />Postavkama praćenja paketa<ph name="END_LINK" />.</translation>

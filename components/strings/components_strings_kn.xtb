@@ -455,6 +455,7 @@
 <translation id="1812527064848182527">ಲ್ಯಾಂಡ್‌ಸ್ಕೇಪ್</translation>
 <translation id="1812975699435941848">ಆರೋಗ್ಯ ಶಿಕ್ಷಣ ಮತ್ತು ವೈದ್ಯಕೀಯ ತರಬೇತಿ</translation>
 <translation id="1816436748874040213">ಹಂಚಿಕೊಂಡ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸ್ಕ್ರಾಲ್ ಮಾಡಲು ಮತ್ತು ಝೂಮ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
+<translation id="1817364650920811003">ಪಾತ್ರ: Chrome ಸಲಹೆ. ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಲೇಬಲ್‌: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">ನಿರ್ಬಂಧವನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="1818585559878922121">ಸಾಕ್ಷ್ಯಚಿತ್ರಗಳು</translation>
 <translation id="182139138257690338">ಸ್ವಯಂಚಾಲಿತ ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
@@ -1395,6 +1396,7 @@
 <translation id="3642638418806704195">ಅಪ್ಲಿಕೇಶನ್:</translation>
 <translation id="3646643500201740985">ಜಾಹೀರಾತು ಎಷ್ಟು ಉತ್ತಮವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ ಎಂಬುದನ್ನು ಮಾಪನ ಮಾಡುವುದು</translation>
 <translation id="3647286794400715637">ಪ್ರತಿ URL ಗಳ ಸ್ಟ್ರಿಂಗ್ ನಮೂದು 1 ರಿಂದ 2 URL ಗಳ ನಡುವೆ ಇರಬೇಕು.</translation>
+<translation id="3647400963805615193">Chrome ಸಲಹೆಯನ್ನು ವಜಾಗೊಳಿಸಿ ಬಟನ್, ವಜಾಗೊಳಿಸಲು Enter ಒತ್ತಿರಿ, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">ಊರ್ಜಿತಗೊಳಿಸುವಿಕೆಯು ಯಶಸ್ವಿಯಾಗಿದೆ</translation>
 <translation id="3650594806107685466">ನಿಮ್ಮ ಕಾರ್ಡ್ ಅನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು ಸಹಾಯ ಮಾಡಲು, <ph name="SIDE_OF_CARD" /> ನಲ್ಲಿ CVC ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="3650917416636556301">ಹೈಕಿಂಗ್ ಮತ್ತು ಕ್ಯಾಂಪಿಂಗ್</translation>
@@ -3366,6 +3368,7 @@
 <translation id="7481312909269577407">ಫಾರ್ವರ್ಡ್</translation>
 <translation id="7481603210197454575">ಎನ್ವಲಪ್ ಇಟಾಲಿಯನ್</translation>
 <translation id="7483482939016730822">ಶಾಲಾ ಪೂರೈಕೆಗಳು ಮತ್ತು ತರಗತಿ ಪರಿಕರ</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chrome ಸಲಹೆಯನ್ನು ವಜಾಗೊಳಿಸಲು Tab ಒತ್ತಿ ನಂತರ Enter ಒತ್ತಿ.</translation>
 <translation id="7485085230273446323">ವ್ಯಾಪಾರ ಮತ್ತು ಕೈಗಾರಿಕೆ</translation>
 <translation id="7485870689360869515">ಯಾವುದೇ ಡೇಟಾ ಕಂಡುಬಂದಿಲ್ಲ.</translation>
 <translation id="7489392576326061356">ಶಾಂಪೂಗಳು ಮತ್ತು ಕಂಡೀಷನರ್‌ಗಳು</translation>

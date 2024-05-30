@@ -2044,7 +2044,6 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2469259292033957819">Je hebt geen opgeslagen printers.</translation>
 <translation id="2469375675106140201">Spellingcontrole aanpassen</translation>
 <translation id="247051149076336810">URL voor fileshare</translation>
-<translation id="2470702053775288986">Niet-ondersteunde extensies staan uit</translation>
 <translation id="2471469610750100598">Zwart (standaard)</translation>
 <translation id="2471506181342525583">Locatietoegang toegestaan</translation>
 <translation id="2473195200299095979">Deze pagina vertalen</translation>
@@ -4188,6 +4187,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="4050534976465737778">Zorg dat beide apparaten zijn ontgrendeld, bij elkaar in de buurt zijn en dat bluetooth aanstaat. Als je content deelt met een Chromebook die niet in je contacten staat, zorg je dat 'Dichtbij aan' aanstaat (open het statusgedeelte en selecteer dan Dichtbij aan). <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Als je wilt overschakelen naar de laatstgebruikte invoermethode, druk je op <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">zoeken + pijl-rechts</translation>
+<translation id="405181879009056822">ChromeOS-instellingen</translation>
 <translation id="4052120076834320548">Heel klein</translation>
 <translation id="4052913941260326985">&amp;QR-code maken</translation>
 <translation id="405365679581583349">Google Play-services updaten</translation>
@@ -5211,7 +5211,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4853020600495124913">Openen in &amp;nieuw venster</translation>
 <translation id="4854317507773910281">Kies een ouderaccount voor goedkeuring</translation>
 <translation id="485480310608090163">Meer instellingen en rechten</translation>
-<translation id="4858599593306712511">Ouderlijk toezicht voor apps</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">Geluid uitgezet door je beheerder</translation>
 <translation id="4862642413395066333">OCSP-antwoorden ondertekenen</translation>
@@ -5722,6 +5721,7 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> gebruikt je locatie om lokale content te leveren. Je kunt dit wijzigen in <ph name="SETTINGS_LINK" />.</translation>
 <translation id="5252496130205799136">Je Google-account gebruiken om wachtwoorden op te slaan en in te vullen?</translation>
 <translation id="5252653240322147470">Pincode kan maximaal <ph name="MAXIMUM" /> cijfers bevatten</translation>
+<translation id="5253554634804500860"><ph name="DEVICE_NAME" /> gebruiken</translation>
 <translation id="5254233580564156835">Geheugengebruik: <ph name="MEMORY_USAGE" /></translation>
 <translation id="52550593576409946">Kiosk-app kan niet worden gestart.</translation>
 <translation id="5255726914791076208">Als je je toegangscode bewerkt, heeft dat geen effect op je <ph name="RP_ID" />-account.</translation>
@@ -5796,6 +5796,7 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5300719150368506519">URL's van pagina's die je bezoekt naar Google sturen</translation>
 <translation id="5301751748813680278">Aangemeld als gast.</translation>
 <translation id="5301954838959518834">OK, begrepen</translation>
+<translation id="5302032366299160685">Wacht tot het bestand is geopend voordat je het opnieuw probeert</translation>
 <translation id="5302048478445481009">Taal</translation>
 <translation id="5302932258331363306">Vervangingen bekijken</translation>
 <translation id="5305145881844743843">Account wordt beheerd door <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
@@ -6292,6 +6293,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5678955352098267522">Je gegevens voor <ph name="WEBSITE_1" /> lezen</translation>
 <translation id="5679785611070310751">Je krijgt vanaf <ph name="MONTH_AND_YEAR" /> geen beveiligingsupdates meer voor deze Chromebook. Tijd om te upgraden voor de nieuwste beveiliging en software. Er zijn voorwaarden van toepassing.</translation>
 <translation id="5680050361008726776"><ph name="ESIM_PROFILE_NAME" /> verwijderen?</translation>
+<translation id="5681586175480958839">Bestand wordt al geopend</translation>
 <translation id="5684181005476681636">Wifi-gegevens</translation>
 <translation id="5684661240348539843">Item-ID</translation>
 <translation id="5684950556880280580">Je wachtwoord is geüpdatet</translation>
@@ -6456,6 +6458,7 @@ Als je dit uitzet, gebruikt Android alleen het IP-adres voor de locatie. Dit kan
 <translation id="5806447147478173900">Totale opslagruimte gebruikt door getoonde sites: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (standaard)</translation>
 <translation id="5809835394668218762">Meer acties voor <ph name="WEBSITE" /></translation>
+<translation id="5809840528400421362">Pincode moet 6 cijfers zijn</translation>
 <translation id="5810809306422959727">Dit account komt niet in aanmerking voor ouderlijk toezicht</translation>
 <translation id="5811614940486072060">Dit bestand wordt niet vaak gedownload en kan gevaarlijk zijn</translation>
 <translation id="5812674658566766066">Alles uitvouwen</translation>

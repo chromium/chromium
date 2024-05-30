@@ -108,6 +108,7 @@
 <translation id="1333308631814936910">დაკავშირებულია <ph name="DISPLAY_NAME" /></translation>
 <translation id="1340378040547539434">გვერდზე მასშტაბის შემცირება</translation>
 <translation id="1341651618736211726">გადავსება</translation>
+<translation id="1341926407152459446">„<ph name="DEVICE_NAME" />“-ის გამოყენება შემავალი და გამომავალი აუდიოსთვის</translation>
 <translation id="1344141078024003905">თქვენ ახორციელებთ თქვენი ეკრანის ტრანსლირებას. თქვენი ეკრანის ტრანსლირების დაპაუზება ან შეწყვეტა ნებისმიერ დროს შეგიძლიათ.</translation>
 <translation id="1346748346194534595">მარჯვნივ</translation>
 <translation id="1351937230027495976">მენიუს ჩაკეცვა</translation>
@@ -131,6 +132,7 @@
 <translation id="1420408895951708260">ღამის განათების გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">დიახ</translation>
 <translation id="1435537621343861112">კარნახის დაწყება ვერ მოხერხდა. მიკროფონი გამორთულია.</translation>
+<translation id="1447907279406111651">მიმდინარეობს ⋅ დასრულების დროა <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">თქვენი მოწყობილობის უსადენო ქსელები</translation>
 <translation id="1455242230282523554">ენის პარამეტრების ჩვენება</translation>
 <translation id="1460620680449458626">ხმა დადუმებულია.</translation>
@@ -145,6 +147,7 @@
 <translation id="1486307154719069822">კარნახი საშუალებას გაძლევთ, ხმის მეშვეობით აკრიფოთ ტექსტი. როცა ტექსტურ ველზე გადახვალთ, დააჭირეთ კარნახის კლავიშს, ან აირჩიეთ მიკროფონის ხატულა ეკრანის ქვედა ნაწილში. კარნახის ენად დაყენებულია <ph name="LANGUAGE" />. მეტყველება დასამუშავებლად გაეგზავნება Google-ს. კარნახის ენის ნებისმიერ დროს შეცვლა შეგიძლიათ აქ: პარამეტრები &gt; მარტივი წვდომა.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> ჩანაცვლდა შემდეგით: <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">ყველა შეთავაზების ჩვენება</translation>
+<translation id="1501946871587957338">გადართავთ აუდიოს წყაროს?</translation>
 <translation id="1510238584712386396">გამშვები</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{შეტყობინების პარამეტრების ჩვენება. შეტყობინებები გამორთულია აპისთვის}other{შეტყობინების პარამეტრების ჩვენება. შეტყობინებები გამორთულია # აპისთვის}}</translation>
 <translation id="1523032696246003">ბატარეა <ph name="BATTERY_PERCENTAGE" />%-ზეა | სრულ დატენამდე დარჩა <ph name="TIME" /></translation>
@@ -481,6 +484,7 @@
 <translation id="2894949423239620203">კაბელმა შეიძლება გავლენა იქონიოს ეფექტურობაზე</translation>
 <translation id="2914580577416829331">ეკრანის აღბეჭდვები</translation>
 <translation id="2924416280450782352">ერთეულების ჩვენება ვერ ხერხდება. ცადეთ ამ პანელის ხელახლა გახსნა.</translation>
+<translation id="292506373491190801">ახლა მიმდინარე მოვლენიდან</translation>
 <translation id="2931572158271115754">ამ შესასრულებელ სიაში არაფერია.</translation>
 <translation id="2932487126591186298">10 წუთი დაემატა დარჩენილია <ph name="REMAINING_TIME" />%.</translation>
 <translation id="2935225303485967257">პროფილების მართვა</translation>
@@ -767,12 +771,14 @@
 <translation id="3950272133184491871">გსურთ, გახვიდეთ?</translation>
 <translation id="3950820424414687140">შესვლა</translation>
 <translation id="3953130726459169782">დავალებები ჯერ შესრულებული არ არის.</translation>
+<translation id="3958714870339660776">მთელი დღე</translation>
 <translation id="3962859241508114581">წინა ჩანაწერი</translation>
 <translation id="3969043077941541451">გამორთული</translation>
 <translation id="3970324493235864154">თქვენი ტელეფონის შეტყობინებების ნახვა</translation>
 <translation id="397105322502079400">ანგარიშობს…</translation>
 <translation id="397726367135689299">ბატარეა შეიძლება არასწორად იტენებოდეს.</translation>
 <translation id="3977512764614765090">ბატარეის დონეა <ph name="PERCENTAGE" />% და იტენება.</translation>
+<translation id="3982013579989864579">გადართავთ გამომავალ აუდიოს?</translation>
 <translation id="3984536049089846927">მომდევნო გვერდი</translation>
 <translation id="3986082989454912832">პასუხი</translation>
 <translation id="3990002060657467458">მართვის ხშირად გამოყენებული საშუალებები (მაგალითად, Wi-Fi, Bluetooth და ხმის სიძლიერე) მოცემულია სწრაფ პარამეტრებში. იქიდან ეკრანის ანაბეჭდების გადაღებასაც შეძლებთ.</translation>
@@ -816,6 +822,7 @@
 <translation id="4150201353443180367">ჩვენება</translation>
 <translation id="4156293514828496577">დარჩენილია ბატარეის <ph name="PERCENTAGE" />% (დაახლოებით <ph name="TIME_LEFT" />).
 ზოგიერთი ფუნქცია შეზღუდულია, ბატარეის მუშაობის ხანგრძლივობა რომ გაიზარდოს.</translation>
+<translation id="4160919062868802509">აღმოჩენილია რამდენიმე აუდიო წყარო</translation>
 <translation id="4165275524535002941">კაბელს შეიძლება არ ჰქონდეს ეკრანების მხარდაჭერა</translation>
 <translation id="4177415338862979658">დააწკაპუნეთ დეტალების გასაცნობად</translation>
 <translation id="4177913004758410636">{0,plural, =1{განაახლეთ მოწყობილობა დღის განმავლობაში}other{განაახლეთ მოწყობილობა # დღის განმავლობაში}}</translation>
@@ -863,6 +870,7 @@
 <translation id="4302592941791324970">მიუწვდომელი</translation>
 <translation id="4303223480529385476">სტატუსის არის გაშლა</translation>
 <translation id="4305133312001648038">მასშტაბის დონის გადაყენება გვერდზე</translation>
+<translation id="4305817255990598646">გადართვა</translation>
 <translation id="4307713728991152670">თქვენი ტელეფონის ბოლოდროინდელი ფოტოების, მედიაფაილებისა და აპების ნახვის დაყენება</translation>
 <translation id="4312840429157639164">კამერა მიზიდულია ზედა მარჯვენა კუთხეში. ის კონფლიქტშია სისტემის ზედაპირთან.</translation>
 <translation id="4316910396681052118">ყველა აპი</translation>
@@ -1014,6 +1022,7 @@
 <translation id="4871905435473761992">უსადენო ქსელის დეტალების ნახვა. თქვენს მობილურ ქსელს უსადენო ქსელის მხარდაჭერა არ აქვს.</translation>
 <translation id="4872237917498892622">Alt+ძიება ან Shift</translation>
 <translation id="4872852897273142380">სანიშნეების ზოლის ფოკუსში მოქცევა ან გამოყოფა (თუ ნაჩვენებია)</translation>
+<translation id="4876935764454575645">აუდიო შერჩევა</translation>
 <translation id="4881323000405981760">ეფექტები მხარდაუჭერელია Linux აპებში.</translation>
 <translation id="4881695831933465202">გახსნა</translation>
 <translation id="4889868803215848840">შემოთავაზებების გაუმჯობესების მიზნით, გთხოვთ, გამოგვეხმაუროთ (არასავალდებულოა):</translation>
@@ -1090,6 +1099,7 @@
 <translation id="5121628974188116412">გვერდის ბოლოში გადასვლა</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" />-ის გადასახედი ვერსია. არააქტიური სამუშაო მაგიდა.</translation>
 <translation id="5136175204352732067">დაკავშირებულია განსხვავებული კლავიატურა</translation>
+<translation id="5144005092084035179">გადართავთ შემავალ აუდიოს?</translation>
 <translation id="5147567197700016471">განბლოკილია</translation>
 <translation id="5150070631291639005">კონფიდენციალურობის პარამეტრები</translation>
 <translation id="5155897006997040331">წაკითხვის სიჩქარე</translation>
@@ -1219,6 +1229,7 @@
 <translation id="5599242528220103262">კლავიატურის მალსახმობი გამორთულია</translation>
 <translation id="5600415762228455511">ფოკუსირების რეჟიმი ჩართულია, დარჩენილია <ph name="REMAINING_TIME" />, ფოკუსირების ობიექტი: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">გახმოვანებული უკუკავშირის გასათიშად დააჭირეთ კლავიშთა კომბინაციას: Ctrl + Alt + Z.</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{&lt; 1 საათის წინ}=1{1 საათის წინ}other{# საათის წინ}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">უკეთეს ქსელზე გადაგრთეთ</translation>
 <translation id="5619862035903135339">ეკრანის აღბეჭდვა გათიშულია ადმინისტრატორის წესების მიხედვით</translation>
@@ -1395,6 +1406,7 @@
 <translation id="6228457605945141550">სიკაშკაშის დაკლება</translation>
 <translation id="623116199192908855">შეასრულეთ ეკრანის ტრანსლირება თქვენი Chromebook-იდან</translation>
 <translation id="6231419273573514727">შესაძლოა, პერიფერიული მოწყობილობების წარმადობა შეზღუდული იყოს</translation>
+<translation id="6232416233079464213"><ph name="SESSION_NAME" />-დან</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ამჟამად იყენებს თქვენს კამერას და მიკროფონს</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">ბატარეა იცლება. ბატარეის დამზოგველი ჩართულია.</translation>
@@ -1791,12 +1803,14 @@
 <translation id="7780094051999721182">მალსახმობები</translation>
 <translation id="7780159184141939021">ეკრანის ბრუნვა</translation>
 <translation id="7781829728241885113">გუშინ</translation>
+<translation id="7787212146956232129">შემყვანი და გამომყვანი მოწყობილობები დაყენებულია. შესაცვლელად გადადით პარამეტრებში.</translation>
 <translation id="7792590255364786396">ხილული</translation>
 <translation id="7796735576426975947">ახალი შეტყობინება დამალულია</translation>
 <translation id="7798302898096527229">გასაუქმებლად დააჭირეთ Search ან Shift კლავიშს.</translation>
 <translation id="780301667611848630">არა, გმადლობთ</translation>
 <translation id="7807067443225230855">ძიება და ასისტენტი</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> და <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">კალენდრის მოახლოებული მოვლენიდან</translation>
 <translation id="7829386189513694949">სიგნალი ძლიერია</translation>
 <translation id="7830453190047749513">სურვილისამებრ, შეგიძლიათ თქვენი <ph name="PERIPHERAL_NAME" />-ის ღილაკების მოქმედებების, კურსორის სიჩქარისა და სხვა ფუნქციების პერსონალიზება</translation>
 <translation id="7837740436429729974">დრო ამოიწურა</translation>
@@ -2100,6 +2114,7 @@
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ფაილი}other{# ფაილი}}</translation>
 <translation id="8936501819958976551">დეაქტივირებულია</translation>
 <translation id="8938800817013097409">USB-C მოწყობილობა (უკან მდებარე მარჯვენა პორტი)</translation>
+<translation id="8939855324412367560">შემავალი აუდიოა „<ph name="INPUT_DEVICE_NAME" />“, ხოლო გამომავალი — „<ph name="OUTPUT_DEVICE_NAME" />“. შესაცვლელად გადადით პარამეტრებში.</translation>
 <translation id="8940956008527784070">კვების ბატარეა იცლება (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> მოსანიშნი ველი მოუნიშნავია.</translation>
 <translation id="8949925099261528566">დაკავშირებულია, ინტერნეტის გარეშე</translation>
@@ -2114,6 +2129,7 @@
 <translation id="899350903320462459">შეტყობინების ქმედების შესასრულებლად განბლოკეთ მოწყობილობა <ph name="LOGIN_ID" />-ის სახელით</translation>
 <translation id="8993733019280019776">ლაპარაკობთ? თქვენი მიკროფონი გამორთულია. აირჩიეთ მიკროფონი ჩასართავად.</translation>
 <translation id="9000771174482730261">მეხსიერების მართვა</translation>
+<translation id="9002204506712855687">გაეცანით უახლეს ფუნქციებს</translation>
 <translation id="9005984960510803406">Crosh ფანჯრის გახსნა</translation>
 <translation id="9017320285115481645">შეიყვანეთ Family Link-ის წვდომის კოდი მშობლებისთვის.</translation>
 <translation id="9022774213089566801">ხშირად მონახულებული</translation>
@@ -2145,6 +2161,7 @@
 <translation id="9098969848082897657">ტელეფონის ჩაჩუმება</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ან <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">ბოლო მოქმედების გაუქმება</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{1 წუთში}other{# წუთში}}</translation>
 <translation id="9129245940793250979">უკანა ღილაკი</translation>
 <translation id="9133335900048457298">დაცული კონტენტის ჩაწერა ვერ მოხერხდება</translation>
 <translation id="9139720510312328767">მომდევნო ასოს წაშლა</translation>
@@ -2155,8 +2172,10 @@
 <translation id="9178475906033259337">ნაჩვენებია 1 შედეგი მოთხოვნაზე <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">ეს ფუნქცია საშუალებას გაძლევთ, სწრაფად და პაროლის გარეშე იქონიოთ წვდომა სისტემაში შესულ ნებისმიერ მომხმარებელზე. გამოიყენეთ ეს ფუნქცია მხოლოდ იმ ანგარიშებთან, რომლებსაც ენდობით.</translation>
 <translation id="9183456764293710005">სრულეკრანიანი ლუპა</translation>
+<translation id="9192133205265227850">„<ph name="DEVICE_NAME" />“-ის გამოყენება</translation>
 <translation id="9193626018745640770">მიმდინარეობს ტრანსლირება უცნობ მიმღებზე</translation>
 <translation id="9194617393863864469">შესვლა სხვა მომხმარებლის სახელით…</translation>
+<translation id="9195990613383871904">ხვალ</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" />-ის გარჩევადობა შეიცვალა <ph name="RESOLUTION" />-ზე. დააწკაპუნეთ ცვლილებების შენარჩუნების დასადასტურებლად. წინა პარამეტრების აღდგენამდე დარჩა <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">დააკავშირეთ <ph name="NAME" /> ამ Chromebook-ს</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, მართავს თქვენი ადმინისტრატორი</translation>

@@ -2057,7 +2057,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2469259292033957819">Anda tiada pencetak yang disimpan.</translation>
 <translation id="2469375675106140201">Sesuaikan semak ejaan</translation>
 <translation id="247051149076336810">URL perkongsian fail</translation>
-<translation id="2470702053775288986">Pelanjutan yang tidak disokong dilumpuhkan</translation>
 <translation id="2471469610750100598">Hitam (lalai)</translation>
 <translation id="2471506181342525583">Akses lokasi.dibenarkan</translation>
 <translation id="2473195200299095979">Terjemahkan halaman ini</translation>
@@ -4203,6 +4202,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4050534976465737778">Pastikan kedua-dua peranti dibuka kunci, berada berhampiran satu sama lain dan Bluetooth telah dihidupkan. Jika anda membuat perkongsian dengan Chromebook yang tiada dalam kenalan anda, pastikan Keterlihatan berdekatan dihidupkan (buka ruang status, kemudian hidupkan Keterlihatan berdekatan). <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Untuk bertukar kepada kaedah input yang terakhir digunakan, tekan <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">Search + anak panah ke kanan</translation>
+<translation id="405181879009056822">Tetapan ChromeOS</translation>
 <translation id="4052120076834320548">Sangat Kecil</translation>
 <translation id="4052913941260326985">Buat &amp;Kod QR</translation>
 <translation id="405365679581583349">Kemas kinikan perkhidmatan Google Play</translation>
@@ -5228,7 +5228,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4853020600495124913">Buka dalam tetingkap &amp;baharu</translation>
 <translation id="4854317507773910281">Pilih akaun ibu/bapa untuk kelulusan</translation>
 <translation id="485480310608090163">Lagi tetapan dan kebenaran</translation>
-<translation id="4858599593306712511">Kawalan ibu bapa apl</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">Diredamkan oleh pentadbir anda</translation>
 <translation id="4862642413395066333">Menandatangan Respons OCSP</translation>
@@ -5739,6 +5738,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> menggunakan lokasi anda untuk memberikan kandungan tempatan. Anda boleh mengubahnya dalam <ph name="SETTINGS_LINK" />.</translation>
 <translation id="5252496130205799136">Gunakan Google Account anda untuk menyimpan dan mengisi kata laluan?</translation>
 <translation id="5252653240322147470">PIN hendaklah kurang daripada <ph name="MAXIMUM" /> digit</translation>
+<translation id="5253554634804500860">Gunakan <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Penggunaan memori: <ph name="MEMORY_USAGE" /></translation>
 <translation id="52550593576409946">Aplikasi kios tidak dapat dilancarkan.</translation>
 <translation id="5255726914791076208">Apabila anda mengedit kunci laluan anda, akaun <ph name="RP_ID" /> anda tidak akan berubah</translation>
@@ -6476,6 +6476,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5806447147478173900">Jumlah storan yang digunakan oleh laman yang dipaparkan: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Lalai)</translation>
 <translation id="5809835394668218762">Lagi tindakan untuk <ph name="WEBSITE" /></translation>
+<translation id="5809840528400421362">PIN mestilah 6 digit</translation>
 <translation id="5810809306422959727">Akaun ini tidak layak untuk kawalan ibu bapa</translation>
 <translation id="5811614940486072060">Fail ini tidak biasa dimuat turun dan mungkin berbahaya</translation>
 <translation id="5812674658566766066">Kembangkan semua</translation>

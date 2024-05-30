@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="164673457281113247">{count,plural, =1{书签已保存}other{个书签已保存}}</translation>
 <translation id="1650222530560417226">点按“开始记录”按钮即可从所有标签页中收集日后的 JavaScript 控制台日志和错误。系统会一直收集（并仅在内存中存储）日志，直到用户关闭此页面或点按“停止记录”。</translation>
+<translation id="1652333207707886577">自定义菜单</translation>
 <translation id="1653432787084483144">{count,plural, =1{键盘上方显示了 {count} 个已保存的密码。}other{键盘上方显示了 {count} 个已保存的密码。}}</translation>
 <translation id="1657011748321897393">分享失败，因为您没有连接到网络。</translation>
 <translation id="165877110639533037">没有已打开的标签页</translation>
@@ -240,6 +241,7 @@
 <translation id="2267753748892043616">添加账号</translation>
 <translation id="2268044343513325586">优化</translation>
 <translation id="2269277877025820298">查看更多</translation>
+<translation id="2271452184061378400">您的标签页分组会保存在此处</translation>
 <translation id="2273327106802955778">“更多”菜单</translation>
 <translation id="2274800392139890332">取消跟踪此包裹</translation>
 <translation id="2275480389219976105">找到地址</translation>
@@ -470,6 +472,7 @@
 <translation id="3435738964857648380">安全</translation>
 <translation id="3443810440409579745">收到标签页。</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分钟</translation>
+<translation id="3445580184527779479">标签页分组。已展开。</translation>
 <translation id="3448016392200048164">分割视图</translation>
 <translation id="345565170154308620">管理密码…</translation>
 <translation id="3464194322481586217">无法跟踪价格。</translation>
@@ -514,6 +517,7 @@
 <translation id="3638472932233958418">预先加载网页</translation>
 <translation id="3642060527569456384">标签页分组会自动保存并在您的所有设备上更新。</translation>
 <translation id="3643338347976071250">{count,plural, =1{有 {count} 个密码会仅保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 {email}。}other{有 {count} 个密码会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {email}。}}</translation>
+<translation id="3650299480924308502">您退出账号后，未保存的数据将从此设备中删除。这些数据可能包括密码、历史记录等。</translation>
 <translation id="3659297405161482746">未找到任何付款方式</translation>
 <translation id="3661160521073045932">有可用的配置文件</translation>
 <translation id="3670030362669914947">卡号</translation>
@@ -530,6 +534,7 @@
 <translation id="3738428049780661523">创建时间：<ph name="DATE" /></translation>
 <translation id="374357899112510277">隐藏“下载内容”</translation>
 <translation id="3745190878148784130">隐藏“缩放文字”</translation>
+<translation id="3747231889390582072">为保护贵组织的安全，未保存的数据将从此设备中删除。此类数据可能包括密码、浏览记录、Cookie 等。</translation>
 <translation id="3762232513783804601">专为 iPad 打造</translation>
 <translation id="3768725474733206671">重新打开最后关闭的标签页</translation>
 <translation id="3771033907050503522">无痕模式标签页</translation>
@@ -969,6 +974,7 @@
 <translation id="5971872012779224351">{count,plural, =1{已删除 1 个书签}other{已删除 {count} 个书签}}</translation>
 <translation id="5979837087407522202">搜索密码</translation>
 <translation id="5981230843984570095">关闭所有闲置标签页</translation>
+<translation id="5982958159110007132">标签页分组标签页。第 <ph name="NUMBER_OF_TABS_IN_GROUP" /> 个，共 <ph name="TAB_INDEX_IN_GROUP" /> 个。</translation>
 <translation id="5984222099446776634">最近访问过的内容</translation>
 <translation id="598634819525651074">面积</translation>
 <translation id="5988097621740394599">查看您打开的标签页上的降价商品。</translation>
@@ -987,6 +993,7 @@
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6042308850641462728">展开</translation>
 <translation id="6045460247888249350">添加标题</translation>
+<translation id="6051432659151380973">您的标签页分组会自动保存</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">在此处控制您的报道和活动</translation>
 <translation id="6064824697233747382">贵单位要求您关闭同步功能。</translation>
@@ -1271,6 +1278,7 @@
 <translation id="745899714366929493">全天</translation>
 <translation id="7459628154744868585">已开启增强型保护</translation>
 <translation id="7465351360025415755">随时掌握重要资讯</translation>
+<translation id="7470908168505178757">标签页分组。已收起。</translation>
 <translation id="7472734401283673885">公司名称</translation>
 <translation id="7473891865547856676">不用了</translation>
 <translation id="7488874549363591659">已送达</translation>
@@ -1480,6 +1488,7 @@
 <translation id="8446884382197647889">了解详情</translation>
 <translation id="8449347986464073209">删除数据并退出账号</translation>
 <translation id="8459333855531264009">不安全</translation>
+<translation id="8466300942149667917">未保存的账号数据将被删除</translation>
 <translation id="8473863474539038330">地址和其他信息</translation>
 <translation id="8487667956631253959">已开启</translation>
 <translation id="8487700953926739672">可离线使用</translation>
@@ -1608,6 +1617,7 @@
 <translation id="9065203028668620118">修改</translation>
 <translation id="9079935439869366234">全部标为未读</translation>
 <translation id="9081058212938299310">更新 <ph name="USERNAME" /> 的密码？</translation>
+<translation id="9082821980444279398">当此设置处于开启状态时，系统会将数据保存在您的 Google 账号中并使用这些数据。当此设置处于关闭状态时，数据只会保存在此设备上，并且会在您退出账号后被删除。</translation>
 <translation id="9083838294503912307">要在您的所有设备上保持同步并获享个性化体验，请开启同步功能。</translation>
 <translation id="9087339162317338348">尽可能使用 HTTPS，并在加载不支持 HTTPS 的网站前收到警告。</translation>
 <translation id="9093271241977565440">点按屏幕顶部的“搜索”图标</translation>

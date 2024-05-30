@@ -456,6 +456,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1812527064848182527">gulsčia</translation>
 <translation id="1812975699435941848">Sveikatos švietimas ir gydymo mokymai</translation>
 <translation id="1816436748874040213">Gali būti prašoma slinkti bendrinamais skirtukais ir keisti jų mastelį</translation>
+<translation id="1817364650920811003">Funkcija: „Chrome“ patarimas. Pritaikomumo etiketė: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Panaikinti blokavimą</translation>
 <translation id="1818585559878922121">Dokumentiniai filmai</translation>
 <translation id="182139138257690338">automatiniai atsisiuntimai</translation>
@@ -1399,6 +1400,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3642638418806704195">Programa:</translation>
 <translation id="3646643500201740985">Skelbimo našumo vertinimas</translation>
 <translation id="3647286794400715637">Kiekviename URL eilutės įraše turi būti nuo vieno iki dviejų URL.</translation>
+<translation id="3647400963805615193">„Chrome“ patarimo uždarymo mygtukas, paspauskite „Enter“, kad uždarytumėte, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Tikrinimas sėkmingas</translation>
 <translation id="3650594806107685466">Kad padėtumėte apsaugoti kortelę, įveskite kortelės saugos kodą (CVC), pateiktą <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Žygiai ir stovyklavimas</translation>
@@ -3371,6 +3373,7 @@ Papildoma išsami informacija:
 <translation id="7481312909269577407">Persiųsti</translation>
 <translation id="7481603210197454575">Itališkas vokas</translation>
 <translation id="7483482939016730822">Mokyklos reikmenys ir klasių įranga</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />; paspauskite tabuliavimo klavišą, tada „Enter“, kad uždarytumėte „Chrome“ patarimą.</translation>
 <translation id="7485085230273446323">Verslas ir pramonė</translation>
 <translation id="7485870689360869515">Nerasta jokių duomenų.</translation>
 <translation id="7489392576326061356">Šampūnai ir kondicionieriai</translation>

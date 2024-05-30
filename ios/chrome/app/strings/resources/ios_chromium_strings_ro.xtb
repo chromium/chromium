@@ -75,6 +75,7 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="2942241131342758843">Folosește Chromium în mod prestabilit ca să deschizi linkuri, să cauți din widgeturi și să completezi automat parolele în alte aplicații</translation>
 <translation id="2977470724722393594">Chromium este actualizat</translation>
 <translation id="3044857325852340337">Datele Chromium au fost șterse</translation>
+<translation id="3049211156275642309">Finalizează configurarea Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium te poate ajuta să urmărești acest pachet în pagina Filă nouă.}few{Chromium te poate ajuta să urmărești aceste pachete în pagina Filă nouă.}other{Chromium te poate ajuta să urmărești aceste pachete în pagina Filă nouă.}}</translation>
 <translation id="3102849287235003384">Pentru a te deconecta de la Contul Google pe toate site-urile, <ph name="BEGIN_LINK" />deconectează-te de la Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Căutarea vocală în Chromium</translation>
@@ -273,6 +274,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="8754966941001340678">Chromium recomandă protecția îmbunătățită</translation>
 <translation id="8759037115129007407">Momentan, membrul familiei nu poate primi parole. Solicită-i să actualizeze Chromium și să-și sincronizeze parolele. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Acest cont și toate datele nesalvate vor fi eliminate din Chromium.</translation>
+<translation id="8826789549860004832">Profită din plin de Chromium continuând configurarea browserului.</translation>
 <translation id="88376265765385899">Deschide marcajele Chromium.</translation>
 <translation id="8860548555286245440">Deschide adrese URL în Chromium în modul incognito</translation>
 <translation id="8866191443434488382">Chromium va detecta numerele de urmărire pe site-urile pe care le accesezi și va afișa noutăți despre colete în pagina Filă nouă. Numărul de urmărire a coletului și numele site-ului se vor trimite la Chromium pentru a oferi această funcție și a îmbunătăți funcțiile pentru cumpărături pentru toată lumea. Poți actualiza oricând opțiunea în <ph name="BEGIN_LINK" />Setările pentru urmărirea coletelor<ph name="END_LINK" />.</translation>

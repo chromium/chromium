@@ -456,6 +456,7 @@
 <translation id="1812527064848182527">横向き</translation>
 <translation id="1812975699435941848">健康教育、医療トレーニング</translation>
 <translation id="1816436748874040213">共有タブのスクロールとズームを要求できる</translation>
+<translation id="1817364650920811003">役割: Chrome のヒント。ユーザー補助ラベル: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">ブロックを解除</translation>
 <translation id="1818585559878922121">ドキュメンタリー映画</translation>
 <translation id="182139138257690338">自動ダウンロード</translation>
@@ -1398,6 +1399,7 @@
 <translation id="3642638418806704195">アプリケーション:</translation>
 <translation id="3646643500201740985">広告効果の測定</translation>
 <translation id="3647286794400715637">各 urls 文字列エントリには 1 つまたは 2 つの URL を含める必要があります。</translation>
+<translation id="3647400963805615193">Chrome のヒントの閉じるボタンです。閉じるには Enter キーを押します。<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">検証が正常に完了しました</translation>
 <translation id="3650594806107685466">カードの安全を守るために、<ph name="SIDE_OF_CARD" />に記載されている CVC を入力してください</translation>
 <translation id="3650917416636556301">ハイキング、キャンプ</translation>
@@ -2298,6 +2300,7 @@
 <translation id="541416427766103491">スタッカー 4</translation>
 <translation id="5414446060143308245">移行する前に確認が必要です</translation>
 <translation id="5414511064953050917">このまま移動</translation>
+<translation id="5419311651396341287">管理者は次の情報を確認できる場合があります。</translation>
 <translation id="5421408724705443535">ロック ミュージック</translation>
 <translation id="5423269318075950257">価格のトラッキング</translation>
 <translation id="5425082381151187189">室内装飾、インテリア</translation>
@@ -3370,6 +3373,7 @@
 <translation id="7481312909269577407">進む</translation>
 <translation id="7481603210197454575">イタリア封筒</translation>
 <translation id="7483482939016730822">学校用品</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />。Chrome のヒントを閉じるには、Tab キー、Enter キーの順に押します。</translation>
 <translation id="7485085230273446323">ビジネス、産業</translation>
 <translation id="7485870689360869515">データが見つかりません。</translation>
 <translation id="7489392576326061356">シャンプー、コンディショナー</translation>

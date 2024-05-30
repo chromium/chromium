@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">履歴</translation>
 <translation id="164673457281113247">{count,plural, =1{ブックマークを保存しました}other{ブックマークを保存しました}}</translation>
 <translation id="1650222530560417226">[ログ記録を開始] をタップすると、今後 JavaScript コンソールに表示されるすべてのタブのログやエラーが収集されます。ログは、このページを閉じるか [ログ記録を停止] をタップするまで収集（およびメモリにのみ保存）されます。</translation>
+<translation id="1652333207707886577">メニューをカスタマイズ</translation>
 <translation id="1653432787084483144">{count,plural, =1{キーボードの上部に保存済みのパスワードが {count} 件表示されています。}other{キーボードの上部に保存済みのパスワードが {count} 件表示されています。}}</translation>
 <translation id="1657011748321897393">ネットワークに接続されていないため共有できませんでした。</translation>
 <translation id="165877110639533037">開いているタブはありません</translation>
@@ -240,6 +241,7 @@
 <translation id="2267753748892043616">アカウントを追加</translation>
 <translation id="2268044343513325586">絞り込み</translation>
 <translation id="2269277877025820298">もっと見る</translation>
+<translation id="2271452184061378400">タブグループはここに保存されます</translation>
 <translation id="2273327106802955778">その他のメニュー</translation>
 <translation id="2274800392139890332">この荷物の追跡を停止</translation>
 <translation id="2275480389219976105">住所が見つかりました</translation>
@@ -470,6 +472,7 @@
 <translation id="3435738964857648380">セキュリティ</translation>
 <translation id="3443810440409579745">タブが共有されました。</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分</translation>
+<translation id="3445580184527779479">タブグループ。展開しています。</translation>
 <translation id="3448016392200048164">分割表示</translation>
 <translation id="345565170154308620">パスワードを管理...</translation>
 <translation id="3464194322481586217">価格をトラッキングできませんでした。</translation>
@@ -514,6 +517,7 @@
 <translation id="3638472932233958418">ウェブページのプリロード</translation>
 <translation id="3642060527569456384">タブグループは自動的に保存され、すべてのデバイスで更新されます。</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} 件のパスワードがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{email}）に保存してください。}other{{count} 件のパスワードがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{email}）に保存してください。}}</translation>
+<translation id="3650299480924308502">ログアウトすると、保存していないデータはこのデバイスから削除されます。これにはパスワード、履歴などが含まれます。</translation>
 <translation id="3659297405161482746">お支払い方法が見つかりませんでした</translation>
 <translation id="3661160521073045932">設定プロファイルを使用できます</translation>
 <translation id="3670030362669914947">番号</translation>
@@ -530,6 +534,7 @@
 <translation id="3738428049780661523">作成: <ph name="DATE" /></translation>
 <translation id="374357899112510277">ダウンロードを非表示</translation>
 <translation id="3745190878148784130">[テキストを拡大] を非表示にする</translation>
+<translation id="3747231889390582072">組織のセキュリティを確保するため、保存されていないデータはこのデバイスから削除されます。これには、パスワード、閲覧履歴、Cookie などが含まれます。</translation>
 <translation id="3762232513783804601">iPad 向けの設計</translation>
 <translation id="3768725474733206671">最後に閉じたタブを開く</translation>
 <translation id="3771033907050503522">シークレットタブ</translation>
@@ -969,6 +974,7 @@
 <translation id="5971872012779224351">{count,plural, =1{1 個のブックマークが削除されました}other{{count} 個のブックマークが削除されました}}</translation>
 <translation id="5979837087407522202">パスワードを検索</translation>
 <translation id="5981230843984570095">アクティブでないタブをすべて閉じる</translation>
+<translation id="5982958159110007132">タブグループのタブ。<ph name="TAB_INDEX_IN_GROUP" />/<ph name="NUMBER_OF_TABS_IN_GROUP" />。</translation>
 <translation id="5984222099446776634">最近のアクセス</translation>
 <translation id="598634819525651074">面積</translation>
 <translation id="5988097621740394599">タブで値下げ情報を確認します。</translation>
@@ -987,6 +993,7 @@
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6042308850641462728">もっと見る</translation>
 <translation id="6045460247888249350">タイトルを追加</translation>
+<translation id="6051432659151380973">タブグループは自動的に保存されます</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">ここで記事やアクティビティを管理します</translation>
 <translation id="6064824697233747382">組織が同期をオフにするよう求めています。</translation>
@@ -1271,6 +1278,7 @@
 <translation id="745899714366929493">終日</translation>
 <translation id="7459628154744868585">保護強化機能がオンになっています</translation>
 <translation id="7465351360025415755">気になるコンテンツをチェック</translation>
+<translation id="7470908168505178757">タブグループ。閉じています。</translation>
 <translation id="7472734401283673885">会社名</translation>
 <translation id="7473891865547856676">スキップ</translation>
 <translation id="7488874549363591659">配達済み</translation>
@@ -1480,6 +1488,7 @@
 <translation id="8446884382197647889">詳細</translation>
 <translation id="8449347986464073209">削除してログアウト</translation>
 <translation id="8459333855531264009">この通信は保護されていません</translation>
+<translation id="8466300942149667917">保存されていないアカウント データは削除されます</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>
 <translation id="8487667956631253959">オン</translation>
 <translation id="8487700953926739672">オフラインでの利用</translation>
@@ -1608,6 +1617,7 @@
 <translation id="9065203028668620118">編集</translation>
 <translation id="9079935439869366234">すべて未読にする</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> のパスワードを更新しますか？</translation>
+<translation id="9082821980444279398">オンにすると、Google アカウントのデータが使用、保存されます。オフにすると、データはこのデバイスのみに保存され、ログアウトすると削除されます。</translation>
 <translation id="9083838294503912307">カスタマイズした設定を複数のデバイスで同期して使用するには、同期を有効にします。</translation>
 <translation id="9087339162317338348">可能な限り HTTPS を使用し、HTTPS をサポートしていないサイトは読み込む前に警告を表示します。</translation>
 <translation id="9093271241977565440">画面上部の検索アイコンをタップします</translation>

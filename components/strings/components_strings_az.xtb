@@ -456,6 +456,7 @@
 <translation id="1812527064848182527">peyzaj</translation>
 <translation id="1812975699435941848">Səhiyyə təhsili və tibbi təlim</translation>
 <translation id="1816436748874040213">Paylaşılan tabları sürüşdürüb zumlamaq istəyə bilər</translation>
+<translation id="1817364650920811003">Rol: Chrome tövsiyəsi. Xüsusi imkanlar etiketi: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Blokdan çıxarın</translation>
 <translation id="1818585559878922121">Sənədli filmlər</translation>
 <translation id="182139138257690338">avtomatik endirmələr</translation>
@@ -1394,6 +1395,7 @@
 <translation id="3642638418806704195">Tətbiq:</translation>
 <translation id="3646643500201740985">Bir reklamın nə qədər yaxşı performans göstərdiyini ölçmək</translation>
 <translation id="3647286794400715637">Hər bir keçid sətri daxiletməsində 1-2 keçid olmalıdır.</translation>
+<translation id="3647400963805615193">Chrome tövsiyəsini rədd etmək üçün düymə, rədd etmək üçün Enter üzərinə basın, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Yoxlama uğurludur</translation>
 <translation id="3650594806107685466">Kartınızın təhlükəsizliyini təmin etmək üçün <ph name="SIDE_OF_CARD" /> tərəfdəki CVC-ni daxil edin</translation>
 <translation id="3650917416636556301">Gəzinti və kempinq</translation>
@@ -3366,6 +3368,7 @@
 <translation id="7481312909269577407">İrəli</translation>
 <translation id="7481603210197454575">Zərf İtalyan</translation>
 <translation id="7483482939016730822">Məktəb ləvazimatları və sinif otağı avadanlığı</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />. Chrome tövsiyəsini rədd etmək üçün Tab, sonra Enter düyməsinə basın.</translation>
 <translation id="7485085230273446323">Biznes və Sənaye</translation>
 <translation id="7485870689360869515">Heç bir data tapılmadı.</translation>
 <translation id="7489392576326061356">Şampun və kondisionerlər</translation>

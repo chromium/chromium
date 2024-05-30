@@ -26,6 +26,7 @@
 <translation id="1108938384783527433">History sync</translation>
 <translation id="1111673857033749125">Bookmarks saved on your other devices will appear here.</translation>
 <translation id="1113597929977215864">Show simplified view</translation>
+<translation id="1126696498560056882">Manage accounts on this device</translation>
 <translation id="1126809382673880764">Does not protect you against dangerous websites, downloads and extensions. You’ll still get Safe Browsing protection, where available, in other Google services, like Gmail and Search.</translation>
 <translation id="1129510026454351943">Details: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1142732900304639782">Don’t offer to translate these sites</translation>
@@ -76,6 +77,7 @@
 <translation id="1332501820983677155">Google Chrome feature shortcuts</translation>
 <translation id="1344653310988386453">Include link to highlight</translation>
 <translation id="1347468774581902829">Manage activity</translation>
+<translation id="1355088659320425659">History and tabs</translation>
 <translation id="1360432990279830238">Sign out and turn off sync?</translation>
 <translation id="1366525380420346469">When on</translation>
 <translation id="1373696734384179344">Insufficient memory to download the selected content.</translation>
@@ -506,6 +508,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3566639033325271639">Update settings</translation>
 <translation id="357465026686164600">Phone as a security key</translation>
 <translation id="3577473026931028326">Something went wrong. Try again.</translation>
+<translation id="3577558748185201054">Manage your interests and preferences</translation>
 <translation id="3587482841069643663">All</translation>
 <translation id="3587596251841506391">Help improve security on the web</translation>
 <translation id="3597179440835065298">Get better suggestions</translation>
@@ -620,6 +623,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4195643157523330669">Open in new tab</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 tab on this device}other{# tabs on this device}}</translation>
 <translation id="4198423547019359126">No available download locations</translation>
+<translation id="4198664641856813238">Sign in to get your bookmarks, passwords and more on all your devices</translation>
 <translation id="4202218894997543208">Topics that you blocked</translation>
 <translation id="4214315110991671325">If you allow cookies, Chrome may use them for preloading.</translation>
 <translation id="4216511743389425832">Listen to this page</translation>
@@ -808,6 +812,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Other forms of activity<ph name="END_LINK1" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.</translation>
 <translation id="506254248375231072">No tabs</translation>
 <translation id="5062960805900435602">Update about password merge is closed</translation>
+<translation id="5075939510584558547">Save without encryption</translation>
 <translation id="5081960376148623587">Choose whether to preload pages</translation>
 <translation id="5085038751173179818">Sign in to this site and Chrome to get your bookmarks and more on all your devices</translation>
 <translation id="5091199029769593641">Soon, you’ll see stories from <ph name="SITE_NAME" /> when you open a new tab. The sites that you follow are saved in your Google Account. You can manage them in Discover settings.</translation>
@@ -866,6 +871,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5401851137404501592">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site.</translation>
 <translation id="5409881200985013443">Submit <ph name="ONE_TIME_CODE" /> on <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verifying…</translation>
+<translation id="5415871492522952905">You’ll have your history and tabs on all your devices so that you can continue what you were doing</translation>
 <translation id="5423934151118863508">Your most visited pages will appear here</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB available</translation>
 <translation id="543338862236136125">Edit password</translation>
@@ -894,6 +900,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5554520618550346933">When you use a password, Chrome warns you if it has been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
 <translation id="5555525474779371165">Choose your Safe Browsing protection</translation>
 <translation id="5556459405103347317">Reload</translation>
+<translation id="555671485580955310">Sync history and tabs</translation>
 <translation id="555816257274242153">Stopped tracking price</translation>
 <translation id="5561162485081632007">Detects and warns you about dangerous events when they happen</translation>
 <translation id="5561549206367097665">Waiting for network…</translation>

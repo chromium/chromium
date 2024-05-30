@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">歷史記錄</translation>
 <translation id="164673457281113247">{count,plural, =1{已儲存書籤}other{已儲存書籤}}</translation>
 <translation id="1650222530560417226">輕觸 [開始記錄] 按鈕即可收集之後的 JavaScript 控制台記錄和所有分頁錯誤。系統會持續收集記錄 (且僅會儲存於記憶體中)，直到網頁關閉或使用者輕觸 [停止記錄] 為止。</translation>
+<translation id="1652333207707886577">自訂選單</translation>
 <translation id="1653432787084483144">{count,plural, =1{鍵盤上方顯示 {count} 組已儲存的密碼。}other{鍵盤上方顯示 {count} 組已儲存的密碼。}}</translation>
 <translation id="1657011748321897393">您尚未連上網路，因此無法分享。</translation>
 <translation id="165877110639533037">沒有開啟的分頁</translation>
@@ -240,6 +241,7 @@
 <translation id="2267753748892043616">新增帳戶</translation>
 <translation id="2268044343513325586">修正搜尋</translation>
 <translation id="2269277877025820298">查看更多內容</translation>
+<translation id="2271452184061378400">你的分頁群組會儲存在這裡</translation>
 <translation id="2273327106802955778">[更多] 選單</translation>
 <translation id="2274800392139890332">取消追蹤這個包裹</translation>
 <translation id="2275480389219976105">找到地址</translation>
@@ -530,6 +532,7 @@
 <translation id="3738428049780661523">建立日期：<ph name="DATE" /></translation>
 <translation id="374357899112510277">隱藏「下載內容」</translation>
 <translation id="3745190878148784130">隱藏「縮放文字」</translation>
+<translation id="3747231889390582072">為確保貴機構的安全，系統將從這部裝置中刪除未儲存的資料，可能包括密碼、瀏覽記錄和 Cookie 等等。</translation>
 <translation id="3762232513783804601">專為 iPad 量身打造</translation>
 <translation id="3768725474733206671">重新開啟最近關閉的分頁</translation>
 <translation id="3771033907050503522">無痕式分頁</translation>
@@ -1480,6 +1483,7 @@
 <translation id="8446884382197647889">瞭解詳情</translation>
 <translation id="8449347986464073209">刪除並登出</translation>
 <translation id="8459333855531264009">不安全</translation>
+<translation id="8466300942149667917">系統將刪除未儲存的帳戶資料</translation>
 <translation id="8473863474539038330">地址和其他資訊</translation>
 <translation id="8487667956631253959">開啟</translation>
 <translation id="8487700953926739672">可離線使用</translation>

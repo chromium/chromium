@@ -1711,6 +1711,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2234827758954819389">Leiðbeiningar um persónuvernd</translation>
 <translation id="2234876718134438132">Samstilling og þjónusta Google</translation>
 <translation id="2235344399760031203">Lokað er á fótspor frá þriðju aðilum</translation>
+<translation id="2236949375853147973">Mín virkni</translation>
 <translation id="2238379619048995541">Gögn um tíðnistöðu</translation>
 <translation id="2241053333139545397">Lesa og breyta gögnunum þínum á mörgum vefsvæðum</translation>
 <translation id="2241634353105152135">Bara einu sinni</translation>
@@ -2057,7 +2058,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2469259292033957819">Þú ert ekki með neina vistaða prentara.</translation>
 <translation id="2469375675106140201">Sérsníða ritvilluleit</translation>
 <translation id="247051149076336810">Vefslóð skráageymslu</translation>
-<translation id="2470702053775288986">Óstuddar viðbætur gerðar óvirkar</translation>
 <translation id="2471469610750100598">Svartur (sjálfgefið)</translation>
 <translation id="2471506181342525583">Aðgangur að staðsetningu veittur</translation>
 <translation id="2473195200299095979">Þýða þessa síðu</translation>
@@ -4203,6 +4203,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4050534976465737778">Gakktu úr skugga um að hvorugt tækið sé læst, settu þau nálægt hvort öðru og hafðu kveikt á Bluetooth. Ef þú deilir með Chromebook sem er ekki í tengiliðunum þínum skaltu tryggja að kveikt sé á nærsýnileika í henni (opnaðu stöðusvæðið og kveiktu á nærsýnileika). <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Ýttu á <ph name="KEY_CODES" /> til að skipta yfir í innfærsluaðferðina sem var notuð síðast</translation>
 <translation id="4051177682900543628">leitarlykill + ör til hægri</translation>
+<translation id="405181879009056822">ChromeOS-stillingar</translation>
 <translation id="4052120076834320548">Örsmátt</translation>
 <translation id="4052913941260326985">Búa til QR-kóða</translation>
 <translation id="405365679581583349">Uppfærðu þjónustu Google Play</translation>
@@ -5737,6 +5738,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> notar staðsetningu þína til að veita þér staðbundið efni. Þú getur breytt þessu í <ph name="SETTINGS_LINK" />.</translation>
 <translation id="5252496130205799136">Viltu nota Google reikninginn þinn til að vista og fylla út aðgangsorð?</translation>
 <translation id="5252653240322147470">PIN-númer þarf að vera færri en <ph name="MAXIMUM" /> tölustafir</translation>
+<translation id="5253554634804500860">Nota <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Minnisnotkun: <ph name="MEMORY_USAGE" /></translation>
 <translation id="52550593576409946">Ekki tókst að opna sjálfsalaforrit.</translation>
 <translation id="5255726914791076208"><ph name="RP_ID" />-reikningurinn þinn mun ekki breytast þegar þú breytir aðgangslyklinum þínum</translation>
@@ -6474,6 +6476,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5806447147478173900">Heildargeymslurými sem birt vefsvæði nota: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (sjálfgefið)</translation>
 <translation id="5809835394668218762">Fleiri aðgerðir fyrir <ph name="WEBSITE" /></translation>
+<translation id="5809840528400421362">PIN-númerið verður að vera sex tölustafir</translation>
 <translation id="5810809306422959727">Þessi reikningur er ekki gjaldgengur fyrir barnalæsingar</translation>
 <translation id="5811614940486072060">Þessi skrá er ekki sótt oft og kann að vera hættuleg</translation>
 <translation id="5812674658566766066">Stækka allt</translation>

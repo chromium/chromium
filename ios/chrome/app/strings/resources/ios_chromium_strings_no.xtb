@@ -75,6 +75,7 @@ For å se flere innstillinger som bruker data for å forbedre Chromium-opplevels
 <translation id="2942241131342758843">Bruk Chromium som standard til å åpne linker, søke i moduler og fylle ut passord i andre apper automatisk</translation>
 <translation id="2977470724722393594">Chromium er oppdatert</translation>
 <translation id="3044857325852340337">Slettet Chromium-data</translation>
+<translation id="3049211156275642309">Fullfør konfigureringen av Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium kan hjelpe deg med å spore denne pakken på Ny fane-siden.}other{Chromium kan hjelpe deg med å spore disse pakkene på Ny fane-siden.}}</translation>
 <translation id="3102849287235003384">For å logge av Google-kontoen din på alle nettsteder, <ph name="BEGIN_LINK" />logg av Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Søk med stemmen i Chromium</translation>
@@ -273,6 +274,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="8754966941001340678">Chromium anbefaler økt beskyttelse</translation>
 <translation id="8759037115129007407">Familiemedlemmet ditt kan ikke motta passord akkurat nå. Be vedkommende om å oppdatere Chromium og synkronisere passordene sine. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Denne kontoen og eventuelle ulagrede data blir fjernet fra Chromium.</translation>
+<translation id="8826789549860004832">Få mest mulig ut av Chromium ved å fortsette å konfigurere nettleseren din.</translation>
 <translation id="88376265765385899">Åpner Chromium-bokmerkene.</translation>
 <translation id="8860548555286245440">Åpne nettadresser i Chromium i Inkognito</translation>
 <translation id="8866191443434488382">Chromium registrerer sporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Pakkesporingsnummeret og navnet på nettstedet sendes til Chromium, slik at Chromium kan levere denne funksjonen og gjøre Shopping-funksjonene bedre for alle. Du kan når som helst oppdatere dette i <ph name="BEGIN_LINK" />innstillingene for pakkesporing<ph name="END_LINK" />.</translation>

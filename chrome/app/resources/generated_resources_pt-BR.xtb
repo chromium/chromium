@@ -1711,6 +1711,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2234827758954819389">Guia de privacidade</translation>
 <translation id="2234876718134438132">Serviços do Google e de sincronização</translation>
 <translation id="2235344399760031203">Cookies de terceiros foram bloqueados</translation>
+<translation id="2236949375853147973">Minha atividade</translation>
 <translation id="2238379619048995541">Dados do estado de frequência</translation>
 <translation id="2241053333139545397">Ler e alterar seus dados em vários websites</translation>
 <translation id="2241634353105152135">Apenas uma vez</translation>
@@ -2057,7 +2058,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2469259292033957819">Você não tem impressoras salvas.</translation>
 <translation id="2469375675106140201">Personalizar verificação ortográfica</translation>
 <translation id="247051149076336810">URL de compartilhamento de arquivos</translation>
-<translation id="2470702053775288986">Extensões incompatíveis desativadas</translation>
 <translation id="2471469610750100598">Preto (padrão)</translation>
 <translation id="2471506181342525583">Acesso à localização permitido</translation>
 <translation id="2473195200299095979">Traduzir esta página</translation>
@@ -4852,6 +4852,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4562091353415772246">Instalar atualizações e apps. Ao continuar, você aceita que este dispositivo também pode fazer o download e a instalação de atualizações e apps do Google, da operadora e do fabricante do dispositivo automaticamente, possivelmente usando dados da rede celular. Em alguns casos, compras no app podem ser oferecidas. <ph name="BEGIN_LINK1" />Saiba mais sobre a Instalação automática pela Play Store<ph name="BEGIN_LINK1_END" />Saiba mais<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">Adicionar impressão digital</translation>
 <translation id="4562155266774382038">Dispensar sugestão</translation>
+<translation id="4562364000855074606">Bloquear apps instalados neste <ph name="DEVICE_TYPE" />. Para restringir o download de apps ou conteúdo, acesse as configurações do Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">O idioma de entrada inicial é o chinês</translation>
 <translation id="4563382028841851106">Remover da conta</translation>
 <translation id="4563880231729913339">Dedo 3</translation>
@@ -8063,6 +8064,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7009709314043432820"><ph name="APP_NAME" /> está usando a câmera</translation>
 <translation id="701080569351381435">Exibir o código fonte</translation>
 <translation id="7011797924920577670">tenta prever seus interesses</translation>
+<translation id="7012430956470647760">Controle da família para apps</translation>
 <translation id="7013762323294215682">Esta chave de acesso será salva no seu gerenciador de senhas. Qualquer pessoa com acesso a ela poderá usá-la.</translation>
 <translation id="7014174261166285193">Falha na instalação.</translation>
 <translation id="7014480873681694324">Remover destaque</translation>

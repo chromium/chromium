@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="164673457281113247">{count,plural, =1{Žymė išsaugota}one{Žymės išsaugotos}few{Žymės išsaugotos}many{Žymės išsaugotos}other{Žymės išsaugotos}}</translation>
 <translation id="1650222530560417226">Palieskite mygtuką „Pradėi registravimą“, kad rinktumėte būsimus „JavaScript“ pulto žurnalus ir klaidas iš visų skirtukų. Žurnalai bus renkami (ir saugomi tik atmintyje), kol šis puslapis bus uždarytas arba kol paliesite „Stabdyti registravimą“.</translation>
+<translation id="1652333207707886577">Meniu tinkinimas</translation>
 <translation id="1653432787084483144">{count,plural, =1{Virš klaviatūros pasiekiamas {count} išsaugotas slaptažodis.}one{Virš klaviatūros pasiekiamas {count} išsaugotas slaptažodis.}few{Virš klaviatūros pasiekiami {count} išsaugoti slaptažodžiai.}many{Virš klaviatūros pasiekiama {count} išsaugoto slaptažodžio.}other{Virš klaviatūros pasiekiama {count} išsaugotų slaptažodžių.}}</translation>
 <translation id="1657011748321897393">Bendrinant įvyko klaida, nes nesate prisijungę prie tinklo.</translation>
 <translation id="165877110639533037">Nėra atidarytų skirtukų</translation>
@@ -240,6 +241,7 @@
 <translation id="2267753748892043616">Pridėti paskyrą</translation>
 <translation id="2268044343513325586">Patikslinti</translation>
 <translation id="2269277877025820298">Žr. daugiau</translation>
+<translation id="2271452184061378400">Čia išsaugomos skirtukų grupės</translation>
 <translation id="2273327106802955778">Daugiau meniu</translation>
 <translation id="2274800392139890332">Nebestebėti šio siuntinio</translation>
 <translation id="2275480389219976105">Rastas adresas</translation>
@@ -532,6 +534,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3738428049780661523">Sukurta: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Slėpti atsisiuntimus</translation>
 <translation id="3745190878148784130">Slėpti parinktį „Keisti teksto mastelį“</translation>
+<translation id="3747231889390582072">Siekiant užtikrinti organizacijos saugą, neišsaugoti duomenys bus ištrinti iš šio įrenginio. Tai gali būti slaptažodžiai, naršymo istorija, slapukai ir kt.</translation>
 <translation id="3762232513783804601">Sukurta specialiai „iPad“</translation>
 <translation id="3768725474733206671">Iš naujo atidaryti pastarąjį uždarytą skirtuką</translation>
 <translation id="3771033907050503522">Inkognito skirt.</translation>
@@ -1469,6 +1472,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8374977641764177587">Įjungti pranešimus?</translation>
 <translation id="8378714024927312812">Tvarko jūsų organizacija</translation>
 <translation id="8386068868580335421">Nustatyti iš naujo</translation>
+<translation id="8386882774665382072">{count,plural, =1{{position} slaptažodis iš {count}}one{{position} slaptažodis iš {count}}few{{position} slaptažodis iš {count}}many{{position} slaptažodis iš {count}}other{{position} slaptažodis iš {count}}}</translation>
 <translation id="838867811594159347">Įveskite slaptafrazę…</translation>
 <translation id="8393889347136007944">Skirtukai nenaudojami <ph name="THRESHOLD" /> d.</translation>
 <translation id="8395339334550012808">Netrukus skiltyje „Stebima“ matysite turinį iš kanalo <ph name="CHANNEL_NAME" /> ir apie jį.</translation>
@@ -1485,6 +1489,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8446884382197647889">Sužinokite daugiau</translation>
 <translation id="8449347986464073209">Ištrinti ir atsijungti</translation>
 <translation id="8459333855531264009">Nesaugūs</translation>
+<translation id="8466300942149667917">Neišsaugoti paskyros duomenys bus ištrinti</translation>
 <translation id="8473863474539038330">Adresai ir dar daugiau</translation>
 <translation id="8487667956631253959">Įjungta</translation>
 <translation id="8487700953926739672">Pasiekiama neprisijungus</translation>
@@ -1651,6 +1656,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="96615566463761848">Rodyti skirtukų pasiūlymus iš kitų įrenginių</translation>
 <translation id="973493300226275298">Stebėkite produkto kainą internetinėse parduotuvėse. Kai kaina sumažės, gausite įspėjimus.</translation>
 <translation id="981498610235328462">Organizacijoje leidžiama prisijungti tik naudojant tam tikras paskyras. Neleidžiamos paskyros yra paslėptos.</translation>
+<translation id="983800820186631385">{count,plural, =1{{position} mokėjimo metodas iš {count}}one{{position} mokėjimo metodas iš {count}}few{{position} mokėjimo metodas iš {count}}many{{position} mokėjimo metodas iš {count}}other{{position} mokėjimo metodas iš {count}}}</translation>
 <translation id="984275831282074731">Mokėjimo metodai</translation>
 <translation id="984509647832111802">Sinchronizavimas neveikia.</translation>
 <translation id="988141524645182168">Kiti įrenginiai</translation>

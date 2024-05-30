@@ -183,6 +183,7 @@
 <translation id="1654477262762802994">Произнесите запрос</translation>
 <translation id="1668469839109562275">Встроенная VPN</translation>
 <translation id="1673232940951031776">Выйти из режима концентрации внимания. Оставшееся время: <ph name="REMAINING_TIME" />.</translation>
+<translation id="1675570947608765064">Другие пользователи видят, что вы изменяете в этой задаче</translation>
 <translation id="1675844249244994876">Обновить окно справа</translation>
 <translation id="1677472565718498478">Ещё <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Функция "<ph name="FEATURE_NAME" />" не подключена.</translation>
@@ -862,6 +863,7 @@
 <translation id="4302592941791324970">Недоступно</translation>
 <translation id="4303223480529385476">Развернуть панель состояния</translation>
 <translation id="4305133312001648038">Сбросить масштаб страницы</translation>
+<translation id="4305817255990598646">Переключиться</translation>
 <translation id="4307713728991152670">Настроить просмотр недавних фотографий, медиафайлов и приложений с телефона</translation>
 <translation id="4312840429157639164">Окно предварительного просмотра камеры привязано к правому верхнему углу, так как перекрывало элементы системного интерфейса</translation>
 <translation id="4316910396681052118">ВСЕ ПРИЛОЖЕНИЯ</translation>

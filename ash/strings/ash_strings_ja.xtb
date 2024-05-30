@@ -131,6 +131,7 @@
 <translation id="1420408895951708260">夜間モードのオンとオフを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">はい</translation>
 <translation id="1435537621343861112">音声入力を開始できません。マイクがオフになっています。</translation>
+<translation id="1447907279406111651">進行中 · <ph name="END_TIME" /> に終了</translation>
 <translation id="1448963928642384376">デバイスのアクセス ポイント</translation>
 <translation id="1455242230282523554">言語設定を表示</translation>
 <translation id="1460620680449458626">音量はミュートされています。</translation>
@@ -481,6 +482,7 @@
 <translation id="2894949423239620203">ケーブルがパフォーマンスに影響している可能性があります</translation>
 <translation id="2914580577416829331">画面キャプチャ</translation>
 <translation id="2924416280450782352">アイテムを表示できません。このパネルをもう一度開いてみてください。</translation>
+<translation id="292506373491190801">進行中の予定から</translation>
 <translation id="2931572158271115754">この ToDo リストは空です。</translation>
 <translation id="2932487126591186298">10 分延長しました。残り時間は <ph name="REMAINING_TIME" /> です。</translation>
 <translation id="2935225303485967257">プロフィールを管理</translation>
@@ -767,6 +769,7 @@
 <translation id="3950272133184491871">今すぐログアウトしますか？</translation>
 <translation id="3950820424414687140">ログイン</translation>
 <translation id="3953130726459169782">完了した課題はまだありません。</translation>
+<translation id="3958714870339660776">終日</translation>
 <translation id="3962859241508114581">前の曲</translation>
 <translation id="3969043077941541451">オフ</translation>
 <translation id="3970324493235864154">スマートフォンの通知を表示する</translation>
@@ -863,6 +866,7 @@
 <translation id="4302592941791324970">使用できません</translation>
 <translation id="4303223480529385476">ステータス領域を拡大</translation>
 <translation id="4305133312001648038">ページのズームレベルをリセットする</translation>
+<translation id="4305817255990598646">切り替え</translation>
 <translation id="4307713728991152670">スマートフォンの最近の写真、メディア、アプリの表示を設定</translation>
 <translation id="4312840429157639164">カメラは右上にスナップされています。システムのサーフェスと競合しています。</translation>
 <translation id="4316910396681052118">すべてのアプリ</translation>
@@ -1219,6 +1223,7 @@
 <translation id="5599242528220103262">キーボード ショートカットは無効になっています</translation>
 <translation id="5600415762228455511">フォーカス モードがオンになっています。残り時間は <ph name="REMAINING_TIME" /> です。<ph name="TASK_NAME" /> に集中しています</translation>
 <translation id="5600837773213129531">音声フィードバックを無効にするには Ctrl+Alt+Z を押してください。</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{1 時間以内}=1{1 時間前}other{# 時間前}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">より安全なネットワークに切り替えました</translation>
 <translation id="5619862035903135339">管理者が設定したポリシーにより、スクリーン キャプチャは無効になっています</translation>
@@ -1395,6 +1400,7 @@
 <translation id="6228457605945141550">明るさを下げる</translation>
 <translation id="623116199192908855">Chromebook から画面をキャストする</translation>
 <translation id="6231419273573514727">周辺機器のパフォーマンスが制限されている可能性があります</translation>
+<translation id="6232416233079464213"><ph name="SESSION_NAME" /> から</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> がカメラとマイクを使用しています</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">バッテリー残量が低下しています。バッテリー セーバーがオンになりました。</translation>
@@ -1516,6 +1522,7 @@
 <translation id="6696025732084565524">お使いのキーボード（取り外し可能）に重要なアップデートを適用する必要があります</translation>
 <translation id="6697913454192220372">新しいデスクを追加</translation>
 <translation id="6700713906295497288">IME メニューボタン</translation>
+<translation id="6706742084323792866">キーボードを固定</translation>
 <translation id="6707693040195709527">デバイスを以前のバージョンに戻す期限が過ぎています</translation>
 <translation id="6710213216561001401">前へ</translation>
 <translation id="6723839937902243910">電源</translation>
@@ -1797,6 +1804,7 @@
 <translation id="780301667611848630">キャンセル</translation>
 <translation id="7807067443225230855">検索とアシスタント</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">カレンダーの今後の予定から</translation>
 <translation id="7829386189513694949">電波: 強い</translation>
 <translation id="7830453190047749513"><ph name="PERIPHERAL_NAME" /> のボタン操作やカーソルの速度などをカスタマイズできます</translation>
 <translation id="7837740436429729974">タイムアップ</translation>
@@ -2113,6 +2121,7 @@
 <translation id="899350903320462459">通知に関する操作を行うには、<ph name="LOGIN_ID" /> でデバイスのロックを解除してください</translation>
 <translation id="8993733019280019776">話していますか？マイクがオフになっています。オンにするにはマイクを選択してください。</translation>
 <translation id="9000771174482730261">ストレージを管理</translation>
+<translation id="9002204506712855687">最新機能をご確認ください</translation>
 <translation id="9005984960510803406">Crosh ウィンドウを開く</translation>
 <translation id="9017320285115481645">ファミリー リンクの保護者のアクセスコードを入力してください。</translation>
 <translation id="9022774213089566801">よく使用するサイト</translation>
@@ -2144,6 +2153,7 @@
 <translation id="9098969848082897657">スマートフォンを消音する</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> または <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">直前の操作を元に戻す</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{1 分後}other{# 分後}}</translation>
 <translation id="9129245940793250979">背面ボタン</translation>
 <translation id="9133335900048457298">保護されたコンテンツは録画できません</translation>
 <translation id="9139720510312328767">次の文字を削除する</translation>
@@ -2156,6 +2166,7 @@
 <translation id="9183456764293710005">全画面拡大鏡</translation>
 <translation id="9193626018745640770">不明な受信デバイスにキャストしています</translation>
 <translation id="9194617393863864469">別のユーザーとしてログイン...</translation>
+<translation id="9195990613383871904">明日</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> の解像度を <ph name="RESOLUTION" /> に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
 <translation id="9201044636667689546">この Chromebook に <ph name="NAME" /> を接続してください</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />、管理者によって管理</translation>

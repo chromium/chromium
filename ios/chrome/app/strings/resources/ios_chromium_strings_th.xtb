@@ -75,6 +75,7 @@
 <translation id="2942241131342758843">ใช้ Chromium โดยค่าเริ่มต้นเพื่อเปิดลิงก์ ค้นหาจากวิดเจ็ต และป้อนรหัสผ่านอัตโนมัติในแอปอื่นๆ</translation>
 <translation id="2977470724722393594">Chromium อัปเดตแล้ว</translation>
 <translation id="3044857325852340337">ลบข้อมูลใน Chromium แล้ว</translation>
+<translation id="3049211156275642309">ตั้งค่า Chromium ให้เสร็จ</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium จะช่วยคุณติดตามพัสดุนี้ในหน้าแท็บใหม่ได้}other{Chromium จะช่วยคุณติดตามพัสดุเหล่านี้ในหน้าแท็บใหม่ได้}}</translation>
 <translation id="3102849287235003384">หากต้องการออกจากระบบบัญชี Google ในเว็บไซต์ทั้งหมด ให้<ph name="BEGIN_LINK" />ออกจากระบบ Chromium<ph name="END_LINK" /></translation>
 <translation id="3219277919172823720">ค้นหาด้วยเสียงใน Chromium</translation>
@@ -273,6 +274,7 @@
 <translation id="8754966941001340678">Chromium ขอแนะนําการปกป้องที่ดียิ่งขึ้น</translation>
 <translation id="8759037115129007407">สมาชิกในครอบครัวของคุณไม่สามารถรับรหัสผ่านได้ในขณะนี้ ขอให้สมาชิกอัปเดต Chromium และซิงค์รหัสผ่าน <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">บัญชีนี้และข้อมูลที่ไม่ได้บันทึกจะถูกนำออกจาก Chromium</translation>
+<translation id="8826789549860004832">รับประโยชน์สูงสุดจาก Chromium โดยการตั้งค่าเบราว์เซอร์ต่อ</translation>
 <translation id="88376265765385899">เปิดบุ๊กมาร์ก Chromium</translation>
 <translation id="8860548555286245440">เปิด URL ใน Chromium ในโหมดไม่ระบุตัวตน</translation>
 <translation id="8866191443434488382">Chromium จะตรวจหาหมายเลขติดตามพัสดุในเว็บไซต์ที่คุณเข้าชมและแสดงข้อมูลอัปเดตเกี่ยวกับพัสดุในหน้า "แท็บใหม่" ระบบจะส่งหมายเลขติดตามพัสดุและชื่อเว็บไซต์ไปยัง Chromium เพื่อให้บริการฟีเจอร์นี้และเพื่อปรับปรุงฟีเจอร์ต่างๆ ที่เกี่ยวกับการช็อปปิ้งสําหรับทุกคน คุณอัปเดตข้อมูลนี้ได้ทุกเมื่อใน<ph name="BEGIN_LINK" />การตั้งค่าการติดตามพัสดุภัณฑ์<ph name="END_LINK" /></translation>

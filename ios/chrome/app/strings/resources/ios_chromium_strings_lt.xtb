@@ -75,6 +75,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chromium“ f
 <translation id="2942241131342758843">Naudokite „Chromium“ pagal numatytuosius nustatymus, kad atidarytumėte nuorodas, ieškotumėte iš valdiklių ir automatiškai pildytumėte slaptažodžius kitose programose</translation>
 <translation id="2977470724722393594">„Chromium“ naujausios versijos</translation>
 <translation id="3044857325852340337">Ištrinti „Chromium“ duomenys</translation>
+<translation id="3049211156275642309">Užbaikite „Chromium“ sąranką</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{„Chromium“ gali padėti stebėti šį paketą „Naujo skirtuko“ puslapyje.}one{„Chromium“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}few{„Chromium“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}many{„Chromium“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}other{„Chromium“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}}</translation>
 <translation id="3102849287235003384">Jei norite atsijungti nuo „Google“ paskyros visose svetainėse, <ph name="BEGIN_LINK" />atsijunkite nuo „Chromium“<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Paieška balsu naršyklėje „Chromium“</translation>
@@ -273,6 +274,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="8754966941001340678">„Chromium“ rekomenduoja naudoti sustiprintą apsaugą</translation>
 <translation id="8759037115129007407">Šeimos grupės narys šiuo metu negali gauti slaptažodžių. Paprašykite atnaujinti „Chromium“ ir sinchronizuoti slaptažodžius. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Ši paskyra ir bet kokie neišsaugoti duomenys bus pašalinti iš „Chromium“.</translation>
+<translation id="8826789549860004832">Naudokitės visomis „Chromium“ galimybėmis, užbaigę naršyklės sąranką.</translation>
 <translation id="88376265765385899">Atidaromos „Chromium“ žymės.</translation>
 <translation id="8860548555286245440">Atidaryti URL naršyklėje „Chromium“ inkognito režimu</translation>
 <translation id="8866191443434488382">„Chromium“ aptiks stebėjimo numerius svetainėse, kuriose lankotės, ir rodys siuntinių atnaujinimus naujo skirtuko puslapyje. Siuntinio stebėjimo numeris ir svetainės pavadinimas bus siunčiami „Chromium“, kad būtų galima teikti šią funkciją ir tobulinti apsipirkimo funkcijas visiems žmonėms. Tai galite bet kada atnaujinti <ph name="BEGIN_LINK" />siuntinio stebėjimo nustatymuose<ph name="END_LINK" />.</translation>

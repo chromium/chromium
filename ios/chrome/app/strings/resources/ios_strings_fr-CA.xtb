@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Historique</translation>
 <translation id="164673457281113247">{count,plural, =1{Favori enregistré}one{Favori enregistré}other{Favoris enregistrés}}</translation>
 <translation id="1650222530560417226">Touchez le bouton « Démarrer la journalisation » pour collecter les éventuels journaux et erreurs de la console JavaScript sur tous les onglets. Les journaux seront collectés (et stockés dans la mémoire uniquement) jusqu'à ce que cette page soit fermée ou que le bouton « Arrêter la journalisation » soit touché.</translation>
+<translation id="1652333207707886577">Personnalisez votre menu</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} mot de passe enregistré proposé en haut du clavier.}one{{count} mot de passe enregistré proposé en haut du clavier.}other{{count} mots de passe enregistrés proposés en haut du clavier.}}</translation>
 <translation id="1657011748321897393">Échec du partage, car vous n'êtes pas connecté(e) au réseau.</translation>
 <translation id="165877110639533037">Aucun onglet ouvert</translation>
@@ -240,6 +241,7 @@
 <translation id="2267753748892043616">Ajouter un compte</translation>
 <translation id="2268044343513325586">Affiner</translation>
 <translation id="2269277877025820298">Afficher plus</translation>
+<translation id="2271452184061378400">Vos groupes d'onglets sont enregistrés ici</translation>
 <translation id="2273327106802955778">Menu Plus</translation>
 <translation id="2274800392139890332">Annuler le suivi de ce colis</translation>
 <translation id="2275480389219976105">Adresse trouvée</translation>
@@ -530,6 +532,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3738428049780661523">Date de création : <ph name="DATE" /></translation>
 <translation id="374357899112510277">Masquer les téléchargements</translation>
 <translation id="3745190878148784130">Masquer Zoomer sur le texte</translation>
+<translation id="3747231889390582072">Pour protéger la sécurité de votre organisation, les données non enregistrées seront supprimées de cet appareil. Cela peut inclure les mots de passe, l'historique de navigation, les témoins et plus encore.</translation>
 <translation id="3762232513783804601">Conçu pour votre iPad</translation>
 <translation id="3768725474733206671">Rouvrir le dernier onglet fermé</translation>
 <translation id="3771033907050503522">Onglets nav. priv.</translation>
@@ -1480,6 +1483,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8446884382197647889">En savoir plus</translation>
 <translation id="8449347986464073209">Supprimer et se déconnecter</translation>
 <translation id="8459333855531264009">Pas sécuritaire</translation>
+<translation id="8466300942149667917">Les données de compte non enregistrées seront supprimées</translation>
 <translation id="8473863474539038330">Adresses et plus</translation>
 <translation id="8487667956631253959">Activée</translation>
 <translation id="8487700953926739672">Offert en ligne</translation>

@@ -2060,7 +2060,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2469259292033957819">Nėra išsaugotų spausdintuvų.</translation>
 <translation id="2469375675106140201">Tinkinti rašybos tikrinimą</translation>
 <translation id="247051149076336810">Failo bendrinimo URL</translation>
-<translation id="2470702053775288986">Nepalaikomi plėtiniai išjungti</translation>
 <translation id="2471469610750100598">Juodas (numatytasis)</translation>
 <translation id="2471506181342525583">Prieiga prie vietovės informacijos suteikta</translation>
 <translation id="2473195200299095979">Išversti šį puslapį</translation>
@@ -2905,6 +2904,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3090819949319990166">Nepavyko nukopijuoti išorinio CRX failo į „<ph name="TEMP_CRX_FILE" />“.</translation>
 <translation id="3090871774332213558">Įrenginys „<ph name="DEVICE_NAME" />“ susietas</translation>
 <translation id="3093714882666365141">Neleisti svetainėms įdiegti mokėjimo doroklių</translation>
+<translation id="3094080575472025333">Programų blokavimas</translation>
 <translation id="3094141017404513551">Jūsų naršymo veikla bus atskirta nuo <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Galiojimo laikas baigsis šiandien}=1{Galiojimo laikas baigsis rytoj}one{Galiojimo laikas baigsis po # dienos}few{Galiojimo laikas baigsis po # dienų}many{Galiojimo laikas baigsis po # dienos}other{Galiojimo laikas baigsis po # dienų}}</translation>
 <translation id="3094521107841754472">Kaina pakeista iš <ph name="PREVIOUS_PRICE" /> į <ph name="CURRENT_PRICE" />.</translation>
@@ -3737,6 +3737,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="372722114124766626">Tik kartą</translation>
 <translation id="3727332897090187514">Pastabų nepridėta</translation>
 <translation id="3727473233247516571">Ilgalaikis viso antrinio rėmelio saugojimas talpykloje: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727843212509629024">PIN kodas netinka. Bandykite dar kartą</translation>
 <translation id="3727850735097852673">Jei norite naudoti „Google“ slaptažodžių tvarkyklę su „macOS Keychain“, iš naujo paleiskite „Chrome“ ir leiskite pasiekti „Keychain“. Paleidus iš naujo skirtukai bus atidaryti iš naujo.</translation>
 <translation id="3728188878314831180">Rodyti telefono pranešimus</translation>
 <translation id="3728681439294129328">Konfigūruoti tinklo adresą</translation>
@@ -4856,6 +4857,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4562091353415772246">Įdiekite naujinių ir programų. Tęsdami sutinkate, kad šis įrenginys taip pat gali automatiškai atsisiųsti ir įdiegti naujinius bei programas iš „Google“, operatoriaus ir šio įrenginio gamintojo (gali būti naudojami mobiliojo ryšio duomenys). Kai kuriose iš šių programų gali būti teikiama pirkimo programoje paslauga. <ph name="BEGIN_LINK1" />Sužinokite daugiau apie automatinį „Play“ programų diegimą<ph name="BEGIN_LINK1_END" />Sužinokite daugiau<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">Pridėti piršto antspaudą</translation>
 <translation id="4562155266774382038">Atsisakyti pasiūlymo</translation>
+<translation id="4562364000855074606">Blokuokite programas, įdiegtas šiame „<ph name="DEVICE_TYPE" />“. Jei norite apriboti programų ar turinio atsisiuntimą, eikite į „Google Play“ nustatymų skiltį. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Pagrindinė įvesties kalba – kinų k.</translation>
 <translation id="4563382028841851106">Pašalinti iš paskyros</translation>
 <translation id="4563880231729913339">Trečias pirštas</translation>
@@ -5231,7 +5233,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4853020600495124913">Atidaryti &amp;naujame lange</translation>
 <translation id="4854317507773910281">Pasirinkite vieno iš tėvų paskyrą norėdami patvirtinti</translation>
 <translation id="485480310608090163">Daugiau nustatymų ir leidimų</translation>
-<translation id="4858599593306712511">Programų tėvų kontrolė</translation>
 <translation id="4858913220355269194">Šemberas</translation>
 <translation id="486213875233855629">Nutildė administratorius</translation>
 <translation id="4862642413395066333">OCSP atsakų pasirašymas</translation>
@@ -8074,6 +8075,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7009709314043432820">„<ph name="APP_NAME" />“ naudoja fotoaparatą</translation>
 <translation id="701080569351381435">Žiūrėti šaltinį</translation>
 <translation id="7011797924920577670">numato jūsų pomėgius</translation>
+<translation id="7012430956470647760">Programoms taikoma tėvų kontrolė</translation>
 <translation id="7013762323294215682">Šis prieigos raktas bus išsaugotas slaptažodžių tvarkyklėje. Visi jį galintys pasiekti asmenys galės naudoti šį prieigos raktą.</translation>
 <translation id="7014174261166285193">Nepavyko įdiegti.</translation>
 <translation id="7014480873681694324">Pašalinti paryškinimą</translation>

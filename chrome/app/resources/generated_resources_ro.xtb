@@ -2045,7 +2045,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2469259292033957819">Nu ai imprimante salvate.</translation>
 <translation id="2469375675106140201">Personalizează verificarea ortografiei</translation>
 <translation id="247051149076336810">Adresa URL a spațiului comun de stocare fișiere</translation>
-<translation id="2470702053775288986">Extensiile necompatibile au fost dezactivate</translation>
 <translation id="2471469610750100598">Negru (prestabilit)</translation>
 <translation id="2471506181342525583">Accesul la locație este permis</translation>
 <translation id="2473195200299095979">Traduceți această pagină</translation>
@@ -4839,6 +4838,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4562091353415772246">Instalează actualizări și aplicații. Dacă alegi să continui, accepți ca acest dispozitiv să descarce și să instaleze automat actualizări și aplicații de la Google, de la operatorul tău și de la producătorul dispozitivului, posibil folosind datele mobile. Unele dintre aceste aplicații pot oferi achiziții în aplicație. <ph name="BEGIN_LINK1" />Află mai multe despre opțiunea Redă instalarea automată<ph name="BEGIN_LINK1_END" />Află mai multe<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">Adaugă o amprentă</translation>
 <translation id="4562155266774382038">Respinge sugestia</translation>
+<translation id="4562364000855074606">Blochează aplicațiile instalate pe <ph name="DEVICE_TYPE" />. Pentru a restricționa descărcarea aplicațiilor sau a conținutului, accesează setările Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="4563210852471260509">Limba inițială de introducere este chineza</translation>
 <translation id="4563382028841851106">Elimină din cont</translation>
 <translation id="4563880231729913339">Deget 3</translation>
@@ -5214,7 +5214,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4853020600495124913">Deschideți într-o &amp;fereastră nouă</translation>
 <translation id="4854317507773910281">Alege contul de părinte pentru aprobare</translation>
 <translation id="485480310608090163">Mai multe setări și permisiuni</translation>
-<translation id="4858599593306712511">Control parental în aplicație</translation>
 <translation id="4858913220355269194">Jucător</translation>
 <translation id="486213875233855629">Sunet dezactivat de administrator</translation>
 <translation id="4862642413395066333">Semnarea răspunsurilor OCSP</translation>
@@ -8049,6 +8048,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7009709314043432820"><ph name="APP_NAME" /> folosește camera foto</translation>
 <translation id="701080569351381435">Afișează sursa</translation>
 <translation id="7011797924920577670">îți estimează interesele</translation>
+<translation id="7012430956470647760">Control parental pentru aplicații</translation>
 <translation id="7013762323294215682">Cheia de acces se va salva în managerul de parole. Oricine are acces la el va putea să o folosească.</translation>
 <translation id="7014174261166285193">Instalarea nu a reușit.</translation>
 <translation id="7014480873681694324">Elimină evidențierea</translation>

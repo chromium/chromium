@@ -191,6 +191,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
           <ph name="LIST_ITEM" />seu empregador ou sua escola
           <ph name="LIST_ITEM" />seu provedor de acesso à Internet
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">Monitorar item</translation>
 <translation id="1337692097987160377">Compartilhar esta guia</translation>
 <translation id="1339601241726513588">Domínio de inscrição:</translation>
 <translation id="1340482604681802745">Endereço de retirada</translation>
@@ -455,6 +456,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1812527064848182527">paisagem</translation>
 <translation id="1812975699435941848">Educação em saúde e treinamento médico</translation>
 <translation id="1816436748874040213">Pode pedir para rolar a tela e aplicar zoom em guias compartilhadas</translation>
+<translation id="1817364650920811003">Função: dica do Chrome. Rótulo de acessibilidade: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Desbloquear</translation>
 <translation id="1818585559878922121">Documentários</translation>
 <translation id="182139138257690338">downloads automáticos</translation>
@@ -1397,6 +1399,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3642638418806704195">Aplicativo:</translation>
 <translation id="3646643500201740985">Medir a performance de um anúncio</translation>
 <translation id="3647286794400715637">Cada entrada de string de URL precisa conter entre um e dois URLs.</translation>
+<translation id="3647400963805615193">Botão "Dispensar dica do Chrome", pressione Enter para dispensar, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Validação bem-sucedida</translation>
 <translation id="3650594806107685466">Por questões de segurança, insira o CVC que fica na <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Caminhadas e acampamento</translation>
@@ -2611,6 +2614,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6035491133925068289">Atletismo</translation>
 <translation id="6039846035001940113">Se o problema continuar, entre em contato com o proprietário do site.</translation>
 <translation id="6040143037577758943">Fechar</translation>
+<translation id="6040539895181423374">Informações de preço</translation>
 <translation id="604124094241169006">Automático</translation>
 <translation id="6041777658117377052">Temperatura da câmara</translation>
 <translation id="6042308850641462728">Mais</translation>
@@ -3368,6 +3372,7 @@ Mais detalhes:
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7481603210197454575">Envelope italiano</translation>
 <translation id="7483482939016730822">Material escolar e equipamento para salas de aula</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />. Pressione Tab e Enter para dispensar a dica do Chrome.</translation>
 <translation id="7485085230273446323">Comércio e indústria</translation>
 <translation id="7485870689360869515">Nenhum dado encontrado</translation>
 <translation id="7489392576326061356">Shampoos e condicionadores</translation>

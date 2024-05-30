@@ -131,6 +131,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1420408895951708260">Ativar/desativar Luz noturna. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1435537621343861112">Não é possível iniciar o ditado. O microfone está desligado.</translation>
+<translation id="1447907279406111651">Agora · Termina à(s) <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">As zonas Wi-Fi do seu dispositivo</translation>
 <translation id="1455242230282523554">Mostrar definições de idioma</translation>
 <translation id="1460620680449458626">O volume está desativado.</translation>
@@ -481,6 +482,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2894949423239620203">O cabo pode afetar o desempenho</translation>
 <translation id="2914580577416829331">Capturas de ecrã</translation>
 <translation id="2924416280450782352">Não é possível mostrar os itens. Experimente reabrir este painel.</translation>
+<translation id="292506373491190801">Do evento a decorrer agora</translation>
 <translation id="2931572158271115754">Nada nesta lista de tarefas.</translation>
 <translation id="2932487126591186298">10 minutos adicionados. Falta(m) <ph name="REMAINING_TIME" />.</translation>
 <translation id="2935225303485967257">Gerir perfis</translation>
@@ -767,6 +769,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="3950272133184491871">Terminar sessão agora?</translation>
 <translation id="3950820424414687140">Iniciar sessão</translation>
 <translation id="3953130726459169782">Ainda não existem trabalhos concluídos.</translation>
+<translation id="3958714870339660776">Todo o dia</translation>
 <translation id="3962859241508114581">Faixa anterior</translation>
 <translation id="3969043077941541451">Desativado</translation>
 <translation id="3970324493235864154">Veja as notificações do telemóvel</translation>
@@ -863,6 +866,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4302592941791324970">Não disponível</translation>
 <translation id="4303223480529385476">Expandir área de estado</translation>
 <translation id="4305133312001648038">Repor o nível de zoom na página</translation>
+<translation id="4305817255990598646">Mudar</translation>
 <translation id="4307713728991152670">Configurar visualização das fotos, dos conteúdos multimédia e das apps recentes do telemóvel</translation>
 <translation id="4312840429157639164">Câmara ajustada ao canto superior direito. Há um conflito com a superfície do sistema.</translation>
 <translation id="4316910396681052118">TODAS AS APLICAÇÕES</translation>
@@ -1219,6 +1223,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5599242528220103262">O atalho de teclado está desativado</translation>
 <translation id="5600415762228455511">O Modo sem distrações está ativado, falta(m) <ph name="REMAINING_TIME" />, com foco em: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Prima Ctrl + Alt + Z para desativar os feedback de voz.</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{Há menos de 1 hora}=1{Há 1 hora}other{Há # horas}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Mudámos a sua ligação para uma rede melhor</translation>
 <translation id="5619862035903135339">A política do administrador desativa a captura de ecrã.</translation>
@@ -1395,6 +1400,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6228457605945141550">Diminuir o brilho</translation>
 <translation id="623116199192908855">Transmitir o ecrã a partir do seu Chromebook</translation>
 <translation id="6231419273573514727">O desempenho do periférico pode estar limitado</translation>
+<translation id="6232416233079464213">Do <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217">A app <ph name="APP_NAME" /> está a usar a câmara e o microfone neste momento</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Bateria fraca. Poupança de bateria ativada,</translation>
@@ -1797,6 +1803,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="780301667611848630">Não, obrigado</translation>
 <translation id="7807067443225230855">Pesquisa e Assistente</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">De um evento de calendário futuro</translation>
 <translation id="7829386189513694949">Sinal forte</translation>
 <translation id="7830453190047749513">Pode personalizar as ações dos botões, a velocidade do cursor e muito mais para o seu <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Acabou o tempo</translation>
@@ -2114,6 +2121,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="899350903320462459">Desbloqueie o dispositivo como <ph name="LOGIN_ID" /> para realizar a ação de notificação.</translation>
 <translation id="8993733019280019776">Está a falar? O microfone está desativado. Selecione o microfone para o ativar.</translation>
 <translation id="9000771174482730261">GERIR ARMAZENAMENTO</translation>
+<translation id="9002204506712855687">Explore as funcionalidades mais recentes</translation>
 <translation id="9005984960510803406">Abrir a janela do Crosh</translation>
 <translation id="9017320285115481645">Introduza o código de acesso parental do Family Link.</translation>
 <translation id="9022774213089566801">Visitados frequentemente</translation>
@@ -2145,6 +2153,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="9098969848082897657">Silenciar telemóvel</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ou <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Anular a última ação</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{Dentro de 1 min}other{Dentro de # min}}</translation>
 <translation id="9129245940793250979">Botão traseiro</translation>
 <translation id="9133335900048457298">Não é possível gravar conteúdo protegido</translation>
 <translation id="9139720510312328767">Eliminar a letra seguinte</translation>
@@ -2157,6 +2166,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="9183456764293710005">Lupa de ecrã inteiro</translation>
 <translation id="9193626018745640770">A transmitir para um recetor desconhecido…</translation>
 <translation id="9194617393863864469">Iniciar sessão com outro utilizador...</translation>
+<translation id="9195990613383871904">Amanhã</translation>
 <translation id="9198992156681343238">Resolução de <ph name="DISPLAY_NAME" /> alterada para <ph name="RESOLUTION" />. Clique em confirmar para manter as alterações. As definições anteriores serão restauradas dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Ligue o dispositivo <ph name="NAME" /> a este Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, gerida pelo administrador</translation>

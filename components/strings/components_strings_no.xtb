@@ -456,6 +456,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1812527064848182527">liggende</translation>
 <translation id="1812975699435941848">Helseutdanning og medisinsk opplæring</translation>
 <translation id="1816436748874040213">Kan be om å få rulle og zoome på delte faner</translation>
+<translation id="1817364650920811003">Rolle: Chrome-tips. Tilgjengelighetsetikett: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Opphev blokkering</translation>
 <translation id="1818585559878922121">Dokumentarfilmer</translation>
 <translation id="182139138257690338">automatiske nedlastinger</translation>
@@ -1398,6 +1399,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3642638418806704195">Program:</translation>
 <translation id="3646643500201740985">Måling av annonseresultater</translation>
 <translation id="3647286794400715637">Hver nettadresse-strengoppføring må inneholde 1–2 nettadresser.</translation>
+<translation id="3647400963805615193">Knappen «Lukk Chrome-tipset» – trykk på Enter for å lukke, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Valideringen var vellykket</translation>
 <translation id="3650594806107685466">For å beskytte kortet ditt skriver du inn verifiseringskoden på <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Fotturer og camping</translation>
@@ -3369,6 +3371,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7481312909269577407">Frem</translation>
 <translation id="7481603210197454575">Italiensk konvolutt</translation>
 <translation id="7483482939016730822">Skolerekvisita</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" /> – trykk på Tab og deretter på Enter for å lukke Chrome-tipset.</translation>
 <translation id="7485085230273446323">Forretning og industri</translation>
 <translation id="7485870689360869515">Ingen data ble funnet.</translation>
 <translation id="7489392576326061356">Sjampo og balsam</translation>

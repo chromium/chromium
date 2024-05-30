@@ -598,6 +598,7 @@ el cambio de contraseña, pero también puede aplicarse de manera forzosa con ci
 
       Las impresoras locales, también conocidas como destinos nativos de impresión, incluyen los destinos disponibles en la máquina local y las impresoras de redes compartidas.</translation>
 <translation id="1456822151187621582">Windows (clientes de <ph name="PRODUCT_OS_NAME" />):</translation>
+<translation id="1459693405370120464">Clima</translation>
 <translation id="1464848559468748897">Controla el comportamiento del usuario durante una sesión de perfiles múltiples en dispositivos con <ph name="PRODUCT_OS_NAME" />.
 
       Si esta política se establece en "MultiProfileUserBehaviorUnrestricted", el usuario puede ser primario o secundario durante una sesión de perfiles múltiples.
@@ -7050,6 +7051,7 @@ Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> utiliza el director
 <translation id="6410847321564585975">Lista de entidades permitidas para informes de actividad de sitios web</translation>
 <translation id="6412352702230183710">Permitir solo hosts de mensajería nativa a nivel del sistema</translation>
 <translation id="6416506846917150119">Inhabilitar la escritura predictiva en el teclado físico cuando los usuarios escriben</translation>
+<translation id="6416916931494972926">Habilitar los informes de telemetría de Kiosk Vision.</translation>
 <translation id="6417265370957905582">Asistente de Google</translation>
 <translation id="6419001911253110938">Habilitar que se muestre la pantalla de presentación de las funciones basadas en IA en la sesión durante el flujo de acceso</translation>
 <translation id="6421254653839955267">Si habilitas la política, se omitirá la búsqueda de CNAME. Se usará el nombre del servidor tal como se haya introducido al generar el SPN de Kerberos.
@@ -7208,6 +7210,7 @@ podrán usar solo la URL de redireccionamiento estándar cuando usen la API de <
 <translation id="6506486086262398387">Si habilitas la política, la función Network File Shares para <ph name="PRODUCT_OS_NAME" /> utilizará el protocolo NTLM para autenticar archivos compartidos SMB en caso de ser necesario. Si inhabilitas la política, se desactivará la autenticación de archivos compartidos SMB mediante NTLM.
 
       Si no la estableces, de forma predeterminada se desactivará para los usuarios administrados y se activará para los demás usuarios.</translation>
+<translation id="6508882314969525299">Inhabilitar los informes de telemetría de Kiosk Vision.</translation>
 <translation id="6509376413448002446">Configura el protector de pantalla del usuario para la pantalla de bloqueo.
 
 Si estableces esta política como verdadera, el dispositivo <ph name="PRODUCT_OS_NAME" /> mostrará un protector de pantalla en la pantalla de bloqueo cuando esté inactivo.
@@ -9948,6 +9951,9 @@ Si no la estableces, los usuarios no podrán jugar al juego en el <ph name="PROD
       Si se establece la política como verdadera, es posible que las pestañas que hayan estado en segundo plano por al menos 5 minutos queden inmovilizadas. Cuando se inmovilizan las pestañas, se reduce el uso de la CPU, la batería y la memoria. <ph name="PRODUCT_NAME" /> utiliza heurísticas para evitar que se inmovilicen las pestañas que realizan tareas útiles en segundo plano (p. ej., muestran notificaciones de pantalla, reproducen sonidos o transmiten video). Los desarrolladores web también pueden inhabilitar la inmovilización en sus sitios (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Si se establece la política como falsa, no se inmovilizará ninguna pestaña.</translation>
+<translation id="8607613052618540095">Si habilitas la política, se habilitarán los informes de telemetría de Kiosk Vision.
+Se iniciará el framework de Kiosk Vision y se habilitarán los informes de telemetría del público.
+Si no estableces esta política o la inhabilitas, se inhabilitarán los informes de telemetría de Kiosk Vision.</translation>
 <translation id="8610216287193516769">Se quitó en la versión M122. Esta es una política solo del servidor que nunca usó la infraestructura de la política de ChromeOS para su propagación.
 Si estableces esta política con el valor <ph name="POLICY_VALUE_ALL" /> o no la estableces, se permitirán todos los usos de cuentas administradas. De esta manera, es posible que una cuenta administrada se utilice como secundaria, por lo que solo recibiría políticas si se accede a ella como cuenta principal en un perfil de navegador.
       Las políticas establecidas para la cuenta no se aplicarán de manera forzosa en los siguientes casos:

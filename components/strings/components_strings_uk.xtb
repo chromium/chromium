@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />роботодавець або керівник закладу освіти
           <ph name="LIST_ITEM" />постачальник послуг Інтернету
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">Відстежувати цей товар</translation>
 <translation id="1337692097987160377">Поділитися цією вкладкою</translation>
 <translation id="1339601241726513588">Домен реєстрації:</translation>
 <translation id="1340482604681802745">Адреса отримання</translation>
@@ -2611,6 +2612,7 @@
 <translation id="6035491133925068289">Легка атлетика</translation>
 <translation id="6039846035001940113">Якщо проблема не зникла, зв’яжіться з власником сайту.</translation>
 <translation id="6040143037577758943">Закрити</translation>
+<translation id="6040539895181423374">Відомості про ціни</translation>
 <translation id="604124094241169006">Автоматично</translation>
 <translation id="6041777658117377052">Температура камери</translation>
 <translation id="6042308850641462728">Більше</translation>

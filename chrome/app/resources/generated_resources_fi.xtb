@@ -2056,7 +2056,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2469259292033957819">Sinulla ei ole tallennettuja tulostimia.</translation>
 <translation id="2469375675106140201">Muokkaa oikeinkirjoituksen tarkistusta</translation>
 <translation id="247051149076336810">Tiedostonjaon URL-osoite</translation>
-<translation id="2470702053775288986">Ei-tuetut laajennukset poistettu käytöstä</translation>
 <translation id="2471469610750100598">Musta (oletus)</translation>
 <translation id="2471506181342525583">Sijainnin käyttöoikeus sallittu</translation>
 <translation id="2473195200299095979">Käännä tämä sivu</translation>
@@ -4848,6 +4847,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4562091353415772246">Asenna ja päivitä sovelluksia. Jatkamalla hyväksyt, että laite voi automaattisesti ladata ja asentaa Googlen, operaattorisi tai laitevalmistajan päivityksiä ja sovelluksia, mahdollisesti mobiilidatayhteyden välityksellä. Jotkin näistä sovelluksista tarjoavat sovelluksen sisäisiä ostoksia. <ph name="BEGIN_LINK1" />Lue lisää Playn automaattisesta asennuksesta<ph name="BEGIN_LINK1_END" />Lue lisää<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">Lisää sormenjälki</translation>
 <translation id="4562155266774382038">Hylkää ehdotus</translation>
+<translation id="4562364000855074606">Estä laitteelle (<ph name="DEVICE_TYPE" />) asennetut sovellukset. Voit rajoittaa sovellusten tai sisällön lataamista Google Playn asetuksissa. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Alkuperäinen syöttökieli on kiina</translation>
 <translation id="4563382028841851106">Poista tililtä</translation>
 <translation id="4563880231729913339">Sormi 3</translation>
@@ -5223,7 +5223,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4853020600495124913">Avaa uudessa ikkunassa</translation>
 <translation id="4854317507773910281">Valitse vanhemman tili hyväksymistä varten</translation>
 <translation id="485480310608090163">Lisää asetuksia ja käyttöoikeuksia</translation>
-<translation id="4858599593306712511">Sovelluksen lapsilukko</translation>
 <translation id="4858913220355269194">Litti</translation>
 <translation id="486213875233855629">Järjestelmänvalvojan mykistämä</translation>
 <translation id="4862642413395066333">OCSP-vastauksien allekirjoittaminen</translation>
@@ -8057,6 +8056,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7009709314043432820"><ph name="APP_NAME" /> käyttää kameraa.</translation>
 <translation id="701080569351381435">Näytä lähdekoodi</translation>
 <translation id="7011797924920577670">päättelee kiinnostuksen kohteitasi</translation>
+<translation id="7012430956470647760">Sovellusten lapsilukko</translation>
 <translation id="7013762323294215682">Avainkoodi tallennetaan salasanoihin. Avainkoodia voi käyttää kuka tahansa, jolla on pääsy siihen.</translation>
 <translation id="7014174261166285193">Asennus epäonnistui.</translation>
 <translation id="7014480873681694324">Poista korostus</translation>

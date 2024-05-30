@@ -803,6 +803,7 @@ Bu politika ayarlanmadan bırakılırsa kullanıcıların, engellenebilir karma 
 <translation id="1635748761015837179">Harici depolama cihazlarına yazmaya izin ver</translation>
 <translation id="1639468541408865385">Genel kapsamlı HTTP kimlik doğrulama önbelleğini etkinleştir</translation>
 <translation id="1639673466479276550">Giriş ekranında ekran koruyucuyu etkinleştir.</translation>
+<translation id="1640447222731279244">ChromeOS Wallpaper "Create with AI" özelliğinin etkinleştirilmesini kontrol et</translation>
 <translation id="1640824698339859203">Kayan TOA'yı etkinleştir ve kullanıcının web hizmeti kimlik doğrulamalarını yeni cihaza taşı</translation>
 <translation id="1641117061932613266"><ph name="PRODUCT_NAME" /> V2 hizmetini etkinleştir</translation>
 <translation id="1641394008743444477">Devre dışı bırakılacak <ph name="PRODUCT_OS_NAME" /> özelliklerini belirlemenize izin verir.
@@ -856,6 +857,12 @@ Politika veya kullanıcı ayarları tarafından belirtilmeyen kaynakların bu AP
 
 Politika, Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa hiçbir etkinliği yakalanmaz.</translation>
 <translation id="1692990221685273468">Yerleşik sertifika doğrulayıcının, platform güven deposundan yüklenen güven bağlantıları için kodlanmış kısıtlamalar uygulayıp uygulamayacağını belirler.</translation>
+<translation id="1693528798631913178">Bu politika, ChromeOS için VC Background "Create with AI" özelliğini etkinleştirir veya devre dışı bırakır.
+0 = Özelliği kullanıcılar için devre dışı bırakır.
+
+1 = Özelliği kullanıcılar için etkinleştirir. Yapay zeka modellerini eğitmek veya geliştirmek için Google'a veri gönderilmediğini unutmayın.
+
+Bu politika, Ayarlanmadı olarak tanımlanırsa VC Background "Create with AI" özelliği kurumsal kullanıcılar için devre dışı bırakılır.</translation>
 <translation id="169467210981344373">Genel kapsamlı HTTP kimlik doğrulama önbelleğini devre dışı bırak</translation>
 <translation id="1696501581280568361">Profil ayırmayı önerir</translation>
 <translation id="1698810555265314018"><ph name="PRODUCT_NAME" />, pikselleştirme ile PDF yazdırdığında yazdırılan resmin çözünürlüğünü kontrol eder.
@@ -1757,6 +1764,7 @@ Kullanıcının daha önce oluşturduğu bir kısayolla çakışma olması durum
 <translation id="2326031114717677574">Ağ verilerinin örneklenme ve toplanma hızı. İzin verilen minimum sıklık 1 dakikadır.
 
       Ayarlamazsa 15 dakikalık varsayılan süre geçerli olur.</translation>
+<translation id="2331028134545182024">ChromeOS VC Background "Create with AI" özelliğinin etkinleştirilmesini kontrol et</translation>
 <translation id="2333228572393176330">Bu politika, TLS 1.3'te yer alan ve düşürme saldırılarına karşı bağlantıları koruyan bir güvenlik özelliğini kontrol eder. Geriye dönük olarak uyumludur ve uyumlu TLS 1.2 sunucuları veya proxyleri ile kurulan bağlantıları etkilemez. Ancak TLS'ye müdahale eden bazı eski proxy sürümlerinde uyumsuz olmalarına yol açan bir uygulama hatası söz konusudur.
 
       Bu politika True (Doğru) değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> bu güvenlik korumalarını tüm bağlantılar için etkinleştirir.
@@ -4949,6 +4957,17 @@ Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" />, <ph name="DBSC_FEATURE_NAME
       - Bu politika <ph name="SKIP_TOS_DIALOG" /> ise tarayıcının işlevi sınırlı olur.
 
       - Bu politika <ph name="SKIP_TOS_DIALOG" /> ise yöneticiler bunu cihazın son kullanıcılarına belirtmelidir.</translation>
+<translation id="489760181463331251">Bu politika, Bellek Tasarrufu'nun tasarruf düzeyini değiştirir.
+
+Bu politika yalnızca Bellek Tasarrufu, ayarlardan veya <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" /> politikası aracılığıyla etkinleştirildiğinde geçerli olur ve sekmelerin ne zaman silineceğini belirlemek için buluşsal yöntemlerin kullanılma biçimini etkiler. Örneğin, etkin olmayan bir sekmeyi silmeden önce ömrünü kısaltmak bellek tasarrufu sağlayabilir ancak sekmelerin daha sık yeniden yükleneceği anlamına da gelir. Bu da kötü bir kullanıcı deneyimine ve daha fazla ağ trafiğine neden olabilir.
+
+Politikayı 0 - Bellek Tasarrufu değerine ayarlamak orta düzeyde bellek tasarrufu sağlar. Sekmeler daha uzun süre sonra devre dışı kalır.
+
+Politikayı 1 - Bellek Tasarrufu değerine ayarlamak dengeli bellek tasarrufu sağlar. Sekmeler ideal süre sonunda devre dışı kalır.
+
+Politikayı 2 - Bellek Tasarrufu değerine ayarlamak maksimum bellek tasarrufu sağlar. Sekmeler daha kısa süre sonra devre dışı kalır.
+
+Bu politika ayarlanmazsa son kullanıcı bu ayarı chrome://settings/performance bölümünden kontrol edebilir.</translation>
 <translation id="489803897780524242">Varsayılan arama sağlayıcısı için arama terimi yerleştirmeyi kontrol eden parametre</translation>
 <translation id="4899708173828500852">Güvenli Taramayı etkinleştir</translation>
 <translation id="4906194810004762807">Aygıt Politikası için yenileme hızı</translation>
@@ -5307,6 +5326,12 @@ Bu politika ayarlanmazsa veya listede geçerli bir resim referansı yoksa <ph na
       Bu politika ayarlanmazsa varsayılan süre olan 604800000 milisaniye (bir hafta) kullanılır.</translation>
 <translation id="5212810195096589189">Sanal makine KSA izinlerini belirleme</translation>
 <translation id="5213038356678567351">Hiçbir zaman başka bir tarayıcıya geçişi tetiklememesi gereken web siteleri.</translation>
+<translation id="5215621993623612880">Bu politika, ChromeOS için Wallpaper "Create with AI" özelliğini etkinleştirir veya devre dışı bırakır.
+0 = Özelliği kullanıcılar için devre dışı bırakır.
+
+1 = Özelliği kullanıcılar için etkinleştirir. Yapay zeka modellerini eğitmek veya geliştirmek için Google'a veri gönderilmediğini unutmayın.
+
+Bu politika, Ayarlanmadı olarak tanımlanırsa Wallpaper "Create with AI" özelliği kurumsal kullanıcılar için devre dışı bırakılır.</translation>
 <translation id="5216815237712190041">Henüz cihazda oturum açmış kullanıcı yoksa giriş ekranında gösterilecek cihaz düzeyinde duvar kağıdı resmini yapılandırın. Politikayı ayarlamak için ChromeOS cihazın, duvar kağıdı resmini hangi URL'den indireceği ve indirme işleminin bütünlüğünü doğrulamak için kullanılacak şifreleme karması belirtilmelidir. Resim JPEG biçiminde olmalı, dosya boyutu 16 MB'tan fazla olmamalıdır. URL'ye kimlik doğrulaması yapmadan erişilebilmelidir. Duvar kağıdı resmi indirilir ve önbelleğe alınır. URL veya karma her değiştiğinde bu tekrar indirilir.
 
       Cihaz duvar kağıdı politikası ayarlanırsa ChromeOS cihaz, duvar kağıdı resmini indirir ve cihazda henüz hiçbir kullanıcı oturum açmamışken giriş ekranında bu resmi kullanır. Kullanıcı giriş yaptıktan sonra, kullanıcının duvar kağıdı politikası devreye girer.
@@ -6883,6 +6908,7 @@ Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_OS_NAME" />, ekran görü
       Bu şekilde aynı GAIA hesabıyla oturum açmış diğer ChromeOS (ve Android) cihazlar otomatik olarak eşlenebilir.
       Politik ayarlanmazsa kurumsal kullanıcılar için varsayılan değer devre dışı iken yönetilmeyen
       hesapların varsayılan değeri etkin olur.</translation>
+<translation id="6400959027108936283">Özelliği etkinleştir</translation>
 <translation id="6401669939808766804">Kullanıcının oturumunu kapat</translation>
 <translation id="640244877779556713">Emoji Önerilerini Etkinleştir</translation>
 <translation id="6403114173011456561"><ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> politikasının ek politikası işlevi görerek dokunmatik sanal klavyeyi kontrol eder.
@@ -7233,6 +7259,7 @@ Politikada yapılacak değişiklikler yalnızca ARC çalışmıyorken (ör. Chro
 
       Not: Bu politikayı, <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" /> politikası ile birlikte kullanın.</translation>
 <translation id="6625136649067113817">Dokunmatik klavyede yazım denetimi özelliği sunulup sunulamayacağını gösteren bir boole flag'i.</translation>
+<translation id="6626319579493977784">Dinamik Kod Ayarları</translation>
 <translation id="66265932317331474">CPU bilgisi raporlama</translation>
 <translation id="6628120204569232711">Depolama durumunu bildir</translation>
 <translation id="662991036483361836">Kullanıcıların Yakındakilerle Paylaş ayarını etkinleştirmesini engelle</translation>
@@ -8233,6 +8260,7 @@ Bu politika, kullanımdan kaldırılan <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_UR
       Politika, Devre Dışı olarak ayarlanır veya ayarlanmadan bırakılırsa kayıtlı cihazlar TPM güvenlik durumunu kaydetmez veya bildirmez.
       İstisna: M95 ve önceki sürümlerde TPM bilgileri <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> tarafından kontrol edilir.</translation>
 <translation id="739556497251174388">Ağ kimlik doğrulaması için <ph name="PRODUCT_OS_NAME" /> giriş kimlik bilgilerinin yeniden kullanılmasına izin ver</translation>
+<translation id="7402257017733669351">Tarayıcı işleminin dinamik kod oluşturmasını engelle</translation>
 <translation id="7402772023599097052">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa, Chrome'u başlatmak için tehlikeli olabilecek komut satırı işaretleri kullanıldığında güvenlik uyarıları gösterilir.
 
 Politika, Devre dışı değerine ayarlanırsa, Chrome tehlikeli olabilecek komut satırı işaretleriyle başlatıldığında güvenlik uyarılarının gösterilmesini engeller.
@@ -9547,6 +9575,7 @@ kısayolları yapılandırmasına olanak tanır.</translation>
 <translation id="8429593528367808164">Kullanıcılar yazarken fiziksel klavyede tahmine dayalı yazma özelliğini etkinleştir</translation>
 <translation id="8433186206711564395">Ağ ayarları</translation>
 <translation id="8433769814000220721">Önerilen İçeriği Etkinleştir</translation>
+<translation id="8435304381855818385">Varsayılan dinamik kod ayarları</translation>
 <translation id="843609873781525167">Politikayı True (Doğru) değerine ayarlamak, <ph name="PRODUCT_NAME" /> ürününün her zaman başlangıçta varsayılan tarayıcı olup olmadığını denetlemesini ve mümkünse kendini otomatik olarak kaydetmesini sağlar. Politikayı False (Yanlış) değerine ayarlamak, <ph name="PRODUCT_NAME" /> ürününün varsayılan olup olmadığını kontrol etmesini durdurup bu seçenek için kullanıcı denetimlerini kapatır.
 
       Politikanının ayarlanmadan bırakılması, <ph name="PRODUCT_NAME" /> ürününün varsayılan olup olmadığını ve varsayılan değilse kullanıcı bildirimlerinin gösterilip gösterilmeyeceğini kullanıcının denetlemesine izin verdiği anlamına gelir.

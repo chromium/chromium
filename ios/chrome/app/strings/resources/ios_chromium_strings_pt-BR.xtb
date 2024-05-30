@@ -75,6 +75,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="2942241131342758843">Use o Chromium como padrão para abrir links, pesquisar em widgets e preencher senhas automaticamente em outros apps</translation>
 <translation id="2977470724722393594">O Chromium está atualizado</translation>
 <translation id="3044857325852340337">Dados do Chromium excluídos</translation>
+<translation id="3049211156275642309">Terminar a configuração do Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{O Chromium pode ajudar você a rastrear o pacote na página "Nova guia".}one{O Chromium pode ajudar você a rastrear o pacote na página "Nova guia".}other{O Chromium pode ajudar você a rastrear os pacotes na página "Nova guia".}}</translation>
 <translation id="3102849287235003384">Para sair da sua Conta do Google em todos os sites, <ph name="BEGIN_LINK" />saia do Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Pesquisar com voz no Chromium</translation>
@@ -273,6 +274,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="8754966941001340678">O Chromium recomenda a proteção reforçada</translation>
 <translation id="8759037115129007407">O membro da sua família não pode receber senhas no momento. Peça para essa pessoa atualizar o Chromium e sincronizar as senhas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">A conta e os dados não salvos serão removidos do Chromium.</translation>
+<translation id="8826789549860004832">Continue a configuração do navegador para aproveitar o Chromium ao máximo.</translation>
 <translation id="88376265765385899">Abre os favoritos do Chromium.</translation>
 <translation id="8860548555286245440">Abrir URLs na navegação anônima do Chromium</translation>
 <translation id="8866191443434488382">O Chromium vai detectar números de rastreamento nos sites que você visitar e mostrar atualizações de pacotes na página "Nova guia". O número de rastreamento do pacote e o nome do site serão enviados ao Chromium para fornecer esse recurso e melhorar os recursos de compras para todos. É possível atualizar essa opção a qualquer momento nas <ph name="BEGIN_LINK" />Configurações de rastreamento de pacote<ph name="END_LINK" />.</translation>

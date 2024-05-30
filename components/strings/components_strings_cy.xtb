@@ -456,6 +456,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1812527064848182527">llorweddol</translation>
 <translation id="1812975699435941848">Addysg Iechyd a Hyfforddiant Meddygol</translation>
 <translation id="1816436748874040213">Yn gallu gofyn i sgrolio a chwyddo tabiau a rennir</translation>
+<translation id="1817364650920811003">Rôl: Awgrym Chrome. Label hygyrchedd: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Dadrwystro</translation>
 <translation id="1818585559878922121">Ffilmiau Dogfen</translation>
 <translation id="182139138257690338">lawrlwythiadau awtomatig</translation>
@@ -1398,6 +1399,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3642638418806704195">Rhaglen:</translation>
 <translation id="3646643500201740985">Mesur pa mor dda y mae hysbyseb yn perfformio</translation>
 <translation id="3647286794400715637">Rhaid i bob cofnod llinyn cyfeiriadau URL gynnwys rhwng 1 a 2 gyfeiriad URL.</translation>
+<translation id="3647400963805615193">Botwm Diystyru Awgrym Chrome, pwyswch Enter i ddiystyru, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Wedi dilysu'n llwyddiannus</translation>
 <translation id="3650594806107685466">I helpu i gadw'ch cerdyn yn ddiogel, rhowch eich CVC sydd ar <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Heicio a Gwersylla</translation>
@@ -3370,6 +3372,7 @@ Manylion ychwanegol:
 <translation id="7481312909269577407">Ymlaen</translation>
 <translation id="7481603210197454575">Amlen Italian</translation>
 <translation id="7483482939016730822">Cyflenwadau Ysgol ac Offer Dosbarth</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, pwyswch Tab yna Enter i Ddiystyru Awgrym Chrome.</translation>
 <translation id="7485085230273446323">Busnes a Diwydiannol</translation>
 <translation id="7485870689360869515">Ni chanfuwyd unrhyw ddata.</translation>
 <translation id="7489392576326061356">Siampŵ a Chyflyrydd</translation>

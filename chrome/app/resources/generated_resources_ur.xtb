@@ -2046,7 +2046,6 @@
 <translation id="2469259292033957819">آپ کے پاس محفوظ کردہ کوئی پرنٹر نہیں ہے۔</translation>
 <translation id="2469375675106140201">املا کی جانچ کو حسب ضرورت بنائیں</translation>
 <translation id="247051149076336810">‏فائل کے اشتراک کا URL</translation>
-<translation id="2470702053775288986">غیر تعاون یافتہ ایکسٹینشنز کو غیر فعال کر دیا گیا</translation>
 <translation id="2471469610750100598">سیاہ (ڈیفالٹ)</translation>
 <translation id="2471506181342525583">مقام تک رسائی کی اجازت ہے</translation>
 <translation id="2473195200299095979">اس صفحہ کا ترجمہ کریں</translation>
@@ -2312,7 +2311,7 @@
 <translation id="2667144577800272420">دیگر ایپس کو <ph name="APP_NAME" /> کی طرح لنکس کو کھولنے کے لیے سیٹ کیا گیا ہے۔ یہ <ph name="APP_NAME_2" /> <ph name="APP_NAME_3" /> تعاون یافتہ لنکس کھولنے سے غیر فعال کر دیں گی۔</translation>
 <translation id="2667463864537187133">املا کی جانچ کا نظم کریں</translation>
 <translation id="2668094785979141847">‏‫Google لینز سے باہر نکلنے کے لیے کلک کریں</translation>
-<translation id="2668604389652548400">‏<ph name="BEGIN_LINK" />Chrome ویب اسٹور<ph name="END_LINK" /> سے ملتے جلتے ایکسٹینشنز کے ساتھ اسے ہٹائیں یا تبدیل کریں</translation>
+<translation id="2668604389652548400">‏<ph name="BEGIN_LINK" />‫Chrome ویب اسٹور<ph name="END_LINK" /> سے ملتی جلتی ایکسٹینشنز کے ساتھ اسے ہٹائیں یا تبدیل کریں</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> کھولی نہیں جا سکی</translation>
 <translation id="2669454659051515572">اس آلے کا استعمال کرنے والا کوئی بھی شخص ڈاؤن لوڈ کردہ فائلز کو دیکھ سکتا ہے</translation>
 <translation id="2670102641511624474">‏<ph name="APP_NAME" /> ایک Chrome ٹیب کا اشتراک کر رہی ہے۔</translation>
@@ -4839,6 +4838,7 @@
 <translation id="4562091353415772246">‏اپ ڈیٹس اور ایپس انسٹال کریں۔ جاری رکھ کر، آپ اتفاق کرتے ہیں کہ یہ آلہ ممکنہ طور پر سیلولر ڈیٹا استعمال کر کے Google، آپ کے کیریئر، اور آپ کے آلے کے مینوفیکچرر سے اپ ڈیٹس اور ایپس خودکار طور پر ڈاؤن لوڈ اور انسٹال بھی کر سکتا ہے۔ ان میں سے کچھ ایپس درون ایپ خریداریوں کی پیشکش کر سکتی ہیں۔ <ph name="BEGIN_LINK1" />Play آٹو انسٹال کے بارے میں مزید جانیں<ph name="BEGIN_LINK1_END" />مزید جانیں<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">فنگر پرنٹ شامل کریں</translation>
 <translation id="4562155266774382038">تجویز برخاست کریں</translation>
+<translation id="4562364000855074606">‏اس <ph name="DEVICE_TYPE" /> پر انسٹال کردہ ایپس کو مسدود کریں۔ ایپس یا مواد کو ڈاؤن لوڈ کرنے پر پابندی لگانے کے لیے، Google Play کی ترتیبات پر جائیں۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">ان پٹ کی ابتدائی زبان چینی ہے</translation>
 <translation id="4563382028841851106">اکاؤنٹ سے ہٹائیں</translation>
 <translation id="4563880231729913339">انگلی 3</translation>
@@ -4982,7 +4982,7 @@
 <translation id="4666911709726371538">مزید ایپس</translation>
 <translation id="4668279686271488041">اشتہار کی اثرپذیری کی پیمائش ڈیٹا آپ کے آلے سے باقاعدگی سے ہو جاتا ہے</translation>
 <translation id="4668929960204016307">،</translation>
-<translation id="4668936527507421457">‏‫PIN کو صرف نمبر استعمال کرنا چاہیے</translation>
+<translation id="4668936527507421457">‏‫PIN میں صرف نمبرز ہونے چاہئیں</translation>
 <translation id="4670909875730475086">مبارک ہو! <ph name="APP_NAME" /> کامیابی کے ساتھ آپ کے آلے پر انسٹال ہو گئی ہے</translation>
 <translation id="4672759829555593783"><ph name="FILE_NAME" /> ابھی کھولیں</translation>
 <translation id="4673442866648850031">اسٹائلس کو ہٹانے کے وقت اسٹائلس ٹولز کھولیں</translation>
@@ -5214,7 +5214,6 @@
 <translation id="4853020600495124913">&amp;نئی ونڈو میں کھولیں</translation>
 <translation id="4854317507773910281">منظوری کے لیے والد/والدہ کا اکاؤنٹ منتخب کریں</translation>
 <translation id="485480310608090163">مزید ترتیبات اور اجازتیں</translation>
-<translation id="4858599593306712511">ایپ کے پیرنٹل کنٹرولز</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">آپ کے منتظم نے خاموش کر دیا</translation>
 <translation id="4862642413395066333">‏سائننگ OCSP جوابات</translation>
@@ -8046,6 +8045,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> ایپ آپ کا کیمرا استعمال کر رہی ہے</translation>
 <translation id="701080569351381435">ماخذ دیکھیں</translation>
 <translation id="7011797924920577670">آپ کی دلچسپیوں کا اندازہ لگاتا ہے</translation>
+<translation id="7012430956470647760">ایپس کے لیے پیرنٹل کنٹرولز</translation>
 <translation id="7013762323294215682">یہ پاس کی آپ کے پاس ورڈ مینیجر میں محفوظ ہو جائے گی۔ اس تک رسائی کا حامل کوئی بھی شخص اس پاس کی کو استعمال کر سکے گا۔</translation>
 <translation id="7014174261166285193">انسٹالیشن ناکام ہو گیا۔</translation>
 <translation id="7014480873681694324">ہائی لائٹ کو ہٹائیں</translation>

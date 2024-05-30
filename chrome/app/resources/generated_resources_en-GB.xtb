@@ -2057,7 +2057,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2469259292033957819">You have no saved printers.</translation>
 <translation id="2469375675106140201">Customise spell check</translation>
 <translation id="247051149076336810">File share URL</translation>
-<translation id="2470702053775288986">Unsupported extensions disabled</translation>
 <translation id="2471469610750100598">Black (default)</translation>
 <translation id="2471506181342525583">Location access allowed</translation>
 <translation id="2473195200299095979">Translate this page</translation>
@@ -4203,6 +4202,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4050534976465737778">Make sure that both devices are unlocked, close together and have Bluetooth turned on. If you’re sharing with a Chromebook not in your contacts, make sure that it has Nearby visibility turned on (open the status area, then turn on Nearby visibility). <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">To switch to the last used input method, press <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">search + right arrow</translation>
+<translation id="405181879009056822">ChromeOS settings</translation>
 <translation id="4052120076834320548">Tiny</translation>
 <translation id="4052913941260326985">Create &amp;QR Code</translation>
 <translation id="405365679581583349">Update Google Play services</translation>
@@ -4852,6 +4852,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4562091353415772246">Install updates and apps. By continuing, you agree that this device may also automatically download and install updates and apps from Google, your operator and your device's manufacturer, possibly using mobile data. Some of these apps may offer in-app purchases. <ph name="BEGIN_LINK1" />Learn more about Play Auto Install<ph name="BEGIN_LINK1_END" />Learn more<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">Add Fingerprint</translation>
 <translation id="4562155266774382038">Dismiss suggestion</translation>
+<translation id="4562364000855074606">Block apps installed on this <ph name="DEVICE_TYPE" />. To restrict downloading apps or content, go to Google Play settings. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Initial input language is Chinese</translation>
 <translation id="4563382028841851106">Remove from account</translation>
 <translation id="4563880231729913339">Finger 3</translation>
@@ -5227,7 +5228,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4853020600495124913">Open in &amp;new window</translation>
 <translation id="4854317507773910281">Choose parent account for approval</translation>
 <translation id="485480310608090163">More settings and permissions</translation>
-<translation id="4858599593306712511">App parental controls</translation>
 <translation id="4858913220355269194">Footy</translation>
 <translation id="486213875233855629">Muted by your administrator</translation>
 <translation id="4862642413395066333">Signing OCSP Responses</translation>
@@ -5738,6 +5738,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> uses your location to give you local content. You can change this in <ph name="SETTINGS_LINK" />.</translation>
 <translation id="5252496130205799136">Use your Google Account to save and fill passwords?</translation>
 <translation id="5252653240322147470">PIN must be less than <ph name="MAXIMUM" /> digits</translation>
+<translation id="5253554634804500860">Use <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Memory usage: <ph name="MEMORY_USAGE" /></translation>
 <translation id="52550593576409946">Kiosk application could not be launched.</translation>
 <translation id="5255726914791076208">When you edit your passkey, your <ph name="RP_ID" /> account won't change</translation>
@@ -5813,6 +5814,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5300719150368506519">Send URLs of pages that you visit to Google</translation>
 <translation id="5301751748813680278">Entering as Guest.</translation>
 <translation id="5301954838959518834">OK, got it</translation>
+<translation id="5302032366299160685">Wait for the file to open before trying again</translation>
 <translation id="5302048478445481009">Language</translation>
 <translation id="5302932258331363306">Show Substitutions</translation>
 <translation id="5305145881844743843">This account is managed by <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
@@ -6311,6 +6313,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5678955352098267522">Read your data on <ph name="WEBSITE_1" /></translation>
 <translation id="5679785611070310751">You will stop getting security updates for this Chromebook in <ph name="MONTH_AND_YEAR" />. Time to upgrade for the latest security and software. Offer terms apply.</translation>
 <translation id="5680050361008726776">Remove '<ph name="ESIM_PROFILE_NAME" />'?</translation>
+<translation id="5681586175480958839">File is already being opened</translation>
 <translation id="5684181005476681636">Wi-Fi details</translation>
 <translation id="5684661240348539843">Asset Identifier</translation>
 <translation id="5684950556880280580">Your password has been updated</translation>
@@ -6475,6 +6478,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5806447147478173900">Total storage used by displayed sites: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Default)</translation>
 <translation id="5809835394668218762">More actions for <ph name="WEBSITE" /></translation>
+<translation id="5809840528400421362">PIN must be six digits</translation>
 <translation id="5810809306422959727">This account isn't eligible for parental controls</translation>
 <translation id="5811614940486072060">This file is not commonly downloaded and may be dangerous</translation>
 <translation id="5812674658566766066">Expand all</translation>
@@ -8061,6 +8065,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7009709314043432820"><ph name="APP_NAME" /> is using your camera</translation>
 <translation id="701080569351381435">View Source</translation>
 <translation id="7011797924920577670">estimates your interests</translation>
+<translation id="7012430956470647760">Parental controls for apps</translation>
 <translation id="7013762323294215682">This passkey will be saved to your password manager. Anyone with access to it will be able to use this passkey.</translation>
 <translation id="7014174261166285193">Installation failed.</translation>
 <translation id="7014480873681694324">Remove highlight</translation>

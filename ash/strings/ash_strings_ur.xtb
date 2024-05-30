@@ -315,7 +315,7 @@
 <translation id="2277103315734023688">آگے کریں</translation>
 <translation id="2282073721614284166">ٹیب میں لنک کھولیں</translation>
 <translation id="2292698582925480719">ڈسپلے اسکیل</translation>
-<translation id="2293443480080733021">آپ کس چیز پر فوکس کرنا چاہیں گے؟ ٹاکس شامل کرنے کے لیے اینٹر دبائیں۔</translation>
+<translation id="2293443480080733021">آپ کس چیز پر فوکس کرنا چاہیں گے؟ ٹاسک شامل کرنے کے لیے اینٹر دبائیں۔</translation>
 <translation id="229397294990920565">موبائل ڈیٹا بند ہو رہا ہے...</translation>
 <translation id="2295777434187870477">مائیک آن ہے، ٹوگل کرنے سے ان پٹ خاموش ہو جائے گا۔</translation>
 <translation id="2298170939937364391">‏فُل اسکرین میگنیفائر فعال ہے۔ اسے ٹوگل کر کے بند کرنے کے لیے Ctrl+Search+M کو دوبارہ دبائیں۔</translation>
@@ -863,6 +863,7 @@
 <translation id="4302592941791324970">دستیاب نہیں ہے</translation>
 <translation id="4303223480529385476">اسٹیٹس ایریا کو پھیلائیں</translation>
 <translation id="4305133312001648038">صفحہ پر زوم لیول ری سیٹ کریں</translation>
+<translation id="4305817255990598646">سوئچ کریں</translation>
 <translation id="4307713728991152670">اپنے فون کی حالیہ تصاویر، میڈیا اور ایپس دیکھنے کو سیٹ اپ کریں</translation>
 <translation id="4312840429157639164">کیمرا اوپری دائیں کونے میں اسنیپ کیا گیا ہے۔ سسٹم کی سطح سے متصادم ہے۔</translation>
 <translation id="4316910396681052118">سبھی ایپس</translation>
@@ -1161,7 +1162,7 @@
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> کے اوپر <ph name="DRAGGED_APP_NAME" />، فولڈر بنانے کیلئے ریلیز کریں۔</translation>
 <translation id="5397578532367286026">‏اس صارف کے استعمال اور سرگزشت کا chrome.com پر مینیجر (<ph name="MANAGER_EMAIL" />) کے ذریعے جائزہ لیا جا سکتا ہے۔</translation>
 <translation id="540713187982329711">ہاٹ اسپاٹ ٹوگل کریں۔ ہاٹ اسپاٹ آن ہے، کوئی آلہ منسلک نہیں ہے۔</translation>
-<translation id="5409208741270395213">ٹاس کو مکمل کے بطور نشان زد کریں</translation>
+<translation id="5409208741270395213">ٹاسک کو مکمل کے بطور نشان زد کریں</translation>
 <translation id="5413656666631274079">ترتیبات کا صفحہ</translation>
 <translation id="5414198321558177633">پروفائل کی فہرست ریفریش ہو رہی ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="5417965108047245734">اپنے <ph name="PRODUCT_NAME" /> کے استعمال کا طریقہ جاننے کے لیے ایک مختصر ٹؤر کریں</translation>
@@ -1515,6 +1516,7 @@
 <translation id="6696025732084565524">آپ کے الگ ہونے کے قابل کی بورڈ کو ایک اہم اپ ڈیٹ درکار ہے</translation>
 <translation id="6697913454192220372">نیا ڈیسک شامل کریں</translation>
 <translation id="6700713906295497288">‏IME مینیو بٹن</translation>
+<translation id="6706742084323792866">کی بورڈ کو پن کریں</translation>
 <translation id="6707693040195709527">گزشتہ ورژن میں آلہ کی تبدیلی کا وقت گزر گیا ہے</translation>
 <translation id="6710213216561001401">گزشتہ</translation>
 <translation id="6723839937902243910">پاور</translation>
@@ -1662,7 +1664,7 @@
 <translation id="7313193732017069507">کیمرا پھیلائیں</translation>
 <translation id="7330397557116570022">ڈکٹیشن استعمال کرنے کے لیے ٹیکسٹ فیلڈ میں جائیں</translation>
 <translation id="7331646370422660166">‏alt + نیچے تیر کا نشان</translation>
-<translation id="7337660433630200387">+10 منٹ</translation>
+<translation id="7337660433630200387">‏‫‎+10 منٹ</translation>
 <translation id="7340731148882810149">خودکار کلکس مینیو</translation>
 <translation id="7346909386216857016">ٹھیک ہے، سمجھ آ گئی</translation>
 <translation id="7348093485538360975">آن اسکرین کی بورڈ</translation>

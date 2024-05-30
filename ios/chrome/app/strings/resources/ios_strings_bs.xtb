@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Historija</translation>
 <translation id="164673457281113247">{count,plural, =1{Oznaka je sačuvana}one{Oznake su sačuvane}few{Oznake su sačuvane}other{Oznake su sačuvane}}</translation>
 <translation id="1650222530560417226">Dodirnite dugme "Započni zapisivanje" da prikupljate buduće zapisnike i greške konzole za JavaScript sa svih kartica. Zapisnici će se prikupljati (i isključivo pohranjivati u memoriju) dok se ova stranica ne zatvori ili dok ne dodirnete "Zaustavi zapisivanje".</translation>
+<translation id="1652333207707886577">Prilagodite meni</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} sačuvana lozinka je dostupna iznad tastature.}one{{count} sačuvana lozinka je dostupna iznad tastature.}few{{count} sačuvane lozinke su dostupne iznad tastature.}other{{count} sačuvanih lozinki je dostupno iznad tastature.}}</translation>
 <translation id="1657011748321897393">Dijeljenje nije uspjelo jer niste povezani na mrežu.</translation>
 <translation id="165877110639533037">Nema otvorenih kartica</translation>
@@ -240,6 +241,7 @@
 <translation id="2267753748892043616">Dodaj račun</translation>
 <translation id="2268044343513325586">Traži detaljnije</translation>
 <translation id="2269277877025820298">Prikaži više</translation>
+<translation id="2271452184061378400">Grupe kartica se pohranjuju ovdje</translation>
 <translation id="2273327106802955778">Meni Više</translation>
 <translation id="2274800392139890332">Prestani pratiti ovaj paket</translation>
 <translation id="2275480389219976105">Pronađena adresa</translation>
@@ -530,6 +532,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3738428049780661523">Kreirano je <ph name="DATE" /></translation>
 <translation id="374357899112510277">Sakrij preuzimanja</translation>
 <translation id="3745190878148784130">Sakrij zumiranje teksta</translation>
+<translation id="3747231889390582072">Radi zaštite i sigurnosti organizacije nesačuvani podaci će se izbrisati s uređaja. Ovo može uključivati lozinke, historiju pregledanja, kolačiće i drugo.</translation>
 <translation id="3762232513783804601">Napravljeno za vaš iPad</translation>
 <translation id="3768725474733206671">Ponovno otvaranje posljednje zatvorene kartice</translation>
 <translation id="3771033907050503522">Anonimne kartice</translation>
@@ -1480,6 +1483,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8446884382197647889">Saznajte više</translation>
 <translation id="8449347986464073209">Izbriši i odjavi</translation>
 <translation id="8459333855531264009">Nije sigurno</translation>
+<translation id="8466300942149667917">Nesačuvani podaci računa će se izbrisati</translation>
 <translation id="8473863474539038330">Adrese i još mnogo toga</translation>
 <translation id="8487667956631253959">Uključeno</translation>
 <translation id="8487700953926739672">Dostupno van mreže</translation>

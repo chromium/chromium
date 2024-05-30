@@ -75,6 +75,7 @@ Veri kullanarak Chromium deneyiminizi iyileştiren daha fazla ayar görmek için
 <translation id="2942241131342758843">Bağlantıları açmak, widget'lardan arama yapmak ve diğer uygulamalarda şifreleri otomatik doldurmak için varsayılan olarak Chromium'u kullanın</translation>
 <translation id="2977470724722393594">Chromium güncel durumda</translation>
 <translation id="3044857325852340337">Chromium verileri silindi</translation>
+<translation id="3049211156275642309">Chromium Kurulumunu Tamamlayın</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium, Yeni Sekme sayfasında bu kargoyu takip etmenize yardımcı olabilir.}other{Chromium, Yeni Sekme sayfasında bu kargoları takip etmenize yardımcı olabilir.}}</translation>
 <translation id="3102849287235003384">Tüm web sitelerinde Google Hesabınızın oturumunu kapatmak için <ph name="BEGIN_LINK" />Chromium oturumunu kapatın<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Chromium'da Sesle Arama Yap</translation>
@@ -273,6 +274,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="8754966941001340678">Chromium, gelişmiş korumayı önerir</translation>
 <translation id="8759037115129007407">Aile üyeniz şu anda şifre alamıyor. Bu kişiden Chromium'u güncellemesini ve şifrelerini senkronize etmesini isteyin. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Bu hesap ve kaydedilmemiş tüm veriler Chromium'dan kaldırılacak.</translation>
+<translation id="8826789549860004832">Chromium'dan en iyi şekilde yararlanmak için tarayıcınızın kurulumuna devam edin.</translation>
 <translation id="88376265765385899">Chromium yer işaretlerini açar.</translation>
 <translation id="8860548555286245440">URL'leri Chromium'da Gizli modda aç</translation>
 <translation id="8866191443434488382">Chromium, ziyaret ettiğiniz sitelerdeki takip numaralarını algılar ve kargoyla ilgili güncellemeleri Yeni Sekme sayfasında gösterir. Kargo takip numarası ve web sitesinin adı, bu özelliğin sunulması ve Alışveriş özelliklerinin herkes için iyileştirilmesi amacıyla Chromium'a gönderilir. Bunu istediğiniz zaman <ph name="BEGIN_LINK" />Kargo Takibi Ayarları<ph name="END_LINK" />'ndan güncelleyebilirsiniz.</translation>

@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />Жұмыс берушіңіз немесе мектебіңіз
           <ph name="LIST_ITEM" />Интернет провайдері
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">Осы элементті бақылау</translation>
 <translation id="1337692097987160377">Осы қойындыны бөлісу</translation>
 <translation id="1339601241726513588">Тіркеу домені:</translation>
 <translation id="1340482604681802745">Алып кету мекенжайы</translation>
@@ -2610,6 +2611,7 @@
 <translation id="6035491133925068289">Жеңіл атлетика</translation>
 <translation id="6039846035001940113">Мәселе шешілмесе, сайт иесіне хабарласыңыз.</translation>
 <translation id="6040143037577758943">Жабу</translation>
+<translation id="6040539895181423374">Баға статистикасы</translation>
 <translation id="604124094241169006">Автоматты</translation>
 <translation id="6041777658117377052">Камераның температурасы</translation>
 <translation id="6042308850641462728">Жаю</translation>

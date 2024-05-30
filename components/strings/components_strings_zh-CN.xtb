@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />您的雇主或您所在的学校
           <ph name="LIST_ITEM" />您的互联网服务提供商
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">跟踪此商品</translation>
 <translation id="1337692097987160377">分享此标签页</translation>
 <translation id="1339601241726513588">注册域：</translation>
 <translation id="1340482604681802745">取货地址</translation>
@@ -455,6 +456,7 @@
 <translation id="1812527064848182527">横向</translation>
 <translation id="1812975699435941848">健康教育与医疗培训</translation>
 <translation id="1816436748874040213">可以请求滚动和缩放分享的标签页</translation>
+<translation id="1817364650920811003">角色：Chrome 提示。无障碍功能标签：<ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">取消屏蔽</translation>
 <translation id="1818585559878922121">纪录片</translation>
 <translation id="182139138257690338">自动下载内容</translation>
@@ -1393,6 +1395,7 @@
 <translation id="3642638418806704195">应用：</translation>
 <translation id="3646643500201740985">衡量广告效果</translation>
 <translation id="3647286794400715637">每个网址字符串条目都必须包含 1-2 个网址。</translation>
+<translation id="3647400963805615193">关闭 Chrome 提示按钮，按 Enter 键即可关闭提示，<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">验证成功</translation>
 <translation id="3650594806107685466">为保障银行卡安全，请输入<ph name="SIDE_OF_CARD" />的 CVC</translation>
 <translation id="3650917416636556301">远足与露营</translation>
@@ -2607,6 +2610,7 @@
 <translation id="6035491133925068289">田径</translation>
 <translation id="6039846035001940113">如果问题仍然存在，请与网站所有者联系。</translation>
 <translation id="6040143037577758943">关闭</translation>
+<translation id="6040539895181423374">价格分析</translation>
 <translation id="604124094241169006">自动</translation>
 <translation id="6041777658117377052">室内温度</translation>
 <translation id="6042308850641462728">展开</translation>
@@ -3363,6 +3367,7 @@
 <translation id="7481312909269577407">前进</translation>
 <translation id="7481603210197454575">意式信封</translation>
 <translation id="7483482939016730822">学习用品和教室设备</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />，依次按 Tab 键和 Enter 键即可关闭 Chrome 提示。</translation>
 <translation id="7485085230273446323">工商业</translation>
 <translation id="7485870689360869515">找不到数据。</translation>
 <translation id="7489392576326061356">洗发水和护发素</translation>

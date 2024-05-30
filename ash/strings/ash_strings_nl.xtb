@@ -131,6 +131,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1420408895951708260">Nachtverlichting aan- of uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1435537621343861112">Kan dicteren niet starten. Je microfoon staat uit.</translation>
+<translation id="1447907279406111651">Nu · Eindigt om <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Je apparaathotspots</translation>
 <translation id="1455242230282523554">Taalinstellingen bekijken</translation>
 <translation id="1460620680449458626">Volume staat uit.</translation>
@@ -481,6 +482,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2894949423239620203">De kabel kan invloed hebben op de prestaties</translation>
 <translation id="2914580577416829331">Schermopnamen</translation>
 <translation id="2924416280450782352">Kan geen items tonen. Probeer dit deelvenster opnieuw te openen.</translation>
+<translation id="292506373491190801">Vanuit actuele afspraak</translation>
 <translation id="2931572158271115754">Er staat niets op deze takenlijst.</translation>
 <translation id="2932487126591186298">10 minuten toegevoegd. Nog <ph name="REMAINING_TIME" />.</translation>
 <translation id="2935225303485967257">Profielen beheren</translation>
@@ -767,6 +769,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3950272133184491871">Nu uitloggen?</translation>
 <translation id="3950820424414687140">Inloggen</translation>
 <translation id="3953130726459169782">Nog geen opdrachten afgerond.</translation>
+<translation id="3958714870339660776">Hele dag</translation>
 <translation id="3962859241508114581">Vorig nummer</translation>
 <translation id="3969043077941541451">Uit</translation>
 <translation id="3970324493235864154">Meldingen van je telefoon bekijken</translation>
@@ -863,6 +866,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4302592941791324970">Niet beschikbaar</translation>
 <translation id="4303223480529385476">Statusgedeelte uitvouwen</translation>
 <translation id="4305133312001648038">Zoomniveau op pagina resetten</translation>
+<translation id="4305817255990598646">Overschakelen</translation>
 <translation id="4307713728991152670">De weergave van recente foto's, media en apps van je telefoon instellen</translation>
 <translation id="4312840429157639164">Camera uitgelijnd op de rechterbovenhoek. Conflict met systeemoppervlak.</translation>
 <translation id="4316910396681052118">ALLE APPS</translation>
@@ -1219,6 +1223,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5599242528220103262">Sneltoets staat uit</translation>
 <translation id="5600415762228455511">Focus staat aan, nog <ph name="REMAINING_TIME" />, focussen op: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Druk op Ctrl+Alt+Z om gesproken feedback uit te zetten.</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{&lt; 1 uur geleden}=1{1 uur geleden}other{# uur geleden}}</translation>
 <translation id="5601503069213153581">Pincode</translation>
 <translation id="5618148318840095371">Je bent overgeschakeld naar een beter netwerk</translation>
 <translation id="5619862035903135339">Op basis van het beheerdersbeleid wordt schermopname uitgezet</translation>
@@ -1395,6 +1400,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6228457605945141550">Helderheid verlagen</translation>
 <translation id="623116199192908855">Je scherm casten vanaf je Chromebook</translation>
 <translation id="6231419273573514727">De prestaties van randapparaten kunnen beperkt zijn</translation>
+<translation id="6232416233079464213">Vanuit <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> gebruikt momenteel je camera en microfoon</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Batterij bijna leeg. Batterijbesparing staat aan.</translation>
@@ -1797,6 +1803,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7807067443225230855">Google Zoeken en Google Assistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> en <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">Vanuit aankomende agenda-afspraak</translation>
 <translation id="7829386189513694949">Sterk signaal</translation>
 <translation id="7830453190047749513">Je kunt onder meer knopacties en cursorsnelheid personaliseren voor je <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">De tijd is om</translation>
@@ -2114,6 +2121,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="899350903320462459">Ontgrendel het apparaat als <ph name="LOGIN_ID" /> om de meldingsactie uit te voeren</translation>
 <translation id="8993733019280019776">Ben je aan het praten? Je microfoon staat uit. Selecteer de microfoon om deze aan te zetten.</translation>
 <translation id="9000771174482730261">OPSLAG BEHEREN</translation>
+<translation id="9002204506712855687">Ontdek de nieuwste functies</translation>
 <translation id="9005984960510803406">Crosh-venster openen</translation>
 <translation id="9017320285115481645">Geef de Family Link-toegangscode voor ouders op.</translation>
 <translation id="9022774213089566801">Veelbezocht</translation>
@@ -2145,6 +2153,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9098969848082897657">Telefoon dempen</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> of <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Laatste actie ongedaan maken</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{Over 1 min}other{Over # min}}</translation>
 <translation id="9129245940793250979">Knop Achter</translation>
 <translation id="9133335900048457298">Kan geen beschermde content opnemen</translation>
 <translation id="9139720510312328767">Volgende letter verwijderen</translation>
@@ -2157,6 +2166,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9183456764293710005">Vergrootglas voor volledig scherm</translation>
 <translation id="9193626018745640770">Casten naar een onbekende ontvanger</translation>
 <translation id="9194617393863864469">Als andere gebruiker inloggen...</translation>
+<translation id="9195990613383871904">Morgen</translation>
 <translation id="9198992156681343238">De resolutie van <ph name="DISPLAY_NAME" /> is gewijzigd in <ph name="RESOLUTION" />. Klik op 'Bevestigen' om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
 <translation id="9201044636667689546"><ph name="NAME" /> koppelen aan deze Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, beheerd door je beheerder</translation>

@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />работадаўцу або навучальнай установе,
           <ph name="LIST_ITEM" />інтэрнэт-правайдару.
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">Адсочваць гэты тавар</translation>
 <translation id="1337692097987160377">Абагуліць гэту ўкладку</translation>
 <translation id="1339601241726513588">Дамен рэгістрацыі:</translation>
 <translation id="1340482604681802745">Адрас прыняцця</translation>
@@ -455,6 +456,7 @@
 <translation id="1812527064848182527">альбомная</translation>
 <translation id="1812975699435941848">Адукацыя ў сферы аховы здароўя і медыцынская падрыхтоўка</translation>
 <translation id="1816436748874040213">Запытваць дазвол на змяненне маштабу і прагортванне змесціва абагуленых укладак</translation>
+<translation id="1817364650920811003">Роля: парада Chrome. Метка спецыяльных магчымасцей: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Разблакіраваць</translation>
 <translation id="1818585559878922121">Дакументальныя фільмы</translation>
 <translation id="182139138257690338">аўтаматычнае спампоўванне</translation>
@@ -1397,6 +1399,7 @@
 <translation id="3642638418806704195">Праграма:</translation>
 <translation id="3646643500201740985">Ацэнка эфектыўнасці рэкламнай аб'явы</translation>
 <translation id="3647286794400715637">Кожны запіс павінен змяшчаць 1-2 URL-адрасы.</translation>
+<translation id="3647400963805615193">Кнопка, каб закрыць параду Chrome. Націсніце Увод, каб закрыць параду. <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Праверка прайшла паспяхова</translation>
 <translation id="3650594806107685466">У мэтах бяспекі ўвядзіце код CVC, які знаходзіцца на <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Пешы турызм і кемпінг</translation>
@@ -2611,6 +2614,7 @@
 <translation id="6035491133925068289">Лёгкая атлетыка</translation>
 <translation id="6039846035001940113">Калі праблема не знікне, звярніцеся да ўладальніка сайта.</translation>
 <translation id="6040143037577758943">Закрыць</translation>
+<translation id="6040539895181423374">Статыстыка цэн</translation>
 <translation id="604124094241169006">Аўтаматычна</translation>
 <translation id="6041777658117377052">Тэмпература камеры</translation>
 <translation id="6042308850641462728">Яшчэ</translation>
@@ -3369,6 +3373,7 @@
 <translation id="7481312909269577407">Далей</translation>
 <translation id="7481603210197454575">Канверт Italian</translation>
 <translation id="7483482939016730822">Школьныя прылады і абсталяванне для класаў</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />. Каб закрыць параду Chrome, націсніце Tab, затым Увод.</translation>
 <translation id="7485085230273446323">Бізнес і прамысловасць</translation>
 <translation id="7485870689360869515">Даныя не знойдзены.</translation>
 <translation id="7489392576326061356">Шампуні і кандыцыянеры</translation>

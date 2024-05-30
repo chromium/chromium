@@ -572,6 +572,7 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 
       本地打印机也称为本机打印目的地，包括可供本地计算机使用的目的地以及共享的网络打印机。</translation>
 <translation id="1456822151187621582">Windows（<ph name="PRODUCT_OS_NAME" />客户端）：</translation>
+<translation id="1459693405370120464">天气</translation>
 <translation id="1464848559468748897">控制<ph name="PRODUCT_OS_NAME" />设备上多个人资料会话中的用户行为。
 
       如果此政策设为“MultiProfileUserBehaviorUnrestricted”，用户将能够以主用户或次要用户的身份登录多个人资料会话。
@@ -687,6 +688,7 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 <translation id="1557113199339446336">如果此政策设为 True，已注册的设备便会报告与扩展检测和响应 (XDR) 事件相关的信息。
 
       如果此政策设为 False 或未设置，则意味着已注册的设备不会报告与扩展检测和响应 (XDR) 事件相关的信息。</translation>
+<translation id="1559343998807576489">智能镜头叠加层功能的设置</translation>
 <translation id="1560279917909364275">以许可名单形式指定哪些记事应用可显示在 <ph name="PRODUCT_OS_NAME" /> 的锁定屏幕中</translation>
 <translation id="1561424797596341174">覆盖与远程访问主机的调试版本号相关的政策</translation>
 <translation id="1561967320164410511">用于个人认证的 U2F 和扩展程序</translation>
@@ -782,6 +784,7 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 <translation id="1635748761015837179">允许写入外部存储设备</translation>
 <translation id="1639468541408865385">启用全局范围的 HTTP 身份验证缓存</translation>
 <translation id="1639673466479276550">为登录屏幕启用屏保。</translation>
+<translation id="1640447222731279244">控制是否启用“利用 AI 创作”来创建 ChromeOS 壁纸的功能</translation>
 <translation id="1640824698339859203">启用流动单点登录，并将用户的 Web 服务身份验证移至新设备</translation>
 <translation id="1641117061932613266">启用<ph name="PRODUCT_NAME" /> V2 服务</translation>
 <translation id="1641394008743444477">让您能够以列表形式设置要停用的 <ph name="PRODUCT_OS_NAME" />功能。
@@ -835,6 +838,12 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 
 如果此政策设为 False 或未设置，则不会捕获任何事件。</translation>
 <translation id="1692990221685273468">确定内置证书验证程序是否会强制执行从平台可信存储区加载的信任锚中经过编码的限制条件。</translation>
+<translation id="1693528798631913178">此政策用于启用或停用“利用 AI 创作”来创建 ChromeOS 视频会议背景的功能。
+0 表示为用户停用此功能。
+
+1 表示为用户启用此功能。请注意，系统不会向 Google 发送任何数据用以训练或改进 AI 模型。
+
+如果此政策未设置，系统会为企业用户停用“利用 AI 创作”来创建视频会议背景的功能。</translation>
 <translation id="169467210981344373">停用全局范围的 HTTP 身份验证缓存</translation>
 <translation id="1696501581280568361">建议进行资料分离</translation>
 <translation id="1698810555265314018">控制 <ph name="PRODUCT_NAME" /> 以光栅化模式打印 PDF 时的打印图片分辨率。
@@ -1725,6 +1734,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="2326031114717677574">音频数据的取样和收集时间间隔。所允许的最短时间间隔为 1 分钟。
 
       如果此政策未设置，系统会应用默认时间间隔（15 分钟）。</translation>
+<translation id="2331028134545182024">控制是否启用“利用 AI 创作”来创建 ChromeOS 视频会议背景的功能</translation>
 <translation id="2333228572393176330">此政策用于控制 TLS 1.3 中的一项安全功能，该功能可为连接提供保护，使其免受降级攻击。此政策可向后兼容，因此不会影响与合规的 TLS 1.2 服务器或代理之间的连接。但是，某些旧版 TLS 拦截代理存在一项实施漏洞，此漏洞会导致这些代理不兼容。
 
       如果此政策设为 True 或未设置，<ph name="PRODUCT_NAME" /> 会为所有连接启用此类安全保护措施。
@@ -4832,6 +4842,17 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       - 如果此政策设为 <ph name="SKIP_TOS_DIALOG" />，浏览器的功能会受到限制。
 
       - 如果此政策设为 <ph name="SKIP_TOS_DIALOG" />，管理员必须将这项设置告知设备的最终用户。</translation>
+<translation id="489760181463331251">此政策用于更改省内存模式的节省级别。
+
+此政策仅在通过设置或 <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" /> 政策启用省内存模式后才会生效，并且会影响系统如何使用启发法来确定何时舍弃标签页。例如，在舍弃之前缩短闲置标签页的生命周期可以节省内存，但这也意味着标签页会更频繁地重新加载，从而导致用户体验不佳并消耗更多网络流量。
+
+如果将此政策设为 0，省内存模式将适中地节省内存。标签页会在较长的一段时间后变为非活跃状态
+
+如果将此政策设为 1，省内存模式将均衡地节省内存。标签页会在最适宜的一段时间后变为非活跃状态。
+
+如果将此政策设为 2，省内存模式将尽可能节省内存。标签页会在更短的一段时间后变为非活跃状态。
+
+如果此政策未设置，最终用户可在 chrome://settings/performance 上控制这项设置。</translation>
 <translation id="489803897780524242">此参数可控制是否为默认搜索服务提供商替换搜索字词</translation>
 <translation id="4899708173828500852">启用安全浏览</translation>
 <translation id="4906194810004762807">设备策略的更新频率</translation>
@@ -5187,6 +5208,12 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如果未做设置，系统会使用默认通知时间段，即 604800000 毫秒（1 周）。</translation>
 <translation id="5212810195096589189">指定虚拟机 CLI 权限</translation>
 <translation id="5213038356678567351">始终不应触发浏览器切换的网站。</translation>
+<translation id="5215621993623612880">此政策用于启用或停用“利用 AI 创作”来创建 ChromeOS 壁纸的功能。
+0 表示为用户停用此功能。
+
+1 表示为用户启用此功能。请注意，系统不会向 Google 发送任何数据用以训练或改进 AI 模型。
+
+如果此政策未设置，系统会为企业用户停用“利用 AI 创作”来创建壁纸的功能。</translation>
 <translation id="5216815237712190041">配置在无任何用户登录设备的情况下显示在登录屏幕上的设备级壁纸图片。要设置此政策，请指定可供 Chrome 操作系统设备下载相应壁纸图片的网址，并指定用于验证下载内容是否完整的加密哈希值。图片必须是 JPEG 格式，且文件大小不得超过 16MB。网址必须可直接访问，而无需进行任何身份验证。系统会下载并缓存相应的壁纸图片。只要相应网址或哈希值发生了变化，系统就会重新下载该文件。
 
       设置设备壁纸政策后，如果还没有任何用户登录 Chrome 操作系统设备，该设备将下载相应壁纸图片并在登录屏幕上使用它。一旦用户登录设备，用户的壁纸政策就会生效。
@@ -6528,6 +6555,11 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6282524907402492171">显示 <ph name="CLOUD_PRINT_NAME" />弃用警告</translation>
 <translation id="6282799760374509080">是否允许音频捕获</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
+<translation id="6286082501885452957">通过设置此政策，您可允许列出的源使用 Device Attributes API 获取设备属性（例如序列号、主机名）。
+
+源必须对应于使用 <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> 或 <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />（自 125 版起）政策强制安装的 Web 应用或设置为自助服务终端应用。如需了解 Device Attributes API 规范，请参阅 https://wicg.github.io/WebApiDevice/device_attributes。
+
+如需详细了解有效的<ph name="URL_LABEL" />格式（自 127 版起），请参阅 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="6287128640500683781">允许任何用户登录</translation>
 <translation id="6287310684159482272">Cookie 设置</translation>
 <translation id="6287742528823584153">启用<ph name="PRODUCT_NAME" />服务，且登录时启动远程桌面</translation>
@@ -6706,6 +6738,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       快速配对是一种新的蓝牙配对流程，用于将已配对的外围设备与 GAIA 账号关联起来。
       这样便能让使用同一 GAIA 账号登录的其他 Chrome 操作系统（和 Android）设备自动配对。
       如果未设置此政策，则默认情况下，快速配对功能对于企业用户处于停用状态，对于不受管理的账号则处于启用状态。</translation>
+<translation id="6400959027108936283">启用此功能</translation>
 <translation id="6401669939808766804">使用户退出</translation>
 <translation id="640244877779556713">启用表情符号建议</translation>
 <translation id="6403114173011456561">作为 <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> 政策的补充政策，用于控制触摸虚拟键盘。
@@ -6725,6 +6758,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6410847321564585975">网站活动报告许可名单</translation>
 <translation id="6412352702230183710">仅允许使用系统级原生消息传递主机</translation>
 <translation id="6416506846917150119">在用户输入内容时停用实体键盘预测性撰写功能</translation>
+<translation id="6416916931494972926">启用 Kiosk Vision 的遥测报告功能。</translation>
 <translation id="6417265370957905582">Google 助理</translation>
 <translation id="6419001911253110938">允许在用户登录流程中显示会话内 AI 功能的介绍界面</translation>
 <translation id="6421254653839955267">如果此政策已启用，系统便会跳过 CNAME 查找步骤。当生成 Kerberos SPN 时，系统会使用输入的服务器名称。
@@ -6873,6 +6907,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6506486086262398387">如果此政策已启用，适用于 <ph name="PRODUCT_OS_NAME" />的网络文件共享功能会酌情使用 NTLM 对 SMB 共享文件进行身份验证。如果此政策已停用，系统会关闭对 SMB 共享文件的 NTLM 身份验证机制。
 
       如果您未设置此政策，系统的默认行为就会是：为受管用户停用此政策，并为其他用户启用此政策。</translation>
+<translation id="6508882314969525299">停用 Kiosk Vision 的遥测报告功能。</translation>
 <translation id="6509376413448002446">为锁定屏幕配置用户屏保。
 
 如果此政策设为 true，当 <ph name="PRODUCT_OS_NAME" /> 设备处于锁屏状态时，系统会显示屏保。
@@ -7043,6 +7078,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       注意：请将此政策与 <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" /> 搭配使用。</translation>
 <translation id="6625136649067113817">一个布尔值标记，用于表明屏幕键盘能否提供拼写检查功能。</translation>
+<translation id="6626319579493977784">动态代码设置</translation>
 <translation id="66265932317331474">报告 CPU 信息</translation>
 <translation id="6628120204569232711">报告存储状态</translation>
 <translation id="662991036483361836">禁止用户启用“附近分享”功能</translation>
@@ -8029,6 +8065,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策已停用或未设置，则意味着已注册的设备既不会记录也不会报告 TPM 安全状态。
       例外情况：对于 M95 及更低版本，TPM 信息由 <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> 控制。</translation>
 <translation id="739556497251174388">允许将 <ph name="PRODUCT_OS_NAME" />登录凭据重用于网络身份验证</translation>
+<translation id="7402257017733669351">阻止浏览器进程创建动态代码</translation>
 <translation id="7402772023599097052">如果已启用或未设置此政策，当您使用可能不安全的命令行 flag 启动 Chrome 时，系统会显示安全警告。
 
 如果已停用此政策，当您使用可能不安全的命令行 flag 启动 Chrome 时，系统不会显示安全警告。
@@ -9292,6 +9329,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8429593528367808164">在用户输入内容时启用实体键盘预测性撰写功能</translation>
 <translation id="8433186206711564395">网络设置</translation>
 <translation id="8433769814000220721">启用建议的内容</translation>
+<translation id="8435304381855818385">默认动态代码设置</translation>
 <translation id="843609873781525167">如果此政策设为 True，<ph name="PRODUCT_NAME" /> 在启动时始终会检查自己是否是默认浏览器，并会尽可能自动注册。如果此政策设为 False，<ph name="PRODUCT_NAME" /> 一律不会检查自己是否是默认浏览器，并会禁止用户设置此选项。
 
       如果您不设置此政策，<ph name="PRODUCT_NAME" /> 会让用户控制是否将它设置为默认浏览器，以及是否在它不是默认浏览器的情况下显示用户通知。
@@ -9506,6 +9544,8 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策设为 true，系统可能会冻结已在后台运行至少 5 分钟的标签页。冻结标签页可以降低 CPU、电池和内存使用量。<ph name="PRODUCT_NAME" /> 会使用试探法来避免冻结在后台执行有用工作（例如显示通知、播放声音、流式传输视频）的标签页。网络开发者也可选择停用用于冻结网站标签页的功能 (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md)。
 
       如果此政策设为 false，系统将不会冻结任何标签页。</translation>
+<translation id="8607613052618540095">如果此政策已启用，则表示 Kiosk Vision 的遥测报告功能已启用。
+它将启动 Kiosk Vision 框架并启用受众群体遥测报告功能。如果此政策未设置或已停用，则表示 Kiosk Vision 的遥测报告功能已停用。</translation>
 <translation id="8610216287193516769">已在 M122 中移除 - 此政策仅适用于服务器端，不会使用 ChromeOS 政策基础架构进行传播。
 如果此政策设为<ph name="POLICY_VALUE_ALL" />或未设置，系统会允许受管理的账号的所有使用情况。这可能会导致受管理的账号成为辅助账号，从而只能在该账号作为浏览器配置文件中的主账号登录时接收政策。
       在以下情况下，系统将不会强制执行针对账号设定的政策：
@@ -9584,6 +9624,12 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如需详细了解 JavaScript/ECMAScript 媒体类型，请参阅 https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage。
       </translation>
+<translation id="8668202868357089313">智能镜头叠加功能可让用户与叠加在实际 Web 内容上的当前网页的屏幕截图进行交互，以发起 Google 搜索。
+
+此功能不受用户设置控制，通常面向所有将 Google 设为默认搜索引擎的用户提供，除非此政策已将其停用。
+
+如果此政策设为 0 - 已启用或未设置，用户将可以使用此功能。
+如果此政策设为 1 - 已停用，此功能将不可用。</translation>
 <translation id="8671119576957984818">启用桌面分享中心</translation>
 <translation id="8671193325113134911">为工作器脚本启用严格的 MIME 类型检查</translation>
 <translation id="8671303329680827168">此政策已被弃用，请改用“<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />”政策。</translation>

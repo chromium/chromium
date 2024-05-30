@@ -75,6 +75,7 @@
 <translation id="2942241131342758843">Predvolene otvárajte odkazy, vyhľadávajte v miniaplikáciách a automaticky dopĺňajte heslá v iných aplikáciách pomocou prehliadača Chromium</translation>
 <translation id="2977470724722393594">Prehliadač Chromium bol aktualizovaný</translation>
 <translation id="3044857325852340337">Dáta prehliadača Chromium boli odstránené</translation>
+<translation id="3049211156275642309">Dokončite nastavovanie prehliadača Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium vám môže pomôcť sledovať túto zásielku na stránke na novej karte.}few{Chromium vám môže pomôcť sledovať tieto zásielky na stránke na novej karte.}many{Chromium can help you track these packages on the New Tab Page.}other{Chromium vám môže pomôcť sledovať tieto zásielky na stránke na novej karte.}}</translation>
 <translation id="3102849287235003384">Ak sa chcete odhlásiť zo svojho účtu Google na všetkých weboch, <ph name="BEGIN_LINK" />odhláste sa z prehliadača Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Vyhľadávať hlasom v prehliadači Chromium</translation>
@@ -273,6 +274,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="8754966941001340678">Chromium odporúča rozšírenú ochranu</translation>
 <translation id="8759037115129007407">Člen vašej rodiny nemôže momentálne dostávať heslá. Požiadajte ho, aby aktualizoval Chromium a synchronizoval svoje heslá. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Tento účet bude spolu so všetkými neuloženými údajmi odstránený z prehliadača Chromium.</translation>
+<translation id="8826789549860004832">Pokračujte v nastavovaní prehliadača Chromium, aby ste ho mohli využívať naplno</translation>
 <translation id="88376265765385899">Otvorí záložky v prehliadači Chromium.</translation>
 <translation id="8860548555286245440">Otvárať webové adresy v režime inkognito prehliadača Chromium</translation>
 <translation id="8866191443434488382">Chromium zistí čísla zásielok na weboch, ktoré navštívite, a zobrazí aktuality o zásielke na stránke na novej karte. Sledovacie číslo zásielky a názov webu sa odošlú prehliadaču Chromium na účely poskytovania tejto funkcie a zlepšovania funkcií nákupov pre každého. Kedykoľvek to môžete zmeniť v <ph name="BEGIN_LINK" />nastaveniach sledovania zásielok<ph name="END_LINK" />.</translation>

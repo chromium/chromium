@@ -75,6 +75,7 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chromiu
 <translation id="2942241131342758843">Gunakan Chromium secara default untuk membuka link, menelusuri dari widget, dan mengisi otomatis sandi di aplikasi lainnya</translation>
 <translation id="2977470724722393594">Chromium sudah diperbarui</translation>
 <translation id="3044857325852340337">Data Chromium berhasil dihapus</translation>
+<translation id="3049211156275642309">Selesaikan Penyiapan Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium dapat membantu Anda melacak paket ini di Halaman Tab Baru.}other{Chromium dapat membantu Anda melacak paket tersebut di Halaman Tab Baru.}}</translation>
 <translation id="3102849287235003384">Untuk logout dari Akun Google Anda di semua situs, <ph name="BEGIN_LINK" />logout dari Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Telusuri dengan Suara di Chromium</translation>
@@ -273,6 +274,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="8754966941001340678">Chromium merekomendasikan perlindungan yang ditingkatkan</translation>
 <translation id="8759037115129007407">Anggota keluarga Anda saat ini tidak dapat menerima sandi. Minta anggota keluarga untuk mengupdate Chromium dan menyinkronkan sandi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Akun ini dan semua data yang tidak disimpan akan dihapus dari Chromium.</translation>
+<translation id="8826789549860004832">Optimalkan penggunaan Chromium dengan melanjutkan penyiapan browser.</translation>
 <translation id="88376265765385899">Membuka bookmark Chromium.</translation>
 <translation id="8860548555286245440">Buka URL di Chromium dalam mode Samaran</translation>
 <translation id="8866191443434488382">Chromium akan mendeteksi nomor pelacakan di situs yang Anda buka dan menampilkan info terbaru terkait paket di halaman Tab Baru. Nomor pelacakan paket dan nama situs akan dikirim ke Chromium untuk menyediakan fitur ini dan meningkatkan kualitas fitur belanja bagi semua orang. Anda dapat memperbaruinya kapan saja di <ph name="BEGIN_LINK" />Setelan Pelacakan Paket<ph name="END_LINK" />.</translation>

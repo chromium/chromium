@@ -75,6 +75,7 @@
 <translation id="2942241131342758843">‏لنکس کھولنے، ویجیٹس سے تلاش کرنے اور دیگر ایپس میں پاس ورڈز کو آٹو فل کرنے کیلئے، Chromium کا بطور ڈیفالٹ استعمال کریں</translation>
 <translation id="2977470724722393594">‏Chromium اپ ٹو ڈیٹ ہے</translation>
 <translation id="3044857325852340337">‏Chromium کے ڈیٹا کو حذف کر دیا گیا ہے</translation>
+<translation id="3049211156275642309">‏‫Chromium کا سیٹ اپ مکل کریں</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{‏Chromium نئے ٹیب صفحہ پر اس پیکیج کو ٹریک کرنے میں آپ کی مدد کر سکتا ہے۔}other{‏Chromium نئے ٹیب صفحہ پر ان پیکیجز کو ٹریک کرنے میں آپ کی مدد کر سکتا ہے۔}}</translation>
 <translation id="3102849287235003384">‏سبھی ویب سائٹس پر اپنے Google اکاؤنٹ سے سائن آؤٹ کرنے کے لیے <ph name="BEGIN_LINK" />Chromium سے سائن آؤٹ کریں<ph name="END_LINK" />۔</translation>
 <translation id="3219277919172823720">‏Chromium میں آواز سے تلاش کریں</translation>
@@ -273,6 +274,7 @@
 <translation id="8754966941001340678">‏Chromium بہتر تحفظ کی تجویز کرتا ہے</translation>
 <translation id="8759037115129007407">‏آپ کا فیملی ممبر ابھی پاس ورڈز موصول نہیں کر سکتا۔ ان سے Chromium اپ ڈیٹ کرنے اور پاس ورڈز کو مطابقت پذیر کرنے کے لیے کہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">‏اس اکاؤنٹ اور کسی بھی غیر محفوظ ڈیٹا کو Chromium سے ہٹا دیا جائے گا۔</translation>
+<translation id="8826789549860004832">‏اپنا براؤزر سیٹ اپ کرنا جاری رکھ کر Chromium سے زیادہ سے زیادہ فائدہ اٹھائیں۔</translation>
 <translation id="88376265765385899">‏Chromium بُک مارکس کھولتا ہے۔</translation>
 <translation id="8860548555286245440">‏URLs کو Chromium میں پوشیدگی میں کھولیں</translation>
 <translation id="8866191443434488382">‏Chromium ان سائٹس پر ٹریکنگ نمبرز کا پتہ لگائے گا جو آپ ملاحظہ کرتے ہیں اور نئے ٹیب کے صفحہ پر آپ کو پیکیج کی اپ ڈیٹس دکھائے گا۔ پیکج ٹریکنگ نمبر اور ویب سائٹ کا نام Chromium کو بھیجا جائے گا تاکہ یہ خصوصیت فراہم کی جا سکے اور ہر کسی کے لیے خریداری کی خصوصیات کو بہتر بنایا جا سکے۔ آپ اسے کسی بھی وقت <ph name="BEGIN_LINK" />پیکیج ٹریکنگ کی ترتیبات<ph name="END_LINK" /> میں اپ ڈیٹ کر سکتے ہیں۔</translation>

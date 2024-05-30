@@ -2042,7 +2042,6 @@
 <translation id="2469259292033957819">Немате сачуваних штампача.</translation>
 <translation id="2469375675106140201">Прилагодите проверу правописа</translation>
 <translation id="247051149076336810">URL за дељење датотека</translation>
-<translation id="2470702053775288986">Неподржани додаци су онемогућени</translation>
 <translation id="2471469610750100598">Црна (подразумевано)</translation>
 <translation id="2471506181342525583">Дозвољен је приступ локацији</translation>
 <translation id="2473195200299095979">Преведите ову страницу</translation>
@@ -2887,6 +2886,7 @@
 <translation id="3090819949319990166">Није успело копирање спољне crx датотеке у датотеку <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Упарили сте „<ph name="DEVICE_NAME" />“</translation>
 <translation id="3093714882666365141">Не дозвољавај сајтовима да инсталирају обрађиваче плаћања</translation>
+<translation id="3094080575472025333">Блокирајте апликације</translation>
 <translation id="3094141017404513551">Овим се ваше прегледање раздваја од прегледања корисника <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Истиче данас}=1{Истиче сутра}one{Истиче за # дан}few{Истиче за # дана}other{Истиче за # дана}}</translation>
 <translation id="3094521107841754472">Цена је промењена из <ph name="PREVIOUS_PRICE" /> у <ph name="CURRENT_PRICE" />.</translation>
@@ -3719,6 +3719,7 @@
 <translation id="372722114124766626">Само једном</translation>
 <translation id="3727332897090187514">Ниједна напомена није додата</translation>
 <translation id="3727473233247516571">Цео кеширани подоквир: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727843212509629024">Нетачан PIN. Пробајте поново</translation>
 <translation id="3727850735097852673">Да бисте користили Google менаџер лозинки са macOS Keychain-ом, поново покрените Chrome и дозволите приступ Keychain-у. Картице ће се поново отворити после поновног покретања.</translation>
 <translation id="3728188878314831180">да преслика обавештења са вашег телефона</translation>
 <translation id="3728681439294129328">Конфигуриши мрежну адресу</translation>
@@ -4188,6 +4189,7 @@
 <translation id="4050534976465737778">Уверите се да су оба уређаја откључана, близу један другом и да је укључен Bluetooth. Ако делите са Chromebook-ом, који није у контактима, уверите се да му је укључена Видљивост у близини (отворите област статуса, па укључите Видљивост у близини). <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Да бисте прешли на последњи коришћени метод уноса, притисните <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">тастер за претрагу + стрелица надесно</translation>
+<translation id="405181879009056822">Подешавања ChromeOS-а</translation>
 <translation id="4052120076834320548">Сићушна</translation>
 <translation id="4052913941260326985">Направи QR кôд</translation>
 <translation id="405365679581583349">Ажурирајте Google Play услуге</translation>
@@ -5213,7 +5215,6 @@
 <translation id="4853020600495124913">Отвори у &amp;новом прозору</translation>
 <translation id="4854317507773910281">Одабери налог родитеља за одобрење</translation>
 <translation id="485480310608090163">Још подешавања и дозвола</translation>
-<translation id="4858599593306712511">Родитељски надзор за апликације</translation>
 <translation id="4858913220355269194">Фриц</translation>
 <translation id="486213875233855629">Администратор је искључио звук</translation>
 <translation id="4862642413395066333">Потписивање OCSP одговора</translation>
@@ -5724,6 +5725,7 @@
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> користи локацију да би вам пружао локални садржај. То можете да промените у: <ph name="SETTINGS_LINK" />.</translation>
 <translation id="5252496130205799136">Желите да користите Google налог да бисте чували и попуњавали лозинке?</translation>
 <translation id="5252653240322147470">PIN мора да има мање од <ph name="MAXIMUM" /> цифре(ара)</translation>
+<translation id="5253554634804500860">Користи телефон <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Коришћење меморије: <ph name="MEMORY_USAGE" /></translation>
 <translation id="52550593576409946">Није могуће покренути киоск апликацију.</translation>
 <translation id="5255726914791076208">Када измените приступни кôд, налог за услугу <ph name="RP_ID" /> се неће променити</translation>
@@ -5798,6 +5800,7 @@
 <translation id="5300719150368506519">Шаље URL-ове страница које посећујете Google-у</translation>
 <translation id="5301751748813680278">Приступате као гост.</translation>
 <translation id="5301954838959518834">Важи</translation>
+<translation id="5302032366299160685">Сачекајте да се фајл отвори пре него што пробате поново</translation>
 <translation id="5302048478445481009">Језик</translation>
 <translation id="5302932258331363306">Прикажи замене</translation>
 <translation id="5305145881844743843">Овим налогом управља <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
@@ -6296,6 +6299,7 @@
 <translation id="5678955352098267522">Читање ваших података на <ph name="WEBSITE_1" /></translation>
 <translation id="5679785611070310751">Престаћете да добијате безбедносна ажурирања за овај Chromebook у: <ph name="MONTH_AND_YEAR" />. Време је да обавите надоградњу како бисте добили најновије безбедносне и софтверске функције. Важе услови понуде.</translation>
 <translation id="5680050361008726776">Желите да уклоните „<ph name="ESIM_PROFILE_NAME" />“?</translation>
+<translation id="5681586175480958839">Фајл се већ отвара</translation>
 <translation id="5684181005476681636">Детаљи о WiFi мрежи</translation>
 <translation id="5684661240348539843">Идентификатор елемента</translation>
 <translation id="5684950556880280580">Лозинка је ажурирана</translation>
@@ -6460,6 +6464,7 @@
 <translation id="5806447147478173900">Укупан меморијски простор који користе приказани сајтови: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (подразумевано)</translation>
 <translation id="5809835394668218762">Још радњи за <ph name="WEBSITE" /></translation>
+<translation id="5809840528400421362">PIN мора да садржи 6 цифара</translation>
 <translation id="5810809306422959727">Овај налог не испуњава услове за родитељски надзор</translation>
 <translation id="5811614940486072060">Овај фајл се не преузима често и може да буде опасан</translation>
 <translation id="5812674658566766066">Прошири све</translation>

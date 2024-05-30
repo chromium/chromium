@@ -2044,7 +2044,6 @@
 <translation id="2469259292033957819">沒有已儲存的印表機。</translation>
 <translation id="2469375675106140201">自訂拼字檢查</translation>
 <translation id="247051149076336810">檔案共用網址</translation>
-<translation id="2470702053775288986">已停用不支援的擴充功能</translation>
 <translation id="2471469610750100598">黑色 (預設)</translation>
 <translation id="2471506181342525583">已允許存取位置資訊</translation>
 <translation id="2473195200299095979">翻譯這個網頁</translation>
@@ -4835,6 +4834,7 @@
 <translation id="4562091353415772246">安裝更新內容和應用程式。如果選擇繼續，即表示您允許這部裝置自動下載及安裝來自 Google、您的電信業者和裝置製造商的更新內容和應用程式，上述程序可能會使用行動數據。其中有些應用程式或許會提供應用程式內購項目。<ph name="BEGIN_LINK1" />進一步瞭解 Play 自動安裝功能<ph name="BEGIN_LINK1_END" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">新增指紋</translation>
 <translation id="4562155266774382038">關閉建議</translation>
+<translation id="4562364000855074606">禁止在這部 <ph name="DEVICE_TYPE" /> 上安裝應用程式。如要限制下載應用程式或內容，請前往 Google Play 設定。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">初始輸入語言為中文</translation>
 <translation id="4563382028841851106">從帳戶中移除</translation>
 <translation id="4563880231729913339">手指 3</translation>
@@ -5210,7 +5210,6 @@
 <translation id="4853020600495124913">在新視窗中開啟(&amp;N)</translation>
 <translation id="4854317507773910281">選擇進行審核的家長帳戶</translation>
 <translation id="485480310608090163">更多設定和權限</translation>
-<translation id="4858599593306712511">應用程式家長監護</translation>
 <translation id="4858913220355269194">飛球</translation>
 <translation id="486213875233855629">已由系統管理員設為靜音</translation>
 <translation id="4862642413395066333">簽署 OCSP 回應</translation>
@@ -8039,6 +8038,7 @@
 <translation id="7009709314043432820">「<ph name="APP_NAME" />」正在使用攝影機</translation>
 <translation id="701080569351381435">檢視原始碼</translation>
 <translation id="7011797924920577670">推測你的興趣喜好</translation>
+<translation id="7012430956470647760">適用於應用程式的家長監護設定</translation>
 <translation id="7013762323294215682">這個密碼金鑰會儲存至密碼管理工具。凡是有權存取密碼管理工具的使用者，都能使用這個密碼金鑰。</translation>
 <translation id="7014174261166285193">安裝失敗。</translation>
 <translation id="7014480873681694324">移除醒目顯示</translation>

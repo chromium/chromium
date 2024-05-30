@@ -2060,7 +2060,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2469259292033957819">Nid oes gennych unrhyw argraffwyr sydd wedi'u harbed.</translation>
 <translation id="2469375675106140201">Personoleiddio gwiriad sillafu</translation>
 <translation id="247051149076336810">URL cyfran ffeil</translation>
-<translation id="2470702053775288986">Analluogwyd estyniadau na chefnogir</translation>
 <translation id="2471469610750100598">Du (diofyn)</translation>
 <translation id="2471506181342525583">Caniateir mynediad at eich lleoliad</translation>
 <translation id="2473195200299095979">Cyfieithu'r dudalen hon</translation>
@@ -4855,6 +4854,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4562091353415772246">Gosod diweddariadau ac apiau. Drwy barhau, rydych yn cytuno y gall y ddyfais hon hefyd lawrlwytho a gosod diweddariadau ac apiau yn awtomatig gan Google, eich rhwydwaith, a gwneuthurwr eich dyfais, gan ddefnyddio data symudol o bosib. Mae'n bosib y bydd rhai o'r apiau hyn yn cynnig pryniannau o fewn yr ap. <ph name="BEGIN_LINK1" />Dysgu rhagor am osod Play yn awtomatig<ph name="BEGIN_LINK1_END" />Dysgu rhagor<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">Ychwanegu Olion Bysedd</translation>
 <translation id="4562155266774382038">Diystyru'r awgrym</translation>
+<translation id="4562364000855074606">Rhwystro apiau sydd wedi'u gosod ar yr <ph name="DEVICE_TYPE" /> yma. I gyfyngu ar lawrlwytho apiau neu gynnwys, ewch i'r Gosodiadau Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Dysgu rhagor<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Yr iaith mewnbwn gychwynnol yw Tsieinëeg</translation>
 <translation id="4563382028841851106">Tynnu o'r cyfrif</translation>
 <translation id="4563880231729913339">Bys 3</translation>
@@ -5230,7 +5230,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4853020600495124913">Agor mewn &amp;ffenestr newydd</translation>
 <translation id="4854317507773910281">Dewiswch gyfrif rhiant i'w gymeradwyo</translation>
 <translation id="485480310608090163">Rhagor o osodiadau a chaniatadau</translation>
-<translation id="4858599593306712511">Rheolaethau rhieni ap</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">Wedi'i ddistewi gan eich gweinyddwr</translation>
 <translation id="4862642413395066333">Llofnodi Ymatebion OCSP</translation>
@@ -8072,6 +8071,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7009709314043432820">Mae <ph name="APP_NAME" /> yn defnyddio'ch camera</translation>
 <translation id="701080569351381435">Gweld y Ffynhonnell</translation>
 <translation id="7011797924920577670">yn amcangyfrif eich diddordebau</translation>
+<translation id="7012430956470647760">Rheolaethau rhieni ar gyfer apiau</translation>
 <translation id="7013762323294215682">Bydd y cyfrinair hwn yn cael ei gadw i'ch rheolwr cyfrineiriau. Bydd unrhyw un sydd â mynediad ato yn gallu defnyddio'r cyfrinair hwn.</translation>
 <translation id="7014174261166285193">Methwyd â gosod yr eitem.</translation>
 <translation id="7014480873681694324">Tynnu'r Amlygu</translation>

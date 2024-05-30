@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />ਤੁਹਾਡੇ ਰੁਜ਼ਗਾਰਦਾਤੇ ਜਾਂ ਸਕੂਲ ਨੂੰ
           <ph name="LIST_ITEM" />ਤੁਹਾਡੇ ਇੰਟਰਨੈੱਟ ਸੇਵਾ ਪ੍ਰਦਾਨਕ ਨੂੰ
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">ਇਸ ਆਈਟਮ 'ਤੇ ਨਜ਼ਰ ਰੱਖੋ</translation>
 <translation id="1337692097987160377">ਇਸ ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="1339601241726513588">ਦਾਖਲਾ ਡੋਮੇਨ:</translation>
 <translation id="1340482604681802745">ਪਿਕਅੱਪ ਪਤਾ</translation>
@@ -455,6 +456,7 @@
 <translation id="1812527064848182527">ਲੈਂਡਸਕੇਪ</translation>
 <translation id="1812975699435941848">ਸਿਹਤ ਸਿੱਖਿਆ ਅਤੇ ਮੈਡੀਕਲ ਸਿਖਲਾਈ</translation>
 <translation id="1816436748874040213">ਸਾਂਝੀਆਂ ਕੀਤੀਆਂ ਟੈਬਾਂ ਨੂੰ ਸਕ੍ਰੋਲ ਅਤੇ ਜ਼ੂਮ ਕਰਨ ਲਈ ਕਹਿ ਸਕਦਾ ਹੈ</translation>
+<translation id="1817364650920811003">ਭੂਮਿਕਾ: Chrome ਸੰਬੰਧੀ ਨੁਕਤਾ। ਪਹੁੰਚਯੋਗਤਾ ਲੇਬਲ: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">ਅਣਬਲਾਕ ਕਰੋ</translation>
 <translation id="1818585559878922121">ਦਸਤਾਵੇਜ਼ੀ ਫ਼ਿਲਮਾਂ</translation>
 <translation id="182139138257690338">ਸਵੈਚਲਿਤ ਡਾਊਨਲੋਡ</translation>
@@ -1394,6 +1396,7 @@
 <translation id="3642638418806704195">ਐਪਲੀਕੇਸ਼ਨ:</translation>
 <translation id="3646643500201740985">ਵਿਗਿਆਪਨ ਕਿੰਨੀ ਵਧੀਆ ਕਾਰਗੁਜ਼ਾਰੀ ਕਰਦਾ ਹੈ, ਉਸਨੂੰ ਮਾਪਣਾ</translation>
 <translation id="3647286794400715637">ਹਰੇਕ URL ਸਤਰ ਇੰਦਰਾਜ ਵਿੱਚ 1 ਤੋਂ 2 URL ਸ਼ਾਮਲ ਹੋਣੇ ਲਾਜ਼ਮੀ ਹਨ।</translation>
+<translation id="3647400963805615193">'Chrome ਸੰਬੰਧੀ ਨੁਕਤੇ ਨੂੰ ਖਾਰਜ ਕਰੋ' ਬਟਨ, ਖਾਰਜ ਕਰਨ ਲਈ Enter ਦਬਾਓ, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">ਪ੍ਰਮਾਣੀਕਰਨ ਸਫਲ</translation>
 <translation id="3650594806107685466">ਆਪਣੇ ਕਾਰਡ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਵਿੱਚ ਮਦਦ ਲਈ, <ph name="SIDE_OF_CARD" /> 'ਤੇ CVC ਦਾਖਲ ਕਰੋ</translation>
 <translation id="3650917416636556301">ਹਾਈਕਿੰਗ ਅਤੇ ਕੈਂਪਿੰਗ</translation>
@@ -2608,6 +2611,7 @@
 <translation id="6035491133925068289">ਟਰੈਕ ਅਤੇ ਫ਼ੀਲਡ</translation>
 <translation id="6039846035001940113">ਜੇਕਰ ਸਮੱਸਿਆ ਜਾਰੀ ਰਹਿੰਦੀ ਹੈ, ਤਾਂ ਸਾਈਟ ਦੇ ਮਾਲਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
+<translation id="6040539895181423374">ਕੀਮਤਾਂ ਬਾਰੇ ਅੰਦਰੂਨੀ-ਝਾਤਾਂ</translation>
 <translation id="604124094241169006">ਆਟੋਮੈਟਿਕ</translation>
 <translation id="6041777658117377052">ਚੈਂਬਰ ਦਾ ਤਾਪਮਾਨ</translation>
 <translation id="6042308850641462728">ਹੋਰ</translation>
@@ -3364,6 +3368,7 @@
 <translation id="7481312909269577407">ਅੱਗੇ ਭੇਜੋ</translation>
 <translation id="7481603210197454575">ਇਤਾਲਵੀ ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="7483482939016730822">ਸਕੂਲੀ ਸਪਲਾਈਆਂ ਅਤੇ ਕਲਾਸਰੂਮ ਸੰਬੰਧੀ ਉਪਕਰਨ</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chrome ਸੰਬੰਧੀ ਨੁਕਤੇ ਨੂੰ ਖਾਰਜ ਕਰਨ ਲਈ Tab ਫਿਰ Enter ਦਬਾਓ।</translation>
 <translation id="7485085230273446323">ਕਾਰੋਬਾਰ ਅਤੇ ਉਦਯੋਗਿਕ</translation>
 <translation id="7485870689360869515">ਕੋਈ ਡਾਟਾ ਨਹੀਂ ਮਿਲਿਆ।</translation>
 <translation id="7489392576326061356">ਸ਼ੈਂਪੂ ਅਤੇ ਕੰਡੀਸ਼ਨਰ</translation>

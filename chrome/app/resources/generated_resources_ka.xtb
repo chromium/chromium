@@ -2044,7 +2044,6 @@
 <translation id="2469259292033957819">შენახული პრინტერები არ გაქვთ.</translation>
 <translation id="2469375675106140201">მართლწერის შემოწმების მორგება</translation>
 <translation id="247051149076336810">ფაილის გაზიარების URL</translation>
-<translation id="2470702053775288986">გამოუყენებელი გაფართოებების გამორთვა</translation>
 <translation id="2471469610750100598">შავი (ნაგულისხმევი)</translation>
 <translation id="2471506181342525583">მდებარეობაზე წვდომა დაშვებულია</translation>
 <translation id="2473195200299095979">ამ გვერდის თარგმნა</translation>
@@ -2889,6 +2888,7 @@
 <translation id="3090819949319990166">გარე crx ფაილის <ph name="TEMP_CRX_FILE" />-ში კოპირება შეუძლებელია.</translation>
 <translation id="3090871774332213558">„<ph name="DEVICE_NAME" />“ დაწყვილებულია</translation>
 <translation id="3093714882666365141">საიტებისთვის გადახდის დამმუშავებლების ინსტალაციის აკრძალვა</translation>
+<translation id="3094080575472025333">აპების დაბლოკვა</translation>
 <translation id="3094141017404513551">ეს ქმედება განაცალკევებს თქვენსა და <ph name="EXISTING_USER" />-ის დათვალიერების მონაცემებს</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{მოქმედების ვადა იწურება დღეს}=1{მოქმედების ვადა იწურება ხვალ}other{მოქმედების ვადა იწურება # დღეში}}</translation>
 <translation id="3094521107841754472">ფასი შეიცვალა <ph name="PREVIOUS_PRICE" />-დან <ph name="CURRENT_PRICE" />-ზე.</translation>
@@ -3721,6 +3721,7 @@
 <translation id="372722114124766626">მხოლოდ ერთხელ</translation>
 <translation id="3727332897090187514">არცერთი შენიშვნა არ არის დამატებული</translation>
 <translation id="3727473233247516571">ქეშირებული ქვეფრეიმი უკან-წინ გადასვლის შესაძლებლობით: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727843212509629024">PIN-კოდი არასწორია. ცადეთ ხელახლა</translation>
 <translation id="3727850735097852673">Google პაროლების მმართველი macOS Keychain-თან რომ გამოიყენოთ, ხელახლა გაუშვით Chrome და დაუშვით წვდომა Keychain-ზე. ხელახლა გაშვების შემდეგ თქვენი ჩანართები თავიდან გაიხსნება.</translation>
 <translation id="3728188878314831180">შეტყობინებების არეკვლა ტელეფონიდან</translation>
 <translation id="3728681439294129328">ქსელის მისამართის კონფიგურაცია</translation>
@@ -5216,7 +5217,6 @@
 <translation id="4853020600495124913">&amp;ახალ ფანჯარაში გახსნა</translation>
 <translation id="4854317507773910281">აირჩიეთ მშობლის ანგარიში დასადასტურებლად</translation>
 <translation id="485480310608090163">სხვა პარამეტრები და ნებართვები</translation>
-<translation id="4858599593306712511">მშობელთა კონტროლის დამატება</translation>
 <translation id="4858913220355269194">ფრიცი</translation>
 <translation id="486213875233855629">დადუმებულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="4862642413395066333">ხელმოწერის OCSP პასუხები</translation>
@@ -5803,6 +5803,7 @@
 <translation id="5300719150368506519">თქვენ მიერ მონახულებული გვერდების URL-ების გაგზავნა Google-ისთვის</translation>
 <translation id="5301751748813680278">მიმდინარეობს შესვლა, როგორც სტუმარი.</translation>
 <translation id="5301954838959518834">კარგი, გასაგებია</translation>
+<translation id="5302032366299160685">დაელოდეთ ფაილის გახსნას, სანამ ხელახლა ცდით</translation>
 <translation id="5302048478445481009">ენა</translation>
 <translation id="5302932258331363306">ჩანაცვლებების ჩვენება</translation>
 <translation id="5305145881844743843">ამ ანგარიშს მართავს <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
@@ -6301,6 +6302,7 @@
 <translation id="5678955352098267522">წაიკითხეთ თქვენი მონაცემები ვებსაიტზე <ph name="WEBSITE_1" /></translation>
 <translation id="5679785611070310751"><ph name="MONTH_AND_YEAR" />-დან ამ Chromebook-ისთვის უსაფრთხოების განახლებებს აღარ მიიღებთ. დროა, გამოცვალოთ მოწყობილობა, უსაფრთხოების უახლესი განახლებებითა და ახალი პროგრამული უზრუნველყოფით რომ ისარგებლოთ. მოქმედებს შემოთავაზების პირობები.</translation>
 <translation id="5680050361008726776">გსურთ, ამოშალოთ „<ph name="ESIM_PROFILE_NAME" />“?</translation>
+<translation id="5681586175480958839">ფაილი უკვე იხსნება</translation>
 <translation id="5684181005476681636">Wi‑Fi ქსელის დეტალები</translation>
 <translation id="5684661240348539843">საინვენტარო იდენტიფიკატორი</translation>
 <translation id="5684950556880280580">თქვენი პაროლი განახლდა</translation>

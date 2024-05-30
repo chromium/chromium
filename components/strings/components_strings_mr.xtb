@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />तुमचा एम्पलॉयर किंवा शाळा
           <ph name="LIST_ITEM" />तुमचा इंटरनेट सेवा पुरवठादार
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">हा आयटम ट्रॅक करा</translation>
 <translation id="1337692097987160377">हा टॅब शेअर करा</translation>
 <translation id="1339601241726513588">नावनोंदणी डोमेन:</translation>
 <translation id="1340482604681802745">घेण्याचा पत्ता</translation>
@@ -455,6 +456,7 @@
 <translation id="1812527064848182527">लॅंडस्केप</translation>
 <translation id="1812975699435941848">आरोग्य शिक्षण आणि वैद्यकीय प्रशिक्षण</translation>
 <translation id="1816436748874040213">शेअर केलेल्या टॅबना स्क्रोल आणि झूम करण्याची विनंती करू शकतात</translation>
+<translation id="1817364650920811003">भूमिका: Chrome टीप. अ‍ॅक्सेसिबिलिटी लेबल: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">अनब्लॉक करा</translation>
 <translation id="1818585559878922121">माहितीपट</translation>
 <translation id="182139138257690338">ऑटोमॅटिक डाउनलोड</translation>
@@ -1396,6 +1398,7 @@
 <translation id="3642638418806704195">ॲप्लिकेशन:</translation>
 <translation id="3646643500201740985">जाहिरात किती चांगल्या पद्धतीने परफॉर्म करते हे मोजणे</translation>
 <translation id="3647286794400715637">प्रत्येक URLs स्ट्रिंग एंट्रीमध्ये एक ते दोन URLs असणे आवश्यक आहे.</translation>
+<translation id="3647400963805615193">Chrome टीप डिसमिस करण्यासाठी बटण, डिसमिस करण्यासाठी एंटर प्रेस करा, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">प्रमाणीकरण यशस्वी</translation>
 <translation id="3650594806107685466">तुमचे कार्ड सुरक्षित ठेवण्यात मदत करण्यासाठी, <ph name="SIDE_OF_CARD" /> वरील CVC एंटर करा</translation>
 <translation id="3650917416636556301">हायकिंग आणि कॅम्पिंग</translation>
@@ -2610,6 +2613,7 @@
 <translation id="6035491133925068289">ट्रॅक अँड फील्ड</translation>
 <translation id="6039846035001940113">समस्या कायम राहिल्यास साइटच्या मालकाशी संपर्क साधा.</translation>
 <translation id="6040143037577758943">बंद करा</translation>
+<translation id="6040539895181423374">किमतीच्या इनसाइट</translation>
 <translation id="604124094241169006">स्वयंचलित</translation>
 <translation id="6041777658117377052">चेंबरचे तापमान</translation>
 <translation id="6042308850641462728">अधिक</translation>
@@ -3368,6 +3372,7 @@
 <translation id="7481312909269577407">पुढील</translation>
 <translation id="7481603210197454575">एन्व्हलप इटालियन</translation>
 <translation id="7483482939016730822">शाळेसाठीच्या वस्तूंचा पुरवठा आणि वर्गासाठी उपकरणे</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chrome टीप डिसमिस करण्यासाठी टॅब त्यानंतर एंटर प्रेस करा.</translation>
 <translation id="7485085230273446323">व्यवसाय आणि औद्योगिक</translation>
 <translation id="7485870689360869515">डेटा आढळला नाही.</translation>
 <translation id="7489392576326061356">शँपू आणि कंडिशनर</translation>

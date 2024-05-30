@@ -1693,6 +1693,7 @@
 <translation id="2234827758954819389">隐私保护指南</translation>
 <translation id="2234876718134438132">同步功能和 Google 服务</translation>
 <translation id="2235344399760031203">已阻止第三方 Cookie</translation>
+<translation id="2236949375853147973">我的活动记录</translation>
 <translation id="2238379619048995541">频率状态数据</translation>
 <translation id="2241053333139545397">读取和更改您在一些网站上的数据</translation>
 <translation id="2241634353105152135">仅一次</translation>
@@ -2036,7 +2037,6 @@
 <translation id="2469259292033957819">您没有已保存的打印机。</translation>
 <translation id="2469375675106140201">自定义拼写检查</translation>
 <translation id="247051149076336810">文件共享网址</translation>
-<translation id="2470702053775288986">已停用不支持的扩展程序</translation>
 <translation id="2471469610750100598">黑色（默认）</translation>
 <translation id="2471506181342525583">已允许使用位置信息</translation>
 <translation id="2473195200299095979">翻译此页</translation>
@@ -4178,6 +4178,7 @@
 <translation id="4050534976465737778">请确保这两部设备均已解锁、相距很近且均已开启蓝牙。如果您的分享对象是一部不在您通讯录中的 Chromebook，请确保已为它开启“附近分享”的高可见度模式（先打开状态区，然后开启“附近分享”的高可见度模式）。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">若要切换到上次使用的输入法，请按 <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">搜索键 + 向右键</translation>
+<translation id="405181879009056822">ChromeOS 设置</translation>
 <translation id="4052120076834320548">最小</translation>
 <translation id="4052913941260326985">创建二维码(&amp;Q)</translation>
 <translation id="405365679581583349">更新 Google Play 服务</translation>
@@ -4827,6 +4828,7 @@
 <translation id="4562091353415772246">安装更新和应用。继续操作即表示您同意：此设备还可自动下载并安装来自 Google、您的运营商和此设备的制造商的更新及应用（期间可能会使用移动数据网络），其中的部分应用可能会提供应用内购商品。<ph name="BEGIN_LINK1" />详细了解 Play 自动安装<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">添加指纹</translation>
 <translation id="4562155266774382038">忽略建议</translation>
+<translation id="4562364000855074606">屏蔽在此 <ph name="DEVICE_TYPE" /> 上安装的应用。如要限制下载应用或内容，请前往 Google Play 设置。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">初始输入语言是中文</translation>
 <translation id="4563382028841851106">从账号中移除</translation>
 <translation id="4563880231729913339">手指 3</translation>
@@ -5712,6 +5714,7 @@
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> 会使用您的位置信息为您提供本地内容。您可以在<ph name="SETTINGS_LINK" />中更改此设置。</translation>
 <translation id="5252496130205799136">使用您的 Google 账号保存和填充密码？</translation>
 <translation id="5252653240322147470">PIN 码必须少于 <ph name="MAXIMUM" /> 位数</translation>
+<translation id="5253554634804500860">使用<ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">内存用量：<ph name="MEMORY_USAGE" /></translation>
 <translation id="52550593576409946">无法启动自助服务终端应用。</translation>
 <translation id="5255726914791076208">修改通行密钥时，您的 <ph name="RP_ID" /> 账号不会改变</translation>
@@ -6446,6 +6449,7 @@
 <translation id="5806447147478173900">显示的网站占用的总存储空间：<ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0°（默认）</translation>
 <translation id="5809835394668218762">可对 <ph name="WEBSITE" /> 执行的更多操作</translation>
+<translation id="5809840528400421362">PIN 码必须包含 6 位数</translation>
 <translation id="5810809306422959727">此账号无法使用家长控制功能</translation>
 <translation id="5811614940486072060">此文件属于不常下载的内容，可能含有危险因素</translation>
 <translation id="5812674658566766066">全部展开</translation>
@@ -8031,6 +8035,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> 正在使用您的摄像头</translation>
 <translation id="701080569351381435">显示源代码</translation>
 <translation id="7011797924920577670">推测您的兴趣</translation>
+<translation id="7012430956470647760">适用于应用的家长控制功能</translation>
 <translation id="7013762323294215682">此通行密钥将保存到密码管理工具。任何有权访问密码管理工具的用户都能使用此通行密钥。</translation>
 <translation id="7014174261166285193">安装失败。</translation>
 <translation id="7014480873681694324">撤消突出显示</translation>

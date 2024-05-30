@@ -191,6 +191,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
           <ph name="LIST_ITEM" />Munkaadója vagy iskolája
           <ph name="LIST_ITEM" />Internetszolgáltatója
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">Elem nyomon követése</translation>
 <translation id="1337692097987160377">Lap megosztása</translation>
 <translation id="1339601241726513588">Regisztrációs domain:</translation>
 <translation id="1340482604681802745">Átvételi cím</translation>
@@ -455,6 +456,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1812527064848182527">fekvő</translation>
 <translation id="1812975699435941848">Egészségügyi oktatás és orvosképzés</translation>
 <translation id="1816436748874040213">Engedélyt kérhet a megosztott lapok görgetésére és nagyítására</translation>
+<translation id="1817364650920811003">Szerep: Chrome-tipp. Kisegítő lehetőségek címkéje: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Letiltás feloldása</translation>
 <translation id="1818585559878922121">Dokumentumfilmek</translation>
 <translation id="182139138257690338">automatikus letöltések</translation>
@@ -1395,6 +1397,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3642638418806704195">Alkalmazás:</translation>
 <translation id="3646643500201740985">Hirdetések teljesítményének mérése</translation>
 <translation id="3647286794400715637">Minden egyes URL-karakterláncnak 1 vagy 2 URL-címet kell tartalmaznia.</translation>
+<translation id="3647400963805615193">Chrome-tipp elvetése gomb. Az elvetéshez nyomja le az Enter billentyűt, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Sikeres érvényesítés</translation>
 <translation id="3650594806107685466">Kártyája biztonságának megőrzése érdekében adja meg a CVC-számot, amelyet itt talál: <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Túrázás és táborozás</translation>
@@ -2609,6 +2612,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6035491133925068289">Atlétika</translation>
 <translation id="6039846035001940113">Ha a probléma továbbra is fennáll, lépjen kapcsolatba a webhely tulajdonosával.</translation>
 <translation id="6040143037577758943">Bezárás</translation>
+<translation id="6040539895181423374">Árváltozások és -összehasonlítások</translation>
 <translation id="604124094241169006">Automatikus</translation>
 <translation id="6041777658117377052">Kamra hőmérséklete</translation>
 <translation id="6042308850641462728">Továbbiak</translation>
@@ -3366,6 +3370,7 @@ További részletek:
 <translation id="7481312909269577407">Előre</translation>
 <translation id="7481603210197454575">Olasz boríték</translation>
 <translation id="7483482939016730822">Iskolai eszközök és osztálytermi felszerelés</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, nyomja le a Tab, majd az Enter billentyűt a Chrome-tipp elvetéséhez.</translation>
 <translation id="7485085230273446323">Üzleti és ipari termékek</translation>
 <translation id="7485870689360869515">Nem található adat.</translation>
 <translation id="7489392576326061356">Samponok és hajkondicionálók</translation>

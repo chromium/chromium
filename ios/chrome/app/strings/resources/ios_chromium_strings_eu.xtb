@@ -75,6 +75,7 @@ Chromium-en erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikust
 <translation id="2942241131342758843">Erabili Chromium modu lehenetsian estekak irekitzeko, widgetetatik bilaketak egiteko eta beste aplikazio batzuetako pasahitzak automatikoki betetzeko</translation>
 <translation id="2977470724722393594">Eguneratuta dago Chromium</translation>
 <translation id="3044857325852340337">Ezabatu Chromium-eko datuak</translation>
+<translation id="3049211156275642309">Amaitu Chromium konfiguratzen</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium-ek Fitxa berria orrian pakete honen jarraipena egiten lagundu ahal dizu.}other{Chromium-ek Fitxa berria orrian pakete hauen jarraipena egiten lagundu ahal dizu.}}</translation>
 <translation id="3102849287235003384">Google-ko kontuko saioa webgune guztietan amaitzeko, <ph name="BEGIN_LINK" />amaitu Chromium-eko saioa<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Bilatu Voice-rekin Chromium-en</translation>
@@ -273,6 +274,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="8754966941001340678">Chromium-ek babes hobetua gomendatzen du</translation>
 <translation id="8759037115129007407">Familiako kideak ezin du jaso pasahitzik une honetan. Eska iezaiozu Chromium eguneratzeko eta pasahitzak sinkronizatzeko. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Kontu hau eta gorde gabeko datuak kendu egingo dira Chromium-etik.</translation>
+<translation id="8826789549860004832">Atera ahalik eta etekin handiena Chromium-i arakatzailea konfiguratzen jarraituta.</translation>
 <translation id="88376265765385899">Chromium-eko laster-markak irekitzen ditu.</translation>
 <translation id="8860548555286245440">Ireki URLak Chromium-en ezkutuko moduan</translation>
 <translation id="8866191443434488382">Chromium-ek jarraipen-zenbakiak hautemango ditu bisitatzen dituzun webguneetan, eta paketeei buruzko informazio eguneratua erakutsiko dizu Fitxa berria orrian. Paketearen jarraipen-zenbakia eta webgunearen izena Chromium-i bidaliko zaizkio eginbide hau eskaintzeko eta erosketa-eginbideak denentzat hobetzeko. Hori aldatzeko, joan <ph name="BEGIN_LINK" />paketeen jarraipenaren ezarpenetara<ph name="END_LINK" />.</translation>

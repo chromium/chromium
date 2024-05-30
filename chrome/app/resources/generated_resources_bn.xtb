@@ -1711,6 +1711,7 @@
 <translation id="2234827758954819389">গোপনীয়তা সংক্রান্ত গাইড</translation>
 <translation id="2234876718134438132">সিঙ্ক এবং Google পরিষেবাগুলি</translation>
 <translation id="2235344399760031203">থার্ড-পার্টি কুকি ব্লক করা হয়েছে</translation>
+<translation id="2236949375853147973">আমার অ্যাক্টিভিটি</translation>
 <translation id="2238379619048995541">ফ্রিকোয়েন্সি স্থিতি ডেটা</translation>
 <translation id="2241053333139545397">কয়েকটি ওয়েবসাইটে আপনার ডেটা পড়ুন এবং পরিবর্তন করুন</translation>
 <translation id="2241634353105152135">শুধুমাত্র একবার</translation>
@@ -2057,7 +2058,6 @@
 <translation id="2469259292033957819">আপনার কাছে আগে থেকে কোনও প্রিন্টার সেভ করা নেই।</translation>
 <translation id="2469375675106140201">বানান পরীক্ষা কাস্টমাইজ করুন</translation>
 <translation id="247051149076336810">ফাইল শেয়ার করার ইউআরএল</translation>
-<translation id="2470702053775288986">অসমর্থিত এক্সটেনশানগুলি নিষ্ক্রিয় করা আছে</translation>
 <translation id="2471469610750100598">কালো (ডিফল্ট)</translation>
 <translation id="2471506181342525583">লোকেশন অ্যাক্সেসের অনুমতি দেওয়া হয়নি</translation>
 <translation id="2473195200299095979">এই পৃষ্ঠাটি অনুবাদ করুন</translation>
@@ -4852,6 +4852,7 @@
 <translation id="4562091353415772246">চালিয়ে যাওয়ার মাধ্যমে, এই ডিভাইস Google থেকে যাতে আপডেট এবং অ্যাপ, অটোমেটিক ডাউনলোড ও ইনস্টল করতে পারে সেই বিষয়েও আপনি সম্মতি দিয়েছেন এবং আপনার পরিষেবা প্রদানকারী ও ডিভাইস প্রস্তুতকারক, ওয়াই-ফাই উপলভ্য না পেয়ে সম্ভবত মোবাইল ডেটা ব্যবহার করছে। এইসবের মধ্যে কিছু অ্যাপ হয়ত অ্যাপ-মধ্যস্থ কেনাকাটার সুবিধা অফার করতে পারে। <ph name="BEGIN_LINK1" />Play অটো ইনস্টল সম্পর্কে আরও জানুন<ph name="BEGIN_LINK1_END" />আরও জানুন<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">আঙ্গুলের ছাপ যোগ করুন</translation>
 <translation id="4562155266774382038">সাজেশন বাতিল করুন</translation>
+<translation id="4562364000855074606">এই <ph name="DEVICE_TYPE" /> ডিভাইসে ইনস্টল করা অ্যাপ ব্লক করুন। অ্যাপ বা কন্টেন্ট ডাউনলোড করাতে বিধিনিষেধ আরোপ করতে, Google Play সেটিংসে যান। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">প্রাথমিক ইনপুট  ভাষা  চীনা</translation>
 <translation id="4563382028841851106">অ্যাকাউন্ট থেকে সরিয়ে দিন</translation>
 <translation id="4563880231729913339">আঙ্গুল ৩</translation>
@@ -8065,6 +8066,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> আপনার ক্যামেরা ব্যবহার করছে</translation>
 <translation id="701080569351381435">উৎস দেখান</translation>
 <translation id="7011797924920577670">আপনার আগ্রহকে অনুমান করে</translation>
+<translation id="7012430956470647760">অ্যাপের জন্য 'অভিভাবকীয় নিয়ন্ত্রণ' ফিচার</translation>
 <translation id="7013762323294215682">এই পাসকী আপনার Password Manager-এ সেভ করা থাকবে। এটিতে যার অ্যাক্সেস থাকবে, তারা এই পাসকী ব্যবহার করতে পারবেন।</translation>
 <translation id="7014174261166285193">ইনস্টলেশান ব্যর্থ হয়েছে৷</translation>
 <translation id="7014480873681694324">হাইলাইট সরিয়ে দিন</translation>

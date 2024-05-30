@@ -75,6 +75,7 @@
 <translation id="2942241131342758843">默认使用 Chromium 来打开链接、在微件中执行搜索以及在其他应用中自动填充密码</translation>
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
 <translation id="3044857325852340337">已删除 Chromium 数据</translation>
+<translation id="3049211156275642309">完成 Chromium 设置</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium 可以帮助您在“新标签页”页面中跟踪此包裹。}other{Chromium 可以帮助您在“新标签页”页面中跟踪这些包裹。}}</translation>
 <translation id="3102849287235003384">若要在所有网站上退出您的 Google 账号，请<ph name="BEGIN_LINK" />退出 Chromium<ph name="END_LINK" />。</translation>
 <translation id="3219277919172823720">在 Chromium 中使用语音搜索</translation>
@@ -273,6 +274,7 @@
 <translation id="8754966941001340678">Chromium 建议使用增强型保护</translation>
 <translation id="8759037115129007407">您的家庭成员目前无法接收密码。请让他们更新 Chromium 并同步其密码。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">系统会从 Chromium 中移除此账号以及所有未保存的数据。</translation>
+<translation id="8826789549860004832">继续设置浏览器，即可充分利用 Chromium 的各项功能。</translation>
 <translation id="88376265765385899">打开 Chromium 书签。</translation>
 <translation id="8860548555286245440">在 Chromium 中以无痕模式打开网址</translation>
 <translation id="8866191443434488382">Chromium 将检测您所访问的网站上的跟踪编号，并在新标签页中向您显示包裹动态。为实现此功能，系统会将包裹跟踪编号和网站名称发送给 Chromium。这些信息还将用于完善购物功能，让所有用户受益。您可以随时在<ph name="BEGIN_LINK" />包裹跟踪设置<ph name="END_LINK" />中更新此设置。</translation>

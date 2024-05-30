@@ -75,6 +75,7 @@ For more settings that use data to improve your Chromium experience, go to <ph n
 <translation id="2942241131342758843">Use Chromium by default to open links, search from widgets and auto-fill passwords in other apps</translation>
 <translation id="2977470724722393594">Chromium is up to date</translation>
 <translation id="3044857325852340337">Deleted Chromium data</translation>
+<translation id="3049211156275642309">Finish setting up Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium can help you track this parcel on the New tab page.}other{Chromium can help you track these parcels on the New tab page.}}</translation>
 <translation id="3102849287235003384">To sign out of your Google Account on all websites, <ph name="BEGIN_LINK" />sign out of Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Search with Voice in Chromium</translation>
@@ -273,6 +274,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="8754966941001340678">Chromium recommends enhanced protection</translation>
 <translation id="8759037115129007407">Your family member can't receive passwords right now. Ask them to update Chromium and sync their passwords. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">This account and any unsaved data will be removed from Chromium.</translation>
+<translation id="8826789549860004832">Get the most out of Chromium by continuing setting up your browser.</translation>
 <translation id="88376265765385899">Opens the Chromium bookmarks.</translation>
 <translation id="8860548555286245440">Open URLs in Chromium in Incognito</translation>
 <translation id="8866191443434488382">Chromium will detect tracking numbers on sites that you visit and show you package updates on the New tab page. The package tracking number and website name will be sent to Chromium to provide this feature and to improve shopping features for everyone. You can update this at any time in <ph name="BEGIN_LINK" />package tracking settings<ph name="END_LINK" />.</translation>

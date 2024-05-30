@@ -2059,7 +2059,6 @@
 <translation id="2469259292033957819">저장된 프린터가 없습니다.</translation>
 <translation id="2469375675106140201">맞춤법 검사 맞춤설정</translation>
 <translation id="247051149076336810">파일 공유 URL</translation>
-<translation id="2470702053775288986">지원되지 않는 확장 프로그램이 사용 중지됨</translation>
 <translation id="2471469610750100598">검정(기본)</translation>
 <translation id="2471506181342525583">위치 액세스 허용됨</translation>
 <translation id="2473195200299095979">이 페이지 번역하기</translation>
@@ -4853,6 +4852,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4562091353415772246">업데이트 및 앱을 설치합니다. 계속하면 이 기기에서 Google, 이동통신사, 기기 제조업체로부터 업데이트와 앱을 자동으로 다운로드하고 설치할 수 있으며 모바일 데이터를 사용할 수도 있음에 동의하는 것으로 간주됩니다. 인앱 구매를 제공하는 앱이 포함될 수 있습니다. <ph name="BEGIN_LINK1" />Play 자동 설치에 관해 자세히 알아보기<ph name="BEGIN_LINK1_END" />자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">지문 추가</translation>
 <translation id="4562155266774382038">추천 닫기</translation>
+<translation id="4562364000855074606">이 <ph name="DEVICE_TYPE" />에 설치된 앱을 차단합니다. 앱 또는 콘텐츠 다운로드를 제한하려면 Google Play 설정으로 이동하세요. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">중국어를 초기 입력 언어로 설정</translation>
 <translation id="4563382028841851106">계정에서 삭제</translation>
 <translation id="4563880231729913339">손가락 3</translation>
@@ -5228,7 +5228,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4853020600495124913">새 창에서 열기(&amp;N)</translation>
 <translation id="4854317507773910281">승인을 요청할 부모 계정 선택</translation>
 <translation id="485480310608090163">추가 설정 및 권한</translation>
-<translation id="4858599593306712511">앱 자녀 보호 기능</translation>
 <translation id="4858913220355269194">축구왕</translation>
 <translation id="486213875233855629">관리자가 음소거함</translation>
 <translation id="4862642413395066333">OCSP 응답 서명</translation>
@@ -8062,6 +8061,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" />에서 카메라를 사용 중입니다.</translation>
 <translation id="701080569351381435">소스 보기</translation>
 <translation id="7011797924920577670">관심분야를 예측</translation>
+<translation id="7012430956470647760">앱의 자녀 보호 기능</translation>
 <translation id="7013762323294215682">이 패스키는 비밀번호 관리자에 저장됩니다. 패스키에 액세스할 수 있는 사용자는 모두 이 패스키를 사용할 수 있습니다.</translation>
 <translation id="7014174261166285193">설치에 실패했습니다.</translation>
 <translation id="7014480873681694324">강조표시 삭제</translation>

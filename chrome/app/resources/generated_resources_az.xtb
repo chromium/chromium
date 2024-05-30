@@ -2043,7 +2043,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2469259292033957819">Yadda saxlanmış printeriniz yoxdur.</translation>
 <translation id="2469375675106140201">Orfoqrafik yoxlanışı fərdiləşdirin</translation>
 <translation id="247051149076336810">Fayl paylaşım Linki</translation>
-<translation id="2470702053775288986">Dəstəklənməyən artırmalar deaktiv edildi</translation>
 <translation id="2471469610750100598">Qara (defolt)</translation>
 <translation id="2471506181342525583">Məkana girişə icazə verilib</translation>
 <translation id="2473195200299095979">Bu səhifəni tərcümə edin</translation>
@@ -4836,6 +4835,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4562091353415772246">Güncəlləmə və tətbiqləri quraşdırın. Davam etməklə razılaşırsınız ki, bu cihaz Google, operator və cihaz istehsalçınızın güncəlləmə və tətbiqlərini mobil data istifadə etməklə avtomatik endirə və quraşdıra bilər. Bu tətbiqlərdən bəzisi tətbiqdaxili alışlar təklif edə bilər. <ph name="BEGIN_LINK1" />Play avtomatik quraşdırmaq haqqında ətraflı məlumat əldə edin<ph name="BEGIN_LINK1_END" />Ətraflı məlumat<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">Barmaq İzi əlavə edin</translation>
 <translation id="4562155266774382038">Təklifdən imtina edin</translation>
+<translation id="4562364000855074606">Bu <ph name="DEVICE_TYPE" /> cihazında quraşdırılan tətbiqləri bloklayın. Tətbiqlər və ya kontentin endirilməsini məhdudlaşdırmaq üçün Google Play Ayarlarına keçin. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">İlkin daxiletmə dili Çin dilidir</translation>
 <translation id="4563382028841851106">Hesabdan silin</translation>
 <translation id="4563880231729913339">Barmaq 3</translation>
@@ -5211,7 +5211,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4853020600495124913">Yeni pəncərədə açın</translation>
 <translation id="4854317507773910281">Təsdiq üçün valideyn hesabı seçin</translation>
 <translation id="485480310608090163">Daha çox ayar və icazələr</translation>
-<translation id="4858599593306712511">Tətbiq valideyn nəzarətləri</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">Administrator səssiz edib</translation>
 <translation id="4862642413395066333">OCSP Cavabları imzalanır</translation>
@@ -8043,6 +8042,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7009709314043432820"><ph name="APP_NAME" /> kameranızdan istifadə edir</translation>
 <translation id="701080569351381435">Mənbəyə baxın</translation>
 <translation id="7011797924920577670">maraqlarınızı qiymətləndirir</translation>
+<translation id="7012430956470647760">Tətbiqlər üçün valideyn nəzarəti</translation>
 <translation id="7013762323294215682">Bu giriş açarı parol menecerində yadda saxlanacaq. Giriş imkanı olan hər kəs ondan istifadə edə biləcək.</translation>
 <translation id="7014174261166285193">Quraşdırma uğursuz oldu.</translation>
 <translation id="7014480873681694324">Vurğulamanı Silin</translation>

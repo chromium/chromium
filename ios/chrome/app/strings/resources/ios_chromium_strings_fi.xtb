@@ -75,6 +75,7 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, niin n
 <translation id="2942241131342758843">Käytä Chromiumia oletuksena ja avaa linkkejä, hae widgeteistä sekä täytä salasanoja automaattisesti muissa sovelluksissa</translation>
 <translation id="2977470724722393594">Chromium on ajan tasalla.</translation>
 <translation id="3044857325852340337">Chromium-data poistettu</translation>
+<translation id="3049211156275642309">Viimeistele Chromiumin käyttöönotto</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium voi auttaa paketin seuraamisessa Uusi välilehti ‐sivulla.}other{Chromium voi auttaa pakettien seuraamisessa Uusi välilehti ‐sivulla.}}</translation>
 <translation id="3102849287235003384">Jos haluat kirjautua ulos Google-tililtäsi kaikilla sivustoilla, <ph name="BEGIN_LINK" />kirjaudu ulos Chromiumista<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Hae puhumalla Chromiumista</translation>
@@ -273,6 +274,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="8754966941001340678">Chromium suosittelee parannettua suojausta</translation>
 <translation id="8759037115129007407">Perheenjäsen ei voi juuri nyt vastaanottaa salasanoja. Pyydä häntä päivittämään Chromium ja synkronoimaan salasanat. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Tämä tili ja kaikki tallentamaton data poistetaan Chromiumista.</translation>
+<translation id="8826789549860004832">Saat parhaan hyödyn Chromiumista jatkamalla selaimen käyttöönottoa.</translation>
 <translation id="88376265765385899">Avaa Chromium-kirjanmerkit.</translation>
 <translation id="8860548555286245440">Avaa URL-osoitteet Chromiumin incognito-tilassa</translation>
 <translation id="8866191443434488382">Chromium tunnistaa seurantanumerot avaamillasi sivustoilla ja näyttää pakettien päivitykset Uusi välilehti ‐sivulla. Paketin seurantanumero ja verkkosivuston nimi lähetetään Chromiumille tämän ominaisuuden tarjoamista ja ostosominaisuuksien parantamista varten. Voit muuttaa tätä milloin tahansa <ph name="BEGIN_LINK" />lähetyksen seuranta-asetuksista<ph name="END_LINK" />.</translation>

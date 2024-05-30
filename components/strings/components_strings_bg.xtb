@@ -456,6 +456,7 @@
 <translation id="1812527064848182527">хоризонтална ориентация</translation>
 <translation id="1812975699435941848">Здравно образование и медицинско обучение</translation>
 <translation id="1816436748874040213">Може да поиска разрешение да превърта и променя мащаба на споделените раздели</translation>
+<translation id="1817364650920811003">Роля: Съвет за Chrome. Етикет за достъпност: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Отблокиране</translation>
 <translation id="1818585559878922121">Документални филми</translation>
 <translation id="182139138257690338">автоматични изтегляния</translation>
@@ -1398,6 +1399,7 @@
 <translation id="3642638418806704195">Приложение:</translation>
 <translation id="3646643500201740985">Измерване на ефективността на дадена реклама</translation>
 <translation id="3647286794400715637">Всеки въведен низ за URL адреси трябва да съдържа 1 или 2 URL адреса.</translation>
+<translation id="3647400963805615193">Бутон за отхвърляне на съвета за Chrome. Натиснете Enter за отхвърляне на „<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />“</translation>
 <translation id="3650584904733503804">Потвърждаването е успешно</translation>
 <translation id="3650594806107685466">За да защитите картата си, въведете кода за проверка, който се намира на <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Туризъм и къмпингуване</translation>
@@ -2298,6 +2300,7 @@
 <translation id="541416427766103491">Стакер 4</translation>
 <translation id="5414446060143308245">Изисква се преглед преди прехвърляне</translation>
 <translation id="5414511064953050917">Преместване въпреки това</translation>
+<translation id="5419311651396341287">Администраторът ви може да е в състояние да преглежда:</translation>
 <translation id="5421408724705443535">Рок музика</translation>
 <translation id="5423269318075950257">Следене на цената</translation>
 <translation id="5425082381151187189">Дом и обзавеждане</translation>
@@ -3370,6 +3373,7 @@
 <translation id="7481312909269577407">Напред</translation>
 <translation id="7481603210197454575">Плик, италиански</translation>
 <translation id="7483482939016730822">Учебни материали и оборудване за класни стаи</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />. Натиснете Tab и след това Enter, за да отхвърлите съвета за Chrome.</translation>
 <translation id="7485085230273446323">Бизнес и промишленост</translation>
 <translation id="7485870689360869515">Няма намерени данни.</translation>
 <translation id="7489392576326061356">Шампоани и балсами</translation>

@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Hanes</translation>
 <translation id="164673457281113247">{count,plural, =1{Mae'r Nod tudalen wedi'i gadw}zero{Mae'r Nodau tudalen wedi'u cadw}two{Mae'r Nodau tudalen wedi'u cadw}few{Mae'r Nodau tudalen wedi'u cadw}many{Mae'r Nodau tudalen wedi'u cadw}other{Mae'r Nodau tudalen wedi'u cadw}}</translation>
 <translation id="1650222530560417226">Tapiwch y botwm "Dechrau Cofnodi" i gasglu cofnodion a gwallau panel JavaScript yn y dyfodol ar bob tab. Bydd y cofnodion yn cael eu casglu (a'u cadw yn y cof yn unig) tan i chi gau'r dudalen hon neu tan i chi dapio'r botwm "Stopio Cofnodi".</translation>
+<translation id="1652333207707886577">Addasu eich dewislen</translation>
 <translation id="1653432787084483144">{count,plural, =1{Mae {count} cyfrinair sydd wedi'i gadw ar gael uwchben eich bysellfwrdd.}zero{Mae {count} cyfrinair sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}two{Mae {count} gyfrinair sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}few{Mae {count} chyfrinair sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}many{Mae {count} chyfrinair sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}other{Mae {count} cyfrinair sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}}</translation>
 <translation id="1657011748321897393">Wedi methu â rhannu oherwydd nad ydych wedi'ch cysylltu â'r rhwydwaith.</translation>
 <translation id="165877110639533037">Dim Tabiau Ar Agor</translation>
@@ -240,6 +241,7 @@
 <translation id="2267753748892043616">Ychwanegu Cyfrif</translation>
 <translation id="2268044343513325586">Mireinio</translation>
 <translation id="2269277877025820298">Gweld Rhagor</translation>
+<translation id="2271452184061378400">Mae eich grwpiau tabiau yn cael eu cadw yma</translation>
 <translation id="2273327106802955778">Dewislen rhagor</translation>
 <translation id="2274800392139890332">Dadolrhain y pecyn hwn</translation>
 <translation id="2275480389219976105">Canfuwyd y Cyfeiriad</translation>
@@ -530,6 +532,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3738428049780661523">Crëwyd <ph name="DATE" /></translation>
 <translation id="374357899112510277">Cuddio Lawrlwythiadau</translation>
 <translation id="3745190878148784130">Cuddio Chwyddo Testun</translation>
+<translation id="3747231889390582072">I amddiffyn diogelwch eich sefydliad, bydd data sydd heb eu cadw yn cael eu dileu o'r ddyfais hon. Gallai hyn gynnwys cyfrineiriau, hanes pori, cwcis a rhagor.</translation>
 <translation id="3762232513783804601">Wedi'i Ddatblygu ar gyfer Eich iPad</translation>
 <translation id="3768725474733206671">Ailagor y Tab a Gaewyd Ddiwethaf</translation>
 <translation id="3771033907050503522">Tabiau Anhysbys</translation>
@@ -1480,6 +1483,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8446884382197647889">Dysgu rhagor</translation>
 <translation id="8449347986464073209">Dileu ac Allgofnodi</translation>
 <translation id="8459333855531264009">Ddim yn Ddiogel</translation>
+<translation id="8466300942149667917">Bydd data cyfrif sydd heb eu cadw yn cael eu dileu</translation>
 <translation id="8473863474539038330">Cyfeiriadau a rhagor</translation>
 <translation id="8487667956631253959">Ymlaen</translation>
 <translation id="8487700953926739672">Ar gael all-lein</translation>

@@ -2053,7 +2053,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2469259292033957819">Нямате запазени принтери.</translation>
 <translation id="2469375675106140201">Персонализиране на проверката на правописа</translation>
 <translation id="247051149076336810">URL адрес на споделено хранилище</translation>
-<translation id="2470702053775288986">Неподдържаните разширения са деактивирани</translation>
 <translation id="2471469610750100598">Черно (по подразбиране)</translation>
 <translation id="2471506181342525583">Достъпът до местоположението е разрешен</translation>
 <translation id="2473195200299095979">Превод на тази страница</translation>
@@ -4849,6 +4848,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4562091353415772246">Инсталиране на актуализации и приложения. С продължаването си приемате, че това устройство може също автоматично да изтегля и инсталира актуализации и приложения от Google, оператора ви и производителя си, при което е възможно да използва мобилни данни. В някои от тези приложения може да се предлагат покупки. <ph name="BEGIN_LINK1" />Научете повече за автоматичното инсталиране през Google Play<ph name="BEGIN_LINK1_END" />Научете повече<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">Добавяне на отпечатък</translation>
 <translation id="4562155266774382038">Отхвърляне на предложението</translation>
+<translation id="4562364000855074606">Блокиране на приложенията, инсталирани на това устройство <ph name="DEVICE_TYPE" />. За да ограничите изтеглянето на приложения или съдържание, отворете настройките за Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Първоначалният език за въвеждане да бъде китайски</translation>
 <translation id="4563382028841851106">Премахване от профила</translation>
 <translation id="4563880231729913339">Пръст 3</translation>
@@ -5224,7 +5224,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4853020600495124913">Отваряне в &amp;нов прозорец</translation>
 <translation id="4854317507773910281">Изберете профил на родител за одобрение</translation>
 <translation id="485480310608090163">Още настройки и разрешения</translation>
-<translation id="4858599593306712511">Родителски контроли в приложението</translation>
 <translation id="4858913220355269194">Фриц</translation>
 <translation id="486213875233855629">Звукът е спрян от администратора ви</translation>
 <translation id="4862642413395066333">Подписване на OCSP отговори</translation>
@@ -5810,6 +5809,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5300719150368506519">Изпращане до Google на URL адресите на посещаваните от вас страници</translation>
 <translation id="5301751748813680278">Влиза се като гост.</translation>
 <translation id="5301954838959518834">Добре, разбрах</translation>
+<translation id="5302032366299160685">Изчакайте файлът да се отвори, преди да опитате отново</translation>
 <translation id="5302048478445481009">Език</translation>
 <translation id="5302932258331363306">Show Substitutions</translation>
 <translation id="5305145881844743843">Този профил се управлява от <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
@@ -6309,6 +6309,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5678955352098267522">Четене на данните ви от <ph name="WEBSITE_1" /></translation>
 <translation id="5679785611070310751">През <ph name="MONTH_AND_YEAR" /> ще спрете да получавате актуализации за сигурност за този Chromebook. Време е да надстроите до най-новите функции за сигурност и софтуер. В сила са условията за офертата.</translation>
 <translation id="5680050361008726776">Да се премахне ли „<ph name="ESIM_PROFILE_NAME" />“?</translation>
+<translation id="5681586175480958839">Файлът вече се отваря.</translation>
 <translation id="5684181005476681636">Подробности за Wi-Fi мрежата</translation>
 <translation id="5684661240348539843">Идентификатор на актива</translation>
 <translation id="5684950556880280580">Паролата ви е актуализирана</translation>
@@ -8059,6 +8060,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7009709314043432820"><ph name="APP_NAME" /> използва камерата ви</translation>
 <translation id="701080569351381435">Преглед на изходния код</translation>
 <translation id="7011797924920577670">прогнозира интересите ви</translation>
+<translation id="7012430956470647760">Родителски контроли за приложения</translation>
 <translation id="7013762323294215682">Този ключ за достъп ще бъде запазен в мениджъра на пароли. Всеки, който има достъп до мениджъра, ще може да използва ключа.</translation>
 <translation id="7014174261166285193">Инсталацията не бе успешна.</translation>
 <translation id="7014480873681694324">Премахване на открояването</translation>

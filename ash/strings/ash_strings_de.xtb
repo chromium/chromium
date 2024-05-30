@@ -183,6 +183,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1654477262762802994">Gesprochene Anfrage starten</translation>
 <translation id="1668469839109562275">Integriertes VPN</translation>
 <translation id="1673232940951031776">Konzentrationsmodus beenden. Noch <ph name="REMAINING_TIME" />.</translation>
+<translation id="1675570947608765064">Andere können die Änderungen sehen, die du an dieser Aufgabe vornimmst</translation>
 <translation id="1675844249244994876">Rechtes Fenster aktualisieren</translation>
 <translation id="1677472565718498478">Noch <ph name="TIME" /> h</translation>
 <translation id="1677507110654891115">"<ph name="FEATURE_NAME" />" ist nicht verbunden.</translation>
@@ -862,6 +863,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4302592941791324970">Nicht verfügbar</translation>
 <translation id="4303223480529385476">Statusbereich maximieren</translation>
 <translation id="4305133312001648038">Zoomstufe auf Seite zurücksetzen</translation>
+<translation id="4305817255990598646">Wechseln</translation>
 <translation id="4307713728991152670">Anzeige der letzten Fotos, Medien und Apps auf deinem Smartphone einrichten</translation>
 <translation id="4312840429157639164">Kamera ist an der oberen rechten Ecke angepinnt. Konflikt mit der Systemoberfläche.</translation>
 <translation id="4316910396681052118">ALLE APPS</translation>

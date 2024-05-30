@@ -2056,7 +2056,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2469259292033957819">Nemate sačuvanih štampača.</translation>
 <translation id="2469375675106140201">Prilagodi provjeru pravopisa</translation>
 <translation id="247051149076336810">URL za dijeljeni fajl</translation>
-<translation id="2470702053775288986">Nepodržane ekstenzije su onemogućene</translation>
 <translation id="2471469610750100598">Crna (zadano)</translation>
 <translation id="2471506181342525583">Pristup lokaciji je dozvoljen</translation>
 <translation id="2473195200299095979">Prevedi ovu stranicu</translation>
@@ -4851,6 +4850,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4562091353415772246">Instalirajte ažuriranja i aplikacije. Ako nastavite, prihvatate da uređaj također može automatski preuzimati i instalirati ažuriranja i aplikacije s Googlea, od vašeg operatera i proizvođača uređaja, uz mogućnost prijenosa podataka na mobilnoj mreži. Neke od tih aplikacija mogu nuditi kupovine unutar aplikacije. <ph name="BEGIN_LINK1" />Saznajte više o Play automatskoj instalaciji<ph name="BEGIN_LINK1_END" />Saznajte više<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">Dodajte otisak prsta</translation>
 <translation id="4562155266774382038">Odbacite prijedlog</translation>
+<translation id="4562364000855074606">Blokirajte aplikacije instalirane na uređaju <ph name="DEVICE_TYPE" />. Da ograničite preuzimanje aplikacija ili sadržaja, idite u Postavke Google Playa. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Početni jezik unosa je kineski</translation>
 <translation id="4563382028841851106">Ukloni s računa</translation>
 <translation id="4563880231729913339">3. prst</translation>
@@ -5226,7 +5226,6 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4853020600495124913">Otvori u &amp;novom prozoru</translation>
 <translation id="4854317507773910281">Odaberi roditeljski račun za odobrenje</translation>
 <translation id="485480310608090163">Više postavki i odobrenja</translation>
-<translation id="4858599593306712511">Dodajte roditeljski nadzor</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">Administrator je isključio zvuk</translation>
 <translation id="4862642413395066333">Potpisivanje OCSP odgovora</translation>
@@ -8064,6 +8063,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7009709314043432820"><ph name="APP_NAME" /> koristi vašu kameru</translation>
 <translation id="701080569351381435">Prikaži izvor</translation>
 <translation id="7011797924920577670">procjenjuje vaša interesovanja</translation>
+<translation id="7012430956470647760">Roditeljski nadzor za aplikacije</translation>
 <translation id="7013762323294215682">Ovaj pristupni ključ će se sačuvati u upravitelj lozinki. Moći će ga koristiti svako ko ima pristup ovom pristupnom ključu.</translation>
 <translation id="7014174261166285193">Instalacija nije uspjela:</translation>
 <translation id="7014480873681694324">Ukloni istaknuti tekst</translation>

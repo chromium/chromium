@@ -1709,6 +1709,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2234827758954819389">Adatvédelmi útmutató</translation>
 <translation id="2234876718134438132">Szinkronizálás és Google</translation>
 <translation id="2235344399760031203">A harmadik felektől származó cookie-k le vannak tiltva</translation>
+<translation id="2236949375853147973">Saját tevékenységek</translation>
 <translation id="2238379619048995541">Órajel állapotadatai</translation>
 <translation id="2241053333139545397">Adatainak olvasása és módosítása bizonyos webhelyeken</translation>
 <translation id="2241634353105152135">Csak egyszer</translation>
@@ -2055,7 +2056,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2469259292033957819">Nincsenek mentett nyomtatók.</translation>
 <translation id="2469375675106140201">Helyesírás-ellenőrzés személyre szabása</translation>
 <translation id="247051149076336810">Fájlmegosztási URL</translation>
-<translation id="2470702053775288986">Nem támogatott kiterjesztések kikapcsolva</translation>
 <translation id="2471469610750100598">Fekete (alapértelmezett)</translation>
 <translation id="2471506181342525583">Helyhozzáférés engedélyezve</translation>
 <translation id="2473195200299095979">Oldal lefordítása</translation>
@@ -4849,6 +4849,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4562091353415772246">Alkalmazások és frissítések telepítése. Ha továbblép, azzal elfogadja, hogy az eszköz automatikusan letölthet és telepíthet frissítéseket és alkalmazásokat a Google-tól, az Ön szolgáltatójától és az eszköz gyártójától, akár mobiladat-kapcsolaton keresztül is. Egyes alkalmazások alkalmazáson belüli vásárlásokat kínálhatnak. <ph name="BEGIN_LINK1" />További információ a Play automatikus telepítéséről<ph name="BEGIN_LINK1_END" />További információ<ph name="END_LINK1" />.</translation>
 <translation id="4562155214028662640">Ujjlenyomat hozzáadása</translation>
 <translation id="4562155266774382038">Javaslat elvetése</translation>
+<translation id="4562364000855074606">Az erre a(z) <ph name="DEVICE_TYPE" /> eszközre telepített alkalmazások letiltása. Az alkalmazások és tartalmak letöltésének korlátozásához lépjen a Google Play beállításaihoz. <ph name="BEGIN_LINK_LEARN_MORE" />További információ<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="4563210852471260509">Az alapértelmezett beviteli nyelv a kínai</translation>
 <translation id="4563382028841851106">Eltávolítás a fiókból</translation>
 <translation id="4563880231729913339">3. ujj</translation>
@@ -8058,6 +8059,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7009709314043432820">A(z) <ph name="APP_NAME" /> használja a kamerát</translation>
 <translation id="701080569351381435">Forráskód megtekintése</translation>
 <translation id="7011797924920577670">érdeklődési köröket határoz meg</translation>
+<translation id="7012430956470647760">Szülői felügyelet alkalmazásokhoz</translation>
 <translation id="7013762323294215682">Ezt az azonosítókulcsot az Ön jelszókezelőjébe menti a rendszer. Bárki, aki hozzáfér a jelszókezelőhöz, használhatja majd ezt az azonosítókulcsot.</translation>
 <translation id="7014174261166285193">A telepítés nem sikerült.</translation>
 <translation id="7014480873681694324">Kiemelés eltávolítása</translation>

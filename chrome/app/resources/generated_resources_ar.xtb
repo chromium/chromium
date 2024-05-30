@@ -2049,7 +2049,6 @@
 <translation id="2469259292033957819">لا تتوفّر لديك أي طابعات محفوظة.</translation>
 <translation id="2469375675106140201">تخصيص التدقيق الإملائي</translation>
 <translation id="247051149076336810">‏عنوان URL لخادم مشاركة الملفات</translation>
-<translation id="2470702053775288986">تم إيقاف الإضافات غير المدعومة</translation>
 <translation id="2471469610750100598">أسود (تلقائي)</translation>
 <translation id="2471506181342525583">تم السماح بالوصول إلى الموقع الجغرافي</translation>
 <translation id="2473195200299095979">ترجم هذه الصفحة</translation>
@@ -4193,6 +4192,7 @@
 <translation id="4050534976465737778">‏تأكَّد من فتح قفل كلا الجهازَين وقرِّبهما من بعضهما وفعِّل البلوتوث فيهما. وإذا كنت تشارك الملفات مع جهاز Chromebook غير مدرَج في جهات اتصالك، يُرجى التأكُّد من تفعيل وضع الظهور في الميزة "مشاركة عن قرب" (يُرجى فتح منطقة الحالة، ثم اختيار وضع الظهور في الميزة "مشاركة عن قرب"). <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">للتبديل إلى آخر أسلوب إدخال تم استخدامه، اضغط على <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">مفتاح البحث + السهم المتّجه لليمين</translation>
+<translation id="405181879009056822">‏إعدادات ChromeOS</translation>
 <translation id="4052120076834320548">دقيق</translation>
 <translation id="4052913941260326985">إنشاء &amp;رمز استجابة سريعة</translation>
 <translation id="405365679581583349">‏تحديث "خدمات Google Play"</translation>
@@ -4842,6 +4842,7 @@
 <translation id="4562091353415772246">‏تثبيت التحديثات والتطبيقات: تعني متابعتك أنّك توافق على منح هذا الجهاز إذنًا بتنزيل التحديثات والتطبيقات وتثبيتها تلقائيًا من Google ومشغّل شبكة الجوّال والشركة المصنّعة لجهازك، مع احتمال استخدام بيانات شبكة الجوّال. ويمكن أن تتيح بعض هذه التطبيقات عمليات شراء داخل التطبيق. <ph name="BEGIN_LINK1" />مزيد من المعلومات حول ميزة "التثبيت التلقائي لتطبيقات مشغِّل شبكة الجوّال عبر Play"<ph name="BEGIN_LINK1_END" />مزيد من المعلومات<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">إضافة بصمة إصبع</translation>
 <translation id="4562155266774382038">إغلاق الاقتراح</translation>
+<translation id="4562364000855074606">‏يتم حظر التطبيقات المثبَّتة على جهاز <ph name="DEVICE_TYPE" /> هذا. ولفرض قيود على تنزيل التطبيقات أو المحتوى، يُرجى الانتقال إلى إعدادات Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">لغة الإدخال الأولية هي الصينية</translation>
 <translation id="4563382028841851106">الإزالة من الحساب</translation>
 <translation id="4563880231729913339">إصبع 3</translation>
@@ -5217,7 +5218,6 @@
 <translation id="4853020600495124913">فتح في &amp;نافذة جديدة</translation>
 <translation id="4854317507773910281">اختَر حساب أحد الوالدَين للحصول على موافقة.</translation>
 <translation id="485480310608090163">المزيد من الإعدادات والأذونات</translation>
-<translation id="4858599593306712511">أدوات رقابة الأهل على التطبيقات</translation>
 <translation id="4858913220355269194">فريتز</translation>
 <translation id="486213875233855629">الصوت مكتوم حسب إعدادات المشرف.</translation>
 <translation id="4862642413395066333">‏توقيع استجابات OCSP</translation>
@@ -5728,6 +5728,7 @@
 <translation id="5250372599208556903">يستخدم <ph name="SEARCH_ENGINE_NAME" /> موقعك لتقديم محتوى محلّي لك. ويمكنك تغيير ذلك في <ph name="SETTINGS_LINK" />.</translation>
 <translation id="5252496130205799136">‏هل تريد استخدام حسابك على Google لحفظ كلمات المرور وملئها؟</translation>
 <translation id="5252653240322147470">يجب أن يكون رقم التعريف الشخصي أقل من <ph name="MAXIMUM" /> من الأرقام</translation>
+<translation id="5253554634804500860">استخدام "<ph name="DEVICE_NAME" />"</translation>
 <translation id="5254233580564156835">استخدام الذاكرة: <ph name="MEMORY_USAGE" /></translation>
 <translation id="52550593576409946">‏تعذر إطلاق تطبيق Kiosk.</translation>
 <translation id="5255726914791076208">عندما تعدِّل مفتاح المرور، لن يتم تغيير حسابك على <ph name="RP_ID" />.</translation>
@@ -6465,6 +6466,7 @@
 <translation id="5806447147478173900">إجمالي مساحة التخزين التي تستخدمها المواقع الإلكترونية المعروضة: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0 درجة (تلقائي)</translation>
 <translation id="5809835394668218762">مزيد من الإجراءات للموقع الإلكتروني <ph name="WEBSITE" /></translation>
+<translation id="5809840528400421362">يجب أن يتكوّن رقم التعريف الشخصي من 6 أرقام</translation>
 <translation id="5810809306422959727">هذا الحساب غير مؤهّل لاستخدام أدوات رقابة الأهل</translation>
 <translation id="5811614940486072060">هذا الملف لا يتم تنزيله عادةً، وقد يكون ضارًا.</translation>
 <translation id="5812674658566766066">توسيع الكل</translation>
@@ -8059,6 +8061,7 @@
 <translation id="7009709314043432820">يستخدم تطبيق <ph name="APP_NAME" /> الكاميرا.</translation>
 <translation id="701080569351381435">عرض المصدر</translation>
 <translation id="7011797924920577670">تقديم تقديرات حول اهتماماتك</translation>
+<translation id="7012430956470647760">أدوات رقابة الأهل على التطبيقات</translation>
 <translation id="7013762323294215682">سيتم حفظ مفتاح المرور هذا في مدير كلمات المرور. سيتمكن أي شخص لديه إذن بالوصول من استخدام مفتاح المرور هذا.</translation>
 <translation id="7014174261166285193">تعذّر التثبيت.</translation>
 <translation id="7014480873681694324">إزالة التمييز</translation>

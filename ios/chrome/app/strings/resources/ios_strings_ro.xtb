@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Istoric</translation>
 <translation id="164673457281113247">{count,plural, =1{Marcaj salvat}few{Marcaje salvate}other{Marcaje salvate}}</translation>
 <translation id="1650222530560417226">Atinge butonul „Activează înregistrarea în jurnal” pentru a colecta jurnale și erori viitoare ale consolei JavaScript din toate filele. Jurnalele vor fi colectate (și stocate doar în memorie) până când această pagină este închisă sau se atinge „Dezactivează înregistrarea în jurnal”.</translation>
+<translation id="1652333207707886577">Personalizează-ți meniul</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} parolă salvată disponibilă deasupra tastaturii.}few{{count} parole salvate disponibile deasupra tastaturii.}other{{count} de parole salvate disponibile deasupra tastaturii.}}</translation>
 <translation id="1657011748321897393">Nu s-a trimis, pentru că nu te-ai conectat la rețea.</translation>
 <translation id="165877110639533037">Nu există file deschise</translation>
@@ -240,6 +241,7 @@
 <translation id="2267753748892043616">Adaugă un cont</translation>
 <translation id="2268044343513325586">Rafinează</translation>
 <translation id="2269277877025820298">Vezi mai multe</translation>
+<translation id="2271452184061378400">Grupurile de file se salvează aici</translation>
 <translation id="2273327106802955778">Meniul Mai multe</translation>
 <translation id="2274800392139890332">Anulează urmărirea coletului</translation>
 <translation id="2275480389219976105">Adresa a fost găsită</translation>
@@ -530,6 +532,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3738428049780661523">Creat pe <ph name="DATE" /></translation>
 <translation id="374357899112510277">Ascunde descărcările</translation>
 <translation id="3745190878148784130">Ascunde opțiunea Fă zoom pe text</translation>
+<translation id="3747231889390582072">Pentru a proteja securitatea organizației, datele nesalvate vor fi șterse de pe acest dispozitiv. Aici pot fi incluse parole, istoricul de navigare, cookie-uri și altele.</translation>
 <translation id="3762232513783804601">Creat pentru iPad</translation>
 <translation id="3768725474733206671">Redeschide ultima filă închisă</translation>
 <translation id="3771033907050503522">File incognito</translation>
@@ -1480,6 +1483,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8446884382197647889">Află mai multe</translation>
 <translation id="8449347986464073209">Șterge și deconectează-te</translation>
 <translation id="8459333855531264009">Nesecurizat</translation>
+<translation id="8466300942149667917">Datele nesalvate ale contului vor fi șterse</translation>
 <translation id="8473863474539038330">Adrese și altele</translation>
 <translation id="8487667956631253959">Aprinsă</translation>
 <translation id="8487700953926739672">Disponibil offline</translation>

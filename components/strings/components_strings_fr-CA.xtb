@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />votre employeur ou votre établissement scolaire;
           <ph name="LIST_ITEM" />votre fournisseur d'accès Internet.
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">Surveiller cet article</translation>
 <translation id="1337692097987160377">Partager cet onglet</translation>
 <translation id="1339601241726513588">Domaine d'enregistrement :</translation>
 <translation id="1340482604681802745">Adresse de ramassage</translation>
@@ -455,6 +456,7 @@
 <translation id="1812527064848182527">paysage</translation>
 <translation id="1812975699435941848">Éducation sanitaire et formation médicale</translation>
 <translation id="1816436748874040213">Peut demander de faire défiler et de zoomer les onglets partagés</translation>
+<translation id="1817364650920811003">Rôle : astuce Chrome. Étiquette d'accessibilité : <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Débloquer</translation>
 <translation id="1818585559878922121">Documentaires</translation>
 <translation id="182139138257690338">Téléchargements automatiques</translation>
@@ -1397,6 +1399,7 @@
 <translation id="3642638418806704195">Application :</translation>
 <translation id="3646643500201740985">Mesurer la performance d'une annonce</translation>
 <translation id="3647286794400715637">Chaque entrée de chaîne d'URL doit contenir entre une et deux URL.</translation>
+<translation id="3647400963805615193">Bouton Fermer l'astuce Chrome : appuyez sur la touche Entrée pour fermer <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Validation réussie</translation>
 <translation id="3650594806107685466">Pour assurer la sécurité de votre carte, entrer le code CVC figurant sur le <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Randonnée et camping</translation>
@@ -2297,6 +2300,7 @@
 <translation id="541416427766103491">Empileur 4</translation>
 <translation id="5414446060143308245">Examen requis avant le transfert</translation>
 <translation id="5414511064953050917">Transférer quand même</translation>
+<translation id="5419311651396341287">Votre administrateur pourra peut-être afficher :</translation>
 <translation id="5421408724705443535">Musique rock</translation>
 <translation id="5423269318075950257">Suivre le prix</translation>
 <translation id="5425082381151187189">Décoration</translation>
@@ -2611,6 +2615,7 @@
 <translation id="6035491133925068289">Athlétisme</translation>
 <translation id="6039846035001940113">Si le problème persiste, communiquez avec le propriétaire du site.</translation>
 <translation id="6040143037577758943">Fermer</translation>
+<translation id="6040539895181423374">Statistiques sur les prix</translation>
 <translation id="604124094241169006">Automatique</translation>
 <translation id="6041777658117377052">Température de la chambre</translation>
 <translation id="6042308850641462728">Plus</translation>
@@ -3368,6 +3373,7 @@ Détails supplémentaires :
 <translation id="7481312909269577407">Suivant</translation>
 <translation id="7481603210197454575">Enveloppe italienne</translation>
 <translation id="7483482939016730822">Fournitures scolaires et matériel de classe</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour fermer l'astuce Chrome.</translation>
 <translation id="7485085230273446323">Entreprise et industrie</translation>
 <translation id="7485870689360869515">Aucune donnée trouvée.</translation>
 <translation id="7489392576326061356">Shampooings et après-shampooings</translation>

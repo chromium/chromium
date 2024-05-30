@@ -456,6 +456,7 @@
 <translation id="1812527064848182527">ल्यान्डस्केप</translation>
 <translation id="1812975699435941848">स्वास्थ्य शिक्षा तथा चिकित्सा प्रशिक्षण</translation>
 <translation id="1816436748874040213">साझा ट्याबहरू स्क्रोल तथा जुम गर्ने अनुमति माग्छ</translation>
+<translation id="1817364650920811003">भूमिका: Chrome सम्बन्धी सुझाव। एक्सेसिबिलिटीको लेबल: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">अनब्लक गर्नुहोस्</translation>
 <translation id="1818585559878922121">वृत्तचित्रात्मक चलचित्रहरू</translation>
 <translation id="182139138257690338">स्वचालित डाउनलोडहरू</translation>
@@ -1395,6 +1396,7 @@
 <translation id="3642638418806704195">एप:</translation>
 <translation id="3646643500201740985">विज्ञापनको पर्फर्मेन्स कत्तिको राम्रो छ भन्ने कुरा मापन गर्ने तरिका</translation>
 <translation id="3647286794400715637">प्रत्येक URL स्ट्रिङ प्रविष्टिमा १ देखि २ वटा URL हुनु पर्छ।</translation>
+<translation id="3647400963805615193">Chrome सम्बन्धी सुझाव हटाउने बटन, हटाउन इन्टर की थिच्नुहोस्, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">प्रमाणीकरण सफल भयो</translation>
 <translation id="3650594806107685466">आफ्नो कार्ड सुरक्षित राख्न <ph name="SIDE_OF_CARD" /> रहेको CVC हाल्नुहोस्</translation>
 <translation id="3650917416636556301">हाइकिङ तथा क्याम्पिङ</translation>
@@ -3368,6 +3370,7 @@
 <translation id="7481312909269577407">अगाडि</translation>
 <translation id="7481603210197454575">Envelope Italian</translation>
 <translation id="7483482939016730822">बिद्यालय तथा कक्षाकोठाका उपकरण</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chrome सम्बन्धी सुझाव हटाउन ट्याब की थिच्नुहोस् अनि इन्टर की थिच्नुहोस्।</translation>
 <translation id="7485085230273446323">व्यापार तथा उद्योगधन्दा</translation>
 <translation id="7485870689360869515">कुनैपनि डाटा भेटिएन।</translation>
 <translation id="7489392576326061356">स्याम्पु तथा कन्डिसनर</translation>

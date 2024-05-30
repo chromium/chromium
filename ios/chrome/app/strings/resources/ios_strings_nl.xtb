@@ -241,6 +241,7 @@
 <translation id="2267753748892043616">Account toevoegen</translation>
 <translation id="2268044343513325586">Verfijnen</translation>
 <translation id="2269277877025820298">Meer zien</translation>
+<translation id="2271452184061378400">Je tabbladgroepen worden hier opgeslagen</translation>
 <translation id="2273327106802955778">Menu Meer</translation>
 <translation id="2274800392139890332">Dit pakket niet meer volgen</translation>
 <translation id="2275480389219976105">Adres gevonden</translation>
@@ -471,6 +472,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3435738964857648380">Beveiliging</translation>
 <translation id="3443810440409579745">Tabblad ontvangen.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
+<translation id="3445580184527779479">Tabbladgroep. Uitgevouwen.</translation>
 <translation id="3448016392200048164">Gesplitste weergave</translation>
 <translation id="345565170154308620">Wachtwoorden beheren…</translation>
 <translation id="3464194322481586217">Kan de prijs niet volgen.</translation>
@@ -515,6 +517,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3638472932233958418">Webpagina's vooraf laden</translation>
 <translation id="3642060527569456384">Tabbladgroepen worden automatisch opgeslagen en geüpdatet op al je apparaten.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} wachtwoord wordt alleen op dit apparaat opgeslagen. Als je het op je andere apparaten wilt gebruiken, sla je het op in je Google-account, {email}.}other{{count} wachtwoorden worden alleen op dit apparaat opgeslagen. Als je ze op je andere apparaten wilt gebruiken, sla je ze op in je Google-account, {email}.}}</translation>
+<translation id="3650299480924308502">Nadat je bent uitgelogd, worden niet-opgeslagen gegevens verwijderd van dit apparaat. Dit kunnen onder andere wachtwoorden en geschiedenis zijn.</translation>
 <translation id="3659297405161482746">Geen betaalmethoden gevonden</translation>
 <translation id="3661160521073045932">Configuratieprofiel beschikbaar</translation>
 <translation id="3670030362669914947">Nummer</translation>
@@ -971,6 +974,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5971872012779224351">{count,plural, =1{1 bookmark verwijderd}other{{count} bookmarks verwijderd}}</translation>
 <translation id="5979837087407522202">Wachtwoorden zoeken</translation>
 <translation id="5981230843984570095">Alle inactieve tabbladen sluiten</translation>
+<translation id="5982958159110007132">Tabblad in tabbladgroep. <ph name="TAB_INDEX_IN_GROUP" /> van <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="5984222099446776634">Recent bezocht</translation>
 <translation id="598634819525651074">Gebied</translation>
 <translation id="5988097621740394599">Prijsdalingen bekijken op je tabbladen</translation>
@@ -989,6 +993,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="6042308850641462728">Meer</translation>
 <translation id="6045460247888249350">Titel toevoegen</translation>
+<translation id="6051432659151380973">Je tabbladgroepen worden automatisch opgeslagen</translation>
 <translation id="605721222689873409">JJ</translation>
 <translation id="6059830886158432458">Beheer hier je artikelen en activiteiten</translation>
 <translation id="6064824697233747382">Je organisatie vereist dat je synchronisatie uitzet.</translation>
@@ -1273,6 +1278,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="745899714366929493">Hele dag</translation>
 <translation id="7459628154744868585">Geoptimaliseerde beveiliging staat aan</translation>
 <translation id="7465351360025415755">Krijg content die belangrijk voor je is</translation>
+<translation id="7470908168505178757">Tabbladgroep. Samengevouwen.</translation>
 <translation id="7472734401283673885">Bedrijfsnaam</translation>
 <translation id="7473891865547856676">Nee, bedankt</translation>
 <translation id="7488874549363591659">Bezorgd</translation>
@@ -1611,6 +1617,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="9065203028668620118">Bewerken</translation>
 <translation id="9079935439869366234">Alles als ongelezen markeren</translation>
 <translation id="9081058212938299310">Wachtwoord voor <ph name="USERNAME" /> updaten?</translation>
+<translation id="9082821980444279398">Als dit aanstaat, kun je gegevens gebruiken en opslaan in je Google-account. Staat dit uit, dan worden gegevens alleen opgeslagen op dit apparaat en worden ze verwijderd als je uitlogt.</translation>
 <translation id="9083838294503912307">Zet de synchronisatie aan om verschillende apparaten te synchroniseren en te personaliseren.</translation>
 <translation id="9087339162317338348">Gebruik waar mogelijk HTTPS en krijg een waarschuwing voordat er sites worden geladen die dit niet ondersteunen.</translation>
 <translation id="9093271241977565440">Tik bovenaan het scherm op het zoekicoon</translation>

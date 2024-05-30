@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Histori</translation>
 <translation id="164673457281113247">{count,plural, =1{Bookmark disimpan}other{Bookmark disimpan}}</translation>
 <translation id="1650222530560417226">Ketuk tombol "Mulai Logging" untuk mengumpulkan log dan error konsol JavaScript mendatang dari semua tab. Log akan dikumpulkan (dan disimpan hanya dalam memori) hingga halaman ini ditutup atau "Hentikan Logging" diketuk.</translation>
+<translation id="1652333207707886577">Sesuaikan menu Anda</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} sandi tersimpan tersedia di atas keyboard Anda.}other{{count} sandi tersimpan tersedia di atas keyboard Anda.}}</translation>
 <translation id="1657011748321897393">Gagal berbagi karena tidak terhubung ke jaringan.</translation>
 <translation id="165877110639533037">Tidak Ada Tab yang Terbuka</translation>
@@ -240,6 +241,7 @@
 <translation id="2267753748892043616">Tambahkan Akun</translation>
 <translation id="2268044343513325586">Saring</translation>
 <translation id="2269277877025820298">Lihat Selengkapnya</translation>
+<translation id="2271452184061378400">Grup tab Anda disimpan di sini</translation>
 <translation id="2273327106802955778">Menu lainnya</translation>
 <translation id="2274800392139890332">Batalkan pelacakan paket ini</translation>
 <translation id="2275480389219976105">Alamat Ditemukan</translation>
@@ -530,6 +532,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3738428049780661523">Dibuat <ph name="DATE" /></translation>
 <translation id="374357899112510277">Sembunyikan Download</translation>
 <translation id="3745190878148784130">Sembunyikan Zoom Teks</translation>
+<translation id="3747231889390582072">Untuk melindungi keamanan organisasi Anda, data yang belum disimpan akan dihapus dari perangkat ini. Data ini dapat mencakup sandi, histori penjelajahan, cookie, dan lainnya.</translation>
 <translation id="3762232513783804601">Dibuat untuk iPad Anda</translation>
 <translation id="3768725474733206671">Buka Ulang Tab yang Terakhir Ditutup</translation>
 <translation id="3771033907050503522">Tab Samaran</translation>
@@ -1480,6 +1483,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8446884382197647889">Pelajari Lebih Lanjut</translation>
 <translation id="8449347986464073209">Hapus dan Logout</translation>
 <translation id="8459333855531264009">Tidak Aman</translation>
+<translation id="8466300942149667917">Data akun yang belum disimpan akan dihapus</translation>
 <translation id="8473863474539038330">Alamat dan lain-lain</translation>
 <translation id="8487667956631253959">Aktif</translation>
 <translation id="8487700953926739672">Tersedia secara offline</translation>

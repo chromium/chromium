@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="164673457281113247">{count,plural, =1{Favorito salvo}one{Favorito salvo}other{Favoritos salvos}}</translation>
 <translation id="1650222530560417226">Toque no botão "Iniciar registro" para coletar erros e registros futuros do Console JavaScript em todas as guias. Os registros serão coletados (e armazenados apenas na memória) até que a página seja fechada ou que o botão "Parar de registrar" seja pressionado.</translation>
+<translation id="1652333207707886577">Personalizar seu menu</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} senha salva disponível acima do teclado.}one{{count} senha salva disponível acima do teclado.}other{{count} senhas salvas disponíveis acima do teclado.}}</translation>
 <translation id="1657011748321897393">O compartilhamento falhou porque não há conexão de rede.</translation>
 <translation id="165877110639533037">Não há guias abertas</translation>
@@ -240,6 +241,7 @@
 <translation id="2267753748892043616">Adicionar conta</translation>
 <translation id="2268044343513325586">Refinar</translation>
 <translation id="2269277877025820298">Ver mais</translation>
+<translation id="2271452184061378400">Seus grupos de guias são salvos aqui</translation>
 <translation id="2273327106802955778">Menu "Mais"</translation>
 <translation id="2274800392139890332">Cancelar rastreamento deste pacote</translation>
 <translation id="2275480389219976105">Endereço encontrado</translation>
@@ -530,6 +532,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3738428049780661523">Criação: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Ocultar Downloads</translation>
 <translation id="3745190878148784130">Ocultar "Aplicar zoom no texto"</translation>
+<translation id="3747231889390582072">Para proteger a segurança da sua organização, os dados não salvos serão excluídos deste dispositivo. Isso pode incluir senhas, histórico de navegação, cookies e muito mais.</translation>
 <translation id="3762232513783804601">Criado para o iPad</translation>
 <translation id="3768725474733206671">Reabrir a última guia fechada</translation>
 <translation id="3771033907050503522">Guias anônimas</translation>
@@ -1480,6 +1483,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8446884382197647889">Saiba mais</translation>
 <translation id="8449347986464073209">Excluir e sair</translation>
 <translation id="8459333855531264009">Não seguro</translation>
+<translation id="8466300942149667917">Os dados da conta não salvos serão excluídos</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
 <translation id="8487667956631253959">Ativada</translation>
 <translation id="8487700953926739672">Disponível off-line</translation>

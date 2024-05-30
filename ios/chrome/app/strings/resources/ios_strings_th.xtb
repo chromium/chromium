@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">ประวัติการเข้าชม</translation>
 <translation id="164673457281113247">{count,plural, =1{บันทึกบุ๊กมาร์กแล้ว}other{บันทึกบุ๊กมาร์กแล้ว}}</translation>
 <translation id="1650222530560417226">แตะปุ่ม "เริ่มบันทึก" เพื่อรวบรวมบันทึกและข้อผิดพลาดของคอนโซล JavaScript ในอนาคตจากทุกแท็บ ระบบจะรวบรวมบันทึก (และเก็บไว้ในหน่วยความจำเท่านั้น) จนกว่าหน้านี้จะปิดหรือมีการแตะ "หยุดบันทึก"</translation>
+<translation id="1652333207707886577">ปรับแต่งเมนู</translation>
 <translation id="1653432787084483144">{count,plural, =1{รหัสผ่านที่บันทึกไว้ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}other{รหัสผ่านที่บันทึกไว้ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}}</translation>
 <translation id="1657011748321897393">การแชร์ล้มเหลวเนื่องจากคุณไม่ได้เชื่อมต่อเครือข่าย</translation>
 <translation id="165877110639533037">ไม่มีแท็บที่เปิดไว้</translation>
@@ -240,6 +241,7 @@
 <translation id="2267753748892043616">เพิ่มบัญชี</translation>
 <translation id="2268044343513325586">ปรับแต่ง</translation>
 <translation id="2269277877025820298">ดูเพิ่มเติม</translation>
+<translation id="2271452184061378400">กลุ่มแท็บจะบันทึกไว้ที่นี่</translation>
 <translation id="2273327106802955778">เมนูเพิ่มเติม</translation>
 <translation id="2274800392139890332">ยกเลิกการติดตามพัสดุนี้</translation>
 <translation id="2275480389219976105">พบที่อยู่</translation>
@@ -470,6 +472,7 @@
 <translation id="3435738964857648380">ความปลอดภัย</translation>
 <translation id="3443810440409579745">ได้รับแท็บแล้ว</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> นาที</translation>
+<translation id="3445580184527779479">กลุ่มแท็บ ขยายอยู่</translation>
 <translation id="3448016392200048164">Split View</translation>
 <translation id="345565170154308620">จัดการรหัสผ่าน...</translation>
 <translation id="3464194322481586217">ติดตามราคาไม่ได้</translation>
@@ -514,6 +517,7 @@
 <translation id="3638472932233958418">โหลดหน้าเว็บล่วงหน้า</translation>
 <translation id="3642060527569456384">กลุ่มแท็บจะบันทึกและอัปเดตโดยอัตโนมัติในอุปกรณ์ทั้งหมด</translation>
 <translation id="3643338347976071250">{count,plural, =1{รหัสผ่าน {count} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {email}}other{รหัสผ่าน {count} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {email}}}</translation>
+<translation id="3650299480924308502">หลังจากออกจากระบบ ข้อมูลที่ไม่ได้บันทึกจะถูกลบออกจากอุปกรณ์เครื่องนี้ ซึ่งอาจรวมถึงรหัสผ่าน ประวัติการเข้าชม และอื่นๆ</translation>
 <translation id="3659297405161482746">ไม่พบวิธีการชำระเงิน</translation>
 <translation id="3661160521073045932">มีโปรไฟล์การกำหนดค่า</translation>
 <translation id="3670030362669914947">หมายเลข</translation>
@@ -530,6 +534,7 @@
 <translation id="3738428049780661523">สร้างเมื่อ <ph name="DATE" /></translation>
 <translation id="374357899112510277">ซ่อน "ดาวน์โหลด"</translation>
 <translation id="3745190878148784130">ซ่อน "ซูมข้อความ"</translation>
+<translation id="3747231889390582072">ระบบจะลบข้อมูลที่ไม่ได้บันทึกออกจากอุปกรณ์เครื่องนี้เพื่อปกป้องความปลอดภัยขององค์กร ซึ่งอาจรวมถึงรหัสผ่าน ประวัติการท่องเว็บ คุกกี้ และอื่นๆ</translation>
 <translation id="3762232513783804601">สร้างมาเพื่อ iPad ของคุณ</translation>
 <translation id="3768725474733206671">เปิดแท็บที่ปิดไปล่าสุดอีกครั้ง</translation>
 <translation id="3771033907050503522">แท็บที่ไม่ระบุตัวตน</translation>
@@ -969,6 +974,7 @@
 <translation id="5971872012779224351">{count,plural, =1{ลบบุ๊กมาร์ก 1 รายการแล้ว}other{ลบบุ๊กมาร์ก {count} รายการแล้ว}}</translation>
 <translation id="5979837087407522202">ค้นหารหัสผ่าน</translation>
 <translation id="5981230843984570095">ปิดแท็บที่ไม่ได้ใช้งานทั้งหมด</translation>
+<translation id="5982958159110007132">แท็บของกลุ่มแท็บ <ph name="TAB_INDEX_IN_GROUP" /> จาก <ph name="NUMBER_OF_TABS_IN_GROUP" /></translation>
 <translation id="5984222099446776634">เข้าชมล่าสุด</translation>
 <translation id="598634819525651074">พื้นที่</translation>
 <translation id="5988097621740394599">ดูการลดราคาในแท็บ</translation>
@@ -987,6 +993,7 @@
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6042308850641462728">แสดงเพิ่ม</translation>
 <translation id="6045460247888249350">เพิ่มชื่อ</translation>
+<translation id="6051432659151380973">ระบบจะบันทึกกลุ่มแท็บโดยอัตโนมัติ</translation>
 <translation id="605721222689873409">ปป</translation>
 <translation id="6059830886158432458">ควบคุมเรื่องราวและกิจกรรมของคุณได้ที่นี่</translation>
 <translation id="6064824697233747382">องค์กรกำหนดให้คุณปิดการซิงค์</translation>
@@ -1271,6 +1278,7 @@
 <translation id="745899714366929493">ตลอดวัน</translation>
 <translation id="7459628154744868585">การปกป้องที่ดียิ่งขึ้นเปิดอยู่</translation>
 <translation id="7465351360025415755">รับเนื้อหาที่คุณสนใจ</translation>
+<translation id="7470908168505178757">กลุ่มแท็บ ยุบอยู่</translation>
 <translation id="7472734401283673885">ชื่อบริษัท</translation>
 <translation id="7473891865547856676">ไม่เป็นไร</translation>
 <translation id="7488874549363591659">นำส่งแล้ว</translation>
@@ -1480,6 +1488,7 @@
 <translation id="8446884382197647889">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="8449347986464073209">ลบและออกจากระบบ</translation>
 <translation id="8459333855531264009">ไม่ปลอดภัย</translation>
+<translation id="8466300942149667917">ระบบจะลบข้อมูลบัญชีที่ไม่ได้บันทึก</translation>
 <translation id="8473863474539038330">ที่อยู่และอื่นๆ</translation>
 <translation id="8487667956631253959">เปิด</translation>
 <translation id="8487700953926739672">ใช้งานแบบออฟไลน์ได้</translation>
@@ -1608,6 +1617,7 @@
 <translation id="9065203028668620118">แก้ไข</translation>
 <translation id="9079935439869366234">ทำเครื่องหมายทั้งหมดว่ายังไม่ได้อ่าน</translation>
 <translation id="9081058212938299310">อัปเดตรหัสผ่านของ <ph name="USERNAME" /> ไหม</translation>
+<translation id="9082821980444279398">เมื่อเปิดไว้ ระบบจะใช้และบันทึกข้อมูลในบัญชี Google ของคุณ เมื่อปิดไว้ ระบบจะบันทึกข้อมูลในอุปกรณ์เครื่องนี้เท่านั้นและข้อมูลจะถูกลบหากคุณออกจากระบบ</translation>
 <translation id="9083838294503912307">เปิดการซิงค์เพื่อซิงค์และปรับเปลี่ยนข้อมูลตามความต้องการในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="9087339162317338348">ใช้ HTTPS ทุกครั้งที่ทำได้และรับการแจ้งเตือนก่อนโหลดเว็บไซต์ที่ไม่รองรับ HTTPS</translation>
 <translation id="9093271241977565440">แตะไอคอนค้นหาที่ด้านบนของหน้าจอ</translation>

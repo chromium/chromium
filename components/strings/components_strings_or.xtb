@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />ଆପଣଙ୍କର ନିଯୁକ୍ତିକାରୀ କିମ୍ବା ସ୍କୁଲ୍‍
           <ph name="LIST_ITEM" />ଆପଣଙ୍କର ଇଣ୍ଟର୍ନେଟ୍ ସେବା ପ୍ରଦାତା
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">ଏହି ଆଇଟମକୁ ଟ୍ରାକ କରନ୍ତୁ</translation>
 <translation id="1337692097987160377">ଏହି ଟାବ୍ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="1339601241726513588">ନାମାଙ୍କନ ଡୋମେନ୍:</translation>
 <translation id="1340482604681802745">ପିକ୍‌ଅପ୍ ଠିକଣା</translation>
@@ -455,6 +456,7 @@
 <translation id="1812527064848182527">ଲ୍ୟାଣ୍ଡସ୍କେପ୍</translation>
 <translation id="1812975699435941848">ସ୍ୱାସ୍ଥ୍ୟ ଶିକ୍ଷା ଓ ମେଡିକାଲ ଟ୍ରେନିଂ</translation>
 <translation id="1816436748874040213">ସେୟାର କରାଯାଇଥିବା ଟାବଗୁଡ଼ିକୁ ସ୍କ୍ରୋଲ କରି ଜୁମ କରିବା ପାଇଁ କହିପାରିବ</translation>
+<translation id="1817364650920811003">ଭୂମିକା: Chromeର ଟିପ। ଆକ୍ସେସିବିଲିଟୀ ଲେବଲ: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">ଅନବ୍ଲକ କରନ୍ତୁ</translation>
 <translation id="1818585559878922121">ଡକ୍ୟୁମେଣ୍ଟାରୀ ମୁଭିଗୁଡ଼ିକ</translation>
 <translation id="182139138257690338">ସ୍ୱଚାଳିତ ଡାଉନଲୋଡଗୁଡ଼ିକ</translation>
@@ -1394,6 +1396,7 @@
 <translation id="3642638418806704195">ଆପ୍ଲିକେସନ୍:</translation>
 <translation id="3646643500201740985">କୌଣସି ବିଜ୍ଞାପନ କେତେ ଭଲ ପରଫର୍ମ କରେ ତାହା ମାପିବା</translation>
 <translation id="3647286794400715637">ପ୍ରତ୍ୟେକ URL ଷ୍ଟ୍ରିଙ୍ଗ ଏଣ୍ଟ୍ରି 1ରୁ 2 URL ମଧ୍ୟରେ ରହିବା ଉଚିତ।</translation>
+<translation id="3647400963805615193">Chromeର ଟିପକୁ ଖାରଜ କରିବା ବଟନ, ଖାରଜ କରିବାକୁ ଏଣ୍ଟର ଦବାନ୍ତୁ, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">ବୈଧକରଣ ସଫଳ ହେଲା</translation>
 <translation id="3650594806107685466">ଆପଣଙ୍କ କାର୍ଡକୁ ସୁରକ୍ଷିତ ରଖିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ <ph name="SIDE_OF_CARD" />ରେ ଥିବା CVC ଲେଖନ୍ତୁ</translation>
 <translation id="3650917416636556301">ହାଇକିଂ ଏବଂ କେମ୍ପିଂ</translation>
@@ -2608,6 +2611,7 @@
 <translation id="6035491133925068289">ଟ୍ରାକ ଓ ଫିଲ୍ଡ</translation>
 <translation id="6039846035001940113">ଯଦି ସମସ୍ୟା ଜାରି ରହେ, ସାଇଟ୍‍ର ମାଲିକଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
+<translation id="6040539895181423374">ମୂଲ୍ୟ ଇନସାଇଟଗୁଡ଼ିକ</translation>
 <translation id="604124094241169006">ସ୍ୱଚାଳିତ</translation>
 <translation id="6041777658117377052">ଚେମ୍ବରର ତାପମାତ୍ରା</translation>
 <translation id="6042308850641462728">ଅଧିକ</translation>
@@ -3364,6 +3368,7 @@
 <translation id="7481312909269577407">ଅଗ୍ରଗତି</translation>
 <translation id="7481603210197454575">ଏନଭେଲପ ଇଟାଲିଆନ</translation>
 <translation id="7483482939016730822">ସ୍କୁଲ ସାମଗ୍ରୀ ଏବଂ କ୍ଲାସରୁମ ଇକ୍ୟୁପମେଣ୍ଟ</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chromeର ଟିପକୁ ଖାରଜ କରିବା ପାଇଁ ପ୍ରଥମେ ଟାବ, ତା'ପରେ ଏଣ୍ଟର ଦବାନ୍ତୁ।</translation>
 <translation id="7485085230273446323">ବିଜିନେସ ଓ ଇଣ୍ଡଷ୍ଟ୍ରିଆଲ</translation>
 <translation id="7485870689360869515">କୌଣସି ଡାଟା ମିଳିଲା ନାହିଁ।</translation>
 <translation id="7489392576326061356">ସାମ୍ପୁ ଓ କଣ୍ଡିସନର</translation>

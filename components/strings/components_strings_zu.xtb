@@ -191,6 +191,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
           <ph name="LIST_ITEM" />Umqashi wakho noma isikolo
           <ph name="LIST_ITEM" />Umhlinzeki wesevisi yakho ye-inthanethi
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">Landelela le nto</translation>
 <translation id="1337692097987160377">Yabelana ngale thebhu</translation>
 <translation id="1339601241726513588">Isizinda sokubhalisa:</translation>
 <translation id="1340482604681802745">Ikheli lokuthathwa</translation>
@@ -455,6 +456,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="1812527064848182527">ukwakheka kwezwe</translation>
 <translation id="1812975699435941848">Izifundo Zezempilo Nokuqeqeshwa Kwezokwelapha</translation>
 <translation id="1816436748874040213">Ingacela ukuskrola nokusondeza amathebhu abiwe</translation>
+<translation id="1817364650920811003">Indima: Ithiphu yeChrome. Ilebula yokutholakala: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Vulela</translation>
 <translation id="1818585559878922121">Ama-Movie wedokhumentari</translation>
 <translation id="182139138257690338">ukulandwa okuzenzakalelayo</translation>
@@ -1394,6 +1396,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3642638418806704195">Uhlelo lokusebenza:</translation>
 <translation id="3646643500201740985">Ukulinganisa ukuthi isikhangiso senza kahle kangakanani</translation>
 <translation id="3647286794400715637">Ukufakwa ngakunye kweyunithi yezinhlamvu zama-url kufanele kuqukathe phakathi kwe-URL e-1 kuya kwama-2.</translation>
+<translation id="3647400963805615193">Inkinobho yokuthi Chitha Ithiphu yeChrome, cindezela u-Enter ukuze uyichithe, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Ukuqinisekiswa kuphumelele</translation>
 <translation id="3650594806107685466">Ukusiza ukugcina ikhadi lakho livikelekile, faka i-CVC ku-<ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Ukuhamba Ngezinyawo Nokukhempa</translation>
@@ -2608,6 +2611,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6035491133925068289">I-Track ne-Field</translation>
 <translation id="6039846035001940113">Uma inkinga iqhubeka, xhumana nomnikazi wesayithi.</translation>
 <translation id="6040143037577758943">Vala</translation>
+<translation id="6040539895181423374">Imininingwane yentengo</translation>
 <translation id="604124094241169006">Okuzenzakalelayo</translation>
 <translation id="6041777658117377052">Ithempelesha yomkhandlu</translation>
 <translation id="6042308850641462728">Okuningi</translation>
@@ -3365,6 +3369,7 @@ Imininingwane engeziwe:
 <translation id="7481312909269577407">Dlulisela</translation>
 <translation id="7481603210197454575">Imvilophu ye-Italian</translation>
 <translation id="7483482939016730822">Izinto Zezikole Nezisetshenziswa Zasekilasini</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, cindezela uTab bese u-Enter ukuze Uchithe Ithiphu yeChrome.</translation>
 <translation id="7485085230273446323">Ibhizinisi Nezimboni</translation>
 <translation id="7485870689360869515">Ayikho idatha etholiwe.</translation>
 <translation id="7489392576326061356">Ama-shampoo Nama-conditioner</translation>

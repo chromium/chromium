@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Tarixçə</translation>
 <translation id="164673457281113247">{count,plural, =1{Əlfəcin yadda saxlandı}other{Əlfəcinlər yadda saxlandı}}</translation>
 <translation id="1650222530560417226">Gələcək JavaScript konsolunun qeyd və xətalarını bütün tablardan toplamaq üçün "Qeydlərə Başlayın" düyməsinə klikləyin. Qeydlər bu səhifə bağlanana və ya "Qeydləri Dayandırın" seçimi edilənədək toplanacaq (və yalnız yaddaşda saxlanacaq).</translation>
+<translation id="1652333207707886577">Menyunu fərdiləşdirin</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} yaddaşda saxlanılmış parol klaviaturanızın yuxarısında əlçatandır.}other{{count} yaddaşda saxlanılmış parol klaviaturanızın yuxarısında əlçatandır.}}</translation>
 <translation id="1657011748321897393">Paylaşım uğursuz oldu, çünki Siz şəbəkəyə qoşulmamısınız.</translation>
 <translation id="165877110639533037">Açıq Panel Yoxdur</translation>
@@ -240,6 +241,7 @@
 <translation id="2267753748892043616">Hesab Əlavə edin</translation>
 <translation id="2268044343513325586">Silin</translation>
 <translation id="2269277877025820298">Ardına baxın</translation>
+<translation id="2271452184061378400">Tab qruplarınız burada yaddaşda saxlanılır</translation>
 <translation id="2273327106802955778">Ətraflı menyu</translation>
 <translation id="2274800392139890332">Bu bağlamanı izləməyin</translation>
 <translation id="2275480389219976105">Ünvan tapıldı</translation>
@@ -530,6 +532,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3738428049780661523">Yaradılıb: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Endirmələri gizlədin</translation>
 <translation id="3745190878148784130">"Mətn ölçüsünü dəyişin" seçimini gizlədin</translation>
+<translation id="3747231889390582072">Təşkilatın təhlükəsizliyini qorumaq üçün yadda saxlanmamış data bu cihazdan silinəcək. Bura parollar, brauzer tarixçəsi, kukilər və s. daxil ola bilər.</translation>
 <translation id="3762232513783804601">iPad'iniz üçün hazırlanıb</translation>
 <translation id="3768725474733206671">Son Bağlanmış Tabı yenidən açın</translation>
 <translation id="3771033907050503522">Gizli Panellər</translation>
@@ -1480,6 +1483,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8446884382197647889">Ətraflı Məlumat</translation>
 <translation id="8449347986464073209">Silin və çıxın</translation>
 <translation id="8459333855531264009">Təhlükəsiz deyil</translation>
+<translation id="8466300942149667917">Yadda saxlanmamış hesab datası silinəcək</translation>
 <translation id="8473863474539038330">Ünvanlar və s.</translation>
 <translation id="8487667956631253959">Aktiv</translation>
 <translation id="8487700953926739672">Oflayn olaraq əlçatan</translation>

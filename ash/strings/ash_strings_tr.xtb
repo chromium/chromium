@@ -183,6 +183,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1654477262762802994">Sesli sorgu başlat</translation>
 <translation id="1668469839109562275">Yerleşik VPN</translation>
 <translation id="1673232940951031776">Odaklanma oturumunu sonlandırın. <ph name="REMAINING_TIME" /> kaldı.</translation>
+<translation id="1675570947608765064">Diğer kullanıcılar bu görevde yaptığınız değişiklikleri görebilir</translation>
 <translation id="1675844249244994876">Sağdaki pencereyi güncelleyin</translation>
 <translation id="1677472565718498478">Kalan süre: <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> bağlı değil.</translation>
@@ -862,6 +863,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4302592941791324970">Kullanılamıyor</translation>
 <translation id="4303223480529385476">Durum alanını genişlet</translation>
 <translation id="4305133312001648038">Sayfadaki yakınlaştırma düzeyini sıfırla</translation>
+<translation id="4305817255990598646">Anahtar</translation>
 <translation id="4307713728991152670">Telefonunuzdaki son fotoğrafları, medya içeriklerini ve uygulamaları görme seçeneğini ayarlayın</translation>
 <translation id="4312840429157639164">Kamera sağ üst köşeye tutturuldu. Sistem yüzeyi ile çakışıyor.</translation>
 <translation id="4316910396681052118">TÜM UYGULAMALAR</translation>
@@ -1515,6 +1517,7 @@ Yeni yüklenmiş</translation>
 <translation id="6696025732084565524">Çıkarılabilir klavyenizde kritik bir güncelleme yapılması gerekiyor</translation>
 <translation id="6697913454192220372">Yeni masa ekle</translation>
 <translation id="6700713906295497288">IME menü düğmesi</translation>
+<translation id="6706742084323792866">PIN klavyesi</translation>
 <translation id="6707693040195709527">Cihazın önceki sürüme geçiş işlemi gecikti</translation>
 <translation id="6710213216561001401">Önceki</translation>
 <translation id="6723839937902243910">Güç</translation>

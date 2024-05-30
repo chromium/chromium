@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
-<translation id="1001716830750249114">Chromium-н хувилбарын тохиргоо руу очих</translation>
 <translation id="1026101648481255140">Үргэлжлүүлэн суулгах</translation>
 <translation id="1029669172902658969">&amp;ChromiumOS-г шинэчлэхийн тулд дахин ачаална уу</translation>
 <translation id="1040916596585577953">Chromium танд энэ өргөтгөлийг шалгахыг зөвлөж байна</translation>
@@ -356,7 +355,7 @@
 <translation id="6729124504294600478">Хувийн болгох болон бусад онцлогийг авахын тулд Chromium-г Веб, аппын үйл ажиллагаа болон Google-н холбосон үйлчилгээнүүдэд оруулна уу</translation>
 <translation id="6734291798041940871">Chromium-г таны компьютерийн бүх хэрэглэгчид суулгасан байна.</translation>
 <translation id="673636774878526923">Та бүх төхөөрөмж дээрээ Chromium-н зүйлсдээ хандахын тулд нэвтэрч, дараа нь синк хийхийг асаана уу.</translation>
-<translation id="674245979920622322">Та ойрын үед зочлоогүй байна. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> өөр <ph name="COUNT" />-г хассан</translation>
+<translation id="674245979920622322">Та ойрын үед зочлоогүй байна. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон өөр <ph name="COUNT" /> зөвшөөрлийг хассан</translation>
 <translation id="67706546131546258">Энэ файл аюултай байж магадгүй тул Chromium үүнийг скан хийхийг зөвлөж байна.</translation>
 <translation id="6779406956731413166">ChromiumOS-г нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
 <translation id="6847869444787758381">Хэрэв таны нууц үг алдагдсан байвал Chromium танд мэдэгдэнэ</translation>

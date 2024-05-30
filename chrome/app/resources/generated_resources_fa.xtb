@@ -2054,7 +2054,6 @@
 <translation id="2469259292033957819">هیچ چاپگر ذخیره‌شده‌ای وجود ندارد.</translation>
 <translation id="2469375675106140201">سفارشی کردن غلطگیر املا</translation>
 <translation id="247051149076336810">نشانی وب دستگاه ذخیره‌سازی متصل به شبکه</translation>
-<translation id="2470702053775288986">افزونه‌های پشتیبانی نشده غیرفعال شدند.</translation>
 <translation id="2471469610750100598">سیاه (پیش‌فرض)</translation>
 <translation id="2471506181342525583">دسترسی به مکان مجاز شد</translation>
 <translation id="2473195200299095979">ترجمه این صفحه</translation>
@@ -4849,6 +4848,7 @@
 <translation id="4562091353415772246">‏نصب به‌روزرسانی‌ها و برنامه‌ها. با ادامه دادن، موافقت می‌کنید که این دستگاه نیز بتواند به‌طور خودکار به‌روزرسانی‌ها و برنامه‌ها را از Google، شرکت مخابراتی و سازنده دستگاه (احتمالاً بااستفاده از داده شبکه تلفن همراه) بارگیری و نصب کند. بعضی‌از این برنامه‌ها ممکن است خریدهای درون‌برنامه پیشنهاد دهند. <ph name="BEGIN_LINK1" />درباره نصب خودکار از Play بیشتر بدانید<ph name="BEGIN_LINK1_END" />بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">افزودن اثر انگشت</translation>
 <translation id="4562155266774382038">بستن پیشنهاد</translation>
+<translation id="4562364000855074606">‏برنامه‌های نصب‌شده در این <ph name="DEVICE_TYPE" /> را مسدود می‌کنید. برای محدود کردن بارگیری برنامه‌ها یا محتوا، به «تنظیمات Google Play» بروید. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">زبان ورودی اولیه چینی است</translation>
 <translation id="4563382028841851106">برداشتن از حساب</translation>
 <translation id="4563880231729913339">انگشت ۳</translation>
@@ -5224,7 +5224,6 @@
 <translation id="4853020600495124913">باز کردن در پنجره &amp;جدید</translation>
 <translation id="4854317507773910281">حساب ولی را برای تأیید انتخاب کنید</translation>
 <translation id="485480310608090163">تنظیمات و اجازه‌های بیشتر</translation>
-<translation id="4858599593306712511">کنترل‌های والدین برنامه</translation>
 <translation id="4858913220355269194">فوتبالی</translation>
 <translation id="486213875233855629">توسط سرپرست بی‌صدا شده است</translation>
 <translation id="4862642413395066333">‏امضا کردن پاسخ‌های OCSP</translation>
@@ -8060,6 +8059,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> درحال استفاده از دوربین است</translation>
 <translation id="701080569351381435">مشاهده منبع</translation>
 <translation id="7011797924920577670">علایق شما را تخمین می‌زند</translation>
+<translation id="7012430956470647760">کنترل‌های والدین ویژه برنامه‌ها</translation>
 <translation id="7013762323294215682">این گذرکلید در مدیر گذرواژه‌تان ذخیره خواهد شد. هر کسی که به آن دسترسی داشته باشد می‌تواند از این گذرکلید استفاده کند.</translation>
 <translation id="7014174261166285193">نصب انجام نشد.</translation>
 <translation id="7014480873681694324">برداشتن برجسته‌سازی</translation>

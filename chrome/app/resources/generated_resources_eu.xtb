@@ -1700,6 +1700,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2234827758954819389">Pribatutasun-gida</translation>
 <translation id="2234876718134438132">Sinkronizazioa eta Google-ren zerbitzuak</translation>
 <translation id="2235344399760031203">Hirugarrenen cookieak blokeatu dira</translation>
+<translation id="2236949375853147973">Nire jarduerak</translation>
 <translation id="2238379619048995541">Maiztasunaren egoeraren datuak</translation>
 <translation id="2241053333139545397">Irakurri eta aldatu hainbat webguneetan dituzun datuak</translation>
 <translation id="2241634353105152135">Behin soilik</translation>
@@ -2043,7 +2044,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2469259292033957819">Ez daukazu inprimagailurik gordeta.</translation>
 <translation id="2469375675106140201">Pertsonalizatu ortografia-zuzentzailea</translation>
 <translation id="247051149076336810">Fitxategiak partekatzeko biltegiaren URLa</translation>
-<translation id="2470702053775288986">Luzapen ez-bateragarria desgaitu da</translation>
 <translation id="2471469610750100598">Beltza (lehenetsia)</translation>
 <translation id="2471506181342525583">Eman da kokapena erabiltzeko baimena</translation>
 <translation id="2473195200299095979">Itzuli orria</translation>
@@ -4836,6 +4836,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4562091353415772246">Instalatu eguneratzeak eta aplikazioak. Aurrera eginez gero, onartu egingo duzu agian gailuak automatikoki deskargatu eta instalatuko dituela Google-ren, operadorearen edo fabrikatzailearen eguneratzeak eta aplikazioak ere, beharbada datu-konexioa erabilita. Baliteke aplikazio horietako batzuetan erosketak egin ahal izatea. <ph name="BEGIN_LINK1" />Lortu Play-ko instalazio automatikoei buruzko informazio gehiago<ph name="BEGIN_LINK1_END" />Lortu informazio gehiago<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">Gehitu hatz-marka</translation>
 <translation id="4562155266774382038">Baztertu iradokizuna</translation>
+<translation id="4562364000855074606">Blokeatu <ph name="DEVICE_TYPE" /> honetan instalatutako aplikazioak. Aplikazioak edo edukia deskargatzeko aukera murrizteko, joan Google Play-ren ezarpenetara. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Hasierako idazteko hizkuntza txinera da</translation>
 <translation id="4563382028841851106">Kendu kontutik</translation>
 <translation id="4563880231729913339">3. hatza</translation>
@@ -8040,6 +8041,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7009709314043432820"><ph name="APP_NAME" /> kamera erabiltzen ari da</translation>
 <translation id="701080569351381435">Ikusi iturburua</translation>
 <translation id="7011797924920577670">interesak estimatzen ditu</translation>
+<translation id="7012430956470647760">Aplikazioetarako guraso-murriztapenak</translation>
 <translation id="7013762323294215682">Sarbide-gakoa Pasahitz-kudeatzailea zerbitzuan gordeko da. Zerbitzu horretarako sarbidea duten guztiek erabili ahal izango dute sarbide-gakoa.</translation>
 <translation id="7014174261166285193">Ezin izan da instalatu.</translation>
 <translation id="7014480873681694324">Kendu nabarmentzea</translation>

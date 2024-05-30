@@ -1709,6 +1709,7 @@
 <translation id="2234827758954819389">गोपनीयता मार्गदर्शक</translation>
 <translation id="2234876718134438132">सिंक आणि Google सेवा</translation>
 <translation id="2235344399760031203">तृतीय पक्ष कुकी ब्लॉक केल्या आहेत</translation>
+<translation id="2236949375853147973">माझी अ‍ॅक्टिव्हिटी</translation>
 <translation id="2238379619048995541">फ्रिक्वेन्सी स्थिती डेटा</translation>
 <translation id="2241053333139545397">अनेक वेबसाइटवर तुमचा डेटा वाचा आणि बदला</translation>
 <translation id="2241634353105152135">फक्त एकदाच</translation>
@@ -2055,7 +2056,6 @@
 <translation id="2469259292033957819">तुमच्याकडे सेव्ह केलेली प्रिंटर नाहीत.</translation>
 <translation id="2469375675106140201">स्पेल चेक कस्टमाइझ करा</translation>
 <translation id="247051149076336810">फाइल शेअर URL</translation>
-<translation id="2470702053775288986">असमर्थित विस्तार अक्षम</translation>
 <translation id="2471469610750100598">काळा (डीफॉल्ट)</translation>
 <translation id="2471506181342525583">स्थान अ‍ॅक्सेस करण्याची अनुमती आहे</translation>
 <translation id="2473195200299095979">या पृष्ठाचे भाषांतर करा</translation>
@@ -4848,6 +4848,7 @@
 <translation id="4562091353415772246">अपडेट आणि अ‍ॅप्स इंस्टॉल करा. पुढे सुरू ठेवून, तुम्ही सहमती देता, की हे डिव्हाइस शक्यतो मोबाइल डेटा वापरून Google, तुमचा वाहक आणि तुमच्या डिव्हाइसच्या निर्मात्याकडून अपडेट आणि ॲप्ससुद्धा आपोआप डाउनलोड आणि इंस्टॉल करू शकतो. यापैकी काही ॲप्स ॲपमधील खरेदी करण्याचा पर्याय देऊ शकतात. <ph name="BEGIN_LINK1" />Play ऑटो इंस्टॉलबद्दल अधिक जाणून घ्या<ph name="BEGIN_LINK1_END" />अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">फिंगरप्रिंट जोडा</translation>
 <translation id="4562155266774382038">सूचना डिसमिस करा</translation>
+<translation id="4562364000855074606">या <ph name="DEVICE_TYPE" /> वर इंस्टॉल केलेली ॲप्स ब्लॉक करा. ॲप्स किंवा आशय डाउनलोड करणे प्रतिबंधित करण्यासाठी, Google Play सेटिंग्ज वर जा. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">चीनी आरंभिक इनपुट भाषा आहे</translation>
 <translation id="4563382028841851106">खात्यामधून काढून टाका</translation>
 <translation id="4563880231729913339">तिसरे बोट</translation>
@@ -8057,6 +8058,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> तुमचा कॅमेरा वापरत आहे</translation>
 <translation id="701080569351381435">स्रोत पहा</translation>
 <translation id="7011797924920577670">तुमच्या स्वारस्यांचा अंदाज लावते</translation>
+<translation id="7012430956470647760">अ‍ॅप्ससाठी पालक नियंत्रणे</translation>
 <translation id="7013762323294215682">ही पासकी तुमच्या Password Manager मध्ये सेव्ह केली जाईल. याचा अ‍ॅक्सेस असलेले कोणीही ही पासकी वापरू शकेल.</translation>
 <translation id="7014174261166285193">स्थापना अयशस्वी.</translation>
 <translation id="7014480873681694324">हायलाइट काढून टाका</translation>

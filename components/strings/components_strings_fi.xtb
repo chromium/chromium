@@ -456,6 +456,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1812527064848182527">vaakasuunta</translation>
 <translation id="1812975699435941848">Terveystieto ja lääketieteellinen koulutus</translation>
 <translation id="1816436748874040213">Saa pyytää vierittämään ja zoomaamaan jaettuja välilehtiä</translation>
+<translation id="1817364650920811003">Rooli: Chrome-vinkki. Saavutettavuustunnus: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Kumoa esto</translation>
 <translation id="1818585559878922121">Dokumenttielokuvat</translation>
 <translation id="182139138257690338">automaattiset lataukset</translation>
@@ -1399,6 +1400,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3642638418806704195">Sovellus:</translation>
 <translation id="3646643500201740985">Mainostulosten mittaaminen</translation>
 <translation id="3647286794400715637">Jokaisessa lisätyssä URL-merkkijonossa on oltava 1–2 URL-osoitetta.</translation>
+<translation id="3647400963805615193">Hylkää Chrome-vinkki ‐painike, hylkää painamalla Enter, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Todennus onnistui</translation>
 <translation id="3650594806107685466">Lisää kortin CVC-koodi (<ph name="SIDE_OF_CARD" />) kortin suojaamiseksi</translation>
 <translation id="3650917416636556301">Vaellus ja telttailu</translation>
@@ -3371,6 +3373,7 @@ Lisätietoja:
 <translation id="7481312909269577407">Seuraava</translation>
 <translation id="7481603210197454575">Kirjekuori italialainen</translation>
 <translation id="7483482939016730822">Koulun ja luokkahuoneiden tarvikkeet</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, hylkää Chrome-vinkki painamalla sarkainta ja sitten Enter.</translation>
 <translation id="7485085230273446323">Liiketoiminta ja teollisuus</translation>
 <translation id="7485870689360869515">Tietoja ei löydy.</translation>
 <translation id="7489392576326061356">Shampoot ja hoitoaineet</translation>

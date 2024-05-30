@@ -191,6 +191,7 @@
           <ph name="LIST_ITEM" />вашему системному администратору;
           <ph name="LIST_ITEM" />интернет-провайдеру.
         <ph name="END_LIST" /></translation>
+<translation id="1335042910556016570">Отслеживайте этот товар</translation>
 <translation id="1337692097987160377">Поделиться вкладкой</translation>
 <translation id="1339601241726513588">Регистрация домена:</translation>
 <translation id="1340482604681802745">Адрес выдачи</translation>
@@ -2610,6 +2611,7 @@
 <translation id="6035491133925068289">Легкая атлетика</translation>
 <translation id="6039846035001940113">Если проблема не исчезнет, свяжитесь с владельцем сайта.</translation>
 <translation id="6040143037577758943">Закрыть</translation>
+<translation id="6040539895181423374">Информация о ценах</translation>
 <translation id="604124094241169006">Автоматически</translation>
 <translation id="6041777658117377052">Температура камеры</translation>
 <translation id="6042308850641462728">Ещё</translation>

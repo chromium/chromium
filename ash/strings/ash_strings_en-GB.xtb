@@ -131,6 +131,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1420408895951708260">Toggle Night Light. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Yes</translation>
 <translation id="1435537621343861112">Can't start dictation. Your mic is off.</translation>
+<translation id="1447907279406111651">Now · Ends at <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Your device hotspots</translation>
 <translation id="1455242230282523554">Show language settings</translation>
 <translation id="1460620680449458626">Volume is muted.</translation>
@@ -481,6 +482,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2894949423239620203">Cable may impact performance</translation>
 <translation id="2914580577416829331">Screen captures</translation>
 <translation id="2924416280450782352">Can't show items. Try reopening this panel.</translation>
+<translation id="292506373491190801">From event happening now</translation>
 <translation id="2931572158271115754">Nothing on this to-do list.</translation>
 <translation id="2932487126591186298">10 minutes added. <ph name="REMAINING_TIME" /> left.</translation>
 <translation id="2935225303485967257">Manage profiles</translation>
@@ -767,6 +769,7 @@ Connect your device to power.</translation>
 <translation id="3950272133184491871">Sign out now?</translation>
 <translation id="3950820424414687140">Sign in</translation>
 <translation id="3953130726459169782">No assignments completed yet.</translation>
+<translation id="3958714870339660776">All day</translation>
 <translation id="3962859241508114581">Previous track</translation>
 <translation id="3969043077941541451">Off</translation>
 <translation id="3970324493235864154">View your phone's notifications</translation>
@@ -863,6 +866,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4302592941791324970">Not available</translation>
 <translation id="4303223480529385476">Expand status area</translation>
 <translation id="4305133312001648038">Reset zoom level on page</translation>
+<translation id="4305817255990598646">Switch</translation>
 <translation id="4307713728991152670">Set up viewing your phone's recent photos, media and apps</translation>
 <translation id="4312840429157639164">Camera snapped to the top-right corner. Conflict with system surface.</translation>
 <translation id="4316910396681052118">ALL APPS</translation>
@@ -1219,6 +1223,7 @@ No devices connected.</translation>
 <translation id="5599242528220103262">Keyboard shortcut is off</translation>
 <translation id="5600415762228455511">Focus is on, <ph name="REMAINING_TIME" /> left, focusing on: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Press Ctrl + Alt + Z to disable spoken feedback.</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{&lt; 1 hour ago}=1{1 hour ago}other{# hours ago}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">We've switched you to a better network</translation>
 <translation id="5619862035903135339">Administrator policy disables screen capture</translation>
@@ -1395,6 +1400,7 @@ No devices connected.</translation>
 <translation id="6228457605945141550">Turn brightness down</translation>
 <translation id="623116199192908855">Cast your screen from your Chromebook</translation>
 <translation id="6231419273573514727">Peripheral performance may be limited</translation>
+<translation id="6232416233079464213">From <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> is currently using your camera and microphone</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Low battery. Battery Saver turned on.</translation>
@@ -1516,6 +1522,7 @@ New install</translation>
 <translation id="6696025732084565524">Your detachable keyboard needs a critical update</translation>
 <translation id="6697913454192220372">Add new desk</translation>
 <translation id="6700713906295497288">IME menu button</translation>
+<translation id="6706742084323792866">Pin keyboard</translation>
 <translation id="6707693040195709527">Device change to previous version is overdue</translation>
 <translation id="6710213216561001401">Previous</translation>
 <translation id="6723839937902243910">Power</translation>
@@ -1796,6 +1803,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="780301667611848630">No, thanks</translation>
 <translation id="7807067443225230855">Search and Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> and <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">From upcoming calendar event</translation>
 <translation id="7829386189513694949">Strong signal</translation>
 <translation id="7830453190047749513">You can personalise button actions, cursor speed and more for your <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Time's up</translation>
@@ -2113,6 +2121,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="899350903320462459">Unlock device as <ph name="LOGIN_ID" /> to perform the notification action</translation>
 <translation id="8993733019280019776">Are you talking? Your mic is off. Select the mic to turn it on.</translation>
 <translation id="9000771174482730261">MANAGE STORAGE</translation>
+<translation id="9002204506712855687">Explore the latest features</translation>
 <translation id="9005984960510803406">Open Crosh window</translation>
 <translation id="9017320285115481645">Enter Family Link parent access code.</translation>
 <translation id="9022774213089566801">Frequently visited</translation>
@@ -2144,6 +2153,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="9098969848082897657">Silence phone</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> or <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Undo last action</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{In 1 min}other{In # mins}}</translation>
 <translation id="9129245940793250979">Rear button</translation>
 <translation id="9133335900048457298">Can't record protected content</translation>
 <translation id="9139720510312328767">Delete next letter</translation>
@@ -2156,6 +2166,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="9183456764293710005">Full-screen Magnifier</translation>
 <translation id="9193626018745640770">Casting on an unknown receiver</translation>
 <translation id="9194617393863864469">Sign in another user...</translation>
+<translation id="9195990613383871904">Tomorrow</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> resolution changed to <ph name="RESOLUTION" />. Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Connect <ph name="NAME" /> to this Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, managed by your administrator</translation>

@@ -456,6 +456,7 @@
 <translation id="1812527064848182527">ലാൻഡ്‌സ്‌കേപ്പ്</translation>
 <translation id="1812975699435941848">ആരോഗ്യ വിദ്യാഭ്യാസവും മെഡിക്കൽ പരിശീലനവും</translation>
 <translation id="1816436748874040213">പങ്കിട്ട ടാബുകൾ സ്ക്രോൾ ചെയ്യാനും സൂം ചെയ്യാനും ആവശ്യപ്പെടാം</translation>
+<translation id="1817364650920811003">റോൾ: Chrome നുറുങ്ങ്. ഉപയോഗസഹായി ലേബൽ: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">അൺബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="1818585559878922121">ഡോക്യുമെന്ററി സിനിമകൾ</translation>
 <translation id="182139138257690338">സ്വയമേവയുള്ള ഡൗൺലോഡുകൾ</translation>
@@ -1397,6 +1398,7 @@
 <translation id="3642638418806704195">ആപ്പ്:</translation>
 <translation id="3646643500201740985">ഒരു പരസ്യം എത്ര നല്ല പ്രകടനം നടത്തി എന്ന് അളക്കൽ</translation>
 <translation id="3647286794400715637">URL-കളുടെ ഓരോ സ്ട്രിംഗ് എൻട്രിയിലും 1 മുതൽ 2 വരെ URL-കൾ ഉണ്ടായിരിക്കണം.</translation>
+<translation id="3647400963805615193">Chrome നുറുങ്ങ് ബട്ടൺ ഡിസ്മിസ് ചെയ്യുക, ഡിസ്മിസ് ചെയ്യാൻ 'Enter' അമർത്തുക, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">മൂല്യനിർണ്ണയം വിജയകരം</translation>
 <translation id="3650594806107685466">നിങ്ങളുടെ കാർഡ് സുരക്ഷിതമായി സൂക്ഷിക്കാൻ സഹായിക്കുന്നതിന്, <ph name="SIDE_OF_CARD" /> CVC നൽകുക</translation>
 <translation id="3650917416636556301">ഹൈക്കിംഗും ക്യാമ്പിംഗും</translation>
@@ -3367,6 +3369,7 @@
 <translation id="7481312909269577407">മുന്നോട്ട്</translation>
 <translation id="7481603210197454575">Envelope Italian</translation>
 <translation id="7483482939016730822">സ്കൂൾ സാമഗ്രികളും ക്ലാസ്റൂമിൽ ആവശ്യമായ ഉപകരണങ്ങളും</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chrome നുറുങ്ങ് ഡിസ്മിസ് ചെയ്യാൻ 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക.</translation>
 <translation id="7485085230273446323">ബിസിനസും വ്യവസായവും</translation>
 <translation id="7485870689360869515">ഡാറ്റകളൊന്നും കണ്ടെത്തിയില്ല.</translation>
 <translation id="7489392576326061356">ഷാമ്പൂകളും കണ്ടീഷനറുകളും</translation>

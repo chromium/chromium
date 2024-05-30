@@ -457,6 +457,7 @@
 <translation id="1812527064848182527">အလျားလိုက်</translation>
 <translation id="1812975699435941848">ကျန်းမာရေးပညာပေးနှင့် ကုသမှုဆိုင်ရာ သင်တန်း</translation>
 <translation id="1816436748874040213">မျှဝေထားသော တဘ်များကို လှိမ့်ရန်၊ ဇူးမ်ဆွဲရန် တောင်းဆိုနိုင်သည်</translation>
+<translation id="1817364650920811003">အခန်းကဏ္ဍ- Chrome အကြံပြုချက်။ အများသုံးစွဲနိုင်မှု အညွှန်း- <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">ပြန်ဖွင့်ရန်</translation>
 <translation id="1818585559878922121">မှတ်တမ်းရုပ်ရှင်</translation>
 <translation id="182139138257690338">အလိုအလျောက် ဒေါင်းလုဒ်များ</translation>
@@ -1398,6 +1399,7 @@
 <translation id="3642638418806704195">အပလီကေးရှင်း-</translation>
 <translation id="3646643500201740985">ကြော်ငြာစွမ်းဆောင်ရည် မည်မျှကောင်းကြောင်း တိုင်းတာခြင်း</translation>
 <translation id="3647286794400715637">URL လိုင်း တစ်ခုစီတွင် URL ၁ ခုမှ ၂ ခုအထိ ပါဝင်ရမည်။</translation>
+<translation id="3647400963805615193">Chrome အကြံပြုချက်ပယ်ရန် ခလုတ်၊ Enter ခလုတ်နှိပ်၍ ပယ်ပါ၊ <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">အောင်မြင်စွာ အတည်ပြုပြီး</translation>
 <translation id="3650594806107685466">သင့်ကတ် လုံခြုံမှုရှိစေရန် <ph name="SIDE_OF_CARD" /> ရှိ CVC နံပါတ်ထည့်ပါ</translation>
 <translation id="3650917416636556301">တောင်တက်ခြင်းနှင့် တဲထိုးစခန်းချခြင်း</translation>
@@ -3371,6 +3373,7 @@
 <translation id="7481312909269577407">ရှေ့သို့</translation>
 <translation id="7481603210197454575">Italian စာအိတ်</translation>
 <translation id="7483482939016730822">ကျောင်းသုံးပစ္စည်းနှင့် စာသင်ခန်းသုံးကိရိယာ</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />၊ Tab နှိပ်ပြီး Enter ခလုတ်နှိပ်၍ Chrome အကြံပြုချက်ကို ပယ်ပါ။</translation>
 <translation id="7485085230273446323">စီးပွားရေး၊ စက်မှုလုပ်ငန်း</translation>
 <translation id="7485870689360869515">ဒေတာ မတွေ့ရပါ။</translation>
 <translation id="7489392576326061356">ခေါင်းလျှော်ရည်နှင့် ဆံသားထိန်းညှိဆေး</translation>

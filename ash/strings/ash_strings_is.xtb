@@ -183,6 +183,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1654477262762802994">Hefja raddfyrirspurn</translation>
 <translation id="1668469839109562275">Innbyggt VPN</translation>
 <translation id="1673232940951031776">Ljúka einbeitingarlotu. <ph name="REMAINING_TIME" /> eftir.</translation>
+<translation id="1675570947608765064">Aðrir geta séð breytingar sem þú gerir á þessu verkefni</translation>
 <translation id="1675844249244994876">Uppfæra hægri glugga</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> eftir</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> er ótengt.</translation>
@@ -862,6 +863,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4302592941791324970">Ekki tiltækt</translation>
 <translation id="4303223480529385476">Stækka stöðusvæði</translation>
 <translation id="4305133312001648038">Endurstilla aðdrátt á síðu</translation>
+<translation id="4305817255990598646">Skipta</translation>
 <translation id="4307713728991152670">Setja upp skoðun nýlegra mynda, efnis og forrita í símanum</translation>
 <translation id="4312840429157639164">Myndavél fest við efra horn hægra megin. Skörun við vettvang kerfis.</translation>
 <translation id="4316910396681052118">ÖLL FORRIT</translation>

@@ -814,6 +814,7 @@ Jika kebijakan ini tidak disetel, pengguna akan diizinkan untuk menambahkan peng
 <translation id="1635748761015837179">Izinkan penulisan ke perangkat penyimpanan eksternal</translation>
 <translation id="1639468541408865385">Aktifkan cache autentikasi HTTP yang tercakup secara global</translation>
 <translation id="1639673466479276550">Aktifkan screensaver di layar login.</translation>
+<translation id="1640447222731279244">Kontrol pengaktifan fitur "Buat dengan AI" di Wallpaper ChromeOS</translation>
 <translation id="1640824698339859203">Aktifkan SSO Mengambang dan pindahkan autentikasi layanan web pengguna ke perangkat baru</translation>
 <translation id="1641117061932613266">Mengaktifkan Layanan <ph name="PRODUCT_NAME" /> V2</translation>
 <translation id="1641394008743444477">Memungkinkan Anda menetapkan daftar fitur <ph name="PRODUCT_OS_NAME" /> untuk dinonaktifkan.
@@ -875,6 +876,12 @@ untuk memanggil API ini.</translation>
 
 Jika kebijakan disetel ke Salah (False) atau tidak disetel, tidak ada peristiwa yang akan direkam.</translation>
 <translation id="1692990221685273468">Menentukan apakah pemverifikasi sertifikat bawaan akan menerapkan batasan yang dienkode ke trust anchor yang dimuat dari penyimpanan trust platform.</translation>
+<translation id="1693528798631913178">Kebijakan ini mengaktifkan atau menonaktifkan "Buat dengan AI" di Latar Belakang VC untuk ChromeOS.
+0 = Menonaktifkan fitur untuk pengguna.
+
+1 = Mengaktifkan fitur untuk pengguna. Perhatikan bahwa tidak ada data yang dikirim ke Google untuk melatih atau meningkatkan kualitas model AI.
+
+Jika kebijakan ini disetel ke Tidak Disetel, fitur "Buat dengan AI" di Latar Belakang VC akan dinonaktifkan untuk pengguna versi bisnis.</translation>
 <translation id="169467210981344373">Nonaktifkan cache autentikasi HTTP yang tercakup secara global</translation>
 <translation id="1696501581280568361">Menyarankan pemisahan profil</translation>
 <translation id="1698810555265314018">Mengontrol resolusi gambar cetak saat <ph name="PRODUCT_NAME" /> mencetak PDF dengan rasterisasi.
@@ -1793,6 +1800,7 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 <translation id="2326031114717677574">Interval pada saat data audio diambil sampelnya dan dikumpulkan. Batas minimum yang diizinkan adalah 1 menit.
 
       Jika tidak disetel, interval default 15 menit akan berlaku.</translation>
+<translation id="2331028134545182024">Kontrol pengaktifan fitur "Buat dengan AI" di Latar Belakang VC ChromeOS</translation>
 <translation id="2333228572393176330">Kebijakan ini akan mengontrol fitur keamanan di TLS 1.3 yang melindungi koneksi terhadap serangan downgrade. Kebijakan ini kompatibel dengan versi sebelumnya dan tidak akan memengaruhi koneksi ke server atau proxy TLS 1.2 yang sudah patuh. Namun, versi lama dari beberapa proxy yang mengganggu TLS memiliki cacat dalam proses implementasi, sehingga versi tersebut menjadi tidak kompatibel.
 
       Jika kebijakan ini disetel ke Benar (True) atau tidak disetel, <ph name="PRODUCT_NAME" /> akan mengaktifkan perlindungan keamanan ini untuk semua koneksi.
@@ -5053,6 +5061,17 @@ Jika kebijakan ini tidak disetel, <ph name="PRODUCT_NAME" /> akan mengikuti pros
       - Jika kebijakan ini disetel ke <ph name="SKIP_TOS_DIALOG" />, browser akan memiliki fungsi terbatas.
 
       - Jika kebijakan ini disetel ke <ph name="SKIP_TOS_DIALOG" />, admin harus memberitahukan hal ini kepada pengguna akhir perangkat.</translation>
+<translation id="489760181463331251">Kebijakan ini mengubah tingkat penghematan Penghemat Memori.
+
+Tindakan ini hanya berlaku saat Penghemat Memori diaktifkan melalui setelan atau melalui kebijakan <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" />, dan akan memengaruhi cara heuristik digunakan untuk menentukan kapan harus menghapus tab. Misalnya, mengurangi masa pakai tab yang tidak aktif sebelum menghapusnya dapat menghemat memori, tetapi juga berarti tab akan lebih sering dimuat ulang sehingga dapat menyebabkan pengalaman pengguna yang buruk dan menimbulkan biaya traffic jaringan yang lebih besar.
+
+Jika kebijakan disetel ke 0 - Penghemat Memori akan mendapatkan penghematan memori sedang. Tab menjadi tidak aktif setelah jangka waktu yang lebih lama
+
+Jika kebijakan disetel ke 1 - Penghemat Memori akan mendapatkan penghematan memori yang seimbang. Tab menjadi tidak aktif setelah jangka waktu yang optimal.
+
+Jika kebijakan disetel ke 2 - Penghemat Memori akan mendapatkan penghematan memori maksimum. Tab menjadi tidak aktif setelah jangka waktu yang lebih singkat.
+
+Jika kebijakan ini tidak disetel, pengguna akhir dapat mengontrol setelan ini di chrome://settings/performance.</translation>
 <translation id="489803897780524242">Parameter yang mengendalikan penempatan istilah penelusuran untuk penyedia penelusuran default</translation>
 <translation id="4899708173828500852">Aktifkan Safe Browsing</translation>
 <translation id="4906194810004762807">Segarkan peringkat untuk Kebijakan Perangkat</translation>
@@ -5418,6 +5437,12 @@ Jika kebijakan ini tidak disetel atau daftar tidak berisi referensi gambar yang 
       Jika tidak ditetapkan, jangka waktu default selama 604800000 milidetik (satu minggu) akan digunakan.</translation>
 <translation id="5212810195096589189">Tentukan izin CLI VM</translation>
 <translation id="5213038356678567351">Situs yang seharusnya tidak pernah memicu pengalihan browser.</translation>
+<translation id="5215621993623612880">Kebijakan ini mengaktifkan atau menonaktifkan "Buat dengan AI" di Wallpaper untuk ChromeOS.
+0 = Menonaktifkan fitur untuk pengguna.
+
+1 = Mengaktifkan fitur untuk pengguna. Perhatikan bahwa tidak ada data yang dikirim ke Google untuk melatih atau meningkatkan kualitas model AI.
+
+Jika kebijakan ini disetel ke Tidak Disetel, fitur "Buat dengan AI" di Wallpaper akan dinonaktifkan untuk pengguna versi bisnis.</translation>
 <translation id="5216815237712190041">Mengonfigurasi gambar wallpaper tingkat perangkat yang akan ditampilkan di layar login jika belum ada pengguna yang login ke perangkat. Kebijakan ini disetel dengan menentukan URL tempat perangkat ChromeOS dapat mendownload gambar wallpaper dan hash kriptografi yang digunakan untuk memverifikasi integritas download. Gambar harus dalam format JPEG dan ukuran filenya tidak boleh lebih dari 16 MB. URL harus dapat diakses tanpa autentikasi apa pun. Gambar wallpaper didownload dan disimpan di cache. File akan didownload ulang setiap kali URL atau hash berubah.
 
       Jika kebijakan wallpaper perangkat disetel, perangkat ChromeOS akan mendownload dan menggunakan gambar wallpaper di layar login jika belum ada pengguna yang login ke perangkat. Setelah pengguna login, kebijakan wallpaper pengguna akan diterapkan.
@@ -7044,6 +7069,7 @@ Jika kebijakan ini tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan menggunakan
       Penyambungan ini memungkinkan perangkat ChromeOS (dan Android) lain yang login dengan akun GAIA yang sama untuk disambungkan secara otomatis.
       Jika kebijakan ini tidak disetel, nilai default akan disetel ke nonaktif untuk pengguna versi bisnis dan disetel ke aktif untuk
       akun yang tidak terkelola.</translation>
+<translation id="6400959027108936283">Aktifkan fitur</translation>
 <translation id="6401669939808766804">Paksa pengguna logout</translation>
 <translation id="640244877779556713">Mengaktifkan Saran Emoji</translation>
 <translation id="6403114173011456561">Mengontrol keyboard virtual sentuh, yang berperan sebagai kebijakan tambahan untuk kebijakan <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
@@ -7401,6 +7427,7 @@ Perubahan kebijakan hanya berlaku saat ARC tidak berjalan, misalnya saat memulai
 
       Catatan: Gunakan kebijakan dengan <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />.</translation>
 <translation id="6625136649067113817">Tanda boolean menunjukkan apakah keyboard virtual dapat memberikan pemeriksaan ejaan.</translation>
+<translation id="6626319579493977784">Setelan Kode Dinamis</translation>
 <translation id="66265932317331474">Melaporkan info CPU</translation>
 <translation id="6628120204569232711">Laporkan status penyimpanan</translation>
 <translation id="662991036483361836">Cegah pengguna mengaktifkan Berbagi Langsung</translation>
@@ -8406,6 +8433,7 @@ Perilaku ini akan menggantikan kebijakan <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, perangkat terdaftar tidak akan merekam atau melaporkan status keamanan TPM.
       Pengecualian: Informasi TPM dikontrol oleh <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> untuk M95 dan yang lebih lama.</translation>
 <translation id="739556497251174388">Mengizinkan penggunaan ulang kredensial login <ph name="PRODUCT_OS_NAME" /> untuk autentikasi jaringan</translation>
+<translation id="7402257017733669351">Mencegah proses browser membuat kode dinamis</translation>
 <translation id="7402772023599097052">Jika kebijakan disetel ke Aktif atau tidak disetel, peringatan keamanan akan muncul saat tanda command line yang berpotensi bahaya digunakan untuk meluncurkan Chrome.
 
 Jika kebijakan disetel ke Nonaktif, peringatan keamanan akan dicegah muncul saat Chrome diluncurkan dengan tanda command line yang berpotensi berbahaya.
@@ -9724,6 +9752,7 @@ mengonfigurasi pintasan.</translation>
 <translation id="8429593528367808164">Aktifkan penulisan prediktif keyboard fisik saat pengguna mengetik</translation>
 <translation id="8433186206711564395">Setelan jaringan</translation>
 <translation id="8433769814000220721">Mengaktifkan Konten yang Disarankan</translation>
+<translation id="8435304381855818385">Setelan kode dinamis default</translation>
 <translation id="843609873781525167">Jika kebijakan ditetapkan ke Benar (True), <ph name="PRODUCT_NAME" /> akan selalu memeriksa apakah browser merupakan default saat memulai dan, jika mungkin, mendaftarkan sendiri secara otomatis. Jika kebijakan ditetapkan ke Salah (False), <ph name="PRODUCT_NAME" /> akan berhenti memeriksa apakah browser tersebut merupakan default dan menonaktifkan kontrol pengguna untuk opsi ini.
 
       Jika kebijakan tidak ditetapkan, <ph name="PRODUCT_NAME" /> akan mengizinkan pengguna mengontrol apakah browser merupakan default dan, jika tidak, apakah notifikasi pengguna seharusnya muncul.

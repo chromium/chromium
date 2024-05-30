@@ -456,6 +456,7 @@
 <translation id="1812527064848182527">লেণ্ডস্কে’প</translation>
 <translation id="1812975699435941848">স্বাস্থ্য সম্পৰ্কীয় শিক্ষা আৰু চিকিৎসাৰ প্ৰশিক্ষণ</translation>
 <translation id="1816436748874040213">শ্বেয়াৰ কৰা টেবসমূহ স্ক্ৰল আৰু জুম কৰিবলৈ ক’ব পাৰে</translation>
+<translation id="1817364650920811003">ভূমিকা: Chromeৰ পৰামৰ্শ। সাধ্য সুবিধাৰ লেবেল: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">অৱৰোধৰ পৰা আঁতৰাওক</translation>
 <translation id="1818585559878922121">তথ্যচিত্ৰমূলক চলচ্চিত্ৰ</translation>
 <translation id="182139138257690338">স্বয়ংক্ৰিয়ভাৱে হোৱা ডাউনল’ড</translation>
@@ -1395,6 +1396,7 @@
 <translation id="3642638418806704195">এপ্লিকেশ্বন:</translation>
 <translation id="3646643500201740985">কোনো বিজ্ঞাপনে কিমান ভাল পাৰদৰ্শিতা দেখুৱাইছে তাৰ জোখ-মাখ কৰা</translation>
 <translation id="3647286794400715637">প্ৰতিটো URLৰ ষ্ট্ৰিঙৰ প্ৰৱিষ্টিত ১ৰ পৰা ২টাৰ ভিতৰত URL থাকিবই লাগিব।</translation>
+<translation id="3647400963805615193">Chromeৰ পৰামৰ্শ অগ্ৰাহ্য কৰাৰ বুটাম, অগ্ৰাহ্য কৰিবলৈ এণ্টাৰ টিপক, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">মান্যতাকৰণ সফল</translation>
 <translation id="3650594806107685466">আপোনাৰ কাৰ্ড সুৰক্ষিত ৰখাত সহায় কৰিবলৈ, <ph name="SIDE_OF_CARD" />ত CVC দিয়ক</translation>
 <translation id="3650917416636556301">হাইকিং আৰু কেম্পিং</translation>
@@ -3365,6 +3367,7 @@
 <translation id="7481312909269577407">ফৰৱাৰ্ড কৰক</translation>
 <translation id="7481603210197454575">এনভেল’প ইটালিয়ান</translation>
 <translation id="7483482939016730822">বিদ্যালয়ৰ সামগ্ৰী আৰু শ্ৰেণীকোঠাৰ সা-সৰঞ্জাম</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chromeৰ পৰামৰ্শ অগ্ৰাহ্য কৰিবলৈ প্ৰথমে টেব টিপি এণ্টাৰ টিপক।</translation>
 <translation id="7485085230273446323">ব্যৱসায় আৰু ঔদ্যোগিক</translation>
 <translation id="7485870689360869515">কোনো ডেটা বিচাৰি পোৱা নগ’ল।</translation>
 <translation id="7489392576326061356">শ্বেম্পু আৰু কণ্ডিশ্বনাৰ</translation>

@@ -456,6 +456,7 @@
 <translation id="1812527064848182527">가로 모드</translation>
 <translation id="1812975699435941848">건강 교육 및 의료 훈련</translation>
 <translation id="1816436748874040213">공유한 탭의 스크롤 및 확대/축소를 요청할 수 있음</translation>
+<translation id="1817364650920811003">역할: Chrome 도움말. 접근성 라벨: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">차단 해제</translation>
 <translation id="1818585559878922121">다큐멘터리 영화</translation>
 <translation id="182139138257690338">자동 다운로드</translation>
@@ -1398,6 +1399,7 @@
 <translation id="3642638418806704195">애플리케이션:</translation>
 <translation id="3646643500201740985">광고 실적 측정</translation>
 <translation id="3647286794400715637">모든 URL 문자열 항목에는 1~2개의 URL이 포함되어야 합니다.</translation>
+<translation id="3647400963805615193">Chrome 도움말 닫기 버튼, Enter 키를 눌러 닫기, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">유효성 검사 성공</translation>
 <translation id="3650594806107685466">카드의 안전성을 유지하려면 <ph name="SIDE_OF_CARD" />의 CVC를 입력하세요.</translation>
 <translation id="3650917416636556301">하이킹 및 캠핑</translation>
@@ -3369,6 +3371,7 @@
 <translation id="7481312909269577407">앞으로</translation>
 <translation id="7481603210197454575">봉투 Italian</translation>
 <translation id="7483482939016730822">학용품 및 교실 비품</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chrome 도움말을 닫으려면 Tab과 Enter를 차례로 누르세요.</translation>
 <translation id="7485085230273446323">비즈니스 및 산업</translation>
 <translation id="7485870689360869515">데이터 없음</translation>
 <translation id="7489392576326061356">샴푸 및 린스</translation>

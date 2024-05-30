@@ -131,6 +131,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1420408895951708260">Activer ou désactiver le mode Éclairage nocturne. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Oui</translation>
 <translation id="1435537621343861112">Impossible de démarrer la dictée. Votre microphone est désactivé.</translation>
+<translation id="1447907279406111651">Maintenant ⋅ Se termine à <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Points d'accès sans fil de votre appareil</translation>
 <translation id="1455242230282523554">Afficher les paramètres de langue</translation>
 <translation id="1460620680449458626">Le volume est désactivé.</translation>
@@ -183,6 +184,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1654477262762802994">Démarrer une requête vocale</translation>
 <translation id="1668469839109562275">RPV intégré</translation>
 <translation id="1673232940951031776">Terminez la séance du mode Sans distractions. Il reste <ph name="REMAINING_TIME" />.</translation>
+<translation id="1675570947608765064">D'autres utilisateurs peuvent voir les modifications que vous apportez à cette tâche</translation>
 <translation id="1675844249244994876">Mettre à jour la fenêtre de droite</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> d'autonomie restante</translation>
 <translation id="1677507110654891115">La fonctionnalité <ph name="FEATURE_NAME" /> n'est pas connectée.</translation>
@@ -480,6 +482,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2894949423239620203">Le câble peut avoir une incidence sur la performance</translation>
 <translation id="2914580577416829331">Captures d'écran</translation>
 <translation id="2924416280450782352">Impossible d'afficher les éléments. Essayez de rouvrir ce panneau.</translation>
+<translation id="292506373491190801">De l'événement qui se passe actuellement</translation>
 <translation id="2931572158271115754">Rien sur cette liste de tâches.</translation>
 <translation id="2932487126591186298">Une durée de 10 minutes a été ajoutée. Il reste <ph name="REMAINING_TIME" />.</translation>
 <translation id="2935225303485967257">Gérer les profils</translation>
@@ -766,6 +769,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3950272133184491871">Se déconnecter maintenant?</translation>
 <translation id="3950820424414687140">Connexion</translation>
 <translation id="3953130726459169782">Aucun devoir n'est terminé pour le moment.</translation>
+<translation id="3958714870339660776">Toute la journée</translation>
 <translation id="3962859241508114581">Chanson précédente</translation>
 <translation id="3969043077941541451">Désactivé</translation>
 <translation id="3970324493235864154">Affichez les notifications de votre téléphone</translation>
@@ -861,6 +865,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4302592941791324970">Non accessible</translation>
 <translation id="4303223480529385476">Développer la zone de notifications</translation>
 <translation id="4305133312001648038">Réinitialiser le niveau de zoom sur la page</translation>
+<translation id="4305817255990598646">Changer</translation>
 <translation id="4307713728991152670">Configurer l'affichage des photos, des applications et du contenu multimédia récents de votre téléphone</translation>
 <translation id="4312840429157639164">Caméra alignée sur le coin supérieur droit. Conflit avec la surface du système.</translation>
 <translation id="4316910396681052118">TOUTES LES APPLICATIONS</translation>
@@ -1217,6 +1222,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5599242528220103262">Le raccourci-clavier est désactivé</translation>
 <translation id="5600415762228455511">Le mode Sans distractions est activé; il reste <ph name="REMAINING_TIME" />. Vous vous concentrer sur : <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Appuyez sur Ctrl + Alt + Z pour désactiver la rétroaction vocale.</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{Il y a moins d'une heure}=1{Il y a 1 heure}one{Il y a # heure}other{Il y a # heures}}</translation>
 <translation id="5601503069213153581">NIP</translation>
 <translation id="5618148318840095371">Nous vous avons connecté à un meilleur réseau</translation>
 <translation id="5619862035903135339">La politique définie par l'administrateur désactive les captures d'écran</translation>
@@ -1393,6 +1399,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6228457605945141550">Baisser la luminosité</translation>
 <translation id="623116199192908855">Diffusez votre écran depuis votre Chromebook</translation>
 <translation id="6231419273573514727">Les performances du périphérique peuvent être limitées</translation>
+<translation id="6232416233079464213">De <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> utilise actuellement votre appareil photo et votre microphone</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Pile faible. L'Économiseur de pile est activé.</translation>
@@ -1514,6 +1521,7 @@ Nouvelle installation</translation>
 <translation id="6696025732084565524">Votre clavier amovible nécessite une mise à jour critique</translation>
 <translation id="6697913454192220372">Ajouter un nouveau bureau</translation>
 <translation id="6700713906295497288">Bouton de menu IME</translation>
+<translation id="6706742084323792866">Clavier NIP</translation>
 <translation id="6707693040195709527">La restauration de la version antérieure de l'appareil n'a pas eu lieu</translation>
 <translation id="6710213216561001401">Précédent</translation>
 <translation id="6723839937902243910">Alimentation</translation>
@@ -1794,6 +1802,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="780301667611848630">Non merci</translation>
 <translation id="7807067443225230855">Recherche et Assistant Google</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> et <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">De l'événement d'agenda à venir</translation>
 <translation id="7829386189513694949">Signal fort</translation>
 <translation id="7830453190047749513">Vous pouvez personnaliser les actions des boutons, la vitesse du curseur et plus encore pour votre <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Temps écoulé</translation>
@@ -2110,6 +2119,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="899350903320462459">Déverrouillez l'appareil en tant que <ph name="LOGIN_ID" /> pour effectuer l'action de la notification</translation>
 <translation id="8993733019280019776">Êtes-vous en train de parler? Votre micro est éteint. Sélectionnez le micro pour l'activer.</translation>
 <translation id="9000771174482730261">GÉRER L'ESPACE DE STOCKAGE</translation>
+<translation id="9002204506712855687">Découvrez les dernières fonctionnalités</translation>
 <translation id="9005984960510803406">Ouvrir une fenêtre Crosh</translation>
 <translation id="9017320285115481645">Entrez le code d'accès parental pour Family Link.</translation>
 <translation id="9022774213089566801">Fréquemment consultés</translation>
@@ -2141,6 +2151,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="9098969848082897657">Désactiver le son du téléphone</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ou <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Annuler la dernière action</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{Dans 1 min}one{Dans # min}other{Dans # min}}</translation>
 <translation id="9129245940793250979">Bouton arrière</translation>
 <translation id="9133335900048457298">Impossible d'enregistrer le contenu protégé</translation>
 <translation id="9139720510312328767">Supprimer la lettre suivante</translation>
@@ -2153,6 +2164,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="9183456764293710005">Loupe en mode plein écran</translation>
 <translation id="9193626018745640770">Diffusion sur un récepteur inconnu en cours…</translation>
 <translation id="9194617393863864469">Ouvrir une session avec un autre compte d'utilisateur...</translation>
+<translation id="9195990613383871904">Demain</translation>
 <translation id="9198992156681343238">La résolution de l'écran <ph name="DISPLAY_NAME" /> est maintenant de <ph name="RESOLUTION" />. Cliquez sur Confirmer pour garder les changements. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Connectez <ph name="NAME" /> à ce Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, géré par votre administrateur</translation>

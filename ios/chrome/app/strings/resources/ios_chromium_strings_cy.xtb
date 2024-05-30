@@ -75,6 +75,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chromium, ewch i <ph
 <translation id="2942241131342758843">Defnyddiwch Chromium i agor dolenni, chwilio o declynnau, ac awtolenwi cyfrineiriau mewn apiau eraill</translation>
 <translation id="2977470724722393594">Mae Chromium yn gyfoes</translation>
 <translation id="3044857325852340337">Wedi dileu data Chromium</translation>
+<translation id="3049211156275642309">Gorffen Gosod Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Gall Chromium eich helpu i dracio'r pecyn hwn ar y Dudalen Tab Newydd.}zero{Gall Chromium eich helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}two{Gall Chromium eich helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}few{Gall Chromium eich helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}many{Gall Chromium eich helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}other{Gall Chromium eich helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}}</translation>
 <translation id="3102849287235003384">I allgofnodi o'ch Cyfrif Google ar bob gwefan, <ph name="BEGIN_LINK" />allgofnodwch o Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Chwilio â Llais yn Chromium</translation>
@@ -273,6 +274,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="8754966941001340678">Mae Chromium yn argymell gwell amddiffyniad</translation>
 <translation id="8759037115129007407">Ni all aelod o'ch teulu dderbyn cyfrineiriau ar hyn o bryd. Gofynnwch iddynt ddiweddaru Chromium a chysoni eu cyfrineiriau. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Bydd y cyfrif hwn ac unrhyw ddata sydd heb eu cadw yn cael eu tynnu o Chromium.</translation>
+<translation id="8826789549860004832">Manteisio i'r eithaf ar Chromium trwy barhau i osod eich porwr.</translation>
 <translation id="88376265765385899">Yn agor y nodau tudalen Chromium.</translation>
 <translation id="8860548555286245440">Agor cyfeiriadau URL yn Chromium yn y modd Anhysbys</translation>
 <translation id="8866191443434488382">Bydd Chromium yn canfod rhifau olrhain ar wefannau rydych chi'n ymweld â nhw ac yn dangos diweddariadau pecyn ar y dudalen Tab Newydd. Bydd y rhif olrhain pecyn ac enw'r wefan yn cael eu hanfon i Chromium i ddarparu'r nodwedd hon ac i wella nodweddion siopa i bawb. Gallwch ddiweddaru hyn yn y <ph name="BEGIN_LINK" />Gosodiadau Olrhain Pecyn<ph name="END_LINK" />.</translation>

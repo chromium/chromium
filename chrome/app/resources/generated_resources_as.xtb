@@ -2055,7 +2055,6 @@
 <translation id="2469259292033957819">আপোনাৰ কোনো ছেভ কৰি থোৱা প্ৰিণ্টাৰ নাই।</translation>
 <translation id="2469375675106140201">বানান পৰীক্ষক কাষ্ট'মাইজ কৰক</translation>
 <translation id="247051149076336810">ফাইল শ্বেয়াৰ কৰা URL</translation>
-<translation id="2470702053775288986">অসমর্থিত এক্সটেনশ্বন অক্ষম কৰা হ’ল</translation>
 <translation id="2471469610750100598">ক’লা (ডিফ’ল্ট)</translation>
 <translation id="2471506181342525583">অৱস্থানৰ এক্সেছৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="2473195200299095979">এই পৃষ্ঠাটো অনুবাদ কৰক</translation>
@@ -4200,6 +4199,7 @@
 <translation id="4050534976465737778">দুয়োটা ডিভাইচ আনলক কৰাটো, এটা আনটোৰ ওচৰত থকাটো আৰু ব্লুটুথ অন হৈ থকাটো নিশ্চিত কৰক। আপুনি যদি আপোনাৰ সম্পৰ্কসূচীত নথকা কোনো Chromebookৰ জৰিয়তে শ্বেয়াৰ কৰি আছে, নিশ্চিত হৈ লওক যে সেইটোৰ নিকটৱৰ্তী দৃশ্যমানতা অন হৈ আছে (বিভিন্ন স্থিতি দেখুওৱা ঠাই খোলক, তাৰ পাছত নিকটৱৰ্তী দৃশ্যমানতা অন কৰক)। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">শেষবাৰ ব্যৱহাৰ কৰা ইনপুটৰ পদ্ধতিটোলৈ সলনি কৰিবলৈ, <ph name="KEY_CODES" />ত টিপক</translation>
 <translation id="4051177682900543628">ছাৰ্চ + সোঁমুৱা কাঁড়</translation>
+<translation id="405181879009056822">ChromeOSৰ ছেটিং</translation>
 <translation id="4052120076834320548">ক্ষুদ্ৰ</translation>
 <translation id="4052913941260326985">কিউআৰ ক’ড সৃষ্টি কৰক</translation>
 <translation id="405365679581583349">Google Play সেৱাসমূহ আপডে’ট কৰক</translation>
@@ -4849,6 +4849,7 @@
 <translation id="4562091353415772246">আপডে’ট আৰু এপ্‌সমূহ ইনষ্টল কৰক। অব্যাহত ৰাখি আপুনি সন্মতি দিয়ে যে এই ডিভাইচটোৱে স্বয়ংক্ৰিয়ভাৱে Google, আপোনাৰ বাহক আৰু আপোনাৰ ডিভাইচটোৰ নিৰ্মাতাৰ পৰা সম্ভৱতঃ চেলুলাৰ ডেটা ব্যৱহাৰ কৰি আপডে’ট আৰু এপ্‌ ডাউনল’ড আৰু ইনষ্টল কৰিবও পাৰে। এই এপ্‌সমূহৰ কিছুমানে এপত কৰা ক্ৰয়ৰ সুবিধা আগবঢ়াব পাৰে। <ph name="BEGIN_LINK1" />Play স্বয়ং ইনষ্টলৰ বিষয়ে অধিক জানক<ph name="BEGIN_LINK1_END" />অধিক জানক<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">ফিংগাৰপ্ৰিণ্ট যোগ কৰক</translation>
 <translation id="4562155266774382038">পৰামৰ্শ অগ্ৰাহ্য কৰক</translation>
+<translation id="4562364000855074606">এই <ph name="DEVICE_TYPE" />ত ইনষ্টল কৰা এপ্‌সমূহ অৱৰোধ কৰক। এপ্ বা সমল ডাউনল’ড কৰাটো সীমাবদ্ধ কৰিবলৈ, Google Playৰ ছেটিঙলৈ যাওক। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">আৰম্ভণিৰ ইনপুটৰ ভাষা হৈছে চীনা</translation>
 <translation id="4563382028841851106">একাউণ্টৰ পৰা আঁতৰাওক</translation>
 <translation id="4563880231729913339">আঙুলি ৩</translation>
@@ -5224,7 +5225,6 @@
 <translation id="4853020600495124913">&amp;নতুন ৱিণ্ড'ত খোলক</translation>
 <translation id="4854317507773910281">অনুমোদনৰ বাবে অভিভাৱকৰ একাউণ্ট বাছনি কৰক</translation>
 <translation id="485480310608090163">অধিক ছেটিং আৰু অনুমতিসমূহ</translation>
-<translation id="4858599593306712511">এপত অভিভাৱকীয় নিয়ন্ত্ৰণ</translation>
 <translation id="4858913220355269194">ফ্ৰিটজ</translation>
 <translation id="486213875233855629">আপোনাৰ প্ৰশাসকে মিউট কৰিছে</translation>
 <translation id="4862642413395066333">OCSP সঁহাৰিত চহী কৰা</translation>
@@ -5735,6 +5735,7 @@
 <translation id="5250372599208556903">আপোনাক <ph name="SEARCH_ENGINE_NAME" />এ স্থানীয় সমল প্ৰদান কৰিবলৈ আপোনাৰ অৱস্থান ব্যৱহাৰ কৰে। আপুনি <ph name="SETTINGS_LINK" />ত এয়া সলনি কৰিব পাৰে।</translation>
 <translation id="5252496130205799136">পাছৱৰ্ডসমূহ ছেভ আৰু পুৰ কৰিবলৈ আপোনাৰ Google একাউণ্টটো ব্যৱহাৰ কৰিবনে?</translation>
 <translation id="5252653240322147470">পিনটো <ph name="MAXIMUM" />তকৈ কম অংকৰ হ’বই লাগিব</translation>
+<translation id="5253554634804500860"><ph name="DEVICE_NAME" /> ব্যৱহাৰ কৰক</translation>
 <translation id="5254233580564156835">মেম’ৰীৰ ব্যৱহাৰ: <ph name="MEMORY_USAGE" /></translation>
 <translation id="52550593576409946">কিঅ’স্ক এপ্লিকেশ্বন লন্স কৰিব পৰা নগল।</translation>
 <translation id="5255726914791076208">আপুনি আপোনাৰ পাছকীটো সম্পাদনা কৰোঁতে, আপোনাৰ <ph name="RP_ID" /> একাউণ্টটো সলনি নহয়</translation>
@@ -6472,6 +6473,7 @@
 <translation id="5806447147478173900">প্ৰদৰ্শিত ছাইটসমূহে ব্যৱহাৰ কৰা মুঠ ষ্ট’ৰেজ: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">০° (ডিফ’ল্ট)</translation>
 <translation id="5809835394668218762"><ph name="WEBSITE" />ৰ বাবে অধিক কাৰ্য</translation>
+<translation id="5809840528400421362">পিনটো ৬ টা অংকৰ হ’বই লাগিব</translation>
 <translation id="5810809306422959727">এই একাউণ্টটো অভিভাৱকীয় নিয়ন্ত্ৰণসমূহ ব্যৱহাৰ কৰিবৰ বাবে যোগ্য নহয়</translation>
 <translation id="5811614940486072060">এই ফাইলটো সাধাৰণতে ডাউনল’ড কৰা নহয় আৰু ই বিপজ্জনক হ’ব পাৰে</translation>
 <translation id="5812674658566766066">আটাইখিনি সম্প্ৰসাৰণ কৰক</translation>
@@ -8060,6 +8062,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" />এ আপোনাৰ কেমেৰা ব্যৱহাৰ কৰি আছে</translation>
 <translation id="701080569351381435">উৎস চাওক</translation>
 <translation id="7011797924920577670">আপোনাৰ আগ্ৰহৰ বিষয়ে অনুমান কৰে</translation>
+<translation id="7012430956470647760">এপৰ বাবে অভিভাৱকীয় নিয়ন্ত্ৰণ</translation>
 <translation id="7013762323294215682">এই পাছকীটো আপোনাৰ Password Managerত ছেভ কৰা হ’ব। সেইটো এক্সেছ কৰিব পৰা যিকোনো ব্যক্তিয়ে এই পাছকীটো ব্যৱহাৰ কৰিব পাৰিব।</translation>
 <translation id="7014174261166285193">ইনষ্টল কৰিব পৰা নগ’ল।</translation>
 <translation id="7014480873681694324">হাইলাইট আঁতৰাওক</translation>

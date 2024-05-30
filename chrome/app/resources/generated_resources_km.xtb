@@ -2057,7 +2057,6 @@
 <translation id="2469259292033957819">អ្នក​មិនមាន​ម៉ាស៊ីន​បោះពុម្ព​ដែលបាន​រក្សាទុក​ទេ​។</translation>
 <translation id="2469375675106140201">កំណត់ការ​ពិនិត្យអក្ខរាវិរុទ្ធ​តាមបំណង</translation>
 <translation id="247051149076336810">URL សម្រាប់​ចែក​រំលែក​ឯកសារ</translation>
-<translation id="2470702053775288986">កម្មវិធីបន្ថែមដែលមិនគាំទ្រត្រូវបានបិទដំណើរការ</translation>
 <translation id="2471469610750100598">ខ្មៅ (លំនាំដើម)</translation>
 <translation id="2471506181342525583">បានអនុញ្ញាតការចូលប្រើទីតាំង</translation>
 <translation id="2473195200299095979">បកប្រែទំព័រនេះ</translation>
@@ -4201,6 +4200,7 @@
 <translation id="4050534976465737778">សូមប្រាកដថា ឧបករណ៍​ទាំងពីរ​មិនជាប់សោ នៅជិតគ្នា និងបានបើក​ប៊្លូធូស។ ប្រសិនបើអ្នក​កំពុងចែករំលែក​ជាមួយ Chromebook ដែលមិន​ស្ថិតនៅក្នុង​ទំនាក់ទំនង​របស់អ្នក សូមប្រាកដថា វាបានបើក​លទ្ធភាពមើលឃើញនៅជិត (បើក​តំបន់ស្ថានភាព បន្ទាប់មកបើក​លទ្ធភាពមើលឃើញ​នៅ​ជិត)។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">ដើម្បីប្ដូរទៅវិធីបញ្ចូលដែលបានប្រើចុងក្រោយ សូមចុច <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">ស្វែងរក + ព្រួញទៅ​ស្ដាំ</translation>
+<translation id="405181879009056822">ការកំណត់ ChromeOS</translation>
 <translation id="4052120076834320548">តូចខ្លាំង</translation>
 <translation id="4052913941260326985">បង្កើតកូដ &amp;QR</translation>
 <translation id="405365679581583349">ធ្វើ​បច្ចុប្បន្នភាព​សេវាកម្ម Google Play</translation>
@@ -5226,7 +5226,6 @@
 <translation id="4853020600495124913">បើកនៅក្នុងផ្ទាំងថ្មី</translation>
 <translation id="4854317507773910281">ជ្រើសរើស​គណនីមាតាបិតា​សម្រាប់ការយល់ព្រម</translation>
 <translation id="485480310608090163">ការកំណត់ និងការអនុញ្ញាតច្រើនទៀត</translation>
-<translation id="4858599593306712511">ការគ្រប់គ្រង​កម្មវិធី​ដោយ​មាតាបិតា</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="486213875233855629">បានបិទ​សំឡេង​ដោយ​អ្នកគ្រប់គ្រង​របស់​អ្នក</translation>
 <translation id="4862642413395066333">ការចុះហត្ថលេខាការឆ្លើយតប OCSP</translation>
@@ -5737,6 +5736,7 @@
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> ប្រើប្រាស់ទីកន្លែងរបស់អ្នកដើម្បីផ្តល់ជូនមាតិកាក្នុងតំបន់សម្រាប់អ្នក។ អ្នកអាចផ្លាស់ប្តូរវាបាននៅក្នុង <ph name="SETTINGS_LINK" /> ។</translation>
 <translation id="5252496130205799136">ប្រើ​គណនី Google របស់អ្នក ដើម្បី​រក្សាទុក និង​បំពេញ​ពាក្យសម្ងាត់​ឬ?</translation>
 <translation id="5252653240322147470">កូដ PIN ត្រូវ​មាន​លេខ​តិច​ជាង <ph name="MAXIMUM" /> ខ្ទង់</translation>
+<translation id="5253554634804500860">ប្រើ <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">ការប្រើប្រាស់​អង្គចងចាំ៖ <ph name="MEMORY_USAGE" /></translation>
 <translation id="52550593576409946">កម្មវិធីបញ្ជរមិនអាចបើកដំណើរការបានទេ។</translation>
 <translation id="5255726914791076208">នៅពេលអ្នកកែកូដសម្ងាត់របស់អ្នក គណនី <ph name="RP_ID" /> របស់អ្នកនឹងមិនផ្លាស់ប្ដូរទេ</translation>
@@ -6474,6 +6474,7 @@
 <translation id="5806447147478173900">ទំហំផ្ទុក​សរុប​ដែល​បានប្រើ​ដោយ​គេហទំព័រ​ដែល​បង្ហាញ៖ <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (លំនាំដើម)</translation>
 <translation id="5809835394668218762">សកម្មភាព​ច្រើន​ទៀត​សម្រាប់ <ph name="WEBSITE" /></translation>
+<translation id="5809840528400421362">កូដ PIN ត្រូវតែ​មាន 6 ខ្ទង់</translation>
 <translation id="5810809306422959727">គណនីនេះ​មិនអាចប្រើ​ការគ្រប់គ្រងដោយមាតាបិតា​បានទេ</translation>
 <translation id="5811614940486072060">ឯកសារនេះ​មិនត្រូវបាន​ទាញយកជាទូទៅ​ទេ ហើយវាអាច​បង្កគ្រោះថ្នាក់</translation>
 <translation id="5812674658566766066">ពង្រីក​ទាំងអស់</translation>
