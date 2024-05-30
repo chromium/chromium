@@ -2390,7 +2390,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                     // don't "jump", but instead smoothly scroll when collapsing near the end of a
                     // full tab strip.
                     tabsWidth += tab.getWidth() - mTabOverlapWidth;
-                } else if (!tab.isDying() && !tab.isDraggedOffStrip()) {
+                } else if (!tab.isClosed() && !tab.isDraggedOffStrip()) {
                     tabsWidth += mCachedTabWidth - mTabOverlapWidth;
                 }
             } else {
