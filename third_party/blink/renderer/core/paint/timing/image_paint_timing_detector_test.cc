@@ -244,7 +244,7 @@ class ImagePaintTimingDetectorTest : public testing::Test,
 
   void SetTransparentPlaceholderImageAndPaint(const char* id) {
     Element* element = GetDocument().getElementById(AtomicString(id));
-    scoped_refptr<BitmapImage> transparent_image =
+    scoped_refptr<Image> transparent_image =
         BitmapImage::MaybeCreateTransparentPlaceholderImage(
             url_test_helpers::ToKURL(TRANSPARENT_PLACEHOLDER_IMAGE));
     DCHECK(transparent_image);

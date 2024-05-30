@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource.h"
 
 #include <stdint.h>
+
 #include <algorithm>
 #include <memory>
 #include <utility>
@@ -37,6 +38,8 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_info.h"
+#include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
@@ -56,7 +59,6 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -197,6 +199,34 @@ class ImageResource::ImageResourceFactory : public NonTextResourceFactory {
   }
 };
 
+ImageResource*
+ImageResource::CreateResourceAndResponseForTransparentPlaceholderImage(
+    scoped_refptr<Image> image,
+    KURL image_url,
+    FetchParameters& fetch_params) {
+  ResourceResponse response;
+  response.SetHttpStatusCode(200);
+  response.SetHttpStatusText(AtomicString("OK"));
+  response.SetCurrentRequestUrl(image_url);
+  response.SetExpectedContentLength(image->DataSize());
+  response.SetTextEncodingName(WebString::FromUTF8(""));
+  response.SetMimeType(WebString::FromUTF8("image/gif"));
+  response.AddHttpHeaderField(WebString::FromUTF8("Content-Type"),
+                              WebString::FromUTF8("image/gif"));
+
+  auto* image_content = ImageResourceContent::CreateLoaded(image);
+  auto* resource = MakeGarbageCollected<ImageResource>(
+      fetch_params.GetResourceRequest(), fetch_params.Options(), image_content);
+  // FIXME: We should provide a body stream here.
+  resource->ResponseReceived(response);
+  resource->SetDataBufferingPolicy(kBufferData);
+  scoped_refptr<SharedBuffer> data = image->Data();
+  if (data->size()) {
+    resource->SetResourceBuffer(data);
+  }
+  return resource;
+}
+
 ImageResource* ImageResource::Fetch(FetchParameters& params,
                                     ResourceFetcher* fetcher) {
   if (params.GetResourceRequest().GetRequestContext() ==
@@ -213,8 +243,21 @@ ImageResource* ImageResource::Fetch(FetchParameters& params,
         network::mojom::CSPDisposition::DO_NOT_CHECK);
   }
 
-  auto* resource = To<ImageResource>(
-      fetcher->RequestResource(params, ImageResourceFactory(), nullptr));
+  ImageResource* resource = nullptr;
+  const KURL& url = params.GetResourceRequest().Url();
+  if (base::FeatureList::IsEnabled(
+          features::kSimplifyLoadingTransparentPlaceholderImage) &&
+      url.ProtocolIsData()) {
+    if (auto transparent_image =
+            BitmapImage::MaybeCreateTransparentPlaceholderImage(url)) {
+      resource = CreateResourceAndResponseForTransparentPlaceholderImage(
+          transparent_image, url, params);
+    }
+  }
+  if (!resource) {
+    resource = To<ImageResource>(
+        fetcher->RequestResource(params, ImageResourceFactory(), nullptr));
+  }
 
   // If the fetch originated from user agent CSS we should mark it as a user
   // agent resource.

@@ -134,6 +134,11 @@ class CORE_EXPORT ImageResource final
 
   void FlushImageIfNeeded();
 
+  static ImageResource* CreateResourceAndResponseForTransparentPlaceholderImage(
+      scoped_refptr<Image> image,
+      KURL image_url,
+      FetchParameters& fetch_params);
+
   Member<ImageResourceContent> content_;
 
   Member<MultipartImageResourceParser> multipart_parser_;

@@ -125,7 +125,7 @@ scoped_refptr<SharedBuffer> BitmapImage::KnownTransparentEncodedGifs(
   return known_transparent_encoded_gifs[index];
 }
 
-scoped_refptr<BitmapImage> BitmapImage::MaybeCreateTransparentPlaceholderImage(
+scoped_refptr<Image> BitmapImage::MaybeCreateTransparentPlaceholderImage(
     KURL url) {
   wtf_size_t index = KnownTransparentGifUrls().Find(url);
   if (index != kNotFound) {

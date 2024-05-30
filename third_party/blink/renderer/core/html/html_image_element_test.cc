@@ -262,6 +262,31 @@ TEST_F(HTMLImageElementSimTest, OnloadTransparentPlaceholderImage) {
   EXPECT_TRUE(ConsoleMessages().Contains("image element onload"));
 }
 
+TEST_F(HTMLImageElementSimTest, CurrentSrcForTransparentPlaceholderImage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kSimplifyLoadingTransparentPlaceholderImage);
+
+  const String image_source =
+      "data:image/gif;base64,R0lGODlhAQABAIAAAP///////"
+      "yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+
+  SimRequest main_resource("http://example.com/index.html", "text/html");
+  LoadURL("http://example.com/index.html");
+  main_resource.Complete(R"(
+    <img id="myimg" src=)" +
+                         image_source + R"(>
+    <script>
+      console.log(myimg.currentSrc);
+    </script>)");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  // Ensure that currentSrc is correctly set as the image source.
+  EXPECT_TRUE(ConsoleMessages().Contains(image_source));
+}
+
 class HTMLImageElementUseCounterTest : public HTMLImageElementTest {
  protected:
   bool IsCounted(WebFeature feature) {

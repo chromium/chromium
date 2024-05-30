@@ -61,8 +61,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
 
   // Returns a BitmapImage if `url` is a data URL with a known encoded 1x1
   // transparent gif.
-  static scoped_refptr<BitmapImage> MaybeCreateTransparentPlaceholderImage(
-      KURL url);
+  static scoped_refptr<Image> MaybeCreateTransparentPlaceholderImage(KURL url);
 
   ~BitmapImage() override;
 
