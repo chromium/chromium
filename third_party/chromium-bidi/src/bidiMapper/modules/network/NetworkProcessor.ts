@@ -106,11 +106,7 @@ export class NetworkProcessor {
         postData: getCdpBodyFromBiDiBytesValue(body),
       });
     } catch (error) {
-      // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/fetch_handler.cc;l=169
-      if ((error as any)?.message.includes('Invalid header')) {
-        throw new InvalidArgumentException('Tried setting invalid header');
-      }
-      throw error;
+      throw NetworkProcessor.wrapInterceptionError(error);
     }
 
     return {};
@@ -156,11 +152,15 @@ export class NetworkProcessor {
     if (request.interceptPhase === Network.InterceptPhase.ResponseStarted) {
       // TODO: Set / expand.
       // ; Step 10. cookies
-      await request.continueResponse({
-        responseCode: statusCode,
-        responsePhrase: reasonPhrase,
-        responseHeaders,
-      });
+      try {
+        await request.continueResponse({
+          responseCode: statusCode,
+          responsePhrase: reasonPhrase,
+          responseHeaders,
+        });
+      } catch (error) {
+        throw NetworkProcessor.wrapInterceptionError(error);
+      }
     }
 
     return {};
@@ -273,12 +273,9 @@ export class NetworkProcessor {
         body: getCdpBodyFromBiDiBytesValue(body),
       });
     } catch (error) {
-      // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/fetch_handler.cc;l=169
-      if ((error as any)?.message.includes('Invalid header')) {
-        throw new InvalidArgumentException('Tried setting invalid header');
-      }
-      throw error;
+      throw NetworkProcessor.wrapInterceptionError(error);
     }
+
     return {};
   }
 
@@ -460,6 +457,14 @@ export class NetworkProcessor {
           return urlPattern;
       }
     });
+  }
+
+  static wrapInterceptionError(error: any) {
+    // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/fetch_handler.cc;l=169
+    if (error?.message.includes('Invalid header')) {
+      return new InvalidArgumentException('Invalid header');
+    }
+    return error;
   }
 }
 
