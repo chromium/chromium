@@ -25,6 +25,15 @@
 namespace base::android {
 namespace {
 
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "PreFreezeMetricsFailureType" in tools/metrics/histograms/enums.xml.
+enum class MetricsFailure {
+  kAlreadyRunning,
+  kSizeMismatch,
+  kMaxValue = kSizeMismatch
+};
+
 // This constant is chosen arbitrarily, to allow time for the background tasks
 // to finish running BEFORE collecting metrics.
 const base::TimeDelta kDelayForMetrics = base::Seconds(2);
@@ -45,8 +54,7 @@ const char* GetProcessType() {
   return process_type;
 }
 
-std::string GetMetricName(const std::string& name, const char* suffix) {
-  CHECK(base::CommandLine::InitializedForCurrentProcess());
+std::string GetMetricName(std::string_view name, std::string_view suffix) {
   const char* process_type = GetProcessType();
   return StrCat({"Memory.PreFreeze2.", process_type, ".", name, ".", suffix});
 }
@@ -60,15 +68,27 @@ class PrivateMemoryFootprintMetric
   std::optional<uint64_t> Measure() const override {
     return PmfUtils::GetPrivateMemoryFootprintForCurrentProcess();
   }
+
+  ~PrivateMemoryFootprintMetric() override = default;
+
+  // Whether the metric has been registered with
+  // |PreFreezeBackgroundMemoryTrimmer| or not, which happens the first time a
+  // task is posted via |PreFreezeBackgroundMemoryTrimmer| or
+  // |OneShotDelayedBackgroundTimer|.
+  static bool did_register_;
 };
 
-void MaybeRecordMetric(const std::string metric_name,
-                       std::optional<uint64_t> value_bytes) {
+bool PrivateMemoryFootprintMetric::did_register_ = false;
+
+void MaybeRecordMetric(std::optional<uint64_t> value_bytes,
+                       std::string_view metric_name,
+                       std::string_view suffix) {
   // Skip recording the metric if we failed to get the PMF.
   if (!value_bytes.has_value()) {
     return;
   }
-  UmaHistogramMemoryMB(metric_name,
+
+  UmaHistogramMemoryMB(GetMetricName(metric_name, suffix),
                        static_cast<int>(BytesToMiB(value_bytes.value())));
 }
 
@@ -82,22 +102,6 @@ std::optional<uint64_t> Diff(std::optional<uint64_t> before,
   const uint64_t after_value = after.value();
 
   return after_value < before_value ? before_value - after_value : 0;
-}
-
-void RecordMetrics(
-    const PreFreezeBackgroundMemoryTrimmer::PreFreezeMetric* metric,
-    std::optional<uint64_t> value_before) {
-  CHECK(base::CommandLine::InitializedForCurrentProcess());
-
-  std::string before_name = GetMetricName(metric->name(), "Before");
-  std::string after_name = GetMetricName(metric->name(), "After");
-  std::string diff_name = GetMetricName(metric->name(), "Diff");
-
-  std::optional<uint64_t> value_after = metric->Measure();
-
-  MaybeRecordMetric(before_name, value_before);
-  MaybeRecordMetric(after_name, value_after);
-  MaybeRecordMetric(diff_name, Diff(value_before, value_after));
 }
 
 }  // namespace
@@ -120,8 +124,34 @@ PreFreezeBackgroundMemoryTrimmer& PreFreezeBackgroundMemoryTrimmer::Instance() {
   return *instance;
 }
 
-void PreFreezeBackgroundMemoryTrimmer::PostMetricsTask(
-    const PreFreezeMetric* metric) {
+void PreFreezeBackgroundMemoryTrimmer::RecordMetrics() {
+  // We check that the command line is available here because we use it to
+  // determine the current process, which is used for the names of metrics
+  // below.
+  CHECK(base::CommandLine::InitializedForCurrentProcess());
+  base::AutoLock locker(lock_);
+  if (metrics_.size() != values_before_.size()) {
+    UmaHistogramEnumeration("Memory.PreFreeze2.RecordMetricsFailureType",
+                            MetricsFailure::kSizeMismatch);
+    values_before_.clear();
+    return;
+  }
+
+  for (size_t i = 0; i < metrics_.size(); i++) {
+    const auto metric = metrics_[i];
+    const std::optional<uint64_t> value_before = values_before_[i];
+
+    std::optional<uint64_t> value_after = metric->Measure();
+
+    MaybeRecordMetric(value_before, metric->name(), "Before");
+    MaybeRecordMetric(value_after, metric->name(), "After");
+    MaybeRecordMetric(Diff(value_before, value_after), metric->name(), "Diff");
+  }
+
+  values_before_.clear();
+}
+
+void PreFreezeBackgroundMemoryTrimmer::PostMetricsTask() {
   // PreFreeze is only for Android U and greater, so no need to record metrics
   // for older versions.
   if (!SupportsModernTrim()) {
@@ -136,6 +166,28 @@ void PreFreezeBackgroundMemoryTrimmer::PostMetricsTask(
     return;
   }
 
+  // The |RecordMetrics| task resets the |values_before_| after it uses them.
+  // That task is posted with a 2 second delay from when |OnPreFreeze| is run.
+  //
+  // From the time that Chrome is backgrounded until Android delivers the signal
+  // to run PreFreeze always takes at least 10 seconds.
+  //
+  // Therefore, even if we:
+  // - Post |RecordMetrics|
+  // - and then immediately return to foreground and immediately back to
+  //   background.
+  // We still will have to wait at least 10 seconds before we get the PreFreeze
+  // signal again, by which time the original RecordMetrics task will have
+  // already finished.
+  if (values_before_.size() > 0) {
+    UmaHistogramEnumeration("Memory.PreFreeze2.RecordMetricsFailureType",
+                            MetricsFailure::kAlreadyRunning);
+    return;
+  }
+  for (const auto& metric : metrics_) {
+    values_before_.push_back(metric->Measure());
+  }
+
   // The posted task will be more likely to survive background killing in
   // experiments that change the memory trimming behavior. Run as USER_BLOCKING
   // to reduce this sample imbalance in experiment groups. Normally tasks
@@ -143,12 +195,10 @@ void PreFreezeBackgroundMemoryTrimmer::PostMetricsTask(
   // number of subtle effects may influence the real delay of those tasks. The
   // USER_BLOCKING will allow to estimate the number of better-survived tasks
   // more precisely.
-  //
-  // base::Unretained(metric) is safe here because we never unregister |metric|.
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, MayBlock()},
-      base::BindOnce(&RecordMetrics, base::Unretained(metric),
-                     metric->Measure()),
+      base::BindOnce(&PreFreezeBackgroundMemoryTrimmer::RecordMetrics,
+                     base::Unretained(this)),
       kDelayForMetrics);
 }
 
@@ -229,19 +279,48 @@ PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTaskModernHelper(
   return ptr;
 }
 
+// static
 void PreFreezeBackgroundMemoryTrimmer::RegisterMemoryMetric(
-    std::unique_ptr<const PreFreezeMetric> metric) {
+    const PreFreezeMetric* metric) {
   base::AutoLock locker(Instance().lock_);
-  Instance().metrics_.push_back(std::move(metric));
+  Instance().RegisterMemoryMetricInternal(metric);
+}
+
+void PreFreezeBackgroundMemoryTrimmer::RegisterMemoryMetricInternal(
+    const PreFreezeMetric* metric) {
+  metrics_.push_back(metric);
+  // If we are in the middle of recording metrics when we register this, add
+  // a nullopt at the end so that metrics recording doesn't fail for all
+  // metrics, just this one.
+  if (values_before_.size() > 0) {
+    values_before_.push_back(std::nullopt);
+  }
+}
+
+// static
+void PreFreezeBackgroundMemoryTrimmer::UnregisterMemoryMetric(
+    const PreFreezeMetric* metric) {
+  base::AutoLock locker(Instance().lock_);
+  Instance().UnregisterMemoryMetricInternal(metric);
+}
+
+void PreFreezeBackgroundMemoryTrimmer::UnregisterMemoryMetricInternal(
+    const PreFreezeMetric* metric) {
+  auto it = std::find(metrics_.begin(), metrics_.end(), metric);
+  CHECK(it != metrics_.end());
+  const long index = it - metrics_.begin();
+  if (values_before_.size() > 0) {
+    CHECK_EQ(values_before_.size(), metrics_.size());
+    values_before_.erase(values_before_.begin() + index);
+  }
+  metrics_.erase(metrics_.begin() + index);
 }
 
 void PreFreezeBackgroundMemoryTrimmer::PostMetricsTasksIfModern() {
   if (!SupportsModernTrim()) {
     return;
   }
-  for (const auto& callback : metrics_) {
-    PostMetricsTask(callback.get());
-  }
+  PostMetricsTask();
 }
 
 // static
@@ -296,15 +375,11 @@ void PreFreezeBackgroundMemoryTrimmer::UnregisterBackgroundTaskInternal(
 
 // static
 void PreFreezeBackgroundMemoryTrimmer::RegisterPrivateMemoryFootprintMetric() {
-  Instance().RegisterPrivateMemoryFootprintMetricInternal();
-}
-
-void PreFreezeBackgroundMemoryTrimmer::
-    RegisterPrivateMemoryFootprintMetricInternal() {
-  base::AutoLock locker(lock_);
-  if (!did_register_task_) {
-    did_register_task_ = true;
-    metrics_.push_back(std::make_unique<PrivateMemoryFootprintMetric>());
+  base::AutoLock locker(Instance().lock_);
+  static base::NoDestructor<PrivateMemoryFootprintMetric> pmf_metric;
+  if (!PrivateMemoryFootprintMetric::did_register_) {
+    PrivateMemoryFootprintMetric::did_register_ = true;
+    Instance().RegisterMemoryMetricInternal(pmf_metric.get());
   }
 }
 
@@ -335,7 +410,7 @@ void PreFreezeBackgroundMemoryTrimmer::SetSupportsModernTrimForTesting(
 void PreFreezeBackgroundMemoryTrimmer::ClearMetricsForTesting() {
   base::AutoLock locker(Instance().lock_);
   Instance().metrics_.clear();
-  Instance().did_register_task_ = false;
+  PrivateMemoryFootprintMetric::did_register_ = false;
 }
 
 bool PreFreezeBackgroundMemoryTrimmer::DidRegisterTasksForTesting() const {
@@ -354,6 +429,12 @@ size_t PreFreezeBackgroundMemoryTrimmer::GetNumberOfKnownMetricsForTesting()
     const {
   base::AutoLock locker(lock_);
   return metrics_.size();
+}
+
+size_t PreFreezeBackgroundMemoryTrimmer::GetNumberOfValuesBeforeForTesting()
+    const {
+  base::AutoLock locker(lock_);
+  return values_before_.size();
 }
 
 // static

@@ -1718,6 +1718,16 @@ chromium-metrics-reviews@google.com.
   <token key="Timing" variants="RecordedTiming"/>
 </histogram>
 
+<histogram name="Memory.PreFreeze2.RecordMetricsFailureType"
+    enum="PreFreezeMetricsFailureType" expires_after="2025-02-01">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@google.com</owner>
+  <summary>
+    Recorded when a pre-freeze notification arrives or when we try to record
+    metrics (after pre-freeze trimming should have finished) and fail.
+  </summary>
+</histogram>
+
 <histogram name="Memory.PreFreeze2{Process}.PrivateMemoryFootprint.{Timing}"
     units="MiB" expires_after="2025-02-01">
   <owner>thiabaud@google.com</owner>

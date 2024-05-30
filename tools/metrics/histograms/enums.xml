@@ -30119,6 +30119,12 @@ Called by update_net_error_codes.py.-->
       label="Served redirect that required change in network context"/>
 </enum>
 
+<enum name="PreFreezeMetricsFailureType">
+  <int value="0"
+      label="Tried to record metrics during a pending metrics recording task"/>
+  <int value="1" label="Metrics were changed during recording"/>
+</enum>
+
 <enum name="PreloadBookmarkMetricsEvent">
   <int value="0" label="MouseOver"/>
   <int value="1" label="MouseDown"/>
