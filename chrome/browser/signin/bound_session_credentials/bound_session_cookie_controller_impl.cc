@@ -298,7 +298,7 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
   // Transient errors have no impact on future requests.
 
   if (BoundSessionRefreshCookieFetcher::IsPersistentError(result)) {
-    delegate_->OnPersistentErrorEncountered();
+    delegate_->OnPersistentErrorEncountered(this);
     // `this` should be deleted.
   }
 }

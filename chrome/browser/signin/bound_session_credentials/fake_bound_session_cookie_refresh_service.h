@@ -30,7 +30,8 @@ class FakeBoundSessionCookieRefreshService
   void Initialize() override {}
   void RegisterNewBoundSession(
       const bound_session_credentials::BoundSessionParams& params) override {}
-  void MaybeTerminateSession(const net::HttpResponseHeaders* headers) override {
+  void MaybeTerminateSession(const GURL& response_url,
+                             const net::HttpResponseHeaders* headers) override {
   }
   chrome::mojom::BoundSessionThrottlerParamsPtr GetBoundSessionThrottlerParams()
       const override;

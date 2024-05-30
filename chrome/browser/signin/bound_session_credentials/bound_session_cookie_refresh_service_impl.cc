@@ -20,6 +20,7 @@
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/storage_partition.h"
+#include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
@@ -85,6 +86,7 @@ void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
 }
 
 void BoundSessionCookieRefreshServiceImpl::MaybeTerminateSession(
+    const GURL& response_url,
     const net::HttpResponseHeaders* headers) {
   if (!headers) {
     return;
@@ -96,12 +98,17 @@ void BoundSessionCookieRefreshServiceImpl::MaybeTerminateSession(
     return;
   }
 
-  if (BoundSessionCookieController* controller = cookie_controller();
-      controller && controller->session_id() == session_id) {
-    TerminateSession(SessionTerminationTrigger::kSessionTerminationHeader);
+  BoundSessionKey key = {
+      .site = net::SchemefulSite(response_url).GetURL(),
+      .session_id = session_id,
+  };
+  auto it = cookie_controllers_.find(key);
+  if (it != cookie_controllers_.end()) {
+    TerminateSession(it->second.get(),
+                     SessionTerminationTrigger::kSessionTerminationHeader);
   } else {
-    DVLOG(1) << "Session termination header (session_id=" << session_id
-             << ") doesn't match any current session";
+    DVLOG(1) << "Session termination header (" << key.site.spec() << "; "
+             << key.session_id << ") doesn't match any current session";
   }
 }
 
@@ -224,8 +231,10 @@ void BoundSessionCookieRefreshServiceImpl::
   UpdateAllRenderers();
 }
 
-void BoundSessionCookieRefreshServiceImpl::OnPersistentErrorEncountered() {
-  TerminateSession(SessionTerminationTrigger::kCookieRotationPersistentError);
+void BoundSessionCookieRefreshServiceImpl::OnPersistentErrorEncountered(
+    BoundSessionCookieController* controller) {
+  TerminateSession(controller,
+                   SessionTerminationTrigger::kCookieRotationPersistentError);
 }
 
 void BoundSessionCookieRefreshServiceImpl::OnStorageKeyDataCleared(
@@ -259,7 +268,7 @@ void BoundSessionCookieRefreshServiceImpl::OnStorageKeyDataCleared(
     return;
   }
 
-  TerminateSession(SessionTerminationTrigger::kCookiesCleared);
+  TerminateSession(controller, SessionTerminationTrigger::kCookiesCleared);
 }
 
 std::unique_ptr<BoundSessionCookieController>
@@ -301,14 +310,17 @@ void BoundSessionCookieRefreshServiceImpl::UpdateAllRenderers() {
 }
 
 void BoundSessionCookieRefreshServiceImpl::TerminateSession(
+    BoundSessionCookieController* controller,
     SessionTerminationTrigger trigger) {
-  BoundSessionCookieController* controller = cookie_controller();
-  CHECK(controller);
+  auto it = cookie_controllers_.find(BoundSessionKey{
+      .site = controller->url(), .session_id = controller->session_id()});
+  CHECK(it != cookie_controllers_.end());
+  CHECK_EQ(it->second.get(), controller);
   // Save some values locally on the stack before destroying `controller`.
   GURL session_url = controller->url();
   base::flat_set<std::string> bound_cookie_names =
       controller->bound_cookie_names();
-  cookie_controllers_.clear();
+  cookie_controllers_.erase(it);
   // `controller` is no longer valid and must not be used.
 
   // TODO(b/300627729): stop clearing all params once multiple sessions are

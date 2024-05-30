@@ -61,7 +61,8 @@ class BoundSessionCookieRefreshServiceImpl
   void Initialize() override;
   void RegisterNewBoundSession(
       const bound_session_credentials::BoundSessionParams& params) override;
-  void MaybeTerminateSession(const net::HttpResponseHeaders* headers) override;
+  void MaybeTerminateSession(const GURL& response_url,
+                             const net::HttpResponseHeaders* headers) override;
   chrome::mojom::BoundSessionThrottlerParamsPtr GetBoundSessionThrottlerParams()
       const override;
   void AddBoundSessionRequestThrottledHandlerReceiver(
@@ -124,7 +125,8 @@ class BoundSessionCookieRefreshServiceImpl
 
   // BoundSessionCookieController::Delegate
   void OnBoundSessionThrottlerParamsChanged() override;
-  void OnPersistentErrorEncountered() override;
+  void OnPersistentErrorEncountered(
+      BoundSessionCookieController* controller) override;
 
   // StoragePartition::DataRemovalObserver:
   void OnStorageKeyDataCleared(
@@ -143,9 +145,10 @@ class BoundSessionCookieRefreshServiceImpl
 
   void UpdateAllRenderers();
 
-  // Terminates ongoing device bound session, clears the session params from
-  // storage and updates all renderers.
-  void TerminateSession(SessionTerminationTrigger trigger);
+  // Terminates an ongoing device bound session pointed by `controller`, clears
+  // the session params from storage and updates all renderers.
+  void TerminateSession(BoundSessionCookieController* controller,
+                        SessionTerminationTrigger trigger);
   void RecordSessionTerminationTrigger(SessionTerminationTrigger trigger);
   void NotifyBoundSessionTerminated(
       const GURL& site,

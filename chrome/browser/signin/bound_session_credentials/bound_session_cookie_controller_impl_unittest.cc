@@ -190,7 +190,8 @@ class BoundSessionCookieControllerImplTest
     on_bound_session_throttler_params_changed_call_count_++;
   }
 
-  void OnPersistentErrorEncountered() override {
+  void OnPersistentErrorEncountered(
+      BoundSessionCookieController* controller) override {
     on_persistent_error_encountered_called_ = true;
   }
 

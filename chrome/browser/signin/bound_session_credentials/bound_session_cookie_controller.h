@@ -36,7 +36,9 @@ class BoundSessionCookieController {
     // Called when the cookie refresh request results in a persistent error that
     // can't be fixed by retrying. `BoundSessionCookieController` is expected to
     // be deleted after this call.
-    virtual void OnPersistentErrorEncountered() = 0;
+    // `controller` points at the caller object.
+    virtual void OnPersistentErrorEncountered(
+        BoundSessionCookieController* controller) = 0;
 
     // Called when the bound session parameters change, for example the minimum
     // cookie expiration date changes. Cookie deletion is considered as a change

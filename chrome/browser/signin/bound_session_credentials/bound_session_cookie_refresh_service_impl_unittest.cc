@@ -103,7 +103,7 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
   }
 
   void SimulateOnPersistentErrorEncountered() {
-    delegate_->OnPersistentErrorEncountered();
+    delegate_->OnPersistentErrorEncountered(this);
   }
 
   void SimulateRefreshBoundSessionCompleted() {
@@ -174,6 +174,7 @@ class MockObserver : public BoundSessionCookieRefreshService::Observer {
 class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
  public:
   const GURL kTestGoogleURL = GURL("https://google.com");
+  const GURL kTestOtherURL = GURL("https://example.org");
 
   BoundSessionCookieRefreshServiceImplTest() {
     BoundSessionParamsStorage::RegisterProfilePrefs(prefs_.registry());
@@ -241,7 +242,8 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
 
   void SimulateTerminateSession(SessionTerminationTrigger trigger) {
     CHECK(cookie_refresh_service_);
-    cookie_refresh_service_->TerminateSession(trigger);
+    cookie_refresh_service_->TerminateSession(cookie_controller_.get(),
+                                              trigger);
   }
 
   void VerifySessionTerminationTriggerRecorded(
@@ -558,7 +560,28 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
                                base::flat_set<std::string>(
                                    {"__Secure-1PSIDTS", "__Secure-3PSIDTS"})))
       .Times(1);
-  service->MaybeTerminateSession(headers.get());
+  service->MaybeTerminateSession(GURL("https://google.com/SignOut"),
+                                 headers.get());
+  VerifyNoBoundSession();
+  VerifySessionTerminationTriggerRecorded(
+      SessionTerminationTrigger::kSessionTerminationHeader);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       TerminateSessionTerminationHeaderOnSubdomain) {
+  SetupPreConditionForBoundSession();
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader(kSessionTerminationHeader, kTestSessionId);
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  EXPECT_CALL(
+      *mock_observer(),
+      OnBoundSessionTerminated(kTestGoogleURL,
+                               base::flat_set<std::string>(
+                                   {"__Secure-1PSIDTS", "__Secure-3PSIDTS"})))
+      .Times(1);
+  service->MaybeTerminateSession(
+      GURL("https://accounts.google.com/accounts/SignOut"), headers.get());
   VerifyNoBoundSession();
   VerifySessionTerminationTriggerRecorded(
       SessionTerminationTrigger::kSessionTerminationHeader);
@@ -572,7 +595,22 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   headers->AddHeader(kSessionTerminationHeader, "different_session_id");
 
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  service->MaybeTerminateSession(headers.get());
+  service->MaybeTerminateSession(kTestGoogleURL, headers.get());
+  VerifyBoundSession(CreateTestBoundSessionParams());
+  histogram_tester().ExpectTotalCount(
+      "Signin.BoundSessionCredentials.SessionTerminationTrigger", 0);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       DontTerminateSessionSiteMismatch) {
+  SetupPreConditionForBoundSession();
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader(kSessionTerminationHeader, kTestSessionId);
+
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  // `kTestOtherURL` and the bound session URL are from different sites.
+  service->MaybeTerminateSession(kTestOtherURL, headers.get());
   VerifyBoundSession(CreateTestBoundSessionParams());
   histogram_tester().ExpectTotalCount(
       "Signin.BoundSessionCredentials.SessionTerminationTrigger", 0);
@@ -585,7 +623,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
       base::MakeRefCounted<net::HttpResponseHeaders>("");
 
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  service->MaybeTerminateSession(headers.get());
+  service->MaybeTerminateSession(kTestGoogleURL, headers.get());
   VerifyBoundSession(CreateTestBoundSessionParams());
   histogram_tester().ExpectTotalCount(
       "Signin.BoundSessionCredentials.SessionTerminationTrigger", 0);

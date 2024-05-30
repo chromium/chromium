@@ -54,10 +54,11 @@ class BoundSessionCookieRefreshService
   virtual void RegisterNewBoundSession(
       const bound_session_credentials::BoundSessionParams& params) = 0;
 
-  // Terminate the session if the session termination header is set and the
-  // `session_id` matches the current bound session's id. This header is
-  // expected to be set on signout.
+  // Terminates a session running on `response_url`'s site if the session
+  // termination header is set and the header's session ID matches the current
+  // session id. This header is expected to be set on signout.
   virtual void MaybeTerminateSession(
+      const GURL& response_url,
       const net::HttpResponseHeaders* headers) = 0;
 
   // Returns bound session params.
