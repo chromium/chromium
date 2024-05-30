@@ -62,9 +62,8 @@ ukm::SourceId UkmRecorder::GetSourceIdForRedirectUrl(
 }
 
 // static
-ukm::SourceId UkmRecorder::GetSourceIdForDipsSite(
-    base::PassKey<DIPSServiceImpl>,
-    const std::string& site) {
+ukm::SourceId UkmRecorder::GetSourceIdForDipsSite(base::PassKey<DIPSService>,
+                                                  const std::string& site) {
   // Use REDIRECT_ID because DIPS sites are bounce trackers that redirected the
   // user (see go/dips). This method is used for background reporting of such
   // sites, so there's no RenderFrameHost to get a SourceId from, or even a full

@@ -7,16 +7,13 @@
 #include <memory>
 
 #include "base/barrier_callback.h"
-#include "base/check_deref.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
-#include "chrome/browser/dips/dips_bounce_detector.h"
 #include "chrome/browser/dips/dips_service.h"
-#include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
 #include "chrome/browser/webid/federated_identity_permission_context.h"
@@ -39,7 +36,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
-#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -47,7 +43,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
-#include "third_party/blink/public/common/input/web_mouse_event.h"
 
 namespace {
 
@@ -127,8 +122,15 @@ class StorageAccessGrantPermissionContextTest
         std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
             web_contents()));
 
-    CHECK_DEREF(DIPSService::Get(browser_context()))
-        .RecordInteractionForTesting(GetRequesterURL());
+    DIPSService* dips_service = DIPSService::Get(browser_context());
+    CHECK(dips_service);
+    base::test::TestFuture<void> future;
+    dips_service->storage()
+        ->AsyncCall(&DIPSStorage::RecordInteraction)
+        .WithArgs(GetRequesterURL(), base::Time::Now(),
+                  DIPSCookieMode::kBlock3PC)
+        .Then(future.GetCallback());
+    ASSERT_TRUE(future.Wait());
     permission_context_ =
         std::make_unique<StorageAccessGrantPermissionContext>(profile());
   }

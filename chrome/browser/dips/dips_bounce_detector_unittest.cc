@@ -94,7 +94,7 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
       DCHECK(redirect->access_type != SiteDataAccessType::kUnknown);
       AppendRedirect(&redirects_, *redirect, *chain);
 
-      DIPSServiceImpl::HandleRedirectForTesting(
+      DIPSService::HandleRedirectForTesting(
           *redirect, *chain,
           base::BindRepeating(&TestBounceDetectorDelegate::RecordBounce,
                               base::Unretained(this)));

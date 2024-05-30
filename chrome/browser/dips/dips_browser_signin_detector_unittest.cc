@@ -16,7 +16,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
-#include "base/test/test_future.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
@@ -35,7 +34,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/scheme_host_port.h"
 
 namespace {
 constexpr char kIdentityProviderDomain[] = "google.com";
@@ -99,7 +97,7 @@ class BrowserSigninDetectorServiceTest : public testing::Test {
 
   DIPSService* dips_service() { return dips_service_; }
 
-  GURL GetURL(std::string_view domain) {
+  GURL GetURL(const std::string domain) {
     return GURL(base::StrCat({"http://", domain}));
   }
 
@@ -112,13 +110,6 @@ class BrowserSigninDetectorServiceTest : public testing::Test {
         base::StrCat({"given_name-", test_account->email}),
         base::StrCat({"local-", test_account->email}),
         base::StrCat({"full_name-", test_account->email}));
-  }
-
-  bool DidSiteHaveInteraction(std::string_view domain) {
-    base::test::TestFuture<bool> future;
-    dips_service()->DidSiteHaveInteractionSince(
-        GetURL(domain), base::Time::Min(), future.GetCallback());
-    return future.Get();
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -154,7 +145,9 @@ TEST_F(BrowserSigninDetectorServiceTest, AccountWithNoExtendedAccountInfo) {
             signin::AccountManagedStatusFinder::Outcome::kPending);
 
   // There should be no recorded interactions.
-  ASSERT_FALSE(DidSiteHaveInteraction(kIdentityProviderDomain));
+  auto dips_state =
+      GetDIPSState(dips_service(), GetURL(kIdentityProviderDomain));
+  ASSERT_FALSE(dips_state.has_value());
 }
 
 TEST_F(BrowserSigninDetectorServiceTest, NonEnterpriseAccount) {
@@ -173,7 +166,10 @@ TEST_F(BrowserSigninDetectorServiceTest, NonEnterpriseAccount) {
             signin::AccountManagedStatusFinder::Outcome::kNonEnterprise);
 
   // There should be a recorded interaction for the`kIdentityProviderDomain`.
-  EXPECT_TRUE(DidSiteHaveInteraction(kIdentityProviderDomain));
+  auto dips_state =
+      GetDIPSState(dips_service(), GetURL(kIdentityProviderDomain));
+  ASSERT_TRUE(dips_state.has_value());
+  EXPECT_TRUE(dips_state->user_interaction_times.has_value());
 }
 
 TEST_F(BrowserSigninDetectorServiceTest, EnterpriseAccount) {
@@ -192,11 +188,16 @@ TEST_F(BrowserSigninDetectorServiceTest, EnterpriseAccount) {
             signin::AccountManagedStatusFinder::Outcome::kEnterprise);
 
   // There should be a recorded interaction for the`kIdentityProviderDomain`.
-  EXPECT_TRUE(DidSiteHaveInteraction(kIdentityProviderDomain));
+  auto dips_state =
+      GetDIPSState(dips_service(), GetURL(kIdentityProviderDomain));
+  EXPECT_TRUE(dips_state.has_value());
 
   // There should be a recorded interaction for the
   // `kEnterpriseAccount.host_domain`.
-  EXPECT_TRUE(DidSiteHaveInteraction(kEnterpriseAccount.host_domain));
+  dips_state =
+      GetDIPSState(dips_service(), GetURL(kEnterpriseAccount.host_domain));
+  ASSERT_TRUE(dips_state.has_value());
+  EXPECT_TRUE(dips_state->user_interaction_times.has_value());
 }
 
 TEST_F(BrowserSigninDetectorServiceTest,
@@ -219,7 +220,10 @@ TEST_F(BrowserSigninDetectorServiceTest,
       signin::AccountManagedStatusFinder::Outcome::kEnterpriseGoogleDotCom);
 
   // There should be a recorded interaction for the `kIdentityProviderDomain`.
-  EXPECT_TRUE(DidSiteHaveInteraction(kIdentityProviderDomain));
+  auto dips_state =
+      GetDIPSState(dips_service(), GetURL(kIdentityProviderDomain));
+  ASSERT_TRUE(dips_state.has_value());
+  EXPECT_TRUE(dips_state->user_interaction_times.has_value());
 }
 
 TEST_F(BrowserSigninDetectorServiceTest, LateObservation) {
@@ -240,9 +244,15 @@ TEST_F(BrowserSigninDetectorServiceTest, LateObservation) {
   InitDIPSService();
 
   // There should be a recorded interaction for the `kIdentityProviderDomain`.
-  EXPECT_TRUE(DidSiteHaveInteraction(kIdentityProviderDomain));
+  auto dips_state =
+      GetDIPSState(dips_service(), GetURL(kIdentityProviderDomain));
+  ASSERT_TRUE(dips_state.has_value());
+  EXPECT_TRUE(dips_state->user_interaction_times.has_value());
 
   // There should be a recorded interaction for the
   // `kEnterpriseAccount.host_domain`.
-  EXPECT_TRUE(DidSiteHaveInteraction(kEnterpriseAccount.host_domain));
+  dips_state =
+      GetDIPSState(dips_service(), GetURL(kEnterpriseAccount.host_domain));
+  ASSERT_TRUE(dips_state.has_value());
+  EXPECT_TRUE(dips_state->user_interaction_times.has_value());
 }

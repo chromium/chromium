@@ -89,7 +89,7 @@ std::vector<DIPSRedirectInfoPtr> CloneRedirects(
 /* static */
 void DIPSWebContentsObserver::MaybeCreateForWebContents(
     content::WebContents* web_contents) {
-  auto* dips_service = DIPSServiceImpl::Get(web_contents->GetBrowserContext());
+  auto* dips_service = DIPSService::Get(web_contents->GetBrowserContext());
   if (!dips_service) {
     return;
   }
@@ -99,7 +99,7 @@ void DIPSWebContentsObserver::MaybeCreateForWebContents(
 
 DIPSWebContentsObserver::DIPSWebContentsObserver(
     content::WebContents* web_contents,
-    DIPSServiceImpl* dips_service)
+    DIPSService* dips_service)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<DIPSWebContentsObserver>(*web_contents),
       dips_service_(dips_service) {

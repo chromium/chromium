@@ -16,6 +16,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -120,16 +121,17 @@ void CreateImageAndWaitForCookieAccess(content::WebContents* web_contents,
                                        const GURL& image_url);
 
 // Helper function to block until all DIPS storage requests are complete.
-inline void WaitOnStorage(DIPSServiceImpl* dips_service) {
+inline void WaitOnStorage(DIPSService* dips_service) {
   dips_service->storage()->FlushPostedTasksForTesting();
 }
 
 // Helper function to query the `url` state from DIPS storage.
-std::optional<StateValue> GetDIPSState(DIPSServiceImpl* dips_service,
+std::optional<StateValue> GetDIPSState(DIPSService* dips_service,
                                        const GURL& url);
 
-inline DIPSServiceImpl* GetDipsService(content::WebContents* web_contents) {
-  return DIPSServiceImpl::Get(web_contents->GetBrowserContext());
+inline DIPSService* GetDipsService(content::WebContents* web_contents) {
+  return DIPSServiceFactory::GetForBrowserContext(
+      web_contents->GetBrowserContext());
 }
 
 class URLCookieAccessObserver : public content::WebContentsObserver {
@@ -298,15 +300,5 @@ void SimulateMouseClickAndWait(content::WebContents*);
 
 // Make a UrlAndSourceId with a randomly-generated UKM source id.
 UrlAndSourceId MakeUrlAndId(std::string_view url);
-
-// Cause DIPS to record a stateful client bounce on `bounce_url` to `final_url`.
-// The redirect chain will be started by performing a browser-initiated
-// navigation to `initial_url`, and terminated by another such navigation to
-// `next_url`.
-testing::AssertionResult SimulateDipsBounce(content::WebContents*,
-                                            const GURL& initial_url,
-                                            const GURL& bounce_url,
-                                            const GURL& final_url,
-                                            const GURL& next_url);
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_TEST_UTILS_H_

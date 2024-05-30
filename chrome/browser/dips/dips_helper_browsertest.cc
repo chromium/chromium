@@ -20,6 +20,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/dips/dips_bounce_detector.h"
 #include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
@@ -138,8 +139,8 @@ class DIPSTabHelperBrowserTest : public PlatformBrowserTest,
 
   void EndRedirectChain() {
     WebContents* web_contents = GetActiveWebContents();
-    DIPSServiceImpl* dips_service =
-        DIPSServiceImpl::Get(web_contents->GetBrowserContext());
+    DIPSService* dips_service = DIPSServiceFactory::GetForBrowserContext(
+        web_contents->GetBrowserContext());
     GURL expected_url = web_contents->GetLastCommittedURL();
 
     RedirectChainObserver chain_observer(dips_service, expected_url);
@@ -503,7 +504,7 @@ class DIPSPrepopulateTest : public PlatformBrowserTest {
 
   base::PassKey<DIPSPrepopulateTest> PassKey() { return {}; }
 
-  raw_ptr<DIPSServiceImpl, DanglingUntriaged> dips_service;
+  raw_ptr<DIPSService, DanglingUntriaged> dips_service;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -546,11 +547,11 @@ IN_PROC_BROWSER_TEST_F(DIPSPrepopulateTest, PrepopulateOTRTest) {
       browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
       /*user_gesture=*/true));
 
-  DIPSServiceImpl::Get(incognito_browser->profile())
+  DIPSServiceFactory::GetForBrowserContext(incognito_browser->profile())
       ->WaitForInitCompleteForTesting(PassKey());
-  std::optional<StateValue> state =
-      GetDIPSState(DIPSServiceImpl::Get(incognito_browser->profile()),
-                   GURL("http://c.test"));
+  std::optional<StateValue> state = GetDIPSState(
+      DIPSServiceFactory::GetForBrowserContext(incognito_browser->profile()),
+      GURL("http://c.test"));
   EXPECT_FALSE(state.has_value());
 }
 
@@ -623,8 +624,9 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                        DetectRedirectHandlingFlakiness) {
   WebContents* web_contents = GetActiveWebContents();
 
-  auto* dips_storage =
-      DIPSServiceImpl::Get(web_contents->GetBrowserContext())->storage();
+  auto* dips_storage = DIPSServiceFactory::GetForBrowserContext(
+                           web_contents->GetBrowserContext())
+                           ->storage();
 
   for (int i = 0; i < 10; i++) {
     const base::Time bounce_time = base::Time::FromSecondsSinceUnixEpoch(i + 1);
@@ -671,8 +673,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                        UserClearedSitesAreNotReportedToUKM) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   content::WebContents* web_contents = GetActiveWebContents();
-  DIPSServiceImpl* dips_service =
-      DIPSServiceImpl::Get(web_contents->GetBrowserContext());
+  DIPSService* dips_service = DIPSServiceFactory::GetForBrowserContext(
+      web_contents->GetBrowserContext());
   // A time more than an hour ago.
   base::Time old_bounce_time = base::Time::Now() - base::Hours(2);
   // A time within the past hour.
@@ -755,8 +757,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, SitesInOpenTabsAreExempt) {
   content::WebContents* web_contents = GetActiveWebContents();
-  DIPSServiceImpl* dips_service =
-      DIPSServiceImpl::Get(web_contents->GetBrowserContext());
+  DIPSService* dips_service = DIPSServiceFactory::GetForBrowserContext(
+      web_contents->GetBrowserContext());
 
   // A time within the past hour.
   base::Time bounce_time = base::Time::Now() - base::Minutes(10);
@@ -827,8 +829,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, SitesInOpenTabsAreExempt) {
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                        SitesInDestroyedTabsAreNotExempt) {
   content::WebContents* web_contents = GetActiveWebContents();
-  DIPSServiceImpl* dips_service =
-      DIPSServiceImpl::Get(web_contents->GetBrowserContext());
+  DIPSService* dips_service = DIPSServiceFactory::GetForBrowserContext(
+      web_contents->GetBrowserContext());
 
   // A time within the past hour.
   base::Time bounce_time = base::Time::Now() - base::Minutes(10);
@@ -878,8 +880,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                        SitesInOpenTabsForDifferentProfilesAreNotExempt) {
   content::WebContents* web_contents = GetActiveWebContents();
-  DIPSServiceImpl* dips_service =
-      DIPSServiceImpl::Get(web_contents->GetBrowserContext());
+  DIPSService* dips_service = DIPSServiceFactory::GetForBrowserContext(
+      web_contents->GetBrowserContext());
 
   // A time within the past hour.
   base::Time bounce_time = base::Time::Now() - base::Minutes(10);

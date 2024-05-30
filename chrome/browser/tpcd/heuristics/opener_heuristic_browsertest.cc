@@ -161,7 +161,7 @@ class OpenerHeuristicBrowserTest
         {subresource_filter::testing::CreateSuffixRule("ad_script.js"),
          subresource_filter::testing::CreateSuffixRule("isad=1")});
 
-    DIPSServiceImpl::Get(GetActiveWebContents()->GetBrowserContext())
+    DIPSService::Get(GetActiveWebContents()->GetBrowserContext())
         ->SetStorageClockForTesting(&clock_);
   }
 
@@ -173,8 +173,8 @@ class OpenerHeuristicBrowserTest
     return OpenerHeuristicTabHelper::FromWebContents(GetActiveWebContents());
   }
 
-  DIPSServiceImpl* GetDipsService() {
-    return DIPSServiceImpl::Get(GetActiveWebContents()->GetBrowserContext());
+  DIPSService* GetDipsService() {
+    return DIPSService::Get(GetActiveWebContents()->GetBrowserContext());
   }
 
   void RecordInteraction(const GURL& url, base::Time time) {

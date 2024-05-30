@@ -50,19 +50,28 @@ bool IsInfoRelevant(const AccountInfo& info) {
   return !info.CoreAccountInfo::IsEmpty() && !info.hosted_domain.empty();
 }
 
+// Provides a URL from the provided |domain|, adequate for DIPS storage API.
+// Note: The provided |domain| are of type eTLD+1s.
+GURL GetURL(const std::string domain) {
+  return GURL(base::StrCat({"http://", domain}));
+}
+
 void DIPSBrowserSigninDetector::RecordInteractionsIfRelevant(
     const AccountInfo& info) {
   if (!IsInfoRelevant(info)) {
     return;
   }
 
-  // base::Time now = base::Time::Now();
+  base::Time now = base::Time::Now();
 
   // Record an interaction for `kIdentityProviderDomain`.
   // Note: All accounts in the identity manager are GAIA accounts. Thus,
   // non-enterprise accounts (ex. "gmail.com", "yahoo.com") will be treated as
   // having an interaction with `kIdentityProviderDomain`.
-  dips_service_->RecordBrowserSignIn(kIdentityProviderDomain);
+  dips_service_->storage()
+      ->AsyncCall(&DIPSStorage::RecordInteraction)
+      .WithArgs(GetURL(kIdentityProviderDomain), now,
+                dips_service_->GetCookieMode());
 
   // Skip handled cases.
   if (info.hosted_domain == kNoHostedDomainFound ||
@@ -72,7 +81,10 @@ void DIPSBrowserSigninDetector::RecordInteractionsIfRelevant(
 
   // Record an interaction for the |info.host_domain| of all enterprise
   // accounts.
-  dips_service_->RecordBrowserSignIn(info.hosted_domain);
+  dips_service_->storage()
+      ->AsyncCall(&DIPSStorage::RecordInteraction)
+      .WithArgs(GetURL(info.hosted_domain), now,
+                dips_service_->GetCookieMode());
 }
 
 void DIPSBrowserSigninDetector::OnExtendedAccountInfoUpdated(
