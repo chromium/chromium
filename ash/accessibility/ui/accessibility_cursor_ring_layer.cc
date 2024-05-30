@@ -50,9 +50,15 @@ void AccessibilityCursorRingLayer::Set(const gfx::Point& location) {
   display::Display display =
       display::Screen::GetScreen()->GetDisplayMatching(bounds);
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display.id());
+  // Root could be null if window tree host is being updated. See
+  // http://b/326074244 for more details.
+  if (!root_window) {
+    return;
+  }
+
   aura::Window* container = Shell::GetContainer(
       root_window, kShellWindowId_AccessibilityBubbleContainer);
-  ::wm::ConvertRectFromScreen(container, &bounds);
+  wm::ConvertRectFromScreen(container, &bounds);
   CreateOrUpdateLayer(container, "AccessibilityCursorRing", bounds,
                       /*stack_at_top=*/true);
 }
