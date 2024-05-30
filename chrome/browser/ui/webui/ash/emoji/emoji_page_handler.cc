@@ -463,23 +463,27 @@ void EmojiPageHandler::UpdatePreferredVariantsInPrefs(
 void EmojiPageHandler::GetHistoryFromPrefs(
     emoji_picker::mojom::Category category,
     GetHistoryFromPrefsCallback callback) {
+  if (profile_ == nullptr || profile_->GetPrefs() == nullptr) {
+    std::move(callback).Run({});
+    return;
+  }
   const base::Value::List* history =
       profile_->GetPrefs()
           ->GetDict(prefs::kEmojiPickerHistory)
           .FindList(ConvertCategoryToPrefString(category));
-  if (!history) {
+  if (history == nullptr) {
     std::move(callback).Run({});
     return;
   }
   std::vector<std::string> results;
   for (const auto& it : *history) {
     const base::Value::Dict* value_dict = it.GetIfDict();
-    if (!value_dict) {
+    if (value_dict == nullptr) {
       continue;
     }
     const std::string* text =
         value_dict->FindString(kPrefsHistoryTextFieldName);
-    if (text) {
+    if (text != nullptr) {
       results.push_back(*text);
     }
   }
