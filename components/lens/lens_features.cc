@@ -61,11 +61,11 @@ const base::FeatureParam<int> kLensOverlayScreenshotRenderQuality{
 const base::FeatureParam<int> kLensOverlayImageCompressionQuality{
     &kLensOverlay, "image-compression-quality", 40};
 const base::FeatureParam<int> kLensOverlayImageMaxArea{
-    &kLensOverlay, "image-dimensions-max-area", 1300000};
+    &kLensOverlay, "image-dimensions-max-area", 1440000};
 const base::FeatureParam<int> kLensOverlayImageMaxHeight{
-    &kLensOverlay, "image-dimensions-max-height", 1500};
+    &kLensOverlay, "image-dimensions-max-height", 1600};
 const base::FeatureParam<int> kLensOverlayImageMaxWidth{
-    &kLensOverlay, "image-dimensions-max-width", 1500};
+    &kLensOverlay, "image-dimensions-max-width", 1600};
 const base::FeatureParam<bool> kLensOverlayDebuggingMode{
     &kLensOverlay, "debugging-mode", false};
 const base::FeatureParam<int> kLensOverlayVerticalTextMargin{
