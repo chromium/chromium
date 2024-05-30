@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 15
+version_major: 16
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
@@ -521,11 +521,6 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
 }
 
-# OU=Security Communication RootCA1, O=SECOM Trust.net, C=JP
-trust_anchors {
-  sha256_hex: "e75e72ed9f560eec6eb4800073a43fc3ad19195a392282017895974a99026b6c"
-}
-
 # CN=COMODO Certification Authority, O=COMODO CA Limited, L=Salford, ST=Greater Manchester, C=GB
 # https://secure.comodo.com/
 trust_anchors {
@@ -708,6 +703,9 @@ trust_anchors {
 trust_anchors {
   sha256_hex: "9a296a5182d1d451a2e37f439b74daafa267523329f90f9a0d2007c334e23c9a"
   ev_policy_oids: "2.23.140.1.1"
+  constraints: {
+    sct_not_after_sec: 1719791999
+  }
 }
 
 # CN=HARICA TLS ECC Root CA 2021, O=Hellenic Academic and Research Institutions CA, C=GR
