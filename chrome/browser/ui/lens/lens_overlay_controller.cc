@@ -599,6 +599,19 @@ void LensOverlayController::AddQueryToHistory(std::string query,
     return;
   }
 
+  // A search URL without a Lens mode parameter indicates a click on a related
+  // search or other in-SRP refinement. In this case, we should clear all
+  // selection and thumbnail state.
+  const std::string lens_mode = lens::GetLensModeParameterValue(search_url);
+  if (lens_mode.empty()) {
+    initialization_data_->selected_region_.reset();
+    initialization_data_->selected_text_.reset();
+    initialization_data_->additional_search_query_params_.clear();
+    selected_region_thumbnail_uri_.clear();
+    page_->ClearAllSelections();
+    SetSearchboxThumbnail(std::string());
+  }
+
   // In the case where a query was triggered by a selection on the overlay or
   // use of the searchbox, initialization_data_, additional_search_query_params_
   // and selected_region_thumbnail_uri_ will have already been set. Record
@@ -630,18 +643,6 @@ void LensOverlayController::AddQueryToHistory(std::string query,
 
   // Update searchbox and selection state to match the new query.
   SetSearchboxInputText(query);
-  // A search URL without a Lens mode parameter indicates a click on a related
-  // search or other in-SRP refinement. In this case, we should clear all
-  // selection and thumbnail state.
-  const std::string lens_mode = lens::GetLensModeParameterValue(search_url);
-  if (lens_mode.empty()) {
-    initialization_data_->selected_region_.reset();
-    initialization_data_->selected_text_.reset();
-    initialization_data_->additional_search_query_params_.clear();
-    selected_region_thumbnail_uri_.clear();
-    page_->ClearAllSelections();
-    SetSearchboxThumbnail(std::string());
-  }
 }
 
 void LensOverlayController::PopAndLoadQueryFromHistory() {
