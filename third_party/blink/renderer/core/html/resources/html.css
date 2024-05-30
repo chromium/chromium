@@ -642,10 +642,11 @@ input[type="hidden" i], input[type="image" i], input[type="file" i] {
 input[type="file" i] {
     align-items: baseline;
     color: inherit;
-    overflow: hidden !important;
     text-align: start !important;
     text-overflow: ellipsis;
     white-space: pre;
+    /* NOTE: This can be removed once InputClipRulesCss is removed */
+    overflow: hidden !important;
 }
 
 input[type="image" i] {
@@ -783,6 +784,13 @@ input:disabled, textarea:disabled {
 option:-internal-spatial-navigation-focus {
     outline: light-dark(black, white) dashed 1px;
     outline-offset: -1px;
+}
+
+@supports blink-feature(InputClipRulesCss) {
+  input:not([type="image" i], [type="range" i], [type="checkbox" i], [type="radio" i]) {
+    overflow: clip !important;
+    overflow-clip-margin: 0px !important;
+  }
 }
 
 /* https://html.spec.whatwg.org/multipage/rendering.html#hidden-elements */

@@ -15,10 +15,11 @@ input[type="month" i],
 input[type="time" i],
 input[type="week" i] {
     font-family: monospace;
-    overflow: hidden;
     padding: 0;
     padding-inline-start: 1px;
     cursor: default;
+    /* NOTE: This can be removed once InputClipRulesCss is removed */
+    overflow: hidden;
 }
 
 input::-webkit-datetime-edit {

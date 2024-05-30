@@ -2113,6 +2113,11 @@
       status: "experimental",
     },
     {
+      // Kill switch for https://crbug.com/40877677
+      name: "InputClipRulesCss",
+      status: "stable",
+    },
+    {
       name: "InputMultipleFieldsUI",
       // No plan to support complex UI for date/time INPUT types on Android and
       // iOS.

@@ -1,41 +1,5 @@
 This is a testharness.js-based test.
-Found 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] <input type="hidden"> - overflow
-  assert_equals: expected "clip" but got "visible"
-[FAIL] <input type="text"> - overflow
-  assert_equals: expected "clip" but got "visible"
-[FAIL] <input type="search"> - overflow
-  assert_equals: expected "clip" but got "visible"
-[FAIL] <input type="tel"> - overflow
-  assert_equals: expected "clip" but got "visible"
-[FAIL] <input type="url"> - overflow
-  assert_equals: expected "clip" but got "visible"
-[FAIL] <input type="email"> - overflow
-  assert_equals: expected "clip" but got "visible"
-[FAIL] <input type="password"> - overflow
-  assert_equals: expected "clip" but got "visible"
-[FAIL] <input type="date"> - overflow
-  assert_equals: expected "clip" but got "hidden"
-[FAIL] <input type="month"> - overflow
-  assert_equals: expected "clip" but got "hidden"
-[FAIL] <input type="week"> - overflow
-  assert_equals: expected "clip" but got "hidden"
-[FAIL] <input type="time"> - overflow
-  assert_equals: expected "clip" but got "hidden"
-[FAIL] <input type="datetime-local"> - overflow
-  assert_equals: expected "clip" but got "hidden"
-[FAIL] <input type="number"> - overflow
-  assert_equals: expected "clip" but got "visible"
-[FAIL] <input type="color"> - overflow
-  assert_equals: expected "clip" but got "visible"
-[FAIL] <input type="file"> - overflow
-  assert_equals: expected "clip" but got "hidden"
-[FAIL] <input type="submit"> - overflow
-  assert_equals: expected "clip" but got "visible"
-[FAIL] <input type="reset"> - overflow
-  assert_equals: expected "clip" but got "visible"
-[FAIL] <input type="button"> - overflow
-  assert_equals: expected "clip" but got "visible"
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] <textarea> - overflow
   assert_equals: expected "visible" but got "auto"
 Harness: the test ran to completion.

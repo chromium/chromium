@@ -2738,7 +2738,6 @@ crbug.com/626703 [ Mac ] external/wpt/webrtc-encoded-transform/tentative/RTCPeer
 crbug.com/626703 [ Win10.20h2 ] virtual/generic-sensor-extra-classes/external/wpt/magnetometer/Magnetometer.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/storage-access-api/hasStorageAccess.sub.https.window.html [ Crash ]
 crbug.com/626703 external/wpt/css/css-grid/stretch-grid-item-text-input-overflow.html [ Failure ]
-crbug.com/626703 external/wpt/html/rendering/widgets/button-layout/input-type-button-clip.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-justify/text-justify-word-separators.html [ Failure ]
 crbug.com/626703 external/wpt/svg/pservers/reftests/gradient-color-interpolation.svg [ Failure ]
 crbug.com/626703 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/arg_min_max.https.any.html?gpu [ Skip Timeout ]
