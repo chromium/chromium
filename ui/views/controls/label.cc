@@ -114,7 +114,8 @@ void Label::SetText(const std::u16string& new_text) {
   full_text_->SetText(new_text);
   ClearDisplayText();
 
-  if (GetAccessibleName().empty() || GetAccessibleName() == current_text) {
+  if (GetViewAccessibility().GetCachedName().empty() ||
+      GetViewAccessibility().GetCachedName() == current_text) {
     if (new_text.empty()) {
       SetAccessibleName(new_text,
                         ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
@@ -1005,7 +1006,8 @@ void Label::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // If the accessible name changed since the last time we computed the text
   // offsets, we need to recompute them.
   if (::ui::AXPlatform::GetInstance().IsUiaProviderEnabled() &&
-      ax_name_used_to_compute_offsets_ != GetAccessibleName()) {
+      ax_name_used_to_compute_offsets_ !=
+          GetViewAccessibility().GetCachedName()) {
     GetViewAccessibility().ClearTextOffsets();
     ax_name_used_to_compute_offsets_.clear();
 
@@ -1014,7 +1016,7 @@ void Label::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     // cause a chicken and egg situation. For now, this is necessary to keep the
     // text offsets up to date.
     if (RefreshAccessibleTextOffsets()) {
-      ax_name_used_to_compute_offsets_ = GetAccessibleName();
+      ax_name_used_to_compute_offsets_ = GetViewAccessibility().GetCachedName();
       node_data->AddIntListAttribute(
           ax::mojom::IntListAttribute::kCharacterOffsets,
           GetViewAccessibility().GetCharacterOffsets());

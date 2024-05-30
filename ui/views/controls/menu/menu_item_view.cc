@@ -1187,7 +1187,7 @@ MenuItemView::Colors MenuItemView::CalculateColors(
 }
 
 std::u16string MenuItemView::CalculateAccessibleName() const {
-  std::u16string item_text = View::GetAccessibleName();
+  std::u16string item_text = View::GetViewAccessibility().GetCachedName();
   if (!item_text.empty())
     return item_text;
 

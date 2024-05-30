@@ -146,7 +146,7 @@ TEST_F(LinkTest, AccessibleProperties) {
   link()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"TestLink");
-  EXPECT_EQ(link()->GetAccessibleName(), u"TestLink");
+  EXPECT_EQ(link()->GetViewAccessibility().GetCachedName(), u"TestLink");
   EXPECT_EQ(data.role, ax::mojom::Role::kLink);
   EXPECT_FALSE(link()->GetViewAccessibility().GetIsIgnored());
 
@@ -158,7 +158,7 @@ TEST_F(LinkTest, AccessibleProperties) {
   link()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             accessible_name);
-  EXPECT_EQ(link()->GetAccessibleName(), accessible_name);
+  EXPECT_EQ(link()->GetViewAccessibility().GetCachedName(), accessible_name);
   EXPECT_EQ(data.role, ax::mojom::Role::kLink);
   EXPECT_FALSE(link()->GetViewAccessibility().GetIsIgnored());
 
@@ -169,7 +169,7 @@ TEST_F(LinkTest, AccessibleProperties) {
   link()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"TestLink");
-  EXPECT_EQ(link()->GetAccessibleName(), u"TestLink");
+  EXPECT_EQ(link()->GetViewAccessibility().GetCachedName(), u"TestLink");
   EXPECT_EQ(data.role, ax::mojom::Role::kLink);
   EXPECT_FALSE(link()->GetViewAccessibility().GetIsIgnored());
 
@@ -180,7 +180,7 @@ TEST_F(LinkTest, AccessibleProperties) {
   link()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             std::u16string());
-  EXPECT_EQ(link()->GetAccessibleName(), std::u16string());
+  EXPECT_EQ(link()->GetViewAccessibility().GetCachedName(), std::u16string());
   EXPECT_EQ(data.role, ax::mojom::Role::kLink);
   EXPECT_TRUE(link()->GetViewAccessibility().GetIsIgnored());
 }

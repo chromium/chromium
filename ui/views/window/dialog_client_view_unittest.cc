@@ -18,6 +18,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -140,8 +141,9 @@ class DialogClientViewTest : public test::WidgetTest {
 
   Button* GetButtonByAccessibleName(View* root, const std::u16string& name) {
     Button* button = Button::AsButton(root);
-    if (button && button->GetAccessibleName() == name)
+    if (button && button->GetViewAccessibility().GetCachedName() == name) {
       return button;
+    }
     for (views::View* child : root->children()) {
       button = GetButtonByAccessibleName(child, name);
       if (button)

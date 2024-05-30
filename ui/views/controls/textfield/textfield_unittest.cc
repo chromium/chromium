@@ -4113,7 +4113,8 @@ TEST_F(TextfieldTest, SetAccessibleNameNotifiesAccessibilityEvent) {
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
   textfield_->SetAccessibleName(test_tooltip_text);
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged));
-  EXPECT_EQ(test_tooltip_text, textfield_->GetAccessibleName());
+  EXPECT_EQ(test_tooltip_text,
+            textfield_->GetViewAccessibility().GetCachedName());
   ui::AXNodeData data;
   textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
   const std::string& name =
@@ -4146,7 +4147,7 @@ TEST_F(TextfieldTest, AccessibleNameFromLabel) {
   EXPECT_EQ(
       textfield_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
       label_text);
-  EXPECT_EQ(textfield_->GetAccessibleName(), label_text);
+  EXPECT_EQ(textfield_->GetViewAccessibility().GetCachedName(), label_text);
   EXPECT_EQ(textfield_data.GetNameFrom(), ax::mojom::NameFrom::kRelatedElement);
   EXPECT_EQ(textfield_data.GetIntListAttribute(
                 ax::mojom::IntListAttribute::kLabelledbyIds)[0],

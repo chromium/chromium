@@ -884,7 +884,8 @@ TEST_F(StyledLabelTest, AccessibleNameAndRole) {
   IgnoreMissingWidgetForTestingScopedSetter a11y_ignore_missing_widget_(
       styled->GetViewAccessibility());
 
-  EXPECT_EQ(styled->GetAccessibleName(), base::UTF8ToUTF16(text));
+  EXPECT_EQ(styled->GetViewAccessibility().GetCachedName(),
+            base::UTF8ToUTF16(text));
   EXPECT_EQ(styled->GetAccessibleRole(), ax::mojom::Role::kStaticText);
 
   ui::AXNodeData data;
@@ -893,7 +894,8 @@ TEST_F(StyledLabelTest, AccessibleNameAndRole) {
   EXPECT_EQ(data.role, ax::mojom::Role::kStaticText);
 
   styled->SetTextContext(style::CONTEXT_DIALOG_TITLE);
-  EXPECT_EQ(styled->GetAccessibleName(), base::UTF8ToUTF16(text));
+  EXPECT_EQ(styled->GetViewAccessibility().GetCachedName(),
+            base::UTF8ToUTF16(text));
   EXPECT_EQ(styled->GetAccessibleRole(), ax::mojom::Role::kTitleBar);
 
   data = ui::AXNodeData();
@@ -903,7 +905,7 @@ TEST_F(StyledLabelTest, AccessibleNameAndRole) {
 
   styled->SetText(u"New Text");
   styled->SetAccessibleRole(ax::mojom::Role::kLink);
-  EXPECT_EQ(styled->GetAccessibleName(), u"New Text");
+  EXPECT_EQ(styled->GetViewAccessibility().GetCachedName(), u"New Text");
   EXPECT_EQ(styled->GetAccessibleRole(), ax::mojom::Role::kLink);
 
   data = ui::AXNodeData();

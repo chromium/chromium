@@ -91,7 +91,7 @@ TEST_F(CheckboxTest, AccessibilityTest) {
 
   EXPECT_EQ(ax_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             label_text);
-  EXPECT_EQ(checkbox()->GetAccessibleName(), label_text);
+  EXPECT_EQ(checkbox()->GetViewAccessibility().GetCachedName(), label_text);
   EXPECT_EQ(ax_data.GetNameFrom(), ax::mojom::NameFrom::kRelatedElement);
   EXPECT_EQ(ax_data.GetIntListAttribute(
                 ax::mojom::IntListAttribute::kLabelledbyIds)[0],

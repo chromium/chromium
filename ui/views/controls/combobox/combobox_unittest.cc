@@ -894,7 +894,8 @@ TEST_F(ComboboxTest, SetTooltipTextNotifiesAccessibilityEvent) {
                                 ax::mojom::Role::kButton));
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged,
                                 ax::mojom::Role::kComboBoxSelect));
-  EXPECT_EQ(test_tooltip_text, combobox()->GetAccessibleName());
+  EXPECT_EQ(test_tooltip_text,
+            combobox()->GetViewAccessibility().GetCachedName());
   ui::AXNodeData data;
   combobox()->GetViewAccessibility().GetAccessibleNodeData(&data);
   const std::string& name =

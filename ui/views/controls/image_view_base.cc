@@ -22,7 +22,7 @@ ImageViewBase::ImageViewBase() {
   // information, set it to ignored. This will result in the same tree
   // inclusion/exclusion behavior without unexpected platform-specific
   // side effects related to the role changing.
-  if (GetAccessibleName().empty() && tooltip_text_.empty()) {
+  if (GetViewAccessibility().GetCachedName().empty() && tooltip_text_.empty()) {
     GetViewAccessibility().SetIsIgnored(true);
   }
 }
@@ -75,7 +75,8 @@ void ImageViewBase::SetTooltipText(const std::u16string& tooltip) {
   std::u16string current_tooltip = tooltip_text_;
   tooltip_text_ = tooltip;
 
-  if (GetAccessibleName().empty() || GetAccessibleName() == current_tooltip) {
+  if (GetViewAccessibility().GetCachedName().empty() ||
+      GetViewAccessibility().GetCachedName() == current_tooltip) {
     SetAccessibleName(tooltip);
   }
 

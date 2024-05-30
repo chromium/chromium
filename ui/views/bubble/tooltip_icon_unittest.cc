@@ -28,7 +28,7 @@ TEST_F(TooltipIconTest, AccessibleRoleAndName) {
   EXPECT_EQ(data.role, ax::mojom::Role::kStaticText);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             tooltip_text);
-  EXPECT_EQ(tooltip->GetAccessibleName(), tooltip_text);
+  EXPECT_EQ(tooltip->GetViewAccessibility().GetCachedName(), tooltip_text);
 }
 
 }  // namespace views

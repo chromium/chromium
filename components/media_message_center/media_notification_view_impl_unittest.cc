@@ -29,6 +29,7 @@
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
@@ -163,7 +164,9 @@ class MediaNotificationViewImplTest : public views::ViewsTestBase {
     return GetHeaderRow(view());
   }
 
-  std::u16string accessible_name() const { return view()->GetAccessibleName(); }
+  std::u16string accessible_name() const {
+    return view()->GetViewAccessibility().GetCachedName();
+  }
 
   views::View* button_row() const { return view()->button_row_; }
 
@@ -276,7 +279,10 @@ TEST_F(MediaNotificationViewImplTest, ButtonsSanityCheck) {
     EXPECT_TRUE(button->GetVisible());
     EXPECT_LT(kMediaButtonIconSize, button->width());
     EXPECT_LT(kMediaButtonIconSize, button->height());
-    EXPECT_FALSE(views::Button::AsButton(button)->GetAccessibleName().empty());
+    EXPECT_FALSE(views::Button::AsButton(button)
+                     ->GetViewAccessibility()
+                     .GetCachedName()
+                     .empty());
   }
 
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
