@@ -58,6 +58,11 @@ class OsSettingsJapaneseManageUserDictionaryPageElement extends
   // All Japanese user dictionary data that is loaded into the app.
   private dictionaries_: JapaneseDictionary[] = [];
 
+  override ready(): void {
+    super.ready();
+    this.addEventListener('dictionary-saved', this.getDictionaries_);
+  }
+
   // Loads the dictionary objects from IME user data service.
   private async getDictionaries_(): Promise<void> {
     const response =

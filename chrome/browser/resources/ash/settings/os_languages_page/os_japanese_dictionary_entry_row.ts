@@ -73,6 +73,8 @@ class OsJapaneseDictionaryEntryRowElement extends PolymerElement {
     if (this.entry.key === '' || this.entry.value === '') {
       return;
     }
+
+    let dictionarySaved = false;
     if (this.locallyAdded) {
       // Entry does not exist inside the storage, hence we need to use the "add"
       // function to add this entry.
@@ -82,13 +84,24 @@ class OsJapaneseDictionaryEntryRowElement extends PolymerElement {
           (await UserDataServiceProvider.getRemote().addJapaneseDictionaryEntry(
                this.dictId, this.entry))
               .status;
-      // If successful, then the entry is no longer "locally added", since it
-      // also exists inside the storage. Future edits need to be done via the
-      // "edit" api call.
-      this.locallyAdded = !resp.success;
+
+      if (resp.success) {
+        // If successful, then the entry is no longer "locally added", since it
+        // also exists inside the storage. Future edits need to be done via the
+        // "edit" api call.
+        this.locallyAdded = false;
+        dictionarySaved = true;
+      }
     } else {
-      UserDataServiceProvider.getRemote().editJapaneseDictionaryEntry(
-          this.dictId, this.index, this.entry);
+      dictionarySaved = (await UserDataServiceProvider.getRemote()
+                             .editJapaneseDictionaryEntry(
+                                 this.dictId, this.index, this.entry))
+                            .status.success;
+    }
+
+    if (dictionarySaved) {
+      this.dispatchEvent(
+          new CustomEvent('dictionary-saved', {bubbles: true, composed: true}));
     }
   }
 }
@@ -101,5 +114,11 @@ declare global {
   interface HTMLElementTagNameMap {
     [OsJapaneseDictionaryEntryRowElement.is]:
         OsJapaneseDictionaryEntryRowElement;
+  }
+}
+
+declare global {
+  interface HTMLElementEventMap {
+    ['dictionary-saved']: CustomEvent;
   }
 }
