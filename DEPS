@@ -769,7 +769,7 @@ deps = {
       ],
   },
   # Download selected models from TFHub as testdata.
-  'src/third_party/tfhub_models': {
+  'src/third_party/tfhub_models/testdata': {
     'bucket': 'chromium-tfhub-models',
     'dep_type': 'gcs',
     'objects': [

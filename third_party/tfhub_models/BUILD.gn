@@ -5,8 +5,8 @@
 bundle_data("tfhub_models_testdata") {
   testonly = true
   sources = [
-    "models/lite-model_universal-sentence-encoder-qa-ondevice_1.tflite",
-    "models/rehead_embedding_from_mobilebert.tflite",
+    "testdata/models/lite-model_universal-sentence-encoder-qa-ondevice_1.tflite",
+    "testdata/models/rehead_embedding_from_mobilebert.tflite",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]

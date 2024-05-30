@@ -162,8 +162,7 @@
 /syzygy
 /syzygy/binaries
 /tfhub_models/.*
-/tfhub_models/*.tar.gz
-/tfhub_models/models/
+/tfhub_models/testdata/
 /tint/src
 /turbine/*.jar
 /usb_ids

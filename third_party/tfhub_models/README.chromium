@@ -16,9 +16,9 @@ testdata.
 
 Uploading New Models:
   1. Put all the models you want uploaded (including existing models to keep) in
-  the existing //third_party/tfhub_models/models directory.
+  the existing //third_party/tfhub_models/testdata/models directory.
 
-  2. `cd` to //third_party/tfhub_models.
+  2. `cd` to //third_party/tfhub_models/testdata.
 
   3. Run the following commands:
   ```
