@@ -10,6 +10,7 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/model/picker_model.h"
 #include "ash/picker/model/picker_search_results_section.h"
@@ -24,6 +25,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "components/prefs/scoped_user_pref_update.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,7 +47,9 @@ namespace {
 
 using ::testing::_;
 using ::testing::Contains;
+using ::testing::ElementsAre;
 using ::testing::FieldsAre;
+using ::testing::IsEmpty;
 using ::testing::NiceMock;
 using ::testing::Not;
 using ::testing::Return;
@@ -140,17 +145,20 @@ class TestPickerClient : public MockPickerClient {
   explicit TestPickerClient(PickerController* controller)
       : controller_(controller) {
     controller_->SetClient(this);
+    prefs_.registry()->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
     // Set default behaviours. These can be overridden with `WillOnce` and
     // `WillRepeatedly`.
     ON_CALL(*this, GetSharedURLLoaderFactory)
         .WillByDefault(
             base::MakeRefCounted<network::TestSharedURLLoaderFactory>);
     ON_CALL(*this, IsFeatureAllowedForDogfood).WillByDefault(Return(true));
+    ON_CALL(*this, GetPrefs).WillByDefault(Return(&prefs_));
   }
   ~TestPickerClient() override { controller_->SetClient(nullptr); }
 
  private:
   raw_ptr<PickerController> controller_ = nullptr;
+  sync_preferences::TestingPrefServiceSyncable prefs_;
 };
 
 TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfClosed) {
@@ -577,6 +585,21 @@ TEST_F(PickerControllerTest, GetSentenceCaseSelectedText) {
   input_method->SetFocusedTextInputClient(&input_field);
 
   EXPECT_EQ(input_field.text(), u"How are you? Fine. Thanks!  Ok");
+}
+
+TEST_F(PickerControllerTest, GetsRecentEmoji) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  base::Value::List history_value;
+  history_value.Append(base::Value::Dict().Set("text", "abc"));
+  history_value.Append(base::Value::Dict().Set("text", "xyz"));
+  ScopedDictPrefUpdate update(client.GetPrefs(), prefs::kEmojiPickerHistory);
+  update->Set("emoji", std::move(history_value));
+
+  EXPECT_THAT(controller.GetRecentEmoji(ui::EmojiPickerCategory::kEmojis),
+              ElementsAre("abc", "xyz"));
+  EXPECT_THAT(controller.GetRecentEmoji(ui::EmojiPickerCategory::kEmoticons),
+              IsEmpty());
 }
 
 struct ActionTestCase {

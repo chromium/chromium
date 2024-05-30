@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/model/picker_mode_type.h"
@@ -47,6 +48,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
@@ -270,6 +272,19 @@ void OpenLink(const GURL& url) {
 
 void OpenFile(const base::FilePath& path) {
   ash::NewWindowDelegate::GetPrimary()->OpenFile(path);
+}
+
+std::string ConvertToString(ui::EmojiPickerCategory category) {
+  switch (category) {
+    case ui::EmojiPickerCategory::kEmojis:
+      return "emoji";
+    case ui::EmojiPickerCategory::kSymbols:
+      return "symbol";
+    case ui::EmojiPickerCategory::kEmoticons:
+      return "emoticon";
+    case ui::EmojiPickerCategory::kGifs:
+      return "gif";
+  }
 }
 
 }  // namespace
@@ -615,6 +630,32 @@ PickerActionType PickerController::GetActionForResult(
           },
       },
       result.data());
+}
+
+std::vector<std::string> PickerController::GetRecentEmoji(
+    ui::EmojiPickerCategory category) {
+  if (client_ == nullptr || client_->GetPrefs() == nullptr) {
+    return {};
+  }
+
+  const base::Value::List* history = client_->GetPrefs()
+                                         ->GetDict(prefs::kEmojiPickerHistory)
+                                         .FindList(ConvertToString(category));
+  if (history == nullptr) {
+    return {};
+  }
+  std::vector<std::string> results;
+  for (const auto& it : *history) {
+    const base::Value::Dict* value_dict = it.GetIfDict();
+    if (value_dict == nullptr) {
+      continue;
+    }
+    const std::string* text = value_dict->FindString("text");
+    if (text != nullptr) {
+      results.push_back(*text);
+    }
+  }
+  return results;
 }
 
 void PickerController::OnWidgetDestroying(views::Widget* widget) {

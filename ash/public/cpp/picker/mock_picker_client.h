@@ -15,6 +15,8 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+class PrefService;
+
 namespace ash {
 
 class ASH_PUBLIC_EXPORT MockPickerClient : public PickerClient {
@@ -62,6 +64,7 @@ class ASH_PUBLIC_EXPORT MockPickerClient : public PickerClient {
                const gfx::Size& size,
                FetchFileThumbnailCallback callback),
               (override));
+  MOCK_METHOD(PrefService*, GetPrefs, (), (override));
 };
 
 }  // namespace ash

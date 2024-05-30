@@ -5,8 +5,11 @@
 #ifndef ASH_PICKER_VIEWS_PICKER_ZERO_STATE_VIEW_DELEGATE_H_
 #define ASH_PICKER_VIEWS_PICKER_ZERO_STATE_VIEW_DELEGATE_H_
 
+#include <vector>
+
 #include "ash/ash_export.h"
 #include "ash/public/cpp/picker/picker_category.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
 
 namespace views {
 class View;
@@ -41,6 +44,10 @@ class ASH_EXPORT PickerZeroStateViewDelegate {
 
   virtual PickerActionType GetActionForResult(
       const PickerSearchResult& result) = 0;
+
+  // Gets history of emoji picker for certain `category`.
+  virtual std::vector<std::string> GetRecentEmoji(
+      ui::EmojiPickerCategory category) = 0;
 };
 
 }  // namespace ash

@@ -438,6 +438,10 @@ void PickerClientImpl::FetchFileThumbnail(const base::FilePath& path,
   thumbnail_loader_->Load({path, size}, std::move(callback));
 }
 
+PrefService* PickerClientImpl::GetPrefs() {
+  return profile_ == nullptr ? nullptr : profile_->GetPrefs();
+}
+
 void PickerClientImpl::ActiveUserChanged(user_manager::User* active_user) {
   if (!active_user) {
     SetProfile(nullptr);

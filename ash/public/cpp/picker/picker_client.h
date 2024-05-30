@@ -20,6 +20,7 @@
 #include "url/gurl.h"
 
 class SkBitmap;
+class PrefService;
 
 namespace gfx {
 class Size;
@@ -93,6 +94,8 @@ class ASH_PUBLIC_EXPORT PickerClient {
   virtual void FetchFileThumbnail(const base::FilePath& path,
                                   const gfx::Size& size,
                                   FetchFileThumbnailCallback callback) = 0;
+
+  virtual PrefService* GetPrefs() = 0;
 
  protected:
   PickerClient();

@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
@@ -73,6 +74,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   void GetSuggestedZeroStateEditorResults(
       SuggestedEditorResultsCallback callback) override;
   void NotifyPseudoFocusChanged(views::View* view) override;
+  std::vector<std::string> GetRecentEmoji(
+      ui::EmojiPickerCategory category) override;
 
   // PickerSearchResultsViewDelegate:
   void SelectSearchResult(const PickerSearchResult& result) override;

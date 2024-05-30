@@ -25,6 +25,7 @@
 #include "url/gurl.h"
 
 class EndpointFetcher;
+class PrefService;
 class Profile;
 class ChromeSearchResult;
 class PickerFileSuggester;
@@ -83,6 +84,7 @@ class PickerClientImpl
   void FetchFileThumbnail(const base::FilePath& path,
                           const gfx::Size& size,
                           FetchFileThumbnailCallback callback) override;
+  PrefService* GetPrefs() override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;

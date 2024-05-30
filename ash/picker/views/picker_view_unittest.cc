@@ -168,6 +168,11 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     return options_.action_type;
   }
 
+  std::vector<std::string> GetRecentEmoji(
+      ui::EmojiPickerCategory category) override {
+    return {};
+  }
+
   std::optional<PickerSearchResult> last_inserted_result() const {
     return last_inserted_result_;
   }

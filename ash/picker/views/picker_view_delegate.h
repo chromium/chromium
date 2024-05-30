@@ -82,6 +82,10 @@ class ASH_EXPORT PickerViewDelegate {
   virtual PickerAssetFetcher* GetAssetFetcher() = 0;
 
   virtual PickerSessionMetrics& GetSessionMetrics() = 0;
+
+  // Gets history of emoji picker for certain `category`.
+  virtual std::vector<std::string> GetRecentEmoji(
+      ui::EmojiPickerCategory category) = 0;
 };
 
 }  // namespace ash

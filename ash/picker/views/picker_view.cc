@@ -220,6 +220,12 @@ void PickerView::NotifyPseudoFocusChanged(views::View* view) {
   search_field_view_->SetTextfieldActiveDescendant(view);
 }
 
+std::vector<std::string> PickerView::GetRecentEmoji(
+    ui::EmojiPickerCategory category) {
+  return delegate_ == nullptr ? std::vector<std::string>()
+                              : delegate_->GetRecentEmoji(category);
+}
+
 void PickerView::SelectSearchResult(const PickerSearchResult& result) {
   if (const PickerSearchResult::CategoryData* category_data =
           std::get_if<PickerSearchResult::CategoryData>(&result.data())) {

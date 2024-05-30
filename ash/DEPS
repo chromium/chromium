@@ -25,6 +25,7 @@ include_rules = [
   "+components/soda",
   "+components/strings",
   "+components/sync",
+  "+components/sync_preferences/testing_pref_service_syncable.h",
   "+components/ui_devtools",
   "+components/ukm",
   "+components/url_matcher",

@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -96,6 +97,8 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   PickerSessionMetrics& GetSessionMetrics() override;
   PickerActionType GetActionForResult(
       const PickerSearchResult& result) override;
+  std::vector<std::string> GetRecentEmoji(
+      ui::EmojiPickerCategory category) override;
 
   // views:WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
