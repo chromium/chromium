@@ -145,4 +145,3 @@ crbug.com/1487775 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/unfenced
 
 # No plans to run wdspec tests for this flag-specific suite.
 external/wpt/webdriver/tests/* [ Skip ]
-
