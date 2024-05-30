@@ -313,6 +313,20 @@ void MahiManagerImpl::SetMediaAppPDFFocused() {
   NotifyRefreshAvailability(/*available=*/availability);
 }
 
+void MahiManagerImpl::MediaAppPDFClosed(
+    const base::UnguessableToken media_app_client_id) {
+  if (media_app_pdf_focused_ && media_app_client_id_ == media_app_client_id &&
+      current_page_info_->client_id == media_app_client_id) {
+    // In this case if there's a refresh banner, it must be targeted to
+    // the destroying media app PDF. Hides it by a false notification.
+    NotifyRefreshAvailability(/*available=*/false);
+    current_page_info_.reset();
+  }
+
+  media_app_pdf_focused_ = false;
+  media_app_client_id_ = base::UnguessableToken::Null();
+}
+
 void MahiManagerImpl::NotifyRefreshAvailability(bool available) {
   if (ui_controller_.IsMahiPanelOpen()) {
     ui_controller_.NotifyRefreshAvailabilityChanged(available);

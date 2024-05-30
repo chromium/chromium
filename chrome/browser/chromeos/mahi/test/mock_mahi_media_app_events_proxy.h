@@ -27,6 +27,10 @@ class MockMahiMediaAppEventsProxy : public chromeos::MahiMediaAppEventsProxy {
               (const base::UnguessableToken, const gfx::Rect&),
               (override));
   MOCK_METHOD(void, OnPdfContextMenuHide, (), (override));
+  MOCK_METHOD(void,
+              OnPdfWindowDestroying,
+              (const base::UnguessableToken),
+              (override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
 };

@@ -35,6 +35,7 @@ class MahiMediaAppContentManagerImpl
 
   // chromeos::MahiMediaAppEventsProxy::Observer
   void OnPdfGetFocus(const base::UnguessableToken client_id) override;
+  void OnPdfWindowDestroying(const base::UnguessableToken client_id) override;
 
   // chromeos::MahiMediaAppContentManager::
   std::optional<std::string> GetFileName(

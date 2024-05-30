@@ -48,6 +48,8 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
   void OpenFeedbackDialog() override;
   bool IsEnabled() override;
   void SetMediaAppPDFFocused() override;
+  void MediaAppPDFClosed(
+      const base::UnguessableToken media_app_client_id) override;
 
   // Notifies the panel that refresh is available or not for the corresponding
   // surface.

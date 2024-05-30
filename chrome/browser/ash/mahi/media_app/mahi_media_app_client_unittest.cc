@@ -146,6 +146,8 @@ TEST_F(MahiMediaAppClientTest, WindowDestroying) {
 
   EXPECT_EQ(mahi_media_app_client_->media_app_window(), window.get());
 
+  EXPECT_CALL(mock_mahi_media_app_events_proxy_, OnPdfWindowDestroying(_))
+      .Times(1);
   window.reset();
   EXPECT_EQ(mahi_media_app_client_->media_app_window(), nullptr);
 }
