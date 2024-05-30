@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
@@ -45,7 +46,7 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
     bridge_ = std::make_unique<SharedTabGroupDataSyncBridge>(
         &saved_tab_group_model_,
         syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
-        processor_.CreateForwardingProcessor());
+        processor_.CreateForwardingProcessor(), &pref_service_);
     task_environment_.RunUntilIdle();
   }
 
@@ -61,6 +62,7 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
   SavedTabGroupModel saved_tab_group_model_;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
   std::unique_ptr<syncer::ModelTypeStore> store_;
+  TestingPrefServiceSimple pref_service_;
   std::unique_ptr<SharedTabGroupDataSyncBridge> bridge_;
 };
 

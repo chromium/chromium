@@ -104,7 +104,7 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<TabGroupSyncServiceImpl>(
       std::move(model), std::move(saved_config), std::move(shared_config),
-      std::move(tab_group_store));
+      std::move(tab_group_store), profile->GetPrefs());
 }
 
 }  // namespace tab_groups

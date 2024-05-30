@@ -31,6 +31,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kStopShowingTabGroupConfirmationOnTabClose, false);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  registry->RegisterBooleanPref(prefs::kSavedTabGroupSpecificsToDataMigration,
+                                false);
 }
 
 }  // namespace tab_groups::prefs

@@ -63,7 +63,10 @@ CreateChangeProcessor() {
 SavedTabGroupKeyedService::SavedTabGroupKeyedService(Profile* profile)
     : profile_(profile),
       listener_(model(), profile),
-      bridge_(model(), GetStoreFactory(), CreateChangeProcessor()) {
+      bridge_(model(),
+              GetStoreFactory(),
+              CreateChangeProcessor(),
+              profile->GetPrefs()) {
   model()->AddObserver(this);
 
   metrics_timer_.Start(

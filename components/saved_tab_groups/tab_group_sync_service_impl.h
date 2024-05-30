@@ -23,6 +23,8 @@
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/sync_data.h"
 
+class PrefService;
+
 namespace tab_groups {
 
 // The internal implementation of the TabGroupSyncService.
@@ -46,7 +48,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       std::unique_ptr<SavedTabGroupModel> model,
       std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
       std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration,
-      std::unique_ptr<TabGroupStore> tab_group_store);
+      std::unique_ptr<TabGroupStore> tab_group_store,
+      PrefService* pref_service);
   ~TabGroupSyncServiceImpl() override;
 
   // Disallow copy/assign.

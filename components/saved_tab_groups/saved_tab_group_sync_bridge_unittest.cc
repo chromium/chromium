@@ -16,7 +16,10 @@
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/pref_names.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
@@ -154,12 +157,14 @@ class SavedTabGroupSyncBridgeTest : public ::testing::Test {
   ~SavedTabGroupSyncBridgeTest() override = default;
 
   void InitializeBridge() {
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kSavedTabGroupSpecificsToDataMigration, false);
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
     bridge_ = std::make_unique<SavedTabGroupSyncBridge>(
         &saved_tab_group_model_,
         syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
-        processor_.CreateForwardingProcessor());
+        processor_.CreateForwardingProcessor(), &pref_service_);
     task_environment_.RunUntilIdle();
   }
 
@@ -167,6 +172,7 @@ class SavedTabGroupSyncBridgeTest : public ::testing::Test {
   SavedTabGroupModel saved_tab_group_model_;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
   std::unique_ptr<syncer::ModelTypeStore> store_;
+  TestingPrefServiceSimple pref_service_;
   std::unique_ptr<SavedTabGroupSyncBridge> bridge_;
 };
 

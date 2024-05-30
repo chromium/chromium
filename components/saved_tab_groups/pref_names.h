@@ -29,6 +29,11 @@ inline constexpr char kStopShowingTabGroupConfirmationOnTabClose[] =
     "stop_showing_tab_group_confirmation_on_tab_close";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Whether the ModelTypeStore has been migrated from storing
+// SavedTabGroupSpecifics to SavedTabGroupData.
+inline constexpr char kSavedTabGroupSpecificsToDataMigration[] =
+    "saved_tab_groups.specifics_to_data_migration";
+
 // Registers the Clear Browsing Data UI prefs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 

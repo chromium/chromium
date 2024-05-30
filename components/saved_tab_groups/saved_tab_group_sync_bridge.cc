@@ -19,7 +19,9 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
+#include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/pref_names.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
@@ -251,8 +253,11 @@ std::vector<sync_pb::SavedTabGroupSpecifics> LoadStoredEntries(
 SavedTabGroupSyncBridge::SavedTabGroupSyncBridge(
     SavedTabGroupModel* model,
     syncer::OnceModelTypeStoreFactory create_store_callback,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
-    : syncer::ModelTypeSyncBridge(std::move(change_processor)), model_(model) {
+    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    PrefService* pref_service)
+    : syncer::ModelTypeSyncBridge(std::move(change_processor)),
+      model_(model),
+      pref_service_(pref_service) {
   DCHECK(model_);
   std::move(create_store_callback)
       .Run(syncer::SAVED_TAB_GROUP,

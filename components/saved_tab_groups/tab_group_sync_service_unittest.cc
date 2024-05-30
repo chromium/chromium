@@ -6,7 +6,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/empty_tab_group_store_delegate.h"
+#include "components/saved_tab_groups/pref_names.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
 #include "components/saved_tab_groups/tab_group_store.h"
@@ -87,6 +90,8 @@ class TabGroupSyncServiceTest : public testing::Test {
     model_ = model.get();
     auto tab_group_store = std::make_unique<MockTabGroupStore>();
     tab_group_store_ = tab_group_store.get();
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kSavedTabGroupSpecificsToDataMigration, false);
 
     tab_group_sync_service_ = std::make_unique<TabGroupSyncServiceImpl>(
         std::move(model),
@@ -94,7 +99,7 @@ class TabGroupSyncServiceTest : public testing::Test {
             processor_.CreateForwardingProcessor(),
             syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
                 store_.get())),
-        nullptr, std::move(tab_group_store));
+        nullptr, std::move(tab_group_store), &pref_service_);
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
     ON_CALL(processor_, GetControllerDelegate())
@@ -195,6 +200,7 @@ class TabGroupSyncServiceTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  TestingPrefServiceSimple pref_service_;
   raw_ptr<SavedTabGroupModel> model_;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
   std::unique_ptr<syncer::ModelTypeStore> store_;

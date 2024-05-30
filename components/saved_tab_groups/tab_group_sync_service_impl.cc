@@ -10,6 +10,7 @@
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
@@ -39,18 +40,21 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
     std::unique_ptr<SavedTabGroupModel> model,
     std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
     std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration,
-    std::unique_ptr<TabGroupStore> tab_group_store)
+    std::unique_ptr<TabGroupStore> tab_group_store,
+    PrefService* pref_service)
     : model_(std::move(model)),
       saved_bridge_(
           model_.get(),
           std::move(saved_tab_group_configuration->model_type_store_factory),
-          std::move(saved_tab_group_configuration->change_processor)),
+          std::move(saved_tab_group_configuration->change_processor),
+          pref_service),
       tab_group_store_(std::move(tab_group_store)) {
   if (shared_tab_group_configuration) {
     shared_bridge_ = std::make_unique<SharedTabGroupDataSyncBridge>(
         model_.get(),
         std::move(shared_tab_group_configuration->model_type_store_factory),
-        std::move(shared_tab_group_configuration->change_processor));
+        std::move(shared_tab_group_configuration->change_processor),
+        pref_service);
   }
   model_->AddObserver(this);
 }

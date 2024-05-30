@@ -15,6 +15,8 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 
+class PrefService;
+
 namespace syncer {
 class MetadataChangeList;
 class ModelTypeChangeProcessor;
@@ -29,7 +31,8 @@ class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge {
   SharedTabGroupDataSyncBridge(
       SavedTabGroupModel* model,
       syncer::OnceModelTypeStoreFactory create_store_callback,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      PrefService* pref_service);
 
   SharedTabGroupDataSyncBridge(const SharedTabGroupDataSyncBridge&) = delete;
   SharedTabGroupDataSyncBridge& operator=(const SharedTabGroupDataSyncBridge&) =

@@ -21,6 +21,8 @@
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 
+class PrefService;
+
 namespace syncer {
 class MutableDataBatch;
 class MetadataBatch;
@@ -40,7 +42,8 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
   explicit SavedTabGroupSyncBridge(
       SavedTabGroupModel* model,
       syncer::OnceModelTypeStoreFactory create_store_callback,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      PrefService* pref_service);
 
   SavedTabGroupSyncBridge(const SavedTabGroupSyncBridge&) = delete;
   SavedTabGroupSyncBridge& operator=(const SavedTabGroupSyncBridge&) = delete;
@@ -156,6 +159,9 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
 
   // The Model we used to represent the current state of SavedTabGroups.
   raw_ptr<SavedTabGroupModel> model_;
+
+  // The pref service for storing migration status.
+  raw_ptr<PrefService> pref_service_;
 
   // Used to store tabs whose groups were not added locally yet.
   std::vector<sync_pb::SavedTabGroupSpecifics> tabs_missing_groups_;
