@@ -1927,9 +1927,12 @@ bool InputHandler::SnapAtScrollEnd(SnapReason reason) {
   SnapContainerData& data = scroll_node->snap_container_data.value();
   gfx::PointF current_position = GetVisualScrollOffset(*scroll_node);
 
-  if (!snap_strategy_) {
-    // You might think that if a scroll never received a scroll update we could
-    // just drop the snap. However, if the GSB+GSE arrived while we were
+  if (!snap_strategy_ || snap_fling_state_ == kConstrainedNativeFling) {
+    // If this was a constrained native fling, SnapFlingController would not
+    // have had the correct final scroll position with which to create the snap
+    // strategy.
+    // Also, you might think that if a scroll never received a scroll update we
+    // could just drop the snap. However, if the GSB+GSE arrived while we were
     // mid-snap from a previous gesture, this would leave the scroller at a
     // non-snap-point.
     DCHECK(last_scroll_update_state_ || last_scroll_begin_state_);
