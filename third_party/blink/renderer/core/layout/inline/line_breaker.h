@@ -228,8 +228,7 @@ class CORE_EXPORT LineBreaker {
   //
   // `retry_size` - If this is not kIndefiniteSize, the function tries to break
   //   the ruby column so that its inline-size is less than `retry_size`.
-  NOINLINE bool HandleRuby(const RubyBreakTokenData* ruby_token,
-                           LineInfo* line_info,
+  NOINLINE bool HandleRuby(LineInfo* line_info,
                            LayoutUnit retry_size = kIndefiniteSize);
   bool IsMonolithicRuby(
       const LineInfo& base_line,

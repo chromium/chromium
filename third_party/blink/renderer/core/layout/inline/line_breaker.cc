@@ -923,7 +923,7 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
 
   while (state_ != LineBreakState::kDone) {
     if (ruby_break_token_) {
-      HandleRuby(ruby_break_token_, line_info);
+      HandleRuby(line_info);
       HandleOverflowIfNeeded(line_info);
       continue;
     }
@@ -1025,7 +1025,7 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
         MoveToNextOf(item);
         continue;
       }
-      if (!HandleRuby(nullptr, line_info)) {
+      if (!HandleRuby(line_info)) {
         AddItem(item, line_info);
         MoveToNextOf(item);
       }
@@ -3217,9 +3217,8 @@ void LineBreaker::HandleBlockInInline(const InlineItem& item,
   state_ = LineBreakState::kDone;
 }
 
-bool LineBreaker::HandleRuby(const RubyBreakTokenData* ruby_token,
-                             LineInfo* line_info,
-                             LayoutUnit retry_size) {
+bool LineBreaker::HandleRuby(LineInfo* line_info, LayoutUnit retry_size) {
+  const RubyBreakTokenData* ruby_token = ruby_break_token_;
   // Clear ruby_break_token_ first because HandleRuby() might set it again due
   // to rewinding.
   ruby_break_token_ = nullptr;
@@ -4017,8 +4016,7 @@ void LineBreaker::HandleOverflow(LineInfo* line_info) {
         const auto& rewound_ruby_column = *item_result->ruby_column;
         const LineInfo& base_line = rewound_ruby_column.base_line;
         Rewind(i, line_info);
-        HandleRuby(rewound_ruby_column.start_ruby_break_token.Get(), line_info,
-                   base_line.Width());
+        HandleRuby(line_info, base_line.Width());
         LayoutUnit new_width =
             line_info->Results().back().ruby_column->base_line.Width();
         if (new_width > LayoutUnit() && new_width != base_line.Width()) {
