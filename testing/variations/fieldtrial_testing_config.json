@@ -15620,6 +15620,21 @@
             ]
         }
     ],
+    "PressAndHoldEscToExitBrowserFullscreen": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PressAndHoldEscToExitBrowserFullscreen"
+                    ]
+                }
+            ]
+        }
+    ],
     "PriceDropNtpIPH": [
         {
             "platforms": [
