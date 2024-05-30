@@ -14,6 +14,8 @@ import androidx.lifecycle.Observer;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
@@ -27,7 +29,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyCheckComponentUi {
     private SafetyCheckSettingsFragment mSettingsFragment;
     private SafetyCheckUpdatesDelegate mUpdatesClient;
-    private SyncConsentActivityLauncher mSigninLauncher;
     private SafetyCheckMediator mMediator;
     private SyncService mSyncService;
     private PrefService mPrefService;
@@ -40,31 +41,37 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
      * observed and a reference is retained there.
      *
      * @param settingsFragment An instance of {@link SafetyCheckSettingsFragment} to observe.
+     * @param profile Profile to launch SigninActivity.
      * @param updatesClient An instance implementing the {@link SafetyCheckUpdatesDelegate}
      *     interface.
      * @param bridge An instances of {@link SafetyCheckBridge} to access C++ APIs.
      * @param settingsLauncher An instance implementing the {@link SettingsLauncher} interface.
-     * @param signinLauncher An instance implementing {@link SyncConsentActivityLauncher}.
+     * @param signinLauncher An instance implementing {@link SigninAndHistoryOptInActivityLauncher}.
+     * @param syncLauncher An instance implementing {@link SyncConsentActivityLauncher}.
      * @param modalDialogManagerSupplier An supplier for the {@link ModalDialogManager}.
      * @param passwordManagerHelper An instance of {@link PasswordManagerHelper} that provides
      *     access to password management capabilities.
      */
     public static void create(
             SafetyCheckSettingsFragment settingsFragment,
+            Profile profile,
             SafetyCheckUpdatesDelegate updatesClient,
             SafetyCheckBridge bridge,
             SettingsLauncher settingsLauncher,
-            SyncConsentActivityLauncher signinLauncher,
+            SigninAndHistoryOptInActivityLauncher signinLauncher,
+            SyncConsentActivityLauncher syncLauncher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable SyncService syncService,
             PrefService prefService,
             PasswordManagerHelper passwordManagerHelper) {
         new SafetyCheckCoordinator(
                 settingsFragment,
+                profile,
                 updatesClient,
                 bridge,
                 settingsLauncher,
                 signinLauncher,
+                syncLauncher,
                 modalDialogManagerSupplier,
                 syncService,
                 prefService,
@@ -73,10 +80,12 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
 
     private SafetyCheckCoordinator(
             SafetyCheckSettingsFragment settingsFragment,
+            Profile profile,
             SafetyCheckUpdatesDelegate updatesClient,
             SafetyCheckBridge bridge,
             SettingsLauncher settingsLauncher,
-            SyncConsentActivityLauncher signinLauncher,
+            SigninAndHistoryOptInActivityLauncher signinLauncher,
+            SyncConsentActivityLauncher syncLauncher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable SyncService syncService,
             PrefService prefService,
@@ -115,6 +124,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                                     createPasswordCheckModels(mSettingsFragment, safetyCheckModel);
                                     mMediator =
                                             new SafetyCheckMediator(
+                                                    profile,
                                                     safetyCheckModel,
                                                     mPasswordCheckAccountModel,
                                                     mPasswordCheckLocalModel,
@@ -122,6 +132,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                                                     bridge,
                                                     settingsLauncher,
                                                     signinLauncher,
+                                                    syncLauncher,
                                                     syncService,
                                                     prefService,
                                                     passwordManagerHelper,

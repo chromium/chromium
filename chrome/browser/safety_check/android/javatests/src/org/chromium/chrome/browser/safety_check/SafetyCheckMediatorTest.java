@@ -55,6 +55,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
@@ -85,10 +86,13 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckMediator.SafetyCheckI
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -131,7 +135,8 @@ public class SafetyCheckMediatorTest {
     @Mock private SafetyCheckBridge.Natives mSafetyCheckBridge;
     @Mock private Profile mProfile;
     @Mock private SafetyCheckUpdatesDelegate mUpdatesDelegate;
-    @Mock private SyncConsentActivityLauncher mSigninLauncher;
+    @Mock private SigninAndHistoryOptInActivityLauncher mSigninLauncher;
+    @Mock private SyncConsentActivityLauncher mSyncLauncher;
     @Mock private SettingsLauncher mSettingsLauncher;
     @Mock private SyncService mSyncService;
     @Mock private Handler mHandler;
@@ -227,6 +232,7 @@ public class SafetyCheckMediatorTest {
     private SafetyCheckMediator createSafetyCheckMediator(
             PropertyModel passwordCheckAccountModel, PropertyModel passwordCheckLocalModel) {
         return new SafetyCheckMediator(
+                mProfile,
                 mSafetyCheckModel,
                 passwordCheckAccountModel,
                 passwordCheckLocalModel,
@@ -234,6 +240,7 @@ public class SafetyCheckMediatorTest {
                 new SafetyCheckBridge(mProfile),
                 mSettingsLauncher,
                 mSigninLauncher,
+                mSyncLauncher,
                 mSyncService,
                 mPrefService,
                 mPasswordStoreBridge,
@@ -759,6 +766,31 @@ public class SafetyCheckMediatorTest {
 
         // After calling destroy() on mediator, the model is not expected to change any more.
         assertEquals(stateBeforeDestroy, mPasswordCheckModel.get(PASSWORDS_STATE));
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void testClickListenerStartsSignInFlowWhenUserSignedOut() {
+        mMediator.setInitialState();
+        setUpPasswordCheckToReturnError(
+                PasswordStorageType.ACCOUNT_STORAGE,
+                new PasswordCheckNativeException(
+                        "Test signed out error", PasswordCheckUIStatus.ERROR_SIGNED_OUT));
+        assertEquals(PasswordsState.SIGNED_OUT, mPasswordCheckModel.get(PASSWORDS_STATE));
+
+        click(getPasswordsClickListener(mPasswordCheckModel));
+
+        verify(mSigninLauncher)
+                .launchActivityIfAllowed(
+                        any(),
+                        eq(mProfile),
+                        any(),
+                        eq(SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT),
+                        eq(
+                                SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                        .DEFAULT_ACCOUNT_BOTTOM_SHEET),
+                        eq(SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE),
+                        eq(SigninAccessPoint.SAFETY_CHECK));
     }
 
     @Test
