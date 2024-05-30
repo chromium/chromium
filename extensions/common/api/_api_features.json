@@ -371,6 +371,7 @@
     "matches": [
       "chrome-untrusted://compose/*",
       "chrome-untrusted://help-app/*",
+      "chrome-untrusted://lens/*",
       "chrome-untrusted://media-app/*",
       "chrome-untrusted://mako/*",
       "chrome-untrusted://projector/*",

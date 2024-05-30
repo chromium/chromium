@@ -108,6 +108,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.Overlay.UserAction" enum="LensOverlayUserAction"
+    expires_after="2025-05-06">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>mercerd@google.com</owner>
+  <summary>
+    Recorded each time the user interacts with the Lens Overlay, enumerated by
+    those actions.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.PermissionBubble.Shown" enum="BooleanShown"
     expires_after="2025-05-06">
   <owner>jdonnelly@chromium.org</owner>

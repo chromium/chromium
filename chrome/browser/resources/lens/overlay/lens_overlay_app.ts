@@ -24,6 +24,7 @@ import type {CursorTooltipData, CursorTooltipElement} from './cursor_tooltip.js'
 import type {InitialToastElement} from './initial_toast.js';
 import type {OverlayTheme} from './lens.mojom-webui.js';
 import {getTemplate} from './lens_overlay_app.html.js';
+import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
 
 // Closes overlay if escape button is pressed.
 function maybeCloseOverlay(event: KeyboardEvent) {
@@ -155,6 +156,7 @@ export class LensOverlayAppElement extends PolymerElement {
   private onFeedbackClick() {
     this.browserProxy.handler.feedbackRequestedByOverlay();
     this.moreOptionsMenuVisible = false;
+    recordLensOverlayInteraction(UserAction.SEND_FEEDBACK);
   }
 
   private onLearnMoreClick(event: MouseEvent|KeyboardEvent) {
@@ -166,6 +168,7 @@ export class LensOverlayAppElement extends PolymerElement {
       shiftKey: event.shiftKey,
     });
     this.moreOptionsMenuVisible = false;
+    recordLensOverlayInteraction(UserAction.LEARN_MORE);
   }
 
   private onMoreOptionsButtonClick() {
@@ -181,6 +184,7 @@ export class LensOverlayAppElement extends PolymerElement {
       shiftKey: event.shiftKey,
     });
     this.moreOptionsMenuVisible = false;
+    recordLensOverlayInteraction(UserAction.MY_ACTIVITY);
   }
 
   private onNotifyResultsPanelOpened() {

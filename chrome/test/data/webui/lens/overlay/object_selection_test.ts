@@ -7,10 +7,13 @@ import 'chrome-untrusted://lens/selection_overlay.js';
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
+import {UserAction} from 'chrome-untrusted://lens/metrics_utils.js';
 import type {OverlayObject} from 'chrome-untrusted://lens/overlay_object.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 import {assertBoxesWithinThreshold, createObject} from '../utils/object_utils.js';
@@ -24,6 +27,7 @@ suite('ObjectSelection', function() {
   let selectionOverlayElement: SelectionOverlayElement;
   let callbackRouterRemote: LensPageRemote;
   let objects: OverlayObject[];
+  let metrics: MetricsTracker;
 
   setup(async () => {
     // Resetting the HTML needs to be the first thing we do in setup to
@@ -47,6 +51,7 @@ suite('ObjectSelection', function() {
     // viewport.
     selectionOverlayElement.$.selectionOverlay.style.width = '100%';
     selectionOverlayElement.$.selectionOverlay.style.height = '100%';
+    metrics = fakeMetricsPrivate();
     await flushTasks();
     await addObjects();
   });
@@ -94,6 +99,11 @@ suite('ObjectSelection', function() {
         const rect =
             await testBrowserProxy.handler.whenCalled('issueLensRequest');
         assertBoxesWithinThreshold(objects[1]!.geometry.boundingBox, rect);
+        assertEquals(1, metrics.count('Lens.Overlay.Overlay.UserAction'));
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.UserAction', UserAction.OBJECT_CLICK));
       });
 
   test(

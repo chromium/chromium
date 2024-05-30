@@ -17,6 +17,7 @@ import {findWordsInRegion} from './find_words_in_region.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import {bestHit} from './hit.js';
+import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
 import type {CursorData, DetectedTextContextMenuData, SelectedTextContextMenuData} from './selection_overlay.js';
 import {CursorType} from './selection_utils.js';
 import type {GestureEvent} from './selection_utils.js';
@@ -290,6 +291,7 @@ export class TextLayerElement extends PolymerElement {
     // On selection complete, send the selected text to C++.
     BrowserProxyImpl.getInstance().handler.issueTextSelectionRequest(
         highlightedText, this.selectionStartIndex, this.selectionEndIndex);
+    recordLensOverlayInteraction(UserAction.TEXT_SELECTION);
   }
 
   selectAndSendWords(selectionStartIndex: number, selectionEndIndex: number) {

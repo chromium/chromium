@@ -6,7 +6,10 @@ import 'chrome-untrusted://lens/lens_overlay_app.js';
 
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import type {LensOverlayAppElement} from 'chrome-untrusted://lens/lens_overlay_app.js';
+import {UserAction} from 'chrome-untrusted://lens/metrics_utils.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {waitAfterNextRender, waitBeforeNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
@@ -14,6 +17,7 @@ import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 suite('OverlayFeedbackButton', () => {
   let testBrowserProxy: TestLensOverlayBrowserProxy;
   let lensOverlayElement: LensOverlayAppElement;
+  let metrics: MetricsTracker;
 
   setup(() => {
     // Resetting the HTML needs to be the first thing we do in setup to
@@ -26,6 +30,7 @@ suite('OverlayFeedbackButton', () => {
 
     lensOverlayElement = document.createElement('lens-overlay-app');
     document.body.appendChild(lensOverlayElement);
+    metrics = fakeMetricsPrivate();
     return waitBeforeNextRender(lensOverlayElement);
   });
 
@@ -59,6 +64,11 @@ suite('OverlayFeedbackButton', () => {
     assertTrue(clickModifiers.ctrlKey);
     assertFalse(clickModifiers.metaKey);
     assertTrue(clickModifiers.shiftKey);
+    assertEquals(1, metrics.count('Lens.Overlay.Overlay.UserAction'));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.UserAction', UserAction.MY_ACTIVITY));
   });
 
   test('verify clicking learn more calls browser proxy', async () => {
@@ -77,11 +87,21 @@ suite('OverlayFeedbackButton', () => {
     assertTrue(clickModifiers.ctrlKey);
     assertFalse(clickModifiers.metaKey);
     assertTrue(clickModifiers.shiftKey);
+    assertEquals(1, metrics.count('Lens.Overlay.Overlay.UserAction'));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.UserAction', UserAction.LEARN_MORE));
   });
 
   test('verify clicking send feedback calls browser proxy', () => {
     lensOverlayElement.shadowRoot!.querySelector<HTMLElement>(
                                       '#sendFeedback')!.click();
+    assertEquals(1, metrics.count('Lens.Overlay.Overlay.UserAction'));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.UserAction', UserAction.SEND_FEEDBACK));
     return testBrowserProxy.handler.whenCalled('feedbackRequestedByOverlay');
   });
 });

@@ -6,11 +6,14 @@ import 'chrome-untrusted://lens/post_selection_renderer.js';
 
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
+import {UserAction} from 'chrome-untrusted://lens/metrics_utils.js';
 import type {PostSelectionBoundingBox, PostSelectionRendererElement} from 'chrome-untrusted://lens/post_selection_renderer.js';
 import {PERIMETER_SELECTION_PADDING_PX, RESTING_CORNER_LENGTH_PX} from 'chrome-untrusted://lens/post_selection_renderer.js';
 import type {GestureEvent} from 'chrome-untrusted://lens/selection_utils.js';
 import {GestureState} from 'chrome-untrusted://lens/selection_utils.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -41,6 +44,7 @@ suite('PostSelectionRenderer', () => {
   let postSelectionRenderer: PostSelectionRendererElement;
   let testBrowserProxy: TestLensOverlayBrowserProxy;
   let callbackRouterRemote: LensPageRemote;
+  let metrics: MetricsTracker;
 
   setup(() => {
     // Resetting the HTML needs to be the first thing we do in setup to
@@ -58,6 +62,7 @@ suite('PostSelectionRenderer', () => {
     postSelectionRenderer.style.display = 'block';
     postSelectionRenderer.style.width = `${TEST_WIDTH}px`;
     postSelectionRenderer.style.height = `${TEST_HEIGHT}px`;
+    metrics = fakeMetricsPrivate();
 
     document.body.appendChild(postSelectionRenderer);
     return waitAfterNextRender(postSelectionRenderer);
@@ -215,6 +220,12 @@ suite('PostSelectionRenderer', () => {
 
     assertPostSelectionRender(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
+    assertEquals(1, metrics.count('Lens.Overlay.Overlay.UserAction'));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.UserAction',
+            UserAction.REGION_SELECTION_CHANGE));
     await assertLensRequest(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
   });
@@ -600,6 +611,7 @@ suite('PostSelectionRenderer', () => {
 
     // Drag that didn't change the bounds shouldn't issue a Lens request.
     assertEquals(0, testBrowserProxy.handler.getCallCount('issueLensRequest'));
+    assertEquals(0, metrics.count('Lens.Overlay.Overlay.UserAction'));
   });
 
   test('PostSelectionClearAllSelectionsCallback', async () => {
