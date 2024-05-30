@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/promo_style/utils.h"
@@ -134,6 +135,8 @@ UITextView* SecondParagraph() {
   [super viewDidLoad];
 
   UIView* view = self.view;
+  view.accessibilityIdentifier =
+      kSearchEngineChoiceLearnMoreAccessibilityIdentifier;
 
   // Navigation.
   view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];

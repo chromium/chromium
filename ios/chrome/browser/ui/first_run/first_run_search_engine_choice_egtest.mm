@@ -5,8 +5,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/policy_constants.h"
 #import "components/search_engines/prepopulated_engines.h"
+#import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/ui/first_run/first_run_test_case_base.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
@@ -177,6 +179,96 @@
       assertWithMatcher:grey_allOf(
                             grey_accessibilityValue(enterpriseSearchEngineName),
                             grey_sufficientlyVisible(), nil)];
+}
+
+// Tests kSearchEngineChoiceScreenEventsHistogram during the FRE, with the
+// following scenario:
+// + Skip sign-in screen in the FRE
+// + Verify search engine choice screen is presented
+//    Verify SearchEngineChoiceScreenEvents::kFreChoiceScreenWasDisplayed
+// + Open the Learn More dialog
+//    Verfiy SearchEngineChoiceScreenEvents::kFreLearnMoreWasDisplayed
+// + Close the Learn More dialog
+// + Choose Bing search engine
+// + Validate search engine choice screen dialog
+//    Verify search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet
+- (void)testSearchEngineChoiceScreenEventsHistogram {
+  NSString* const eventHistogram =
+      @(search_engines::kSearchEngineChoiceScreenEventsHistogram);
+  // Skip sign-in.
+  GREYAssertNil([MetricsAppInterface expectTotalCount:0
+                                         forHistogram:eventHistogram],
+                @"Failed to record event histogram");
+  [[self elementInteractionWithGreyMatcher:
+             chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Check that the choice screen is shown
+  [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
+  GREYAssertNil([MetricsAppInterface expectTotalCount:1
+                                         forHistogram:eventHistogram],
+                @"Failed to record event histogram");
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:static_cast<int>(
+                           search_engines::SearchEngineChoiceScreenEvents::
+                               kFreChoiceScreenWasDisplayed)
+          forHistogram:eventHistogram],
+      @"Failed to record event histogram");
+  // Scroll down and open the Learn More dialog.
+  id<GREYMatcher> learnMoreLinkMatcher = grey_allOf(
+      grey_accessibilityLabel(@"Learn more"), grey_sufficientlyVisible(), nil);
+  [[self
+      elementInteractionWithGreyMatcher:learnMoreLinkMatcher
+                   scrollViewIdentifier:kSearchEngineChoiceScrollViewIdentifier]
+      performAction:grey_tap()];
+  // Verify the Learn More view was presented.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kSearchEngineChoiceLearnMoreAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+  GREYAssertNil([MetricsAppInterface expectTotalCount:2
+                                         forHistogram:eventHistogram],
+                @"Failed to record event histogram");
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:static_cast<int>(
+                           search_engines::SearchEngineChoiceScreenEvents::
+                               kFreLearnMoreWasDisplayed)
+          forHistogram:eventHistogram],
+      @"Failed to record event histogram");
+  // Close the Learn More dialog.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
+  // Select a search engine.
+  NSString* searchEngineToSelect = [SearchEngineChoiceEarlGreyUI
+      searchEngineNameWithPrepopulatedEngine:TemplateURLPrepopulateData::bing];
+  [SearchEngineChoiceEarlGreyUI
+      selectSearchEngineCellWithName:searchEngineToSelect
+                     scrollDirection:kGREYDirectionDown
+                              amount:50];
+  // Tap on the Continue button. This scrolls the table down to the bottom.
+  id<GREYMatcher> continueButtonMatcher =
+      grey_accessibilityID(kSearchEngineContinueButtonIdentifier);
+  [[[EarlGrey selectElementWithMatcher:continueButtonMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+  [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
+  GREYAssertNil([MetricsAppInterface expectTotalCount:3
+                                         forHistogram:eventHistogram],
+                @"Failed to record event histogram");
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:static_cast<int>(
+                           search_engines::SearchEngineChoiceScreenEvents::
+                               kFreDefaultWasSet)
+          forHistogram:eventHistogram],
+      @"Failed to record event histogram");
+  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
 }
 
 @end

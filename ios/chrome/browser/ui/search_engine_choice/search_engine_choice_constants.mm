@@ -28,3 +28,6 @@ NSString* const kSearchEngineContinueButtonIdentifier =
     @"SearchEngineContinueButtonIdentifier";
 const char kExpandSearchEngineDescriptionUserAction[] =
     "ExpandSearchEngineDescription";
+
+NSString* const kSearchEngineChoiceLearnMoreAccessibilityIdentifier =
+    @"SearchEngineChoiceLearnMoreAccessibilityIdentifier";

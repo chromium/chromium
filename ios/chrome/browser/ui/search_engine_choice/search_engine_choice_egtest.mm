@@ -4,7 +4,9 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/search_engines/prepopulated_engines.h"
+#import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_switches.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
@@ -26,11 +28,16 @@
   // Make sure the search engine has been reset, to avoid any issues if it was
   // not by a previous test.
   [SettingsAppInterface resetSearchEngine];
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
 }
 
 - (void)tearDown {
   // Reset the default search engine to Google
   [SettingsAppInterface resetSearchEngine];
+  // Release the histogram tester.
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
   [super tearDown];
 }
 
@@ -175,6 +182,74 @@
                        googleSearchEngineIdentifier]);
   [[[EarlGrey selectElementWithMatcher:expandedChevronMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+}
+
+// Tests kSearchEngineChoiceScreenEventsHistogram during the search engine
+// choice dialog, with the following the scenario
+// + Verify search engine choice screen is presented
+// + Open the Learn More dialog
+//    Verfiy SearchEngineChoiceScreenEvents::kLearnMoreWasDisplayed
+// + Close the Learn More dialog
+// + Choose Bing search engine
+// + Validate search engine choice screen dialog
+//    Verify search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet
+// Note that SearchEngineChoiceScreenEvents::kChoiceScreenWasDisplayed cannot
+// be tested since `[MetricsAppInterface setupHistogramTester] is called after
+// the search engine choice dialog is presented.
+- (void)testSearchEngineChoiceScreenEventsHistogram {
+  NSString* const eventHistogram =
+      @(search_engines::kSearchEngineChoiceScreenEventsHistogram);
+  // Check that the choice screen is shown
+  [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
+  // Scroll down and open the Learn More dialog.
+  id<GREYMatcher> learnMoreLinkMatcher = grey_allOf(
+      grey_accessibilityLabel(@"Learn more"), grey_sufficientlyVisible(), nil);
+  [[[EarlGrey selectElementWithMatcher:learnMoreLinkMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+  // Verify the Learn More view was presented.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kSearchEngineChoiceLearnMoreAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+  GREYAssertNil([MetricsAppInterface expectTotalCount:1
+                                         forHistogram:eventHistogram],
+                @"Failed to record event histogram");
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:static_cast<int>(
+                           search_engines::SearchEngineChoiceScreenEvents::
+                               kLearnMoreWasDisplayed)
+          forHistogram:eventHistogram],
+      @"Failed to record event histogram");
+  // Close the Learn More dialog.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
+  // Select a search engine.
+  NSString* searchEngineToSelect = [SearchEngineChoiceEarlGreyUI
+      searchEngineNameWithPrepopulatedEngine:TemplateURLPrepopulateData::bing];
+  [SearchEngineChoiceEarlGreyUI
+      selectSearchEngineCellWithName:searchEngineToSelect
+                     scrollDirection:kGREYDirectionDown
+                              amount:50];
+  // Tap on the Continue button. This scrolls the table down to the bottom.
+  id<GREYMatcher> continueButtonMatcher =
+      grey_accessibilityID(kSearchEngineContinueButtonIdentifier);
+  [[[EarlGrey selectElementWithMatcher:continueButtonMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+  [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
+  GREYAssertNil([MetricsAppInterface expectTotalCount:2
+                                         forHistogram:eventHistogram],
+                @"Failed to record event histogram");
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:static_cast<int>(
+                           search_engines::SearchEngineChoiceScreenEvents::
+                               kDefaultWasSet)
+          forHistogram:eventHistogram],
+      @"Failed to record event histogram");
 }
 
 @end
