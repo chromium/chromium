@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "components/ml/webnn/features.mojom-blink.h"
+#include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
@@ -13,7 +14,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_buffer_mojo.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_buffer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_error_mojo.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_mojo.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -231,8 +232,9 @@ MLBuffer* MLContext::createBuffer(ScriptState* script_state,
 
   if (base::FeatureList::IsEnabled(
           webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
-    return MLBufferMojo::Create(std::move(scoped_trace), script_state, this,
-                                descriptor, exception_state);
+    return MLBuffer::Create(std::move(scoped_trace),
+                            ExecutionContext::From(script_state), this,
+                            descriptor, exception_state);
   }
 
   // TODO: crbug.com/325612086 - Remove this fallback.

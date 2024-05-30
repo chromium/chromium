@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_compute_result.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_buffer_mojo.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_buffer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_error_mojo.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
@@ -217,30 +217,24 @@ void MLGraphMojo::DispatchImpl(ScopedMLTrace scoped_trace,
   // pass the buffer directly with the input and output tensors.
   HashMap<String, base::UnguessableToken> mojo_inputs;
   for (const auto& [name, input_buffer] : inputs) {
-    // Remote buffer gets automatically unbound when the execution context
-    // destructs.
-    MLBufferMojo* ml_buffer_mojo =
-        static_cast<MLBufferMojo*>(input_buffer.Get());
-    if (!ml_buffer_mojo->is_bound()) {
+    if (!input_buffer->IsValid()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Invalid input buffer state");
       return;
     }
 
-    mojo_inputs.insert(name, ml_buffer_mojo->handle());
+    mojo_inputs.insert(name, input_buffer->handle());
   }
 
   HashMap<String, base::UnguessableToken> mojo_outputs;
   for (const auto& [name, output_buffer] : outputs) {
-    MLBufferMojo* ml_buffer_mojo =
-        static_cast<MLBufferMojo*>(output_buffer.Get());
-    if (!ml_buffer_mojo->is_bound()) {
+    if (!output_buffer->IsValid()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Invalid output buffer state");
       return;
     }
 
-    mojo_outputs.insert(name, ml_buffer_mojo->handle());
+    mojo_outputs.insert(name, output_buffer->handle());
   }
 
   remote_graph_->Dispatch(std::move(mojo_inputs), std::move(mojo_outputs));
