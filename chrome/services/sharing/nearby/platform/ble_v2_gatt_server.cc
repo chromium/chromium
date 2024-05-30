@@ -133,9 +133,11 @@ BleV2GattServer::CreateCharacteristic(
 
     if (!gatt_service_pending_remote) {
       LOG(WARNING) << __func__ << ": Unable to get or create GATT service";
+      metrics::RecordCreateLocalGattServiceResult(/*success=*/false);
       return std::nullopt;
     }
 
+    metrics::RecordCreateLocalGattServiceResult(/*success=*/true);
     auto gatt_service = gatt_service_factory_->Create();
     gatt_service->gatt_service_remote.Bind(
         std::move(gatt_service_pending_remote),

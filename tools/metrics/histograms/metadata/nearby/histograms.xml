@@ -31,6 +31,20 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram
+    name="Nearby.Connections.BleV2.GattServer.CreateLocalGattService.Result"
+    enum="BooleanSuccess" expires_after="2025-04-30">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of creating a local GATT service. Emitted on
+    calls by Nearby Connections to create a GATT characteristic before
+    advertising begins; the GATT server first creates a GATT service if one
+    doesn't exist already before creating the characteristic, and this metric
+    captures the success/failure of creating the GATT service.
+  </summary>
+</histogram>
+
+<histogram
     name="Nearby.Connections.BleV2.GattServer.RegisterGattService.FailureReason"
     enum="BluetoothGattServiceGattErrorCode" expires_after="2025-04-30">
   <owner>julietlevesque@google.com</owner>

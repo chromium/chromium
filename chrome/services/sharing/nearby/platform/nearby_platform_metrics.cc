@@ -27,6 +27,12 @@ void RecordGattServiceRegistrationErrorReason(
       error_code);
 }
 
+void RecordCreateLocalGattServiceResult(bool success) {
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.BleV2.GattServer.CreateLocalGattService.Result",
+      success);
+}
+
 void RecordStartAdvertisingFailureReason(StartAdvertisingFailureReason reason,
                                          bool is_extended_advertisement) {
   // Record the overall StartAdvertising failure reason.
