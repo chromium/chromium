@@ -549,6 +549,8 @@ void ChromeBrowserMainPartsWin::PostMainMessageLoopRun() {
 
 void ChromeBrowserMainPartsWin::PostEarlyInitialization() {
   MaybeBlockDynamicCodeForBrowserProcess();
+
+  ChromeBrowserMainParts::PostEarlyInitialization();
 }
 
 void ChromeBrowserMainPartsWin::ShowMissingLocaleMessageBox() {
