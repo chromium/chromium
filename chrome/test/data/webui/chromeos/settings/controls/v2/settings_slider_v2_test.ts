@@ -97,6 +97,7 @@ suite(SettingsSliderV2Element.is, () => {
     setup(async () => {
       clearBody();
       slider = document.createElement(SettingsSliderV2Element.is);
+      slider.value = 16;
       document.body.appendChild(slider);
       internalSlider = slider.shadowRoot!.querySelector('cr-slider')!;
       await flushTasks();
@@ -112,6 +113,30 @@ suite(SettingsSliderV2Element.is, () => {
       flush();
       assertTrue(slider.disabled);
       assertEquals('true', internalSlider.ariaDisabled);
+    });
+
+    test('markers are shown by default when ticks is set', async () => {
+      slider.ticks = ticks;
+      flush();
+
+      assertEquals(ticks.length, internalSlider.markerCount);
+    });
+
+    test('markers are hidden if number of ticks is greater than 10', () => {
+      const longTicks: number[] =
+          [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048];
+      slider.ticks = longTicks;
+
+      flush();
+      assertEquals(0, internalSlider.markerCount);
+    });
+
+    test('explicitly set hideMarkers to true will hide markers', () => {
+      slider.hideMarkers = true;
+      slider.ticks = ticks;
+
+      flush();
+      assertEquals(0, internalSlider.markerCount);
     });
 
     [true, false].forEach(hideLabel => {

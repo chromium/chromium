@@ -17,8 +17,7 @@
  *       ticks="[[sliderTicks_]]"
  *       on-change="onSliderChange_"
  *       min-label="$i18n{low}"
- *       max-label="$i18n{high}"
- *       show-markers>
+ *       max-label="$i18n{high}">
  *   <settings-slider-v2>
  *
  *   // With scale
@@ -42,7 +41,7 @@
  *       on-change="onSliderChange_"
  *       min-label="$i18n{low}"
  *       max-label="$i18n{high}"
- *       show-markers>
+ *       hide-markers>
  *   <settings-slider-v2>
  *
  *   // With scale
@@ -166,10 +165,10 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
       },
 
       /**
-       * Whether or not to show tick marks on the slider. Default to false.
+       * Whether or not to hide tick marks on the slider. Default to false.
        * Only compatible with `ticks`, and not compatible with `scale`.
        */
-      showMarkers: {
+      hideMarkers: {
         type: Boolean,
         value: false,
       },
@@ -192,7 +191,7 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
   hideLabel: boolean;
   minLabel: string;
   maxLabel: string;
-  showMarkers: boolean;
+  hideMarkers: boolean;
   updateValueInstantly: boolean;
   override validPrefTypes = [chrome.settingsPrivate.PrefType.NUMBER];
   value: number;
@@ -285,7 +284,7 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
     // Limit the number of ticks to 10 to keep the slider from looking too busy.
     const MAX_TICKS = 10;
     this.$.slider.markerCount =
-        (this.showMarkers || numTicks <= MAX_TICKS) ? numTicks : 0;
+        (this.hideMarkers || numTicks > MAX_TICKS) ? 0 : numTicks;
 
     // Convert from the public `value` to the slider index (where the knob
     // should be positioned on the slider).
