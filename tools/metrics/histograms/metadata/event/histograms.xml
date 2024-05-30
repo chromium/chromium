@@ -478,10 +478,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.ScrollJank.DelayedFramesPercentage.FixedWindow"
-    units="%" expires_after="2025-05-19">
+    units="%" expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
   <owner>kartarsingh@google.com</owner>
   <owner>mekk@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <summary>
     The percentage of frames not presented during a scroll or a fling[1],
     meaning frame production took longer than expected and the frame was
@@ -500,6 +503,10 @@ chromium-metrics-reviews@google.com.
 
     For more details about this metric, please check
     http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY
+
+    This histogram is of special interest to the chrome-analysis-team@.
+
+    Do not change its semantics or retire it without talking to them first.
 
     [1]Fling is a finger boosted scroll, meaning the screen is moving after the
     user has accelerated their finger on the screen and removed it.
