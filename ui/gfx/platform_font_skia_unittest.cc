@@ -17,6 +17,7 @@
 #include "ui/gfx/font_render_params.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "ui/gfx/platform_font.h"
 #include "ui/gfx/system_fonts_win.h"
 #endif
 
@@ -153,6 +154,11 @@ TEST(PlatformFontSkiaOnWindowsTest, SystemFont) {
   EXPECT_EQ(system_font.GetBaseline(), default_font.GetBaseline());
   EXPECT_EQ(system_font.GetFontRenderParams(),
             default_font.GetFontRenderParams());
+}
+
+TEST(PlatformFontSkiaOnWindowsTest, Exists) {
+  EXPECT_TRUE(gfx::PlatformFont::Exists("Arial"));
+  EXPECT_FALSE(gfx::PlatformFont::Exists("never-exist-font-name"));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
