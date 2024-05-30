@@ -138,83 +138,11 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, IncognitoAccelerator) {
       CheckIncognitoWindowOpened(browser()));
 }
 
-class ExtensionsMenuModelInteractiveTest : public AppMenuModelInteractiveTest {
- public:
-  explicit ExtensionsMenuModelInteractiveTest(bool enable_feature = true) {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (enable_feature) {
-      enabled_features = {features::kExtensionsMenuInAppMenu};
-      disabled_features = {features::kChromeRefresh2023};
-    } else {
-      enabled_features = {};
-      disabled_features = {features::kExtensionsMenuInAppMenu,
-                           features::kChromeRefresh2023};
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-  ~ExtensionsMenuModelInteractiveTest() override = default;
-  ExtensionsMenuModelInteractiveTest(
-      const ExtensionsMenuModelInteractiveTest&) = delete;
-  void operator=(const ExtensionsMenuModelInteractiveTest&) = delete;
-
-  void SetUp() override {
-    set_open_about_blank_on_browser_launch(true);
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    InteractiveBrowserTest::SetUp();
-  }
-
- protected:
-  base::HistogramTester histograms;
-};
-
-class ExtensionsMenuModelPresenceTest
-    : public ExtensionsMenuModelInteractiveTest,
-      public testing::WithParamInterface<bool> {
- public:
-  ExtensionsMenuModelPresenceTest()
-      : ExtensionsMenuModelInteractiveTest(/*enable_feature=*/GetParam()) {}
-  ~ExtensionsMenuModelPresenceTest() override = default;
-  ExtensionsMenuModelPresenceTest(const ExtensionsMenuModelPresenceTest&) =
-      delete;
-  void operator=(const ExtensionsMenuModelPresenceTest&) = delete;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ExtensionsMenuModelPresenceTest,
-    testing::Bool(),
-    [](const testing::TestParamInfo<ExtensionsMenuModelPresenceTest::ParamType>&
-           info) { return info.param ? "InRootAppMenu" : "NotInRootAppMenu"; });
-
-// Test to confirm that the structure of the Extensions menu is present but that
-// no histograms are logged since it isn't interacted with.
-IN_PROC_BROWSER_TEST_P(ExtensionsMenuModelPresenceTest, MenuPresence) {
-  if (features::IsExtensionMenuInRootAppMenu()) {  // Menu enabled
-    RunTestSequence(
-        InstrumentTab(kPrimaryTabPageElementId),
-        PressButton(kToolbarAppMenuButtonElementId),
-        EnsurePresent(AppMenuModel::kExtensionsMenuItem),
-        SelectMenuItem(AppMenuModel::kExtensionsMenuItem),
-        EnsurePresent(ExtensionsMenuModel::kManageExtensionsMenuItem),
-        EnsurePresent(ExtensionsMenuModel::kVisitChromeWebStoreMenuItem));
-  } else {
-    RunTestSequence(InstrumentTab(kPrimaryTabPageElementId),
-                    PressButton(kToolbarAppMenuButtonElementId),
-                    EnsureNotPresent(AppMenuModel::kExtensionsMenuItem));
-  }
-
-  histograms.ExpectTotalCount("WrenchMenu.TimeToAction.VisitChromeWebStore", 0);
-  histograms.ExpectTotalCount("WrenchMenu.TimeToAction.ManageExtensions", 0);
-  histograms.ExpectBucketCount("WrenchMenu.MenuAction",
-                               MENU_ACTION_MANAGE_EXTENSIONS, 0);
-  histograms.ExpectBucketCount("WrenchMenu.MenuAction",
-                               MENU_ACTION_VISIT_CHROME_WEB_STORE, 0);
-}
-
 // Test to confirm that the manage extensions menu item navigates when selected
 // and emite histograms that it did so.
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuModelInteractiveTest, ManageExtensions) {
+IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, ManageExtensions) {
+  base::HistogramTester histograms;
+
   RunTestSequence(
       InstrumentTab(kPrimaryTabPageElementId),
       PressButton(kToolbarAppMenuButtonElementId),
@@ -260,16 +188,14 @@ class ExtensionsMenuVisitChromeWebstoreModelInteractiveTest
   base::HistogramTester histograms;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ExtensionsMenuVisitChromeWebstoreModelInteractiveTest,
-    // extensions_features::kNewWebstoreURL enabled status.
-    testing::Bool(),
-    [](const testing::TestParamInfo<ExtensionsMenuModelPresenceTest::ParamType>&
-           info) {
-      return info.param ? "NewVisitChromeWebstoreUrl"
-                        : "OldVisitChromeWebstoreUrl";
-    });
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExtensionsMenuVisitChromeWebstoreModelInteractiveTest,
+                         // extensions_features::kNewWebstoreURL enabled status.
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "NewVisitChromeWebstoreUrl"
+                                             : "OldVisitChromeWebstoreUrl";
+                         });
 
 // Test to confirm that the visit Chrome Web Store menu item navigates to the
 // correct chrome webstore URL when selected and emits histograms that it did
@@ -344,8 +270,7 @@ class CastExperimentAppMenuModelInteractiveTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kCastAppMenuExperiment,
-          {{features::kCastListedFirst.name, "false"}}},
-         {features::kChromeRefresh2023, {}}},
+          {{features::kCastListedFirst.name, "false"}}}},
         /*disabled_features=*/{});
   }
   CastExperimentAppMenuModelInteractiveTest(
@@ -377,8 +302,7 @@ class CastListedFirstExperimentAppMenuModelInteractiveTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kCastAppMenuExperiment,
-          {{features::kCastListedFirst.name, "true"}}},
-         {features::kChromeRefresh2023, {}}},
+          {{features::kCastListedFirst.name, "true"}}}},
         /*disabled_features=*/{});
   }
   CastListedFirstExperimentAppMenuModelInteractiveTest(
