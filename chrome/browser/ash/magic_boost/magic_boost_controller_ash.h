@@ -7,6 +7,7 @@
 
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
 
@@ -33,6 +34,8 @@ class MagicBoostControllerAsh : public crosapi::mojom::MagicBoostController {
 
  private:
   mojo::ReceiverSet<crosapi::mojom::MagicBoostController> receivers_;
+
+  views::UniqueWidgetPtr widget_;
 };
 
 }  // namespace ash

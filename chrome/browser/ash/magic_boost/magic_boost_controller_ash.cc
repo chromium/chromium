@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 
+#include "ash/system/magic_boost/magic_boost_disclaimer_view.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 
 namespace ash {
@@ -23,6 +24,7 @@ void MagicBoostControllerAsh::ShowDisclaimerUi(
     int64_t display_id,
     crosapi::mojom::MagicBoostController::TransitionAction action) {
   // TODO(b/341832244): Show disclaimer widget here.
+  widget_ = MagicBoostDisclaimerView::CreateWidget();
 }
 
 }  // namespace ash
