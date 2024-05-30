@@ -66,3 +66,17 @@ TabGroupRange OrderControllerSourceFromWebStateList::GetGroupRangeOfItemAt(
   }
   return TabGroupRange::InvalidRange();
 }
+
+std::set<int> OrderControllerSourceFromWebStateList::GetCollapsedGroupIndexes()
+    const {
+  std::set<const TabGroup*> groups = web_state_list_->GetGroups();
+  std::set<int> collapsed_indexes;
+
+  for (const auto& group : groups) {
+    if (group->visual_data().is_collapsed()) {
+      std::set<int> group_indexes = TabGroupRange(group->range()).AsSet();
+      collapsed_indexes.insert(group_indexes.begin(), group_indexes.end());
+    }
+  }
+  return collapsed_indexes;
+}

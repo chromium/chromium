@@ -36,6 +36,9 @@ class OrderControllerSource {
   // Returns the `TabGroupRange` for the item at `index`. If the item does not
   // belong to a group, returns `TabGroupRange::InvalidRange()`.
   virtual TabGroupRange GetGroupRangeOfItemAt(int index) const = 0;
+
+  // Returns a set of indexes that correspond to all tab in collapsed groups.
+  virtual std::set<int> GetCollapsedGroupIndexes() const = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_ORDER_CONTROLLER_SOURCE_H_

@@ -62,20 +62,22 @@ int FindIndexOfNthWebStateOpenedBy(const RemovingIndexes& removing_indexes,
 }
 
 // Returns the index of the closest item from `index` in `range` that is not
-// scheduled for deletion or WebStateList::kInvalidIndex. Prefer a WebState
-// after `index` over one before.
-int FindClosestWebStateInRange(const RemovingIndexes& removing_indexes,
-                               int index,
-                               Range range) {
+// scheduled for deletion, collapsed or WebStateList::kInvalidIndex. Prefer a
+// WebState after `index` over one before.
+int FindClosestWebStateInRange(
+    const RemovingIndexes& removing_indexes,
+    int index,
+    Range range,
+    const std::set<int>& collapsed_group_indexes = std::set<int>()) {
   for (int i = index + 1; i < range.end; ++i) {
-    if (!removing_indexes.Contains(i)) {
+    if (!removing_indexes.Contains(i) && !collapsed_group_indexes.contains(i)) {
       return i;
     }
   }
 
   for (int i = range.begin; i < index; ++i) {
     const int j = index - 1 - (i - range.begin);
-    if (!removing_indexes.Contains(j)) {
+    if (!removing_indexes.Contains(j) && !collapsed_group_indexes.contains(j)) {
       return j;
     }
   }
@@ -234,11 +236,19 @@ int OrderController::DetermineNewActiveIndex(
     }
   }
 
-  // Look for the closest non-removed WebState in the same group (pinned or
+  // Look for the closest non-removed and non-collapsed WebState (pinned or
   // regular WebStates).
   Range range = Range{.begin = is_pinned ? 0 : pinned_count,
                       .end = is_pinned ? pinned_count : count};
   int closest_index =
+      FindClosestWebStateInRange(removing_indexes, active_index, range,
+                                 source_->GetCollapsedGroupIndexes());
+  if (closest_index != WebStateList::kInvalidIndex) {
+    return closest_index;
+  }
+
+  // Look for the closest non-removed WebState (pinned or regular WebStates).
+  closest_index =
       FindClosestWebStateInRange(removing_indexes, active_index, range);
 
   if (closest_index == WebStateList::kInvalidIndex) {

@@ -25,7 +25,8 @@ class FakeOrderControllerSource final : public OrderControllerSource {
   FakeOrderControllerSource(int pinned_items_count,
                             TabGroupRange tab_group_range,
                             std::vector<ItemInfo> items)
-      : items_(std::move(items)),
+      : collapsed_indexes_(),
+        items_(std::move(items)),
         pinned_items_count_(pinned_items_count),
         tab_group_range_(tab_group_range) {
     DCHECK_GE(pinned_items_count_, 0);
@@ -47,6 +48,9 @@ class FakeOrderControllerSource final : public OrderControllerSource {
         .end = GetCount(),
     };
   }
+
+  // Collapses the group at `tab_group_range_`.
+  void CollapseTabGroup() { collapsed_indexes_ = tab_group_range_.AsSet(); }
 
   // OrderControllerSource implementation.
   int GetCount() const final { return static_cast<int>(items_.size()); }
@@ -87,7 +91,12 @@ class FakeOrderControllerSource final : public OrderControllerSource {
     }
   }
 
+  std::set<int> GetCollapsedGroupIndexes() const final {
+    return collapsed_indexes_;
+  }
+
  private:
+  std::set<int> collapsed_indexes_;
   const std::vector<ItemInfo> items_;
   const int pinned_items_count_;
   TabGroupRange tab_group_range_;
@@ -389,4 +398,28 @@ TEST_F(OrderControllerTest, DetermineNewActiveIndex_TabGroup) {
   // Closing an active tab in a group and tabs outside the group selects the
   // next available tab outside the group.
   EXPECT_EQ(3, order_controller.DetermineNewActiveIndex(2, {2, 4}));
+}
+
+// Tests that when closing a tab, the next active tab is not in a collapsed
+// group.
+TEST_F(OrderControllerTest, DetermineNewActiveIndex_CollapsedTabs) {
+  FakeOrderControllerSource source(0, TabGroupRange(1, 1),
+                                   {
+                                       // Regular item
+                                       ItemInfo{},
+                                       // Grouped item
+                                       ItemInfo{},
+                                       // Regular item
+                                       ItemInfo{},
+                                   });
+  OrderController order_controller(source);
+
+  // Closing the active tab with no collapsed tabs selects the closest preceding
+  // tab.
+  EXPECT_EQ(1, order_controller.DetermineNewActiveIndex(2, {2}));
+
+  // Closing the active tab with collapsed tabs selects the closest non
+  // collasped preceding tab.
+  source.CollapseTabGroup();
+  EXPECT_EQ(0, order_controller.DetermineNewActiveIndex(2, {2}));
 }
