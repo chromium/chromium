@@ -137,11 +137,16 @@ public class ActivityFinisher {
                                 tasks.size(),
                                 activities);
                     }
-                    if (!tasks.isEmpty()) {
-                        didWorkHolder.set(true);
-                        // It's possible to have tasks but no activities when the test starts.
-                        for (ActivityManager.AppTask task : tasks) {
+                    // It's possible to have tasks but no activities when the test starts.
+                    for (ActivityManager.AppTask task : tasks) {
+                        try {
                             task.finishAndRemoveTask();
+                            didWorkHolder.set(true);
+                        } catch (Throwable t) {
+                            Log.w(TAG, "Ignoring exception:", t);
+                            // IllegalArgumentException when tasks disappear between querying
+                            // the list of them and calling finish on them.
+                            // http://crbug.com/343294387.
                         }
                     }
                     if (!activities.isEmpty()) {
