@@ -3036,6 +3036,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void AddDeferredSharedStorageHeaderCallback(
       base::OnceCallback<void(NavigationOrDocumentHandle*)> callback);
 
+  // Determine what frames in the frame tree have their network revoked. If this
+  // function determines the network has been revoked for a frame, it will mark
+  // the relevant FencedFrameProperties as having its network cut off. Network
+  // revocation can only happen when network access has been disabled for this
+  // fenced frame tree as well as for all of its descendant fenced frame trees.
+  void CalculateUntrustedNetworkStatus();
+
   const base::WeakPtr<PageImpl> auction_initiator_page() const {
     return auction_initiator_page_;
   }
@@ -4142,13 +4149,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void RevokeNetworkForNonceCallback(
       base::UnguessableToken nonce,
       DisableUntrustedNetworkInFencedFrameCallback callback);
-
-  // Determine what frames in the frame tree have their network revoked. If this
-  // function determines the network has been revoked for a frame, it will mark
-  // the relevant FencedFrameProperties as having its network cut off. Network
-  // revocation can only happen when network access has been disabled for this
-  // fenced frame tree as well as for all of its descendant fenced frame trees.
-  void CalculateUntrustedNetworkStatus();
 
   // The RenderViewHost that this RenderFrameHost is associated with.
   //

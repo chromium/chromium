@@ -75,6 +75,13 @@ class CONTENT_EXPORT FencedDocumentData
   // Should be invoked when network access is cut off. This is stored as a
   // vector to account for the web platform supporting multiple calls to
   // disableUntrustedNetwork().
+  // Note: The callbacks must be run before FencedDocumentData is destroyed.
+  // Otherwise a check failure will crash the program, see check's error
+  // message: "LocalFrameHost::DisableUntrustedNetworkInFencedFrameCallback was
+  // destroyed without first either being run or its corresponding binding being
+  // closed. It is an error to drop response callbacks which still correspond to
+  // an open interface pipe."
+  // TODO(crbug.com/340606646): Add guards against the scenario above.
   std::vector<base::OnceClosure> on_disabled_untrusted_network_callbacks_;
 };
 

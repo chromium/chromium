@@ -9449,15 +9449,26 @@ void RenderFrameHostImpl::CalculateUntrustedNetworkStatus() {
   std::vector<FrameTreeNode*> subframe_nodes(std::next(node_range.begin()),
                                              node_range.end());
   std::reverse(subframe_nodes.begin(), subframe_nodes.end());
-  std::set<int> node_ids_with_network_allowed_descendants;
+  std::set<int> nodes_not_eligible_for_network_cutoff;
   // This loop traverses up the frame tree, determining if each fenced frame
   // root node meets the criteria for network cutoff. We look at the most deeply
   // nested nodes first since each node's network cutoff status is reliant on
   // the network cutoff status of all its descendant fenced frame trees.
   for (auto it : subframe_nodes) {
-    // Only check the network cutoff status for each fenced frame root, as they
-    // are the source of network cutoff.
+    // If this is not a fenced frame root, we only need to check if there is
+    // any ongoing navigation.
     if (!it->IsFencedFrameRoot()) {
+      if (it->HasNavigation() &&
+          it->current_frame_host()->IsNestedWithinFencedFrame()) {
+        // If iframe has an ongoing navigation, any of its ancestor fenced
+        // frames cannot resolve the promise returned by the disable untrusted
+        // network call.
+        nodes_not_eligible_for_network_cutoff.insert(
+            it->current_frame_host()
+                ->GetMainFrame()
+                ->frame_tree_node()
+                ->frame_tree_node_id());
+      }
       continue;
     }
 
@@ -9467,16 +9478,20 @@ void RenderFrameHostImpl::CalculateUntrustedNetworkStatus() {
     CHECK(properties.has_value());
 
     // Avoid redundant processing if network has already been disabled for this
-    // FrameTreeNode.
-    if (properties->HasDisabledNetworkForCurrentAndDescendantFrameTrees()) {
+    // FrameTreeNode and it does not have ongoing navigation.
+    if (properties->HasDisabledNetworkForCurrentAndDescendantFrameTrees() &&
+        !it->HasNavigation()) {
       continue;
     }
 
-    bool all_children_have_network_cutoff =
-        !node_ids_with_network_allowed_descendants.contains(
-            it->frame_tree_node_id());
+    // `can_disable_network` being true means:
+    // 1. All descendant fenced frames have network access revoked.
+    // 2. All descendant fenced frames do not have ongoing navigations.
+    bool can_disable_network = !nodes_not_eligible_for_network_cutoff.contains(
+        it->frame_tree_node_id());
+
     bool network_cutoff_ready =
-        all_children_have_network_cutoff &&
+        can_disable_network &&
         properties->HasDisabledNetworkForCurrentFrameTree();
 
     if (network_cutoff_ready) {
@@ -9488,11 +9503,18 @@ void RenderFrameHostImpl::CalculateUntrustedNetworkStatus() {
         // child iframe that might've called disableUntrustedNetwork() as well.
         fenced_document_data->RunDisabledUntrustedNetworkCallbacks();
       }
-    } else if (it->GetParentOrOuterDocument() &&
-               it->GetParentOrOuterDocument()->IsNestedWithinFencedFrame()) {
-      // If network cutoff is not ready for a fenced frame root, none of its
-      // ancestor fenced frames will be ready for network cutoff either.
-      node_ids_with_network_allowed_descendants.insert(
+    }
+
+    if ((!network_cutoff_ready || it->HasNavigation()) &&
+        it->GetParentOrOuterDocument() &&
+        it->GetParentOrOuterDocument()->IsNestedWithinFencedFrame()) {
+      // Check for ongoing navigations to prevent race conditions. If a parent
+      // fenced frame embeds a child nested fenced frame, and that child frame
+      // disables its network and then immediately is navigated by its parent,
+      // we can end up in a state where the parent thinks network is revoked for
+      // all its children, but network is still allowed in the child fenced
+      // frame.
+      nodes_not_eligible_for_network_cutoff.insert(
           it->GetParentOrOuterDocument()
               ->GetMainFrame()
               ->frame_tree_node()
