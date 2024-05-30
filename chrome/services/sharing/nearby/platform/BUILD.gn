@@ -143,6 +143,7 @@ source_set("unit_tests") {
     "single_thread_executor_unittest.cc",
     "webrtc_test.cc",
     "wifi_direct_medium_unittest.cc",
+    "wifi_direct_server_socket_unittest.cc",
     "wifi_lan_medium_unittest.cc",
     "wifi_lan_server_socket_unittest.cc",
     "wifi_lan_socket_unittest.cc",

@@ -106,7 +106,8 @@ std::unique_ptr<api::WifiDirectServerSocket> WifiDirectMedium::ListenForService(
     return nullptr;
   }
 
-  return std::make_unique<WifiDirectServerSocket>(std::move(handle));
+  return std::make_unique<WifiDirectServerSocket>(task_runner_,
+                                                  std::move(handle), nullptr);
 }
 
 absl::optional<std::pair<std::int32_t, std::int32_t>>
