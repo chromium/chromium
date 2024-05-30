@@ -44,6 +44,7 @@ build_webui("build") {
     "page_favicon.css",
     "search_query.css",
     "shared_vars.css",
+    "url_visit.css",
   ]
 
   static_files = [ "hide_source_gm_grey_24dp.svg" ]
