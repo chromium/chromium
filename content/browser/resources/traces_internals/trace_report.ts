@@ -234,9 +234,13 @@ export class TraceReportElement extends PolymerElement {
     }));
   }
 
-  private isDownloadDisabled_(isLoading: boolean, uploadState: UploadState):
+  private isDownloadDisabled_(isLoading: boolean, hasTraceContent: boolean):
       boolean {
-    return isLoading || uploadState === UploadState.UPLOADED;
+    return isLoading || !hasTraceContent;
+  }
+
+  private getDownloadTooltip_(hasTraceContent: boolean): string {
+    return hasTraceContent ? 'Dowload Trace' : 'Trace expired';
   }
 
   private dispatchReloadRequest_(): void {

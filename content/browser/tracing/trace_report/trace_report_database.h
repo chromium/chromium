@@ -99,6 +99,9 @@ struct CONTENT_EXPORT ClientTraceReport : BaseTraceReport {
 
   // The time at which the report was successfully uploaded to a server.
   base::Time upload_time;
+
+  // Whether the report has content (payload) attached to it.
+  bool has_trace_content;
 };
 
 class CONTENT_EXPORT TraceReportDatabase {

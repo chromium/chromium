@@ -131,6 +131,7 @@
     width: 40px;
     cursor: pointer;
     border-radius: 100%;
+    pointer-events: auto;
   }
 
   .action-button:active {
@@ -232,9 +233,10 @@
         disabled="[[!isManualUploadPermitted_(trace.skipReason)]]">
     </cr-icon-button>
     <cr-icon-button class="action-button" iron-icon="cr:file-download"
-        title="Download Trace" on-click="onDownloadTraceClick_"
-        disabled="[[isDownloadDisabled_(isLoading, trace.uploadState)]]"
-        aria-label="Download Trace">
+        title="[[getDownloadTooltip_(trace.hasTraceContent)]]"
+        on-click="onDownloadTraceClick_"
+        disabled="[[isDownloadDisabled_(isLoading, trace.hasTraceContent)]]"
+        aria-label="[[getDownloadTooltip_(trace.hasTraceContent)]]">
     </cr-icon-button>
     <cr-icon-button class="action-button" iron-icon="cr:delete"
         title="Delete Trace" on-click="onDeleteTraceClick_"

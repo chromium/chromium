@@ -34,13 +34,16 @@ ClientTraceReport GetReportFromStatement(sql::Statement& statement) {
   client_report.creation_time = statement.ColumnTime(1);
   client_report.scenario_name = statement.ColumnString(2);
   client_report.upload_rule_name = statement.ColumnString(3);
-  client_report.total_size = static_cast<uint64_t>(statement.ColumnInt64(9));
 
   client_report.upload_state =
       static_cast<ReportUploadState>(statement.ColumnInt(4));
   client_report.upload_time = statement.ColumnTime(5);
   client_report.skip_reason =
       static_cast<SkipUploadReason>(statement.ColumnInt(6));
+  client_report.has_trace_content =
+      static_cast<uint64_t>(statement.ColumnBool(7));
+  client_report.total_size = static_cast<uint64_t>(statement.ColumnInt64(8));
+
   return client_report;
 }
 
@@ -463,7 +466,10 @@ std::vector<ClientTraceReport> TraceReportDatabase::GetAllReports() {
   }
 
   sql::Statement statement(database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
-      SELECT * FROM local_traces
+      SELECT uuid, creation_time, scenario_name, upload_rule_name,
+        state, upload_time, skip_reason,
+        trace_content != null as has_trace_content, file_size
+      FROM local_traces
       ORDER BY creation_time DESC
     )sql"));
   CHECK(statement.is_valid());
@@ -482,7 +488,10 @@ TraceReportDatabase::GetNextReportPendingUpload() {
   }
 
   sql::Statement statement(database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
-      SELECT * FROM local_traces WHERE state in (1,2)
+      SELECT uuid, creation_time, scenario_name, upload_rule_name,
+        state, upload_time, skip_reason,
+        trace_content != null as has_trace_content, file_size
+      FROM local_traces WHERE state in (1,2)
       ORDER BY creation_time DESC
     )sql"));
   CHECK(statement.is_valid());

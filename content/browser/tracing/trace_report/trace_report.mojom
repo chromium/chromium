@@ -57,6 +57,9 @@ struct ClientTraceReport {
   // The reason for which a report was not uploaded even if the upload rules
   // were met.
   SkipUploadReason skip_reason;
+
+  // Whether the report has content (payload) attached to it.
+  bool has_trace_content;
 };
 
 struct Scenario {
