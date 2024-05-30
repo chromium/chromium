@@ -31,18 +31,19 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "components/crash/core/common/crash_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace component_updater {
 
 namespace {
 
-constexpr char kComponentId[] = "jebgalgnebhfojomionfpkfelancnnkf";
+constexpr char kComponentId[] = "llkgjffcdpffmhiakmfcdcblohccpfmo";
 // This hash corresponds to kComponentId.
 constexpr uint8_t kSha256Hash[] = {
-    0x94, 0x16, 0x0b, 0x6d, 0x41, 0x75, 0xe9, 0xec, 0x8e, 0xd5, 0xfa,
-    0x54, 0xb0, 0xd2, 0xdd, 0xa5, 0x6e, 0x05, 0x6b, 0xe8, 0x73, 0x47,
-    0xf6, 0xc4, 0x11, 0x9f, 0xbc, 0xb3, 0x09, 0xb3, 0x5b, 0x40};
+    0xbb, 0xa6, 0x95, 0x52, 0x3f, 0x55, 0xc7, 0x80, 0xac, 0x52, 0x32,
+    0x1b, 0xe7, 0x22, 0xf5, 0xce, 0x6a, 0xfd, 0x9c, 0x9e, 0xa9, 0x2a,
+    0x0b, 0x50, 0x60, 0x2b, 0x7f, 0x6c, 0x64, 0x80, 0x09, 0x04};
 
 constexpr char kMockComponentHistogramName[] =
     "ComponentUpdater.AndroidComponentLoader.LoadStatus.MockComponent";
@@ -116,8 +117,13 @@ void VerifyComponentLoaded(base::OnceClosure on_done,
 
 class AndroidComponentLoaderPolicyTest : public testing::Test {
  public:
-  AndroidComponentLoaderPolicyTest() = default;
-  ~AndroidComponentLoaderPolicyTest() override = default;
+  AndroidComponentLoaderPolicyTest() {
+    crash_reporter::ResetCrashKeysForTesting();
+    crash_reporter::InitializeCrashKeysForTesting();
+  }
+  ~AndroidComponentLoaderPolicyTest() override {
+    crash_reporter::ResetCrashKeysForTesting();
+  }
 
   AndroidComponentLoaderPolicyTest(const AndroidComponentLoaderPolicyTest&) =
       delete;
@@ -170,6 +176,8 @@ TEST_F(AndroidComponentLoaderPolicyTest, TestValidManifest) {
   histogram_tester_.ExpectBucketCount(kMockComponentHistogramName,
                                       ComponentLoadResult::kComponentLoaded, 1);
   histogram_tester_.ExpectTotalCount(kMockComponentHistogramName, 1);
+  EXPECT_EQ("ORIGIN_TRIALS-123.456.789",
+            crash_reporter::GetCrashKeyValue("crx-components"));
 }
 
 TEST_F(AndroidComponentLoaderPolicyTest, TestMissingManifest) {

@@ -171,6 +171,9 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "num-experiments",
     "variations-seed-version",
 
+    // CRX components
+    "crx-components",
+
     // sandbox/linux
     "seccomp-sigsys",
 

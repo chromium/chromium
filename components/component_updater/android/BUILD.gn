@@ -92,7 +92,10 @@ static_library("embedded_component_loader") {
     ":embedded_component_loader_jni_headers",
     "//base",
     "//components/component_updater",
+    "//components/crash/core/common:crash_key",
+    "//components/metrics:component_metrics",
     "//components/update_client",
+    "//third_party/metrics_proto",
   ]
 }
 
@@ -103,6 +106,7 @@ source_set("embedded_component_loader_unittests") {
     ":embedded_component_loader",
     "//base",
     "//base/test:test_support",
+    "//components/crash/core/common:crash_key",
     "//testing/gmock",
     "//testing/gtest",
   ]

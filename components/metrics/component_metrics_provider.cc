@@ -17,7 +17,32 @@ namespace metrics {
 
 namespace {
 
-SystemProfileProto_ComponentId CrxIdToComponentId(const std::string& app_id) {
+// Extracts the first 32 bits of a fingerprint string, excluding the fingerprint
+// format specifier - see the fingerprint format specification at
+// https://github.com/google/omaha/blob/master/doc/ServerProtocolV3.md
+uint32_t Trim(const std::string& fp) {
+  const auto len_prefix = fp.find(".");
+  if (len_prefix == std::string::npos) {
+    return 0;
+  }
+  uint32_t result = 0;
+  if (base::HexStringToUInt(fp.substr(len_prefix + 1, 8), &result)) {
+    return result;
+  }
+  return 0;
+}
+
+}  // namespace
+
+ComponentMetricsProvider::ComponentMetricsProvider(
+    std::unique_ptr<ComponentMetricsProviderDelegate> components_info_delegate)
+    : components_info_delegate_(std::move(components_info_delegate)) {}
+
+ComponentMetricsProvider::~ComponentMetricsProvider() = default;
+
+// static
+SystemProfileProto_ComponentId ComponentMetricsProvider::CrxIdToComponentId(
+    const std::string& app_id) {
   static constexpr auto kComponentMap = base::MakeFixedFlatMap<
       std::string_view, SystemProfileProto_ComponentId>({
       {"aagaghndoahmfdbmfnajfklaomcanlnh",
@@ -152,33 +177,10 @@ SystemProfileProto_ComponentId CrxIdToComponentId(const std::string& app_id) {
   return result->second;
 }
 
-// Extract the first 32 bits of a fingerprint string, excluding the fingerprint
-// format specifier - see the fingerprint format specification at
-// https://github.com/google/omaha/blob/master/doc/ServerProtocolV3.md
-uint32_t Trim(const std::string& fp) {
-  const auto len_prefix = fp.find(".");
-  if (len_prefix == std::string::npos) {
-    return 0;
-  }
-  uint32_t result = 0;
-  if (base::HexStringToUInt(fp.substr(len_prefix + 1, 8), &result)) {
-    return result;
-  }
-  return 0;
-}
-
-}  // namespace
-
-ComponentMetricsProvider::ComponentMetricsProvider(
-    std::unique_ptr<ComponentMetricsProviderDelegate> components_info_delegate)
-    : components_info_delegate_(std::move(components_info_delegate)) {}
-
-ComponentMetricsProvider::~ComponentMetricsProvider() = default;
-
 void ComponentMetricsProvider::ProvideSystemProfileMetrics(
     SystemProfileProto* system_profile) {
   for (const auto& component : components_info_delegate_->GetComponents()) {
-    const auto id = CrxIdToComponentId(component.id);
+    const auto id = ComponentMetricsProvider::CrxIdToComponentId(component.id);
     // Ignore any unknown components - in practice these are the
     // SupervisedUserWhitelists, which we do not want to transmit to UMA or
     // Crash.
