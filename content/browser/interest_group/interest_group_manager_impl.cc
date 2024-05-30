@@ -325,10 +325,12 @@ void InterestGroupManagerImpl::JoinInterestGroup(blink::InterestGroup group,
       InterestGroupObserver::kJoin, group.owner, group.name);
 
   blink::InterestGroupKey group_key(group.owner, group.name);
-  caching_storage_.JoinInterestGroup(group, joining_url,
-                                     std::move(notify_callback));
-  // This needs to happen second so that the DB row is created.
-  QueueKAnonymityUpdateForInterestGroup(group_key);
+  caching_storage_.JoinInterestGroup(
+      group, joining_url,
+      base::BindOnce(
+          &InterestGroupManagerImpl::QueueKAnonymityUpdateForInterestGroup,
+          weak_factory_.GetWeakPtr(), group_key)
+          .Then(std::move(notify_callback)));
 }
 
 void InterestGroupManagerImpl::LeaveInterestGroup(
@@ -622,13 +624,21 @@ void InterestGroupManagerImpl::ClearPermissionsCache() {
 }
 
 void InterestGroupManagerImpl::QueueKAnonymityUpdateForInterestGroup(
-    const blink::InterestGroupKey& group_key) {
-  k_anonymity_manager_->QueryKAnonymityForInterestGroup(group_key);
+    const blink::InterestGroupKey& group_key,
+    const std::optional<InterestGroupKanonUpdateParameter> update_parameter) {
+  if (update_parameter) {
+    k_anonymity_manager_->QueryKAnonymityData(group_key,
+                                              update_parameter.value());
+  }
 }
 
 void InterestGroupManagerImpl::UpdateKAnonymity(
-    const StorageInterestGroup::KAnonymityData& data) {
-  caching_storage_.UpdateKAnonymity(data);
+    const blink::InterestGroupKey& interest_group_key,
+    const std::vector<std::string>& positive_hashed_keys,
+    const base::Time update_time,
+    bool replace_existing_values) {
+  caching_storage_.UpdateKAnonymity(interest_group_key, positive_hashed_keys,
+                                    update_time, replace_existing_values);
 }
 
 void InterestGroupManagerImpl::GetLastKAnonymityReported(
@@ -838,13 +848,6 @@ void InterestGroupManagerImpl::GetInterestGroupsForUpdate(
                                               std::move(callback));
 }
 
-void InterestGroupManagerImpl::GetKAnonymityDataForUpdate(
-    const blink::InterestGroupKey& group_key,
-    base::OnceCallback<void(
-        const std::vector<StorageInterestGroup::KAnonymityData>&)> callback) {
-  caching_storage_.GetKAnonymityDataForUpdate(group_key, std::move(callback));
-}
-
 void InterestGroupManagerImpl::GetDebugReportLockoutAndCooldowns(
     base::flat_set<url::Origin> origins,
     base::OnceCallback<void(std::optional<DebugReportLockoutAndCooldowns>)>
@@ -860,21 +863,22 @@ void InterestGroupManagerImpl::UpdateInterestGroup(
   caching_storage_.UpdateInterestGroup(
       group_key, std::move(update),
       base::BindOnce(&InterestGroupManagerImpl::OnUpdateComplete,
-                     weak_factory_.GetWeakPtr(), group_key.owner,
-                     group_key.name, std::move(callback)));
+                     weak_factory_.GetWeakPtr(), group_key,
+                     std::move(callback)));
 }
 
 void InterestGroupManagerImpl::OnUpdateComplete(
-    const url::Origin& owner_origin,
-    const std::string& name,
+    const blink::InterestGroupKey& group_key,
     base::OnceCallback<void(bool)> callback,
-    bool success) {
-  NotifyInterestGroupAccessed(/*devtools_auction_id=*/std::nullopt,
-                              InterestGroupObserver::kUpdate, owner_origin,
-                              name, /*component_seller_origin=*/std::nullopt,
-                              /*bid=*/std::nullopt,
-                              /*bid_currency=*/std::nullopt);
-  std::move(callback).Run(success);
+    std::optional<InterestGroupKanonUpdateParameter> kanon_update_parameter) {
+  NotifyInterestGroupAccessed(
+      /*devtools_auction_id=*/std::nullopt, InterestGroupObserver::kUpdate,
+      group_key.owner, group_key.name, /*component_seller_origin=*/std::nullopt,
+      /*bid=*/std::nullopt,
+      /*bid_currency=*/std::nullopt);
+  std::move(callback).Run(kanon_update_parameter.has_value());
+  QueueKAnonymityUpdateForInterestGroup(group_key,
+                                        std::move(kanon_update_parameter));
 }
 
 void InterestGroupManagerImpl::ReportUpdateFailed(

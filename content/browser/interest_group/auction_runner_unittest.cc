@@ -1358,33 +1358,24 @@ void AuthorizeKAnonAd(const blink::InterestGroup::Ad& ad,
                       const char* url,
                       StorageInterestGroup& group) {
   DCHECK_EQ(url, ad.render_url());
-  group.bidding_ads_kanon.emplace_back();
-  group.bidding_ads_kanon.back().hashed_key =
-      blink::HashedKAnonKeyForAdBid(group.interest_group, ad.render_url());
-  group.bidding_ads_kanon.back().is_k_anonymous = true;
-  group.bidding_ads_kanon.back().last_updated = base::Time::Now();
+  group.hashed_kanon_keys.emplace_back(
+      blink::HashedKAnonKeyForAdBid(group.interest_group, ad.render_url()));
 }
 
 void AuthorizeKAnonReporting(const blink::InterestGroup::Ad& ad,
                              const char* url,
                              StorageInterestGroup& group) {
   DCHECK_EQ(url, ad.render_url());
-  group.reporting_ads_kanon.emplace_back();
-  group.reporting_ads_kanon.back().hashed_key =
-      blink::HashedKAnonKeyForAdNameReporting(group.interest_group, ad);
-  group.reporting_ads_kanon.back().is_k_anonymous = true;
-  group.reporting_ads_kanon.back().last_updated = base::Time::Now();
+  group.hashed_kanon_keys.emplace_back(
+      blink::HashedKAnonKeyForAdNameReporting(group.interest_group, ad));
 }
 
 void AuthorizeKAnonAdComponent(const blink::InterestGroup::Ad& ad,
                                const char* url,
                                StorageInterestGroup& group) {
   DCHECK_EQ(url, ad.render_url());
-  group.component_ads_kanon.emplace_back();
-  group.component_ads_kanon.back().hashed_key =
-      blink::HashedKAnonKeyForAdComponentBid(ad.render_url());
-  group.component_ads_kanon.back().is_k_anonymous = true;
-  group.component_ads_kanon.back().last_updated = base::Time::Now();
+  group.hashed_kanon_keys.emplace_back(
+      blink::HashedKAnonKeyForAdComponentBid(ad.render_url()));
 }
 
 quiche::ObliviousHttpRequest::Context
@@ -1986,15 +1977,12 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
         task_environment()->FastForwardBy(base::Seconds(1));
       }
 
-      for (const auto& kanon_data : bidder.bidding_ads_kanon) {
-        interest_group_manager_->UpdateKAnonymity(kanon_data);
-      }
-      for (const auto& kanon_data : bidder.component_ads_kanon) {
-        interest_group_manager_->UpdateKAnonymity(kanon_data);
-      }
-      for (const auto& kanon_data : bidder.reporting_ads_kanon) {
-        interest_group_manager_->UpdateKAnonymity(kanon_data);
-      }
+      blink::InterestGroupKey bidder_group_key(bidder.interest_group.owner,
+                                               bidder.interest_group.name);
+      base::Time update_time(base::Time::Now());
+      interest_group_manager_->UpdateKAnonymity(
+          bidder_group_key, bidder.hashed_kanon_keys, update_time,
+          /*replace_existing_values*/ true);
     }
 
     interest_group_manager_->ClearLoggedData();

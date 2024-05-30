@@ -28,3 +28,7 @@ message BiddingAndAuctionServerKeyProtos {
   }
   repeated BiddingAndAuctionServerKeyProto keys = 1;
 }
+
+message KAnonKeyProtos {
+  repeated bytes keys = 1;
+}

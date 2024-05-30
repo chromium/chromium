@@ -19,14 +19,6 @@ StorageInterestGroup::StorageInterestGroup() = default;
 StorageInterestGroup::StorageInterestGroup(StorageInterestGroup&&) = default;
 StorageInterestGroup::~StorageInterestGroup() = default;
 
-std::ostream& operator<<(std::ostream& out,
-                         const StorageInterestGroup::KAnonymityData& kanon) {
-  return out << "KAnonymityData[hashed_key=`"
-             << base::Base64Encode(kanon.hashed_key)
-             << "`, is_k_anonymous=" << kanon.is_k_anonymous
-             << ", last_updated=`" << kanon.last_updated << "`]";
-}
-
 DebugReportLockoutAndCooldowns::DebugReportLockoutAndCooldowns() = default;
 DebugReportLockoutAndCooldowns::DebugReportLockoutAndCooldowns(
     std::optional<base::Time> last_report_sent_time,

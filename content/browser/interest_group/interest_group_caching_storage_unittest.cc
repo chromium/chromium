@@ -5,11 +5,13 @@
 #include "content/browser/interest_group/interest_group_caching_storage.h"
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "content/browser/interest_group/interest_group_update.h"
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
@@ -109,23 +111,6 @@ class InterestGroupCachingStorageTest : public testing::Test {
     return result;
   }
 
-  std::vector<StorageInterestGroup::KAnonymityData> GetKAnonymityDataForUpdate(
-      InterestGroupCachingStorage* caching_storage,
-      const blink::InterestGroupKey& group_key) {
-    std::vector<StorageInterestGroup::KAnonymityData> result;
-    base::RunLoop run_loop;
-    caching_storage->GetKAnonymityDataForUpdate(
-        group_key,
-        base::BindLambdaForTesting(
-            [&result, &run_loop](
-                const std::vector<StorageInterestGroup::KAnonymityData>& res) {
-              result = std::move(res);
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-    return result;
-  }
-
   std::vector<url::Origin> GetAllInterestGroupJoiningOrigins(
       InterestGroupCachingStorage* caching_storage) {
     std::vector<url::Origin> result;
@@ -177,7 +162,11 @@ class InterestGroupCachingStorageTest : public testing::Test {
     base::RunLoop run_loop;
     caching_storage->JoinInterestGroup(
         group, main_frame_joining_url,
-        base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+        base::BindLambdaForTesting(
+            [&run_loop](
+                std::optional<InterestGroupKanonUpdateParameter> input) {
+              run_loop.Quit();
+            }));
     run_loop.Run();
   }
 
@@ -196,9 +185,12 @@ class InterestGroupCachingStorageTest : public testing::Test {
                            InterestGroupUpdate update) {
     base::RunLoop run_loop;
     caching_storage->UpdateInterestGroup(
-        group_key, update, base::BindLambdaForTesting([&run_loop](bool input) {
-          run_loop.Quit();
-        }));
+        group_key, update,
+        base::BindLambdaForTesting(
+            [&run_loop](
+                std::optional<InterestGroupKanonUpdateParameter> input) {
+              run_loop.Quit();
+            }));
     run_loop.Run();
   }
 
@@ -326,32 +318,34 @@ TEST_F(InterestGroupCachingStorageTest, DBUpdatesShouldModifyCache) {
 
   previously_loaded_igs = loaded_igs;
 
-  StorageInterestGroup::KAnonymityData k_anon_data{
-      blink::HashedKAnonKeyForAdBid(ig1, kAdURL), true, base::Time::Now()};
-  caching_storage->UpdateKAnonymity(k_anon_data);
+  std::string k_anon_key = blink::HashedKAnonKeyForAdBid(ig1, kAdURL);
+  caching_storage->UpdateKAnonymity(
+      blink::InterestGroupKey(ig2.owner, ig2.name), {k_anon_key},
+      base::Time::Now(),
+      /*replace_existing_values*/ true);
   task_environment().FastForwardBy(base::Minutes(1));
   loaded_igs = GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_EQ(loaded_igs->get()->size(), 1u);
   ASSERT_NE(loaded_igs->get(), previously_loaded_igs->get());
   ASSERT_EQ(previously_loaded_igs->get()
                 ->GetInterestGroups()[0]
-                ->bidding_ads_kanon.size(),
+                ->hashed_kanon_keys.size(),
             0u);
-  ASSERT_EQ(loaded_igs->get()->GetInterestGroups()[0]->bidding_ads_kanon[0],
-            k_anon_data);
+  ASSERT_EQ(loaded_igs->get()->GetInterestGroups()[0]->hashed_kanon_keys[0],
+            k_anon_key);
 
   previously_loaded_igs = loaded_igs;
 
   // UpdateLastKAnonymityReported does not alter any cached values but does
   // update the reported time.
   base::Time update_time = base::Time::Now();
-  caching_storage->UpdateLastKAnonymityReported(k_anon_data.hashed_key);
+  caching_storage->UpdateLastKAnonymityReported(k_anon_key);
   task_environment().FastForwardBy(base::Minutes(1));
   loaded_igs = GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_EQ(loaded_igs->get(), previously_loaded_igs->get());
 
   std::optional<base::Time> loaded_time =
-      GetLastKAnonymityReported(caching_storage.get(), k_anon_data.hashed_key);
+      GetLastKAnonymityReported(caching_storage.get(), k_anon_key);
   ASSERT_EQ(loaded_time, update_time);
   loaded_igs = GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_EQ(loaded_igs->get(), previously_loaded_igs->get());
@@ -453,11 +447,6 @@ TEST_F(InterestGroupCachingStorageTest, GettersShouldNotModifyCache) {
   ASSERT_EQ(loaded_igs->get(), previously_loaded_igs->get());
 
   GetInterestGroupsForUpdate(caching_storage.get(), owner, 1);
-  loaded_igs = GetInterestGroupsForOwner(caching_storage.get(), owner);
-  ASSERT_EQ(loaded_igs->get(), previously_loaded_igs->get());
-
-  GetKAnonymityDataForUpdate(caching_storage.get(),
-                             blink::InterestGroupKey(ig1.owner, ig1.name));
   loaded_igs = GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_EQ(loaded_igs->get(), previously_loaded_igs->get());
 
@@ -672,13 +661,13 @@ TEST_F(InterestGroupCachingStorageTest,
                    loaded_igs2 = std::move(groups);
                  }));
   caching_storage->JoinInterestGroup(ig, GURL("https://www.test.com"),
-                                     base::BindLambdaForTesting([]() {}));
+                                     base::DoNothing());
 
   caching_storage->LeaveInterestGroup(blink::InterestGroupKey(owner, "name"),
                                       owner,
                                       base::BindLambdaForTesting([]() {}));
   caching_storage->JoinInterestGroup(ig, GURL("https://www.test.com"),
-                                     base::BindLambdaForTesting([]() {}));
+                                     base::DoNothing());
 
   caching_storage->GetInterestGroupsForOwner(
       owner, base::BindLambdaForTesting(
@@ -732,7 +721,7 @@ TEST_F(InterestGroupCachingStorageTest,
                    loaded_igs2 = std::move(groups);
                  }));
   caching_storage->JoinInterestGroup(ig, GURL("https://www.test.com"),
-                                     base::BindLambdaForTesting([]() {}));
+                                     base::DoNothing());
 
   caching_storage->GetInterestGroupsForOwner(
       owner, base::BindLambdaForTesting(

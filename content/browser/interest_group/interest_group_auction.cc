@@ -1606,18 +1606,15 @@ class InterestGroupAuction::BuyerHelper
     // k-anon cache is always checked against the same time, to avoid weird
     // behavior of validity changing in the middle of the auction.
     base::Time start_time = auction_->auction_start_time_;
+    if (IsKAnonDataExpired(storage_interest_group->last_k_anon_updated,
+                           start_time)) {
+      return {};
+    }
 
     std::vector<std::pair<std::string, bool>> kanon_entries;
-    for (const auto& ad_kanon : storage_interest_group->bidding_ads_kanon) {
-      if (IsKAnonymous(ad_kanon, start_time)) {
-        kanon_entries.emplace_back(ad_kanon.hashed_key, true);
-      }
-    }
-    for (const auto& component_ad_kanon :
-         storage_interest_group->component_ads_kanon) {
-      if (IsKAnonymous(component_ad_kanon, start_time)) {
-        kanon_entries.emplace_back(component_ad_kanon.hashed_key, true);
-      }
+    for (const std::string& hashed_key :
+         storage_interest_group->hashed_kanon_keys) {
+      kanon_entries.emplace_back(hashed_key, true);
     }
     return base::flat_map<std::string, bool>(std::move(kanon_entries));
   }

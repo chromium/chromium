@@ -923,7 +923,6 @@ void InterestGroupUpdateManager::UpdateInterestGroupByBatch(
 
   for (auto& [interest_group_key, update_url, joining_origin] :
        update_parameters) {
-    manager_->QueueKAnonymityUpdateForInterestGroup(interest_group_key);
     ++num_in_flight_updates_;
     base::UmaHistogramCounts100000(
         "Ads.InterestGroup.Net.RequestUrlSizeBytes.Update",

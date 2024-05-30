@@ -172,7 +172,8 @@ void InterestGroupCachingStorage::GetInterestGroupsForOwner(
 void InterestGroupCachingStorage::JoinInterestGroup(
     const blink::InterestGroup& group,
     const GURL& main_frame_joining_url,
-    base::OnceClosure callback) {
+    base::OnceCallback<void(std::optional<InterestGroupKanonUpdateParameter>)>
+        callback) {
   InvalidateCachedInterestGroupsForOwner(group.owner);
   interest_group_storage_.AsyncCall(&InterestGroupStorage::JoinInterestGroup)
       .WithArgs(std::move(group), std::move(main_frame_joining_url))
@@ -205,11 +206,12 @@ void InterestGroupCachingStorage::ClearOriginJoinedInterestGroups(
 void InterestGroupCachingStorage::UpdateInterestGroup(
     const blink::InterestGroupKey& group_key,
     InterestGroupUpdate update,
-    base::OnceCallback<void(bool)> notify_callback) {
+    base::OnceCallback<void(std::optional<InterestGroupKanonUpdateParameter>)>
+        callback) {
   InvalidateCachedInterestGroupsForOwner(group_key.owner);
   interest_group_storage_.AsyncCall(&InterestGroupStorage::UpdateInterestGroup)
       .WithArgs(group_key, std::move(update))
-      .Then(std::move(notify_callback));
+      .Then(std::move(callback));
 }
 
 void InterestGroupCachingStorage::AllowUpdateIfOlderThan(
@@ -282,14 +284,18 @@ void InterestGroupCachingStorage::RecordDebugReportCooldown(
 }
 
 void InterestGroupCachingStorage::UpdateKAnonymity(
-    const StorageInterestGroup::KAnonymityData& data) {
+    const blink::InterestGroupKey& interest_group_key,
+    const std::vector<std::string>& positive_hashed_keys,
+    const base::Time update_time,
+    bool replace_existing_values) {
   // We do not know the affected owners without looking them up from the
   // database or calculating k-anon keys for all the ads in the cache. Both are
   // expensive, and this function will run many times per interest group, so
   // prefer to over-delete data here.
   InvalidateAllCachedInterestGroups();
   interest_group_storage_.AsyncCall(&InterestGroupStorage::UpdateKAnonymity)
-      .WithArgs(data);
+      .WithArgs(interest_group_key, positive_hashed_keys, update_time,
+                replace_existing_values);
 }
 
 void InterestGroupCachingStorage::GetLastKAnonymityReported(
@@ -357,16 +363,6 @@ void InterestGroupCachingStorage::GetInterestGroupsForUpdate(
   interest_group_storage_
       .AsyncCall(&InterestGroupStorage::GetInterestGroupsForUpdate)
       .WithArgs(owner, groups_limit)
-      .Then(std::move(callback));
-}
-
-void InterestGroupCachingStorage::GetKAnonymityDataForUpdate(
-    const blink::InterestGroupKey& group_key,
-    base::OnceCallback<void(
-        const std::vector<StorageInterestGroup::KAnonymityData>&)> callback) {
-  interest_group_storage_
-      .AsyncCall(&InterestGroupStorage::GetKAnonymityDataForUpdate)
-      .WithArgs(group_key)
       .Then(std::move(callback));
 }
 

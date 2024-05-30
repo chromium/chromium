@@ -19,9 +19,8 @@ constexpr base::TimeDelta kKAnonymityExpiration = base::Days(7);
 
 }  // namespace
 
-bool IsKAnonymous(const StorageInterestGroup::KAnonymityData& data,
-                  const base::Time now) {
-  return data.is_k_anonymous && data.last_updated + kKAnonymityExpiration > now;
+bool IsKAnonDataExpired(const base::Time last_updated, const base::Time now) {
+  return last_updated + kKAnonymityExpiration < now;
 }
 
 InterestGroupKAnonymityManager::InterestGroupKAnonymityManager(
@@ -33,64 +32,113 @@ InterestGroupKAnonymityManager::InterestGroupKAnonymityManager(
 
 InterestGroupKAnonymityManager::~InterestGroupKAnonymityManager() = default;
 
-void InterestGroupKAnonymityManager::QueryKAnonymityForInterestGroup(
-    const blink::InterestGroupKey& interest_group_key) {
-  interest_group_manager_->GetKAnonymityDataForUpdate(
-      interest_group_key,
-      base::BindOnce(&InterestGroupKAnonymityManager::QueryKAnonymityData,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
+InterestGroupKAnonymityManager::InProgressQueryState::InProgressQueryState(
+    base::Time update_time,
+    bool replace_existing_values)
+    : update_time(update_time),
+      replace_existing_values(replace_existing_values) {}
+InterestGroupKAnonymityManager::InProgressQueryState::InProgressQueryState(
+    const InProgressQueryState&) = default;
+InterestGroupKAnonymityManager::InProgressQueryState::~InProgressQueryState() =
+    default;
 
 void InterestGroupKAnonymityManager::QueryKAnonymityData(
-    const std::vector<StorageInterestGroup::KAnonymityData>& k_anon_data) {
+    const blink::InterestGroupKey& interest_group_key,
+    const InterestGroupKanonUpdateParameter& k_anon_data) {
   KAnonymityServiceDelegate* k_anonymity_service =
       k_anonymity_service_callback_.Run();
   if (!k_anonymity_service) {
     return;
   }
 
-  std::vector<std::string> ids_to_query;
   base::Time check_time = base::Time::Now();
+  bool replace_existing_values = true;
   base::TimeDelta min_wait = k_anonymity_service->GetQueryInterval();
-
-  for (const StorageInterestGroup::KAnonymityData& k_anon_data_item :
-       k_anon_data) {
-    if (k_anon_data_item.last_updated < check_time - min_wait) {
-      ids_to_query.push_back(k_anon_data_item.hashed_key);
+  if (k_anon_data.update_time > check_time - min_wait) {
+    // The last update happened recently but we should still update the
+    // newly-added keys if needed.
+    replace_existing_values = false;
+  }
+  const std::vector<std::string>& ids_to_query =
+      replace_existing_values ? k_anon_data.hashed_keys
+                              : k_anon_data.newly_added_hashed_keys;
+  if (ids_to_query.size() == 0) {
+    return;
+  }
+  InProgressQueryState new_query_state(check_time, replace_existing_values);
+  auto in_progress_query_it =
+      queries_in_progress.insert({interest_group_key, new_query_state});
+  if (!in_progress_query_it.second) {
+    if (replace_existing_values ||
+        in_progress_query_it.first->second.update_time <
+            check_time - min_wait) {
+      // This new request replaces all existing requests or the outstanding
+      // request is outdated.
+      in_progress_query_it.first->second = new_query_state;
     }
+  }
+  InProgressQueryState& query_state = in_progress_query_it.first->second;
 
-    if (ids_to_query.size() >= kQueryBatchSizeLimit) {
+  std::vector<std::string> ids_to_query_in_next_batch;
+  for (const std::string& key : ids_to_query) {
+    ids_to_query_in_next_batch.push_back(key);
+
+    if (ids_to_query_in_next_batch.size() >= kQueryBatchSizeLimit) {
+      query_state.remaining_responses++;
       k_anonymity_service->QuerySets(
-          ids_to_query,
+          ids_to_query_in_next_batch,
           base::BindOnce(&InterestGroupKAnonymityManager::QuerySetsCallback,
-                         weak_ptr_factory_.GetWeakPtr(), ids_to_query,
-                         check_time));
-      ids_to_query.clear();
+                         weak_ptr_factory_.GetWeakPtr(),
+                         ids_to_query_in_next_batch, query_state.update_time,
+                         interest_group_key));
+      ids_to_query_in_next_batch.clear();
     }
   }
 
-  if (ids_to_query.empty())
+  if (ids_to_query_in_next_batch.empty()) {
     return;
-
+  }
+  query_state.remaining_responses++;
   k_anonymity_service->QuerySets(
-      ids_to_query,
+      ids_to_query_in_next_batch,
       base::BindOnce(&InterestGroupKAnonymityManager::QuerySetsCallback,
-                     weak_ptr_factory_.GetWeakPtr(), ids_to_query,
-                     std::move(check_time)));
+                     weak_ptr_factory_.GetWeakPtr(), ids_to_query_in_next_batch,
+                     query_state.update_time, interest_group_key));
 }
 
 void InterestGroupKAnonymityManager::QuerySetsCallback(
     std::vector<std::string> hashed_query,
     base::Time update_time,
+    const blink::InterestGroupKey& interest_group_key,
     std::vector<bool> status) {
   DCHECK_LE(status.size(), hashed_query.size());
+  if (status.empty()) {
+    // There was an error. Cancel the update.
+    queries_in_progress.erase(interest_group_key);
+    return;
+  }
+
+  auto it = queries_in_progress.find(interest_group_key);
+  if (it == queries_in_progress.end() ||
+      update_time != it->second.update_time) {
+    return;
+  }
+
   int size = std::min(hashed_query.size(), status.size());
   for (int i = 0; i < size; i++) {
-    StorageInterestGroup::KAnonymityData data = {hashed_query[i], status[i],
-                                                 update_time};
-    interest_group_manager_->UpdateKAnonymity(data);
+    if (status[i]) {
+      it->second.positive_hashed_keys_from_received_responses.emplace_back(
+          hashed_query[i]);
+    }
   }
-  // Don't update sets if the request failed.
+  it->second.remaining_responses--;
+  if (it->second.remaining_responses == 0) {
+    interest_group_manager_->UpdateKAnonymity(
+        interest_group_key,
+        it->second.positive_hashed_keys_from_received_responses, update_time,
+        it->second.replace_existing_values);
+    queries_in_progress.erase(it);
+  }
 }
 
 void InterestGroupKAnonymityManager::RegisterAdKeysAsJoined(

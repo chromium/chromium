@@ -42,8 +42,7 @@ class CONTENT_EXPORT InterestGroupStorage {
   static constexpr base::TimeDelta kHistoryLength = base::Days(30);
   static constexpr base::TimeDelta kMaintenanceInterval = base::Hours(1);
   static constexpr base::TimeDelta kIdlePeriod = base::Seconds(30);
-  // Store a KAnon key after its corresponding interest group or ad is
-  // no longer present for this amount longer.
+  // How long to store a k-anon key's last join time.
   static constexpr base::TimeDelta kAdditionalKAnonStoragePeriod =
       base::Days(1);
   // After a successful interest group update, delay the next update until
@@ -65,9 +64,12 @@ class CONTENT_EXPORT InterestGroupStorage {
   // Joins an interest group. If the interest group does not exist, a new one
   // is created based on the provided group information. If the interest group
   // exists, the existing interest group is overwritten. In either case a join
-  // record for this interest group is created.
-  void JoinInterestGroup(const blink::InterestGroup& group,
-                         const GURL& main_frame_joining_url);
+  // record for this interest group is created. Returns the necessary
+  // information for a k-anon update if the join was successful, or nullopt if
+  // not.
+  std::optional<InterestGroupKanonUpdateParameter> JoinInterestGroup(
+      const blink::InterestGroup& group,
+      const GURL& main_frame_joining_url);
   // Remove the interest group if it exists.
   void LeaveInterestGroup(const blink::InterestGroupKey& group_key,
                           const url::Origin& main_frame);
@@ -88,9 +90,12 @@ class CONTENT_EXPORT InterestGroupStorage {
   // `update`.
   //
   // If it fails for any reason (e.g., the interest group does not exist, or the
-  // data in `update` is not valid), returns false.
-  bool UpdateInterestGroup(const blink::InterestGroupKey& group_key,
-                           InterestGroupUpdate update);
+  // data in `update` is not valid), returns nullopt. Otherwise, returns the
+  // information required a k-anon update.
+  std::optional<InterestGroupKanonUpdateParameter> UpdateInterestGroup(
+      const blink::InterestGroupKey& group_key,
+      InterestGroupUpdate update);
+
   // Allows the interest group specified by `group_key` to be updated if it was
   // last updated before `update_if_older_than`.
   void AllowUpdateIfOlderThan(const blink::InterestGroupKey& group_key,
@@ -116,8 +121,19 @@ class CONTENT_EXPORT InterestGroupStorage {
   void RecordDebugReportCooldown(const url::Origin& origin,
                                  base::Time cooldown_start,
                                  DebugReportCooldownType cooldown_type);
-  // Records K-anonymity.
-  void UpdateKAnonymity(const StorageInterestGroup::KAnonymityData& data);
+
+  // Records a K-anonymity update for an interest group. If
+  // `replace_existing_values` is true, this update will store the new
+  // `update_time` and `positive_hashed_values`, replacing the interest
+  // group's existing update time and keys. If `replace_existing_values` is
+  // false, `positive_hashed_keys` will be added to the existing positive keys
+  // without updating the stored update time.  No value is stored if
+  // `update_time` is older than the `update_time` already stored in the
+  // database.
+  void UpdateKAnonymity(const blink::InterestGroupKey& interest_group_key,
+                        const std::vector<std::string>& positive_hashed_keys,
+                        const base::Time update_time,
+                        bool replace_existing_values);
 
   // Gets the last time that the key was reported to the k-anonymity server.
   std::optional<base::Time> GetLastKAnonymityReported(
@@ -142,11 +158,6 @@ class CONTENT_EXPORT InterestGroupStorage {
   std::vector<InterestGroupUpdateParameter> GetInterestGroupsForUpdate(
       const url::Origin& owner,
       size_t groups_limit);
-
-  // Gets all KAnonymityData for ads part of the interest group specified by
-  // `interest_group_key`.
-  std::vector<StorageInterestGroup::KAnonymityData> GetKAnonymityDataForUpdate(
-      blink::InterestGroupKey interest_group_key);
 
   // Gets a list of all interest group joining origins. Each joining origin
   // will only appear once.

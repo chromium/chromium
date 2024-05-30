@@ -76,6 +76,22 @@ struct CONTENT_EXPORT InterestGroupUpdateParameter {
   url::Origin joining_origin;
 };
 
+struct CONTENT_EXPORT InterestGroupKanonUpdateParameter {
+  explicit InterestGroupKanonUpdateParameter(base::Time update_time);
+  InterestGroupKanonUpdateParameter(const InterestGroupKanonUpdateParameter&) =
+      delete;
+  InterestGroupKanonUpdateParameter(InterestGroupKanonUpdateParameter&& other);
+  ~InterestGroupKanonUpdateParameter();
+
+  base::Time update_time;
+  // All an interest group's keys, including those that are not k-anonymous or
+  // have never been joined.
+  std::vector<std::string> hashed_keys;
+  // Which keys have been newly added in the join or update that triggered this
+  // k-anon update.
+  std::vector<std::string> newly_added_hashed_keys;
+};
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_UPDATE_H_

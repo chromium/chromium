@@ -435,16 +435,20 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // (including ads). Also reports membership in the interest group to the
   // k-anonymity of interest-group service.
   void QueueKAnonymityUpdateForInterestGroup(
-      const blink::InterestGroupKey& group_key);
-  // Records K-anonymity to the database.
-  void UpdateKAnonymity(const StorageInterestGroup::KAnonymityData& data);
-
-  // Gets all KAnonymityData for ads part of the interest group specified by
-  // `interest_group_key`.
-  void GetKAnonymityDataForUpdate(
       const blink::InterestGroupKey& group_key,
-      base::OnceCallback<void(
-          const std::vector<StorageInterestGroup::KAnonymityData>&)> callback);
+      const std::optional<InterestGroupKanonUpdateParameter> update_parameter);
+  // Records a K-anonymity update for an interest group. If
+  // `replace_existing_values` is true, this update will store the new
+  // `update_time` and `positive_hashed_values`, replacing the interest
+  // group's existing update time and keys. If `replace_existing_values` is
+  // false, `positive_hashed_keys` will be added to the existing positive keys
+  // without updating the stored update time.  No value is stored if
+  // `update_time` is older than the `update_time` already stored in the
+  // database.
+  void UpdateKAnonymity(const blink::InterestGroupKey& interest_group_key,
+                        const std::vector<std::string>& positive_hashed_keys,
+                        const base::Time update_time,
+                        bool initial_update);
 
   // Gets lockout and cooldown for sending forDebuggingOnly reports.
   void GetDebugReportLockoutAndCooldowns(
@@ -592,11 +596,12 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
                            base::OnceCallback<void(bool)> callback);
 
   // Called when a call to UpdateInterestGroup() completes. Sends a notification
-  // about the update and invokes `callback` with `success`.
-  void OnUpdateComplete(const url::Origin& owner_origin,
-                        const std::string& name,
-                        base::OnceCallback<void(bool)> callback,
-                        bool success);
+  // about the update and invokes `callback` with `success`. Queues a
+  // k-anonymity update with `kanon_update_parameter`.
+  void OnUpdateComplete(
+      const blink::InterestGroupKey& group_key,
+      base::OnceCallback<void(bool)> callback,
+      std::optional<InterestGroupKanonUpdateParameter> kanon_update_parameter);
 
   // Modifies the update rate limits stored in the database, with a longer delay
   // for parse failure.

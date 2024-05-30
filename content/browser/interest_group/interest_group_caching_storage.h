@@ -18,6 +18,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_storage.h"
+#include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -120,10 +121,14 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
   // Joins an interest group. If the interest group does not exist, a new one
   // is created based on the provided group information. If the interest group
   // exists, the existing interest group is overwritten. In either case a join
-  // record for this interest group is created.
-  void JoinInterestGroup(const blink::InterestGroup& group,
-                         const GURL& main_frame_joining_url,
-                         base::OnceClosure callback);
+  // record for this interest group is created. Returns the necessary
+  // information for a k-anon update if the join was successful, or nullopt if
+  // not.
+  void JoinInterestGroup(
+      const blink::InterestGroup& group,
+      const GURL& main_frame_joining_url,
+      base::OnceCallback<void(std::optional<InterestGroupKanonUpdateParameter>)>
+          callback);
 
   // Remove the interest group if it exists.
   void LeaveInterestGroup(const blink::InterestGroupKey& group_key,
@@ -142,10 +147,13 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
   // `update`.
   //
   // If it fails for any reason (e.g., the interest group does not exist, or the
-  // data in `update` is not valid), returns false.
-  void UpdateInterestGroup(const blink::InterestGroupKey& group_key,
-                           InterestGroupUpdate update,
-                           base::OnceCallback<void(bool)> callback);
+  // data in `update` is not valid), returns nullopt. Otherwise, returns the
+  // information required a k-anon update.
+  void UpdateInterestGroup(
+      const blink::InterestGroupKey& group_key,
+      InterestGroupUpdate update,
+      base::OnceCallback<void(std::optional<InterestGroupKanonUpdateParameter>)>
+          callback);
   // Allows the interest group specified by `group_key` to be updated if it was
   // last updated before `update_if_older_than`.
   void AllowUpdateIfOlderThan(const blink::InterestGroupKey& group_key,
@@ -171,8 +179,18 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
   void RecordDebugReportCooldown(const url::Origin& origin,
                                  base::Time cooldown_start,
                                  DebugReportCooldownType cooldown_type);
-  // Records K-anonymity.
-  void UpdateKAnonymity(const StorageInterestGroup::KAnonymityData& data);
+  // Records a K-anonymity update for an interest group. If
+  // `replace_existing_values` is true, this update will store the new
+  // `update_time` and `positive_hashed_values`, replacing the interest
+  // group's existing update time and keys. If `replace_existing_values` is
+  // false, `positive_hashed_keys` will be added to the existing positive keys
+  // without updating the stored update time.  No value is stored if
+  // `update_time` is older than the `update_time` already stored in the
+  // database.
+  void UpdateKAnonymity(const blink::InterestGroupKey& interest_group_key,
+                        const std::vector<std::string>& positive_hashed_keys,
+                        const base::Time update_time,
+                        bool replace_existing_values = true);
 
   // Gets the last time that the key was reported to the k-anonymity server.
   void GetLastKAnonymityReported(
@@ -199,13 +217,6 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
       int groups_limit,
       base::OnceCallback<void(std::vector<InterestGroupUpdateParameter>)>
           callback);
-
-  // Gets all KAnonymityData for ads part of the interest group specified by
-  // `interest_group_key`.
-  void GetKAnonymityDataForUpdate(
-      const blink::InterestGroupKey& group_key,
-      base::OnceCallback<void(
-          const std::vector<StorageInterestGroup::KAnonymityData>&)> callback);
 
   // Gets lockout and cooldown for sending forDebuggingOnly reports.
   void GetDebugReportLockoutAndCooldowns(

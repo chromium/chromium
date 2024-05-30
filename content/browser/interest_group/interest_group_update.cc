@@ -25,4 +25,13 @@ InterestGroupUpdateParameter::InterestGroupUpdateParameter(
       joining_origin(std::move(o)) {}
 InterestGroupUpdateParameter::~InterestGroupUpdateParameter() = default;
 
+InterestGroupKanonUpdateParameter::InterestGroupKanonUpdateParameter(
+    base::Time update_time)
+    : update_time(std::move(update_time)) {}
+InterestGroupKanonUpdateParameter::InterestGroupKanonUpdateParameter(
+    InterestGroupKanonUpdateParameter&& other) = default;
+
+InterestGroupKanonUpdateParameter::~InterestGroupKanonUpdateParameter() =
+    default;
+
 }  // namespace content
