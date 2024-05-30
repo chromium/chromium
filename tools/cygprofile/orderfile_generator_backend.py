@@ -425,7 +425,14 @@ class OrderfileUpdater:
     self._step_recorder.RunCommand(cmd)
     if use_new_cloud:
       logging.info('Uploading using the new cloud:')
-      new_cmd = [self._UPLOAD_TO_NEW_CLOUD_COMMAND] + cmd[1:]
+      bucket_name, prefix = bucket.split('/', 1)
+      new_cmd = [
+          self._UPLOAD_TO_NEW_CLOUD_COMMAND, '--bucket', bucket_name,
+          '--prefix', prefix
+      ]
+      if extension:
+        new_cmd.extend(['-z', extension])
+      new_cmd.append(filename)
       stdout: str = self._step_recorder.RunCommand(new_cmd,
                                                    capture_output=True).stdout
       # The first line is "Uploading ... ", the rest of the lines is valid json.
