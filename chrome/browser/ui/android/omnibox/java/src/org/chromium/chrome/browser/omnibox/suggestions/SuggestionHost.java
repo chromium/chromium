@@ -41,8 +41,9 @@ public interface SuggestionHost {
      * Triggered when the user clicks one of the OmniboxActions attached to Suggestion.
      *
      * @param action the action the user interacted with
+     * @param position The position of the associated suggestion.
      */
-    void onOmniboxActionClicked(@NonNull OmniboxAction action);
+    void onOmniboxActionClicked(@NonNull OmniboxAction action, int position);
 
     /**
      * Triggered when the user long presses the omnibox suggestion. Deletes the entire

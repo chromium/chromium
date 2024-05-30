@@ -66,6 +66,8 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteMediator.EditSessionState;
+import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionFactoryImpl;
+import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxAnswerAction;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -1502,6 +1504,29 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    public void onOmniboxAnswerActionClicked() {
+        mMediator.setAutocompleteProfile(mProfile);
+        mMediator.onNativeInitialized();
+        mMediator.onOmniboxSessionStateChange(true);
+        OmniboxAnswerAction answerAction =
+                (OmniboxAnswerAction)
+                        OmniboxActionFactoryImpl.get()
+                                .buildOmniboxAnswerAction(
+                                        123L,
+                                        "7 day forecast",
+                                        "7 day forecast",
+                                        new GURL(
+                                                "https://www.google.com/search?q=Redmond%20WA%207%20Day%20Weather"));
+
+        mMediator.onSuggestionsReceived(
+                AutocompleteResult.fromCache(mSuggestionsList, null), /* isFinal= */ true);
+        mMediator.onOmniboxActionClicked(answerAction, 0);
+
+        verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertEquals(
+                mOmniboxLoadUrlParamsCaptor.getValue().url, answerAction.destinationUrl.getSpec());
+    }
+
     @SmallTest
     @EnableFeatures(OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE)
     public void onOmniboxSessionStateChange_attachesImeCallback() {

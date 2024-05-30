@@ -92,6 +92,6 @@ public class ActionChipsProcessor {
     /** Invoke action associated with the ActionChip. */
     private void executeAction(@NonNull OmniboxAction action, int position) {
         mExecutedAction = action;
-        mSuggestionHost.onOmniboxActionClicked(action);
+        mSuggestionHost.onOmniboxActionClicked(action, position);
     }
 }
