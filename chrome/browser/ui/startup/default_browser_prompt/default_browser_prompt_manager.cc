@@ -117,6 +117,14 @@ void DefaultBrowserPromptManager::CreateInfoBarForWebContents(
 
   infobars::InfoBar *infobar = chrome::DefaultBrowserInfoBarDelegate::Create(
       infobars::ContentInfoBarManager::FromWebContents(web_contents), profile);
+
+  if (infobar == nullptr) {
+    // Infobar may be null if `InfoBarManager::ShouldShowInfoBar` returns false,
+    // in which case this function should do nothing. One case where this can
+    // happen is if the --headless command  line switch is present.
+    return;
+  }
+
   infobars_[web_contents] = infobar;
 
   static_cast<ConfirmInfoBarDelegate *>(infobar->delegate())->AddObserver(this);
