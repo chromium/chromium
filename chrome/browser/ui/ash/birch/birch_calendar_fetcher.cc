@@ -29,12 +29,14 @@ namespace {
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("birch_calendar_provider", R"(
        semantics {
-         sender: "Birch Calendar Provider"
+         sender: "Post-login glanceables"
          description:
             "Fetch a Chrome OS user's Google Calendar event list in order to "
-            "display their events in the Birch UI."
+            "display their events. Events appear in suggestion chip buttons "
+            "for activities the user might want to perform after login or "
+            "from overview mode (e.g. view an upcoming calendar event)."
           trigger:
-              "Birch UI is shown."
+              "User logs in to device or enters overview mode."
           data:
             "The request is authenticated with an OAuth2 access token "
             "identifying the Google account."
@@ -50,14 +52,21 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           user_data {
             type: ACCESS_TOKEN
           }
-          last_reviewed: "2024-02-15"
+          last_reviewed: "2024-05-30"
         }
         policy {
           cookies_allowed: NO
           setting:
-            "This feature is off by default."
-          policy_exception_justification:
-            "Policy is planned, but not yet implemented."
+            "This feature can be enabled/disabled by the user in the "
+            "suggestion chip button context menu."
+          chrome_policy {
+            CalendarIntegrationEnabled {
+              CalendarIntegrationEnabled: false
+            }
+            ContextualGoogleIntegrationsEnabled {
+              ContextualGoogleIntegrationsEnabled: false
+            }
+          }
         })");
 
 }  // namespace

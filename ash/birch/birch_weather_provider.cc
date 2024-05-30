@@ -30,20 +30,35 @@ namespace {
 constexpr net::NetworkTrafficAnnotationTag kWeatherIconTag =
     net::DefineNetworkTrafficAnnotation("weather_icon", R"(
         semantics {
-          sender: "Birch feature"
+          sender: "Post-login glanceables"
           description:
-            "Download weather icon image from Google."
+            "Download weather icon image from Google. The icon is used for "
+            "suggestion chip buttons for activities the user might want to "
+            "perform after login or from overview mode (e.g. view the weather)."
           trigger:
-            "The user opens an UI surface associated with birch feature."
+            "User logs in to the device or enters overview mode."
           data: "None."
+          user_data: {
+            type: NONE
+          }
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "chromeos-launcher@google.com"
+            }
+          }
+          last_reviewed: "2024-05-30"
         }
         policy {
-         cookies_allowed: NO
-         setting:
-           "This feature is off by default."
-         policy_exception_justification:
-           "Policy is planned, but not yet implemented."
+          cookies_allowed: NO
+          setting:
+            "This feature can be enabled/disabled by the user in the "
+            "suggestion chip button context menu."
+          chrome_policy {
+            ContextualGoogleIntegrationsEnabled {
+              ContextualGoogleIntegrationsEnabled: false
+            }
+          }
         })");
 
 void DownloadImageFromUrl(const std::string& url_string,

@@ -36,17 +36,17 @@ constexpr size_t kMaxDownloadBytes = 20 * 1024;
 // TODO(b/343206102): The plan for the weather provider is to send location
 //                    information to the weather service - update network
 //                    annotations when that's implemented.
-// TODO(b/343205609): Make references to "birch UI" more descriptive when the
-//                    feature is ready.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("birch_weather_provider", R"(
        semantics {
-         sender: "Birch Weather Provider"
+         sender: "Post-login glanceables"
          description:
             "Fetch current, or forecasted weather information for the user's "
-            "current location."
+            "current location. The weather is used in a suggestion chip button "
+            "for an activity the user might want to perform after login or "
+            "from overview mode (e.g. view the weather)."
           trigger:
-              "Birch UI is shown."
+              "User logs in to the device or enters overview mode."
           data: "None"
           user_data: {
             type: NONE
@@ -60,7 +60,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
               email: "chromeos-launcher@google.com"
             }
           }
-          last_reviewed: "2024-05-20"
+          last_reviewed: "2024-05-30"
         }
         policy {
           cookies_allowed: NO
@@ -68,9 +68,12 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "This feature is off by default - guarded by ForestFeature, and "
             "BirchWeatherV2 feature flags. If the feature flags are enabled, "
             "the feature can be disabled by disabling weather in the context "
-            "menu within the birch UI."
-          policy_exception_justification:
-            "Policy is planned, but not yet implemented."
+            "menu on the suggestion chips."
+          chrome_policy {
+            ContextualGoogleIntegrationsEnabled {
+              ContextualGoogleIntegrationsEnabled: false
+            }
+          }
         })");
 
 BirchWeatherV2Provider::BirchWeatherV2Provider(

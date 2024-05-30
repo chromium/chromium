@@ -72,7 +72,6 @@ missing_new_fields,components/variations/android/java/src/org/chromium/component
 missing_new_fields,ash/ambient/ambient_photo_cache.cc
 missing_new_fields,ash/ambient/ambient_weather_controller.cc
 missing_new_fields,ash/assistant/assistant_controller_impl.cc
-missing_new_fields,ash/birch/birch_weather_provider.cc
 missing_new_fields,ash/quick_pair/repository/fast_pair/device_metadata_fetcher.cc
 missing_new_fields,ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.cc
 missing_new_fields,ash/webui/projector_app/projector_xhr_sender.cc
