@@ -128,7 +128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DeepScanTrigger" enum="SBDeepScanTriggers"
-    expires_after="2024-06-30">
+    expires_after="2025-06-30">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

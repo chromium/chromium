@@ -116,6 +116,7 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
   // Enum representing the trigger of the scan request.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  // LINT.IfChange
   enum class DeepScanTrigger {
     // The trigger is unknown.
     TRIGGER_UNKNOWN = 0,
@@ -137,6 +138,7 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
 
     kMaxValue = TRIGGER_IMMEDIATE_DEEP_SCAN,
   };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sb_client/enums.xml)
 
   ~DownloadItemWarningData() override;
 

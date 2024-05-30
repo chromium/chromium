@@ -264,8 +264,10 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SBDeepScanTriggers">
   <int value="0" label="Unknown"/>
-  <int value="1" label="Advanced Protection Prompt"/>
+  <int value="1" label="Consumer prompt"/>
   <int value="2" label="Enterprise policy"/>
+  <int value="3" label="Encrypted archive prompt"/>
+  <int value="4" label="Immediate deep scan"/>
 </enum>
 
 <enum name="SBDeepScanType">
