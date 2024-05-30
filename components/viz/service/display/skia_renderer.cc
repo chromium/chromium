@@ -1389,34 +1389,6 @@ void SkiaRenderer::EnsureScissorTestDisabled() {
   scissor_rect_.reset();
 }
 
-void SkiaRenderer::BindFramebufferToOutputSurface() {
-  current_canvas_ = skia_output_surface_->BeginPaintCurrentFrame();
-  if (debug_settings_->show_overdraw_feedback) {
-    current_canvas_ = skia_output_surface_->RecordOverdrawForCurrentPaint();
-  }
-}
-
-void SkiaRenderer::BindFramebufferToTexture(
-    const AggregatedRenderPassId render_pass_id) {
-  auto iter = render_pass_backings_.find(render_pass_id);
-  DCHECK(render_pass_backings_.end() != iter);
-
-  bool is_root = render_pass_id == current_frame()->root_render_pass->id;
-  // This function is called after AllocateRenderPassResourceIfNeeded, so there
-  // should be backing ready.
-  RenderPassBacking& backing = iter->second;
-  current_canvas_ = skia_output_surface_->BeginPaintRenderPass(
-      render_pass_id, backing.size, backing.format, backing.alpha_type,
-      backing.generate_mipmap ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo,
-      backing.scanout_dcomp_surface, RenderPassBackingSkColorSpace(backing),
-      /*is_overlay=*/backing.is_scanout, backing.mailbox);
-
-  if (is_root && debug_settings_->show_overdraw_feedback) {
-    DCHECK(output_surface_->capabilities().renderer_allocates_images);
-    current_canvas_ = skia_output_surface_->RecordOverdrawForCurrentPaint();
-  }
-}
-
 void SkiaRenderer::SetScissorTestRect(const gfx::Rect& scissor_rect) {
   scissor_rect_ = std::optional<gfx::Rect>(scissor_rect);
 }
@@ -1498,6 +1470,31 @@ void SkiaRenderer::BeginDrawingRenderPass(
     const gfx::Rect& render_pass_update_rect) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("viz.quads"),
                "SkiaRenderer::BeginDrawingRenderPass");
+
+  // The root render pass will be either bound to the buffer allocated by the
+  // SkiaOutputSurface, or if the renderer allocates images then the root render
+  // pass buffer will be bound to the backing allocated in
+  // AllocateRenderPassResourceIfNeeded().
+  const bool is_root = render_pass == current_frame()->root_render_pass;
+  if (is_root && !output_surface_->capabilities().renderer_allocates_images) {
+    current_canvas_ = skia_output_surface_->BeginPaintCurrentFrame();
+  } else {
+    auto iter = render_pass_backings_.find(render_pass->id);
+    // This function is called after AllocateRenderPassResourceIfNeeded, so
+    // there should be backing ready.
+    CHECK(render_pass_backings_.end() != iter);
+    const RenderPassBacking& backing = iter->second;
+    current_canvas_ = skia_output_surface_->BeginPaintRenderPass(
+        render_pass->id, backing.size, backing.format, backing.alpha_type,
+        backing.generate_mipmap ? skgpu::Mipmapped::kYes
+                                : skgpu::Mipmapped::kNo,
+        backing.scanout_dcomp_surface, RenderPassBackingSkColorSpace(backing),
+        /*is_overlay=*/backing.is_scanout, backing.mailbox);
+  }
+
+  if (is_root && debug_settings_->show_overdraw_feedback) {
+    current_canvas_ = skia_output_surface_->RecordOverdrawForCurrentPaint();
+  }
 
   if (render_pass_update_rect == gfx::Rect(current_viewport_size_)) {
     EnsureScissorTestDisabled();

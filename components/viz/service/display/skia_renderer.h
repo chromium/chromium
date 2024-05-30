@@ -100,9 +100,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
 
   gfx::Rect GetRenderPassBackingDrawnRect(
       const AggregatedRenderPassId& render_pass_id) override;
-  void BindFramebufferToOutputSurface() override;
-  void BindFramebufferToTexture(
-      const AggregatedRenderPassId render_pass_id) override;
   void SetScissorTestRect(const gfx::Rect& scissor_rect) override;
   void BeginDrawingRenderPass(
     const AggregatedRenderPass* render_pass,

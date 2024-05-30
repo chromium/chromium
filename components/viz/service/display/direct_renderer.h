@@ -288,9 +288,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   virtual gfx::Size GetRenderPassBackingPixelSize(
       const AggregatedRenderPassId& render_pass_id) = 0;
 
-  virtual void BindFramebufferToOutputSurface() = 0;
-  virtual void BindFramebufferToTexture(
-      const AggregatedRenderPassId render_pass_id) = 0;
   virtual void SetScissorTestRect(const gfx::Rect& scissor_rect) = 0;
   // |render_pass_update_rect| is in render pass backing buffer space.
   virtual void BeginDrawingRenderPass(

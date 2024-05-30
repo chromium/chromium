@@ -806,15 +806,9 @@ DirectRenderer::CalculateRenderPassRequirements(
 }
 
 void DirectRenderer::UseRenderPass(const AggregatedRenderPass* render_pass) {
-  bool is_root = render_pass == current_frame()->root_render_pass;
+  const bool is_root = render_pass == current_frame()->root_render_pass;
   current_frame()->current_render_pass = render_pass;
-  // The root render pass will be either bound to the buffer allocated by
-  // the SkiaOutputSurface, or if the renderer allocatates images then the root
-  // render pass buffer will be allocated in
-  // AllocateRenderPassResourceIfNeeded(), and bound in
-  // BindFramebufferToTexture().
   if (is_root && !output_surface_->capabilities().renderer_allocates_images) {
-    BindFramebufferToOutputSurface();
     InitializeViewport(current_frame(), current_frame()->device_viewport_size);
     return;
   }
@@ -833,7 +827,6 @@ void DirectRenderer::UseRenderPass(const AggregatedRenderPass* render_pass) {
   if (!IsRenderPassResourceAllocated(render_pass->id))
     return;
 
-  BindFramebufferToTexture(render_pass->id);
   InitializeViewport(current_frame(), render_pass->output_rect.size());
 }
 

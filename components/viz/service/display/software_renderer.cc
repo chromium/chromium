@@ -131,29 +131,6 @@ void SoftwareRenderer::EnsureScissorTestDisabled() {
   is_scissor_enabled_ = false;
 }
 
-void SoftwareRenderer::BindFramebufferToOutputSurface() {
-  DCHECK(!root_canvas_);
-
-  root_canvas_ = output_device_->BeginPaint(current_frame()->root_damage_rect);
-  if (!root_canvas_)
-    output_device_->EndPaint();
-  // `current_canvas_` may be pointing to `current_framebuffer_canvas_`. Make
-  // sure to re-assign it before destroying `current_framebuffer_canvas_`
-  current_canvas_ = root_canvas_;
-  current_framebuffer_canvas_.reset();
-}
-
-void SoftwareRenderer::BindFramebufferToTexture(
-    const AggregatedRenderPassId render_pass_id) {
-  auto it = render_pass_bitmaps_.find(render_pass_id);
-  DCHECK(it != render_pass_bitmaps_.end());
-  SkBitmap& bitmap = it->second;
-
-  current_framebuffer_canvas_ = std::make_unique<SkCanvas>(
-      bitmap, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
-  current_canvas_ = current_framebuffer_canvas_.get();
-}
-
 void SoftwareRenderer::SetScissorTestRect(const gfx::Rect& scissor_rect) {
   is_scissor_enabled_ = true;
   scissor_rect_ = scissor_rect;
@@ -228,6 +205,28 @@ void SoftwareRenderer::BeginDrawingRenderPass(
     const AggregatedRenderPass* render_pass,
     bool needs_clear,
     const gfx::Rect& render_pass_update_rect) {
+  if (render_pass == current_frame()->root_render_pass) {
+    DCHECK(!root_canvas_);
+
+    root_canvas_ =
+        output_device_->BeginPaint(current_frame()->root_damage_rect);
+    if (!root_canvas_) {
+      output_device_->EndPaint();
+    }
+    // `current_canvas_` may be pointing to `current_framebuffer_canvas_`. Make
+    // sure to re-assign it before destroying `current_framebuffer_canvas_`
+    current_canvas_ = root_canvas_;
+    current_framebuffer_canvas_.reset();
+  } else {
+    auto it = render_pass_bitmaps_.find(render_pass->id);
+    DCHECK(it != render_pass_bitmaps_.end());
+    SkBitmap& bitmap = it->second;
+
+    current_framebuffer_canvas_ = std::make_unique<SkCanvas>(
+        bitmap, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
+    current_canvas_ = current_framebuffer_canvas_.get();
+  }
+
   if (render_pass_update_rect == gfx::Rect(current_viewport_size_)) {
     EnsureScissorTestDisabled();
   } else {
