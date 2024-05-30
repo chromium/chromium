@@ -85,6 +85,7 @@
         },
       },
       'android-13-x64-rel': {
+        'ci_only': True,
         'args': [
           # https://crbug.com/1414886
           '--gtest_filter=-OfferNotificationControllerAndroidBrowserTestForMessagesUi.MessageShown',
@@ -161,6 +162,11 @@
       'android-12-x64-rel': {
         'swarming': {
           'shards': 3,
+        },
+      },
+      'android-13-x64-rel': {
+        'swarming': {
+          'shards': 2,
         },
       },
       'android-code-coverage-native': {
@@ -1889,6 +1895,7 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.content_browsertests.filter',
         ],
+        'ci_only': True,
         'swarming': {
           'shards': 40,
         },
@@ -2131,6 +2138,7 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.content_shell_test_apk.filter',
         ],
+        'ci_only': True,
       },
       'android-15-x64-fyi-rel': {
         'args': [
@@ -4174,6 +4182,11 @@
           # TODO(crbug.com/40203477): Fix the failed tests
           '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
         ],
+        'swarming': {
+          'shards': 2,
+        },
+      },
+      'android-13-x64-rel': {
         'swarming': {
           'shards': 2,
         },
