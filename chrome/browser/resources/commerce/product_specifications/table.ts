@@ -19,7 +19,8 @@ import type {UrlListEntry} from './utils.js';
 /** Describes a row in a ProductSpecs table. */
 export interface TableRow {
   title: string;
-  values: string[];
+  descriptions: string[];
+  summaries: string[];
 }
 /** Describes a column in a ProductSpecs table. */
 export interface TableColumn {

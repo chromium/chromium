@@ -43,6 +43,9 @@ suite('ProductSpecificationsTableTest', () => {
     // Assert.
     const columns = tableElement.shadowRoot!.querySelectorAll('.col');
     assertEquals(2, columns.length);
+
+    const rows = tableElement.shadowRoot!.querySelectorAll('.row');
+    assertEquals(0, rows.length);
   });
 
   test('images are displayed', async () => {
@@ -79,14 +82,27 @@ suite('ProductSpecificationsTableTest', () => {
 
   test('product rows show the correct data', async () => {
     // Arrange.
-    const row1 = {title: 'foo', values: ['foo1', 'foo2']};
-    const row2 = {title: 'bar', values: ['bar2']};
+    const row1 = {
+      title: 'foo',
+      descriptions: ['foo1', 'foo2'],
+      summaries: ['summary1', 'summary2'],
+    };
+    const row2 = {
+      title: 'bar',
+      descriptions: ['bar2'],
+      summaries: ['summary3'],
+    };
 
     // Act.
     tableElement.rows = [row1, row2];
     await waitAfterNextRender(tableElement);
 
     // Assert.
+
+    // Since no column headers were specified, that section should remain empty.
+    const columnHeads = tableElement.shadowRoot!.querySelectorAll('.col');
+    assertEquals(0, columnHeads.length);
+
     const rowHeaders =
         tableElement.shadowRoot!.querySelectorAll('.row .row-header');
     assertEquals(2, rowHeaders.length);
@@ -95,9 +111,16 @@ suite('ProductSpecificationsTableTest', () => {
     const rowContents =
         tableElement.shadowRoot!.querySelectorAll('.row .row-content');
     assertEquals(3, rowContents.length);
-    assertEquals(row1.values[0], rowContents[0]!.textContent);
-    assertEquals(row1.values[1], rowContents[1]!.textContent);
-    assertEquals(row2.values[0], rowContents[2]!.textContent);
+    assertEquals(row1.descriptions[0], rowContents[0]!.textContent);
+    assertEquals(row1.descriptions[1], rowContents[1]!.textContent);
+    assertEquals(row2.descriptions[0], rowContents[2]!.textContent);
+
+    const rowSummary =
+        tableElement.shadowRoot!.querySelectorAll('.row-summary');
+    assertEquals(3, rowSummary.length);
+    assertEquals(row1.summaries[0], rowSummary[0]!.textContent);
+    assertEquals(row1.summaries[1], rowSummary[1]!.textContent);
+    assertEquals(row2.summaries[0], rowSummary[2]!.textContent);
   });
 
   test('fires url change event', async () => {
@@ -196,8 +219,12 @@ suite('ProductSpecificationsTableTest', () => {
       },
     ];
     tableElement.rows = [
-      {title: 'foo', values: ['foo1', 'foo2']},
-      {title: 'bar', values: ['bar2']},
+      {
+        title: 'foo',
+        descriptions: ['foo1', 'foo2'],
+        summaries: ['summary1', 'summary2'],
+      },
+      {title: 'bar', descriptions: ['bar2'], summaries: ['summary3']},
     ];
     await waitAfterNextRender(tableElement);
     const columns = tableElement.shadowRoot!.querySelectorAll('.col');
@@ -243,5 +270,17 @@ suite('ProductSpecificationsTableTest', () => {
     table!.dispatchEvent(new PointerEvent('pointerleave'));
     assertStyle(openTabButton1, 'display', 'none');
     assertStyle(openTabButton2, 'display', 'none');
+
+    // Check that summaries also show the new tab button.
+    const rowSummary =
+        tableElement.shadowRoot!.querySelectorAll('.row-summary');
+    assertEquals(3, rowSummary.length);
+    rowSummary[0]!.dispatchEvent(new PointerEvent('pointerenter'));
+    assertNotStyle(openTabButton1, 'display', 'none');
+    assertStyle(openTabButton2, 'display', 'none');
+
+    rowSummary[1]!.dispatchEvent(new PointerEvent('pointerenter'));
+    assertStyle(openTabButton1, 'display', 'none');
+    assertNotStyle(openTabButton2, 'display', 'none');
   });
 });

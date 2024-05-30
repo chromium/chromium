@@ -34,7 +34,8 @@
     font-weight: 500;
   }
 
-  .row-content {
+  .row-content
+  .row-summary {
     padding-bottom: 24px;
   }
 </style>
@@ -70,9 +71,16 @@
         </td>
       </tr>
       <tr class="row">
-        <template is="dom-repeat" items="[[row.values]]" as="value">
+        <template is="dom-repeat" items="[[row.descriptions]]" as="description">
           <td class="row-content" on-pointerenter="onShowOpenTabButton_">
-            <div>[[value]]</div>
+            <div>[[description]]</div>
+          </td>
+        </template>
+      </tr>
+      <tr class="row">
+        <template is="dom-repeat" items="[[row.summaries]]" as="summary">
+          <td class="row-summary" on-pointerenter="onShowOpenTabButton_">
+            <div>[[summary]]</div>
           </td>
         </template>
       </tr>

@@ -164,19 +164,26 @@ export class ProductSpecificationsElement extends PolymerElement {
       const {productSpecs} =
           await this.shoppingApi_.getProductSpecificationsForUrls(
               urls.map(url => ({url})));
-      productSpecs.productDimensionMap.forEach((value: string, key: bigint) => {
-        rows.push({
-          title: value,
-          values:
-              productSpecs.products.map((p: ProductSpecificationsProduct) => {
-                const value = p.productDimensionValues.get(key);
-                return (value?.specificationDescriptions || [])
-                    .flatMap(description => description.options)
-                    .flatMap(option => option.descriptions)
-                    .map(descText => descText.text)
-                    .join(', ');
-              }),
-        });
+      productSpecs.productDimensionMap.forEach((title: string, key: bigint) => {
+        const descriptions: string[] = [];
+        const summaries: string[] = [];
+        productSpecs.products.forEach(
+            (product: ProductSpecificationsProduct) => {
+              const value = product.productDimensionValues.get(key);
+              descriptions.push(
+                  (value?.specificationDescriptions || [])
+                      .flatMap(description => description.options)
+                      .flatMap(option => option.descriptions)
+                      .map(descText => descText.text)
+                      .join(', ') ||
+                  '');
+              summaries.push(
+                  (value?.summary || [])
+                      .map(summary => summary?.text || '')
+                      ?.join(' ') ||
+                  '');
+            });
+        rows.push({title, descriptions, summaries});
       });
       const infos = await this.getInfoForUrls_(urls);
       aggregatedDatas =

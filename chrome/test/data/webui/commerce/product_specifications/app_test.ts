@@ -253,7 +253,7 @@ suite('AppTest', () => {
   test('populates specs table', async () => {
     const rowTitle = 'foo';
     const dimensionValues = {
-      summary: [],
+      summary: [{text: 'summary', url: {url: ''}}],
       specificationDescriptions: [
         {
           label: '',
@@ -329,7 +329,76 @@ suite('AppTest', () => {
     // one row should be created.
     const rows = appElement.$.summaryTable.rows;
     assertEquals(1, rows.length);
-    assertArrayEquals([{title: rowTitle, values: ['bar, baz']}], rows);
+    assertArrayEquals(
+        [{title: rowTitle, descriptions: ['bar, baz'], summaries: ['summary']}],
+        rows);
+  });
+
+  test('populates specs table, no summary', async () => {
+    const rowTitle = 'foo';
+    const dimensionValues = {
+      summary: [],
+      specificationDescriptions: [
+        {
+          label: '',
+          altText: '',
+          options: [
+            {
+              descriptions: [
+                {
+                  text: 'bar',
+                  url: {url: ''},
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const dimensionValuesMap = new Map<bigint, ProductSpecificationsValue>(
+        [[BigInt(2), dimensionValues]]);
+    const specsProduct1 = createSpecsProduct({
+      productClusterId: BigInt(123),
+      title: 'qux',
+      productDimensionValues: dimensionValuesMap,
+    });
+    const info1 = createInfo({
+      clusterId: BigInt(123),
+      title: 'qux',
+      productUrl: {url: 'https://example.com/'},
+      imageUrl: {url: 'qux.com/image'},
+    });
+
+    const promiseValues = createAppPromiseValues({
+      urlsParam: ['https://example.com/'],
+      specs: createSpecs({
+        productDimensionMap: new Map<bigint, string>([[BigInt(2), rowTitle]]),
+        products: [specsProduct1],
+      }),
+      infos: [info1],
+    });
+    createAppElementWithPromiseValues(promiseValues);
+    appElement.resetMinLoadingAnimationMsForTesting();
+    await flushTasks();
+
+    const columns = appElement.$.summaryTable.columns;
+    assertEquals(1, columns.length);
+    assertArrayEquals(
+        [
+          {
+            selectedItem: {
+              title: specsProduct1.title,
+              url: 'https://example.com/',
+              imageUrl: info1.imageUrl.url,
+            },
+          },
+        ],
+        columns);
+
+    const rows = appElement.$.summaryTable.rows;
+    assertEquals(1, rows.length);
+    assertArrayEquals(
+        [{title: rowTitle, descriptions: ['bar'], summaries: ['']}], rows);
   });
 
   test('shows full table loading state', async () => {
