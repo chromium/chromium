@@ -45,7 +45,7 @@ let instance: ChromeHelper|null = null;
 /**
  * Forces casting type from Uint8Array to number[].
  */
-export function castToNumberArray(data: Uint8Array): number[] {
+function castToNumberArray(data: Uint8Array): number[] {
   // This cast is to workaround that the generated mojo binding only accepts
   // number[], but actually can be passed Uint8Array (which also supports
   // indexing via [] and length).

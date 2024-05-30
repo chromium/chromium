@@ -129,6 +129,8 @@ mojom("ocr") {
 mojom("pdf_builder") {
   sources = [ "pdf_builder.mojom" ]
 
+  public_deps = [ "//mojo/public/mojom/base" ]
+
   webui_module_path = "/ash/webui/camera_app_ui"
 }
 

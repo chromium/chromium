@@ -6,6 +6,10 @@
 /* eslint-disable max-len */
 
 export type {
+  BigBuffer,
+} from
+    'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
+export type {
   PointF,
 } from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 export {
