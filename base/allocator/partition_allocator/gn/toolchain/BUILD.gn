@@ -47,12 +47,7 @@ toolchain("clang") {
     rspfile = "{{output}}.rsp"
     rspfile_content = "{{inputs}}"
 
-    # --start-group/--end-group let us link multiple .a {{inputs}}
-    # without worrying about their relative order on the link line.
-    _start_group = "-Wl,--start-group"
-    _end_group = "-Wl,--end-group"
-
-    command = "$link -shared {{ldflags}} $_start_group @$rspfile {{frameworks}} {{solibs}} $_end_group {{libs}} $rpath -o {{output}}"
+    command = "$link -shared {{ldflags}} @$rspfile {{frameworks}} {{solibs}} {{libs}} $rpath -o {{output}}"
     outputs = [ "{{root_out_dir}}/$soname" ]
     output_prefix = "lib"
     default_output_extension = ".so"
