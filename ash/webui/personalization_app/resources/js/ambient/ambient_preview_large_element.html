@@ -60,7 +60,7 @@
   }
 
   #messageContainer .text {
-    color: var(--cros-sys-on_primary_container, var(--cros-text-color-secondary));
+    color: var(--cros-sys-on_primary_container);
     font: var(--cros-body-2-font);
     line-height: 1.5;
     margin-top: 56px;
@@ -200,7 +200,7 @@
     border-radius: 16px;
   }
 
-  .help-link {
+  #helpLink {
     color: var(--text-color-action);
     text-decoration: none;
   }
@@ -241,7 +241,7 @@
       </span>
       <cr-button class="primary action-button">
         <!-- TODO(b/282827734): create new p-link for the support page -->
-        <a class="help-link" href="https://support.google.com/chromebook?p=wallpaper_fileerror"
+        <a id="helpLink" href="https://support.google.com/chromebook?p=wallpaper_fileerror"
             target="_blank">$i18n{ambientModeLearnMoreLabel}</a>
       </cr-button>
     </div>
