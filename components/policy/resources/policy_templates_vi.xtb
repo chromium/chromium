@@ -3145,6 +3145,7 @@ Nếu bạn không đặt chính sách này, thì hệ thống sẽ ngăn mọi 
 
       Tùy chọn cài đặt thử nghiệm này sẽ bị xóa trong tương lai khi tính năng đăng nhập nội tuyến hỗ trợ đầy đủ tất cả các luồng đăng nhập một lần (SSO).</translation>
 <translation id="3435796032110614169">Cho phép xóa lịch sử lệnh in</translation>
+<translation id="3435896845095436175">Bật</translation>
 <translation id="3436217793443508863">Khoảng thời gian (tính bằng mili giây) kể từ khi không có hoạt động đầu vào của người dùng cho đến thời điểm màn hình bị khóa khi chạy bằng pin</translation>
 <translation id="3437924696598384725">Cho phép người dùng quản lý các tùy chọn kết nối VPN</translation>
 <translation id="3441664787678256816">Cho phép các kết nối hỗ trợ từ xa của doanh nghiệp đến máy này</translation>
@@ -4335,6 +4336,7 @@ Khi bạn đặt chính sách này thành Disabled (Tắt), thì người dùng 
 <translation id="4389073105055031853">Cho phép người dùng quản lý tất cả chứng chỉ</translation>
 <translation id="4389091865841123886">Định cấu hình chứng thực từ xa với cơ chế TPM.</translation>
 <translation id="4389113579547582722">Cho phép hiển thị quảng cáo Xếp hạng trong App Store</translation>
+<translation id="4394049700291259645">Vô hiệu hóa</translation>
 <translation id="4395619678972620537">Nếu bạn bật chính sách này, các kết nối ngang hàng WebRTC có thể hạ cấp xuống phiên bản 
       lỗi thời của các giao thức TLS/DTLS (DTLS 1.0, TLS 1.0 và TLS 1.1).
       Khi bạn tắt hoặc không đặt chính sách này, các phiên bản TLS/DTLS này sẽ

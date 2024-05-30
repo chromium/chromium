@@ -687,6 +687,7 @@ Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns vo
 <translation id="1557113199339446336">Als je het beleid instelt op True, rapporteren ingeschreven apparaten informatie over XDR-gebeurtenissen (Extended Detection and Response).
 
       Als je het beleid instelt op False of niet instelt, rapporteren ingeschreven apparaten niet over XDR-gebeurtenissen (Extended Detection and Response).</translation>
+<translation id="1559343998807576489">Instellingen voor de functie Lens Overlay</translation>
 <translation id="1560279917909364275">Notitie-apps die zijn toegestaan op het <ph name="PRODUCT_OS_NAME" />-vergrendelscherm toevoegen aan de toelatingslijst</translation>
 <translation id="1561424797596341174">Beleid overschrijft Debug-builds van de host voor externe toegang</translation>
 <translation id="1561967320164410511">U2F plus extensies voor individuele bevestiging</translation>
@@ -3108,6 +3109,7 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
 
       De experimentele instelling wordt in de toekomst verwijderd als het inline inlogproces alle SSO-inlogprocessen volledig ondersteunt.</translation>
 <translation id="3435796032110614169">Verwijderen van afdrukgeschiedenis toestaan</translation>
+<translation id="3435896845095436175">Aanzetten</translation>
 <translation id="3436217793443508863">De tijdsduur zonder gebruikersinvoer waarna het scherm wordt vergrendeld als er op de batterij wordt gewerkt (in milliseconden)</translation>
 <translation id="3437924696598384725">De gebruiker toestaan VPN-verbindingen te beheren</translation>
 <translation id="3441664787678256816">Verbindingen voor externe zakelijke support met deze machine toestaan</translation>
@@ -4247,6 +4249,7 @@ Als je het beleid niet toepast, kunnen gebruikers hun pakketten op <ph name="PRO
 <translation id="4389073105055031853">Gebruikers toestaan alle certificaten te beheren</translation>
 <translation id="4389091865841123886">De externe bevestiging configureren met een TPM-mechanisme.</translation>
 <translation id="4389113579547582722">Toestaan dat de promotie voor appstore-beoordelingen wordt getoond</translation>
+<translation id="4394049700291259645">Uitzetten</translation>
 <translation id="4395619678972620537">Als je het beleid toepast, kunnen WebRTC-peerverbindingen worden gedowngraded naar verouderde versies van de TLS/DTLS-protocollen (DTLS 1.0, TLS 1.0 en TLS 1.1).
       Als je dit beleid niet toepast of niet instelt, worden deze TLS/DTLS-versies uitgezet.
 
@@ -9619,6 +9622,12 @@ Dit beleid is altijd van kracht voor <ph name="PRODUCT_OS_NAME" />.</translation
 
       Ga naar https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage voor meer informatie over JavaScript-/ECMAScript-mediatypen.
       </translation>
+<translation id="8668202868357089313">Met Lens Overlay kunnen gebruikers Google-zoekopdrachten uitvoeren door interactie met een screenshot van de huidige pagina die over de daadwerkelijke webcontent wordt weergegeven.
+
+Er is geen gebruikersinstelling om deze functie te beheren. De functie wordt over het algemeen beschikbaar gemaakt voor alle gebruikers die Google als standaard zoekmachine hebben, tenzij uitgezet op basis van dit beleid.
+
+Als je het beleid instelt op 0 - Enabled of niet instelt, is de functie beschikbaar voor gebruikers.
+Als je het beleid instelt op 1 - Disabled, is de functie niet beschikbaar.</translation>
 <translation id="8671119576957984818">Hub voor delen van bureaublad aanzetten</translation>
 <translation id="8671193325113134911">Strenge MIME-typecontrole voor workerscripts aanzetten</translation>
 <translation id="8671303329680827168">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.</translation>

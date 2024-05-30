@@ -3161,6 +3161,7 @@ Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
 
       Satır içi oturum açma özelliği, gelecekte tüm TOA oturum açma akışlarını tam olarak desteklediğinde bu deneysel ayar kaldırılacaktır.</translation>
 <translation id="3435796032110614169">Yazdırma işleri geçmişinin silinmesine izin ver</translation>
+<translation id="3435896845095436175">Etkinleştir</translation>
 <translation id="3436217793443508863">Pil gücüyle çalışırken, ekran kilitlenmeden önce kullanıcı girişi olmadan geçecek süre (milisaniye olarak)</translation>
 <translation id="3437924696598384725">Kullanıcının VPN bağlantılarını yönetmesine izin verme</translation>
 <translation id="3441664787678256816">Bu makineye uzaktan kurumsal destek bağlantıları yapılmasına izin ver</translation>
@@ -4342,6 +4343,7 @@ Politika, Devre Dışı değerine ayarlanırsa kullanıcılar, kargolarını <ph
 <translation id="4389073105055031853">Kullanıcıların tüm sertifikaları yönetmelerine izin ver</translation>
 <translation id="4389091865841123886">TPM mekanizmasıyla uzaktan doğrulamayı yapılandırın.</translation>
 <translation id="4389113579547582722">App Store puan promosyonunun gösterilmesine izin ver</translation>
+<translation id="4394049700291259645">Devre dışı bırak</translation>
 <translation id="4395619678972620537">Politika etkinleştirilirse WebRTC eş bağlantıları, TLS/DTLS (DTLS 1.0, TLS 1.0, TLS 1.1) protokollerinin eski sürümlerine geçebilir.
       Bu politika devre dışı bırakılır veya ayarlanmazsa bu TLS/DTLS sürümleri devre dışı bırakılır.
 

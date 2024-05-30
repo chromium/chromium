@@ -3151,6 +3151,7 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di IA ge
 
       In futuro, quando l'accesso incorporato supporterà completamente tutti i flussi di accesso SSO, questa impostazione sperimentale verrà rimossa.</translation>
 <translation id="3435796032110614169">Consenti l'eliminazione della cronologia dei processi di stampa</translation>
+<translation id="3435896845095436175">Abilita</translation>
 <translation id="3436217793443508863">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale lo schermo viene bloccato quando viene usata la batteria.</translation>
 <translation id="3437924696598384725">Consente all'utente di gestire le connessioni VPN</translation>
 <translation id="3441664787678256816">Consenti le connessioni aziendali di assistenza da remoto a questo computer</translation>
@@ -4304,6 +4305,7 @@ Se viene disattivato, gli utenti non possono monitorare i loro pacchetti su <ph 
 <translation id="4389073105055031853">Consenti agli utenti di gestire tutti i certificati</translation>
 <translation id="4389091865841123886">Configura l'attestazione da remoto con meccanismo TPM.</translation>
 <translation id="4389113579547582722">Consenti la visualizzazione della promozione di valutazione dell'App Store</translation>
+<translation id="4394049700291259645">Disabilita</translation>
 <translation id="4395619678972620537">Se questo criterio viene attivato, è possibile eseguire il downgrade delle connessioni peer WebRTC a versioni obsolete dei protocolli TLS/DTLS (DTLS 1.0, TLS 1.0 e TLS 1.1).
       Se questo criterio viene disattivato o se non viene configurato, queste versioni TLS/DTLS sono disattivate.
 

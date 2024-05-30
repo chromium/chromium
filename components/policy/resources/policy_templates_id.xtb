@@ -3222,6 +3222,7 @@ Untuk informasi selengkapnya tentang penanganan data untuk fitur AI generatif, l
 
       Setelan eksperimental ini akan dihapus di masa mendatang setelah login inline mendukung sepenuhnya semua alur login SSO.</translation>
 <translation id="3435796032110614169">Mengizinkan histori tugas pencetakan untuk dihapus</translation>
+<translation id="3435896845095436175">Aktifkan</translation>
 <translation id="3436217793443508863">Durasi waktu tanpa input pengguna sebelum layar terkunci saat menggunakan baterai, dalam milidetik.</translation>
 <translation id="3437924696598384725">Izinkan pengguna mengelola koneksi VPN</translation>
 <translation id="3441664787678256816">Mengizinkan koneksi dukungan jarak jauh perusahaan ke perangkat ini</translation>
@@ -4415,6 +4416,7 @@ Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat melacak paket mere
 <translation id="4389073105055031853">Izinkan pengguna mengelola semua sertifikat</translation>
 <translation id="4389091865841123886">Mengonfigurasi pengesahan jarak jauh dengan mekanisme TPM.</translation>
 <translation id="4389113579547582722">Izinkan pop-up Rating App Store ditampilkan</translation>
+<translation id="4394049700291259645">Nonaktifkan</translation>
 <translation id="4395619678972620537">Jika diaktifkan, koneksi pembanding WebRTC dapat melakukan downgrade ke versi
       protokol TLS/DTLS (DTLS 1.0, TLS 1.0, dan TLS 1.1) yang tidak digunakan lagi.
       Jika kebijakan ini disetel ke nonaktif atau tidak disetel, versi TLS/DTLS ini akan

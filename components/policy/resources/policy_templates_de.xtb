@@ -3111,6 +3111,7 @@ Weitere Informationen zur Datenverarbeitung bei Funktionen für generative KI f
 
       Die experimentelle Einstellung wird in Zukunft entfernt, sobald die Inline-Anmeldung alle SSO-Anmeldeprozesse vollständig unterstützt.</translation>
 <translation id="3435796032110614169">Zulassen, dass der Druckauftragsverlauf gelöscht wird</translation>
+<translation id="3435896845095436175">Aktivieren</translation>
 <translation id="3436217793443508863">Zeitraum ohne Nutzereingabe im Akkubetrieb, nach dem der Bildschirm gesperrt wird, angegeben in Millisekunden.</translation>
 <translation id="3437924696598384725">Zulassen, dass der Nutzer VPN-Verbindungen verwaltet</translation>
 <translation id="3441664787678256816">Verbindungen zu diesem Computer per Remote-Unterstützung von Unternehmen erlauben</translation>
@@ -4253,6 +4254,7 @@ Ist die Richtlinie deaktiviert, können Nutzer ihre Pakete in <ph name="PRODUCT_
 <translation id="4389073105055031853">Nutzern erlauben, alle Zertifikate zu verwalten</translation>
 <translation id="4389091865841123886">Konfiguriert die Remote-Bestätigung mit TPM-Mechanismus</translation>
 <translation id="4389113579547582722">Werbung für App Store-Bewertungen zulassen</translation>
+<translation id="4394049700291259645">Deaktivieren</translation>
 <translation id="4395619678972620537">Wenn die Richtlinie aktiviert ist, können WebRTC-Peer-Verbindungen ein Downgrade auf veraltete Versionen der TLS/DTLS-Protokolle (DTLS 1.0, TLS 1.0 und TLS 1.1) durchführen.
       Wenn sie deaktiviert oder nicht konfiguriert ist, sind diese TLS/DTLS-Versionen deaktiviert.
 

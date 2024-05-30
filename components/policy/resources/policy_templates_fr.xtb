@@ -3114,6 +3114,7 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
 
       Ce paramètre expérimental sera supprimé lorsque la procédure de connexion intégrée sera entièrement compatible avec l'ensemble des procédures de connexion SSO.</translation>
 <translation id="3435796032110614169">Autoriser la suppression de l'historique des tâches d'impression</translation>
+<translation id="3435896845095436175">Activer</translation>
 <translation id="3436217793443508863">Délai d'inactivité de l'utilisateur, en millisecondes, au terme duquel l'écran est verrouillé (lorsque l'appareil fonctionne sur batterie).</translation>
 <translation id="3437924696598384725">Autoriser l'utilisateur à gérer les connexions VPN</translation>
 <translation id="3441664787678256816">Autoriser les connexions d'assistance à distance des entreprises à cet appareil</translation>
@@ -4253,6 +4254,7 @@ Si elle est désactivée, les utilisateurs ne peuvent pas suivre leurs colis dan
 <translation id="4389073105055031853">Autoriser les utilisateurs à gérer tous les certificats</translation>
 <translation id="4389091865841123886">Configurer l'attestation à distance avec le mécanisme TPM</translation>
 <translation id="4389113579547582722">Autoriser l'affichage de la promo concernant la note sur l'App Store</translation>
+<translation id="4394049700291259645">Désactiver</translation>
 <translation id="4395619678972620537">Si cette règle est activée, les connexions homologues WebRTC peuvent revenir à
       des versions antérieures obsolètes des protocoles TLS/DTLS (DTLS 1.0, TLS 1.0 et TLS 1.1).
       Si cette règle est désactivée ou qu'elle n'est pas configurée, ces versions

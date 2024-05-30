@@ -3210,6 +3210,7 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 
       A configuração experimental será removida no futuro, quando o login in-line for compatível com todos os fluxos de login SSO.</translation>
 <translation id="3435796032110614169">Permite a exclusão do histórico de trabalhos de impressão</translation>
+<translation id="3435896845095436175">Ativar</translation>
 <translation id="3436217793443508863">O tempo, em milissegundos, sem entrada do usuário até que a tela seja bloqueada quando o dispositivo estiver funcionando com energia da bateria.</translation>
 <translation id="3437924696598384725">Permitir que o usuário gerencie conexões VPN</translation>
 <translation id="3441664787678256816">Permitir conexões de suporte remoto de empresas a esta máquina</translation>
@@ -4405,6 +4406,7 @@ Quando ela é desativada, os usuários não podem rastrear as encomendas no <ph 
 <translation id="4389073105055031853">Permitir que os usuários gerenciem todos os certificados</translation>
 <translation id="4389091865841123886">Configurar a declaração remota com mecanismo TPM</translation>
 <translation id="4389113579547582722">Permitir que a promoção de avaliação na App Store seja mostrada</translation>
+<translation id="4394049700291259645">Desativar</translation>
 <translation id="4395619678972620537">Se ativadas, as conexões de ponto WebRTC podem fazer downgrade para versões
       obsoletas dos protocolos TLS/DTLS (DTLS 1.0, TLS 1.0 e TLS 1.1).
       Quando esta política estiver desativada ou não for definida, essas versões TLS/DTLS serão

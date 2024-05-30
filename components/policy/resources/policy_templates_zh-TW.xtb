@@ -3046,6 +3046,7 @@
 
       未來內嵌登入將完整支援所有 SSO 登入流程，屆時我們會移除這項實驗性設定。</translation>
 <translation id="3435796032110614169">允許刪除列印工作的歷史記錄</translation>
+<translation id="3435896845095436175">啟用</translation>
 <translation id="3436217793443508863">使用電池供電時的閒置時間長度 (以毫秒為單位)。如果使用者在這段時間內沒有任何動作，系統就會鎖定螢幕</translation>
 <translation id="3437924696598384725">允許使用者管理 VPN 連線</translation>
 <translation id="3441664787678256816">允許與這部裝置建立企業遠端支援連線</translation>
@@ -4165,6 +4166,7 @@
 <translation id="4389073105055031853">允許使用者管理所有憑證</translation>
 <translation id="4389091865841123886">使用 TPM 機制設定遠端證明。</translation>
 <translation id="4389113579547582722">允許顯示 App Store 評分宣傳</translation>
+<translation id="4394049700291259645">停用</translation>
 <translation id="4395619678972620537">如果啟用這項政策，WebRTC 對等互連可降級至傳輸層安全標準 (TLS)/DTLS 通訊協定的過時版本 (DTLS 1.0、TLS 1.0 和 TLS 1.1)。
       如果停用或不設定這項政策，則會停用這些傳輸層安全標準 (TLS)/DTLS 版本。
 
