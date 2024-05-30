@@ -79,7 +79,7 @@ class AutofillOptimizationGuideTest : public testing::Test {
     // Autofill Optimization Guide unittests by defining the credit card in each
     // individual test.
     CreditCard card = test::GetVirtualCard();
-    test_api(card).set_network_for_virtual_card(kVisaCard);
+    test_api(card).set_network_for_card(kVisaCard);
     card.set_virtual_card_enrollment_type(
         CreditCard::VirtualCardEnrollmentType::kNetwork);
     personal_data_manager_->SetPrefService(pref_service_.get());
@@ -161,7 +161,7 @@ TEST_F(AutofillOptimizationGuideTest,
       GeoIpCountryCode(""),
       /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
   test_api(*personal_data_manager_->payments_data_manager().GetCreditCards()[0])
-      .set_network_for_virtual_card(kMasterCard);
+      .set_network_for_card(kMasterCard);
 
   EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
 
@@ -343,7 +343,7 @@ TEST_F(AutofillOptimizationGuideTest,
   CreditCard virtual_card = test::GetVirtualCard();
   virtual_card.set_virtual_card_enrollment_type(
       CreditCard::VirtualCardEnrollmentType::kNetwork);
-  test_api(virtual_card).set_network_for_virtual_card(kVisaCard);
+  test_api(virtual_card).set_network_for_card(kVisaCard);
 
   ON_CALL(*decider_,
           CanApplyOptimization(
@@ -366,7 +366,7 @@ TEST_F(AutofillOptimizationGuideTest,
   CreditCard virtual_card = test::GetVirtualCard();
   virtual_card.set_virtual_card_enrollment_type(
       CreditCard::VirtualCardEnrollmentType::kNetwork);
-  test_api(virtual_card).set_network_for_virtual_card(kVisaCard);
+  test_api(virtual_card).set_network_for_card(kVisaCard);
 
   ON_CALL(*decider_,
           CanApplyOptimization(
@@ -389,7 +389,7 @@ TEST_F(AutofillOptimizationGuideTest,
   CreditCard virtual_card = test::GetVirtualCard();
   virtual_card.set_virtual_card_enrollment_type(
       CreditCard::VirtualCardEnrollmentType::kIssuer);
-  test_api(virtual_card).set_network_for_virtual_card(kVisaCard);
+  test_api(virtual_card).set_network_for_card(kVisaCard);
 
   EXPECT_CALL(
       *decider_,
@@ -414,7 +414,7 @@ TEST_F(
   CreditCard virtual_card = test::GetVirtualCard();
   virtual_card.set_virtual_card_enrollment_type(
       CreditCard::VirtualCardEnrollmentType::kNetwork);
-  test_api(virtual_card).set_network_for_virtual_card(kMasterCard);
+  test_api(virtual_card).set_network_for_card(kMasterCard);
 
   EXPECT_CALL(
       *decider_,
@@ -531,7 +531,7 @@ TEST_F(AutofillOptimizationGuideTest,
       .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
   test_api(*personal_data_manager_->payments_data_manager().GetCreditCards()[0])
-      .set_network_for_virtual_card(kAmericanExpressCard);
+      .set_network_for_card(kAmericanExpressCard);
   test_api(*personal_data_manager_->payments_data_manager().GetCreditCards()[0])
       .set_issuer_id_for_card(kAmexCardIssuerId);
 
@@ -560,7 +560,7 @@ TEST_F(AutofillOptimizationGuideTest,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
   CreditCard* card =
       personal_data_manager_->payments_data_manager().GetCreditCards()[0];
-  test_api(*card).set_network_for_virtual_card(kMasterCard);
+  test_api(*card).set_network_for_card(kMasterCard);
   test_api(*card).set_issuer_id_for_card(kCapitalOneCardIssuerId);
 
   EXPECT_CALL(
@@ -593,7 +593,7 @@ TEST_F(AutofillOptimizationGuideTest,
       .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
   test_api(*personal_data_manager_->payments_data_manager().GetCreditCards()[0])
-      .set_network_for_virtual_card(kAmericanExpressCard);
+      .set_network_for_card(kAmericanExpressCard);
   test_api(*personal_data_manager_->payments_data_manager().GetCreditCards()[0])
       .set_issuer_id_for_card(kAmexCardIssuerId);
 
@@ -625,7 +625,7 @@ TEST_F(AutofillOptimizationGuideTest,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
   CreditCard* card =
       personal_data_manager_->payments_data_manager().GetCreditCards()[0];
-  test_api(*card).set_network_for_virtual_card(kMasterCard);
+  test_api(*card).set_network_for_card(kMasterCard);
   test_api(*card).set_issuer_id_for_card(kCapitalOneCardIssuerId);
 
   EXPECT_CALL(
