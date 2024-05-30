@@ -11,6 +11,7 @@ assert(enable_screen_ai_service)
 
 mojom("mojom") {
   sources = [
+    "pdf_progressive_searchifier.mojom",
     "pdf_searchifier.mojom",
     "pdf_service.mojom",
     "pdf_thumbnailer.mojom",

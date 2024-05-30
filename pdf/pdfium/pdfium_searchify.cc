@@ -5,13 +5,16 @@
 #include "pdf/pdfium/pdfium_searchify.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <numbers>
 #include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
+#include "pdf/pdf_engine.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
 #include "pdf/pdfium/pdfium_ocr.h"
 #include "pdf/pdfium/pdfium_searchify_font.h"
@@ -23,6 +26,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
+#include "ui/gfx/codec/jpeg_codec.h"
 
 namespace chrome_pdf {
 
@@ -194,6 +198,26 @@ void AddTextOnImage(FPDF_DOCUMENT document,
   }
 }
 
+ScopedFPDFFont CreateFont(FPDF_DOCUMENT document) {
+  std::vector<uint8_t> cid_to_gid_map(CreateCidToGidMap());
+  return ScopedFPDFFont(
+      FPDFText_LoadCidType2Font(document, kPdfTtf, kPdfTtfSize, kToUnicodeCMap,
+                                cid_to_gid_map.data(), cid_to_gid_map.size()));
+}
+
+int GetBlockForJpeg(void* param,
+                    unsigned long pos,
+                    unsigned char* buf,
+                    unsigned long size) {
+  auto data_vector = *static_cast<base::span<const uint8_t>*>(param);
+  if (pos + size < pos || pos + size > data_vector.size()) {
+    return 0;
+  }
+  base::span<uint8_t> buf_span(buf, size);
+  buf_span.copy_from(data_vector.subspan(pos, size));
+  return 1;
+}
+
 }  // namespace
 
 std::vector<uint8_t> PDFiumSearchify(
@@ -211,10 +235,7 @@ std::vector<uint8_t> PDFiumSearchify(
     DLOG(ERROR) << "Got zero page count";
     return {};
   }
-  std::vector<uint8_t> cid_to_gid_map(CreateCidToGidMap());
-  ScopedFPDFFont font(FPDFText_LoadCidType2Font(
-      document.get(), kPdfTtf, kPdfTtfSize, kToUnicodeCMap,
-      cid_to_gid_map.data(), cid_to_gid_map.size()));
+  ScopedFPDFFont font = CreateFont(document.get());
   CHECK(font);
   for (int page_index = 0; page_index < page_count; page_index++) {
     ScopedFPDFPage page(FPDF_LoadPage(document.get(), page_index));
@@ -253,6 +274,61 @@ std::vector<uint8_t> PDFiumSearchify(
     DLOG(ERROR) << "Failed to save the document";
     return {};
   }
+  return output_file_write.TakeBuffer();
+}
+
+PdfiumProgressiveSearchifier::ScopedSdkInitializer::ScopedSdkInitializer() {
+  // TODO(thestig): Check the default value of `use_skia`.
+  InitializeSDK(false, false, FontMappingMode::kNoMapping);
+}
+
+PdfiumProgressiveSearchifier::ScopedSdkInitializer::~ScopedSdkInitializer() {
+  ShutdownSDK();
+}
+
+PdfiumProgressiveSearchifier::PdfiumProgressiveSearchifier()
+    : doc_(FPDF_CreateNewDocument()), font_(CreateFont(doc_.get())) {
+  CHECK(doc_);
+  CHECK(font_);
+}
+
+PdfiumProgressiveSearchifier::~PdfiumProgressiveSearchifier() = default;
+
+// TODO(chuhsuan): Return bool instead of crashing on error.
+void PdfiumProgressiveSearchifier::AddPage(
+    const SkBitmap& bitmap,
+    uint32_t page_index,
+    screen_ai::mojom::VisualAnnotationPtr annotation) {
+  CHECK(annotation);
+  // Replace the page if it already exists.
+  DeletePage(page_index);
+  int width = bitmap.width();
+  int height = bitmap.height();
+  ScopedFPDFPage page(FPDFPage_New(doc_.get(), page_index, width, height));
+  CHECK(page);
+  ScopedFPDFPageObject image(FPDFPageObj_NewImageObj(doc_.get()));
+  CHECK(image);
+  std::vector<uint8_t> encoded;
+  CHECK(gfx::JPEGCodec::Encode(bitmap, 100, &encoded));
+  FPDF_FILEACCESS file_access{
+      .m_FileLen = static_cast<unsigned long>(encoded.size()),
+      .m_GetBlock = &GetBlockForJpeg,
+      .m_Param = &encoded};
+  CHECK(FPDFImageObj_LoadJpegFileInline(nullptr, 0, image.get(), &file_access));
+  CHECK(FPDFImageObj_SetMatrix(image.get(), width, 0, 0, height, 0, 0));
+  AddTextOnImage(doc_.get(), page.get(), font_.get(), image.get(),
+                 std::move(annotation));
+  FPDFPage_InsertObject(page.get(), image.release());
+  CHECK(FPDFPage_GenerateContent(page.get()));
+}
+
+void PdfiumProgressiveSearchifier::DeletePage(uint32_t page_index) {
+  FPDFPage_Delete(doc_.get(), page_index);
+}
+
+std::vector<uint8_t> PdfiumProgressiveSearchifier::Save() {
+  PDFiumMemBufferFileWrite output_file_write;
+  CHECK(FPDF_SaveAsCopy(doc_.get(), &output_file_write, 0));
   return output_file_write.TakeBuffer();
 }
 

@@ -37,7 +37,10 @@
 #include "ui/gfx/geometry/vector2d.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include <memory>
+
 #include "base/functional/callback.h"
+#include "pdf/pdf_progressive_searchifier.h"
 #include "pdf/pdfium/pdfium_searchify.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -568,6 +571,11 @@ std::vector<uint8_t> PDFiumEngineExports::Searchify(
     base::RepeatingCallback<screen_ai::mojom::VisualAnnotationPtr(
         const SkBitmap& bitmap)> perform_ocr_callback) {
   return PDFiumSearchify(pdf_buffer, std::move(perform_ocr_callback));
+}
+
+std::unique_ptr<PdfProgressiveSearchifier>
+PDFiumEngineExports::CreateProgressiveSearchifier() {
+  return std::make_unique<PdfiumProgressiveSearchifier>();
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

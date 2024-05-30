@@ -10,6 +10,7 @@
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/services/pdf/pdf_progressive_searchifier.h"
 #include "chrome/services/pdf/pdf_searchifier.h"
 #include "chrome/services/pdf/pdf_thumbnailer.h"
 #include "chrome/services/pdf/public/mojom/pdf_service.mojom.h"
@@ -40,6 +41,14 @@ PdfService::PdfService(mojo::PendingReceiver<mojom::PdfService> receiver)
 }
 
 PdfService::~PdfService() = default;
+
+void PdfService::BindPdfProgressiveSearchifier(
+    mojo::PendingReceiver<mojom::PdfProgressiveSearchifier> receiver,
+    mojo::PendingRemote<mojom::Ocr> ocr) {
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<pdf::PdfProgressiveSearchifier>(std::move(ocr)),
+      std::move(receiver));
+}
 
 void PdfService::BindPdfSearchifier(
     mojo::PendingReceiver<mojom::PdfSearchifier> receiver,

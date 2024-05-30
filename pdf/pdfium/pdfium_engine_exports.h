@@ -21,6 +21,10 @@
 
 namespace chrome_pdf {
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+class PdfProgressiveSearchifier;
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
 class PDFiumEngineExports : public PDFEngineExports {
  public:
   PDFiumEngineExports();
@@ -73,6 +77,8 @@ class PDFiumEngineExports : public PDFEngineExports {
       base::span<const uint8_t> pdf_buffer,
       base::RepeatingCallback<screen_ai::mojom::VisualAnnotationPtr(
           const SkBitmap& bitmap)> perform_ocr_callback) override;
+  std::unique_ptr<PdfProgressiveSearchifier> CreateProgressiveSearchifier()
+      override;
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 };
 

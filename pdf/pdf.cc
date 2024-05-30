@@ -20,7 +20,10 @@
 #include "ui/gfx/geometry/size_f.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "base/functional/callback_forward.h"
+#include <memory>
+
+#include "base/functional/callback.h"
+#include "pdf/pdf_progressive_searchifier.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -188,6 +191,11 @@ std::vector<uint8_t> Searchify(
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/false);
   PDFEngineExports* engine_exports = PDFEngineExports::Get();
   return engine_exports->Searchify(pdf_buffer, std::move(perform_ocr_callback));
+}
+
+std::unique_ptr<PdfProgressiveSearchifier> CreateProgressiveSearchifier() {
+  PDFEngineExports* engine_exports = PDFEngineExports::Get();
+  return engine_exports->CreateProgressiveSearchifier();
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

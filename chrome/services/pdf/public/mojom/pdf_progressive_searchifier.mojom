@@ -1,0 +1,24 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module pdf.mojom;
+
+import "skia/public/mojom/bitmap.mojom";
+
+// PdfProgressiveSearchifier creates a PDF and provides operations to add and
+// delete pages, and save the searchified PDF. The operation requests are
+// handled one by one. The service will crash if any of the operations
+// experienced an error.
+interface PdfProgressiveSearchifier {
+  // Adds a new page to the PDF at `page_index` with the given image and a layer
+  // of invisible text. If the page already exists, it will be replaced. If
+  // `page_index` is larger than PDF's current last index(L), the created page
+  // index is the next available index(L+1).
+  AddPage(skia.mojom.BitmapN32 image, uint32 page_index);
+  // Deletes the page of the PDF at `page_index` and shift the following pages
+  // forward. Does nothing if the page at `page_index` doesn't exist.
+  DeletePage(uint32 page_index);
+  // Returns the searchified PDF. It can be called multiple times at any time.
+  Save() => (array<uint8> searchified_pdf);
+};

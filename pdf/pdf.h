@@ -23,6 +23,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include <memory>
+
 #include "base/functional/callback_forward.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -35,6 +37,10 @@ class SizeF;
 }  // namespace gfx
 
 namespace chrome_pdf {
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+class PdfProgressiveSearchifier;
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 void SetUseSkiaRendererPolicy(bool use_skia);
 
@@ -234,6 +240,10 @@ std::vector<uint8_t> Searchify(
     base::span<const uint8_t> pdf_buffer,
     base::RepeatingCallback<screen_ai::mojom::VisualAnnotationPtr(
         const SkBitmap& bitmap)> perform_ocr_callback);
+
+// Creates a PDF searchifier for future operations, such as adding and deleting
+// pages, and saving PDFs. Crashes if failed to create.
+std::unique_ptr<PdfProgressiveSearchifier> CreateProgressiveSearchifier();
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace chrome_pdf

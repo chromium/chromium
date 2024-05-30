@@ -43,6 +43,8 @@ if (enable_pdf) {
 
     public = [ "pdf.h" ]
 
+    public_deps = []
+
     deps = [
       ":features",
       ":internal",
@@ -51,6 +53,10 @@ if (enable_pdf) {
       "//services/screen_ai/buildflags",
       "//ui/gfx/geometry",
     ]
+
+    if (enable_screen_ai_service) {
+      public_deps = [ ":pdf_progressive_searchifier" ]
+    }
   }
 
   source_set("features") {
@@ -212,6 +218,19 @@ if (enable_pdf) {
       ]
 
       public_deps += [ "//services/screen_ai/public/mojom" ]
+
+      deps += [ ":pdf_progressive_searchifier" ]
+    }
+  }
+
+  if (enable_screen_ai_service) {
+    source_set("pdf_progressive_searchifier") {
+      public = [ "pdf_progressive_searchifier.h" ]
+
+      public_deps = [
+        "//services/screen_ai/public/mojom",
+        "//skia",
+      ]
     }
   }
 

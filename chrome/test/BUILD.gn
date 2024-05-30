@@ -8893,6 +8893,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views/mahi",
       "//chrome/browser/ui/webui/ash/enterprise_reporting:mojo_bindings",
       "//chrome/browser/ui/webui/nearby_share:mojom",
+      "//chrome/services/pdf:pdf_progressive_searchifier_test",
       "//chrome/services/pdf:pdf_searchifier_test",
       "//chrome/services/pdf:pdf_thumbnailer_test",
       "//chrome/services/sharing:unit_tests",

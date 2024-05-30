@@ -13,6 +13,8 @@ assert(enable_screen_ai_service)
 
 source_set("lib") {
   sources = [
+    "pdf_progressive_searchifier.cc",
+    "pdf_progressive_searchifier.h",
     "pdf_searchifier.cc",
     "pdf_searchifier.h",
     "pdf_service.cc",
@@ -36,6 +38,21 @@ source_set("lib") {
     "//content/public/utility",
     "//pdf",
     "//skia",
+  ]
+}
+
+source_set("pdf_progressive_searchifier_test") {
+  testonly = true
+  sources = [ "pdf_progressive_searchifier_unittest.cc" ]
+
+  deps = [
+    ":lib",
+    "//base/test:test_support",
+    "//chrome/services/pdf/public/mojom",
+    "//mojo/public/cpp/bindings",
+    "//services/screen_ai/public/mojom",
+    "//skia",
+    "//testing/gtest",
   ]
 }
 
