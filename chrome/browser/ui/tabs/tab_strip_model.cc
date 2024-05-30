@@ -21,7 +21,6 @@
 #include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
-#include "base/scoped_observation.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -91,8 +90,6 @@ namespace {
 
 TabGroupModelFactory* factory_instance = nullptr;
 
-class RenderWidgetHostVisibilityTracker;
-
 // Works similarly to base::AutoReset but checks for access from the wrong
 // thread as well as ensuring that the previous value of the re-entrancy guard
 // variable was false.
@@ -126,69 +123,6 @@ bool ShouldForgetOpenersForTransition(ui::PageTransition transition) {
          ui::PageTransitionCoreTypeIs(transition,
                                       ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 }
-
-// Installs RenderWidgetVisibilityTracker when the active tab has changed.
-std::unique_ptr<RenderWidgetHostVisibilityTracker>
-InstallRenderWidgetVisibilityTracker(const TabStripSelectionChange& selection) {
-  if (!selection.active_tab_changed())
-    return nullptr;
-
-  content::RenderWidgetHost* track_host = nullptr;
-  if (selection.new_contents &&
-      selection.new_contents->GetRenderWidgetHostView()) {
-    track_host = selection.new_contents->GetRenderWidgetHostView()
-                     ->GetRenderWidgetHost();
-  }
-  return std::make_unique<RenderWidgetHostVisibilityTracker>(track_host);
-}
-
-// This tracks (and reports via UMA and tracing) how long it takes before a
-// RenderWidgetHost is requested to become visible.
-class RenderWidgetHostVisibilityTracker final
-    : public content::RenderWidgetHostObserver {
- public:
-  explicit RenderWidgetHostVisibilityTracker(content::RenderWidgetHost* host) {
-    if (!host || host->GetView()->IsShowing())
-      return;
-    observation_.Observe(host);
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("ui,latency",
-                                      "TabSwitchVisibilityRequest", this,
-                                      "render_widget_host", host);
-  }
-  ~RenderWidgetHostVisibilityTracker() override = default;
-  RenderWidgetHostVisibilityTracker(const RenderWidgetHostVisibilityTracker&) =
-      delete;
-  RenderWidgetHostVisibilityTracker& operator=(
-      const RenderWidgetHostVisibilityTracker&) = delete;
-
- private:
-  // content::RenderWidgetHostObserver:
-  void RenderWidgetHostVisibilityChanged(content::RenderWidgetHost* host,
-                                         bool became_visible) override {
-    // This used to be a DCHECK but there are cases where the tab preview
-    // capture system is just finishing up a capture where we could get a
-    // signal with `became_visible` being false. Therefore simple make sure
-    // the render widget host actually became visible.
-    if (became_visible) {
-      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-          "Browser.Tabs.SelectionToVisibilityRequestTime", timer_.Elapsed(),
-          base::Microseconds(1), base::Seconds(3), 50);
-      TRACE_EVENT_NESTABLE_ASYNC_END0("ui,latency",
-                                      "TabSwitchVisibilityRequest", this);
-      observation_.Reset();
-    }
-  }
-
-  void RenderWidgetHostDestroyed(content::RenderWidgetHost* host) override {
-    DCHECK(observation_.IsObservingSource(host));
-    observation_.Reset();
-  }
-
-  base::ScopedObservation<content::RenderWidgetHost,
-                          content::RenderWidgetHostObserver>
-      observation_{this};
-  base::ElapsedTimer timer_;
-};
 
 tabs::TabInterface::DetachReason RemoveReasonToDetachReason(
     TabStripModelChange::RemoveReason reason) {
@@ -566,12 +500,7 @@ void TabStripModel::SendDetachWebContentsNotifications(
         return notifications->selection_model.IsSelected(
             dwc->index_before_any_removals);
       });
-  {
-    auto visibility_tracker =
-        empty() ? nullptr : InstallRenderWidgetVisibilityTracker(selection);
-
-    OnChange(change, selection);
-  }
+  OnChange(change, selection);
 
   for (auto& dwc : notifications->detached_web_contents) {
     if (dwc->remove_reason == TabStripModelChange::RemoveReason::kDeleted) {
@@ -2299,7 +2228,6 @@ TabStripSelectionChange TabStripModel::SetSelection(
       }
     }
     TabStripModelChange change;
-    auto visibility_tracker = InstallRenderWidgetVisibilityTracker(selection);
     OnChange(change, selection);
   }
 

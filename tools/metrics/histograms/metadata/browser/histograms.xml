@@ -939,23 +939,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Browser.Tabs.SelectionToVisibilityRequestTime"
-    units="microseconds" expires_after="2024-07-07">
-  <owner>jonross@chromium.org</owner>
-  <owner>sky@chromium.org</owner>
-  <summary>
-    The time it takes for the browser to request a tab to be visible. Note that
-    this only measures the time from the browser deciding to make the tab
-    visible (after a click, or keyboard-shortcut to switch tabs), until the tab
-    is requested to become visible. The time it takes to actually make the tab
-    visible and show on screen is measured in a separate metric, in
-    Browser.Tabs.TotalSwitchDuration3.
-
-    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES so only users with
-    high resolution clocks will report this metric.
-  </summary>
-</histogram>
-
 <histogram name="Browser.Tabs.TabSwitchResult3{TabSwitchingType}"
     enum="TabSwitchResult2" expires_after="2024-10-06">
   <owner>fdoray@chromium.org</owner>
