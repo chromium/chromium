@@ -6,40 +6,44 @@ module blink.mojom;
 
 // The status of the ModelStreamingResponder response.
 // TODO(leimy): return more information about the erroneous case.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ModelStreamingResponseStatus)
 enum ModelStreamingResponseStatus {
   // There response is not fully streamed back yet, and the interface will
   // remain open.
-  kOngoing,
+  kOngoing = 0,
   // The ModelStreamingResponder completes and closes.
-  kComplete,
-
-  // The session has been destroyed.
-  kErrorSessionDestroyed,
-
+  kComplete = 1,
   // The following enums are for the case when the ModelStreamingResponder closes with some errors.
-  kErrorUnknown,
+  kErrorUnknown = 2,
   // The request was invalid.
-  kErrorInvalidRequest,
+  kErrorInvalidRequest = 3,
   // The request was throttled.
-  kErrorRequestThrottled,
+  kErrorRequestThrottled = 4,
   // User permission errors such as not signed-in or not allowed to execute
   // model.
-  kErrorPermissionDenied,
+  kErrorPermissionDenied = 5,
   // Other generic failures.
-  kErrorGenericFailure,
+  kErrorGenericFailure = 6,
   // Retryable error occurred in server.
-  kErrorRetryableError,
+  kErrorRetryableError = 7,
   // Non-retryable error occurred in server.
-  kErrorNonRetryableError,
+  kErrorNonRetryableError = 8,
   // Unsupported language.
-  kErrorUnsupportedLanguage,
+  kErrorUnsupportedLanguage = 9,
   // Request was filtered.
-  kErrorFiltered,
+  kErrorFiltered = 10,
   // Response was disabled.
-  kErrorDisabled,
+  kErrorDisabled = 11,
   // The request was cancelled.
-  kErrorCancelled,
+  kErrorCancelled = 12,
+  // The session has been destroyed.
+  kErrorSessionDestroyed = 13,
+  // Append new items here.
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/model_execution/enums.xml:ModelExecutionResponseStatus)
 
 // The responder provides methods for the session to return the execution
 // response in a streaming manner.
