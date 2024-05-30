@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
-#include "v8/include/cppgc/common.h"
+#include "v8/include/cppgc/common.h"  // IWYU pragma: export (for ThreadState::StackState alias)
 #include "v8/include/cppgc/heap-consistency.h"
 #include "v8/include/v8-callbacks.h"
 #include "v8/include/v8-cppgc.h"

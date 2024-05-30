@@ -1,0 +1,14 @@
+
+# IWYU (include-what-you-use) mapping file.
+#
+# This mapping is specific to Blink, as the include path prefix might be
+# different in other libraries. For instance, blink includes V8 libraies via
+# "v8/include", but V8 includes its own headers directly. This mapping has been
+# tested agasint "third_party/blink/renderer/modules/canvas", but could be
+# extended to other Blink folders.
+
+[
+  { include: ['@"(include/core/Sk.*)"', 'private', '"third_party/skia/\1"', 'public'] },
+  { include: ['@"(absl/.*)"', 'private', '"third_party/abseil-cpp/\1"', 'public'] },
+  { include: ['@"(command_buffer/.*)"', 'private', '"gpu/\1"', 'public'] },
+]
