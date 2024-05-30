@@ -410,6 +410,7 @@ void WebGPUImplementation::AssociateMailbox(
     GLuint texture_id,
     GLuint texture_generation,
     GLuint usage,
+    GLuint internal_usage,
     const WGPUTextureFormat* view_formats,
     GLuint view_format_count,
     MailboxFlags flags,
@@ -439,7 +440,7 @@ void WebGPUImplementation::AssociateMailbox(
 
   helper_->AssociateMailboxImmediate(
       device_id, device_generation, texture_id, texture_generation, usage,
-      flags, view_format_count, num_entries,
+      internal_usage, flags, view_format_count, num_entries,
       reinterpret_cast<GLuint*>(immediate_data.data()));
 #endif
 }

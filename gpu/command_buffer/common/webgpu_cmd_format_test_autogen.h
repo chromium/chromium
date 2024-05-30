@@ -42,17 +42,18 @@ TEST_F(WebGPUFormatTest, AssociateMailboxImmediate) {
       static_cast<GLuint>(kSomeBaseValueToTestWith + 5),
       static_cast<GLuint>(kSomeBaseValueToTestWith + 6),
       static_cast<GLuint>(kSomeBaseValueToTestWith + 7),
+      static_cast<GLuint>(kSomeBaseValueToTestWith + 8),
   };
   cmds::AssociateMailboxImmediate& cmd =
       *GetBufferAs<cmds::AssociateMailboxImmediate>();
-  const GLsizei kNumElements = 8;
+  const GLsizei kNumElements = 9;
   const size_t kExpectedCmdSize =
       sizeof(cmd) + kNumElements * sizeof(GLuint) * 1;
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLuint>(1), static_cast<GLuint>(2),
-              static_cast<GLuint>(3), static_cast<GLuint>(4),
-              static_cast<GLuint>(5), static_cast<MailboxFlags>(6),
-              static_cast<GLuint>(7), static_cast<GLuint>(8), data);
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(1), static_cast<GLuint>(2),
+                           static_cast<GLuint>(3), static_cast<GLuint>(4),
+                           static_cast<GLuint>(5), static_cast<GLuint>(6),
+                           static_cast<MailboxFlags>(7), static_cast<GLuint>(8),
+                           static_cast<GLuint>(9), data);
   EXPECT_EQ(static_cast<uint32_t>(cmds::AssociateMailboxImmediate::kCmdId),
             cmd.header.command);
   EXPECT_EQ(kExpectedCmdSize, cmd.header.size * 4u);
@@ -61,9 +62,10 @@ TEST_F(WebGPUFormatTest, AssociateMailboxImmediate) {
   EXPECT_EQ(static_cast<GLuint>(3), cmd.id);
   EXPECT_EQ(static_cast<GLuint>(4), cmd.generation);
   EXPECT_EQ(static_cast<GLuint>(5), cmd.usage);
-  EXPECT_EQ(static_cast<MailboxFlags>(6), cmd.flags);
-  EXPECT_EQ(static_cast<GLuint>(7), cmd.view_format_count);
-  EXPECT_EQ(static_cast<GLuint>(8), cmd.count);
+  EXPECT_EQ(static_cast<GLuint>(6), cmd.internal_usage);
+  EXPECT_EQ(static_cast<MailboxFlags>(7), cmd.flags);
+  EXPECT_EQ(static_cast<GLuint>(8), cmd.view_format_count);
+  EXPECT_EQ(static_cast<GLuint>(9), cmd.count);
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }

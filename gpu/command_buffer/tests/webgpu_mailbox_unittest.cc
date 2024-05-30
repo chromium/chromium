@@ -268,7 +268,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId + 1, reservation.deviceGeneration,
                        reservation.id, reservation.generation,
-                       WGPUTextureUsage_TextureBinding,
+                       WGPUTextureUsage_TextureBinding, 0u,
                        webgpu::WEBGPU_MAILBOX_NONE, 0u,
                        ComputeNumEntries(sizeof(mailbox.name)),
                        reinterpret_cast<const GLuint*>(&mailbox.name));
@@ -282,7 +282,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration + 1,
                        reservation.id, reservation.generation,
-                       WGPUTextureUsage_TextureBinding,
+                       WGPUTextureUsage_TextureBinding, 0u,
                        webgpu::WEBGPU_MAILBOX_NONE, 0u,
                        ComputeNumEntries(sizeof(mailbox.name)),
                        reinterpret_cast<const GLuint*>(&mailbox.name));
@@ -296,7 +296,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id + 1, reservation.generation,
-                       WGPUTextureUsage_TextureBinding,
+                       WGPUTextureUsage_TextureBinding, 0u,
                        webgpu::WEBGPU_MAILBOX_NONE, 0u,
                        ComputeNumEntries(sizeof(mailbox.name)),
                        reinterpret_cast<const GLuint*>(&mailbox.name));
@@ -310,8 +310,9 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id, reservation.generation,
-                       WGPUTextureUsage_Force32, webgpu::WEBGPU_MAILBOX_NONE,
-                       0u, ComputeNumEntries(sizeof(mailbox.name)),
+                       WGPUTextureUsage_Force32, 0u,
+                       webgpu::WEBGPU_MAILBOX_NONE, 0u,
+                       ComputeNumEntries(sizeof(mailbox.name)),
                        reinterpret_cast<const GLuint*>(&mailbox.name));
           EXPECT_EQ(
               error::kInvalidArguments,
@@ -345,7 +346,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id, reservation.generation,
-                       WGPUTextureUsage_TextureBinding,
+                       WGPUTextureUsage_TextureBinding, 0u,
                        webgpu::WEBGPU_MAILBOX_NONE, 0u, 0u, packed_data.data());
           EXPECT_EQ(error::kOutOfBounds,
                     ExecuteImmediateCmd(decoder, cmd.cmd, 0u));
@@ -356,7 +357,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id, reservation.generation,
-                       WGPUTextureUsage_TextureBinding,
+                       WGPUTextureUsage_TextureBinding, 0u,
                        webgpu::WEBGPU_MAILBOX_NONE, view_format_count,
                        ComputeNumEntries(sizeof(mailbox.name)) - 1u,
                        packed_data.data());
@@ -370,7 +371,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id, reservation.generation,
-                       WGPUTextureUsage_TextureBinding,
+                       WGPUTextureUsage_TextureBinding, 0u,
                        webgpu::WEBGPU_MAILBOX_NONE, view_format_count,
                        packed_data.size() + adjustment, packed_data.data());
           EXPECT_EQ(error::kOutOfBounds,
@@ -383,7 +384,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id, reservation.generation,
-                       WGPUTextureUsage_TextureBinding,
+                       WGPUTextureUsage_TextureBinding, 0u,
                        webgpu::WEBGPU_MAILBOX_NONE,
                        view_format_count + adjustment, packed_data.size(),
                        packed_data.data());
@@ -400,7 +401,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id, reservation.generation,
-                       WGPUTextureUsage_TextureBinding,
+                       WGPUTextureUsage_TextureBinding, 0u,
                        webgpu::WEBGPU_MAILBOX_NONE, view_format_count,
                        packed_data.size(), packed_data.data());
           EXPECT_EQ(error::kNoError,
@@ -413,7 +414,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id, reservation.generation,
-                       WGPUTextureUsage_TextureBinding,
+                       WGPUTextureUsage_TextureBinding, 0u,
                        webgpu::WEBGPU_MAILBOX_NONE, 0u,
                        ComputeNumEntries(sizeof(mailbox.name)),
                        reinterpret_cast<const GLuint*>(&mailbox.name));
@@ -459,7 +460,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmdBadMailboxMakesErrorTexture) {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id, reservation.generation,
-                       WGPUTextureUsage_TextureBinding,
+                       WGPUTextureUsage_TextureBinding, 0u,
                        webgpu::WEBGPU_MAILBOX_NONE, 0u,
                        ComputeNumEntries(sizeof(bad_mailbox.name)),
                        reinterpret_cast<const GLuint*>(&bad_mailbox.name));
@@ -499,7 +500,7 @@ TEST_P(WebGPUMailboxTest, DissociateMailboxCmd) {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id, reservation.generation,
-                       WGPUTextureUsage_TextureBinding,
+                       WGPUTextureUsage_TextureBinding, 0u,
                        webgpu::WEBGPU_MAILBOX_NONE, 0u,
                        ComputeNumEntries(sizeof(mailbox.name)),
                        reinterpret_cast<const GLuint*>(&mailbox.name));

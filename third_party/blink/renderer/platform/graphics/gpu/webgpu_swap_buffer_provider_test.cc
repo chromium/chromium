@@ -40,6 +40,7 @@ class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
                         GLuint,
                         GLuint,
                         GLuint,
+                        GLuint,
                         const WGPUTextureFormat*,
                         GLuint,
                         gpu::webgpu::MailboxFlags,

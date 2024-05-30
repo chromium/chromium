@@ -94,6 +94,7 @@ struct AssociateMailboxImmediate {
             GLuint _id,
             GLuint _generation,
             GLuint _usage,
+            GLuint _internal_usage,
             MailboxFlags _flags,
             GLuint _view_format_count,
             GLuint _count,
@@ -104,6 +105,7 @@ struct AssociateMailboxImmediate {
     id = _id;
     generation = _generation;
     usage = _usage;
+    internal_usage = _internal_usage;
     flags = _flags;
     view_format_count = _view_format_count;
     count = _count;
@@ -117,13 +119,15 @@ struct AssociateMailboxImmediate {
             GLuint _id,
             GLuint _generation,
             GLuint _usage,
+            GLuint _internal_usage,
             MailboxFlags _flags,
             GLuint _view_format_count,
             GLuint _count,
             const GLuint* _mailbox_and_view_formats) {
-    static_cast<ValueType*>(cmd)->Init(
-        _device_id, _device_generation, _id, _generation, _usage, _flags,
-        _view_format_count, _count, _mailbox_and_view_formats);
+    static_cast<ValueType*>(cmd)->Init(_device_id, _device_generation, _id,
+                                       _generation, _usage, _internal_usage,
+                                       _flags, _view_format_count, _count,
+                                       _mailbox_and_view_formats);
     const uint32_t size = ComputeSize(_count);
     return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
   }
@@ -134,13 +138,14 @@ struct AssociateMailboxImmediate {
   uint32_t id;
   uint32_t generation;
   uint32_t usage;
+  uint32_t internal_usage;
   uint32_t flags;
   uint32_t view_format_count;
   uint32_t count;
 };
 
-static_assert(sizeof(AssociateMailboxImmediate) == 36,
-              "size of AssociateMailboxImmediate should be 36");
+static_assert(sizeof(AssociateMailboxImmediate) == 40,
+              "size of AssociateMailboxImmediate should be 40");
 static_assert(offsetof(AssociateMailboxImmediate, header) == 0,
               "offset of AssociateMailboxImmediate header should be 0");
 static_assert(offsetof(AssociateMailboxImmediate, device_id) == 4,
@@ -154,13 +159,16 @@ static_assert(offsetof(AssociateMailboxImmediate, generation) == 16,
               "offset of AssociateMailboxImmediate generation should be 16");
 static_assert(offsetof(AssociateMailboxImmediate, usage) == 20,
               "offset of AssociateMailboxImmediate usage should be 20");
-static_assert(offsetof(AssociateMailboxImmediate, flags) == 24,
-              "offset of AssociateMailboxImmediate flags should be 24");
 static_assert(
-    offsetof(AssociateMailboxImmediate, view_format_count) == 28,
-    "offset of AssociateMailboxImmediate view_format_count should be 28");
-static_assert(offsetof(AssociateMailboxImmediate, count) == 32,
-              "offset of AssociateMailboxImmediate count should be 32");
+    offsetof(AssociateMailboxImmediate, internal_usage) == 24,
+    "offset of AssociateMailboxImmediate internal_usage should be 24");
+static_assert(offsetof(AssociateMailboxImmediate, flags) == 28,
+              "offset of AssociateMailboxImmediate flags should be 28");
+static_assert(
+    offsetof(AssociateMailboxImmediate, view_format_count) == 32,
+    "offset of AssociateMailboxImmediate view_format_count should be 32");
+static_assert(offsetof(AssociateMailboxImmediate, count) == 36,
+              "offset of AssociateMailboxImmediate count should be 36");
 
 struct DissociateMailbox {
   typedef DissociateMailbox ValueType;

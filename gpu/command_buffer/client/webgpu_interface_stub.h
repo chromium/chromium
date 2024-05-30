@@ -39,6 +39,7 @@ class WebGPUInterfaceStub : public WebGPUInterface {
                         GLuint id,
                         GLuint generation,
                         GLuint usage,
+                        GLuint internal_usage,
                         const WGPUTextureFormat* view_formats,
                         GLuint view_format_count,
                         MailboxFlags flags,

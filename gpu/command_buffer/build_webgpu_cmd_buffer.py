@@ -66,7 +66,8 @@ _FUNCTION_INFO = {
     'client_test': False,
     'internal': True,
     'cmd_args': 'GLuint device_id, GLuint device_generation, GLuint id, '
-                'GLuint generation, GLuint usage, MailboxFlags flags, '
+                'GLuint generation, GLuint usage, '
+                'GLuint internal_usage, MailboxFlags flags, '
                 'GLuint view_format_count, GLuint count, '
                 'const GLuint* mailbox_and_view_formats',
     'type': 'PUTn',
