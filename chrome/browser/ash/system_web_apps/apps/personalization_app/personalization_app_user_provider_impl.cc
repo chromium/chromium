@@ -194,7 +194,7 @@ void PersonalizationAppUserProviderImpl::SelectProfileImage() {
   }
 
   if (GetUser(profile_)->image_index() !=
-      user_manager::User::USER_IMAGE_PROFILE) {
+      user_manager::UserImage::Type::kProfile) {
     ash::UserImageManagerImpl::RecordUserImageChanged(
         ash::default_user_image::kHistogramImageFromProfile);
   }
@@ -237,7 +237,7 @@ void PersonalizationAppUserProviderImpl::SelectLastExternalUserImage() {
   }
 
   if (GetUser(profile_)->image_index() !=
-      user_manager::User::USER_IMAGE_EXTERNAL) {
+      user_manager::UserImage::Type::kExternal) {
     ash::UserImageManagerImpl::RecordUserImageChanged(
         ash::default_user_image::kHistogramImageExternal);
   }
@@ -276,13 +276,13 @@ void PersonalizationAppUserProviderImpl::OnUserImageChanged(
 
   int image_index = desired_user->image_index();
   switch (image_index) {
-    case user_manager::User::USER_IMAGE_INVALID: {
+    case user_manager::UserImage::Type::kInvalid: {
       UpdateUserImageObserver(
           ash::personalization_app::mojom::UserImage::NewInvalidImage(
               ash::personalization_app::mojom::InvalidImage::New()));
       break;
     }
-    case user_manager::User::USER_IMAGE_EXTERNAL: {
+    case user_manager::UserImage::Type::kExternal: {
       if (desired_user->image_format() == user_manager::UserImage::FORMAT_PNG &&
           desired_user->has_image_bytes()) {
         last_external_user_image_ = std::make_unique<user_manager::UserImage>(
@@ -309,7 +309,7 @@ void PersonalizationAppUserProviderImpl::OnUserImageChanged(
       }
       break;
     }
-    case user_manager::User::USER_IMAGE_PROFILE: {
+    case user_manager::UserImage::Type::kProfile: {
       UpdateUserImageObserver(
           ash::personalization_app::mojom::UserImage::NewProfileImage(
               ash::personalization_app::mojom::ProfileImage::New()));

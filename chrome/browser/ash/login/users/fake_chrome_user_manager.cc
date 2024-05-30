@@ -120,7 +120,7 @@ FakeChromeUserManager::AddUserWithAffiliationAndTypeAndProfile(
       std::make_unique<user_manager::UserImage>(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_LOGIN_DEFAULT_USER)),
-      user_manager::User::USER_IMAGE_PROFILE, false);
+      user_manager::UserImage::Type::kProfile, false);
   user_storage_.emplace_back(user);
   users_.push_back(user);
 
@@ -174,7 +174,7 @@ user_manager::User* FakeChromeUserManager::AddPublicAccountUser(
       std::make_unique<user_manager::UserImage>(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_LOGIN_DEFAULT_USER)),
-      user_manager::User::USER_IMAGE_PROFILE, false);
+      user_manager::UserImage::Type::kProfile, false);
   user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;

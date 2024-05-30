@@ -1194,7 +1194,7 @@ User* UserManagerBase::FindUserInListAndModify(const AccountId& account_id) {
 void UserManagerBase::GuestUserLoggedIn() {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
   auto* user = User::CreateGuestUser(GuestAccountId());
-  user->SetStubImage(CreateStubImage(), User::USER_IMAGE_INVALID,
+  user->SetStubImage(CreateStubImage(), UserImage::Type::kInvalid,
                      /*is_loading=*/false);
   user_storage_.emplace_back(user);
   active_user_ = user;
@@ -1267,7 +1267,7 @@ void UserManagerBase::PublicAccountUserLoggedIn(user_manager::User* user) {
 void UserManagerBase::KioskAppLoggedIn(user_manager::User* user) {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
 
-  user->SetStubImage(CreateStubImage(), User::USER_IMAGE_INVALID,
+  user->SetStubImage(CreateStubImage(), UserImage::Type::kInvalid,
                      /*is_loading=*/false);
   active_user_ = user;
 }

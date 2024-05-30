@@ -632,7 +632,7 @@ TEST_F(PersonalizationAppUserProviderImplTest, SelectImageFromDisk) {
   ASSERT_EQ(user_manager::UserManager::Get()
                 ->FindUser(GetAccountId(profile()))
                 ->image_index(),
-            user_manager::User::USER_IMAGE_PROFILE);
+            user_manager::UserImage::Type::kProfile);
 
   base::FilePath file_path = GetTestFilePath();
   auto fake_file_selector =
@@ -645,7 +645,7 @@ TEST_F(PersonalizationAppUserProviderImplTest, SelectImageFromDisk) {
   EXPECT_EQ(user_manager::UserManager::Get()
                 ->FindUser(GetAccountId(profile()))
                 ->image_index(),
-            user_manager::User::USER_IMAGE_EXTERNAL);
+            user_manager::UserImage::Type::kExternal);
 }
 
 TEST_F(PersonalizationAppUserProviderImplTest,

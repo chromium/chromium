@@ -31,7 +31,7 @@ const char kImageIndex[] = "image_index";
 
 bool IsIndexSupported(int index) {
   return default_user_image::IsValidIndex(index) ||
-         (index == user_manager::User::USER_IMAGE_PROFILE);
+         (index == user_manager::UserImage::Type::kProfile);
 }
 
 }  // anonymous namespace
@@ -139,7 +139,7 @@ void UserImageSyncObserver::OnIsSyncingChanged() {
 void UserImageSyncObserver::UpdateSyncedImageFromLocal() {
   int local_index = user_->image_index();
   if (!IsIndexSupported(local_index)) {
-    local_index = user_manager::User::USER_IMAGE_INVALID;
+    local_index = user_manager::UserImage::Type::kInvalid;
   }
   int synced_index;
   if (GetSyncedImageIndex(&synced_index) && (synced_index == local_index)) {
@@ -160,7 +160,7 @@ void UserImageSyncObserver::UpdateLocalImageFromSynced() {
   }
   UserImageManagerImpl* image_manager =
       UserImageManagerRegistry::Get()->GetManager(user_->GetAccountId());
-  if (synced_index == user_manager::User::USER_IMAGE_PROFILE) {
+  if (synced_index == user_manager::UserImage::Type::kProfile) {
     image_manager->SaveUserImageFromProfileImage();
   } else {
     image_manager->SaveUserDefaultImageIndex(synced_index);
@@ -169,11 +169,11 @@ void UserImageSyncObserver::UpdateLocalImageFromSynced() {
 }
 
 bool UserImageSyncObserver::GetSyncedImageIndex(int* index) {
-  *index = user_manager::User::USER_IMAGE_INVALID;
+  *index = user_manager::UserImage::Type::kInvalid;
   const base::Value::Dict& dict = prefs_->GetDict(kUserImageInfo);
   std::optional<int> maybe_index = dict.FindInt(kImageIndex);
   if (!maybe_index.has_value()) {
-    *index = user_manager::User::USER_IMAGE_INVALID;
+    *index = user_manager::UserImage::Type::kInvalid;
     return false;
   }
 

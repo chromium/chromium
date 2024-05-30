@@ -1472,11 +1472,11 @@ ExtensionFunction::ResponseAction AutotestPrivateLoginStatusFunction::Run() {
 
       std::string user_image;
       switch (user->image_index()) {
-        case user_manager::User::USER_IMAGE_EXTERNAL:
+        case user_manager::UserImage::Type::kExternal:
           user_image = "file";
           break;
 
-        case user_manager::User::USER_IMAGE_PROFILE:
+        case user_manager::UserImage::Type::kProfile:
           user_image = "profile";
           break;
 

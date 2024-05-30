@@ -120,9 +120,9 @@ const char* ChooseExtensionFromImageFormat(
 // static
 int UserImageManagerImpl::ImageIndexToHistogramIndex(int image_index) {
   switch (image_index) {
-    case user_manager::User::USER_IMAGE_EXTERNAL:
+    case user_manager::UserImage::Type::kExternal:
       return default_user_image::kHistogramImageExternal;
-    case user_manager::User::USER_IMAGE_PROFILE:
+    case user_manager::UserImage::Type::kProfile:
       return default_user_image::kHistogramImageFromProfile;
     default:
       return image_index + default_user_image::kHistogramSpecialImagesMaxCount;
@@ -296,8 +296,8 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
           image_url_, base::BindOnce(&Job::OnLoadImageDone,
                                      weak_factory_.GetWeakPtr(), true));
     }
-  } else if (image_index_ == user_manager::User::USER_IMAGE_EXTERNAL ||
-             image_index_ == user_manager::User::USER_IMAGE_PROFILE) {
+  } else if (image_index_ == user_manager::UserImage::Type::kExternal ||
+             image_index_ == user_manager::UserImage::Type::kProfile) {
     // Load the user image from a file referenced by `image_path`. This happens
     // asynchronously. PNG_CODEC can be used here because LoadImage() is
     // called only for users whose user image has previously been set by one of
@@ -350,8 +350,8 @@ void UserImageManagerImpl::Job::SetToImage(
   DCHECK(!run_);
   run_ = true;
 
-  DCHECK(image_index == user_manager::User::USER_IMAGE_EXTERNAL ||
-         image_index == user_manager::User::USER_IMAGE_PROFILE);
+  DCHECK(image_index == user_manager::UserImage::Type::kExternal ||
+         image_index == user_manager::UserImage::Type::kProfile);
 
   image_index_ = image_index;
 
@@ -363,7 +363,7 @@ void UserImageManagerImpl::Job::SetToImageData(
   DCHECK(!run_);
   run_ = true;
 
-  image_index_ = user_manager::User::USER_IMAGE_EXTERNAL;
+  image_index_ = user_manager::UserImage::Type::kExternal;
 
   user_image_loader::StartWithData(
       parent_->background_task_runner_, std::move(data),
@@ -498,7 +498,7 @@ void UserImageManagerImpl::Job::SaveImageAndUpdateLocalState(
 
 void UserImageManagerImpl::Job::OnSaveImageDone(bool success) {
   image_cache_updated_ = success;
-  if (success || image_index_ == user_manager::User::USER_IMAGE_PROFILE) {
+  if (success || image_index_ == user_manager::UserImage::Type::kProfile) {
     UpdateLocalState();
   }
   NotifyJobDone();
@@ -571,8 +571,8 @@ void UserImageManagerImpl::LoadUserImage() {
   }
 
   int image_index = image_properties->FindInt(kImageIndexNodeName)
-                        .value_or(user_manager::User::USER_IMAGE_INVALID);
-  if (image_index == user_manager::User::USER_IMAGE_INVALID) {
+                        .value_or(user_manager::UserImage::Type::kInvalid);
+  if (image_index == user_manager::UserImage::Type::kInvalid) {
     NOTREACHED_IN_MIGRATION();
     return;
   }
@@ -591,7 +591,7 @@ void UserImageManagerImpl::LoadUserImage() {
               IDR_LOGIN_DEFAULT_USER)),
       image_index, true);
   DCHECK((image_path && !image_path->empty()) ||
-         image_index == user_manager::User::USER_IMAGE_PROFILE ||
+         image_index == user_manager::UserImage::Type::kProfile ||
          default_user_image::IsValidIndex(image_index));
   if (!default_user_image::IsValidIndex(image_index) &&
       (!image_path || image_path->empty())) {
@@ -674,7 +674,7 @@ void UserImageManagerImpl::SaveUserImage(
     return;
   }
   job_ = std::make_unique<Job>(this);
-  job_->SetToImage(user_manager::User::USER_IMAGE_EXTERNAL,
+  job_->SetToImage(user_manager::UserImage::Type::kExternal,
                    std::move(user_image));
 }
 
@@ -683,7 +683,7 @@ void UserImageManagerImpl::SaveUserImageFromFile(const base::FilePath& path) {
     return;
   }
   job_ = std::make_unique<Job>(this);
-  job_->SetToPath(path, user_manager::User::USER_IMAGE_EXTERNAL, GURL(), true);
+  job_->SetToPath(path, user_manager::UserImage::Type::kExternal, GURL(), true);
 }
 
 void UserImageManagerImpl::SaveUserImageFromProfileImage() {
@@ -701,7 +701,7 @@ void UserImageManagerImpl::SaveUserImageFromProfileImage() {
                                        *downloaded_profile_image_.bitmap()));
   }
   job_ = std::make_unique<Job>(this);
-  job_->SetToImage(user_manager::User::USER_IMAGE_PROFILE,
+  job_->SetToImage(user_manager::UserImage::Type::kProfile,
                    std::move(user_image));
   // If no profile image has been downloaded yet, ensure that a download is
   // started.
@@ -870,7 +870,7 @@ void UserImageManagerImpl::OnProfileDownloadSuccess(
       gfx::ImageSkia::CreateFrom1xBitmap(downloader->GetProfilePicture());
   profile_image_url_ = GURL(downloader->GetProfilePictureURL());
 
-  if (user->image_index() == user_manager::User::USER_IMAGE_PROFILE ||
+  if (user->image_index() == user_manager::UserImage::Type::kProfile ||
       is_random_image_set_) {
     is_random_image_set_ = false;
     VLOG(1) << "Updating profile image for logged-in user.";
@@ -906,7 +906,7 @@ void UserImageManagerImpl::SetInitialUserImage() {
 
 void UserImageManagerImpl::TryToInitDownloadedProfileImage() {
   const user_manager::User* user = GetUser();
-  if (user->image_index() == user_manager::User::USER_IMAGE_PROFILE &&
+  if (user->image_index() == user_manager::UserImage::Type::kProfile &&
       downloaded_profile_image_.isNull() && !user->image_is_stub()) {
     // Initialize the `downloaded_profile_image_` for the currently logged-in
     // user if it has not been initialized already, the user image is the
@@ -921,7 +921,7 @@ bool UserImageManagerImpl::NeedProfileImage() const {
   const user_manager::User* user = GetUser();
   return IsUserLoggedInAndHasGaiaAccount() &&
          IsCustomizationSelectorsPrefEnabled() &&
-         user->image_index() == user_manager::User::USER_IMAGE_PROFILE;
+         user->image_index() == user_manager::UserImage::Type::kProfile;
 }
 
 void UserImageManagerImpl::DownloadProfileData() {

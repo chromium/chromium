@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(UserAvatarCustomizationSelectorsEnabledPolicyTest,
   user_image_manager_->SaveUserImage(user_manager::UserImage::CreateAndEncode(
       image, user_manager::UserImage::FORMAT_JPEG));
   waiter.Wait();
-  EXPECT_EQ(user_manager::User::USER_IMAGE_EXTERNAL, user_->image_index());
+  EXPECT_EQ(user_manager::UserImage::Type::kExternal, user_->image_index());
   EXPECT_TRUE(ash::test::AreImagesEqual(image, user_->GetImage()));
 
   // Save custom local image from file
@@ -138,14 +138,14 @@ IN_PROC_BROWSER_TEST_F(UserAvatarCustomizationSelectorsEnabledPolicyTest,
   waiter.Reset();
   user_image_manager_->SaveUserImageFromFile(custom_image_path);
   waiter.Wait();
-  EXPECT_EQ(user_manager::User::USER_IMAGE_EXTERNAL, user_->image_index());
+  EXPECT_EQ(user_manager::UserImage::Type::kExternal, user_->image_index());
   EXPECT_TRUE(ash::test::AreImagesEqual(custom_image, user_->GetImage()));
 
   // Save profile image
   waiter.Reset();
   user_image_manager_->SaveUserImageFromProfileImage();
   waiter.Wait();
-  EXPECT_EQ(user_manager::User::USER_IMAGE_PROFILE, user_->image_index());
+  EXPECT_EQ(user_manager::UserImage::Type::kProfile, user_->image_index());
 
   // Save default image. This should not be affected by policy
   int index = ash::default_user_image::GetRandomDefaultImageIndex();

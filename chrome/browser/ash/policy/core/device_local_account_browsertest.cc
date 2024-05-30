@@ -1518,7 +1518,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, UserAvatarImage) {
       user_data_dir.Append(account_id_1_.GetUserEmail()).AddExtension("jpg");
 
   EXPECT_FALSE(user->HasDefaultImage());
-  EXPECT_EQ(user_manager::User::USER_IMAGE_EXTERNAL, user->image_index());
+  EXPECT_EQ(user_manager::UserImage::Type::kExternal, user->image_index());
   EXPECT_TRUE(ash::test::AreImagesEqual(policy_image, user->GetImage()));
   const base::Value::Dict& images_pref =
       g_browser_process->local_state()->GetDict("user_image_info");
@@ -1529,7 +1529,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, UserAvatarImage) {
   const std::string* image_path = image_properties->FindString("path");
   ASSERT_TRUE(image_index.has_value());
   ASSERT_TRUE(image_path);
-  EXPECT_EQ(user_manager::User::USER_IMAGE_EXTERNAL, image_index.value());
+  EXPECT_EQ(user_manager::UserImage::Type::kExternal, image_index.value());
   EXPECT_EQ(saved_image_path.value(), *image_path);
 
   gfx::ImageSkia saved_image = ash::test::ImageLoader(saved_image_path).Load();
