@@ -372,5 +372,44 @@ TEST_F(CSSPrimitiveValueTest, ContainerProgressTreeScope) {
   EXPECT_EQ(&scoped_value, &scoped_value2);
 }
 
+TEST_F(CSSPrimitiveValueTest, CSSPrimitiveValueOperations) {
+  auto* numeric_percentage = CSSNumericLiteralValue::Create(
+      10, CSSPrimitiveValue::UnitType::kPercentage);
+  auto* numeric_number =
+      CSSNumericLiteralValue::Create(10, CSSPrimitiveValue::UnitType::kNumber);
+  auto* node_10_px = CSSMathExpressionNumericLiteral::Create(
+      10, CSSPrimitiveValue::UnitType::kPixels);
+  auto* node_20_em = CSSMathExpressionNumericLiteral::Create(
+      20, CSSPrimitiveValue::UnitType::kEms);
+  auto* node_subtract = CSSMathExpressionOperation::CreateArithmeticOperation(
+      node_10_px, node_20_em, CSSMathOperator::kSubtract);
+  auto* node_sign = CSSMathExpressionOperation::CreateSignRelatedFunction(
+      {node_subtract}, CSSValueID::kSign);
+  auto* function = CSSMathFunctionValue::Create(node_sign);
+  EXPECT_EQ(function->Multiply(1, CSSPrimitiveValue::UnitType::kPixels)
+                ->Add(10, CSSPrimitiveValue::UnitType::kPixels)
+                ->CustomCSSText(),
+            "calc(10px + sign(-20em + 10px) * 1px)");
+  EXPECT_EQ(function->MultiplyBy(10, CSSPrimitiveValue::UnitType::kNumber)
+                ->CustomCSSText(),
+            "calc(10 * sign(-20em + 10px))");
+  EXPECT_EQ(function->MultiplyBy(1, CSSPrimitiveValue::UnitType::kPixels)
+                ->Subtract(*numeric_percentage)
+                ->CustomCSSText(),
+            "calc(-10% + 1px * sign(-20em + 10px))");
+  EXPECT_EQ(function->Divide(20, CSSPrimitiveValue::UnitType::kNumber)
+                ->CustomCSSText(),
+            "calc(sign(-20em + 10px) / 20)");
+  EXPECT_EQ(function->Subtract(*function)->CustomCSSText(),
+            "calc(sign(-20em + 10px) - sign(-20em + 10px))");
+  EXPECT_EQ(
+      numeric_percentage->SubtractFrom(10, CSSPrimitiveValue::UnitType::kPixels)
+          ->CustomCSSText(),
+      "calc(-10% + 10px)");
+  EXPECT_EQ(numeric_number->Subtract(10, CSSPrimitiveValue::UnitType::kNumber)
+                ->CustomCSSText(),
+            "0");
+}
+
 }  // namespace
 }  // namespace blink

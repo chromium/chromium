@@ -36,6 +36,7 @@
 namespace blink {
 
 class CSSLengthResolver;
+class CSSMathExpressionNode;
 
 // Dimension calculations are imprecise, often resulting in values of e.g.
 // 44.99998. We need to go ahead and round if we're really close to the next
@@ -369,6 +370,33 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
 
   bool IsZero() const;
 
+  // this + value
+  CSSPrimitiveValue* Add(double value, UnitType unit_type) const;
+  // value + this
+  CSSPrimitiveValue* AddTo(double value, UnitType unit_type) const;
+  // this + value
+  CSSPrimitiveValue* Add(const CSSPrimitiveValue& value) const;
+  // value + this
+  CSSPrimitiveValue* AddTo(const CSSPrimitiveValue& value) const;
+  // this - value
+  CSSPrimitiveValue* Subtract(double value, UnitType unit_type) const;
+  // value - this
+  CSSPrimitiveValue* SubtractFrom(double value, UnitType unit_type) const;
+  // this - value
+  CSSPrimitiveValue* Subtract(const CSSPrimitiveValue& value) const;
+  // value - this
+  CSSPrimitiveValue* SubtractFrom(const CSSPrimitiveValue& value) const;
+  // this * value
+  CSSPrimitiveValue* Multiply(double value, UnitType unit_type) const;
+  // value * this
+  CSSPrimitiveValue* MultiplyBy(double value, UnitType unit_type) const;
+  // this * value
+  CSSPrimitiveValue* Multiply(const CSSPrimitiveValue& value) const;
+  // value * this
+  CSSPrimitiveValue* MultiplyBy(const CSSPrimitiveValue& value) const;
+  // this / value
+  CSSPrimitiveValue* Divide(double value, UnitType unit_type) const;
+
   // TODO(crbug.com/979895): The semantics of these untyped getters are not very
   // clear if |this| is a math function. Do not add new callers before further
   // refactoring and cleanups.
@@ -430,6 +458,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
 
  private:
   bool InvolvesLayout() const;
+  const CSSMathExpressionNode* ToMathExpressionNode() const;
 };
 
 using CSSLengthArray = CSSPrimitiveValue::CSSLengthArray;
