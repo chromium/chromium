@@ -202,6 +202,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:chromium/fuzz",
+    bootstrappable = True,
 )
 
 build_recipe(

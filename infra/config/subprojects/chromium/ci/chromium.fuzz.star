@@ -4,6 +4,7 @@
 """Definitions of builders in the chromium.fuzz builder group."""
 
 load("//lib/args.star", "args")
+load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "builders", "os", "reclient", "sheriff_rotations")
@@ -32,6 +33,10 @@ ci.defaults.set(
 
 consoles.console_view(
     name = "chromium.fuzz",
+    branch_selector = [
+        branches.selector.LINUX_BRANCHES,
+        branches.selector.WINDOWS_BRANCHES,
+    ],
     ordering = {
         None: [
             "centipede",
@@ -266,9 +271,25 @@ ci.builder(
 
 ci.builder(
     name = "Centipede Upload Linux ASan",
+    branch_selector = branches.selector.LINUX_BRANCHES,
     executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 4,
+    ),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
     ),
     gn_args = gn_args.config(
         configs = [
@@ -290,6 +311,11 @@ ci.builder(
         short_name = "centipede",
     ),
     contact_team_email = "chrome-deet-core@google.com",
+    properties = {
+        "upload_bucket": "chromium-browser-centipede",
+        "upload_directory": "asan",
+        "archive_prefix": "centipede",
+    },
 )
 
 ci.builder(
@@ -300,6 +326,21 @@ Those fuzzers require more resources to run correctly.\
     executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 4,
+    ),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
     ),
     gn_args = gn_args.config(
         configs = [
@@ -321,6 +362,11 @@ Those fuzzers require more resources to run correctly.\
         short_name = "centipede high end",
     ),
     contact_team_email = "chrome-deet-core@google.com",
+    properties = {
+        "upload_bucket": "chromium-browser-centipede",
+        "upload_directory": "asan",
+        "archive_prefix": "centipede-high-end",
+    },
 )
 
 ci.builder(
@@ -824,6 +870,24 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
     ),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chromeos",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
+        ),
+    ),
     gn_args = gn_args.config(
         configs = [
             "libfuzzer",
@@ -843,12 +907,34 @@ ci.builder(
     ),
     contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 6 * time.hour,
+    properties = {
+        "archive_prefix": "libfuzzer-chromeos",
+        "upload_bucket": "chromium-browser-libfuzzer",
+        "upload_directory": "chromeos-asan",
+    },
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
     name = "Libfuzzer Upload iOS Catalyst Debug",
     executable = "recipe:chromium/fuzz",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["ios"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "clobber",
+                "mac_toolchain",
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.IOS,
+        ),
+    ),
     gn_args = gn_args.config(
         configs = [
             "compile_only",
@@ -871,14 +957,36 @@ ci.builder(
     ),
     contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 4 * time.hour,
+    properties = {
+        "archive_prefix": "libfuzzer-ios",
+        "upload_bucket": "chromium-browser-libfuzzer",
+        "upload_directory": "ios-catalyst-debug",
+        "ios_targets_only": True,
+    },
     xcode = xcode.xcode_default,
 )
 
 ci.builder(
     name = "Libfuzzer Upload Linux ASan",
+    branch_selector = branches.selector.LINUX_BRANCHES,
     executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
+    ),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
     ),
     gn_args = gn_args.config(
         configs = [
@@ -899,6 +1007,10 @@ ci.builder(
     ),
     contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 4 * time.hour,
+    properties = {
+        "upload_bucket": "chromium-browser-libfuzzer",
+        "upload_directory": "asan",
+    },
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -907,6 +1019,21 @@ ci.builder(
     executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
+    ),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
     ),
     gn_args = gn_args.config(
         configs = [
@@ -928,6 +1055,10 @@ ci.builder(
     ),
     contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 4 * time.hour,
+    properties = {
+        "upload_bucket": "chromium-browser-libfuzzer",
+        "upload_directory": "asan",
+    },
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -936,6 +1067,22 @@ ci.builder(
     executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
+    ),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "clobber",
+                "mb",
+                "msan",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
     ),
     gn_args = gn_args.config(
         configs = [
@@ -956,6 +1103,10 @@ ci.builder(
         short_name = "linux-msan",
     ),
     contact_team_email = "chrome-deet-core@google.com",
+    properties = {
+        "upload_bucket": "chromium-browser-libfuzzer",
+        "upload_directory": "msan",
+    },
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -964,6 +1115,21 @@ ci.builder(
     executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
+    ),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
     ),
     gn_args = gn_args.config(
         configs = [
@@ -986,6 +1152,10 @@ ci.builder(
     ),
     contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 5 * time.hour,
+    properties = {
+        "upload_bucket": "chromium-browser-libfuzzer",
+        "upload_directory": "ubsan",
+    },
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -994,6 +1164,21 @@ ci.builder(
     executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 1,
+    ),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1014,6 +1199,12 @@ ci.builder(
         short_name = "arm64",
     ),
     contact_team_email = "v8-infra@google.com",
+    properties = {
+        "archive_prefix": "libfuzzer-v8-arm64",
+        "upload_bucket": "chromium-browser-libfuzzer",
+        "upload_directory": "asan-arm64-sim",
+        "v8_targets_only": True,
+    },
 )
 
 ci.builder(
@@ -1021,6 +1212,21 @@ ci.builder(
     executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 1,
+    ),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1041,6 +1247,12 @@ ci.builder(
         short_name = "arm64-dbg",
     ),
     contact_team_email = "v8-infra@google.com",
+    properties = {
+        "archive_prefix": "libfuzzer-v8-arm64",
+        "upload_bucket": "chromium-browser-libfuzzer",
+        "upload_directory": "asan-arm64-sim",
+        "v8_targets_only": True,
+    },
 )
 
 ci.builder(
@@ -1048,6 +1260,21 @@ ci.builder(
     executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
+    ),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1068,6 +1295,10 @@ ci.builder(
         short_name = "linux32",
     ),
     contact_team_email = "chrome-deet-core@google.com",
+    properties = {
+        "upload_bucket": "chromium-browser-libfuzzer",
+        "upload_directory": "asan",
+    },
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -1076,6 +1307,21 @@ ci.builder(
     executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 1,
+    ),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1096,6 +1342,12 @@ ci.builder(
         short_name = "arm",
     ),
     contact_team_email = "v8-infra@google.com",
+    properties = {
+        "archive_prefix": "libfuzzer-v8-arm",
+        "upload_bucket": "chromium-browser-libfuzzer",
+        "upload_directory": "asan-arm-sim",
+        "v8_targets_only": True,
+    },
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -1104,6 +1356,21 @@ ci.builder(
     executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 1,
+    ),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
     ),
     gn_args = gn_args.config(
         configs = [
@@ -1124,11 +1391,32 @@ ci.builder(
         short_name = "arm-dbg",
     ),
     contact_team_email = "v8-infra@google.com",
+    properties = {
+        "archive_prefix": "libfuzzer-v8-arm",
+        "upload_bucket": "chromium-browser-libfuzzer",
+        "upload_directory": "asan-arm-sim",
+        "v8_targets_only": True,
+    },
 )
 
 ci.builder(
     name = "Libfuzzer Upload Mac ASan",
     executable = "recipe:chromium/fuzz",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
     gn_args = gn_args.config(
         configs = [
             "libfuzzer",
@@ -1149,13 +1437,33 @@ ci.builder(
     ),
     contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 4 * time.hour,
+    properties = {
+        "upload_bucket": "chromium-browser-libfuzzer",
+        "upload_directory": "asan",
+    },
 )
 
 ci.builder(
     name = "Libfuzzer Upload Windows ASan",
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
+    ),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
     ),
     # Note that because of optimize_for_fuzzing, Windows cannot share a config
     # with other libFuzzer builds. optimize_for_fuzzing is used by the other
@@ -1182,5 +1490,9 @@ ci.builder(
     # crbug.com/1175182: Temporarily increase timeout
     # crbug.com/1372531: Increase timeout again
     execution_timeout = 8 * time.hour,
+    properties = {
+        "upload_bucket": "chromium-browser-libfuzzer",
+        "upload_directory": "asan",
+    },
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )

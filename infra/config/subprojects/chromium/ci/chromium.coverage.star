@@ -483,6 +483,22 @@ coverage_builder(
 coverage_builder(
     name = "linux-fuzz-coverage",
     executable = "recipe:chromium/fuzz",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["use_clang_coverage"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "clobber",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
     gn_args = gn_args.config(
         configs = [
             "use_clang_coverage",
@@ -504,6 +520,9 @@ coverage_builder(
             short_name = "lnx-fuzz",
         ),
     ],
+    properties = {
+        "collect_fuzz_coverage": True,
+    },
 )
 
 coverage_builder(

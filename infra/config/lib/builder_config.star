@@ -820,6 +820,20 @@ def _set_builder_config_property(ctx):
                 "cft",
             ]
             excluded_builders = [
+                # TODO(crbug.com/343505108): Remove the following libfuzzer
+                # builders as trybots are created for them.
+                "Centipede High End Upload Linux ASan",
+                "Libfuzzer Upload Chrome OS ASan",
+                "Libfuzzer Upload Linux ASan Debug",
+                "Libfuzzer Upload Linux MSan",
+                "Libfuzzer Upload Linux UBSan",
+                "Libfuzzer Upload Linux V8-ARM64 ASan",
+                "Libfuzzer Upload Linux V8-ARM64 ASan Debug",
+                "Libfuzzer Upload Linux32 ASan",
+                "Libfuzzer Upload Linux32 V8-ARM ASan",
+                "Libfuzzer Upload Linux32 V8-ARM ASan Debug",
+                "Libfuzzer Upload Mac ASan",
+                "Libfuzzer Upload iOS Catalyst Debug",
                 # TODO(crbug.com/40282196): Remove the following as trybots are
                 # created for them.
                 "android-arm64-archive-rel",
