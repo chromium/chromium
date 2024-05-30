@@ -840,7 +840,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             CoreAccountInfo primaryAccountInfo =
                     IdentityServicesProvider.get()
                             .getIdentityManager(getProfile())
-                            .getPrimaryAccountInfo(ConsentLevel.SYNC);
+                            .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
             if (primaryAccountInfo != null) {
                 SyncSettingsUtils.openTrustedVaultKeyRetrievalDialog(
                         this, primaryAccountInfo, REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL);

@@ -24,6 +24,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
+import android.app.PendingIntent;
 
 import androidx.preference.Preference;
 import androidx.test.espresso.intent.Intents;
@@ -37,7 +38,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Promise;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -55,6 +58,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -325,6 +329,34 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         Intents.release();
     }
 
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testTrustedVaultKeyRetrievalForSignedInUsers() {
+        // TODO(crbug.com/334124078): Simplify the test using FakeTrustedVaultClientBackend once the
+        // bug is resolved.
+        TestTrustedVaultClientBackend backend = new TestTrustedVaultClientBackend();
+        TrustedVaultClient.setInstanceForTesting(new TrustedVaultClient(backend));
+
+        final FakeSyncServiceImpl fakeSyncService =
+                (FakeSyncServiceImpl) mSyncTestRule.getSyncService();
+        fakeSyncService.setEngineInitialized(true);
+        fakeSyncService.setTrustedVaultKeyRequired(true);
+
+        // Sign in and open settings.
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+
+        ManageSyncSettings fragment = startManageSyncPreferences();
+        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
+
+        // Mimic the user tapping on Encryption.
+        Preference encryption = fragment.findPreference(ManageSyncSettings.PREF_ENCRYPTION);
+        clickPreference(encryption);
+
+        CriteriaHelper.pollUiThread(() -> backend.isSuccess());
+    }
+
     private ManageSyncSettings startManageSyncPreferences() {
         mSettingsActivity = mSettingsActivityTestRule.startSettingsActivity();
         return mSettingsActivityTestRule.getFragment();
@@ -334,5 +366,25 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> pref.getOnPreferenceClickListener().onPreferenceClick(pref));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+    }
+
+    // An empty implementation to test only the fact that "something" happens when the encryption
+    // dialog is clicked.
+    public static class TestTrustedVaultClientBackend extends TrustedVaultClient.EmptyBackend {
+        private boolean mSuccess;
+
+        public TestTrustedVaultClientBackend() {
+            mSuccess = false;
+        }
+
+        public boolean isSuccess() {
+            return mSuccess;
+        }
+
+        @Override
+        public Promise<PendingIntent> createKeyRetrievalIntent(CoreAccountInfo accountInfo) {
+            mSuccess = true;
+            return super.createKeyRetrievalIntent(accountInfo);
+        }
     }
 }
