@@ -11,32 +11,47 @@ import android.os.RemoteException;
 
 import androidx.annotation.Nullable;
 
+import com.google.privacy.ppn.proto.AuthAndSignRequest;
+import com.google.privacy.ppn.proto.AuthAndSignResponse;
+import com.google.privacy.ppn.proto.GetInitialDataRequest;
+import com.google.privacy.ppn.proto.GetInitialDataResponse;
+import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.components.ip_protection_auth.common.IIpProtectionAuthAndSignCallback;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionAuthService;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionGetInitialDataCallback;
-import org.chromium.components.ip_protection_auth.common.proto.IpProtectionAuthProtos.AuthAndSignRequest;
-import org.chromium.components.ip_protection_auth.common.proto.IpProtectionAuthProtos.AuthAndSignResponse;
-import org.chromium.components.ip_protection_auth.common.proto.IpProtectionAuthProtos.GetInitialDataRequest;
-import org.chromium.components.ip_protection_auth.common.proto.IpProtectionAuthProtos.GetInitialDataResponse;
 
 /** Mock implementation of the IP Protection Auth Service */
 public final class IpProtectionAuthServiceMock extends Service {
     private static final String TAG = "IpProtectionAuthServiceMock";
+    private static final String TEST_STRING = "test";
+    private static final String EXPECTED_SERVICE_TYPE = "webviewipblinding";
+
     private final IIpProtectionAuthService.Stub mBinder =
             new IIpProtectionAuthService.Stub() {
-                // TODO(abhijithnair): Currently this method just passes the same request byte[]
-                // back as the result. Use a mock result instead.
                 @Override
                 public void getInitialData(
                         byte[] bytes, IIpProtectionGetInitialDataCallback callback) {
                     try {
                         GetInitialDataRequest request =
                                 GetInitialDataRequest.parser().parseFrom(bytes);
+                        if (!request.getServiceType().equals(EXPECTED_SERVICE_TYPE)) {
+                            String errorMessage =
+                                    "expected service type "
+                                            + EXPECTED_SERVICE_TYPE
+                                            + ", got: "
+                                            + request.getServiceType();
+                            callback.reportError(errorMessage.getBytes());
+                            return;
+                        }
+                        GetInitialDataResponse.PrivacyPassData privacyPassData =
+                                GetInitialDataResponse.PrivacyPassData.newBuilder()
+                                        .setTokenKeyId(ByteString.copyFrom(TEST_STRING.getBytes()))
+                                        .build();
                         GetInitialDataResponse response =
                                 GetInitialDataResponse.newBuilder()
-                                        .setTestPayload(request.getTestPayload())
+                                        .setPrivacyPassData(privacyPassData)
                                         .build();
                         callback.reportResult(response.toByteArray());
                     } catch (RemoteException ex) {
@@ -48,16 +63,21 @@ public final class IpProtectionAuthServiceMock extends Service {
                     }
                 }
 
-                // TODO(abhijithnair): Currently this method just passes the same request byte[]
-                // back as the result. Use a mock result instead.
                 @Override
                 public void authAndSign(byte[] bytes, IIpProtectionAuthAndSignCallback callback) {
                     try {
                         AuthAndSignRequest request = AuthAndSignRequest.parser().parseFrom(bytes);
+                        if (!request.getOauthToken().equals(TEST_STRING)) {
+                            String errorMessage =
+                                    "expected oauth token "
+                                            + TEST_STRING
+                                            + ", got: "
+                                            + request.getOauthToken();
+                            callback.reportError(errorMessage.getBytes());
+                            return;
+                        }
                         AuthAndSignResponse response =
-                                AuthAndSignResponse.newBuilder()
-                                        .setTestPayload(request.getTestPayload())
-                                        .build();
+                                AuthAndSignResponse.newBuilder().setApnType(TEST_STRING).build();
                         callback.reportResult(response.toByteArray());
                     } catch (RemoteException ex) {
                         // TODO(abhijithnair): Handle this exception correctly.

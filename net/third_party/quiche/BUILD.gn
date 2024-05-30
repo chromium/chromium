@@ -886,6 +886,7 @@ proto_library("blind_sign_auth_proto") {
     ":blind_sign_auth_test_support",
     ":quiche",
     ":quiche_tests",
+    "//components/ip_protection/*",
   ]
 
   sources = protobuf_blind_sign_auth

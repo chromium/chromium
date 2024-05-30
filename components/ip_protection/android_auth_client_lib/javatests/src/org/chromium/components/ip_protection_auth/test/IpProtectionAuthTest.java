@@ -8,24 +8,26 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.fail;
 
-import android.content.Context;
 import android.os.ConditionVariable;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
+
+import com.google.privacy.ppn.proto.AuthAndSignRequest;
+import com.google.privacy.ppn.proto.AuthAndSignResponse;
+import com.google.privacy.ppn.proto.GetInitialDataRequest;
+import com.google.privacy.ppn.proto.GetInitialDataResponse;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.ip_protection_auth.IpProtectionAuthClient;
-import org.chromium.components.ip_protection_auth.common.proto.IpProtectionAuthProtos.AuthAndSignRequest;
-import org.chromium.components.ip_protection_auth.common.proto.IpProtectionAuthProtos.AuthAndSignResponse;
-import org.chromium.components.ip_protection_auth.common.proto.IpProtectionAuthProtos.GetInitialDataRequest;
-import org.chromium.components.ip_protection_auth.common.proto.IpProtectionAuthProtos.GetInitialDataResponse;
+import org.chromium.components.ip_protection_auth.IpProtectionAuthServiceCallback;
+import org.chromium.components.ip_protection_auth.IpProtectionByteArrayCallback;
 
 @MediumTest
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -35,11 +37,10 @@ public final class IpProtectionAuthTest {
 
     @Before
     public void setUp() throws Exception {
-        Context context = ApplicationProvider.getApplicationContext();
-
+        LibraryLoader.getInstance().ensureInitialized();
         final ConditionVariable conditionVariable = new ConditionVariable();
-        IpProtectionAuthClient.IpProtectionAuthServiceCallback callback =
-                new IpProtectionAuthClient.IpProtectionAuthServiceCallback() {
+        IpProtectionAuthServiceCallback callback =
+                new IpProtectionAuthServiceCallback() {
                     @Override
                     public void onResult(IpProtectionAuthClient client) {
                         mIpProtectionClient = client;
@@ -51,7 +52,7 @@ public final class IpProtectionAuthTest {
                         fail("onError should not be called");
                     }
                 };
-        IpProtectionAuthClient.createConnectedInstanceForTestingAsync(context, callback);
+        IpProtectionAuthClient.createConnectedInstanceForTestingAsync(callback);
         assertThat(conditionVariable.block(5000)).isTrue();
     }
 
@@ -65,11 +66,15 @@ public final class IpProtectionAuthTest {
         final ConditionVariable conditionVariable = new ConditionVariable();
         // Using a 1-element array so that the reference is final and can be passed into the lambda.
         final GetInitialDataResponse[] getInitialDataResponse = new GetInitialDataResponse[1];
-        IpProtectionAuthClient.GetInitialDataCallback getInitialDataCallback =
-                new IpProtectionAuthClient.GetInitialDataCallback() {
+        IpProtectionByteArrayCallback getInitialDataCallback =
+                new IpProtectionByteArrayCallback() {
                     @Override
-                    public void onResult(GetInitialDataResponse response) {
-                        getInitialDataResponse[0] = response;
+                    public void onResult(byte[] response) {
+                        try {
+                            getInitialDataResponse[0] = GetInitialDataResponse.parseFrom(response);
+                        } catch (Exception e) {
+                            fail(e.getMessage());
+                        }
                         conditionVariable.open();
                     }
 
@@ -79,10 +84,9 @@ public final class IpProtectionAuthTest {
                     }
                 };
         GetInitialDataRequest request =
-                GetInitialDataRequest.newBuilder().setTestPayload("get initial data").build();
-        mIpProtectionClient.getInitialData(request, getInitialDataCallback);
+                GetInitialDataRequest.newBuilder().setServiceType("webviewipblinding").build();
+        mIpProtectionClient.getInitialData(request.toByteArray(), getInitialDataCallback);
         assertThat(conditionVariable.block(5000)).isTrue();
-        assertThat(getInitialDataResponse[0].getTestPayload()).isEqualTo("get initial data");
     }
 
     @Test
@@ -90,11 +94,15 @@ public final class IpProtectionAuthTest {
         final ConditionVariable conditionVariable = new ConditionVariable();
         // Using a 1-element array so that the reference is final and can be passed into the lambda.
         final AuthAndSignResponse[] authAndSignResponse = new AuthAndSignResponse[1];
-        IpProtectionAuthClient.AuthAndSignCallback authAndSignCallback =
-                new IpProtectionAuthClient.AuthAndSignCallback() {
+        IpProtectionByteArrayCallback authAndSignCallback =
+                new IpProtectionByteArrayCallback() {
                     @Override
-                    public void onResult(AuthAndSignResponse response) {
-                        authAndSignResponse[0] = response;
+                    public void onResult(byte[] response) {
+                        try {
+                            authAndSignResponse[0] = AuthAndSignResponse.parseFrom(response);
+                        } catch (Exception e) {
+                            fail(e.getMessage());
+                        }
                         conditionVariable.open();
                     }
 
@@ -104,9 +112,23 @@ public final class IpProtectionAuthTest {
                     }
                 };
         AuthAndSignRequest authAndSignRequest =
-                AuthAndSignRequest.newBuilder().setTestPayload("auth and sign").build();
-        mIpProtectionClient.authAndSign(authAndSignRequest, authAndSignCallback);
+                AuthAndSignRequest.newBuilder().setOauthToken("test").build();
+        mIpProtectionClient.authAndSign(authAndSignRequest.toByteArray(), authAndSignCallback);
         assertThat(conditionVariable.block(5000)).isTrue();
-        assertThat(authAndSignResponse[0].getTestPayload()).isEqualTo("auth and sign");
+    }
+
+    @Test
+    public void nativeCreateConnectedInstanceTest() throws Exception {
+        IpProtectionAuthTestNatives.createConnectedInstanceForTesting();
+    }
+
+    @Test
+    public void nativeGetInitialDataTest() throws Exception {
+        IpProtectionAuthTestNatives.testGetInitialData();
+    }
+
+    @Test
+    public void nativeAuthAndSignTest() throws Exception {
+        IpProtectionAuthTestNatives.testAuthAndSign();
     }
 }
