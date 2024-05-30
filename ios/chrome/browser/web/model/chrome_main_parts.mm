@@ -27,6 +27,7 @@
 #import "components/crash/core/common/crash_key.h"
 #import "components/crash/core/common/reporter_running_ios.h"
 #import "components/flags_ui/pref_service_flags_storage.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/language/core/browser/language_usage_metrics.h"
 #import "components/language/core/browser/pref_names.h"
 #import "components/memory_system/initializer.h"
@@ -310,8 +311,13 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
       .PreProfileInit(
           /*in_memory_database=*/false);
 
-  // Ensure that the browser state is initialized.
+  // Ensure that the KeyedService factories are registered.
   EnsureBrowserStateKeyedServiceFactoriesBuilt();
+  BrowserStateDependencyManager::GetInstance()
+      ->DisallowKeyedServiceFactoryRegistration(
+          "EnsureBrowserStateKeyedServiceFactoriesBuilt()");
+
+  // Ensure the ChromeBrowserState is loaded and initialized.
   ios::ChromeBrowserStateManager* browser_state_manager =
       application_context_->GetChromeBrowserStateManager();
 

@@ -26,3 +26,10 @@ SessionProtoDBFactory<
       instance;
   return instance.get();
 }
+
+void EnsureSessionProtoDBFactoriesBuilt() {
+  SessionProtoDBFactory<commerce_subscription_db::
+                            CommerceSubscriptionContentProto>::GetInstance();
+  SessionProtoDBFactory<
+      parcel_tracking_db::ParcelTrackingContent>::GetInstance();
+}
