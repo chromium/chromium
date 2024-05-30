@@ -84,6 +84,12 @@ static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
   int parse_iterations =
       parse_iterations_str.empty() ? 1 : stoi(parse_iterations_str);
 
+  const CSSDeferPropertyParsing defer_property_parsing =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          "style-lazy-parsing") != ""
+          ? CSSDeferPropertyParsing::kYes
+          : CSSDeferPropertyParsing::kNo;
+
   auto page = std::make_unique<DummyPageHolder>(
       gfx::Size(800, 600), nullptr,
       MakeGarbageCollected<NoNetworkLocalFrameClient>());
@@ -107,7 +113,7 @@ static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
 
     for (int i = 0; i < parse_iterations; ++i) {
       sheet->ParseString(WTF::String(*sheet_dict.FindString("text")),
-                         /*allow_import_rules=*/true);
+                         /*allow_import_rules=*/true, defer_property_parsing);
     }
     if (*sheet_dict.FindString("type") == "user") {
       engine.InjectSheet(g_empty_atom, sheet, WebCssOrigin::kUser);
