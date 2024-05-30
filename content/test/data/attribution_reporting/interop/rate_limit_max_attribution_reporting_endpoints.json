@@ -141,7 +141,6 @@
       {
         "timestamp": "5001",
         "registration_request": {
-          "attribution_src_url": "https://example.reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
