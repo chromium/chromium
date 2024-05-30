@@ -1,6 +1,6 @@
 <!-- mdformat off(generated) -->
 <!-- mdlint off(generated) -->
-Version: 15
+Version: 16
 
 SHA 256 Hash | Subject | NotBefore | NotAfter
 ---|---|---|---
@@ -87,7 +87,6 @@ c741f70f4b2a8d88bf2e71c14122ef53ef10eba0cfa5e64cfa20f418853073e0 | CN=Microsoft 
 8a866fd1b276b57e578e921c65828a2bed58e9f2f288054134b7f1f4bfc9cc74 | CN=QuoVadis Root CA 1 G3,O=QuoVadis Limited,C=BM | 2012-01-12 | 2042-01-12
 8fe4fb0af93a4d0d67db0bebb23e37c71bf325dcbcdd240ea04daf58b47e1840 | CN=QuoVadis Root CA 2 G3,O=QuoVadis Limited,C=BM | 2012-01-12 | 2042-01-12
 513b2cecb810d4cde5dd85391adfc6c2dd60d87bb736d2b521484aa47a0ebef6 | OU=Security Communication RootCA2,O=SECOM Trust Systems CO.\,LTD.,C=JP | 2009-05-29 | 2029-05-29
-e75e72ed9f560eec6eb4800073a43fc3ad19195a392282017895974a99026b6c | OU=Security Communication RootCA1,O=SECOM Trust.net,C=JP | 2003-09-30 | 2023-09-30
 1a0d20445de5ba1862d19ef880858cbce50102b36e8f0a040c3c69e74522fe6e | CN=COMODO Certification Authority,O=COMODO CA Limited,L=Salford,ST=Greater Manchester,C=GB | 2011-01-01 | 2030-12-31
 1793927a0614549789adce2f8f34f7f0b66d0f3ae3a3b84d21ec15dbba4fadc7 | CN=COMODO ECC Certification Authority,O=COMODO CA Limited,L=Salford,ST=Greater Manchester,C=GB | 2008-03-06 | 2038-01-18
 4ff460d54b9c86dabfbcfc5712e0400d2bed3fbc4d4fbdaa86e06adcd2a9ad7a | CN=USERTrust ECC Certification Authority,O=The USERTRUST Network,L=Jersey City,ST=New Jersey,C=US | 2010-02-01 | 2038-01-18
