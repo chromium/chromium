@@ -23,7 +23,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -97,7 +96,6 @@ public class BluetoothScanningPermissionDialogTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "b/343347280")
     public void testAddDevice() {
         Dialog dialog = mPermissionDialog.getDialogForTesting();
 
