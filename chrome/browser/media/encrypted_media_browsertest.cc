@@ -1163,13 +1163,12 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_StorageIdTest) {
 }
 
 // TODO(crbug.com/40601162): Times out in debug builds.
-// TODO(crbug.com/40916095): Sometimes crashes on win and chromeos.
-#if !defined(NDEBUG) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#define MAYBE_MultipleCdmTypes DISABLED_MultipeCdmTypes
-#else
+#ifdef NDEBUG
 #define MAYBE_MultipleCdmTypes MultipeCdmTypes
+#else
+#define MAYBE_MultipleCdmTypes DISABLED_MultipeCdmTypes
 #endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_MultipleCdmTypes) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MultipleCdmTypes) {
   base::StringPairs empty_query_params;
   RunMediaTestPage("multiple_cdm_types.html", empty_query_params,
                    media::kEndedTitle, true);
