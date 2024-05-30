@@ -45,16 +45,14 @@ enum TrustTokenOperationStatus {
   // verification keys for an issuer).
   kFailedPrecondition,
 
-  // No inputs for the given operation available, or a quota on the operation's
-  // output would be exceeded.
+  // No inputs for the given operation available.
   kResourceExhausted,
 
   // The operation's result already exists (for instance, a cache was hit).
   kAlreadyExists,
 
-  // Internal storage has not yet initialized, or the system is unavailable in
-  // some other general, probably transient, manner.
-  kUnavailable,
+  // A quota on the operation's outputs would be exceeded.
+  kResourceLimited,
 
   // The operation was unauthorized due to some sort of policy.
   kUnauthorized,

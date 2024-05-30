@@ -125,7 +125,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, RejectsIfTooManyIssuers) {
   mojom::TrustTokenOperationStatus result =
       ExecuteBeginOperationAndWaitForResult(&helper, request.get());
 
-  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kResourceExhausted);
+  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kResourceLimited);
 }
 
 // Check that redemption fails if its key commitment request fails.
@@ -1280,7 +1280,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, LimitThirdRedemptionAllowFourth) {
   env_.AdvanceClock(base::Seconds(
       kTrustTokenPerIssuerToplevelRedemptionFrequencyLimitInSeconds));
   result = ExecuteBeginOperationAndWaitForResult(&helper, request.get());
-  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kResourceExhausted);
+  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kResourceLimited);
 
   // after another second, redemption is allowed.
   env_.AdvanceClock(base::Seconds(1));
@@ -1379,7 +1379,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
   // pass some time, but not enough, fourth redemption fails
   env_.AdvanceClock(base::Seconds(second_redemption_delta - 1));
   result = ExecuteBeginOperationAndWaitForResult(&helper, request.get());
-  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kResourceExhausted);
+  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kResourceLimited);
 }
 
 }  // namespace network

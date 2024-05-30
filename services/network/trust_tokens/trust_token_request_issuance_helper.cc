@@ -153,7 +153,7 @@ void TrustTokenRequestIssuanceHelper::Begin(
   if (!token_store_->SetAssociation(*issuer_, top_level_origin_)) {
     LogOutcome(net_log_, kBegin, "Couldn't set issuer-toplevel association");
     std::move(done).Run(std::nullopt,
-                        mojom::TrustTokenOperationStatus::kResourceExhausted);
+                        mojom::TrustTokenOperationStatus::kResourceLimited);
     return;
   }
 
@@ -161,7 +161,7 @@ void TrustTokenRequestIssuanceHelper::Begin(
       kTrustTokenPerIssuerTokenCapacity) {
     LogOutcome(net_log_, kBegin, "Tokens at capacity");
     std::move(done).Run(std::nullopt,
-                        mojom::TrustTokenOperationStatus::kResourceExhausted);
+                        mojom::TrustTokenOperationStatus::kResourceLimited);
     return;
   }
 

@@ -3577,9 +3577,9 @@ String GetTrustTokenOperationStatus(
     case network::mojom::TrustTokenOperationStatus::kAlreadyExists:
       return protocol::Network::TrustTokenOperationDone::StatusEnum::
           AlreadyExists;
-    case network::mojom::TrustTokenOperationStatus::kUnavailable:
+    case network::mojom::TrustTokenOperationStatus::kResourceLimited:
       return protocol::Network::TrustTokenOperationDone::StatusEnum::
-          Unavailable;
+          ResourceLimited;
     case network::mojom::TrustTokenOperationStatus::kUnauthorized:
       return protocol::Network::TrustTokenOperationDone::StatusEnum::
           Unauthorized;

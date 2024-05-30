@@ -781,25 +781,25 @@ class TrustTokensTester {
     // provided to HasTrustTokens(origin, _) calls in AddOrigin:
     // - If data has not been cleared,
     //     HasTrustToken(origin, https://probe.example)
-    //   is expected to fail with kResourceExhausted because |origin| is at
+    //   is expected to fail with kResourceLimited because |origin| is at
     //   its number-of-associated-issuers limit, so the answerer will refuse
     //   to answer a query for an origin it has not yet seen.
     // - If data has been cleared, the answerer should be able to fulfill the
     //   query.
     answerer->HasTrustTokens(
         url::Origin::Create(GURL("https://probe.example")),
-        base::BindLambdaForTesting([&](network::mojom::HasTrustTokensResultPtr
-                                           result) {
-          // HasTrustTokens will error out with kResourceExhausted exactly
-          // when the top-frame origin |origin| was previously added by
-          // AddOrigin.
-          if (result->status ==
-              network::mojom::TrustTokenOperationStatus::kResourceExhausted) {
-            has_origin = true;
-          }
+        base::BindLambdaForTesting(
+            [&](network::mojom::HasTrustTokensResultPtr result) {
+              // HasTrustTokens will error out with kResourceLimited exactly
+              // when the top-frame origin |origin| was previously added by
+              // AddOrigin.
+              if (result->status ==
+                  network::mojom::TrustTokenOperationStatus::kResourceLimited) {
+                has_origin = true;
+              }
 
-          run_loop.Quit();
-        }));
+              run_loop.Quit();
+            }));
 
     run_loop.Run();
 
