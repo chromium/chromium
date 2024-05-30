@@ -19,6 +19,12 @@
   <message name="IDS_SETTINGS_SEND_FEEDBACK_ROLE_DESCRIPTION" desc="Accessibility role description for the send feedback button at the top right of a settings section. Spoken by screen readers when focusing the button but not visually rendered.">
     Send feedback button
   </message>
+  <message name="IDS_SETTINGS_COLUMN_HEADING_WHEN_ON" desc="The header used above a bulleted section on a Settings page that explains the functionality of a setting.">
+    When on
+  </message>
+  <message name="IDS_SETTINGS_COLUMN_HEADING_CONSIDER" desc="The header used above a bulleted section on a Settings page that notes things the user might want to consider when turning this setting on or off.">
+    Things to consider
+  </message>
 
   <if expr="not chromeos_ash">
     <message name="IDS_RELAUNCH_CONFIRMATION_DIALOG_BODY" desc="The body of the modal dialog that we show when users click on relaunch and they have open Incognito windows. The dialog serves to warn the users about losing their Incognito windows if they proceed with the relaunch.">
@@ -1591,9 +1597,6 @@
   <message name="IDS_SETTINGS_ANTI_ABUSE_DESCRIPTION" desc="The label used for the anti-abuse site settings description.">
     Sites you visit can verify that you're a real person and not a bot
   </message>
-  <message name="IDS_SETTINGS_ANTI_ABUSE_WHEN_ON_HEADER" desc="The header used for the section that informs users of the anti-abuse features.">
-    When on
-  </message>
   <message name="IDS_SETTINGS_ANTI_ABUSE_WHEN_ON_SECTION_ONE" desc="A description that informs users that Chrome saves a small amount of data when the anti-abuse features are enabled.">
     A site you visit can save a small amount of info with Chrome, mainly to validate you're not a bot
   </message>
@@ -1602,9 +1605,6 @@
   </message>
   <message name="IDS_SETTINGS_ANTI_ABUSE_WHEN_ON_SECTION_THREE" desc="A description that informs users how their browsing could be helped by the anti-abuse features.">
     Browsing is faster because a site is less likely to ask you to verify you're a real person
-  </message>
-  <message name="IDS_SETTINGS_ANTI_ABUSE_THINGS_TO_CONSIDER_HEADER" desc="The header used for the section that informs users of additional things to consider when the anti-abuse features are enabled.">
-    Things to consider
   </message>
   <message name="IDS_SETTINGS_ANTI_ABUSE_THINGS_TO_CONSIDER_SECTION_ONE" desc="A description that informs users that the anti-abuse features do not reveal their browsing history.">
     This setting works without identifying you or allowing sites to see your browsing history, though sites can share a small amount of info as part of the verification
@@ -1773,12 +1773,6 @@
   </message>
   <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_TOGGLE_SUB_LABEL" desc="A description of the new Ad measurement setting. This text appears beneath the name of the new setting, 'Ad measurement', and is associated with the control that a user can turn on or off. **** CONTEXT PRIVACY SANDBOX **** Chrome's Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** NEW SETTINGS SECTION IN CHROME **** 3 new ad-specific settings appear on an 'Ad privacy' page in Chrome settings. For an equivalent structure, see 'Security' on chrome://settings/privacy that opens chrome://settings/security. Likewise, 'Ad privacy' on chrome://settings/privacy will open chrome://settings/AdPrivacy.">
     Sites and advertisers can measure the performance of their ads
-  </message>
-  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_HEADING" desc="A label above bullet points that explain the functionality of this setting.">
-    When on
-  </message>
-  <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_HEADING" desc="A label above bullet points that note things the user might want to consider when turning this setting on or off.">
-    Things to consider
   </message>
   <message name="IDS_SETTINGS_AD_MEASUREMENT_PAGE_ENABLED_BULLET_1" desc="1 of 3 bullets in the 'When on' section that describes the Ad measurement setting. * 'Limited types of data': The Ad measurement API (for developers) and the Ad measurement control (for users) is offered by Chrome. But Chrome is a 'pass through', helping one site communicate information to another about the performance of an ad. That's where this passive construction comes from. Chrome facilitates, but shouldn't be seen as a major actor here. And we don't want to suggest anything like 'Chrome limits the types of data shared between sites,' because Chrome can't do that. Any 2 sites can have a side agreement to share as much info as they like.">
     Limited types of data are shared between sites to measure the performance of their ads, such as whether you made a purchase after visiting a site
@@ -2228,9 +2222,6 @@
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_BULLET_FIVE" desc="Bullet point under the safe browsing enhanced protection mode">
     Sends URLs to Safe Browsing to check them. Also sends a small sample of pages, downloads, extension activity, and system information to help discover new threats. Temporarily links this data to your Google Account when you're signed in, to protect you across Google apps.
   </message>
-  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_LABEL" desc="Label of 'When on' section under the Safe Browsing enhanced protection mode">
-    When on
-  </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_TWO" desc="Bullet point under the Safe Browsing enhanced protection mode section titled 'When on'">
     In-depth scans for suspicious downloads.
   </message>
@@ -2242,9 +2233,6 @@
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_FIVE" desc="Bullet point under the Safe Browsing enhanced protection mode section titled 'When on'">
     Warns you if you use a password that has been compromised in a data breach.
-  </message>
-  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_THINGS_TO_CONSIDER_LABEL" desc="Label of 'Things to consider' section under the Safe Browsing enhanced protection mode">
-    Things to consider
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_THINGS_TO_CONSIDER_BULLET_ONE" desc="Bullet point under the Safe Browsing enhanced protection mode section titled 'Things to consider'">
     Sends the URLs of sites you visit and a small sample of page content, downloads, extension activity, and system information to Google Safe Browsing to check if they're harmful.
