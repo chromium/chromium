@@ -338,10 +338,6 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
                      referrer_chain.get());
   }
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "SafeBrowsing.ReferrerAttributionResult.DownloadAttribution", result,
-      SafeBrowsingNavigationObserverManager::ATTRIBUTION_FAILURE_TYPE_MAX);
-
   size_t referrer_chain_length = referrer_chain->size();
 
   // Determines how many recent navigation events to append to referrer chain
@@ -357,7 +353,7 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
       ->AppendRecentNavigations(recent_navigations_to_collect,
                                 referrer_chain.get());
 
-  return std::make_unique<ReferrerChainData>(std::move(referrer_chain),
+  return std::make_unique<ReferrerChainData>(result, std::move(referrer_chain),
                                              referrer_chain_length,
                                              recent_navigations_to_collect);
 }
@@ -403,7 +399,7 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
       ->AppendRecentNavigations(recent_navigations_to_collect,
                                 referrer_chain.get());
 
-  return std::make_unique<ReferrerChainData>(std::move(referrer_chain),
+  return std::make_unique<ReferrerChainData>(result, std::move(referrer_chain),
                                              referrer_chain_length,
                                              recent_navigations_to_collect);
 }

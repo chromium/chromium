@@ -216,8 +216,8 @@ void AndroidTelemetryService::FillReferrerChain(download::DownloadItem* item) {
 
   item->SetUserData(ReferrerChainData::kDownloadReferrerChainDataKey,
                     std::make_unique<ReferrerChainData>(
-                        std::move(referrer_chain), referrer_chain_length,
-                        recent_navigations_to_collect));
+                        result, std::move(referrer_chain),
+                        referrer_chain_length, recent_navigations_to_collect));
 }
 
 std::unique_ptr<ClientSafeBrowsingReportRequest>

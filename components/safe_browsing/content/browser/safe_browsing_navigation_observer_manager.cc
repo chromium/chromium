@@ -20,6 +20,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager_util.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -128,10 +129,12 @@ const char ReferrerChainData::kDownloadReferrerChainDataKey[] =
     "referrer_chain_data_key";
 
 ReferrerChainData::ReferrerChainData(
+    ReferrerChainProvider::AttributionResult attribution_result,
     std::unique_ptr<ReferrerChain> referrer_chain,
     size_t referrer_chain_length,
     size_t recent_navigations_to_collect)
-    : referrer_chain_(std::move(referrer_chain)),
+    : attribution_result_(attribution_result),
+      referrer_chain_(std::move(referrer_chain)),
       referrer_chain_length_(referrer_chain_length),
       recent_navigations_to_collect_(recent_navigations_to_collect) {}
 

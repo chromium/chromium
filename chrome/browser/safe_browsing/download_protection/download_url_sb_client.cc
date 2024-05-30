@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_url_sb_client.h"
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -12,6 +13,7 @@
 #include "components/safe_browsing/content/browser/client_report_util.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
@@ -143,8 +145,20 @@ void DownloadUrlSBClient::IdentifyReferrerChain() {
   if (!item_)
     return;
 
+  std::unique_ptr<ReferrerChainData> data =
+      safe_browsing::IdentifyReferrerChain(*item_);
+  if (!data) {
+    return;
+  }
+
+  // TODO(drubery): Add a kMaxValue to AttributionResult so we don't need the
+  // explicit max value.
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.ReferrerAttributionResult.DownloadAttribution",
+      data->attribution_result(),
+      ReferrerChainProvider::AttributionResult::ATTRIBUTION_FAILURE_TYPE_MAX);
   item_->SetUserData(ReferrerChainData::kDownloadReferrerChainDataKey,
-                     safe_browsing::IdentifyReferrerChain(*item_));
+                     std::move(data));
 }
 
 void DownloadUrlSBClient::UpdateDownloadCheckStats(SBStatsType stat_type) {
