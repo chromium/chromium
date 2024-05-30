@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_provider.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/fake_search_data.h"
@@ -21,8 +22,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 namespace app_list::test {
 namespace {
-// Threshold used by new shortcuts search.
-constexpr double kRelevanceScoreThreshold = 0.52;
+
+constexpr std::u16string kText = u"fake query";
+constexpr std::u16string kIrrelevantText = u"irrelevant";
+
+constexpr double kResultRelevanceThreshold = 0.79;
 constexpr size_t kMaxResults = 3u;
 
 using ash::mojom::AcceleratorState;
@@ -49,15 +53,45 @@ std::vector<SearchResultPtr> CreateFakeSearchResultsWithSpecifiedScores(
   return search_results;
 }
 
+std::vector<SearchResultPtr> CreateFakeSearchResults(int num_relevant,
+                                                     int num_irrelevant) {
+  std::vector<SearchResultPtr> search_results;
+  for (int i = 0; i < num_relevant; i++) {
+    search_results.push_back(SearchResult::New(
+        /*accelerator_layout_info=*/CreateFakeAcceleratorLayoutInfo(
+            /*description=*/kText,
+            /*source=*/ash::mojom::AcceleratorSource::kAsh,
+            /*action=*/
+            ash::shortcut_ui::fake_search_data::FakeActionIds::kAction1,
+            /*style=*/ash::mojom::AcceleratorLayoutStyle::kDefault),
+        /*accelerator_infos=*/
+        ash::shortcut_ui::fake_search_data::CreateFakeAcceleratorInfoList(),
+        /*relevance_score=*/kResultRelevanceThreshold));
+  }
+
+  for (int i = 0; i < num_irrelevant; i++) {
+    search_results.push_back(SearchResult::New(
+        /*accelerator_layout_info=*/CreateFakeAcceleratorLayoutInfo(
+            /*description=*/kIrrelevantText,
+            /*source=*/ash::mojom::AcceleratorSource::kAsh,
+            /*action=*/
+            ash::shortcut_ui::fake_search_data::FakeActionIds::kAction1,
+            /*style=*/ash::mojom::AcceleratorLayoutStyle::kDefault),
+        /*accelerator_infos=*/
+        ash::shortcut_ui::fake_search_data::CreateFakeAcceleratorInfoList(),
+        /*relevance_score=*/kResultRelevanceThreshold));
+  }
+
+  return search_results;
+}
+
 std::vector<SearchResultPtr> CreateFakeSearchResultsWithSpecifiedStates(
     const std::vector<ash::mojom::AcceleratorState>& states) {
   std::vector<SearchResultPtr> search_results;
   for (const auto state : states) {
     search_results.push_back(SearchResult::New(
         /*accelerator_layout_info=*/CreateFakeAcceleratorLayoutInfo(
-            /*description=*/base::StrCat(
-                {u"result with score ",
-                 base::NumberToString16(kRelevanceScoreThreshold)}),
+            /*description=*/kText,
             /*source=*/ash::mojom::AcceleratorSource::kAsh,
             /*action=*/
             ash::shortcut_ui::fake_search_data::FakeActionIds::kAction1,
@@ -65,9 +99,8 @@ std::vector<SearchResultPtr> CreateFakeSearchResultsWithSpecifiedStates(
         /*accelerator_infos=*/
         ash::shortcut_ui::fake_search_data::CreateFakeAcceleratorInfoList(
             state),
-        /*relevance_score=*/kRelevanceScoreThreshold));
+        /*relevance_score=*/kResultRelevanceThreshold));
   }
-
   return search_results;
 }
 
@@ -137,9 +170,6 @@ class CustomizableKeyboardShortcutProviderTest : public ChromeAshTestBase {
     // Initialize search_controller_;
     search_controller_ = std::make_unique<TestSearchController>();
     search_controller_->AddProvider(std::move(provider));
-
-    // TODO(b/326514738): bypassed the filtering in the unit test.
-    provider_->set_should_apply_query_filtering_for_test(false);
   }
 
   void Wait() { task_environment()->RunUntilIdle(); }
@@ -164,19 +194,32 @@ class CustomizableKeyboardShortcutProviderTest : public ChromeAshTestBase {
   raw_ptr<KeyboardShortcutProvider> provider_ = nullptr;
 };
 
+// Test that the relevance scores of the results returned by `search_handler`
+// will be overwritten.
+TEST_F(CustomizableKeyboardShortcutProviderTest, ResultOverwritten) {
+  auto search_results = CreateFakeSearchResultsWithSpecifiedScores(
+      {1.0, 0.9, 0.8, 0.7, 0.5, 0.4});
+  search_handler_->SetSearchResults(std::move(search_results));
+
+  StartSearch(kText);
+  Wait();
+
+  EXPECT_TRUE(results().empty());
+}
+
 // Test that when there are more than 3 results whose relevant score exceeds
 // the threshold, only return top three.
 TEST_F(CustomizableKeyboardShortcutProviderTest, FourQualifiedReturnThree) {
-  auto search_results = CreateFakeSearchResultsWithSpecifiedScores(
-      {0.9, 0.8, 0.7, 0.53, 0.5, 0.4});
+  auto search_results =
+      CreateFakeSearchResults(/*num_relevant=*/4, /*num_irrelevant=*/2);
   search_handler_->SetSearchResults(std::move(search_results));
 
-  StartSearch(u"fake query");
+  StartSearch(kText);
   Wait();
 
   EXPECT_EQ(kMaxResults, results().size());
   for (const auto& result : results()) {
-    EXPECT_GT(result->relevance(), kRelevanceScoreThreshold);
+    EXPECT_GT(result->relevance(), kResultRelevanceThreshold);
   }
 }
 
@@ -184,10 +227,10 @@ TEST_F(CustomizableKeyboardShortcutProviderTest, FourQualifiedReturnThree) {
 // exceeds the threshold.
 TEST_F(CustomizableKeyboardShortcutProviderTest, NoneQualifiedReturnEmpty) {
   auto search_results =
-      CreateFakeSearchResultsWithSpecifiedScores({0.51, 0.51, 0.5});
+      CreateFakeSearchResults(/*num_relevant=*/0, /*num_irrelevant=*/3);
   search_handler_->SetSearchResults(std::move(search_results));
 
-  StartSearch(u"fake query");
+  StartSearch(kText);
   Wait();
 
   EXPECT_TRUE(results().empty());
@@ -198,16 +241,15 @@ TEST_F(CustomizableKeyboardShortcutProviderTest, NoneQualifiedReturnEmpty) {
 TEST_F(CustomizableKeyboardShortcutProviderTest,
        TwoQualifiedTwoNotQualifiedReturnTwo) {
   auto search_results =
-      CreateFakeSearchResultsWithSpecifiedScores({0.9, 0.8, 0.51, 0.51, 0.5});
+      CreateFakeSearchResults(/*num_relevant=*/2, /*num_irrelevant=*/2);
   search_handler_->SetSearchResults(std::move(search_results));
 
-  StartSearch(u"fake query");
+  StartSearch(kText);
   Wait();
 
-  const size_t results_count = 2;
-  EXPECT_EQ(results_count, results().size());
+  EXPECT_EQ(2u, results().size());
   for (const auto& result : results()) {
-    EXPECT_GT(result->relevance(), kRelevanceScoreThreshold);
+    EXPECT_GT(result->relevance(), kResultRelevanceThreshold);
   }
 }
 
@@ -221,11 +263,10 @@ TEST_F(CustomizableKeyboardShortcutProviderTest,
        AcceleratorState::kDisabledByUser});
   search_handler_->SetSearchResults(std::move(search_results));
 
-  StartSearch(u"fake query");
+  StartSearch(kText);
   Wait();
 
-  const size_t results_count = 3;
-  EXPECT_EQ(results_count, results().size());
+  EXPECT_EQ(3u, results().size());
 }
 
 }  // namespace app_list::test

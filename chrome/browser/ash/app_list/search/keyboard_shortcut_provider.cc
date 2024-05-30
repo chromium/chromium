@@ -26,11 +26,10 @@
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/search/types.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "chromeos/ash/components/string_matching/tokenized_string_match.h"
 #include "content/public/browser/storage_partition.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace app_list {
 
@@ -40,6 +39,7 @@ using ::ash::string_matching::TokenizedString;
 
 constexpr size_t kMinQueryLength = 3u;
 constexpr size_t kMaxResults = 3u;
+constexpr double kResultRelevanceThreshold = 0.79;
 // The threshold is used to filter the results from the search handler of the
 // new shortcuts app.
 constexpr double kRelevanceScoreThreshold = 0.52;
@@ -66,12 +66,6 @@ KeyboardShortcutProvider::KeyboardShortcutProvider(Profile* profile)
   if (shortcuts_app_manager_factory) {
     search_handler_ = shortcuts_app_manager_factory->search_handler();
   }
-
-  const std::string locale = g_browser_process->GetApplicationLocale();
-  std::string language_code = l10n_util::GetLanguage(locale);
-  // TODO(b/326514738): It's a temporary filtering, and the filtering only
-  // applies to English.
-  should_apply_query_filtering_ = (language_code == "en");
 }
 
 KeyboardShortcutProvider::~KeyboardShortcutProvider() = default;
@@ -86,22 +80,15 @@ void KeyboardShortcutProvider::Start(const std::u16string& query) {
     return;
   }
 
-  // TODO(b/326514738): Before the over-triggering issue is resolved, display
-  // keyboard shortcut results only if the keyword "shortcut" is present in the
-  // query. The filtering only applies to English.
-  if (should_apply_query_filtering_ &&
-      query.find(u"shortcut") == std::u16string::npos) {
-    return;
-  }
-
   if (ash::features::IsSearchCustomizableShortcutsInLauncherEnabled()) {
     if (!search_handler_) {
       return;
     }
+
     search_handler_->Search(
         query, UINT32_MAX,
         base::BindOnce(&KeyboardShortcutProvider::OnShortcutsSearchComplete,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(), query));
   }
 }
 
@@ -115,14 +102,19 @@ ash::AppListSearchResultType KeyboardShortcutProvider::ResultType() const {
 }
 
 void KeyboardShortcutProvider::OnShortcutsSearchComplete(
+    const std::u16string& query,
     std::vector<ash::shortcut_customization::mojom::SearchResultPtr>
         search_results) {
   CHECK(ash::features::IsSearchCustomizableShortcutsInLauncherEnabled());
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Convert final candidates into correct type, and publish.
-  SearchProvider::Results results;
+  TokenizedString tokenized_query(query, TokenizedString::Mode::kWords);
+
+  ash::string_matching::TokenizedStringMatch match;
+
+  // Find all shortcuts which meet the relevance threshold.
+  std::vector<ash::shortcut_customization::mojom::SearchResultPtr> candidates;
   for (auto& search_result : search_results) {
     // Only enabled shortcuts should be displayed.
     RemoveDisabledShortcuts(search_result);
@@ -131,12 +123,37 @@ void KeyboardShortcutProvider::OnShortcutsSearchComplete(
     if (search_result->relevance_score < kRelevanceScoreThreshold) {
       break;
     }
-    results.push_back(
-        std::make_unique<KeyboardShortcutResult>(profile_, search_result));
-    if (results.size() >= kMaxResults) {
-      break;
+
+    TokenizedString tokenized_target(
+        search_result->accelerator_layout_info->description,
+        TokenizedString::Mode::kWords);
+
+    // Excludes the result if either the query or the description is empty.
+    if (tokenized_query.text().empty() || tokenized_target.text().empty()) {
+      continue;
+    }
+
+    // Re-calculate the relevance score using tokenized string match.
+    double relevance = match.Calculate(tokenized_query, tokenized_target);
+    if (relevance > kResultRelevanceThreshold) {
+      search_result->relevance_score = relevance;
+      candidates.emplace_back(std::move(search_result));
     }
   }
+
+  // Sort candidates by descending relevance score. The sort is required as the
+  // relevance score has been re-calculated.
+  std::sort(candidates.begin(), candidates.end(), [](auto& a, auto& b) {
+    return a->relevance_score > b->relevance_score;
+  });
+
+  // Convert final candidates into correct type, and publish.
+  SearchProvider::Results results;
+  for (size_t i = 0; i < std::min(candidates.size(), kMaxResults); ++i) {
+    results.push_back(
+        std::make_unique<KeyboardShortcutResult>(profile_, candidates[i]));
+  }
+
   SwapResults(&results);
 }
 

@@ -32,21 +32,15 @@ class KeyboardShortcutProvider : public SearchProvider {
     search_handler_ = handler;
   }
 
-  // Overrides `should_apply_query_filtering_` for testing purposes.
-  void set_should_apply_query_filtering_for_test(
-      bool should_apply_query_filtering) {
-    should_apply_query_filtering_ = should_apply_query_filtering;
-  }
-
  private:
+  // When results are returned from `search_handler_`, re-calculates the
+  // relevance score with tokenized string match on `description` and publishes
+  // the most relevant results.
   void OnShortcutsSearchComplete(
+      const std::u16string& query,
       std::vector<ash::shortcut_customization::mojom::SearchResultPtr>);
 
   const raw_ptr<Profile> profile_;
-
-  // A check for whether we should apply query filtering for keyboard shortcut
-  // results.
-  bool should_apply_query_filtering_ = false;
 
   // The |search_handler_| is managed by ShortcutsAppManager which is
   // implemented as a KeyedService, active for the lifetime of a logged-in user.

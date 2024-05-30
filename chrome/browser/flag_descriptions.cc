@@ -7457,6 +7457,12 @@ const char kLauncherGameSearchName[] = "Enable launcher game search";
 const char kLauncherGameSearchDescription[] =
     "Enables cloud game search results in the launcher.";
 
+const char kLauncherKeyShortcutInBestMatchName[] =
+    "Enable keyshortcut results in best match";
+const char kLauncherKeyShortcutInBestMatchDescription[] =
+    "When enabled, it allows key shortcut results to appear in best match and "
+    "answer card in launcher.";
+
 const char kLauncherKeywordExtractionScoring[] =
     "Query keyword extraction and scoring in launcher";
 const char kLauncherKeywordExtractionScoringDescription[] =

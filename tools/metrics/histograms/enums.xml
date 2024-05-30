@@ -16617,6 +16617,7 @@ from previous Chrome versions.
   <int value="-1969627578" label="EnableVariableRefreshRateAlwaysOn:disabled"/>
   <int value="-1968796101"
       label="OmniboxRemoveExcessiveRecycledViewClearCalls:disabled"/>
+  <int value="-1966599581" label="LauncherKeyShortcutInBestMatch:enabled"/>
   <int value="-1966445414" label="StylusBatteryStatus:disabled"/>
   <int value="-1965587041" label="omnibox-tab-switch-suggestions"/>
   <int value="-1964730371"
@@ -25654,6 +25655,7 @@ from previous Chrome versions.
   <int value="1957358530" label="ContextualSearchSecondTap:enabled"/>
   <int value="1957472162"
       label="AutofillUpstreamEditableExpirationDate:disabled"/>
+  <int value="1958041903" label="LauncherKeyShortcutInBestMatch:disabled"/>
   <int value="1958387645" label="ScanCardsInWebPayments:enabled"/>
   <int value="1959148757" label="OffMainThreadFetch:enabled"/>
   <int value="1959538299" label="UrlScoringModel:disabled"/>

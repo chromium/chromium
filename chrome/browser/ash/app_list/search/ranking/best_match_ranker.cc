@@ -40,7 +40,6 @@ bool ShouldIgnoreProvider(ProviderType type) {
       return true;
     case ProviderType::kInternalApp:
     case ProviderType::kArcAppShortcut:
-    case ProviderType::kKeyboardShortcut:
     case ProviderType::kDriveSearch:
     case ProviderType::kGames:
     case ProviderType::kZeroStateHelpApp:
@@ -54,6 +53,13 @@ bool ShouldIgnoreProvider(ProviderType type) {
     case ProviderType::kSystemInfo:
     case ProviderType::kAppShortcutV2:
       return false;
+    case ProviderType::kKeyboardShortcut:
+      // Allows key shortcut results to appear in best match if flag enabled,
+      // otherwise disable it by default to avoid possible over-triggering.
+      if (search_features::IskLauncherKeyShortcutInBestMatchEnabled()) {
+        return false;
+      }
+      return true;
   }
 }
 
@@ -63,8 +69,8 @@ bool ShouldIgnoreResult(const ChromeSearchResult* result) {
   // - 'magnifying glass' results: WEB_QUERY, SEARCH_SUGGEST,
   //   SEARCH_SUGGEST_PERSONALIZED.
   //
-  // This is determined using the omnibox metrics type, which is currently the
-  // only type that gives sufficient granularity.
+  // This is determined using the omnibox metrics type, which is currently
+  // the only type that gives sufficient granularity.
   return result->metrics_type() == ash::OMNIBOX_ANSWER ||
          result->metrics_type() == ash::OMNIBOX_CALCULATOR ||
          result->metrics_type() == ash::OMNIBOX_WEB_QUERY ||
@@ -92,8 +98,9 @@ void BestMatchRanker::OnBurnInPeriodElapsed() {
 void BestMatchRanker::UpdateResultRanks(ResultsMap& results,
                                         ProviderType provider) {
   // Skip results from providers that are never included in the top matches.
-  if (ShouldIgnoreProvider(provider))
+  if (ShouldIgnoreProvider(provider)) {
     return;
+  }
 
   // Remove invalidated weak pointers from best_matches_
   for (auto iter = best_matches_.begin(); iter != best_matches_.end();) {
@@ -119,8 +126,9 @@ void BestMatchRanker::UpdateResultRanks(ResultsMap& results,
   }
 
   for (const auto& result : it->second) {
-    if (ShouldIgnoreResult(result.get()))
+    if (ShouldIgnoreResult(result.get())) {
       continue;
+    }
 
     if (seen_ids.find(result->id()) != seen_ids.end()) {
       // Omnibox provider can return more than once. Don't add duplicate results
@@ -140,8 +148,9 @@ void BestMatchRanker::UpdateResultRanks(ResultsMap& results,
   }
 
   // If we have no best matches, there is no ranking work to do. Return early.
-  if (best_matches_.empty())
+  if (best_matches_.empty()) {
     return;
+  }
 
   // Sort best_matches_:
   if (use_relevance_sort_only) {

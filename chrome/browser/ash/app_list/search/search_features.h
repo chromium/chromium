@@ -56,6 +56,9 @@ BASE_DECLARE_FEATURE(kLauncherSystemInfoAnswerCards);
 // into any issues.
 BASE_DECLARE_FEATURE(kLauncherSearchFileScan);
 
+// Allows keyboard shortcut results to appear in best match and answer card.
+BASE_DECLARE_FEATURE(kLauncherKeyShortcutInBestMatch);
+
 bool IsLauncherGameSearchEnabled();
 bool IsLauncherKeywordExtractionScoringEnabled();
 bool IsLauncherQueryFederatedAnalyticsPHHEnabled();
@@ -67,6 +70,7 @@ bool IsLauncherFuzzyMatchAcrossProvidersEnabled();
 bool IsLauncherFuzzyMatchForOmniboxEnabled();
 bool IsLauncherSystemInfoAnswerCardsEnabled();
 bool IsLauncherSearchFileScanEnabled();
+bool IskLauncherKeyShortcutInBestMatchEnabled();
 }  // namespace search_features
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_SEARCH_FEATURES_H_

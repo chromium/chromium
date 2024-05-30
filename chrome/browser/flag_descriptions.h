@@ -4332,6 +4332,9 @@ extern const char kLacrosLaunchAtLoginScreenDescription[];
 extern const char kLauncherGameSearchName[];
 extern const char kLauncherGameSearchDescription[];
 
+extern const char kLauncherKeyShortcutInBestMatchName[];
+extern const char kLauncherKeyShortcutInBestMatchDescription[];
+
 extern const char kLauncherKeywordExtractionScoring[];
 extern const char kLauncherKeywordExtractionScoringDescription[];
 
