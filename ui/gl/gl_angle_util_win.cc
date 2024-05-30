@@ -13,17 +13,15 @@
 #include "ui/gl/gl_surface_egl.h"
 
 namespace gl {
-
-void* QueryDeviceObjectFromANGLE(int object_type) {
+namespace {
+void* QueryDeviceObjectFromANGLE(EGLDisplay egl_display, int object_type) {
   TRACE_EVENT0("gpu", "QueryDeviceObjectFromANGLE");
-
-  EGLDisplay egl_display = gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay();
   if (egl_display == EGL_NO_DISPLAY) {
     DVLOG(1) << "Failed to retrieve EGLDisplay";
     return nullptr;
   }
 
-  if (!gl::g_driver_egl.client_ext.b_EGL_EXT_device_query) {
+  if (!g_driver_egl.client_ext.b_EGL_EXT_device_query) {
     DVLOG(1) << "EGL_EXT_device_query not supported";
     return nullptr;
   }
@@ -48,18 +46,29 @@ void* QueryDeviceObjectFromANGLE(int object_type) {
 
   return reinterpret_cast<void*>(device);
 }
+}  // namespace
 
 Microsoft::WRL::ComPtr<ID3D11Device> QueryD3D11DeviceObjectFromANGLE() {
+  auto* display = GLSurfaceEGL::GetGLDisplayEGL();
+  if (!display || (display->GetDisplayType() != ANGLE_D3D11 &&
+                   display->GetDisplayType() != ANGLE_D3D11_NULL &&
+                   display->GetDisplayType() != ANGLE_D3D11on12)) {
+    return nullptr;
+  }
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
-  d3d11_device = reinterpret_cast<ID3D11Device*>(
-      QueryDeviceObjectFromANGLE(EGL_D3D11_DEVICE_ANGLE));
+  d3d11_device = reinterpret_cast<ID3D11Device*>(QueryDeviceObjectFromANGLE(
+      display->GetDisplay(), EGL_D3D11_DEVICE_ANGLE));
   return d3d11_device;
 }
 
 Microsoft::WRL::ComPtr<IDirect3DDevice9> QueryD3D9DeviceObjectFromANGLE() {
+  auto* display = GLSurfaceEGL::GetGLDisplayEGL();
+  if (!display || display->GetDisplayType() != ANGLE_D3D9) {
+    return nullptr;
+  }
   Microsoft::WRL::ComPtr<IDirect3DDevice9> d3d9_device;
   d3d9_device = reinterpret_cast<IDirect3DDevice9*>(
-      QueryDeviceObjectFromANGLE(EGL_D3D9_DEVICE_ANGLE));
+      QueryDeviceObjectFromANGLE(display->GetDisplay(), EGL_D3D9_DEVICE_ANGLE));
   return d3d9_device;
 }
 
