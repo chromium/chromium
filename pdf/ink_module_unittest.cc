@@ -132,7 +132,6 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessagePen) {
   const InkBrush& ink_brush = brush->GetInkBrush();
   EXPECT_EQ(SkColorSetRGB(10, 255, 50), ink_brush.GetColorForTesting());
   EXPECT_EQ(8.0f, ink_brush.GetSizeForTesting());
-  // TODO(crbug.com/335524382): Update with real value.
   EXPECT_EQ(1.0f, ink_brush.GetOpacityForTesting());
 }
 
@@ -154,8 +153,7 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
   const InkBrush& ink_brush = brush->GetInkBrush();
   EXPECT_EQ(SkColorSetRGB(240, 133, 0), ink_brush.GetColorForTesting());
   EXPECT_EQ(4.5f, ink_brush.GetSizeForTesting());
-  // TODO(crbug.com/335524382): Update with real value.
-  EXPECT_EQ(1.0f, ink_brush.GetOpacityForTesting());
+  EXPECT_EQ(0.4f, ink_brush.GetOpacityForTesting());
 }
 
 // Verify that brushes with zero color values can be set as the annotation
@@ -176,7 +174,6 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
   const InkBrush& ink_brush = brush->GetInkBrush();
   EXPECT_EQ(SkColorSetRGB(0, 0, 0), ink_brush.GetColorForTesting());
   EXPECT_EQ(4.5f, ink_brush.GetSizeForTesting());
-  // TODO(crbug.com/335524382): Update with real value.
   EXPECT_EQ(1.0f, ink_brush.GetOpacityForTesting());
 }
 
@@ -199,8 +196,7 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageSizeZeroTranslation) {
   const InkBrush& ink_brush = brush->GetInkBrush();
   EXPECT_EQ(SkColorSetRGB(255, 255, 255), ink_brush.GetColorForTesting());
   EXPECT_EQ(1.0f, ink_brush.GetSizeForTesting());
-  // TODO(crbug.com/335524382): Update with real value.
-  EXPECT_EQ(1.0f, ink_brush.GetOpacityForTesting());
+  EXPECT_EQ(0.4f, ink_brush.GetOpacityForTesting());
 }
 
 // Verify that the size of the brush is properly translated. The PDF extension's
@@ -221,8 +217,7 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageSizeOneTranslation) {
   const InkBrush& ink_brush = brush->GetInkBrush();
   EXPECT_EQ(SkColorSetRGB(255, 255, 255), ink_brush.GetColorForTesting());
   EXPECT_EQ(8.0f, ink_brush.GetSizeForTesting());
-  // TODO(crbug.com/335524382): Update with real value.
-  EXPECT_EQ(1.0f, ink_brush.GetOpacityForTesting());
+  EXPECT_EQ(0.4f, ink_brush.GetOpacityForTesting());
 }
 
 TEST_F(InkModuleTest, HandleSetAnnotationModeMessage) {
