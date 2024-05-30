@@ -6,85 +6,116 @@
 
 #include <string_view>
 
-#include "components/attribution_reporting/debug_types.mojom.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
+#include "base/types/expected.h"
+#include "components/attribution_reporting/debug_types.mojom.h"
+#include "components/attribution_reporting/parsing_utils.h"
 
 namespace attribution_reporting {
 
 namespace {
+
 using ::attribution_reporting::mojom::DebugDataType;
+
+#define SOURCE_DEBUG_DATA_TYPES(X)                                \
+  X(kSourceChannelCapacityLimit, "source-channel-capacity-limit") \
+  X(kSourceDestinationLimit, "source-destination-limit")          \
+  X(kSourceDestinationRateLimit, "source-destination-rate-limit") \
+  X(kSourceNoised, "source-noised")                               \
+  X(kSourceReportingOriginPerSiteLimit,                           \
+    "source-reporting-origin-per-site-limit")                     \
+  X(kSourceStorageLimit, "source-storage-limit")                  \
+  X(kSourceSuccess, "source-success")                             \
+  X(kSourceTriggerStateCardinalityLimit,                          \
+    "source-trigger-state-cardinality-limit")                     \
+  X(kSourceUnknownError, "source-unknown-error")
+
+#define TRIGGER_DEBUG_DATA_TYPES(X)                                           \
+  X(kTriggerAggregateAttributionsPerSourceDestinationLimit,                   \
+    "trigger-aggregate-attributions-per-source-destination-limit")            \
+  X(kTriggerAggregateDeduplicated, "trigger-aggregate-deduplicated")          \
+  X(kTriggerAggregateExcessiveReports, "trigger-aggregate-excessive-reports") \
+  X(kTriggerAggregateInsufficientBudget,                                      \
+    "trigger-aggregate-insufficient-budget")                                  \
+  X(kTriggerAggregateNoContributions, "trigger-aggregate-no-contributions")   \
+  X(kTriggerAggregateReportWindowPassed,                                      \
+    "trigger-aggregate-report-window-passed")                                 \
+  X(kTriggerAggregateStorageLimit, "trigger-aggregate-storage-limit")         \
+  X(kTriggerEventAttributionsPerSourceDestinationLimit,                       \
+    "trigger-event-attributions-per-source-destination-limit")                \
+  X(kTriggerEventDeduplicated, "trigger-event-deduplicated")                  \
+  X(kTriggerEventExcessiveReports, "trigger-event-excessive-reports")         \
+  X(kTriggerEventLowPriority, "trigger-event-low-priority")                   \
+  X(kTriggerEventNoMatchingConfigurations,                                    \
+    "trigger-event-no-matching-configurations")                               \
+  X(kTriggerEventNoMatchingTriggerData,                                       \
+    "trigger-event-no-matching-trigger-data")                                 \
+  X(kTriggerEventNoise, "trigger-event-noise")                                \
+  X(kTriggerEventReportWindowNotStarted,                                      \
+    "trigger-event-report-window-not-started")                                \
+  X(kTriggerEventReportWindowPassed, "trigger-event-report-window-passed")    \
+  X(kTriggerEventStorageLimit, "trigger-event-storage-limit")                 \
+  X(kTriggerNoMatchingFilterData, "trigger-no-matching-filter-data")          \
+  X(kTriggerNoMatchingSource, "trigger-no-matching-source")                   \
+  X(kTriggerReportingOriginLimit, "trigger-reporting-origin-limit")           \
+  X(kTriggerUnknownError, "trigger-unknown-error")
+
+#define OTHER_DEBUG_DATA_TYPES(X)                \
+  X(kHeaderParsingError, "header-parsing-error") \
+  X(kOsSourceDelegated, "os-source-delegated")   \
+  X(kOsTriggerDelegated, "os-trigger-delegated")
+
 }  // namespace
 
 std::string_view SerializeDebugDataType(DebugDataType data_type) {
+#define TYPE_TO_STR(name, str) \
+  case DebugDataType::name:    \
+    return str;
+
   switch (data_type) {
-    case DebugDataType::kSourceDestinationLimit:
-      return "source-destination-limit";
-    case DebugDataType::kSourceNoised:
-      return "source-noised";
-    case DebugDataType::kSourceStorageLimit:
-      return "source-storage-limit";
-    case DebugDataType::kSourceSuccess:
-      return "source-success";
-    case DebugDataType::kSourceDestinationRateLimit:
-      return "source-destination-rate-limit";
-    case DebugDataType::kSourceUnknownError:
-      return "source-unknown-error";
-    case DebugDataType::kTriggerNoMatchingSource:
-      return "trigger-no-matching-source";
-    case DebugDataType::kTriggerEventAttributionsPerSourceDestinationLimit:
-      return "trigger-event-attributions-per-source-destination-limit";
-    case DebugDataType::kTriggerAggregateAttributionsPerSourceDestinationLimit:
-      return "trigger-aggregate-attributions-per-source-destination-limit";
-    case DebugDataType::kTriggerNoMatchingFilterData:
-      return "trigger-no-matching-filter-data";
-    case DebugDataType::kTriggerReportingOriginLimit:
-      return "trigger-reporting-origin-limit";
-    case DebugDataType::kTriggerEventDeduplicated:
-      return "trigger-event-deduplicated";
-    case DebugDataType::kTriggerEventNoMatchingConfigurations:
-      return "trigger-event-no-matching-configurations";
-    case DebugDataType::kTriggerEventNoise:
-      return "trigger-event-noise";
-    case DebugDataType::kTriggerEventLowPriority:
-      return "trigger-event-low-priority";
-    case DebugDataType::kTriggerEventExcessiveReports:
-      return "trigger-event-excessive-reports";
-    case DebugDataType::kTriggerEventStorageLimit:
-      return "trigger-event-storage-limit";
-    case DebugDataType::kTriggerEventReportWindowNotStarted:
-      return "trigger-event-report-window-not-started";
-    case DebugDataType::kTriggerEventReportWindowPassed:
-      return "trigger-event-report-window-passed";
-    case DebugDataType::kTriggerEventNoMatchingTriggerData:
-      return "trigger-event-no-matching-trigger-data";
-    case DebugDataType::kTriggerAggregateDeduplicated:
-      return "trigger-aggregate-deduplicated";
-    case DebugDataType::kTriggerAggregateNoContributions:
-      return "trigger-aggregate-no-contributions";
-    case DebugDataType::kTriggerAggregateInsufficientBudget:
-      return "trigger-aggregate-insufficient-budget";
-    case DebugDataType::kTriggerAggregateStorageLimit:
-      return "trigger-aggregate-storage-limit";
-    case DebugDataType::kTriggerAggregateReportWindowPassed:
-      return "trigger-aggregate-report-window-passed";
-    case DebugDataType::kTriggerAggregateExcessiveReports:
-      return "trigger-aggregate-excessive-reports";
-    case DebugDataType::kTriggerUnknownError:
-      return "trigger-unknown-error";
-    case DebugDataType::kOsSourceDelegated:
-      return "os-source-delegated";
-    case DebugDataType::kOsTriggerDelegated:
-      return "os-trigger-delegated";
-    case DebugDataType::kHeaderParsingError:
-      return "header-parsing-error";
-    case DebugDataType::kSourceReportingOriginPerSiteLimit:
-      return "source-reporting-origin-per-site-limit";
-    case DebugDataType::kSourceChannelCapacityLimit:
-      return "source-channel-capacity-limit";
-    case DebugDataType::kSourceTriggerStateCardinalityLimit:
-      return "source-trigger-state-cardinality-limit";
+    SOURCE_DEBUG_DATA_TYPES(TYPE_TO_STR)
+    TRIGGER_DEBUG_DATA_TYPES(TYPE_TO_STR)
+    OTHER_DEBUG_DATA_TYPES(TYPE_TO_STR)
   }
+
+#undef TYPE_TO_STR
+
   NOTREACHED_NORETURN();
 }
+
+#define STR_TO_TYPE(name, str) {str, DebugDataType::name},
+
+base::expected<DebugDataType, ParseError> ParseSourceDebugDataType(
+    std::string_view str) {
+  static constexpr auto kTypes =
+      base::MakeFixedFlatMap<std::string_view, DebugDataType>(
+          {SOURCE_DEBUG_DATA_TYPES(STR_TO_TYPE)});
+
+  auto it = kTypes.find(str);
+  if (it == kTypes.end()) {
+    return base::unexpected(ParseError());
+  }
+  return it->second;
+}
+
+base::expected<DebugDataType, ParseError> ParseTriggerDebugDataType(
+    std::string_view str) {
+  static constexpr auto kTypes =
+      base::MakeFixedFlatMap<std::string_view, DebugDataType>(
+          {TRIGGER_DEBUG_DATA_TYPES(STR_TO_TYPE)});
+
+  auto it = kTypes.find(str);
+  if (it == kTypes.end()) {
+    return base::unexpected(ParseError());
+  }
+  return it->second;
+}
+
+#undef STR_TO_TYPE
+
+#undef OTHER_DEBUG_DATA_TYPES
+#undef TRIGGER_DEBUG_DATA_TYPES
+#undef SOURCE_DEBUG_DATA_TYPES
 
 }  // namespace attribution_reporting
