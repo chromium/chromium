@@ -27,15 +27,16 @@ const nearby::Uuid kCharacteristicUuid1 = nearby::Uuid("2222");
 const nearby::Uuid kCharacteristicUuid2 = nearby::Uuid("3333");
 const std::vector<uint8_t> kReadCharacteristicValue = {0x01, 0x02, 0x03, 0x04,
                                                        0x05};
+const char kServiceId1[] = "1234";
+const char kServiceId2[] = "5678";
 
-std::vector<bluetooth::mojom::ServiceInfoPtr> GenerateServiceInfo(
-    nearby::Uuid service_uuid) {
-  std::vector<bluetooth::mojom::ServiceInfoPtr> service_infos;
+bluetooth::mojom::ServiceInfoPtr GenerateServiceInfo(nearby::Uuid service_uuid,
+                                                     std::string service_id) {
   bluetooth::mojom::ServiceInfoPtr service_info =
       bluetooth::mojom::ServiceInfo::New();
   service_info->uuid = device::BluetoothUUID(std::string(service_uuid));
-  service_infos.push_back(std::move(service_info));
-  return service_infos;
+  service_info->id = service_id;
+  return service_info;
 }
 
 std::vector<bluetooth::mojom::CharacteristicInfoPtr> GenerateCharacteristicInfo(
@@ -146,9 +147,11 @@ class BleV2GattClientTest : public testing::Test {
   void SuccessfullyDiscoverServiceAndCharacteristics(
       const Uuid& service_uuid,
       const Uuid& characteristic_uuid) {
-    fake_device_->set_services(GenerateServiceInfo(service_uuid));
+    std::vector<bluetooth::mojom::ServiceInfoPtr> service_infos;
+    service_infos.push_back(GenerateServiceInfo(service_uuid, kServiceId1));
+    fake_device_->set_services(std::move(service_infos));
     fake_device_->set_characteristics(
-        GenerateCharacteristicInfo(characteristic_uuid));
+        kServiceId1, GenerateCharacteristicInfo(characteristic_uuid));
     std::vector<Uuid> characteristic_uuids = {characteristic_uuid};
     base::RunLoop run_loop;
     base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
@@ -180,7 +183,9 @@ TEST_F(BleV2GattClientTest, DiscoverServiceAndCharacteristics_Success) {
 
 TEST_F(BleV2GattClientTest,
        DiscoverServiceAndCharacteristics_FailureIfNoServiceUuidMatch) {
-  fake_device_->set_services(GenerateServiceInfo(kServiceUuid2));
+  std::vector<bluetooth::mojom::ServiceInfoPtr> service_infos;
+  service_infos.push_back(GenerateServiceInfo(kServiceUuid2, kServiceId1));
+  fake_device_->set_services(std::move(service_infos));
   std::vector<Uuid> characteristic_uuids;
 
   base::RunLoop run_loop;
@@ -201,8 +206,10 @@ TEST_F(BleV2GattClientTest,
 
 TEST_F(BleV2GattClientTest,
        DiscoverServiceAndCharacteristics_FailureIfGetCharacteristicError) {
-  fake_device_->set_services(GenerateServiceInfo(kServiceUuid1));
-  fake_device_->set_characteristics(std::nullopt);
+  std::vector<bluetooth::mojom::ServiceInfoPtr> service_infos;
+  service_infos.push_back(GenerateServiceInfo(kServiceUuid1, kServiceId1));
+  fake_device_->set_services(std::move(service_infos));
+  fake_device_->set_characteristics(kServiceId1, std::nullopt);
 
   std::vector<Uuid> characteristic_uuids = {kCharacteristicUuid1};
 
@@ -224,9 +231,11 @@ TEST_F(BleV2GattClientTest,
 
 TEST_F(BleV2GattClientTest,
        DiscoverServiceAndCharacteristics_FailureIfNoCharacteristicUuidMatch) {
-  fake_device_->set_services(GenerateServiceInfo(kServiceUuid1));
+  std::vector<bluetooth::mojom::ServiceInfoPtr> service_infos;
+  service_infos.push_back(GenerateServiceInfo(kServiceUuid1, kServiceId1));
+  fake_device_->set_services(std::move(service_infos));
   fake_device_->set_characteristics(
-      GenerateCharacteristicInfo(kCharacteristicUuid2));
+      kServiceId1, GenerateCharacteristicInfo(kCharacteristicUuid2));
 
   std::vector<Uuid> characteristic_uuids = {kCharacteristicUuid1};
 
@@ -331,6 +340,40 @@ TEST_F(BleV2GattClientTest, DisconnectHandler) {
 
   run_loop.Run();
   EXPECT_TRUE(fake_gatt_service_destroyed);
+}
+
+// This test mimics the behavior of the Android GATT server where the GATT
+// server hosts duplicate GATT services with the same UUID, however each
+// GATT service has a different set of characteristics - only one of which
+// contains the set of characteristics requested by
+// `DiscoverServicesAndCharacteristics()`.
+TEST_F(BleV2GattClientTest,
+       DiscoverServiceAndCharacteristics_SuccessIfDuplicateServices) {
+  std::vector<bluetooth::mojom::ServiceInfoPtr> service_infos;
+  service_infos.push_back(GenerateServiceInfo(kServiceUuid1, kServiceId1));
+  service_infos.push_back(GenerateServiceInfo(kServiceUuid1, kServiceId2));
+  fake_device_->set_services(std::move(service_infos));
+  fake_device_->set_characteristics(
+      kServiceId2, GenerateCharacteristicInfo(kCharacteristicUuid2));
+  fake_device_->set_characteristics(
+      kServiceId1, GenerateCharacteristicInfo(kCharacteristicUuid1));
+
+  std::vector<Uuid> characteristic_uuids = {kCharacteristicUuid1};
+
+  base::RunLoop run_loop;
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(
+              &BleV2GattClientTest::CallDiscoverServiceAndCharacteristics,
+              base::Unretained(this), /*expected_success=*/true, kServiceUuid1,
+              /*characteristic_uuids=*/characteristic_uuids),
+          run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(ble_v2_gatt_client_
+                  ->GetCharacteristic(kServiceUuid1, kCharacteristicUuid1)
+                  .has_value());
 }
 
 }  // namespace nearby::chrome

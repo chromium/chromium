@@ -27,7 +27,8 @@ void FakeDevice::GetServices(GetServicesCallback callback) {
 
 void FakeDevice::GetCharacteristics(const std::string& service_id,
                                     GetCharacteristicsCallback callback) {
-  std::move(callback).Run(std::move(characteristics_));
+  std::move(callback).Run(
+      std::move(service_id_to_characteristics_map_.at(service_id)));
 }
 
 void FakeDevice::ReadValueForCharacteristic(

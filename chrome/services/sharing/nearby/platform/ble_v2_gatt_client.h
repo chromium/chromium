@@ -97,16 +97,27 @@ class BleV2GattClient : public ::nearby::api::ble_v2::GattClient {
       bluetooth::mojom::GattResult result,
       const std::optional<std::vector<uint8_t>>& value);
 
-  bluetooth::mojom::CharacteristicInfoPtr GetCharacteristicInfoMojom(
-      const Uuid& service_uuid,
-      const Uuid& characteristic_uuid);
+  // Returns the `CharacteristicInfoPtr` and it's containing GATT service id
+  // if it exists.
+  std::optional<std::pair<bluetooth::mojom::CharacteristicInfoPtr, std::string>>
+  GetCharacteristicInfoMojom(const Uuid& service_uuid,
+                             const Uuid& characteristic_uuid);
 
   void Shutdown(base::WaitableEvent* shutdown_waitable_event);
   void OnMojoDisconnect();
 
   bool have_gatt_services_been_discovered_ = false;
-  std::map<std::string, std::unique_ptr<GattService>>
-      uuid_to_discovered_gatt_service_map_;
+
+  // Map of service UUID to a vector of GATT Services on the remote device that
+  // match the service UUID. `uuid_to_discovered_gatt_services_map_` supports
+  // duplicate GATT services with the same UUID because Android's GATT server
+  // contains duplicate GATT services with the same UUID that contain different
+  // GATT characteristics. BleV2GattClient needs to check all of the GATT
+  // services under the UUID for a match to the requested characteristics. This
+  // is aligned with how Windows handles duplicate GATT services from Android
+  // in their BLE V2 implementation.
+  std::map<std::string, std::vector<std::unique_ptr<GattService>>>
+      uuid_to_discovered_gatt_services_map_;
 
   // Track all pending tasks in case the object is invalidated while
   // waiting.

@@ -51,9 +51,11 @@ class FakeDevice : public mojom::Device {
   }
 
   void set_characteristics(
+      const std::string& service_id,
       std::optional<std::vector<bluetooth::mojom::CharacteristicInfoPtr>>
           characteristics) {
-    characteristics_ = std::move(characteristics);
+    service_id_to_characteristics_map_.insert_or_assign(
+        service_id, std::move(characteristics));
   }
 
   void set_read_value_for_characteristic_response(
@@ -72,8 +74,9 @@ class FakeDevice : public mojom::Device {
   base::OnceClosure on_disconnected_callback_;
   bool is_disconnected_ = false;
   std::vector<bluetooth::mojom::ServiceInfoPtr> services_;
-  std::optional<std::vector<bluetooth::mojom::CharacteristicInfoPtr>>
-      characteristics_;
+  std::map<std::string,
+           std::optional<std::vector<bluetooth::mojom::CharacteristicInfoPtr>>>
+      service_id_to_characteristics_map_;
   bluetooth::mojom::GattResult read_value_gatt_result_;
   std::optional<std::vector<uint8_t>> read_value_;
   mojo::Receiver<mojom::Device> device_{this};
