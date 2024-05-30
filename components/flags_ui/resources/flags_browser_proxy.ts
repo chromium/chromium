@@ -24,6 +24,7 @@ export interface Feature {
     description: string,
     selected: boolean,
   }>;
+  links?: string[];
 }
 
 export interface ExperimentalFeaturesData {

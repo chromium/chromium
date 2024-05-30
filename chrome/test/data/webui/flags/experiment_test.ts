@@ -6,7 +6,7 @@ import 'chrome://flags/experiment.js';
 
 import type {FlagsExperimentElement} from 'chrome://flags/experiment.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('ExperimentTest', function() {
@@ -45,17 +45,16 @@ suite('ExperimentTest', function() {
       'supported_platforms': ['Windows'],
     };
 
-    assertTrue(!!experiment);
     assertTrue(isVisible(experiment));
     assertTrue(isVisible(experiment.getRequiredElement('.experiment-name')));
     assertTrue(isVisible(experiment.getRequiredElement('.description')));
     assertTrue(isVisible(experiment.getRequiredElement('.platforms')));
+    assertFalse(isVisible(experiment.getRequiredElement('.links-container')));
     assertTrue(isVisible(experiment.getRequiredElement('.permalink')));
     assertTrue(!!experiment.getRequiredElement('.textarea-container'));
     assertTrue(!!experiment.getRequiredElement('.input-container'));
 
     const select = experiment.getRequiredElement('select');
-    assertTrue(!!select);
     assertTrue(isVisible(select));
     assertEquals(3, select.children.length);
     const options = ['Default', 'Enabled', 'Disabled'];
@@ -88,17 +87,16 @@ suite('ExperimentTest', function() {
       'supported_platforms': ['Windows'],
     };
 
-    assertTrue(!!experiment);
     assertTrue(isVisible(experiment));
     assertTrue(isVisible(experiment.getRequiredElement('.experiment-name')));
     assertTrue(isVisible(experiment.getRequiredElement('.description')));
     assertTrue(isVisible(experiment.getRequiredElement('.platforms')));
+    assertFalse(isVisible(experiment.getRequiredElement('.links-container')));
     assertTrue(isVisible(experiment.getRequiredElement('.permalink')));
     assertTrue(!!experiment.getRequiredElement('.textarea-container'));
     assertTrue(!!experiment.getRequiredElement('.input-container'));
 
     const select = experiment.getRequiredElement('select');
-    assertTrue(!!select);
     assertTrue(isVisible(select));
     assertEquals(2, select.children.length);
     const options = ['Enabled', 'Disabled'];
@@ -123,11 +121,11 @@ suite('ExperimentTest', function() {
       'supported_platforms': ['Windows'],
     };
 
-    assertTrue(!!experiment);
     assertTrue(isVisible(experiment));
     assertTrue(isVisible(experiment.getRequiredElement('.experiment-name')));
     assertTrue(isVisible(experiment.getRequiredElement('.description')));
     assertTrue(isVisible(experiment.getRequiredElement('.platforms')));
+    assertFalse(isVisible(experiment.getRequiredElement('.links-container')));
     assertTrue(isVisible(experiment.getRequiredElement('.permalink')));
     assertTrue(!!experiment.getRequiredElement('.textarea-container'));
     assertTrue(!!experiment.getRequiredElement('.input-container'));
@@ -135,5 +133,42 @@ suite('ExperimentTest', function() {
     const actions = experiment.getRequiredElement('.experiment-actions');
     assertTrue(!!actions);
     assertTrue(isVisible(actions));
+  });
+
+  test('check available experiments with links', function() {
+    experiment.data = {
+      'description': 'available feature with links',
+      'internal_name': 'available-feature-with-links',
+      'is_default': true,
+      'name': 'available feature with links',
+      'enabled': true,
+      'options': [
+        {
+          'description': 'Default',
+          'internal_name': 'available-feature@0',
+          'selected': false,
+        },
+        {
+          'description': 'Enabled',
+          'internal_name': 'available-feature@1',
+          'selected': false,
+        },
+        {
+          'description': 'Disabled',
+          'internal_name': 'available-feature@2',
+          'selected': false,
+        },
+      ],
+      'supported_platforms': ['Windows'],
+      'links': ['https://a.com'],
+    };
+
+    assertTrue(isVisible(experiment));
+    assertTrue(isVisible(experiment.getRequiredElement('.links-container')));
+
+    const links = experiment.$all<HTMLAnchorElement>('.links-container a');
+    assertEquals(1, links.length);
+    const linkElement = links[0]!;
+    assertEquals('https://a.com/', linkElement.href);
   });
 });
