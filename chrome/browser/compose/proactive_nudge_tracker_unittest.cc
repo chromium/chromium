@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
@@ -539,6 +540,12 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest, InputContext) {
           Pair("total_field_count", Val(2.0f)),
           Pair("multiline_field_count", Val(1.0f)),
           Pair("time_spent_on_page", Val(63.0f)),
+          Pair("field_signature",
+               Val(autofill::HashFieldSignature(
+                   autofill::CalculateFieldSignatureForField(field)))),
+          Pair("form_signature",
+               Val(autofill::HashFormSignature(
+                   autofill::CalculateFormSignature(CreateFormData())))),
           Pair("page_url", Val(GURL("https://example.com/test"))),
           Pair("origin", Val(GURL("https://example.com"))),
           Pair("field_value", Val(std::string("FormFieldDataInitialValue"))),

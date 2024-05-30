@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
 #include "components/segmentation_platform/public/constants.h"
@@ -59,6 +60,14 @@ scoped_refptr<segmentation_platform::InputContext> PopulateInputContextForField(
       "time_spent_on_page",
       ProcessedValue::FromFloat(
           (base::TimeTicks::Now() - signals.page_change_time).InSecondsF()));
+
+  input_context->metadata_args.emplace(
+      "field_signature",
+      ProcessedValue(autofill::HashFieldSignature(
+          autofill::CalculateFieldSignatureForField(signals.field))));
+  input_context->metadata_args.emplace(
+      "form_signature", ProcessedValue(autofill::HashFormSignature(
+                            autofill::CalculateFormSignature(signals.form))));
 
   input_context->metadata_args.emplace("page_url",
                                        ProcessedValue(signals.page_url));
