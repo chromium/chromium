@@ -341,14 +341,14 @@ class RemoveLocalStorageTester {
                                const url::Origin& origin1,
                                const url::Origin& origin2,
                                const url::Origin& origin3) {
-    storage::LocalStorageStorageKeyMetaData data;
+    storage::LocalStorageAreaWriteMetaData data;
     std::map<std::vector<uint8_t>, std::vector<uint8_t>> entries;
 
     base::Time now = base::Time::Now();
     data.set_last_modified(now.ToInternalValue());
     data.set_size_bytes(16);
     ASSERT_TRUE(
-        db.Put(CreateMetaDataKey(origin1),
+        db.Put(CreateWriteMetaDataKey(origin1),
                base::as_bytes(base::make_span(data.SerializeAsString())))
             .ok());
     ASSERT_TRUE(db.Put(CreateDataKey(origin1), {}).ok());
@@ -356,7 +356,7 @@ class RemoveLocalStorageTester {
     base::Time one_day_ago = now - base::Days(1);
     data.set_last_modified(one_day_ago.ToInternalValue());
     ASSERT_TRUE(
-        db.Put(CreateMetaDataKey(origin2),
+        db.Put(CreateWriteMetaDataKey(origin2),
                base::as_bytes(base::make_span((data.SerializeAsString()))))
             .ok());
     ASSERT_TRUE(db.Put(CreateDataKey(origin2), {}).ok());
@@ -364,7 +364,7 @@ class RemoveLocalStorageTester {
     base::Time sixty_days_ago = now - base::Days(60);
     data.set_last_modified(sixty_days_ago.ToInternalValue());
     ASSERT_TRUE(
-        db.Put(CreateMetaDataKey(origin3),
+        db.Put(CreateWriteMetaDataKey(origin3),
                base::as_bytes(base::make_span(data.SerializeAsString())))
             .ok());
     ASSERT_TRUE(db.Put(CreateDataKey(origin3), {}).ok());
@@ -382,7 +382,8 @@ class RemoveLocalStorageTester {
     return key;
   }
 
-  static std::vector<uint8_t> CreateMetaDataKey(const url::Origin& origin) {
+  static std::vector<uint8_t> CreateWriteMetaDataKey(
+      const url::Origin& origin) {
     const uint8_t kMetaPrefix[] = {'M', 'E', 'T', 'A', ':'};
     auto origin_str = origin.Serialize();
     std::vector<uint8_t> serialized_origin(origin_str.begin(),

@@ -51,7 +51,7 @@ namespace storage {
 //   value: "1"
 //
 //   key: "META:" + <StorageKey 'storage_key'>
-//   value: <LocalStorageStorageKeyMetaData serialized as a string>
+//   value: <LocalStorageAreaWriteMetaData serialized as a string>
 //
 //   key: "_" + <StorageKey 'storage_key'> + '\x00' + <script controlled key>
 //   value: <script controlled value>
@@ -67,7 +67,7 @@ using StorageAreaImpl = StorageAreaImpl;
 static const int kDaysInTenYears = 10 * 365;
 
 constexpr std::string_view kVersionKey = "VERSION";
-const uint8_t kMetaPrefix[] = {'M', 'E', 'T', 'A', ':'};
+const uint8_t kWriteMetaPrefix[] = {'M', 'E', 'T', 'A', ':'};
 const int64_t kMinSchemaVersion = 1;
 const int64_t kCurrentLocalStorageSchemaVersion = 1;
 
@@ -85,26 +85,27 @@ const unsigned kMaxLocalStorageAreaCount = 50;
 const size_t kMaxLocalStorageCacheSize = 20 * 1024 * 1024;
 #endif
 
-DomStorageDatabase::Key CreateMetaDataKey(
+DomStorageDatabase::Key CreateWriteMetaDataKey(
     const blink::StorageKey& storage_key) {
   std::string storage_key_str = storage_key.SerializeForLocalStorage();
   std::vector<uint8_t> serialized_storage_key(storage_key_str.begin(),
                                               storage_key_str.end());
   DomStorageDatabase::Key key;
-  key.reserve(std::size(kMetaPrefix) + serialized_storage_key.size());
-  key.insert(key.end(), kMetaPrefix, kMetaPrefix + std::size(kMetaPrefix));
+  key.reserve(std::size(kWriteMetaPrefix) + serialized_storage_key.size());
+  key.insert(key.end(), kWriteMetaPrefix,
+             kWriteMetaPrefix + std::size(kWriteMetaPrefix));
   key.insert(key.end(), serialized_storage_key.begin(),
              serialized_storage_key.end());
   return key;
 }
 
-std::optional<blink::StorageKey> ExtractStorageKeyFromMetaDataKey(
+std::optional<blink::StorageKey> ExtractStorageKeyFromWriteMetaDataKey(
     const DomStorageDatabase::Key& key) {
-  DCHECK_GT(key.size(), std::size(kMetaPrefix));
+  DCHECK_GT(key.size(), std::size(kWriteMetaPrefix));
   const std::string_view key_string(reinterpret_cast<const char*>(key.data()),
                                     key.size());
   return blink::StorageKey::DeserializeForLocalStorage(
-      key_string.substr(std::size(kMetaPrefix)));
+      key_string.substr(std::size(kWriteMetaPrefix)));
 }
 
 void SuccessResponse(base::OnceClosure callback, bool success) {
@@ -142,7 +143,7 @@ void DeleteStorageKeys(AsyncDomStorageDatabase* database,
             for (const auto& storage_key : storage_keys) {
               db.DeletePrefixed(MakeStorageKeyPrefix(storage_key), &batch);
               batch.Delete(
-                  leveldb_env::MakeSlice(CreateMetaDataKey(storage_key)));
+                  leveldb_env::MakeSlice(CreateWriteMetaDataKey(storage_key)));
             }
             return db.Commit(&batch);
           },
@@ -211,11 +212,11 @@ class LocalStorageImpl::StorageAreaHolder final
       context_->database_initialized_ = true;
     }
 
-    DomStorageDatabase::Key metadata_key = CreateMetaDataKey(storage_key_);
+    DomStorageDatabase::Key metadata_key = CreateWriteMetaDataKey(storage_key_);
     if (storage_area()->empty()) {
       extra_keys_to_delete->push_back(std::move(metadata_key));
     } else {
-      storage::LocalStorageStorageKeyMetaData data;
+      storage::LocalStorageAreaWriteMetaData data;
       data.set_last_modified(base::Time::Now().ToInternalValue());
       data.set_size_bytes(storage_area()->storage_used());
       std::string serialized_data = data.SerializeAsString();
@@ -694,29 +695,29 @@ void LocalStorageImpl::RetrieveStorageUsage(GetUsageCallback callback) {
     database_->RunDatabaseTask(
         base::BindOnce([](const DomStorageDatabase& db) {
           std::vector<DomStorageDatabase::KeyValuePair> data;
-          db.GetPrefixed(base::make_span(kMetaPrefix), &data);
+          db.GetPrefixed(base::make_span(kWriteMetaPrefix), &data);
           return data;
         }),
-        base::BindOnce(&LocalStorageImpl::OnGotMetaData,
+        base::BindOnce(&LocalStorageImpl::OnGotWriteMetaData,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 }
 
-void LocalStorageImpl::OnGotMetaData(
+void LocalStorageImpl::OnGotWriteMetaData(
     GetUsageCallback callback,
     std::vector<DomStorageDatabase::KeyValuePair> data) {
   std::vector<mojom::StorageUsageInfoPtr> result;
   std::set<blink::StorageKey> storage_keys;
   for (const auto& row : data) {
     std::optional<blink::StorageKey> storage_key =
-        ExtractStorageKeyFromMetaDataKey(row.key);
+        ExtractStorageKeyFromWriteMetaDataKey(row.key);
     if (!storage_key) {
       // TODO(mek): Deal with database corruption.
       continue;
     }
     storage_keys.insert(*storage_key);
 
-    storage::LocalStorageStorageKeyMetaData row_data;
+    storage::LocalStorageAreaWriteMetaData row_data;
     if (!row_data.ParseFromArray(row.value.data(), row.value.size())) {
       // TODO(mek): Deal with database corruption.
       continue;

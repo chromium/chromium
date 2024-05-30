@@ -8,7 +8,9 @@ option optimize_for = LITE_RUNTIME;
 
 package storage;
 
-message LocalStorageStorageKeyMetaData {
+// This metadata is updated at the time a LocalStorage StorageArea is persisted
+// to disk for a given StorageKey.
+message LocalStorageAreaWriteMetaData {
   // Serialized by base::Time::ToInternalValue().
   required int64 last_modified = 1;
   required uint64 size_bytes = 2;
