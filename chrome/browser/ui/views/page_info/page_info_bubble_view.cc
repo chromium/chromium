@@ -114,6 +114,10 @@ InternalPageInfoBubbleView::InternalPageInfoBubbleView(
   title_label->SetFontList(views::Label::GetDefaultFontList());
   title_label->SetMultiLine(true);
   title_label->SetElideBehavior(gfx::NO_ELIDE);
+
+  // TODO(crbug.com/343325197) Remove this SizeToContents() once this bug is
+  // fixed.
+  SizeToContents();
 }
 
 InternalPageInfoBubbleView::~InternalPageInfoBubbleView() = default;
@@ -302,7 +306,9 @@ gfx::Size PageInfoBubbleView::CalculatePreferredSize(
 }
 
 void PageInfoBubbleView::ChildPreferredSizeChanged(views::View* child) {
-  DeprecatedLayoutImmediately();
+  // TODO(crbug.com/343325197) Remove this SizeToContents() once this bug is
+  // fixed.
+  SizeToContents();
 }
 
 void PageInfoBubbleView::AnnouncePageOpened(std::u16string announcement) {

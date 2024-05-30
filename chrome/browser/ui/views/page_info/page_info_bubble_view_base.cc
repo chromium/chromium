@@ -49,7 +49,7 @@ PageInfoBubbleViewBase::PageInfoBubbleViewBase(
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::TOP_LEFT,
                                views::BubbleBorder::DIALOG_SHADOW,
-                               true),
+                               /*autosize=*/false),
       content::WebContentsObserver(web_contents) {
   g_shown_bubble_type = type;
   g_page_info_bubble = this;
