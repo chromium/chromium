@@ -486,6 +486,8 @@ void AuthenticatorRequestDialogModel::RemoveObserver(
 }
 
 void AuthenticatorRequestDialogModel::SetStep(Step step) {
+  FIDO_LOG(EVENT) << "UI step: " << step;
+
   const StepUIType previous_ui_type = step_ui_type(step_);
   step_ = step;
   ui_disabled_ = false;
@@ -557,6 +559,19 @@ bool AuthenticatorRequestDialogModel::should_bubble_be_closed() const {
 AUTHENTICATOR_EVENTS
 #undef AUTHENTICATOR_REQUEST_EVENT_0
 #undef AUTHENTICATOR_REQUEST_EVENT_1
+
+std::ostream& operator<<(std::ostream& os,
+                         AuthenticatorRequestDialogModel::Step& step) {
+  switch (step) {
+#define F(x)                                     \
+  case AuthenticatorRequestDialogModel::Step::x: \
+    os << #x;                                    \
+    break;
+    STEPS
+#undef F
+  }
+  return os;
+}
 
 AuthenticatorRequestDialogController::EphemeralState::EphemeralState() =
     default;

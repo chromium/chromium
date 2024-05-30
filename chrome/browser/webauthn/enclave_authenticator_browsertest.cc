@@ -22,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_logging_settings.h"
 #include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -556,6 +557,8 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
 #endif
     clock_.SetNow(base::Time::FromTimeT(1000));
     OSCryptMocker::SetUp();
+    // Log call `FIDO_LOG` messages.
+    scoped_vmodule_.InitWithSwitches("device_event_log_impl=2");
 
     auto security_domain_service_callback =
         security_domain_service_->GetCallback();
@@ -811,6 +814,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
                 crypto::ScopedFakeUserVerifyingKeyProvider,
                 crypto::ScopedFailingUserVerifyingKeyProvider>
       fake_uv_provider_;
+  logging::ScopedVmoduleSwitches scoped_vmodule_;
 };
 
 class EnclaveAuthenticatorWithPinBrowserTest

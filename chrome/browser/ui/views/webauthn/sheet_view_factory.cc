@@ -197,12 +197,14 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
           std::make_unique<AuthenticatorBlePowerOnManualSheetModel>(
               dialog_model));
       break;
-#if BUILDFLAG(IS_MAC)
     case Step::kBlePermissionMac:
+#if BUILDFLAG(IS_MAC)
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
           std::make_unique<AuthenticatorBlePermissionMacSheetModel>(
               dialog_model));
       break;
+#else
+      NOTREACHED_NORETURN();
 #endif
     case Step::kOffTheRecordInterstitial:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
