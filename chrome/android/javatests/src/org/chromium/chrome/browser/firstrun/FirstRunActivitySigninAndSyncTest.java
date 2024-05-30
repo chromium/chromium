@@ -239,29 +239,6 @@ public class FirstRunActivitySigninAndSyncTest {
     // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
     // adding at least one policy via AppRestrictions prevents that.
     @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
-    @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void continueButtonClickShowsHistorySyncPageWithChildAccount() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_CHILD_ACCOUNT);
-        launchFirstRunActivityAndWaitForNativeInitialization();
-        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
-        onView(withId(R.id.signin_fre_selected_account)).check(matches(isDisplayed()));
-
-        clickButton(R.id.signin_fre_continue_button);
-
-        waitUntilCurrentPageIs(HistorySyncFirstRunFragment.class);
-        CriteriaHelper.pollUiThread(
-                () ->
-                        IdentityServicesProvider.get()
-                                .getSigninManager(ProfileManager.getLastUsedRegularProfile())
-                                .getIdentityManager()
-                                .hasPrimaryAccount(ConsentLevel.SIGNIN));
-    }
-
-    @Test
-    @MediumTest
-    // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
-    // adding at least one policy via AppRestrictions prevents that.
-    @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
     public void dismissButtonNotShownOnResetForChildAccount() throws ExecutionException {
         mAccountManagerTestRule.addAccount(CHILD_EMAIL);
         launchFirstRunActivityAndWaitForNativeInitialization();

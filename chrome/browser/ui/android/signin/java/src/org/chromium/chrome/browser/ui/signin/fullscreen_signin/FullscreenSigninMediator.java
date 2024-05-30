@@ -17,7 +17,6 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -317,8 +316,7 @@ public class FullscreenSigninMediator
     void proceedWithSignIn() {
         // This is needed to get metrics/crash reports from the sign-in flow itself.
         mDelegate.acceptTermsOfService(mAllowMetricsAndCrashUploading);
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                && mModel.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED)) {
+        if (mModel.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED)) {
             // Don't perform the sign-in here, as it will be handled by SigninChecker.
             mDelegate.advanceToNextPage();
             return;
@@ -327,8 +325,8 @@ public class FullscreenSigninMediator
                 TextUtils.equals(mDefaultAccountEmail, mSelectedAccountEmail)
                         ? MobileFreProgress.WELCOME_SIGNIN_WITH_DEFAULT_ACCOUNT
                         : MobileFreProgress.WELCOME_SIGNIN_WITH_NON_DEFAULT_ACCOUNT);
-        // If the user signs into an account on the FRE, goes to the next page and presses
-        // back to come back to the welcome screen, then there will already be an account signed in.
+        // If the user signs into an account on the FRE, goes to the sync consent page and presses
+        // back to come back to the FRE, then there will already be an account signed in.
         @Nullable
         CoreAccountInfo signedInAccount =
                 IdentityServicesProvider.get()
@@ -372,14 +370,10 @@ public class FullscreenSigninMediator
                         mSelectedAccountEmail);
         if (selectedAccount != null) {
             mModel.set(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, true);
-            final @SigninAccessPoint int accessPoint =
-                    mModel.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED)
-                            ? SigninAccessPoint.FORCED_SIGNIN
-                            : SigninAccessPoint.START_PAGE;
             SigninUtils.checkAccountManagementAndSignIn(
                     selectedAccount,
                     signinManager,
-                    accessPoint,
+                    SigninAccessPoint.START_PAGE,
                     signInCallback,
                     mContext,
                     mModalDialogManager);

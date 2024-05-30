@@ -51,16 +51,6 @@ public class AccountManagerTestRule implements TestRule {
                     .accountImage(createAvatar())
                     .build();
 
-    public static final AccountInfo TEST_CHILD_ACCOUNT =
-            new AccountInfo.Builder(
-                            generateChildEmail(TEST_ACCOUNT_1.getEmail()),
-                            FakeAccountManagerFacade.toGaiaId(
-                                    generateChildEmail(TEST_ACCOUNT_1.getEmail())))
-                    .fullName("Test1 Full")
-                    .givenName("Test1 Given")
-                    .accountImage(createAvatar())
-                    .build();
-
     public static final AccountInfo TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL =
             new AccountInfo.Builder(
                             generateChildEmail("test@gmail.com"),
@@ -279,7 +269,6 @@ public class AccountManagerTestRule implements TestRule {
 
     /**
      * Sets the result for the next add account flow.
-     *
      * @param result The activity result to return when the intent is launched
      * @param newAccountName The account name to return when the intent is launched
      */
