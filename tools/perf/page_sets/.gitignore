@@ -12,7 +12,7 @@
 *.wpr
 *.wprgo
 
-maps_perf_test/load_dataset
+maps_perf_test/dataset/load_dataset
 
 # Generated fetched binary's timestamp
 # See details in py_utils.cloud_storage.GetIfChanged(file_path, bucket) method.

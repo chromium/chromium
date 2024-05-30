@@ -1438,7 +1438,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/benchmark.git' + '@' + '344117638c8ff7e239044fd0fa7085839fc03021',
 
   # Download test data for Maps telemetry_gpu_integration_test.
-  'src/tools/perf/page_sets/maps_perf_test/': {
+  'src/tools/perf/page_sets/maps_perf_test/dataset': {
       'dep_type': 'gcs',
       'condition': 'non_git_source',
       'bucket': 'chromium-telemetry',

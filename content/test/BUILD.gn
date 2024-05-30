@@ -897,7 +897,7 @@ group("telemetry_gpu_integration_test_support") {
     # the full directory can include a .fetchts file, which affects swarming's
     # ability to dedupe tasks.
     "//tools/perf/page_sets/maps_perf_test/config.js",
-    "//tools/perf/page_sets/maps_perf_test/load_dataset",
+    "//tools/perf/page_sets/maps_perf_test/dataset/load_dataset",
     "//tools/perf/page_sets/maps_perf_test/performance.html",
     "//tools/perf/page_sets/maps_perf_test/tracked.js",
     "//tools/perf/page_sets/maps_perf_test/worker.js",

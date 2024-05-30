@@ -46,7 +46,7 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
   @classmethod
   def SetUpProcess(cls) -> None:
     cloud_storage.GetIfChanged(
-        os.path.join(_MAPS_PERF_TEST_PATH, 'load_dataset'),
+        os.path.join(_MAPS_PERF_TEST_PATH, 'dataset', 'load_dataset'),
         cloud_storage.PUBLIC_BUCKET)
     super().SetUpProcess()
 
