@@ -116,12 +116,6 @@ buildflag_header("buildflags") {
   }
 }
 
-# This proto library is used for non - android NTPs below.
-proto_library("ntp_background_proto") {
-  sources = [ "search/background/ntp_background.proto" ]
-  generate_python = false
-}
-
 source_set("browser_process") {
   sources = [
     "browser_process.cc",
@@ -2088,7 +2082,6 @@ static_library("browser") {
     ":k_anonymity_storage_proto",
     ":lcp_critical_path_predictor_proto",
     ":main_extra_parts",
-    ":ntp_background_proto",
     ":resource_prefetch_predictor_proto",
     ":unexpire_flags",
     "//base",
@@ -2682,6 +2675,7 @@ static_library("browser") {
   if (!is_android) {
     deps += [
       "//chrome/browser/new_tab_page/chrome_colors",
+      "//chrome/browser/search/background",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
       "//chrome/browser/ui/webui/search_engine_choice:mojo_bindings",
@@ -4416,25 +4410,6 @@ static_library("browser") {
       "resources_integrity.h",
       "safe_browsing/generated_safe_browsing_pref.cc",
       "safe_browsing/generated_safe_browsing_pref.h",
-      "search/background/ntp_background_data.cc",
-      "search/background/ntp_background_data.h",
-      "search/background/ntp_background_service.cc",
-      "search/background/ntp_background_service.h",
-      "search/background/ntp_background_service_factory.cc",
-      "search/background/ntp_background_service_factory.h",
-      "search/background/ntp_background_service_observer.h",
-      "search/background/ntp_backgrounds.cc",
-      "search/background/ntp_backgrounds.h",
-      "search/background/ntp_custom_background_service.cc",
-      "search/background/ntp_custom_background_service.h",
-      "search/background/ntp_custom_background_service_factory.cc",
-      "search/background/ntp_custom_background_service_factory.h",
-      "search/background/ntp_custom_background_service_observer.h",
-      "search/background/wallpaper_search/wallpaper_search_background_manager.cc",
-      "search/background/wallpaper_search/wallpaper_search_background_manager.h",
-      "search/background/wallpaper_search/wallpaper_search_background_manager_observer.h",
-      "search/background/wallpaper_search/wallpaper_search_data.cc",
-      "search/background/wallpaper_search/wallpaper_search_data.h",
       "search/instant_service.cc",
       "search/instant_service.h",
       "search/instant_service_factory.cc",

@@ -816,9 +816,9 @@ source_set("extensions") {
     "//chrome/app/theme:theme_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
-    "//chrome/browser:ntp_background_proto",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/search/background",
     "//chrome/browser/themes",
 
     # Only for allow_circular_includes_from

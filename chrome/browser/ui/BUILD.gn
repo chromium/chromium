@@ -774,7 +774,10 @@ static_library("ui") {
       "passwords/password_cross_domain_confirmation_popup_controller_impl.cc",
       "passwords/password_cross_domain_confirmation_popup_controller_impl.h",
     ]
-    deps += [ "//chrome/browser/themes" ]
+    deps += [
+      "//chrome/browser/search/background",
+      "//chrome/browser/themes",
+    ]
   }
 
   if (is_win || is_android || is_linux || is_chromeos) {
@@ -4332,12 +4335,12 @@ static_library("ui") {
       "webui/app_settings/web_app_settings_ui.h",
       "webui/browser_switch/browser_switch_ui.cc",
       "webui/browser_switch/browser_switch_ui.h",
+      "webui/whats_new/whats_new_fetcher.cc",
+      "webui/whats_new/whats_new_fetcher.h",
       "webui/whats_new/whats_new_handler.cc",
       "webui/whats_new/whats_new_handler.h",
       "webui/whats_new/whats_new_ui.cc",
       "webui/whats_new/whats_new_ui.h",
-      "webui/whats_new/whats_new_fetcher.cc",
-      "webui/whats_new/whats_new_fetcher.h",
     ]
 
     deps += [
