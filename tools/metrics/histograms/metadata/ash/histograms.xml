@@ -8741,6 +8741,7 @@ chromium-metrics-reviews@google.com.
     <variant name="LiveCaption" summary="Live Caption"/>
     <variant name="NoiseCancellation" summary="Noise cancellation"/>
     <variant name="PortraitRelighting" summary="Portrait Relighting"/>
+    <variant name="StudioMic" summary="Studio mic"/>
     <variant name="TestEffect" summary="Test Effect"/>
   </token>
 </histogram>
@@ -8758,6 +8759,7 @@ chromium-metrics-reviews@google.com.
     <variant name="LiveCaption" summary="Live Caption"/>
     <variant name="NoiseCancellation" summary="Noise cancellation"/>
     <variant name="PortraitRelighting" summary="Portrait Relighting"/>
+    <variant name="StudioMic" summary="Studio mic"/>
     <variant name="TestEffect" summary="Test Effect"/>
   </token>
 </histogram>
