@@ -64,12 +64,6 @@ NTSTATUS NtCreateFileInTarget(HANDLE* target_file_handle,
     return status;
   }
 
-  if (!SameObject(local_handle, obj_attributes->ObjectName->Buffer)) {
-    // The handle points somewhere else. Fail the operation.
-    ::CloseHandle(local_handle);
-    return STATUS_ACCESS_DENIED;
-  }
-
   if (!::DuplicateHandle(::GetCurrentProcess(), local_handle, target_process,
                          target_file_handle, 0, false,
                          DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS)) {
@@ -89,11 +83,7 @@ bool FileSystemPolicy::GenerateRules(const wchar_t* name,
   }
 
   bool is_pipe = IsPipe(mod_name);
-  if (!PreProcessName(&mod_name)) {
-    // The path to be added might contain a reparse point.
-    NOTREACHED_IN_MIGRATION();
-    return false;
-  }
+  ConvertToLongPath(&mod_name);
 
   // TODO(cpu) bug 32224: This prefix add is a hack because we don't have the
   // infrastructure to normalize names. In any case we need to escape the
@@ -287,16 +277,6 @@ bool FileSystemPolicy::SetInformationFileAction(EvalResult eval_result,
       local_handle, io_block, file_info, length, file_info_class);
 
   return true;
-}
-
-bool PreProcessName(std::wstring* path) {
-  ConvertToLongPath(path);
-
-  if (ERROR_NOT_A_REPARSE_POINT == IsReparsePoint(*path))
-    return true;
-
-  // We can't process a reparsed file.
-  return false;
 }
 
 std::wstring FixNTPrefixForMatch(const std::wstring& name) {

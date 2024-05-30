@@ -9,10 +9,11 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include <optional>
 #include "base/win/windows_types.h"
 
 namespace sandbox {
@@ -60,16 +61,6 @@ class SingletonBase {
 bool ConvertToLongPath(std::wstring* path,
                        const std::wstring* drive_letter = nullptr);
 
-// Returns ERROR_SUCCESS if the path contains a reparse point,
-// ERROR_NOT_A_REPARSE_POINT if there's no reparse point in this path, or an
-// error code when the function fails.
-// This function is not smart. It looks for each element in the path and
-// returns true if any of them is a reparse point.
-DWORD IsReparsePoint(const std::wstring& full_path);
-
-// Returns true if the handle corresponds to the object pointed by this path.
-bool SameObject(HANDLE handle, const wchar_t* full_path);
-
 // Resolves a handle to an nt path or nullopt if the path cannot be resolved.
 std::optional<std::wstring> GetPathFromHandle(HANDLE handle);
 
@@ -108,6 +99,9 @@ void* GetProcessBaseAddress(HANDLE process);
 // the valid handles could change between the return of the list and when you
 // use them.
 std::optional<ProcessHandleMap> GetCurrentProcessHandles();
+
+// Returns true if the string contains a NUL ('\0') character.
+bool ContainsNulCharacter(std::wstring_view str);
 
 }  // namespace sandbox
 

@@ -33,19 +33,6 @@ const size_t kDriveLetterLen = 3;
 constexpr wchar_t kNTDotPrefix[] = L"\\\\.\\";
 const size_t kNTDotPrefixLen = std::size(kNTDotPrefix) - 1;
 
-// These functions perform case independent path comparisons.
-bool EqualPath(const std::wstring& first, const std::wstring& second) {
-  return _wcsicmp(first.c_str(), second.c_str()) == 0;
-}
-
-bool EqualPath(const std::wstring& first,
-               size_t first_offset,
-               const std::wstring& second,
-               size_t second_offset) {
-  return _wcsicmp(first.c_str() + first_offset,
-                  second.c_str() + second_offset) == 0;
-}
-
 bool EqualPath(const std::wstring& first,
                const wchar_t* second,
                size_t second_len) {
@@ -185,125 +172,6 @@ bool IsPipe(const std::wstring& path) {
     return false;
 
   return EqualPath(path, start, kPipe, std::size(kPipe) - 1);
-}
-
-// |full_path| can have any of the following forms:
-//    \??\c:\some\foo\bar
-//    \Device\HarddiskVolume0\some\foo\bar
-//    \??\HarddiskVolume0\some\foo\bar
-DWORD IsReparsePoint(const std::wstring& full_path) {
-  // Check if it's a pipe. We can't query the attributes of a pipe.
-  if (IsPipe(full_path))
-    return ERROR_NOT_A_REPARSE_POINT;
-
-  std::wstring path;
-  bool nt_path = IsNTPath(full_path, &path);
-  bool has_drive = StartsWithDriveLetter(path);
-  bool is_device_path = IsDevicePath(path, &path);
-
-  if (!has_drive && !is_device_path && !nt_path)
-    return ERROR_INVALID_NAME;
-
-  bool added_implied_device = false;
-  if (!has_drive) {
-    path = std::wstring(kNTDotPrefix) + path;
-    added_implied_device = true;
-  }
-
-  std::wstring::size_type last_pos = std::wstring::npos;
-  bool passed_once = false;
-
-  do {
-    path = path.substr(0, last_pos);
-
-    DWORD attributes = ::GetFileAttributes(path.c_str());
-    if (INVALID_FILE_ATTRIBUTES == attributes) {
-      DWORD error = ::GetLastError();
-      if (error != ERROR_FILE_NOT_FOUND && error != ERROR_PATH_NOT_FOUND &&
-          error != ERROR_INVALID_NAME) {
-        // Unexpected error.
-        if (passed_once && added_implied_device &&
-            (path.rfind(L'\\') == kNTDotPrefixLen - 1)) {
-          break;
-        }
-        return error;
-      }
-    } else if (FILE_ATTRIBUTE_REPARSE_POINT & attributes) {
-      // This is a reparse point.
-      return ERROR_SUCCESS;
-    }
-
-    passed_once = true;
-    last_pos = path.rfind(L'\\');
-  } while (last_pos > 2);  // Skip root dir.
-
-  return ERROR_NOT_A_REPARSE_POINT;
-}
-
-// We get a |full_path| of the forms accepted by IsReparsePoint(), and the name
-// we'll get from |handle| will be \device\harddiskvolume1\some\foo\bar.
-bool SameObject(HANDLE handle, const wchar_t* full_path) {
-  // Check if it's a pipe.
-  if (IsPipe(full_path))
-    return true;
-
-  auto actual_path = GetPathFromHandle(handle);
-  if (!actual_path)
-    return false;
-
-  std::wstring path(full_path);
-  DCHECK_NT(!path.empty());
-
-  // This may end with a backslash.
-  const wchar_t kBackslash = '\\';
-  if (path.back() == kBackslash)
-    path = path.substr(0, path.length() - 1);
-
-  // Perfect match (case-insensitive check).
-  if (EqualPath(actual_path.value(), path))
-    return true;
-
-  bool nt_path = IsNTPath(path, &path);
-  bool has_drive = StartsWithDriveLetter(path);
-
-  if (!has_drive && nt_path) {
-    std::wstring simple_actual_path;
-    if (!IsDevicePath(actual_path.value(), &simple_actual_path))
-      return false;
-
-    // Perfect match (case-insensitive check).
-    return (EqualPath(simple_actual_path, path));
-  }
-
-  if (!has_drive)
-    return false;
-
-  // We only need 3 chars, but let's alloc a buffer for four.
-  wchar_t drive[4] = {0};
-  wchar_t vol_name[MAX_PATH];
-  memcpy(drive, &path[0], 2 * sizeof(*drive));
-
-  // We'll get a double null terminated string.
-  DWORD vol_length = ::QueryDosDeviceW(drive, vol_name, MAX_PATH);
-  if (vol_length < 2 || vol_length == MAX_PATH)
-    return false;
-
-  // Ignore the nulls at the end.
-  vol_length = static_cast<DWORD>(wcslen(vol_name));
-
-  // The two paths should be the same length.
-  if (vol_length + path.size() - 2 != actual_path->size())
-    return false;
-
-  // Check up to the drive letter.
-  if (!EqualPath(actual_path.value(), vol_name, vol_length))
-    return false;
-
-  // Check the path after the drive letter.
-  if (!EqualPath(actual_path.value(), vol_length, path, 2))
-    return false;
-
-  return true;
 }
 
 // Just make a best effort here.  There are lots of corner cases that we're
@@ -527,6 +395,11 @@ std::optional<ProcessHandleMap> GetCurrentProcessHandles() {
       handle_map[type_name.value()].push_back(handle);
   }
   return handle_map;
+}
+
+bool ContainsNulCharacter(std::wstring_view str) {
+  wchar_t nul = '\0';
+  return str.find_first_of(nul) != std::wstring::npos;
 }
 
 }  // namespace sandbox
