@@ -194,7 +194,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Mark any aria-hidden ancestors of this object as "bad", ignoring their
   // aria-hidden markup from this point forward, and rebuild the top aria-hidden
   // element's subtree without the aria-hidden markup.
-  void DiscardBadAriaHidden(AXObject&);
+  void DiscardBadAriaHiddenBecauseOfFocus(AXObject& focus);
+  // Mark an aria-hidden usage as bad/discarded when used on <body>/<html>/etc.
+  void DiscardBadAriaHiddenBecauseOfElement(const AXObject& obj);
 
   void ImageLoaded(const LayoutObject*) override;
 

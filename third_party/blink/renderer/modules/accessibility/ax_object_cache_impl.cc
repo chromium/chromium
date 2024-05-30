@@ -2206,9 +2206,31 @@ bool AXObjectCacheImpl::HasBadAriaHidden(const AXObject& obj) const {
   return nodes_with_bad_aria_hidden.Contains(obj.AXObjectID());
 }
 
-void AXObjectCacheImpl::DiscardBadAriaHidden(AXObject& obj) {
+void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfElement(
+    const AXObject& obj) {
+  bool is_first_time =
+      nodes_with_bad_aria_hidden.insert(obj.AXObjectID()).is_new_entry;
+
+  if (!is_first_time) {
+    return;
+  }
+
+  Element& element = *obj.GetElement();
+  element.AddConsoleMessage(
+      mojom::blink::ConsoleMessageSource::kRendering,
+      mojom::blink::ConsoleMessageLevel::kError,
+      String::Format(
+          "Blocked aria-hidden on a <%s> element because it would hide the "
+          "entire accessibility tree from assistive technology users. For more "
+          "details, see the aria-hidden section of the WAI-ARIA specification "
+          "at https://w3c.github.io/aria/#aria-hidden.",
+          element.TagQName().ToString().Ascii().c_str()));
+}
+
+void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfFocus(AXObject& obj) {
   // aria-hidden markup requires an element.
   Element& element = *obj.GetElement();
+
   element.AddConsoleMessage(
       mojom::blink::ConsoleMessageSource::kRendering,
       mojom::blink::ConsoleMessageLevel::kError,
@@ -3906,7 +3928,7 @@ void AXObjectCacheImpl::HandleNodeGainedFocusWithCleanLayout(Node* node) {
   // The aria-hidden will be ignored when this occurs.
   if (obj->IsAriaHidden()) {
     Node* focused_node = obj->GetNode();
-    DiscardBadAriaHidden(*obj);
+    DiscardBadAriaHiddenBecauseOfFocus(*obj);
     obj = Get(focused_node);
     CHECK(obj) << "Object could not be recreated with aria-hidden off.";
     CHECK(!obj->IsAriaHidden());
