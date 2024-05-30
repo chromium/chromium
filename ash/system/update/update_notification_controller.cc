@@ -107,12 +107,9 @@ void UpdateNotificationController::GenerateUpdateNotification(
     notification->SetSystemPriority();
 
   if (ShouldShowDeferredUpdate()) {
-    notification->set_buttons({
-        message_center::ButtonInfo(l10n_util::GetStringUTF16(
-            IDS_UPDATE_NOTIFICATION_APPLY_UPDATE_BUTTON)),
-        message_center::ButtonInfo(l10n_util::GetStringUTF16(
-            IDS_UPDATE_NOTIFICATION_AUTOMATIC_UPDATE_BUTTON)),
-    });
+    notification->set_buttons(
+        {message_center::ButtonInfo(l10n_util::GetStringUTF16(
+            IDS_UPDATE_NOTIFICATION_APPLY_UPDATE_BUTTON))});
   } else if (model_->update_required()) {
     std::vector<message_center::ButtonInfo> notification_actions;
     if (model_->rollback()) {
@@ -303,39 +300,34 @@ void UpdateNotificationController::HandleNotificationClick(
     return;
   }
 
-  if (button_index.value() == 0) {
-    message_center::MessageCenter::Get()->RemoveNotification(
-        kNotificationId, false /* by_user */);
+  message_center::MessageCenter::Get()->RemoveNotification(kNotificationId,
+                                                           false /* by_user */);
 
-    if (ShouldShowDeferredUpdate()) {
-      // When the "update" button is clicked, apply the deferred update.
-      ash::UpdateEngineClient::Get()->ApplyDeferredUpdate(
-          /*shutdown_after_update=*/false, base::DoNothing());
-    } else if (model_->update_required()) {
-      // Restart
-      if (slow_boot_file_path_exists_) {
-        // An active dialog exists already.
-        if (confirmation_dialog_)
-          return;
-
-        confirmation_dialog_ = new ShutdownConfirmationDialog(
-            IDS_DIALOG_TITLE_SLOW_BOOT, IDS_DIALOG_MESSAGE_SLOW_BOOT,
-            base::BindOnce(&UpdateNotificationController::RestartForUpdate,
-                           weak_ptr_factory_.GetWeakPtr()),
-            base::BindOnce(&UpdateNotificationController::RestartCancelled,
-                           weak_ptr_factory_.GetWeakPtr()));
-      } else {
-        RestartForUpdate();
+  if (ShouldShowDeferredUpdate()) {
+    // When the "update" button is clicked, apply the deferred update.
+    ash::UpdateEngineClient::Get()->ApplyDeferredUpdate(
+        /*shutdown_after_update=*/false, base::DoNothing());
+  } else if (model_->update_required()) {
+    // Restart
+    if (slow_boot_file_path_exists_) {
+      // An active dialog exists already.
+      if (confirmation_dialog_) {
+        return;
       }
+
+      confirmation_dialog_ = new ShutdownConfirmationDialog(
+          IDS_DIALOG_TITLE_SLOW_BOOT, IDS_DIALOG_MESSAGE_SLOW_BOOT,
+          base::BindOnce(&UpdateNotificationController::RestartForUpdate,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(&UpdateNotificationController::RestartCancelled,
+                         weak_ptr_factory_.GetWeakPtr()));
     } else {
-      // Shows the about chrome OS page and checks for update after the page is
-      // loaded.
-      Shell::Get()->system_tray_model()->client()->ShowAboutChromeOS();
+      RestartForUpdate();
     }
   } else {
-    // When the "automatic update" button is clicked, take user to the ChromeOS
-    // additional details page that has the automatic update toggle.
-    Shell::Get()->system_tray_model()->client()->ShowAboutChromeOSDetails();
+    // Shows the about chrome OS page and checks for update after the page is
+    // loaded.
+    Shell::Get()->system_tray_model()->client()->ShowAboutChromeOS();
   }
 }
 

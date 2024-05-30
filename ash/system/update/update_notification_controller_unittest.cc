@@ -715,7 +715,6 @@ TEST_F(UpdateNotificationControllerTest,
       "the background.",
       GetNotificationMessage());
   EXPECT_EQ("Update", GetNotificationButton(0));
-  EXPECT_EQ("Automatic updates", GetNotificationButton(1));
 }
 
 TEST_F(UpdateNotificationControllerTest,
