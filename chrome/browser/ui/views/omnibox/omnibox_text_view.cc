@@ -257,8 +257,10 @@ void OmniboxTextView::SetTextWithStyling(
   wrap_text_lines_ = AnswerHasDefinedMaxLines(answer_type);
   for (size_t i = fragment_index;
        i < static_cast<size_t>(formatted_string.fragments_size()); i++) {
+    const std::u16string space_separator = i == 0u ? u"" : u" ";
     const std::u16string append_text =
-        u" " + base::UTF8ToUTF16(formatted_string.fragments(i).text());
+        space_separator +
+        base::UTF8ToUTF16(formatted_string.fragments(i).text());
     size_t offset = render_text_ ? render_text_->text().length() : 0u;
     gfx::Range range(offset, offset + append_text.length());
     render_text_->AppendText(append_text);
