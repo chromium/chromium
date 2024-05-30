@@ -1588,10 +1588,13 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
       hr = codec_api_->SetValue(&CODECAPI_AVEncVideoSelectLayer, &var);
       RETURN_ON_HR_FAILURE(hr, "Couldn't set select temporal layer", hr);
       var.vt = VT_UI8;
-      var.ulVal = quantizer.value();
+      // Only 16 least significant bits are responsible for generic frame QP
+      // values.
+      var.ullVal = quantizer.value() & 0xFFFF;
       hr = codec_api_->SetValue(&CODECAPI_AVEncVideoEncodeQP, &var);
       RETURN_ON_HR_FAILURE(hr, "Couldn't set frame QP", hr);
-      hr = input_sample_->SetUINT64(MFSampleExtension_VideoEncodeQP, var.ulVal);
+      hr =
+          input_sample_->SetUINT64(MFSampleExtension_VideoEncodeQP, var.ullVal);
       RETURN_ON_HR_FAILURE(hr, "Couldn't set input sample attribute QP", hr);
     }
 
