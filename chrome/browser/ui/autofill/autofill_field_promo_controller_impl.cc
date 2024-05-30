@@ -39,7 +39,6 @@ void AutofillFieldPromoControllerImpl::Show(const gfx::RectF& bounds) {
   }
 
   AutofillPopupHideHelper::HidingParams hiding_params = {
-      .hide_on_text_field_change = false,
       // TODO(b/313587343): Maybe make this true when clicking on the IPH
       // doesn't trigger anymore the event of web contents losing focus.
       .hide_on_web_contents_lost_focus = false};

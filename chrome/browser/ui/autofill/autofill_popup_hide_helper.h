@@ -8,7 +8,6 @@
 #include "base/functional/bind.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
-#include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -35,7 +34,6 @@ enum class SuggestionHidingReason;
 // cannot be observed by this class because they are specific to the renderer,
 // to suggestions, etc.
 class AutofillPopupHideHelper : public content::WebContentsObserver,
-                                public AutofillManager::Observer,
                                 public PictureInPictureWindowManager::Observer
 #if !BUILDFLAG(IS_ANDROID)
     ,
@@ -51,7 +49,6 @@ class AutofillPopupHideHelper : public content::WebContentsObserver,
   // This struct configures what type of events the helper should call the
   // `hiding_callback_`.
   struct HidingParams {
-    bool hide_on_text_field_change = true;
     bool hide_on_web_contents_lost_focus = true;
   };
 
@@ -87,11 +84,6 @@ class AutofillPopupHideHelper : public content::WebContentsObserver,
   // PictureInPictureWindowManager::Observer
   void OnEnterPictureInPicture() override;
 
-  // AutofillManager::Observer:
-  void OnBeforeTextFieldDidChange(AutofillManager& manager,
-                                  FormGlobalId form,
-                                  FieldGlobalId field) override;
-
   const HidingParams hiding_params_;
   const HidingCallback hiding_callback_;
   // Returns true if the popup overlaps with a picture in picture window. It is
@@ -112,8 +104,6 @@ class AutofillPopupHideHelper : public content::WebContentsObserver,
   base::ScopedObservation<PictureInPictureWindowManager,
                           PictureInPictureWindowManager::Observer>
       picture_in_picture_window_observation_{this};
-
-  ScopedAutofillManagersObservation autofill_managers_observation_{this};
 };
 
 }  // namespace autofill
