@@ -217,7 +217,10 @@ void SafeBrowsingBlockingPage::SafeBrowsingControllerClient::
   const PrefService* prefs = browser_state->GetPrefs();
   bool is_enterprise_managed =
       safe_browsing::IsSafeBrowsingPolicyManaged(*prefs);
-  if (web_state() && !is_enterprise_managed) {
+  bool is_standard_safe_browsing_user =
+      safe_browsing::GetSafeBrowsingState(*prefs) ==
+      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION;
+  if (web_state() && !is_enterprise_managed && is_standard_safe_browsing_user) {
     SafeBrowsingTabHelper::FromWebState(web_state())
         ->ShowEnhancedSafeBrowsingInfobar();
   }
