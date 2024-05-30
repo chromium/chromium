@@ -234,6 +234,9 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, DISABLED_ActiveTabPermission) {
 #if BUILDFLAG(IS_MAC)
 // TODO(crbug.com/1392776): Flaky on Mac.
 #define MAYBE_FullscreenEvents DISABLED_FullscreenEvents
+#elif defined(MEMORY_SANITIZER)
+// TODO(crbug.com/341641151): Deflake test for MSAN.
+#define MAYBE_FullscreenEvents DISABLED_FullscreenEvents
 #else
 #define MAYBE_FullscreenEvents FullscreenEvents
 #endif  // BUILDFLAG(IS_MAC)
@@ -315,8 +318,14 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_Constraints) {
       << message_;
 }
 
+#if defined(MEMORY_SANITIZER)
+// TODO(crbug.com/341641151): Deflake test for MSAN.
+#define MAYBE_TabIndicator DISABLED_TabIndicator
+#else
+#define MAYBE_TabIndicator TabIndicator
+#endif  // BUILDFLAG(IS_MAC)
 // Tests that the tab indicator (in the tab strip) is shown during tab capture.
-IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, TabIndicator) {
+IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_TabIndicator) {
   content::WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_THAT(chrome::GetTabAlertStatesForContents(contents),
