@@ -651,8 +651,10 @@ bool Surface::DoPlaceAboveOrBelow(Surface* child,
   DCHECK(ListContainsEntry(list, child));
   auto it = FindListEntry(list, child);
 
-  if (place_above && reference != this) {
-    ++position_it;
+  if (place_above) {
+    if (reference != this) {
+      ++position_it;
+    }
   } else {
     --position_it;
   }
