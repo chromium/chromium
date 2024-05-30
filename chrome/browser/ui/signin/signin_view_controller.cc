@@ -124,9 +124,9 @@ void HandleSignoutConfirmationChoice(
 
   Profile* profile = browser->profile();
   switch (user_choice) {
-    case ChromeSignoutConfirmationChoice::kDismissed:
+    case ChromeSignoutConfirmationChoice::kCancelSignout:
       return;
-    case ChromeSignoutConfirmationChoice::kReauth:
+    case ChromeSignoutConfirmationChoice::kCancelSignoutAndReauth:
       signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
           profile, reauth_access_point);
       return;

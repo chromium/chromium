@@ -9,11 +9,17 @@
 
 class Browser;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(ChromeSignoutConfirmationChoice)
 enum class ChromeSignoutConfirmationChoice {
-  kDismissed,
-  kSignout,
-  kReauth,
+  kCancelSignout = 0,
+  kSignout = 1,
+  kCancelSignoutAndReauth = 2,
+
+  kMaxValue = kCancelSignoutAndReauth,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:ChromeSignoutConfirmationChoice)
 
 enum class ChromeSignoutConfirmationPromptVariant {
   // The user has unsynced data, and can choose between canceling the signout

@@ -747,6 +747,22 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.ChromeSignoutConfirmationPrompt.{Variant}"
+    enum="ChromeSignoutConfirmationChoice" expires_after="2024-11-27">
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the user choice on the Chrome signout confrmation prompt, for the
+    version of the dialog that is shown when {Variant}.
+  </summary>
+  <token key="Variant">
+    <variant name="Unsynced"
+        summary="the user has valid credentials and unsynced data"/>
+    <variant name="UnsyncedReauth"
+        summary="the user has invalid credentials and unsynced data"/>
+  </token>
+</histogram>
+
 <histogram base="true" name="Signin.CookieJar.ChromeAccountRelation"
     enum="AccountRelation" expires_after="never">
 <!-- expires-never: this histogram gives important user information about user

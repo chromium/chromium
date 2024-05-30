@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
@@ -11,7 +12,9 @@
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome_signout_confirmation_prompt.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -37,8 +40,34 @@ constexpr char kTestEmail[] = "email@gmail.com";
 constexpr signin_metrics::AccessPoint kTestAccessPoint = signin_metrics::
     AccessPoint::ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT;
 
+constexpr char kConfirmationUnsyncedHistogramName[] =
+    "Signin.ChromeSignoutConfirmationPrompt.Unsynced";
+constexpr char kConfirmationUnsyncedReauthHistogramName[] =
+    "Signin.ChromeSignoutConfirmationPrompt.UnsyncedReauth";
+
 std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
   return std::make_unique<syncer::TestSyncService>();
+}
+
+void VerifySignoutPromptHistogram(
+    const base::HistogramTester& histogram_tester,
+    ChromeSignoutConfirmationPromptVariant variant,
+    ChromeSignoutConfirmationChoice choice) {
+  const char* histogram_name = kConfirmationUnsyncedHistogramName;
+  switch (variant) {
+    case ChromeSignoutConfirmationPromptVariant::kUnsyncedData:
+      break;
+    case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
+      histogram_name = kConfirmationUnsyncedReauthHistogramName;
+      break;
+  }
+
+  histogram_tester.ExpectUniqueSample(histogram_name, choice, 1);
+  base::HistogramTester::CountsMap expected_counts;
+  expected_counts[histogram_name] = 1;
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Signin.ChromeSignoutConfirmationPrompt."),
+              testing::ContainerEq(expected_counts));
 }
 
 }  // namespace
@@ -171,7 +200,12 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   ASSERT_TRUE(dialog_delegate);
 
   // Click "Verify it's you".
+  base::HistogramTester histogram_tester;
   dialog_delegate->AcceptDialog();
+  VerifySignoutPromptHistogram(
+      histogram_tester,
+      ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton,
+      ChromeSignoutConfirmationChoice::kCancelSignoutAndReauth);
 
   // The tab was navigated to the signin page.
   content::WebContents* tab =
@@ -196,7 +230,11 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   ASSERT_TRUE(dialog_delegate);
 
   // Click "Cancel".
-  dialog_delegate->AcceptDialog();
+  base::HistogramTester histogram_tester;
+  dialog_delegate->CancelDialog();
+  VerifySignoutPromptHistogram(
+      histogram_tester, ChromeSignoutConfirmationPromptVariant::kUnsyncedData,
+      ChromeSignoutConfirmationChoice::kCancelSignout);
 
   // User is still signed in.
   EXPECT_EQ(
@@ -226,7 +264,11 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   ASSERT_TRUE(dialog_delegate);
 
   // Click "Sign Out Anyway".
-  dialog_delegate->CancelDialog();
+  base::HistogramTester histogram_tester;
+  dialog_delegate->AcceptDialog();
+  VerifySignoutPromptHistogram(
+      histogram_tester, ChromeSignoutConfirmationPromptVariant::kUnsyncedData,
+      ChromeSignoutConfirmationChoice::kSignout);
 
   // User was signed out.
   EXPECT_FALSE(

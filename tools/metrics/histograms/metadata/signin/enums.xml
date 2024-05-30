@@ -217,6 +217,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Modified to never sign in"/>
 </enum>
 
+<!-- LINT.IfChange(ChromeSignoutConfirmationChoice) -->
+
+<enum name="ChromeSignoutConfirmationChoice">
+  <int value="0" label="Cancel Signout"/>
+  <int value="1" label="Signout"/>
+  <int value="2" label="Cancel Signout and Reauth"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h:ChromeSignoutConfirmationChoice) -->
+
 <enum name="FRESigninEvents">
   <int value="0" label="Checking managed status"/>
   <int value="1" label="Signing in - unmanaged"/>

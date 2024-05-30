@@ -204,9 +204,10 @@ void ShowReauthForPrimaryAccountWithAuthError(
       IdentityManagerFactory::GetForProfile(profile);
   CoreAccountInfo primary_account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  DCHECK(!primary_account_info.IsEmpty());
-  DCHECK(identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-      primary_account_info.account_id));
+  if (!identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          primary_account_info.account_id)) {
+    return;
+  }
   ShowReauthForAccount(profile, primary_account_info.email, access_point);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
