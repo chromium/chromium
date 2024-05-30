@@ -221,24 +221,14 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     FreeListingCoupon,
     OfferNotificationBubbleViewsInteractiveUiTest,
-    testing::Values(
-        OfferNotificationBubbleViewsInteractiveUiTestData{
-            "FreeListingCoupon_default",
-            AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
-            std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
-                {{commerce::kDiscountDialogAutoPopupBehaviorSetting,
-                  {{commerce::kHistoryClustersBehaviorParam, "0"},
-                   {commerce::kMerchantWideBehaviorParam, "2"},
-                   {commerce::kNonMerchantWideBehaviorParam, "2"}}}})},
-        OfferNotificationBubbleViewsInteractiveUiTestData{
-            "FreeListingCoupon_chrome_refresh_style",
-            AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
-            std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
-                {{::features::kChromeRefresh2023, {}},
-                 {commerce::kDiscountDialogAutoPopupBehaviorSetting,
-                  {{commerce::kHistoryClustersBehaviorParam, "0"},
-                   {commerce::kMerchantWideBehaviorParam, "2"},
-                   {commerce::kNonMerchantWideBehaviorParam, "2"}}}})}),
+    testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
+        "FreeListingCoupon_default",
+        AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
+        std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+            {{commerce::kDiscountDialogAutoPopupBehaviorSetting,
+              {{commerce::kHistoryClustersBehaviorParam, "0"},
+               {commerce::kMerchantWideBehaviorParam, "2"},
+               {commerce::kNonMerchantWideBehaviorParam, "2"}}}})}),
     GetTestName);
 INSTANTIATE_TEST_SUITE_P(
     GPayPromoCode,
@@ -1042,16 +1032,10 @@ class OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest
 INSTANTIATE_TEST_SUITE_P(
     FreeListingCoupon,
     OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest,
-    testing::Values(
-        OfferNotificationBubbleViewsInteractiveUiTestData{
-            "FreeListingCoupon_on_history_cluster",
-            AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
-            std::make_optional<std::vector<base::test::FeatureRefAndParams>>()},
-        OfferNotificationBubbleViewsInteractiveUiTestData{
-            "FreeListingCoupon_on_history_cluster_chrome_refresh_style",
-            AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
-            std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
-                {{::features::kChromeRefresh2023, {}}})}),
+    testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
+        "FreeListingCoupon_on_history_cluster_default",
+        AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
+        std::make_optional<std::vector<base::test::FeatureRefAndParams>>()}),
     GetTestName);
 
 IN_PROC_BROWSER_TEST_P(

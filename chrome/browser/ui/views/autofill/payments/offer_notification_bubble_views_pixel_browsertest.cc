@@ -114,12 +114,8 @@ class OfferNotificationBubbleViewPixelBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     OfferNotificationBubbleViewPixelBrowserTest,
-    testing::Values(
-        OfferNotificationBubbleViewPixelTestConfig{"FreeListingOffer_default"},
-        OfferNotificationBubbleViewPixelTestConfig{
-            "FreeListingOffer_chrome_refresh_style",
-            std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
-                {{::features::kChromeRefresh2023, {}}})}),
+    testing::Values(OfferNotificationBubbleViewPixelTestConfig{
+        "FreeListingOffer_default"}),
     GetTestName);
 
 // TODO(crbug.com/40927006): Disabled because this is flaky on the bots, but not

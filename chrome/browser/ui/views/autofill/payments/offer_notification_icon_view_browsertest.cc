@@ -151,16 +151,10 @@ class OfferNotificationIconViewBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    OfferNotificationIconViewBrowserTest,
-    testing::Values(
-        UiTestData{"Default"},
-        UiTestData{
-            "Chrome_refresh_style",
-            std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
-                {{::features::kChromeRefresh2023, {}}})}),
-    GetTestName);
+INSTANTIATE_TEST_SUITE_P(All,
+                         OfferNotificationIconViewBrowserTest,
+                         testing::Values(UiTestData{"Default"}),
+                         GetTestName);
 
 IN_PROC_BROWSER_TEST_P(OfferNotificationIconViewBrowserTest,
                        InvokeUi_show_offer_notification_icon_only) {
