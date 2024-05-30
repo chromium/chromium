@@ -430,7 +430,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1316136264406804862">Buscando...</translation>
 <translation id="1316248800168909509">No se pudo establecer conexión con <ph name="DEVICE" />. Vuelve a intentarlo.</translation>
 <translation id="1316495628809031177">Se pausó la sincronización</translation>
-<translation id="1317637799698924700">La estación de conectores funcionará en modo compatible con USB tipo C.</translation>
+<translation id="1317637799698924700">La estación de conectores funcionará en modo compatible con USB Type-C.</translation>
 <translation id="1319983966058170660">Botón para volver de la subpágina <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">Consulta y administra las contraseñas guardadas en tu <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="1327272175893960498">Tickets de Kerberos</translation>
@@ -2879,7 +2879,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3124111068741548686">A cargo del USUARIO</translation>
 <translation id="3124332159330678621">Personaliza Chrome para darle un nuevo aspecto a tu navegador</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3127860049873093642">Para evitar problemas de carga y rendimiento, usa un adaptador de alimentación compatible de Dell o con conexión USB tipo C.</translation>
+<translation id="3127860049873093642">Para evitar problemas de carga y rendimiento, usa un adaptador de alimentación compatible de Dell o con conexión USB Type-C.</translation>
 <translation id="3127862849166875294">Cambiar el tamaño de la partición del disco para Crostini</translation>
 <translation id="3129173833825111527">Margen izquierdo</translation>
 <translation id="3130528281680948470">El dispositivo se restablecerá y todas las cuentas de usuario y los datos locales se eliminarán. Esta acción no se puede deshacer.</translation>
@@ -3291,7 +3291,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3468999815377931311">Teléfono Android</translation>
 <translation id="3469583217479686109">Herramienta de selección</translation>
 <translation id="3470392222765168737">Seguir el sitio</translation>
-<translation id="3471876058939596279">No se pueden usar los puertos HDMI y USB tipo C al mismo tiempo para transmitir video. Usa otro puerto de video.</translation>
+<translation id="3471876058939596279">No se pueden usar los puertos HDMI y USB Type-C al mismo tiempo para transmitir video. Usa otro puerto de video.</translation>
 <translation id="3472469028191701821">Se abrirá en una pestaña nueva</translation>
 <translation id="3473241910002674503">Con los botones del modo tablet, puedes navegar hacia la pantalla de inicio, regresar y cambiar de apps.</translation>
 <translation id="3473479545200714844">Lupa</translation>
