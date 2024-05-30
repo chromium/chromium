@@ -6054,6 +6054,7 @@
                         "reprompt_duration": "21d",
                         "reprompt_duration_multiplier": "1",
                         "show_app_menu_chip": "false",
+                        "show_app_menu_item": "false",
                         "show_info_bar": "true",
                         "updated_info_bar_copy": "true"
                     },
