@@ -18,6 +18,9 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#if BUILDFLAG(IS_WIN)
+#include "base/path_service.h"
+#endif  // BUILDFLAG(IS_WIN)
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -279,6 +282,19 @@ TEST_F(MemoryMappedFileTest, ExtendableFile) {
   ASSERT_TRUE(ReadFileToString(temp_file_path(), &contents));
   EXPECT_EQ("BAZ", contents.substr(kFileSize, 3));
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(MemoryMappedFileTest, ReadCodeImage) {
+  base::FilePath exe_path;
+  base::PathService::Get(base::FILE_EXE, &exe_path);
+  File file(exe_path,
+            File::FLAG_OPEN | File::FLAG_READ | File::FLAG_WIN_SHARE_DELETE);
+  ASSERT_TRUE(file.IsValid());
+  MemoryMappedFile map;
+  ASSERT_TRUE(
+      map.Initialize(std::move(file), MemoryMappedFile::READ_CODE_IMAGE));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 

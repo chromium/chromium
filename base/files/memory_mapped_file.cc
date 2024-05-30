@@ -99,9 +99,7 @@ bool MemoryMappedFile::Initialize(File file,
       break;
 #if BUILDFLAG(IS_WIN)
     case READ_CODE_IMAGE:
-      // Can't open with "READ_CODE_IMAGE", not supported outside Windows
-      // or with a |region|.
-      NOTREACHED_IN_MIGRATION();
+      DCHECK(Region::kWholeFile == region);
       break;
 #endif
   }
