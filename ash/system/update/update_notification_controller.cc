@@ -236,8 +236,13 @@ std::u16string UpdateNotificationController::GetMessage() const {
   std::u16string domain_manager =
       GetDomainManager(model_->relaunch_notification_state().policy_source);
   if (body_message_id.has_value() && !domain_manager.empty()) {
-    update_text = l10n_util::GetStringFUTF16(*body_message_id, domain_manager,
-                                             ui::GetChromeOSDeviceName());
+    if (model_->rollback()) {
+      update_text = l10n_util::GetStringFUTF16(*body_message_id, domain_manager,
+                                               ui::GetChromeOSDeviceName());
+    } else {
+      update_text =
+          l10n_util::GetStringFUTF16(*body_message_id, domain_manager);
+    }
   } else {
     update_text = l10n_util::GetStringFUTF16(
         IDS_UPDATE_NOTIFICATION_MESSAGE_LEARN_MORE, system_app_name);

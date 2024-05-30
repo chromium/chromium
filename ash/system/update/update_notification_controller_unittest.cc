@@ -177,7 +177,7 @@ TEST_F(UpdateNotificationControllerTest, VisibilityAfterUpdate) {
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysPrimary);
   EXPECT_TRUE(strcmp(kSystemMenuUpdateIcon.name, GetNotificationIcon().name) ==
               0);
-  EXPECT_EQ("Update available", GetNotificationTitle());
+  EXPECT_EQ("Update device", GetNotificationTitle());
   EXPECT_EQ("Learn more about the latest " +
                 base::UTF16ToUTF8(system_app_name_) + " update",
             GetNotificationMessage());
@@ -214,7 +214,7 @@ TEST_F(UpdateNotificationControllerTest, VisibilityAfterUpdateWithSlowReboot) {
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysPrimary);
   EXPECT_TRUE(strcmp(kSystemMenuUpdateIcon.name, GetNotificationIcon().name) ==
               0);
-  EXPECT_EQ("Update available", GetNotificationTitle());
+  EXPECT_EQ("Update device", GetNotificationTitle());
   EXPECT_EQ("Learn more about the latest " +
                 base::UTF16ToUTF8(system_app_name_) +
                 " update. This Chromebook needs to restart to apply an update. "
@@ -261,7 +261,7 @@ TEST_F(UpdateNotificationControllerTest,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysPrimary);
   EXPECT_TRUE(strcmp(kSystemMenuUpdateIcon.name, GetNotificationIcon().name) ==
               0);
-  EXPECT_EQ("Update available", GetNotificationTitle());
+  EXPECT_EQ("Update device", GetNotificationTitle());
   EXPECT_EQ("Learn more about the latest " +
                 base::UTF16ToUTF8(system_app_name_) + " update",
             GetNotificationMessage());
@@ -448,8 +448,6 @@ TEST_F(UpdateNotificationControllerTest, RollbackRequiredNotification) {
 TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRecommended) {
   ShowDefaultUpdateNotification();
 
-  const std::u16string chrome_os_device_name = ui::GetChromeOSDeviceName();
-
   Shell::Get()->system_tray_model()->SetRelaunchNotificationState(
       {.requirement_type = RelaunchNotificationState::kRecommendedNotOverdue});
 
@@ -458,8 +456,7 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRecommended) {
   const std::string expected_notification_title =
       l10n_util::GetStringUTF8(IDS_RELAUNCH_RECOMMENDED_TITLE);
   const std::string expected_notification_body = l10n_util::GetStringFUTF8(
-      IDS_RELAUNCH_RECOMMENDED_BODY, base::ASCIIToUTF16(kDomain),
-      chrome_os_device_name);
+      IDS_RELAUNCH_RECOMMENDED_BODY, base::ASCIIToUTF16(kDomain));
 
   ASSERT_TRUE(HasNotification());
   CompareNotificationColor(
@@ -477,8 +474,6 @@ TEST_F(UpdateNotificationControllerTest,
        SetUpdateNotificationRecommendedOverdue) {
   ShowDefaultUpdateNotification();
 
-  const std::u16string chrome_os_device_name = ui::GetChromeOSDeviceName();
-
   Shell::Get()->system_tray_model()->SetRelaunchNotificationState(
       {.requirement_type = RelaunchNotificationState::kRecommendedAndOverdue});
 
@@ -487,8 +482,7 @@ TEST_F(UpdateNotificationControllerTest,
   const std::string expected_notification_title =
       l10n_util::GetStringUTF8(IDS_RELAUNCH_RECOMMENDED_OVERDUE_TITLE);
   const std::string expected_notification_body = l10n_util::GetStringFUTF8(
-      IDS_RELAUNCH_RECOMMENDED_OVERDUE_BODY, base::ASCIIToUTF16(kDomain),
-      chrome_os_device_name);
+      IDS_RELAUNCH_RECOMMENDED_OVERDUE_BODY, base::ASCIIToUTF16(kDomain));
 
   ASSERT_TRUE(HasNotification());
   CompareNotificationColor(
@@ -505,7 +499,6 @@ TEST_F(UpdateNotificationControllerTest,
 TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredDays) {
   ShowDefaultUpdateNotification();
 
-  const std::u16string chrome_os_device_name = ui::GetChromeOSDeviceName();
   constexpr base::TimeDelta remaining_time = base::Days(3);
 
   Shell::Get()->system_tray_model()->SetRelaunchNotificationState({
@@ -518,8 +511,7 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredDays) {
   const std::string expected_notification_title =
       l10n_util::GetPluralStringFUTF8(IDS_RELAUNCH_REQUIRED_TITLE_DAYS, 3);
   const std::string expected_notification_body = l10n_util::GetStringFUTF8(
-      IDS_RELAUNCH_REQUIRED_BODY, base::ASCIIToUTF16(kDomain),
-      chrome_os_device_name);
+      IDS_RELAUNCH_REQUIRED_BODY, base::ASCIIToUTF16(kDomain));
 
   ASSERT_TRUE(HasNotification());
   CompareNotificationColor(
@@ -548,8 +540,7 @@ TEST_F(UpdateNotificationControllerTest,
   waiter.Wait();
 
   const std::string expected_notification_body = l10n_util::GetStringFUTF8(
-      IDS_RELAUNCH_REQUIRED_BODY, base::ASCIIToUTF16(kDeviceDomain),
-      ui::GetChromeOSDeviceName());
+      IDS_RELAUNCH_REQUIRED_BODY, base::ASCIIToUTF16(kDeviceDomain));
 
   ASSERT_TRUE(HasNotification());
   EXPECT_EQ(expected_notification_body, GetNotificationMessage());
@@ -579,7 +570,6 @@ TEST_F(UpdateNotificationControllerTest,
 TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredHours) {
   ShowDefaultUpdateNotification();
 
-  const std::u16string chrome_os_device_name = ui::GetChromeOSDeviceName();
   constexpr base::TimeDelta remaining_time = base::Hours(3);
 
   Shell::Get()->system_tray_model()->SetRelaunchNotificationState({
@@ -592,8 +582,7 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredHours) {
   const std::string expected_notification_title =
       l10n_util::GetPluralStringFUTF8(IDS_RELAUNCH_REQUIRED_TITLE_HOURS, 3);
   const std::string expected_notification_body = l10n_util::GetStringFUTF8(
-      IDS_RELAUNCH_REQUIRED_BODY, base::ASCIIToUTF16(kDomain),
-      chrome_os_device_name);
+      IDS_RELAUNCH_REQUIRED_BODY, base::ASCIIToUTF16(kDomain));
 
   ASSERT_TRUE(HasNotification());
   CompareNotificationColor(
@@ -612,7 +601,6 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredHours) {
 TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredMinutes) {
   ShowDefaultUpdateNotification();
 
-  const std::u16string chrome_os_device_name = ui::GetChromeOSDeviceName();
   constexpr base::TimeDelta remaining_time = base::Minutes(3);
 
   Shell::Get()->system_tray_model()->SetRelaunchNotificationState({
@@ -625,8 +613,7 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredMinutes) {
   const std::string expected_notification_title =
       l10n_util::GetPluralStringFUTF8(IDS_RELAUNCH_REQUIRED_TITLE_MINUTES, 3);
   const std::string expected_notification_body = l10n_util::GetStringFUTF8(
-      IDS_RELAUNCH_REQUIRED_BODY, base::ASCIIToUTF16(kDomain),
-      chrome_os_device_name);
+      IDS_RELAUNCH_REQUIRED_BODY, base::ASCIIToUTF16(kDomain));
 
   ASSERT_TRUE(HasNotification());
   CompareNotificationColor(
@@ -645,7 +632,6 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredMinutes) {
 TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredSeconds) {
   ShowDefaultUpdateNotification();
 
-  const std::u16string chrome_os_device_name = ui::GetChromeOSDeviceName();
   constexpr base::TimeDelta remaining_time = base::Seconds(3);
 
   Shell::Get()->system_tray_model()->SetRelaunchNotificationState({
@@ -658,8 +644,7 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationRequiredSeconds) {
   const std::string expected_notification_title =
       l10n_util::GetPluralStringFUTF8(IDS_RELAUNCH_REQUIRED_TITLE_SECONDS, 3);
   const std::string expected_notification_body = l10n_util::GetStringFUTF8(
-      IDS_RELAUNCH_REQUIRED_BODY, base::ASCIIToUTF16(kDomain),
-      chrome_os_device_name);
+      IDS_RELAUNCH_REQUIRED_BODY, base::ASCIIToUTF16(kDomain));
 
   ASSERT_TRUE(HasNotification());
   CompareNotificationColor(
@@ -724,7 +709,7 @@ TEST_F(UpdateNotificationControllerTest,
       /*expected_color_id_for_jelly=*/cros_tokens::kCrosSysPrimary);
   EXPECT_TRUE(strcmp(kSystemMenuUpdateIcon.name, GetNotificationIcon().name) ==
               0);
-  EXPECT_EQ("Update available", GetNotificationTitle());
+  EXPECT_EQ("Update device", GetNotificationTitle());
   EXPECT_EQ(
       "Get the latest features and security improvements. Updates happen in "
       "the background.",

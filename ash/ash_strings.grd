@@ -924,13 +924,13 @@ Style notes:
       </message>
 
       <message name="IDS_UPDATE_NOTIFICATION_TITLE" desc="The title of the notification to notify that the user should restart to get system updates.">
-        Update available
+        Update device
       </message>
       <message name="IDS_ROLLBACK_NOTIFICATION_TITLE" desc="The title of the notification to notify that the user should restart to roll back the device.">
-        Device needs to go back to previous version
+        Update device to previous version
       </message>
       <message name="IDS_ROLLBACK_OVERDUE_NOTIFICATION_TITLE" desc="The title of the notification to notify that the user should restart to roll back the device and the admin recommended to restart.">
-        Device change to previous version is overdue
+        Update device to previous version
       </message>
 
       <!-- `FeatureTile` downloading states -->
@@ -967,29 +967,29 @@ Style notes:
           other {Update device within # seconds}}
       </message>
       <message name="IDS_RELAUNCH_REQUIRED_BODY" desc="The body text of a dialog that tells users the device must be restarted. MANAGER can be a domain or an email address.">
-        <ph name="MANAGER">$1<ex>google.com</ex></ph> requires you to update your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> before the deadline
+        Update required by <ph name="MANAGER">$1<ex>google.com</ex></ph>
       </message>
 
       <message name="IDS_ROLLBACK_REQUIRED_TITLE_DAYS" desc="The title of a dialog that tells users the device must be restarted to roll back to an earlier version within days. The device will be wiped on restart.">
         {0, plural,
-          =1 {Change device to previous version within a day}
-          other {Change device to previous version within # days}}
+          =1 {Update device to previous version within a day}
+          other {Update device to previous version within # days}}
       </message>
       <message name="IDS_ROLLBACK_REQUIRED_TITLE_HOURS" desc="The title of a dialog that tells users the device must be restarted to roll back to an earlier version within hours. The device will be wiped on restart.">
         {0, plural,
-          =1 {Change device to previous version within an hour}
-          other {Change device to previous version within # hours}}
+          =1 {Update device to previous version within an hour}
+          other {Update device to previous version within # hours}}
       </message>
       <message name="IDS_ROLLBACK_REQUIRED_TITLE_MINUTES" desc="The title of a dialog that tells users the device must be restarted to roll back to an earlier version within minutes. The device will be wiped on restart.">
         {0, plural,
-          =1 {Change device to previous version within 1 minute}
-          other {Change device to previous version within # minutes}}
+          =1 {Update device to previous version within 1 minute}
+          other {Update device to previous version within # minutes}}
       </message>
       <message name="IDS_ROLLBACK_REQUIRED_TITLE_SECONDS" desc="The title of a dialog that tells users the device must be restarted to roll back to an earlier version within seconds. The device will be wiped on restart.">
         {0, plural,
-          =0 {Change device to previous version now}
-          =1 {Change device to previous version within 1 second}
-          other {Change device to previous version within # seconds}}
+          =0 {Update device to previous version now}
+          =1 {Update device to previous version within 1 second}
+          other {Update device to previous version within # seconds}}
       </message>
       <message name="IDS_ROLLBACK_REQUIRED_BODY" desc="The body text of a dialog that tells users the device must be restarted to roll back to an earlier version within a deadline given in the title of the message. The device will be wiped on restart. MANAGER can be a domain or an email address.">
         <ph name="MANAGER">$1<ex>google.com</ex></ph> requires you to roll back your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>. Your device will reset and all data will be deleted.
@@ -999,13 +999,13 @@ Style notes:
         Update available
       </message>
       <message name="IDS_RELAUNCH_RECOMMENDED_OVERDUE_TITLE" desc="The title of a dialog that tells users that a device restart had been recommended for an update.">
-        Update overdue
+        Device not up to date
       </message>
       <message name="IDS_RELAUNCH_RECOMMENDED_BODY" desc="The body text of a dialog that tells users the device must be restarted. MANAGER can be a domain or an email address.">
-        <ph name="MANAGER">$1<ex>google.com</ex></ph> recommends that you update your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>
+        Update required by <ph name="MANAGER">$1<ex>google.com</ex></ph>
       </message>
       <message name="IDS_RELAUNCH_RECOMMENDED_OVERDUE_BODY" desc="The body text of a dialog that tells users the device must be restarted right now. MANAGER can be a domain or an email address.">
-        <ph name="MANAGER">$1<ex>google.com</ex></ph> requires you to update your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> immediately
+        Update required by <ph name="MANAGER">$1<ex>google.com</ex></ph>
       </message>
       <message name="IDS_UPDATE_NOTIFICATION_MESSAGE_LEARN_MORE" desc="The body of the notification to notify that the user should restart to get system updates. This notification body links to the info page on the update.">
         Learn more about the latest <ph name="SYSTEM_APP_NAME">$1<ex>ChromiumOS</ex></ph> update
