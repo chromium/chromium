@@ -15,7 +15,7 @@ import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakeUserActionRecorder} from '../fake_user_action_recorder.js';
 
-import {TestAccountManagerBrowserProxy} from './test_account_manager_browser_proxy.js';
+import {TestAccountManagerBrowserProxy, TestAccountManagerBrowserProxyForAccountsAllowedInArc} from './test_account_manager_browser_proxy.js';
 
 suite('<additonal-accounts-settings-card>', () => {
   let browserProxy: TestAccountManagerBrowserProxy;
@@ -236,4 +236,90 @@ suite('AccountManagerAccountAdditionDisabledTests', () => {
         loadTimeData.getString('accountManagerSecondaryAccountsDisabledText'),
         tooltip.tooltipText);
   });
+});
+
+suite('AccountManagerAccountAdditionInAndroidDisallowedTests', () => {
+  let browserProxy: TestAccountManagerBrowserProxyForAccountsAllowedInArc;
+  let additionalAccountSettingsCard: AdditionalAccountsSettingsCardElement;
+  let accountList: DomRepeat;
+
+  suiteSetup(() => {
+    loadTimeData.overrideValues({
+      isSecondaryAccountAllowedInArc: false,
+      arcAccountRestrictionsEnabled: true,
+    });
+  });
+
+  setup(async () => {
+    browserProxy = new TestAccountManagerBrowserProxyForAccountsAllowedInArc();
+    AccountManagerBrowserProxyImpl.setInstanceForTesting(browserProxy);
+    const accounts = await browserProxy.getAccounts();
+
+    additionalAccountSettingsCard =
+        document.createElement('additional-accounts-settings-card');
+    additionalAccountSettingsCard.accounts = accounts;
+    document.body.appendChild(additionalAccountSettingsCard);
+    const list =
+        additionalAccountSettingsCard.shadowRoot!.querySelector<DomRepeat>(
+            '#secondaryAccountsList');
+    assertTrue(!!list);
+    accountList = list;
+    Router.getInstance().navigateTo(routes.OS_PEOPLE);
+    flush();
+  });
+
+  teardown(() => {
+    additionalAccountSettingsCard.remove();
+    browserProxy.reset();
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('arc disallowed is shown for secondary managed account', () => {
+    assertEquals(2, accountList.items!.length);
+    const notAvailableInArc =
+        additionalAccountSettingsCard.shadowRoot!.querySelector<HTMLElement>(
+            '#arcStatus_0');
+    assertTrue(!!notAvailableInArc);
+    assertFalse(notAvailableInArc.hidden);
+  });
+
+  test('arc disallowed is not shown for secondary unmanaged account', () => {
+    const notAvailableInArc =
+        additionalAccountSettingsCard.shadowRoot!.querySelector<HTMLElement>(
+            '#arcStatus_1');
+    assertTrue(!!notAvailableInArc);
+    assertTrue(notAvailableInArc.hidden);
+  });
+
+  test(
+      'use with Android apps option in hamburger menu is disabled for managed secondary account',
+      () => {
+        additionalAccountSettingsCard.shadowRoot!
+            .querySelectorAll('cr-icon-button')[0]!.click();
+        const actionMenu =
+            additionalAccountSettingsCard.shadowRoot!.querySelector(
+                'cr-action-menu');
+        const button =
+            additionalAccountSettingsCard.shadowRoot!
+                .querySelector<HTMLButtonElement>('#arcStatusButton');
+        assertTrue(!!actionMenu);
+        assert(button);
+        assertTrue(button.disabled);
+      });
+
+  test(
+      'use with Android apps option in hamburger menu is available for unmanaged secondary account',
+      () => {
+        additionalAccountSettingsCard.shadowRoot!
+            .querySelectorAll('cr-icon-button')[1]!.click();
+        const actionMenu =
+            additionalAccountSettingsCard.shadowRoot!.querySelector(
+                'cr-action-menu');
+        const button =
+            additionalAccountSettingsCard.shadowRoot!
+                .querySelector<HTMLButtonElement>('#arcStatusButton');
+        assertTrue(!!actionMenu);
+        assert(button);
+        assertFalse(button.disabled);
+      });
 });

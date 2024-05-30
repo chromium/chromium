@@ -100,6 +100,18 @@ export class AdditionalAccountsSettingsCardElement extends
       },
 
       /**
+       * @return true if secondary account is allowed in ARC, false
+       * otherwise
+       */
+      isSecondaryAccountAllowedInArc_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isSecondaryAccountAllowedInArc');
+        },
+        readOnly: true,
+      },
+
+      /**
        * @return true if `kArcAccountRestrictionsEnabled` feature is
        * enabled, false otherwise.
        */
@@ -131,6 +143,7 @@ export class AdditionalAccountsSettingsCardElement extends
   private isChildUser_: boolean;
   private isDeviceAccountManaged_: boolean;
   private isSecondaryGoogleAccountSigninAllowed_: boolean;
+  private readonly isSecondaryAccountAllowedInArc_: boolean;
 
   constructor() {
     super();
@@ -301,9 +314,43 @@ export class AdditionalAccountsSettingsCardElement extends
     if (!this.actionMenuAccount_) {
       return '';
     }
+
+    // For a managed account whenever SecondaryAccountAllowedInArcPolicy
+    // is false, it should always show "Use with Android apps".
+    // Other times the label is dependent on isAvailableInArc's value
+    if (this.isSecondaryAccountInAndroidBlockedByPolicy_()) {
+      return this.i18n('accountUseInArcButtonLabel');
+    }
+
     return this.actionMenuAccount_.isAvailableInArc ?
         this.i18n('accountStopUsingInArcButtonLabel') :
         this.i18n('accountUseInArcButtonLabel');
+  }
+
+  /**
+   * Only for managed accounts, this checks if
+   * SecondaryAccountAllowedInArcPolicy is blocking the account from being used
+   * as a secondary account with Android apps.
+   */
+  private isSecondaryAccountInAndroidBlockedByPolicy_(): boolean {
+    if (!this.actionMenuAccount_) {
+      return false;
+    }
+
+    return this.actionMenuAccount_.isManaged &&
+        !this.isSecondaryAccountAllowedInArc_;
+  }
+
+  /**
+   * If SecondaryAccountAllowedInArcPolicy blocks the managed account added as
+   * secondary account to be used with Android apps, it should display tooltip
+   * 'Not used with Android apps'.
+   */
+  private displayArcAvailabilityStatus_(account: Account): boolean {
+    if (account.isManaged && !this.isSecondaryAccountAllowedInArc_) {
+      return false;
+    }
+    return account.isAvailableInArc;
   }
 
   /**

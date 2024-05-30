@@ -68,6 +68,10 @@
     padding-inline-end: 12px;
   }
 
+  .managed-icon {
+    padding-inline-start: 12px;
+  }
+
   cr-policy-indicator {
     margin-inline-end: 1em;
     margin-top: var(--add-account-margin-top);
@@ -160,8 +164,9 @@
           <!-- Display ARC status -->
           <template is="dom-if" if="[[isArcAccountRestrictionsEnabled_]]">
             <span class="arc-availability secondary" id="arcStatus_[[index]]"
-                aria-hidden="true" hidden$="[[item.isAvailableInArc]]">
-              $i18n{accountNotUsedInArcLabel}
+               aria-hidden="true"
+               hidden$="[[displayArcAvailabilityStatus_(item)]]">
+             $i18n{accountNotUsedInArcLabel}
             </span>
           </template>
         </div>
@@ -191,8 +196,16 @@
       $i18n{removeAccountLabel}
     </button>
     <template is="dom-if" if="[[isArcAccountRestrictionsEnabled_]]">
-      <button class="dropdown-item" on-click="onChangeArcAvailability_">
+      <button id="arcStatusButton"
+        disabled=
+        "[[isSecondaryAccountInAndroidBlockedByPolicy_(actionMenuAccount_)]]"
+        class="dropdown-item" on-click="onChangeArcAvailability_">
         [[getChangeArcAvailabilityLabel_(actionMenuAccount_)]]
+        <iron-icon class="managed-icon" icon="cr:domain"
+          aria-hidden="true"
+          hidden$=
+          "[[!isSecondaryAccountInAndroidBlockedByPolicy_(actionMenuAccount_)]]">
+        </iron-icon>
       </button>
     </template>
   </cr-action-menu>
