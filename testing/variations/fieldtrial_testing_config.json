@@ -6047,12 +6047,12 @@
             ],
             "experiments": [
                 {
-                    "name": "V1Enabled2_20240516",
+                    "name": "V2Enabled1_20240516",
                     "params": {
-                        "group_name": "enabled-v1-arm-2",
+                        "group_name": "enabled-v2-arm-1",
                         "max_prompt_count": "5",
-                        "reprompt_duration": "7d",
-                        "reprompt_duration_multiplier": "2",
+                        "reprompt_duration": "21d",
+                        "reprompt_duration_multiplier": "1",
                         "show_app_menu_chip": "false",
                         "show_info_bar": "true",
                         "updated_info_bar_copy": "true"
