@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_ERROR_MOJO_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_ERROR_MOJO_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_ERROR_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_ERROR_H_
 
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-blink.h"
@@ -24,4 +24,4 @@ mojo::StructPtr<MojoResultType> ToError(
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_ERROR_MOJO_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_ERROR_H_

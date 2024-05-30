@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_descriptor.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_error_mojo.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_error.h"
 
 namespace blink {
 
