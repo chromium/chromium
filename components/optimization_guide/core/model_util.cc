@@ -140,8 +140,9 @@ std::string GetStringNameForOptimizationTarget(
 }
 
 std::optional<base::FilePath> StringToFilePath(const std::string& str_path) {
-  if (str_path.empty())
+  if (str_path.empty()) {
     return std::nullopt;
+  }
 
 #if BUILDFLAG(IS_WIN)
   return base::FilePath(base::UTF8ToWide(str_path));
@@ -175,8 +176,9 @@ std::optional<
 GetModelOverrideForOptimizationTarget(
     optimization_guide::proto::OptimizationTarget optimization_target) {
   auto model_override_switch_value = switches::GetModelOverride();
-  if (!model_override_switch_value)
+  if (!model_override_switch_value) {
     return std::nullopt;
+  }
 
   std::vector<std::string> model_overrides =
       base::SplitString(*model_override_switch_value, ",",
@@ -199,8 +201,9 @@ GetModelOverrideForOptimizationTarget(
           << "Invalid optimization target provided to the Model Override";
       return std::nullopt;
     }
-    if (optimization_target != recv_optimization_target)
+    if (optimization_target != recv_optimization_target) {
       continue;
+    }
 
     std::string file_name = override_parts[1];
     base::FilePath file_path = *StringToFilePath(file_name);
@@ -290,6 +293,23 @@ bool IsPredictionModelVersionInKillSwitch(
   }
   return killswitch_model_versions_it->second.find(model_version) !=
          killswitch_model_versions_it->second.end();
+}
+
+std::optional<proto::ModelInfo> ParseModelInfoFromFile(
+    const base::FilePath& model_info_path) {
+  std::string binary_model_info;
+  if (!base::ReadFileToString(model_info_path, &binary_model_info)) {
+    return std::nullopt;
+  }
+
+  proto::ModelInfo model_info;
+  if (!model_info.ParseFromString(binary_model_info)) {
+    return std::nullopt;
+  }
+
+  DCHECK(model_info.has_version());
+  DCHECK(model_info.has_optimization_target());
+  return model_info;
 }
 
 }  // namespace optimization_guide

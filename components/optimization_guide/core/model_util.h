@@ -75,6 +75,10 @@ bool IsPredictionModelVersionInKillSwitch(
     proto::OptimizationTarget opt_target,
     int64_t model_version);
 
+// Returns the model info parsed from |model_info_path|.
+std::optional<proto::ModelInfo> ParseModelInfoFromFile(
+    const base::FilePath& model_info_path);
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_UTIL_H_

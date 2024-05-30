@@ -89,8 +89,9 @@ void RecordPredictionModelDownloadStatus(PredictionModelDownloadStatus status) {
 bool WriteModelInfoProtoToFile(const proto::ModelInfo& model_info,
                                const base::FilePath& file_path) {
   std::string model_info_str;
-  if (!model_info.SerializeToString(&model_info_str))
+  if (!model_info.SerializeToString(&model_info_str)) {
     return false;
+  }
   return base::WriteFile(file_path, model_info_str);
 }
 
@@ -157,8 +158,9 @@ void PredictionModelDownloadManager::StartDownload(
 }
 
 void PredictionModelDownloadManager::CancelAllPendingDownloads() {
-  for (const std::string& pending_download_guid : pending_download_guids_)
+  for (const std::string& pending_download_guid : pending_download_guids_) {
     download_service_->CancelDownload(pending_download_guid);
+  }
 }
 
 bool PredictionModelDownloadManager::IsAvailableForDownloads() const {
@@ -182,8 +184,9 @@ void PredictionModelDownloadManager::RemoveObserver(
 void PredictionModelDownloadManager::OnDownloadServiceReady(
     const std::set<std::string>& pending_download_guids,
     const std::map<std::string, base::FilePath>& successful_downloads) {
-  for (const std::string& pending_download_guid : pending_download_guids)
+  for (const std::string& pending_download_guid : pending_download_guids) {
     pending_download_guids_.insert(pending_download_guid);
+  }
 
   // Successful downloads should already be notified via |onDownloadSucceeded|,
   // so we don't do anything with them here.
@@ -211,8 +214,9 @@ void PredictionModelDownloadManager::OnDownloadStarted(
             optimization_guide::GetStringNameForOptimizationTarget(
                 optimization_target),
         base::TimeTicks::Now() - download_requested_time);
-    for (PredictionModelDownloadObserver& observer : observers_)
+    for (PredictionModelDownloadObserver& observer : observers_) {
       observer.OnModelDownloadStarted(optimization_target);
+    }
   }
 }
 
@@ -250,8 +254,9 @@ void PredictionModelDownloadManager::OnDownloadFailed(
   base::UmaHistogramBoolean(
       "OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded",
       false);
-  if (optimization_target)
+  if (optimization_target) {
     NotifyModelDownloadFailed(*optimization_target);
+  }
 }
 
 // static
@@ -416,7 +421,8 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
         FilePathToString(store_add_file_path));
   }
 
-  if (!WriteModelInfoProtoToFile(model.model_info(), model_info_path)) {
+  // Save the model info with relative paths.
+  if (!WriteModelInfoProtoToFile(model_info, model_info_path)) {
     RecordPredictionModelDownloadStatus(
         PredictionModelDownloadStatus::kFailedModelInfoSaving);
     return std::nullopt;
@@ -440,15 +446,17 @@ void PredictionModelDownloadManager::NotifyModelReady(
     return;
   }
 
-  for (PredictionModelDownloadObserver& observer : observers_)
+  for (PredictionModelDownloadObserver& observer : observers_) {
     observer.OnModelReady(base_model_dir, *model);
+  }
 }
 
 void PredictionModelDownloadManager::NotifyModelDownloadFailed(
     proto::OptimizationTarget optimization_target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (PredictionModelDownloadObserver& observer : observers_)
+  for (PredictionModelDownloadObserver& observer : observers_) {
     observer.OnModelDownloadFailed(optimization_target);
+  }
 }
 
 }  // namespace optimization_guide
