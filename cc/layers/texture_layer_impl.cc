@@ -13,11 +13,13 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "cc/base/features.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/occlusion.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
@@ -106,15 +108,20 @@ bool TextureLayerImpl::WillDraw(
       // eviction. Other sources will be add once they can support this. Some
       // complexity arises here from WebGL/WebGPU textures, as they do not
       // necessarily maintain the data needed to rebuild the resources.
+      base::OnceClosure evicted_cb = viz::ResourceEvictedCallback();
+      if (base::FeatureList::IsEnabled(features::kEvictionUnlocksResources) &&
+          transferable_resource_.resource_source ==
+              viz::TransferableResource::ResourceSource::kCanvas) {
+        evicted_cb = base::BindOnce(&TextureLayerImpl::OnResourceEvicted,
+                                    base::Unretained(this));
+        DCHECK(MayEvictResourceInBackground(
+            transferable_resource_.resource_source));
+      }
       resource_id_ = resource_provider->ImportResource(
           transferable_resource_,
           /* impl_thread_release_callback= */ viz::ReleaseCallback(),
           /* main_thread_release_callback= */ std::move(release_callback_),
-          transferable_resource_.resource_source ==
-                  viz::TransferableResource::ResourceSource::kCanvas
-              ? base::BindOnce(&TextureLayerImpl::OnResourceEvicted,
-                               base::Unretained(this))
-              : viz::ResourceEvictedCallback());
+          /* evicted_callback= */ std::move(evicted_cb));
       DCHECK(resource_id_);
     }
     own_resource_ = false;
@@ -338,10 +345,21 @@ void TextureLayerImpl::SetInInvisibleLayerTree() {
       transferable_resource_.resource_source ==
           viz::TransferableResource::ResourceSource::kCanvas &&
       own_resource_) {
+    DCHECK(
+        MayEvictResourceInBackground(transferable_resource_.resource_source));
     if (!transferable_resource_.is_software) {
       FreeTransferableResource();
     }
   }
+}
+
+// static
+bool TextureLayerImpl::MayEvictResourceInBackground(
+    viz::TransferableResource::ResourceSource source) {
+  return source == viz::TransferableResource::ResourceSource::kCanvas &&
+         (base::FeatureList::IsEnabled(
+              features::kClearCanvasResourcesInBackground) ||
+          base::FeatureList::IsEnabled(features::kEvictionUnlocksResources));
 }
 
 }  // namespace cc

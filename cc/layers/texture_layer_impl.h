@@ -79,6 +79,11 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
                               scoped_refptr<CrossThreadSharedBitmap> bitmap);
   void UnregisterSharedBitmapId(viz::SharedBitmapId id);
   void SetInInvisibleLayerTree() override;
+  // Whether the resource may be evicted in background. If it returns true, main
+  // is responsible for making sure that the resource is imported again after a
+  // visibility change.
+  static bool MayEvictResourceInBackground(
+      viz::TransferableResource::ResourceSource source);
 
  private:
   TextureLayerImpl(LayerTreeImpl* tree_impl, int id);
