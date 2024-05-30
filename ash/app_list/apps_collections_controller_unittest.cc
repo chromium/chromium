@@ -4,6 +4,7 @@
 
 #include "ash/app_list/apps_collections_controller.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <tuple>
@@ -18,6 +19,7 @@
 #include "ash/app_list/views/search_result_page_anchored_dialog.h"
 #include "ash/app_menu/app_menu_model_adapter.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/ash_prefs.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -315,6 +317,91 @@ TEST_P(AppsCollectionsControllerUserElegibilityTest, SecondaryUserNotElegible) {
 
   auto* apps_collections_page = helper->GetBubbleAppsCollectionsPage();
   EXPECT_FALSE(apps_collections_page->GetVisible());
+}
+
+// Class for tests of the `AppsCollectionsController` which are
+// concerned with the experiment prefs.
+class AppsCollectionsControllerPrefTest
+    : public NoSessionAshTestBase,
+      public ::testing::WithParamInterface<std::tuple<
+          /*is_apps_collections_active=*/bool,
+          /*is_counterfactual=*/bool>> {
+ public:
+  AppsCollectionsControllerPrefTest() {
+    if (IsAppsCollectionsEnabled()) {
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          app_list_features::kAppsCollections,
+          {{"is-counterfactual",
+            IsAppsCollectionsEnabledCounterfactually() ? "true" : "false"}});
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          app_list_features::kAppsCollections);
+    }
+  }
+
+  // NoSessionAshTestBase:
+  void SetUp() override {
+    NoSessionAshTestBase::SetUp();
+
+    GetTestAppListClient()->set_is_new_user(true);
+    TestSessionControllerClient* session_controller =
+        GetSessionControllerClient();
+    session_controller->Reset();
+
+    const AccountId& account_id = AccountId::FromUserEmail("primary@test");
+
+    auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
+    RegisterUserProfilePrefs(user_prefs->registry(), /*country=*/"",
+                             /*for_test=*/true);
+    session_controller->AddUserSession("primary@test",
+                                       user_manager::UserType::kRegular,
+                                       /*provide_pref_service=*/false,
+                                       /*is_new_profile=*/true);
+    GetSessionControllerClient()->SetUserPrefService(account_id,
+                                                     std::move(user_prefs));
+    session_controller->SwitchActiveUser(account_id);
+    session_controller->SetSessionState(session_manager::SessionState::ACTIVE);
+  }
+
+  // Returns whether apps collectionns feature is enabled.
+  bool IsAppsCollectionsEnabled() const { return std::get<0>(GetParam()); }
+
+  // Returns whether apps collections feature is enabled counterfactrually.
+  bool IsAppsCollectionsEnabledCounterfactually() const {
+    return IsAppsCollectionsEnabled() && std::get<1>(GetParam());
+  }
+
+  AppsCollectionsController::ExperimentalArm GetExpectedExperimentalArm() {
+    if (!IsAppsCollectionsEnabled()) {
+      return AppsCollectionsController::ExperimentalArm::kControl;
+    }
+
+    return IsAppsCollectionsEnabledCounterfactually()
+               ? AppsCollectionsController::ExperimentalArm::kCounterfactual
+               : AppsCollectionsController::ExperimentalArm::kEnabled;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppsCollectionsControllerPrefTest,
+                         ::testing::Combine(
+                             /*is_new_user_locally=*/::testing::Bool(),
+                             /*is_managed_user=*/::testing::Bool()));
+
+// Verifies that the experimental arm for the user is calculated and stored
+// correctly.
+TEST_P(AppsCollectionsControllerPrefTest, GetExperimentalArm) {
+  EXPECT_EQ(AppsCollectionsController::Get()->GetUserExperimentalArm(),
+            AppsCollectionsController::ExperimentalArm::kDefaultValue);
+
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  EXPECT_EQ(AppsCollectionsController::Get()->GetUserExperimentalArm(),
+            GetExpectedExperimentalArm());
 }
 
 }  // namespace

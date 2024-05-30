@@ -10,6 +10,7 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_model_provider.h"
+#include "ash/app_list/apps_collections_controller.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_item_list.h"
@@ -22,6 +23,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/compositor/compositor.h"
@@ -271,12 +273,9 @@ void RecordAppListByCollectionLaunched(AppCollection collection,
                              ? AppEntity::kThirdPartyApp
                              : AppEntity::kDefaultApp;
 
-  const std::string experimental_arm =
-      app_list_features::IsAppsCollectionsEnabledCounterfactually()
-          ? ".Counterfactual"
-          : ".Enabled";
   const std::string apps_collections_state =
-      app_list_features::IsAppsCollectionsEnabled() ? experimental_arm : "";
+      ash::AppsCollectionsController::Get()
+          ->GetUserExperimentalArmAsHistogramSuffix();
   const std::string app_list_page =
       is_apps_collections_page ? "AppsCollectionsPage" : "AppsPage";
 

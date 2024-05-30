@@ -100,17 +100,6 @@ ChromeSearchResult* FindAppResultByAppId(
   return result;
 }
 
-std::string GetAppsCollectionsExperimentSuffixForHistogram() {
-  std::string apps_collections_state;
-  if (app_list_features::IsAppsCollectionsEnabled()) {
-    apps_collections_state =
-        app_list_features::IsAppsCollectionsEnabledCounterfactually()
-            ? ".Counterfactual"
-            : ".Enabled";
-  }
-  return apps_collections_state;
-}
-
 void RecordDefaultAppsForHistogram(const std::string& histogram_name,
                                    const std::vector<std::string>& apps) {
   for (std::string id : apps) {
@@ -975,7 +964,8 @@ void AppListClientImpl::MaybeRecordActivatedItemVisibility(
   base::UmaHistogramEnumeration(
       base::StrCat({"Apps.AppListBubble.", app_list_page,
                     ".AppLaunchesByVisibility.", visibility,
-                    GetAppsCollectionsExperimentSuffixForHistogram()}),
+                    ash::AppsCollectionsController::Get()
+                        ->GetUserExperimentalArmAsHistogramSuffix()}),
       default_app_name.value());
 }
 
@@ -1003,12 +993,14 @@ void AppListClientImpl::RecordAppsDefaultVisibility(
   RecordDefaultAppsForHistogram(
       base::StrCat({"Apps.AppListBubble.", app_list_page,
                     ".AppVisibilityOnLauncherShown.AboveTheFold",
-                    GetAppsCollectionsExperimentSuffixForHistogram()}),
+                    ash::AppsCollectionsController::Get()
+                        ->GetUserExperimentalArmAsHistogramSuffix()}),
       apps_above_the_fold);
 
   RecordDefaultAppsForHistogram(
       base::StrCat({"Apps.AppListBubble.", app_list_page,
                     ".AppVisibilityOnLauncherShown.BelowTheFold",
-                    GetAppsCollectionsExperimentSuffixForHistogram()}),
+                    ash::AppsCollectionsController::Get()
+                        ->GetUserExperimentalArmAsHistogramSuffix()}),
       apps_below_the_fold);
 }

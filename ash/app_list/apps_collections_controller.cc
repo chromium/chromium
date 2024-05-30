@@ -8,11 +8,13 @@
 #include <optional>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/shell.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 namespace {
@@ -39,6 +41,51 @@ AppsCollectionsController* AppsCollectionsController::Get() {
   return g_instance;
 }
 
+AppsCollectionsController::ExperimentalArm
+AppsCollectionsController::GetUserExperimentalArm() {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  if (!prefs ||
+      prefs->FindPreference(prefs::kLauncherAppsCollectionsExperimentArm)
+          ->IsDefaultValue()) {
+    return ExperimentalArm::kDefaultValue;
+  }
+
+  return static_cast<ExperimentalArm>(
+      prefs->GetInteger(prefs::kLauncherAppsCollectionsExperimentArm));
+}
+
+void AppsCollectionsController::MaybeRecordUserExperimentStatePref(
+    ExperimentalArm arm) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+
+  if (!prefs) {
+    return;
+  }
+
+  if (prefs->FindPreference(prefs::kLauncherAppsCollectionsExperimentArm)
+          ->IsDefaultValue()) {
+    prefs->SetInteger(prefs::kLauncherAppsCollectionsExperimentArm,
+                      static_cast<int>(arm));
+  }
+}
+
+std::string
+AppsCollectionsController::GetUserExperimentalArmAsHistogramSuffix() {
+  switch (GetUserExperimentalArm()) {
+    case ash::AppsCollectionsController::ExperimentalArm::kDefaultValue:
+    case ash::AppsCollectionsController::ExperimentalArm::kControl:
+      return "";
+    case ash::AppsCollectionsController::ExperimentalArm::kCounterfactual:
+      return ".Counterfactual";
+    case ash::AppsCollectionsController::ExperimentalArm::kEnabled:
+      return ".Enabled";
+  }
+
+  NOTREACHED();
+}
+
 bool AppsCollectionsController::ShouldShowAppsCollection() {
   if (apps_collections_was_dissmissed_) {
     return false;
@@ -52,30 +99,39 @@ bool AppsCollectionsController::ShouldShowAppsCollection() {
     return true;
   }
 
+  if (GetUserExperimentalArm() != ExperimentalArm::kDefaultValue) {
+    return GetUserExperimentalArm() == ExperimentalArm::kEnabled;
+  }
+
   const auto* const session_controller = Shell::Get()->session_controller();
 
   if (const auto user_type = session_controller->GetUserType();
       user_type != user_manager::UserType::kRegular) {
+    MaybeRecordUserExperimentStatePref(ExperimentalArm::kControl);
     return false;
   }
 
   if (session_controller->IsActiveAccountManaged()) {
+    MaybeRecordUserExperimentStatePref(ExperimentalArm::kControl);
     return false;
   }
 
   if (!session_controller->IsUserFirstLogin()) {
+    MaybeRecordUserExperimentStatePref(ExperimentalArm::kControl);
     return false;
   }
 
   // NOTE: Currently only supported for the primary user profile. This is a
   // self-imposed restriction.
   if (!session_controller->IsUserPrimary()) {
+    MaybeRecordUserExperimentStatePref(ExperimentalArm::kControl);
     return false;
   }
 
   // If the client was destroyed at this point, (i.e. in tests), return early to
   // avoid segmentation fault.
   if (!client_) {
+    MaybeRecordUserExperimentStatePref(ExperimentalArm::kControl);
     return false;
   }
 
@@ -86,15 +142,25 @@ bool AppsCollectionsController::ShouldShowAppsCollection() {
   // is reached, the user is treated as "existing" we want to err on the side of
   // being conservative.
   if (!is_new_user || !is_new_user.value()) {
+    MaybeRecordUserExperimentStatePref(ExperimentalArm::kControl);
     return false;
   }
+
+  if (!app_list_features::IsAppsCollectionsEnabled()) {
+    MaybeRecordUserExperimentStatePref(ExperimentalArm::kControl);
+    return false;
+  }
+
+  MaybeRecordUserExperimentStatePref(
+      app_list_features::IsAppsCollectionsEnabledCounterfactually()
+          ? ExperimentalArm::kCounterfactual
+          : ExperimentalArm::kEnabled);
 
   // To ensure the population number of the experiment groups (Counterfactual
   // and Enabled) are similar sized, query the finch experiment state here.
   // The counterfactual arm will serve as control group, so it should not show
   // Apps Collections even if it belong to the experiment.
-  return app_list_features::IsAppsCollectionsEnabled() &&
-         !app_list_features::IsAppsCollectionsEnabledCounterfactually();
+  return !app_list_features::IsAppsCollectionsEnabledCounterfactually();
 }
 
 void AppsCollectionsController::SetAppsCollectionDismissed(

@@ -294,26 +294,26 @@ TEST_F(AppsCollectionSectionViewTest, RecordMetricsForAppLaunchByEntity) {
   EXPECT_EQ(unknown_collection->GetItemViewCount(), 1u);
 
   histograms.ExpectUniqueSample(
-      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByEntity.Enabled",
+      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByEntity",
       AppEntity::kDefaultApp, 0);
   histograms.ExpectUniqueSample(
-      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByEntity.Enabled",
+      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByEntity",
       AppEntity::kThirdPartyApp, 0);
 
   LeftClickOn(GetAppItemAtIndex(entertainment_collection, 0));
   histograms.ExpectBucketCount(
-      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByEntity.Enabled",
+      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByEntity",
       AppEntity::kDefaultApp, 1);
   histograms.ExpectBucketCount(
-      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByEntity.Enabled",
+      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByEntity",
       AppEntity::kThirdPartyApp, 0);
 
   LeftClickOn(GetAppItemAtIndex(unknown_collection, 0));
   histograms.ExpectBucketCount(
-      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByEntity.Enabled",
+      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByEntity",
       AppEntity::kDefaultApp, 1);
   histograms.ExpectBucketCount(
-      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByEntity.Enabled",
+      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByEntity",
       AppEntity::kThirdPartyApp, 1);
 }
 
@@ -342,8 +342,7 @@ TEST_F(AppsCollectionSectionViewTest, RecordMetricsForAppLaunchByCategory) {
   ASSERT_EQ(unknown_collection->GetItemViewCount(), 1u);
 
   histograms.ExpectTotalCount(
-      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory.Enabled",
-      0);
+      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory", 0);
 
   // TODO(anasalazar): Investigate why after adding margin to the
   // AppsCollections apps container, this tests fails to click on apps unless we
@@ -352,46 +351,46 @@ TEST_F(AppsCollectionSectionViewTest, RecordMetricsForAppLaunchByCategory) {
 
   LeftClickOn(GetAppItemAtIndex(entertainment_collection, 0));
   histograms.ExpectBucketCount(
-      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory.Enabled",
+      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory",
       AppCollection::kEntertainment, 1);
   histograms.ExpectBucketCount(
-      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory.Enabled",
+      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory",
       AppCollection::kProductivity, 0);
   histograms.ExpectBucketCount(
-      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory.Enabled",
+      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory",
       AppCollection::kUnknown, 0);
 
   LeftClickOn(GetAppItemAtIndex(productivity_collection, 0));
   histograms.ExpectBucketCount(
-      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory.Enabled",
+      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory",
       AppCollection::kEntertainment, 1);
   histograms.ExpectBucketCount(
-      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory.Enabled",
+      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory",
       AppCollection::kProductivity, 1);
   histograms.ExpectBucketCount(
-      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory.Enabled",
+      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory",
       AppCollection::kUnknown, 0);
 
   LeftClickOn(GetAppItemAtIndex(unknown_collection, 0));
   histograms.ExpectBucketCount(
-      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory.Enabled",
+      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory",
       AppCollection::kEntertainment, 1);
   histograms.ExpectBucketCount(
-      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory.Enabled",
+      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory",
       AppCollection::kProductivity, 1);
   histograms.ExpectBucketCount(
-      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory.Enabled",
+      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory",
       AppCollection::kUnknown, 1);
 
   LeftClickOn(GetAppItemAtIndex(productivity_collection, 1));
   histograms.ExpectBucketCount(
-      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory.Enabled",
+      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory",
       AppCollection::kEntertainment, 1);
   histograms.ExpectBucketCount(
-      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory.Enabled",
+      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory",
       AppCollection::kProductivity, 2);
   histograms.ExpectBucketCount(
-      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory.Enabled",
+      "Apps.AppListBubble.AppsCollectionsPage.AppLaunchesByCategory",
       AppCollection::kUnknown, 1);
 }
 

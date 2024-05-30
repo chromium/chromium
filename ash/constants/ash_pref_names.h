@@ -1591,6 +1591,11 @@ inline constexpr char kUsbPeripheralCableSpeedNotificationShown[] =
 inline constexpr char kAppListReorderNudge[] =
     "ash.launcher.app_list_reorder_nudge";
 
+// An integer pref that stores the experimental arm that the user belongs to in
+// the AppsCollections experiment. Used for metrics.
+inline constexpr char kLauncherAppsCollectionsExperimentArm[] =
+    "ash.launcher.apps_collections_experimental_arm";
+
 // A dictionary pref that stores information related to the privacy notice in
 // the continue files section for the launcher.
 inline constexpr char kLauncherFilesPrivacyNotice[] =

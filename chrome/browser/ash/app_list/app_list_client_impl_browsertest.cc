@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "ash/app_list/apps_collections_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -912,14 +913,11 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, AppsVisibility) {
   ChromeAppListItem* item = model_updater->FindItem(extensions::kWebStoreAppId);
   EXPECT_TRUE(item);
 
-  // Calculate the correct histogram name.
+  // Fetch the correct histogram name.
   base::HistogramTester histogram_tester;
-  const std::string experimental_arm =
-      app_list_features::IsAppsCollectionsEnabledCounterfactually()
-          ? ".Counterfactual"
-          : ".Enabled";
   const std::string apps_collections_state =
-      app_list_features::IsAppsCollectionsEnabled() ? experimental_arm : "";
+      ash::AppsCollectionsController::Get()
+          ->GetUserExperimentalArmAsHistogramSuffix();
   const std::string histogram_prefix =
       "Apps.AppListBubble.AppsPage.AppLaunchesByVisibility";
 

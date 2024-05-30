@@ -343,6 +343,12 @@ void AppListControllerImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterTimePref(prefs::kLauncherSearchLastFileScanLogTime,
                              base::Time());
+
+  // The prefs for apps collections experiment.
+  registry->RegisterIntegerPref(
+      prefs::kLauncherAppsCollectionsExperimentArm,
+      static_cast<int>(
+          AppsCollectionsController::ExperimentalArm::kDefaultValue));
 }
 
 void AppListControllerImpl::SetClient(AppListClient* client) {

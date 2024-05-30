@@ -5,6 +5,8 @@
 #ifndef ASH_APP_LIST_APPS_COLLECTIONS_CONTROLLER_H_
 #define ASH_APP_LIST_APPS_COLLECTIONS_CONTROLLER_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/functional/callback_forward.h"
@@ -27,6 +29,23 @@ class ASH_EXPORT AppsCollectionsController {
     kExitNudge = 1,
     kMaxValue = kExitNudge,
   };
+
+  // The experimental arm that the user belong into for metrics purposes.
+  enum class ExperimentalArm {
+    // The default value for the experimental arm. Represents that the user was
+    // not separated into an experimental arm yet.
+    kDefaultValue = -1,
+    // For users that are considered out of the AppsCollections experiment.
+    kControl = 0,
+    // For users that are considered as part of the AppsCollections experiment
+    // but are treated as the control group for metric analysis.
+    kCounterfactual = 1,
+    // For users that are considered as part of the AppsCollections experiment
+    // and are shown the AppsCollections.
+    kEnabled = 2,
+    kMaxValue = kEnabled,
+  };
+
   AppsCollectionsController();
   AppsCollectionsController(const AppsCollectionsController&) = delete;
   AppsCollectionsController& operator=(const AppsCollectionsController&) =
@@ -36,6 +55,11 @@ class ASH_EXPORT AppsCollectionsController {
   // Returns the singleton instance owned by AppListController.
   // NOTE: Exists if and only if the Apps Collection feature is enabled.
   static AppsCollectionsController* Get();
+
+  // Fetch the experimental arm this user belongs into the AppsCollections
+  // experiment.
+  ExperimentalArm GetUserExperimentalArm();
+  std::string GetUserExperimentalArmAsHistogramSuffix();
 
   // Whether the AppsCollection page should be presented by default when opening
   // the bubble, instead of the Apps page.
@@ -55,6 +79,9 @@ class ASH_EXPORT AppsCollectionsController {
   void SetReorderCallback(ReorderCallback callback);
 
  private:
+  // Store the experimental arm for this user as a profile perf.
+  void MaybeRecordUserExperimentStatePref(ExperimentalArm arm);
+
   // The client which facilitates communication between Ash and the browser.
   raw_ptr<AppListClient> client_;
 
