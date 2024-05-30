@@ -92,6 +92,30 @@ OverviewEnterExitType MaybeOverrideEnterExitTypeForHomeScreen(
                : OverviewEnterExitType::kFadeOutExit;
 }
 
+// Defines an observer that can be used to monitor overview mode ending and dump
+// without crashing when that happens. This is needed to investigate a crash
+// where resetting the occlusion tracker seemingly closes overview.
+// TODO(http://b/334908991): Remove this once the root cause of the crash is
+// found and fixed.
+class OverviewEndingDumper : public OverviewObserver {
+ public:
+  OverviewEndingDumper() {
+    observation_.Observe(Shell::Get()->overview_controller());
+  }
+  OverviewEndingDumper(const OverviewEndingDumper&) = delete;
+  OverviewEndingDumper& operator=(const OverviewEndingDumper&) = delete;
+  ~OverviewEndingDumper() override = default;
+
+  void OnOverviewModeEnding(OverviewSession* overview_session) override {
+    observation_.Reset();
+    base::debug::DumpWithoutCrashing();
+  }
+
+ private:
+  base::ScopedObservation<OverviewController, OverviewObserver> observation_{
+      this};
+};
+
 }  // namespace
 
 OverviewController::ScopedOcclusionPauser::ScopedOcclusionPauser(
@@ -628,12 +652,18 @@ void OverviewController::ResetPauser() {
     return;
   }
 
-  // Unpausing the occlusion tracker may trigger window activations.
+  // Unpausing the occlusion tracker may trigger window activations. Even though
+  // window activations are paused, it seems overview might still exit. See
+  // http://b/334908991 for more details.
+  OverviewEndingDumper dumper;
+
   const bool ignore_activations = overview_session_->ignore_activations();
   overview_session_->set_ignore_activations(true);
   occlusion_tracker_pauser_.reset();
   raster_scale_pauser_.reset();
-  overview_session_->set_ignore_activations(ignore_activations);
+  if (overview_session_) {
+    overview_session_->set_ignore_activations(ignore_activations);
+  }
 }
 
 void OverviewController::UpdateRoundedCornersAndShadow() {
