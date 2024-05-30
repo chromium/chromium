@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
@@ -213,7 +214,8 @@ int GetBlockForJpeg(void* param,
   if (pos + size < pos || pos + size > data_vector.size()) {
     return 0;
   }
-  base::span<uint8_t> buf_span(buf, size);
+  // TODO(tsepez): spanify arguments to remove the error.
+  base::span<uint8_t> UNSAFE_BUFFERS(buf_span(buf, size));
   buf_span.copy_from(data_vector.subspan(pos, size));
   return 1;
 }
