@@ -48,6 +48,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
@@ -62,6 +64,7 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
@@ -134,6 +137,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                     (item) -> {
                         RecordUserAction.record("MobileMenuWindowManagerCloseInstance");
                         closeInstance(item.instanceId, item.taskId);
+                        cleanupSyncedTabGroupsIfLastInstance();
                     },
                     () -> openNewWindow("Android.WindowManager.NewWindow"),
                     info.size() < MultiWindowUtils.getMaxInstances(),
@@ -1046,5 +1050,31 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             }
         }
         return false;
+    }
+
+    /**
+     * This method makes a call out to sync to audit all of the tab groups if there is only one
+     * remaining active Chrome instance. This is a workaround to the fact that closing an instance
+     * that does not have an active {@link TabModelSelector} will never notify sync that the tabs it
+     * contained were closed and as such sync will continue to think some inactive instance contains
+     * the tab groups that aren't available in the current activity. If we get down to a single
+     * instance of Chrome we know any data for tab groups not found in the current activity's {@link
+     * TabModelSelector} must be closed and we can remove the sync mapping.
+     */
+    @VisibleForTesting
+    void cleanupSyncedTabGroupsIfLastInstance() {
+        List<InstanceInfo> info = getInstanceInfo();
+        if (info.size() != 1) return;
+
+        TabModelSelector selector =
+                TabWindowManagerSingleton.getInstance()
+                        .getTabModelSelectorById(info.get(0).instanceId);
+        assert selector != null;
+
+        TabGroupModelFilter filter =
+                (TabGroupModelFilter) selector.getTabModelFilterProvider().getTabModelFilter(false);
+        TabGroupSyncService tabGroupSyncService =
+                TabGroupSyncServiceFactory.getForProfile(filter.getTabModel().getProfile());
+        TabGroupSyncUtils.unmapLocalIdsNotInTabGroupModelFilter(tabGroupSyncService, filter);
     }
 }

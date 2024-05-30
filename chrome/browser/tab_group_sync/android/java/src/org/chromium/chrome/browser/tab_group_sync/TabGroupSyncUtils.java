@@ -15,6 +15,8 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
@@ -76,5 +78,24 @@ public final class TabGroupSyncUtils {
                 || TextUtils.equals(url, UrlConstants.NTP_ABOUT_URL)
                 || TextUtils.equals(url, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)
                 || TextUtils.equals(url, ContentUrlConstants.ABOUT_BLANK_URL);
+    }
+
+    /**
+     * Removes all tab groups mappings found in the {@link TabGroupSyncService} that don't have
+     * corresponding local IDs in the {@link TabGroupModelFilter}.
+     *
+     * @param tabGroupSyncService The {@link TabGroupSyncService} to remove tabs from.
+     * @param filter The {@link TabGroupModelFilter} to check for tab groups.
+     */
+    public static void unmapLocalIdsNotInTabGroupModelFilter(
+            TabGroupSyncService tabGroupSyncService, TabGroupModelFilter filter) {
+        assert !filter.isIncognito();
+
+        for (String syncGroupId : tabGroupSyncService.getAllGroupIds()) {
+            SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(syncGroupId);
+            if (!isInCurrentWindow(filter, savedTabGroup.localId)) {
+                tabGroupSyncService.removeLocalTabGroupMapping(savedTabGroup.localId);
+            }
+        }
     }
 }

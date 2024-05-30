@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -79,6 +80,7 @@ import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -159,6 +161,7 @@ public class MultiInstanceManagerApi31UnitTest {
     @Mock DesktopWindowStateProvider mDesktopWindowStateProvider;
     @Mock AppHeaderState mAppHeaderState;
 
+    @Mock TabGroupSyncService mTabGroupSyncService;
     @Mock Profile mProfile;
     @Mock Profile mIncognitoProfile;
     @Mock ProfileProvider mProfileProvider;
@@ -250,7 +253,7 @@ public class MultiInstanceManagerApi31UnitTest {
                                 : InstanceInfo.Type.ADJACENT;
                 mTestInstanceInfos.add(
                         new InstanceInfo(
-                                numberOfInstances,
+                                instanceId,
                                 taskId,
                                 type,
                                 MultiInstanceManagerApi31.readUrl(instanceId),
@@ -1305,5 +1308,37 @@ public class MultiInstanceManagerApi31UnitTest {
                 mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1));
 
         verify(mMultiInstanceManager, never()).closeInstance(anyInt(), anyInt());
+    }
+
+    @Test
+    @Config(sdk = 31)
+    public void testCleanupIfLastInstance() {
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
+
+        mMultiInstanceManager.mTestBuildInstancesList = true;
+        assertEquals(
+                "Failed to alloc INSTANCE_ID_1.",
+                INSTANCE_ID_1,
+                allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true));
+        List<InstanceInfo> instanceInfo = mMultiInstanceManager.getInstanceInfo();
+        assertEquals("Expected one instance.", 1, instanceInfo.size());
+        assertEquals(
+                "First instance should be INSTANCE_ID_1.",
+                INSTANCE_ID_1,
+                instanceInfo.get(0).instanceId);
+
+        mMultiInstanceManager.cleanupSyncedTabGroupsIfLastInstance();
+        verify(mTabGroupSyncService).getAllGroupIds();
+
+        assertEquals(
+                "Failed to alloc INSTANCE_ID_2.",
+                INSTANCE_ID_2,
+                allocInstanceIndex(INSTANCE_ID_2, mTabbedActivityTask63, true));
+        assertEquals("Expected two instances.", 2, mMultiInstanceManager.getInstanceInfo().size());
+
+        mMultiInstanceManager.cleanupSyncedTabGroupsIfLastInstance();
+        // Verify this is not called a second time.
+        verify(mTabGroupSyncService).getAllGroupIds();
     }
 }

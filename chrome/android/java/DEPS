@@ -52,6 +52,7 @@ include_rules = [
   "+components/paint_preview/browser/android/java/src/org/chromium/components/paintpreview",
   "+components/payments/content/android/java/src/org/chromium/components/payments",
   "+components/permissions/android/java/src/org/chromium/components/permissions",
+  "+components/saved_tab_groups/android/java/src/org/chromium/components/tab_group_sync",
   "+components/search_engines/android/java/src/org/chromium/components/search_engines",
   "+components/security_state/content/android/java",
   "+components/segmentation_platform/content/android/java",
