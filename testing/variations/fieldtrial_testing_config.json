@@ -1026,6 +1026,27 @@
             ]
         }
     ],
+    "ArcVmVirtualSwap": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "VirtualSwapEnabled_100PercentVmSize_5SecondSwapInterval",
+                    "params": {
+                        "guest_reclaim_enabled": "true",
+                        "size_percentage": "100",
+                        "virtual_swap_enabled": "true",
+                        "virtual_swap_interval_ms": "5000"
+                    },
+                    "enable_features": [
+                        "ArcGuestZram"
+                    ]
+                }
+            ]
+        }
+    ],
     "ArcVmmSwap": [
         {
             "platforms": [
