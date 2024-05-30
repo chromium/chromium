@@ -855,6 +855,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         if (shouldReplaceSyncSettingsWithAccountSettings()) {
             Set<Integer> selectedSyncTypes = mSyncService.getSelectedTypes();
 
+            boolean syncDisabledByPolicy = mSyncService.isSyncDisabledByEnterprisePolicy();
+
             for (Map.Entry<Integer, ChromeSwitchPreference> entry :
                     mSyncTypeSwitchPreferencesMap.entrySet()) {
                 @UserSelectableType int type = entry.getKey();
@@ -864,8 +866,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
                 if (type == UserSelectableType.TABS || type == UserSelectableType.HISTORY) {
                     // PREF_ACCOUNT_SECTION_HISTORY_TOGGLE toggle represents both History and Tabs
-                    // in this
-                    // case.
+                    // in this case.
                     // History and Tabs should usually have the same value, but in some
                     // cases they may not, e.g. if one of them is disabled by policy. In that
                     // case, show the toggle as on if at least one of them is enabled. The
@@ -878,6 +879,11 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                             selectedSyncTypes.contains(UserSelectableType.TABS)
                                     || selectedSyncTypes.contains(UserSelectableType.HISTORY);
                 }
+
+                // Disable if sync is disabled by policy.
+                // Note that `syncDisabledByPolicy` does not affect `managed` since setting it would
+                // otherwise add a disclaimer to all the preferences that it's managed.
+                enabled = enabled && !syncDisabledByPolicy;
 
                 ChromeSwitchPreference pref = entry.getValue();
                 pref.setEnabled(enabled);

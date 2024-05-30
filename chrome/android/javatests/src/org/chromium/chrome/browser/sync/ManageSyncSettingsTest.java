@@ -100,11 +100,14 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.policy.test.annotations.Policies;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.components.sync.internal.SyncPrefNames;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -1444,6 +1447,32 @@ public class ManageSyncSettingsTest {
                         settings.findPreference(
                                 ManageSyncSettings.PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE);
         Assert.assertNull(toggle.getBackgroundColor());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testSyncDisabledByPolicy() {
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        SyncService syncService = mSyncTestRule.getSyncService();
+        // Mark sync disabled by policy.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
+                    prefService.setBoolean(SyncPrefNames.SYNC_MANAGED, true);
+                    Assert.assertTrue(syncService.isSyncDisabledByEnterprisePolicy());
+                });
+
+        ManageSyncSettings fragment = startManageSyncPreferences();
+
+        // All datatype toggles should be unchecked and disabled.
+        Map<Integer, ChromeSwitchPreference> dataTypes = getAccountDataTypes(fragment);
+        for (ChromeSwitchPreference dataType : dataTypes.values()) {
+            Assert.assertFalse(dataType.isChecked());
+            Assert.assertFalse(dataType.isEnabled());
+        }
     }
 
     private ManageSyncSettings startManageSyncPreferences() {
