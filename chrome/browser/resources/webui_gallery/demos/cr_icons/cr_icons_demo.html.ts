@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {CrIconsDemoElement} from './cr_icons_demo.js';
+
+export function getHtml(this: CrIconsDemoElement) {
+  return html`
 <h1>cr-icons from the common cr-iconsets defined in icons_lit.html</h1>
 <div class="demos">
   <div>Commonly used cr-icons across WebUI built with SVG.</div>
@@ -65,4 +75,5 @@
         @input="${this.onIconColorInput_}">
     Icon fill color
   </label>
-</div>
+</div>`;
+}

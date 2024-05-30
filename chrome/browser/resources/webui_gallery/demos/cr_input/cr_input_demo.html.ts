@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {CrInputDemoElement} from './cr_input_demo.js';
+
+export function getHtml(this: CrInputDemoElement) {
+  return html`
 <h1>cr-input</h1>
 <h2>Default "filled" inputs with built-in labels</h2>
 <div class="demos">
@@ -44,7 +54,9 @@
       error-message="Number needs to be between 5 and 200"
       .value="${this.numberValue_}"
       @value-changed="${this.onNumberValueChanged_}">
-    <cr-button slot="suffix" @click="${this.onValidateClick_}">Validate</cr-button>
+    <cr-button slot="suffix" @click="${this.onValidateClick_}">
+      Validate
+    </cr-button>
   </cr-input>
 
   <cr-input
@@ -106,4 +118,5 @@
         type="text" placeholder="Insert text here" aria-label="Some label">
     </cr-input>
   </div>
-</div>
+</div>`;
+}

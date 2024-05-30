@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {CrDialogDemoElement} from './cr_dialog_demo.js';
+
+export function getHtml(this: CrDialogDemoElement) {
+  return html`
 <h1>cr-dialog</h1>
 <div class="demos">
   <cr-checkbox ?checked="${this.showHeader_}"
@@ -61,4 +71,5 @@ ${this.isDialogOpen_ ? html`
       Dialogs also have a slot for text or other elements in the footer.
     </div>
   </cr-dialog>
-` : ''}
+` : ''}`;
+}

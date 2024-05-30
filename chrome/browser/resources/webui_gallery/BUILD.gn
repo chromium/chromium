@@ -41,14 +41,6 @@ build_webui("build") {
   # Files holding a Polymer or native custom element definition AND have an
   # equivalent .html template file.
   web_component_files = [
-    "demos/buttons/buttons_demo.ts",
-    "demos/card/card_demo.ts",
-    "demos/cr_action_menu/cr_action_menu_demo.ts",
-    "demos/cr_checkbox/cr_checkbox_demo.ts",
-    "demos/cr_chip/cr_chip_demo.ts",
-    "demos/cr_dialog/cr_dialog_demo.ts",
-    "demos/cr_icons/cr_icons_demo.ts",
-    "demos/cr_input/cr_input_demo.ts",
     "demos/cr_radio/cr_radio_demo.ts",
     "demos/cr_slider/cr_slider_demo.ts",
     "demos/cr_tabs/cr_tabs_demo.ts",
@@ -72,6 +64,22 @@ build_webui("build") {
     "app.ts",
     "demos/cr_a11y_announcer/cr_a11y_announcer_demo.html.ts",
     "demos/cr_a11y_announcer/cr_a11y_announcer_demo.ts",
+    "demos/buttons/buttons_demo.html.ts",
+    "demos/buttons/buttons_demo.ts",
+    "demos/card/card_demo.html.ts",
+    "demos/card/card_demo.ts",
+    "demos/cr_action_menu/cr_action_menu_demo.html.ts",
+    "demos/cr_action_menu/cr_action_menu_demo.ts",
+    "demos/cr_checkbox/cr_checkbox_demo.html.ts",
+    "demos/cr_checkbox/cr_checkbox_demo.ts",
+    "demos/cr_chip/cr_chip_demo.html.ts",
+    "demos/cr_chip/cr_chip_demo.ts",
+    "demos/cr_dialog/cr_dialog_demo.html.ts",
+    "demos/cr_dialog/cr_dialog_demo.ts",
+    "demos/cr_icons/cr_icons_demo.html.ts",
+    "demos/cr_icons/cr_icons_demo.ts",
+    "demos/cr_input/cr_input_demo.html.ts",
+    "demos/cr_input/cr_input_demo.ts",
   ]
 
   html_to_wrapper_template = "detect"

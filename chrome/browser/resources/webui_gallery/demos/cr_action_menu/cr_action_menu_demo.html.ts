@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {CrActionMenuDemoElement} from './cr_action_menu_demo.js';
+
+export function getHtml(this: CrActionMenuDemoElement) {
+  return html`
 <h1>cr-action-menu</h1>
 
 <h2>Typical action menu</h2>
@@ -91,4 +101,5 @@
   <button class="dropdown-item">Menu item 2</button>
   <hr>
   <button class="dropdown-item" disabled>Menu item 3</button>
-</cr-action-menu>
+</cr-action-menu>`;
+}

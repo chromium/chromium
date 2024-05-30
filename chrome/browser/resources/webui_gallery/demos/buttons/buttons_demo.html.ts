@@ -1,5 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {ButtonsDemoElement} from './buttons_demo.js';
+
+export function getHtml(this: ButtonsDemoElement) {
+  return html`
 <h1>cr-button</h1>
 <div class="demos">
   <cr-button>Outline button</cr-button>
@@ -68,4 +76,5 @@
   <cr-expand-button no-hover>
     With no hover effect on entire row
   </cr-expand-button>
-</div>
+</div>`;
+}

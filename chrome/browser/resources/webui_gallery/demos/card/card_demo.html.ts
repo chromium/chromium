@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {CardDemoElement} from './card_demo.js';
+
+export function getHtml(this: CardDemoElement) {
+  return html`
 <div class="cr-centered-card-container">
   <h2>Cards and rows with content</h2>
   <div class="card">
@@ -59,4 +69,5 @@
       <div class="cr-padded-text hr">...into more rows!</div>
     </cr-collapse>
   </div>
-</div>
+</div>`;
+}
