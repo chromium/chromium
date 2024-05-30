@@ -120,11 +120,9 @@ void TabGroupUnderline::MaybeSetVisible(const bool visible) {
 
 // static
 int TabGroupUnderline::GetStrokeInset() {
-  return features::IsChromeRefresh2023()
-             ? (TabStyle::Get()->GetTabOverlap() -
-                ChromeRefresh2023TabGroupStyle::GetTabGroupOverlapAdjustment() +
-                kStrokeThickness)
-             : (TabStyle::Get()->GetTabOverlap() + kStrokeThickness);
+  return TabStyle::Get()->GetTabOverlap() -
+         ChromeRefresh2023TabGroupStyle::GetTabGroupOverlapAdjustment() +
+         kStrokeThickness;
 }
 
 BEGIN_METADATA(TabGroupUnderline)
