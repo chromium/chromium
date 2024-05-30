@@ -495,7 +495,8 @@ void ReadableByteStreamController::ProcessPullIntoDescriptorsUsingQueue(
         controller->pending_pull_intos_[0];
     //   c. If ! ReadableByteStreamControllerFillPullIntoDescriptorFromQueue(
     //   controller, pullIntoDescriptor) is true,
-    if (FillPullIntoDescriptorFromQueue(controller, pull_into_descriptor)) {
+    if (FillPullIntoDescriptorFromQueue(controller, pull_into_descriptor,
+                                        exception_state)) {
       //     i. Perform !
       //     ReadableByteStreamControllerShiftPendingPullInto(controller).
       ShiftPendingPullInto(controller);
@@ -505,6 +506,15 @@ void ReadableByteStreamController::ProcessPullIntoDescriptorsUsingQueue(
                                controller->controlled_readable_stream_,
                                pull_into_descriptor, exception_state);
       DCHECK(!exception_state.HadException());
+    }
+    if (exception_state.HadException()) {
+      // Instead of returning a rejection, which is inconvenient here,
+      // call ControllerError(). The only difference this makes is that it
+      // happens synchronously, but that should not be observable.
+      ReadableByteStreamController::Error(script_state, controller,
+                                          exception_state.GetException());
+      exception_state.ClearException();
+      return;
     }
   }
 }
@@ -993,7 +1003,12 @@ void ReadableByteStreamController::FillHeadPullIntoDescriptor(
 
 bool ReadableByteStreamController::FillPullIntoDescriptorFromQueue(
     ReadableByteStreamController* controller,
-    PullIntoDescriptor* pull_into_descriptor) {
+    PullIntoDescriptor* pull_into_descriptor,
+    ExceptionState& exception_state) {
+  if (pull_into_descriptor->buffer->IsDetached()) {
+    exception_state.ThrowTypeError("buffer is detached");
+    return false;
+  }
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-fill-pull-into-descriptor-from-queue
   // 1. Let elementSize be pullIntoDescriptor.[[elementSize]].
   const size_t element_size = pull_into_descriptor->element_size;
@@ -1243,7 +1258,8 @@ void ReadableByteStreamController::PullInto(
     //   a. If !
     //   ReadableByteStreamControllerFillPullIntoDescriptorFromQueue(controller,
     //   pullIntoDescriptor) is true,
-    if (FillPullIntoDescriptorFromQueue(controller, pull_into_descriptor)) {
+    if (FillPullIntoDescriptorFromQueue(controller, pull_into_descriptor,
+                                        exception_state)) {
       //     i. Let filledView be !
       //     ReadableByteStreamControllerConvertPullIntoDescriptor(pullIntoDescriptor).
       DOMArrayBufferView* filled_view = ConvertPullIntoDescriptor(
@@ -1255,6 +1271,15 @@ void ReadableByteStreamController::PullInto(
       //     iii. Perform readIntoRequest’s chunk steps, given filledView.
       read_into_request->ChunkSteps(script_state, filled_view);
       //     iv. Return.
+      return;
+    }
+    if (exception_state.HadException()) {
+      // Instead of returning a rejection, which is inconvenient here,
+      // call ControllerError(). The only difference this makes is that it
+      // happens synchronously, but that should not be observable.
+      ReadableByteStreamController::Error(script_state, controller,
+                                          exception_state.GetException());
+      exception_state.ClearException();
       return;
     }
     //   b. If controller.[[closeRequested]] is true,
