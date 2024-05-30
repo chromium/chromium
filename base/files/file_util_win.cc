@@ -814,30 +814,40 @@ bool CreateDirectoryAndGetError(const FilePath& full_path,
 
 bool NormalizeFilePath(const FilePath& path, FilePath* real_path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  File file(path,
-            File::FLAG_OPEN | File::FLAG_READ | File::FLAG_WIN_SHARE_DELETE);
-  if (!file.IsValid())
-    return false;
 
-  // The expansion of |path| into a full path may make it longer.
-  constexpr int kMaxPathLength = MAX_PATH + 10;
+  File file(path, File::FLAG_OPEN | File::FLAG_READ |
+                      File::FLAG_WIN_SHARE_DELETE |
+                      File::FLAG_WIN_BACKUP_SEMANTICS);
+  if (!file.IsValid()) {
+    return false;
+  }
+
+  // The expansion of `path` into a full path may make it longer. Since
+  // '\Device\HarddiskVolume1' is 23 characters long, we can add 30 characters.
+  constexpr int kMaxPathLength = MAX_PATH + 30;
   wchar_t native_file_path[kMaxPathLength];
   // On success, `used_wchars` returns the number of written characters, not
-  // include the trailing '\0'. Thus, failure is indicated by returning 0 or >=
-  // kMaxPathLength.
+  // including the trailing '\0'. Thus, failure is indicated by returning 0 or
+  // >= kMaxPathLength.
   DWORD used_wchars = ::GetFinalPathNameByHandle(
       file.GetPlatformFile(), native_file_path, kMaxPathLength,
       FILE_NAME_NORMALIZED | VOLUME_NAME_NT);
-
-  if (used_wchars >= kMaxPathLength || used_wchars == 0)
+  if (used_wchars >= kMaxPathLength || used_wchars == 0) {
     return false;
+  }
 
-  // GetFinalPathNameByHandle() returns the \\?\ syntax for file names and
-  // existing code expects we return a path starting 'X:\' so we call
-  // DevicePathToDriveLetterPath rather than using VOLUME_NAME_DOS above.
-  return DevicePathToDriveLetterPath(
-      FilePath(FilePath::StringPieceType(native_file_path, used_wchars)),
-      real_path);
+  // With `VOLUME_NAME_NT` flag, GetFinalPathNameByHandle() returns the path
+  // with the volume device path and existing code expects we return a path
+  // starting 'X:\' so we need to call DevicePathToDriveLetterPath.
+  if (!DevicePathToDriveLetterPath(
+          FilePath(FilePath::StringPieceType(native_file_path, used_wchars)),
+          real_path)) {
+    return false;
+  }
+
+  // `real_path` can be longer than MAX_PATH and we should only return paths
+  // that are less than MAX_PATH.
+  return real_path->value().size() <= MAX_PATH;
 }
 
 bool DevicePathToDriveLetterPath(const FilePath& nt_device_path,

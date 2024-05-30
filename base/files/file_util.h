@@ -498,10 +498,15 @@ BASE_EXPORT bool CreateDirectory(const FilePath& full_path);
 BASE_EXPORT bool GetFileSize(const FilePath& file_path, int64_t* file_size);
 
 // Sets |real_path| to |path| with symbolic links and junctions expanded.
-// On windows, make sure the path starts with a lettered drive.
-// |path| must reference a file.  Function will fail if |path| points to
-// a directory or to a nonexistent path.  On windows, this function will
-// fail if |real_path| would be longer than MAX_PATH characters.
+// On Windows, the function ensures that the resulting |real_path| starts with a
+// drive letter.
+//
+// The |path| parameter can reference either a file or a directory. The function
+// will fail if |path| points to a nonexistent path or to a volume that isn't
+// mapped to a drive letter on Windows.
+//
+// In addition, on Windows this function will fail if the resulting |real_path|
+// would exceed 'MAX_PATH' characters in length.
 BASE_EXPORT bool NormalizeFilePath(const FilePath& path, FilePath* real_path);
 
 #if BUILDFLAG(IS_WIN)

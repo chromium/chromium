@@ -351,12 +351,22 @@ bool ShouldBlockAccessToPath(const base::FilePath& path,
   base::FilePath check_path;
   if (base::FeatureList::IsEnabled(
           features::kFileSystemAccessSymbolicLinkCheck)) {
-    // `path` is expected to be absolute, but call `MakeAbsoluteFilePath()`
-    // in order to perform normalization, such as resolving any symbolic link.
+    // On POSIX, `MakeAbsoluteFilePath()` is called to perform normalization,
+    // such as resolving any symbolic links. `path` is expected to be absolute.
+    //
+    // On Windows, `NormalizeFilePath()` is called to perform normalization. It
+    // will resolve any file path elements like symbolic links or junctions by
+    // returning the target file path.
+#if BUILDFLAG(IS_WIN)
+    if (!base::NormalizeFilePath(path, &check_path)) {
+      check_path = path;
+    }
+#else
     check_path = base::MakeAbsoluteFilePath(path);
     if (check_path.empty()) {
       check_path = path;
     }
+#endif  // BUILDFLAG(IS_WIN)
   } else {
     check_path = path;
   }

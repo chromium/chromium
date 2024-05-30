@@ -483,18 +483,15 @@ TEST_F(FileUtilTest, NormalizeFilePathReparsePoints) {
   //     |-> to_sub_long (reparse point to temp_dir\sub_a\long_name_\sub_long)
 
   FilePath base_a = temp_dir_.GetPath().Append(FPL("base_a"));
-#if BUILDFLAG(IS_WIN)
   // TEMP can have a lower case drive letter.
   std::wstring temp_base_a = base_a.value();
   ASSERT_FALSE(temp_base_a.empty());
   temp_base_a[0] = ToUpperASCII(char16_t{temp_base_a[0]});
   base_a = FilePath(temp_base_a);
-#endif
+
   ASSERT_TRUE(CreateDirectory(base_a));
-#if BUILDFLAG(IS_WIN)
   // TEMP might be a short name which is not normalized.
   base_a = MakeLongFilePath(base_a);
-#endif
 
   FilePath sub_a = base_a.Append(FPL("sub_a"));
   ASSERT_TRUE(CreateDirectory(sub_a));
@@ -507,23 +504,17 @@ TEST_F(FileUtilTest, NormalizeFilePathReparsePoints) {
   // a junction expands to a path over MAX_PATH chars in length,
   // NormalizeFilePath() fails without crashing.
   FilePath sub_long_rel(FPL("sub_long"));
-  FilePath deep_txt(FPL("deep.txt"));
+  FilePath deep_txt(FPL("deepfile.txt"));
 
-  int target_length = MAX_PATH;
-  target_length -= (sub_a.value().length() + 1);  // +1 for the sepperator '\'.
+  int target_length = MAX_PATH - 1;  // One for the string terminator.
+  target_length -= (sub_a.value().length() + 1);  // +1 for the separator '\'.
   target_length -= (sub_long_rel.Append(deep_txt).value().length() + 1);
-  // Without making the path a bit shorter, CreateDirectory() fails.
-  // the resulting path is still long enough to hit the failing case in
-  // NormalizePath().
-  const int kCreateDirLimit = 4;
-  target_length -= kCreateDirLimit;
   FilePath::StringType long_name_str = FPL("long_name_");
   long_name_str.resize(target_length, '_');
 
   FilePath long_name = sub_a.Append(FilePath(long_name_str));
   FilePath deep_file = long_name.Append(sub_long_rel).Append(deep_txt);
-  ASSERT_EQ(static_cast<size_t>(MAX_PATH - kCreateDirLimit),
-            deep_file.value().length());
+  ASSERT_EQ(static_cast<size_t>(MAX_PATH - 1), deep_file.value().length());
 
   FilePath sub_long = deep_file.DirName();
   ASSERT_TRUE(CreateDirectory(sub_long));
@@ -531,10 +522,8 @@ TEST_F(FileUtilTest, NormalizeFilePathReparsePoints) {
 
   FilePath base_b = temp_dir_.GetPath().Append(FPL("base_b"));
   ASSERT_TRUE(CreateDirectory(base_b));
-#if BUILDFLAG(IS_WIN)
   // TEMP might be a short name which is not normalized.
   base_b = MakeLongFilePath(base_b);
-#endif
 
   FilePath to_sub_a = base_b.Append(FPL("to_sub_a"));
   ASSERT_TRUE(CreateDirectory(to_sub_a));
@@ -578,7 +567,7 @@ TEST_F(FileUtilTest, NormalizeFilePathReparsePoints) {
     // path using to_base_b many times, and check that paths long enough to fail
     // do not cause a crash.
     FilePath long_path = base_b;
-    const int kLengthLimit = MAX_PATH + 200;
+    const int kLengthLimit = MAX_PATH + 40;
     while (long_path.value().length() <= kLengthLimit) {
       long_path = long_path.Append(FPL("to_base_b"));
     }
@@ -586,10 +575,11 @@ TEST_F(FileUtilTest, NormalizeFilePathReparsePoints) {
 
     ASSERT_FALSE(NormalizeFilePath(long_path, &normalized_path));
 
-    // Normalizing the junction to deep.txt should fail, because the expanded
-    // path to deep.txt is longer than MAX_PATH.
-    ASSERT_FALSE(
+    // Normalizing the junction to deep.txt should pass, because the expanded
+    // path to deep.txt is not longer than `MAX_PATH`.
+    ASSERT_TRUE(
         NormalizeFilePath(to_sub_long.Append(deep_txt), &normalized_path));
+    ASSERT_EQ(normalized_path, deep_file);
 
     // Delete the reparse points, and see that NormalizeFilePath() fails
     // to traverse them.
@@ -597,6 +587,26 @@ TEST_F(FileUtilTest, NormalizeFilePathReparsePoints) {
 
   ASSERT_FALSE(
       NormalizeFilePath(to_sub_a.Append(FPL("file.txt")), &normalized_path));
+}
+
+TEST_F(FileUtilTest, NormalizeFilePathWithLongPath) {
+  // Indicates that the OS should bypass the normal path length limit.
+  const FilePath::StringType kPathPrefix(FPL("\\\\?\\"));
+
+  constexpr int kLengthLimit = MAX_PATH + 40;
+  FilePath long_path = temp_dir_.GetPath();
+  while (long_path.value().length() <= kLengthLimit) {
+    long_path = long_path.Append(FPL("to_base_b"));
+    const auto path_with_no_check = kPathPrefix + long_path.value();
+    ASSERT_TRUE(::CreateDirectoryW(path_with_no_check.c_str(), nullptr));
+  }
+
+  auto path_with_no_check = kPathPrefix + long_path.value();
+  long_path = FilePath(path_with_no_check);
+
+  // The normalization should fail because the path is too long.
+  FilePath normalized_path;
+  ASSERT_FALSE(NormalizeFilePath(long_path, &normalized_path));
 }
 
 TEST_F(FileUtilTest, DevicePathToDriveLetter) {
@@ -1086,8 +1096,8 @@ TEST_F(FileUtilTest, NormalizeFilePathSymlinks) {
   ASSERT_TRUE(CreateSymbolicLink(link_to, link_from))
       << "Failed to create directory symlink.";
 
-  EXPECT_FALSE(NormalizeFilePath(link_from, &normalized_path))
-      << "Links to directories should return false.";
+  EXPECT_TRUE(NormalizeFilePath(link_from, &normalized_path))
+      << "Links to directories should return true.";
 
   // Test that a loop in the links causes NormalizeFilePath() to return false.
   link_from = temp_dir_.GetPath().Append(FPL("link_a"));

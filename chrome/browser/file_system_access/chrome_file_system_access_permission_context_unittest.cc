@@ -21,6 +21,7 @@
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
+#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -100,6 +101,18 @@ using ContentAnalysisResponse = enterprise_connectors::ContentAnalysisResponse;
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 namespace {
 
+enum class CreateSymbolicLinkResult {
+  // The symbolic link creation failed because the platform does not support it.
+  // On Windows, that may be due to the lack of the required privilege.
+  kUnsupported = -1,
+
+  // The symbolic link creation failed.
+  kFailed,
+
+  // The symbolic link was created successfully.
+  kSucceeded,
+};
+
 constexpr char kDummyDmToken[] = "dm_token";
 
 void EnableEnterpriseAnalysis(Profile* profile) {
@@ -123,6 +136,54 @@ void EnableEnterpriseAnalysis(Profile* profile) {
 
 bool CreateNonEmptyFile(const base::FilePath& path) {
   return base::WriteFile(path, "data");
+}
+
+#if BUILDFLAG(IS_WIN)
+CreateSymbolicLinkResult CreateWinSymbolicLink(const base::FilePath& target,
+                                               const base::FilePath& symlink,
+                                               bool is_directory = false) {
+  // Creating symbolic links on Windows requires Administrator privileges.
+  // However, recent versions of Windows introduced the
+  // SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE flag, which allows the
+  // creation of symbolic links by processes with lower privileges, provided
+  // that Developer Mode is enabled.
+  //
+  // On older versions of Windows where the
+  // SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE flag does not exist, the OS
+  // will return the error code ERROR_INVALID_PARAMETER when attempting to
+  // create a symbolic link without sufficient privileges.
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS3) {
+    return CreateSymbolicLinkResult::kUnsupported;
+  }
+
+  DWORD flags = is_directory ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0;
+
+  if (!::CreateSymbolicLink(
+          symlink.value().c_str(), target.value().c_str(),
+          flags | SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE)) {
+    // SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE works only if Developer Mode
+    // is enabled.
+    if (::GetLastError() == ERROR_PRIVILEGE_NOT_HELD) {
+      return CreateSymbolicLinkResult::kUnsupported;
+    }
+    return CreateSymbolicLinkResult::kFailed;
+  }
+
+  return CreateSymbolicLinkResult::kSucceeded;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+CreateSymbolicLinkResult CreateSymbolicLinkForTesting(
+    const base::FilePath& target,
+    const base::FilePath& symlink) {
+#if BUILDFLAG(IS_WIN)
+  return CreateWinSymbolicLink(target, symlink);
+#else
+  if (!base::CreateSymbolicLink(target, symlink)) {
+    return CreateSymbolicLinkResult::kFailed;
+  }
+  return CreateSymbolicLinkResult::kSucceeded;
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace
@@ -690,9 +751,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 }
 #endif
 
-#if BUILDFLAG(IS_POSIX)
-// Test enabled on POSIX, as `base::CreateSymbolicLink()` is currently only
-// supported on POSIX. This should be enabled on Windows once supported.
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_ResolveSymbolicLink) {
   if (!base::FeatureList::IsEnabled(
@@ -703,7 +761,14 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::FilePath symlink1 = temp_dir_.GetPath().AppendASCII("symlink1");
   base::FilePath app_dir = temp_dir_.GetPath().AppendASCII("app");
   base::ScopedPathOverride app_override(base::DIR_EXE, app_dir, true, true);
-  ASSERT_TRUE(base::CreateSymbolicLink(app_dir, symlink1));
+
+  CreateSymbolicLinkResult result =
+      CreateSymbolicLinkForTesting(app_dir, symlink1);
+  if (result == CreateSymbolicLinkResult::kUnsupported) {
+    GTEST_SKIP();
+  }
+  ASSERT_EQ(result, CreateSymbolicLinkResult::kSucceeded);
+
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kLocal, symlink1,
                 HandleType::kFile, UserAction::kOpen),
@@ -711,13 +776,18 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
   base::FilePath symlink2 = temp_dir_.GetPath().AppendASCII("symlink2");
   base::FilePath allowed_file = temp_dir_.GetPath().AppendASCII("foo");
-  ASSERT_TRUE(base::CreateSymbolicLink(allowed_file, symlink2));
+
+  result = CreateSymbolicLinkForTesting(allowed_file, symlink2);
+  if (result == CreateSymbolicLinkResult::kUnsupported) {
+    GTEST_SKIP();
+  }
+  ASSERT_EQ(result, CreateSymbolicLinkResult::kSucceeded);
+
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kLocal, symlink2,
                 HandleType::kFile, UserAction::kOpen),
             SensitiveDirectoryResult::kAllowed);
 }
-#endif
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_DangerousFile) {
