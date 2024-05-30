@@ -21249,6 +21249,7 @@ from previous Chrome versions.
   <int value="32488630" label="EphemeralTab:enabled"/>
   <int value="32557641" label="HTTPAuthCommittedInterstitials:disabled"/>
   <int value="32701080" label="DropInputEventsBeforeFirstPaint:enabled"/>
+  <int value="33135480" label="EnableModelExecutionAPI:disabled"/>
   <int value="33778663" label="OriginTrials:enabled"/>
   <int value="34166742" label="AccessibilityIncludeLongClickAction:enabled"/>
   <int value="34399969" label="SplitPartiallyOccludedQuads:enabled"/>
@@ -22117,6 +22118,7 @@ from previous Chrome versions.
   <int value="402143634" label="enable-search-button-in-omnibox-always"/>
   <int value="402630521"
       label="IPH_KeyboardAccessoryPaymentVirtualCard:enabled"/>
+  <int value="402998524" label="EnableModelExecutionAPI:enabled"/>
   <int value="403288255" label="enable-wheel-scroll-latching"/>
   <int value="403554154" label="SafetyCheckWeakPasswords:enabled"/>
   <int value="405068544" label="GlobalMediaControlsUpdatedUI:enabled"/>
