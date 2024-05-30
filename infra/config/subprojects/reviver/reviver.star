@@ -56,6 +56,7 @@ polymorphic.launcher(
         "ci/android-oreo-x86-rel",
         "ci/android-pie-x86-rel",
         "ci/android-12-x64-rel",
+        "ci/android-13-x64-rel",
     ],
 )
 
