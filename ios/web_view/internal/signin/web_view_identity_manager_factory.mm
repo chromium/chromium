@@ -18,6 +18,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_manager_builder.h"
 #include "ios/web_view/internal/app/application_context.h"
+#import "ios/web_view/internal/signin/account_capabilities_fetcher_factory_ios_web_view.h"
 #include "ios/web_view/internal/signin/ios_web_view_signin_client.h"
 #include "ios/web_view/internal/signin/web_view_device_accounts_provider_impl.h"
 #include "ios/web_view/internal/signin/web_view_signin_client_factory.h"
@@ -71,6 +72,8 @@ WebViewIdentityManagerFactory::BuildServiceInstanceFor(
   params.profile_path = base::FilePath();
   params.signin_client = client;
   params.require_sync_consent_for_scope_verification = false;
+  params.account_capabilities_fetcher_factory = std::make_unique<
+      ios_web_view::AccountCapabilitiesFetcherFactoryIOSWebView>();
 
   return signin::BuildIdentityManager(&params);
 }

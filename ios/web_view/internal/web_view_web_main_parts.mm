@@ -72,11 +72,7 @@ void WebViewWebMainParts::PreCreateThreads() {
           syncer::kSyncPasswordCleanUpAccidentalBatchDeletions.name,
       },
       ",");
-  std::string disabled_features = base::JoinString(
-      {
-          switches::kEnableFetchingAccountCapabilities.name,
-      },
-      ",");
+  std::string disabled_features;
   feature_list->InitFromCommandLine(
       /*enable_features=*/enable_features,
       /*disable_features=*/disabled_features);
