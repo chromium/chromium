@@ -52,7 +52,7 @@ class MockBoundSessionCookieRefreshService
               RegisterNewBoundSession,
               (const bound_session_credentials::BoundSessionParams& params),
               (override));
-  MOCK_METHOD(chrome::mojom::BoundSessionThrottlerParamsPtr,
+  MOCK_METHOD(std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>,
               GetBoundSessionThrottlerParams,
               (),
               (const, override));

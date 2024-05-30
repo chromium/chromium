@@ -5780,7 +5780,8 @@ std::unique_ptr<blink::URLLoaderThrottle> CreateGoogleURLLoaderThrottle(
       BoundSessionCookieRefreshServiceFactory::GetForProfile(profile);
   std::unique_ptr<BoundSessionRequestThrottledHandler>
       bound_session_request_throttled_handler;
-  chrome::mojom::BoundSessionThrottlerParamsPtr bound_session_throttler_params;
+  std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
+      bound_session_throttler_params;
 
   if (bound_session_cookie_refresh_service) {
     bound_session_request_throttled_handler =

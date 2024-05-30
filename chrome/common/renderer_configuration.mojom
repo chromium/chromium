@@ -23,9 +23,9 @@ struct BoundSessionThrottlerParams {
 
 // The renderer configuration parameters which can change post renderer launch.
 struct DynamicParams {
-  // `BoundSessionThrottlerParams` can be null if there is no bound session.
+  // `BoundSessionThrottlerParams` can be empty if there are no bound sessions.
   [EnableIf=enable_bound_session_credentials]
-  BoundSessionThrottlerParams? bound_session_throttler_params;
+  array<BoundSessionThrottlerParams> bound_session_throttler_params;
   bool force_safe_search = true;
   int32 youtube_restrict = 0;
   string allowed_domains_for_apps;

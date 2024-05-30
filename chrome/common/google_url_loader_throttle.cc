@@ -5,6 +5,7 @@
 #include "chrome/common/google_url_loader_throttle.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -37,41 +38,55 @@ const char kCCTClientDataHeader[] = "X-CCT-Client-Data";
 #endif
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+// Elements of these enum are ordered in such a way that two independent
+// statuses can be merged together using `std::max()` function to get an
+// aggregate status.
 enum class RequestBoundSessionStatus {
-  kNotCovered,
-  kCoveredWithFreshCookie,
-  kCoveredWithMissingCookie
+  kNotCovered = 0,
+  kCoveredWithFreshCookie = 1,
+  kCoveredWithMissingCookie = 2
 };
 
-RequestBoundSessionStatus GetRequestBoundSessionStatus(
+RequestBoundSessionStatus GetRequestSingleBoundSessionStatus(
     const GURL& request_url,
-    chrome::mojom::BoundSessionThrottlerParams*
-        bound_session_throttler_params) {
-  // No bound session.
-  if (!bound_session_throttler_params ||
-      bound_session_throttler_params->domain.empty()) {
+    chrome::mojom::BoundSessionThrottlerParams* throttler_params) {
+  CHECK(throttler_params);
+  if (throttler_params->domain.empty()) {
     return RequestBoundSessionStatus::kNotCovered;
   }
 
   // Check if the request requires the short lived cookie.
-  if (!request_url.DomainIs(net::cookie_util::CookieDomainAsHost(
-          bound_session_throttler_params->domain))) {
+  if (!request_url.DomainIs(
+          net::cookie_util::CookieDomainAsHost(throttler_params->domain))) {
     return RequestBoundSessionStatus::kNotCovered;
   }
 
-  if (!bound_session_throttler_params->path.empty() &&
-      !net::cookie_util::IsOnPath(bound_session_throttler_params->path,
-                                  request_url.path())) {
+  if (!throttler_params->path.empty() &&
+      !net::cookie_util::IsOnPath(throttler_params->path, request_url.path())) {
     return RequestBoundSessionStatus::kNotCovered;
   }
 
   // Short lived cookie is fresh.
-  if (bound_session_throttler_params->cookie_expiry_date > base::Time::Now()) {
+  if (throttler_params->cookie_expiry_date > base::Time::Now()) {
     return RequestBoundSessionStatus::kCoveredWithFreshCookie;
   }
 
   // Short lived cookie has expired.
   return RequestBoundSessionStatus::kCoveredWithMissingCookie;
+}
+
+RequestBoundSessionStatus GetRequestBoundSessionStatus(
+    const GURL& request_url,
+    const std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>&
+        bound_session_throttler_params) {
+  RequestBoundSessionStatus status = RequestBoundSessionStatus::kNotCovered;
+
+  for (const auto& throttler_params : bound_session_throttler_params) {
+    status = std::max(status, GetRequestSingleBoundSessionStatus(
+                                  request_url, throttler_params.get()));
+  }
+
+  return status;
 }
 
 bool IsCoveredRequestBoundSessionStatus(RequestBoundSessionStatus status) {
@@ -135,7 +150,7 @@ GoogleURLLoaderThrottle::~GoogleURLLoaderThrottle() = default;
 // static
 bool GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
     const GURL& request_url,
-    chrome::mojom::BoundSessionThrottlerParams*
+    const std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>&
         bound_session_throttler_params) {
   RequestBoundSessionStatus status =
       GetRequestBoundSessionStatus(request_url, bound_session_throttler_params);
@@ -191,7 +206,7 @@ void GoogleURLLoaderThrottle::WillStartRequest(
   sends_cookies_ = request->SendsCookies();
   if (sends_cookies_) {
     RequestBoundSessionStatus status = GetRequestBoundSessionStatus(
-        request->url, dynamic_params_->bound_session_throttler_params.get());
+        request->url, dynamic_params_->bound_session_throttler_params);
     if (IsCoveredRequestBoundSessionStatus(status)) {
       is_covered_by_bound_session_ = true;
     }
@@ -252,7 +267,7 @@ void GoogleURLLoaderThrottle::WillRedirectRequest(
   if (sends_cookies_) {
     RequestBoundSessionStatus status = GetRequestBoundSessionStatus(
         redirect_info->new_url,
-        dynamic_params_->bound_session_throttler_params.get());
+        dynamic_params_->bound_session_throttler_params);
     if (IsCoveredRequestBoundSessionStatus(status)) {
       is_covered_by_bound_session_ = true;
     }

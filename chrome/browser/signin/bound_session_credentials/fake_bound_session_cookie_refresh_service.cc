@@ -13,9 +13,9 @@ FakeBoundSessionCookieRefreshService::FakeBoundSessionCookieRefreshService() =
 FakeBoundSessionCookieRefreshService::~FakeBoundSessionCookieRefreshService() =
     default;
 
-chrome::mojom::BoundSessionThrottlerParamsPtr
+std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
 FakeBoundSessionCookieRefreshService::GetBoundSessionThrottlerParams() const {
-  return chrome::mojom::BoundSessionThrottlerParams::New();
+  return {};
 }
 
 void FakeBoundSessionCookieRefreshService::HandleRequestBlockedOnCookie(

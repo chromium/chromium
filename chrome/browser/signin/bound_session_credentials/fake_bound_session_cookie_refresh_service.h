@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_FAKE_BOUND_SESSION_COOKIE_REFRESH_SERVICE_H_
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_FAKE_BOUND_SESSION_COOKIE_REFRESH_SERVICE_H_
 
-#include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
+#include <string>
+#include <vector>
 
 #include "base/observer_list.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
 #include "chrome/common/bound_session_request_throttled_handler.h"
 #include "chrome/common/renderer_configuration.mojom-shared.h"
@@ -33,8 +35,8 @@ class FakeBoundSessionCookieRefreshService
   void MaybeTerminateSession(const GURL& response_url,
                              const net::HttpResponseHeaders* headers) override {
   }
-  chrome::mojom::BoundSessionThrottlerParamsPtr GetBoundSessionThrottlerParams()
-      const override;
+  std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
+  GetBoundSessionThrottlerParams() const override;
   void HandleRequestBlockedOnCookie(
       HandleRequestBlockedOnCookieCallback resume_blocked_request) override;
   void SetRendererBoundSessionThrottlerParamsUpdaterDelegate(

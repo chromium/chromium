@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_REFRESH_SERVICE_H_
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_REFRESH_SERVICE_H_
 
+#include <string>
+#include <vector>
+
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -62,7 +65,7 @@ class BoundSessionCookieRefreshService
       const net::HttpResponseHeaders* headers) = 0;
 
   // Returns bound session params.
-  virtual chrome::mojom::BoundSessionThrottlerParamsPtr
+  virtual std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
   GetBoundSessionThrottlerParams() const = 0;
 
   virtual void CreateRegistrationRequest(

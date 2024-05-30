@@ -43,7 +43,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/network/public/cpp/network_switches.h"
-#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -432,7 +432,7 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
   }
 
   void RegisterNewSession() {
-    EXPECT_FALSE(service()->GetBoundSessionThrottlerParams());
+    EXPECT_TRUE(service()->GetBoundSessionThrottlerParams().empty());
     base::RunLoop run_loop;
     ExpectSessionParamsUpdate(run_loop.QuitClosure());
 
@@ -441,11 +441,11 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
                        kDomain, KTriggerRegistrationPath)));
     run_loop.Run();
 
-    chrome::mojom::BoundSessionThrottlerParamsPtr throttler_params =
-        service()->GetBoundSessionThrottlerParams();
-    ASSERT_TRUE(throttler_params);
-    EXPECT_EQ(throttler_params->domain, kDomain);
-    EXPECT_EQ(throttler_params->path, "/");
+    std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
+        throttler_params = service()->GetBoundSessionThrottlerParams();
+    ASSERT_EQ(throttler_params.size(), 1U);
+    EXPECT_EQ(throttler_params[0]->domain, kDomain);
+    EXPECT_EQ(throttler_params[0]->path, "/");
 
     // Cookie rotation request comes immediately after session registration.
     WaitOnServerCookieRotationResponseBlocked();
@@ -520,12 +520,12 @@ IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
                        CookieRotationOnStartup) {
-  chrome::mojom::BoundSessionThrottlerParamsPtr throttler_params =
+  std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr> throttler_params =
       service()->GetBoundSessionThrottlerParams();
-  ASSERT_TRUE(throttler_params);
-  EXPECT_EQ(throttler_params->domain, kDomain);
-  EXPECT_EQ(throttler_params->path, "/");
-  base::Time cookie_expiration = throttler_params->cookie_expiry_date;
+  ASSERT_EQ(throttler_params.size(), 1U);
+  EXPECT_EQ(throttler_params[0]->domain, kDomain);
+  EXPECT_EQ(throttler_params[0]->path, "/");
+  base::Time cookie_expiration = throttler_params[0]->cookie_expiry_date;
 
   // Cookie rotation is set to happen on startup, as soon as the service
   // is created.
@@ -536,7 +536,8 @@ IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
 
   ASSERT_TRUE(UnblockServerCookieRotationResponse());
   bound_session_params_update.Run();
-  ASSERT_TRUE(service()->GetBoundSessionThrottlerParams());
-  EXPECT_GT(service()->GetBoundSessionThrottlerParams()->cookie_expiry_date,
-            cookie_expiration);
+  std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
+      new_throttler_params = service()->GetBoundSessionThrottlerParams();
+  ASSERT_EQ(new_throttler_params.size(), 1U);
+  EXPECT_GT(new_throttler_params[0]->cookie_expiry_date, cookie_expiration);
 }

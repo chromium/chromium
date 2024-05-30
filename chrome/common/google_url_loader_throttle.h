@@ -6,6 +6,7 @@
 #define CHROME_COMMON_GOOGLE_URL_LOADER_THROTTLE_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -42,7 +43,7 @@ class GoogleURLLoaderThrottle final : public blink::URLLoaderThrottle {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   static bool ShouldDeferRequestForBoundSession(
       const GURL& request_url,
-      chrome::mojom::BoundSessionThrottlerParams*
+      const std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>&
           bound_session_throttler_params);
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 

@@ -6,6 +6,8 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
@@ -112,15 +114,13 @@ void BoundSessionCookieRefreshServiceImpl::MaybeTerminateSession(
   }
 }
 
-chrome::mojom::BoundSessionThrottlerParamsPtr
+std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
 BoundSessionCookieRefreshServiceImpl::GetBoundSessionThrottlerParams() const {
-  if (cookie_controllers_.empty()) {
-    return chrome::mojom::BoundSessionThrottlerParamsPtr();
+  std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr> result;
+  for (const auto& [key, controller] : cookie_controllers_) {
+    result.push_back(controller->bound_session_throttler_params());
   }
-
-  // TODO(http://b/325451269): update BoundSessionThrottlerParams to include
-  // include a list of bound sessions.
-  return cookie_controller()->bound_session_throttler_params();
+  return result;
 }
 
 void BoundSessionCookieRefreshServiceImpl::

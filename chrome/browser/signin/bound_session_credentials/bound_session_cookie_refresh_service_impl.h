@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -63,8 +65,8 @@ class BoundSessionCookieRefreshServiceImpl
       const bound_session_credentials::BoundSessionParams& params) override;
   void MaybeTerminateSession(const GURL& response_url,
                              const net::HttpResponseHeaders* headers) override;
-  chrome::mojom::BoundSessionThrottlerParamsPtr GetBoundSessionThrottlerParams()
-      const override;
+  std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
+  GetBoundSessionThrottlerParams() const override;
   void AddBoundSessionRequestThrottledHandlerReceiver(
       mojo::PendingReceiver<chrome::mojom::BoundSessionRequestThrottledHandler>
           receiver) override;

@@ -57,21 +57,28 @@ class MockBoundSessionRequestThrottledHandler
               (override));
 };
 
-chrome::mojom::BoundSessionThrottlerParamsPtr CreateBlockingParams() {
-  return chrome::mojom::BoundSessionThrottlerParams::New(
-      "google.com", "/", base::Time::Now() - base::Seconds(10));
+std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
+CreateBlockingParams() {
+  std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr> result;
+  result.push_back(chrome::mojom::BoundSessionThrottlerParams::New(
+      "google.com", "/", base::Time::Now() - base::Seconds(10)));
+  return result;
 }
 
-chrome::mojom::BoundSessionThrottlerParamsPtr CreateNonBlockingParams() {
-  return chrome::mojom::BoundSessionThrottlerParams::New(
-      "example.org", "/", base::Time::Now() - base::Seconds(10));
+std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
+CreateNonBlockingParams() {
+  std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr> result;
+  result.push_back(chrome::mojom::BoundSessionThrottlerParams::New(
+      "example.org", "/", base::Time::Now() - base::Seconds(10)));
+  return result;
 }
 
 }  // namespace
 
 class ThrottledGaiaAuthFetcherTest : public testing::Test {
  public:
-  void CreateFetcher(chrome::mojom::BoundSessionThrottlerParamsPtr params) {
+  void CreateFetcher(
+      std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr> params) {
     auto request_throttled_handler =
         std::make_unique<StrictMock<MockBoundSessionRequestThrottledHandler>>();
     mock_request_throttled_handler_ = request_throttled_handler.get();
@@ -142,7 +149,7 @@ TEST_F(ThrottledGaiaAuthFetcherTest, ThrottleListAccountsCancel) {
 }
 
 TEST_F(ThrottledGaiaAuthFetcherTest, ListAccountsNotThrottledNoBoundSessions) {
-  CreateFetcher(nullptr);
+  CreateFetcher({});
   EXPECT_CALL(*request_throttled_handler(), HandleRequestBlockedOnCookie(_))
       .Times(0);
 

@@ -55,24 +55,27 @@ void AppendBoundSessionInfo(
   // service.
   // TODO(b/299884315): expose extra info that is not available in
   // BoundSessionThrottlerParams, like session ID or a bound cookie names.
-  base::Value::Dict bound_session_entry;
+  base::Value::List bound_sessions_list;
   if (!bound_session_service) {
-    bound_session_entry.Set("domain", "Bound session service is disabled.");
-  } else if (chrome::mojom::BoundSessionThrottlerParamsPtr
+    bound_sessions_list.Append(base::Value::Dict().Set(
+        "domain", "Bound session service is disabled."));
+  } else if (std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
                  bound_session_throttler_params =
                      bound_session_service->GetBoundSessionThrottlerParams();
-             !bound_session_throttler_params) {
-    bound_session_entry.Set("domain", "No active bound sessions.");
+             bound_session_throttler_params.empty()) {
+    bound_sessions_list.Append(
+        base::Value::Dict().Set("domain", "No active bound sessions."));
   } else {
-    bound_session_entry.Set("domain", bound_session_throttler_params->domain);
-    bound_session_entry.Set("path", bound_session_throttler_params->path);
-    bound_session_entry.Set(
-        "expirationTime",
-        base::TimeFormatAsIso8601(
-            bound_session_throttler_params->cookie_expiry_date));
+    for (const auto& params : bound_session_throttler_params) {
+      bound_sessions_list.Append(
+          base::Value::Dict()
+              .Set("domain", params->domain)
+              .Set("path", params->path)
+              .Set("expirationTime",
+                   base::TimeFormatAsIso8601(params->cookie_expiry_date)));
+    }
   }
-  signin_status.Set("boundSessionInfo",
-                    base::Value::List().Append(std::move(bound_session_entry)));
+  signin_status.Set("boundSessionInfo", std::move(bound_sessions_list));
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
