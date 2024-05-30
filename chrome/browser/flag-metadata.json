@@ -3782,11 +3782,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-show-scrollable-mvt-on-ntp",
-    "owners": ["clank-start@chromium.org","hanxi@chromium.org"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-signed-out-view-demotion",
     "owners": [ "sczs@chromium.org", "tinazwang@chromium.org" ],
     "expiry_milestone": 135

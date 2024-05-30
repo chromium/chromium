@@ -2660,9 +2660,6 @@ extern const char kSecurePaymentConfirmationAndroidDescription[];
 extern const char kShowNtpAtStartupAndroidName[];
 extern const char kShowNtpAtStartupAndroidDescription[];
 
-extern const char kShowScrollableMVTOnNTPAndroidName[];
-extern const char kShowScrollableMVTOnNTPAndroidDescription[];
-
 extern const char kSendTabToSelfV2Name[];
 extern const char kSendTabToSelfV2Description[];
 

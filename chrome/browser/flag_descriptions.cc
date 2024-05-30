@@ -4492,11 +4492,6 @@ const char kShowNtpAtStartupAndroidName[] = "Show a NewTabPage at startup";
 const char kShowNtpAtStartupAndroidDescription[] =
     "Enable showing a NewTabPage at startup after leaving Chrome for a while.";
 
-const char kShowScrollableMVTOnNTPAndroidName[] =
-    "Show scrollable MVT on NTP on tablets";
-const char kShowScrollableMVTOnNTPAndroidDescription[] =
-    "Enable showing the scrollable most visited tiles on NTP on tablets.";
-
 const char kSecurePaymentConfirmationAndroidName[] =
     "Secure Payment Confirmation on Android";
 const char kSecurePaymentConfirmationAndroidDescription[] =

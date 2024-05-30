@@ -267,8 +267,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSearchInCCT,
     &kSearchResumptionModuleAndroid,
     &kShowNtpAtStartupAndroid,
-    &kShowScrollableMVTOnNTPAndroid,
-    &kShowScrollableMVTOnNtpPhoneAndroid,
     &kSmallerTabStripTitleLimit,
     &kStopAppIndexingReport,
     &kSuppressToolbarCaptures,
@@ -837,14 +835,6 @@ BASE_FEATURE(kReportParentalControlSitesChild,
 BASE_FEATURE(kShowNtpAtStartupAndroid,
              "ShowNtpAtStartupAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kShowScrollableMVTOnNTPAndroid,
-             "ShowScrollableMVTOnNTPAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kShowScrollableMVTOnNtpPhoneAndroid,
-             "ShowScrollableMVTOnNtpPhoneAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSmallerTabStripTitleLimit,
              "SmallerTabStripTitleLimit",

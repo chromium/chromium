@@ -435,9 +435,6 @@ public abstract class ChromeFeatureList {
             "SegmentationPlatformAndroidHomeModuleRanker";
     public static final String SEND_TAB_TO_SELF_V2 = "SendTabToSelfV2";
     public static final String SHOW_NTP_AT_STARTUP_ANDROID = "ShowNtpAtStartupAndroid";
-    public static final String SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID = "ShowScrollableMVTOnNTPAndroid";
-    public static final String SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID =
-            "ShowScrollableMVTOnNtpPhoneAndroid";
     public static final String SMALLER_TAB_STRIP_TITLE_LIMIT = "SmallerTabStripTitleLimit";
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =
             "SmartSuggestionForLargeDownloads";

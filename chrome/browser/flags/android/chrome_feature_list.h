@@ -141,8 +141,6 @@ BASE_DECLARE_FEATURE(kSearchInCCT);
 BASE_DECLARE_FEATURE(kSearchResumptionModuleAndroid);
 BASE_DECLARE_FEATURE(kSharingHubLinkToggle);
 BASE_DECLARE_FEATURE(kShowNtpAtStartupAndroid);
-BASE_DECLARE_FEATURE(kShowScrollableMVTOnNTPAndroid);
-BASE_DECLARE_FEATURE(kShowScrollableMVTOnNtpPhoneAndroid);
 BASE_DECLARE_FEATURE(kSmallerTabStripTitleLimit);
 BASE_DECLARE_FEATURE(kScrollToTLDOptimization);
 BASE_DECLARE_FEATURE(kStopAppIndexingReport);

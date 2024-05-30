@@ -7204,11 +7204,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShowNtpAtStartupAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kShowNtpAtStartupAndroid)},
 
-    {"enable-show-scrollable-mvt-on-ntp",
-     flag_descriptions::kShowScrollableMVTOnNTPAndroidName,
-     flag_descriptions::kShowScrollableMVTOnNTPAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kShowScrollableMVTOnNTPAndroid)},
-
     {"enable-search-resumption-module",
      flag_descriptions::kSearchResumptionModuleAndroidName,
      flag_descriptions::kSearchResumptionModuleAndroidDescription, kOsAndroid,

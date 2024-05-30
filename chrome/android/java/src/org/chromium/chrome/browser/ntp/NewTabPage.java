@@ -1238,7 +1238,7 @@ public class NewTabPage
     }
 
     static boolean isScrollableMvtEnabled(Context context) {
-        return ReturnToChromeUtil.isScrollableMvtEnabled(context);
+        return true;
     }
 
     public boolean isSingleTabCardVisibleForTesting() {

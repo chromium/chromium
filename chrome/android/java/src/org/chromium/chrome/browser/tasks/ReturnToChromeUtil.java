@@ -925,23 +925,6 @@ public final class ReturnToChromeUtil {
         RecordHistogram.recordBooleanHistogram(HOME_SURFACE_SHOWN_UMA, true);
     }
 
-    public static boolean isScrollableMvtEnabled(Context context) {
-        // TODO(b/331667743): Clean up the flag for scrollable mvt while cleaning up surface polish
-        // code.
-        if (ChromeFeatureList.sSurfacePolish.isEnabled()) {
-            return true;
-        }
-
-        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            // On phones, parameter SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID is checked when feature
-            // flag surface polish is disabled.
-            return ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID);
-        }
-
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID);
-    }
-
     /**
      * Returns the start position of the context menu of a home module.
      *

@@ -85,13 +85,15 @@ public class SearchResumptionModuleUtils {
     /**
      * Creates a {@link SearchResumptionModuleCoordinator} if we are currently allowed to and
      * dependencies are met:
-     * 1) Feature flags SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID and SEARCH_RESUMPTION_MODULE_ANDROID are
-     *    both enabled;
-     * 2) The default search engine is Google;
-     * 3) The user has signed in;
-     * 4) The current Tab isn't shown due to such as tapping the back button.
-     * 5) The Tab to track is a regular Tab, not a native page, not with an empty URL;
-     * 6) The Tab to track was visited within an expiration time.
+     *
+     * <ol>
+     *   <li>Feature flag SEARCH_RESUMPTION_MODULE_ANDROID is enabled;
+     *   <li>The default search engine is Google;
+     *   <li>The user has signed in;
+     *   <li>The current Tab isn't shown due to such as tapping the back button.
+     *   <li>The Tab to track is a regular Tab, not a native page, not with an empty URL;
+     *   <li>The Tab to track was visited within an expiration time.
+     * </ol>
      *
      * @param parent The parent layout which the search resumption module lives.
      * @param tabModel The TabModel to find the Tab to track.
@@ -127,11 +129,13 @@ public class SearchResumptionModuleUtils {
     /**
      * Returns whether to show the search resumption module. Only shows the module if all of the
      * criteria meet:
-     * 1) Feature flags SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID and SEARCH_RESUMPTION_MODULE_ANDROID are
-     *    both enabled;
-     * 2) The default search engine is Google;
-     * 3) The user has signed in;
-     * 4) The user has turned on sync.
+     *
+     * <ol>
+     *   <li>Feature flag SEARCH_RESUMPTION_MODULE_ANDROID is enabled;
+     *   <li>The default search engine is Google;
+     *   <li>The user has signed in;
+     *   <li>The user has turned on sync.
+     * </ol>
      */
     @VisibleForTesting
     static boolean shouldShowSearchResumptionModule(Profile profile) {
