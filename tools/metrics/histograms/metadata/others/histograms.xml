@@ -172,6 +172,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".JourneysSidePanel" summary="from Journeys inside Side Panel"/>
   <variant name=".NtpQuests" summary="from the Quests module on the NTP"/>
   <variant name=".NtpRealbox" summary="from the realbox on the NTP"/>
+  <variant name=".NtpTabResumption"
+      summary="from the Tab resumption module on the NTP"/>
 </variants>
 
 <variants name="WebContentsObserverMethods">
@@ -8629,8 +8631,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="PageImageService.Android.SalientImageUrlFetchResult.{ClientId}"
+<histogram name="PageImageService.Android.SalientImageUrlFetchResult{ClientId}"
     enum="SalientImageUrlFetchResult" expires_after="2025-01-20">
   <owner>hanxi@google.com</owner>
   <owner>huangs@google.com</owner>
