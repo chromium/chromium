@@ -120,7 +120,7 @@ class OobeWebDialogView : public views::WebDialogView {
 
   bool HandleKeyboardEvent(
       content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override {
+      const input::NativeWebKeyboardEvent& event) override {
     return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
         event, GetFocusManager());
   }

@@ -70,7 +70,7 @@ typedef EventWithLatencyInfo<blink::WebMouseEvent>
 typedef EventWithLatencyInfo<blink::WebTouchEvent>
     TouchEventWithLatencyInfo;
 
-typedef EventWithLatencyInfo<NativeWebKeyboardEvent>
+typedef EventWithLatencyInfo<input::NativeWebKeyboardEvent>
     NativeWebKeyboardEventWithLatencyInfo;
 
 }  // namespace content

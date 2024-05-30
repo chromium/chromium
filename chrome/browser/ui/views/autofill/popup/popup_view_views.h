@@ -208,11 +208,10 @@ class PopupViewViews : public PopupBaseView,
   // Reacts to key events under the assumption that the currently shown popup
   // contains Compose content.
   bool HandleKeyPressEventForCompose(
-      const content::NativeWebKeyboardEvent& event);
+      const input::NativeWebKeyboardEvent& event);
 
   // AutofillPopupView:
-  bool HandleKeyPressEvent(
-      const content::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event) override;
   void OnSuggestionsChanged() override;
 
   // PopupBaseView:

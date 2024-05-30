@@ -444,7 +444,7 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     mouse_wheel_event.phase = blink::WebMouseWheelEvent::Phase::kPhaseBegan;
     rwh->ForwardWheelEvent(mouse_wheel_event);
 
-    content::NativeWebKeyboardEvent keyboard_event(
+    input::NativeWebKeyboardEvent keyboard_event(
         blink::WebInputEvent::Type::kChar, /*modifiers=*/0,
         base::TimeTicks::Now());
     rwh->ForwardKeyboardEvent(keyboard_event);

@@ -11,7 +11,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_utils.h"
 
-namespace content {
+namespace input {
 
 namespace {
 
@@ -231,4 +231,4 @@ blink::WebTouchEvent WebTouchEventBuilder::Build(
   return result;
 }
 
-}  // namespace content
+}  // namespace input

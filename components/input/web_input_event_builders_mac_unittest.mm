@@ -24,9 +24,9 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
 
-using blink::WebKeyboardEvent;
 using blink::WebInputEvent;
-using content::WebKeyboardEventBuilder;
+using blink::WebKeyboardEvent;
+using input::WebKeyboardEventBuilder;
 
 namespace {
 
@@ -714,7 +714,7 @@ TEST(WebInputEventBuilderMacTest, ScrollWheelMatchesUIEvent) {
   EXPECT_EQ(delta_y, mac_event.deltaY);
 
   blink::WebMouseWheelEvent web_event =
-      content::WebMouseWheelEventBuilder::Build(mac_event, window.contentView);
+      input::WebMouseWheelEventBuilder::Build(mac_event, window.contentView);
   ui::MouseWheelEvent ui_event((base::apple::OwnedNSEvent(mac_event)));
 
   EXPECT_EQ(delta_x * ui::kScrollbarPixelsPerCocoaTick, web_event.delta_x);
@@ -745,7 +745,7 @@ TEST(WebInputEventBuilderMacTest, TouchEventsWithPointerTypePenRotationLess90) {
                                       defer:NO];
   window.releasedWhenClosed = NO;
   blink::WebTouchEvent touch_event =
-      content::WebTouchEventBuilder::Build(mac_event, window.contentView);
+      input::WebTouchEventBuilder::Build(mac_event, window.contentView);
   EXPECT_EQ(60, touch_event.touches[0].twist);
   EXPECT_EQ(60, touch_event.touches[0].rotation_angle);
 }
@@ -765,7 +765,7 @@ TEST(WebInputEventBuilderMacTest,
                                       defer:NO];
   window.releasedWhenClosed = NO;
   blink::WebTouchEvent touch_event =
-      content::WebTouchEventBuilder::Build(mac_event, [window contentView]);
+      input::WebTouchEventBuilder::Build(mac_event, [window contentView]);
   EXPECT_EQ(160, touch_event.touches[0].twist);
   EXPECT_EQ(20, touch_event.touches[0].rotation_angle);
 }
@@ -785,7 +785,7 @@ TEST(WebInputEventBuilderMacTest,
                                       defer:NO];
   window.releasedWhenClosed = NO;
   blink::WebTouchEvent touch_event =
-      content::WebTouchEventBuilder::Build(mac_event, window.contentView);
+      input::WebTouchEventBuilder::Build(mac_event, window.contentView);
   EXPECT_EQ(260, touch_event.touches[0].twist);
   EXPECT_EQ(80, touch_event.touches[0].rotation_angle);
 }
@@ -805,7 +805,7 @@ TEST(WebInputEventBuilderMacTest,
                                       defer:NO];
   window.releasedWhenClosed = NO;
   blink::WebTouchEvent touch_event =
-      content::WebTouchEventBuilder::Build(mac_event, window.contentView);
+      input::WebTouchEventBuilder::Build(mac_event, window.contentView);
   EXPECT_EQ(30, touch_event.touches[0].twist);
   EXPECT_EQ(30, touch_event.touches[0].rotation_angle);
 }
@@ -825,7 +825,7 @@ TEST(WebInputEventBuilderMacTest, BuildWebTouchEvents) {
                                       defer:NO];
   window.releasedWhenClosed = NO;
   blink::WebTouchEvent touch_event =
-      content::WebTouchEventBuilder::Build(mac_event, window.contentView);
+      input::WebTouchEventBuilder::Build(mac_event, window.contentView);
   EXPECT_EQ(blink::WebInputEvent::Type::kTouchStart, touch_event.GetType());
   EXPECT_FALSE(touch_event.hovering);
   EXPECT_EQ(1U, touch_event.touches_length);
@@ -859,7 +859,7 @@ TEST(WebInputEventBuilderMacTest, BuildWebMouseEventsWithBackButton) {
                                       defer:NO];
   window.releasedWhenClosed = NO;
   blink::WebMouseEvent mouse_event =
-      content::WebMouseEventBuilder::Build(mac_event, window.contentView);
+      input::WebMouseEventBuilder::Build(mac_event, window.contentView);
   EXPECT_EQ(blink::WebInputEvent::Type::kMouseDown, mouse_event.GetType());
   EXPECT_EQ(gfx::PointF(6, 9), mouse_event.PositionInScreen());
   EXPECT_EQ(blink::WebPointerProperties::PointerType::kMouse,
@@ -882,7 +882,7 @@ TEST(WebInputEventBuilderMacTest, BuildWebMouseEventsWithForwardButton) {
                                       defer:NO];
   window.releasedWhenClosed = NO;
   blink::WebMouseEvent mouse_event =
-      content::WebMouseEventBuilder::Build(mac_event, window.contentView);
+      input::WebMouseEventBuilder::Build(mac_event, window.contentView);
   EXPECT_EQ(blink::WebInputEvent::Type::kMouseDown, mouse_event.GetType());
   EXPECT_EQ(gfx::PointF(6, 9), mouse_event.PositionInScreen());
   EXPECT_EQ(blink::WebPointerProperties::PointerType::kMouse,

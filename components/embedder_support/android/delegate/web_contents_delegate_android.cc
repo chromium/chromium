@@ -287,7 +287,7 @@ void WebContentsDelegateAndroid::UpdateTargetURL(WebContents* source,
 
 bool WebContentsDelegateAndroid::HandleKeyboardEvent(
     WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   const JavaRef<jobject>& key_event = event.os_event;
   if (!key_event.is_null()) {
     JNIEnv* env = AttachCurrentThread();

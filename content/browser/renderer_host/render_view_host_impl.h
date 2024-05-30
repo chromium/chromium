@@ -347,7 +347,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   void RenderWidgetDidForwardMouseEvent(
       const blink::WebMouseEvent& mouse_event) override;
   bool MayRenderWidgetForwardKeyboardEvent(
-      const NativeWebKeyboardEvent& key_event) override;
+      const input::NativeWebKeyboardEvent& key_event) override;
   bool ShouldContributePriorityToProcess() override;
   void SetBackgroundOpaque(bool opaque) override;
   bool IsMainFrameActive() override;

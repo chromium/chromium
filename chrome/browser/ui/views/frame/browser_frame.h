@@ -24,7 +24,7 @@ class BrowserView;
 class NativeBrowserFrame;
 class SystemMenuModelBuilder;
 
-namespace content {
+namespace input {
 struct NativeWebKeyboardEvent;
 }
 
@@ -126,11 +126,11 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   // would be handled as a shortcut if the renderer chooses not to handle it.
   // Otherwise returns NOT_HANDLED.
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
-      const content::NativeWebKeyboardEvent& event);
+      const input::NativeWebKeyboardEvent& event);
 
   // Returns true if the |event| was handled by the platform implementation,
   // if the renderer did not process it.
-  bool HandleKeyboardEvent(const content::NativeWebKeyboardEvent& event);
+  bool HandleKeyboardEvent(const input::NativeWebKeyboardEvent& event);
 
   // Called when BrowserView creates all it's child views.
   void OnBrowserViewInitViewsComplete();

@@ -125,8 +125,7 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
       const std::vector<blink::mojom::DraggableRegionPtr>& regions) override;
   SkRegion* GetDraggableRegion() override;
   void UpdateShape(std::unique_ptr<ShapeRects> rects) override;
-  bool HandleKeyboardEvent(
-      const content::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(const input::NativeWebKeyboardEvent& event) override;
   bool IsFrameless() const override;
   bool HasFrameColor() const override;
   SkColor ActiveFrameColor() const override;

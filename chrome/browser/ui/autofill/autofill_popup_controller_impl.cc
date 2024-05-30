@@ -671,7 +671,7 @@ void AutofillPopupControllerImpl::KeyPressObserver::Observe(
       // Cannot bind HandleKeyPressEvent() directly because of its
       // return value.
       [](base::WeakPtr<AutofillPopupControllerImpl> weak_this,
-         const content::NativeWebKeyboardEvent& event) {
+         const input::NativeWebKeyboardEvent& event) {
         return weak_this && weak_this->HandleKeyPressEvent(event);
       },
       observer_->weak_ptr_factory_.GetWeakPtr());
@@ -761,7 +761,7 @@ void AutofillPopupControllerImpl::SetFilter(
 }
 
 bool AutofillPopupControllerImpl::HandleKeyPressEvent(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   if (sub_popup_controller_ &&
       sub_popup_controller_->HandleKeyPressEvent(event)) {
     return true;

@@ -55,6 +55,10 @@ namespace cc::slim {
 class SurfaceLayer;
 }
 
+namespace input {
+struct NativeWebKeyboardEvent;
+}  // namespace input
+
 namespace ui {
 class MotionEventAndroid;
 class OverscrollRefreshHandler;
@@ -71,7 +75,6 @@ class SynchronousCompositorClient;
 class TextSuggestionHostAndroid;
 class TouchSelectionControllerClientManagerAndroid;
 class WebContentsAccessibilityAndroid;
-struct NativeWebKeyboardEvent;
 struct ContextMenuParams;
 
 // -----------------------------------------------------------------------------
@@ -286,7 +289,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   // Returns the temporary background color of the underlaying document, for
   // example, returns black during screen rotation.
   std::optional<SkColor> GetCachedBackgroundColor();
-  void SendKeyEvent(const NativeWebKeyboardEvent& event);
+  void SendKeyEvent(const input::NativeWebKeyboardEvent& event);
   void SendMouseEvent(const blink::WebMouseEvent& event,
                       const ui::LatencyInfo& info);
   void SendMouseWheelEvent(const blink::WebMouseWheelEvent& event);

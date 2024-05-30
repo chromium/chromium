@@ -178,7 +178,7 @@ void NearbyShareDialogUI::BindInterface(
 
 bool NearbyShareDialogUI::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   if (!web_view_) {
     return false;
   }

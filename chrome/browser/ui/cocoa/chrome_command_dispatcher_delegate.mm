@@ -44,7 +44,7 @@
   // when the focused view is not a RenderWidgetHostView, which is why this
   // logic is necessary. Duplicating the logic adds a bit of redundant work,
   // but doesn't cause problems.
-  content::NativeWebKeyboardEvent keyboard_event(
+  input::NativeWebKeyboardEvent keyboard_event(
       (base::apple::OwnedNSEvent(event)));
   ui::Accelerator accelerator =
       ui::GetAcceleratorFromNativeWebKeyboardEvent(keyboard_event);

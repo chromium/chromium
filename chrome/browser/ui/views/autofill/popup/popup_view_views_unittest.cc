@@ -243,7 +243,7 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
       modifiers |= blink::WebInputEvent::Modifiers::kAltKey;
     }
 
-    content::NativeWebKeyboardEvent event(
+    input::NativeWebKeyboardEvent event(
         blink::WebKeyboardEvent::Type::kRawKeyDown, modifiers,
         ui::EventTimeForNow());
     event.windows_key_code = windows_key_code;
@@ -1744,9 +1744,9 @@ TEST_F(PopupViewViewsTest, SearchBar_PressedKeysPassedToController) {
                     CreateParamsForTestWidget(),
                     /*search_bar_config=*/{.enabled = true});
 
-  EXPECT_CALL(controller(), HandleKeyPressEvent(
-                                Field(&content::NativeWebKeyboardEvent::dom_key,
-                                      ui::DomKey::Key::ARROW_DOWN)));
+  EXPECT_CALL(controller(),
+              HandleKeyPressEvent(Field(&input::NativeWebKeyboardEvent::dom_key,
+                                        ui::DomKey::Key::ARROW_DOWN)));
 
   generator().PressAndReleaseKey(ui::VKEY_DOWN);
 }

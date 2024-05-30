@@ -1180,7 +1180,7 @@ bool LensOverlayController::HandleContextMenu(
 
 bool LensOverlayController::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, overlay_web_view_->GetFocusManager());
 }

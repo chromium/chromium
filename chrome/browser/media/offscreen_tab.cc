@@ -258,7 +258,7 @@ bool OffscreenTab::HandleContextMenu(
 
 content::KeyboardEventProcessingResult OffscreenTab::PreHandleKeyboardEvent(
     WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   DCHECK_EQ(offscreen_tab_web_contents_.get(), source);
   // Intercept and silence all keyboard events before they can be sent to the
   // renderer.

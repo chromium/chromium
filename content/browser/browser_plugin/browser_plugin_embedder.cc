@@ -44,7 +44,7 @@ BrowserPluginEmbedder::GetBrowserPluginGuestManager() const {
 }
 
 bool BrowserPluginEmbedder::HandleKeyboardEvent(
-    const NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   if ((event.windows_key_code != ui::VKEY_ESCAPE) ||
       (event.GetModifiers() & blink::WebInputEvent::kInputModifiers)) {
     return false;

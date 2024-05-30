@@ -16,7 +16,7 @@
 @class UITouch;
 @class UIView;
 
-namespace content {
+namespace input {
 
 class COMPONENT_EXPORT(INPUT) WebKeyboardEventBuilder {
  public:
@@ -38,6 +38,6 @@ class COMPONENT_EXPORT(INPUT) WebTouchEventBuilder {
       const std::optional<gfx::Vector2dF>& view_offset);
 };
 
-}  // namespace content
+}  // namespace input
 
 #endif  // COMPONENTS_INPUT_WEB_INPUT_EVENT_BUILDERS_IOS_H_

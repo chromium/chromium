@@ -233,7 +233,7 @@ base::Time SafeBrowsingUserInteractionObserver::GetCreationTimeForTesting()
   return creation_time_;
 }
 
-bool IsAllowedModifier(const content::NativeWebKeyboardEvent& event) {
+bool IsAllowedModifier(const input::NativeWebKeyboardEvent& event) {
   const int key_modifiers =
       event.GetModifiers() & blink::WebInputEvent::kKeyModifiers;
   // If the only modifier is shift, the user may be typing uppercase
@@ -251,7 +251,7 @@ bool IsAllowedModifier(const content::NativeWebKeyboardEvent& event) {
 }
 
 bool SafeBrowsingUserInteractionObserver::HandleKeyPress(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   // Allow non-character keys such as ESC. These can be used to exit fullscreen,
   // for example.
   if (!event.IsCharacterKey() || event.is_browser_shortcut ||

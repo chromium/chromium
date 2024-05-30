@@ -43,7 +43,7 @@ class SideSearchSideContentsHelper
     // Passthrough for the side content's WebContentsDelegate.
     virtual bool HandleKeyboardEvent(
         content::WebContents* source,
-        const content::NativeWebKeyboardEvent& event);
+        const input::NativeWebKeyboardEvent& event);
 
     // Passthrough for the side content's WebContentsDelegate.
     virtual content::WebContents* OpenURLFromTab(
@@ -86,9 +86,8 @@ class SideSearchSideContentsHelper
   bool CanDragEnter(content::WebContents* source,
                     const content::DropData& data,
                     blink::DragOperationsMask operations_allowed) override;
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
       const content::OpenURLParams& params,

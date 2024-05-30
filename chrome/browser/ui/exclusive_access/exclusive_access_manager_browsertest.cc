@@ -19,7 +19,7 @@ using ExclusiveAccessManagerTest = ExclusiveAccessTest;
 
 IN_PROC_BROWSER_TEST_F(ExclusiveAccessManagerTest, HandleKeyEvent_NonEscKey) {
   // Non-Esc key events should be ignored.
-  content::NativeWebKeyboardEvent event(
+  input::NativeWebKeyboardEvent event(
       blink::WebInputEvent::Type::kRawKeyDown,
       blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());

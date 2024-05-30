@@ -153,7 +153,7 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
       WebContents* source) override;
 #if BUILDFLAG(IS_MAC)
   bool HandleKeyboardEvent(WebContents* source,
-                           const NativeWebKeyboardEvent& event) override;
+                           const input::NativeWebKeyboardEvent& event) override;
 #endif
   bool DidAddMessageToConsole(WebContents* source,
                               blink::mojom::ConsoleMessageLevel log_level,

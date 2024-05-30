@@ -77,7 +77,7 @@ void SideSearchSideContentsHelper::DidOpenRequestedURL(
 
 bool SideSearchSideContentsHelper::Delegate::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return false;
 }
 
@@ -132,7 +132,7 @@ bool SideSearchSideContentsHelper::CanDragEnter(
 
 bool SideSearchSideContentsHelper::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   DCHECK(delegate_);
   return delegate_->HandleKeyboardEvent(source, event);
 }

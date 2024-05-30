@@ -167,12 +167,12 @@ void BrowserFrameAsh::GetWindowPlacement(
 }
 
 content::KeyboardEventProcessingResult BrowserFrameAsh::PreHandleKeyboardEvent(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return content::KeyboardEventProcessingResult::NOT_HANDLED;
 }
 
 bool BrowserFrameAsh::HandleKeyboardEvent(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return false;
 }
 

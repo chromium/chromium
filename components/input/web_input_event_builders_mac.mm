@@ -48,7 +48,7 @@
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
 
-namespace content {
+namespace input {
 
 namespace {
 
@@ -719,4 +719,4 @@ blink::WebTouchEvent WebTouchEventBuilder::Build(NSEvent* event, NSView* view) {
   return result;
 }
 
-}  // namespace content
+}  // namespace input

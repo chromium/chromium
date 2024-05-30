@@ -692,7 +692,7 @@ class InputHandler::InputInjector
     }
   }
 
-  void InjectKeyboardEvent(const NativeWebKeyboardEvent& keyboard_event,
+  void InjectKeyboardEvent(const input::NativeWebKeyboardEvent& keyboard_event,
                            Maybe<Array<std::string>> commands,
                            std::unique_ptr<DispatchKeyEventCallback> callback) {
     if (!widget_host_) {
@@ -1134,7 +1134,7 @@ void InputHandler::DispatchKeyEvent(
     return;
   }
 
-  NativeWebKeyboardEvent event(
+  input::NativeWebKeyboardEvent event(
       web_event_type,
       GetEventModifiers(modifiers.value_or(blink::WebInputEvent::kNoModifiers),
                         auto_repeat.value_or(false), is_keypad.value_or(false),

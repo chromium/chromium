@@ -30,7 +30,7 @@ class PopupViewViewsTestApi {
     return view_->CanShowDropdownInBounds(bounds);
   }
 
-  bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event) && {
+  bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event) && {
     return view_->HandleKeyPressEvent(event);
   }
 

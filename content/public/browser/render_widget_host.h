@@ -176,9 +176,9 @@ class CONTENT_EXPORT RenderWidgetHost {
   virtual void ForwardWheelEvent(
       const blink::WebMouseWheelEvent& wheel_event) = 0;
   virtual void ForwardKeyboardEvent(
-      const NativeWebKeyboardEvent& key_event) = 0;
+      const input::NativeWebKeyboardEvent& key_event) = 0;
   virtual void ForwardKeyboardEventWithLatencyInfo(
-      const NativeWebKeyboardEvent& key_event,
+      const input::NativeWebKeyboardEvent& key_event,
       const ui::LatencyInfo& latency_info) = 0;
   virtual void ForwardGestureEvent(
       const blink::WebGestureEvent& gesture_event) = 0;
@@ -205,7 +205,7 @@ class CONTENT_EXPORT RenderWidgetHost {
 
   // Add/remove a callback that can handle key presses without requiring focus.
   using KeyPressEventCallback =
-      base::RepeatingCallback<bool(const NativeWebKeyboardEvent&)>;
+      base::RepeatingCallback<bool(const input::NativeWebKeyboardEvent&)>;
   virtual void AddKeyPressEventCallback(
       const KeyPressEventCallback& callback) = 0;
   virtual void RemoveKeyPressEventCallback(

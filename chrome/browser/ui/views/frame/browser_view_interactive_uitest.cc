@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
             chrome::IsCommandEnabled(browser(), IDC_SHOW_BOOKMARK_BAR));
 
   // Return back to browser fullscreen mode.
-  content::NativeWebKeyboardEvent event(
+  input::NativeWebKeyboardEvent event(
       blink::WebInputEvent::Type::kKeyDown, blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   event.windows_key_code = ui::VKEY_ESCAPE;

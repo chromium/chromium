@@ -8,7 +8,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 
-namespace content {
+namespace input {
 
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(blink::WebInputEvent::Type type,
                                                int modifiers,
@@ -48,4 +48,4 @@ NativeWebKeyboardEvent& NativeWebKeyboardEvent::operator=(
 
 NativeWebKeyboardEvent::~NativeWebKeyboardEvent() = default;
 
-}  // namespace content
+}  // namespace input

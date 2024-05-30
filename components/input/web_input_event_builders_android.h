@@ -16,7 +16,7 @@
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/events/android/motion_event_android.h"
 
-namespace content {
+namespace input {
 
 class COMPONENT_EXPORT(INPUT) WebMouseEventBuilder {
  public:
@@ -54,6 +54,6 @@ class COMPONENT_EXPORT(INPUT) WebGestureEventBuilder {
                                       float y);
 };
 
-}  // namespace content
+}  // namespace input
 
 #endif  // COMPONENTS_INPUT_WEB_INPUT_EVENT_BUILDERS_ANDROID_H_

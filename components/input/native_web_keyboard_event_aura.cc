@@ -112,7 +112,7 @@ class TranslatedKeyEvent : public ui::KeyEvent {
 
 using blink::WebKeyboardEvent;
 
-namespace content {
+namespace input {
 
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(blink::WebInputEvent::Type type,
                                                int modifiers,
@@ -166,4 +166,4 @@ NativeWebKeyboardEvent::~NativeWebKeyboardEvent() {
   delete os_event;
 }
 
-}  // namespace content
+}  // namespace input

@@ -249,7 +249,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void SetActive(bool active) override;
   void ForwardMouseEvent(const blink::WebMouseEvent& mouse_event) override;
   void ForwardWheelEvent(const blink::WebMouseWheelEvent& wheel_event) override;
-  void ForwardKeyboardEvent(const NativeWebKeyboardEvent& key_event) override;
+  void ForwardKeyboardEvent(
+      const input::NativeWebKeyboardEvent& key_event) override;
   void ForwardGestureEvent(
       const blink::WebGestureEvent& gesture_event) override;
   RenderProcessHost* GetProcess() override;
@@ -543,7 +544,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // event in |key_event| should be updated. |update_event| is only used on
   // aura.
   void ForwardKeyboardEventWithCommands(
-      const NativeWebKeyboardEvent& key_event,
+      const input::NativeWebKeyboardEvent& key_event,
       const ui::LatencyInfo& latency,
       std::vector<blink::mojom::EditCommandPtr> commands,
       bool* update_event = nullptr);
@@ -551,7 +552,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Forwards the given message to the renderer. These are called by the view
   // when it has received a message.
   void ForwardKeyboardEventWithLatencyInfo(
-      const NativeWebKeyboardEvent& key_event,
+      const input::NativeWebKeyboardEvent& key_event,
       const ui::LatencyInfo& latency) override;
   void ForwardGestureEventWithLatencyInfo(
       const blink::WebGestureEvent& gesture_event,
@@ -1140,7 +1141,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // Give key press listeners a chance to handle this key press. This allow
   // widgets that don't have focus to still handle key presses.
-  bool KeyPressListenersHandleEvent(const NativeWebKeyboardEvent& event);
+  bool KeyPressListenersHandleEvent(const input::NativeWebKeyboardEvent& event);
 
   // InputRouterClient
   blink::mojom::InputEventResultState FilterInputEvent(

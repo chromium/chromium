@@ -12,7 +12,7 @@ namespace ui {
 
 // Returns |event| as a ui::Accelerator.
 ui::Accelerator GetAcceleratorFromNativeWebKeyboardEvent(
-    const content::NativeWebKeyboardEvent& event);
+    const input::NativeWebKeyboardEvent& event);
 
 }  // namespace ui
 

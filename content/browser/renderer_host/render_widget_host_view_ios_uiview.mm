@@ -190,7 +190,7 @@ static void* kObservingContext = &kObservingContext;
     }
   }
   for (UITouch* touch in touches) {
-    blink::WebTouchEvent webTouchEvent = content::WebTouchEventBuilder::Build(
+    blink::WebTouchEvent webTouchEvent = input::WebTouchEventBuilder::Build(
         blink::WebInputEvent::Type::kTouchStart, touch, event, self,
         _viewOffsetDuringTouchSequence);
     if (!_viewOffsetDuringTouchSequence) {
@@ -205,7 +205,7 @@ static void* kObservingContext = &kObservingContext;
 - (void)touchesEnded:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
   CHECK(_view);
   for (UITouch* touch in touches) {
-    _view->OnTouchEvent(content::WebTouchEventBuilder::Build(
+    _view->OnTouchEvent(input::WebTouchEventBuilder::Build(
         blink::WebInputEvent::Type::kTouchEnd, touch, event, self,
         _viewOffsetDuringTouchSequence));
   }
@@ -217,7 +217,7 @@ static void* kObservingContext = &kObservingContext;
 - (void)touchesMoved:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
   CHECK(_view);
   for (UITouch* touch in touches) {
-    _view->OnTouchEvent(content::WebTouchEventBuilder::Build(
+    _view->OnTouchEvent(input::WebTouchEventBuilder::Build(
         blink::WebInputEvent::Type::kTouchMove, touch, event, self,
         _viewOffsetDuringTouchSequence));
   }
@@ -226,7 +226,7 @@ static void* kObservingContext = &kObservingContext;
 - (void)touchesCancelled:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
   CHECK(_view);
   for (UITouch* touch in touches) {
-    _view->OnTouchEvent(content::WebTouchEventBuilder::Build(
+    _view->OnTouchEvent(input::WebTouchEventBuilder::Build(
         blink::WebInputEvent::Type::kTouchCancel, touch, event, self,
         _viewOffsetDuringTouchSequence));
   }

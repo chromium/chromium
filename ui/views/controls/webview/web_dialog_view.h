@@ -141,9 +141,8 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   // content::WebContentsDelegate:
   void SetContentsBounds(content::WebContents* source,
                          const gfx::Rect& bounds) override;
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
   void CloseContents(content::WebContents* source) override;
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,

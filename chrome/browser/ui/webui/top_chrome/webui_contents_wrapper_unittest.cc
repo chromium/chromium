@@ -175,7 +175,7 @@ TEST_F(WebUIContentsWrapperTest, EscapeKeyClosesHost) {
   MockHost host;
   contents_wrapper()->SetHost(host.GetWeakPtr());
 
-  content::NativeWebKeyboardEvent event(
+  input::NativeWebKeyboardEvent event(
       blink::WebInputEvent::Type::kRawKeyDown,
       blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());

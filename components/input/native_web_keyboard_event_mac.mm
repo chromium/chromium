@@ -10,7 +10,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 
-namespace content {
+namespace input {
 
 namespace {
 
@@ -129,4 +129,4 @@ NativeWebKeyboardEvent& NativeWebKeyboardEvent::operator=(
 
 NativeWebKeyboardEvent::~NativeWebKeyboardEvent() = default;
 
-}  // namespace content
+}  // namespace input

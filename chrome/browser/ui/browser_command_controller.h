@@ -23,7 +23,7 @@ class Browser;
 class BrowserWindow;
 class Profile;
 
-namespace content {
+namespace input {
 struct NativeWebKeyboardEvent;
 }
 
@@ -47,7 +47,7 @@ class BrowserCommandController : public CommandUpdater,
   // should not be sent to the renderer or |event| was triggered by a key that
   // we never want to send to the renderer.
   bool IsReservedCommandOrKey(int command_id,
-                              const content::NativeWebKeyboardEvent& event);
+                              const input::NativeWebKeyboardEvent& event);
 
   // Notifies the controller that state has changed in one of the following
   // areas and it should update command states.

@@ -138,7 +138,7 @@ void ShellNativeAppWindow::UpdateShape(std::unique_ptr<ShapeRects> rects) {
 }
 
 bool ShellNativeAppWindow::HandleKeyboardEvent(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   // No special handling. The WebContents will handle it.
   return false;
 }

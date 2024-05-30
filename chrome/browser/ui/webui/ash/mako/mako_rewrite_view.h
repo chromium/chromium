@@ -45,9 +45,8 @@ class MakoRewriteView : public WebUIBubbleDialogView,
   bool IsDraggingEnabled() override;
   bool IsResizingEnabled() override;
 
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
 
  private:
   gfx::Rect caret_bounds_;

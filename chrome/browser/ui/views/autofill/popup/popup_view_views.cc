@@ -277,7 +277,7 @@ void PopupViewViews::SetSelectedCell(std::optional<CellIndex> cell_index,
 }
 
 bool PopupViewViews::HandleKeyPressEvent(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   // If a subpopup has not received focus yet but a horizontal key press event
   // happens, this means the user wants to navigate from a selected cell in
   // the parent to the currently open subpopup. In this case, we select
@@ -380,7 +380,7 @@ bool PopupViewViews::HandleKeyPressEvent(
 }
 
 bool PopupViewViews::HandleKeyPressEventForCompose(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   CHECK_EQ(controller_->GetMainFillingProduct(), FillingProduct::kCompose);
   const bool kHasShiftModifier =
       (event.GetModifiers() & blink::WebInputEvent::kShiftKey);
@@ -751,8 +751,7 @@ bool PopupViewViews::SearchBarHandleKeyPressed(const ui::KeyEvent& event) {
   // Handling events in the controller (the delegate's handler is prioritized by
   // the search bar) enables keyboard navigation when the search bar input
   // field is focused.
-  return controller_->HandleKeyPressEvent(
-      content::NativeWebKeyboardEvent(event));
+  return controller_->HandleKeyPressEvent(input::NativeWebKeyboardEvent(event));
 }
 
 void PopupViewViews::SetSelectedCell(

@@ -1670,7 +1670,7 @@ void RenderWidgetHostImpl::ForwardTouchEventWithLatencyInfo(
 }
 
 void RenderWidgetHostImpl::ForwardKeyboardEvent(
-    const NativeWebKeyboardEvent& key_event) {
+    const input::NativeWebKeyboardEvent& key_event) {
   ui::LatencyInfo latency_info;
 
   if (key_event.GetType() == WebInputEvent::Type::kRawKeyDown ||
@@ -1681,14 +1681,14 @@ void RenderWidgetHostImpl::ForwardKeyboardEvent(
 }
 
 void RenderWidgetHostImpl::ForwardKeyboardEventWithLatencyInfo(
-    const NativeWebKeyboardEvent& key_event,
+    const input::NativeWebKeyboardEvent& key_event,
     const ui::LatencyInfo& latency) {
   ForwardKeyboardEventWithCommands(
       key_event, latency, std::vector<blink::mojom::EditCommandPtr>(), nullptr);
 }
 
 void RenderWidgetHostImpl::ForwardKeyboardEventWithCommands(
-    const NativeWebKeyboardEvent& key_event,
+    const input::NativeWebKeyboardEvent& key_event,
     const ui::LatencyInfo& latency,
     std::vector<blink::mojom::EditCommandPtr> commands,
     bool* update_event) {
@@ -3180,7 +3180,7 @@ void RenderWidgetHostImpl::RequestForceRedraw(int snapshot_id) {
 }
 
 bool RenderWidgetHostImpl::KeyPressListenersHandleEvent(
-    const NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   if (event.skip_if_unhandled ||
       event.GetType() != WebKeyboardEvent::Type::kRawKeyDown) {
     return false;

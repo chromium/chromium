@@ -69,10 +69,9 @@ class ExtensionViewHost
       bool is_outermost_main_frame_navigation) override;
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
       content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
+      const input::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
   bool PreHandleGestureEvent(content::WebContents* source,
                              const blink::WebGestureEvent& event) override;
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
@@ -111,13 +110,13 @@ class ExtensionViewHost
  private:
   // Returns whether the provided event is a raw escape keypress in a
   // mojom::ViewType::kExtensionPopup.
-  bool IsEscapeInPopup(const content::NativeWebKeyboardEvent& event) const;
+  bool IsEscapeInPopup(const input::NativeWebKeyboardEvent& event) const;
 
   // Handles keyboard events that were not handled by HandleKeyboardEvent().
   // Platform specific implementation may override this method to handle the
   // event in platform specific way. Returns whether the events are handled.
   bool UnhandledKeyboardEvent(content::WebContents* source,
-                              const content::NativeWebKeyboardEvent& event);
+                              const input::NativeWebKeyboardEvent& event);
 
   // The browser associated with the ExtensionView, if any. Note: since this
   // ExtensionViewHost could be associated with a browser even if `browser_` is

@@ -27,7 +27,7 @@ using blink::WebPointerProperties;
 using blink::WebTouchEvent;
 using blink::WebTouchPoint;
 
-namespace content {
+namespace input {
 
 namespace {
 
@@ -180,4 +180,4 @@ WebGestureEvent WebGestureEventBuilder::Build(WebInputEvent::Type type,
   return result;
 }
 
-}  // namespace content
+}  // namespace input

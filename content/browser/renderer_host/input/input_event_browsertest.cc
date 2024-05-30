@@ -148,7 +148,7 @@ class InputEventBrowserTest : public ContentBrowserTest {
   void SimulateSyntheticKeyDown(base::TimeTicks event_time) {
     DCHECK(URLLoaded());
 
-    content::NativeWebKeyboardEvent event(
+    input::NativeWebKeyboardEvent event(
         blink::WebKeyboardEvent::Type::kRawKeyDown,
         blink::WebInputEvent::kNoModifiers, event_time);
     event.windows_key_code = ui::VKEY_DOWN;

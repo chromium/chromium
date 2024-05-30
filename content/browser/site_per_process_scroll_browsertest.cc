@@ -828,7 +828,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
              "initial_y;")
           .ExtractDouble());
 
-  NativeWebKeyboardEvent key_event(
+  input::NativeWebKeyboardEvent key_event(
       blink::WebKeyboardEvent::Type::kRawKeyDown,
       blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());

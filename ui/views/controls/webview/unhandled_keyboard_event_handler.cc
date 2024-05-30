@@ -16,7 +16,7 @@ UnhandledKeyboardEventHandler::UnhandledKeyboardEventHandler() = default;
 UnhandledKeyboardEventHandler::~UnhandledKeyboardEventHandler() = default;
 
 bool UnhandledKeyboardEventHandler::HandleKeyboardEvent(
-    const content::NativeWebKeyboardEvent& event,
+    const input::NativeWebKeyboardEvent& event,
     FocusManager* focus_manager) {
   CHECK(focus_manager);
 

@@ -602,7 +602,7 @@ void RenderViewTest::TearDown() {
 }
 
 void RenderViewTest::SendNativeKeyEvent(
-    const NativeWebKeyboardEvent& key_event) {
+    const input::NativeWebKeyboardEvent& key_event) {
   SendWebKeyboardEvent(key_event);
 }
 

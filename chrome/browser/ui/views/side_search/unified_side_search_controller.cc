@@ -80,7 +80,7 @@ UnifiedSideSearchController::~UnifiedSideSearchController() {
 
 bool UnifiedSideSearchController::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   auto* browser_view = GetBrowserView();
   return browser_view ? unhandled_keyboard_event_handler_.HandleKeyboardEvent(
                             event, browser_view->GetFocusManager())

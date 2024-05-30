@@ -399,7 +399,7 @@ gfx::RectF PopupRowView::GetControlCellBounds() const {
 }
 
 bool PopupRowView::HandleKeyPressEvent(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   // Some cells may want to define their own behavior.
   CHECK(GetSelectedCell());
 

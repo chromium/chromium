@@ -68,7 +68,7 @@ class PopupRowWithButtonViewTest : public ChromeViewsTestBase {
   }
 
   void SimulateKeyPress(int windows_key_code) {
-    content::NativeWebKeyboardEvent event(
+    input::NativeWebKeyboardEvent event(
         blink::WebKeyboardEvent::Type::kRawKeyDown,
         blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
     event.windows_key_code = windows_key_code;

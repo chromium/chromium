@@ -16,7 +16,7 @@ namespace content::protocol {
 // Mac requires a native event to emulate key events. This method gives
 // only crude capabilities (see: crbug.com/667387).
 gfx::NativeEvent NativeInputEventBuilder::CreateEvent(
-    const NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   NSEventType type = NSEventTypeKeyUp;
   if (event.GetType() == blink::WebInputEvent::Type::kRawKeyDown ||
       event.GetType() == blink::WebInputEvent::Type::kKeyDown)
@@ -24,7 +24,8 @@ gfx::NativeEvent NativeInputEventBuilder::CreateEvent(
   const char16_t* textStartAddr = &event.text[0];
   const int textLength =
       std::find(textStartAddr,
-                textStartAddr + NativeWebKeyboardEvent::kTextLengthCap, '\0') -
+                textStartAddr + input::NativeWebKeyboardEvent::kTextLengthCap,
+                '\0') -
       textStartAddr;
   NSString* character =
       base::SysUTF16ToNSString(std::u16string(textStartAddr, textLength));

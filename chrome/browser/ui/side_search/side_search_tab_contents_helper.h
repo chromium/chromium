@@ -32,7 +32,7 @@ class SideSearchTabContentsHelper
    public:
     virtual bool HandleKeyboardEvent(
         content::WebContents* source,
-        const content::NativeWebKeyboardEvent& event) = 0;
+        const input::NativeWebKeyboardEvent& event) = 0;
 
     virtual content::WebContents* OpenURLFromTab(
         content::WebContents* source,
@@ -62,9 +62,8 @@ class SideSearchTabContentsHelper
   void NavigateInTabContents(const content::OpenURLParams& params) override;
   void LastSearchURLUpdated(const GURL& url) override;
   void SidePanelProcessGone() override;
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
       const content::OpenURLParams& params,

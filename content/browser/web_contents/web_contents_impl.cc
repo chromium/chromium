@@ -3849,7 +3849,7 @@ void WebContentsImpl::RenderWidgetWasResized(
 }
 
 KeyboardEventProcessingResult WebContentsImpl::PreHandleKeyboardEvent(
-    const NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   OPTIONAL_TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
                         "WebContentsImpl::PreHandleKeyboardEvent");
   auto* outermost_contents = GetOutermostWebContents();
@@ -3890,7 +3890,8 @@ bool WebContentsImpl::HandleMouseEvent(const blink::WebMouseEvent& event) {
   return false;
 }
 
-bool WebContentsImpl::HandleKeyboardEvent(const NativeWebKeyboardEvent& event) {
+bool WebContentsImpl::HandleKeyboardEvent(
+    const input::NativeWebKeyboardEvent& event) {
   OPTIONAL_TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
                         "WebContentsImpl::HandleKeyboardEvent");
   if (browser_plugin_embedder_ &&

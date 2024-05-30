@@ -4517,7 +4517,7 @@ class PasswordManagerPrerenderBrowserTest : public PasswordManagerBrowserTest {
         blink::WebInputEvent::kNoModifiers,
         blink::WebInputEvent::GetStaticTimeStampForTests());
 
-    content::NativeWebKeyboardEvent event(web_event, gfx::NativeView());
+    input::NativeWebKeyboardEvent event(web_event, gfx::NativeView());
     event.windows_key_code = key;
     render_frame_host->GetRenderWidgetHost()->ForwardKeyboardEvent(event);
   }

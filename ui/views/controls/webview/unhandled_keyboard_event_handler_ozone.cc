@@ -14,7 +14,7 @@ namespace views {
 
 // static
 bool UnhandledKeyboardEventHandler::HandleNativeKeyboardEvent(
-    const content::NativeWebKeyboardEvent& event,
+    const input::NativeWebKeyboardEvent& event,
     FocusManager* focus_manager) {
   auto& key_event = *event.os_event->AsKeyEvent();
   if (!event.skip_if_unhandled) {

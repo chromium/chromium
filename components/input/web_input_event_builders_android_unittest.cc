@@ -36,7 +36,7 @@ WebKeyboardEvent CreateFakeWebKeyboardEvent(JNIEnv* env,
   ScopedJavaLocalRef<jobject> keydown_event =
       ui::events::android::CreateKeyEvent(env, 0, key_code);
 
-  WebKeyboardEvent web_event = content::WebKeyboardEventBuilder::Build(
+  WebKeyboardEvent web_event = input::WebKeyboardEventBuilder::Build(
       env, keydown_event, WebKeyboardEvent::Type::kKeyDown, web_modifier,
       blink::WebInputEvent::GetStaticTimeStampForTests(), key_code, 0,
       unicode_character, false);
@@ -161,7 +161,7 @@ TEST(WebInputEventBuilderAndroidTest, LastChannelKey) {
 
 // Synthetic key event should produce DomKey::UNIDENTIFIED.
 TEST(WebInputEventBuilderAndroidTest, DomKeySyntheticEvent) {
-  WebKeyboardEvent web_event = content::WebKeyboardEventBuilder::Build(
+  WebKeyboardEvent web_event = input::WebKeyboardEventBuilder::Build(
       nullptr, nullptr, WebKeyboardEvent::Type::kKeyDown, 0,
       blink::WebInputEvent::GetStaticTimeStampForTests(), kCompositionKeyCode,
       0, 0, false);
@@ -212,7 +212,7 @@ TEST(WebInputEventBuilderAndroidTest, WebMouseEventCoordinates) {
       AMOTION_EVENT_ACTION_DOWN, 1, 0, -1, 0, 0, 1, AMETA_ALT_ON, raw_offset_x,
       raw_offset_y, false, &p0, nullptr);
 
-  WebMouseEvent web_event = content::WebMouseEventBuilder::Build(
+  WebMouseEvent web_event = input::WebMouseEventBuilder::Build(
       motion_event, blink::WebInputEvent::Type::kMouseDown, 1,
       ui::MotionEvent::BUTTON_PRIMARY);
   EXPECT_EQ(web_event.PositionInWidget().x(), p0.pos_x_pixels * kPixToDip);

@@ -20,9 +20,9 @@ namespace ui {
 class LatencyInfo;
 }  // namespace ui
 
-namespace content {
+namespace input {
 struct NativeWebKeyboardEvent;
-}  // namespace content
+}  // namespace input
 
 namespace remote_cocoa {
 
@@ -63,10 +63,10 @@ class RenderWidgetHostNSViewHostHelper {
   // Forward a keyboard event to the RenderWidgetHost that is currently handling
   // the key-down event.
   virtual void ForwardKeyboardEvent(
-      const content::NativeWebKeyboardEvent& key_event,
+      const input::NativeWebKeyboardEvent& key_event,
       const ui::LatencyInfo& latency_info) = 0;
   virtual void ForwardKeyboardEventWithCommands(
-      const content::NativeWebKeyboardEvent& key_event,
+      const input::NativeWebKeyboardEvent& key_event,
       const ui::LatencyInfo& latency_info,
       std::vector<blink::mojom::EditCommandPtr> commands) = 0;
 

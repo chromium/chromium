@@ -110,8 +110,7 @@ class PopupRowView : public views::View, public views::ViewObserver {
 
   // Attempts to process a key press `event`. Returns true if it did (and the
   // parent no longer needs to handle it).
-  virtual bool HandleKeyPressEvent(
-      const content::NativeWebKeyboardEvent& event);
+  virtual bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event);
 
   // Returns the view representing the content area of the row.
   PopupRowContentView& GetContentView() { return *content_view_; }

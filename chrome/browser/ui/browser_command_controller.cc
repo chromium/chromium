@@ -273,7 +273,7 @@ BrowserCommandController::~BrowserCommandController() {
 
 bool BrowserCommandController::IsReservedCommandOrKey(
     int command_id,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   // In Apps mode, no keys are reserved.
   if (browser_->is_type_app() || browser_->is_type_app_popup())
     return false;

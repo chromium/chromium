@@ -32,9 +32,12 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace content {
-struct NativeWebKeyboardEvent;
 class WebContents;
 }  // namespace content
+
+namespace input {
+struct NativeWebKeyboardEvent;
+}  // namespace input
 
 namespace password_manager {
 class PasswordManagerDriver;
@@ -186,7 +189,7 @@ class PasswordGenerationPopupControllerImpl
 
   void HideImpl();
 
-  bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
+  bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event);
 
   // Whether the elements of popup are selectable (true in generation state).
   bool IsSelectable() const;

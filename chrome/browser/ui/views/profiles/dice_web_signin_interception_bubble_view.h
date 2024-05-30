@@ -139,9 +139,8 @@ class DiceWebSigninInterceptionBubbleView
                       const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture,
                       bool* was_blocked) override;
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
 
   // Dimisses the bubbles and finishes the flow.
   void Dismiss(SigninInterceptionDismissReason reason);

@@ -343,7 +343,7 @@ void NativeAppWindowViews::UpdateShape(std::unique_ptr<ShapeRects> rects) {
 }
 
 bool NativeAppWindowViews::HandleKeyboardEvent(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, GetFocusManager());
 }

@@ -60,7 +60,7 @@ AvatarToolbarButton* GetAvatarButton(Browser* browser) {
 // the delegate web view.
 void SimulateEscapeKeyPress(content::WebContents* web_content) {
   // Create the escape key press event.
-  content::NativeWebKeyboardEvent event(
+  input::NativeWebKeyboardEvent event(
       blink::WebKeyboardEvent::Type::kRawKeyDown,
       blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now());
   event.dom_key = ui::DomKey::ESCAPE;

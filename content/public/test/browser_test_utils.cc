@@ -178,7 +178,7 @@ void BuildSimpleWebKeyEvent(blink::WebInputEvent::Type type,
                             ui::DomKey key,
                             ui::DomCode code,
                             ui::KeyboardCode key_code,
-                            NativeWebKeyboardEvent* event) {
+                            input::NativeWebKeyboardEvent* event) {
   event->dom_key = key;
   event->dom_code = static_cast<int>(code);
   event->native_key_code = ui::KeycodeConverter::DomCodeToNativeKeycode(code);
@@ -206,7 +206,7 @@ void InjectRawKeyEvent(WebContents* web_contents,
                        ui::DomCode code,
                        ui::KeyboardCode key_code,
                        int modifiers) {
-  NativeWebKeyboardEvent event(type, modifiers, base::TimeTicks::Now());
+  input::NativeWebKeyboardEvent event(type, modifiers, base::TimeTicks::Now());
   BuildSimpleWebKeyEvent(type, key, code, key_code, &event);
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);

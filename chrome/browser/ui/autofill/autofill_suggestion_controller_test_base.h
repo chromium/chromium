@@ -178,8 +178,8 @@ class AutofillSuggestionControllerTestBase
                                             AutoselectFirstSuggestion(false));
   }
 
-  content::NativeWebKeyboardEvent CreateKeyPressEvent(int windows_key_code) {
-    content::NativeWebKeyboardEvent event(
+  input::NativeWebKeyboardEvent CreateKeyPressEvent(int windows_key_code) {
+    input::NativeWebKeyboardEvent event(
         blink::WebInputEvent::Type::kRawKeyDown,
         blink::WebInputEvent::kNoModifiers,
         blink::WebInputEvent::GetStaticTimeStampForTests());

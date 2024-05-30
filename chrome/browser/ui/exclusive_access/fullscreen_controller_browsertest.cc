@@ -278,13 +278,13 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
                   ->keyboard_lock_controller()
                   ->IsKeyboardLockActive());
 
-  content::NativeWebKeyboardEvent key_down_event(
+  input::NativeWebKeyboardEvent key_down_event(
       blink::WebKeyboardEvent::Type::kRawKeyDown,
       blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   key_down_event.windows_key_code = ui::VKEY_ESCAPE;
 
-  content::NativeWebKeyboardEvent key_up_event(
+  input::NativeWebKeyboardEvent key_up_event(
       blink::WebKeyboardEvent::Type::kKeyUp, blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   key_up_event.windows_key_code = ui::VKEY_ESCAPE;
@@ -327,13 +327,13 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
                   ->keyboard_lock_controller()
                   ->IsKeyboardLockActive());
 
-  content::NativeWebKeyboardEvent key_down_event(
+  input::NativeWebKeyboardEvent key_down_event(
       blink::WebKeyboardEvent::Type::kRawKeyDown,
       blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   key_down_event.windows_key_code = ui::VKEY_ESCAPE;
 
-  content::NativeWebKeyboardEvent key_up_event(
+  input::NativeWebKeyboardEvent key_up_event(
       blink::WebKeyboardEvent::Type::kKeyUp, blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   key_up_event.windows_key_code = ui::VKEY_ESCAPE;

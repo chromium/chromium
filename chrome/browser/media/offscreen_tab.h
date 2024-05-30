@@ -97,7 +97,7 @@ class OffscreenTab final : public ProfileObserver,
                          const content::ContextMenuParams& params) final;
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
       content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) final;
+      const input::NativeWebKeyboardEvent& event) final;
   bool PreHandleGestureEvent(content::WebContents* source,
                              const blink::WebGestureEvent& event) final;
   bool CanDragEnter(content::WebContents* source,

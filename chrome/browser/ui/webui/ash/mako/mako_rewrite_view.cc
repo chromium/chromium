@@ -224,8 +224,8 @@ bool MakoRewriteView::IsResizingEnabled() {
 
 bool MakoRewriteView::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
-  if (event.GetType() == content::NativeWebKeyboardEvent::Type::kRawKeyDown &&
+    const input::NativeWebKeyboardEvent& event) {
+  if (event.GetType() == input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
       event.dom_key == ui::DomKey::ESCAPE) {
     return true;
   }

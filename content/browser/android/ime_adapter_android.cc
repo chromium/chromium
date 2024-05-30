@@ -48,7 +48,7 @@ namespace {
 // type, |modifiers|, |time_ms|, |key_code|, |unicode_char| is used to create
 // WebKeyboardEvent. |key_code| is also needed ad need to treat the enter key
 // as a key press of character \r.
-NativeWebKeyboardEvent NativeWebKeyboardEventFromKeyEvent(
+input::NativeWebKeyboardEvent NativeWebKeyboardEventFromKeyEvent(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& java_key_event,
     int type,
@@ -58,7 +58,7 @@ NativeWebKeyboardEvent NativeWebKeyboardEventFromKeyEvent(
     int scan_code,
     bool is_system_key,
     int unicode_char) {
-  return NativeWebKeyboardEvent(
+  return input::NativeWebKeyboardEvent(
       env, java_key_event, static_cast<blink::WebInputEvent::Type>(type),
       modifiers, base::TimeTicks() + base::Milliseconds(time_ms), key_code,
       scan_code, unicode_char, is_system_key);
@@ -300,7 +300,7 @@ bool ImeAdapterAndroid::SendKeyEvent(
     int unicode_char) {
   if (!rwhva_)
     return false;
-  NativeWebKeyboardEvent event = NativeWebKeyboardEventFromKeyEvent(
+  input::NativeWebKeyboardEvent event = NativeWebKeyboardEventFromKeyEvent(
       env, original_key_event, type, modifiers, time_ms, key_code, scan_code,
       is_system_key, unicode_char);
   rwhva_->SendKeyEvent(event);

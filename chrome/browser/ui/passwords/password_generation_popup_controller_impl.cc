@@ -178,7 +178,7 @@ PasswordGenerationPopupControllerImpl::GetWeakPtr() {
 }
 
 bool PasswordGenerationPopupControllerImpl::HandleKeyPressEvent(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   bool edit_password_enabled = false;
   bool nudge_password_enabled = false;
   // Password generation experiments are defined for Desktop only.
@@ -313,7 +313,7 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
     }
     key_press_handler_manager_->RegisterKeyPressHandler(base::BindRepeating(
         [](base::WeakPtr<PasswordGenerationPopupControllerImpl> weak_this,
-           const content::NativeWebKeyboardEvent& event) {
+           const input::NativeWebKeyboardEvent& event) {
           return weak_this && weak_this->HandleKeyPressEvent(event);
         },
         GetWeakPtr()));

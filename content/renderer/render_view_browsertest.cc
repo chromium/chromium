@@ -409,18 +409,18 @@ class RenderViewImplTest : public RenderViewTest {
 
     ui::KeyEvent keydown_event(ui::ET_KEY_PRESSED,
                                static_cast<ui::KeyboardCode>(key_code), flags);
-    NativeWebKeyboardEvent keydown_web_event(keydown_event);
+    input::NativeWebKeyboardEvent keydown_web_event(keydown_event);
     SendNativeKeyEvent(keydown_web_event);
 
     ui::KeyEvent char_event = ui::KeyEvent::FromCharacter(
         keydown_event.GetCharacter(), static_cast<ui::KeyboardCode>(key_code),
         ui::DomCode::NONE, flags);
-    NativeWebKeyboardEvent char_web_event(char_event);
+    input::NativeWebKeyboardEvent char_web_event(char_event);
     SendNativeKeyEvent(char_web_event);
 
     ui::KeyEvent keyup_event(ui::ET_KEY_RELEASED,
                              static_cast<ui::KeyboardCode>(key_code), flags);
-    NativeWebKeyboardEvent keyup_web_event(keyup_event);
+    input::NativeWebKeyboardEvent keyup_web_event(keyup_event);
     SendNativeKeyEvent(keyup_web_event);
 
     char16_t c = DomCodeToUsLayoutCharacter(
@@ -457,17 +457,17 @@ class RenderViewImplTest : public RenderViewTest {
     // WM_CHAR sends a composed Unicode character.
     CHROME_MSG msg1 = {NULL, WM_KEYDOWN, static_cast<WPARAM>(key_code), 0};
     ui::KeyEvent evt1(msg1);
-    NativeWebKeyboardEvent keydown_event(evt1);
+    input::NativeWebKeyboardEvent keydown_event(evt1);
     SendNativeKeyEvent(keydown_event);
 
     CHROME_MSG msg2 = {NULL, WM_CHAR, (*output)[0], 0};
     ui::KeyEvent evt2(msg2);
-    NativeWebKeyboardEvent char_event(evt2);
+    input::NativeWebKeyboardEvent char_event(evt2);
     SendNativeKeyEvent(char_event);
 
     CHROME_MSG msg3 = {NULL, WM_KEYUP, static_cast<WPARAM>(key_code), 0};
     ui::KeyEvent evt3(msg3);
-    NativeWebKeyboardEvent keyup_event(evt3);
+    input::NativeWebKeyboardEvent keyup_event(evt3);
     SendNativeKeyEvent(keyup_event);
 
     return length;

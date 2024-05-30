@@ -28,8 +28,8 @@ TEST(NativeWebKeyboardEventMac, CtrlCmdSpaceKeyDownRoundTrip) {
                             isARepeat:NO
                               keyCode:kVK_Space];
   blink::WebKeyboardEvent web_event =
-      content::WebKeyboardEventBuilder::Build(ns_event);
-  content::NativeWebKeyboardEvent native_event(web_event, gfx::NativeView());
+      input::WebKeyboardEventBuilder::Build(ns_event);
+  input::NativeWebKeyboardEvent native_event(web_event, gfx::NativeView());
 
   NSEvent* round_trip_ns_event = native_event.os_event.Get();
   EXPECT_EQ(round_trip_ns_event.type, ns_event.type);

@@ -77,7 +77,7 @@ class ExclusiveAccessManager {
   void OnTabClosing(content::WebContents* web_contents);
 
   // Called by Browser::PreHandleKeyboardEvent.
-  bool HandleUserKeyEvent(const content::NativeWebKeyboardEvent& event);
+  bool HandleUserKeyEvent(const input::NativeWebKeyboardEvent& event);
 
   // Called by Browser::ContentsMouseEvent.
   void OnUserInput();

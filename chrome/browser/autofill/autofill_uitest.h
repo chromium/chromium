@@ -135,7 +135,7 @@ class AutofillUiTest : public InProcessBrowserTest,
                               ui::DomCode code,
                               ui::KeyboardCode key_code);
 
-  bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
+  bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event);
 
   // DoNothingAndWait() violates an assertion if during the time an event
   // happens. Delayed events during DoNothingAndWait() may therefore cause

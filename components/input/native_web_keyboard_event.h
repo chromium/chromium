@@ -19,7 +19,7 @@ namespace ui {
 class KeyEvent;
 }
 
-namespace content {
+namespace input {
 
 // Owns a platform specific event; used to pass own and pass event through
 // platform independent code.
@@ -70,6 +70,6 @@ struct COMPONENT_EXPORT(INPUT) NativeWebKeyboardEvent :
   bool skip_if_unhandled;
 };
 
-}  // namespace content
+}  // namespace input
 
 #endif  // COMPONENTS_INPUT_NATIVE_WEB_KEYBOARD_EVENT_H_

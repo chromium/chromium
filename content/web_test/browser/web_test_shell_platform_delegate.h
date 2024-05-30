@@ -47,7 +47,7 @@ class WebTestShellPlatformDelegate : public ShellPlatformDelegate {
                                              WebContents* contents) override;
   bool HandleKeyboardEvent(Shell* shell,
                            WebContents* source,
-                           const NativeWebKeyboardEvent& event) override;
+                           const input::NativeWebKeyboardEvent& event) override;
 #endif
 
  private:

@@ -8,10 +8,13 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace content {
-struct NativeWebKeyboardEvent;
 class RenderFrameHost;
 class WebContents;
 }
+
+namespace input {
+struct NativeWebKeyboardEvent;
+}  // namespace input
 
 namespace gfx {
 class Size;
@@ -40,7 +43,7 @@ class ExtensionView {
   // Handles unhandled keyboard messages coming back from the renderer process.
   virtual bool HandleKeyboardEvent(
       content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) = 0;
+      const input::NativeWebKeyboardEvent& event) = 0;
 
   // Method for the ExtensionHost to notify that the extension page has loaded.
   virtual void OnLoaded() = 0;

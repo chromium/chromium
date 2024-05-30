@@ -39,9 +39,8 @@ class UnifiedSideSearchController
   ~UnifiedSideSearchController() override;
 
   // SideSearchTabContentsHelper::Delegate:
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
       const content::OpenURLParams& params,

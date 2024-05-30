@@ -641,7 +641,7 @@ SkColor ProfilePickerView::GetPreferredBackgroundColor() const {
 
 bool ProfilePickerView::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   // Forward the keyboard event to AcceleratorPressed() through the
   // FocusManager.
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(

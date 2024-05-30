@@ -204,7 +204,7 @@ void PopupRowWithButtonView::HandleKeyPressEventFocusOnContent() {
 }
 
 bool PopupRowWithButtonView::HandleKeyPressEvent(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   switch (event.windows_key_code) {
     // When pressing left arrow key (LTR):
     // 1. Set button as not focused.

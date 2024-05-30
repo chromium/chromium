@@ -89,8 +89,8 @@
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #endif
 
-using content::NativeWebKeyboardEvent;
 using content::WebContents;
+using input::NativeWebKeyboardEvent;
 using testing::_;
 using testing::Return;
 

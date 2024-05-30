@@ -54,7 +54,7 @@ bool UsesRemoteCocoaApplicationHost(Browser* browser) {
   return shim_manager && shim_manager->BrowserUsesRemoteCocoa(browser);
 }
 
-bool ShouldHandleKeyboardEvent(const content::NativeWebKeyboardEvent& event) {
+bool ShouldHandleKeyboardEvent(const input::NativeWebKeyboardEvent& event) {
   // |event.skip_if_unhandled| is true when it shouldn't be handled by the
   // browser if it was ignored by the renderer. See http://crbug.com/25000.
   if (event.skip_if_unhandled) {
@@ -62,8 +62,9 @@ bool ShouldHandleKeyboardEvent(const content::NativeWebKeyboardEvent& event) {
   }
 
   // Ignore synthesized keyboard events. See http://crbug.com/23221.
-  if (event.GetType() == content::NativeWebKeyboardEvent::Type::kChar)
+  if (event.GetType() == input::NativeWebKeyboardEvent::Type::kChar) {
     return false;
+  }
 
   // If the event was not synthesized it should have an os_event.
   DCHECK(event.os_event);
@@ -310,7 +311,7 @@ bool BrowserFrameMac::WillExecuteCommand(
     // https://crbug.com/836947.
     // The function IsReservedCommandOrKey does not examine its event argument
     // on macOS.
-    content::NativeWebKeyboardEvent dummy_event(
+    input::NativeWebKeyboardEvent dummy_event(
         blink::WebInputEvent::Type::kKeyDown, 0, base::TimeTicks());
     if (!browser->command_controller()->IsReservedCommandOrKey(command,
                                                                dummy_event)) {
@@ -453,7 +454,7 @@ void BrowserFrameMac::GetWindowPlacement(
 }
 
 content::KeyboardEventProcessingResult BrowserFrameMac::PreHandleKeyboardEvent(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   // On macOS, all keyEquivalents that use modifier keys are handled by
   // -[CommandDispatcher performKeyEquivalent:]. If this logic is being hit,
   // it means that the event was not handled, so we must return either
@@ -473,7 +474,7 @@ content::KeyboardEventProcessingResult BrowserFrameMac::PreHandleKeyboardEvent(
 }
 
 bool BrowserFrameMac::HandleKeyboardEvent(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   if (!ShouldHandleKeyboardEvent(event)) {
     return false;
   }

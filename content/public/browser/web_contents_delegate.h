@@ -69,7 +69,6 @@ class SiteInstance;
 struct ContextMenuParams;
 struct DropData;
 struct MediaPlayerWatchTime;
-struct NativeWebKeyboardEvent;
 struct Referrer;
 }  // namespace content
 
@@ -83,6 +82,10 @@ namespace gfx {
 class Rect;
 class Size;
 }
+
+namespace input {
+struct NativeWebKeyboardEvent;
+}  // namespace input
 
 namespace ui {
 class Event;
@@ -292,14 +295,14 @@ class CONTENT_EXPORT WebContentsDelegate {
   // See enum for description of return values.
   virtual KeyboardEventProcessingResult PreHandleKeyboardEvent(
       WebContents* source,
-      const NativeWebKeyboardEvent& event);
+      const input::NativeWebKeyboardEvent& event);
 
   // Allows delegates to handle unhandled keyboard messages coming back from
   // the renderer. Returns true if the event was handled, false otherwise. A
   // true value means no more processing should happen on the event. The default
   // return value is false
   virtual bool HandleKeyboardEvent(WebContents* source,
-                                   const NativeWebKeyboardEvent& event);
+                                   const input::NativeWebKeyboardEvent& event);
 
   // Allows delegates to handle gesture events before sending to the renderer.
   // Returns true if the |event| was handled and thus shouldn't be processed

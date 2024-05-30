@@ -211,7 +211,7 @@ void AutofillUiTest::SendKeyToPopup(content::RenderFrameHost* render_frame_host,
       render_frame_host->GetView()->GetRenderWidgetHost();
 
   // Route popup-targeted key presses via the render view host.
-  content::NativeWebKeyboardEvent event(
+  input::NativeWebKeyboardEvent event(
       blink::WebKeyboardEvent::Type::kRawKeyDown,
       blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
   event.windows_key_code = key_code;
@@ -246,7 +246,7 @@ testing::AssertionResult AutofillUiTest::SendKeyToPopupAndWait(
     base::TimeDelta timeout,
     base::Location location) {
   // Route popup-targeted key presses via the render view host.
-  content::NativeWebKeyboardEvent event(
+  input::NativeWebKeyboardEvent event(
       blink::WebKeyboardEvent::Type::kRawKeyDown,
       blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
   event.windows_key_code = key_code;
@@ -278,7 +278,7 @@ void AutofillUiTest::DoNothingAndWaitAndIgnoreEvents(base::TimeDelta timeout) {
 }
 
 bool AutofillUiTest::HandleKeyPressEvent(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return true;
 }
 

@@ -62,7 +62,7 @@ void SideSearchTabContentsHelper::LastSearchURLUpdated(const GURL& url) {
 
 bool SideSearchTabContentsHelper::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return delegate_ ? delegate_->HandleKeyboardEvent(source, event) : false;
 }
 

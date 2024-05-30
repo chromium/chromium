@@ -38,7 +38,7 @@ class AutofillPopupView {
   // swallowed. This allows views to handle events that depend on its internal
   // state, such as changing the selected Autofill cell.
   virtual bool HandleKeyPressEvent(
-      const content::NativeWebKeyboardEvent& event) = 0;
+      const input::NativeWebKeyboardEvent& event) = 0;
 
   // Refreshes the position and redraws popup when suggestions change. Returns
   // whether the resulting popup was shown (or had to hide, e.g. due to

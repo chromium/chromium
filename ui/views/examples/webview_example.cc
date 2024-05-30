@@ -34,7 +34,7 @@ void WebViewExample::CreateExampleView(View* container) {
 
 bool WebViewExample::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, webview_->GetFocusManager());
 }

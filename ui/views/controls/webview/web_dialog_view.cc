@@ -27,9 +27,9 @@
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
-using content::NativeWebKeyboardEvent;
 using content::WebContents;
 using content::WebUIMessageHandler;
+using input::NativeWebKeyboardEvent;
 using ui::WebDialogDelegate;
 using ui::WebDialogUIBase;
 using ui::WebDialogWebContentsDelegate;
@@ -376,8 +376,9 @@ void WebDialogView::SetContentsBounds(WebContents* source,
 // A simplified version of BrowserView::HandleKeyboardEvent().
 // We don't handle global keyboard shortcuts here, but that's fine since
 // they're all browser-specific. (This may change in the future.)
-bool WebDialogView::HandleKeyboardEvent(content::WebContents* source,
-                                        const NativeWebKeyboardEvent& event) {
+bool WebDialogView::HandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
   if (!event.os_event) {
     return false;
   }

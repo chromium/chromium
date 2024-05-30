@@ -1408,8 +1408,8 @@ void RenderWidgetHostViewAura::InsertChar(const ui::KeyEvent& event) {
       event.GetCharacter() != ui::VKEY_RETURN) {
     // Send a blink::WebInputEvent::Char event to |host_|.
     ForwardKeyboardEventWithLatencyInfo(
-        NativeWebKeyboardEvent(event, event.GetCharacter()), *event.latency(),
-        nullptr);
+        input::NativeWebKeyboardEvent(event, event.GetCharacter()),
+        *event.latency(), nullptr);
   }
 }
 
@@ -2739,7 +2739,7 @@ void RenderWidgetHostViewAura::DetachFromInputMethod(bool is_removed) {
 }
 
 void RenderWidgetHostViewAura::ForwardKeyboardEventWithLatencyInfo(
-    const NativeWebKeyboardEvent& event,
+    const input::NativeWebKeyboardEvent& event,
     const ui::LatencyInfo& latency,
     bool* update_event) {
   RenderWidgetHostImpl* target_host = host();

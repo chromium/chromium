@@ -124,9 +124,8 @@ class WebUILoginView : public views::View,
   // Overridden from content::WebContentsDelegate.
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
   bool TakeFocus(content::WebContents* source, bool reverse) override;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,

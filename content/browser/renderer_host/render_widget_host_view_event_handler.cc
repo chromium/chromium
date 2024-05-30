@@ -256,7 +256,7 @@ void RenderWidgetHostViewEventHandler::OnKeyEvent(ui::KeyEvent* event) {
   // we need to notify focus to Blink on ET_KEY_RELEASED for ESC key.
   SetKeyboardFocus();
   // We don't have to communicate with an input method here.
-  NativeWebKeyboardEvent webkit_event(*event);
+  input::NativeWebKeyboardEvent webkit_event(*event);
 
   // If the key has been reserved as part of the active KeyboardLock request,
   // then we want to mark it as such so it is not intercepted by the browser.

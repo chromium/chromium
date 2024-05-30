@@ -2262,7 +2262,7 @@ void RenderWidgetHostViewAndroid::UnlockPointer() {
 // Methods called from the host to the render
 
 void RenderWidgetHostViewAndroid::SendKeyEvent(
-    const NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   if (!host())
     return;
 
@@ -2616,8 +2616,8 @@ bool RenderWidgetHostViewAndroid::OnMouseEvent(
                       : 1;
   }
 
-  SendMouseEvent(WebMouseEventBuilder::Build(event, webMouseEventType,
-                                             click_count, action_button),
+  SendMouseEvent(input::WebMouseEventBuilder::Build(event, webMouseEventType,
+                                                    click_count, action_button),
                  ui::LatencyInfo());
 
   return true;
@@ -2625,7 +2625,7 @@ bool RenderWidgetHostViewAndroid::OnMouseEvent(
 
 bool RenderWidgetHostViewAndroid::OnMouseWheelEvent(
     const ui::MotionEventAndroid& event) {
-  SendMouseWheelEvent(WebMouseWheelEventBuilder::Build(event));
+  SendMouseWheelEvent(input::WebMouseWheelEventBuilder::Build(event));
   return true;
 }
 
@@ -2818,7 +2818,7 @@ void RenderWidgetHostViewAndroid::OnStylusSelectTap(base::TimeTicks time,
                                                     float y) {
   // Treat the stylus tap as a long press, activating either a word selection or
   // context menu depending on the targetted content.
-  blink::WebGestureEvent long_press = WebGestureEventBuilder::Build(
+  blink::WebGestureEvent long_press = input::WebGestureEventBuilder::Build(
       blink::WebInputEvent::Type::kGestureLongPress, time, x, y);
   SendGestureEvent(long_press);
 }

@@ -28,9 +28,8 @@ END_METADATA
 
 namespace {
 
-bool IsEscapeEvent(const content::NativeWebKeyboardEvent& event) {
-  return event.GetType() ==
-             content::NativeWebKeyboardEvent::Type::kRawKeyDown &&
+bool IsEscapeEvent(const input::NativeWebKeyboardEvent& event) {
+  return event.GetType() == input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
          event.windows_key_code == ui::VKEY_ESCAPE;
 }
 
@@ -91,7 +90,7 @@ content::WebContents* LensOverlaySidePanelWebView::OpenURLFromTab(
 
 bool LensOverlaySidePanelWebView::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   if (IsEscapeEvent(event)) {
     Browser* browser = BrowserFromWebContents(web_contents());
     if (browser) {

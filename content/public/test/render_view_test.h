@@ -139,7 +139,7 @@ class RenderViewTest : public testing::Test {
   void GoForward(const GURL& url, const blink::PageState& state);
 
   // Sends one native key event over IPC.
-  void SendNativeKeyEvent(const NativeWebKeyboardEvent& key_event);
+  void SendNativeKeyEvent(const input::NativeWebKeyboardEvent& key_event);
 
   // Send a raw keyboard event to the renderer.
   void SendWebKeyboardEvent(const blink::WebKeyboardEvent& key_event);

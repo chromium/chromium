@@ -44,7 +44,7 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
                                        const gfx::Size& new_size) {}
     virtual bool HandleKeyboardEvent(
         content::WebContents* source,
-        const content::NativeWebKeyboardEvent& event);
+        const input::NativeWebKeyboardEvent& event);
     virtual bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                                    const content::ContextMenuParams& params);
     virtual void RequestMediaAccessPermission(
@@ -81,10 +81,9 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
                              const gfx::Size& new_size) override;
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
       content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
+      const input::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
   std::unique_ptr<content::EyeDropper> OpenEyeDropper(

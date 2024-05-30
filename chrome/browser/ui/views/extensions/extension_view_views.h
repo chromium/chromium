@@ -69,9 +69,8 @@ class ExtensionViewViews : public views::WebView,
   void ResizeDueToAutoResize(content::WebContents* web_contents,
                              const gfx::Size& new_size) override;
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
   void OnLoaded() override;
 
   // views::WebView:

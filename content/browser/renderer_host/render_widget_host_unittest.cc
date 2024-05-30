@@ -440,7 +440,7 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
 
  protected:
   KeyboardEventProcessingResult PreHandleKeyboardEvent(
-      const NativeWebKeyboardEvent& event) override {
+      const input::NativeWebKeyboardEvent& event) override {
     prehandle_keyboard_event_type_ = event.GetType();
     prehandle_keyboard_event_called_ = true;
     if (prehandle_keyboard_event_)
@@ -450,7 +450,8 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
                : KeyboardEventProcessingResult::NOT_HANDLED;
   }
 
-  bool HandleKeyboardEvent(const NativeWebKeyboardEvent& event) override {
+  bool HandleKeyboardEvent(
+      const input::NativeWebKeyboardEvent& event) override {
     unhandled_keyboard_event_type_ = event.GetType();
     unhandled_keyboard_event_called_ = true;
     return true;
@@ -538,7 +539,7 @@ class RenderWidgetHostTest : public testing::Test {
 
   ~RenderWidgetHostTest() override = default;
 
-  bool KeyPressEventCallback(const NativeWebKeyboardEvent& /* event */) {
+  bool KeyPressEventCallback(const input::NativeWebKeyboardEvent& /* event */) {
     return handle_key_press_event_;
   }
   bool MouseEventCallback(const blink::WebMouseEvent& /* event */) {
@@ -674,10 +675,10 @@ class RenderWidgetHostTest : public testing::Test {
     return last_simulated_event_time_;
   }
 
-  NativeWebKeyboardEvent CreateNativeWebKeyboardEvent(
+  input::NativeWebKeyboardEvent CreateNativeWebKeyboardEvent(
       WebInputEvent::Type type) {
-    return NativeWebKeyboardEvent(type, /*modifiers=*/0,
-                                  GetNextSimulatedEventTime());
+    return input::NativeWebKeyboardEvent(type, /*modifiers=*/0,
+                                         GetNextSimulatedEventTime());
   }
 
   void SimulateKeyboardEvent(WebInputEvent::Type type) {
@@ -2353,7 +2354,7 @@ TEST_F(RenderWidgetHostTest, AddAndRemoveInputEventObserver) {
   host_->AddInputEventObserver(&observer);
 
   // Confirm OnInputEvent is triggered.
-  NativeWebKeyboardEvent native_event =
+  input::NativeWebKeyboardEvent native_event =
       CreateNativeWebKeyboardEvent(WebInputEvent::Type::kChar);
   ui::LatencyInfo latency_info = ui::LatencyInfo();
   ui::EventLatencyMetadata event_latency_metadata;
@@ -2384,7 +2385,7 @@ TEST_F(RenderWidgetHostTest, ScopedObservationWithInputEventObserver) {
   scoped_observation.Observe(host_.get());
 
   // Confirm OnInputEvent is triggered.
-  NativeWebKeyboardEvent native_event =
+  input::NativeWebKeyboardEvent native_event =
       CreateNativeWebKeyboardEvent(WebInputEvent::Type::kChar);
   ui::LatencyInfo latency_info = ui::LatencyInfo();
   ui::EventLatencyMetadata event_latency_metadata;

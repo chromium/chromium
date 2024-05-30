@@ -8,9 +8,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 
-namespace content {
+namespace input {
 struct NativeWebKeyboardEvent;
-}  // namespace content
+}  // namespace input
 
 namespace autofill {
 
@@ -86,7 +86,7 @@ class AutofillPopupController : public AutofillSuggestionController {
   // TODO(b/325246516): Change the event type to `ui::KeyEvent` as events can
   // come not only from blink, but from native UI too.
   virtual bool HandleKeyPressEvent(
-      const content::NativeWebKeyboardEvent& event) = 0;
+      const input::NativeWebKeyboardEvent& event) = 0;
 
   virtual base::WeakPtr<AutofillPopupController> GetWeakPtr() = 0;
 

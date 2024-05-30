@@ -14,7 +14,7 @@
 class BrowserFrame;
 enum class TabDragKind;
 
-namespace content {
+namespace input {
 struct NativeWebKeyboardEvent;
 }
 
@@ -45,11 +45,11 @@ class NativeBrowserFrame {
   // would be handled as a shortcut if the renderer chooses not to handle it.
   // Otherwise returns NOT_HANDLED.
   virtual content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
-      const content::NativeWebKeyboardEvent& event) = 0;
+      const input::NativeWebKeyboardEvent& event) = 0;
 
   // Returns true if the |event| was handled by the platform implementation.
   virtual bool HandleKeyboardEvent(
-      const content::NativeWebKeyboardEvent& event) = 0;
+      const input::NativeWebKeyboardEvent& event) = 0;
 
   // Returns true if there is a previously saved browser widget state that we
   // should restore. Returns false if we want to skip the given widget state

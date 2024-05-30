@@ -13,7 +13,7 @@
 namespace content {
 
 KeyboardEventProcessingResult RenderWidgetHostDelegate::PreHandleKeyboardEvent(
-    const NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return KeyboardEventProcessingResult::NOT_HANDLED;
 }
 
@@ -28,7 +28,7 @@ bool RenderWidgetHostDelegate::HandleWheelEvent(
 }
 
 bool RenderWidgetHostDelegate::HandleKeyboardEvent(
-    const NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return false;
 }
 

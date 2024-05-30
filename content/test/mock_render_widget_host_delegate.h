@@ -31,7 +31,9 @@ class MockRenderWidgetHostDelegate
 
   ~MockRenderWidgetHostDelegate() override;
 
-  const NativeWebKeyboardEvent* last_event() const { return last_event_.get(); }
+  const input::NativeWebKeyboardEvent* last_event() const {
+    return last_event_.get();
+  }
   void set_widget_host(RenderWidgetHostImpl* rwh) { rwh_ = rwh; }
   void set_is_fullscreen(bool is_fullscreen) { is_fullscreen_ = is_fullscreen; }
   void set_focused_widget(RenderWidgetHostImpl* focused_widget) {
@@ -49,7 +51,7 @@ class MockRenderWidgetHostDelegate
   void ResizeDueToAutoResize(RenderWidgetHostImpl* render_widget_host,
                              const gfx::Size& new_size) override;
   KeyboardEventProcessingResult PreHandleKeyboardEvent(
-      const NativeWebKeyboardEvent& event) override;
+      const input::NativeWebKeyboardEvent& event) override;
   void ExecuteEditCommand(const std::string& command,
                           const std::optional<std::u16string>& value) override;
   void Undo() override;
@@ -74,7 +76,7 @@ class MockRenderWidgetHostDelegate
   TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
 
  private:
-  std::unique_ptr<NativeWebKeyboardEvent> last_event_;
+  std::unique_ptr<input::NativeWebKeyboardEvent> last_event_;
   raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> rwh_ = nullptr;
   std::unique_ptr<RenderWidgetHostInputEventRouter> rwh_input_event_router_;
   mojo::Remote<gfx::mojom::DelegatedInkPointRenderer>

@@ -172,7 +172,7 @@ void ProfilePickerDiceSignInProvider::AddNewContents(
 
 bool ProfilePickerDiceSignInProvider::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return host_->GetWebContentsDelegate()->HandleKeyboardEvent(source, event);
 }
 

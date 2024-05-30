@@ -58,9 +58,9 @@
 namespace ash {
 namespace {
 
-using ::content::NativeWebKeyboardEvent;
 using ::content::RenderViewHost;
 using ::content::WebContents;
+using ::input::NativeWebKeyboardEvent;
 using ::web_modal::WebContentsModalDialogManager;
 
 // A class to change arrow key traversal behavior when it's alive.

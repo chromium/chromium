@@ -150,7 +150,7 @@ class PhishyInteractionTrackerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TriggerKeyEvent() {
-    content::NativeWebKeyboardEvent key_event(
+    input::NativeWebKeyboardEvent key_event(
         blink::WebKeyboardEvent::Type::kChar,
         blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now());
     phishy_interaction_tracker_->HandleInputEvent(key_event);

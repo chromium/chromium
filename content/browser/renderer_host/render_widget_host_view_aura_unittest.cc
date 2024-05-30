@@ -1584,7 +1584,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
                           ui::DomCodeToUsLayoutKeyboardCode(ui::DomCode::US_A),
                           ui::DomCode::US_A, ui::EF_NONE);
   view_->OnKeyEvent(&key_event1);
-  const NativeWebKeyboardEvent* event1 =
+  const input::NativeWebKeyboardEvent* event1 =
       render_widget_host_delegate()->last_event();
   ASSERT_FALSE(event1);
   // Run the runloop to ensure input messages are dispatched.  Otherwise the
@@ -1609,7 +1609,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
                            ui::DomCodeToUsLayoutKeyboardCode(dom_code),
                            dom_code, ui::EF_NONE);
     view_->OnKeyEvent(&key_event);
-    const NativeWebKeyboardEvent* event =
+    const input::NativeWebKeyboardEvent* event =
         render_widget_host_delegate()->last_event();
     ASSERT_TRUE(event) << "Failed for DomCode: "
                        << ui::KeycodeConverter::DomCodeToCodeString(dom_code);
@@ -1635,7 +1635,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
       ui::DomCodeToUsLayoutKeyboardCode(ui::DomCode::ESCAPE),
       ui::DomCode::ESCAPE, ui::EF_NONE);
   view_->OnKeyEvent(&key_event1);
-  const NativeWebKeyboardEvent* event1 =
+  const input::NativeWebKeyboardEvent* event1 =
       render_widget_host_delegate()->last_event();
   ASSERT_TRUE(event1);
   ASSERT_EQ(key_event1.key_code(), event1->windows_key_code);
@@ -1647,7 +1647,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
                           ui::DomCodeToUsLayoutKeyboardCode(ui::DomCode::US_B),
                           ui::DomCode::US_B, ui::EF_NONE);
   view_->OnKeyEvent(&key_event2);
-  const NativeWebKeyboardEvent* event2 =
+  const input::NativeWebKeyboardEvent* event2 =
       render_widget_host_delegate()->last_event();
   ASSERT_TRUE(event2);
   ASSERT_EQ(key_event2.key_code(), event2->windows_key_code);
@@ -1673,7 +1673,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
                            ui::DomCodeToUsLayoutKeyboardCode(dom_code),
                            dom_code, ui::EF_NONE);
     view_->OnKeyEvent(&key_event);
-    const NativeWebKeyboardEvent* event =
+    const input::NativeWebKeyboardEvent* event =
         render_widget_host_delegate()->last_event();
     ASSERT_FALSE(event) << "Failed for DomCode: "
                         << ui::KeycodeConverter::DomCodeToCodeString(dom_code);
@@ -1702,7 +1702,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
       ui::DomCodeToUsLayoutKeyboardCode(ui::DomCode::ESCAPE),
       ui::DomCode::ESCAPE, ui::EF_NONE);
   view_->OnKeyEvent(&esc_key_event);
-  const NativeWebKeyboardEvent* esc_event =
+  const input::NativeWebKeyboardEvent* esc_event =
       render_widget_host_delegate()->last_event();
   ASSERT_TRUE(esc_event);
   ASSERT_EQ(esc_key_event.key_code(), esc_event->windows_key_code);
@@ -1745,12 +1745,13 @@ TEST_F(RenderWidgetHostViewAuraTest,
                            ui::DomCodeToUsLayoutKeyboardCode(dom_code),
                            dom_code, ui::EF_NONE);
     parent_view_->OnKeyEvent(&key_event);
-    const NativeWebKeyboardEvent* parent_event = delegates_[0]->last_event();
+    const input::NativeWebKeyboardEvent* parent_event =
+        delegates_[0]->last_event();
     ASSERT_FALSE(parent_event)
         << "Failed for DomCode: "
         << ui::KeycodeConverter::DomCodeToCodeString(dom_code);
 
-    const NativeWebKeyboardEvent* child_event =
+    const input::NativeWebKeyboardEvent* child_event =
         render_widget_host_delegate()->last_event();
     ASSERT_TRUE(child_event)
         << "Failed for DomCode: "
@@ -5094,7 +5095,7 @@ TEST_F(RenderWidgetHostViewAuraTest, KeyEvent) {
                          ui::EF_NONE);
   view_->OnKeyEvent(&key_event);
 
-  const NativeWebKeyboardEvent* event = delegates_.back()->last_event();
+  const input::NativeWebKeyboardEvent* event = delegates_.back()->last_event();
   ASSERT_TRUE(event);
   EXPECT_EQ(key_event.key_code(), event->windows_key_code);
   EXPECT_EQ(ui::KeycodeConverter::DomCodeToNativeKeycode(key_event.code()),

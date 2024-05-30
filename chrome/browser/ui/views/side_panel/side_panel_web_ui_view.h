@@ -49,9 +49,8 @@ class SidePanelWebUIView : public views::WebView,
       gfx::Point point,
       std::unique_ptr<ui::MenuModel> menu_model) override;
   void HideCustomContextMenu() override;
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
 
  private:
   base::RepeatingClosure on_show_cb_;

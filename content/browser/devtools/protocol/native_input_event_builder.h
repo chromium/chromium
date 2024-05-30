@@ -13,11 +13,13 @@ namespace content::protocol {
 class NativeInputEventBuilder {
  public:
 #if BUILDFLAG(IS_APPLE)
-  static gfx::NativeEvent CreateEvent(const NativeWebKeyboardEvent& event);
+  static gfx::NativeEvent CreateEvent(
+      const input::NativeWebKeyboardEvent& event);
 #else
   // We only need this for Macs because they require an OS event to process
   // some keyboard events in browser (see: crbug.com/667387).
-  static gfx::NativeEvent CreateEvent(const NativeWebKeyboardEvent& event) {
+  static gfx::NativeEvent CreateEvent(
+      const input::NativeWebKeyboardEvent& event) {
     return nullptr;
   }
 #endif

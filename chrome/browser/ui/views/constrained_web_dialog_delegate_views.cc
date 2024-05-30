@@ -129,7 +129,7 @@ class WebDialogWebContentsDelegateViews
   // ui::WebDialogWebContentsDelegate:
   bool HandleKeyboardEvent(
       content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override {
+      const input::NativeWebKeyboardEvent& event) override {
     // Forward shortcut keys in dialog to our initiator's delegate.
     // http://crbug.com/104586
     if (!initiator_web_contents_)
@@ -219,7 +219,7 @@ class ConstrainedWebDialogDelegateViews
   // contents::WebContentsDelegate:
   bool HandleKeyboardEvent(
       content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override {
+      const input::NativeWebKeyboardEvent& event) override {
     return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
         event, view_->GetFocusManager());
   }
@@ -249,8 +249,8 @@ class ConstrainedWebDialogDelegateViews
   std::unique_ptr<WebDialogWebContentsDelegate> override_tab_delegate_;
 };
 
-using content::NativeWebKeyboardEvent;
 using content::WebContents;
+using input::NativeWebKeyboardEvent;
 using ui::WebDialogDelegate;
 using ui::WebDialogWebContentsDelegate;
 

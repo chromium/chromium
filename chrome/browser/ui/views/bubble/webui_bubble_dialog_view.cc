@@ -203,7 +203,7 @@ void WebUIBubbleDialogView::ResizeDueToAutoResize(content::WebContents* source,
 
 bool WebUIBubbleDialogView::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, GetFocusManager());
 }

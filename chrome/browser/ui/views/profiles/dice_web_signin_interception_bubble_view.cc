@@ -370,7 +370,7 @@ DiceWebSigninInterceptionBubbleView::GetBubbleWebContentsForTesting() {
 
 bool DiceWebSigninInterceptionBubbleView::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   if (event.dom_key == ui::DomKey::ESCAPE && ShouldUseFullDesign()) {
     Dismiss(SigninInterceptionDismissReason::kEscKey);
     return true;

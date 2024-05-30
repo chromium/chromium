@@ -627,7 +627,7 @@ void Shell::PrimaryPageChanged(Page& page) {
 }
 
 bool Shell::HandleKeyboardEvent(WebContents* source,
-                                const NativeWebKeyboardEvent& event) {
+                                const input::NativeWebKeyboardEvent& event) {
   return g_platform->HandleKeyboardEvent(this, source, event);
 }
 #endif

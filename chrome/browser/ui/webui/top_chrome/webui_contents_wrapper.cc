@@ -23,9 +23,8 @@ namespace {
 
 using MakeContentsResult = WebUIContentsPreloadManager::MakeContentsResult;
 
-bool IsEscapeEvent(const content::NativeWebKeyboardEvent& event) {
-  return event.GetType() ==
-             content::NativeWebKeyboardEvent::Type::kRawKeyDown &&
+bool IsEscapeEvent(const input::NativeWebKeyboardEvent& event) {
+  return event.GetType() == input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
          event.windows_key_code == ui::VKEY_ESCAPE;
 }
 
@@ -75,7 +74,7 @@ void EnableDraggableRegions(content::WebContents* web_contents) {
 
 bool WebUIContentsWrapper::Host::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return false;
 }
 
@@ -146,7 +145,7 @@ void WebUIContentsWrapper::ResizeDueToAutoResize(content::WebContents* source,
 content::KeyboardEventProcessingResult
 WebUIContentsWrapper::PreHandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   DCHECK_EQ(web_contents(), source);
   // Close the bubble if an escape event is detected. Handle this here to
   // prevent the renderer from capturing the event and not propagating it up.
@@ -159,7 +158,7 @@ WebUIContentsWrapper::PreHandleKeyboardEvent(
 
 bool WebUIContentsWrapper::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   DCHECK_EQ(web_contents(), source);
   return host_ ? host_->HandleKeyboardEvent(source, event) : false;
 }

@@ -293,7 +293,6 @@
 #endif
 
 using base::UserMetricsAction;
-using content::NativeWebKeyboardEvent;
 using content::NavigationController;
 using content::NavigationEntry;
 using content::OpenURLParams;
@@ -303,6 +302,7 @@ using content::SiteInstance;
 using content::WebContents;
 using custom_handlers::ProtocolHandler;
 using extensions::Extension;
+using input::NativeWebKeyboardEvent;
 using ui::WebDialogDelegate;
 using web_modal::WebContentsModalDialogManager;
 

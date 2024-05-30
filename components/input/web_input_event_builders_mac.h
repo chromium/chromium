@@ -15,7 +15,7 @@
 @class NSEvent;
 @class NSView;
 
-namespace content {
+namespace input {
 
 class COMPONENT_EXPORT(INPUT) WebKeyboardEventBuilder {
  public:
@@ -47,6 +47,6 @@ class COMPONENT_EXPORT(INPUT) WebTouchEventBuilder {
   static blink::WebTouchEvent Build(NSEvent* event, NSView* view);
 };
 
-}  // namespace content
+}  // namespace input
 
 #endif  // COMPONENTS_INPUT_WEB_INPUT_EVENT_BUILDERS_MAC_H_

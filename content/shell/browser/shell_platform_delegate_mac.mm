@@ -331,7 +331,7 @@ void ShellPlatformDelegate::DidNavigatePrimaryMainFramePostCommit(
 bool ShellPlatformDelegate::HandleKeyboardEvent(
     Shell* shell,
     WebContents* source,
-    const NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   if (event.skip_if_unhandled || Shell::ShouldHideToolbar()) {
     return false;
   }

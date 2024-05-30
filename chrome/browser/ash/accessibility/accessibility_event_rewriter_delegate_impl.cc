@@ -174,7 +174,7 @@ void AccessibilityEventRewriterDelegateImpl::OnUnhandledSpokenFeedbackEvent(
 
 bool AccessibilityEventRewriterDelegateImpl::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   OnUnhandledSpokenFeedbackEvent(event.os_event->Clone());
   return true;
 }

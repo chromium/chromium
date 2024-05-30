@@ -155,7 +155,7 @@ void ExclusiveAccessManager::OnTabClosing(WebContents* web_contents) {
 }
 
 bool ExclusiveAccessManager::HandleUserKeyEvent(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   if (event.windows_key_code != ui::VKEY_ESCAPE) {
     OnUserInput();
     return false;
@@ -163,7 +163,7 @@ bool ExclusiveAccessManager::HandleUserKeyEvent(
 
   if (base::FeatureList::IsEnabled(
           features::kPressAndHoldEscToExitBrowserFullscreen)) {
-    if (event.GetType() == content::NativeWebKeyboardEvent::Type::kKeyUp &&
+    if (event.GetType() == input::NativeWebKeyboardEvent::Type::kKeyUp &&
         esc_key_hold_timer_.IsRunning()) {
       esc_key_hold_timer_.Stop();
       show_exit_bubble_timer_.Stop();
@@ -171,7 +171,7 @@ bool ExclusiveAccessManager::HandleUserKeyEvent(
         controller->HandleUserReleasedEscapeEarly();
       }
     } else if (event.GetType() ==
-                   content::NativeWebKeyboardEvent::Type::kRawKeyDown &&
+                   input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
                !esc_key_hold_timer_.IsRunning()) {
       esc_key_hold_timer_.Start(
           FROM_HERE, kHoldEscapeTime,

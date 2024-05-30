@@ -83,7 +83,8 @@ void MockInputDispositionHandler::OnKeyboardEventAck(
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   VLOG(1) << __FUNCTION__ << " called!";
-  acked_key_event_ = std::make_unique<NativeWebKeyboardEvent>(event.event);
+  acked_key_event_ =
+      std::make_unique<input::NativeWebKeyboardEvent>(event.event);
   RecordAckCalled(event.event.GetType(), ack_result);
 }
 

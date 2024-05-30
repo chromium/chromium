@@ -18,6 +18,10 @@ namespace base {
 class TickClock;
 }  // namespace base
 
+namespace input {
+struct NativeWebKeyboardEvent;
+}  // namespace input
+
 namespace content {
 struct NativeWebKeyboardEvent;
 class WebContents;
@@ -57,7 +61,7 @@ class KeyboardLockController : public ExclusiveAccessControllerBase {
 
   // Allows for special handling for KeyDown/KeyUp events.  Returns true if the
   // event was handled by the KeyboardLockController.
-  bool HandleKeyEvent(const content::NativeWebKeyboardEvent& event);
+  bool HandleKeyEvent(const input::NativeWebKeyboardEvent& event);
 
  private:
   friend class ExclusiveAccessTest;

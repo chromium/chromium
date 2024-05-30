@@ -86,7 +86,7 @@ TEST_F(AutofillPopupControllerImplTest, EventsAreDelegatedToChildrenAndView) {
       client().popup_controller(manager()).OpenSubPopup(
           {0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));
 
-  content::NativeWebKeyboardEvent event = CreateKeyPressEvent(ui::VKEY_LEFT);
+  input::NativeWebKeyboardEvent event = CreateKeyPressEvent(ui::VKEY_LEFT);
   EXPECT_CALL(*client().sub_popup_view(), HandleKeyPressEvent)
       .WillOnce(Return(true));
   EXPECT_CALL(*client().popup_view(), HandleKeyPressEvent).Times(0);

@@ -119,7 +119,7 @@ class SafeBrowsingUserInteractionObserver
       bool is_main_frame,
       scoped_refptr<SafeBrowsingUIManager> ui_manager);
 
-  bool HandleKeyPress(const content::NativeWebKeyboardEvent& event);
+  bool HandleKeyPress(const input::NativeWebKeyboardEvent& event);
   bool HandleMouseEvent(const blink::WebMouseEvent& event);
 
   void ShowInterstitial(DelayedWarningEvent event);

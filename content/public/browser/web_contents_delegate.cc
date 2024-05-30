@@ -98,13 +98,13 @@ bool WebContentsDelegate::HandleContextMenu(RenderFrameHost& render_frame_host,
 
 KeyboardEventProcessingResult WebContentsDelegate::PreHandleKeyboardEvent(
     WebContents* source,
-    const NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return KeyboardEventProcessingResult::NOT_HANDLED;
 }
 
 bool WebContentsDelegate::HandleKeyboardEvent(
     WebContents* source,
-    const NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return false;
 }
 

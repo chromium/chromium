@@ -144,7 +144,7 @@ content::WebContents* AboutThisSiteSidePanelView::OpenURLFromTab(
 
 bool AboutThisSiteSidePanelView::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   // Redirect keyboard events to the main browser.
   if (auto* delegate = outer_delegate()) {
     return delegate->HandleKeyboardEvent(source, event);

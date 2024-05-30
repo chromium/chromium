@@ -628,7 +628,7 @@ bool WebViewGuest::HandleContextMenu(
 
 bool WebViewGuest::HandleKeyboardEvent(
     WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   if (HandleKeyboardShortcuts(event))
     return true;
 
@@ -1199,7 +1199,7 @@ void WebViewGuest::NavigateGuest(
 }
 
 bool WebViewGuest::HandleKeyboardShortcuts(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   // <webview> outside of Chrome Apps do not handle keyboard shortcuts.
   if (!GuestViewManager::FromBrowserContext(browser_context())
            ->IsOwnedByExtension(this)) {

@@ -53,19 +53,19 @@
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 
-using content::NativeWebKeyboardEvent;
-using content::RenderWidgetHostViewMacEditCommandHelper;
-using content::WebGestureEventBuilder;
-using content::WebMouseEventBuilder;
-using content::WebMouseWheelEventBuilder;
-using content::WebTouchEventBuilder;
+using blink::WebGestureEvent;
 using blink::WebInputEvent;
 using blink::WebMouseEvent;
 using blink::WebMouseWheelEvent;
-using blink::WebGestureEvent;
 using blink::WebTouchEvent;
-using remote_cocoa::mojom::RenderWidgetHostNSViewHost;
+using content::RenderWidgetHostViewMacEditCommandHelper;
+using input::NativeWebKeyboardEvent;
+using input::WebGestureEventBuilder;
+using input::WebMouseEventBuilder;
+using input::WebMouseWheelEventBuilder;
+using input::WebTouchEventBuilder;
 using remote_cocoa::RenderWidgetHostNSViewHostHelper;
+using remote_cocoa::mojom::RenderWidgetHostNSViewHost;
 
 namespace {
 
@@ -94,10 +94,10 @@ class DummyHostHelper : public RenderWidgetHostNSViewHostHelper {
   id GetRootBrowserAccessibilityElement() override { return nil; }
   id GetFocusedBrowserAccessibilityElement() override { return nil; }
   void SetAccessibilityWindow(NSWindow* window) override {}
-  void ForwardKeyboardEvent(const NativeWebKeyboardEvent& key_event,
+  void ForwardKeyboardEvent(const input::NativeWebKeyboardEvent& key_event,
                             const ui::LatencyInfo& latency_info) override {}
   void ForwardKeyboardEventWithCommands(
-      const NativeWebKeyboardEvent& key_event,
+      const input::NativeWebKeyboardEvent& key_event,
       const ui::LatencyInfo& latency_info,
       const std::vector<blink::mojom::EditCommandPtr> commands) override {}
   void RouteOrProcessMouseEvent(

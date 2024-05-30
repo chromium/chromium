@@ -177,7 +177,7 @@ void ExclusiveAccessTest::LostPointerLock() {
 }
 
 bool ExclusiveAccessTest::SendEscapeToExclusiveAccessManager(bool is_key_down) {
-  content::NativeWebKeyboardEvent event(
+  input::NativeWebKeyboardEvent event(
       is_key_down ? blink::WebInputEvent::Type::kRawKeyDown
                   : blink::WebInputEvent::Type::kKeyUp,
       blink::WebInputEvent::kNoModifiers,

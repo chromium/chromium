@@ -26,8 +26,8 @@ void MockRenderWidgetHostDelegate::ResizeDueToAutoResize(
 
 KeyboardEventProcessingResult
 MockRenderWidgetHostDelegate::PreHandleKeyboardEvent(
-    const NativeWebKeyboardEvent& event) {
-  last_event_ = std::make_unique<NativeWebKeyboardEvent>(event);
+    const input::NativeWebKeyboardEvent& event) {
+  last_event_ = std::make_unique<input::NativeWebKeyboardEvent>(event);
   return pre_handle_keyboard_event_result_;
 }
 

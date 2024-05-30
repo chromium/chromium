@@ -40,6 +40,10 @@ class Rect;
 class Size;
 }  // namespace gfx
 
+namespace input {
+struct NativeWebKeyboardEvent;
+}  // namespace input
+
 namespace ui {
 class Compositor;
 }  // namespace ui
@@ -54,7 +58,6 @@ class RenderViewHostDelegateView;
 class TextInputManager;
 class VisibleTimeRequestTrigger;
 enum class KeyboardEventProcessingResult;
-struct NativeWebKeyboardEvent;
 
 //
 // RenderWidgetHostDelegate
@@ -100,7 +103,7 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // event before sending it to the renderer. See enum for details on return
   // value.
   virtual KeyboardEventProcessingResult PreHandleKeyboardEvent(
-      const NativeWebKeyboardEvent& event);
+      const input::NativeWebKeyboardEvent& event);
 
   // Callback to inform the browser that the renderer did not process the
   // specified events. This gives an opportunity to the browser to process the
@@ -110,7 +113,7 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Callback to inform the browser that the renderer did not process the
   // specified events. This gives an opportunity to the browser to process the
   // event (used for keyboard shortcuts).
-  virtual bool HandleKeyboardEvent(const NativeWebKeyboardEvent& event);
+  virtual bool HandleKeyboardEvent(const input::NativeWebKeyboardEvent& event);
 
   // Callback to inform the browser that the renderer did not process the
   // specified mouse wheel event.  Returns true if the browser has handled

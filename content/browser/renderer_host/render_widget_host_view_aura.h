@@ -399,9 +399,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   // RenderWidgetHostViewEventHandler::Delegate:
   gfx::Rect ConvertRectToScreen(const gfx::Rect& rect) const override;
-  void ForwardKeyboardEventWithLatencyInfo(const NativeWebKeyboardEvent& event,
-                                           const ui::LatencyInfo& latency,
-                                           bool* update_event) override;
+  void ForwardKeyboardEventWithLatencyInfo(
+      const input::NativeWebKeyboardEvent& event,
+      const ui::LatencyInfo& latency,
+      bool* update_event) override;
   RenderFrameHostImpl* GetFocusedFrame() const;
   bool NeedsMouseCapture() override;
   void SetTooltipsEnabled(bool enable) override;

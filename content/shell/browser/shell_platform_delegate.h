@@ -137,7 +137,7 @@ class ShellPlatformDelegate {
 
   virtual bool HandleKeyboardEvent(Shell* shell,
                                    WebContents* source,
-                                   const NativeWebKeyboardEvent& event);
+                                   const input::NativeWebKeyboardEvent& event);
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

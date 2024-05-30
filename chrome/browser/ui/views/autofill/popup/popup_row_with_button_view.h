@@ -78,8 +78,7 @@ class PopupRowWithButtonView : public PopupRowView, public ButtonDelegate {
   void SetSelectedCell(std::optional<CellType> cell) override;
   // Handles key press events coming from the parent class. Returns false if
   // the parent should handle it.
-  bool HandleKeyPressEvent(
-      const content::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event) override;
 
  private:
   // Enumerates logical parts of the row. Used for accessibility and arrow

@@ -107,13 +107,13 @@ class RenderWidgetHostNSViewBridgeOwner
         ui::RemoteAccessibility::GetTokenForLocalElement(window));
   }
 
-  void ForwardKeyboardEvent(const content::NativeWebKeyboardEvent& key_event,
+  void ForwardKeyboardEvent(const input::NativeWebKeyboardEvent& key_event,
                             const ui::LatencyInfo& latency_info) override {
     ForwardKeyboardEventWithCommands(
         key_event, latency_info, std::vector<blink::mojom::EditCommandPtr>());
   }
   void ForwardKeyboardEventWithCommands(
-      const content::NativeWebKeyboardEvent& key_event,
+      const input::NativeWebKeyboardEvent& key_event,
       const ui::LatencyInfo& latency_info,
       std::vector<blink::mojom::EditCommandPtr> edit_commands) override {
     const blink::WebKeyboardEvent* web_event =

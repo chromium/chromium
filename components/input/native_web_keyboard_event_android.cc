@@ -9,7 +9,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/native_widget_types.h"
 
-namespace content {
+namespace input {
 
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(blink::WebInputEvent::Type type,
                                                int modifiers,
@@ -69,4 +69,4 @@ NativeWebKeyboardEvent& NativeWebKeyboardEvent::operator=(
 
 NativeWebKeyboardEvent::~NativeWebKeyboardEvent() {}
 
-}  // namespace content
+}  // namespace input
