@@ -227,6 +227,7 @@ android_library("web_contents_delegate_java") {
     "//base:base_java",
     "//build/android:build_java",
     "//content/public/android:content_java",
+    "//content/public/android:content_util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",

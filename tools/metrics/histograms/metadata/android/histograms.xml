@@ -4862,6 +4862,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.UIDialogShown" enum="AndroidDialogType"
+    expires_after="2024-12-31">
+  <owner>alexmitra@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Logs when an Android dialog is shown from either Chrome or WebView. Logs the
+    specific type of dialog which is being shown to the user.
+  </summary>
+</histogram>
+
 <histogram name="Android.Unfold.Latency" units="ms" expires_after="2023-09-30">
   <owner>amanvr@google.com</owner>
   <owner>woa-performance@google.com</owner>

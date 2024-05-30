@@ -59,6 +59,7 @@ import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
+import org.chromium.content_public.browser.util.DialogTypeRecorder;
 
 import java.lang.ref.WeakReference;
 import java.security.Principal;
@@ -714,6 +715,7 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
         try {
             new JsDialogHelper(res, jsDialogType, defaultValue, message, url)
                     .showDialog(activityContext);
+            DialogTypeRecorder.recordDialogType(DialogTypeRecorder.DialogType.JS_POPUP);
         } catch (WindowManager.BadTokenException e) {
             Log.w(
                     TAG,

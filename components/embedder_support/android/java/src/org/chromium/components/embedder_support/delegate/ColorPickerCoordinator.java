@@ -20,6 +20,7 @@ import android.graphics.Color;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.content_public.browser.util.DialogTypeRecorder;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -117,6 +118,7 @@ public class ColorPickerCoordinator {
                 mModel, mColorPickerDialogView, ColorPickerViewBinder::bind);
 
         mColorPickerDialogView.show();
+        DialogTypeRecorder.recordDialogType(DialogTypeRecorder.DialogType.COLOR_PICKER);
     }
 
     void close() {

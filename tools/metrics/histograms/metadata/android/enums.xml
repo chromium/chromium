@@ -97,6 +97,17 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Other Default"/>
 </enum>
 
+<enum name="AndroidDialogType">
+  <int value="0" label="Date Dialog"/>
+  <int value="1" label="Time Dialog"/>
+  <int value="2" label="Datetime Dialog"/>
+  <int value="3" label="Month Dialog"/>
+  <int value="4" label="Week Dialog"/>
+  <int value="5" label="Color Picker Dialog"/>
+  <int value="6" label="Select Dialog"/>
+  <int value="7" label="JavaScript Dialog"/>
+</enum>
+
 <enum name="AndroidDownloadFilterType">
   <int value="0" label="All"/>
   <int value="1" label="Page"/>

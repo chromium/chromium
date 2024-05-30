@@ -149,6 +149,7 @@ android_library("content_full_java") {
   deps = [
     ":content_java_resources",
     ":content_main_dex_java",
+    ":content_util_java",
     "$google_play_services_package:google_play_services_auth_api_phone_java",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
@@ -429,6 +430,16 @@ android_library("identity_credentials_public_impl_java") {
   deps = [
     ":identity_credentials_java",
     "//base:base_java",
+  ]
+}
+
+android_library("content_util_java") {
+  deps = [
+    "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+  sources = [
+    "java/src/org/chromium/content_public/browser/util/DialogTypeRecorder.java",
   ]
 }
 

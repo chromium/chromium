@@ -22,6 +22,7 @@ import org.chromium.base.Log;
 import org.chromium.content.R;
 import org.chromium.content.browser.picker.DateTimePickerDialog.OnDateTimeSetListener;
 import org.chromium.content.browser.picker.MultiFieldTimePickerDialog.OnMultiFieldTimeSetListener;
+import org.chromium.content_public.browser.util.DialogTypeRecorder;
 import org.chromium.ui.base.ime.TextInputType;
 
 import java.util.Arrays;
@@ -104,6 +105,7 @@ public class InputDialogContainer {
                     min,
                     max,
                     step);
+            DialogTypeRecorder.recordDialogType(DialogTypeRecorder.DialogType.DATE);
         } else if (dialogType == TextInputType.TIME) {
             showPickerDialog(
                     dialogType,
@@ -118,6 +120,7 @@ public class InputDialogContainer {
                     min,
                     max,
                     step);
+            DialogTypeRecorder.recordDialogType(DialogTypeRecorder.DialogType.TIME);
         } else if (dialogType == TextInputType.DATE_TIME
                 || dialogType == TextInputType.DATE_TIME_LOCAL) {
             showPickerDialog(
@@ -133,6 +136,7 @@ public class InputDialogContainer {
                     min,
                     max,
                     step);
+            DialogTypeRecorder.recordDialogType(DialogTypeRecorder.DialogType.DATETIME);
         } else if (dialogType == TextInputType.MONTH) {
             showPickerDialog(
                     dialogType,
@@ -147,10 +151,12 @@ public class InputDialogContainer {
                     min,
                     max,
                     step);
+            DialogTypeRecorder.recordDialogType(DialogTypeRecorder.DialogType.MONTH);
         } else if (dialogType == TextInputType.WEEK) {
             int year = WeekPicker.getISOWeekYearForDate(cal);
             int week = WeekPicker.getWeekForDate(cal);
             showPickerDialog(dialogType, year, 0, 0, 0, 0, 0, 0, week, min, max, step);
+            DialogTypeRecorder.recordDialogType(DialogTypeRecorder.DialogType.WEEK);
         }
     }
 

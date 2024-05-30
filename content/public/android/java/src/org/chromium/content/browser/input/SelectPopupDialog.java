@@ -17,6 +17,7 @@ import android.widget.ListView;
 
 import org.chromium.base.Callback;
 import org.chromium.content.R;
+import org.chromium.content_public.browser.util.DialogTypeRecorder;
 import org.chromium.ui.widget.UiWidgetFactory;
 
 import java.util.List;
@@ -153,6 +154,7 @@ public class SelectPopupDialog implements SelectPopup.Ui {
     public void show() {
         try {
             mListBoxPopup.show();
+            DialogTypeRecorder.recordDialogType(DialogTypeRecorder.DialogType.SELECT_ELEMENT);
         } catch (WindowManager.BadTokenException e) {
             notifySelection(null);
         }
