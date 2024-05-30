@@ -51,6 +51,9 @@
     "fuchsia-x64-cast-receiver-dbg": "ci/fuchsia-x64-cast-receiver-dbg/gn-args.json",
     "fuchsia-x64-cast-receiver-rel": "ci/fuchsia-x64-cast-receiver-rel/gn-args.json"
   },
+  "chromium.fuzz": {
+    "Libfuzzer Upload Windows ASan": "ci/Libfuzzer Upload Windows ASan/gn-args.json"
+  },
   "chromium.gpu": {
     "Android Release (Nexus 5X)": "ci/Android Release (Nexus 5X)/gn-args.json",
     "GPU Mac Builder": "ci/GPU Mac Builder/gn-args.json",
