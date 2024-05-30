@@ -3737,6 +3737,14 @@ const FeatureEntry::Choice kAccountBookmarksAndReadingListBehindOptInChoices[] =
 
 const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
     {"Default", "", ""},
+    {"Disabled", "disable-features",
+     "ReplaceSyncPromosWithSignInPromos,"
+     "ReadingListEnableSyncTransportModeUponSignIn,"
+     "SyncEnableContactInfoDataTypeInTransportMode,"
+     "SyncEnableWalletOfferInTransportMode,"
+     "EnablePasswordsAccountStorageForNonSyncingUsers,"
+     "HideSettingsSignInPromo,"
+     "FeedBottomSyncStringRemoval"},
     {"Base only", "enable-features", "ReplaceSyncPromosWithSignInPromos"},
     {"Everything (bookmarks, reading list, etc)", "enable-features",
      "ReplaceSyncPromosWithSignInPromos,"
@@ -3753,7 +3761,8 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
      "EnterprisePolicyOnSignin,"
      "MinorModeRestrictionsForHistorySyncOptIn,"
      "HideSettingsSignInPromo,"
-     "FeedBottomSyncStringRemoval"},
+     "FeedBottomSyncStringRemoval,"
+     "SeedAccountsRevamp"},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 

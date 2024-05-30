@@ -18320,6 +18320,7 @@ from previous Chrome versions.
   <int value="-1236065190" label="HardwareMediaKeyHandling:disabled"/>
   <int value="-1235772843" label="WebAppSystemMediaControls:enabled"/>
   <int value="-1235586511" label="enable-datasaver-prompt"/>
+  <int value="-1235516826" label="disable-features"/>
   <int value="-1235356380" label="UseOutOfProcessVideoDecoding:disabled"/>
   <int value="-1235021573" label="ImeOptionsInSettings:disabled"/>
   <int value="-1234740672" label="UsePdfCompositorServiceForPrint:disabled"/>
