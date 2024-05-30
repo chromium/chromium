@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 
 import java.util.HashSet;
 import java.util.List;
@@ -93,9 +92,8 @@ public class TabGroupVisualDataManager {
                     @Override
                     public void willMergeTabToGroup(Tab movedTab, int newRootId) {
                         TabGroupModelFilter filter = filterFromTab(movedTab);
-                        String sourceGroupTitle =
-                                TabGroupTitleUtils.getTabGroupTitle(movedTab.getRootId());
-                        String targetGroupTitle = TabGroupTitleUtils.getTabGroupTitle(newRootId);
+                        String sourceGroupTitle = filter.getTabGroupTitle(movedTab.getRootId());
+                        String targetGroupTitle = filter.getTabGroupTitle(newRootId);
                         // If the target group has no title but the source group has a title,
                         // handover the stored title to the group after merge.
                         if (sourceGroupTitle != null && targetGroupTitle == null) {
@@ -121,13 +119,13 @@ public class TabGroupVisualDataManager {
 
                     @Override
                     public void willMoveTabOutOfGroup(Tab movedTab, int newRootId) {
+                        TabGroupModelFilter filter = filterFromTab(movedTab);
                         int rootId = movedTab.getRootId();
-                        String title = TabGroupTitleUtils.getTabGroupTitle(rootId);
+                        String title = filter.getTabGroupTitle(rootId);
 
                         // If the group size is 2, i.e. the group becomes a single tab after
                         // ungroup, delete the stored visual data. When tab groups of size 1 are
                         // supported this behavior is no longer valid.
-                        TabGroupModelFilter filter = filterFromTab(movedTab);
                         int sizeThreshold =
                                 ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled() ? 1 : 2;
                         boolean shouldDeleteVisualData =
@@ -169,7 +167,7 @@ public class TabGroupVisualDataManager {
     /** Overwrites the tab group metadata at the new id with the data from the old id. */
     public static void moveTabGroupMetadata(
             TabGroupModelFilter filter, int oldRootId, int newRootId) {
-        String title = TabGroupTitleUtils.getTabGroupTitle(oldRootId);
+        String title = filter.getTabGroupTitle(oldRootId);
         if (title != null) {
             filter.setTabGroupTitle(newRootId, title);
             filter.deleteTabGroupTitle(oldRootId);

@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
@@ -93,7 +92,7 @@ public class HistoricalTabModelObserver implements TabModelObserver {
                 continue;
             }
             // null title for default title is handled in HistoricalTabSaver.
-            String title = TabGroupTitleUtils.getTabGroupTitle(rootId);
+            String title = mTabGroupModelFilter.getTabGroupTitle(rootId);
             // Give a tab group the first color in the color list as a placeholder.
             @TabGroupColorId int color = TabGroupColorId.GREY;
             if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {

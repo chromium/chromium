@@ -16,7 +16,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.annotation.Nullable;
 
@@ -60,14 +59,12 @@ import java.util.Set;
     ChromeFeatureList.TAB_GROUP_PARITY_ANDROID
 })
 public class HistoricalTabModelObserverUnitTest {
-    private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
     private static final int INVALID_COLOR_ID = -1;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public TestRule mFeatureProcessor = new Features.JUnitProcessor();
 
     private Context mContext;
-    @Mock private SharedPreferences mSharedPreferencesTitle;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
     @Mock private Profile mProfile;
@@ -87,8 +84,6 @@ public class HistoricalTabModelObserverUnitTest {
         verify(mTabGroupModelFilter).addObserver(mObserver);
 
         mContext = spy(ContextUtils.getApplicationContext());
-        when(mContext.getSharedPreferences(TAB_GROUP_TITLES_FILE_NAME, Context.MODE_PRIVATE))
-                .thenReturn(mSharedPreferencesTitle);
         ContextUtils.initApplicationContextForTests(mContext);
     }
 
@@ -100,7 +95,7 @@ public class HistoricalTabModelObserverUnitTest {
 
     @Test
     public void testEmpty() {
-        mObserver.onFinishingMultipleTabClosure(new ArrayList<Tab>(), /* canRestore= */ true);
+        mObserver.onFinishingMultipleTabClosure(new ArrayList<>(), /* canRestore= */ true);
 
         verifyNoMoreInteractions(mHistoricalTabSaver);
     }
@@ -506,7 +501,7 @@ public class HistoricalTabModelObserverUnitTest {
         assert tabList.length != 0;
 
         final int rootId = tabList[0].getId();
-        when(mSharedPreferencesTitle.getString(String.valueOf(rootId), null)).thenReturn(title);
+        when(mTabGroupModelFilter.getTabGroupTitle(rootId)).thenReturn(title);
         when(mTabGroupModelFilter.getOrCreateTabGroupColor(rootId)).thenReturn(color);
         when(mTabGroupModelFilter.getRelatedTabCountForRootId(rootId)).thenReturn(tabList.length);
         when(mTabGroupModelFilter.tabGroupExistsForRootId(rootId)).thenReturn(true);

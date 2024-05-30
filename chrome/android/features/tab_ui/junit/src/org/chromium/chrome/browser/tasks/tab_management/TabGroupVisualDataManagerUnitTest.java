@@ -15,7 +15,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.annotation.Nullable;
 
@@ -63,9 +62,6 @@ import java.util.Set;
 public class TabGroupVisualDataManagerUnitTest {
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
-    private static final String TAB_GROUP_COLORS_FILE_NAME = "tab_group_colors";
-
     private static final String TAB1_TITLE = "Tab1";
     private static final String TAB2_TITLE = "Tab2";
     private static final String TAB3_TITLE = "Tab3";
@@ -87,7 +83,6 @@ public class TabGroupVisualDataManagerUnitTest {
     @Mock private TabGroupModelFilter mIncognitoTabGroupModelFilter;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModelFilterProvider mTabModelFilterProvider;
-    @Mock private SharedPreferences mSharedPreferencesTitle;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
 
@@ -135,10 +130,6 @@ public class TabGroupVisualDataManagerUnitTest {
                 .addTabGroupObserver(mIncognitoTabGroupModelFilterObserverCaptor.capture());
 
         mTabGroupVisualDataManager = new TabGroupVisualDataManager(mTabModelSelector);
-
-        doReturn(mSharedPreferencesTitle)
-                .when(mContext)
-                .getSharedPreferences(TAB_GROUP_TITLES_FILE_NAME, Context.MODE_PRIVATE);
 
         ContextUtils.initApplicationContextForTests(mContext);
     }
@@ -296,11 +287,8 @@ public class TabGroupVisualDataManagerUnitTest {
 
     @Test
     public void tabMergeIntoGroup_NotDeleteStoredTitle() {
-        // Mock that TITLE1, TITLE2 and COLOR1_ID, COLOR2_ID are associated with the groups.
-        when(mSharedPreferencesTitle.getString(String.valueOf(TAB1_ID), null))
-                .thenReturn(CUSTOMIZED_TITLE1);
-        when(mSharedPreferencesTitle.getString(String.valueOf(TAB3_ID), null))
-                .thenReturn(CUSTOMIZED_TITLE2);
+        when(mTabGroupModelFilter.getTabGroupTitle(TAB1_ID)).thenReturn(CUSTOMIZED_TITLE1);
+        when(mTabGroupModelFilter.getTabGroupTitle(TAB3_ID)).thenReturn(CUSTOMIZED_TITLE2);
         when(mTabGroupModelFilter.getTabGroupColor(TAB1_ID)).thenReturn(COLOR1_ID);
         when(mTabGroupModelFilter.getTabGroupColor(TAB3_ID)).thenReturn(COLOR2_ID);
 
@@ -321,10 +309,8 @@ public class TabGroupVisualDataManagerUnitTest {
 
     @Test
     public void tabMergeIntoGroup_HandOverStoredTitle() {
-        // Mock that TITLE1 and COLOR1_ID are associated with the group of TAB1_ID.
-        when(mSharedPreferencesTitle.getString(String.valueOf(TAB1_ID), null))
-                .thenReturn(CUSTOMIZED_TITLE1);
-        when(mSharedPreferencesTitle.getString(String.valueOf(TAB3_ID), null)).thenReturn(null);
+        when(mTabGroupModelFilter.getTabGroupTitle(TAB1_ID)).thenReturn(CUSTOMIZED_TITLE1);
+        when(mTabGroupModelFilter.getTabGroupTitle(TAB3_ID)).thenReturn(null);
         when(mTabGroupModelFilter.getTabGroupColor(TAB1_ID)).thenReturn(COLOR1_ID);
         when(mTabGroupModelFilter.getTabGroupColor(TAB3_ID)).thenReturn(INVALID_COLOR_ID);
 
@@ -368,9 +354,7 @@ public class TabGroupVisualDataManagerUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
     public void tabMoveOutOfGroup_DeleteStoredTitle_GroupSize1NotSupported() {
-        // Mock that TITLE1 and COLOR1_ID are associated with the group of TAB1_ID.
-        when(mSharedPreferencesTitle.getString(String.valueOf(TAB1_ID), null))
-                .thenReturn(CUSTOMIZED_TITLE1);
+        when(mTabGroupModelFilter.getTabGroupTitle(TAB1_ID)).thenReturn(CUSTOMIZED_TITLE1);
         when(mTabGroupModelFilter.getTabGroupColor(TAB1_ID)).thenReturn(COLOR1_ID);
 
         // Mock that tab1 and tab2 are in the same group and group root id is TAB1_ID.
@@ -388,9 +372,7 @@ public class TabGroupVisualDataManagerUnitTest {
 
     @Test
     public void tabMoveOutOfGroup_DeleteStoredTitle_GroupSize1Supported() {
-        // Mock that TITLE1 and COLOR1_ID are associated with the group of TAB1_ID.
-        when(mSharedPreferencesTitle.getString(String.valueOf(TAB1_ID), null))
-                .thenReturn(CUSTOMIZED_TITLE1);
+        when(mTabGroupModelFilter.getTabGroupTitle(TAB1_ID)).thenReturn(CUSTOMIZED_TITLE1);
         when(mTabGroupModelFilter.getTabGroupColor(TAB1_ID)).thenReturn(COLOR1_ID);
         when(mTabGroupModelFilter.getTabGroupCollapsed(TAB1_ID)).thenReturn(true);
 
@@ -416,9 +398,7 @@ public class TabGroupVisualDataManagerUnitTest {
         verify(mTabGroupModelFilter, never()).deleteTabGroupColor(TAB1_ID);
         verify(mTabGroupModelFilter, never()).deleteTabGroupCollapsed(TAB1_ID);
 
-        // Mock that TITLE1 and COLOR1_ID are associated with the group of TAB1_ID.
-        when(mSharedPreferencesTitle.getString(String.valueOf(TAB2_ID), null))
-                .thenReturn(CUSTOMIZED_TITLE1);
+        when(mTabGroupModelFilter.getTabGroupTitle(TAB2_ID)).thenReturn(CUSTOMIZED_TITLE1);
         when(mTabGroupModelFilter.getTabGroupColor(TAB2_ID)).thenReturn(COLOR1_ID);
 
         // Mock that we are going to ungroup the last tab in a size 1 tab group, and it is the root
@@ -436,9 +416,7 @@ public class TabGroupVisualDataManagerUnitTest {
 
     @Test
     public void testDidChangeGroupRootId() {
-        // Mock that TITLE1 and COLOR1_ID are associated with the group of TAB1_ID.
-        when(mSharedPreferencesTitle.getString(String.valueOf(TAB1_ID), null))
-                .thenReturn(CUSTOMIZED_TITLE1);
+        when(mTabGroupModelFilter.getTabGroupTitle(TAB1_ID)).thenReturn(CUSTOMIZED_TITLE1);
         when(mTabGroupModelFilter.getTabGroupColor(TAB1_ID)).thenReturn(COLOR1_ID);
         when(mTabGroupModelFilter.getTabGroupCollapsed(TAB1_ID)).thenReturn(true);
 

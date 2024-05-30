@@ -118,7 +118,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -2164,12 +2163,8 @@ public class TabSwitcherLayoutTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
-                            "Foo",
-                            TabGroupTitleUtils.getTabGroupTitle(
-                                    normalTabModel.getTabAt(1).getRootId()));
-                    assertNull(
-                            TabGroupTitleUtils.getTabGroupTitle(
-                                    normalTabModel.getTabAt(2).getRootId()));
+                            "Foo", filter.getTabGroupTitle(normalTabModel.getTabAt(1).getRootId()));
+                    assertNull(filter.getTabGroupTitle(normalTabModel.getTabAt(2).getRootId()));
                     assertEquals(
                             nextSuggestedColorId,
                             filter.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
@@ -2293,13 +2288,9 @@ public class TabSwitcherLayoutTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
-                            "Foo",
-                            TabGroupTitleUtils.getTabGroupTitle(
-                                    normalTabModel.getTabAt(4).getRootId()));
+                            "Foo", filter.getTabGroupTitle(normalTabModel.getTabAt(4).getRootId()));
                     assertEquals(
-                            "Bar",
-                            TabGroupTitleUtils.getTabGroupTitle(
-                                    normalTabModel.getTabAt(0).getRootId()));
+                            "Bar", filter.getTabGroupTitle(normalTabModel.getTabAt(0).getRootId()));
                     assertEquals(
                             nextSuggestedColorId1,
                             filter.getTabGroupColor(normalTabModel.getTabAt(4).getRootId()));
@@ -2365,11 +2356,9 @@ public class TabSwitcherLayoutTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assertNull(TabGroupTitleUtils.getTabGroupTitle(ungroupedRootId[0]));
+                    assertNull(filter.getTabGroupTitle(ungroupedRootId[0]));
                     assertEquals(
-                            "Foo",
-                            TabGroupTitleUtils.getTabGroupTitle(
-                                    normalTabModel.getTabAt(0).getRootId()));
+                            "Foo", filter.getTabGroupTitle(normalTabModel.getTabAt(0).getRootId()));
                 });
 
         // Assert color still exists post snackbar dismissal.
@@ -2755,21 +2744,6 @@ public class TabSwitcherLayoutTest {
                 TabUtils.getTabThumbnailAspectRatio(
                         mActivityTestRule.getActivity(),
                         mActivityTestRule.getActivity().getBrowserControlsManager()));
-    }
-
-    private void simulateAspectRatioChangedToPoint75() throws IOException {
-        TabModel currentModel = mActivityTestRule.getActivity().getCurrentTabModel();
-        for (int i = 0; i < currentModel.getCount(); i++) {
-            Tab tab = currentModel.getTabAt(i);
-            Bitmap bitmap = TabContentManager.getJpegForTab(tab.getId(), null);
-            bitmap =
-                    Bitmap.createScaledBitmap(
-                            bitmap,
-                            bitmap.getWidth(),
-                            (int) (bitmap.getWidth() * 1.0 / 0.75),
-                            false);
-            encodeJpeg(tab, bitmap);
-        }
     }
 
     private void encodeJpeg(Tab tab, Bitmap bitmap) throws IOException {
