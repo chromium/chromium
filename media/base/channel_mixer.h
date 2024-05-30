@@ -27,7 +27,6 @@ class MEDIA_EXPORT ChannelMixer {
   // (1 / sqrt(2)) gain to each.
   static constexpr float kHalfPower = 0.707106781186547524401f;
 
-  ChannelMixer(ChannelLayout input_layout, ChannelLayout output_layout);
   ChannelMixer(ChannelLayout input_layout,
                int input_channels,
                ChannelLayout output_layout,

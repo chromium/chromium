@@ -81,8 +81,7 @@ SnooperNode::SnooperNode(const media::AudioParameters& input_params,
               : ((output_params_.channels() < input_params_.channels())
                      ? kBefore
                      : kAfter)),
-      channel_mixer_(input_params_.channel_layout(),
-                     output_params_.channel_layout()) {
+      channel_mixer_(input_params_, output_params_) {
   TRACE_EVENT2("audio", "SnooperNode::SnooperNode", "input_params",
                input_params.AsHumanReadableString(), "output_params",
                output_params.AsHumanReadableString());

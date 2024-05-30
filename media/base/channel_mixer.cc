@@ -16,13 +16,6 @@
 namespace media {
 
 ChannelMixer::ChannelMixer(ChannelLayout input_layout,
-                           ChannelLayout output_layout)
-    : ChannelMixer(input_layout,
-                   ChannelLayoutToChannelCount(input_layout),
-                   output_layout,
-                   ChannelLayoutToChannelCount(output_layout)) {}
-
-ChannelMixer::ChannelMixer(ChannelLayout input_layout,
                            int input_channels,
                            ChannelLayout output_layout,
                            int output_channels) {
