@@ -1760,17 +1760,13 @@ gfx::Rect RenderWidgetHostViewAura::GetAutocorrectCharacterBounds() const {
   const std::vector<ui::mojom::ImeTextSpanInfoPtr>& ime_text_spans_info =
       text_input_manager_->GetTextInputState()->ime_text_spans_info;
 
-  unsigned autocorrect_span_found = 0;
-  gfx::Rect bounds;
+  // If there are multiple autocorrect spans, use the first one.
   for (const auto& ime_text_span_info : ime_text_spans_info) {
     if (ime_text_span_info->span.type == ui::ImeTextSpan::Type::kAutocorrect) {
-      bounds = ConvertRectToScreen(ime_text_span_info->bounds);
-      autocorrect_span_found++;
+      return ConvertRectToScreen(ime_text_span_info->bounds);
     }
   }
-  // Assuming there is only one autocorrect span at any point in time.
-  CHECK_LE(autocorrect_span_found, 1u);
-  return bounds;
+  return {};
 }
 
 bool RenderWidgetHostViewAura::SetAutocorrectRange(
