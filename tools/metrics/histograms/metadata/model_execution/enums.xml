@@ -44,6 +44,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="No">The model is not available for this device.</int>
 </enum>
 
+<!-- LINT.IfChange(ModelExecutionResponseStatus) -->
+
 <enum name="ModelExecutionResponseStatus">
   <int value="0" label="Ongoing">
     There response is not fully streamed back yet, and the interface will remain
@@ -72,7 +74,10 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="ErrorFiltered">Bad response.</int>
   <int value="11" label="ErrorDisabled">Response was disabled.</int>
   <int value="12" label="ErrorCancelled">The request was cancelled.</int>
+  <int value="13" label="ErrorSessionDestroyed">The session was destroyed.</int>
 </enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/mojom/ai/ai_text_session.mojom:ModelStreamingResponseStatus) -->
 
 </enums>
 
