@@ -3100,7 +3100,10 @@ constexpr char kWallpaperGooglePhotosSharedAlbumsInternalName[] =
 constexpr char kWallpaperPerDeskName[] = "per-desk-wallpaper";
 constexpr char kTimeOfDayDlcInternalName[] = "time-of-day-dlc";
 constexpr char kGlanceablesV2InternalName[] = "glanceables-v2";
-constexpr char kGlanceablesV2KeyName[] = "glanceables-v2-key";
+constexpr char kGlanceablesTimeManagementClassroomStudentViewInternalName[] =
+    "glanceables-time-management-classroom-student-view";
+constexpr char kGlanceablesTimeManagementTasksViewInternalName[] =
+    "glanceables-time-management-tasks-view";
 constexpr char kBackgroundListeningName[] = "background-listening";
 constexpr char kAppInstallServiceUriBorealisName[] =
     "app-install-service-uri-borealis";
@@ -5999,9 +6002,17 @@ const FeatureEntry kFeatureEntries[] = {
     {kGlanceablesV2InternalName, flag_descriptions::kGlanceablesV2Name,
      flag_descriptions::kGlanceablesV2Description, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kGlanceablesV2)},
-    {kGlanceablesV2KeyName, flag_descriptions::kGlanceablesV2Name,
-     flag_descriptions::kGlanceablesV2Description, kOsCrOS,
-     STRING_VALUE_TYPE(ash::switches::kGlanceablesKeySwitch, "")},
+    {kGlanceablesTimeManagementClassroomStudentViewInternalName,
+     flag_descriptions::kGlanceablesTimeManagementClassroomStudentViewName,
+     flag_descriptions::
+         kGlanceablesTimeManagementClassroomStudentViewDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         ash::features::kGlanceablesTimeManagementClassroomStudentView)},
+    {kGlanceablesTimeManagementTasksViewInternalName,
+     flag_descriptions::kGlanceablesTimeManagementTasksViewName,
+     flag_descriptions::kGlanceablesTimeManagementTasksViewDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kGlanceablesTimeManagementTasksView)},
     {"vc-dlc-ui", flag_descriptions::kVcDlcUiName,
      flag_descriptions::kVcDlcUiDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kVcDlcUi)},

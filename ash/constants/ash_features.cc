@@ -5,15 +5,17 @@
 #include "ash/constants/ash_features.h"
 
 #include "ash/constants/ash_switches.h"
-#include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/hash/sha1.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/components/libsegmentation/buildflags.h"
 #include "chromeos/constants/chromeos_features.h"
+
+#if defined(ARCH_CPU_ARM_FAMILY)
+#include "base/command_line.h"
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
 
 namespace ash::features {
 namespace {
@@ -1284,8 +1286,7 @@ BASE_FEATURE(kGlanceablesV2,
              "GlanceablesV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Classroom Student Glanceable on time management surface for stable
-// launch.
+// Enables Classroom Student Glanceable on time management surface.
 BASE_FEATURE(kGlanceablesTimeManagementClassroomStudentView,
              "GlanceablesTimeManagementClassroomStudentView",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1295,7 +1296,7 @@ BASE_FEATURE(kGlanceablesTimeManagementClassroomStudentData,
              "GlanceablesTimeManagementClassroomStudentData",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Tasks Glanceable on time management surface for stable launch.
+// Enables Tasks Glanceable on time management surface.
 BASE_FEATURE(kGlanceablesTimeManagementTasksView,
              "GlanceablesTimeManagementTasksView",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3723,14 +3724,6 @@ bool IsGlanceablesTimeManagementTasksViewEnabled() {
       base::FeatureList::IsEnabled(kSysUiShouldHoldbackTaskManagement);
   if (device_enrolled_in_holdback) {
     return false;
-  }
-
-  const auto* const command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kGlanceablesKeySwitch)) {
-    // Force-enable or -disable based on hash correctness.
-    return base::SHA1HashString(command_line->GetSwitchValueASCII(
-               switches::kGlanceablesKeySwitch)) ==
-           switches::kGlanceablesKeyExpectedHash;
   }
 
   return base::FeatureList::IsEnabled(kGlanceablesTimeManagementTasksView);

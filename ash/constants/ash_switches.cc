@@ -708,12 +708,6 @@ const char kForestFeatureKey[] = "forest-feature-key";
 // "CHROMEBIT", "CHROMEBOOK", "REFERENCE", "CHROMEBOX"
 const char kFormFactor[] = "form-factor";
 
-// Switch name for "glanceables-v2-key" flag and its expected hashed value.
-const char kGlanceablesKeyExpectedHash[] =
-    "\x52\xde\x04\xda\xef\x3a\xde\xe2\x90\x68\xa1\x5c\x36\xd5\x6b\x1d\xb8\x11"
-    "\xe2\xcb";
-const char kGlanceablesKeySwitch[] = "glanceables-key";
-
 // Specifies campaigns to override for testing.
 const char kGrowthCampaigns[] = "growth-campaigns";
 

@@ -22569,6 +22569,8 @@ from previous Chrome versions.
   <int value="618407424" label="OmniboxRetainSuggestionsWithHeaders:enabled"/>
   <int value="618426510" label="WaylandScreenCoordinatesEnabled:disabled"/>
   <int value="618532343" label="DesktopPWAsLocalUpdating:disabled"/>
+  <int value="619598806"
+      label="GlanceablesTimeManagementClassroomStudentView:disabled"/>
   <int value="620189062" label="TabFreeze:enabled"/>
   <int value="620989380" label="ImeInputLogicFst:enabled"/>
   <int value="621484660" label="ReorderBookmarks:disabled"/>
@@ -24072,6 +24074,8 @@ from previous Chrome versions.
   <int value="1269940659" label="EnumerateAudioDevices:enabled"/>
   <int value="1269952439" label="AndroidAIAFetching:disabled"/>
   <int value="1270596217" label="AccessibilityIncludeLongClickAction:disabled"/>
+  <int value="1270975112"
+      label="GlanceablesTimeManagementClassroomStudentView:enabled"/>
   <int value="1271871811" label="LegacyTLSEnforced:enabled"/>
   <int value="1272040421" label="ContextualPageActionReaderMode:disabled"/>
   <int value="1272699563" label="enable-hosted-mode"/>
@@ -24565,6 +24569,7 @@ from previous Chrome versions.
   <int value="1481562816" label="disable-password-link"/>
   <int value="1482039233" label="SearchSuggestionsOnLocalNtp:disabled"/>
   <int value="1482245628" label="OmniboxNativeVoiceSuggestProvider:enabled"/>
+  <int value="1482277613" label="GlanceablesTimeManagementTasksView:enabled"/>
   <int value="1482839038" label="AutofillCreditCardAuthentication:enabled"/>
   <int value="1483827594" label="webview-selective-image-inversion-darkening"/>
   <int value="1483980996" label="MacSyscallSandbox:enabled"/>
@@ -25599,6 +25604,7 @@ from previous Chrome versions.
   <int value="1919380242" label="ReduceAcceptLanguage:disabled"/>
   <int value="1919786756" label="FedCmDisconnect:disabled"/>
   <int value="1919917329" label="ImplicitRootScroller:disabled"/>
+  <int value="1919955548" label="GlanceablesTimeManagementTasksView:disabled"/>
   <int value="1920780354" label="CCTPageInsightsHubPeek:enabled"/>
   <int value="1920894670"
       label="OmniboxPreserveDefaultMatchAgainstAsyncUpdate:enabled"/>

@@ -3926,6 +3926,12 @@ extern const char kGameDashboardDescription[];
 extern const char kGlanceablesV2Name[];
 extern const char kGlanceablesV2Description[];
 
+extern const char kGlanceablesTimeManagementClassroomStudentViewName[];
+extern const char kGlanceablesTimeManagementClassroomStudentViewDescription[];
+
+extern const char kGlanceablesTimeManagementTasksViewName[];
+extern const char kGlanceablesTimeManagementTasksViewDescription[];
+
 extern const char kHelpAppAppDetailPageName[];
 extern const char kHelpAppAppDetailPageDescription[];
 

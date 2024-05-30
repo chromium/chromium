@@ -6772,6 +6772,18 @@ const char kGlanceablesV2Name[] = "Glanceables";
 const char kGlanceablesV2Description[] =
     "Enables Glanceables on the Calendar surface.";
 
+const char kGlanceablesTimeManagementClassroomStudentViewName[] =
+    "Glanceables > Time Management > Classroom Student";
+const char kGlanceablesTimeManagementClassroomStudentViewDescription[] =
+    "Enables Google Classroom integration for students on the Time Management "
+    "Glanceables surface (via Calendar entry point).";
+
+const char kGlanceablesTimeManagementTasksViewName[] =
+    "Glanceables > Time Management > Tasks";
+const char kGlanceablesTimeManagementTasksViewDescription[] =
+    "Enables Google Tasks integration on the Time Management Glanceables "
+    "surface (via Calendar entry point).";
+
 const char kHelpAppAppDetailPageName[] = "Help App app detail page";
 const char kHelpAppAppDetailPageDescription[] =
     "If enabled, the Help app will render the App Detail Page and entry point.";

@@ -4811,24 +4811,18 @@
     "expiry_milestone": 140
   },
   {
+    "name": "glanceables-time-management-classroom-student-view",
+    "owners": [ "amitrokhin@chromium.org", "//ash/glanceables/OWNERS" ],
+    "expiry_milestone": 135
+  },
+  {
+    "name": "glanceables-time-management-tasks-view",
+    "owners": [ "amitrokhin@chromium.org", "//ash/glanceables/OWNERS" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "glanceables-v2",
     "owners": [ "tbarzic@chromium.org", "anasalazar@chromium.org", "cros-system-ui-eng@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "glanceables-v2-calendar-view",
-    "owners": [
-      "sylvieliu@chromium.org",
-      "cros-system-ui-eng@google.com"
-    ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "glanceables-v2-key",
-    "owners": [
-      "amitrokhin@chromium.org",
-      "tbarzic@chromium.org"
-    ],
     "expiry_milestone": 130
   },
   {
