@@ -53,8 +53,7 @@ void SimTest::SetUp() {
   // WebViewImpl given to SetWebView().
   network_ = std::make_unique<SimNetwork>();
   compositor_ = std::make_unique<SimCompositor>();
-  web_frame_client_ =
-      std::make_unique<frame_test_helpers::TestWebFrameClient>();
+  web_frame_client_ = CreateWebFrameClientForMainFrame();
   page_ = std::make_unique<SimPage>();
   web_view_helper_ =
       std::make_unique<frame_test_helpers::WebViewHelper>(WTF::BindRepeating(
@@ -218,6 +217,11 @@ frame_test_helpers::TestWebFrameWidget* SimTest::CreateWebFrameWidget(
       std::move(frame_widget), std::move(widget_host), std::move(widget),
       std::move(task_runner), frame_sink_id, hidden, never_composited,
       is_for_child_local_root, is_for_nested_main_frame, is_for_scalable_page);
+}
+
+std::unique_ptr<frame_test_helpers::TestWebFrameClient>
+SimTest::CreateWebFrameClientForMainFrame() {
+  return std::make_unique<frame_test_helpers::TestWebFrameClient>();
 }
 
 void SimTest::SetPreferCompositingToLCDText(bool enabled) {

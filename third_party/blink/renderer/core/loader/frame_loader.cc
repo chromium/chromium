@@ -96,6 +96,7 @@
 #include "third_party/blink/renderer/core/loader/idleness_detector.h"
 #include "third_party/blink/renderer/core/loader/idna_util.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
+#include "third_party/blink/renderer/core/loader/navigation_policy.h"
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -783,15 +784,37 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
   }
 
   if (url.ProtocolIsJavaScript()) {
-    if (!origin_window ||
-        origin_window->CanExecuteScripts(kAboutToExecuteScript)) {
-      if (origin_window && request.GetFrameType() ==
-                               mojom::blink::RequestContextFrameType::kNested) {
-        LogJavaScriptUrlHistogram(origin_window, url.GetPath());
-      }
+    // If the navigation policy does not target the current frame (for example,
+    // a navigation initiated by Ctrl/Cmd+Click on an anchor element),
+    // `FindOrCreateFrameForNavigation()` returns the initiator frame, expecting
+    // the navigation to end up in the browser process so the browser process
+    // can handle the navigation policy accordingly.
+    //
+    // However, before this navigation is sent to the browser process, Blink
+    // checks if it's a javascript: URL, since that is always supposed to be
+    // handled internally in the renderer. It is certainly not correct to
+    // evaluate the javascript: URL in the initiator frame if the navigation is
+    // not targeting the current frame.
+    if (request.GetNavigationPolicy() == kNavigationPolicyCurrentTab) {
+      if (!origin_window ||
+          origin_window->CanExecuteScripts(kAboutToExecuteScript)) {
+        if (origin_window &&
+            request.GetFrameType() ==
+                mojom::blink::RequestContextFrameType::kNested) {
+          LogJavaScriptUrlHistogram(origin_window, url.GetPath());
+        }
 
-      frame_->GetDocument()->ProcessJavaScriptUrl(url,
-                                                  request.JavascriptWorld());
+        frame_->GetDocument()->ProcessJavaScriptUrl(url,
+                                                    request.JavascriptWorld());
+      } else {
+        // Any possible navigation policy that ends up creating a new browsing
+        // context will create a browsing context with no opener relation. The
+        // new browsing context will always be cross-origin because the new
+        // window starts at the initial empty document—and since it does have an
+        // opener, it will not inherit an origin and will have a new unique
+        // opaque origin. It would be incorrect to execute the javascript: URL
+        // in a cross-origin context, so intentionally do nothing.
+      }
     }
     return;
   }
