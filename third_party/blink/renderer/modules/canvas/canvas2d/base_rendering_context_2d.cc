@@ -3574,7 +3574,7 @@ bool BaseRenderingContext2D::CopyGPUTextureToResourceProvider(
     GPUTexture& texture,
     CanvasResourceProvider& resource_provider) {
   // Get the GPU mailbox associated with the WebGPU access texture. This texture
-  // always originates from `beginWebGPUAccess`, so we should always find a
+  // always originates from `transferToWebGPU`, so we should always find a
   // shared-image mailbox here.
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       texture.GetMailboxTexture();
@@ -3614,7 +3614,7 @@ void BaseRenderingContext2D::transferBackFromWebGPU(
     ExceptionState& exception_state) {
   // If the context is lost or doesn't exist, this call should be a no-op.
   // We don't want to throw an exception or attempt any changes if
-  // `endWebGPUAccess` is called during teardown.
+  // `transferBackFromWebGPU` is called during teardown.
   CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
   if (UNLIKELY(!host) || UNLIKELY(isContextLost())) {
     return;
@@ -3631,7 +3631,6 @@ void BaseRenderingContext2D::transferBackFromWebGPU(
     return;
   }
 
-  // If the texture has been destroyed, stop.
   if (webgpu_access_texture_->Destroyed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The texture has been destroyed.");
