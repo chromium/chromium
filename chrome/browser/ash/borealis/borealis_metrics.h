@@ -142,6 +142,8 @@ void RecordBorealisUninstallResultHistogram(
 void RecordBorealisStartupNumAttemptsHistogram();
 void RecordBorealisStartupResultHistogram(BorealisStartupResult startup_result);
 void RecordBorealisStartupOverallTimeHistogram(base::TimeDelta startup_time);
+void RecordBorealisStartupTimeToFirstWindowHistogram(
+    base::TimeDelta startup_time);
 void RecordBorealisShutdownNumAttemptsHistogram();
 void RecordBorealisShutdownResultHistogram(
     BorealisShutdownResult shutdown_result);

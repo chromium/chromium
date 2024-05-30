@@ -303,8 +303,9 @@ chromium-metrics-reviews@google.com.
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
-    Recording the time taken for each successful attempt to start Borealis (via
-    the UI).
+    Recording the time taken for each successful attempt to start the Borealis
+    VM (via the UI), until the VM is responsive and able to launch the Steam
+    client.
 
     (Same as Borealis.Startup.OverallTime but with larger bucket sizes.)
   </summary>
@@ -317,6 +318,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recording the result of each attempt to start Borealis, whether it was
     successful or the error that it faced.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Startup.TimeToFirstWindow" units="ms"
+    expires_after="2024-10-13">
+  <owner>philpearson@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Recording the time taken for each successful attempt to start Borealis (via
+    the UI), from when the splash screen is shown to when the first window is
+    shown (probably either an update dialog or a Steam client window).
   </summary>
 </histogram>
 

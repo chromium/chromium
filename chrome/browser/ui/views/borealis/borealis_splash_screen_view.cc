@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/borealis/borealis_splash_screen_view.h"
+
 #include <memory>
 
 #include "ash/public/cpp/window_properties.h"
@@ -11,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
@@ -71,7 +73,7 @@ void BorealisSplashScreenView::Show(Profile* profile) {
 }
 
 BorealisSplashScreenView::BorealisSplashScreenView(Profile* profile)
-    : weak_factory_(this) {
+    : start_tick_(base::TimeTicks::Now()), weak_factory_(this) {
   profile_ = profile;
   borealis::BorealisService::GetForProfile(profile_)
       ->WindowManager()
@@ -137,6 +139,8 @@ BorealisSplashScreenView::BorealisSplashScreenView(Profile* profile)
 void BorealisSplashScreenView::OnSessionStarted() {
   DCHECK(GetWidget() != nullptr);
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  RecordBorealisStartupTimeToFirstWindowHistogram(base::TimeTicks::Now() -
+                                                  start_tick_);
 }
 
 void BorealisSplashScreenView::OnWindowManagerDeleted(
