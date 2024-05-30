@@ -37,6 +37,8 @@ export class LearnMode {
   private static shouldFlushSpeech_ = true;
   /** Last time a touch explore gesture was described. */
   private static lastTouchExplore_ = new Date();
+  /** Previously pressed key. */
+  private static prevKey = '';
 
   /** Initialize keyboard explorer. */
   static init(): void {
@@ -98,10 +100,21 @@ export class LearnMode {
       LearnMode.output(KeyUtil.getReadableNameForKeyCode(evt.keyCode));
 
       // Allow Ctrl+W or escape to be handled.
-      if ((evt.key === 'w' && evt.ctrlKey) || evt.key === 'Escape') {
+      if ((evt.key === 'w' && evt.ctrlKey)) {
         LearnMode.close_();
         return true;
       }
+      if (evt.key === 'Escape') {
+        // Escape must be pressed twice in a row to exit.
+        if (LearnMode.prevKey === 'Escape') {
+          LearnMode.close_();
+          return true;
+        } else {
+          // Append a message about pressing escape a second time.
+          LearnMode.output(Msgs.getMsg('learn_mode_escape_to_exit'));
+        }
+      }
+      LearnMode.prevKey = evt.key;
 
       BackgroundBridge.ForcedActionPath.onKeyDown(evt).then(
           (shouldPropagate) => {

@@ -412,6 +412,9 @@
   <message desc="The instructions for ChromeVox Learn Mode.  The keyboard explorer voices the name of each key when the user presses it. * These instructions describe how to use the keyboard explorer." name="IDS_CHROMEVOX_KBEXPLORER_INSTRUCTIONS">
     Press any key to learn its name. Ctrl+W will close learn mode.
   </message>
+  <message desc="Hint text spoken on pressing 'escape' in ChromeVox learn mode, informing the user that pressing it again will close Learn Mode." name="IDS_CHROMEVOX_LEARN_MODE_ESCAPE_TO_EXIT" is_accessibility_with_no_ui="true">
+    Press escape again to exit Learn Mode
+  </message>
   <message desc="Spoken when a new Chrome tab named 'title' is opened." name="IDS_CHROMEVOX_CHROME_TAB_CREATED">
     tab created
   </message>

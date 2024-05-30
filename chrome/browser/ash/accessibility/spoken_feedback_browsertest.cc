@@ -392,6 +392,36 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeEscapeWithGesture) {
   sm_.Replay();
 }
 
+IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest,
+                       LearnModePressEscapeTwiceToExit) {
+  EnableChromeVox();
+  sm_.Call([this]() { ExecuteCommandHandlerCommand("showLearnModePage"); });
+  sm_.ExpectSpeechPattern(
+      "Press a qwerty key, refreshable braille key, or touch gesture to learn "
+      "*");
+
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_ESCAPE); });
+  sm_.ExpectSpeech("Escape");
+  sm_.ExpectSpeech("Press escape again to exit Learn Mode");
+
+  // Pressing a different key means the next escape key will not exit learn
+  // mode, it has to be pressed twice in a row.
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_K); });
+  sm_.ExpectSpeech("K");
+
+  // Press escape again, it warns about exiting again.
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_ESCAPE); });
+  sm_.ExpectSpeech("Escape");
+  sm_.ExpectSpeech("Press escape again to exit Learn Mode");
+
+  // Press it a second time in a row, should actually exit.
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_ESCAPE); });
+  sm_.ExpectSpeech("Escape");
+  sm_.ExpectSpeech("Stopping Learn Mode");
+
+  sm_.Replay();
+}
+
 IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, OpenLogPage) {
   // Enabling earcon logging should not crash ChromeVox at startup
   // (see b/318531241).
