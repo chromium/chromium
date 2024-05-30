@@ -48,8 +48,14 @@ AboutThisSiteServiceFactory::BuildServiceInstanceFor(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
 
+  auto* optimization_guide =
+      OptimizationGuideServiceFactory::GetForBrowserState(browser_state);
+  if (!optimization_guide) {
+    return nullptr;
+  }
+
   return std::make_unique<page_info::AboutThisSiteService>(
-      OptimizationGuideServiceFactory::GetForBrowserState(browser_state),
-      browser_state->IsOffTheRecord(), browser_state->GetPrefs(),
+      optimization_guide, browser_state->IsOffTheRecord(),
+      browser_state->GetPrefs(),
       ios::TemplateURLServiceFactory::GetForBrowserState(browser_state));
 }

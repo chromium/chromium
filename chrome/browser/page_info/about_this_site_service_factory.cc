@@ -53,9 +53,14 @@ AboutThisSiteServiceFactory::BuildServiceInstanceForBrowserContext(
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
+  auto* optimization_guide =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  if (!optimization_guide) {
+    return nullptr;
+  }
+
   return std::make_unique<page_info::AboutThisSiteService>(
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
-      profile->IsOffTheRecord(), profile->GetPrefs(),
+      optimization_guide, profile->IsOffTheRecord(), profile->GetPrefs(),
       TemplateURLServiceFactory::GetForProfile(profile));
 }
 
