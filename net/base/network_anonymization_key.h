@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <optional>
+#include <ostream>
 #include <string>
 #include <tuple>
 
@@ -204,6 +205,9 @@ class NET_EXPORT NetworkAnonymizationKey {
   // for non-opaque origins.
   std::optional<base::UnguessableToken> nonce_;
 };
+
+NET_EXPORT std::ostream& operator<<(std::ostream& os,
+                                    const NetworkAnonymizationKey& nak);
 
 }  // namespace net
 

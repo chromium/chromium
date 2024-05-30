@@ -167,14 +167,28 @@ int QuicSessionPool::ProxyJob::DoCreateProxySession() {
   // is no DNS or Alt-Svc information to use.
   quic::ParsedQuicVersion quic_version = SupportedQuicVersionForProxying();
 
+  // In order to support connection re-use in multi-proxy chains, without
+  // sacrificing partitioning, use an empty NAK for connections to a proxy that
+  // are carrying a connection to another proxy. For example, given chain
+  // [proxy1, proxy2, proxy3], the connections to proxy1 and proxy2 need not be
+  // partitioned and can use an empty NAK. This situation is identified by the
+  // session usage of the tunneled connection being kProxy.
+  bool use_empty_nak = false;
+  if (!base::FeatureList::IsEnabled(net::features::kPartitionProxyChains) &&
+      session_key.session_usage() == SessionUsage::kProxy) {
+    use_empty_nak = true;
+  }
+
   proxy_session_request_ = std::make_unique<QuicSessionRequest>(pool_);
   return proxy_session_request_->Request(
       destination, quic_version, proxy_chain_prefix, proxy_annotation_tag_,
       http_user_agent_settings_.get(), SessionUsage::kProxy,
       session_key.privacy_mode(), priority(), session_key.socket_tag(),
-      session_key.network_anonymization_key(), session_key.secure_dns_policy(),
-      session_key.require_dns_https_alpn(), cert_verify_flags_,
-      GURL("https://" + last_server.ToString()), net_log(), &net_error_details_,
+      use_empty_nak ? NetworkAnonymizationKey()
+                    : session_key.network_anonymization_key(),
+      session_key.secure_dns_policy(), session_key.require_dns_https_alpn(),
+      cert_verify_flags_, GURL("https://" + last_server.ToString()), net_log(),
+      &net_error_details_,
       /*failed_on_default_network_callback=*/CompletionOnceCallback(),
       io_callback_);
 }

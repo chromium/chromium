@@ -211,4 +211,10 @@ void NetworkAnonymizationKey::ClearGlobalsForTesting() {
   g_partition_by_default_locked.store(false);
 }
 
+NET_EXPORT std::ostream& operator<<(std::ostream& os,
+                                    const NetworkAnonymizationKey& nak) {
+  os << nak.ToDebugString();
+  return os;
+}
+
 }  // namespace net

@@ -9,6 +9,9 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
@@ -38,6 +41,7 @@ struct TestParams {
                                 PrivacyMode,
                                 SecureDnsPolicy,
                                 ConnectJobFactory::AlpnMode,
+                                bool,
                                 bool>;
 
   explicit TestParams(ParamTuple tup)
@@ -45,13 +49,15 @@ struct TestParams {
         privacy_mode(std::get<1>(tup)),
         secure_dns_policy(std::get<2>(tup)),
         alpn_mode(std::get<3>(tup)),
-        enable_early_data(std::get<4>(tup)) {}
+        enable_early_data(std::get<4>(tup)),
+        partition_proxy_chains(std::get<5>(tup)) {}
 
   bool disable_cert_network_fetches;
   PrivacyMode privacy_mode;
   SecureDnsPolicy secure_dns_policy;
   ConnectJobFactory::AlpnMode alpn_mode;
   bool enable_early_data;
+  bool partition_proxy_chains;
 };
 
 std::ostream& operator<<(std::ostream& os, const TestParams& test_params) {
@@ -68,6 +74,7 @@ std::ostream& operator<<(std::ostream& os, const TestParams& test_params) {
              ? "kHttp11Only"
              : "kHttpAll");
   os << ", .enable_early_data=" << test_params.enable_early_data;
+  os << ", .partition_proxy_chains=" << test_params.partition_proxy_chains;
   os << "}";
   return os;
 }
@@ -217,6 +224,14 @@ base::flat_set<std::string> AlpnProtoStringsForMode(
 class ConnectJobParamsFactoryTest : public testing::TestWithParam<TestParams> {
  public:
   ConnectJobParamsFactoryTest() {
+    if (partition_proxy_chains()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          net::features::kPartitionProxyChains);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          net::features::kPartitionProxyChains);
+    }
+
     early_data_enabled_ = enable_early_data();
     switch (alpn_mode()) {
       case ConnectJobFactory::AlpnMode::kDisabled:
@@ -245,6 +260,9 @@ class ConnectJobParamsFactoryTest : public testing::TestWithParam<TestParams> {
   }
   ConnectJobFactory::AlpnMode alpn_mode() const { return GetParam().alpn_mode; }
   bool enable_early_data() const { return GetParam().enable_early_data; }
+  bool partition_proxy_chains() const {
+    return GetParam().partition_proxy_chains;
+  }
 
   // Create an SSL config for connection to the endpoint, based on the test
   // parameters.
@@ -301,6 +319,7 @@ class ConnectJobParamsFactoryTest : public testing::TestWithParam<TestParams> {
     return proxy_ssl_config;
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   NextProtoVector alpn_protos_;
   SSLConfig::ApplicationSettings application_settings_;
   bool early_data_enabled_;
@@ -325,9 +344,9 @@ class ConnectJobParamsFactoryTest : public testing::TestWithParam<TestParams> {
       /*ignore_certificate_errors=*/nullptr,
       &early_data_enabled_};
 
-  const NetworkAnonymizationKey kTestNak =
+  const NetworkAnonymizationKey kEndpointNak =
       NetworkAnonymizationKey::CreateSameSite(
-          net::SchemefulSite(GURL("http://example.test")));
+          net::SchemefulSite(GURL("http://test")));
   const NetworkAnonymizationKey kProxyDnsNak =
       NetworkAnonymizationKey::CreateSameSite(
           net::SchemefulSite(GURL("http://example-dns.test")));
@@ -341,14 +360,14 @@ TEST_P(ConnectJobParamsFactoryTest, HttpEndpoint) {
       /*proxy_annotation_tag=*/std::nullopt,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
-      kTestNak, secure_dns_policy(), disable_cert_network_fetches(),
+      kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
       &common_connect_job_params_, kProxyDnsNak);
 
   scoped_refptr<TransportSocketParams> transport_socket_params =
       ExpectTransportSocketParams(params);
   VerifyTransportSocketParams(
       transport_socket_params, "transport_socket_params", kEndpoint,
-      secure_dns_policy(), kTestNak, base::flat_set<std::string>());
+      secure_dns_policy(), kEndpointNak, base::flat_set<std::string>());
 }
 
 // A connect to a endpoint without SSL, specified as a `SchemelessEndpoint`,
@@ -361,7 +380,7 @@ TEST_P(ConnectJobParamsFactoryTest, UnencryptedEndpointWithoutScheme) {
       /*proxy_annotation_tag=*/std::nullopt,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
-      kTestNak, secure_dns_policy(), disable_cert_network_fetches(),
+      kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
       &common_connect_job_params_, kProxyDnsNak);
 
   scoped_refptr<TransportSocketParams> transport_socket_params =
@@ -369,7 +388,7 @@ TEST_P(ConnectJobParamsFactoryTest, UnencryptedEndpointWithoutScheme) {
   VerifyTransportSocketParams(transport_socket_params,
                               "transport_socket_params",
                               HostPortPair("test", 82), secure_dns_policy(),
-                              kTestNak, base::flat_set<std::string>());
+                              kEndpointNak, base::flat_set<std::string>());
 }
 
 // A connect to a simple HTTPS endpoint produces SSL params wrapping transport
@@ -385,7 +404,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpoint) {
       kEndpoint, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
-      kTestNak, secure_dns_policy(), disable_cert_network_fetches(),
+      kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
       &common_connect_job_params_, kProxyDnsNak);
 
   scoped_refptr<SSLSocketParams> ssl_socket_params =
@@ -393,12 +412,12 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpoint) {
   SSLConfig ssl_config = SSLConfigForEndpoint();
   VerifySSLSocketParams(ssl_socket_params, "ssl_socket_params",
                         HostPortPair::FromSchemeHostPort(kEndpoint), ssl_config,
-                        privacy_mode(), kTestNak);
+                        privacy_mode(), kEndpointNak);
   scoped_refptr<TransportSocketParams> transport_socket_params =
       ssl_socket_params->GetDirectConnectionParams();
   VerifyTransportSocketParams(
       transport_socket_params, "transport_socket_params", kEndpoint,
-      secure_dns_policy(), kTestNak, AlpnProtoStringsForMode(alpn_mode()));
+      secure_dns_policy(), kEndpointNak, AlpnProtoStringsForMode(alpn_mode()));
 }
 
 // A connect to a endpoint SSL, specified as a `SchemelessEndpoint`,
@@ -415,7 +434,7 @@ TEST_P(ConnectJobParamsFactoryTest, EncryptedEndpointWithoutScheme) {
       kEndpoint, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
-      kTestNak, secure_dns_policy(), disable_cert_network_fetches(),
+      kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
       &common_connect_job_params_, kProxyDnsNak);
 
   scoped_refptr<SSLSocketParams> ssl_socket_params =
@@ -423,13 +442,13 @@ TEST_P(ConnectJobParamsFactoryTest, EncryptedEndpointWithoutScheme) {
   SSLConfig ssl_config = SSLConfigForEndpoint();
   VerifySSLSocketParams(ssl_socket_params, "ssl_socket_params",
                         HostPortPair("test", 4433), ssl_config, privacy_mode(),
-                        kTestNak);
+                        kEndpointNak);
   scoped_refptr<TransportSocketParams> transport_socket_params =
       ssl_socket_params->GetDirectConnectionParams();
-  VerifyTransportSocketParams(transport_socket_params,
-                              "transport_socket_params",
-                              HostPortPair("test", 4433), secure_dns_policy(),
-                              kTestNak, AlpnProtoStringsForMode(alpn_mode()));
+  VerifyTransportSocketParams(
+      transport_socket_params, "transport_socket_params",
+      HostPortPair("test", 4433), secure_dns_policy(), kEndpointNak,
+      AlpnProtoStringsForMode(alpn_mode()));
 }
 
 // A connection to an HTTP endpoint via an HTTPS proxy, without forcing a
@@ -444,7 +463,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpEndpointViaHttpsProxy) {
       kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
-      kTestNak, secure_dns_policy(), disable_cert_network_fetches(),
+      kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
       &common_connect_job_params_, kProxyDnsNak);
 
   scoped_refptr<HttpProxySocketParams> http_proxy_socket_params =
@@ -454,7 +473,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpEndpointViaHttpsProxy) {
       /*quic_ssl_config=*/std::nullopt,
       HostPortPair::FromSchemeHostPort(kEndpoint), proxy_chain,
       /*proxy_chain_index=*/0,
-      /*tunnel=*/false, kTestNak, secure_dns_policy());
+      /*tunnel=*/false, kEndpointNak, secure_dns_policy());
 
   scoped_refptr<SSLSocketParams> ssl_socket_params =
       http_proxy_socket_params->ssl_params();
@@ -462,7 +481,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpEndpointViaHttpsProxy) {
   SSLConfig ssl_config = SSLConfigForProxy();
   VerifySSLSocketParams(ssl_socket_params, "ssl_socket_params",
                         HostPortPair::FromString("proxy:443"), ssl_config,
-                        PrivacyMode::PRIVACY_MODE_DISABLED, kTestNak);
+                        PrivacyMode::PRIVACY_MODE_DISABLED, kEndpointNak);
 
   scoped_refptr<TransportSocketParams> transport_socket_params =
       ssl_socket_params->GetDirectConnectionParams();
@@ -485,7 +504,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpEndpointViaQuicProxy) {
       kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
-      kTestNak, secure_dns_policy(), disable_cert_network_fetches(),
+      kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
       &common_connect_job_params_, kProxyDnsNak);
 
   auto http_proxy_socket_params = ExpectHttpProxySocketParams(params);
@@ -495,7 +514,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpEndpointViaQuicProxy) {
   VerifyHttpProxySocketParams(
       http_proxy_socket_params, "http_proxy_socket_params", quic_ssl_config,
       HostPortPair::FromSchemeHostPort(kEndpoint), proxy_chain,
-      /*proxy_chain_index=*/0, tunnel, kTestNak, secure_dns_policy());
+      /*proxy_chain_index=*/0, tunnel, kEndpointNak, secure_dns_policy());
 }
 
 // A connection to an HTTPS endpoint via an HTTPS proxy,
@@ -514,7 +533,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpsProxy) {
       kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
-      kTestNak, secure_dns_policy(), disable_cert_network_fetches(),
+      kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
       &common_connect_job_params_, kProxyDnsNak);
 
   scoped_refptr<SSLSocketParams> endpoint_ssl_socket_params =
@@ -523,7 +542,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpsProxy) {
   VerifySSLSocketParams(endpoint_ssl_socket_params,
                         "endpoint_ssl_socket_params",
                         HostPortPair::FromSchemeHostPort(kEndpoint),
-                        endpoint_ssl_config, privacy_mode(), kTestNak);
+                        endpoint_ssl_config, privacy_mode(), kEndpointNak);
 
   scoped_refptr<HttpProxySocketParams> http_proxy_socket_params =
       endpoint_ssl_socket_params->GetHttpProxyConnectionParams();
@@ -532,7 +551,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpsProxy) {
       /*quic_ssl_config=*/std::nullopt,
       HostPortPair::FromSchemeHostPort(kEndpoint), proxy_chain,
       /*proxy_chain_index=*/0,
-      /*tunnel=*/true, kTestNak, secure_dns_policy());
+      /*tunnel=*/true, kEndpointNak, secure_dns_policy());
 
   scoped_refptr<SSLSocketParams> proxy_ssl_socket_params =
       http_proxy_socket_params->ssl_params();
@@ -540,7 +559,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpsProxy) {
   SSLConfig proxy_ssl_config = SSLConfigForProxy();
   VerifySSLSocketParams(proxy_ssl_socket_params, "proxy_ssl_socket_params",
                         HostPortPair::FromString("proxy:443"), proxy_ssl_config,
-                        PrivacyMode::PRIVACY_MODE_DISABLED, kTestNak);
+                        PrivacyMode::PRIVACY_MODE_DISABLED, kEndpointNak);
 
   scoped_refptr<TransportSocketParams> transport_socket_params =
       proxy_ssl_socket_params->GetDirectConnectionParams();
@@ -568,7 +587,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaQuicProxy) {
       kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
-      kTestNak, secure_dns_policy(), disable_cert_network_fetches(),
+      kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
       &common_connect_job_params_, kProxyDnsNak);
 
   auto endpoint_ssl_socket_params = ExpectSSLSocketParams(params);
@@ -576,7 +595,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaQuicProxy) {
   VerifySSLSocketParams(endpoint_ssl_socket_params,
                         "endpoint_ssl_socket_params",
                         HostPortPair::FromSchemeHostPort(kEndpoint),
-                        endpoint_ssl_config, privacy_mode(), kTestNak);
+                        endpoint_ssl_config, privacy_mode(), kEndpointNak);
 
   auto http_proxy_socket_params =
       endpoint_ssl_socket_params->GetHttpProxyConnectionParams();
@@ -585,7 +604,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaQuicProxy) {
       http_proxy_socket_params, "http_proxy_socket_params", quic_ssl_config,
       HostPortPair::FromSchemeHostPort(kEndpoint), proxy_chain,
       /*proxy_chain_index=*/0,
-      /*tunnel=*/true, kTestNak, secure_dns_policy());
+      /*tunnel=*/true, kEndpointNak, secure_dns_policy());
 }
 
 // A connection to an HTTPS endpoint via an HTTP proxy
@@ -603,7 +622,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpProxy) {
       kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
-      kTestNak, secure_dns_policy(), disable_cert_network_fetches(),
+      kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
       &common_connect_job_params_, kProxyDnsNak);
 
   scoped_refptr<SSLSocketParams> endpoint_ssl_socket_params =
@@ -612,7 +631,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpProxy) {
   VerifySSLSocketParams(endpoint_ssl_socket_params,
                         "endpoint_ssl_socket_params",
                         HostPortPair::FromSchemeHostPort(kEndpoint),
-                        endpoint_ssl_config, privacy_mode(), kTestNak);
+                        endpoint_ssl_config, privacy_mode(), kEndpointNak);
 
   scoped_refptr<HttpProxySocketParams> http_proxy_socket_params =
       endpoint_ssl_socket_params->GetHttpProxyConnectionParams();
@@ -621,7 +640,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpProxy) {
       /*quic_ssl_config=*/std::nullopt,
       HostPortPair::FromSchemeHostPort(kEndpoint), proxy_chain,
       /*proxy_chain_index=*/0,
-      /*tunnel=*/true, kTestNak, secure_dns_policy());
+      /*tunnel=*/true, kEndpointNak, secure_dns_policy());
 
   scoped_refptr<TransportSocketParams> transport_socket_params =
       http_proxy_socket_params->transport_params();
@@ -642,7 +661,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpEndpointViaSOCKSProxy) {
       kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
-      kTestNak, secure_dns_policy(), disable_cert_network_fetches(),
+      kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
       &common_connect_job_params_, kProxyDnsNak);
 
   scoped_refptr<SOCKSSocketParams> socks_socket_params =
@@ -650,7 +669,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpEndpointViaSOCKSProxy) {
   VerifySOCKSSocketParams(socks_socket_params, "socks_socket_params",
                           /*is_socks_v5=*/false,
                           HostPortPair::FromSchemeHostPort(kEndpoint),
-                          kTestNak);
+                          kEndpointNak);
 
   scoped_refptr<TransportSocketParams> transport_socket_params =
       socks_socket_params->transport_params();
@@ -675,7 +694,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaSOCKSProxy) {
       kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
-      kTestNak, secure_dns_policy(), disable_cert_network_fetches(),
+      kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
       &common_connect_job_params_, kProxyDnsNak);
 
   scoped_refptr<SSLSocketParams> endpoint_ssl_socket_params =
@@ -684,14 +703,14 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaSOCKSProxy) {
   VerifySSLSocketParams(endpoint_ssl_socket_params,
                         "endpoint_ssl_socket_params",
                         HostPortPair::FromSchemeHostPort(kEndpoint),
-                        endpoint_ssl_config, privacy_mode(), kTestNak);
+                        endpoint_ssl_config, privacy_mode(), kEndpointNak);
 
   scoped_refptr<SOCKSSocketParams> socks_socket_params =
       endpoint_ssl_socket_params->GetSocksProxyConnectionParams();
   VerifySOCKSSocketParams(socks_socket_params, "socks_socket_params",
                           /*is_socks_v5=*/true,
                           HostPortPair::FromSchemeHostPort(kEndpoint),
-                          kTestNak);
+                          kEndpointNak);
 
   scoped_refptr<TransportSocketParams> transport_socket_params =
       socks_socket_params->transport_params();
@@ -714,7 +733,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpEndpointViaHttpsProxyViaHttpsProxy) {
       kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
-      kTestNak, secure_dns_policy(), disable_cert_network_fetches(),
+      kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
       &common_connect_job_params_, kProxyDnsNak);
 
   scoped_refptr<HttpProxySocketParams> http_proxy_socket_params_b =
@@ -724,7 +743,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpEndpointViaHttpsProxyViaHttpsProxy) {
       /*quic_ssl_config=*/std::nullopt,
       HostPortPair::FromSchemeHostPort(kEndpoint), proxy_chain,
       /*proxy_chain_index=*/1,
-      /*tunnel=*/true, kTestNak, secure_dns_policy());
+      /*tunnel=*/true, kEndpointNak, secure_dns_policy());
 
   scoped_refptr<SSLSocketParams> proxy_ssl_socket_params_b =
       http_proxy_socket_params_b->ssl_params();
@@ -733,24 +752,27 @@ TEST_P(ConnectJobParamsFactoryTest, HttpEndpointViaHttpsProxyViaHttpsProxy) {
   VerifySSLSocketParams(proxy_ssl_socket_params_b, "proxy_ssl_socket_params_b",
                         HostPortPair::FromString("proxyb:443"),
                         proxy_ssl_config, PrivacyMode::PRIVACY_MODE_DISABLED,
-                        kTestNak);
+                        kEndpointNak);
 
   scoped_refptr<HttpProxySocketParams> http_proxy_socket_params_a =
       proxy_ssl_socket_params_b->GetHttpProxyConnectionParams();
-  VerifyHttpProxySocketParams(http_proxy_socket_params_a,
-                              "http_proxy_socket_params_a",
-                              /*quic_ssl_config=*/std::nullopt,
-                              HostPortPair("proxyb", 443), proxy_chain,
-                              /*proxy_chain_index=*/0,
-                              /*tunnel=*/true, kTestNak, secure_dns_policy());
+  VerifyHttpProxySocketParams(
+      http_proxy_socket_params_a, "http_proxy_socket_params_a",
+      /*quic_ssl_config=*/std::nullopt, HostPortPair("proxyb", 443),
+      proxy_chain,
+      /*proxy_chain_index=*/0,
+      /*tunnel=*/true,
+      partition_proxy_chains() ? kEndpointNak : NetworkAnonymizationKey(),
+      secure_dns_policy());
 
   scoped_refptr<SSLSocketParams> proxy_ssl_socket_params_a =
       http_proxy_socket_params_a->ssl_params();
   ASSERT_TRUE(proxy_ssl_socket_params_a);
-  VerifySSLSocketParams(proxy_ssl_socket_params_a, "proxy_ssl_socket_params_a",
-                        HostPortPair::FromString("proxya:443"),
-                        proxy_ssl_config, PrivacyMode::PRIVACY_MODE_DISABLED,
-                        kTestNak);
+  VerifySSLSocketParams(
+      proxy_ssl_socket_params_a, "proxy_ssl_socket_params_a",
+      HostPortPair::FromString("proxya:443"), proxy_ssl_config,
+      PrivacyMode::PRIVACY_MODE_DISABLED,
+      partition_proxy_chains() ? kEndpointNak : NetworkAnonymizationKey());
 
   scoped_refptr<TransportSocketParams> transport_socket_params =
       proxy_ssl_socket_params_a->GetDirectConnectionParams();
@@ -779,7 +801,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpsProxyViaHttpsProxy) {
       kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
-      kTestNak, secure_dns_policy(), disable_cert_network_fetches(),
+      kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
       &common_connect_job_params_, kProxyDnsNak);
 
   scoped_refptr<SSLSocketParams> endpoint_ssl_socket_params =
@@ -788,7 +810,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpsProxyViaHttpsProxy) {
   VerifySSLSocketParams(endpoint_ssl_socket_params,
                         "endpoint_ssl_socket_params",
                         HostPortPair::FromSchemeHostPort(kEndpoint),
-                        endpoint_ssl_config, privacy_mode(), kTestNak);
+                        endpoint_ssl_config, privacy_mode(), kEndpointNak);
 
   scoped_refptr<HttpProxySocketParams> http_proxy_socket_params_b =
       endpoint_ssl_socket_params->GetHttpProxyConnectionParams();
@@ -797,7 +819,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpsProxyViaHttpsProxy) {
       /*quic_ssl_config=*/std::nullopt,
       HostPortPair::FromSchemeHostPort(kEndpoint), proxy_chain,
       /*proxy_chain_index=*/1,
-      /*tunnel=*/true, kTestNak, secure_dns_policy());
+      /*tunnel=*/true, kEndpointNak, secure_dns_policy());
 
   scoped_refptr<SSLSocketParams> proxy_ssl_socket_params_b =
       http_proxy_socket_params_b->ssl_params();
@@ -806,24 +828,27 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpsProxyViaHttpsProxy) {
   VerifySSLSocketParams(proxy_ssl_socket_params_b, "proxy_ssl_socket_params_b",
                         HostPortPair::FromString("proxyb:443"),
                         proxy_ssl_config, PrivacyMode::PRIVACY_MODE_DISABLED,
-                        kTestNak);
+                        kEndpointNak);
 
   scoped_refptr<HttpProxySocketParams> http_proxy_socket_params_a =
       proxy_ssl_socket_params_b->GetHttpProxyConnectionParams();
-  VerifyHttpProxySocketParams(http_proxy_socket_params_a,
-                              "http_proxy_socket_params_a",
-                              /*quic_ssl_config=*/std::nullopt,
-                              HostPortPair("proxyb", 443), proxy_chain,
-                              /*proxy_chain_index=*/0,
-                              /*tunnel=*/true, kTestNak, secure_dns_policy());
+  VerifyHttpProxySocketParams(
+      http_proxy_socket_params_a, "http_proxy_socket_params_a",
+      /*quic_ssl_config=*/std::nullopt, HostPortPair("proxyb", 443),
+      proxy_chain,
+      /*proxy_chain_index=*/0,
+      /*tunnel=*/true,
+      partition_proxy_chains() ? kEndpointNak : NetworkAnonymizationKey(),
+      secure_dns_policy());
 
   scoped_refptr<SSLSocketParams> proxy_ssl_socket_params_a =
       http_proxy_socket_params_a->ssl_params();
   ASSERT_TRUE(proxy_ssl_socket_params_a);
-  VerifySSLSocketParams(proxy_ssl_socket_params_a, "proxy_ssl_socket_params_a",
-                        HostPortPair::FromString("proxya:443"),
-                        proxy_ssl_config, PrivacyMode::PRIVACY_MODE_DISABLED,
-                        kTestNak);
+  VerifySSLSocketParams(
+      proxy_ssl_socket_params_a, "proxy_ssl_socket_params_a",
+      HostPortPair::FromString("proxya:443"), proxy_ssl_config,
+      PrivacyMode::PRIVACY_MODE_DISABLED,
+      partition_proxy_chains() ? kEndpointNak : NetworkAnonymizationKey());
 
   scoped_refptr<TransportSocketParams> transport_socket_params =
       proxy_ssl_socket_params_a->GetDirectConnectionParams();
@@ -831,6 +856,66 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpsProxyViaHttpsProxy) {
       transport_socket_params, "transport_socket_params",
       HostPortPair("proxya", 443), secure_dns_policy(), kProxyDnsNak,
       AlpnProtoStringsForMode(alpn_mode()));
+}
+
+// A connection to an HTTPS endpoint via a two-proxy chain mixing QUIC and HTTPS
+// sets up the required parameters.
+TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpsProxyViaQuicProxy) {
+  // HTTPS endpoints are not supported without ALPN.
+  if (alpn_mode() == ConnectJobFactory::AlpnMode::kDisabled) {
+    return;
+  }
+
+  const url::SchemeHostPort kEndpoint(url::kHttpsScheme, "test", 82);
+  ProxyChain proxy_chain = ProxyChain::ForIpProtection({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC, "proxya",
+                                         443),
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS, "proxyb",
+                                         443),
+  });
+  ConnectJobParams params = ConstructConnectJobParams(
+      kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*allowed_bad_certs=*/{}, alpn_mode(),
+      /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
+      kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
+      &common_connect_job_params_, kProxyDnsNak);
+
+  scoped_refptr<SSLSocketParams> endpoint_ssl_socket_params =
+      ExpectSSLSocketParams(params);
+  SSLConfig endpoint_ssl_config = SSLConfigForEndpoint();
+  VerifySSLSocketParams(endpoint_ssl_socket_params,
+                        "endpoint_ssl_socket_params",
+                        HostPortPair::FromSchemeHostPort(kEndpoint),
+                        endpoint_ssl_config, privacy_mode(), kEndpointNak);
+
+  scoped_refptr<HttpProxySocketParams> http_proxy_socket_params_b =
+      endpoint_ssl_socket_params->GetHttpProxyConnectionParams();
+  VerifyHttpProxySocketParams(
+      http_proxy_socket_params_b, "http_proxy_socket_params_b",
+      /*quic_ssl_config=*/std::nullopt,
+      HostPortPair::FromSchemeHostPort(kEndpoint), proxy_chain,
+      /*proxy_chain_index=*/1,
+      /*tunnel=*/true, kEndpointNak, secure_dns_policy());
+
+  scoped_refptr<SSLSocketParams> proxy_ssl_socket_params_b =
+      http_proxy_socket_params_b->ssl_params();
+  ASSERT_TRUE(proxy_ssl_socket_params_b);
+  SSLConfig proxy_ssl_config = SSLConfigForProxy();
+  VerifySSLSocketParams(proxy_ssl_socket_params_b, "proxy_ssl_socket_params_b",
+                        HostPortPair::FromString("proxyb:443"),
+                        proxy_ssl_config, PrivacyMode::PRIVACY_MODE_DISABLED,
+                        kEndpointNak);
+
+  scoped_refptr<HttpProxySocketParams> http_proxy_socket_params_a =
+      proxy_ssl_socket_params_b->GetHttpProxyConnectionParams();
+  SSLConfig quic_ssl_config = SSLConfigForProxy();
+  VerifyHttpProxySocketParams(
+      http_proxy_socket_params_a, "http_proxy_socket_params_a", quic_ssl_config,
+      HostPortPair("proxyb", 443), proxy_chain,
+      /*proxy_chain_index=*/0,
+      /*tunnel=*/true,
+      partition_proxy_chains() ? kEndpointNak : NetworkAnonymizationKey(),
+      secure_dns_policy());
 }
 
 // A connection to an HTTPS endpoint via a two-proxy QUIC chain
@@ -852,7 +937,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaQuicProxyViaQuicProxy) {
       kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
-      kTestNak, secure_dns_policy(), disable_cert_network_fetches(),
+      kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
       &common_connect_job_params_, kProxyDnsNak);
 
   auto endpoint_ssl_socket_params = ExpectSSLSocketParams(params);
@@ -860,17 +945,17 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaQuicProxyViaQuicProxy) {
   VerifySSLSocketParams(endpoint_ssl_socket_params,
                         "endpoint_ssl_socket_params",
                         HostPortPair::FromSchemeHostPort(kEndpoint),
-                        endpoint_ssl_config, privacy_mode(), kTestNak);
+                        endpoint_ssl_config, privacy_mode(), kEndpointNak);
 
   auto http_proxy_socket_params_b =
       endpoint_ssl_socket_params->GetHttpProxyConnectionParams();
   SSLConfig quic_ssl_config_b = SSLConfigForProxy();
-  VerifyHttpProxySocketParams(http_proxy_socket_params_b,
-                              "http_proxy_socket_params_b", quic_ssl_config_b,
-                              HostPortPair::FromSchemeHostPort(kEndpoint),
-                              proxy_chain,
-                              /*proxy_chain_index=*/1,
-                              /*tunnel=*/true, kTestNak, secure_dns_policy());
+  VerifyHttpProxySocketParams(
+      http_proxy_socket_params_b, "http_proxy_socket_params_b",
+      quic_ssl_config_b, HostPortPair::FromSchemeHostPort(kEndpoint),
+      proxy_chain,
+      /*proxy_chain_index=*/1,
+      /*tunnel=*/true, kEndpointNak, secure_dns_policy());
 }
 
 // A connection to an HTTPS endpoint via a proxy chain with two HTTPS proxies
@@ -896,7 +981,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaMixedProxyChain) {
       kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
-      kTestNak, secure_dns_policy(), disable_cert_network_fetches(),
+      kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
       &common_connect_job_params_, kProxyDnsNak);
 
   auto endpoint_ssl_socket_params = ExpectSSLSocketParams(params);
@@ -904,7 +989,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaMixedProxyChain) {
   VerifySSLSocketParams(endpoint_ssl_socket_params,
                         "endpoint_ssl_socket_params",
                         HostPortPair::FromSchemeHostPort(kEndpoint),
-                        endpoint_ssl_config, privacy_mode(), kTestNak);
+                        endpoint_ssl_config, privacy_mode(), kEndpointNak);
 
   scoped_refptr<HttpProxySocketParams> http_proxy_socket_params_d =
       endpoint_ssl_socket_params->GetHttpProxyConnectionParams();
@@ -913,7 +998,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaMixedProxyChain) {
       /*quic_ssl_config=*/std::nullopt,
       HostPortPair::FromSchemeHostPort(kEndpoint), proxy_chain,
       /*proxy_chain_index=*/3,
-      /*tunnel=*/true, kTestNak, secure_dns_policy());
+      /*tunnel=*/true, kEndpointNak, secure_dns_policy());
 
   scoped_refptr<SSLSocketParams> proxy_ssl_socket_params_d =
       http_proxy_socket_params_d->ssl_params();
@@ -922,33 +1007,38 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaMixedProxyChain) {
   VerifySSLSocketParams(proxy_ssl_socket_params_d, "proxy_ssl_socket_params_d",
                         HostPortPair::FromString("proxyd:443"),
                         proxy_ssl_config, PrivacyMode::PRIVACY_MODE_DISABLED,
-                        kTestNak);
+                        kEndpointNak);
 
   scoped_refptr<HttpProxySocketParams> http_proxy_socket_params_c =
       proxy_ssl_socket_params_d->GetHttpProxyConnectionParams();
-  VerifyHttpProxySocketParams(http_proxy_socket_params_c,
-                              "http_proxy_socket_params_c",
-                              /*quic_ssl_config=*/std::nullopt,
-                              HostPortPair("proxyd", 443), proxy_chain,
-                              /*proxy_chain_index=*/2,
-                              /*tunnel=*/true, kTestNak, secure_dns_policy());
+  VerifyHttpProxySocketParams(
+      http_proxy_socket_params_c, "http_proxy_socket_params_c",
+      /*quic_ssl_config=*/std::nullopt, HostPortPair("proxyd", 443),
+      proxy_chain,
+      /*proxy_chain_index=*/2,
+      /*tunnel=*/true,
+      partition_proxy_chains() ? kEndpointNak : NetworkAnonymizationKey(),
+      secure_dns_policy());
 
   scoped_refptr<SSLSocketParams> proxy_ssl_socket_params_c =
       http_proxy_socket_params_c->ssl_params();
   ASSERT_TRUE(proxy_ssl_socket_params_c);
-  VerifySSLSocketParams(proxy_ssl_socket_params_c, "proxy_ssl_socket_params_c",
-                        HostPortPair::FromString("proxyc:443"),
-                        proxy_ssl_config, PrivacyMode::PRIVACY_MODE_DISABLED,
-                        kTestNak);
+  VerifySSLSocketParams(
+      proxy_ssl_socket_params_c, "proxy_ssl_socket_params_c",
+      HostPortPair::FromString("proxyc:443"), proxy_ssl_config,
+      PrivacyMode::PRIVACY_MODE_DISABLED,
+      partition_proxy_chains() ? kEndpointNak : NetworkAnonymizationKey());
 
   auto http_proxy_socket_params_b =
       proxy_ssl_socket_params_c->GetHttpProxyConnectionParams();
   SSLConfig quic_ssl_config_b = SSLConfigForProxy();
-  VerifyHttpProxySocketParams(http_proxy_socket_params_b,
-                              "http_proxy_socket_params_b", quic_ssl_config_b,
-                              HostPortPair("proxyc", 443), proxy_chain,
-                              /*proxy_chain_index=*/1,
-                              /*tunnel=*/true, kTestNak, secure_dns_policy());
+  VerifyHttpProxySocketParams(
+      http_proxy_socket_params_b, "http_proxy_socket_params_b",
+      quic_ssl_config_b, HostPortPair("proxyc", 443), proxy_chain,
+      /*proxy_chain_index=*/1,
+      /*tunnel=*/true,
+      partition_proxy_chains() ? kEndpointNak : NetworkAnonymizationKey(),
+      secure_dns_policy());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -962,6 +1052,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(ConnectJobFactory::AlpnMode::kDisabled,
                         ConnectJobFactory::AlpnMode::kHttp11Only,
                         ConnectJobFactory::AlpnMode::kHttpAll),
+        testing::Values(false, true),
         testing::Values(false, true))));
 
 }  // namespace
