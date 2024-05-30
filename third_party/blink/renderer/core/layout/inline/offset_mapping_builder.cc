@@ -86,6 +86,12 @@ void OffsetMappingBuilder::AppendIdentityMapping(unsigned length) {
   has_open_unit_ = true;
 }
 
+void OffsetMappingBuilder::RevertIdentityMapping1() {
+  CHECK(!current_layout_object_);
+  --current_offset_;
+  --destination_length_;
+}
+
 void OffsetMappingBuilder::AppendCollapsedMapping(unsigned length) {
   DCHECK_GT(length, 0u);
   const unsigned dom_start = current_offset_;

@@ -17,7 +17,7 @@
 </div>
 <script>
 test(() => {
-  assert_equals(document.querySelector('ruby').getClientRects().length, 3);
+  assert_equals(document.querySelector('ruby').getClientRects().length, 2);
   // The test passes if no crashes.
 }, 'crbug.com/342460084: A crash test for a ruby broken by overflow-wrap:break-word');
 </script>

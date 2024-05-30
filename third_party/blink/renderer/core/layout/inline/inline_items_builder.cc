@@ -1490,6 +1490,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterInline(
   has_ruby_ = has_ruby_ || node->IsInlineRubyText();
   if (node->IsInlineRubyText()) {
     ++ruby_text_nesting_level_;
+    typename MappingBuilder::SourceNodeScope scope(&mapping_builder_, nullptr);
     if (!node->Parent()->IsInlineRuby()) {
       // This creates a ruby column with a placeholder-only ruby-base.
       AppendOpaque(InlineItem::kOpenRubyColumn,
@@ -1516,6 +1517,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterInline(
     }
   }
 
+  typename MappingBuilder::SourceNodeScope scope(&mapping_builder_, nullptr);
   if (node->IsInlineRuby()) {
     AppendOpaque(InlineItem::kOpenRubyColumn,
                  IsLtr(style->Direction()) ? kLeftToRightIsolateCharacter
@@ -1549,9 +1551,23 @@ void InlineItemsBuilderTemplate<MappingBuilder>::ExitInline(
     if (kDisableForcedBreakInRubyColumn) {
       --ruby_text_nesting_level_;
     }
-    AppendOpaque(InlineItem::kCloseRubyColumn, kPopDirectionalIsolateCharacter,
-                 node);
+    typename MappingBuilder::SourceNodeScope scope(&mapping_builder_, nullptr);
+    wtf_size_t size = items_->size();
+    if (size >= 3 &&
+        items_->at(size - 3).Type() == InlineItem::kCloseRubyColumn &&
+        items_->at(size - 2).Type() == InlineItem::kOpenRubyColumn &&
+        items_->at(size - 1).Type() == InlineItem::kRubyLinePlaceholder) {
+      // Remove the last kOpenRubyColumn and kRubyLinePlaceholder.
+      text_.Resize(items_->at(size - 2).StartOffset());
+      items_->Shrink(size - 2);
+      // kOpenRubyColumn called AppendIdentityMapping(1).
+      mapping_builder_.RevertIdentityMapping1();
+    } else {
+      AppendOpaque(InlineItem::kCloseRubyColumn,
+                   kPopDirectionalIsolateCharacter, node);
+    }
   } else if (node->IsInlineRubyText()) {
+    typename MappingBuilder::SourceNodeScope scope(&mapping_builder_, nullptr);
     AppendOpaque(InlineItem::kRubyLinePlaceholder, node);
   }
 
@@ -1598,12 +1614,13 @@ void InlineItemsBuilderTemplate<MappingBuilder>::ExitInline(
 
   if (node->IsInlineRubyText()) {
     --ruby_text_nesting_level_;
+    typename MappingBuilder::SourceNodeScope scope(&mapping_builder_, nullptr);
     if (node->Parent()->IsInlineRuby()) {
       LayoutObject* ruby_container = node->Parent();
       AppendOpaque(InlineItem::kCloseRubyColumn,
                    kPopDirectionalIsolateCharacter, ruby_container);
       // This produces almost-empty ruby-columns if </ruby> follows.
-      // LineBreaker should ignore such ruby-columns.
+      // The beginning part of this function removes such ruby-columns.
       AppendOpaque(InlineItem::kOpenRubyColumn,
                    IsLtr(node->Parent()->Style()->Direction())
                        ? kLeftToRightIsolateCharacter
