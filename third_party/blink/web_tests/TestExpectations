@@ -7505,6 +7505,3 @@ crbug.com/343473478 external/wpt/html/semantics/forms/the-input-element/click-us
 crbug.com/343473478 external/wpt/html/semantics/forms/the-input-element/show-picker-disabled-readonly.html [ Failure Pass Timeout ]
 crbug.com/343473478 external/wpt/html/semantics/forms/the-input-element/show-picker-user-gesture.html [ Failure Pass Skip Timeout ]
 crbug.com/343473478 external/wpt/html/semantics/forms/the-select-element/show-picker-user-gesture.html [ Failure Pass ]
-
-# Gardener 2024-05-30
-crbug.com/343598877 [ Win ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/* [ Crash Failure Pass ]

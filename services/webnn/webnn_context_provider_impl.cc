@@ -248,13 +248,15 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(WEBNN_USE_TFLITE)
-// TODO: crbug.com/41486052 - Create the TFLite context using `options`.
+  if (!context_impl) {
 #if BUILDFLAG(IS_CHROMEOS)
-  context_impl = new tflite::ContextImplCrOS(std::move(receiver), this);
+    // TODO: crbug.com/41486052 - Create the TFLite context using `options`.
+    context_impl = new tflite::ContextImplCrOS(std::move(receiver), this);
 #else
-  context_impl = new tflite::ContextImplTflite(std::move(receiver), this,
-                                               std::move(options));
+    context_impl = new tflite::ContextImplTflite(std::move(receiver), this,
+                                                 std::move(options));
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  }
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 
   if (!context_impl) {
