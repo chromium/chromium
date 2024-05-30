@@ -29,35 +29,45 @@ content::RenderFrameHost* FindFullPagePdfExtensionHost(
 
   // A full-page PDF embedder host should have a child PDF extension host.
   content::RenderFrameHost* extension_host = nullptr;
-  contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+  contents->GetPrimaryMainFrame()->ForEachRenderFrameHostWithAction(
       [&extension_host](content::RenderFrameHost* child_host) {
-        if (!IsPdfExtensionOrigin(child_host->GetLastCommittedOrigin())) {
-          return;
+        content::RenderFrameHost* parent_host = child_host->GetParent();
+        // Don't descend past the first level of children (extension frame must
+        // be a direct child to main frame).
+        if (parent_host && !parent_host->IsInPrimaryMainFrame()) {
+          return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
         }
 
-        CHECK(!extension_host);
-        extension_host = child_host;
+        if (IsPdfExtensionOrigin(child_host->GetLastCommittedOrigin())) {
+          CHECK(!extension_host);
+          extension_host = child_host;
+        }
+
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
       });
 
   return extension_host;
 }
 
-content::RenderFrameHost* FindPdfChildFrame(content::RenderFrameHost* rfh) {
-  if (!IsPdfInternalPluginAllowedOrigin(rfh->GetLastCommittedOrigin())) {
+content::RenderFrameHost* FindPdfChildFrame(
+    content::RenderFrameHost* extension_host) {
+  if (!IsPdfInternalPluginAllowedOrigin(
+          extension_host->GetLastCommittedOrigin())) {
     return nullptr;
   }
 
   content::RenderFrameHost* pdf_rfh = nullptr;
-  rfh->ForEachRenderFrameHost([&pdf_rfh](content::RenderFrameHost* rfh) {
-    if (!rfh->GetProcess()->IsPdf()) {
-      return;
-    }
+  extension_host->ForEachRenderFrameHost(
+      [&pdf_rfh](content::RenderFrameHost* rfh) {
+        if (!rfh->GetProcess()->IsPdf()) {
+          return;
+        }
 
-    DCHECK(IsPdfInternalPluginAllowedOrigin(
-        rfh->GetParent()->GetLastCommittedOrigin()));
-    DCHECK(!pdf_rfh);
-    pdf_rfh = rfh;
-  });
+        DCHECK(IsPdfInternalPluginAllowedOrigin(
+            rfh->GetParent()->GetLastCommittedOrigin()));
+        DCHECK(!pdf_rfh);
+        pdf_rfh = rfh;
+      });
 
   return pdf_rfh;
 }
