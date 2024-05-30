@@ -226,6 +226,7 @@ class AutofillManager
   virtual void OnAskForValuesToFill(
       const FormData& form,
       const FormFieldData& field,
+      const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source);
   void OnHidePopup();
   virtual void OnDidFillAutofillFormData(const FormData& form,
@@ -338,6 +339,7 @@ class AutofillManager
   virtual void OnAskForValuesToFillImpl(
       const FormData& form,
       const FormFieldData& field,
+      const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source) = 0;
   virtual void OnDidFillAutofillFormDataImpl(
       const FormData& form,

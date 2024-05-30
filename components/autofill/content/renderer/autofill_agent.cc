@@ -59,6 +59,7 @@
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_form_related_change_type.h"
+#include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
@@ -114,6 +115,19 @@ bool JavaScriptOnlyReformattedValue(std::u16string old_value,
   // NKFC normalization may be appropriate).
   // TODO(b/40947225): Internationalize this normalization.
   return old_value == new_value;
+}
+
+gfx::Rect GetCaretBounds(content::RenderFrame& frame) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillCaretExtraction)) {
+    return gfx::Rect();
+  }
+  gfx::Rect anchor;
+  gfx::Rect focus;
+  if (auto* frame_widget = frame.GetWebFrame()->LocalRoot()->FrameWidget()) {
+    frame_widget->CalculateSelectionBounds(anchor, focus);
+    frame.ConvertViewportToWindow(&focus);
+  }
+  return focus;
 }
 
 }  // namespace
@@ -183,9 +197,10 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
   void AskForValuesToFill(
       const FormData& form,
       const FormFieldData& field,
+      const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source) override {
     DeferMsg(&mojom::AutofillDriver::AskForValuesToFill, form, field,
-             trigger_source);
+             caret_bounds, trigger_source);
   }
   void HidePopup() override { DeferMsg(&mojom::AutofillDriver::HidePopup); }
   void FocusOnNonFormField(bool had_interacted_form) override {
@@ -1164,7 +1179,11 @@ void AutofillAgent::ShowSuggestionsForContentEditable(
   CHECK_EQ(form->fields.size(), 1u);
   if (auto* autofill_driver = unsafe_autofill_driver()) {
     is_popup_possibly_visible_ = true;
-    autofill_driver->AskForValuesToFill(*form, form->fields[0], trigger_source);
+    if (auto* render_frame = unsafe_render_frame()) {
+      autofill_driver->AskForValuesToFill(*form, form->fields[0],
+                                          GetCaretBounds(*render_frame),
+                                          trigger_source);
+    }
   }
 }
 
@@ -1222,7 +1241,10 @@ void AutofillAgent::QueryAutofillSuggestions(
 
   is_popup_possibly_visible_ = true;
   if (auto* autofill_driver = unsafe_autofill_driver()) {
-    autofill_driver->AskForValuesToFill(form, field, trigger_source);
+    if (auto* render_frame = unsafe_render_frame()) {
+      autofill_driver->AskForValuesToFill(
+          form, field, GetCaretBounds(*render_frame), trigger_source);
+    }
   }
 }
 

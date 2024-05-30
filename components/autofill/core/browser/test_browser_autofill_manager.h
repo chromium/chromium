@@ -50,6 +50,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   void OnAskForValuesToFill(
       const FormData& form,
       const FormFieldData& field,
+      const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source) override;
   void OnJavaScriptChangedAutofilledValue(const FormData& form,
                                           const FormFieldData& field,

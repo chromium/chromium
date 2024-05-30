@@ -251,8 +251,11 @@ void AutofillDriverIOS::AskForValuesToFill(const FormData& form,
                                            const FormFieldData& field) {
   // TODO(crbug.com/40266699): Route this using AutofillDriverRouter.
   // TODO(crbug.com/40269303): Distinguish between different trigger sources.
+  // The caret position is currently not extracted on iOS .
+  gfx::Rect caret_bounds;
   GetAutofillManager().OnAskForValuesToFill(
-      form, field, autofill::AutofillSuggestionTriggerSource::kiOS);
+      form, field, caret_bounds,
+      autofill::AutofillSuggestionTriggerSource::kiOS);
 }
 
 void AutofillDriverIOS::DidFillAutofillFormData(const FormData& form,

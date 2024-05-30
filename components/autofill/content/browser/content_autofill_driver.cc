@@ -208,17 +208,25 @@ bool ContentAutofillDriver::CanShowAutofillUi() const {
   return render_frame_host_->IsActive();
 }
 
+gfx::Rect ContentAutofillDriver::TransformBoundingBoxToViewportCoordinates(
+    const gfx::Rect& bounding_box) const {
+  content::RenderWidgetHostView* view = render_frame_host_->GetView();
+  if (!view) {
+    return bounding_box;
+  }
+  return gfx::Rect(view->TransformPointToRootCoordSpace(bounding_box.origin()),
+                   bounding_box.size());
+}
+
 gfx::RectF ContentAutofillDriver::TransformBoundingBoxToViewportCoordinates(
     const gfx::RectF& bounding_box) const {
   content::RenderWidgetHostView* view = render_frame_host_->GetView();
-  if (!view)
+  if (!view) {
     return bounding_box;
-
-  gfx::PointF orig_point(bounding_box.x(), bounding_box.y());
-  gfx::PointF transformed_point =
-      view->TransformPointToRootCoordSpaceF(orig_point);
-  return gfx::RectF(transformed_point.x(), transformed_point.y(),
-                    bounding_box.width(), bounding_box.height());
+  }
+  return gfx::RectF(
+      view->TransformPointToRootCoordSpaceF(bounding_box.origin()),
+      bounding_box.size());
 }
 
 net::IsolationInfo ContentAutofillDriver::IsolationInfo() {
@@ -488,6 +496,7 @@ void ContentAutofillDriver::SelectControlDidChange(
 void ContentAutofillDriver::AskForValuesToFill(
     const FormData& raw_form,
     const FormFieldData& raw_field,
+    const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
@@ -496,12 +505,13 @@ void ContentAutofillDriver::AskForValuesToFill(
   FormFieldData field = raw_field;
   SetFrameAndFormMetaData(form, field);
   router().AskForValuesToFill(
-      this, std::move(form), field, trigger_source,
+      this, std::move(form), field,
+      TransformBoundingBoxToViewportCoordinates(caret_bounds), trigger_source,
       [](autofill::AutofillDriver* target, const FormData& form,
-         const FormFieldData& field,
+         const FormFieldData& field, const gfx::Rect& caret_bounds,
          AutofillSuggestionTriggerSource trigger_source) {
         target->GetAutofillManager().OnAskForValuesToFill(
-            WithNewVersion(form), field, trigger_source);
+            WithNewVersion(form), field, caret_bounds, trigger_source);
       });
 }
 

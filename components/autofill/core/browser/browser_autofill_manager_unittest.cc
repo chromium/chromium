@@ -155,6 +155,11 @@ const std::string kArbitraryNickname = "Grocery Card";
 const std::u16string kArbitraryNickname16 = u"Grocery Card";
 Suggestion::Icon kAddressEntryIcon = Suggestion::Icon::kAccount;
 
+gfx::Rect GetFakeCaretBounds(const FormFieldData& focused_field) {
+  gfx::PointF p = focused_field.bounds().origin();
+  return gfx::Rect(gfx::Point(p.x(), p.y()), gfx::Size(0, 10));
+}
+
 bool ShouldSplitCardNameAndLastFourDigitsForMetadata() {
   // Splitting card name and last four logic does not apply to iOS because the
   // AutofillSuggestionGenerator on iOS doesn't currently support it.
@@ -769,8 +774,8 @@ class BrowserAutofillManagerTest : public testing::Test {
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source =
           AutofillSuggestionTriggerSource::kTextFieldDidChange) {
-    browser_autofill_manager_->OnAskForValuesToFill(form, field,
-                                                    trigger_source);
+    browser_autofill_manager_->OnAskForValuesToFill(
+        form, field, GetFakeCaretBounds(field), trigger_source);
   }
 
   void DidShowAutofillSuggestions(
@@ -785,7 +790,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                             const FormFieldData& field,
                             bool form_element_was_clicked) {
     browser_autofill_manager_->OnAskForValuesToFill(
-        form, field,
+        form, field, GetFakeCaretBounds(field),
         form_element_was_clicked
             ? AutofillSuggestionTriggerSource::kFormControlElementClicked
             : AutofillSuggestionTriggerSource::kTextFieldDidChange);
@@ -810,7 +815,7 @@ class BrowserAutofillManagerTest : public testing::Test {
       AutofillTriggerDetails trigger_details = {
           .trigger_source = AutofillTriggerSource::kPopup}) {
     browser_autofill_manager_->OnAskForValuesToFill(
-        form, field,
+        form, field, GetFakeCaretBounds(field),
         AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown);
     if (const AutofillProfile* profile =
             personal_data().address_data_manager().GetProfileByGUID(guid)) {

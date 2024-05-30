@@ -623,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AutofillInOOPIFs) {
       auto* driver = static_cast<mojom::AutofillDriver*>(
           autofill::ContentAutofillDriver::GetForRenderFrameHost(rfh));
       driver->AskForValuesToFill(
-          form, form.fields[0],
+          form, form.fields[0], gfx::Rect(0, 10),
           ::autofill::mojom::AutofillSuggestionTriggerSource::kUnspecified);
     }
   });

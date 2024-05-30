@@ -245,10 +245,12 @@ void AutofillDriverRouter::AskForValuesToFill(
     AutofillDriver* source,
     FormData form,
     const FormFieldData& field,
+    const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source,
     void (*callback)(AutofillDriver* target,
                      const FormData& form,
                      const FormFieldData& field,
+                     const gfx::Rect& caret_bounds,
                      AutofillSuggestionTriggerSource trigger_source)) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
@@ -258,7 +260,7 @@ void AutofillDriverRouter::AskForValuesToFill(
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
   auto* target = DriverOfFrame(browser_form.host_frame);
   CHECK(target);
-  callback(target, browser_form, field, trigger_source);
+  callback(target, browser_form, field, caret_bounds, trigger_source);
 }
 
 void AutofillDriverRouter::HidePopup(AutofillDriver* source,

@@ -86,6 +86,7 @@ void AndroidAutofillManager::OnTextFieldDidScrollImpl(
 void AndroidAutofillManager::OnAskForValuesToFillImpl(
     const FormData& form,
     const FormFieldData& field,
+    const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source) {
   auto* provider = GetAutofillProvider();
   if (!provider) {

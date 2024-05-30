@@ -200,6 +200,12 @@ class WebFrameWidget : public WebWidget {
   // If the widget is currently selecting a range.
   virtual bool HandlingSelectRange() = 0;
 
+  // Calculates the selection bounds in the root frame. Returns bounds unchanged
+  // when there is no focused frame. Returns the caret bounds if the selection
+  // range is empty.
+  virtual void CalculateSelectionBounds(gfx::Rect& anchor_in_root_frame,
+                                        gfx::Rect& focus_in_root_frame) = 0;
+
   // Returns true if a pinch gesture is currently active in main frame.
   virtual bool PinchGestureActiveInMainFrame() = 0;
 

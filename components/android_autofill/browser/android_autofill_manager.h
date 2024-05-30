@@ -87,6 +87,7 @@ class AndroidAutofillManager : public AutofillManager,
   void OnAskForValuesToFillImpl(
       const FormData& form,
       const FormFieldData& field,
+      const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source) override;
 
   void OnFocusOnFormFieldImpl(const FormData& form,

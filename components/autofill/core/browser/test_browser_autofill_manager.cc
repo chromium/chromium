@@ -71,10 +71,12 @@ void TestBrowserAutofillManager::OnDidFillAutofillFormData(
 void TestBrowserAutofillManager::OnAskForValuesToFill(
     const FormData& form,
     const FormFieldData& field,
+    const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source) {
   TestAutofillManagerWaiter waiter(*this,
                                    {AutofillManagerEvent::kAskForValuesToFill});
-  AutofillManager::OnAskForValuesToFill(form, field, trigger_source);
+  AutofillManager::OnAskForValuesToFill(form, field, caret_bounds,
+                                        trigger_source);
   ASSERT_TRUE(waiter.Wait());
 }
 
@@ -226,7 +228,10 @@ void TestBrowserAutofillManager::OnAskForValuesToFillTest(
     AutofillSuggestionTriggerSource trigger_source) {
   TestAutofillManagerWaiter waiter(*this,
                                    {AutofillManagerEvent::kAskForValuesToFill});
-  BrowserAutofillManager::OnAskForValuesToFill(form, field, trigger_source);
+  gfx::PointF p = field.bounds().origin();
+  gfx::Rect caret_bounds(gfx::Point(p.x(), p.y()), gfx::Size(0, 10));
+  BrowserAutofillManager::OnAskForValuesToFill(form, field, caret_bounds,
+                                               trigger_source);
   ASSERT_TRUE(waiter.Wait());
 }
 

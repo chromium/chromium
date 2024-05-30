@@ -4455,6 +4455,11 @@ void WebFrameWidgetImpl::ForEachRemoteFrameControlledByWidget(
                                                callback);
 }
 
+void WebFrameWidgetImpl::CalculateSelectionBounds(gfx::Rect& anchor_root_frame,
+                                                  gfx::Rect& focus_root_frame) {
+  CalculateSelectionBounds(anchor_root_frame, focus_root_frame, nullptr);
+}
+
 void WebFrameWidgetImpl::CalculateSelectionBounds(
     gfx::Rect& anchor_root_frame,
     gfx::Rect& focus_root_frame,
