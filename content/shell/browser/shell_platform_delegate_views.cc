@@ -365,7 +365,8 @@ void ShellPlatformDelegate::CreatePlatformWindow(
       gfx::Rect(initial_size));
 #else
   shell_data.window_widget = new views::Widget();
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.bounds = gfx::Rect(initial_size);
   params.delegate = delegate.release();
   params.wm_class_class = "chromium-content_shell";

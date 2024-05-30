@@ -828,7 +828,7 @@ Widget* AttachPopupToNativeParent(NSWindow* native_parent) {
   // windows of TYPE_CONTROL which need a parent Widget to obtain the focus
   // manager.
   Widget* child = new Widget;
-  Widget::InitParams init_params;
+  Widget::InitParams init_params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   init_params.parent = anchor_view;
   init_params.child = true;
   init_params.type = Widget::InitParams::TYPE_POPUP;

@@ -41,7 +41,8 @@ class ArcTaskWindowBuilder {
   bool built_{false};
   int task_id_{1};
   raw_ptr<exo::Surface> shell_root_surface_{nullptr};
-  views::Widget::InitParams init_params_;
+  views::Widget::InitParams init_params_{
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET};
   std::string package_name_;
   std::string title_ = "ArcTaskWindowDefaultTitle";
 };

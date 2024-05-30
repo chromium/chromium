@@ -88,7 +88,8 @@ class ASH_EXPORT TestWidgetBuilder {
   [[nodiscard]] std::unique_ptr<views::Widget> BuildOwnsNativeWidget();
 
  private:
-  views::Widget::InitParams widget_init_params_;
+  views::Widget::InitParams widget_init_params_{
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET};
   int window_id_ = aura::Window::kInitialId;
   std::u16string window_title_ = std::u16string();
   bool show_ = true;
