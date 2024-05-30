@@ -966,8 +966,8 @@ public class MediaDrmBridge {
 
         closeSessionNoException(sessionId);
         mSessionManager.remove(sessionId);
-        onPromiseResolved(promiseId);
         onSessionClosed(sessionId);
+        onPromiseResolved(promiseId);
         Log.i(TAG, "Session %s closed", sessionId.toHexString());
     }
 
