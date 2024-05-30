@@ -77,6 +77,11 @@ SequenceId SharedImageStub::sequence() const {
   return gpu_channel_shared_image_interface_->sequence();
 }
 
+const scoped_refptr<gpu::GpuChannelSharedImageInterface>&
+SharedImageStub::shared_image_interface() {
+  return gpu_channel_shared_image_interface_;
+}
+
 std::unique_ptr<SharedImageStub> SharedImageStub::Create(GpuChannel* channel,
                                                          int32_t route_id) {
   auto stub = base::WrapUnique(new SharedImageStub(channel, route_id));
