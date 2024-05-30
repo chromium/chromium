@@ -80,6 +80,7 @@ public class GoogleBottomBarViewCreator {
         initButton(R.id.google_bottom_bar_save_button, ButtonId.SAVE);
         initButton(R.id.google_bottom_bar_share_button, ButtonId.SHARE);
         initButton(R.id.google_bottom_bar_page_insights_button, ButtonId.PIH_BASIC);
+        initButton(R.id.google_bottom_bar_custom_button, ButtonId.CUSTOM);
     }
 
     private void initButton(int viewId, @ButtonId int buttonConfigId) {
@@ -139,6 +140,7 @@ public class GoogleBottomBarViewCreator {
         button.setImageDrawable(buttonConfig.getIcon());
         button.setContentDescription(buttonConfig.getDescription());
         button.setOnClickListener(mActionsHandler.getClickListener(buttonConfig));
+        button.setVisibility(View.VISIBLE);
 
         if (!isFirstTimeShown) {
             int buttonEvent =

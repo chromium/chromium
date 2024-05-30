@@ -10,6 +10,7 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
+import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -58,6 +59,7 @@ class GoogleBottomBarLogger {
         GoogleBottomBarButtonEvent.SAVE_EMBEDDER,
         GoogleBottomBarButtonEvent.SHARE_CHROME,
         GoogleBottomBarButtonEvent.SHARE_EMBEDDER,
+        GoogleBottomBarButtonEvent.CUSTOM_EMBEDDER,
         GoogleBottomBarButtonEvent.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -69,6 +71,7 @@ class GoogleBottomBarLogger {
         int SAVE_EMBEDDER = 4;
         int SHARE_CHROME = 5;
         int SHARE_EMBEDDER = 6;
+        int CUSTOM_EMBEDDER = 7;
 
         int COUNT = 7;
         // NOTE: This must be kept in sync with the definition |GoogleBottomBarButtonEvent|
@@ -131,24 +134,27 @@ class GoogleBottomBarLogger {
             Supplier<PageInsightsCoordinator> pageInsightsCoordinatorSupplier,
             BottomBarConfig.ButtonConfig buttonConfig) {
         switch (buttonConfig.getId()) {
-            case BottomBarConfigCreator.ButtonId.PIH_BASIC,
-                    BottomBarConfigCreator.ButtonId.PIH_COLORED,
-                    BottomBarConfigCreator.ButtonId.PIH_EXPANDED -> {
+            case ButtonId.PIH_BASIC, ButtonId.PIH_COLORED, ButtonId.PIH_EXPANDED -> {
                 return pageInsightsCoordinatorSupplier.hasValue()
                         ? GoogleBottomBarButtonEvent.PIH_CHROME
                         : buttonConfig.getPendingIntent() != null
                                 ? GoogleBottomBarButtonEvent.PIH_EMBEDDER
                                 : GoogleBottomBarButtonEvent.UNKNOWN;
             }
-            case BottomBarConfigCreator.ButtonId.SHARE -> {
+            case ButtonId.SHARE -> {
                 return buttonConfig.getPendingIntent() != null
                         ? GoogleBottomBarButtonEvent.SHARE_EMBEDDER
                         : GoogleBottomBarButtonEvent.SHARE_CHROME;
             }
-            case BottomBarConfigCreator.ButtonId.SAVE -> {
+            case ButtonId.SAVE -> {
                 return buttonConfig.getPendingIntent() != null
                         ? GoogleBottomBarButtonEvent.SAVE_EMBEDDER
                         : GoogleBottomBarButtonEvent.SAVE_DISABLED;
+            }
+            case ButtonId.CUSTOM -> {
+                return buttonConfig.getPendingIntent() != null
+                        ? GoogleBottomBarButtonEvent.CUSTOM_EMBEDDER
+                        : GoogleBottomBarButtonEvent.UNKNOWN;
             }
         }
 
