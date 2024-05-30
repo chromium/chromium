@@ -31,7 +31,9 @@ bool ShouldIncludeApp(apps::AppType app_type) {
 
 BlockedAppRegistry::BlockedAppRegistry(apps::AppServiceProxy* app_service,
                                        PrefService* pref_service)
-    : store_(pref_service), app_service_(app_service) {
+    : store_(pref_service),
+      app_service_(app_service),
+      app_activity_watcher_(this, app_service) {
   CHECK(app_service_);
 
   registry_ = store_.GetFromPref();

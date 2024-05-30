@@ -11,13 +11,13 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/test/browser_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::on_device_controls {
 
 // Base unit test class for testing on device app controls.
-class AppControlsTestBase : public testing::Test {
+class AppControlsTestBase : public ChromeViewsTestBase {
  public:
   AppControlsTestBase();
   AppControlsTestBase(const AppControlsTestBase&) = delete;
@@ -27,9 +27,6 @@ class AppControlsTestBase : public testing::Test {
   ArcAppTest& arc_test() { return arc_test_; }
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
   Profile& profile() { return profile_; }
-  content::BrowserTaskEnvironment& task_environment() {
-    return task_environment_;
-  }
 
   // Installs ARC++ app with the given `package_name` and `app_name`.
   // Returns AppService id of the installed app.
@@ -38,13 +35,12 @@ class AppControlsTestBase : public testing::Test {
   // Uninstalls ARC++ app with the given `package_name`.
   void UninstallArcApp(const std::string& package_name);
 
-  // testing::Test:
+  // ChromeViewsTestBase:
   void SetUp() override;
   void TearDown() override;
 
  private:
   base::test::ScopedCommandLine scoped_command_line_;
-  content::BrowserTaskEnvironment task_environment_;
 
   TestingProfile profile_;
   apps::AppServiceTest app_service_test_;

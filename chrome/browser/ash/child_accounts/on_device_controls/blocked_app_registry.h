@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "chrome/browser/ash/child_accounts/on_device_controls/app_activity_watcher.h"
 #include "chrome/browser/ash/child_accounts/on_device_controls/blocked_app_store.h"
 #include "chrome/browser/ash/child_accounts/on_device_controls/blocked_app_types.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -72,6 +73,9 @@ class BlockedAppRegistry : public apps::AppRegistryCache::Observer {
   BlockedAppStore store_;
 
   const raw_ptr<apps::AppServiceProxy> app_service_;
+
+  // Watches for instances of blocked apps launched from play.
+  AppActivityWatcher app_activity_watcher_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>

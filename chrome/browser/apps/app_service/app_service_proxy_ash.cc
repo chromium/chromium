@@ -61,6 +61,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/grit/extensions_browser_resources.h"
+
 namespace {
 constexpr int32_t kAppDialogIconSize = 48;
 
@@ -379,7 +380,8 @@ void AppServiceProxyAsh::UnpauseApps(const std::set<std::string>& app_ids) {
   }
 }
 
-void AppServiceProxyAsh::BlockApps(const std::set<std::string>& app_ids) {
+void AppServiceProxyAsh::BlockApps(const std::set<std::string>& app_ids,
+                                   bool show_block_dialog) {
   for (auto& app_id : app_ids) {
     auto app_type = app_registry_cache_.GetAppType(app_id);
     if (app_type == AppType::kUnknown) {
@@ -389,6 +391,12 @@ void AppServiceProxyAsh::BlockApps(const std::set<std::string>& app_ids) {
     auto* publisher = GetPublisher(app_type);
     if (publisher) {
       publisher->BlockApp(app_id);
+    }
+
+    if (show_block_dialog) {
+      app_registry_cache_.ForOneApp(app_id, [](const apps::AppUpdate& update) {
+        AppServiceProxyAsh::CreateLocalBlockDialog(update.Name());
+      });
     }
   }
 }

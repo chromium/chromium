@@ -19,5 +19,12 @@ include_rules = [
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/test/base",
+  "+chrome/test/views",
   "+chrome/common/chrome_switches.h",
 ]
+
+specific_include_rules = {
+  "app_activity_watcher_unittest.cc": [
+    "+chrome/browser/ui/views/apps/app_dialog/app_local_block_dialog_view.h",
+  ],
+}

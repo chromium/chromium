@@ -142,8 +142,10 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // as false directly and removes the paused app icon effect.
   void UnpauseApps(const std::set<std::string>& app_ids);
 
-  // Mark apps as blocked by local settings.
-  void BlockApps(const std::set<std::string>& app_ids);
+  // Mark apps as blocked by local settings. Show local block dialog if
+  // `show_block_dialog` is true.
+  void BlockApps(const std::set<std::string>& app_ids,
+                 bool show_block_dialog = false);
 
   // Remove the local settings block adedd by `BlockApps`.
   void UnblockApps(const std::set<std::string>& app_ids);
