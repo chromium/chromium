@@ -25,6 +25,9 @@ import type {Attachment, DocumentMetadata, ExtendedKeyEvent, Point} from './cons
 import {FittingType, SaveRequestType} from './constants.js';
 import type {MessageData} from './controller.js';
 import {PluginController} from './controller.js';
+// <if expr="enable_pdf_ink2">
+import {PluginControllerEventType} from './controller.js';
+// </if>
 // <if expr="enable_ink">
 import type {ContentController} from './controller.js';
 // </if>
@@ -853,6 +856,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
             destinationData.page, destinationData.x, destinationData.y,
             destinationData.zoom);
         return;
+      // <if expr="enable_pdf_ink2">
+      case 'finishInkStroke':
+        this.pluginController_!.getEventTarget().dispatchEvent(
+            new CustomEvent(PluginControllerEventType.FINISH_INK_STROKE));
+        return;
+      // </if>
       case 'metadata':
         const metadataData =
             data as unknown as {metadataData: DocumentMetadata};

@@ -14,6 +14,9 @@ export {AnnotationBrush, AnnotationBrushParams, AnnotationBrushType} from './con
 // </if>
 export {Attachment, FittingType, Point, Rect, SaveRequestType} from './constants.js';
 export {PluginController} from './controller.js';
+// <if expr="enable_pdf_ink2">
+export {PluginControllerEventType} from './controller.js';
+// </if>
 export {ViewerAttachmentBarElement} from './elements/viewer-attachment-bar.js';
 export {ViewerAttachmentElement} from './elements/viewer-attachment.js';
 export {ChangePageAndXyDetail, ChangePageDetail, ChangePageOrigin, ChangeZoomDetail, NavigateDetail, ViewerBookmarkElement} from './elements/viewer-bookmark.js';

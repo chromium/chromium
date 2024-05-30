@@ -110,6 +110,9 @@ export interface ContentController {
 
 /** Event types dispatched by the plugin controller. */
 export enum PluginControllerEventType {
+  // <if expr="enable_pdf_ink2">
+  FINISH_INK_STROKE = 'PluginControllerEventType.FINISH_INK_STROKE',
+  // </if>
   IS_ACTIVE_CHANGED = 'PluginControllerEventType.IS_ACTIVE_CHANGED',
   PLUGIN_MESSAGE = 'PluginControllerEventType.PLUGIN_MESSAGE',
 }

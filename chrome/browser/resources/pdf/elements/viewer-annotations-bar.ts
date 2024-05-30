@@ -11,15 +11,13 @@ import './viewer-toolbar-dropdown.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
-// <if expr="enable_ink">
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-// </if>
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {AnnotationTool} from '../annotation_tool.js';
 // <if expr="enable_pdf_ink2">
 import type {AnnotationBrush, AnnotationBrushType} from '../constants.js';
-import {PluginController} from '../controller.js';
+import {PluginController, PluginControllerEventType} from '../controller.js';
 // </if>
 // <if expr="enable_ink">
 import {InkController, InkControllerEventType} from '../ink_controller.js';
@@ -79,11 +77,13 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
   private canRedoAnnotation_: boolean;
   // <if expr="enable_ink">
   private inkController_: InkController = InkController.getInstance();
-  private tracker_: EventTracker = new EventTracker();
   // </if>
+  private tracker_: EventTracker = new EventTracker();
   // <if expr="enable_pdf_ink2">
   pdfInk2Enabled: boolean;
   private pluginController_: PluginController = PluginController.getInstance();
+  private currentStroke: number = 0;
+  private mostRecentStroke: number = 0;
   // </if>
 
   constructor() {
@@ -104,18 +104,46 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
           }
         });
     // </if>
+
+    // <if expr="enable_pdf_ink2">
+    this.tracker_.add(
+        this.pluginController_.getEventTarget(),
+        PluginControllerEventType.FINISH_INK_STROKE,
+        this.handleFinishInkStroke_.bind(this));
+    // </if>
   }
 
+  /**
+   * Handles whether the undo and redo buttons should be enabled or disabled
+   * when a new ink stroke is added to the page.
+   */
+  private handleFinishInkStroke_() {
+    this.currentStroke++;
+    this.mostRecentStroke = this.currentStroke;
+
+    // When a new stroke is added, it can always be undone. Since it's the most
+    // recent stroke, the redo action cannot be performed.
+    this.canUndoAnnotation_ = true;
+    this.canRedoAnnotation_ = false;
+  }
+  // </if>
+
+  // <if expr="enable_ink">
   private setAnnotationUndoState_(
       e: CustomEvent<{canUndo: boolean, canRedo: boolean}>) {
     this.canUndoAnnotation_ = e.detail.canUndo;
     this.canRedoAnnotation_ = e.detail.canRedo;
   }
+  // </if>
 
   private onUndoClick_() {
     // <if expr="enable_pdf_ink2">
     if (this.pdfInk2Enabled) {
+      assert(this.currentStroke > 0);
       this.pluginController_.undo();
+      this.currentStroke--;
+      this.canUndoAnnotation_ = this.currentStroke > 0;
+      this.canRedoAnnotation_ = true;
       return;
     }
     // </if>
@@ -128,7 +156,11 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
   private onRedoClick_() {
     // <if expr="enable_pdf_ink2">
     if (this.pdfInk2Enabled) {
+      assert(this.currentStroke < this.mostRecentStroke);
       this.pluginController_.redo();
+      this.currentStroke++;
+      this.canUndoAnnotation_ = true;
+      this.canRedoAnnotation_ = this.currentStroke < this.mostRecentStroke;
       return;
     }
     // </if>
