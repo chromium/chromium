@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
@@ -21,7 +20,6 @@
 #include "ash/style/combobox.h"
 #include "ash/style/counter_expand_button.h"
 #include "ash/test/ash_test_base.h"
-#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -93,8 +91,6 @@ class GlanceablesClassroomStudentViewTest : public AshTestBase {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlanceablesV2},
         /*disabled_features=*/{});
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kGlanceablesIgnoreEnableMergeRequestBuildFlag);
   }
 
   void SetUp() override {

@@ -9,7 +9,6 @@
 
 #include "ash/api/tasks/fake_tasks_client.h"
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_student_view.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
@@ -28,7 +27,6 @@
 #include "ash/system/unified/glanceable_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
-#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -146,8 +144,6 @@ class DateTrayTest
   DateTrayTest() {
     scoped_feature_list_.InitWithFeatureState(features::kGlanceablesV2,
                                               AreGlanceablesV2Enabled());
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kGlanceablesIgnoreEnableMergeRequestBuildFlag);
   }
 
   void SetUp() override {

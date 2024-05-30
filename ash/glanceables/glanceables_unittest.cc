@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/glanceables/classroom/fake_glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_student_view.h"
 #include "ash/glanceables/common/glanceables_util.h"
@@ -94,8 +93,6 @@ class GlanceablesTasksAndClassroomTest : public AshTestBase {
         {features::kGlanceablesTimeManagementTasksView,
          features::kGlanceablesTimeManagementClassroomStudentView},
         /*disabled_features=*/{});
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kGlanceablesIgnoreEnableMergeRequestBuildFlag);
   }
 
   void SetUp() override {

@@ -8,8 +8,6 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
-#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_keyed_service.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -37,8 +35,6 @@ TEST_F(GlanceablesKeyedServiceFactoryTest, NoSupportWhenFeatureIsDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(/*enabled_features=*/{}, /*disabled_features=*/{
                                     features::kGlanceablesV2});
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kGlanceablesIgnoreEnableMergeRequestBuildFlag);
 
   EXPECT_FALSE(
       GlanceablesKeyedServiceFactory::GetInstance()->GetService(GetProfile()));
