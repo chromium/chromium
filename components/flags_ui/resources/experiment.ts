@@ -89,6 +89,15 @@ export class FlagsExperimentElement extends CustomElement {
     const platforms = this.getRequiredElement('.platforms');
     platforms.textContent = feature.supported_platforms.join(', ');
 
+    if (feature.links) {
+      for (const link of feature.links) {
+        const linkElement = document.createElement('a');
+        linkElement.href = link;
+        linkElement.textContent = link;
+        this.getRequiredElement('.links-container').appendChild(linkElement);
+      }
+    }
+
     if (feature.origin_list_value !== undefined) {
       const textarea = document.createElement('textarea');
       textarea.dataset['internalName'] = feature.internal_name;

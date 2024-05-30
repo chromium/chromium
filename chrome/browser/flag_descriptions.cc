@@ -3879,6 +3879,9 @@ const char kPromptAPIForGeminiNanoDescription[] =
     "You must comply with our Prohibited Use Policy [2] which provides "
     "additional details about appropriate use of "
     "Generative AI.";
+const char* const kPromptAPIForGeminiNanoLinks[2] = {
+    "https://goo.gle/chrome-ai-dev-preview",
+    "https://policies.google.com/terms/generative-ai/use-policy"};
 
 // Android ---------------------------------------------------------------------
 

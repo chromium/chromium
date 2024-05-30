@@ -13,6 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "components/compose/buildflags.h"
+#include "components/flags_ui/feature_entry.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -2267,6 +2268,7 @@ extern const char kEnableMantaServiceDescription[];
 
 extern const char kPromptAPIForGeminiNanoName[];
 extern const char kPromptAPIForGeminiNanoDescription[];
+extern const char* const kPromptAPIForGeminiNanoLinks[2];
 
 // Android --------------------------------------------------------------------
 

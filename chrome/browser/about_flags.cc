@@ -11510,7 +11510,8 @@ const FeatureEntry kFeatureEntries[] = {
     {"prompt-api-for-gemini-nano",
      flag_descriptions::kPromptAPIForGeminiNanoName,
      flag_descriptions::kPromptAPIForGeminiNanoDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kEnableModelExecutionAPI)},
+     FEATURE_VALUE_TYPE(blink::features::kEnableModelExecutionAPI),
+     flag_descriptions::kPromptAPIForGeminiNanoLinks},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

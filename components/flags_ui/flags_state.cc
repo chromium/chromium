@@ -668,6 +668,14 @@ void FlagsState::GetFlagFeatureEntries(
     bool is_default_value = IsDefaultValue(entry, enabled_entries);
     data.Set("is_default", is_default_value);
 
+    if (!entry.links.empty()) {
+      base::Value::List links;
+      for (auto* link : entry.links) {
+        links.Append(link);
+      }
+      data.Set("links", std::move(links));
+    }
+
     switch (entry.type) {
       case FeatureEntry::SINGLE_VALUE:
       case FeatureEntry::SINGLE_DISABLE_VALUE:

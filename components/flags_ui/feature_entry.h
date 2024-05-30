@@ -237,6 +237,10 @@ struct FeatureEntry {
     base::span<const Choice> choices;
   };
 
+  // This describes the links to be rendered as <a> in the chrome://flags
+  // page.
+  base::span<const char* const> links;
+
   // Check whether internal |name| matches this FeatureEntry. Depending on the
   // type of entry, this compared it to either |internal_name| or the values
   // produced by NameForOption().
