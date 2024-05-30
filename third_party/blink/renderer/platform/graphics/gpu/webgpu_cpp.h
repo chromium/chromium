@@ -12,9 +12,9 @@
 // table. The procs would be empty since use_dawn is false.
 
 #if BUILDFLAG(USE_DAWN)
-#include <dawn/wire/client/webgpu_cpp.h>
+#include <dawn/wire/client/webgpu_cpp.h>  // IWYU pragma: export
 #else
-#include <dawn/webgpu_cpp.h>
+#include <dawn/webgpu_cpp.h>  // IWYU pragma: export
 #endif
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGPU_CPP_H_

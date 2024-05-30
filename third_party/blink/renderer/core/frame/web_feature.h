@@ -9,8 +9,8 @@
 // is heavy on the compiler. Those who do not need the definition, but could do
 // with just a forward-declaration, should include WebFeatureForward.h instead.
 
-#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
-#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"  // IWYU pragma: export
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-blink.h"  // IWYU pragma: export
 
 namespace blink {
 using WebFeature = mojom::WebFeature;

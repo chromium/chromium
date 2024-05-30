@@ -1,4 +1,6 @@
 include_rules = [
+    "+gpu/command_buffer/common",
+    "+media/base",
     "+services/metrics/public/cpp/ukm_recorder.h",
     "+third_party/skia/include",
 ]
