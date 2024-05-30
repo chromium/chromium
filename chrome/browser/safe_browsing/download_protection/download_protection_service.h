@@ -264,6 +264,12 @@ class DownloadProtectionService {
   // `browser_context`.
   void RemovePendingDownloadRequests(content::BrowserContext* browser_context);
 
+  // Returns the maximum number of user gestures for a download referrer
+  // chain. If `item` is non-null, information about that download may
+  // change the limit.
+  int GetDownloadAttributionUserGestureLimit(
+      download::DownloadItem* item = nullptr);
+
  private:
   friend class PPAPIDownloadRequest;
   friend class DownloadUrlSBClient;
@@ -332,6 +338,20 @@ class DownloadProtectionService {
   virtual void RequestFinished(DeepScanningRequest* request);
 
   void PPAPIDownloadCheckRequestFinished(PPAPIDownloadRequest* request);
+
+  // Identify referrer chain of the PPAPI download based on the frame URL where
+  // the download is initiated. Then add referrer chain info to
+  // ClientDownloadRequest proto. This function also records UMA stats of
+  // download attribution result.
+  void AddReferrerChainToPPAPIClientDownloadRequest(
+      content::WebContents* web_contents,
+      const GURL& initiating_frame_url,
+      const content::GlobalRenderFrameHostId&
+          initiating_outermost_main_frame_id,
+      const GURL& initiating_main_frame_url,
+      SessionID tab_id,
+      bool has_user_gesture,
+      ClientDownloadRequest* out_request);
 
   void OnDangerousDownloadOpened(const download::DownloadItem* item,
                                  Profile* profile);

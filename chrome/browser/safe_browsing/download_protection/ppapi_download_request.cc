@@ -213,7 +213,7 @@ void PPAPIDownloadRequest::SendRequest() {
         base::FilePath(default_file_path_.FinalExtension()).AsUTF8Unsafe();
   }
 
-  AddReferrerChainToPPAPIClientDownloadRequest(
+  service_->AddReferrerChainToPPAPIClientDownloadRequest(
       web_contents(), initiating_frame_url_,
       initiating_outermost_main_frame_id_, initiating_main_frame_url_, tab_id_,
       has_user_gesture_, &request);

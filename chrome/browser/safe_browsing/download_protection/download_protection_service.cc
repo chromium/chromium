@@ -67,6 +67,10 @@ namespace safe_browsing {
 
 namespace {
 
+inline constexpr int kDownloadAttributionUserGestureLimit = 2;
+inline constexpr int kDownloadAttributionUserGestureLimitForExtendedReporting =
+    5;
+
 const int64_t kDownloadRequestTimeoutMs = 7000;
 // We sample 1% of allowlisted downloads to still send out download pings.
 const double kAllowlistDownloadSampleRate = 0.01;
@@ -555,6 +559,34 @@ void DownloadProtectionService::ReportDelayedBypassEvent(
   download_protection_observer_.ReportDelayedBypassEvent(download, danger_type);
 }
 
+void DownloadProtectionService::AddReferrerChainToPPAPIClientDownloadRequest(
+    content::WebContents* web_contents,
+    const GURL& initiating_frame_url,
+    const content::GlobalRenderFrameHostId& initiating_outermost_main_frame_id,
+    const GURL& initiating_main_frame_url,
+    SessionID tab_id,
+    bool has_user_gesture,
+    ClientDownloadRequest* out_request) {
+  // If web_contents is null, return immediately. This could happen in tests.
+  if (!web_contents) {
+    return;
+  }
+
+  SafeBrowsingNavigationObserverManager::AttributionResult result =
+      GetNavigationObserverManager(web_contents)
+          ->IdentifyReferrerChainByHostingPage(
+              initiating_frame_url, initiating_main_frame_url,
+              initiating_outermost_main_frame_id, tab_id, has_user_gesture,
+              GetDownloadAttributionUserGestureLimit(),
+              out_request->mutable_referrer_chain());
+  UMA_HISTOGRAM_COUNTS_100(
+      "SafeBrowsing.ReferrerURLChainSize.PPAPIDownloadAttribution",
+      out_request->referrer_chain_size());
+  UMA_HISTOGRAM_ENUMERATION(
+      "SafeBrowsing.ReferrerAttributionResult.PPAPIDownloadAttribution", result,
+      SafeBrowsingNavigationObserverManager::ATTRIBUTION_FAILURE_TYPE_MAX);
+}
+
 void DownloadProtectionService::OnDangerousDownloadOpened(
     const download::DownloadItem* item,
     Profile* profile) {
@@ -781,6 +813,28 @@ DownloadProtectionService::GetURLLoaderFactory(
 void DownloadProtectionService::RemovePendingDownloadRequests(
     content::BrowserContext* browser_context) {
   context_download_requests_.erase(browser_context);
+}
+
+int DownloadProtectionService::GetDownloadAttributionUserGestureLimit(
+    download::DownloadItem* item) {
+  if (!item) {
+    return kDownloadAttributionUserGestureLimit;
+  }
+
+  content::WebContents* web_contents =
+      content::DownloadItemUtils::GetWebContents(item);
+  if (!web_contents) {
+    return kDownloadAttributionUserGestureLimit;
+  }
+
+  if (Profile* profile =
+          Profile::FromBrowserContext(web_contents->GetBrowserContext());
+      profile && profile->GetPrefs() &&
+      IsExtendedReportingEnabled(*profile->GetPrefs())) {
+    return kDownloadAttributionUserGestureLimitForExtendedReporting;
+  }
+
+  return kDownloadAttributionUserGestureLimit;
 }
 
 void DownloadProtectionService::RequestFinished(DeepScanningRequest* request) {

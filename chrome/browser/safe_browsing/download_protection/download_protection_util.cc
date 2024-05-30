@@ -23,10 +23,6 @@ namespace safe_browsing {
 
 namespace {
 
-inline constexpr int kDownloadAttributionUserGestureLimit = 2;
-inline constexpr int kDownloadAttributionUserGestureLimitForExtendedReporting =
-    5;
-
 // Escapes a certificate attribute so that it can be used in a allowlist
 // entry.  Currently, we only escape slashes, since they are used as a
 // separator between attributes.
@@ -111,23 +107,6 @@ SafeBrowsingNavigationObserverManager* GetNavigationObserverManager(
     content::WebContents* web_contents) {
   return SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
       web_contents->GetBrowserContext());
-}
-
-int GetDownloadAttributionUserGestureLimit(const download::DownloadItem& item) {
-  content::WebContents* web_contents =
-      content::DownloadItemUtils::GetWebContents(&item);
-  if (!web_contents) {
-    return kDownloadAttributionUserGestureLimit;
-  }
-
-  if (Profile* profile =
-          Profile::FromBrowserContext(web_contents->GetBrowserContext());
-      profile && profile->GetPrefs() &&
-      IsExtendedReportingEnabled(*profile->GetPrefs())) {
-    return kDownloadAttributionUserGestureLimitForExtendedReporting;
-  }
-
-  return kDownloadAttributionUserGestureLimit;
 }
 
 void AddEventUrlToReferrerChain(const download::DownloadItem& item,
@@ -294,7 +273,8 @@ void LogLocalDecryptionEvent(DeepScanEvent event) {
 }
 
 std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
-    const download::DownloadItem& item) {
+    const download::DownloadItem& item,
+    int user_gesture_limit) {
   std::unique_ptr<ReferrerChain> referrer_chain =
       std::make_unique<ReferrerChain>();
   content::WebContents* web_contents =
@@ -317,10 +297,9 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
   // We look for the referrer chain that leads to the download url first.
   SafeBrowsingNavigationObserverManager::AttributionResult result =
       GetNavigationObserverManager(web_contents)
-          ->IdentifyReferrerChainByEventURL(
-              item.GetURL(), download_tab_id, frame_id,
-              GetDownloadAttributionUserGestureLimit(item),
-              referrer_chain.get());
+          ->IdentifyReferrerChainByEventURL(item.GetURL(), download_tab_id,
+                                            frame_id, user_gesture_limit,
+                                            referrer_chain.get());
 
   // If no navigation event is found, this download is not triggered by regular
   // navigation (e.g. html5 file apis, etc). We look for the referrer chain
@@ -333,8 +312,7 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
                                referrer_chain.get());
     result = GetNavigationObserverManager(web_contents)
                  ->IdentifyReferrerChainByRenderFrameHost(
-                     outermost_render_frame_host,
-                     GetDownloadAttributionUserGestureLimit(item),
+                     outermost_render_frame_host, user_gesture_limit,
                      referrer_chain.get());
   }
 
@@ -359,7 +337,8 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
 }
 
 std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
-    const content::FileSystemAccessWriteItem& item) {
+    const content::FileSystemAccessWriteItem& item,
+    int user_gesture_limit) {
   // If web_contents is null, return immediately. This can happen when the
   // file system API is called in PerformAfterWriteChecks.
   if (!item.web_contents) {
@@ -377,8 +356,7 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
       GetNavigationObserverManager(item.web_contents)
           ->IdentifyReferrerChainByHostingPage(
               item.frame_url, tab_url, item.outermost_main_frame_id, tab_id,
-              item.has_user_gesture, kDownloadAttributionUserGestureLimit,
-              referrer_chain.get());
+              item.has_user_gesture, user_gesture_limit, referrer_chain.get());
 
   UMA_HISTOGRAM_ENUMERATION(
       "SafeBrowsing.ReferrerAttributionResult.NativeFileSystemWriteAttribution",
@@ -402,34 +380,6 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
   return std::make_unique<ReferrerChainData>(result, std::move(referrer_chain),
                                              referrer_chain_length,
                                              recent_navigations_to_collect);
-}
-
-void AddReferrerChainToPPAPIClientDownloadRequest(
-    content::WebContents* web_contents,
-    const GURL& initiating_frame_url,
-    const content::GlobalRenderFrameHostId& initiating_outermost_main_frame_id,
-    const GURL& initiating_main_frame_url,
-    SessionID tab_id,
-    bool has_user_gesture,
-    ClientDownloadRequest* out_request) {
-  // If web_contents is null, return immediately. This could happen in tests.
-  if (!web_contents) {
-    return;
-  }
-
-  SafeBrowsingNavigationObserverManager::AttributionResult result =
-      GetNavigationObserverManager(web_contents)
-          ->IdentifyReferrerChainByHostingPage(
-              initiating_frame_url, initiating_main_frame_url,
-              initiating_outermost_main_frame_id, tab_id, has_user_gesture,
-              kDownloadAttributionUserGestureLimit,
-              out_request->mutable_referrer_chain());
-  UMA_HISTOGRAM_COUNTS_100(
-      "SafeBrowsing.ReferrerURLChainSize.PPAPIDownloadAttribution",
-      out_request->referrer_chain_size());
-  UMA_HISTOGRAM_ENUMERATION(
-      "SafeBrowsing.ReferrerAttributionResult.PPAPIDownloadAttribution", result,
-      SafeBrowsingNavigationObserverManager::ATTRIBUTION_FAILURE_TYPE_MAX);
 }
 
 }  // namespace safe_browsing
