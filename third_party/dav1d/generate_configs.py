@@ -115,7 +115,8 @@ def CopyConfigs(src_dir, dest_dir):
 
 def GenerateConfig(config_dir, env, special_args=[]):
     temp_dir = tempfile.mkdtemp()
-    PrintAndCheckCall(MESON + DEFAULT_BUILD_ARGS + special_args + [temp_dir],
+    PrintAndCheckCall(MESON + ['setup'] + DEFAULT_BUILD_ARGS + special_args +
+                      [temp_dir],
                       cwd='libdav1d',
                       env=env)
 
@@ -198,7 +199,7 @@ def CopyVersions(src_dir, dest_dir):
 
 def GenerateVersion(version_dir, env):
     temp_dir = tempfile.mkdtemp()
-    PrintAndCheckCall(MESON + DEFAULT_BUILD_ARGS + [temp_dir],
+    PrintAndCheckCall(MESON + ['setup'] + DEFAULT_BUILD_ARGS + [temp_dir],
                       cwd='libdav1d',
                       env=env)
     PrintAndCheckCall(['ninja', '-C', temp_dir, 'include/vcs_version.h'],
