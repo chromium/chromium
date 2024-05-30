@@ -5,9 +5,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_MESH_2D_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_MESH_2D_BUFFER_H_
 
+#include <stdint.h>
+
+#include <utility>
+
 #include "base/memory/scoped_refptr.h"
-#include "cc/paint/refcounted_buffer.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "v8/include/v8-isolate.h"
+
+namespace cc {
+template <typename T>
+class RefCountedBuffer;
+}  // namespace cc
 
 namespace blink {
 

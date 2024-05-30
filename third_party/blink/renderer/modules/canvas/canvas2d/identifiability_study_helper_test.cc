@@ -4,14 +4,16 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 
-#include <array>
-#include <cstdint>
+#include <stdint.h>
 
-#include "base/rand_util.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include <array>
+
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
+
+// GoogleTest macros trigger a bug in IWYU:
+// https://github.com/include-what-you-use/include-what-you-use/issues/1546
+// IWYU pragma: no_include <string>
 
 namespace blink {
 

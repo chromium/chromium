@@ -4,12 +4,18 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
 
+#include <string>
+#include <vector>
+
 #include "base/check_deref.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/style/filter_operation.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_test_utils.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {

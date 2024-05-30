@@ -5,34 +5,55 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_RENDERING_CONTEXT_2D_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_RENDERING_CONTEXT_2D_STATE_H_
 
-#include "base/types/pass_key.h"
-#include "cc/paint/draw_looper.h"
+#include "base/check.h"
+#include "base/compiler_specific.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_font_stretch.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_text_rendering.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
-#include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/clip_list.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
+#include "third_party/blink/renderer/platform/graphics/pattern.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/skia/include/core/SkBlendMode.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/geometry/vector2d_f.h"
+
+// IWYU pragma: no_include "third_party/blink/renderer/platform/heap/visitor.h"
+
+namespace cc {
+class DrawLooper;
+class PaintCanvas;
+}  // namespace cc
+namespace gfx {
+class Size;
+}  // namespace gfx
 
 namespace blink {
 
 class BaseRenderingContext2D;
-class CanvasRenderingContext2D;
+class CSSValue;
 class CanvasFilter;
 class CanvasGradient;
-class CanvasPattern;
-class CSSValue;
+class CanvasRenderingContext2D;
 class Element;
+class FontSelector;
+enum class FontInvalidationReason;
 
 enum ShadowMode {
   kDrawShadowAndForeground,

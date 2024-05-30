@@ -12,19 +12,24 @@
 #include <utility>
 
 #include "base/types/expected.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray_string.h"
+#include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/core/css/resolver/filter_operation_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/style/filter_operation.h"
+#include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/core/style/shadow_data.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
@@ -32,7 +37,6 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
-#include "third_party/blink/renderer/platform/geometry/length_point.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_component_transfer.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_convolve_matrix.h"
@@ -45,10 +49,10 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
-
-class ScriptValue;
+class Font;
 
 namespace {
 int num_canvas_filter_errors_to_console_allowed_ = 64;

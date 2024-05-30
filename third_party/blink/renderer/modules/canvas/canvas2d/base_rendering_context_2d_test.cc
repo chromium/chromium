@@ -7,15 +7,16 @@
 #include <array>
 #include <cstdint>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/paint_canvas.h"
-#include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_flags.h"
+#include "cc/paint/paint_image.h"
 #include "cc/paint/paint_op.h"
-#include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_record.h"
+#include "cc/paint/paint_shader.h"
 #include "cc/paint/refcounted_buffer.h"
 #include "cc/test/paint_op_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,10 +27,14 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilter_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
+#include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/resolver/font_style_resolver.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/core/style/filter_operation.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_test_utils.h"
@@ -37,13 +42,31 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_uv_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_vertex_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/recording_test_utils.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/fonts/font_description.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/image_orientation.h"
+#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/skia/include/core/SkBlendMode.h"
+#include "third_party/skia/include/core/SkClipOp.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkM44.h"
+#include "third_party/skia/include/core/SkMatrix.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkTileMode.h"
+#include "third_party/skia/include/private/base/SkPoint_impl.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 namespace {

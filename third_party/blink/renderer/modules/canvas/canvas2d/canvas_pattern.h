@@ -26,16 +26,22 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_PATTERN_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_PATTERN_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_dom_matrix_2d_init.h"
+#include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/pattern.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+// IWYU pragma: no_include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
+class DOMMatrix2DInit;
 class ExceptionState;
+class ExecutionContext;
 class Image;
 
 class CanvasPattern final : public ScriptWrappable {

@@ -26,11 +26,23 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
 
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
+#include "base/compiler_specific.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/graphics/gradient.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
+class ExecutionContext;
 
 CanvasGradient::CanvasGradient(const gfx::PointF& p0, const gfx::PointF& p1)
     : gradient_(

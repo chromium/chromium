@@ -5,8 +5,20 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_path.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+
+// GoogleTest macros trigger a bug in IWYU:
+// https://github.com/include-what-you-use/include-what-you-use/issues/1546
+// IWYU pragma: no_include <string>
 
 namespace blink {
 

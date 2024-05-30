@@ -27,16 +27,25 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_GRADIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_GRADIENT_H_
 
+#include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+// IWYU pragma: no_include "third_party/blink/renderer/platform/heap/visitor.h"
+
+namespace gfx {
+class PointF;
+}  // namespace gfx
 
 namespace blink {
 
 class ExceptionState;
+class ExecutionContext;
 
 class MODULES_EXPORT CanvasGradient final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();

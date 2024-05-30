@@ -8,7 +8,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray_string.h"
-#include "third_party/blink/renderer/core/style/filter_operation.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-primitive.h"
 #include "v8/include/v8-script.h"

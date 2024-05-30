@@ -5,11 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_RECORDING_TEST_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_RECORDING_TEST_UTILS_H_
 
+#include <stddef.h>
+
+#include "base/memory/stack_allocated.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_op_buffer_iterator.h"
 #include "cc/paint/paint_record.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink_testing {
 

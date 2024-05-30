@@ -27,17 +27,21 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_STYLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_STYLE_H_
 
+#include "base/check.h"
 #include "base/check_op.h"
-#include "base/types/pass_key.h"
+#include "base/compiler_specific.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+// https://github.com/include-what-you-use/include-what-you-use/issues/1546
+// IWYU pragma: no_forward_declare WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
+
+// IWYU pragma: no_include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace ui {
 class ColorProvider;
@@ -47,7 +51,6 @@ namespace blink {
 
 class CanvasGradient;
 class CanvasPattern;
-class HTMLCanvasElement;
 
 class CanvasStyle final {
   DISALLOW_NEW();

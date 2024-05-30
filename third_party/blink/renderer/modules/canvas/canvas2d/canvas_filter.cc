@@ -4,9 +4,12 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
 
+#include <utility>
+
 #include "base/check_deref.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_operation_resolver.h"

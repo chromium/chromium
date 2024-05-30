@@ -2,22 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-#include <tuple>
-
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_operation_resolver.h"
 
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
+
 #include "base/check_deref.h"
+#include "base/functional/callback.h"  // IWYU pragma: keep (needed by GarbageCollectedIs)
 #include "base/strings/stringprintf.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray_string.h"
+#include "third_party/blink/renderer/core/css/css_property_value_set.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/resolver/font_style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
-#include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/style/filter_operation.h"
 #include "third_party/blink/renderer/core/style/shadow_data.h"
@@ -25,11 +29,14 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
-#include "third_party/blink/renderer/platform/fonts/font_description.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 namespace {

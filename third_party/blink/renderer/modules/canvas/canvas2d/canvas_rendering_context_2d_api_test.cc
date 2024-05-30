@@ -2,45 +2,71 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
+#include <stddef.h>
+#include <stdint.h>
 
 #include <memory>
+#include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "cc/paint/refcounted_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings_provider.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_blob_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_image_data_settings.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"  // IWYU pragma: keep
 #include "third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_blob_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
-#include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
-#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_object.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style_test_utils.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_index_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_uv_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_vertex_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "ui/accessibility/ax_mode.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/skia/include/private/base/SkPoint_impl.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-local-handle.h"
+
+// GoogleTest expectation macros trigger a bug in IWYU:
+// https://github.com/include-what-you-use/include-what-you-use/issues/1546
+// IWYU pragma: no_include <string>
+// IWYU pragma: no_include <tuple>
+
+namespace v8 {
+class Isolate;
+}  // namespace v8
 
 using testing::Mock;
 

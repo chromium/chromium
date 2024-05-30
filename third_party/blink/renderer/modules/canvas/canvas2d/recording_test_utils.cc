@@ -4,10 +4,15 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/recording_test_utils.h"
 
+#include <stddef.h>
+
+#include <utility>
+
+#include "base/check_op.h"
+#include "cc/paint/paint_op.h"
 #include "cc/paint/paint_record.h"
 #include "cc/test/paint_op_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink_testing {
 

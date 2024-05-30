@@ -7,15 +7,24 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <initializer_list>
 
-#include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
+#include "base/compiler_specific.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
+// https://github.com/include-what-you-use/include-what-you-use/issues/1546
+// IWYU pragma: no_forward_declare WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
+
+// IWYU pragma: no_include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
