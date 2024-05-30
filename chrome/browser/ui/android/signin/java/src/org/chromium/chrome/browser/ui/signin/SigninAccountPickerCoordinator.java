@@ -111,7 +111,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
         sheetContainer.setLayoutParams(
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mContainerView.addView(sheetContainer);
-        @ColorInt int scrimColor = mActivity.getColor(R.color.black_alpha_30);
+        @ColorInt int scrimColor = mActivity.getColor(R.color.default_scrim_color);
         mScrim =
                 new ScrimCoordinator(
                         mActivity,
