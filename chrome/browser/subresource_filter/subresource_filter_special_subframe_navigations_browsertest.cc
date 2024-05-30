@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/browser/ui/browser.h"
