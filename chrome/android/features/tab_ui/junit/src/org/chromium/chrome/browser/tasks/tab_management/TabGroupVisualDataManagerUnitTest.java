@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -70,7 +71,6 @@ public class TabGroupVisualDataManagerUnitTest {
     private static final String CUSTOMIZED_TITLE2 = "Other cool tabs";
     private static final int COLOR1_ID = TabGroupColorId.BLUE;
     private static final int COLOR2_ID = TabGroupColorId.RED;
-    private static final int INVALID_COLOR_ID = -1;
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
     private static final int TAB3_ID = 123;
@@ -312,7 +312,8 @@ public class TabGroupVisualDataManagerUnitTest {
         when(mTabGroupModelFilter.getTabGroupTitle(TAB1_ID)).thenReturn(CUSTOMIZED_TITLE1);
         when(mTabGroupModelFilter.getTabGroupTitle(TAB3_ID)).thenReturn(null);
         when(mTabGroupModelFilter.getTabGroupColor(TAB1_ID)).thenReturn(COLOR1_ID);
-        when(mTabGroupModelFilter.getTabGroupColor(TAB3_ID)).thenReturn(INVALID_COLOR_ID);
+        when(mTabGroupModelFilter.getTabGroupColor(TAB3_ID))
+                .thenReturn(TabGroupColorUtils.INVALID_COLOR_ID);
 
         // Mock that tab1 and tab2 are in the same group and group root id is TAB1_ID; tab3 and tab4
         // are in the same group and group root id is TAB3_ID.

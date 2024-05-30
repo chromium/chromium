@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
@@ -358,7 +359,6 @@ class TabListMediator {
     }
 
     private static final String TAG = "TabListMediator";
-    private static final int INVALID_COLOR_ID = -1;
     private static Map<Integer, Integer> sTabClosedFromMapTabClosedFromMap = new HashMap<>();
     private static Set<Integer> sViewedTabIds = new HashSet<>();
 
@@ -1625,7 +1625,7 @@ class TabListMediator {
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             // If the tab to update is in ListMode, update it with the most recent stored color.
             if (mMode == TabListMode.LIST) {
-                int tabGroupColorId = INVALID_COLOR_ID;
+                int tabGroupColorId = TabGroupColorUtils.INVALID_COLOR_ID;
                 // Only update the color if the tab is a representation of a tab group, otherwise
                 // hide the icon by setting the color to INVALID.
                 if (isInTabGroup) {
@@ -1925,7 +1925,7 @@ class TabListMediator {
             }
         }
 
-        int colorId = INVALID_COLOR_ID;
+        int colorId = TabGroupColorUtils.INVALID_COLOR_ID;
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             // While groups always have a color, only set it here when it should be shown next to
             // the title. In GRID mode this is not the case, as the color replaces the favicon.
@@ -2121,7 +2121,7 @@ class TabListMediator {
                 int colorId = filter.getTabGroupColor(tab.getRootId());
                 // This should never be the case in practice, but if the color is invalid then set
                 // it to the first color in the list.
-                if (colorId == INVALID_COLOR_ID) {
+                if (colorId == TabGroupColorUtils.INVALID_COLOR_ID) {
                     colorId = TabGroupColorId.GREY;
                 }
                 final @StringRes int colorDescRes =
@@ -2866,7 +2866,7 @@ class TabListMediator {
                 int colorId = filter.getTabGroupColor(rootId);
                 // This should never be the case in practice, but if the color is invalid
                 // then set it to the first color in the list.
-                if (colorId == INVALID_COLOR_ID) {
+                if (colorId == TabGroupColorUtils.INVALID_COLOR_ID) {
                     colorId = TabGroupColorId.GREY;
                 }
                 final @StringRes int colorDescRes =

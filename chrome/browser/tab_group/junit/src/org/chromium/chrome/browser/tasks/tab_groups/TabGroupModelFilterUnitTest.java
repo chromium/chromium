@@ -134,7 +134,6 @@ public class TabGroupModelFilterUnitTest {
     private static final String TAB_TITLE = "Tab";
 
     private static final String TAB_GROUP_COLORS_FILE_NAME = "tab_group_colors";
-    private static final int INVALID_COLOR_ID = -1;
     private static final int COLOR_ID = 0;
 
     private static final String TAB_GROUP_SYNC_IDS_FILE_NAME = "tab_group_sync_ids";
@@ -392,7 +391,8 @@ public class TabGroupModelFilterUnitTest {
                 .getSharedPreferences(TAB_GROUP_COLLAPSED_FILE_NAME, Context.MODE_PRIVATE);
         ContextUtils.initApplicationContextForTests(mContext);
         when(mSharedPreferencesTitle.getString(anyString(), any())).thenReturn(TAB_TITLE);
-        when(mSharedPreferencesColor.getInt(anyString(), anyInt())).thenReturn(INVALID_COLOR_ID);
+        when(mSharedPreferencesColor.getInt(anyString(), anyInt()))
+                .thenReturn(TabGroupColorUtils.INVALID_COLOR_ID);
         when(mSharedPreferencesCollapsed.getBoolean(anyString(), anyBoolean())).thenReturn(true);
         when(mSharedPreferencesTitle.edit()).thenReturn(mEditor);
         when(mSharedPreferencesColor.edit()).thenReturn(mEditor);

@@ -13,6 +13,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupCreationDialogResultAction;
@@ -103,7 +104,6 @@ public class TabGroupCreationDialogManager implements Destroyable {
         }
     }
 
-    private static final int INVALID_COLOR_ID = -1;
     private final ModalDialogManager mModalDialogManager;
     private TabModelSelector mTabModelSelector;
     private Runnable mOnDialogAcceptedRunnable;
@@ -142,7 +142,7 @@ public class TabGroupCreationDialogManager implements Destroyable {
                         // existing color to make sure it is truly a new group.
                         boolean isNewGroup =
                                 filter.getTabGroupColor(destinationTab.getRootId())
-                                        == INVALID_COLOR_ID;
+                                        == TabGroupColorUtils.INVALID_COLOR_ID;
                         if (isNewGroup) {
                             mShowDialogDelegate.showDialog(destinationTab.getRootId(), filter);
                         }

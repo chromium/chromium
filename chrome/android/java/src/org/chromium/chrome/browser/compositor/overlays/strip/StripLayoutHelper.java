@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
@@ -178,7 +179,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_START = 96.f;
     private static final long TAB_SWITCH_METRICS_MAX_ALLOWED_SCROLL_INTERVAL =
             DateUtils.MINUTE_IN_MILLIS;
-    private static final int INVALID_COLOR_ID = -1;
 
     // Histogram Constants
     private static final String PLACEHOLDER_LEFTOVER_TABS_HISTOGRAM_NAME =
@@ -2666,7 +2666,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     private StripLayoutGroupTitle createGroupTitle(int rootId) {
         int colorId = mTabGroupModelFilter.getTabGroupColor(rootId);
         // If the color is invalid, temporarily assign a default placeholder color.
-        if (colorId == INVALID_COLOR_ID) colorId = TabGroupColorId.GREY;
+        if (colorId == TabGroupColorUtils.INVALID_COLOR_ID) colorId = TabGroupColorId.GREY;
         @ColorInt
         int color = ColorPickerUtils.getTabGroupColorPickerItemColor(mContext, colorId, mIncognito);
 

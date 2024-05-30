@@ -69,8 +69,6 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
     }
 
-    private static final int INVALID_COLOR_ID = -1;
-
     private ObserverList<TabGroupModelFilterObserver> mGroupFilterObserver = new ObserverList<>();
     private Map<Integer, Integer> mRootIdToGroupIndexMap = new HashMap<>();
     private Map<Integer, TabGroup> mRootIdToGroupMap = new HashMap<>();
@@ -182,7 +180,9 @@ public class TabGroupModelFilter extends TabModelFilter {
             // and it is not a new tab group creation is when a tab group is restored from the
             // recent tabs page, where the color will be set before this call.
             int destinationGroupColorId = TabGroupColorUtils.getTabGroupColor(tab.getRootId());
-            didCreateNewGroup = didCreateNewGroup && (destinationGroupColorId == INVALID_COLOR_ID);
+            didCreateNewGroup =
+                    didCreateNewGroup
+                            && (destinationGroupColorId == TabGroupColorUtils.INVALID_COLOR_ID);
         }
 
         // If this is a new tab group creation, do not trigger a snackbar.
@@ -209,7 +209,7 @@ public class TabGroupModelFilter extends TabModelFilter {
                         Collections.singletonList(tab.getRootId()),
                         Collections.singletonList(null),
                         null,
-                        INVALID_COLOR_ID,
+                        TabGroupColorUtils.INVALID_COLOR_ID,
                         /* destinationGroupTitleCollapsed= */ false);
             }
         }
@@ -260,7 +260,7 @@ public class TabGroupModelFilter extends TabModelFilter {
             List<Token> originalTabGroupIds = new ArrayList<>();
             Set<Pair<Integer, Token>> removedGroups = new HashSet<>();
             String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationRootId);
-            int destinationGroupColorId = INVALID_COLOR_ID;
+            int destinationGroupColorId = TabGroupColorUtils.INVALID_COLOR_ID;
             boolean didCreateNewGroup =
                     !isTabInTabGroup(sourceTab) && !isTabInTabGroup(destinationTab);
 
@@ -271,7 +271,8 @@ public class TabGroupModelFilter extends TabModelFilter {
                 // and it is not a new tab group creation is when a tab group is restored from the
                 // recent tabs page, where the color will be set before this call.
                 didCreateNewGroup =
-                        didCreateNewGroup && (destinationGroupColorId == INVALID_COLOR_ID);
+                        didCreateNewGroup
+                                && (destinationGroupColorId == TabGroupColorUtils.INVALID_COLOR_ID);
             }
 
             final boolean destinationGroupTitleCollapsed;
@@ -405,7 +406,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
         int destinationIndexInTabModel = getTabModelDestinationIndex(destinationTab);
         String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationRootId);
-        int destinationGroupColorId = INVALID_COLOR_ID;
+        int destinationGroupColorId = TabGroupColorUtils.INVALID_COLOR_ID;
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             destinationGroupColorId = TabGroupColorUtils.getTabGroupColor(destinationRootId);
         }
@@ -1144,7 +1145,8 @@ public class TabGroupModelFilter extends TabModelFilter {
                 int newRootId = oldToNew.getValue();
                 TabGroupMetadata metadata = oldRootIdsToMetadata.get(oldRootId);
                 if (metadata.title != null) setTabGroupTitle(newRootId, metadata.title);
-                if (metadata.color != INVALID_COLOR_ID) setTabGroupColor(newRootId, metadata.color);
+                if (metadata.color != TabGroupColorUtils.INVALID_COLOR_ID)
+                    setTabGroupColor(newRootId, metadata.color);
                 if (ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) {
                     if (metadata.isCollapsed) setTabGroupCollapsed(newRootId, true);
                 }
@@ -1476,7 +1478,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         assert rootId != Tab.INVALID_TAB_ID;
         int color = TabGroupColorUtils.getTabGroupColor(rootId);
 
-        if (color == INVALID_COLOR_ID) {
+        if (color == TabGroupColorUtils.INVALID_COLOR_ID) {
             color = TabGroupColorUtils.getNextSuggestedColorId(this);
             setTabGroupColor(rootId, color);
         }

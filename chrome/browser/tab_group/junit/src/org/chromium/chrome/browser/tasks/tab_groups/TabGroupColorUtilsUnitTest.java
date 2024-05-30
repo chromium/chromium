@@ -15,6 +15,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils.INVALID_COLOR_ID;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -43,7 +45,6 @@ public class TabGroupColorUtilsUnitTest {
 
     private static final String TAB_GROUP_COLORS_FILE_NAME = "tab_group_colors";
     private static final String MIGRATION_CHECK = "migration_check";
-    private static final int INVALID_COLOR_ID = -1;
     private static final int MIGRATION_DONE = 1;
 
     private static final int ROOT_ID_1 = 123;

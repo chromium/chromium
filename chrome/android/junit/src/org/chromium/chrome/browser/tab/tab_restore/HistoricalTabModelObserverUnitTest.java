@@ -59,8 +59,6 @@ import java.util.Set;
     ChromeFeatureList.TAB_GROUP_PARITY_ANDROID
 })
 public class HistoricalTabModelObserverUnitTest {
-    private static final int INVALID_COLOR_ID = -1;
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public TestRule mFeatureProcessor = new Features.JUnitProcessor();
 

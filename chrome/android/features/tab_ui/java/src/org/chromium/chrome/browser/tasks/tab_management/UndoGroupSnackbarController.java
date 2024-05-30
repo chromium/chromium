@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -33,8 +34,6 @@ import java.util.Locale;
  * and shows a undo snackbar.
  */
 public class UndoGroupSnackbarController implements SnackbarManager.SnackbarController {
-    private static final int INVALID_COLOR_ID = -1;
-
     private final Context mContext;
     private final TabModelSelector mTabModelSelector;
     private final SnackbarManager mSnackbarManager;
@@ -257,7 +256,7 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
             // merge, delete that color id on undo. This check deletes the group color for that
             // destination rootID, as all tabs still currently share that ID before the undo
             // operation is performed.
-            if (firstInfo.destinationGroupColorId == INVALID_COLOR_ID) {
+            if (firstInfo.destinationGroupColorId == TabGroupColorUtils.INVALID_COLOR_ID) {
                 filter.deleteTabGroupColor(firstRootId);
             }
         }

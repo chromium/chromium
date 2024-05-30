@@ -171,8 +171,6 @@ public class TabSwitcherLayoutTest {
 
     private static final String TEST_URL = "/chrome/test/data/android/google.html";
 
-    private static final int INVALID_COLOR_ID = -1;
-
     // Tests need animation on.
     @ClassRule
     public static DisableAnimationsTestRule sEnableAnimationsRule =
@@ -2169,7 +2167,7 @@ public class TabSwitcherLayoutTest {
                             nextSuggestedColorId,
                             filter.getTabGroupColor(normalTabModel.getTabAt(1).getRootId()));
                     assertEquals(
-                            INVALID_COLOR_ID,
+                            TabGroupColorUtils.INVALID_COLOR_ID,
                             filter.getTabGroupColor(normalTabModel.getTabAt(2).getRootId()));
                 });
     }
@@ -2480,8 +2478,12 @@ public class TabSwitcherLayoutTest {
         // Assert default color is cleared.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assertEquals(INVALID_COLOR_ID, filter.getTabGroupColor(groupRootId));
-                    assertEquals(INVALID_COLOR_ID, filter.getTabGroupColor(tab2.getRootId()));
+                    assertEquals(
+                            TabGroupColorUtils.INVALID_COLOR_ID,
+                            filter.getTabGroupColor(groupRootId));
+                    assertEquals(
+                            TabGroupColorUtils.INVALID_COLOR_ID,
+                            filter.getTabGroupColor(tab2.getRootId()));
                 });
     }
 

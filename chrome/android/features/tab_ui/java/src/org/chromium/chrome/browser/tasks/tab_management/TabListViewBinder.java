@@ -29,6 +29,7 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGroupInfo;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
@@ -38,7 +39,6 @@ import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 /** {@link org.chromium.ui.modelutil.SimpleRecyclerViewMcp.ViewBinder} for tab List. */
 class TabListViewBinder {
-    private static final int INVALID_COLOR_ID = -1;
     private static final int TAB_GROUP_ICON_COLOR_LEVEL = 1;
 
     /**
@@ -318,7 +318,8 @@ class TabListViewBinder {
 
             // If the tab is a single tab item, a tab that is part of a group but shown in the
             // TabGridDialogView list representation, or an invalid case, do not set/show.
-            if (model.get(TabProperties.TAB_GROUP_COLOR_ID) == INVALID_COLOR_ID) {
+            if (model.get(TabProperties.TAB_GROUP_COLOR_ID)
+                    == TabGroupColorUtils.INVALID_COLOR_ID) {
                 colorIconView.setVisibility(View.GONE);
                 return;
             }

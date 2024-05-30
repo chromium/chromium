@@ -17,12 +17,12 @@ import androidx.core.content.res.ResourcesCompat;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 
 public class TabGroupColorFaviconProvider {
     static final int TAB_GROUP_FAVICON_COLOR_LEVEL = 1;
     static final int FAVICON_BACKGROUND_DEFAULT_ALPHA = 255;
     static final int FAVICON_BACKGROUND_SELECTED_ALPHA = 0;
-    private static final int INVALID_COLOR_ID = -1;
     private final Context mContext;
 
     public TabGroupColorFaviconProvider(Context context) {
@@ -75,7 +75,7 @@ public class TabGroupColorFaviconProvider {
         return new TabFaviconFetcher() {
             @Override
             public void fetch(Callback<TabFavicon> faviconCallback) {
-                if (colorId != INVALID_COLOR_ID) {
+                if (colorId != TabGroupColorUtils.INVALID_COLOR_ID) {
                     final @ColorInt int color =
                             ColorPickerUtils.getTabGroupColorPickerItemColor(
                                     mContext, colorId, isIncognito);
