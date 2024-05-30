@@ -13,6 +13,7 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/android/color_utils_android.h"
 #include "ui/android/window_android.h"
+#include "ui/gfx/android/java_bitmap.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -35,12 +36,17 @@ namespace {
 
 ScopedJavaLocalRef<jobject> ConvertToJavaAccount(JNIEnv* env,
                                                  const Account& account) {
+  ScopedJavaLocalRef<jobject> decoded_picture = nullptr;
+  if (!account.decoded_picture.IsEmpty()) {
+    decoded_picture =
+        gfx::ConvertToJavaBitmap(*account.decoded_picture.ToSkBitmap());
+  }
   return Java_Account_Constructor(
       env, ConvertUTF8ToJavaString(env, account.id),
       ConvertUTF8ToJavaString(env, account.email),
       ConvertUTF8ToJavaString(env, account.name),
       ConvertUTF8ToJavaString(env, account.given_name),
-      url::GURLAndroid::FromNativeGURL(env, account.picture),
+      url::GURLAndroid::FromNativeGURL(env, account.picture), decoded_picture,
       account.login_state == Account::LoginState::kSignIn);
 }
 

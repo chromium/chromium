@@ -90,8 +90,9 @@ public class AccountSelectionIntegrationTest {
     private static final GURL TEST_URL = JUnitTestGURLs.URL_1;
 
     private static final Account ANA =
-            new Account("Ana", "ana@one.test", "Ana Doe", "Ana", TEST_PROFILE_PIC, true);
-    private static final Account BOB = new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, false);
+            new Account("Ana", "ana@one.test", "Ana Doe", "Ana", TEST_PROFILE_PIC, null, true);
+    private static final Account BOB =
+            new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, null, false);
 
     private static final IdentityProviderMetadata IDP_METADATA =
             new IdentityProviderMetadata(

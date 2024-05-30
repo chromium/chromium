@@ -73,10 +73,11 @@ public class AccountSelectionViewTest {
     private static final GURL TEST_LOGIN_URL = JUnitTestGURLs.URL_2;
 
     private static final Account ANA =
-            new Account("Ana", "ana@email.example", "Ana Doe", "Ana", TEST_PROFILE_PIC, true);
+            new Account("Ana", "ana@email.example", "Ana Doe", "Ana", TEST_PROFILE_PIC, null, true);
     private static final Account NO_ONE =
-            new Account("", "", "No Subject", "", TEST_PROFILE_PIC, true);
-    private static final Account BOB = new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, true);
+            new Account("", "", "No Subject", "", TEST_PROFILE_PIC, null, true);
+    private static final Account BOB =
+            new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, null, true);
 
     private static final GURL TEST_ERROR_URL = JUnitTestGURLs.URL_1;
     private static final GURL TEST_EMPTY_ERROR_URL = new GURL("");

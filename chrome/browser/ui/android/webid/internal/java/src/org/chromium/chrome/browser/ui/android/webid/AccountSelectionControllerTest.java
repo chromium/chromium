@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
@@ -21,7 +20,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.ACCOUNT;
-import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.AVATAR;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IDP_BRAND_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IDP_FOR_DISPLAY;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IFRAME_FOR_DISPLAY;
@@ -36,7 +34,6 @@ import androidx.annotation.Px;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -50,7 +47,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
-import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.Avatar;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
@@ -106,9 +102,17 @@ public class AccountSelectionControllerTest {
                     "Ana Doe",
                     "Ana",
                     TEST_PROFILE_PIC,
+                    /* pictureBitmap= */ null,
                     /* isSignIn= */ true);
     private static final Account BOB =
-            new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, /* isSignIn= */ true);
+            new Account(
+                    "Bob",
+                    "",
+                    "Bob",
+                    "",
+                    TEST_PROFILE_PIC,
+                    /* pictureBitmap= */ null,
+                    /* isSignIn= */ true);
     private static final Account CARL =
             new Account(
                     "Carl",
@@ -116,6 +120,7 @@ public class AccountSelectionControllerTest {
                     "Carl Test",
                     ":)",
                     TEST_PROFILE_PIC,
+                    /* pictureBitmap= */ null,
                     /* isSignIn= */ true);
     private static final Account NEW_USER =
             new Account(
@@ -124,6 +129,7 @@ public class AccountSelectionControllerTest {
                     "Sam E. Goto",
                     "Sam",
                     TEST_PROFILE_PIC,
+                    /* pictureBitmap= */ null,
                     /* isSignIn= */ false);
     private static final String[] RP_CONTEXTS =
             new String[] {"signin", "signup", "use", "continue"};
@@ -280,10 +286,8 @@ public class AccountSelectionControllerTest {
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         assertNull(headerModel.get(IDP_BRAND_ICON));
 
-        // The only downloaded icon should not be an IDP brand icon.
-        verify(mMockImageFetcher, times(1))
-                .fetchImage(
-                        argThat(imageFetcherParamsHaveUrl(TEST_PROFILE_PIC)), any(Callback.class));
+        // There should be no downloads.
+        verify(mMockImageFetcher, times(0)).fetchImage(any(), any());
     }
 
     @Test
@@ -301,70 +305,6 @@ public class AccountSelectionControllerTest {
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
-    }
-
-    @Test
-    public void testShowAccountsSetsAccountListAndRequestsAvatar() {
-        mMediator.showAccounts(
-                TEST_ETLD_PLUS_ONE,
-                TEST_ETLD_PLUS_ONE_1,
-                TEST_ETLD_PLUS_ONE_2,
-                Arrays.asList(ANA, BOB),
-                IDP_METADATA,
-                CLIENT_ID_METADATA,
-                /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin",
-                /* requestPermission= */ true);
-        assertEquals("Incorrect item sheet count", 2, mSheetAccountItems.size());
-        assertNull(mSheetAccountItems.get(0).model.get(AVATAR));
-        assertNull(mSheetAccountItems.get(1).model.get(AVATAR));
-
-        // Both accounts have the same profile pic URL
-        ImageFetcher.Params expected_params =
-                ImageFetcher.Params.create(
-                        TEST_PROFILE_PIC.getSpec(),
-                        ImageFetcher.WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME,
-                        DESIRED_AVATAR_SIZE,
-                        DESIRED_AVATAR_SIZE);
-
-        verify(mMockImageFetcher, times(2)).fetchImage(eq(expected_params), any());
-    }
-
-    @Test
-    public void testFetchAvatarUpdatesModel() {
-        mMediator.showAccounts(
-                TEST_ETLD_PLUS_ONE,
-                TEST_ETLD_PLUS_ONE_1,
-                TEST_ETLD_PLUS_ONE_2,
-                Collections.singletonList(CARL),
-                IDP_METADATA,
-                CLIENT_ID_METADATA,
-                /* isAutoReauthn= */ false,
-                /* rpContext= */ "signin",
-                /* requestPermission= */ true);
-        assertEquals("Incorrect item sheet count", 1, mSheetAccountItems.size());
-        assertEquals("Incorrect account", CARL, mSheetAccountItems.get(0).model.get(ACCOUNT));
-        assertNull(mSheetAccountItems.get(0).model.get(AVATAR));
-
-        ImageFetcher.Params expected_params =
-                ImageFetcher.Params.create(
-                        TEST_PROFILE_PIC.getSpec(),
-                        ImageFetcher.WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME,
-                        DESIRED_AVATAR_SIZE,
-                        DESIRED_AVATAR_SIZE);
-
-        final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
-        verify(mMockImageFetcher).fetchImage(eq(expected_params), callback.capture());
-
-        Bitmap bitmap =
-                Bitmap.createBitmap(
-                        DESIRED_AVATAR_SIZE, DESIRED_AVATAR_SIZE, Bitmap.Config.ARGB_8888);
-        callback.getValue().onResult(bitmap);
-
-        Avatar avatarData = mSheetAccountItems.get(0).model.get(AVATAR);
-        assertEquals("incorrect avatar bitmap", bitmap, avatarData.mAvatar);
-        assertEquals("incorrect avatar name", CARL.getName(), avatarData.mName);
-        assertEquals("incorrect avatar size", DESIRED_AVATAR_SIZE, avatarData.mAvatarSize);
     }
 
     @Test

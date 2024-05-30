@@ -650,28 +650,11 @@ class AccountSelectionMediator {
     private void requestAvatarImage(PropertyModel accountModel) {
         Account account = accountModel.get(AccountProperties.ACCOUNT);
         final String name = account.getName();
-        final String avatarURL = account.getPictureUrl().getSpec();
+        final Bitmap picture = account.getPictureBitmap();
 
-        if (!avatarURL.isEmpty()) {
-            ImageFetcher.Params params =
-                    ImageFetcher.Params.create(
-                            avatarURL,
-                            ImageFetcher.WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME,
-                            mDesiredAvatarSize,
-                            mDesiredAvatarSize);
-
-            mImageFetcher.fetchImage(
-                    params,
-                    bitmap -> {
-                        accountModel.set(
-                                AccountProperties.AVATAR,
-                                new AccountProperties.Avatar(name, bitmap, mDesiredAvatarSize));
-                    });
-        } else {
-            accountModel.set(
-                    AccountProperties.AVATAR,
-                    new AccountProperties.Avatar(name, null, mDesiredAvatarSize));
-        }
+        accountModel.set(
+                AccountProperties.AVATAR,
+                new AccountProperties.Avatar(name, picture, mDesiredAvatarSize));
     }
 
     boolean wasDismissed() {
