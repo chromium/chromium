@@ -83,6 +83,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -1260,6 +1261,11 @@ EarlyBreakOnHasArgumentChecking CheckEarlyBreakForHasArgument(
   return kNoEarlyBreak;
 }
 
+bool MatchesExternalSVGUseTarget(Element& element) {
+  const auto* svg_element = DynamicTo<SVGElement>(element);
+  return svg_element && svg_element->IsResourceTarget();
+}
+
 }  // namespace
 
 bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
@@ -1581,7 +1587,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (force_pseudo_state) {
         return true;
       }
-      return element == element.GetDocument().CssTarget();
+      return element == element.GetDocument().CssTarget() ||
+             MatchesExternalSVGUseTarget(element);
     case CSSSelector::kPseudoIs:
     case CSSSelector::kPseudoWhere:
     case CSSSelector::kPseudoAny:

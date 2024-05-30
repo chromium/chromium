@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/svg/graphics/isolated_svg_document_host.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
+#include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_cache.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
@@ -219,6 +220,20 @@ void SVGResourceDocumentContent::NotifyObservers() {
   for (auto& observer : observers_) {
     observer->ResourceNotifyFinished(this);
   }
+}
+
+SVGResourceTarget* SVGResourceDocumentContent::GetResourceTarget(
+    const AtomicString& element_id) {
+  Document* document = GetDocument();
+  if (!document) {
+    return nullptr;
+  }
+  auto* svg_target =
+      DynamicTo<SVGElement>(document->getElementById(element_id));
+  if (!svg_target) {
+    return nullptr;
+  }
+  return &svg_target->EnsureResourceTarget();
 }
 
 void SVGResourceDocumentContent::ContentChanged() {

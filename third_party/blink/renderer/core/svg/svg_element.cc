@@ -646,6 +646,14 @@ SVGUseElement* SVGElement::GeneratingUseElement() const {
   return nullptr;
 }
 
+SVGResourceTarget& SVGElement::EnsureResourceTarget() {
+  return EnsureSVGRareData()->EnsureResourceTarget(*this);
+}
+
+bool SVGElement::IsResourceTarget() const {
+  return HasSVGRareData() && SvgRareData()->HasResourceTarget();
+}
+
 void SVGElement::SetCorrespondingElement(SVGElement* corresponding_element) {
   EnsureSVGRareData()->SetCorrespondingElement(corresponding_element);
 }
