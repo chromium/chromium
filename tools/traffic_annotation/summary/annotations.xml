@@ -475,4 +475,5 @@ Refer to README.md for content description and update process.
  <item id="data_sharing_service_read_groups" added_in_milestone="127" content_hash_code="0516c774" os_list="android" file_path="components/data_sharing/public/android/java/src/org/chromium/components/data_sharing/DataSharingNetworkUtils.java" />
  <item id="data_sharing_service_delete_groups" added_in_milestone="127" content_hash_code="0402370f" os_list="android" file_path="components/data_sharing/public/android/java/src/org/chromium/components/data_sharing/DataSharingNetworkUtils.java" />
  <item id="data_sharing_service_update_group" added_in_milestone="127" content_hash_code="055ae156" os_list="android" file_path="components/data_sharing/public/android/java/src/org/chromium/components/data_sharing/DataSharingNetworkUtils.java" />
+ <item id="glanceables_icon_downloader" added_in_milestone="127" content_hash_code="0704f787" os_list="chromeos" file_path="ash/birch/birch_item.cc" />
 </annotations>

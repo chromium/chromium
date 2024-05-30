@@ -32,6 +32,39 @@
 namespace ash {
 namespace {
 
+constexpr net::NetworkTrafficAnnotationTag kIconDownloaderTrafficTag =
+    net::DefineNetworkTrafficAnnotation("glanceables_icon_downloader", R"(
+        semantics {
+          sender: "Post-login glanceables"
+          description:
+            "Downloads icons for suggestion chip buttons for activities the "
+            "user might want to perform after login or from overview mode "
+            "(e.g. view a calendar event or open a file)."
+          trigger: "User logs in to device or enters overview mode."
+          data: "None."
+          destination: GOOGLE_OWNED_SERVICE
+          user_data {
+            type: NONE
+          }
+          internal {
+            contacts {
+              email: "chromeos-launcher@google.com"
+            }
+          }
+          last_reviewed: "2024-05-29"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This feature can be enabled/disabled by the user in the "
+            "suggestion chip button context menu."
+          chrome_policy {
+            ContextualGoogleIntegrationsEnabled {
+              ContextualGoogleIntegrationsEnabled: false
+            }
+          }
+        })");
+
 // Handles when an `image` is downloaded, by converting it to a ui::ImageModel
 // and running `callback`.
 void OnImageDownloaded(const GURL& url,
@@ -66,10 +99,8 @@ void DownloadImageFromUrl(
       Shell::Get()->session_controller()->GetUserSession(0);
   CHECK(active_user_session);
 
-  // TODO(b/328088919): Update MISSING_TRAFFIC_ANNOTATION with real annotation.
   ImageDownloader::Get()->Download(
-      url, MISSING_TRAFFIC_ANNOTATION,
-      active_user_session->user_info.account_id,
+      url, kIconDownloaderTrafficTag, active_user_session->user_info.account_id,
       base::BindOnce(&OnImageDownloaded, url, std::move(callback)));
 }
 
