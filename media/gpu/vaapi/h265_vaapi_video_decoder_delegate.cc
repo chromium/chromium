@@ -493,7 +493,7 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitDecode(
       gfx::Rect(vaapi_pic->va_surface()->size()).Contains(pic->visible_rect()));
 
   const bool success = vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
-      vaapi_pic->GetVASurfaceID());
+      vaapi_pic->va_surface()->id());
   ref_pic_list_pocs_.clear();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   encryption_segment_info_.clear();
@@ -544,7 +544,7 @@ void H265VaapiVideoDecoderDelegate::FillVAPicture(
     VAPictureHEVC* va_pic,
     scoped_refptr<H265Picture> pic) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  va_pic->picture_id = pic->AsVaapiH265Picture()->GetVASurfaceID();
+  va_pic->picture_id = pic->AsVaapiH265Picture()->va_surface()->id();
   va_pic->pic_order_cnt = pic->pic_order_cnt_val_;
   va_pic->flags = 0;
 

@@ -591,7 +591,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitDecode(
       gfx::Rect(vaapi_pic->va_surface()->size()).Contains(pic->visible_rect()));
 
   const bool success = vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
-      vaapi_pic->GetVASurfaceID());
+      vaapi_pic->va_surface()->id());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   encryption_segment_info_.clear();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -643,7 +643,7 @@ void H264VaapiVideoDecoderDelegate::FillVAPicture(
   VASurfaceID va_surface_id = VA_INVALID_SURFACE;
 
   if (!pic->nonexisting)
-    va_surface_id = pic->AsVaapiH264Picture()->GetVASurfaceID();
+    va_surface_id = pic->AsVaapiH264Picture()->va_surface()->id();
 
   va_pic->picture_id = va_surface_id;
   va_pic->frame_idx = pic->frame_num;

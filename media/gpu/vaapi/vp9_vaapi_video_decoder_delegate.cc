@@ -114,7 +114,7 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
     auto ref_pic = ref_frames.GetFrame(i);
     if (ref_pic) {
       pic_param.reference_frames[i] =
-          ref_pic->AsVaapiVP9Picture()->GetVASurfaceID();
+          ref_pic->AsVaapiVP9Picture()->va_surface()->id();
     } else {
       pic_param.reference_frames[i] = VA_INVALID_SURFACE;
     }
@@ -277,7 +277,7 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
       gfx::Rect(vaapi_pic->va_surface()->size()).Contains(pic->visible_rect()));
 
   bool success = vaapi_wrapper_->MapAndCopyAndExecute(
-      vaapi_pic->GetVASurfaceID(), buffers);
+      vaapi_pic->va_surface()->id(), buffers);
   if (!success && NeedsProtectedSessionRecovery())
     return DecodeStatus::kTryAgain;
 
