@@ -512,6 +512,50 @@ TEST_F(RecentSessionPolicyTest,
   EnsureBucketCounts("UserEducation.Session.RecentSuperActiveWeeks", {{1, 1}});
 }
 
+TEST_F(RecentSessionPolicyTest, RecordRecentUsageMetrics_DailyLimit) {
+  auto data = CreateSessionData(
+      {base::Days(1), base::Days(1) + base::Minutes(5), base::Days(2),
+       base::Days(6), base::Days(15), base::Days(20)});
+  policy_->RecordRecentUsageMetrics(data);
+  EnsureBucketCounts("UserEducation.Session.ShortTermCount", {{5, 1}});
+  EnsureBucketCounts("UserEducation.Session.LongTermCount", {{7, 1}});
+  EnsureBucketCounts("UserEducation.Session.MonthlyActiveDays", {{6, 1}});
+  EnsureBucketCounts("UserEducation.Session.RecentActiveDays", {{4, 1}});
+  EnsureBucketCounts("UserEducation.Session.RecentActiveWeeks", {{2, 1}});
+  EnsureBucketCounts("UserEducation.Session.RecentSuperActiveWeeks", {{1, 1}});
+
+  // Start another session almost right away, so it's in the same day.
+  data.recent_session_start_times.insert(
+      data.recent_session_start_times.begin(),
+      data.recent_session_start_times.front() + base::Seconds(5));
+  policy_->RecordRecentUsageMetrics(data);
+  // Session-based metrics should still be recorded.
+  EnsureBucketCounts("UserEducation.Session.ShortTermCount", {{5, 1}, {6, 1}});
+  EnsureBucketCounts("UserEducation.Session.LongTermCount", {{7, 1}, {8, 1}});
+  // Daily and weekly metrics, however, should not.
+  EnsureBucketCounts("UserEducation.Session.MonthlyActiveDays", {{6, 1}});
+  EnsureBucketCounts("UserEducation.Session.RecentActiveDays", {{4, 1}});
+  EnsureBucketCounts("UserEducation.Session.RecentActiveWeeks", {{2, 1}});
+  EnsureBucketCounts("UserEducation.Session.RecentSuperActiveWeeks", {{1, 1}});
+
+  // Start another session on the next calendar day.
+  data.recent_session_start_times.insert(
+      data.recent_session_start_times.begin(),
+      data.recent_session_start_times.front() + base::Days(1));
+  policy_->RecordRecentUsageMetrics(data);
+  // All metrics should now be recorded. Some days will have shifted to the next
+  // week.
+  EnsureBucketCounts("UserEducation.Session.ShortTermCount", {{5, 1}, {6, 2}});
+  EnsureBucketCounts("UserEducation.Session.LongTermCount",
+                     {{7, 1}, {8, 1}, {9, 1}});
+  EnsureBucketCounts("UserEducation.Session.MonthlyActiveDays",
+                     {{6, 1}, {7, 1}});
+  EnsureBucketCounts("UserEducation.Session.RecentActiveDays", {{4, 2}});
+  EnsureBucketCounts("UserEducation.Session.RecentActiveWeeks",
+                     {{2, 1}, {4, 1}});
+  EnsureBucketCounts("UserEducation.Session.RecentSuperActiveWeeks", {{1, 2}});
+}
+
 class RecentSessionPolicyFinchTest : public RecentSessionPolicyTest {
  public:
   RecentSessionPolicyFinchTest() = default;

@@ -42,6 +42,12 @@ class RecentSessionPolicyImpl : public RecentSessionPolicy {
     // If there is insufficient data to produce a count, returns std::nullopt.
     virtual std::optional<int> GetCount(
         const RecentSessionData& recent_sessions) const = 0;
+
+    // Returns whether recording of metrics and sessions should be skipped
+    // because e.g. the metric would have been recorded already during the
+    // current calendar day. Default is false.
+    virtual bool ShouldSkipRecording(
+        const RecentSessionData& recent_sessions) const;
   };
 
   // Counts the number of sessions in the given number of `days`. Does not
@@ -57,9 +63,16 @@ class RecentSessionPolicyImpl : public RecentSessionPolicy {
     const int days_;
   };
 
+  // Represents a constraint that should only be recorded daily.
+  class DailyConstraint : public Constraint {
+   public:
+    bool ShouldSkipRecording(
+        const RecentSessionData& recent_sessions) const override;
+  };
+
   // Counts the number of active weeks in the past number of `weeks`. Uses the
   // last seven calendar days (including today).
-  class ActiveWeeksConstraint : public Constraint {
+  class ActiveWeeksConstraint : public DailyConstraint {
    public:
     explicit ActiveWeeksConstraint(int weeks, int active_days)
         : weeks_(weeks), active_days_(active_days) {}
@@ -74,7 +87,7 @@ class RecentSessionPolicyImpl : public RecentSessionPolicy {
 
   // Counts the number of active days in the past number of `days`. Uses
   // calendar days, including today.
-  class ActiveDaysConstraint : public Constraint {
+  class ActiveDaysConstraint : public DailyConstraint {
    public:
     explicit ActiveDaysConstraint(int days) : days_(days) {}
     ~ActiveDaysConstraint() override = default;

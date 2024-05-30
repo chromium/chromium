@@ -53,6 +53,26 @@ std::optional<int> ValueOrNull(int value) {
 
 }  // namespace
 
+bool RecentSessionPolicyImpl::Constraint::ShouldSkipRecording(
+    const RecentSessionData& recent_sessions) const {
+  return false;
+}
+
+bool RecentSessionPolicyImpl::DailyConstraint::ShouldSkipRecording(
+    const RecentSessionData& recent_sessions) const {
+  // Do not record if there are at least two recent sessions and the most recent
+  // session is on the same calendar day as the second-most-recent session; the
+  // session would have already been recorded on this day.
+  //
+  // It is critical that calendar day is used rather than just a 24-hour period,
+  // since if the test were simply less than 24 hours, there could be a sequence
+  // of, say, 16-hour separations between sessions and only the first one would
+  // be recorded, no matter how long the sequence lasted.
+  return recent_sessions.recent_session_start_times.size() > 1U &&
+         GetEndOfDay(recent_sessions.recent_session_start_times[0]) ==
+             GetEndOfDay(recent_sessions.recent_session_start_times[1]);
+}
+
 std::optional<int> RecentSessionPolicyImpl::SessionCountConstraint::GetCount(
     const RecentSessionData& recent_sessions) const {
   const base::Time start =
@@ -124,7 +144,8 @@ RecentSessionPolicyImpl::~RecentSessionPolicyImpl() = default;
 void RecentSessionPolicyImpl::RecordRecentUsageMetrics(
     const RecentSessionData& recent_sessions) {
   for (const auto& constraint : constraints_) {
-    if (!constraint.histogram_name.empty()) {
+    if (!constraint.histogram_name.empty() &&
+        !constraint.constraint->ShouldSkipRecording(recent_sessions)) {
       if (const auto result =
               constraint.constraint->GetCount(recent_sessions)) {
         base::UmaHistogramExactLinear(
