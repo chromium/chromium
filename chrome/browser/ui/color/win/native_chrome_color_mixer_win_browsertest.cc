@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -10,32 +9,23 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/win/accent_color_observer.h"
 
-class NativeChromeColorMixerWinBrowsertest
-    : public InProcessBrowserTest,
-      public testing::WithParamInterface<bool> {
+class NativeChromeColorMixerWinBrowsertest : public InProcessBrowserTest {
  public:
-  NativeChromeColorMixerWinBrowsertest() {
-    feature_list_.InitWithFeatureState(features::kChromeRefresh2023,
-                                       GetParam());
-  }
+  NativeChromeColorMixerWinBrowsertest() = default;
 
  protected:
   void SetFollowDevice(bool follow_device) {
     ThemeServiceFactory::GetForProfile(browser()->profile())
         ->UseDeviceTheme(follow_device);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that windows header colors track the accent color when configured to
 // use dwm frame colors.
-IN_PROC_BROWSER_TEST_P(NativeChromeColorMixerWinBrowsertest,
+IN_PROC_BROWSER_TEST_F(NativeChromeColorMixerWinBrowsertest,
                        HeaderColorsFollowAccentColor) {
   // Ensure the accent color starts unset and we are not following device
   // colors.
@@ -72,10 +62,3 @@ IN_PROC_BROWSER_TEST_P(NativeChromeColorMixerWinBrowsertest,
   accent_color_observer->SetUseDwmFrameColorForTesting(false);
   EXPECT_EQ(initial_header_color, get_header_color());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         NativeChromeColorMixerWinBrowsertest,
-                         ::testing::Bool(),
-                         [](const auto& info) {
-                           return info.param ? "GM2" : "Cr2023";
-                         });
