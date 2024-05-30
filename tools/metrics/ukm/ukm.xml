@@ -8272,6 +8272,27 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="EditingTime">
+    <summary>
+      Number of seconds the user spent editing the field. Includes time between
+      key presses, up to 5 seconds each. Bucketed using
+      GetExponentialBucketMinForUserTiming().
+    </summary>
+  </metric>
+  <metric name="FieldSignature">
+    <summary>
+      The signature of the field. This is the hash identifier used to denote
+      this field. See components/autofill/core/common/signatures_util.cc for
+      more details.
+    </summary>
+  </metric>
+  <metric name="FormSignature">
+    <summary>
+      The signature of the form. This is the hash identifier used to denote this
+      form. See components/autofill/core/common/signatures_util.cc for more
+      details.
+    </summary>
+  </metric>
   <metric name="IsAutofillFieldType" enum="Boolean">
     <summary>
       Whether the field is detected and supported by Autofill.

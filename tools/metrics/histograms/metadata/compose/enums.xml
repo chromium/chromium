@@ -197,6 +197,23 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="autofill::FormData not found after select all"/>
 </enum>
 
+<enum name="ProactiveNudgeDerivedEngagement">
+  <int value="0" label="The user didn't interact with the nudge"/>
+  <int value="1"
+      label="The user disabled the nudge on this site using the three-dot
+             menu"/>
+  <int value="2"
+      label="The user disabled the nudge on all sites using the three-dot
+             menu"/>
+  <int value="3"
+      label="User clicked the nudge, but didn't press generate in Compose"/>
+  <int value="4"
+      label="User clicked the nudge, pressed generate at least once, but
+             didn't accept the suggestion"/>
+  <int value="5"
+      label="User clicked, pressed generate, and accepted a suggestion"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

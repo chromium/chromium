@@ -8,11 +8,17 @@
 #include <bit>
 #include <cstdint>
 
+#include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/signatures.h"
+#include "components/compose/core/browser/compose_features.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace compose {
@@ -26,6 +32,7 @@ constexpr int MAX_FIELD_METRIC_COUNT = 100;
 // we'd rather be conservative when recording text changes as user typing. If
 // the text length changes by more than this number, we'll ignore the change.
 constexpr int MAX_CHARS_TYPED_AT_ONCE = 10;
+constexpr base::TimeDelta EDITING_TIME_IDLE_TIMEOUT = base::Seconds(5);
 
 int64_t CountWords(const std::u16string& value) {
   int64_t words = 0;
@@ -77,13 +84,27 @@ void ComposeTextUsageLogger::OnAfterTextFieldDidChange(
     const std::u16string& text_value) {
   autofill::FormType form_type = autofill::FormType::kUnknownFormType;
   int64_t form_control_type = -1;
+  autofill::FieldSignature field_signature;
+  autofill::FormSignature form_signature;
   autofill::FormStructure* form_structure = manager.FindCachedFormById(form);
+  bool is_long_field = false;
   if (form_structure) {
+    form_signature = form_structure->form_signature();
     const autofill::AutofillField* field_data =
         form_structure->GetFieldById(field);
     if (field_data) {
       form_type = FieldTypeGroupToFormType(field_data->Type().group());
       form_control_type = static_cast<int64_t>(field_data->form_control_type());
+
+      switch (field_data->form_control_type()) {
+        case autofill::FormControlType::kContentEditable:
+        case autofill::FormControlType::kTextArea:
+          is_long_field = true;
+          break;
+        default:
+          break;
+      }
+      field_signature = field_data->GetFieldSignature();
     }
   }
 
@@ -107,7 +128,13 @@ void ComposeTextUsageLogger::OnAfterTextFieldDidChange(
       metrics.initial_text = text_value;
     }
     metrics.initialized = true;
+  } else {
+    base::TimeDelta additional_editing_time =
+        std::min(base::TimeTicks::Now() - metrics.last_update_time,
+                 EDITING_TIME_IDLE_TIMEOUT);
+    metrics.editing_time += additional_editing_time;
   }
+  metrics.last_update_time = base::TimeTicks::Now();
 
   switch (form_type) {
     case autofill::FormType::kUnknownFormType:
@@ -132,6 +159,10 @@ void ComposeTextUsageLogger::OnAfterTextFieldDidChange(
   }
 
   metrics.form_control_type = form_control_type;
+
+  metrics.is_long_field = is_long_field;
+  metrics.field_signature = field_signature;
+  metrics.form_signature = form_signature;
 
   metrics.final_text = std::move(text_value);
 }
@@ -158,12 +189,27 @@ void ComposeTextUsageLogger::Reset() {
           0, CountWords(metrics.final_text) - CountWords(metrics.initial_text));
     }
 
-    ukm::builders::Compose_TextElementUsage(source_id_)
-        .SetAutofillFormControlType(metrics.form_control_type)
+    ukm::builders::Compose_TextElementUsage builder(source_id_);
+    builder.SetAutofillFormControlType(metrics.form_control_type)
         .SetTypedCharacterCount(RoundDownToPowerOfTwo(typed_chars))
         .SetTypedWordCount(RoundDownToPowerOfTwo(typed_words))
-        .SetIsAutofillFieldType(metrics.is_autofill_field_type)
-        .Record(ukm::UkmRecorder::Get());
+        .SetIsAutofillFieldType(metrics.is_autofill_field_type);
+
+    if (base::FeatureList::IsEnabled(features::kEnableAdditionalTextMetrics)) {
+      builder
+          .SetFieldSignature(
+              autofill::HashFieldSignature(metrics.field_signature))
+          .SetFormSignature(autofill::HashFormSignature(metrics.form_signature))
+          .SetEditingTime(ukm::GetExponentialBucketMinForUserTiming(
+              metrics.editing_time.InSeconds()));
+      if (metrics.is_long_field) {
+        base::UmaHistogramCustomTimes(
+            "Compose.TextElementUsage.LongField.EditingTime",
+            metrics.editing_time, base::Seconds(2), base::Minutes(20), 50);
+      }
+    }
+
+    builder.Record(ukm::UkmRecorder::Get());
   }
   field_metrics_.clear();
 }

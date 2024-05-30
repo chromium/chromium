@@ -65,6 +65,9 @@ BASE_DECLARE_FEATURE(kComposeUiRefinement);
 // Default nudge allow/deny decision for unspecified hint.
 BASE_DECLARE_FEATURE(kEnableNudgeForUnspecifiedHint);
 
+// A kill switch for additional metrics added to ComposeTextUsageLogger.
+BASE_DECLARE_FEATURE(kEnableAdditionalTextMetrics);
+
 }  // namespace compose::features
 
 #endif  // COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_FEATURES_H_
