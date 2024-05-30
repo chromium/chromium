@@ -12806,7 +12806,7 @@
             ]
         }
     ],
-    "NavBarColorMatchesTabBackground": [
+    "NavBarColorMatchesTabBackgroundAndroid": [
         {
             "platforms": [
                 "android"
