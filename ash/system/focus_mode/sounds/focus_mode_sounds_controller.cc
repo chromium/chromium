@@ -15,7 +15,6 @@
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_soundscape_delegate.h"
 #include "ash/system/focus_mode/sounds/focus_mode_youtube_music_delegate.h"
-#include "ash/system/focus_mode/sounds/playlist_view.h"
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "components/prefs/pref_service.h"

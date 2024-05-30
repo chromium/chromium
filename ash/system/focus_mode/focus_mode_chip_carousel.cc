@@ -161,6 +161,10 @@ void FocusModeChipCarousel::SetTasks(const std::vector<FocusModeTask>& tasks) {
   // Populate a maximum of `kMaxTasks` tasks.
   const size_t num_tasks = std::min(tasks.size(), kMaxTasks);
   for (size_t i = 0; i < num_tasks; i++) {
+    // Skip empty task.
+    if (tasks[i].title.empty()) {
+      continue;
+    }
     views::LabelButton* chip =
         scroll_contents_->AddChildView(std::make_unique<views::LabelButton>(
             base::BindRepeating(on_chip_pressed_, tasks[i]),

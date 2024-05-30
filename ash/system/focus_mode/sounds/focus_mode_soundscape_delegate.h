@@ -24,7 +24,7 @@ class ASH_EXPORT FocusModeSoundscapeDelegate : public FocusModeSoundsDelegate {
   static std::unique_ptr<FocusModeSoundscapeDelegate> Create(
       const std::string& locale);
 
-  FocusModeSoundscapeDelegate(
+  explicit FocusModeSoundscapeDelegate(
       std::unique_ptr<SoundscapesDownloader> downloader);
   ~FocusModeSoundscapeDelegate() override;
 
