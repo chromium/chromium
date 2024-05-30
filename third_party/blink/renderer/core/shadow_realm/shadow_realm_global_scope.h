@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -19,6 +20,10 @@ class CORE_EXPORT ShadowRealmGlobalScope final : public EventTarget,
  public:
   explicit ShadowRealmGlobalScope(
       ExecutionContext* initiator_execution_context);
+
+  // Get the root execution context where the outermost shadow realm was
+  // initialized.
+  ExecutionContext* GetRootInitiatorExecutionContext() const;
 
   void Trace(Visitor* visitor) const override;
 
@@ -63,6 +68,13 @@ class CORE_EXPORT ShadowRealmGlobalScope final : public EventTarget,
   const Member<ExecutionContext> initiator_execution_context_;
   KURL url_;
   ShadowRealmToken token_;
+};
+
+template <>
+struct DowncastTraits<ShadowRealmGlobalScope> {
+  static bool AllowFrom(const ExecutionContext& context) {
+    return context.IsShadowRealmGlobalScope();
+  }
 };
 
 }  // namespace blink

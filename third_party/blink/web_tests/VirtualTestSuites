@@ -2992,5 +2992,19 @@
       "--enable-blink-features=KeyboardFocusableScrollersOptOut"
     ],
     "expires": "May 1, 2025"
+  },
+  {
+    "prefix": "shadow-realm-enabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/service-workers/service-worker/shadowrealm-promise-rejection.https.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": ["--js-flags=--harmony-shadow-realm"],
+    "expires": "May 23, 2026",
+    "owners": [
+      "syg@chromium.org",
+      "samuelmaddock@electronjs.org"
+    ]
   }
 ]

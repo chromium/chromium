@@ -17,6 +17,14 @@ ShadowRealmGlobalScope::ShadowRealmGlobalScope(
                        initiator_execution_context->GetAgent()),
       initiator_execution_context_(initiator_execution_context) {}
 
+ExecutionContext* ShadowRealmGlobalScope::GetRootInitiatorExecutionContext()
+    const {
+  return initiator_execution_context_->IsShadowRealmGlobalScope()
+             ? To<ShadowRealmGlobalScope>(initiator_execution_context_.Get())
+                   ->GetRootInitiatorExecutionContext()
+             : initiator_execution_context_.Get();
+}
+
 void ShadowRealmGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(initiator_execution_context_);
   EventTarget::Trace(visitor);
@@ -54,8 +62,7 @@ bool ShadowRealmGlobalScope::IsShadowRealmGlobalScope() const {
 }
 
 const KURL& ShadowRealmGlobalScope::Url() const {
-  NOTREACHED_IN_MIGRATION();
-  return url_;
+  return GetRootInitiatorExecutionContext()->Url();
 }
 
 const KURL& ShadowRealmGlobalScope::BaseURL() const {
@@ -100,7 +107,6 @@ void ShadowRealmGlobalScope::AddInspectorIssue(AuditsIssue issue) {
 }
 
 EventTarget* ShadowRealmGlobalScope::ErrorEventTarget() {
-  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
