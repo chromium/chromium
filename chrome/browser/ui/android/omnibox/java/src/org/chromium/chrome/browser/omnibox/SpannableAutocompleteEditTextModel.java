@@ -270,15 +270,23 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
 
         boolean retVal;
         mInputConnection.onBeginImeCommand();
-        if (hasAutocomplete()
-                && ((mLayoutDirectionIsLtr && event.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT)
-                        || (!mLayoutDirectionIsLtr
-                                && event.getKeyCode() == KeyEvent.KEYCODE_DPAD_LEFT)
-                        || (event.getKeyCode() == KeyEvent.KEYCODE_TAB)
-                        || event.getKeyCode() == KeyEvent.KEYCODE_ENTER)
-                && event.getAction() == KeyEvent.ACTION_DOWN) {
-            mInputConnection.commitAutocomplete();
-            retVal = true;
+        if (hasAutocomplete()) {
+            if (event.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL) {
+                // The editor doesn't see the selected text so won't handle forward delete.
+                clearAutocompleteText();
+                mLastEditWasTyping = false;
+                retVal = true;
+            } else if (((mLayoutDirectionIsLtr && event.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT)
+                            || (!mLayoutDirectionIsLtr
+                                    && event.getKeyCode() == KeyEvent.KEYCODE_DPAD_LEFT)
+                            || (event.getKeyCode() == KeyEvent.KEYCODE_TAB)
+                            || (event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
+                    && event.getAction() == KeyEvent.ACTION_DOWN) {
+                mInputConnection.commitAutocomplete();
+                retVal = true;
+            } else {
+                retVal = mDelegate.super_dispatchKeyEvent(event);
+            }
         } else {
             retVal = mDelegate.super_dispatchKeyEvent(event);
         }

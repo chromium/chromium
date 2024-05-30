@@ -151,4 +151,25 @@ public class SpannableAutocompleteEditTextModelUnitTest {
         confirmAutocompletionBypassed(KeyEvent.KEYCODE_TAB);
         confirmAutocompletionBypassed(KeyEvent.KEYCODE_DPAD_LEFT);
     }
+
+    @Test
+    public void dispatchKeyEvent_handleForwardDel() {
+        mCurrentState.setUserText("goo");
+        mCurrentState.setAutocompleteText(Optional.of("gle.com"));
+        assertEquals(mCurrentState.getText(), "google.com"); // Verify full state constructed.
+
+        // The delete key doesn't get sent to our delegate when in autocomplete mode so
+        // confirmAutocompletionBypassed() doesn't work. Manually dispatch.
+        var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_FORWARD_DEL);
+        clearInvocations(mConnection, mDelegate);
+        mModel.dispatchKeyEvent(event);
+
+        // Inline autocompleted text should be deleted.
+        assertEquals(mCurrentState.getText(), "goo");
+
+        // Go left and then forward delete the last user-char. The forward delete should still
+        // get dispatched.
+        confirmAutocompletionBypassed(KeyEvent.KEYCODE_DPAD_LEFT);
+        confirmAutocompletionBypassed(KeyEvent.KEYCODE_FORWARD_DEL);
+    }
 }
