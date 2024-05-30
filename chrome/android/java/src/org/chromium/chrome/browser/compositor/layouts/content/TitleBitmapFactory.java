@@ -23,7 +23,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
@@ -147,13 +147,15 @@ public class TitleBitmapFactory {
     /**
      * Generates the group title bitmap.
      *
+     * @param filter To fetch tab information from.
      * @param context The current Android's context.
      * @param rootId The root ID of the group.
      * @param title The title of the group.
      * @return The Bitmap with the title.
      */
-    public Bitmap getGroupTitleBitmap(Context context, int rootId, String title) {
-        @TabGroupColorId int colorId = TabGroupColorUtils.getTabGroupColor(rootId);
+    public Bitmap getGroupTitleBitmap(
+            TabGroupModelFilter filter, Context context, int rootId, String title) {
+        @TabGroupColorId int colorId = filter.getTabGroupColor(rootId);
         @ColorInt
         int color =
                 ColorPickerUtils.getTabGroupColorPickerItemTextColor(context, colorId, mIncognito);

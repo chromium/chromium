@@ -39,8 +39,8 @@ public class LayerTitleCache {
     private final Context mContext;
     private TabModelSelector mTabModelSelector;
 
-    private final SparseArray<FaviconTitle> mTabTitles = new SparseArray<FaviconTitle>();
-    private final SparseArray<Title> mGroupTitles = new SparseArray<Title>();
+    private final SparseArray<FaviconTitle> mTabTitles = new SparseArray<>();
+    private final SparseArray<Title> mGroupTitles = new SparseArray<>();
     private final int mFaviconSize;
 
     private long mNativeLayerTitleCache;
@@ -190,7 +190,11 @@ public class LayerTitleCache {
             title.register();
         }
 
-        Bitmap titleBitmap = titleBitmapFactory.getGroupTitleBitmap(mContext, rootId, titleString);
+        TabGroupModelFilter filter =
+                (TabGroupModelFilter)
+                        mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
+        Bitmap titleBitmap =
+                titleBitmapFactory.getGroupTitleBitmap(filter, mContext, rootId, titleString);
         title.set(titleBitmap);
 
         if (mNativeLayerTitleCache != 0) {
@@ -390,7 +394,7 @@ public class LayerTitleCache {
         long init(
                 LayerTitleCache caller,
                 int fadeWidth,
-                int faviconStartlPadding,
+                int faviconStartPadding,
                 int faviconEndPadding,
                 int spinnerResId,
                 int spinnerIncognitoResId,

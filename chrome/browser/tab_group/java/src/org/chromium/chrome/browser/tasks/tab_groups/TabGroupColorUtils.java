@@ -57,7 +57,7 @@ public class TabGroupColorUtils {
      * @param tabRootId The tab root ID whose related tab group color will be fetched.
      * @return The stored color of the target tab group, default value is -1 (INVALID_COLOR_ID).
      */
-    public static int getTabGroupColor(int tabRootId) {
+    static int getTabGroupColor(int tabRootId) {
         assert tabRootId != Tab.INVALID_TAB_ID;
         return getSharedPreferences().getInt(String.valueOf(tabRootId), INVALID_COLOR_ID);
     }
