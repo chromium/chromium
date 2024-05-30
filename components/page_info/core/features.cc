@@ -30,7 +30,12 @@ extern bool IsAboutThisSiteFeatureEnabled(const std::string& locale) {
 
 BASE_FEATURE(kPageInfoAboutThisSite,
              "PageInfoAboutThisSite",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 BASE_FEATURE(kPageInfoAboutThisSiteMoreLangs,
              "PageInfoAboutThisSiteMoreLangs",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -17594,8 +17594,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20240530",
                     "enable_features": [
+                        "PageInfoAboutThisSite",
                         "RevampPageInfoIos"
                     ]
                 }
