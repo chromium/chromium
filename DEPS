@@ -543,6 +543,7 @@ allowed_hosts = [
 
    # TODO(337061377): Move into a separate allowed gcs bucket list.
   'chromium-ads-detection',
+  'chromium-browser-clang',
   'chromium-clang-format',
   'chromium-nodejs',
   'chromium-tfhub-models',
@@ -777,6 +778,41 @@ deps = {
         'sha256sum': '7130f43eb9889ff4dcd36ed2c5352053b88216e6b9186dfce08ea41b7dd142f3',
         'size_bytes': 35504613,
         'generation': 1691086948259727,
+      },
+    ],
+  },
+  # Update prebuilt Rust toolchain.
+  'src/third_party/rust-toolchain': {
+    'dep_type': 'gcs',
+    'bucket': 'chromium-browser-clang',
+    'objects': [
+      {
+        'object_name': 'Linux_x64/rust-toolchain-32dd3795bce8b347fda786529cf5e42a813e0b7d-2-llvmorg-19-init-10646-g084e2b53.tar.xz',
+        'sha256sum': 'e7e236fe6e61b7a41ba6b1e4bc64e91119359cdddce268597c6328b9fea8d76d',
+        'size_bytes': 151082700,
+        'generation': 1715715529295267,
+        'condition': 'host_os == "linux" and non_git_source',
+      },
+      {
+        'object_name': 'Mac/rust-toolchain-32dd3795bce8b347fda786529cf5e42a813e0b7d-2-llvmorg-19-init-10646-g084e2b53.tar.xz',
+        'sha256sum': '3860d592e7f6a853aa06a00642f4110132c7af7f2b91d7bdd399d00dbd5177f6',
+        'size_bytes': 143827372,
+        'generation': 1715715530889094,
+        'condition': 'host_os == "mac" and host_cpu == "x64"',
+      },
+      {
+        'object_name': 'Mac_arm64/rust-toolchain-32dd3795bce8b347fda786529cf5e42a813e0b7d-2-llvmorg-19-init-10646-g084e2b53.tar.xz',
+        'sha256sum': '333dfb93cb0d944acb1ed9f0c44aba9dfdb4e7cd2c660758014338bea37ce8da',
+        'size_bytes': 135183068,
+        'generation': 1715715532458630,
+        'condition': 'host_os == "mac" and host_cpu == "arm64"',
+      },
+      {
+        'object_name': 'Win/rust-toolchain-32dd3795bce8b347fda786529cf5e42a813e0b7d-2-llvmorg-19-init-10646-g084e2b53.tar.xz',
+        'sha256sum': 'f610825518d0f3b6f1e9d2772065165b5bcac3302448a53ac89b3684bae7dbd2',
+        'size_bytes': 206423884,
+        'generation': 1715715534082072,
+        'condition': 'host_os == "win"',
       },
     ],
   },
@@ -5056,12 +5092,6 @@ hooks = [
     'pattern': '.',
     'condition': 'not llvm_force_head_revision',
     'action': ['vpython3', 'src/tools/clang/scripts/update.py'],
-  },
-  {
-    # Update prebuilt Rust toolchain.
-    'name': 'rust-toolchain',
-    'pattern': '.',
-    'action': ['vpython3', 'src/tools/rust/update_rust.py'],
   },
   {
     # Build the clang toolchain from tip-of-tree.
