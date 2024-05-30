@@ -7850,29 +7850,6 @@
             ]
         }
     ],
-    "EventTimingKeypressAndCompositionInteractionId": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows",
-                "android_webview",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EventTimingKeypressAndCompositionInteractionId"
-                    ]
-                }
-            ]
-        }
-    ],
     "ExcludeTransparentTextsFromBeingLcpEligible": [
         {
             "platforms": [
