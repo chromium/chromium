@@ -48,7 +48,8 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
       syncer::EntityChangeList entity_changes) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
-  void GetData(StorageKeyList storage_keys, DataCallback callback) override;
+  void GetDataForCommit(StorageKeyList storage_keys,
+                        DataCallback callback) override;
   void GetAllDataForDebugging(DataCallback callback) override;
 
  private:

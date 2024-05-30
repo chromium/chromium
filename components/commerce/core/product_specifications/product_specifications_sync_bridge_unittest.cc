@@ -324,15 +324,15 @@ TEST_F(ProductSpecificationsSyncBridgeTest, TestInitialization) {
   }
 }
 
-TEST_F(ProductSpecificationsSyncBridgeTest, TestGetData) {
+TEST_F(ProductSpecificationsSyncBridgeTest, TestGetDataForCommit) {
   ProductSpecificationsSyncBridge::StorageKeyList storage_keys;
-  // Leave out first entry. GetData takes in a set of keys
+  // Leave out first entry. GetDataForCommit() takes in a set of keys
   // so we want to ensure the entries with keys specified are
   // returned, rather than all entries.
   storage_keys.push_back(kInitUuid[1]);
   storage_keys.push_back(kInitUuid[2]);
   base::RunLoop run_loop;
-  bridge().GetData(
+  bridge().GetDataForCommit(
       std::move(storage_keys),
       base::BindLambdaForTesting(
           [&](std::unique_ptr<syncer::DataBatch> data_batch) {

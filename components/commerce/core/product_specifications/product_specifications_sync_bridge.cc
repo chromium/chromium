@@ -119,8 +119,9 @@ std::string ProductSpecificationsSyncBridge::GetClientTag(
   return GetStorageKey(entity_data);
 }
 
-void ProductSpecificationsSyncBridge::GetData(StorageKeyList storage_keys,
-                                              DataCallback callback) {
+void ProductSpecificationsSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys,
+    DataCallback callback) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::string& storage_key : storage_keys) {
     if (auto it = entries_.find(storage_key); it != entries_.end()) {
