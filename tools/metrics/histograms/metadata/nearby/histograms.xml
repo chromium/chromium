@@ -283,7 +283,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Connections.InstantMessaging.TachyonIceConfigFetcher.CacheHit"
     enum="BooleanCacheHit" expires_after="2025-04-30">
-  <owner>cclem@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records whether the cache was used to satisfy the GetIceServers request.
@@ -294,7 +294,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Connections.InstantMessaging.TachyonIceConfigFetcher.FailureReason"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-04-30">
-  <owner>cclem@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the HTTP response code or net error code of the GetIceServers API
@@ -305,7 +305,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Connections.InstantMessaging.TachyonIceConfigFetcher.OAuthTokenFetchResult"
     enum="BooleanSuccess" expires_after="2025-04-30">
-  <owner>cclem@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records whether the Tachyon OAuth token was successfully fetched. Emitted
@@ -316,7 +316,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Connections.InstantMessaging.TachyonIceConfigFetcher.Result"
     enum="BooleanSuccess" expires_after="2025-04-30">
-  <owner>cclem@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the result of the GetIceServers API call to the Tachyon server.
@@ -1052,7 +1052,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Share.Certificates.Manager.DownloadPublicCertificatesCount"
     units="certificates" expires_after="2025-04-30">
-  <owner>cclem@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     If the Nearby Share certificate manager successfully downloads public
@@ -1064,7 +1064,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Share.Certificates.Manager.DownloadPublicCertificatesFailuePageCount"
     units="pages" expires_after="2025-04-30">
-  <owner>cclem@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     If the Nearby Share certificate manager fails to download public
@@ -1076,7 +1076,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Share.Certificates.Manager.DownloadPublicCertificatesHttpResult"
     enum="NearbyHttpResult" expires_after="2025-04-30">
-  <owner>cclem@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the result of the async ListPublicCertificates API call to the
@@ -1089,7 +1089,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Share.Certificates.Manager.DownloadPublicCertificatesSuccessPageCount"
     units="pages" expires_after="2025-04-30">
-  <owner>cclem@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     If the Nearby Share certificate manager successfully downloads public
@@ -1100,7 +1100,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Share.Certificates.Manager.DownloadPublicCertificatesSuccessRate"
     enum="BooleanSuccess" expires_after="2025-04-30">
-  <owner>cclem@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records whether the Nearby Share certificate manager successfully downloaded
@@ -1112,7 +1112,7 @@ chromium-metrics-reviews@google.com.
     name="Nearby.Share.Certificates.Manager.GetDecryptedPublicCertificateResult"
     enum="NearbyShareCertificateManagerGetDecryptedPublicCertificateResult"
     expires_after="2025-04-30">
-  <owner>cclem@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the result of the async GetDecryptedPublicCertificate call in
@@ -1122,7 +1122,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Certificates.Storage.InitializeAttemptCount"
     units="attempts" expires_after="2025-04-30">
-  <owner>cclem@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     If the Nearby Share certificate storage successfully initializes the public
@@ -1133,7 +1133,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Nearby.Share.Certificates.Storage.InitializeAttemptResult"
     enum="NearbyShareCertificateStorageInitializationResult"
     expires_after="2025-04-30">
-  <owner>cclem@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     For individual initialization attempts of the Nearby Share certificate
@@ -1155,7 +1155,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Certificates.Storage.{Operation}SuccessRate"
     enum="BooleanSuccess" expires_after="2025-04-30">
-  <owner>cclem@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Record success rate of Nearby Share storage operation {Operation}.
@@ -1450,7 +1450,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Error" enum="NearbyShareError"
     expires_after="2025-04-30">
-  <owner>cclem@google.com</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records a unique error code for every site in the code where an error
@@ -1482,7 +1482,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.LocalDeviceData.DeviceDataUpdater.HttpResult"
     enum="NearbyHttpResult" expires_after="2025-04-30">
-  <owner>cclem@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the result of the async UpdateDevice API call to the Nearby Sharing
@@ -1592,7 +1592,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.PairedKeyVerificationError"
     enum="NearbySharePairedKeyVerificationError" expires_after="2025-04-30">
-  <owner>cclem@google.com</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the reason why paired key verification failed. Emitted whenever the
