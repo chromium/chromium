@@ -384,6 +384,15 @@ bool IsContentNotificationExperimentEnabled() {
   return base::FeatureList::IsEnabled(kContentNotificationExperiment);
 }
 
+BASE_FEATURE(kContentNotificationProvisionalIgnoreConditions,
+             "ContentNotificationProvisionalIgnoreConditions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsContentNotificationProvisionalIgnoreConditions() {
+  return base::FeatureList::IsEnabled(
+      kContentNotificationProvisionalIgnoreConditions);
+}
+
 BASE_FEATURE(kIOSLargeFakebox,
              "IOSLargeFakebox",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -644,16 +653,7 @@ bool IsContentPushNotificationsSetUpListEnabled() {
 
 bool IsContentPushNotificationsProvisionalEnabled() {
   return (ContentNotificationsExperimentTypeEnabled() ==
-              NotificationsExperimentTypeProvisional ||
-          ContentNotificationsExperimentTypeEnabled() ==
-              NotificationsExperimentTypeProvisionalBypass);
-}
-
-// TODO(b/322348322): Remove provisional notifications bypass conditions testing
-// flag param.
-bool IsContentPushNotificationsProvisionalBypass() {
-  return (ContentNotificationsExperimentTypeEnabled() ==
-          NotificationsExperimentTypeProvisionalBypass);
+          NotificationsExperimentTypeProvisional);
 }
 
 bool IsContentPushNotificationsPromoRegistrationOnly() {

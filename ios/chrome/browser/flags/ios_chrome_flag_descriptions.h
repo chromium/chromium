@@ -197,6 +197,11 @@ extern const char kBreakpadNoDelayInitialUploadDescription[];
 extern const char kContentNotificationExperimentName[];
 extern const char kContentNotificationExperimentDescription[];
 
+// Title and description for the flag to enable the content notification
+// provisional without conditions. This is used for testing the feature only.
+extern const char kContentNotificationProvisionalIgnoreConditionsName[];
+extern const char kContentNotificationProvisionalIgnoreConditionsDescription[];
+
 // Title and description for the flag to enable the content notifications
 // feature.
 extern const char kContentPushNotificationsName[];

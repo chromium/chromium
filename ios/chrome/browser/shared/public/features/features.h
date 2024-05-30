@@ -365,6 +365,13 @@ BASE_DECLARE_FEATURE(kContentPushNotifications);
 // Feature flag to enable Content Notification experiments.
 BASE_DECLARE_FEATURE(kContentNotificationExperiment);
 
+// Feature flag to enable Content Notification Provisional without any
+// conditions.
+BASE_DECLARE_FEATURE(kContentNotificationProvisionalIgnoreConditions);
+
+// True if Content Notification Provisional is enabled without any conditions.
+bool IsContentNotificationProvisionalIgnoreConditions();
+
 // Feature flag to enable the Large Fakebox design changes.
 BASE_DECLARE_FEATURE(kIOSLargeFakebox);
 
@@ -504,11 +511,6 @@ bool IsContentPushNotificationsSetUpListEnabled();
 
 // YES when the Content Provisional Push Notifications are enabled.
 bool IsContentPushNotificationsProvisionalEnabled();
-
-// TODO(b/322348322): Remove provisional notifications bypass conditions testing
-// flag param. YES when the Content Provisional Push Notifications are enabled
-// and the time based conditions should be ignored.
-bool IsContentPushNotificationsProvisionalBypass();
 
 // YES when the Content Push Notifications Promo is registered with no UI
 // change.

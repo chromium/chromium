@@ -236,6 +236,11 @@ const char kContentNotificationExperimentName[] =
 const char kContentNotificationExperimentDescription[] =
     "Enable Content Notification Experiment.";
 
+const char kContentNotificationProvisionalIgnoreConditionsName[] =
+    "Content Notification Provisional Ignore Conditions";
+const char kContentNotificationProvisionalIgnoreConditionsDescription[] =
+    "Enable Content Notification Provisional without Conditions";
+
 const char kContentPushNotificationsName[] = "Content Push Notifications";
 const char kContentPushNotificationsDescription[] =
     "Enables the content push notifications.";

@@ -236,11 +236,6 @@ const FeatureEntry::FeatureParam kContentPushNotificationsEnabledSetupLists[] =
     {{kContentPushNotificationsExperimentType, "2"}};
 const FeatureEntry::FeatureParam kContentPushNotificationsEnabledProvisional[] =
     {{kContentPushNotificationsExperimentType, "3"}};
-// TODO(b/322348322): Remove provisional notifications bypass conditions testing
-// flag param.
-const FeatureEntry::FeatureParam
-    kContentPushNotificationsEnabledProvisionalBypass[] = {
-        {kContentPushNotificationsExperimentType, "4"}};
 const FeatureEntry::FeatureParam
     kContentPushNotificationsPromoRegistrationOnly[] = {
         {kContentPushNotificationsExperimentType, "5"}};
@@ -258,9 +253,6 @@ const FeatureEntry::FeatureVariation kContentPushNotificationsVariations[] = {
      std::size(kContentPushNotificationsEnabledSetupLists), nullptr},
     {"Provisional Notification", kContentPushNotificationsEnabledProvisional,
      std::size(kContentPushNotificationsEnabledProvisional), nullptr},
-    {"Provisional Ignore Conditions",
-     kContentPushNotificationsEnabledProvisionalBypass,
-     std::size(kContentPushNotificationsEnabledProvisionalBypass), nullptr},
     {"Promo Registeration Only", kContentPushNotificationsPromoRegistrationOnly,
      std::size(kContentPushNotificationsPromoRegistrationOnly), nullptr},
     {"Provisional Notification Registeration Only",
@@ -840,6 +832,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContentNotificationExperimentName,
      flag_descriptions::kContentNotificationExperimentDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kContentNotificationExperiment)},
+    {"content-notification-provisional-ignore-conditions",
+     flag_descriptions::kContentNotificationProvisionalIgnoreConditionsName,
+     flag_descriptions::
+         kContentNotificationProvisionalIgnoreConditionsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kContentNotificationProvisionalIgnoreConditions)},
     {"content-push-notifications",
      flag_descriptions::kContentPushNotificationsName,
      flag_descriptions::kContentPushNotificationsDescription, flags_ui::kOsIos,
