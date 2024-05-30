@@ -29,13 +29,17 @@ WifiDirectServerSocket::~WifiDirectServerSocket() {
 
 // api::WifiDirectServerSocket
 std::string WifiDirectServerSocket::GetIPAddress() const {
-  NOTIMPLEMENTED();
-  return std::string();
+  CHECK(tcp_server_socket_);
+  net::IPEndPoint address;
+  tcp_server_socket_->GetLocalAddress(&address);
+  return address.address().ToString();
 }
 
 int WifiDirectServerSocket::GetPort() const {
-  NOTIMPLEMENTED();
-  return -1;
+  CHECK(tcp_server_socket_);
+  net::IPEndPoint address;
+  tcp_server_socket_->GetLocalAddress(&address);
+  return address.port();
 }
 
 std::unique_ptr<api::WifiDirectSocket> WifiDirectServerSocket::Accept() {
@@ -48,6 +52,13 @@ Exception WifiDirectServerSocket::Close() {
 
   if (!tcp_server_socket_) {
     return {Exception::kFailed};
+  }
+
+  // Directly call `CloseSocket` if the current sequence is on the appriroiate
+  // task runner.
+  if (task_runner_->RunsTasksInCurrentSequence()) {
+    CloseSocket(nullptr);
+    return {Exception::kSuccess};
   }
 
   // Cleanup the socket on the IO thread.
@@ -63,7 +74,9 @@ Exception WifiDirectServerSocket::Close() {
 void WifiDirectServerSocket::CloseSocket(
     base::WaitableEvent* close_waitable_event) {
   tcp_server_socket_.reset();
-  close_waitable_event->Signal();
+  if (close_waitable_event) {
+    close_waitable_event->Signal();
+  }
 }
 
 void WifiDirectServerSocket::OnFirewallHoleDisconnect() {
@@ -71,7 +84,7 @@ void WifiDirectServerSocket::OnFirewallHoleDisconnect() {
   // any new incoming connections.
   // Note: This is a callback that is bound to the provided `task_runner`, which
   // is the appropriate place to destroy the stored socket,
-  tcp_server_socket_.reset();
+  CloseSocket(nullptr);
 }
 
 }  // namespace nearby::chrome

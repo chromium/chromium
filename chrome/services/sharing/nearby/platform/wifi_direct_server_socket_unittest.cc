@@ -39,21 +39,23 @@ class WifiDirectServerSocketTest : public ::testing::Test {
         net::IPAddress::FromIPLiteral(kTestIPv4Address);
     // Pick a random port for each test run, otherwise the `Listen` call below
     // has a chance to return ADDRESS_IN_USE(-147).
-    uint16_t port = static_cast<uint16_t>(
-        kMinPort + base::RandGenerator(kMaxPort - kMinPort + 1));
-    net::IPEndPoint end_point(*address, port);
+    port_ = static_cast<uint16_t>(kMinPort +
+                                  base::RandGenerator(kMaxPort - kMinPort + 1));
+    net::IPEndPoint end_point(*address, port_);
     EXPECT_EQ(
         tcp_server_socket->Listen(end_point,
                                   /*backlog=*/1, /*ipv6_only=*/std::nullopt),
         net::OK);
 
-    // Create the subject under test.
+    // Create the subject under test, using the main thread task runner so that
+    // the socket operations happen on the same thread they were created.
     server_socket_ = std::make_unique<WifiDirectServerSocket>(
         task_environment_.GetMainThreadTaskRunner(), mojo::PlatformHandle(),
         std::move(firewall_hole), std::move(tcp_server_socket));
   }
 
   WifiDirectServerSocket* socket() { return server_socket_.get(); }
+  uint16_t port() { return port_; }
 
   void RunOnTaskRunner(base::OnceClosure task) {
     base::RunLoop run_loop;
@@ -67,6 +69,7 @@ class WifiDirectServerSocketTest : public ::testing::Test {
       base::test::TaskEnvironment::MainThreadType::IO};
   mojo::SelfOwnedReceiverRef<::sharing::mojom::FirewallHole> firewall_hole_;
   std::unique_ptr<WifiDirectServerSocket> server_socket_;
+  uint16_t port_;
 };
 
 TEST_F(WifiDirectServerSocketTest, Close) {
@@ -86,6 +89,14 @@ TEST_F(WifiDirectServerSocketTest, Close_MultipleCalls) {
         EXPECT_FALSE(socket->Close().Ok());
       },
       socket()));
+}
+
+TEST_F(WifiDirectServerSocketTest, GetIPAddress) {
+  EXPECT_EQ(socket()->GetIPAddress(), kTestIPv4Address);
+}
+
+TEST_F(WifiDirectServerSocketTest, GetPort) {
+  EXPECT_EQ(socket()->GetPort(), port());
 }
 
 }  // namespace nearby::chrome
