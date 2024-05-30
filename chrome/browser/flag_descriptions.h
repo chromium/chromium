@@ -2265,6 +2265,9 @@ extern const char kEnablePasswordSharingDescription[];
 extern const char kEnableMantaServiceName[];
 extern const char kEnableMantaServiceDescription[];
 
+extern const char kPromptAPIForGeminiNanoName[];
+extern const char kPromptAPIForGeminiNanoDescription[];
+
 // Android --------------------------------------------------------------------
 
 #if BUILDFLAG(IS_ANDROID)

@@ -3865,6 +3865,21 @@ const char kRunVideoCaptureServiceInBrowserProcessDescription[] =
     "Run the video capture service in the browser process.";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 
+const char kPromptAPIForGeminiNanoName[] = "Prompt API for Gemini Nano";
+const char kPromptAPIForGeminiNanoDescription[] =
+    "Enables the exploratory Prompt API, allowing you to send natural language "
+    "instructions to a built-in large language model (Gemini Nano in Chrome). "
+    "Exploratory APIs are designed for local prototyping to help discover "
+    "potential use cases, and may never launch. These explorations will inform "
+    "the built-in AI roadmap [1]. "
+    "This API is primarily intended for natural language processing tasks such "
+    "as summarizing, classifying, or rephrasing text. It is NOT suitable for "
+    "use cases that require factual accuracy (e.g. answering knowledge "
+    "questions). "
+    "You must comply with our Prohibited Use Policy [2] which provides "
+    "additional details about appropriate use of "
+    "Generative AI.";
+
 // Android ---------------------------------------------------------------------
 
 #if BUILDFLAG(IS_ANDROID)
