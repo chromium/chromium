@@ -186,13 +186,13 @@ HeapProfilerController::SnapshotParams::SnapshotParams(
     scoped_refptr<StoppedFlag> stopped,
     ProcessType process_type,
     base::TimeTicks profiler_creation_time,
-    double process_probability,
+    uint32_t process_probability_pct,
     size_t process_index,
     base::OnceClosure on_first_snapshot_callback)
     : stopped(std::move(stopped)),
       process_type(process_type),
       profiler_creation_time(profiler_creation_time),
-      process_probability(process_probability),
+      process_probability_pct(process_probability_pct),
       process_index(process_index),
       on_first_snapshot_callback(std::move(on_first_snapshot_callback)) {}
 
@@ -340,7 +340,7 @@ HeapProfilerController::GetBrowserProcessSnapshotController() const {
 
 void HeapProfilerController::TakeSnapshotInChildProcess(
     base::PassKey<ChildProcessSnapshotController>,
-    double process_probability,
+    uint32_t process_probability_pct,
     size_t process_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_NE(process_type_, ProcessType::kBrowser);
@@ -349,7 +349,7 @@ void HeapProfilerController::TakeSnapshotInChildProcess(
       FROM_HERE,
       base::BindOnce(&TakeSnapshot,
                      SnapshotParams(stopped_, process_type_, creation_time_,
-                                    process_probability, process_index,
+                                    process_probability_pct, process_index,
                                     std::move(on_first_snapshot_callback_))));
 }
 
@@ -409,7 +409,7 @@ void HeapProfilerController::TakeSnapshot(SnapshotParams params) {
   RetrieveAndSendSnapshot(
       params.process_type,
       base::TimeTicks::Now() - params.profiler_creation_time,
-      params.process_probability, params.process_index);
+      params.process_probability_pct, params.process_index);
   if (params.process_type == ProcessType::kBrowser) {
     // Also trigger snapshots in child processes.
     params.trigger_child_process_snapshot_closure.Run();
@@ -426,25 +426,25 @@ void HeapProfilerController::TakeSnapshot(SnapshotParams params) {
 void HeapProfilerController::RetrieveAndSendSnapshot(
     ProcessType process_type,
     base::TimeDelta time_since_profiler_creation,
-    double process_probability,
+    uint32_t process_probability_pct,
     size_t process_index) {
   using Sample = base::SamplingHeapProfiler::Sample;
 
-  CHECK_GT(process_probability, 0.0);
-  CHECK_LE(process_probability, 1.0);
+  CHECK_GT(process_probability_pct, 0u);
+  CHECK_LE(process_probability_pct, 100u);
 
   // Always log the total sampled memory before returning. If `samples` is empty
   // this will be logged as 0 MB.
   base::ClampedNumeric<uint64_t> total_sampled_bytes;
   absl::Cleanup log_total_sampled_memory = [&total_sampled_bytes, process_type,
-                                            process_probability] {
+                                            process_probability_pct] {
     // Scale this processes' memory by the inverse of the probability that it
     // was chosen to get its estimated contribution to the total memory.
     constexpr int kBytesPerMB = 1024 * 1024;
     base::UmaHistogramMemoryLargeMB(
         ProcessHistogramName("HeapProfiling.InProcess.TotalSampledMemory",
                              process_type),
-        total_sampled_bytes / kBytesPerMB * (1.0 / process_probability));
+        total_sampled_bytes / kBytesPerMB * (100.0 / process_probability_pct));
   };
 
   std::vector<Sample> samples =
@@ -499,10 +499,9 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
   static const uint64_t kProcessIndexHash =
       base::HashMetricName("process_index");  // 0x28f4372e67b3f8f8
 
-  // Store probability as int from 0 to 100.
   profile_builder.AddProfileMetadata(
       base::MetadataRecorder::Item(kProcessPercentHash, std::nullopt,
-                                   std::nullopt, 100 * process_probability));
+                                   std::nullopt, process_probability_pct));
   profile_builder.AddProfileMetadata(base::MetadataRecorder::Item(
       kProcessIndexHash, std::nullopt, std::nullopt, process_index));
 

@@ -29,14 +29,15 @@ class SnapshotController;
 }
 
 // The probability of including a child process in each snapshot that's taken
-// when kHeapProfilerCentralControl is enabled. Defaults to 1.0, but can be set
-// lower to sub-sample process types that are very common (mainly renderers) to
-// keep data volume low. Samples from child processes are weighted in inverse
-// proportion to the snapshot probability to normalize the aggregated results.
-extern const base::FeatureParam<double> kGpuSnapshotProbability;
-extern const base::FeatureParam<double> kNetworkSnapshotProbability;
-extern const base::FeatureParam<double> kRendererSnapshotProbability;
-extern const base::FeatureParam<double> kUtilitySnapshotProbability;
+// when kHeapProfilerCentralControl is enabled, as a percentage from 0 to 100.
+// Defaults to 100, but can be set lower to sub-sample process types that are
+// very common (mainly renderers) to keep data volume low. Samples from child
+// processes are weighted in inverse proportion to the snapshot probability to
+// normalize the aggregated results.
+extern const base::FeatureParam<int> kGpuSnapshotProbability;
+extern const base::FeatureParam<int> kNetworkSnapshotProbability;
+extern const base::FeatureParam<int> kRendererSnapshotProbability;
+extern const base::FeatureParam<int> kUtilitySnapshotProbability;
 
 // Sends notifications to ChildProcessSnapshotController endpoints in child
 // processes to trigger snapshots on demand from the HeapProfilerController in

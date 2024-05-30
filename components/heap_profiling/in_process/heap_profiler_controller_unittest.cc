@@ -588,7 +588,7 @@ class MultiprocessTestParent {
 
 class MockSnapshotController : public mojom::SnapshotController {
  public:
-  MOCK_METHOD(void, TakeSnapshot, (double, uint32_t), (override));
+  MOCK_METHOD(void, TakeSnapshot, (uint32_t, uint32_t), (override));
 };
 
 // Configurations of the HeapProfiler* features to test.
@@ -611,10 +611,10 @@ struct FeatureTestParams {
   bool central_control_feature_enabled = false;
   // Probabilities for snapshotting child processes. Only used of
   // HeapProfilerCentralControl is enabled.
-  double gpu_snapshot_prob = 1.0;
-  double network_snapshot_prob = 1.0;
-  double renderer_snapshot_prob = 1.0;
-  double utility_snapshot_prob = 1.0;
+  int gpu_snapshot_prob = 100;
+  int network_snapshot_prob = 100;
+  int renderer_snapshot_prob = 100;
+  int utility_snapshot_prob = 100;
 
   base::FieldTrialParams ToFieldTrialParams() const;
 
@@ -690,10 +690,10 @@ std::vector<FeatureRefAndParams> FeatureTestParams::GetEnabledFeatures() const {
     enabled_features.push_back(FeatureRefAndParams(
         kHeapProfilerCentralControl,
         {
-            {"gpu-prob", base::NumberToString(gpu_snapshot_prob)},
-            {"network-prob", base::NumberToString(network_snapshot_prob)},
-            {"renderer-prob", base::NumberToString(renderer_snapshot_prob)},
-            {"utility-prob", base::NumberToString(utility_snapshot_prob)},
+            {"gpu-prob-pct", base::NumberToString(gpu_snapshot_prob)},
+            {"network-prob-pct", base::NumberToString(network_snapshot_prob)},
+            {"renderer-prob-pct", base::NumberToString(renderer_snapshot_prob)},
+            {"utility-prob-pct", base::NumberToString(utility_snapshot_prob)},
         }));
   }
   return enabled_features;
@@ -1162,7 +1162,7 @@ TEST_P(HeapProfilerControllerProcessTest, BrowserProcess) {
         &child_command_line, ProcessType::kUtility, kTestChildProcessId);
 
     if (GetParam().stable.expect_child_sample) {
-      EXPECT_CALL(mock_child_snapshot_controller, TakeSnapshot(1.0, 0))
+      EXPECT_CALL(mock_child_snapshot_controller, TakeSnapshot(100, 0))
           .WillOnce([&] {
             // Record that BrowserProcessSnapshotController triggered a fake
             // snapshot in the child process.
@@ -1311,8 +1311,8 @@ constexpr FeatureTestParams kMultipleChildConfigs[] = {
                                 ProcessType::kUtility, ProcessType::kRenderer},
         .include_zero_feature_enabled = true,
         .central_control_feature_enabled = true,
-        .renderer_snapshot_prob = 2.0 / 3.0,
-        .utility_snapshot_prob = 1.0 / 2.0,
+        .renderer_snapshot_prob = 66,
+        .utility_snapshot_prob = 50,
     },
 };
 

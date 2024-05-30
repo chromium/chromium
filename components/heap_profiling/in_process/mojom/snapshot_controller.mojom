@@ -11,11 +11,11 @@ module heap_profiling.mojom;
 interface SnapshotController {
   // Triggers a heap snapshot.
   //
-  // `process_probability` is the chance that a process of this type was chosen
-  // to include in the snapshot, and can be used to scale the samples in the
-  // snapshot to represent its portion of the whole population.
+  // `process_probability_pct` is the percent chance that a process of this
+  // type was chosen to include in the snapshot, and can be used to scale the
+  // samples in the snapshot to represent its portion of the whole population.
   //
   // `process_index` is the 0-based index of this process in the list of
   // processes of the same type that were snapshotted at the same time.
-  TakeSnapshot(double process_probability, uint32 process_index);
+  TakeSnapshot(uint32 process_probability_pct, uint32 process_index);
 };

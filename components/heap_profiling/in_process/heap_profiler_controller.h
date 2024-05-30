@@ -92,11 +92,11 @@ class HeapProfilerController {
 
   // Triggers an immediate snapshot in a child process. In the browser process,
   // snapshots are scheduled internally by the HeapProfilerController.
-  // `process_probability` and `process_index` will be recorded in the profile
-  // metadata so that samples from a single profile can be distinguished and
-  // scaled to represent the full population.
+  // `process_probability_pct` and `process_index` will be recorded in the
+  // profile metadata so that samples from a single profile can be distinguished
+  // and scaled to represent the full population.
   void TakeSnapshotInChildProcess(base::PassKey<ChildProcessSnapshotController>,
-                                  double process_probability,
+                                  uint32_t process_probability_pct,
                                   size_t process_index);
 
   // Allows unit tests to call AppendCommandLineSwitchForChildProcess without
@@ -128,7 +128,7 @@ class HeapProfilerController {
     SnapshotParams(scoped_refptr<StoppedFlag> stopped,
                    ProcessType process_type,
                    base::TimeTicks profiler_creation_time,
-                   double process_probability,
+                   uint32_t process_probability_pct,
                    size_t process_index,
                    base::OnceClosure on_first_snapshot_callback);
 
@@ -160,7 +160,7 @@ class HeapProfilerController {
     // Metadata to record with the profile. The default values are correct for
     // the browser process and child processes with kHeapProfilerCentralControl
     // disabled, where one HeapProfiler always samples one process.
-    double process_probability = 1.0;
+    uint32_t process_probability_pct = 100;
     size_t process_index = 0;
 
     // A callback to invoke for the first snapshot. Will be null for the
@@ -192,7 +192,7 @@ class HeapProfilerController {
   static void RetrieveAndSendSnapshot(
       ProcessType process_type,
       base::TimeDelta time_since_profiler_creation,
-      double process_probability,
+      uint32_t process_probability_pct,
       size_t process_index);
 
   const ProcessType process_type_;

@@ -27,17 +27,17 @@
 
 namespace heap_profiling {
 
-const base::FeatureParam<double> kGpuSnapshotProbability{
-    &kHeapProfilerCentralControl, "gpu-prob", 1.0};
+const base::FeatureParam<int> kGpuSnapshotProbability{
+    &kHeapProfilerCentralControl, "gpu-prob-pct", 100};
 
-const base::FeatureParam<double> kNetworkSnapshotProbability{
-    &kHeapProfilerCentralControl, "network-prob", 1.0};
+const base::FeatureParam<int> kNetworkSnapshotProbability{
+    &kHeapProfilerCentralControl, "network-prob-pct", 100};
 
-const base::FeatureParam<double> kRendererSnapshotProbability{
-    &kHeapProfilerCentralControl, "renderer-prob", 1.0};
+const base::FeatureParam<int> kRendererSnapshotProbability{
+    &kHeapProfilerCentralControl, "renderer-prob-pct", 100};
 
-const base::FeatureParam<double> kUtilitySnapshotProbability{
-    &kHeapProfilerCentralControl, "utility-prob", 1.0};
+const base::FeatureParam<int> kUtilitySnapshotProbability{
+    &kHeapProfilerCentralControl, "utility-prob-pct", 100};
 
 // static
 BrowserProcessSnapshotController*
@@ -111,25 +111,29 @@ void BrowserProcessSnapshotController::TakeSnapshotsOnSnapshotSequence() {
       // processes to measure.
       continue;
     }
-    double snapshot_probability;
+    int snapshot_probability_pct;
     switch (process_type) {
       case metrics::CallStackProfileParams::Process::kGpu:
-        snapshot_probability = kGpuSnapshotProbability.Get();
+        snapshot_probability_pct = kGpuSnapshotProbability.Get();
         break;
       case metrics::CallStackProfileParams::Process::kNetworkService:
-        snapshot_probability = kNetworkSnapshotProbability.Get();
+        snapshot_probability_pct = kNetworkSnapshotProbability.Get();
         break;
       case metrics::CallStackProfileParams::Process::kRenderer:
-        snapshot_probability = kRendererSnapshotProbability.Get();
+        snapshot_probability_pct = kRendererSnapshotProbability.Get();
         break;
       case metrics::CallStackProfileParams::Process::kUtility:
-        snapshot_probability = kUtilitySnapshotProbability.Get();
+        snapshot_probability_pct = kUtilitySnapshotProbability.Get();
         break;
       default:
         NOTREACHED_NORETURN();
     }
-    CHECK_GE(snapshot_probability, 0.0);
-    CHECK_LE(snapshot_probability, 1.0);
+    CHECK_GE(snapshot_probability_pct, 0);
+    CHECK_LE(snapshot_probability_pct, 100);
+    if (snapshot_probability_pct == 0) {
+      // No need to test each process since none will be chosen.
+      continue;
+    }
 
     // Choose a random set of processes to snapshot. If randomness is
     // suppressed, choose processes by their index in the set.
@@ -139,8 +143,8 @@ void BrowserProcessSnapshotController::TakeSnapshotsOnSnapshotSequence() {
       const double prob = suppress_randomness_for_testing_
                               ? (prob_idx++ / remote_set->size())
                               : base::RandDouble();
-      if (prob < snapshot_probability) {
-        remote->TakeSnapshot(snapshot_probability, process_idx++);
+      if (prob * 100.0 < snapshot_probability_pct) {
+        remote->TakeSnapshot(snapshot_probability_pct, process_idx++);
       }
     }
   }

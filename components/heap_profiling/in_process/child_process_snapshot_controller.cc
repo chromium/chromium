@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/types/pass_key.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
@@ -24,12 +25,15 @@ void ChildProcessSnapshotController::CreateSelfOwnedReceiver(
       std::move(receiver));
 }
 
-void ChildProcessSnapshotController::TakeSnapshot(double process_probability,
-                                                  uint32_t process_index) {
+void ChildProcessSnapshotController::TakeSnapshot(
+    uint32_t process_probability_pct,
+    uint32_t process_index) {
+  CHECK_GT(process_probability_pct, 0u);
+  CHECK_LE(process_probability_pct, 100u);
   if (auto* controller = HeapProfilerController::GetInstance()) {
     controller->TakeSnapshotInChildProcess(
-        base::PassKey<ChildProcessSnapshotController>(), process_probability,
-        process_index);
+        base::PassKey<ChildProcessSnapshotController>(),
+        process_probability_pct, process_index);
   }
 }
 

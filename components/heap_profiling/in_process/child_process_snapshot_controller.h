@@ -27,7 +27,8 @@ class ChildProcessSnapshotController final : public mojom::SnapshotController {
       const ChildProcessSnapshotController&) = delete;
 
   // SnapshotController:
-  void TakeSnapshot(double process_probability, uint32_t process_index) final;
+  void TakeSnapshot(uint32_t process_probability_pct,
+                    uint32_t process_index) final;
 
  private:
   ChildProcessSnapshotController() = default;
