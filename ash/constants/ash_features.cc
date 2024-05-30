@@ -1403,7 +1403,7 @@ BASE_FEATURE(kGrowthCampaignsTriggerByEvent,
 // This flag is used as a kill switch to disable the feature in the case that
 // the feature introduces any unexpected behaviours.
 BASE_FEATURE(kGrowthCampaignsTriggerByBrowser,
-             "kGrowthCampaignsTriggerByBrowser",
+             "GrowthCampaignsTriggerByBrowser",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, the Help app will render the App Detail Page and entry point.
