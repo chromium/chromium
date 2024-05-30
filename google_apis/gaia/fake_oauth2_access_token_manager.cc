@@ -25,7 +25,12 @@ FakeOAuth2AccessTokenManager::FakeOAuth2AccessTokenManager(
     : OAuth2AccessTokenManager(delegate),
       auto_post_fetch_response_on_message_loop_(false) {}
 
-FakeOAuth2AccessTokenManager::~FakeOAuth2AccessTokenManager() = default;
+FakeOAuth2AccessTokenManager::~FakeOAuth2AccessTokenManager() {
+  CompleteRequests(
+      CoreAccountId(), true, FakeOAuth2AccessTokenManager::ScopeSet(),
+      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
+      OAuth2AccessTokenConsumer::TokenResponse());
+}
 
 void FakeOAuth2AccessTokenManager::IssueAllTokensForAccount(
     const CoreAccountId& account_id,
@@ -156,13 +161,6 @@ FakeOAuth2AccessTokenManager::GetPendingRequests() {
     }
   }
   return valid_requests;
-}
-
-void FakeOAuth2AccessTokenManager::CancelAllRequests() {
-  CompleteRequests(
-      CoreAccountId(), true, FakeOAuth2AccessTokenManager::ScopeSet(),
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
-      OAuth2AccessTokenConsumer::TokenResponse());
 }
 
 void FakeOAuth2AccessTokenManager::CancelRequestsForAccount(

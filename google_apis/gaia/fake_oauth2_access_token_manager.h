@@ -80,11 +80,8 @@ class FakeOAuth2AccessTokenManager : public OAuth2AccessTokenManager {
     auto_post_fetch_response_on_message_loop_ = auto_post_response;
   }
 
-  // OAuth2AccessTokenManager overrides.
-  void CancelAllRequests() override;
-
+  // OAuth2AccessTokenManager:
   void CancelRequestsForAccount(const CoreAccountId& account_id) override;
-
   void FetchOAuth2Token(
       OAuth2AccessTokenManager::RequestImpl* request,
       const CoreAccountId& account_id,
@@ -93,7 +90,6 @@ class FakeOAuth2AccessTokenManager : public OAuth2AccessTokenManager {
       const std::string& client_secret,
       const std::string& consumer_name,
       const OAuth2AccessTokenManager::ScopeSet& scopes) override;
-
   void InvalidateAccessTokenImpl(
       const CoreAccountId& account_id,
       const std::string& client_id,

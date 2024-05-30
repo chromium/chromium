@@ -44,7 +44,7 @@ ProfileOAuth2TokenService::ProfileOAuth2TokenService(
 }
 
 ProfileOAuth2TokenService::~ProfileOAuth2TokenService() {
-  token_manager_->CancelAllRequests();
+  token_manager_.reset();
   GetDelegate()->Shutdown();
   RemoveObserver(this);
 }
@@ -246,8 +246,6 @@ void ProfileOAuth2TokenService::RevokeCredentials(
 
 void ProfileOAuth2TokenService::RevokeAllCredentials(
     signin_metrics::SourceForRefreshTokenOperation source) {
-  token_manager_->CancelAllRequests();
-  token_manager_->ClearCache();
   GetDelegate()->RevokeAllCredentials(source);
 }
 
