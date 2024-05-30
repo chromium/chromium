@@ -131,13 +131,15 @@ TEST_F(ContentAnalysisDownloadsDelegateTest, TestNoMessageOrUrlReturnsNullOpt) {
 }
 
 TEST_F(ContentAnalysisDownloadsDelegateTest, TestGetMessageAndUrl) {
+  ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
+      empty_custom_rule_msg;
   ContentAnalysisDownloadsDelegate delegate(
       kTestFile, kTestMessage, GURL(kTestUrl), true,
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::OpenCallback,
                      base::Unretained(this)),
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::DiscardCallback,
                      base::Unretained(this)),
-      nullptr, CreateSampleCustomRuleMessage(u"", ""));
+      nullptr, empty_custom_rule_msg);
 
   EXPECT_TRUE(delegate.GetCustomMessage());
   EXPECT_TRUE(delegate.GetCustomLearnMoreUrl());
@@ -162,7 +164,7 @@ TEST_F(ContentAnalysisDownloadsDelegateTest,
       nullptr, CreateSampleCustomRuleMessage(kTestMessage2, kTestUrl2));
 
   EXPECT_TRUE(delegate.GetCustomMessage());
-  EXPECT_TRUE(delegate.GetCustomLearnMoreUrl());
+  EXPECT_FALSE(delegate.GetCustomLearnMoreUrl());
   EXPECT_TRUE(delegate.GetCustomRuleMessageRanges());
 
   EXPECT_EQ(base::StrCat({kTestFile,
@@ -184,7 +186,7 @@ TEST_F(ContentAnalysisDownloadsDelegateTest,
       nullptr, CreateSampleCustomRuleMessage(kTestMessage2, kTestInvalidUrl));
 
   EXPECT_TRUE(delegate.GetCustomMessage());
-  EXPECT_TRUE(delegate.GetCustomLearnMoreUrl());
+  EXPECT_FALSE(delegate.GetCustomLearnMoreUrl());
   EXPECT_FALSE(delegate.GetCustomRuleMessageRanges());
 
   EXPECT_EQ(base::StrCat({kTestFile,

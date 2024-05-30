@@ -1024,6 +1024,9 @@ void ContentAnalysisDialog::UpdateDialogMessage(std::u16string new_message) {
     message_->SetText(new_message);
     AddLinksToDialogMessage();
     message_->GetViewAccessibility().AnnounceText(std::move(new_message));
+    if (has_learn_more_url()) {
+      AddLearnMoreLinkToDialog();
+    }
   } else {
     message_->SetText(new_message);
     message_->GetViewAccessibility().AnnounceText(std::move(new_message));

@@ -99,8 +99,12 @@ ContentAnalysisDownloadsDelegate::GetCustomMessage() const {
 
 std::optional<GURL> ContentAnalysisDownloadsDelegate::GetCustomLearnMoreUrl()
     const {
-  if (custom_learn_more_url_.is_empty())
+  // Rule-based custom messages which don't have learn more urls take
+  // precedence over policy-based.
+  if (custom_learn_more_url_.is_empty() ||
+      !custom_rule_message_.message_segments().empty()) {
     return std::nullopt;
+  }
   return custom_learn_more_url_;
 }
 
