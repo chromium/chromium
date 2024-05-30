@@ -450,6 +450,11 @@ mojom("mojom_attribution") {
   blink_cpp_typemaps = shared_typemaps
 }
 
+mojom("mojom_source_location") {
+  generate_java = true
+  sources = [ "source_location.mojom" ]
+}
+
 # These .mojom files are put in their own target to avoid a circular dependency,
 # which comes from the fact that the typemap for url_loader.mojom
 # (ResourceRequest) depends on them.
@@ -488,7 +493,6 @@ mojom("url_loader_base") {
     "request_priority.mojom",
     "service_worker_router_info.mojom",
     "shared_dictionary_access_observer.mojom",
-    "source_location.mojom",
     "supports_loading_mode.mojom",
     "timing_allow_origin.mojom",
     "trust_token_access_observer.mojom",
@@ -513,6 +517,7 @@ mojom("url_loader_base") {
     ":mojom_proxy_config",
     ":mojom_schemeful_site",
     ":mojom_shared_dictionary",
+    ":mojom_source_location",
     "//mojo/public/mojom/base",
     "//services/proxy_resolver/public/mojom",
     "//url/mojom:url_mojom_gurl",
@@ -1149,6 +1154,7 @@ mojom("cookies_mojom") {
   public_deps = [
     ":mojom_first_party_sets",
     ":mojom_schemeful_site",
+    ":mojom_source_location",
     "//components/content_settings/core/common:content_settings_enums",
     "//components/content_settings/core/common:content_settings_types",
     "//components/content_settings/core/common:mojo_bindings",

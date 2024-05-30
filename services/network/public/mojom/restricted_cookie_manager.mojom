@@ -4,11 +4,12 @@
 
 module network.mojom;
 
-import "services/network/public/mojom/cookie_manager.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
+import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
-import "url/mojom/url.mojom";
+import "services/network/public/mojom/source_location.mojom";
 import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
 
 const uint64 kInvalidCookieVersion = 0;
 const uint64 kInitialCookieVersion = 1;
