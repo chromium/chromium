@@ -46,6 +46,7 @@ export interface CertificateManagerV2Element {
     viewOsImportedCerts: HTMLElement,
     // <if expr="is_win or is_macosx">
     manageOsImportedCerts: HTMLElement,
+    manageOsImportedClientCerts: HTMLElement,
     // </if>
   };
 }

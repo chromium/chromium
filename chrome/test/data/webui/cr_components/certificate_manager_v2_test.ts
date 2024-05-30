@@ -451,5 +451,16 @@ suite('CertificateManagerV2Test', () => {
     certManager.$.manageOsImportedCerts.click();
     await testProxy.handler.whenCalled('showNativeManageCertificates');
   });
+
+  test('Open native client certificate management', async () => {
+    initializeElement();
+
+    await microtasksFinished();
+    assertFalse(
+        certManager.$.manageOsImportedClientCerts.hidden,
+        'imported os certs external link visibility wrong');
+    certManager.$.manageOsImportedClientCerts.click();
+    await testProxy.handler.whenCalled('showNativeManageCertificates');
+  });
   // </if>
 });

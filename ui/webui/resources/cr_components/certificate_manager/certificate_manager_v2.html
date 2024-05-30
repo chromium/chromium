@@ -21,6 +21,8 @@
 <iron-pages selected="[[selectedTabIndex_]]">
 
   <div>
+    Client certificates are certificates that identify you to other servers.
+
     <if expr="is_win or is_macosx">
       <certificate-list-v2
           id="provisionedClientCerts"
@@ -31,6 +33,9 @@
       </certificate-list-v2>
     </if>
 
+    <h3>Windows</h3>
+    <!-- TODO(crbug.com/40928765): platform client certs list should be on a
+      sub-page -->
     <certificate-list-v2
         id="platformClientCerts"
         cert-source="[[certificateSourceEnum_.kPlatformClientCert]]"
@@ -38,6 +43,12 @@
         hide-export
         on-hash-copied="onHashCopied_">
     </certificate-list-v2>
+    <if expr="is_win or is_macosx">
+      <cr-link-row external id="manageOsImportedClientCerts"
+          label="Manage imported certificates from Windows"
+          on-click="onManageCertsExternal_">
+      </cr-link-row>
+    </if>
   </div>
 
   <div class="cr-centered-card-container">
