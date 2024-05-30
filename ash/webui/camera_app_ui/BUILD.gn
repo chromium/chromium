@@ -126,6 +126,12 @@ mojom("ocr") {
   webui_module_path = "/ash/webui/camera_app_ui"
 }
 
+mojom("pdf_builder") {
+  sources = [ "pdf_builder.mojom" ]
+
+  webui_module_path = "/ash/webui/camera_app_ui"
+}
+
 mojom("mojo_bindings") {
   sources = [
     "camera_app_helper.mojom",
@@ -135,6 +141,7 @@ mojom("mojo_bindings") {
 
   deps = [
     ":ocr",
+    ":pdf_builder",
     "//ash/components/arc/mojom:camera_intent",
     "//chromeos/services/machine_learning/public/mojom:document_scanner_param_types",
     "//media/capture/video/chromeos/mojom:system_event_monitor",

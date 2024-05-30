@@ -15,7 +15,6 @@ export {
   CameraAppHelper,
   CameraAppHelperRemote,
   CameraUsageOwnershipMonitorCallbackRouter,
-  DocumentOutputFormat,
   ExternalScreenMonitorCallbackRouter,
   FileMonitorResult,
   LidStateMonitorCallbackRouter,
@@ -61,6 +60,9 @@ export type {
   Line as OcrResultLine,
   OcrResult,
 } from '../../mojom/ash/webui/camera_app_ui/ocr.mojom-webui.js';
+export {
+  PdfBuilderRemote,
+} from '../../mojom/ash/webui/camera_app_ui/pdf_builder.mojom-webui.js';
 export {
   WifiEapMethod,
   WifiEapPhase2Method,

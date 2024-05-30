@@ -5,12 +5,17 @@
 #ifndef ASH_WEBUI_CAMERA_APP_UI_CAMERA_APP_UI_DELEGATE_H_
 #define ASH_WEBUI_CAMERA_APP_UI_CAMERA_APP_UI_DELEGATE_H_
 
+#include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "ash/webui/camera_app_ui/ocr.mojom-forward.h"
+#include "ash/webui/camera_app_ui/pdf_builder.mojom-forward.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 class BrowserContext;
@@ -25,6 +30,21 @@ class MediaDeviceSaltService;
 namespace ash {
 class HoldingSpaceClient;
 
+class ProgressivePdf {
+ public:
+  virtual ~ProgressivePdf() = default;
+
+  // Adds a new page to the PDF at `page_index`. If a page at `page_index`
+  // already exists, it will be replaced.
+  virtual void NewPage(const std::vector<uint8_t>& jpg,
+                       uint32_t page_index) = 0;
+
+  // Deletes the page of the PDF at `page_index`.
+  virtual void DeletePage(uint32_t page_index) = 0;
+
+  // Returns the PDF produced by the preceding operations.
+  virtual void Save(base::OnceCallback<void(const std::vector<uint8_t>&)>) = 0;
+};
 // A delegate which exposes browser functionality from //chrome to the camera
 // app ui page handler.
 class CameraAppUIDelegate {
@@ -140,16 +160,15 @@ class CameraAppUIDelegate {
       const std::vector<uint8_t>& pdf,
       base::OnceCallback<void(const std::vector<uint8_t>&)> callback) = 0;
 
-  // Adds an invisible text layer on the inaccessible PDF and returns a
-  // searchable PDF.
-  virtual void Searchify(
-      const std::vector<uint8_t>& pdf,
-      base::OnceCallback<void(const std::vector<uint8_t>&)> callback) = 0;
-
   // Performs OCR on the image and returns the OCR result.
   virtual void PerformOcr(
       const std::vector<uint8_t>& jpeg_data,
       base::OnceCallback<void(camera_app::mojom::OcrResultPtr)> callback) = 0;
+
+  // Creates a PDF and provides operations to add and delete pages, and save the
+  // searchified PDF.
+  virtual void CreatePdfBuilder(
+      mojo::PendingReceiver<camera_app::mojom::PdfBuilder>) = 0;
 };
 
 }  // namespace ash

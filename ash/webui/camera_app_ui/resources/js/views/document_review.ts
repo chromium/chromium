@@ -21,8 +21,8 @@ import {
 import {Filenamer} from '../models/file_namer.js';
 import {getI18nMessage} from '../models/load_time_data.js';
 import {ResultSaver} from '../models/result_saver.js';
-import {ChromeHelper} from '../mojo/chrome_helper.js';
-import {ToteMetricFormat} from '../mojo/type.js';
+import {castToNumberArray, ChromeHelper} from '../mojo/chrome_helper.js';
+import {PdfBuilderRemote, ToteMetricFormat} from '../mojo/type.js';
 import * as nav from '../nav.js';
 import {speakMessage} from '../spoken_msg.js';
 import {show as showToast} from '../toast.js';
@@ -52,6 +52,7 @@ interface PageInternal extends Page {
   isCornersUpdated: boolean;
   isRotationUpdated: boolean;
   croppedBlob: Blob;
+  isDirty: boolean;
 }
 
 export enum Mode {
@@ -140,6 +141,11 @@ export class DocumentReview extends View {
    */
   private lastFileProcessingTime: number|null = null;
 
+  /**
+   * The interface to build PDFs.
+   */
+  private readonly pdfBuilder = new PdfBuilder();
+
   constructor(protected readonly resultSaver: ResultSaver) {
     super(ViewName.DOCUMENT_REVIEW, {
       defaultFocusSelector: '.show .primary',
@@ -185,6 +191,12 @@ export class DocumentReview extends View {
       target: this.previewElement,
       onDone: async () => {
         await this.waitForUpdatingPage(() => this.showMode(Mode.PREVIEW));
+        for (const [index, page] of this.pages.entries()) {
+          if (page.isDirty) {
+            void this.pdfBuilder.addPage(page.croppedBlob, index);
+            page.isDirty = false;
+          }
+        }
       },
       onUpdatePage: async ({corners, rotation}) => {
         const page = this.pages[this.selectedIndex];
@@ -262,9 +274,14 @@ export class DocumentReview extends View {
       isCornersUpdated: false,
       isRotationUpdated: false,
       croppedBlob,
+      isDirty: false,
     };
     await this.addPageView(croppedBlob);
     this.pages.push(pageInternal);
+    if (this.pages.length === 1) {
+      this.pdfBuilder.create();
+    }
+    void this.pdfBuilder.addPage(croppedBlob, this.pages.length - 1);
   }
 
   private async addPageView(blob: Blob): Promise<void> {
@@ -285,9 +302,9 @@ export class DocumentReview extends View {
       await this.resultSaver.savePhoto(
           blobs[0], ToteMetricFormat.kScanJpg, name, null);
     } else {
-      const pdfBlob = await ChromeHelper.getInstance().convertToPdf(blobs);
+      const blob = await this.pdfBuilder.save();
       await this.resultSaver.savePhoto(
-          pdfBlob, ToteMetricFormat.kScanPdf, name, null);
+          blob, ToteMetricFormat.kScanPdf, name, null);
     }
     this.lastFileProcessingTime = performance.now() - startTime;
   }
@@ -303,9 +320,8 @@ export class DocumentReview extends View {
   private async share(mimeType: MimeType.JPEG|MimeType.PDF): Promise<void> {
     const blobs = this.pages.map((page) => page.croppedBlob);
     const name = (new Filenamer()).newDocumentName(mimeType);
-    const blob = mimeType === MimeType.JPEG ?
-        blobs[0] :
-        await ChromeHelper.getInstance().convertToPdf(blobs);
+    const blob =
+        mimeType === MimeType.JPEG ? blobs[0] : await this.pdfBuilder.save();
     const file = new File([blob], name, {type: mimeType});
     await share(file);
   }
@@ -411,7 +427,7 @@ export class DocumentReview extends View {
     const {blob: croppedBlob} = await this.crop(page);
     const pageElement = this.pagesElement.children[index];
     await this.updatePageView(pageElement, croppedBlob);
-    this.pages[index] = {...page, croppedBlob};
+    this.pages[index] = {...page, croppedBlob, isDirty: true};
   }
 
   private async updatePageView(pageElement: ParentNode, blob: Blob):
@@ -441,6 +457,7 @@ export class DocumentReview extends View {
   private async deletePage(index: number): Promise<void> {
     this.deletePageView(index);
     this.pages.splice(index, 1);
+    this.pdfBuilder.deletePage(index);
     await this.selectPage(
         this.selectedIndex === this.pages.length ? this.pages.length - 1 :
                                                    this.selectedIndex);
@@ -485,6 +502,7 @@ export class DocumentReview extends View {
    */
   private clearPages(): void {
     this.pages = [];
+    this.pdfBuilder.clear();
     this.clearPagesView();
   }
 
@@ -499,7 +517,7 @@ export class DocumentReview extends View {
   private async crop(page: Page): Promise<Page> {
     const {blob, corners, rotation} = page;
     const newBlob = await ChromeHelper.getInstance().convertToDocument(
-        blob, corners, rotation, MimeType.JPEG);
+        blob, corners, rotation);
     return {...page, blob: newBlob};
   }
 
@@ -588,5 +606,56 @@ export class DocumentReview extends View {
   private async onSelectPage(index: number) {
     await this.waitForUpdatingPage();
     await this.selectPage(index);
+  }
+}
+
+/**
+ * PdfBuilder allows users to build a PDF progressively. Users should start with
+ * a `create()` call and release the PDF with a `clear()` call.
+ */
+class PdfBuilder {
+  private builder: PdfBuilderRemote|null = null;
+
+  /**
+   * Creates a PDF. This must be called before any other calls.
+   */
+  create(): void {
+    this.builder = ChromeHelper.getInstance().createPdfBuilder();
+  }
+
+  /**
+   * Adds a page with the image at `index`. Replace if the page already exists.
+   */
+  async addPage(jpg: Blob, index: number): Promise<void> {
+    assert(this.builder !== null);
+    const buffer = await jpg.arrayBuffer();
+    const numArray = castToNumberArray(new Uint8Array(buffer));
+    this.builder.addPage(numArray, index);
+  }
+
+  /**
+   * Deletes the page at `index`.
+   */
+  deletePage(index: number): void {
+    assert(this.builder !== null);
+    this.builder.deletePage(index);
+  }
+
+  /**
+   * Returns the current PDF.
+   */
+  async save(): Promise<Blob> {
+    assert(this.builder !== null);
+    const {pdf} = await this.builder.save();
+    return new Blob([new Uint8Array(pdf)], {type: MimeType.PDF});
+  }
+
+  /**
+   * Releases the resource. Call it when the PDF is no longer needed.
+   */
+  clear(): void {
+    assert(this.builder !== null);
+    this.builder.$.close();
+    this.builder = null;
   }
 }

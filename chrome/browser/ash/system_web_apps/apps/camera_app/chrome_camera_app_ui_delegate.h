@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/webui/camera_app_ui/camera_app_ui_delegate.h"
+#include "ash/webui/camera_app_ui/pdf_builder.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path_watcher.h"
 #include "base/functional/callback.h"
@@ -20,11 +21,12 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
-#include "chrome/services/pdf/public/mojom/pdf_searchifier.mojom.h"
+#include "chrome/services/pdf/public/mojom/pdf_progressive_searchifier.mojom.h"
 #include "chrome/services/pdf/public/mojom/pdf_service.mojom.h"
 #include "chrome/services/pdf/public/mojom/pdf_thumbnailer.mojom.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_ui.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -131,12 +133,33 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
     PdfServiceManager& operator=(const PdfServiceManager&) = delete;
     ~PdfServiceManager() override;
 
+    class ProgressivePdf : public ash::camera_app::mojom::PdfBuilder {
+     public:
+      ProgressivePdf(
+          mojo::Remote<pdf::mojom::PdfService> pdf_service,
+          mojo::Remote<pdf::mojom::PdfProgressiveSearchifier> pdf_searchifier);
+      ProgressivePdf(const ProgressivePdf&) = delete;
+      ProgressivePdf& operator=(const ProgressivePdf&) = delete;
+      ~ProgressivePdf() override;
+
+      // ash::camera_app::mojom::PdfBuilder
+      void AddPage(const std::vector<uint8_t>& jpg, uint32_t index) override;
+      void DeletePage(uint32_t index) override;
+      void Save(SaveCallback callback) override;
+
+     private:
+      void ConsumeSaveCallback(const std::vector<uint8_t>& searchified_pdf);
+
+      SaveCallback save_callback_;
+      mojo::Remote<pdf::mojom::PdfService> pdf_service_;
+      mojo::Remote<pdf::mojom::PdfProgressiveSearchifier> pdf_searchifier_;
+      base::WeakPtrFactory<ProgressivePdf> weak_factory_{this};
+    };
+
     void GetThumbnail(
         const std::vector<uint8_t>& pdf,
         base::OnceCallback<void(const std::vector<uint8_t>&)> callback);
-    void Searchify(
-        const std::vector<uint8_t>& pdf,
-        base::OnceCallback<void(const std::vector<uint8_t>&)> callback);
+    std::unique_ptr<ProgressivePdf> CreateProgressivePdf();
 
    private:
     void GotThumbnail(mojo::RemoteSetElementId pdf_service_id,
@@ -144,28 +167,17 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
                       const SkBitmap& bitmap);
     void ConsumeGotThumbnailCallback(const std::vector<uint8_t>& thumbnail,
                                      mojo::RemoteSetElementId id);
-    void Searchified(mojo::RemoteSetElementId pdf_service_id,
-                     mojo::RemoteSetElementId pdf_searchifier_id,
-                     const std::vector<uint8_t>& pdf);
-    void ConsumeSearchifiedCallback(const std::vector<uint8_t>& pdf,
-                                    mojo::RemoteSetElementId id);
     mojo::PendingRemote<pdf::mojom::Ocr> CreateOcrRemote();
 
     //  pdf::mojom::Ocr
-    void PerformOcr(
-        const SkBitmap& image,
-        base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)>
-            got_annotation_callback) override;
+    void PerformOcr(const SkBitmap& image,
+                    PerformOcrCallback callback) override;
 
     mojo::RemoteSet<pdf::mojom::PdfThumbnailer> pdf_thumbnailers_;
     base::flat_map<mojo::RemoteSetElementId,
                    base::OnceCallback<void(const std::vector<uint8_t>&)>>
         pdf_thumbnailer_callbacks;
 
-    mojo::RemoteSet<pdf::mojom::PdfSearchifier> pdf_searchifiers_;
-    base::flat_map<mojo::RemoteSetElementId,
-                   base::OnceCallback<void(const std::vector<uint8_t>&)>>
-        pdf_searchifier_callbacks_;
     mojo::ReceiverSet<pdf::mojom::Ocr> ocr_receivers_;
     scoped_refptr<screen_ai::OpticalCharacterRecognizer>
         optical_character_recognizer_;
@@ -206,12 +218,12 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   void RenderPdfAsJpeg(
       const std::vector<uint8_t>& pdf,
       base::OnceCallback<void(const std::vector<uint8_t>&)> callback) override;
-  void Searchify(
-      const std::vector<uint8_t>& pdf,
-      base::OnceCallback<void(const std::vector<uint8_t>&)> callback) override;
   void PerformOcr(const std::vector<uint8_t>& jpeg_data,
                   base::OnceCallback<void(ash::camera_app::mojom::OcrResultPtr)>
                       callback) override;
+  void CreatePdfBuilder(
+      mojo::PendingReceiver<ash::camera_app::mojom::PdfBuilder> receiver)
+      override;
 
  private:
   base::FilePath GetMyFilesFolder();

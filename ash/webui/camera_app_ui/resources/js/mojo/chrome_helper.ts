@@ -17,13 +17,13 @@ import {
   CameraAppHelper,
   CameraAppHelperRemote,
   CameraIntentAction,
-  DocumentOutputFormat,
   EventsSenderRemote,
   ExternalScreenMonitorCallbackRouter,
   FileMonitorResult,
   LidState,
   LidStateMonitorCallbackRouter,
   OcrResult,
+  PdfBuilderRemote,
   Rotation,
   ScreenLockedMonitorCallbackRouter,
   ScreenState,
@@ -45,7 +45,7 @@ let instance: ChromeHelper|null = null;
 /**
  * Forces casting type from Uint8Array to number[].
  */
-function castToNumberArray(data: Uint8Array): number[] {
+export function castToNumberArray(data: Uint8Array): number[] {
   // This cast is to workaround that the generated mojo binding only accepts
   // number[], but actually can be passed Uint8Array (which also supports
   // indexing via [] and length).
@@ -207,16 +207,8 @@ export abstract class ChromeHelper {
    * target `corners` to crop. The output will be converted according to given
    * `mimeType`.
    */
-  abstract convertToDocument(
-      blob: Blob, corners: Point[], rotation: number,
-      mimeType: MimeType): Promise<Blob>;
-
-  /**
-   * Converts given `jpegBlobs` to PDF format.
-   *
-   * @return Blob in PDF format.
-   */
-  abstract convertToPdf(jpegBlobs: Blob[]): Promise<Blob>;
+  abstract convertToDocument(blob: Blob, corners: Point[], rotation: number):
+      Promise<Blob>;
 
   /**
    * Tries to trigger HaTS survey for CCA.
@@ -244,6 +236,8 @@ export abstract class ChromeHelper {
   abstract renderPdfAsImage(pdf: Blob): Promise<Blob>;
 
   abstract performOcr(jpeg: Blob): Promise<OcrResult>;
+
+  abstract createPdfBuilder(): PdfBuilderRemote;
 
   /**
    * Creates a new instance of ChromeHelper if it is not set. Returns the
@@ -418,32 +412,12 @@ class ChromeHelperImpl extends ChromeHelper {
   }
 
   override async convertToDocument(
-      blob: Blob, corners: Point[], rotation: number,
-      mimeType: MimeType): Promise<Blob> {
+      blob: Blob, corners: Point[], rotation: number): Promise<Blob> {
     assert(corners.length === 4, 'Unexpected amount of corners');
     const buffer = new Uint8Array(await blob.arrayBuffer());
-    let outputFormat;
-    if (mimeType === MimeType.JPEG) {
-      outputFormat = DocumentOutputFormat.kJpeg;
-    } else if (mimeType === MimeType.PDF) {
-      outputFormat = DocumentOutputFormat.kPdf;
-    } else {
-      throw new Error(`Output mimetype unsupported: ${mimeType}`);
-    }
-
     const {docData} = await this.remote.convertToDocument(
-        castToNumberArray(buffer), corners, castToMojoRotation(rotation),
-        outputFormat);
-    return new Blob([new Uint8Array(docData)], {type: mimeType});
-  }
-
-  override async convertToPdf(jpegBlobs: Blob[]): Promise<Blob> {
-    const numArrays = await Promise.all(jpegBlobs.map(async (blob) => {
-      const buffer = new Uint8Array(await blob.arrayBuffer());
-      return castToNumberArray(buffer);
-    }));
-    const {pdfData} = await this.remote.convertToPdf(numArrays);
-    return new Blob([new Uint8Array(pdfData)], {type: MimeType.PDF});
+        castToNumberArray(buffer), corners, castToMojoRotation(rotation));
+    return new Blob([new Uint8Array(docData)], {type: MimeType.JPEG});
   }
 
   override maybeTriggerSurvey(): void {
@@ -525,5 +499,12 @@ class ChromeHelperImpl extends ChromeHelper {
     const numArray = castToNumberArray(buffer);
     const {ocrResult} = await this.remote.performOcr(numArray);
     return ocrResult;
+  }
+
+  override createPdfBuilder(): PdfBuilderRemote {
+    const pdfBuilderRemote = new PdfBuilderRemote();
+    const pdfBuilderReceiver = pdfBuilderRemote.$.bindNewPipeAndPassReceiver();
+    this.remote.createPdfBuilder(pdfBuilderReceiver);
+    return wrapEndpoint(pdfBuilderRemote);
   }
 }

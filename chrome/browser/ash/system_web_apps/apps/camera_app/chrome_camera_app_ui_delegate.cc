@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/camera_app_ui/ocr.mojom.h"
+#include "ash/webui/camera_app_ui/pdf_builder.mojom.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/feature_list.h"
@@ -47,7 +48,7 @@
 #include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/services/pdf/public/mojom/pdf_searchifier.mojom.h"
+#include "chrome/services/pdf/public/mojom/pdf_progressive_searchifier.mojom.h"
 #include "chrome/services/pdf/public/mojom/pdf_service.mojom.h"
 #include "chrome/services/pdf/public/mojom/pdf_thumbnailer.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -60,9 +61,11 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/chromeos/styles/cros_styles.h"
@@ -270,9 +273,6 @@ ChromeCameraAppUIDelegate::PdfServiceManager::PdfServiceManager(
       base::BindRepeating(&ChromeCameraAppUIDelegate::PdfServiceManager::
                               ConsumeGotThumbnailCallback,
                           weak_factory_.GetWeakPtr(), std::vector<uint8_t>()));
-  pdf_searchifiers_.set_disconnect_handler(base::BindRepeating(
-      &ChromeCameraAppUIDelegate::PdfServiceManager::ConsumeSearchifiedCallback,
-      weak_factory_.GetWeakPtr(), std::vector<uint8_t>()));
 }
 
 ChromeCameraAppUIDelegate::PdfServiceManager::~PdfServiceManager() = default;
@@ -336,42 +336,6 @@ void ChromeCameraAppUIDelegate::PdfServiceManager::ConsumeGotThumbnailCallback(
   pdf_thumbnailer_callbacks.erase(id);
 }
 
-void ChromeCameraAppUIDelegate::PdfServiceManager::Searchify(
-    const std::vector<uint8_t>& pdf,
-    base::OnceCallback<void(const std::vector<uint8_t>&)> callback) {
-  mojo::Remote<pdf::mojom::PdfService> pdf_service = LaunchPdfService();
-  mojo::PendingRemote<pdf::mojom::PdfSearchifier> pdf_searchifier;
-  pdf_service->BindPdfSearchifier(
-      pdf_searchifier.InitWithNewPipeAndPassReceiver(), CreateOcrRemote());
-  mojo::RemoteSetElementId pdf_service_id =
-      pdf_services_.Add(std::move(pdf_service));
-  mojo::RemoteSetElementId pdf_searchifier_id =
-      pdf_searchifiers_.Add(std::move(pdf_searchifier));
-  pdf_searchifier_callbacks_[pdf_searchifier_id] = std::move(callback);
-  pdf_searchifiers_.Get(pdf_searchifier_id)
-      ->Searchify(
-          pdf,
-          base::BindOnce(
-              &ChromeCameraAppUIDelegate::PdfServiceManager::Searchified,
-              weak_factory_.GetWeakPtr(), pdf_service_id, pdf_searchifier_id));
-}
-
-void ChromeCameraAppUIDelegate::PdfServiceManager::Searchified(
-    mojo::RemoteSetElementId pdf_service_id,
-    mojo::RemoteSetElementId pdf_searchifier_id,
-    const std::vector<uint8_t>& pdf) {
-  ConsumeSearchifiedCallback(pdf, pdf_searchifier_id);
-  pdf_searchifiers_.Remove(pdf_searchifier_id);
-  pdf_services_.Remove(pdf_service_id);
-}
-
-void ChromeCameraAppUIDelegate::PdfServiceManager::ConsumeSearchifiedCallback(
-    const std::vector<uint8_t>& pdf,
-    mojo::RemoteSetElementId id) {
-  std::move(pdf_searchifier_callbacks_[id]).Run(pdf);
-  pdf_searchifier_callbacks_.erase(id);
-}
-
 mojo::PendingRemote<pdf::mojom::Ocr>
 ChromeCameraAppUIDelegate::PdfServiceManager::CreateOcrRemote() {
   mojo::PendingReceiver<::pdf::mojom::Ocr> receiver;
@@ -383,10 +347,90 @@ ChromeCameraAppUIDelegate::PdfServiceManager::CreateOcrRemote() {
 
 void ChromeCameraAppUIDelegate::PdfServiceManager::PerformOcr(
     const SkBitmap& image,
-    base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)>
-        got_annotation_callback) {
-  optical_character_recognizer_->PerformOCR(image,
-                                            std::move(got_annotation_callback));
+    PerformOcrCallback callback) {
+  if (base::FeatureList::IsEnabled(ash::features::kCameraAppPdfOcr)) {
+    optical_character_recognizer_->PerformOCR(image, std::move(callback));
+    return;
+  }
+  std::move(callback).Run(screen_ai::mojom::VisualAnnotation::New());
+}
+
+// TODO(b/339345727): Inform CCA earlier when the PDF service crashes.
+std::unique_ptr<ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf>
+ChromeCameraAppUIDelegate::PdfServiceManager::CreateProgressivePdf() {
+  mojo::Remote<pdf::mojom::PdfService> pdf_service = LaunchPdfService();
+  mojo::Remote<pdf::mojom::PdfProgressiveSearchifier> pdf_searchifier;
+  pdf_service->BindPdfProgressiveSearchifier(
+      pdf_searchifier.BindNewPipeAndPassReceiver(), CreateOcrRemote());
+  return std::make_unique<
+      ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf>(
+      std::move(pdf_service), std::move(pdf_searchifier));
+}
+
+ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf::ProgressivePdf(
+    mojo::Remote<pdf::mojom::PdfService> pdf_service,
+    mojo::Remote<pdf::mojom::PdfProgressiveSearchifier> pdf_searchifier)
+    : pdf_service_(std::move(pdf_service)),
+      pdf_searchifier_(std::move(pdf_searchifier)) {
+  pdf_searchifier_.set_disconnect_handler(
+      base::BindRepeating(&ChromeCameraAppUIDelegate::PdfServiceManager::
+                              ProgressivePdf::ConsumeSaveCallback,
+                          weak_factory_.GetWeakPtr(), std::vector<uint8_t>()));
+}
+
+ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf::
+    ~ProgressivePdf() = default;
+
+void ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf::AddPage(
+    const std::vector<uint8_t>& jpg,
+    uint32_t index) {
+  if (!pdf_searchifier_) {
+    LOG(ERROR) << "Failed to add new page to PDF";
+    return;
+  }
+  std::unique_ptr<SkBitmap> bitmap =
+      gfx::JPEGCodec::Decode(jpg.data(), jpg.size());
+  pdf_searchifier_->AddPage(std::move(*bitmap), index);
+}
+
+void ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf::DeletePage(
+    uint32_t index) {
+  if (!pdf_searchifier_) {
+    LOG(ERROR) << "Failed to delete page from PDF";
+    return;
+  }
+  pdf_searchifier_->DeletePage(index);
+}
+
+void ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf::Save(
+    SaveCallback callback) {
+  if (!pdf_searchifier_) {
+    LOG(ERROR) << "Failed to save PDF";
+    std::move(callback).Run({});
+    return;
+  }
+  save_callback_ = std::move(callback);
+  pdf_searchifier_->Save(
+      base::BindOnce(&ChromeCameraAppUIDelegate::PdfServiceManager::
+                         ProgressivePdf::ConsumeSaveCallback,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf::
+    ConsumeSaveCallback(const std::vector<uint8_t>& searchified_pdf) {
+  // `PDF service crashed. Avoid any further calls to `pdf_searchifier`.
+  if (searchified_pdf.empty()) {
+    LOG(ERROR) << "PDF Searchifier crashed";
+    pdf_searchifier_.reset();
+    pdf_service_.reset();
+  }
+
+  // `save_callback_` may have value if `pdf_searchifier` crashed on calling
+  // `Save`.
+  if (save_callback_.is_null()) {
+    return;
+  }
+  std::move(save_callback_).Run(searchified_pdf);
 }
 
 ChromeCameraAppUIDelegate::ChromeCameraAppUIDelegate(content::WebUI* web_ui)
@@ -733,12 +777,6 @@ void ChromeCameraAppUIDelegate::RenderPdfAsJpeg(
   pdf_service_manager_->GetThumbnail(pdf, std::move(callback));
 }
 
-void ChromeCameraAppUIDelegate::Searchify(
-    const std::vector<uint8_t>& pdf,
-    base::OnceCallback<void(const std::vector<uint8_t>&)> callback) {
-  pdf_service_manager_->Searchify(pdf, std::move(callback));
-}
-
 void ChromeCameraAppUIDelegate::PerformOcr(
     const std::vector<uint8_t>& jpeg_data,
     base::OnceCallback<void(ash::camera_app::mojom::OcrResultPtr)> callback) {
@@ -776,6 +814,12 @@ void ChromeCameraAppUIDelegate::PerformOcr(
             std::move(callback).Run(std::move(result));
           },
           std::move(callback)));
+}
+
+void ChromeCameraAppUIDelegate::CreatePdfBuilder(
+    mojo::PendingReceiver<ash::camera_app::mojom::PdfBuilder> receiver) {
+  mojo::MakeSelfOwnedReceiver(pdf_service_manager_->CreateProgressivePdf(),
+                              std::move(receiver));
 }
 
 ash::CameraAppUIDelegate::WifiConfig::WifiConfig() = default;

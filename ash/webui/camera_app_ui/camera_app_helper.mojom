@@ -7,6 +7,7 @@ module ash.camera_app.mojom;
 import "ash/components/arc/mojom/camera_intent.mojom";
 import "ash/webui/camera_app_ui/events_sender.mojom";
 import "ash/webui/camera_app_ui/ocr.mojom";
+import "ash/webui/camera_app_ui/pdf_builder.mojom";
 import "ash/webui/camera_app_ui/types.mojom";
 import "chromeos/services/machine_learning/public/mojom/document_scanner_param_types.mojom";
 import "media/capture/video/chromeos/mojom/system_event_monitor.mojom";
@@ -165,11 +166,6 @@ enum ToteMetricFormat {
   kVideoMp4 = 4,
 };
 
-enum DocumentOutputFormat {
-  kJpeg = 0,
-  kPdf = 1,
-};
-
 // Interface for communication between Chrome Camera App (Remote) and Chrome
 // (Receiver).
 interface CameraAppHelper {
@@ -261,19 +257,14 @@ interface CameraAppHelper {
       => (array<gfx.mojom.PointF> corners);
 
   // Does the post processing for document given by its |jpeg_data|, document
-  // |corners|, clockwise rotate in |rotation| degrees and convert the result
-  // to the desired |output_format|. The input |corners| should be the ones
-  // based on the image with corrected orientation.  And it is guaranteed that
-  // the output |doc_data| will have none or corrected
+  // |corners|, clockwise rotate in |rotation| degrees. The input |corners|
+  // should be the ones based on the image with corrected orientation. And it is
+  // guaranteed that the output |doc_data| will have none or corrected
   // orientation.
   ConvertToDocument(array<uint8> jpeg_data,
                     array<gfx.mojom.PointF, 4> corners,
-                    chromeos.machine_learning.mojom.Rotation rotation,
-                    DocumentOutputFormat output_format)
+                    chromeos.machine_learning.mojom.Rotation rotation)
       => (array<uint8> doc_data);
-
-  // Converts the given |jpegs_data| to PDF format.
-  ConvertToPdf(array<array<uint8>> jpegs_data) => (array<uint8> pdf_data);
 
   // Triggers HaTS survey for the camera app if all the conditions match:
   // 1. The camera app session is longer than 15 seconds
@@ -318,4 +309,7 @@ interface CameraAppHelper {
 
   // Performs OCR on the image and returns the OCR result.
   PerformOcr(array<uint8> jpeg_data) => (OcrResult ocr_result);
+
+  // Creates a PDF builder.
+  CreatePdfBuilder(pending_receiver<PdfBuilder> builder);
 };

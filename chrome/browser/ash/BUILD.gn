@@ -4144,6 +4144,7 @@ source_set("ash") {
     "//ash/webui/boca_ui/resources",
     "//ash/webui/camera_app_ui:document_scanning",
     "//ash/webui/camera_app_ui:ocr",
+    "//ash/webui/camera_app_ui:pdf_builder",
     "//ash/webui/camera_app_ui/resources/strings",
     "//ash/webui/common:sea_pen",
     "//ash/webui/connectivity_diagnostics/resources:resources",

@@ -18,13 +18,13 @@ import {
   EventsSenderRemote,
   LidState,
   OcrResult,
+  PdfBuilderRemote,
   ScreenState,
   StorageMonitorStatus,
   ToteMetricFormat,
   WifiConfig,
 } from './mojo/type.js';
 import {fakeEndpoint} from './mojo/util.js';
-import {MimeType} from './type.js';
 import {expandPath} from './util.js';
 
 export class ChromeHelperFake extends ChromeHelper {
@@ -134,12 +134,7 @@ export class ChromeHelperFake extends ChromeHelper {
   }
 
   override async convertToDocument(
-      _blob: Blob, _corners: Point[], _rotation: number,
-      _mimeType: MimeType): Promise<Blob> {
-    assertNotReached();
-  }
-
-  override async convertToPdf(_jpegBlobs: Blob[]): Promise<Blob> {
+      _blob: Blob, _corners: Point[], _rotation: number): Promise<Blob> {
     assertNotReached();
   }
 
@@ -187,6 +182,9 @@ export class ChromeHelperFake extends ChromeHelper {
     return {lines: []};
   }
 
+  override createPdfBuilder(): PdfBuilderRemote {
+    assertNotReached();
+  }
   /* eslint-enable @typescript-eslint/require-await */
 }
 

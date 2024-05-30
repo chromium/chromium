@@ -14,11 +14,13 @@
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/camera_app_ui/camera_app_window_state_controller.h"
 #include "ash/webui/camera_app_ui/document_scanner_service_client.h"
+#include "ash/webui/camera_app_ui/pdf_builder.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/services/machine_learning/public/mojom/document_scanner.mojom.h"
 #include "media/capture/video/chromeos/mojom/system_event_monitor.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/aura/window.h"
@@ -101,10 +103,7 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
   void ConvertToDocument(const std::vector<uint8_t>& jpeg_data,
                          const std::vector<gfx::PointF>& corners,
                          chromeos::machine_learning::mojom::Rotation rotation,
-                         camera_app::mojom::DocumentOutputFormat output_format,
                          ConvertToDocumentCallback callback) override;
-  void ConvertToPdf(const std::vector<std::vector<uint8_t>>& jpegs_data,
-                    ConvertToPdfCallback callback) override;
   void MaybeTriggerSurvey() override;
   void StartStorageMonitor(mojo::PendingRemote<StorageMonitor> monitor,
                            StartStorageMonitorCallback callback) override;
@@ -120,6 +119,8 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
                        RenderPdfAsJpegCallback callback) override;
   void PerformOcr(const std::vector<uint8_t>& jpeg_data,
                   PerformOcrCallback callback) override;
+  void CreatePdfBuilder(
+      mojo::PendingReceiver<camera_app::mojom::PdfBuilder> receiver) override;
 
  private:
   void CheckExternalScreenState();
@@ -128,7 +129,6 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
                                 bool success,
                                 const std::vector<gfx::PointF>& corners);
   void OnConvertedToDocument(
-      camera_app::mojom::DocumentOutputFormat output_format,
       ConvertToDocumentCallback callback,
       bool success,
       const std::vector<uint8_t>& processed_jpeg_data);
