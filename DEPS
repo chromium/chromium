@@ -556,18 +556,18 @@ allowed_hosts = [
 
 deps = {
   # NPM dependencies for JavaScript code coverage.
-  'src/third_party/js_code_coverage': {
-      'dep_type': 'gcs',
-      'condition': 'checkout_js_coverage_modules and non_git_source',
-      'bucket': 'chromium-nodejs',
-      'objects': [
-          {
-              'object_name': 'js_code_coverage/d538975c93eefc7bafd599b50f867e90c1ef17f3',
-              'sha256sum': '646bb00ced0a930b2eb1e4dbcfac18ebbb8f889bb80599e0254d9d6505427914',
-              'size_bytes': 1469185,
-              'generation': 1657780123604338,
-          },
-      ],
+  'src/third_party/js_code_coverage/node_modules': {
+    'dep_type': 'gcs',
+    'bucket': 'chromium-nodejs',
+    'objects': [
+      {
+        'object_name': 'js_code_coverage/90d7a8ecae092222e585481b64e9928bcf4a689e723a0af4b94922280cd55a48',
+        'sha256sum': '90d7a8ecae092222e585481b64e9928bcf4a689e723a0af4b94922280cd55a48',
+        'size_bytes': 1472459,
+        'generation': 1716929997740855
+      }
+    ]
+
   },
   'src/build/linux/debian_bullseye_amd64-sysroot': {
     'bucket': 'chrome-linux-sysroot',
