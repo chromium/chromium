@@ -191,18 +191,16 @@ std::vector<std::pair<gfx::Range, GURL>> GetCustomRuleStyles(
     size_t offset) {
   std::vector<std::pair<gfx::Range, GURL>> linked_ranges;
   for (const auto& custom_segment : custom_rule_message.message_segments()) {
+    std::u16string unescaped_segment =
+        base::UnescapeForHTML(base::UTF8ToUTF16(custom_segment.text()));
     if (custom_segment.has_link()) {
       GURL url(custom_segment.link());
       if (url.is_valid()) {
         linked_ranges.emplace_back(
-            gfx::Range(offset,
-                       offset + base::UnescapeForHTML(
-                                    base::UTF8ToUTF16(custom_segment.text()))
-                                    .length()),
-            url);
+            gfx::Range(offset, offset + unescaped_segment.length()), url);
       }
     }
-    offset += custom_segment.text().length();
+    offset += unescaped_segment.length();
   }
   return linked_ranges;
 }
