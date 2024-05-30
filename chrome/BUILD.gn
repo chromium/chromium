@@ -1839,12 +1839,12 @@ if (is_linux || is_chromeos) {
       "//third_party/xdg-utils/scripts/xdg-settings",
     ]
     if (is_linux) {
-      sources +=
-          [ "//chrome/app/theme/$branding_path_component/product_logo_48.png" ]
-    } else {
       sources += [
         "//chrome/app/theme/$branding_path_component/linux/product_logo_48.png",
       ]
+    } else {
+      sources +=
+          [ "//chrome/app/theme/$branding_path_component/product_logo_48.png" ]
     }
     outputs = [ "$root_out_dir/{{source_file_part}}" ]
   }
