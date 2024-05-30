@@ -681,3 +681,8 @@
 # https://crrev.com/c/5467603. The CL removed
 # AllowBFCacheWhenClosedMediaStreamTrack feature.
 -BackForwardCacheBrowserTest.CacheIfMediaStreamTrackUsingGetDisplayMediaEnded
+
+# TODO(crbug.com/343101485): The test has been failing since
+# https://crrev.com/c/5468575.
+-NavigationBrowserTest.CommitBadNavigationInPendingCommitRFHCleanup
+
