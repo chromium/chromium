@@ -179,7 +179,7 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchReportsHistograms) {
   base::test::TestFuture<SearchResult> future;
   OverrideVisibilityScoresForTesting({{"", 0.99}});
   service->Search("", {}, 1, future.GetCallback());
-  EXPECT_TRUE(future.Take().empty());
+  EXPECT_TRUE(future.Take().scored_url_rows.empty());
 
   histogram_tester.ExpectUniqueSample("History.Embeddings.Search.Completed",
                                       true, 1);
@@ -231,9 +231,13 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchFiltersLowScoringResults) {
   service->Search("test query", {}, 3, future.GetCallback());
   SearchResult result = future.Take();
 
-  EXPECT_EQ(result.size(), 2u);
-  EXPECT_EQ(result[0].scored_url.url_id, 1);
-  EXPECT_EQ(result[1].scored_url.url_id, 3);
+  EXPECT_EQ(result.query, "test query");
+  EXPECT_EQ(result.time_range_start, std::nullopt);
+  EXPECT_EQ(result.count, 3u);
+
+  EXPECT_EQ(result.scored_url_rows.size(), 2u);
+  EXPECT_EQ(result.scored_url_rows[0].scored_url.url_id, 1);
+  EXPECT_EQ(result.scored_url_rows[1].scored_url.url_id, 3);
 }
 
 }  // namespace history_embeddings

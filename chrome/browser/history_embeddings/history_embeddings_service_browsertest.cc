@@ -118,9 +118,9 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
   base::test::TestFuture<SearchResult> search_future;
   service()->Search("A B C D e f g", {}, 1, search_future.GetCallback());
   SearchResult result = search_future.Take();
-  EXPECT_EQ(result.size(), 1u);
-  EXPECT_EQ(result[0].scored_url.passage, "A a B C b a 2 D");
-  EXPECT_EQ(result[0].row.url(), url);
+  EXPECT_EQ(result.scored_url_rows.size(), 1u);
+  EXPECT_EQ(result.scored_url_rows[0].scored_url.passage, "A a B C b a 2 D");
+  EXPECT_EQ(result.scored_url_rows[0].row.url(), url);
 
   histogram_tester.ExpectUniqueSample(
       "History.Embeddings.QueryEmbeddingSucceeded", true, 1);
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(
   base::test::TestFuture<SearchResult> search_future;
   service()->Search("A B C D e f g", {}, 1, search_future.GetCallback());
   SearchResult result = search_future.Take();
-  EXPECT_TRUE(result.empty());
+  EXPECT_TRUE(result.scored_url_rows.empty());
 
   histogram_tester.ExpectUniqueSample(
       "History.Embeddings.QueryEmbeddingSucceeded", true, 1);
@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
   base::test::TestFuture<SearchResult> search_future;
   service()->Search("A B C D e f g", {}, 1, search_future.GetCallback());
   SearchResult result = search_future.Take();
-  EXPECT_TRUE(result.empty());
+  EXPECT_TRUE(result.scored_url_rows.empty());
 
   histogram_tester.ExpectUniqueSample(
       "History.Embeddings.QueryEmbeddingSucceeded", true, 1);
@@ -193,10 +193,11 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, LogDataIsPrepared) {
   base::HistogramTester histogram_tester;
-  SearchResult result = {
+  SearchResult result;
+  result.scored_url_rows = {
       ScoredUrlRow(ScoredUrl(0, 0, base::Time::Now(), 0.5f, 0, {})),
   };
-  service()->SendQualityLog("test", result, 0, 1, 3, false);
+  service()->SendQualityLog(result, 1, 3, false);
   histogram_tester.ExpectUniqueSample(
       "History.Embeddings.Quality.LogEntryPrepared", true, 1);
 }

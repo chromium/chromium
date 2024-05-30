@@ -72,7 +72,8 @@ void HistoryEmbeddingsProvider::DeleteMatch(const AutocompleteMatch& match) {
 void HistoryEmbeddingsProvider::OnReceivedSearchResult(
     std::u16string input_text,
     history_embeddings::SearchResult result) {
-  for (const history_embeddings::ScoredUrlRow& scored_url_row : result) {
+  for (const history_embeddings::ScoredUrlRow& scored_url_row :
+       result.scored_url_rows) {
     AutocompleteMatch match(this, scored_url_row.scored_url.score * kMaxScore,
                             false, AutocompleteMatchType::HISTORY_BODY);
     match.destination_url = scored_url_row.row.url();

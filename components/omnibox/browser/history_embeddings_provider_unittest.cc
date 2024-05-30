@@ -53,10 +53,11 @@ class HistoryEmbeddingsProviderTest : public testing::Test {
 
 TEST_F(HistoryEmbeddingsProviderTest,
        OnReceivedSearchResult_CreatesAutocompleteMatches) {
-  history_embeddings_provider_->OnReceivedSearchResult(
-      u"query", {
-                    CreateScoredUrlRow(.5, "https://url.com/", u"title"),
-                });
+  history_embeddings::SearchResult result;
+  result.scored_url_rows = {
+      CreateScoredUrlRow(.5, "https://url.com/", u"title"),
+  };
+  history_embeddings_provider_->OnReceivedSearchResult(u"query", result);
 
   ASSERT_EQ(history_embeddings_provider_->matches_.size(), 1u);
   EXPECT_EQ(history_embeddings_provider_->matches_[0].provider.get(),

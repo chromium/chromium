@@ -94,7 +94,7 @@ struct ScoredUrl {
   ScoredUrl(ScoredUrl&&);
   ScoredUrl& operator=(ScoredUrl&&);
   ScoredUrl(const ScoredUrl&);
-  ScoredUrl& operator=(ScoredUrl&);
+  ScoredUrl& operator=(const ScoredUrl&);
 
   // Basic data about the found URL/visit.
   history::URLID url_id;

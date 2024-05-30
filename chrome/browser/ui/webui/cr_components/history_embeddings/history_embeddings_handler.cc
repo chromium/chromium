@@ -30,7 +30,7 @@ void OnSearchCompleted(HistoryEmbeddingsHandler::SearchCallback callback,
                        history_embeddings::SearchResult native_search_result) {
   auto mojom_search_result = history_embeddings::mojom::SearchResult::New();
   for (history_embeddings::ScoredUrlRow& scored_url_row :
-       native_search_result) {
+       native_search_result.scored_url_rows) {
     auto item = history_embeddings::mojom::SearchResultItem::New();
     item->title = base::UTF16ToUTF8(scored_url_row.row.title());
     item->url = scored_url_row.row.url();

@@ -48,11 +48,33 @@ class Embedder;
 struct ScoredUrlRow {
   explicit ScoredUrlRow(ScoredUrl scored_url)
       : scored_url(std::move(scored_url)) {}
+  ScoredUrlRow(const ScoredUrlRow&) = default;
+  ScoredUrlRow(ScoredUrlRow&&) = default;
+  ScoredUrlRow& operator=(const ScoredUrlRow&) = default;
+  ScoredUrlRow& operator=(ScoredUrlRow&&) = default;
 
   ScoredUrl scored_url;
   history::URLRow row;
 };
-using SearchResult = std::vector<ScoredUrlRow>;
+
+struct SearchResult {
+  SearchResult();
+  SearchResult(const SearchResult&);
+  SearchResult(SearchResult&&);
+  ~SearchResult();
+  SearchResult& operator=(const SearchResult&);
+  SearchResult& operator=(SearchResult&&);
+
+  // Keep context for search parameters requested, to make logging easier.
+  std::string query;
+  std::optional<base::Time> time_range_start;
+  size_t count = 0;
+
+  // The actual search result data. Note that the size of this vector will
+  // not necessarily match the above requested `count`.
+  std::vector<ScoredUrlRow> scored_url_rows;
+};
+
 using SearchResultCallback = base::OnceCallback<void(SearchResult)>;
 
 using QualityLogEntry =
@@ -94,10 +116,8 @@ class HistoryEmbeddingsService : public KeyedService,
   base::WeakPtr<HistoryEmbeddingsService> AsWeakPtr();
 
   // Submit quality logging data after user selects an item from search result.
-  void SendQualityLog(const std::string& query,
-                      const SearchResult& result,
+  void SendQualityLog(const SearchResult& result,
                       size_t selection,
-                      size_t num_days,
                       size_t num_entered_characters,
                       bool from_omnibox_history_scope);
 
@@ -168,9 +188,8 @@ class HistoryEmbeddingsService : public KeyedService,
 
   // Invoked after the embedding for the original search query has been
   // computed.
-  void OnQueryEmbeddingComputed(std::optional<base::Time> time_range_start,
-                                size_t count,
-                                SearchResultCallback callback,
+  void OnQueryEmbeddingComputed(SearchResultCallback callback,
+                                SearchResult result,
                                 std::vector<std::string> query_passages,
                                 std::vector<Embedding> query_embedding,
                                 ComputeEmbeddingsStatus status);
@@ -180,11 +199,13 @@ class HistoryEmbeddingsService : public KeyedService,
   // a history URLRow. Omits any entries that don't have corresponding data in
   // the history database.
   void OnSearchCompleted(SearchResultCallback callback,
+                         SearchResult result,
                          std::vector<ScoredUrl> scored_urls);
 
   // Calls `page_content_annotation_service_` to determine whether the passage
   // of each ScoredUrl should be shown to the user.
   void DeterminePassageVisibility(SearchResultCallback callback,
+                                  SearchResult result,
                                   std::vector<ScoredUrl> scored_urls);
 
   // Called after `page_content_annotation_service_` has determined visibility
@@ -192,6 +213,7 @@ class HistoryEmbeddingsService : public KeyedService,
   // contain entries that can be shown to the user.
   void OnPassageVisibilityCalculated(
       SearchResultCallback callback,
+      SearchResult result,
       std::vector<ScoredUrl> scored_urls,
       const std::vector<page_content_annotations::BatchAnnotationResult>&
           annotation_results);

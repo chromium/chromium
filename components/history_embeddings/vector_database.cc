@@ -117,7 +117,7 @@ ScoredUrl::~ScoredUrl() = default;
 ScoredUrl::ScoredUrl(ScoredUrl&&) = default;
 ScoredUrl& ScoredUrl::operator=(ScoredUrl&&) = default;
 ScoredUrl::ScoredUrl(const ScoredUrl&) = default;
-ScoredUrl& ScoredUrl::operator=(ScoredUrl&) = default;
+ScoredUrl& ScoredUrl::operator=(const ScoredUrl&) = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 
