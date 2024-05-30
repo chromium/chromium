@@ -57,6 +57,16 @@ GoogleCalendarPageHandler::GoogleCalendarPageHandler(
 GoogleCalendarPageHandler::~GoogleCalendarPageHandler() = default;
 
 void GoogleCalendarPageHandler::GetEvents(GetEventsCallback callback) {
+  // Do not grab data if it is within 12 hours since the module was dismissed.
+  base::Time dismiss_time =
+      pref_service_->GetTime(kGoogleCalendarLastDismissedTimePrefName);
+  if (dismiss_time != base::Time() &&
+      base::Time::Now() - dismiss_time < base::Hours(12)) {
+    std::move(callback).Run(
+        std::vector<ntp::calendar::mojom::CalendarEventPtr>());
+    return;
+  }
+
   const std::string fake_data_param = base::GetFieldTrialParamValueByFeature(
       ntp_features::kNtpCalendarModule,
       ntp_features::kNtpCalendarModuleDataParam);

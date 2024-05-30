@@ -69,6 +69,47 @@ TEST_F(GoogleCalendarPageHandlerTest, DismissAndRestoreModule) {
             base::Time());
 }
 
+TEST_F(GoogleCalendarPageHandlerTest, DismissModuleAffectsEvents) {
+  base::FieldTrialParams params;
+  params[ntp_features::kNtpCalendarModuleDataParam] = "fake";
+  feature_list().Reset();
+  feature_list().InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpCalendarModule, params);
+
+  std::vector<ntp::calendar::mojom::CalendarEventPtr> response1;
+  std::vector<ntp::calendar::mojom::CalendarEventPtr> response2;
+  base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback1;
+  base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback2;
+  EXPECT_CALL(callback1, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&](std::vector<ntp::calendar::mojom::CalendarEventPtr> events) {
+            response1 = std::move(events);
+          }));
+  EXPECT_CALL(callback2, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&](std::vector<ntp::calendar::mojom::CalendarEventPtr> events) {
+            response2 = std::move(events);
+          }));
+
+  handler().DismissModule();
+
+  // Move time forward 1 hour.
+  task_environment().AdvanceClock(base::Hours(1));
+
+  // Expect empty result since it has been less than 12 hours.
+  handler().GetEvents(callback1.Get());
+  EXPECT_EQ(response1.size(), 0u);
+
+  // Move clock forward 11 more hours to be at 12 hours since dismissal.
+  task_environment().AdvanceClock(base::Hours(11));
+
+  // Expect non-empty result since it has been 12 hours.
+  handler().GetEvents(callback2.Get());
+  EXPECT_GT(response2.size(), 0u);
+}
+
 TEST_F(GoogleCalendarPageHandlerTest, GetFakeEvents) {
   base::FieldTrialParams params;
   params[ntp_features::kNtpCalendarModuleDataParam] = "fake";
