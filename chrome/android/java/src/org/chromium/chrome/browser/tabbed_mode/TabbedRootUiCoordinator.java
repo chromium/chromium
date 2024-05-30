@@ -725,13 +725,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     @Override
     protected void initProfileDependentFeatures(Profile currentlySelectedProfile) {
         super.initProfileDependentFeatures(currentlySelectedProfile);
-        if (TabGroupSyncFeatures.isTabGroupSyncEnabled(currentlySelectedProfile)) {
+        Profile originalProfile = currentlySelectedProfile.getOriginalProfile();
+        if (TabGroupSyncFeatures.isTabGroupSyncEnabled(originalProfile)) {
             mTabGroupSyncController =
                     new TabGroupSyncController(
                             mTabModelSelectorSupplier.get(),
                             mTabCreatorManagerSupplier.get(),
-                            TabGroupSyncServiceFactory.getForProfile(currentlySelectedProfile),
-                            UserPrefs.get(currentlySelectedProfile),
+                            TabGroupSyncServiceFactory.getForProfile(originalProfile),
+                            UserPrefs.get(originalProfile),
                             () -> ApplicationStatus.getLastTrackedFocusedActivity() == mActivity);
         }
     }
