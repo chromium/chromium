@@ -161,9 +161,10 @@ void ComposeManagerImpl::OpenComposeWithFormFieldData(
 }
 
 std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
+    const autofill::FormData& form,
     const autofill::FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source) {
-  if (!client_->ShouldTriggerPopup(field, trigger_source)) {
+  if (!client_->ShouldTriggerPopup(form, field, trigger_source)) {
     return std::nullopt;
   }
   std::u16string suggestion_text;

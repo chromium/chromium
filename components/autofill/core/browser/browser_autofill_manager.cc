@@ -1184,7 +1184,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     AutofillComposeDelegate* compose_delegate = client().GetComposeDelegate();
     std::optional<Suggestion> maybe_compose_suggestion =
         compose_delegate
-            ? compose_delegate->GetSuggestion(field, trigger_source)
+            ? compose_delegate->GetSuggestion(form, field, trigger_source)
             : std::nullopt;
     if (maybe_compose_suggestion) {
       suggestions.push_back(*std::move(maybe_compose_suggestion));

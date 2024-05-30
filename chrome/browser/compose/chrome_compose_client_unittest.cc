@@ -790,7 +790,8 @@ TEST_F(ChromeComposeClientTest, TestProactiveNudgeEngagementIsRecorded) {
   const autofill::AutofillSuggestionTriggerSource trigger_source =
       autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange;
 
-  while (!client().ShouldTriggerPopup(selected_field_data, trigger_source)) {
+  while (!client().ShouldTriggerPopup(form_data, selected_field_data,
+                                      trigger_source)) {
     task_environment()->RunUntilIdle();
   }
 
@@ -833,8 +834,8 @@ TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeDisabledUKM) {
       autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange;
 
   // By default the proactive nudge is disabled.
-  EXPECT_FALSE(
-      client().ShouldTriggerPopup(selected_field_data, trigger_source));
+  EXPECT_FALSE(client().ShouldTriggerPopup(form_data, selected_field_data,
+                                           trigger_source));
 
   // Commit metrics on page navigation.
   NavigateAndCommitActiveTab(GURL("about:blank"));
@@ -879,7 +880,8 @@ TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeEnabledUKM) {
   const autofill::AutofillSuggestionTriggerSource trigger_source =
       autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange;
 
-  EXPECT_TRUE(client().ShouldTriggerPopup(selected_field_data, trigger_source));
+  EXPECT_TRUE(client().ShouldTriggerPopup(form_data, selected_field_data,
+                                          trigger_source));
 
   // Commit metrics on page navigation.
   NavigateAndCommitActiveTab(GURL("about:blank"));
@@ -923,8 +925,8 @@ TEST_F(ChromeComposeClientTest,
       autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange;
 
   // Will fail because field origin does not match page origin.
-  EXPECT_FALSE(
-      client().ShouldTriggerPopup(selected_field_data, trigger_source));
+  EXPECT_FALSE(client().ShouldTriggerPopup(form_data, selected_field_data,
+                                           trigger_source));
 
   // Commit metrics on page navigation.
   NavigateAndCommitActiveTab(GURL("about:blank"));
@@ -953,8 +955,8 @@ TEST_F(ChromeComposeClientTest, TestProactiveNudgeMSBBDisabled) {
       autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange;
 
   // Will fail because MSBB is not set
-  EXPECT_FALSE(
-      client().ShouldTriggerPopup(selected_field_data, trigger_source));
+  EXPECT_FALSE(client().ShouldTriggerPopup(form_data, selected_field_data,
+                                           trigger_source));
 
   histograms().ExpectBucketCount(
       compose::kComposeProactiveNudgeShowStatus,
@@ -975,7 +977,8 @@ TEST_F(ChromeComposeClientTest, TestComposeShouldTriggerSavedStateNudgeUKM) {
   ShowDialogAndBindMojoWithFieldData(selected_field_data);
 
   // By default the saved state nudge is shown.
-  EXPECT_TRUE(client().ShouldTriggerPopup(selected_field_data, trigger_source));
+  EXPECT_TRUE(client().ShouldTriggerPopup(form_data, selected_field_data,
+                                          trigger_source));
 
   // Commit metrics on page navigation.
   NavigateAndCommitActiveTab(GURL("about:blank"));
@@ -2417,14 +2420,15 @@ TEST_F(ChromeComposeClientTest,
 
   EXPECT_FALSE(prefs->GetDict(prefs::kProactiveNudgeDisabledSitesWithTime)
                    .Find(test_origin.Serialize()));
-  EXPECT_TRUE(client().ShouldTriggerPopup(selected_field_data, trigger_source));
+  EXPECT_TRUE(client().ShouldTriggerPopup(form_data, selected_field_data,
+                                          trigger_source));
 
   client().AddSiteToNeverPromptList(test_origin);
 
   EXPECT_TRUE(prefs->GetDict(prefs::kProactiveNudgeDisabledSitesWithTime)
                   .Find(test_origin.Serialize()));
-  EXPECT_FALSE(
-      client().ShouldTriggerPopup(selected_field_data, trigger_source));
+  EXPECT_FALSE(client().ShouldTriggerPopup(form_data, selected_field_data,
+                                           trigger_source));
 }
 
 TEST_F(ChromeComposeClientTest, AcceptSuggestionHistogramTest) {

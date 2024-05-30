@@ -9,6 +9,7 @@
 
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace url {
@@ -58,6 +59,7 @@ class AutofillComposeDelegate {
   // Returns a suggestion if the compose service is available for
   // `field`.
   virtual std::optional<autofill::Suggestion> GetSuggestion(
+      const autofill::FormData& form,
       const autofill::FormFieldData& field,
       autofill::AutofillSuggestionTriggerSource trigger_source) = 0;
 };
