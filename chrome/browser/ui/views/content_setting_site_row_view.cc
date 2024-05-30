@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/content_setting_site_row_view.h"
 
 #include <memory>
+
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
@@ -16,6 +17,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -70,7 +72,7 @@ ContentSettingSiteRowView::ContentSettingSiteRowView(
       base::BindRepeating(&ContentSettingSiteRowView::OnToggleButtonPressed,
                           base::Unretained(this))));
   toggle_button_->SetIsOn(allowed);
-  toggle_button_->SetAccessibleName(title);
+  toggle_button_->GetViewAccessibility().SetName(title);
 
   layout->SetInteriorMargin(ChromeLayoutProvider::Get()->GetInsetsMetric(
       ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON));

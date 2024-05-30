@@ -27,6 +27,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
@@ -427,7 +428,7 @@ void ExtensionsMenuSitePermissionsPageView::Update(
 void ExtensionsMenuSitePermissionsPageView::UpdateShowRequestsToggle(
     bool is_on) {
   show_requests_toggle_->SetIsOn(is_on);
-  show_requests_toggle_->SetAccessibleName(
+  show_requests_toggle_->GetViewAccessibility().SetName(
       GetShowRequestsToggleAccessibleName(is_on));
 }
 

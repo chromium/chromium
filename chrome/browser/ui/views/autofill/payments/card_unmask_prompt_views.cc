@@ -27,6 +27,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -332,13 +333,13 @@ void CardUnmaskPromptViews::InitIfNecessary() {
   auto month_input = std::make_unique<views::Combobox>(&month_combobox_model_);
   month_input->SetCallback(base::BindRepeating(
       &CardUnmaskPromptViews::DateChanged, base::Unretained(this)));
-  month_input->SetAccessibleName(
+  month_input->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_UNMASK_EXPIRATION_MONTH));
   month_input_ = input_row->AddChildView(std::move(month_input));
   auto year_input = std::make_unique<views::Combobox>(&year_combobox_model_);
   year_input->SetCallback(base::BindRepeating(
       &CardUnmaskPromptViews::DateChanged, base::Unretained(this)));
-  year_input->SetAccessibleName(
+  year_input->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_UNMASK_EXPIRATION_YEAR));
   year_input_ = input_row->AddChildView(std::move(year_input));
   if (!controller_->ShouldRequestExpirationDate()) {
@@ -355,7 +356,7 @@ void CardUnmaskPromptViews::InitIfNecessary() {
     cvc_input->SetPlaceholderText(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_DIALOG_PLACEHOLDER_CVC));
   }
-  cvc_input->SetAccessibleName(l10n_util::GetStringUTF16(
+  cvc_input->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_DIALOG_ACCESSIBLE_NAME_SECURITY_CODE));
   cvc_input->SetDefaultWidthInChars(8);
   cvc_input->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_NUMBER);

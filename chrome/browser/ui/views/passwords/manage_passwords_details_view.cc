@@ -29,6 +29,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -276,7 +277,7 @@ class NoteLabel : public views::Label {
     if (note_.empty()) {
       SetText(note_to_display);
     }
-    SetAccessibleName(l10n_util::GetStringFUTF16(
+    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
         IDS_MANAGE_PASSWORDS_NOTE_ACCESSIBLE_NAME, note_to_display));
   }
 
@@ -400,7 +401,8 @@ std::unique_ptr<views::View> CreateEditUsernameRow(
   *textfield = username_with_error_label_view->AddChildView(
       std::make_unique<views::Textfield>());
   (*textfield)
-      ->SetAccessibleName(
+      ->GetViewAccessibility()
+      .SetName(
           l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_USERNAME_TEXTFIELD));
   (*textfield)
       ->SetID(static_cast<int>(ManagePasswordsViewIDs::kUsernameTextField));
@@ -444,7 +446,7 @@ std::unique_ptr<views::View> CreateEditNoteRow(
   *textarea = note_with_error_label_view->AddChildView(
       std::make_unique<views::Textarea>());
   (*textarea)->SetText(form.GetNoteWithEmptyUniqueDisplayName());
-  (*textarea)->SetAccessibleName(
+  (*textarea)->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_NOTE_TEXTFIELD));
   int line_height = views::TypographyProvider::Get().GetLineHeight(
       views::style::CONTEXT_TEXTFIELD, views::style::STYLE_PRIMARY);
@@ -539,7 +541,7 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
       CreateUsernameLabel(password_form);
   username_label->SetID(
       static_cast<int>(ManagePasswordsViewIDs::kUsernameLabel));
-  username_label->SetAccessibleName(
+  username_label->GetViewAccessibility().SetName(
       l10n_util::GetStringFUTF16(IDS_MANAGE_PASSWORDS_USERNAME_ACCESSIBLE_NAME,
                                  username_label->GetText()));
   if (!password_form.username_value.empty()) {

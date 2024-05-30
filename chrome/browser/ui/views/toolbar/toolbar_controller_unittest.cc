@@ -278,7 +278,7 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
       button->SetProperty(views::kElementIdentifierKey, ids[i]);
       button->SetPreferredSize(kButtonSize);
       button->SetAccessibleRole(ax::mojom::Role::kButton);
-      button->SetAccessibleName(
+      button->GetViewAccessibility().SetName(
           base::StrCat({u"DummyButton", base::NumberToString16(i)}));
       button->SetVisible(true);
       test_buttons_.emplace_back(

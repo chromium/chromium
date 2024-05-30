@@ -127,7 +127,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
     auto button = std::make_unique<ToolbarButton>();
     button->SetPreferredSize(dummy_button_size_);
     button->SetMinSize(dummy_button_size_);
-    button->SetAccessibleName(u"dummybutton");
+    button->GetViewAccessibility().SetName(u"dummybutton");
     button->SetVisible(true);
     return button;
   }

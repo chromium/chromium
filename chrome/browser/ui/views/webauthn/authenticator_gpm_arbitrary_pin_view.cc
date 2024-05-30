@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/views/webauthn/reveal_button_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -21,7 +22,7 @@ AuthenticatorGPMArbitraryPinView::AuthenticatorGPMArbitraryPinView(
 
   auto pin_textfield = std::make_unique<views::Textfield>();
   pin_textfield->SetController(this);
-  pin_textfield->SetAccessibleName(u"Pin field (UNTRANSLATED)");
+  pin_textfield->GetViewAccessibility().SetName(u"Pin field (UNTRANSLATED)");
   pin_textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   pin_textfield->SetDefaultWidthInChars(20);
   pin_textfield->SetReadOnly(ui_disabled);

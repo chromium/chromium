@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -27,7 +28,7 @@ class UrlLabel : public views::Label {
     // Never use the elided URL for the accessible name or tooltip - both of
     // these are allowed to be of arbitrary length (since they aren't
     // constrained by the visual layout) and should give the user the full URL.
-    SetAccessibleName(GetText());
+    GetViewAccessibility().SetName(GetText());
     SetTooltipText(GetText());
   }
   ~UrlLabel() override = default;

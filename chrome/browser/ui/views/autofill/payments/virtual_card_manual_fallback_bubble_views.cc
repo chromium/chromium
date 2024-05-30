@@ -14,6 +14,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/separator.h"
@@ -292,7 +293,7 @@ void VirtualCardManualFallbackBubbleViews::
   for (auto& pair : fields_to_buttons_map_) {
     std::u16string tooltip = controller_->GetFieldButtonTooltip(pair.first);
     pair.second->SetTooltipText(tooltip);
-    pair.second->SetAccessibleName(
+    pair.second->GetViewAccessibility().SetName(
         base::StrCat({pair.second->GetText(), u" ", tooltip}));
   }
 }

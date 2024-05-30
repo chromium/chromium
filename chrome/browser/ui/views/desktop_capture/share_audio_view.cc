@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -32,7 +33,7 @@ ShareAudioView::ShareAudioView(const std::u16string& label_text,
   if (audio_offered) {
     audio_toggle_button_ =
         AddChildView(std::make_unique<views::ToggleButton>());
-    audio_toggle_button_->SetAccessibleName(label_text);
+    audio_toggle_button_->GetViewAccessibility().SetName(label_text);
   } else {
     audio_toggle_label_->SetTextStyle(views::style::TextStyle::STYLE_DISABLED);
   }

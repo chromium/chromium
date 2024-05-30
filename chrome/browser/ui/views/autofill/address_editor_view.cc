@@ -17,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
@@ -184,7 +185,7 @@ views::View* AddressEditorView::CreateInputField(const EditorField& field) {
       auto text_field = std::make_unique<views::Textfield>();
       // Set the initial value and validity state.
       text_field->SetText(initial_value);
-      text_field->SetAccessibleName(field.label);
+      text_field->GetViewAccessibility().SetName(field.label);
 
       if (field.control_type == EditorField::ControlType::TEXTFIELD_NUMBER) {
         text_field->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_NUMBER);
@@ -223,7 +224,7 @@ std::unique_ptr<views::Combobox> AddressEditorView::CreateCountryCombobox(
     const std::u16string& label) {
   auto& combobox_model = controller_->GetCountryComboboxModel();
   auto combobox = std::make_unique<views::Combobox>(&combobox_model);
-  combobox->SetAccessibleName(label);
+  combobox->GetViewAccessibility().SetName(label);
 
   std::u16string initial_value =
       controller_->GetProfileInfo(autofill::ADDRESS_HOME_COUNTRY);

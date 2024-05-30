@@ -30,6 +30,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -371,7 +372,7 @@ void OfferNotificationBubbleViews::UpdateButtonTooltipsAndAccessibleNames() {
 
   if (promo_code_label_button_) {
     promo_code_label_button_->SetTooltipText(tooltip);
-    promo_code_label_button_->SetAccessibleName(
+    promo_code_label_button_->GetViewAccessibility().SetName(
         base::StrCat({promo_code_label_button_->GetText(), u" ", tooltip}));
   } else if (promo_code_label_view_) {
     promo_code_label_view_->UpdateCopyButtonTooltipsAndAccessibleNames(tooltip);

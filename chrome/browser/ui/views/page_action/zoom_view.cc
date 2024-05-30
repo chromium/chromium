@@ -16,6 +16,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 ZoomView::ZoomView(IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
                    PageActionIconView::Delegate* page_action_icon_delegate)
@@ -76,7 +77,7 @@ void ZoomView::ZoomChangedForActiveTab(bool can_show_bubble) {
         zoom::ZoomController::FromWebContents(web_contents);
     current_zoom_percent_ = zoom_controller->GetZoomPercent();
 
-    SetAccessibleName(l10n_util::GetStringFUTF16(
+    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
         IDS_TOOLTIP_ZOOM, base::FormatPercent(current_zoom_percent_)));
 
     // The icon is hidden when the zoom level is default.

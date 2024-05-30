@@ -35,6 +35,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
@@ -284,7 +285,7 @@ void ShareThisTabDialogView::SetupAudioToggle() {
 
   audio_toggle_button_ = audio_toggle_container->AddChildView(
       std::make_unique<views::ToggleButton>());
-  audio_toggle_button_->SetAccessibleName(
+  audio_toggle_button_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_SHARE_THIS_TAB_AUDIO_SHARE));
   audio_toggle_button_->SetIsOn(
       !base::CommandLine::ForCurrentProcess()->HasSwitch(

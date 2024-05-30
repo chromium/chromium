@@ -53,6 +53,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button_border.h"
@@ -212,7 +213,7 @@ std::u16string SavedTabGroupButton::GetAccessibleNameForButton() const {
 }
 
 void SavedTabGroupButton::SetTextProperties(const SavedTabGroup& group) {
-  SetAccessibleName(GetAccessibleNameForButton());
+  GetViewAccessibility().SetName(GetAccessibleNameForButton());
   SetTooltipText(group.title());
   SetText(group.title());
 }

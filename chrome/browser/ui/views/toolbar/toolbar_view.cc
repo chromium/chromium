@@ -490,7 +490,7 @@ void ToolbarView::Init() {
 
   auto app_menu_button = std::make_unique<BrowserAppMenuButton>(this);
   app_menu_button->SetFlipCanvasOnPaintForRTLUI(true);
-  app_menu_button->SetAccessibleName(
+  app_menu_button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_APP));
   app_menu_button->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_APPMENU_TOOLTIP));
@@ -1071,7 +1071,7 @@ void ToolbarView::UpdateTypeAndSeverity(
     accname_app = l10n_util::GetStringFUTF16(
         IDS_ACCNAME_APP_UPGRADE_RECOMMENDED, accname_app);
   }
-  app_menu_button_->SetAccessibleName(accname_app);
+  app_menu_button_->GetViewAccessibility().SetName(accname_app);
   app_menu_button_->SetTypeAndSeverity(type_and_severity);
 
   if (base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh) &&

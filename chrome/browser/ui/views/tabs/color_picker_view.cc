@@ -26,6 +26,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -76,7 +77,7 @@ class ColorPickerElementView : public views::Button {
         color_name_(color_name) {
     DCHECK(selected_callback_);
 
-    SetAccessibleName(color_name);
+    GetViewAccessibility().SetName(color_name);
     SetInstallFocusRingOnFocus(true);
     views::HighlightPathGenerator::Install(
         this, std::make_unique<ColorPickerHighlightPathGenerator>());

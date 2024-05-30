@@ -30,6 +30,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/label_button.h"
@@ -123,7 +124,7 @@ void LocalCardMigrationBubbleViews::AddedToWidget() {
   views::ImageView* icon_view = new views::ImageView();
   icon_view->SetImage(ui::ImageModel::FromImageSkia(image));
   icon_view->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
-  icon_view->SetAccessibleName(
+  icon_view->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME));
   title_container->AddChildView(icon_view);
 

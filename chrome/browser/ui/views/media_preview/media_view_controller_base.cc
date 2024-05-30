@@ -80,7 +80,8 @@ MediaViewControllerBase::MediaViewControllerBase(
       views::kMarginsKey, gfx::Insets().set_top(provider->GetDistanceMetric(
                               views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
-  device_selector_combobox_->SetAccessibleName(combobox_accessible_name);
+  device_selector_combobox_->GetViewAccessibility().SetName(
+      combobox_accessible_name);
   device_selector_combobox_->SetSizeToLargestLabel(false);
   device_selector_combobox_->SetVisible(false);
   device_selector_combobox_->SetProperty(

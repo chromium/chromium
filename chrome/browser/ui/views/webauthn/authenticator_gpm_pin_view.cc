@@ -7,6 +7,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/views/webauthn/reveal_button_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -22,7 +23,7 @@ AuthenticatorGPMPinView::AuthenticatorGPMPinView(int pin_digits_count,
 
   auto pin_textfield = std::make_unique<PinTextfield>(pin_digits_count);
   pin_textfield->SetController(this);
-  pin_textfield->SetAccessibleName(u"Pin field (UNTRANSLATED)");
+  pin_textfield->GetViewAccessibility().SetName(u"Pin field (UNTRANSLATED)");
   pin_textfield->SetObscured(true);
   pin_textfield->SetDisabled(ui_disabled);
   pin_textfield->SetPin(pin);

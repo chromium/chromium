@@ -31,7 +31,7 @@ BatterySaverButton::BatterySaverButton(BrowserView* browser_view)
   // Do not flip the battery saver icon for RTL languages.
   SetFlipCanvasOnPaintForRTLUI(false);
 
-  SetAccessibleName(
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_BATTERY_SAVER_BUTTON_ACCNAME));
   SetTooltipText(l10n_util::GetStringUTF16(IDS_BATTERY_SAVER_BUTTON_TOOLTIP));
   GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kDialog);

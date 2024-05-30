@@ -36,6 +36,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -291,7 +292,7 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
                                              ui::kColorIcon, ui::kColorIcon);
     refresh_button_->SetProperty(views::kElementIdentifierKey,
                                  kPlusAddressRefreshButtonElementId);
-    refresh_button_->SetAccessibleName(l10n_util::GetStringUTF16(
+    refresh_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
         IDS_PLUS_ADDRESS_MODEL_REFRESH_BUTTON_ACCESSIBLE_NAME));
     refresh_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, 8)));
   }
@@ -349,7 +350,7 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
               ));
   cancel_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT));
-  cancel_button_->SetAccessibleName(
+  cancel_button_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT));
   cancel_button_->SizeToPreferredSize();
   cancel_button_->SetProperty(views::kElementIdentifierKey,
@@ -364,7 +365,7 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
           l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_OK_TEXT)));
   confirm_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_OK_TEXT));
-  confirm_button_->SetAccessibleName(
+  confirm_button_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_OK_TEXT));
   confirm_button_->SizeToPreferredSize();
   confirm_button_->SetStyle(ui::ButtonStyle::kProminent);

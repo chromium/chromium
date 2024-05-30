@@ -9,6 +9,7 @@
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -25,7 +26,7 @@ ReadAnythingMenuButton::ReadAnythingMenuButton(
   views::InstallCircleHighlightPathGenerator(this);
   SetIcon(icon, kIconSize, /* icon_color= */ gfx::kPlaceholderColor,
           /* focus_ring_color= */ gfx::kPlaceholderColor);
-  SetAccessibleName(tooltip);
+  GetViewAccessibility().SetName(tooltip);
   SetTooltipText(tooltip);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetMenuModel(menu_model);

@@ -14,6 +14,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -69,7 +70,8 @@ void SharingIconView::UpdateImpl() {
   if (!controller)
     return;
 
-  SetAccessibleName(controller->GetTextForTooltipAndAccessibleName());
+  GetViewAccessibility().SetName(
+      controller->GetTextForTooltipAndAccessibleName());
 
   // To ensure that we reset error icon badge.
   if (!GetVisible()) {

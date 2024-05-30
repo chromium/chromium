@@ -9,6 +9,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_class_properties.h"
@@ -27,7 +28,7 @@ DownloadBubblePasswordPromptView::DownloadBubblePasswordPromptView() {
   password_field_ = AddChildView(std::make_unique<views::Textfield>());
   password_field_->SetTextInputType(
       ui::TextInputType::TEXT_INPUT_TYPE_PASSWORD);
-  password_field_->SetAccessibleName(l10n_util::GetStringUTF16(
+  password_field_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_DOWNLOAD_BUBBLE_PASSWORD_PROMPT_ACCESSIBLE_ALERT));
 
   // Dummy view for padding in the bottom-left
@@ -45,7 +46,7 @@ DownloadBubblePasswordPromptView::~DownloadBubblePasswordPromptView() = default;
 void DownloadBubblePasswordPromptView::SetState(State state) {
   password_field_->SetText(std::u16string());
   password_field_->SetInvalid(IsError(state));
-  password_field_->SetAccessibleName(GetAccessibleName(state));
+  password_field_->GetViewAccessibility().SetName(GetAccessibleName(state));
   error_message_->SetVisible(IsError(state));
   error_message_->SetText(GetErrorMessage(state));
   password_field_->RequestFocus();

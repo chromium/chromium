@@ -36,7 +36,7 @@ WindowsCaptionButton::WindowsCaptionButton(
   SetAnimateOnStateChange(true);
   // Not focusable by default, only for accessibility.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-  SetAccessibleName(accessible_name);
+  GetViewAccessibility().SetName(accessible_name);
   SetID(button_type);
 }
 

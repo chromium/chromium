@@ -75,6 +75,7 @@
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -275,7 +276,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   title_field_ =
       AddChildView(std::make_unique<TitleField>(stop_context_menu_propagation));
   title_field_->SetText(title);
-  title_field_->SetAccessibleName(l10n_util::GetStringUTF16(
+  title_field_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_TAB_GROUP_HEADER_CXMENU_TAB_GROUP_TITLE_ACCESSIBLE_NAME));
   title_field_->SetPlaceholderText(
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_BUBBLE_TITLE_PLACEHOLDER));
@@ -533,7 +534,8 @@ void TabGroupEditorBubbleView::OnSaveTogglePressed() {
     saved_tab_group_service->UnsaveGroup(group_);
   }
 
-  save_group_toggle_->SetAccessibleName(GetSaveToggleAccessibleName());
+  save_group_toggle_->GetViewAccessibility().SetName(
+      GetSaveToggleAccessibleName());
   UpdateGroup();
 }
 
@@ -669,7 +671,8 @@ views::View* TabGroupEditorBubbleView::CreateSavedTabGroupItem() {
 
   save_group_toggle_->SetIsOn(
       saved_tab_group_service->model()->Contains(group_));
-  save_group_toggle_->SetAccessibleName(GetSaveToggleAccessibleName());
+  save_group_toggle_->GetViewAccessibility().SetName(
+      GetSaveToggleAccessibleName());
   save_group_toggle_->SetProperty(views::kElementIdentifierKey,
                                   kTabGroupEditorBubbleSaveToggleId);
 

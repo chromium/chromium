@@ -16,6 +16,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_class_properties.h"
 
 ManagePasswordsIconViews::ManagePasswordsIconViews(
@@ -44,7 +45,7 @@ void ManagePasswordsIconViews::SetState(password_manager::ui::State state) {
   PasswordBubbleViewBase::CloseCurrentBubble();
   state_ = state;
   UpdateUiForState();
-  SetAccessibleName(GetTextForTooltipAndAccessibleName());
+  GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());
 }
 
 void ManagePasswordsIconViews::UpdateUiForState() {

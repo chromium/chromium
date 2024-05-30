@@ -35,6 +35,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/controls/button/button.h"
@@ -147,7 +148,8 @@ content::WebContents* ToolbarActionView::GetCurrentWebContents() const {
 
 void ToolbarActionView::UpdateState() {
   content::WebContents* web_contents = GetCurrentWebContents();
-  SetAccessibleName(view_controller_->GetAccessibleName(web_contents));
+  GetViewAccessibility().SetName(
+      view_controller_->GetAccessibleName(web_contents));
   if (!sessions::SessionTabHelper::IdForTab(web_contents).is_valid())
     return;
 

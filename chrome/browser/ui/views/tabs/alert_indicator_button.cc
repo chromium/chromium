@@ -26,6 +26,7 @@
 #include "ui/gfx/animation/multi_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/metrics.h"
 #include "ui/views/view_class_properties.h"
@@ -148,7 +149,8 @@ AlertIndicatorButton::AlertIndicatorButton(Tab* parent_tab)
   DCHECK(parent_tab_);
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
-  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_MUTE_TAB));
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ACCNAME_MUTE_TAB));
 
   SetProperty(views::kElementIdentifierKey, kTabAlertIndicatorButtonElementId);
 }

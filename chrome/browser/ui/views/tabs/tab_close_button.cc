@@ -25,6 +25,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -46,7 +47,7 @@ TabCloseButton::TabCloseButton(PressedCallback pressed_callback,
     : views::LabelButton(std::move(pressed_callback)),
       mouse_event_callback_(std::move(mouse_event_callback)) {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
-  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);

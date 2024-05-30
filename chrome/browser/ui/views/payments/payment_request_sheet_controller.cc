@@ -246,7 +246,8 @@ class PaymentRequestBackArrowButton : public views::ImageButton {
     SetSize(gfx::Size(kBackArrowSize, kBackArrowSize));
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     SetID(static_cast<int>(DialogViewID::BACK_BUTTON));
-    SetAccessibleName(l10n_util::GetStringUTF16(IDS_PAYMENTS_BACK));
+    GetViewAccessibility().SetName(
+        l10n_util::GetStringUTF16(IDS_PAYMENTS_BACK));
   }
 
   void OnThemeChanged() override {

@@ -48,6 +48,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/shadow_util.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
@@ -117,7 +118,7 @@ class ScrollButton : public views::ImageButton {
         this,
         std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
 
-    SetAccessibleName(l10n_util::GetStringUTF16(
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
         button_type == ButtonType::LEADING
             ? IDS_ACCNAME_WEB_APP_DETAILED_INSTALL_DIALOG_LEADING_SCROLL_BUTTON
             : IDS_ACCNAME_WEB_APP_DETAILED_INSTALL_DIALOG_TRAILING_SCROLL_BUTTON));
@@ -238,7 +239,8 @@ class ImageCarouselView : public views::View {
           ui::ImageModel::FromImageSkia(gfx::ImageSkia::CreateFromBitmap(
               screenshots_[i].image, current_scale)));
       if (screenshots_[i].label) {
-        image_views_[i]->SetAccessibleName(screenshots_[i].label.value());
+        image_views_[i]->GetViewAccessibility().SetName(
+            screenshots_[i].label.value());
       }
     }
   }

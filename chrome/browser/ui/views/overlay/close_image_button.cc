@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/vector_icons.h"
 
 namespace {
@@ -34,7 +35,7 @@ CloseImageButton::CloseImageButton(PressedCallback callback)
   // Accessibility.
   const std::u16string close_button_label(
       l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_CLOSE_CONTROL_TEXT));
-  SetAccessibleName(close_button_label);
+  GetViewAccessibility().SetName(close_button_label);
   SetTooltipText(close_button_label);
 }
 

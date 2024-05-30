@@ -35,6 +35,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
@@ -303,7 +304,7 @@ void BookmarkEditorView::Init() {
   labels->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_NAME_LABEL)));
   title_tf_ = labels->AddChildView(std::make_unique<views::Textfield>());
-  title_tf_->SetAccessibleName(
+  title_tf_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_BOOKMARK_AX_EDITOR_NAME_LABEL));
   title_tf_->SetText(title);
   title_tf_->set_controller(this);
@@ -320,7 +321,7 @@ void BookmarkEditorView::Init() {
     url_tf_ = labels->AddChildView(std::make_unique<views::Textfield>());
     url_tf_->SetText(chrome::FormatBookmarkURLForDisplay(url));
     url_tf_->set_controller(this);
-    url_tf_->SetAccessibleName(
+    url_tf_->GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_BOOKMARK_AX_EDITOR_URL_LABEL));
     url_tf_->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_URL);
   }

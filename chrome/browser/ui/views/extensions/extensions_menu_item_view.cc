@@ -437,8 +437,10 @@ void ExtensionMenuItemView::Update(
     site_permissions_button_->SetText(site_permissions_text);
     site_permissions_button_->SetTooltipText(GetSitePermissionsButtonTooltip(
         is_enterprise, site_permissions_button_access));
-    site_permissions_button_->SetAccessibleName(GetSitePermissionsButtonAccName(
-        is_enterprise, site_permissions_button_access, site_permissions_text));
+    site_permissions_button_->GetViewAccessibility().SetName(
+        GetSitePermissionsButtonAccName(is_enterprise,
+                                        site_permissions_button_access,
+                                        site_permissions_text));
 
     // Update button size after changing its contents so it fits in the menu
     // item row.
@@ -455,7 +457,7 @@ void ExtensionMenuItemView::UpdatePinButton(bool is_force_pinned,
   }
 
   pin_button_->SetTooltipText(GetPinButtonTooltip(is_force_pinned, is_pinned));
-  pin_button_->SetAccessibleName(GetPinButtonAccessibleName(
+  pin_button_->GetViewAccessibility().SetName(GetPinButtonAccessibleName(
       is_force_pinned, is_pinned, controller_->GetActionName()));
   // Extension pinning is not available in Incognito as it leaves a trace of
   // user activity.
@@ -494,7 +496,7 @@ void ExtensionMenuItemView::UpdateContextMenuButton(bool is_action_pinned) {
                                       three_dot_icon);
   context_menu_button_->SetImageModel(views::Button::STATE_PRESSED,
                                       three_dot_icon);
-  context_menu_button_->SetAccessibleName(
+  context_menu_button_->GetViewAccessibility().SetName(
       GetContextMenuAccessibleName(is_action_pinned));
 }
 

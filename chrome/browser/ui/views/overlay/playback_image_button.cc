@@ -13,6 +13,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/vector_icons.h"
 
 PlaybackImageButton::PlaybackImageButton(PressedCallback callback)
@@ -21,7 +22,7 @@ PlaybackImageButton::PlaybackImageButton(PressedCallback callback)
   const std::u16string playback_accessible_button_label(
       l10n_util::GetStringUTF16(
           IDS_PICTURE_IN_PICTURE_PLAY_PAUSE_CONTROL_ACCESSIBLE_TEXT));
-  SetAccessibleName(playback_accessible_button_label);
+  GetViewAccessibility().SetName(playback_accessible_button_label);
 }
 
 void PlaybackImageButton::OnBoundsChanged(const gfx::Rect& rect) {
@@ -52,7 +53,7 @@ void PlaybackImageButton::UpdateImageAndText() {
       std::u16string pause_text =
           l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_PAUSE_CONTROL_TEXT);
       SetTooltipText(pause_text);
-      SetAccessibleName(pause_text);
+      GetViewAccessibility().SetName(pause_text);
       break;
     }
     case VideoOverlayWindowViews::kPaused: {
@@ -60,7 +61,7 @@ void PlaybackImageButton::UpdateImageAndText() {
       std::u16string play_text =
           l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_PLAY_CONTROL_TEXT);
       SetTooltipText(play_text);
-      SetAccessibleName(play_text);
+      GetViewAccessibility().SetName(play_text);
       break;
     }
     case VideoOverlayWindowViews::kEndOfVideo: {
@@ -68,7 +69,7 @@ void PlaybackImageButton::UpdateImageAndText() {
       std::u16string replay_text =
           l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_REPLAY_CONTROL_TEXT);
       SetTooltipText(replay_text);
-      SetAccessibleName(replay_text);
+      GetViewAccessibility().SetName(replay_text);
       break;
     }
   }

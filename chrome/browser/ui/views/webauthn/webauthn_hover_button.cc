@@ -11,6 +11,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/table_layout.h"
@@ -125,9 +126,10 @@ WebAuthnHoverButton::WebAuthnHoverButton(
     subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   }
 
-  SetAccessibleName(subtitle_text.empty()
-                        ? title_text
-                        : base::JoinString({title_text, subtitle_text}, u"\n"));
+  GetViewAccessibility().SetName(
+      subtitle_text.empty()
+          ? title_text
+          : base::JoinString({title_text, subtitle_text}, u"\n"));
 
   // Per WebAuthn UI specs, the top/bottom insets of hover buttons are 16dp for
   // a one-line button, and 10dp for a two-line button. Left/right insets are

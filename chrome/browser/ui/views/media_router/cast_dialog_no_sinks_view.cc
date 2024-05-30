@@ -31,6 +31,7 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -113,7 +114,7 @@ void CastDialogNoSinksView::SetHelpIconView() {
                      0);
   icon->SetInstallFocusRingOnFocus(true);
   icon->SetBorder(views::CreateEmptyBorder(media_router::kPrimaryIconBorder));
-  icon->SetAccessibleName(
+  icon->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_NO_DEVICES_FOUND_BUTTON));
   icon->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_NO_DEVICES_FOUND_BUTTON));

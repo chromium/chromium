@@ -13,6 +13,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/radio_button.h"
@@ -257,7 +258,7 @@ CardUnmaskAuthenticationSelectionDialogView::CreateChallengeOptionRadioButton(
           &CardUnmaskAuthenticationSelectionDialogView::
               OnChallengeOptionSelected,
           weak_ptr_factory_.GetWeakPtr(), challenge_option.id)));
-  radio_button->SetAccessibleName(
+  radio_button->GetViewAccessibility().SetName(
       controller_->GetAuthenticationModeLabel(challenge_option) + u". " +
       challenge_option.challenge_info);
   return radio_button;

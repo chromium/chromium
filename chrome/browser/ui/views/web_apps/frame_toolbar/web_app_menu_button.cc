@@ -22,6 +22,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -55,7 +56,7 @@ WebAppMenuButton::WebAppMenuButton(BrowserView* browser_view,
     SetTooltipText(accessible_name);
   }
 
-  SetAccessibleName(accessible_name);
+  GetViewAccessibility().SetName(accessible_name);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
 }
 

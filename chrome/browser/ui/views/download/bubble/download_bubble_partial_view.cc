@@ -22,6 +22,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/link_fragment.h"
@@ -89,7 +90,7 @@ class SuppressBubbleSettingRow : public views::View,
         std::u16string(),
         base::BindRepeating(&SuppressBubbleSettingRow::CheckboxClicked,
                             base::Unretained(this))));
-    checkbox_->SetAccessibleName(
+    checkbox_->GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SUPPRESS_PARTIAL_VIEW));
     checkbox_->SetChecked(
         !download::IsDownloadBubblePartialViewEnabled(browser_->profile()));

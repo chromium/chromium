@@ -18,6 +18,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -57,7 +58,7 @@ class AuthenticatorQRViewCentered : public views::View {
     qr_code_image_->SetImageSize(qrCodeImageSize());
     qr_code_image_->SetPreferredSize(qrCodeImageSize() +
                                      gfx::Size(kQrCodeMargin, kQrCodeMargin));
-    qr_code_image_->SetAccessibleName(
+    qr_code_image_->GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_QR_CODE_ALT_TEXT));
 
     // TODO(https://crbug.com/325664342): Audit if `QuietZone::kIncluded`

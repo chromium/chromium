@@ -264,7 +264,7 @@ bool PermissionDashboardController::Update(
 
     auto name = l10n_util::GetStringUTF16(
         indicator_model->AccessibilityAnnouncementStringId());
-    indicator_chip->SetAccessibleName(name);
+    indicator_chip->GetViewAccessibility().SetName(name);
     const std::u16string& accessible_description =
         l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT);
     indicator_chip->GetViewAccessibility().SetDescription(

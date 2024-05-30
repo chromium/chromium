@@ -142,7 +142,7 @@ class IntentPickerAppGridButton : public views::Button {
     name_label->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_TOP);
 
     SetFocusBehavior(FocusBehavior::ALWAYS);
-    SetAccessibleName(name_label->GetText());
+    GetViewAccessibility().SetName(name_label->GetText());
     SetPreferredSize(gfx::Size(kGridItemPreferredSize, kGridItemPreferredSize));
 
     SetGroup(kGridItemGroupId);

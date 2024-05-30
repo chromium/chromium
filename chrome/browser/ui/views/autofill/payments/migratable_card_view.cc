@@ -19,6 +19,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -119,7 +120,7 @@ MigratableCardView::GetMigratableCardDescriptionView(
         // format.
         views::InkDrop::Get(checkbox_->ink_drop_view())
             ->SetMode(views::InkDropHost::InkDropMode::OFF);
-        checkbox_->SetAccessibleName(card_description.get());
+        checkbox_->GetViewAccessibility().SetName(*card_description.get());
       }
       break;
     }
@@ -155,7 +156,7 @@ MigratableCardView::GetMigratableCardDescriptionView(
   card_image->SetImage(
       ui::ImageModel::FromResourceId(CreditCard::IconResourceId(
           migratable_credit_card.credit_card().network())));
-  card_image->SetAccessibleName(
+  card_image->GetViewAccessibility().SetName(
       migratable_credit_card.credit_card().NetworkForDisplay());
   card_network_and_last_four_digits->AddChildView(card_image.release());
   card_network_and_last_four_digits->AddChildView(card_description.release());

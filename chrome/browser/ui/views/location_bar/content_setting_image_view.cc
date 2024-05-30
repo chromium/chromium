@@ -153,7 +153,7 @@ void ContentSettingImageView::Update() {
   if (content_setting_image_model_->ShouldNotifyAccessibility(web_contents)) {
     auto name = l10n_util::GetStringUTF16(
         content_setting_image_model_->AccessibilityAnnouncementStringId());
-    SetAccessibleName(name);
+    GetViewAccessibility().SetName(name);
     const std::u16string& accessible_description =
         l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT);
     GetViewAccessibility().SetDescription(accessible_description);

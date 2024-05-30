@@ -42,7 +42,7 @@ BackForwardButton::BackForwardButton(Direction direction,
     SetVectorIcons(vector_icons::kBackArrowChromeRefreshIcon,
                    kBackArrowTouchIcon);
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_BACK));
-    SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
     GetViewAccessibility().SetDescription(
         l10n_util::GetStringUTF8(IDS_ACCDESCRIPTION_BACK));
     SetID(VIEW_ID_BACK_BUTTON);
@@ -52,7 +52,8 @@ BackForwardButton::BackForwardButton(Direction direction,
     SetVectorIcons(vector_icons::kForwardArrowChromeRefreshIcon,
                    kForwardArrowTouchIcon);
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_FORWARD));
-    SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_FORWARD));
+    GetViewAccessibility().SetName(
+        l10n_util::GetStringUTF16(IDS_ACCNAME_FORWARD));
     GetViewAccessibility().SetDescription(
         l10n_util::GetStringUTF8(IDS_ACCDESCRIPTION_FORWARD));
     SetID(VIEW_ID_FORWARD_BUTTON);

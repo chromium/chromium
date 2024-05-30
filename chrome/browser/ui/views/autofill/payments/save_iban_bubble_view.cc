@@ -17,6 +17,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/vector_icon_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -197,7 +198,7 @@ void SaveIbanBubbleView::CreateMainContentView() {
   // Adds nickname textfield.
   nickname_textfield_ = nickname_input_textfield_view->AddChildView(
       std::make_unique<views::Textfield>());
-  nickname_textfield_->SetAccessibleName(
+  nickname_textfield_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_NICKNAME));
   nickname_textfield_->SetTextInputType(
       ui::TextInputType::TEXT_INPUT_TYPE_TEXT);

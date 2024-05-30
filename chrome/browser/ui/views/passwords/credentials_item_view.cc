@@ -26,6 +26,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/tooltip_icon.h"
 #include "ui/views/controls/button/button.h"
@@ -155,9 +156,9 @@ CredentialsItemView::CredentialsItemView(
   }
 
   if (!upper_text.empty() && !lower_text.empty()) {
-    SetAccessibleName(upper_text + u"\n" + lower_text);
+    GetViewAccessibility().SetName(upper_text + u"\n" + lower_text);
   } else {
-    SetAccessibleName(upper_text + lower_text);
+    GetViewAccessibility().SetName(upper_text + lower_text);
   }
 
   SetFocusBehavior(FocusBehavior::ALWAYS);

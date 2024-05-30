@@ -150,14 +150,14 @@ TabStripScrollContainer::TabStripScrollContainer(
       CreateScrollButton(
           base::BindRepeating(&TabStripScrollContainer::ScrollTowardsLeadingTab,
                               base::Unretained(this)));
-  leading_scroll_button->SetAccessibleName(
+  leading_scroll_button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SCROLL_LEADING));
 
   std::unique_ptr<views::ImageButton> trailing_scroll_button =
       CreateScrollButton(base::BindRepeating(
           &TabStripScrollContainer::ScrollTowardsTrailingTab,
           base::Unretained(this)));
-  trailing_scroll_button->SetAccessibleName(
+  trailing_scroll_button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SCROLL_TRAILING));
 
   // The space in dips between the scroll buttons and the NTB.

@@ -19,6 +19,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/vector_icon_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/view_class_properties.h"
 
@@ -85,12 +86,12 @@ ManagePasswordsListView::ManagePasswordsListView(
         base::FeatureList::IsEnabled(
             password_manager::features::kButterOnDesktopFollowup)) {
       if (!password_form->IsUsingAccountStore()) {
-        list_item->SetAccessibleName(l10n_util::GetStringFUTF16(
+        list_item->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
             IDS_PASSWORD_MANAGER_MANAGEMENT_BUBBLE_LIST_ITEM_DEVICE_ONLY_ACCESSIBLE_TEXT,
             GetDisplayUsername(*password_form)));
       }
     } else if (password_form->IsUsingAccountStore()) {
-      list_item->SetAccessibleName(l10n_util::GetStringFUTF16(
+      list_item->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
           IDS_PASSWORD_MANAGER_MANAGEMENT_BUBBLE_LIST_ITEM_ACCESSIBLE_TEXT,
           GetDisplayUsername(*password_form)));
     }

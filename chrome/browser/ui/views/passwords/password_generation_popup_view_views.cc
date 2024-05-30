@@ -267,7 +267,7 @@ class NudgePasswordButtons : public views::View {
                             base::Unretained(this)),
         cancel_button_label);
     cancel_button->SetAccessibleRole(ax::mojom::Role::kListBoxOption);
-    cancel_button->SetAccessibleName(cancel_button_label);
+    cancel_button->GetViewAccessibility().SetName(cancel_button_label);
     cancel_button->GetViewAccessibility().SetDescription(help_text);
     cancel_button_ = AddChildView(std::move(cancel_button));
 
@@ -282,7 +282,7 @@ class NudgePasswordButtons : public views::View {
         accept_button_label);
     accept_button->SetStyle(ui::ButtonStyle::kProminent);
     accept_button->SetAccessibleRole(ax::mojom::Role::kListBoxOption);
-    accept_button->SetAccessibleName(
+    accept_button->GetViewAccessibility().SetName(
         base::JoinString({accept_button_label, controller_->password()}, u" "));
     accept_button->GetViewAccessibility().SetDescription(help_text);
     accept_button_ = AddChildView(std::move(accept_button));

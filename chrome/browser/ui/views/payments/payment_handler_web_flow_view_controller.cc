@@ -115,7 +115,8 @@ class PaymentHandlerCloseButton : public views::ImageButton {
     SetSize(gfx::Size(kCloseButtonSize, kCloseButtonSize));
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     SetID(static_cast<int>(DialogViewID::CANCEL_BUTTON));
-    SetAccessibleName(l10n_util::GetStringUTF16(IDS_PAYMENTS_CLOSE));
+    GetViewAccessibility().SetName(
+        l10n_util::GetStringUTF16(IDS_PAYMENTS_CLOSE));
 
     // This view does not set its color using the browser theme color, as this
     // may differ from the header color, which is based on the web view theme.

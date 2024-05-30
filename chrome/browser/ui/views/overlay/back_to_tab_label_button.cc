@@ -11,6 +11,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/vector_icons.h"
@@ -56,7 +57,7 @@ BackToTabLabelButton::BackToTabLabelButton(PressedCallback callback)
   SetText(back_to_tab_button_label);
 
   // Accessibility.
-  SetAccessibleName(back_to_tab_button_label);
+  GetViewAccessibility().SetName(back_to_tab_button_label);
   SetInstallFocusRingOnFocus(true);
 }
 

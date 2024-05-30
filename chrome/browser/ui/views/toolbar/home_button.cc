@@ -26,6 +26,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
@@ -139,7 +140,7 @@ HomeButton::HomeButton(PressedCallback callback, PrefService* prefs)
                            ui::EF_MIDDLE_MOUSE_BUTTON);
   SetVectorIcons(kNavigateHomeChromeRefreshIcon, kNavigateHomeTouchIcon);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_HOME));
-  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_HOME));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(IDS_ACCNAME_HOME));
   SetID(VIEW_ID_HOME_BUTTON);
   SizeToPreferredSize();
 }

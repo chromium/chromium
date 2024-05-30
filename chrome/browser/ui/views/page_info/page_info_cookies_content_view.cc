@@ -18,6 +18,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -237,7 +238,7 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesToggle(
   third_party_cookies_toggle_->SetIsOn(!cookie_info.protections_on);
   third_party_cookies_toggle_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE);
-  third_party_cookies_toggle_->SetAccessibleName(subtitle);
+  third_party_cookies_toggle_->GetViewAccessibility().SetName(subtitle);
   third_party_cookies_toggle_subtitle_->SetText(subtitle);
   third_party_cookies_toggle_subtitle_->SetTextStyle(
       views::style::STYLE_BODY_5);

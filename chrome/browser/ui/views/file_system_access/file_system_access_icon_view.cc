@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 FileSystemAccessIconView::FileSystemAccessIconView(
     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
@@ -58,8 +59,8 @@ void FileSystemAccessIconView::UpdateImpl() {
   if (has_write_access_ != had_write_access)
     UpdateIconImage();
 
-  SetAccessibleName(has_write_access_
-                        ? l10n_util::GetStringUTF16(
+  GetViewAccessibility().SetName(
+      has_write_access_ ? l10n_util::GetStringUTF16(
                               IDS_FILE_SYSTEM_ACCESS_WRITE_USAGE_TOOLTIP)
                         : l10n_util::GetStringUTF16(
                               IDS_FILE_SYSTEM_ACCESS_DIRECTORY_USAGE_TOOLTIP));

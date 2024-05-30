@@ -59,6 +59,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace {
 
@@ -1176,7 +1177,7 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
   switch (state_manager_->GetButtonActiveState()) {
     case ButtonState::kIncognitoProfile: {
       const int incognito_window_count = GetWindowCount();
-      avatar_toolbar_button_->SetAccessibleName(
+      avatar_toolbar_button_->GetViewAccessibility().SetName(
           l10n_util::GetPluralStringFUTF16(
               IDS_INCOGNITO_BUBBLE_ACCESSIBLE_TITLE, incognito_window_count));
       text = l10n_util::GetPluralStringFUTF16(IDS_AVATAR_BUTTON_INCOGNITO,
@@ -1233,7 +1234,7 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
 #else
       const int guest_window_count = GetWindowCount();
 #endif
-      avatar_toolbar_button_->SetAccessibleName(
+      avatar_toolbar_button_->GetViewAccessibility().SetName(
           l10n_util::GetPluralStringFUTF16(IDS_GUEST_BUBBLE_ACCESSIBLE_TITLE,
                                            guest_window_count));
       text = l10n_util::GetPluralStringFUTF16(IDS_AVATAR_BUTTON_GUEST,

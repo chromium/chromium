@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace autofill {
 
@@ -77,7 +78,8 @@ void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::WindowClosing() {
 void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::
     OnWidgetInitialized() {
   if (auto* ok_button = GetOkButton()) {
-    ok_button->SetAccessibleName(ui_params_.failure_ok_button_accessible_name);
+    ok_button->GetViewAccessibility().SetName(
+        ui_params_.failure_ok_button_accessible_name);
   }
 }
 
@@ -92,7 +94,7 @@ void SaveCardAndVirtualCardEnrollConfirmationBubbleViews::Init() {
   description->SetID(DialogViewId::DESCRIPTION_LABEL);
   description->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   description->SetMultiLine(true);
-  description->SetAccessibleName(ui_params_.description_text);
+  description->GetViewAccessibility().SetName(ui_params_.description_text);
   AddChildView(std::move(description));
 }
 

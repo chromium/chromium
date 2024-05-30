@@ -7,6 +7,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/vector_icons.h"
 
@@ -38,7 +39,7 @@ PinOptionsButton::PinOptionsButton(const std::u16string& label,
           label),
       callback_(std::move(callback)),
       menu_model_(std::make_unique<ui::SimpleMenuModel>(this)) {
-  SetAccessibleName(label);
+  GetViewAccessibility().SetName(label);
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   for (int command_id = 0; command_id < CommandId::COMMAND_ID_COUNT;

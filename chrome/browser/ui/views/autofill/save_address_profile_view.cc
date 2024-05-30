@@ -37,6 +37,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
@@ -95,7 +96,7 @@ void AddAddressSection(views::View* parent_view,
                        int a11y_label_string_id) {
   auto text_label =
       std::make_unique<views::Label>(text, views::style::CONTEXT_LABEL);
-  text_label->SetAccessibleName(
+  text_label->GetViewAccessibility().SetName(
       l10n_util::GetStringFUTF16(a11y_label_string_id, text));
   text_label->SetMultiLine(true);
   text_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
@@ -145,7 +146,7 @@ std::unique_ptr<views::EditableCombobox> CreateNicknameEditableCombobox() {
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
   // TODO(crbug.com/40164487): Use internationalized string.
-  combobox->SetAccessibleName(u"Address Label");
+  combobox->GetViewAccessibility().SetName(u"Address Label");
   return combobox;
 }
 

@@ -253,7 +253,7 @@ void QRCodeGeneratorBubble::Init() {
 
   // Text box to edit URL
   auto textfield_url = std::make_unique<views::Textfield>();
-  textfield_url->SetAccessibleName(l10n_util::GetStringUTF16(
+  textfield_url->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_BROWSER_SHARING_QR_CODE_DIALOG_URL_TEXTFIELD_ACCESSIBLE_NAME));
   textfield_url->SetText(base::UTF8ToUTF16(url_.spec()));
   textfield_url->set_controller(this);

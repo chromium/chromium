@@ -864,7 +864,7 @@ void DownloadBubbleRowView::UpdateButtons() {
         views::Button::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(*(action.icon), ui::kColorIcon,
                                        GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
-    action_button->SetAccessibleName(
+    action_button->GetViewAccessibility().SetName(
         GetAccessibleNameForQuickAction(action.command));
     action_button->SetTooltipText(action.hover_text);
     action_button->SetVisible(true);
@@ -877,8 +877,9 @@ void DownloadBubbleRowView::UpdateButtons() {
   if (info_->primary_button_command()) {
     views::MdTextButton* main_button =
         main_page_buttons_[*info_->primary_button_command()];
-    main_button->SetAccessibleName(GetAccessibleNameForMainPageButton(
-        info_->primary_button_command().value()));
+    main_button->GetViewAccessibility().SetName(
+        GetAccessibleNameForMainPageButton(
+            info_->primary_button_command().value()));
     main_button->SetVisible(true);
   }
 
@@ -910,11 +911,12 @@ void DownloadBubbleRowView::UpdateLabels() {
   UpdateStatusText();
 
   if (info_->has_subpage()) {
-    transparent_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
-        IDS_DOWNLOAD_BUBBLE_MAIN_BUTTON_SUBPAGE, primary_label_->GetText(),
-        secondary_label_->GetText()));
+    transparent_button_->GetViewAccessibility().SetName(
+        l10n_util::GetStringFUTF16(IDS_DOWNLOAD_BUBBLE_MAIN_BUTTON_SUBPAGE,
+                                   primary_label_->GetText(),
+                                   secondary_label_->GetText()));
   } else {
-    transparent_button_->SetAccessibleName(base::JoinString(
+    transparent_button_->GetViewAccessibility().SetName(base::JoinString(
         {primary_label_->GetText(), secondary_label_->GetText()}, u" "));
   }
 

@@ -12,6 +12,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace autofill {
 
@@ -46,7 +47,7 @@ void AddressBubblesIconView::UpdateImpl() {
   bool command_enabled =
       SetCommandEnabled(controller && controller->IsBubbleActive());
   SetVisible(command_enabled);
-  SetAccessibleName(GetTextForTooltipAndAccessibleName());
+  GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());
 }
 
 std::u16string

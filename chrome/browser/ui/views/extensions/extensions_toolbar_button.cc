@@ -89,7 +89,7 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
 
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
-    SetAccessibleName(GetAccessibleText(state_));
+    GetViewAccessibility().SetName(GetAccessibleText(state_));
     // By default, the button's accessible description is set to the button's
     // tooltip text. This is the accepted workaround to ensure only accessible
     // name is announced by a screenreader rather than tooltip text and
@@ -154,7 +154,7 @@ void ExtensionsToolbarButton::UpdateState(State state) {
 
   state_ = state;
   SetVectorIcon(GetIcon(state_));
-  SetAccessibleName(GetAccessibleText(state_));
+  GetViewAccessibility().SetName(GetAccessibleText(state_));
 }
 
 void ExtensionsToolbarButton::OnWidgetDestroying(views::Widget* widget) {

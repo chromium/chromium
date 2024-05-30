@@ -32,6 +32,7 @@
 #include "components/user_education/views/new_badge_label.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -446,7 +447,7 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
   button->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP));
   button->SetAccessibleRole(ax::mojom::Role::kMenuItem);
-  button->SetAccessibleName(l10n_util::GetStringFUTF16(
+  button->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_A11Y_HINT,
       popup_cell_utils::GetVoiceOverStringFromSuggestion(
           controller->GetSuggestionAt(line_number))));

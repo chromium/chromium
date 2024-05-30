@@ -13,6 +13,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -203,7 +204,7 @@ void RichHoverButton::UpdateAccessibleName() {
       subtitle_ == nullptr
           ? title_text
           : base::JoinString({title_text, subtitle_->GetText()}, u"\n");
-  HoverButton::SetAccessibleName(accessible_name);
+  HoverButton::GetViewAccessibility().SetName(accessible_name);
 }
 
 gfx::Size RichHoverButton::CalculatePreferredSize(

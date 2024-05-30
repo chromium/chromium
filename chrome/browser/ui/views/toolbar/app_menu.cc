@@ -498,7 +498,7 @@ class AppMenuView : public views::View {
       button->Init(type);
       menu_button = std::move(button);
     }
-    menu_button->SetAccessibleName(GetAccessibleNameForAppMenuItem(
+    menu_button->GetViewAccessibility().SetName(GetAccessibleNameForAppMenuItem(
         menu_model_, index, accessible_name_id, add_accelerator_text));
     menu_button->set_tag(index);
     menu_button->SetEnabled(menu_model_->IsEnabledAt(index));
@@ -553,7 +553,7 @@ class FullscreenButton : public ImageButton {
     const int accname_string_id =
         is_in_fullscreen ? IDS_ACCNAME_EXIT_FULLSCREEN : IDS_ACCNAME_FULLSCREEN;
     SetTooltipText(l10n_util::GetStringUTF16(accname_string_id));
-    SetAccessibleName(GetAccessibleNameForAppMenuItem(
+    GetViewAccessibility().SetName(GetAccessibleNameForAppMenuItem(
         menu_model, fullscreen_index, accname_string_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         // ChromeOS uses a dedicated "fullscreen" media key for fullscreen

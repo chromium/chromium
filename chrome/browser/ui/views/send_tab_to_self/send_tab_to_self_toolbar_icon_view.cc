@@ -23,6 +23,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 
 namespace send_tab_to_self {
@@ -38,7 +39,7 @@ SendTabToSelfToolbarIconView::SendTabToSelfToolbarIconView(
       browser_view_(browser_view) {
   const int button_height = GetLayoutConstant(TOOLBAR_BUTTON_HEIGHT);
   SetPreferredSize(gfx::Size(button_height, button_height));
-  SetAccessibleName(l10n_util::GetStringUTF16(
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_BUTTON_A11Y_NAME));
   SetTooltipText(
       l10n_util::GetStringUTF16(IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_TITLE));

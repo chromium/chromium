@@ -54,6 +54,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/image_button.h"
@@ -577,7 +578,8 @@ void MediaDialogView::InitializeLiveCaptionSection() {
                           base::Unretained(this)));
   live_caption_button->SetIsOn(
       profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
-  live_caption_button->SetAccessibleName(live_caption_title_->GetText());
+  live_caption_button->GetViewAccessibility().SetName(
+      live_caption_title_->GetText());
   live_caption_button_ =
       live_caption_container->AddChildView(std::move(live_caption_button));
 
@@ -627,7 +629,8 @@ void MediaDialogView::InitializeLiveTranslateSection() {
                           base::Unretained(this)));
   live_translate_button->SetIsOn(
       profile_->GetPrefs()->GetBoolean(prefs::kLiveTranslateEnabled));
-  live_translate_button->SetAccessibleName(live_translate_title_->GetText());
+  live_translate_button->GetViewAccessibility().SetName(
+      live_translate_title_->GetText());
   auto* live_translate_container_layout =
       live_translate_container->SetLayoutManager(
           std::make_unique<views::BoxLayout>(
@@ -663,8 +666,9 @@ void MediaDialogView::InitializeLiveTranslateSection() {
       std::make_unique<views::Combobox>(std::move(target_language_model));
   target_language_combobox->SetCallback(base::BindRepeating(
       &MediaDialogView::TargetLanguageChanged, base::Unretained(this)));
-  target_language_combobox->SetAccessibleName(l10n_util::GetStringUTF16(
-      IDS_GLOBAL_MEDIA_CONTROLS_LIVE_TRANSLATE_TARGET_LANGUAGE_ACCNAME));
+  target_language_combobox->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(
+          IDS_GLOBAL_MEDIA_CONTROLS_LIVE_TRANSLATE_TARGET_LANGUAGE_ACCNAME));
   target_language_combobox_ = target_language_container->AddChildView(
       std::move(target_language_combobox));
   target_language_container_ =

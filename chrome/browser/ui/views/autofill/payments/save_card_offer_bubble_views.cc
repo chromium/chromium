@@ -249,8 +249,9 @@ std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateMainContentView() {
     cardholder_name_textfield_ = new views::Textfield();
     cardholder_name_textfield_->set_controller(this);
     cardholder_name_textfield_->SetID(DialogViewId::CARDHOLDER_NAME_TEXTFIELD);
-    cardholder_name_textfield_->SetAccessibleName(l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_SAVE_CARD_PROMPT_CARDHOLDER_NAME));
+    cardholder_name_textfield_->GetViewAccessibility().SetName(
+        l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_CARDHOLDER_NAME));
     cardholder_name_textfield_->SetTextInputType(
         ui::TextInputType::TEXT_INPUT_TYPE_TEXT);
     cardholder_name_textfield_->SetText(prefilled_name);
@@ -293,7 +294,7 @@ SaveCardOfferBubbleViews::CreateRequestExpirationDateView() {
   month_input_dropdown_ = new views::Combobox(&month_combobox_model_);
   month_input_dropdown_->SetCallback(base::BindRepeating(
       &SaveCardOfferBubbleViews::DialogModelChanged, base::Unretained(this)));
-  month_input_dropdown_->SetAccessibleName(
+  month_input_dropdown_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_MONTH));
   month_input_dropdown_->SetID(DialogViewId::EXPIRATION_DATE_DROPBOX_MONTH);
 
@@ -308,7 +309,7 @@ SaveCardOfferBubbleViews::CreateRequestExpirationDateView() {
   year_input_dropdown_ = new views::Combobox(&year_combobox_model_);
   year_input_dropdown_->SetCallback(base::BindRepeating(
       &SaveCardOfferBubbleViews::DialogModelChanged, base::Unretained(this)));
-  year_input_dropdown_->SetAccessibleName(
+  year_input_dropdown_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_YEAR));
   year_input_dropdown_->SetID(DialogViewId::EXPIRATION_DATE_DROPBOX_YEAR);
 

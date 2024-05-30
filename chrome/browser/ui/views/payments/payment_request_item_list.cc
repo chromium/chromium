@@ -19,6 +19,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -104,7 +105,7 @@ void PaymentRequestItemList::Item::Init() {
     views::InkDrop::Get(edit_button.get())->SetBaseColorId(ui::kColorIcon);
     edit_button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     edit_button->SetID(static_cast<int>(DialogViewID::EDIT_ITEM_BUTTON));
-    edit_button->SetAccessibleName(
+    edit_button->GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_PAYMENTS_EDIT));
     container->AddChildView(std::move(edit_button));
   }
@@ -152,7 +153,7 @@ void PaymentRequestItemList::Item::UpdateAccessibleName() {
                 : l10n_util::GetStringFUTF16(
                       IDS_PAYMENTS_ROW_ACCESSIBLE_NAME_FORMAT,
                       GetNameForDataType(), accessible_item_description_);
-  SetAccessibleName(accessible_content);
+  GetViewAccessibility().SetName(accessible_content);
 }
 
 void PaymentRequestItemList::Item::ButtonPressed() {
