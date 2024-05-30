@@ -1362,6 +1362,10 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
     map->Add<device::mojom::PressureManager>(base::BindRepeating(
         &DedicatedWorkerHost::BindPressureService, base::Unretained(host)));
   }
+  if (base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI)) {
+    map->Add<blink::mojom::AIManager>(base::BindRepeating(
+        &DedicatedWorkerHost::BindAIManager, base::Unretained(host)));
+  }
 
   // RenderProcessHost binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindWorkerReceiver(

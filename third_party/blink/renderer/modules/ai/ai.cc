@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_model_availability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_session_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_text_session.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -36,10 +37,10 @@ V8AIModelAvailability AvailabilityToV8(AI::ModelAvailability availability) {
   }
 }
 
-AI::AI(LocalDOMWindow* window)
-    : ExecutionContextClient(window),
-      task_runner_(window->GetTaskRunner(TaskType::kInternalDefault)),
-      ai_remote_(window) {}
+AI::AI(ExecutionContext* context)
+    : ExecutionContextClient(context),
+      task_runner_(context->GetTaskRunner(TaskType::kInternalDefault)),
+      ai_remote_(context) {}
 
 void AI::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
@@ -49,8 +50,8 @@ void AI::Trace(Visitor* visitor) const {
 
 HeapMojoRemote<mojom::blink::AIManager>& AI::GetAIRemote() {
   if (!ai_remote_.is_bound()) {
-    if (DomWindow() && DomWindow()->GetFrame()) {
-      DomWindow()->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
+    if (GetExecutionContext()) {
+      GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
           ai_remote_.BindNewPipeAndPassReceiver(task_runner_));
     }
   }
