@@ -402,9 +402,10 @@ ImageDecoder::CompressionFormat ImageDecoder::GetCompressionFormat(
     if (!memcmp(contents, "WEBPVP8X", 8)) {
       // Extended WebP format; more content will need to be sniffed to make a
       // determination.
-      std::unique_ptr<char[]> long_buffer(new char[available_data]);
-      contents = reinterpret_cast<const unsigned char*>(
-          fast_reader.GetConsecutiveData(0, available_data, long_buffer.get()));
+      auto long_buffer = base::HeapArray<char>::Uninit(available_data);
+      contents =
+          reinterpret_cast<const unsigned char*>(fast_reader.GetConsecutiveData(
+              0, available_data, long_buffer.data()));
       WebPBitstreamFeatures webp_features{};
       VP8StatusCode status =
           WebPGetFeatures(contents, available_data, &webp_features);
