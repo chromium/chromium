@@ -29,9 +29,13 @@ perf_results.json, which is the perf specific results (with unenforced format,
 could be histogram or graph json), and test_results.json.
 
 TESTING:
-To test changes to this script, please run
-cd tools/perf
-./run_tests ScriptsSmokeTest.testRunPerformanceTests
+To test changes to this script, please run unit tests:
+$ cd testing/scripts
+$ python3 -m unittest run_performance_tests_unittest.py
+
+Run end-to-end tests:
+$ cd tools/perf
+$ ./run_tests ScriptsSmokeTest.testRunPerformanceTests
 """
 
 from __future__ import print_function
@@ -39,6 +43,7 @@ from __future__ import print_function
 import argparse
 import json
 import os
+import pathlib
 import requests
 import shutil
 import sys
@@ -49,28 +54,26 @@ import six
 
 from collections import OrderedDict
 
-CHROMIUM_SRC_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir))
+CHROMIUM_SRC_DIR = pathlib.Path(__file__).absolute().parents[2]
 
-PERF_DIR = os.path.join(CHROMIUM_SRC_DIR, 'tools', 'perf')
-sys.path.append(PERF_DIR)
+PERF_DIR = CHROMIUM_SRC_DIR / 'tools/perf'
+sys.path.append(str(PERF_DIR))
 import generate_legacy_perf_dashboard_json
 from core import path_util
 
-PERF_CORE_DIR = os.path.join(PERF_DIR, 'core')
-sys.path.append(PERF_CORE_DIR)
+PERF_CORE_DIR = PERF_DIR / 'core'
+sys.path.append(str(PERF_CORE_DIR))
 import results_merger
 
 # Add src/testing/ into sys.path for importing xvfb, test_env, and common.
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+sys.path.append(str(CHROMIUM_SRC_DIR / 'testing'))
 import xvfb
 import test_env
 from scripts import common
 
-SHARD_MAPS_DIRECTORY = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir,
-                 'tools', 'perf', 'core', 'shard_maps'))
+SHARD_MAPS_DIR = CHROMIUM_SRC_DIR / 'tools/perf/core/shard_maps'
+CROSSBENCH_TOOL = CHROMIUM_SRC_DIR / 'third_party/crossbench/cb.py'
+PERF_TOOLS = ['benchmarks', 'executables', 'crossbench']
 
 # See https://crbug.com/923564.
 # We want to switch over to using histograms for everything, but converting from
@@ -598,6 +601,39 @@ def execute_telemetry_benchmark(command_generator,
   return 0
 
 
+def load_map_file(map_file, isolated_out_dir):
+  """Loads the shard map file and copies it to isolated_out_dir."""
+  if not os.path.exists(map_file):
+    map_file_path = SHARD_MAPS_DIR / map_file
+    if map_file_path.exists():
+      map_file = str(map_file_path)
+    else:
+      raise Exception(f'Test shard map file not found: {map_file_path}')
+  copy_map_file_to_out_dir(map_file, isolated_out_dir)
+  with open(map_file) as f:
+    return json.load(f)
+
+
+def load_map_string(map_string, isolated_out_dir):
+  """Loads the dynamic shard map string and writes it to isolated_out_dir."""
+  if not map_string:
+    raise Exception('Use `--dynamic-shardmap` to pass the dynamic shard map')
+  shard_map = json.loads(map_string, object_pairs_hook=OrderedDict)
+  with tempfile.NamedTemporaryFile(mode='wb', delete=False) as tmp:
+    tmp.write(bytes(map_string, 'utf-8'))
+    tmp.close()
+    copy_map_file_to_out_dir(tmp.name, isolated_out_dir)
+  return shard_map
+
+
+def copy_map_file_to_out_dir(map_file, isolated_out_dir):
+  """Copies the sharding map file to isolated_out_dir for later collection."""
+  if not os.path.exists(isolated_out_dir):
+    os.makedirs(isolated_out_dir)
+  shutil.copyfile(map_file,
+                  os.path.join(isolated_out_dir, 'benchmarks_shard_map.json'))
+
+
 class CrossbenchTest(object):
   """This class is for running Crossbench tests.
 
@@ -605,6 +641,10 @@ class CrossbenchTest(object):
   `executable` argument, followed by `--benchmarks` to specify the
   target benchmark. The remaining Crossbench arguments are optional,
   and any passed arguments are sent to the `cb.py` for executing the test.
+
+  Shard map: Use `crossbench-benchmarks` node in each shard group with a
+  dictionary of benchmark names and, optionally, a list of arguments that need
+  to pass through the `cb.py` tool. See `linux-perf-fyi_map.json` for examples.
 
   Example:
     ./run_performance_tests.py ../../third_party/crossbench/cb.py \
@@ -629,7 +669,7 @@ class CrossbenchTest(object):
             [self.OUTDIR % output_paths.benchmark_path] + browser +
             self.options.passthrough_args)
 
-  def _execute_benchmark(self, benchmark):
+  def execute_benchmark(self, benchmark):
     start = time.time()
 
     env = os.environ.copy()
@@ -676,7 +716,7 @@ class CrossbenchTest(object):
       raise Exception('Please use the --benchmarks to specify the benchmark.')
     if ',' in self.options.benchmarks:
       raise Exception('No support to run multiple benchmarks at this time.')
-    return self._execute_benchmark(self.options.benchmarks)
+    return self.execute_benchmark(self.options.benchmarks)
 
 
 def parse_arguments(args):
@@ -784,9 +824,19 @@ def main(sys_args):
         'isolated output directory. Inside the hash marks in the following\n'
         'lines is the name of the subfolder to find results in.\n')
 
-  if options.executable.endswith(CrossbenchTest.EXECUTABLE):
-    return CrossbenchTest(options, isolated_out_dir).execute()
-  if options.non_telemetry:
+  if options.use_dynamic_shards:
+    shard_map = load_map_string(options.dynamic_shardmap, isolated_out_dir)
+    overall_return_code = _run_benchmarks_on_shardmap(shard_map, options,
+                                                      isolated_out_dir,
+                                                      test_results_files)
+  elif options.test_shard_map_filename:
+    shard_map = load_map_file(options.test_shard_map_filename, isolated_out_dir)
+    overall_return_code = _run_benchmarks_on_shardmap(shard_map, options,
+                                                      isolated_out_dir,
+                                                      test_results_files)
+  elif options.executable.endswith(CrossbenchTest.EXECUTABLE):
+    overall_return_code = CrossbenchTest(options, isolated_out_dir).execute()
+  elif options.non_telemetry:
     benchmark_name = options.gtest_benchmark_name
     passthrough_args = options.passthrough_args
     # crbug/1146949#c15
@@ -814,67 +864,38 @@ def main(sys_args):
         options.xvfb,
         results_label=options.results_label)
     test_results_files.append(output_paths.test_results)
+  elif options.benchmarks:
+    benchmarks = options.benchmarks.split(',')
+    for benchmark in benchmarks:
+      output_paths = OutputFilePaths(isolated_out_dir, benchmark).SetUp()
+      command_generator = TelemetryCommandGenerator(benchmark, options)
+      print('\n### {folder} ###'.format(folder=benchmark))
+      return_code = execute_telemetry_benchmark(
+          command_generator,
+          output_paths,
+          options.xvfb,
+          options.ignore_benchmark_exit_code,
+          no_output_conversion=options.no_output_conversion)
+      overall_return_code = return_code or overall_return_code
+      test_results_files.append(output_paths.test_results)
+    if options.run_ref_build:
+      print('Not running reference build. --run-ref-build argument is only '
+            'supported for sharded benchmarks. It is simple to support '
+            'this for unsharded --benchmarks if needed.')
   else:
-    if options.use_dynamic_shards:
-      shard_map_str = options.dynamic_shardmap
-      shard_map = json.loads(shard_map_str, object_pairs_hook=OrderedDict)
-      shard_map_path = os.path.join(SHARD_MAPS_DIRECTORY,
-                                    options.test_shard_map_filename)
-      with open(shard_map_path, 'w') as f:
-        json.dump(shard_map, f, indent=4, separators=(',', ': '))
-      shutil.copyfile(
-          shard_map_path,
-          os.path.join(isolated_out_dir, 'benchmarks_shard_map.json'))
-      overall_return_code = _run_benchmarks_on_shardmap(shard_map, options,
-                                                        isolated_out_dir,
-                                                        test_results_files)
-    # If the user has supplied a list of benchmark names, execute those instead
-    # of using the shard map.
-    elif options.benchmarks:
-      benchmarks = options.benchmarks.split(',')
-      for benchmark in benchmarks:
-        output_paths = OutputFilePaths(isolated_out_dir, benchmark).SetUp()
-        command_generator = TelemetryCommandGenerator(benchmark, options)
-        print('\n### {folder} ###'.format(folder=benchmark))
-        return_code = execute_telemetry_benchmark(
-            command_generator,
-            output_paths,
-            options.xvfb,
-            options.ignore_benchmark_exit_code,
-            no_output_conversion=options.no_output_conversion)
-        overall_return_code = return_code or overall_return_code
-        test_results_files.append(output_paths.test_results)
-      if options.run_ref_build:
-        print('Not running reference build. --run-ref-build argument is only '
-              'supported for sharded benchmarks. It is simple to support '
-              'this for unsharded --benchmarks if needed.')
-    elif options.test_shard_map_filename:
-      # First determine what shard we are running on to know how to
-      # index into the bot map to get list of telemetry benchmarks to run.
-      shard_map_path = os.path.join(SHARD_MAPS_DIRECTORY,
-                                    options.test_shard_map_filename)
-      # Copy sharding map file to isolated_out_dir so that the merge script
-      # can collect it later.
-      shutil.copyfile(
-          shard_map_path,
-          os.path.join(isolated_out_dir, 'benchmarks_shard_map.json'))
-      with open(shard_map_path) as f:
-        shard_map = json.load(f)
-      overall_return_code = _run_benchmarks_on_shardmap(shard_map, options,
-                                                        isolated_out_dir,
-                                                        test_results_files)
-    else:
-      raise Exception('Telemetry tests must provide either a shard map or a '
-                      '--benchmarks list so that we know which stories to run.')
+    raise Exception('Telemetry tests must provide either a shard map or a '
+                    '--benchmarks list so that we know which stories to run.')
 
-  test_results_list = []
-  for test_results_file in test_results_files:
-    if os.path.exists(test_results_file):
-      with open(test_results_file, 'r') as fh:
-        test_results_list.append(json.load(fh))
-  merged_test_results = results_merger.merge_test_results(test_results_list)
-  with open(options.isolated_script_test_output, 'w') as f:
-    json.dump(merged_test_results, f)
+  # Dumping the test results.
+  if test_results_files:
+    test_results_list = []
+    for test_results_file in test_results_files:
+      if os.path.exists(test_results_file):
+        with open(test_results_file, 'r') as fh:
+          test_results_list.append(json.load(fh))
+    merged_test_results = results_merger.merge_test_results(test_results_list)
+    with open(options.isolated_script_test_output, 'w') as f:
+      json.dump(merged_test_results, f)
 
   return overall_return_code
 
@@ -882,25 +903,17 @@ def main(sys_args):
 def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
                                 test_results_files):
   overall_return_code = 0
-  shard_index = None
-  env = os.environ.copy()
-  if 'GTEST_SHARD_INDEX' in env:
-    shard_index = env['GTEST_SHARD_INDEX']
   # TODO(crbug.com/40631538): shard environment variables are not specified
   # for single-shard shard runs.
-  if not shard_index:
-    shard_map_has_multiple_shards = bool(shard_map.get('1', False))
-    if not shard_map_has_multiple_shards:
-      shard_index = '0'
-  if not shard_index:
+  if 'GTEST_SHARD_INDEX' not in os.environ and '1' not in shard_map.keys():
     raise Exception(
-        'Sharded Telemetry perf tests must either specify --benchmarks '
-        'list or have GTEST_SHARD_INDEX environment variable present.')
+        'Setting GTEST_SHARD_INDEX environment variable is required '
+        'when you use a shard map.')
+  shard_index = os.environ.get('GTEST_SHARD_INDEX', 0)
   shard_configuration = shard_map[shard_index]
-  assert ('benchmarks' in shard_configuration
-          or 'executables' in shard_configuration), (
-              'Every shard must have benchmarks or executables associated '
-              'with it.')
+  if not [x for x in shard_configuration if x in PERF_TOOLS]:
+    raise Exception(
+        f'None of {",".join(PERF_TOOLS)} presented in the shard map')
   if 'benchmarks' in shard_configuration:
     benchmarks_and_configs = shard_configuration['benchmarks']
     for (benchmark, story_selection_config) in benchmarks_and_configs.items():
@@ -953,6 +966,17 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
                                             options.xvfb)
       overall_return_code = return_code or overall_return_code
       test_results_files.append(output_paths.test_results)
+  if 'crossbench' in shard_configuration:
+    benchmarks = shard_configuration['crossbench']
+    crossbench_args = options.passthrough_args
+    crossbench_test = CrossbenchTest(options, isolated_out_dir)
+    # Overwriting the "run_benchmark" with the Crossbench tool.
+    options.executable = str(CROSSBENCH_TOOL)
+    for benchmark, benchmark_args in benchmarks.items():
+      print(f'\n### {benchmark} ###')
+      options.passthrough_args = list(set(crossbench_args + benchmark_args))
+      return_code += crossbench_test.execute_benchmark(benchmark)
+      overall_return_code = return_code or overall_return_code
 
   return overall_return_code
 
