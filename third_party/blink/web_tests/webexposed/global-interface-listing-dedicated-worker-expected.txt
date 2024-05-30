@@ -4014,6 +4014,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] [GLOBAL OBJECT]
 [Worker]     attribute globalThis
 [Worker]     attribute internals
+[Worker]     getter ai
 [Worker]     getter name
 [Worker]     getter onmessage
 [Worker]     getter onmessageerror
@@ -4026,6 +4027,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method webkitRequestFileSystemSync
 [Worker]     method webkitResolveLocalFileSystemSyncURL
 [Worker]     method webkitResolveLocalFileSystemURL
+[Worker]     setter ai
 [Worker]     setter name
 [Worker]     setter onmessage
 [Worker]     setter onmessageerror
