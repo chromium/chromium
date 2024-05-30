@@ -2940,10 +2940,14 @@ test("content_unittests") {
 
   if (is_win) {
     sources += [
-      "../browser/media/web_app_system_media_controls_manager_unittest.cc",
       "../browser/renderer_host/renderer_sandboxed_process_launcher_delegate_unittest.cc",
       "../renderer/media/win/overlay_state_observer_impl_unittest.cc",
     ]
+  }
+
+  if (is_win || is_mac) {
+    sources +=
+        [ "../browser/media/web_app_system_media_controls_manager_unittest.cc" ]
   }
 
   if (is_android || is_linux || is_chromeos || is_mac || is_win || is_fuchsia) {

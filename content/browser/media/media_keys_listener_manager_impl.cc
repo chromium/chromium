@@ -333,12 +333,15 @@ void MediaKeysListenerManagerImpl::StartListeningForMediaKeysIfNecessary() {
     return;
   }
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
-    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || BUILDFLAG(IS_WIN)
   // Create SystemMediaControls with the SingletonHwnd.
   browser_system_media_controls_ =
       system_media_controls::SystemMediaControls::Create(
           media::AudioManager::GetGlobalAppName());
+#elif BUILDFLAG(IS_MAC)
+  browser_system_media_controls_ =
+      system_media_controls::SystemMediaControls::Create(
+          /*application_host=*/nullptr);
 #endif
 
   if (browser_system_media_controls_) {

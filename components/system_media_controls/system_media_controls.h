@@ -12,6 +12,10 @@
 #include "services/media_session/public/cpp/media_position.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
+namespace remote_cocoa {
+class ApplicationHost;
+}
+
 namespace system_media_controls {
 
 class SystemMediaControlsObserver;
@@ -29,10 +33,15 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControls {
     kStopped,
   };
 
+#if BUILDFLAG(IS_MAC)
+  static std::unique_ptr<SystemMediaControls> Create(
+      remote_cocoa::ApplicationHost* application_host);
+#else
   // |window| used by Windows OS for web app (dPWA) connections.
   static std::unique_ptr<SystemMediaControls> Create(
       const std::string& product_name,
       int window = -1);
+#endif  // BUILDFLAG(IS_MAC)
 
   virtual ~SystemMediaControls() = default;
 

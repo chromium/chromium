@@ -3,15 +3,16 @@
 // found in the LICENSE file.
 
 #include "components/system_media_controls/mac/system_media_controls_mac.h"
+
 #include "base/notimplemented.h"
+#include "components/remote_cocoa/browser/application_host.h"
 
 namespace system_media_controls {
 
 // static
 std::unique_ptr<SystemMediaControls> SystemMediaControls::Create(
-    const std::string& product_name,
-    int window) {
-  return std::make_unique<internal::SystemMediaControlsMac>();
+    remote_cocoa::ApplicationHost* application_host) {
+  return std::make_unique<internal::SystemMediaControlsMac>(application_host);
 }
 // static
 void SystemMediaControls::SetVisibilityChangedCallbackForTesting(
@@ -21,8 +22,11 @@ void SystemMediaControls::SetVisibilityChangedCallbackForTesting(
 
 namespace internal {
 
-SystemMediaControlsMac::SystemMediaControlsMac()
-    : remote_command_center_delegate_(this) {}
+SystemMediaControlsMac::SystemMediaControlsMac(
+    remote_cocoa::ApplicationHost* application_host)
+    : remote_command_center_delegate_(this) {
+  // TODO(liahiscock) Use application_host
+}
 
 SystemMediaControlsMac::~SystemMediaControlsMac() = default;
 

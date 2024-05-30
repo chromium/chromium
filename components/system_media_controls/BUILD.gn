@@ -51,7 +51,10 @@ component("system_media_controls") {
       "mac/system_media_controls_mac.h",
       "mac/system_media_controls_mac.mm",
     ]
-    deps += [ "//build:branding_buildflags" ]
+    deps += [
+      "//build:branding_buildflags",
+      "//components/remote_cocoa/browser",
+    ]
 
     frameworks = [ "Foundation.framework" ]
     weak_frameworks = [ "MediaPlayer.framework" ]

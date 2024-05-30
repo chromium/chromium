@@ -1,4 +1,6 @@
-This directory contains the Cocoa front-end of the macOS implementation of the
-views framework, which can be found in //ui/views/cocoa. This can be
-instantiated inside the browser process or in a separate application (for app
-modes).
+This directory contains mechanisms for Remote Cocoa, which is the system that
+bridges Cocoa objects with their Chromium C++ counterparts, which can be either
+in-process (the browser) or out-of-process (PWA app shims).
+ 
+One such example is bridging Cocoa NSWindows and NSViews with their Chromium
+Views counterparts, but Remote Cocoa is not exclusive to views.
