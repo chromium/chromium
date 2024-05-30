@@ -140,6 +140,10 @@ class ASH_EXPORT MahiUiController {
   void OnSummaryLoaded(std::u16string summary_text,
                        chromeos::MahiResponseStatus status);
 
+  // Invalidates pending summary/outline/QA requests on new request to avoid
+  // racing.
+  void InvalidatePendingRequests();
+
   // The current state. Use `VisibilityState::kSummaryAndOutlines` by default.
   VisibilityState visibility_state_ = VisibilityState::kSummaryAndOutlines;
 

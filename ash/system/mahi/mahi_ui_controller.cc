@@ -136,6 +136,8 @@ void MahiUiController::Retry(VisibilityState origin_state) {
 void MahiUiController::SendQuestion(const std::u16string& question,
                                     bool current_panel_content,
                                     QuestionSource source) {
+  InvalidatePendingRequests();
+
   base::UmaHistogramEnumeration(
       mahi_constants::kMahiQuestionSourceHistogramName, source);
 
@@ -155,6 +157,8 @@ void MahiUiController::SendQuestion(const std::u16string& question,
 }
 
 void MahiUiController::UpdateSummaryAndOutlines() {
+  InvalidatePendingRequests();
+
   chromeos::MahiManager::Get()->GetSummary(base::BindOnce(
       &MahiUiController::OnSummaryLoaded, weak_ptr_factory_.GetWeakPtr()));
   chromeos::MahiManager::Get()->GetOutlines(base::BindOnce(
@@ -241,6 +245,12 @@ void MahiUiController::OnSummaryLoaded(std::u16string summary_text,
   }
 
   NotifyUiUpdate(MahiUiUpdate(MahiUiUpdateType::kSummaryLoaded, summary_text));
+}
+
+void MahiUiController::InvalidatePendingRequests() {
+  // By invalidating existing weak ptrs, the pending `OnAnswerLoaded`,
+  // `OnOutlinesLoaded` and `OnSummaryLoaded` callbacks are cancelled.
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 }  // namespace ash

@@ -124,12 +124,12 @@ GURL MahiManagerImpl::GetContentUrl() {
 }
 
 void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
-  MaybeInitialize();
+  MaybeInitializeAndDiscardPendingRequests();
 
   current_panel_url_ = current_page_info_->url;
-  auto get_content_done_callback =
-      base::BindOnce(&MahiManagerImpl::OnGetPageContentForSummary,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  auto get_content_done_callback = base::BindOnce(
+      &MahiManagerImpl::OnGetPageContentForSummary,
+      weak_ptr_factory_for_requests_.GetWeakPtr(), std::move(callback));
 
   if (media_app_pdf_focused_) {
     chromeos::MahiMediaAppContentManager::Get()->GetContent(
@@ -155,22 +155,23 @@ void MahiManagerImpl::GoToOutlineContent(int outline_id) {}
 void MahiManagerImpl::AnswerQuestion(const std::u16string& question,
                                      bool current_panel_content,
                                      MahiAnswerQuestionCallback callback) {
-  MaybeInitialize();
+  MaybeInitializeAndDiscardPendingRequests();
 
   if (current_panel_content) {
     mahi_provider_->QuestionAndAnswer(
         base::UTF16ToUTF8(current_panel_content_->page_content),
         current_panel_qa_, base::UTF16ToUTF8(question),
         base::BindOnce(&MahiManagerImpl::OnMahiProviderQAResponse,
-                       weak_ptr_factory_.GetWeakPtr(), question,
+                       weak_ptr_factory_for_requests_.GetWeakPtr(), question,
                        std::move(callback)));
     return;
   }
 
   current_panel_url_ = current_page_info_->url;
-  auto get_content_done_callback = base::BindOnce(
-      &MahiManagerImpl::OnGetPageContentForQA, weak_ptr_factory_.GetWeakPtr(),
-      question, std::move(callback));
+  auto get_content_done_callback =
+      base::BindOnce(&MahiManagerImpl::OnGetPageContentForQA,
+                     weak_ptr_factory_for_requests_.GetWeakPtr(), question,
+                     std::move(callback));
   if (media_app_pdf_focused_) {
     chromeos::MahiMediaAppContentManager::Get()->GetContent(
         media_app_client_id_, std::move(get_content_done_callback));
@@ -342,7 +343,7 @@ void MahiManagerImpl::OnActiveUserPrefServiceChanged(
   pref_change_registrar_->Add(
       ash::prefs::kMahiEnabled,
       base::BindRepeating(&MahiManagerImpl::OnMahiPrefChanged,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          weak_ptr_factory_for_pref_.GetWeakPtr()));
 
   OnMahiPrefChanged();
 }
@@ -355,11 +356,15 @@ void MahiManagerImpl::OnMahiPrefChanged() {
   }
 }
 
-void MahiManagerImpl::MaybeInitialize() {
+void MahiManagerImpl::MaybeInitializeAndDiscardPendingRequests() {
   if (!mahi_provider_) {
     mahi_provider_ = CreateProvider();
   }
   CHECK(mahi_provider_);
+
+  if (weak_ptr_factory_for_requests_.HasWeakPtrs()) {
+    weak_ptr_factory_for_requests_.InvalidateWeakPtrs();
+  }
 }
 
 void MahiManagerImpl::OnGetPageContentForSummary(
@@ -379,7 +384,8 @@ void MahiManagerImpl::OnGetPageContentForSummary(
   mahi_provider_->Summarize(
       base::UTF16ToUTF8(current_panel_content_->page_content),
       base::BindOnce(&MahiManagerImpl::OnMahiProviderSummaryResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_for_requests_.GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void MahiManagerImpl::OnGetPageContentForQA(
@@ -400,7 +406,7 @@ void MahiManagerImpl::OnGetPageContentForQA(
       base::UTF16ToUTF8(current_panel_content_->page_content),
       current_panel_qa_, base::UTF16ToUTF8(question),
       base::BindOnce(&MahiManagerImpl::OnMahiProviderQAResponse,
-                     weak_ptr_factory_.GetWeakPtr(), question,
+                     weak_ptr_factory_for_requests_.GetWeakPtr(), question,
                      std::move(callback)));
 }
 

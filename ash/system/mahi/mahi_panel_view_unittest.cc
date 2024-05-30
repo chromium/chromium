@@ -532,6 +532,7 @@ TEST_F(MahiPanelViewTest, PanelContentsViewBoundsStayConstant) {
 }
 
 TEST_F(MahiPanelViewTest, LoadingAnimations) {
+  ResetPanelWidget();
   // Config the mock mahi manager to return a summary asyncly.
   base::test::TestFuture<void> summary_waiter;
   ON_CALL(mock_mahi_manager(), GetSummary)

@@ -13,6 +13,9 @@
 #include "ash/system/mahi/test/mock_mahi_manager.h"
 #include "ash/system/mahi/test/mock_mahi_ui_controller_delegate.h"
 #include "ash/test/ash_test_base.h"
+#include "base/functional/callback_forward.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/test_future.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/view.h"
 
@@ -253,6 +256,87 @@ TEST_F(MahiUiControllerTest, UpdateSummaryAndOutlines) {
                        mahi_test_util::GetDefaultFakeOutlines())))));
 
   ui_controller().UpdateSummaryAndOutlines();
+  Mock::VerifyAndClearExpectations(&delegate());
+}
+
+// Checks new requests can discard pending ones to avoid racing.
+TEST_F(MahiUiControllerTest, RacingRequests) {
+  // Configs the mock mahi manager to respond async-ly.
+  base::test::TestFuture<void> summary_waiter;
+  ON_CALL(mock_mahi_manager(), GetSummary)
+      .WillByDefault([&summary_waiter](
+                         chromeos::MahiManager::MahiSummaryCallback callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](base::OnceClosure unblock_closure,
+                   chromeos::MahiManager::MahiSummaryCallback callback) {
+                  std::move(callback).Run(u"fake summary",
+                                          MahiResponseStatus::kSuccess);
+                  std::move(unblock_closure).Run();
+                },
+                summary_waiter.GetCallback(), std::move(callback)));
+      });
+
+  base::test::TestFuture<void> outline_waiter;
+  ON_CALL(mock_mahi_manager(), GetOutlines)
+      .WillByDefault([&outline_waiter](
+                         chromeos::MahiManager::MahiOutlinesCallback callback) {
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](base::OnceClosure unblock_closure,
+                   chromeos::MahiManager::MahiOutlinesCallback callback) {
+                  mahi_test_util::ReturnDefaultOutlines(std::move(callback));
+                  std::move(unblock_closure).Run();
+                },
+                outline_waiter.GetCallback(), std::move(callback)));
+      });
+
+  base::test::TestFuture<void> answer_waiter;
+  ON_CALL(mock_mahi_manager(), AnswerQuestion)
+      .WillByDefault([&answer_waiter](
+                         const std::u16string& question,
+                         bool current_panel_content,
+                         chromeos::MahiManager::MahiAnswerQuestionCallback
+                             callback) {
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](base::OnceClosure unblock_closure,
+                   chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+                  std::move(callback).Run(u"fake answer",
+                                          MahiResponseStatus::kSuccess);
+                  std::move(unblock_closure).Run();
+                },
+                answer_waiter.GetCallback(), std::move(callback)));
+      });
+
+  // Pending `UpdateSummaryAndOutlines` is discarded on new `SendQuestion` call.
+  // So that `OnUpdated` is only called with QA types.
+  EXPECT_CALL(delegate(),
+              OnUpdated(Property(&MahiUiUpdate::type,
+                                 Eq(MahiUiUpdateType::kQuestionPosted))));
+  EXPECT_CALL(delegate(),
+              OnUpdated(Property(&MahiUiUpdate::type,
+                                 Eq(MahiUiUpdateType::kAnswerLoaded))));
+
+  EXPECT_CALL(delegate(),
+              OnUpdated(Property(&MahiUiUpdate::type,
+                                 Eq(MahiUiUpdateType::kSummaryLoaded))))
+      .Times(0);
+  EXPECT_CALL(delegate(),
+              OnUpdated(Property(&MahiUiUpdate::type,
+                                 Eq(MahiUiUpdateType::kOutlinesLoaded))))
+      .Times(0);
+
+  ui_controller().UpdateSummaryAndOutlines();
+  ui_controller().SendQuestion(u"fake question", /*current_panel_content=*/true,
+                               MahiUiController::QuestionSource::kPanel);
+
+  ASSERT_TRUE(outline_waiter.Wait());
+  ASSERT_TRUE(summary_waiter.Wait());
+  ASSERT_TRUE(answer_waiter.Wait());
   Mock::VerifyAndClearExpectations(&delegate());
 }
 

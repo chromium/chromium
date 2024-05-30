@@ -64,8 +64,9 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
 
   void OnMahiPrefChanged();
 
-  // Initialize required provider if it is not initialized yet.
-  void MaybeInitialize();
+  // Initialize required provider if it is not initialized yet, and discard
+  // pending requests to avoid racing condition.
+  void MaybeInitializeAndDiscardPendingRequests();
 
   void OnGetPageContentForSummary(
       MahiSummaryCallback callback,
@@ -113,7 +114,8 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
   bool media_app_pdf_focused_ = false;
   base::UnguessableToken media_app_client_id_;
 
-  base::WeakPtrFactory<MahiManagerImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<MahiManagerImpl> weak_ptr_factory_for_requests_{this};
+  base::WeakPtrFactory<MahiManagerImpl> weak_ptr_factory_for_pref_{this};
 };
 
 }  // namespace ash
