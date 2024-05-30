@@ -24,5 +24,7 @@ NSString* const kSearchEngineChoiceScrollViewIdentifier =
     @"SearchEngineChoiceScrollViewIdentifier";
 NSString* const kSearchEngineMoreButtonIdentifier =
     @"SearchEngineMoreButtonIdentifier";
+NSString* const kSearchEngineContinueButtonIdentifier =
+    @"SearchEngineContinueButtonIdentifier";
 const char kExpandSearchEngineDescriptionUserAction[] =
     "ExpandSearchEngineDescription";

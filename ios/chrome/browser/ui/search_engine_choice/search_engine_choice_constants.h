@@ -34,6 +34,8 @@ extern NSString* const kSetAsDefaultSearchEngineIdentifier;
 extern NSString* const kSearchEngineChoiceScrollViewIdentifier;
 // `More` button accessibility identifier.
 extern NSString* const kSearchEngineMoreButtonIdentifier;
+// `Continue` button accessibility identifier.
+extern NSString* const kSearchEngineContinueButtonIdentifier;
 // User action when the search engine snippet is expanded.
 extern const char kExpandSearchEngineDescriptionUserAction[];
 

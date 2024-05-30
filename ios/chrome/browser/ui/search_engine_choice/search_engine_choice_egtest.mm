@@ -83,25 +83,33 @@
 // button is correctly updated when the user selects a search engine then
 // scrolls down and that it correctly sets the default search engine.
 - (void)testSearchEngineChoiceScreenSelectThenScroll {
-  // Checks that the choice screen is shown
+  // Check that the choice screen is shown
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
+  // Verify that the primary button is initially the "More" pill button.
   id<GREYMatcher> moreButtonMatcher =
       grey_accessibilityID(kSearchEngineMoreButtonIdentifier);
-  // Selects a search engine.
+  [[EarlGrey selectElementWithMatcher:moreButtonMatcher]
+      assertWithMatcher:grey_allOf(grey_enabled(), grey_notNil(), nil)];
+  // Select a search engine.
   NSString* searchEngineToSelect = [SearchEngineChoiceEarlGreyUI
       searchEngineNameWithPrepopulatedEngine:TemplateURLPrepopulateData::bing];
   [SearchEngineChoiceEarlGreyUI
       selectSearchEngineCellWithName:searchEngineToSelect
                      scrollDirection:kGREYDirectionDown
                               amount:50];
-  // Taps the primary button. This scrolls the table down to the bottom.
-  [[[EarlGrey selectElementWithMatcher:moreButtonMatcher]
-      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
   // Verify that the "More" button has been removed.
   [[EarlGrey selectElementWithMatcher:moreButtonMatcher]
       assertWithMatcher:grey_nil()];
-  [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
+  // Tap on the Continue button. This scrolls the table down to the bottom.
+  id<GREYMatcher> continueButtonMatcher =
+      grey_accessibilityID(kSearchEngineContinueButtonIdentifier);
+  [[[EarlGrey selectElementWithMatcher:continueButtonMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+  // Verify that the "Contine" button has been removed.
+  [[EarlGrey selectElementWithMatcher:continueButtonMatcher]
+      assertWithMatcher:grey_nil()];
 
+  [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
   [SearchEngineChoiceEarlGreyUI
       verifyDefaultSearchEngineSetting:searchEngineToSelect];
 }
