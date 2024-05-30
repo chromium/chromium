@@ -1085,9 +1085,9 @@ void RuleMap::Compact() {
   // First, we make an array that contains the number of elements in each
   // bucket, indexed by the bucket number. We also find each element's
   // position within that bucket.
-  std::unique_ptr<unsigned[]> counts(
-      new unsigned[num_buckets]());  // Zero-initialized.
-  std::unique_ptr<unsigned[]> order_in_bucket(new unsigned[backing.size()]);
+  auto counts =
+      base::HeapArray<unsigned>::WithSize(num_buckets);  // Zero-initialized.
+  auto order_in_bucket = base::HeapArray<unsigned>::Uninit(backing.size());
   for (wtf_size_t i = 0; i < bucket_number_.size(); ++i) {
     order_in_bucket[i] = counts[bucket_number_[i]]++;
   }
@@ -1170,8 +1170,7 @@ void RuleMap::AddFilteredRulesFromOtherSet(
     }
   } else {
     // First make a mapping of bucket number to key.
-    std::unique_ptr<const AtomicString*[]> keys(
-        new const AtomicString*[other.num_buckets]);
+    auto keys = base::HeapArray<const AtomicString*>::Uninit(other.num_buckets);
     for (const auto& [key, src_extent] : other.buckets) {
       keys[src_extent.bucket_number] = &key;
     }
