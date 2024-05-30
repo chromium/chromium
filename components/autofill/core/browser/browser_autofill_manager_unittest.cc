@@ -1749,9 +1749,9 @@ TEST_F(BrowserAutofillManagerTest,
   GetAutofillSuggestions(form, form.fields[0]);
   external_delegate()->CheckSuggestions(
       form.fields[0].global_id(),
-      {Suggestion("Charles", std::vector<std::vector<Suggestion::Text>>{{}},
+      {Suggestion("Charles", std::vector<std::vector<Suggestion::Text>>{},
                   Suggestion::Icon::kNoIcon, SuggestionType::kAddressEntry),
-       Suggestion("Elvis", std::vector<std::vector<Suggestion::Text>>{{}},
+       Suggestion("Elvis", std::vector<std::vector<Suggestion::Text>>{},
                   Suggestion::Icon::kNoIcon, SuggestionType::kAddressEntry),
        AutofillSuggestionGenerator::CreateSeparator(),
        AutofillSuggestionGenerator::CreateManageAddressesEntry()});
@@ -3555,7 +3555,7 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_FieldSwapping) {
   GetAutofillSuggestions(form, form.fields[0]);
   external_delegate()->CheckSuggestions(
       form.fields[0].global_id(),
-      {Suggestion("John H. Doe", std::vector<std::vector<Suggestion::Text>>{{}},
+      {Suggestion("John H. Doe", std::vector<std::vector<Suggestion::Text>>{},
                   Suggestion::Icon::kNoIcon,
                   SuggestionType::kAddressFieldByFieldFilling),
        AutofillSuggestionGenerator::CreateSeparator(),
