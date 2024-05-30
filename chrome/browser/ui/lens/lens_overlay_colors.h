@@ -34,7 +34,7 @@ inline constexpr SkColor kColorGrapeShaderLayer5 = SkColorSetRGB(0xD0, 0xBC, 0xF
 inline constexpr SkColor kColorGrapeScrim = SkColorSetRGB(0x1E, 0x19, 0x28);
 inline constexpr SkColor kColorGrapeSurfaceContainerHighestLight = SkColorSetRGB(0xE9, 0xDD, 0xFF);
 inline constexpr SkColor kColorGrapeSurfaceContainerHighestDark = SkColorSetRGB(0x4C, 0x3F, 0x69);
-inline constexpr SkColor kColorGrapeSelectionElement = SkColorSetRGB(0x4C, 0x3F, 0x69);
+inline constexpr SkColor kColorGrapeSelectionElement = SkColorSetRGB(0xF3, 0xEB, 0xFA);
 // Candy colors:
 inline constexpr SkColor kColorCandyPrimary = SkColorSetRGB(0x95, 0x00, 0x84);
 inline constexpr SkColor kColorCandyShaderLayer1 = SkColorSetRGB(0xAB, 0x5B, 0x98);

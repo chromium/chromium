@@ -12,6 +12,8 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
+import {getFallbackTheme, getShaderLayerColorHexes} from './color_utils.js';
+import type {OverlayTheme} from './lens.mojom-webui.js';
 import {getTemplate} from './overlay_shimmer.html.js';
 import {toPercent} from './values_converter.js';
 
@@ -200,6 +202,14 @@ export class OverlayShimmerElement extends PolymerElement {
         type: Boolean,
         reflectToAttribute: true,
       },
+      shaderLayerColorHexes: {
+        type: Array,
+        computed: 'computeShaderLayerColorHexes_(theme)',
+      },
+      theme: {
+        type: Object,
+        value: getFallbackTheme,
+      },
     };
   }
 
@@ -214,6 +224,10 @@ export class OverlayShimmerElement extends PolymerElement {
   // Whether the sparkles are enabled or not.
   private enableSparkles: boolean =
       loadTimeData.getBoolean('enableShimmerSparkles');
+  // The overlay theme.
+  private theme: OverlayTheme;
+  // Shader hex colors.
+  private shaderLayerColorHexes: string[];
 
   // Event tracker for receiving DOM events.
   private eventTracker_: EventTracker = new EventTracker();
@@ -236,15 +250,6 @@ export class OverlayShimmerElement extends PolymerElement {
   private areResultsShowing: boolean = false;
   // The time stamp in MS of the last time the sparkles were animated.
   private lastSparkleTime: number = 0;
-  // Shader hex colors.
-  // TODO(b/341968225): Set the colors dynamically.
-  private shaderLayerColorHexes = [
-    '#EEF0F9',
-    '#A6C8FF',
-    '#5B5E66',
-    '#EEF0F9',
-    '#A8ABB3',
-  ];
 
   // Listener ids for events from the browser side.
   private listenerIds: number[];
@@ -278,6 +283,10 @@ export class OverlayShimmerElement extends PolymerElement {
         id => assert(
             BrowserProxyImpl.getInstance().callbackRouter.removeListener(id)));
     this.listenerIds = [];
+  }
+
+  private computeShaderLayerColorHexes_() {
+    return getShaderLayerColorHexes(this.theme);
   }
 
   async startAnimation() {

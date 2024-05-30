@@ -7,8 +7,10 @@ import type {Point} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
+import {getFallbackTheme, getShaderLayerColorHexes} from './color_utils.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
+import type {OverlayTheme} from './lens.mojom-webui.js';
 import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './overlay_shimmer.js';
 import type {PostSelectionBoundingBox} from './post_selection_renderer.js';
 import {getTemplate} from './region_selection.html.js';
@@ -41,6 +43,14 @@ export class RegionSelectionElement extends PolymerElement {
       canvasPhysicalHeight: Number,
       canvasPhysicalWidth: Number,
       screenshotDataUri: String,
+      shaderLayerColorHexes: {
+        type: Array,
+        computed: 'computeShaderLayerColorHexes_(theme)',
+      },
+      theme: {
+        type: Object,
+        value: getFallbackTheme,
+      },
     };
   }
 
@@ -51,26 +61,26 @@ export class RegionSelectionElement extends PolymerElement {
   private context: CanvasRenderingContext2D;
   // The data URI of the current overlay screenshot.
   private screenshotDataUri: string;
+  // The overlay theme.
+  private theme: OverlayTheme;
+  // Shader hex colors.
+  private shaderLayerColorHexes: string[];
+
   // The tap region dimensions are the height and width that the region should
   // have when the user taps instead of drag.
   private readonly tapRegionHeight: number =
       loadTimeData.getInteger('tapRegionHeight');
   private readonly tapRegionWidth: number =
       loadTimeData.getInteger('tapRegionWidth');
-  // Shader hex colors.
-  // TODO(b/340358494): Set the colors dynamically.
-  private shaderLayerColorHexes = [
-    '#EEF0F9',
-    '#A6C8FF',
-    '#5B5E66',
-    '#EEF0F9',
-    '#A8ABB3',
-  ];
 
   override ready() {
     super.ready();
 
     this.context = this.$.regionSelectionCanvas.getContext('2d')!;
+  }
+
+  private computeShaderLayerColorHexes_() {
+    return getShaderLayerColorHexes(this.theme);
   }
 
   // Handles a drag gesture by drawing a bounded box on the canvas.

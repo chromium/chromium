@@ -1,8 +1,4 @@
 <style>
-  :host {
-    --color-scrim-rgb: 24, 28, 34;
-  }
-
   .app-container {
     height: 100%;
     width: 100%;
@@ -50,7 +46,7 @@
   }
 
   #moreOptionsMenu {
-    background-color: #181C2299;
+    background-color: rgba(var(--color-scrim-rgb), 0.6);
     border-radius: 8px;
     display: none;
     gap: 8px;
@@ -71,7 +67,7 @@
   }
 
   .menu-item-label {
-    color: #E3E3E3;
+    color: white;
     font-size: 13px;
     font-style: normal;
     font-weight: 500;
@@ -108,10 +104,22 @@
     on-pointer-released="handlePointerReleased"
     on-screenshot-rendered="onScreenshotRendered"
     on-pointerenter="handlePointerEnter"
-    on-pointerleave="handlePointerLeave">
+    on-pointerleave="handlePointerLeave"
+    style="
+    --color-primary: [[skColorToHex_(theme.primary)]];
+    --color-shader-layer-1: [[skColorToHex_(theme.shaderLayer1)]];
+    --color-shader-layer-2: [[skColorToHex_(theme.shaderLayer2)]];
+    --color-shader-layer-3: [[skColorToHex_(theme.shaderLayer3)]];
+    --color-shader-layer-4: [[skColorToHex_(theme.shaderLayer4)]];
+    --color-shader-layer-5: [[skColorToHex_(theme.shaderLayer5)]];
+    --color-scrim: [[skColorToHex_(theme.scrim)]];
+    --color-scrim-rgb: [[skColorToRgb_(theme.scrim)]];
+    --color-surface-container-highest-light: [[skColorToHex_(theme.surfaceContainerHighestLight)]];
+    --color-surface-container-highest-dark: [[skColorToHex_(theme.surfaceContainerHighestDark)]];
+    --color-selection-element: [[skColorToHex_(theme.selectionElement)]];">
   <div id="backgroundScrim" on-click="onBackgroundScrimClicked"
       hidden$="[[!isImageRendered]]"></div>
-  <lens-selection-overlay screenshot-data-uri="[[screenshotDataUri]]"
+  <lens-selection-overlay theme="[[theme]]" screenshot-data-uri="[[screenshotDataUri]]"
       class$="[[getSelectionOverlayClass(screenshotDataUri)]]">
   </lens-selection-overlay>
   <initial-toast id="initialToast"></initial-toast>
