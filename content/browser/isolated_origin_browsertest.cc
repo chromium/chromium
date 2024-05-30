@@ -246,8 +246,15 @@ class OriginIsolationOptInHeaderTest : public IsolatedOriginTestBase {
   OriginIsolationOptInHeaderTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     feature_list_.InitWithFeatures(
-        {features::kOriginIsolationHeader},
-        {blink::features::kOriginAgentClusterDefaultEnabled});
+        /*enabled_features=*/{features::kOriginIsolationHeader},
+        /*disabled_features=*/{
+            // TODO(https://crbug.com/40259221): update this test to be
+            // parameterized on kOriginKeyedProcessesByDefault, and then
+            // make sure all the tests have correct expectations both with and
+            // without. This will assist in removing the
+            // kOriginAgentClusterDefaultEnabled flag.
+            blink::features::kOriginAgentClusterDefaultEnabled,
+            features::kOriginKeyedProcessesByDefault});
   }
   ~OriginIsolationOptInHeaderTest() override = default;
 

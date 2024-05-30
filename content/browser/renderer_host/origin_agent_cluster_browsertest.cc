@@ -74,6 +74,11 @@ class OriginAgentClusterBrowserTest : public ContentBrowserTest {
         .push_back(blink::features::kOriginAgentClusterDefaultEnabled);
     (origin_cluster_absent_warning_ ? enabled : disabled)
         .push_back(blink::features::kOriginAgentClusterDefaultWarning);
+    // TODO(https://crbug.com/40259221): update this test to be parameterized on
+    // kOriginKeyedProcessesByDefault, and then make sure all the tests have
+    // correct expectations both with and without. This will assist in removing
+    // the kOriginAgentClusterDefaultEnabled flag.
+    disabled.push_back(features::kOriginKeyedProcessesByDefault);
     features_.InitWithFeatures(enabled, disabled);
   }
 
