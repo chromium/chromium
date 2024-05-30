@@ -312280,12 +312280,6 @@
       "7f2bab2748888967344c729032f6869d665b56b3",
       []
      ],
-     "accessibility": {
-      "display-contents-role-and-label-expected.txt": [
-       "faf7334f5f34a91f7d8881863db8175471364d82",
-       []
-      ]
-     },
      "display-contents-alignment-001-ref.html": [
       "595aa7f7e5b9bb3d0c2da3afc6ae7d6ae733e241",
       []
@@ -350283,6 +350277,12 @@
     ],
     "WEB_FEATURES.yml": [
      "7bafe10430041b2dfe1c5fab249a07d699e12823",
+     []
+    ]
+   },
+   "digital-credentials": {
+    "META.yml": [
+     "8a7db924976bf95537afe45854962916207e5b61",
      []
     ]
    },
@@ -430501,7 +430501,7 @@
     "feature-policy": {
      "clipboard-read": {
       "clipboard-read-disabled-by-feature-policy.tentative.https.sub.html": [
-       "8ca1819df8b3b6762107c6be60079d313fcbd209",
+       "16a17b5158d0b47e40cb36df80cef8915875b806",
        [
         null,
         {
@@ -430510,7 +430510,7 @@
        ]
       ],
       "clipboard-read-enabled-by-feature-policy-attribute-cross-origin-tentative.https.sub.html": [
-       "367d033d0f6afa1c2a9c6a0048444e012118656d",
+       "2998e058b3d09f143c1f390618a325685fdc8481",
        [
         null,
         {
@@ -430528,7 +430528,7 @@
        ]
       ],
       "clipboard-read-enabled-by-feature-policy-cross-origin-tentative.https.sub.html": [
-       "c371ea3b41cb2e648202f1aaf76b542fa0f033f8",
+       "88c8d845b26e45466fa4ee028a9777d3367d5f1e",
        [
         null,
         {
@@ -430537,7 +430537,7 @@
        ]
       ],
       "clipboard-read-enabled-by-feature-policy.tentative.https.sub.html": [
-       "c21d6cf0f6214e79227b1f1b06faaf142d8a48c9",
+       "e392def5e9076a30399238213e474f95e66cf903",
        [
         null,
         {
@@ -430546,7 +430546,7 @@
        ]
       ],
       "clipboard-read-enabled-on-self-origin-by-feature-policy.tentative.https.sub.html": [
-       "79dd6cf891cf5618fc51fa90f183a8ece97226a8",
+       "e9df891d4bd51d88ebaaf1abea093f510b702cb3",
        [
         null,
         {
@@ -430557,7 +430557,7 @@
      },
      "clipboard-write": {
       "clipboard-write-disabled-by-feature-policy.tentative.https.sub.html": [
-       "b328debde2979499b2e095e33fdb0be440c2ad6b",
+       "297d074a7d725d6c34d6f46c945968fab4599dd5",
        [
         null,
         {
@@ -430566,7 +430566,7 @@
        ]
       ],
       "clipboard-write-enabled-by-feature-policy-attribute-cross-origin-tentative.https.sub.html": [
-       "e669c8fec4910dc8f3f7a038b69f0b17e671c94a",
+       "45bba1b8d35ec21a3120465edd29cdce222abaf2",
        [
         null,
         {
@@ -430584,7 +430584,7 @@
        ]
       ],
       "clipboard-write-enabled-by-feature-policy-cross-origin-tentative.https.sub.html": [
-       "6e7029cc789a63e0603b596739ca6eac36bbdc88",
+       "8f64fdbe02ebd1e2f8d4565899edb913a7f56ca4",
        [
         null,
         {
@@ -430593,7 +430593,7 @@
        ]
       ],
       "clipboard-write-enabled-by-feature-policy.tentative.https.sub.html": [
-       "cb908df65f283ae68bd18e0aaec2085bf30dfe71",
+       "701759b61c935d095dc04343ab4bb9d8d359ef24",
        [
         null,
         {
@@ -430602,7 +430602,7 @@
        ]
       ],
       "clipboard-write-enabled-on-self-origin-by-feature-policy.tentative.https.sub.html": [
-       "532c72545c7546fc45150bcf5f41f2eefb40e7b1",
+       "b976a17a7cbff604129d25437b83386e54602b0d",
        [
         null,
         {
