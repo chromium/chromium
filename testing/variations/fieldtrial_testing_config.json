@@ -3273,6 +3273,24 @@
             ]
         }
     ],
+    "CameraMicPreview": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CameraMicPreview",
+                        "GetUserMediaDeferredDeviceSettingsSelection"
+                    ]
+                }
+            ]
+        }
+    ],
     "Canvas2DAutoFlushParams": [
         {
             "platforms": [
