@@ -103,13 +103,7 @@ class Service {
                 /* avoid showing user prompts */
                 std::make_unique<NoopUserConsentHandler>()) {}
 
-  ~Service() {
-    // WebOTPService sends IPCs in its destructor, so for the unit test, pretend
-    // that this works.
-    service_->WillBeDestroyed(
-        DocumentServiceDestructionReason::kEndOfDocumentLifetime);
-    service_->ResetAndDeleteThis();
-  }
+  ~Service() { Dispose(); }
 
   NiceMock<MockSmsProvider>* provider() { return &provider_; }
   SmsFetcher* fetcher() { return &fetcher_; }
@@ -135,13 +129,26 @@ class Service {
 
   void ActivateTimer() { service_->OnTimeout(); }
 
+ protected:
+  void Dispose() {
+    if (!service_) {
+      return;
+    }
+
+    // WebOTPService sends IPCs in its destructor, so for the unit test, pretend
+    // that this works.
+    service_->WillBeDestroyed(
+        DocumentServiceDestructionReason::kEndOfDocumentLifetime);
+    service_.ExtractAsDangling()->ResetAndDeleteThis();
+  }
+
  private:
   StubWebContentsDelegate contents_delegate_;
   NiceMock<MockSmsProvider> provider_;
   SmsFetcherImpl fetcher_;
   std::unique_ptr<UserConsentHandler> consent_handler_;
   mojo::Remote<blink::mojom::WebOTPService> service_remote_;
-  raw_ptr<WebOTPService, DanglingUntriaged> service_;
+  raw_ptr<WebOTPService> service_;
 };
 
 class WebOTPServiceTest : public RenderViewHostTestHarness {
@@ -553,6 +560,13 @@ class ServiceWithPrompt : public Service {
                 std::make_unique<NiceMock<MockUserConsentHandler>>()) {
     mock_handler_ =
         static_cast<NiceMock<MockUserConsentHandler>*>(consent_handler());
+  }
+
+  ~ServiceWithPrompt() {
+    // At destruction, WebOTPService calls into `MockUserConsentHandler`, which
+    // can reference `on_complete_callback_`. Preemptively tear it down so
+    // `on_complete_callback_` is not destroyed before it is used.
+    Dispose();
   }
 
   void ExpectRequestUserConsent() {
