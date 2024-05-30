@@ -11809,6 +11809,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_v_google_apis_x64",
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
@@ -12687,6 +12688,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_v_google_apis_x64",
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
