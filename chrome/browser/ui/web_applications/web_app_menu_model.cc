@@ -150,15 +150,9 @@ void WebAppMenuModel::Build() {
     SetMinorText(app_info_index, display_text);
   }
 
-  if (!features::IsChromeRefresh2023()) {
-    SetMinorIcon(app_info_index,
-                 ui::ImageModel::FromVectorIcon(
-                     browser()->location_bar_model()->GetVectorIcon()));
-  } else {
-    SetIcon(app_info_index,
-            ui::ImageModel::FromVectorIcon(
-                browser()->location_bar_model()->GetVectorIcon()));
-  }
+  SetIcon(app_info_index,
+          ui::ImageModel::FromVectorIcon(
+              browser()->location_bar_model()->GetVectorIcon()));
 
   AddSeparator(ui::NORMAL_SEPARATOR);
 
@@ -203,33 +197,24 @@ void WebAppMenuModel::Build() {
                     browser()->app_controller()->GetAppShortName())));
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-  AddSeparator(features::IsChromeRefresh2023() ? ui::NORMAL_SEPARATOR
-                                               : ui::LOWER_SEPARATOR);
+  AddSeparator(ui::NORMAL_SEPARATOR);
   CreateZoomMenu();
-  AddSeparator(features::IsChromeRefresh2023() ? ui::NORMAL_SEPARATOR
-                                               : ui::UPPER_SEPARATOR);
+  AddSeparator(ui::NORMAL_SEPARATOR);
   AddItemWithStringId(IDC_PRINT, IDS_PRINT);
-  if (!features::IsChromeRefresh2023()) {
-    AddItemWithStringId(IDC_FIND, IDS_FIND);
-  } else {
-    CreateFindAndEditSubMenu();
-  }
-  if (media_router::MediaRouterEnabled(browser()->profile()))
+  CreateFindAndEditSubMenu();
+
+  if (media_router::MediaRouterEnabled(browser()->profile())) {
     AddItemWithStringId(IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE);
-  if (!features::IsChromeRefresh2023()) {
-    AddSeparator(ui::LOWER_SEPARATOR);
-    CreateCutCopyPasteMenu();
   }
-  if (features::IsChromeRefresh2023()) {
-    SetCommandIcon(this, kExtensionsMenuCommandId,
-                   vector_icons::kExtensionChromeRefreshIcon);
-    SetCommandIcon(this, kUninstallAppCommandId, kTrashCanRefreshIcon);
-    SetCommandIcon(this, IDC_NEW_TAB, kNewTabRefreshIcon);
-    SetCommandIcon(this, IDC_COPY_URL, kLinkChromeRefreshIcon);
-    SetCommandIcon(this, IDC_OPEN_IN_CHROME, kBrowserLogoIcon);
-    SetCommandIcon(this, IDC_ZOOM_MENU, kZoomInIcon);
-    SetCommandIcon(this, IDC_PRINT, kPrintMenuIcon);
-    SetCommandIcon(this, IDC_FIND_AND_EDIT_MENU, kSearchMenuIcon);
-    SetCommandIcon(this, IDC_ROUTE_MEDIA, kCastChromeRefreshIcon);
-  }
+
+  SetCommandIcon(this, kExtensionsMenuCommandId,
+                 vector_icons::kExtensionChromeRefreshIcon);
+  SetCommandIcon(this, kUninstallAppCommandId, kTrashCanRefreshIcon);
+  SetCommandIcon(this, IDC_NEW_TAB, kNewTabRefreshIcon);
+  SetCommandIcon(this, IDC_COPY_URL, kLinkChromeRefreshIcon);
+  SetCommandIcon(this, IDC_OPEN_IN_CHROME, kBrowserLogoIcon);
+  SetCommandIcon(this, IDC_ZOOM_MENU, kZoomInIcon);
+  SetCommandIcon(this, IDC_PRINT, kPrintMenuIcon);
+  SetCommandIcon(this, IDC_FIND_AND_EDIT_MENU, kSearchMenuIcon);
+  SetCommandIcon(this, IDC_ROUTE_MEDIA, kCastChromeRefreshIcon);
 }
