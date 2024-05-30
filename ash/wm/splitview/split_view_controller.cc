@@ -965,12 +965,19 @@ void SplitViewController::EndSplitView(EndReason end_reason) {
   auto_snap_controller_.reset();
 
   if (end_reason != EndReason::kRootWindowDestroyed) {
+    // TODO(http://b/343542206): Break down the
+    // `SplitViewOverviewSessionExitPoint` enum in
+    // `SplitViewController::EndSplitView()`.
+    const SplitViewOverviewSessionExitPoint exit_point =
+        end_reason == EndReason::kSnapGroups
+            ? SplitViewOverviewSessionExitPoint::kCompleteByActivating
+            : SplitViewOverviewSessionExitPoint::kShutdown;
+
     // `EndSplitView()` is also called upon `~RootWindowController()` and
     // `~SplitViewController()`, during which `root_window_` would have been
     // destroyed.
     RootWindowController::ForWindow(root_window_)
-        ->EndSplitViewOverviewSession(
-            SplitViewOverviewSessionExitPoint::kShutdown);
+        ->EndSplitViewOverviewSession(exit_point);
   }
 
   StopObserving(SnapPosition::kPrimary);
@@ -1878,7 +1885,7 @@ bool SplitViewController::MaybeCreateSnapGroup() {
     // TODO(b/286963080): Move this to SnapGroupController.
     if (snap_group_controller->AddSnapGroup(
             primary_window_, secondary_window_, /*replace=*/false,
-            /*sticky_creation_time=*/std::nullopt)) {
+            /*carry_over_creation_time=*/std::nullopt)) {
       // Ending split view will call `UpdateStateAndNotifyObservers()` that
       // state is now `kNoSnap` and end overview in
       // `OverviewGrid::OnSplitViewStateChanged()`.

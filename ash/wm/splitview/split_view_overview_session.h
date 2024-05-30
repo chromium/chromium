@@ -33,7 +33,7 @@ enum class SplitViewOverviewSetupType {
 };
 
 // Enumeration of the exit point of the `SplitViewOverviewSession`.
-// Please keep in sync with "OverviewEndAction" in
+// Please keep in sync with "SplitViewOverviewSessionExitPoint" in
 // tools/metrics/histograms/metadata/ash/enums.xml.
 enum class SplitViewOverviewSessionExitPoint {
   kCompleteByActivating,
