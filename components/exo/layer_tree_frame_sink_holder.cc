@@ -261,8 +261,14 @@ void LayerTreeFrameSinkHolder::DidLoseLayerTreeFrameSink() {
   resource_manager_.ClearAllCallbacks();
   is_lost_ = true;
 
-  if (lifetime_manager_)
+  if (surface_tree_host_) {
+    CHECK(!lifetime_manager_);
+    surface_tree_host_->OnFrameSinkLost();
+  }
+  if (lifetime_manager_) {
+    CHECK(!surface_tree_host_);
     ScheduleDelete();
+  }
 }
 
 void LayerTreeFrameSinkHolder::ClearPendingBeginFramesForTesting() {

@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -303,6 +304,16 @@ void SurfaceTreeHost::OnContextLost() {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&SurfaceTreeHost::HandleContextLost,
                                 weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SurfaceTreeHost::OnFrameSinkLost() {
+  // HandleContextLost() may happen during this period. If the frame_sink is
+  // still lost after 16ms, we need to resubmit to avoid blank content.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&SurfaceTreeHost::HandleFrameSinkLost,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Milliseconds(16));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -724,6 +735,23 @@ void SurfaceTreeHost::HandleContextLost() {
   }
 
   root_surface_->SurfaceHierarchyResourcesLost();
+  SubmitCompositorFrame();
+}
+
+void SurfaceTreeHost::HandleFrameSinkLost() {
+  if (!layer_tree_frame_sink_holder_->is_lost()) {
+    // If the frame_sink loss happens together with a context loss and
+    // HandleContextLost() is called first, `layer_tree_frame_sink_holder_` is
+    // already recreated with a compositor frame resubmitted. Skip to avoid an
+    // unnecessary compositor frame.
+    return;
+  }
+
+  if (!GetSurfaceId().is_valid() || !root_surface_) {
+    return;
+  }
+
+  // Resubmit compositor frame.
   SubmitCompositorFrame();
 }
 

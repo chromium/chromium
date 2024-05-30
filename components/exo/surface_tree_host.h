@@ -154,6 +154,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
   // viz::ContextLostObserver:
   void OnContextLost() override;
 
+  void OnFrameSinkLost();
+
   void set_client_submits_surfaces_in_pixel_coordinates(bool enabled) {
     client_submits_surfaces_in_pixel_coordinates_ = enabled;
   }
@@ -277,6 +279,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
   viz::CompositorFrame PrepareToSubmitCompositorFrame();
 
   void HandleContextLost();
+  void HandleFrameSinkLost();
 
   void CleanUpCallbacks();
 
