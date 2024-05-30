@@ -491,7 +491,9 @@ void LogicalLineBuilder::PlaceRubyAnnotation(
     LineInfo& annotation_line,
     LogicalRubyColumn& logical_column) {
   std::pair<LayoutUnit, LayoutUnit> insets =
-      ApplyRubyAlign(item_result.inline_size, /* on_start_edge */ false,
+      ApplyRubyAlign(item_result.inline_size -
+                         item_result.ruby_column->last_base_glyph_spacing,
+                     /* on_start_edge */ false,
                      /* on_end_edge */ false, annotation_line);
 
   auto* line_items = MakeGarbageCollected<LogicalLineItems>();

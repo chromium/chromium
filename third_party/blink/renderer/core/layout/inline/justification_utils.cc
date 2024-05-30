@@ -102,11 +102,14 @@ String BuildJustificationText(const String& text_content,
   return line_text_builder.ReleaseString();
 }
 
-void JustifyResults(const String& text_content,
-                    const String& line_text,
-                    unsigned line_text_start_offset,
-                    ShapeResultSpacing<String>& spacing,
-                    InlineItemResults& results) {
+// This function returns spacing amount on the right of the last glyph.
+// It's zero if the last item is an atomic-inline.
+float JustifyResults(const String& text_content,
+                     const String& line_text,
+                     unsigned line_text_start_offset,
+                     ShapeResultSpacing<String>& spacing,
+                     InlineItemResults& results) {
+  float last_glyph_spacing = 0;
   for (wtf_size_t i = 0; i < results.size(); ++i) {
     InlineItemResult& item_result = results[i];
     if (item_result.has_only_pre_wrap_trailing_spaces) {
@@ -129,15 +132,16 @@ void JustifyResults(const String& text_content,
       ShapeResult* shape_result = item_result.shape_result->CreateShapeResult();
       DCHECK_GE(item_result.StartOffset(), line_text_start_offset);
       DCHECK_EQ(shape_result->NumCharacters(), item_result.Length());
-      shape_result->ApplySpacing(spacing, item_result.StartOffset() -
-                                              line_text_start_offset -
-                                              shape_result->StartIndex());
+      last_glyph_spacing = shape_result->ApplySpacing(
+          spacing, item_result.StartOffset() - line_text_start_offset -
+                       shape_result->StartIndex());
       item_result.inline_size = shape_result->SnappedWidth();
       if (UNLIKELY(item_result.is_hyphenated)) {
         item_result.inline_size += item_result.hyphen.InlineSize();
       }
       item_result.shape_result = ShapeResultView::Create(shape_result);
     } else if (item_result.item->Type() == InlineItem::kAtomicInline) {
+      last_glyph_spacing = 0;
       float spacing_before = 0.0f;
       DCHECK_LE(line_text_start_offset, item_result.StartOffset());
       const unsigned line_text_offset =
@@ -159,13 +163,17 @@ void JustifyResults(const String& text_content,
     } else if (item_result.IsRubyColumn()) {
       LineInfo& base_line = item_result.ruby_column->base_line;
       if (item_result.inline_size == base_line.Width()) {
-        JustifyResults(text_content, line_text, line_text_start_offset, spacing,
-                       *base_line.MutableResults());
+        last_glyph_spacing =
+            JustifyResults(text_content, line_text, line_text_start_offset,
+                           spacing, *base_line.MutableResults());
         base_line.SetWidth(base_line.AvailableWidth(),
                            base_line.ComputeWidth());
         item_result.inline_size =
             std::max(item_result.inline_size, base_line.Width());
+        item_result.ruby_column->last_base_glyph_spacing =
+            LayoutUnit(last_glyph_spacing);
       } else {
+        last_glyph_spacing = 0;
         [[maybe_unused]] float spacing_before = 0;
         unsigned offset = item_result.StartOffset() - line_text_start_offset;
         if (!item_result.ruby_column->is_continuation) {
@@ -197,6 +205,7 @@ void JustifyResults(const String& text_content,
       }
     }
   }
+  return last_glyph_spacing;
 }
 
 class ExpandableItemsFinder {

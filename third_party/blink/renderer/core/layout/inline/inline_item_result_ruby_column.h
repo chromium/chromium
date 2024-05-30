@@ -38,6 +38,10 @@ struct InlineItemResultRubyColumn
   // They are used only in LineBreaker to help rewinding.
   Member<const RubyBreakTokenData> start_ruby_break_token;
   Member<RubyBreakTokenData> end_ruby_break_token;
+
+  // Spacing amount on the right of the last glyph. This is set on justify
+  // a line, and consumed on applying ruby-align to an annotation.
+  LayoutUnit last_base_glyph_spacing;
 };
 
 }  // namespace blink

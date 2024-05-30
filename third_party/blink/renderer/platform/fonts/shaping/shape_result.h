@@ -291,7 +291,9 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // |text_start_offset| adjusts the character index in the ShapeResult before
   // giving it to |ShapeResultSpacing|. It can be negative if
   // |StartIndex()| is larger than the text in |ShapeResultSpacing|.
-  void ApplySpacing(ShapeResultSpacing<String>&, int text_start_offset = 0);
+  //
+  // The function returns spacing amount on the right of the last glyph.
+  float ApplySpacing(ShapeResultSpacing<String>&, int text_start_offset = 0);
   ShapeResult* ApplySpacingToCopy(ShapeResultSpacing<TextRun>&,
                                   const TextRun&) const;
   // Add `expansion` space before the first glyph.
@@ -471,8 +473,8 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   void RecalcCharacterPositions() const;
 
   template <typename TextContainerType>
-  void ApplySpacingImpl(ShapeResultSpacing<TextContainerType>&,
-                        int text_start_offset = 0);
+  float ApplySpacingImpl(ShapeResultSpacing<TextContainerType>&,
+                         int text_start_offset = 0);
   template <bool is_horizontal_run>
   void ComputeGlyphPositions(ShapeResult::RunInfo*,
                              unsigned start_glyph,

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>A pixel test for ruby behavior in a line with text-align:justify</title>
+<style>
+div {
+  text-align: justify;
+  text-align-last: justify;
+  font-size: 24px;
+  width: 10.99em;
+  padding: 2px;
+  border: 2px solid gray;
+  margin-bottom: 8px;
+}
+ruby {
+  color: blue;
+}
+rt {
+  color: orange;
+}
+span {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  background-color: blue;
+}
+</style>
+
+<!-- longer base -->
+<div>
+〓〓〓〓〓〓〓〓〓〓
+<ruby>〓〓〓〓<rt>〓〓〓</ruby>〓<br>
+<ruby>〓〓〓<span></span><rt>〓〓〓</ruby>〓<br>
+<ruby>〓〓<ruby>〓〓<rt>〓〓</rt></ruby><rt>〓〓〓</ruby>〓<br>
+<ruby>〓〓〓〓<rt>〓〓〓</ruby>
+</div>
+
+<!-- shorter base -->
+<div>
+〓〓〓〓〓〓〓〓〓〓
+<ruby>〓〓〓<rt>〓〓〓〓〓〓〓〓〓</ruby>〓<br>
+<ruby>〓〓<span></span><rt>〓〓〓〓〓〓〓〓〓</ruby>〓<br>
+<ruby>〓〓〓<rt>〓〓〓〓〓〓〓〓〓</ruby>
+</div>

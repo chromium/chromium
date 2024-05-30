@@ -934,7 +934,7 @@ float ShapeResult::ForEachGraphemeClusters(const StringView& text,
 // TODO(kojii): VC2015 fails to explicit instantiation of a member function.
 // Typed functions + this private function are to instantiate instances.
 template <typename TextContainerType>
-void ShapeResult::ApplySpacingImpl(
+float ShapeResult::ApplySpacingImpl(
     ShapeResultSpacing<TextContainerType>& spacing,
     int text_start_offset) {
   float offset = 0;
@@ -991,15 +991,16 @@ void ShapeResult::ApplySpacingImpl(
     if (space < 0)
       total_space += 1;
   }
+  return space;
 }
 
-void ShapeResult::ApplySpacing(ShapeResultSpacing<String>& spacing,
-                               int text_start_offset) {
+float ShapeResult::ApplySpacing(ShapeResultSpacing<String>& spacing,
+                                int text_start_offset) {
   // For simplicity, we apply spacing once only. If you want to do multiple
   // time, please get rid of below |DCHECK()|.
   DCHECK(!is_applied_spacing_) << this;
   is_applied_spacing_ = true;
-  ApplySpacingImpl(spacing, text_start_offset);
+  return ApplySpacingImpl(spacing, text_start_offset);
 }
 
 ShapeResult* ShapeResult::ApplySpacingToCopy(
