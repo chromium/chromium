@@ -628,6 +628,7 @@ ci.gpu.linux_builder(
         category = "ChromeOS|Intel",
         short_name = "vlt",
     ),
+    execution_timeout = 6 * time.hour,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
