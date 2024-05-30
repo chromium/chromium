@@ -49,8 +49,8 @@ namespace {
 // SharedMemory GMBs are used.
 bool g_force_use_gpu_memory_buffer_for_test = false;
 
-// A constant flag that describes which APIs the shared image created
-// for the video frame will be used with. They will be read via the raster
+// A constant flag that describes which APIs the shared images created
+// for the video frames will be used with. They will be read via the raster
 // interface (which will be going over GLES2 if OOP-R is not enabled), sent
 // to the display compositor, and may be used as overlays.
 constexpr uint32_t kSharedImageUsage =
@@ -335,28 +335,6 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
   }
 
  private:
-  // Creates and returns a new `GpuMemoryBuffer` from a cloned handle of our
-  // `gpu_memory_buffer_handle_`. The type of the buffer depends on the type of
-  // the handle and can only be either `NATIVE_PIXMAP` or
-  // `SHARED_MEMORY_BUFFER`.
-  std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBufferFromHandle(
-      const gfx::Size& size) {
-    const auto buffer_format = GetBufferFormat();
-    const auto buffer_usage = GetBufferUsage();
-    if (gpu_memory_buffer_handle_.type ==
-        gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferType()) {
-      return gpu_memory_buffer_support_.CreateGpuMemoryBufferImplFromHandle(
-          gpu_memory_buffer_handle_.Clone(), size, buffer_format, buffer_usage,
-          base::DoNothing());
-    }
-
-    DCHECK_EQ(gpu_memory_buffer_handle_.type, gfx::SHARED_MEMORY_BUFFER);
-    DCHECK(g_force_use_gpu_memory_buffer_for_test);
-    return gpu::GpuMemoryBufferImplSharedMemory::CreateFromHandle(
-        gpu_memory_buffer_handle_.Clone(), size, buffer_format, buffer_usage,
-        base::DoNothing());
-  }
-
   // Initializes this holder by creating `shared_image_`. This shared image is
   // backed by a GpuMemoryBuffer whose handle is a clone of our
   // `gpu_memory_buffer_handle_`. This operation should only be done the first
@@ -368,19 +346,6 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
 
     if (!should_create_shared_image_) {
       return true;
-    }
-
-    // We clone our handle `gpu_memory_buffer_handle_` and use the cloned handle
-    // to create a new GpuMemoryBuffer which will be used to create the shared
-    // image. This way, the lifetime of our `gpu_memory_buffer_handle_` remains
-    // tied to the lieftime of this object (i.e. until `OnBufferRetired()` is
-    // called).
-    std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
-        CreateGpuMemoryBufferFromHandle(frame_info->coded_size);
-
-    if (!gmb) {
-      LOG(ERROR) << "Failed to create a GpuMemoryBuffer.";
-      return false;
     }
 
     gpu::SharedImageInterface* shared_image_interface =
@@ -395,10 +360,14 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
       format.SetPrefersExternalSampler();
     }
 #endif
+    // We clone our handle `gpu_memory_buffer_handle_` and use the cloned handle
+    // to create the shared image. This way, the lifetime of our
+    // `gpu_memory_buffer_handle_` remains tied to the lifetime of this object
+    // (i.e. until `OnBufferRetired()` is called).
     shared_image_ = shared_image_interface->CreateSharedImage(
-        {format, gmb->GetSize(), frame_info->color_space, kSharedImageUsage,
-         "CameraVideoFrame"},
-        gmb->CloneHandle());
+        {format, frame_info->coded_size, frame_info->color_space,
+         kSharedImageUsage, "CameraVideoFrame"},
+        gpu_memory_buffer_handle_.Clone());
     CHECK(shared_image_);
 
     // Since this is the first time we create the `shared_image_`, we need to
