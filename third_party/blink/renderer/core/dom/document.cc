@@ -84,6 +84,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_aria_notification_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_caret_position_from_point_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_creation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_registration_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
@@ -1755,7 +1756,7 @@ Range* Document::caretRangeFromPoint(int x, int y) {
 CaretPosition* Document::caretPositionFromPoint(
     float x,
     float y,
-    const HeapVector<Member<ShadowRoot>>& shadow_roots) {
+    const CaretPositionFromPointOptions* options) {
   if (!GetLayoutView()) {
     return nullptr;
   }
@@ -1772,7 +1773,8 @@ CaretPosition* Document::caretPositionFromPoint(
   }
   bool adjust_position = false;
   while (anchor_node->IsInShadowTree() &&
-         !shadow_roots.Contains(anchor_node->GetTreeScope())) {
+         !(options->hasShadowRoots() &&
+           options->shadowRoots().Contains(anchor_node->GetTreeScope()))) {
     anchor_node = anchor_node->OwnerShadowHost();
     adjust_position = true;
   }

@@ -143,6 +143,7 @@ class AriaNotificationOptions;
 class Attr;
 class BeforeUnloadEventListener;
 class CaretPosition;
+class CaretPositionFromPointOptions;
 class CDATASection;
 class CSSStyleSheet;
 class CanvasFontCache;
@@ -489,12 +490,12 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // Returns a |CaretPosition| from given point. If the point is inside a shadow
   // tree, then |CaretPosition| only points inside the shadow tree if it's
-  // provided in the |shadow_roots| argument.
+  // provided in the |shadowRoots| vector in |options| argument.
   // https://drafts.csswg.org/cssom-view/#ref-for-dom-document-caretpositionfrompoint
   CaretPosition* caretPositionFromPoint(
       float x,
       float y,
-      const HeapVector<Member<ShadowRoot>>& shadow_roots);
+      const CaretPositionFromPointOptions* options);
   Element* scrollingElement();
 
   // When calling from C++ code, use this method. scrollingElement() is
