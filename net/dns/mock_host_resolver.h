@@ -87,9 +87,7 @@ int ParseAddressList(std::string_view host_list,
 // rule, otherwise DCHECKs will fire.
 
 // Base class shared by MockHostResolver and MockCachingHostResolver.
-class MockHostResolverBase
-    : public HostResolver,
-      public base::SupportsWeakPtr<MockHostResolverBase> {
+class MockHostResolverBase : public HostResolver {
  private:
   class RequestImpl;
   class ProbeRequestImpl;
@@ -457,6 +455,8 @@ class MockHostResolverBase
   scoped_refptr<State> state_;
 
   THREAD_CHECKER(thread_checker_);
+
+  base::WeakPtrFactory<MockHostResolverBase> weak_ptr_factory_{this};
 };
 
 class MockHostResolver : public MockHostResolverBase {

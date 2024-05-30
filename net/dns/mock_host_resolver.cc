@@ -711,9 +711,9 @@ MockHostResolverBase::CreateRequest(
     NetworkAnonymizationKey network_anonymization_key,
     NetLogWithSource net_log,
     std::optional<ResolveHostParameters> optional_parameters) {
-  return std::make_unique<RequestImpl>(Host(std::move(host)),
-                                       network_anonymization_key,
-                                       optional_parameters, AsWeakPtr());
+  return std::make_unique<RequestImpl>(
+      Host(std::move(host)), network_anonymization_key, optional_parameters,
+      weak_ptr_factory_.GetWeakPtr());
 }
 
 std::unique_ptr<HostResolver::ResolveHostRequest>
@@ -723,7 +723,8 @@ MockHostResolverBase::CreateRequest(
     const NetLogWithSource& source_net_log,
     const std::optional<ResolveHostParameters>& optional_parameters) {
   return std::make_unique<RequestImpl>(Host(host), network_anonymization_key,
-                                       optional_parameters, AsWeakPtr());
+                                       optional_parameters,
+                                       weak_ptr_factory_.GetWeakPtr());
 }
 
 std::unique_ptr<HostResolver::ServiceEndpointRequest>
@@ -738,13 +739,14 @@ MockHostResolverBase::CreateServiceEndpointRequest(
 
 std::unique_ptr<HostResolver::ProbeRequest>
 MockHostResolverBase::CreateDohProbeRequest() {
-  return std::make_unique<ProbeRequestImpl>(AsWeakPtr());
+  return std::make_unique<ProbeRequestImpl>(weak_ptr_factory_.GetWeakPtr());
 }
 
 std::unique_ptr<HostResolver::MdnsListener>
 MockHostResolverBase::CreateMdnsListener(const HostPortPair& host,
                                          DnsQueryType query_type) {
-  return std::make_unique<MdnsListenerImpl>(host, query_type, AsWeakPtr());
+  return std::make_unique<MdnsListenerImpl>(host, query_type,
+                                            weak_ptr_factory_.GetWeakPtr());
 }
 
 HostCache* MockHostResolverBase::GetHostCache() {
@@ -787,7 +789,7 @@ int MockHostResolverBase::LoadIntoCache(
     return ERR_NAME_NOT_RESOLVED;
 
   RequestImpl request(endpoint, network_anonymization_key, optional_parameters,
-                      AsWeakPtr());
+                      weak_ptr_factory_.GetWeakPtr());
   return DoSynchronousResolution(request);
 }
 
@@ -796,8 +798,8 @@ void MockHostResolverBase::ResolveAllPending() {
   DCHECK(ondemand_mode_);
   for (auto& [id, request] : state_->mutable_requests()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MockHostResolverBase::ResolveNow, AsWeakPtr(), id));
+        FROM_HERE, base::BindOnce(&MockHostResolverBase::ResolveNow,
+                                  weak_ptr_factory_.GetWeakPtr(), id));
   }
 }
 
@@ -958,8 +960,8 @@ int MockHostResolverBase::Resolve(RequestImpl* request) {
 
   if (!ondemand_mode_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MockHostResolverBase::ResolveNow, AsWeakPtr(), id));
+        FROM_HERE, base::BindOnce(&MockHostResolverBase::ResolveNow,
+                                  weak_ptr_factory_.GetWeakPtr(), id));
   }
 
   return ERR_IO_PENDING;
