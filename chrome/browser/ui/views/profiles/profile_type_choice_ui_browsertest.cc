@@ -39,7 +39,6 @@ const PixelTestParam kTestParams[] = {
      .use_dark_theme = true,
      .use_right_to_left_language = true,
      .use_small_window = true},
-    {.test_suffix = "CR2023", .use_chrome_refresh_2023_style = true},
 };
 
 const char kRemoveAvatarIconJS[] =

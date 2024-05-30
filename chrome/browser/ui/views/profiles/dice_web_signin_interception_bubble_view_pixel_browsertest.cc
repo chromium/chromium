@@ -62,7 +62,6 @@ struct TestParam {
   bool use_dark_theme = false;
   SkColor4f intercepted_profile_color = SkColors::kLtGray;
   SkColor4f primary_profile_color = SkColors::kBlue;
-  bool enable_webui_refresh = false;
   bool with_explicit_browser_signin_design = false;
   NameFormat name_format = NameFormat::Regular;
 };
@@ -85,13 +84,12 @@ const TestParam kTestParams[] = {
         .intercepted_profile_color = SkColors::kMagenta,
     },
 
-    // Ditto, with ChromeRefresh2023.
+    // Ditto, with explicit browser signin.
     {
-        .test_suffix = "ConsumerSimpleChromeRefresh2023",
+        .test_suffix = "ConsumerSimpleExplicitBrowserSignin",
         .interception_type =
             WebSigninInterceptor::SigninInterceptionType::kMultiUser,
         .intercepted_profile_color = SkColors::kMagenta,
-        .enable_webui_refresh = true,
         .with_explicit_browser_signin_design = true,
     },
 
@@ -160,12 +158,11 @@ const TestParam kTestParams[] = {
             WebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
     },
 
-    // Ditto with ChromeRefresh2023.
+    // Ditto, with explicit browser signin.
     {
-        .test_suffix = "ProfileSwitchChromeRefresh2023",
+        .test_suffix = "ProfileSwitchExplicitBrowserSignin",
         .interception_type =
             WebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
-        .enable_webui_refresh = true,
         .with_explicit_browser_signin_design = true,
     },
 
@@ -181,20 +178,6 @@ const TestParam kTestParams[] = {
         .interception_type =
             WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
         .use_dark_theme = true,
-    },
-    {
-        .test_suffix = "ChromeSigninWebUIRefresh",
-        .interception_type =
-            WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
-        .enable_webui_refresh = true,
-    },
-
-    {
-        .test_suffix = "ChromeSigninDarkModeWebUIRefresh",
-        .interception_type =
-            WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
-        .use_dark_theme = true,
-        .enable_webui_refresh = true,
     },
 
     {
@@ -220,10 +203,6 @@ class DiceWebSigninInterceptionBubblePixelTest
  public:
   DiceWebSigninInterceptionBubblePixelTest() {
     std::vector<base::test::FeatureRef> enabled_features;
-    if (GetParam().enable_webui_refresh) {
-      enabled_features.push_back(features::kChromeRefresh2023);
-    }
-
     if (GetParam().with_explicit_browser_signin_design) {
       enabled_features.push_back(switches::kExplicitBrowserSigninUIOnDesktop);
     }

@@ -101,8 +101,6 @@ const SyncConfirmationTestParam kWindowTestParams[] = {
     {.pixel_test_param = {.test_suffix = "ManagedAccount"},
      .account_management_status = AccountManagementStatus::kManaged},
 #endif
-    {.pixel_test_param = {.test_suffix = "CR2023",
-                          .use_chrome_refresh_2023_style = true}},
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
     // Restricted mode is only implemented for these platforms.
@@ -135,9 +133,6 @@ const SyncConfirmationTestParam kDialogTestParams[] = {
      .account_management_status = AccountManagementStatus::kManaged,
      .sync_style = SyncConfirmationStyle::kDefaultModal},
 #endif
-    {.pixel_test_param = {.test_suffix = "CR2023",
-                          .use_chrome_refresh_2023_style = true},
-     .sync_style = SyncConfirmationStyle::kDefaultModal},
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
     // Restricted mode is only implemented for these platforms.

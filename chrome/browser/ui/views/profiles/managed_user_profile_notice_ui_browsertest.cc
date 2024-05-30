@@ -56,8 +56,6 @@ const ManagedUserNoticeTestParam kWindowTestParams[] = {
                           .use_right_to_left_language = true}},
     {.pixel_test_param = {.test_suffix = "SmallWindow",
                           .use_small_window = true}},
-    {.pixel_test_param = {.test_suffix = "CR2023",
-                          .use_chrome_refresh_2023_style = true}},
 };
 
 const ManagedUserNoticeTestParam kDialogTestParams[] = {
@@ -71,8 +69,6 @@ const ManagedUserNoticeTestParam kDialogTestParams[] = {
     {.pixel_test_param = {.test_suffix = "Rtl",
                           .use_right_to_left_language = true},
      .show_link_data_checkbox = true},
-    {.pixel_test_param = {.test_suffix = "CR2023",
-                          .use_chrome_refresh_2023_style = true}},
 };
 
 // Creates a step to represent the managed-user-profile-notice

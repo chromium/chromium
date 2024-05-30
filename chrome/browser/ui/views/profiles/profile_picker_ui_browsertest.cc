@@ -47,8 +47,6 @@ const ProfilePickerTestParam kTestParams[] = {
                           .use_right_to_left_language = true,
                           .use_small_window = true},
      .use_multiple_profiles = true},
-    {.pixel_test_param = {.test_suffix = "CR2023",
-                          .use_chrome_refresh_2023_style = true}},
 };
 
 void AddMultipleProfiles(Profile* profile, size_t number_of_profiles) {
