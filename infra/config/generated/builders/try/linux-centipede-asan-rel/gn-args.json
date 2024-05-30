@@ -1,5 +1,6 @@
 {
   "gn_args": {
+    "archive_seed_corpus": false,
     "dcheck_always_on": true,
     "enable_mojom_fuzzer": true,
     "ffmpeg_branding": "ChromeOS",
