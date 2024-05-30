@@ -35,8 +35,14 @@ class OsJapaneseDictionaryEntryRowElement extends PolymerElement {
       entry: {
         type: Object,
       },
+      locallyAdded: {
+        type: Boolean,
+      },
     };
   }
+
+  // Whether the entry needs to be added to the storage.
+  locallyAdded = false;
 
   // The ID of the Japanese User Dictionary that the entry is part of.
   dictId: bigint;
@@ -64,8 +70,26 @@ class OsJapaneseDictionaryEntryRowElement extends PolymerElement {
   }
 
   private async saveEntryToDictionary_(): Promise<void> {
-    UserDataServiceProvider.getRemote().editJapaneseDictionaryEntry(
-        this.dictId, this.index, this.entry);
+    if (this.entry.key === '' || this.entry.value === '') {
+      return;
+    }
+    if (this.locallyAdded) {
+      // Entry does not exist inside the storage, hence we need to use the "add"
+      // function to add this entry.
+      // TODO(b/340393256): Handle possible race condition when two add..Entry
+      // requests are in flight at the same time.
+      const resp =
+          (await UserDataServiceProvider.getRemote().addJapaneseDictionaryEntry(
+               this.dictId, this.entry))
+              .status;
+      // If successful, then the entry is no longer "locally added", since it
+      // also exists inside the storage. Future edits need to be done via the
+      // "edit" api call.
+      this.locallyAdded = !resp.success;
+    } else {
+      UserDataServiceProvider.getRemote().editJapaneseDictionaryEntry(
+          this.dictId, this.index, this.entry);
+    }
   }
 }
 

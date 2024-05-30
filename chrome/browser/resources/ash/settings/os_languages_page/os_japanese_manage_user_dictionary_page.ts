@@ -72,6 +72,13 @@ class OsSettingsJapaneseManageUserDictionaryPageElement extends
       this.status = `number of dictionaries=${this.dictionaries_.length}`;
     }
   }
+
+  // Used to get the last index of the synced entries of each dictionary so that
+  // dictionary components can figure out whether to add or edit entries when
+  // saving to storage.
+  private getLastIndex_(x: Object[]): number {
+    return x.length - 1;
+  }
 }
 
 customElements.define(
