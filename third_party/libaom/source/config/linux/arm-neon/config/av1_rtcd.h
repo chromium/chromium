@@ -137,7 +137,20 @@ void av1_calc_indices_dim2_neon(const int16_t *data, const int16_t *centroids, u
 #define av1_calc_indices_dim2 av1_calc_indices_dim2_neon
 
 void av1_convolve_2d_scale_c(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int w, int h, const InterpFilterParams *filter_params_x, const InterpFilterParams *filter_params_y, const int subpel_x_qn, const int x_step_qn, const int subpel_y_qn, const int y_step_qn, ConvolveParams *conv_params);
-#define av1_convolve_2d_scale av1_convolve_2d_scale_c
+void av1_convolve_2d_scale_neon(const uint8_t* src,
+                                int src_stride,
+                                uint8_t* dst,
+                                int dst_stride,
+                                int w,
+                                int h,
+                                const InterpFilterParams* filter_params_x,
+                                const InterpFilterParams* filter_params_y,
+                                const int subpel_x_qn,
+                                const int x_step_qn,
+                                const int subpel_y_qn,
+                                const int y_step_qn,
+                                ConvolveParams* conv_params);
+#define av1_convolve_2d_scale av1_convolve_2d_scale_neon
 
 void av1_convolve_2d_sr_c(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int w, int h, const InterpFilterParams *filter_params_x, const InterpFilterParams *filter_params_y, const int subpel_x_qn, const int subpel_y_qn, ConvolveParams *conv_params);
 void av1_convolve_2d_sr_neon(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int w, int h, const InterpFilterParams *filter_params_x, const InterpFilterParams *filter_params_y, const int subpel_x_qn, const int subpel_y_qn, ConvolveParams *conv_params);
