@@ -310,7 +310,8 @@ H264Delegate::Status H264Delegate::SubmitSlice(
       sizeof(V4L2_STATELESS_H264_START_CODE_ANNEX_B) - 1);
   slice_data[2] = V4L2_STATELESS_H264_START_CODE_ANNEX_B;
   slice_data.insert(slice_data.end(), data, data + size);
-  ctx_->slice_data = slice_data;
+  ctx_->slice_data.insert(ctx_->slice_data.end(), slice_data.begin(),
+                          slice_data.end());
 
   return H264Delegate::Status::kOk;
 }
@@ -355,6 +356,8 @@ H264Delegate::Status H264Delegate::SubmitDecode(
                                      stateless_h264_picture->dec_surface())) {
     return H264Delegate::Status::kFail;
   }
+
+  ctx_->slice_data.clear();
 
   return H264Delegate::Status::kOk;
 }
