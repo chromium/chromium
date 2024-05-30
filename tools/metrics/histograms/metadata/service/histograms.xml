@@ -1239,17 +1239,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.PostMessage.QueueSize" units="count"
-    expires_after="2024-10-01">
-  <owner>yyanagisawa@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    When PostMessage is used before the ServiceWorker client gets ready, the
-    message is queued, and the queued messages are flushed when it gets ready.
-    This metric tells the length of the queue at the time the queue is flushed.
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorker.RegisteredStorageKeyCount" units="origins"
     expires_after="2024-11-03">
   <owner>yyanagisawa@chromium.org</owner>

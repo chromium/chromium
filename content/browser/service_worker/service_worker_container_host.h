@@ -225,11 +225,6 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // load. All service workers are updated.
   void AddServiceWorkerToUpdate(scoped_refptr<ServiceWorkerVersion> version);
 
-  // Dispatches message event to the client (document, dedicated worker when
-  // PlzDedicatedWorker is enabled, or shared worker).
-  void PostMessageToClient(ServiceWorkerVersion& version,
-                           blink::TransferableMessage message);
-
   // Notifies the client that its controller used a feature, for UseCounter
   // purposes. This can only be called if IsContainerForClient() is true.
   void CountFeature(blink::mojom::WebFeature feature);
@@ -662,11 +657,6 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // kept here, and flushed in SetContainerReady().
   std::set<blink::mojom::WebFeature> buffered_used_features_;
 
-  // Until |container_| gets associated, postMessage will be queued.
-  std::vector<std::tuple<scoped_refptr<ServiceWorkerVersion>,
-                         blink::TransferableMessage>>
-      buffered_messages_;
-
   // For worker clients only ---------------------------------------------------
 
   // The ID of the process where the container lives for worker clients. It is
@@ -835,9 +825,12 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
     return *service_worker_client_;
   }
 
-  // Called from ServiceWorkerClient.
+  // Dispatches message event to the client (document, dedicated worker when
+  // PlzDedicatedWorker is enabled, or shared worker).
   void PostMessageToClient(ServiceWorkerVersion& version,
                            blink::TransferableMessage message);
+
+  // Called from ServiceWorkerClient.
   void SendSetController(
       blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
       bool notify_controllerchange);

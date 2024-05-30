@@ -58,14 +58,6 @@ ServiceWorkerMetrics::EventType PurposeToEventType(
   return ServiceWorkerMetrics::EventType::UNKNOWN;
 }
 
-// Max number of messages that can be sent before |container_| gets ready.
-// I believe messages may not be sent in that situation for regular way, but
-// we technically do not prevent finding a client and send a message in that
-// phase.
-// 128 is picked randomly. We may need to run a experiment to decide the precise
-// number.
-constexpr size_t kMaxBufferedMessageSize = 128;
-
 }  // namespace
 
 // RAII helper class for keeping track of versions waiting for an update hint
@@ -726,25 +718,12 @@ void ServiceWorkerClient::AddServiceWorkerToUpdate(
   versions_to_update_.emplace(std::move(version));
 }
 
-void ServiceWorkerClient::PostMessageToClient(
-    ServiceWorkerVersion& version,
-    blink::TransferableMessage message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!is_container_ready()) {
-    if (buffered_messages_.size() < kMaxBufferedMessageSize) {
-      buffered_messages_.emplace_back(base::WrapRefCounted(&version),
-                                      std::move(message));
-    }
-    return;
-  }
-
-  container_host().PostMessageToClient(version, std::move(message));
-}
-
 void ServiceWorkerContainerHostForClient::PostMessageToClient(
     ServiceWorkerVersion& version,
     blink::TransferableMessage message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(service_worker_client().is_execution_ready());
+
   blink::mojom::ServiceWorkerObjectInfoPtr info;
   if (base::WeakPtr<ServiceWorkerObjectHost> object_host =
           version_object_manager().GetOrCreateHost(&version)) {
@@ -2069,19 +2048,6 @@ SubresourceLoaderParams ServiceWorkerClient::MaybeCreateSubresourceLoaderParams(
 void ServiceWorkerClient::SetContainerReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TransitionToClientPhase(ClientPhase::kContainerReady);
-  std::vector<std::tuple<scoped_refptr<ServiceWorkerVersion>,
-                         blink::TransferableMessage>>
-      messages;
-
-  messages.swap(buffered_messages_);
-  base::UmaHistogramCounts1000("ServiceWorker.PostMessage.QueueSize",
-                               messages.size());
-  for (auto& [version, message] : messages) {
-    CHECK(version);
-    container_host().PostMessageToClient(*version, std::move(message));
-  }
-  CHECK(buffered_messages_.empty());
-
   FlushFeatures();
 }
 
