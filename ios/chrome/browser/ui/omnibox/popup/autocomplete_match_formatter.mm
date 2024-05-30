@@ -147,12 +147,10 @@ UIColor* DimColorIncognito() {
           _match.answer_template->answers(0).subhead().fragments();
 
       for (auto fragment : subheadFragments) {
-        NSAttributedString* fragmentText = [self
-            attributedStringWithString:base::SysUTF8ToNSString(fragment.text())
-                       classifications:nullptr
-                             smallFont:NO
-                                 color:SuggestionDetailTextColor()
-                              dimColor:DimColor()];
+        NSAttributedString* fragmentText =
+            [self attributedStringForFragment:fragment
+                                        color:SuggestionDetailTextColor()
+                       useDeemphasizedStyling:YES];
         [result appendAttributedString:fragmentText];
         [result appendAttributedString:spacer];
       }
@@ -161,12 +159,11 @@ UIColor* DimColorIncognito() {
           _match.answer_template->answers(0).headline().fragments();
 
       for (auto fragment : headLinefragments) {
-        NSAttributedString* fragmentText = [self
-            attributedStringWithString:base::SysUTF8ToNSString(fragment.text())
-                       classifications:&_match.contents_class
-                             smallFont:NO
-                                 color:SuggestionDetailTextColor()
-                              dimColor:DimColor()];
+        NSAttributedString* fragmentText =
+            [self attributedStringForFragment:fragment
+                                        color:SuggestionDetailTextColor()
+                       useDeemphasizedStyling:YES];
+
         [result appendAttributedString:fragmentText];
         [result appendAttributedString:spacer];
       }
@@ -299,12 +296,10 @@ UIColor* DimColorIncognito() {
           _match.answer_template->answers(0).headline().fragments();
 
       for (auto fragment : headlineFragments) {
-        NSAttributedString* fragmentText = [self
-            attributedStringWithString:base::SysUTF8ToNSString(fragment.text())
-                       classifications:&_match.contents_class
-                             smallFont:NO
-                                 color:suggestionTextColor
-                              dimColor:dimColor];
+        NSAttributedString* fragmentText =
+            [self attributedStringForFragment:fragment
+                                        color:SuggestionDetailTextColor()
+                       useDeemphasizedStyling:NO];
         [result appendAttributedString:fragmentText];
         [result appendAttributedString:spacer];
       }
@@ -313,12 +308,10 @@ UIColor* DimColorIncognito() {
           _match.answer_template->answers(0).subhead().fragments();
 
       for (auto fragment : subheadFragments) {
-        NSAttributedString* fragmentText = [self
-            attributedStringWithString:base::SysUTF8ToNSString(fragment.text())
-                       classifications:&_match.contents_class
-                             smallFont:NO
-                                 color:suggestionTextColor
-                              dimColor:DimColor()];
+        NSAttributedString* fragmentText =
+            [self attributedStringForFragment:fragment
+                                        color:SuggestionDetailTextColor()
+                       useDeemphasizedStyling:NO];
         [result appendAttributedString:fragmentText];
         [result appendAttributedString:spacer];
       }
@@ -503,6 +496,95 @@ UIColor* DimColorIncognito() {
 
   return [[NSAttributedString alloc] initWithString:unescapedString
                                          attributes:attributes];
+}
+
+#pragma mark FormattedStringFragment styling
+
+// Converts an attributed string fragment proto into an attributedString
+- (NSAttributedString*)
+    attributedStringForFragment:
+        (omnibox::FormattedString::FormattedStringFragment)fragment
+                          color:(UIColor*)defaultColor
+         useDeemphasizedStyling:(BOOL)useDeemphasizedStyling {
+  NSDictionary* attributes =
+      [self formattingAttributesForFragment:fragment
+                     useDeemphasizedStyling:useDeemphasizedStyling];
+
+  NSAttributedString* result = [[NSAttributedString alloc]
+      initWithString:base::SysUTF8ToNSString(fragment.text())
+          attributes:attributes];
+
+  return result;
+}
+
+/// Return correct formatting attributes for the fragment proto.
+/// `useDeemphasizedStyling` is necessary because some styles (e.g. PRIMARY)
+/// should take their color from the surrounding line; they don't have a fixed
+/// color.
+- (NSDictionary<NSAttributedStringKey, id>*)
+    formattingAttributesForFragment:
+        (omnibox::FormattedString::FormattedStringFragment)fragment
+             useDeemphasizedStyling:(BOOL)useDeemphasizedStyling {
+  UIFontDescriptor* defaultFontDescriptor =
+      useDeemphasizedStyling
+          ? [[UIFontDescriptor
+                preferredFontDescriptorWithTextStyle:UIFontTextStyleSubheadline]
+                fontDescriptorWithSymbolicTraits:
+                    UIFontDescriptorTraitTightLeading]
+          : [UIFontDescriptor
+                preferredFontDescriptorWithTextStyle:UIFontTextStyleBody];
+  UIColor* defaultColor = useDeemphasizedStyling ? SuggestionDetailTextColor()
+                                                 : SuggestionTextColor();
+
+  if (fragment.is_bolded()) {
+    UIFontDescriptor* boldFontDescriptor = [defaultFontDescriptor
+        fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+    return @{
+      NSFontAttributeName : [UIFont fontWithDescriptor:boldFontDescriptor
+                                                  size:0],
+      NSForegroundColorAttributeName : defaultColor,
+    };
+  }
+
+  omnibox::FormattedString::ColorType color = fragment.color();
+  switch (color) {
+    case omnibox::FormattedString::COLOR_ON_SURFACE_POSITIVE:
+      return @{
+        NSFontAttributeName : [UIFont fontWithDescriptor:defaultFontDescriptor
+                                                    size:0],
+        NSForegroundColorAttributeName : [UIColor colorNamed:kGreenColor],
+      };
+    case omnibox::FormattedString::COLOR_ON_SURFACE_NEGATIVE:
+      return @{
+        NSFontAttributeName : [UIFont fontWithDescriptor:defaultFontDescriptor
+                                                    size:0],
+        NSForegroundColorAttributeName : [UIColor colorNamed:kRedColor],
+      };
+    case omnibox::FormattedString::COLOR_PRIMARY: {
+      // Calculate a slightly smaller font. The ratio here is somewhat
+      // arbitrary. Proportions from 5/9 to 5/7 all look pretty good.
+      CGFloat ratio = 5.0 / 9.0;
+      UIFont* defaultFont = [UIFont fontWithDescriptor:defaultFontDescriptor
+                                                  size:0];
+      UIFontDescriptor* superiorFontDescriptor = [defaultFontDescriptor
+          fontDescriptorWithSize:defaultFontDescriptor.pointSize * ratio];
+      CGFloat baselineOffset =
+          defaultFont.capHeight - defaultFont.capHeight * ratio;
+      return @{
+        NSFontAttributeName : [UIFont fontWithDescriptor:superiorFontDescriptor
+                                                    size:0],
+        NSBaselineOffsetAttributeName :
+            [NSNumber numberWithFloat:baselineOffset],
+        NSForegroundColorAttributeName : defaultColor,
+      };
+    }
+    default:
+      return @{
+        NSFontAttributeName : [UIFont fontWithDescriptor:defaultFontDescriptor
+                                                    size:0],
+        NSForegroundColorAttributeName : defaultColor,
+      };
+  }
 }
 
 /// Return correct formatting attributes for the given style.
