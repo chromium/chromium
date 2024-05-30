@@ -4,26 +4,37 @@
 
 #include "components/signin/core/browser/signin_metrics_service.h"
 
+#include <optional>
 #include <string_view>
 
+#include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "google_apis/gaia/core_account_id.h"
 
 namespace {
 
 constexpr char kSigninPendingStartTimePref[] =
-    "signin.sigin_pending_start_time";
-constexpr char kFirstAccountWebSigninStartTimePref[] =
-    "signin.first_account_web_signin_start_time";
+    "signin.signin_pending_start_time";
+// This pref contains the web signin start time of the accounts that have signed
+// on the web only. If the account is removed or any account gets signed in to
+// Chrome, the pref is cleared.
+// The pref is a dictionary that maps the account ids to the web signin start
+// time per account.
+// Storing the account_id is not ideal as it might not be consistent with
+// different platforms, however it is fine the purpose of this metric.
+constexpr char kWebSigninAccountStartTimesPref[] =
+    "signin.web_signin_accounts_start_time_dict";
 
 // These values are persisted to logs. Entries should not be renumbered
 // and numeric values should never be reused.
@@ -99,7 +110,7 @@ SigninMetricsService::~SigninMetricsService() = default;
 // static
 void SigninMetricsService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kSigninPendingStartTimePref, base::Time());
-  registry->RegisterTimePref(kFirstAccountWebSigninStartTimePref, base::Time());
+  registry->RegisterDictionaryPref(kWebSigninAccountStartTimesPref);
 }
 
 void SigninMetricsService::OnPrimaryAccountChanged(
@@ -108,14 +119,34 @@ void SigninMetricsService::OnPrimaryAccountChanged(
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       return;
     case signin::PrimaryAccountChangeEvent::Type::kSet:
-      if (pref_service_->HasPrefPath(kFirstAccountWebSigninStartTimePref)) {
-        std::optional<signin_metrics::AccessPoint> access_point =
-            event_details.GetAccessPoint();
-        CHECK(access_point.has_value());
-        MaybeRecordWebSigninToChromeSignin(
-            pref_service_->GetTime(kFirstAccountWebSigninStartTimePref),
-            access_point.value());
-        pref_service_->ClearPref(kFirstAccountWebSigninStartTimePref);
+      if (pref_service_->HasPrefPath(kWebSigninAccountStartTimesPref)) {
+        const base::Value::Dict& web_signin_account_start_time_dict =
+            pref_service_->GetDict(kWebSigninAccountStartTimesPref);
+
+        // This value only exists if the initial signin was from a web signin
+        // source.
+        const base::Value* start_time_value =
+            web_signin_account_start_time_dict.Find(
+                event_details.GetCurrentState()
+                    .primary_account.account_id.ToString());
+        std::optional<base::Time> start_time =
+            start_time_value ? base::ValueToTime(start_time_value)
+                             : std::nullopt;
+        if (start_time.has_value()) {
+          std::optional<signin_metrics::AccessPoint> access_point =
+              event_details.GetAccessPoint();
+          CHECK(access_point.has_value());
+
+          MaybeRecordWebSigninToChromeSignin(start_time.value(),
+                                             access_point.value());
+
+          base::UmaHistogramEnumeration(
+              "Signin.WebSignin.SourceToChromeSignin", access_point.value(),
+              signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+        }
+        // Clear all related web signin information on the first Chrome signin
+        // event.
+        pref_service_->ClearPref(kWebSigninAccountStartTimesPref);
       }
       return;
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
@@ -177,27 +208,24 @@ void SigninMetricsService::OnErrorStateOfRefreshTokenUpdatedForAccount(
   }
 }
 
-void SigninMetricsService::OnAccountsInCookieUpdated(
-    const signin::AccountsInCookieJarInfo& cookie_jar,
-    const GoogleServiceAuthError& error) {
-  if (!cookie_jar.accounts_are_fresh) {
-    return;
+void SigninMetricsService::OnExtendedAccountInfoUpdated(
+    const AccountInfo& info) {
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
+      info.access_point ==
+          signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN &&
+      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    ScopedDictPrefUpdate update(&pref_service_.get(),
+                                kWebSigninAccountStartTimesPref);
+    update->Set(info.account_id.ToString(),
+                base::TimeToValue(base::Time::Now()));
   }
+}
 
-  // Interested in Web-only signed in.
-  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled() ||
-      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return;
-  }
-
-  if (cookie_jar.signed_in_accounts.empty()) {
-    pref_service_->ClearPref(kFirstAccountWebSigninStartTimePref);
-    return;
-  }
-
-  // Set the web signin time for the first account only.
-  if (!pref_service_->HasPrefPath(kFirstAccountWebSigninStartTimePref)) {
-    pref_service_->SetTime(kFirstAccountWebSigninStartTimePref,
-                           base::Time::Now());
+void SigninMetricsService::OnRefreshTokenRemovedForAccount(
+    const CoreAccountId& core_account_id) {
+  if (pref_service_->HasPrefPath(kWebSigninAccountStartTimesPref)) {
+    ScopedDictPrefUpdate update(&pref_service_.get(),
+                                kWebSigninAccountStartTimesPref);
+    update->Remove(core_account_id.ToString());
   }
 }

@@ -4,6 +4,7 @@
 
 #include "components/signin/core/browser/signin_metrics_service.h"
 
+#include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -21,13 +22,13 @@
 
 namespace {
 
-// Equivalent to private pref content: `kFirstAccountWebSigninStartTimePref`.
-constexpr char kFirstAccountWebSigninStartTimePrefForTesting[] =
-    "signin.first_account_web_signin_start_time";
+// Equivalent to private pref content: `kWebSigninAccountStartTimesPref`.
+constexpr char kWebSigninAccountStartTimesPrefForTesting[] =
+    "signin.web_signin_accounts_start_time_dict";
 
 // Equivalent to private pref content: `kSigninPendingStartTimePref`.
 constexpr char kSigninPendingStartTimePrefForTesting[] =
-    "signin.sigin_pending_start_time";
+    "signin.signin_pending_start_time";
 
 const signin_metrics::AccessPoint kDefaultTestAccessPoint =
     signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
@@ -59,9 +60,22 @@ class SigninMetricsServiceTest : public ::testing::Test {
             .Build(email));
   }
 
+  void EnableSync(const std::string& email) {
+    identity_test_environment_.MakePrimaryAccountAvailable(
+        email, signin::ConsentLevel::kSync);
+  }
+
   AccountInfo WebSignin(const std::string& email) {
-    return identity_test_environment_.MakeAccountAvailable(
-        email, {.set_cookie = true});
+    return signin::MakeAccountAvailable(
+        identity_manager(),
+        signin::AccountAvailabilityOptionsBuilder()
+            .WithAccessPoint(
+                signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
+            .Build(email));
+  }
+
+  void RemoveAccount(const CoreAccountId account_id) {
+    identity_test_environment_.RemoveRefreshTokenForAccount(account_id);
   }
 
   void TriggerSigninPending() {
@@ -122,6 +136,24 @@ class SigninMetricsServiceTest : public ::testing::Test {
         identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
     signin::SetRefreshTokenForPrimaryAccount(identity_manager(), token);
+  }
+
+  // Value is expected to be there.
+  base::Time GetAccountWebSigninStartTime(CoreAccountId account_id) const {
+    CHECK(pref_service_.HasPrefPath(kWebSigninAccountStartTimesPrefForTesting));
+    const base::Value::Dict& first_websignin_account_dict =
+        pref_service_.GetDict(kWebSigninAccountStartTimesPrefForTesting);
+    std::optional<base::Time> start_time = base::ValueToTime(
+        first_websignin_account_dict.Find(account_id.ToString()));
+    CHECK(start_time.has_value());
+    return start_time.value();
+  }
+
+  bool HasWebSigninStartTimePref(CoreAccountId account_id) {
+    return pref_service_.HasPrefPath(
+               kWebSigninAccountStartTimesPrefForTesting) &&
+           pref_service_.GetDict(kWebSigninAccountStartTimesPrefForTesting)
+               .contains(account_id.ToString());
   }
 
   PrefService& pref_service() { return pref_service_; }
@@ -301,7 +333,7 @@ TEST_F(SigninMetricsServiceTest,
 
 struct AccessPointParam {
   signin_metrics::AccessPoint access_point;
-  std::string histogram_name;  // Empty for no histogram expectations.
+  std::string histogram_time_name;  // Empty for no histogram expectations.
 };
 
 const AccessPointParam params[] = {
@@ -325,13 +357,24 @@ TEST_P(SigninMetricsServiceAccessPointParamTest, WebSigninToChromeSignin) {
 
   Signin(account.email, GetParam().access_point);
 
-  if (!GetParam().histogram_name.empty()) {
-    histogram_tester.ExpectTotalCount(GetParam().histogram_name, 1);
+  if (!GetParam().histogram_time_name.empty()) {
+    histogram_tester.ExpectTotalCount(GetParam().histogram_time_name, 1);
   } else {
     EXPECT_EQ(
-        0.,
-        histogram_tester.GetTotalCountsForPrefix("Signin.WebSignin.").size());
+        0., histogram_tester
+                .GetTotalCountsForPrefix("Signin.WebSignin.TimeToChromeSignin")
+                .size());
   }
+
+  histogram_tester.ExpectUniqueSample("Signin.WebSignin.SourceToChromeSignin",
+                                      GetParam().access_point, 1);
+
+  // No metrics should be recorded from Signin to Sync.
+  base::HistogramTester histogram_tester_sync;
+  EnableSync(account.email);
+  EXPECT_EQ(
+      0.,
+      histogram_tester_sync.GetTotalCountsForPrefix("Signin.WebSignin").size());
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
@@ -356,25 +399,51 @@ TEST_F(SigninMetricsServiceTest, WebSigninToChromeSigninAfterRestart) {
       "Signin.WebSignin.TimeToChromeSignin.ProfileMenu", 1);
 }
 
-TEST_F(SigninMetricsServiceTest, WebSigninWithMultipleAccountsStartTimePref) {
+TEST_F(SigninMetricsServiceTest, WebSigninWithMultipleAccounts) {
   base::HistogramTester histogram_tester;
 
   CreateSigninMetricsService();
 
   AccountInfo first_account = WebSignin("first_test@gmail.com");
-  EXPECT_TRUE(pref_service().HasPrefPath(
-      kFirstAccountWebSigninStartTimePrefForTesting));
-  base::Time web_signin_start_time =
-      pref_service().GetTime(kFirstAccountWebSigninStartTimePrefForTesting);
+  EXPECT_TRUE(
+      pref_service().HasPrefPath(kWebSigninAccountStartTimesPrefForTesting));
+  base::Time first_web_signin_start_time =
+      GetAccountWebSigninStartTime(first_account.account_id);
 
   AccountInfo second_account = WebSignin("second_test@gmail.com");
   ASSERT_NE(first_account.email, second_account.email);
+  base::Time second_web_signin_start_time =
+      GetAccountWebSigninStartTime(second_account.account_id);
+  EXPECT_NE(first_web_signin_start_time, second_web_signin_start_time);
 
-  // Signing a secondary account should not alter the web signin pref that is
-  // tied to the first account only.
+  // Secondary accounts through the settings page, this is a real use case.
+  signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
+  Signin(second_account.email, access_point);
+
+  // Pref should be cleared and metrics should be measured even with the
+  // secondary account signing in.
+  EXPECT_FALSE(
+      pref_service().HasPrefPath(kWebSigninAccountStartTimesPrefForTesting));
+
+  histogram_tester.ExpectUniqueSample("Signin.WebSignin.SourceToChromeSignin",
+                                      access_point, 1);
+}
+
+TEST_F(SigninMetricsServiceTest, WebSigninToSignout) {
+  base::HistogramTester histogram_tester;
+
+  CreateSigninMetricsService();
+
+  AccountInfo account = WebSignin("test@gmail.com");
+  EXPECT_TRUE(HasWebSigninStartTimePref(account.account_id));
+
+  RemoveAccount(account.account_id);
+  EXPECT_FALSE(HasWebSigninStartTimePref(account.account_id));
+
+  histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
   EXPECT_EQ(
-      web_signin_start_time,
-      pref_service().GetTime(kFirstAccountWebSigninStartTimePrefForTesting));
+      0., histogram_tester.GetTotalCountsForPrefix("Signin.WebSignin.").size());
 }
 
 TEST_F(SigninMetricsServiceTest, WebSigninForSigninPendingResolution) {

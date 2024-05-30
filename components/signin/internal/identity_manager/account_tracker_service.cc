@@ -37,6 +37,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/signin/internal/identity_manager/account_info_util.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
@@ -68,6 +69,7 @@ const char kLastDownloadedImageURLWithSizeKey[] =
 const char kAccountChildAttributeKey[] = "is_supervised_child";
 const char kAdvancedProtectionAccountStatusKey[] =
     "is_under_advanced_protection";
+const char kAccountAccessPoint[] = "access_point";
 
 // This key is deprecated since 2021/07 and should be removed after migration.
 // It was replaced by kAccountChildAttributeKey.
@@ -688,6 +690,12 @@ void AccountTrackerService::LoadFromPrefs() {
           is_under_advanced_protection.value();
     }
 
+    std::optional<int> access_point = dict->FindInt(kAccountAccessPoint);
+    if (access_point.has_value()) {
+      account_info.access_point =
+          static_cast<signin_metrics::AccessPoint>(access_point.value());
+    }
+
     if (std::optional<int> deprecated_can_offer_extended_chrome_sync_promos =
             dict->FindIntByDottedPath(
                 kDeprecatedCanOfferExtendedChromeSyncPromosPrefPath)) {
@@ -788,6 +796,7 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
             static_cast<int>(account_info.is_child_account));
   dict->Set(kAdvancedProtectionAccountStatusKey,
             account_info.is_under_advanced_protection);
+  dict->Set(kAccountAccessPoint, static_cast<int>(account_info.access_point));
   // |kLastDownloadedImageURLWithSizeKey| should only be set after the GAIA
   // picture is successufly saved to disk. Otherwise, there is no guarantee that
   // |kLastDownloadedImageURLWithSizeKey| matches the picture on disk.

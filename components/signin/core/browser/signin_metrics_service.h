@@ -35,9 +35,9 @@ class SigninMetricsService : public KeyedService,
       const GoogleServiceAuthError& error,
       signin_metrics::SourceForRefreshTokenOperation token_operation_source)
       override;
-  void OnAccountsInCookieUpdated(
-      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
-      const GoogleServiceAuthError& error) override;
+  void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
+  void OnRefreshTokenRemovedForAccount(
+      const CoreAccountId& account_id) override;
 
  private:
   raw_ref<signin::IdentityManager> identity_manager_;

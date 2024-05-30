@@ -2172,6 +2172,17 @@ name="TransactionalReauthEntryPoint" -->
   </summary>
 </histogram>
 
+<histogram name="Signin.WebSignin.SourceToChromeSignin"
+    enum="SigninAccessPoint" expires_after="2024-10-16">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the access point of Chrome Sign in when the user was in a web signed
+    in only state before with the same account. Recorded when the Chrome Signin
+    event occurres.
+  </summary>
+</histogram>
+
 <histogram name="Signin.WebSignin.TimeToChromeSignin.{AccessPoint}" units="ms"
     expires_after="2024-10-16">
   <owner>rsult@google.com</owner>
@@ -2179,10 +2190,6 @@ name="TransactionalReauthEntryPoint" -->
   <summary>
     Records the time spent from being in Web Signin only to signing in to Chrome
     via {AccessPoint}. The value is recorded when signing in to Chrome.
-
-    It will also be recorded when the user directly signs in to Chrome, with no
-    prior web only signed in state. The value recorded will be relativley very
-    low.
   </summary>
   <token key="AccessPoint">
     <variant name="PasswordSigninPromo" summary="the Password Sign-in promo"/>
