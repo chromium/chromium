@@ -3302,21 +3302,6 @@
             ]
         }
     ],
-    "CanvasOopWithoutGpuTileRaster": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CanvasOopWithoutGpuTileRaster"
-                    ]
-                }
-            ]
-        }
-    ],
     "CanvasOutOfProcessRasterization": [
         {
             "platforms": [

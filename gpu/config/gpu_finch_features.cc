@@ -176,12 +176,7 @@ BASE_FEATURE(kCanvasOopRasterization,
 // enabled to use OOP-C path with this flag.
 BASE_FEATURE(kCanvasOopWithoutGpuTileRaster,
              "CanvasOopWithoutGpuTileRaster",
-#if BUILDFLAG(IS_WIN)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the use of MSAA in skia on Ice Lake and later intel architectures.
 BASE_FEATURE(kEnableMSAAOnNewIntelGPUs,
