@@ -85,6 +85,7 @@ artifact_zip("updater_zip") {
         "$root_build_dir/UpdaterSetup.exe",
         "$root_build_dir/UpdaterSetup_test.exe",
         "$root_build_dir/qualification_app.exe",
+        "$root_build_dir/${updater_product_full_name}Util.exe",
         "$root_gen_dir/chrome/updater/app/server/win/updater_idl.h",
         "$root_gen_dir/chrome/updater/app/server/win/updater_internal_idl.h",
       ] + get_target_outputs(":signing")
@@ -93,6 +94,7 @@ artifact_zip("updater_zip") {
     "//chrome/updater/app/server/win:updater_idl",
     "//chrome/updater/app/server/win:updater_internal_idl",
     "//chrome/updater/test/qualification_app",
+    "//chrome/updater/tools:${updater_product_full_name}Util",
     "//chrome/updater/win/installer",
     "//chrome/updater/win/installer:installer_test",
   ]
