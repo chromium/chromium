@@ -137,44 +137,6 @@ policy::MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
       ->GetMinimumVersionPolicyHandler();
 }
 
-void CheckCryptohomeIsMounted(
-    std::optional<user_data_auth::IsMountedReply> result) {
-  if (!result.has_value()) {
-    LOG(ERROR) << "IsMounted call failed.";
-    return;
-  }
-
-  LOG_IF(ERROR, !result->is_mounted()) << "Cryptohome is not mounted.";
-}
-
-// If we don't have a mounted profile directory we're in trouble.
-// TODO(davemoore): Once we have better api this check should ensure that
-// our profile directory is the one that's mounted, and that it's mounted
-// as the current user.
-void CheckProfileForSanity() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kTestType)) {
-    return;
-  }
-
-  UserDataAuthClient::Get()->IsMounted(
-      user_data_auth::IsMountedRequest(),
-      base::BindOnce(&CheckCryptohomeIsMounted));
-
-  // Confirm that we hadn't loaded the new profile previously.
-  const auto* user = user_manager::UserManager::Get()->GetActiveUser();
-  if (!user) {
-    // No active user means there's no new profile for the active user.
-    return;
-  }
-  base::FilePath user_profile_dir =
-      ash::BrowserContextHelper::Get()->GetBrowserContextPathByUserIdHash(
-          user->username_hash());
-  CHECK(
-      !g_browser_process->profile_manager()->GetProfileByPath(user_profile_dir))
-      << "The user profile was loaded before we mounted the cryptohome.";
-}
-
 user_manager::UserManager::EphemeralModeConfig CreateEphemeralModeConfig(
     ash::CrosSettings* cros_settings) {
   DCHECK(cros_settings);
@@ -522,8 +484,6 @@ void ChromeUserManagerImpl::NotifyOnLogin() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   UserManagerBase::NotifyOnLogin();
-
-  CheckProfileForSanity();
 }
 
 void ChromeUserManagerImpl::RemoveNonCryptohomeData(

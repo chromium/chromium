@@ -21,6 +21,7 @@ class UserManagerDelegateImpl : public user_manager::UserManagerBase::Delegate {
   const std::string& GetApplicationLocale() override;
   void OverrideDirHome(const user_manager::User& primary_user) override;
   bool IsUserSessionRestoreInProgress() override;
+  void CheckProfileOnLogin(const user_manager::User& user) override;
 };
 
 }  // namespace ash

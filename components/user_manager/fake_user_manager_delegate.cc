@@ -27,4 +27,8 @@ bool FakeUserManagerDelegate::IsUserSessionRestoreInProgress() {
   return false;
 }
 
+void FakeUserManagerDelegate::CheckProfileOnLogin(const User& user) {
+  // Do nothing.
+}
+
 }  // namespace user_manager

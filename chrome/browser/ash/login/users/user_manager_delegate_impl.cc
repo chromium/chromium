@@ -4,11 +4,23 @@
 
 #include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 
+#include <optional>
+
+#include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "components/user_manager/user.h"
+#include "content/public/common/content_switches.h"
 
 namespace ash {
 
@@ -40,6 +52,36 @@ void UserManagerDelegateImpl::OverrideDirHome(
 
 bool UserManagerDelegateImpl::IsUserSessionRestoreInProgress() {
   return UserSessionManager::GetInstance()->UserSessionsRestoreInProgress();
+}
+
+// If we don't have a mounted profile directory we're in trouble.
+// TODO(davemoore): Once we have better api this check should ensure that
+// our profile directory is the one that's mounted, and that it's mounted
+// as the current user.
+void UserManagerDelegateImpl::CheckProfileOnLogin(
+    const user_manager::User& user) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kTestType)) {
+    return;
+  }
+
+  UserDataAuthClient::Get()->IsMounted(
+      user_data_auth::IsMountedRequest(),
+      base::BindOnce([](std::optional<user_data_auth::IsMountedReply> result) {
+        if (!result.has_value()) {
+          LOG(ERROR) << "IsMounted call failed.";
+          return;
+        }
+
+        LOG_IF(ERROR, !result->is_mounted()) << "Cryptohome is not mounted.";
+      }));
+
+  base::FilePath user_profile_dir =
+      ash::BrowserContextHelper::Get()->GetBrowserContextPathByUserIdHash(
+          user.username_hash());
+  CHECK(
+      !g_browser_process->profile_manager()->GetProfileByPath(user_profile_dir))
+      << "The user profile was loaded before we mounted the cryptohome.";
 }
 
 }  // namespace ash

@@ -380,6 +380,7 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
       prefs::kLastLoggedInGaiaUser,
       active_user_->HasGaiaAccount() ? account_id.GetUserEmail() : "");
 
+  delegate_->CheckProfileOnLogin(*active_user_);
   NotifyOnLogin();
 }
 

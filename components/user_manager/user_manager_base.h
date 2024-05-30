@@ -85,6 +85,9 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
     // Returns whether user session restore is in progress.
     virtual bool IsUserSessionRestoreInProgress() = 0;
+
+    // Verifies the Profile's state for the given `user` on login.
+    virtual void CheckProfileOnLogin(const User& user) = 0;
   };
 
   // Creates UserManagerBase with |task_runner| for UI thread, and given
