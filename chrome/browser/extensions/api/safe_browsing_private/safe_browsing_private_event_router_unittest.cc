@@ -1576,8 +1576,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestDataControlsSensitiveDataEvent) {
       .WillOnce(CaptureArg(&report));
 
   TriggerOnDataControlsSensitiveDataEvent({
-      {"rule_id_1", "rule_name_1"},
-      {"rule_id_2", "rule_name_2"},
+      {0, {"rule_id_1", "rule_name_1"}},
+      {1, {"rule_id_2", "rule_name_2"}},
   });
   base::RunLoop().RunUntilIdle();
 

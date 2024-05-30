@@ -32,13 +32,17 @@ Verdict RulesService::GetVerdict(Rule::Restriction restriction,
 
   Rule::Level max_level = Rule::Level::kNotSet;
   Verdict::TriggeredRules triggered_rules;
-  for (const auto& rule : rules_) {
+  for (size_t i = 0; i < rules_.size(); ++i) {
+    const auto& rule = rules_[i];
     Rule::Level level = rule.GetLevel(restriction, context);
     if (level > max_level) {
       max_level = level;
     }
-    if (level != Rule::Level::kNotSet && !rule.rule_id().empty()) {
-      triggered_rules[rule.rule_id()] = rule.name();
+    if (level != Rule::Level::kNotSet) {
+      triggered_rules[i] = {
+          .rule_id = rule.rule_id(),
+          .rule_name = rule.name(),
+      };
     }
   }
 

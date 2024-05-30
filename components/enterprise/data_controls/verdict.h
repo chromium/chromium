@@ -16,8 +16,17 @@ namespace data_controls {
 // on what UX should be shown, what should be reported, etc.
 class Verdict {
  public:
-  // The key is the rule's ID and the value is the rule's name.
-  using TriggeredRules = base::flat_map<std::string, std::string>;
+  // The key is the rule's index in the "DataControlsRules" policy list
+  // representation that exists in `RulesService`.
+  // Since policy updates can change the rules list and invalidate indexes of
+  // previously triggered rules, this index key should only be used
+  // synchronously to merge rules and not in async cases (for example after a
+  // warning dialog has been shown).
+  struct TriggeredRule {
+    std::string rule_id;
+    std::string rule_name;
+  };
+  using TriggeredRules = base::flat_map<size_t, TriggeredRule>;
 
   static Verdict NotSet();
   static Verdict Report(TriggeredRules triggered_rules);

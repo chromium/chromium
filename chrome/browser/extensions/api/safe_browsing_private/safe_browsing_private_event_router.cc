@@ -1040,14 +1040,14 @@ void SafeBrowsingPrivateEventRouter::OnDataControlsSensitiveDataEvent(
 
   base::Value::List triggered_rule_info;
   triggered_rule_info.reserve(triggered_rules.size());
-  for (const auto& [rule_id, name] : triggered_rules) {
+  for (const auto& [index, rule] : triggered_rules) {
     base::Value::Dict triggered_rule;
     triggered_rule.Set(
         extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
-        rule_id);
+        rule.rule_id);
     triggered_rule.Set(
         extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
-        name);
+        rule.rule_name);
 
     triggered_rule_info.Append(std::move(triggered_rule));
   }

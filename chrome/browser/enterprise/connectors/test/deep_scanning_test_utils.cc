@@ -810,6 +810,7 @@ void EventReportValidator::ValidateDataControlsAttributes(
         event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
     ASSERT_TRUE(triggered_rules);
     ASSERT_EQ(data_controls_triggered_rules_.size(), triggered_rules->size());
+    size_t i = 0;
     for (const base::Value& rule : *triggered_rules) {
       const std::string* name = rule.GetDict().FindString(
           SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName);
@@ -819,8 +820,11 @@ void EventReportValidator::ValidateDataControlsAttributes(
           SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId);
       ASSERT_TRUE(id);
 
-      ASSERT_TRUE(data_controls_triggered_rules_.count(*id));
-      ASSERT_EQ(data_controls_triggered_rules_[*id], *name);
+      ASSERT_TRUE(data_controls_triggered_rules_.count(i));
+      ASSERT_EQ(data_controls_triggered_rules_[i].rule_name, *name);
+      ASSERT_EQ(data_controls_triggered_rules_[i].rule_id, *id);
+
+      ++i;
     }
   }
 }
