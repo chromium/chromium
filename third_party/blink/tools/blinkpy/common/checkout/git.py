@@ -155,7 +155,11 @@ class Git:
         command = ['diff', 'HEAD', '--no-renames', '--name-only']
         if pathspec:
             command.extend(['--', pathspec])
-        return self.run(command) != ''
+        output = self.run(command)
+        if output != '':
+            _log.error('Has working directory changes:\n%s', output)
+            return True
+        return False
 
     def uncommitted_changes(self):
         """List files with uncommitted changes, including untracked files."""
