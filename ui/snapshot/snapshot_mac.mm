@@ -54,6 +54,7 @@ void GrabViewSnapshotScreenCaptureKitImpl(gfx::NativeView native_view,
                                           GrabSnapshotImageCallback callback)
     API_AVAILABLE(macos(14.4)) {
   NSView* view = native_view.GetNativeNSView();
+  NSInteger window_number = view.window.windowNumber;
   __block GrabSnapshotImageCallback local_callback = std::move(callback);
 
   // Get the view frame relative to the window, and flip it to have an
@@ -83,7 +84,7 @@ void GrabViewSnapshotScreenCaptureKitImpl(gfx::NativeView native_view,
       NSUInteger sc_window_index =
           [sc_windows indexOfObjectPassingTest:^BOOL(
                           SCWindow* obj, NSUInteger idx, BOOL* stop) {
-            return obj.windowID == view.window.windowNumber;
+            return obj.windowID == window_number;
           }];
       if (sc_window_index == NSNotFound) {
         DLOG(ERROR) << "failed to find window";

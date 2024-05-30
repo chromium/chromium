@@ -16,6 +16,7 @@
 #import "ui/base/test/windowed_nsnotification_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/snapshot/snapshot_mac.h"
 
 namespace ui {
@@ -72,29 +73,22 @@ TEST_P(GrabWindowSnapshotTest, TestGrabWindowSnapshot) {
 
   gfx::Image image = future.Take();
   ASSERT_TRUE(!image.IsEmpty());
+  NSImage* ns_image = image.ToNSImage();
 
-  // The call to `CGWindowListCreateImage` returned a `CGImageRef` that is
-  // wrapped in an `NSImage` (inside the returned `gfx::Image`). The image rep
-  // that results (e.g. an `NSCGImageSnapshotRep` in macOS 12) isn't anything
-  // that pixel values can be retrieved from, so do a quick-and-dirty conversion
-  // to an `NSBitmapImageRep`.
-  NSBitmapImageRep* image_rep =
-      [NSBitmapImageRep imageRepWithData:image.ToNSImage().TIFFRepresentation];
-
-  // Test the size.
-  EXPECT_EQ(window_size * window.backingScaleFactor, image_rep.pixelsWide);
-  EXPECT_EQ(window_size * window.backingScaleFactor, image_rep.pixelsHigh);
+  // Expect the image's size to match the size of the window, scaled
+  // appropriately. Expect exactly one representation.
+  EXPECT_EQ(window_size * window.backingScaleFactor, ns_image.size.width);
+  EXPECT_EQ(window_size * window.backingScaleFactor, ns_image.size.height);
+  EXPECT_EQ(1u, ns_image.representations.count);
 
   // Pick a pixel in the middle of the screenshot and expect it to be some
   // version of blue.
-  NSColor* color = [image_rep colorAtX:image_rep.pixelsWide / 2
-                                     y:image_rep.pixelsHigh / 2];
-  CGFloat red = 0, green = 0, blue = 0, alpha = 0;
-  [color getRed:&red green:&green blue:&blue alpha:&alpha];
-  EXPECT_LE(red, 0.2);
-  EXPECT_LE(green, 0.2);
-  EXPECT_GE(blue, 0.9);
-  EXPECT_EQ(alpha, 1);
+  SkColor color = gfx::test::GetPlatformImageColor(ns_image, window_size / 2,
+                                                   window_size / 2);
+  EXPECT_LE(SkColorGetR(color), 10u);
+  EXPECT_LE(SkColorGetG(color), 10u);
+  EXPECT_GE(SkColorGetB(color), 245u);
+  EXPECT_EQ(SkColorGetA(color), 255u);
 
   ForceAPIUsageForTesting(SnapshotAPI::kUnspecified);
 }
