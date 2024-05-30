@@ -221,7 +221,7 @@ TEST_F(FocusModeTrayTest, MarkTaskAsCompleted) {
   // Click the radio button to mark the selected task as completed.
   LeftClickOn(radio_button);
 
-  task_environment()->FastForwardBy(kStartAnimationDelay);
+  AdvanceClock(kStartAnimationDelay);
 
   auto* bubble_view = GetBubbleView();
   ui::Layer* bubble_view_layer = bubble_view->layer();

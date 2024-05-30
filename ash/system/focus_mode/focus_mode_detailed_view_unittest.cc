@@ -99,6 +99,13 @@ class FocusModeDetailedViewTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
+  void AdvanceClock(base::TimeDelta time_delta) {
+    // Note that AdvanceClock() is used here instead of FastForwardBy() to
+    // prevent long run time during an ash test session.
+    task_environment()->AdvanceClock(time_delta);
+    task_environment()->RunUntilIdle();
+  }
+
   virtual void CreateFakeTasks(api::FakeTasksClient& tasks_client) {
     AddFakeTaskList(tasks_client, "default");
     AddFakeTask(tasks_client, "default", "task1", "Task 1");
@@ -328,7 +335,7 @@ TEST_F(FocusModeDetailedViewTest, ToggleRow) {
   CreateFakeFocusModeDetailedView();
 
   // Wait a minute to test that the time remaining label updates.
-  task_environment()->FastForwardBy(base::Seconds(60));
+  AdvanceClock(base::Seconds(60));
   validate_labels(/*active=*/true, "Wait for a minute");
 
   LeftClickOn(GetToggleRowButton());
@@ -344,7 +351,7 @@ TEST_F(FocusModeDetailedViewTest, ToggleRow) {
 
   // Wait a second to avoid the time remaining being either 1500 seconds or
   // 1499.99 seconds.
-  task_environment()->FastForwardBy(base::Seconds(1));
+  AdvanceClock(base::Seconds(1));
   validate_labels(/*active=*/true, "Check time passed");
 
   LeftClickOn(GetToggleRowButton());
@@ -548,8 +555,7 @@ TEST_F(FocusModeDetailedViewTest, TimerSettingViewDecrements) {
 
 // Tests that the timer setting view is visible outside of a focus session and
 // the countdown view is visible in a focus session.
-// TODO(b/338629645): disabled due to flakes.
-TEST_F(FocusModeDetailedViewTest, DISABLED_TimerViewVisibility) {
+TEST_F(FocusModeDetailedViewTest, TimerViewVisibility) {
   auto* focus_mode_controller = FocusModeController::Get();
   auto* timer_setting_view = GetTimerSettingView();
   auto* countdown_view = GetTimerCountdownView();
@@ -568,7 +574,7 @@ TEST_F(FocusModeDetailedViewTest, DISABLED_TimerViewVisibility) {
             GetEndTimeLabel()->GetText());
 
   // Wait a minute to test that the end time label updates.
-  task_environment()->FastForwardBy(base::Seconds(60));
+  AdvanceClock(base::Seconds(60));
   EXPECT_EQ(focus_mode_util::GetFormattedEndTimeString(base::Time::Now() +
                                                        session_duration),
             GetEndTimeLabel()->GetText());
@@ -685,7 +691,7 @@ TEST_F(FocusModeDetailedViewTest, ExpandOrShrinkTaskViewContainer) {
 
   // 2. Expand the `task_container_view`.
   LeftClickOn(radio_button);
-  task_environment()->FastForwardBy(kStartAnimationDelay);
+  AdvanceClock(kStartAnimationDelay);
   views::test::RunScheduledLayout(task_container_view);
   EXPECT_EQ(old_height_before_shrink, task_container_view->bounds().height());
 }
