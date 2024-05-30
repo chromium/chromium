@@ -778,6 +778,7 @@ TEST_F(ChromeComposeClientTest, TestProactiveNudgeEngagementIsRecorded) {
   config.proactive_nudge_show_probability = 1.0;
   config.proactive_nudge_delay = base::Microseconds(1);
   config.proactive_nudge_segmentation = true;
+  config.proactive_nudge_always_collect_training_data = true;
 
   autofill::FormData form_data;
   form_data.url = web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL();
