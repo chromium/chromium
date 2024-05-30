@@ -43,6 +43,11 @@ chromium-metrics-reviews@google.com.
     A bit field with each bit representing the presence of a potential OAuth
     query param in the URL. Recorded when the Custom Tab receives and handles
     the initial intent. Android only.
+
+    Available bit flags:
+
+    0b00001: client_id, 0b00010: redirect_uri, 0b00100: response_type, 0b01000:
+    scope, 0b10000: state
   </summary>
 </histogram>
 
