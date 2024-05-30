@@ -1,0 +1,6 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++paragraph
+++++++++staticText name='aria-hidden has to be ignored on the body element.'
+++++++++++inlineTextBox name='aria-hidden has to be ignored on the body element.'

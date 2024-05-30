@@ -842,6 +842,8 @@ data/accessibility/aria/aria-heading-expected-blink.txt
 data/accessibility/aria/aria-heading-expected-mac.txt
 data/accessibility/aria/aria-heading-expected-win.txt
 data/accessibility/aria/aria-heading.html
+data/accessibility/aria/aria-hidden-body-expected-blink.txt
+data/accessibility/aria/aria-hidden-body.html
 data/accessibility/aria/aria-hidden-changed-expected-blink.txt
 data/accessibility/aria/aria-hidden-changed-on-buttons-expected-blink.txt
 data/accessibility/aria/aria-hidden-changed-on-buttons.html
@@ -881,6 +883,8 @@ data/accessibility/aria/aria-hidden-focused-input-expected-mac.txt
 data/accessibility/aria/aria-hidden-focused-input-expected-uia-win.txt
 data/accessibility/aria/aria-hidden-focused-input-expected-win.txt
 data/accessibility/aria/aria-hidden-focused-input.html
+data/accessibility/aria/aria-hidden-html-expected-blink.txt
+data/accessibility/aria/aria-hidden-html.html
 data/accessibility/aria/aria-hidden-iframe-body-expected-blink.txt
 data/accessibility/aria/aria-hidden-iframe-body.html
 data/accessibility/aria/aria-hidden-iframe-expected-android-external.txt

@@ -3519,6 +3519,13 @@ bool AXObject::IsAriaHiddenRoot() const {
     return false;
   }
 
+  auto* node = GetNode();
+  // The aria-hidden attribute is not valid for the main html and body elements:
+  // See more at https://github.com/w3c/aria/pull/1880
+  if (IsA<HTMLBodyElement>(node) || node == GetDocument()->documentElement()) {
+    return false;
+  }
+
   // aria-hidden:true works a bit like display:none.
   // * aria-hidden=true affects entire subtree.
   // * aria-hidden=false is a noop.
