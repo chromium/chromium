@@ -95,12 +95,6 @@ bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs) {
 }
 #endif
 
-// Enables fetching account capabilities and populating AccountInfo with the
-// fetch result.
-BASE_FEATURE(kEnableFetchingAccountCapabilities,
-             "EnableFetchingAccountCapabilities",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This feature disables all extended sync promos.
 BASE_FEATURE(kForceDisableExtendedSyncPromos,
              "ForceDisableExtendedSyncPromos",

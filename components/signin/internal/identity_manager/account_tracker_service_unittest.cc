@@ -408,7 +408,6 @@ class AccountTrackerServiceTest : public testing::Test {
     if (network_enabled) {
       account_fetcher_->EnableNetworkFetchesForTest();
     }
-    account_fetcher_->EnableAccountCapabilitiesFetcherForTest(true);
   }
 
   void DeleteAccountTracker() {
@@ -715,29 +714,7 @@ TEST_F(AccountTrackerServiceTest,
 }
 
 TEST_F(AccountTrackerServiceTest,
-       TokenAvailable_AccountCapabilitiesFetcherDisabled) {
-  account_fetcher()->EnableAccountCapabilitiesFetcherForTest(false);
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      switches::kEnableFetchingAccountCapabilities);
-  SimulateTokenAvailable(kAccountKeyAlpha);
-  EXPECT_TRUE(account_fetcher()->AreAllAccountCapabilitiesFetched());
-  EXPECT_TRUE(CheckAccountTrackerEvents({}));
-  AccountInfo account_info = account_tracker()->GetAccountInfo(
-      AccountKeyToAccountId(kAccountKeyAlpha));
-  EXPECT_FALSE(account_info.capabilities.AreAllCapabilitiesKnown());
-}
-
-// iOS doesn't support the kEnableFetchingAccountCapabilities feature.
-// TODO(crbug.com/40217995): enable these tests on iOS once the feature
-// is supported.
-#if !BUILDFLAG(IS_IOS)
-TEST_F(AccountTrackerServiceTest,
        TokenAvailable_AccountCapabilitiesFetcherEnabled) {
-  account_fetcher()->EnableAccountCapabilitiesFetcherForTest(false);
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      switches::kEnableFetchingAccountCapabilities);
   SimulateTokenAvailable(kAccountKeyAlpha);
   EXPECT_FALSE(account_fetcher()->AreAllAccountCapabilitiesFetched());
 
@@ -747,7 +724,6 @@ TEST_F(AccountTrackerServiceTest,
   ReturnAccountCapabilitiesFetchSuccess(kAccountKeyAlpha);
   EXPECT_TRUE(account_fetcher()->AreAllAccountCapabilitiesFetched());
 }
-#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(AccountTrackerServiceTest, TokenAvailableTwice_UserInfoOnce) {
   SimulateTokenAvailable(kAccountKeyAlpha);

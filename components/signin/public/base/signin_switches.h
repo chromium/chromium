@@ -81,9 +81,6 @@ bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs);
 #endif
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kEnableFetchingAccountCapabilities);
-
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kForceDisableExtendedSyncPromos);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

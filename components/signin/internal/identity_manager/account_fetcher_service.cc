@@ -148,11 +148,6 @@ AccountFetcherService::GetAccountCapabilitiesFetcherFactoryForTest() {
   return account_capabilities_fetcher_factory_.get();
 }
 
-void AccountFetcherService::EnableAccountCapabilitiesFetcherForTest(
-    bool enabled) {
-  enable_account_capabilities_fetcher_for_test_ = enabled;
-}
-
 void AccountFetcherService::RefreshAllAccountInfo(bool only_fetch_if_invalid) {
   for (const auto& account : token_service_->GetAccounts()) {
     RefreshAccountInfo(account, only_fetch_if_invalid);
@@ -259,14 +254,6 @@ void AccountFetcherService::DestroyFetchers(const CoreAccountId& account_id) {
   account_capabilities_requests_.erase(account_id);
 }
 
-bool AccountFetcherService::IsAccountCapabilitiesFetchingEnabled() {
-  if (enable_account_capabilities_fetcher_for_test_)
-    return true;
-
-  return base::FeatureList::IsEnabled(
-      switches::kEnableFetchingAccountCapabilities);
-}
-
 void AccountFetcherService::PrepareForFetchingAccountCapabilities() {
   account_capabilities_fetcher_factory_
       ->PrepareForFetchingAccountCapabilities();
@@ -312,9 +299,7 @@ void AccountFetcherService::RefreshAccountInfo(const CoreAccountId& account_id,
   const AccountInfo& info =
       account_tracker_service_->GetAccountInfo(account_id);
 
-  if ((!only_fetch_if_invalid ||
-       !info.capabilities.AreAllCapabilitiesKnown()) &&
-      IsAccountCapabilitiesFetchingEnabled()) {
+  if (!only_fetch_if_invalid || !info.capabilities.AreAllCapabilitiesKnown()) {
     StartFetchingAccountCapabilities(info);
   }
 

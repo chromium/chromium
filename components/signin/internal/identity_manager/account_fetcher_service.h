@@ -98,11 +98,6 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   // network requests.
   void EnableAccountRemovalForTest();
 
-  // Force-enables Account Capabilities fetches. For use in testing contexts.
-  // Passing the false value doesn't necessary disables fetches, it just turns
-  // force-enable off.
-  void EnableAccountCapabilitiesFetcherForTest(bool enabled);
-
   // Returns the AccountCapabilitiesFetcherFactory, for use in tests only.
   AccountCapabilitiesFetcherFactory*
   GetAccountCapabilitiesFetcherFactoryForTest();
@@ -155,7 +150,6 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   void ResetChildInfo();
 #endif
 
-  bool IsAccountCapabilitiesFetchingEnabled();
   void StartFetchingAccountCapabilities(
       const CoreAccountInfo& core_account_info);
 
@@ -191,7 +185,6 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   bool network_initialized_ = false;
   bool refresh_tokens_loaded_ = false;
   bool enable_account_removal_for_test_ = false;
-  bool enable_account_capabilities_fetcher_for_test_ = false;
   std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
 
 #if BUILDFLAG(IS_ANDROID)
