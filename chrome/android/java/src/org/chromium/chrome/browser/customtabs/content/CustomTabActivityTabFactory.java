@@ -154,8 +154,7 @@ public class CustomTabActivityTabFactory {
         Intent intent = mIntentDataProvider.getIntent();
         return new TabBuilder(
                         ProfileProvider.getOrCreateProfile(
-                                mProfileProviderSupplier.get(),
-                                mIntentDataProvider.isOffTheRecord()))
+                                mProfileProviderSupplier.get(), mIntentDataProvider.isIncognito()))
                 .setId(IntentHandler.getTabId(intent))
                 .setWindow(mActivityWindowAndroid.get())
                 .setLaunchType(TabLaunchType.FROM_EXTERNAL_APP)
