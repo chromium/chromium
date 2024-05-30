@@ -20,10 +20,12 @@ namespace ash::printing {
 
 PrintPreviewWebcontentsAdapterAsh::PrintPreviewWebcontentsAdapterAsh()
     : dialog_controller_(std::make_unique<PrintPreviewDialogControllerCros>()) {
+  dialog_controller_->AddObserver(this);
 }
 
-PrintPreviewWebcontentsAdapterAsh::~PrintPreviewWebcontentsAdapterAsh() =
-    default;
+PrintPreviewWebcontentsAdapterAsh::~PrintPreviewWebcontentsAdapterAsh() {
+  dialog_controller_->RemoveObserver(this);
+}
 
 void PrintPreviewWebcontentsAdapterAsh::BindReceiver(
     mojo::PendingReceiver<crosapi::mojom::PrintPreviewCrosDelegate> receiver) {
@@ -72,6 +74,29 @@ void PrintPreviewWebcontentsAdapterAsh::StartGetPreview(
     // lacros.
     mojo_client_->GeneratePrintPreview(token, std::move(settings),
                                        std::move(callback));
+  }
+}
+
+void PrintPreviewWebcontentsAdapterAsh::OnDialogClosed(
+    const base::UnguessableToken& token) {
+  if (!mojo_client_) {
+    // ash-chrome client.
+    ash_client_->HandleDialogClosed(
+        token, base::BindOnce(
+                   &PrintPreviewWebcontentsAdapterAsh::OnDialogClosedCallback,
+                   weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    // lacros client.
+    mojo_client_->HandleDialogClosed(
+        token, base::BindOnce(
+                   &PrintPreviewWebcontentsAdapterAsh::OnDialogClosedCallback,
+                   weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void PrintPreviewWebcontentsAdapterAsh::OnDialogClosedCallback(bool success) {
+  if (!success) {
+    PRINTER_LOG(ERROR) << "Failed to close cros print dialog";
   }
 }
 

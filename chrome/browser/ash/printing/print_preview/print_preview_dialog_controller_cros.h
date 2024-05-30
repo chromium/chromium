@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/observer_list_types.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ui/webui/ash/print_preview_cros/print_preview_cros_dialog.h"
 #include "components/printing/common/print.mojom.h"
@@ -21,12 +22,23 @@ class PrintPreviewDialogControllerCros
     : public printing::print_preview::PrintPreviewCrosDialog ::
           PrintPreviewCrosDialogObserver {
  public:
+  // Observer to inform clients that a print dialog has been closed and no
+  // longer tracked by PrintPreviewDialogControllerCros.
+  class DialogControllerObserver : public base::CheckedObserver {
+   public:
+    ~DialogControllerObserver() override = default;
+    virtual void OnDialogClosed(const base::UnguessableToken& token) = 0;
+  };
+
   PrintPreviewDialogControllerCros();
   PrintPreviewDialogControllerCros(const PrintPreviewDialogControllerCros&) =
       delete;
   PrintPreviewDialogControllerCros& operator=(
       const PrintPreviewDialogControllerCros&) = delete;
   ~PrintPreviewDialogControllerCros() override;
+
+  void AddObserver(DialogControllerObserver* observer);
+  void RemoveObserver(DialogControllerObserver* observer);
 
   // True if the print preview dialog was successfully created.
   // `token` refers to the ID of the webcontent requesting a print dialog.
@@ -60,6 +72,7 @@ class PrintPreviewDialogControllerCros
   GetPrintPreviewDialogForToken(base::UnguessableToken token);
 
   PrintPreviewDialogMap dialog_initiator_data_map_;
+  base::ObserverList<DialogControllerObserver> observer_list_;
 };
 
 }  // namespace ash

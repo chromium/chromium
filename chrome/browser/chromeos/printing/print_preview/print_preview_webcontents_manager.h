@@ -49,12 +49,18 @@ class PrintPreviewWebcontentsManager
       content::WebContents* webcontents,
       ::printing::mojom::RequestPrintPreviewParamsPtr params);
 
+  // Handles removing the webcontents mapping and informing the ash client
+  // of the removed webcontent. This can happen if the initiating source
+  // (e.g. tab) closes/crashes.
   void PrintPreviewDone(const base::UnguessableToken& token);
 
   // crosapi::mojom::PrintPreviewCrosClient:
   void GeneratePrintPreview(const base::UnguessableToken& token,
                             crosapi::mojom::PrintSettingsPtr settings,
                             GeneratePrintPreviewCallback callback) override;
+  // Handles ash -> chrome requests when the print dialog is closed.
+  void HandleDialogClosed(const base::UnguessableToken& token,
+                          HandleDialogClosedCallback callback) override;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void ResetRemoteForTesting();
@@ -68,6 +74,8 @@ class PrintPreviewWebcontentsManager
 
  private:
   friend class MockPrintPreviewWebcontentsManager;
+  friend class PrintPreviewWebContentsManagerBrowserTest;
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   mojo::Remote<crosapi::mojom::PrintPreviewCrosDelegate> remote_;
   mojo::Receiver<crosapi::mojom::PrintPreviewCrosClient> receiver_{this};
@@ -76,7 +84,11 @@ class PrintPreviewWebcontentsManager
   void OnRequestPrintPreviewCallback(bool success);
   void OnPrintPreviewDoneCallback(bool success);
 
-  // Mapping mapping between a unique ID and webcontents.
+  // Remove the entry from lookup maps keyed by `token`.
+  // Returns the webcontents tied to `token` if removal was successful.
+  content::WebContents* RemoveTokenMapping(const base::UnguessableToken& token);
+
+  // Mapping a unique ID to its webcontents.
   std::map<base::UnguessableToken, content::WebContents*> token_to_webcontents_;
 
   base::WeakPtrFactory<PrintPreviewWebcontentsManager> weak_ptr_factory_{this};

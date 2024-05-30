@@ -19,6 +19,16 @@ namespace ash {
 PrintPreviewDialogControllerCros::PrintPreviewDialogControllerCros() = default;
 PrintPreviewDialogControllerCros::~PrintPreviewDialogControllerCros() = default;
 
+void PrintPreviewDialogControllerCros::AddObserver(
+    DialogControllerObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void PrintPreviewDialogControllerCros::RemoveObserver(
+    DialogControllerObserver* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
 PrintPreviewCrosDialog*
 PrintPreviewDialogControllerCros::GetOrCreatePrintPreviewDialog(
     base::UnguessableToken token,
@@ -62,6 +72,10 @@ void PrintPreviewDialogControllerCros::RemovePrintPreviewDialog(
 void PrintPreviewDialogControllerCros::OnDialogClosed(
     base::UnguessableToken token) {
   RemovePrintPreviewDialog(token);
+
+  for (auto& observer : observer_list_) {
+    observer.OnDialogClosed(token);
+  }
 }
 
 bool PrintPreviewDialogControllerCros::HasDialogForToken(
