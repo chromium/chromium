@@ -267,6 +267,8 @@ base::expected<void, String> ValidateGemmOptions(const MLGemmOptions* options,
                                                  uint32_t output_channels) {
   CHECK(options);
   if (options->hasC()) {
+    // TODO: update this comment
+    //
     // Both XNNPACK and TFLite fully connected operator only supports 1-D bias
     // tensor (operand c of WebNN gemm operator) with [output_channels]
     // dimensions.

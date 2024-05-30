@@ -26,8 +26,6 @@ std::string TestParamInfoToString(
   switch (info.param) {
     case BackendType::kFake:
       return "FakeBackend";
-    case BackendType::kXnnpack:
-      return "Xnnpack";
     case BackendType::kWebNNService:
       return "WebNNService";
   }

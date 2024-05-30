@@ -52,6 +52,8 @@ struct ArrayBufferViewInfo {
   ArrayBufferContents contents;
 };
 
+// TODO: update this comment
+//
 // `TransferNamedArrayBufferViews()` and `CreateNamedArrayBufferViews()`
 // implement the MLNamedArrayBufferViews transfer algorithm of WebNN spec:
 // https://www.w3.org/TR/webnn/#mlnamedarraybufferviews-transfer

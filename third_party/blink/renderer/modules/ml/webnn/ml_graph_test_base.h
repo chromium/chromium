@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_compute_result.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/modules/ml/buildflags.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_utils.h"
@@ -26,7 +25,7 @@ class V8TestingScope;
 
 // The utility methods for graph test.
 // The backends share the unit tests in the MLGraphTest.
-enum class BackendType { kFake, kXnnpack, kWebNNService };
+enum class BackendType { kFake, kWebNNService };
 
 std::string TestParamInfoToString(
     const ::testing::TestParamInfo<BackendType>& backend_type);

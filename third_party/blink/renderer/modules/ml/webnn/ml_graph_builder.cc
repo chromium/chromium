@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/modules/ml/buildflags.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
@@ -50,10 +49,6 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-
-#if BUILDFLAG(BUILD_WEBNN_WITH_XNNPACK)
-#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_xnnpack.h"
-#endif
 
 namespace blink {
 
@@ -2086,6 +2081,8 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
   return outputs;
 }
 
+// TODO: update this comment
+//
 // There are some backends don't support "split into sizes" variant, e.g.
 // XNNPACK, and there is an ongoing discussion in WG:
 // https://github.com/webmachinelearning/webnn/issues/392
@@ -2264,14 +2261,6 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
     g_backend_for_testing->BuildGraphImpl(ml_context_, named_outputs, resolver);
     return promise;
   }
-
-#if BUILDFLAG(BUILD_WEBNN_WITH_XNNPACK)
-  if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kCpu) {
-    MLGraphXnnpack::ValidateAndBuild(std::move(scoped_trace), ml_context_,
-                                     named_outputs, resolver);
-    return promise;
-  }
-#endif
 
   if (base::FeatureList::IsEnabled(
           webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {

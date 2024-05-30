@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
-#include "third_party/blink/renderer/modules/ml/buildflags.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_buffer_mojo.h"
@@ -63,12 +62,6 @@ void MLContext::ValidateAndCreate(ScriptPromiseResolver<MLContext>* resolver,
       options->devicePreference(), options->deviceType(),
       options->powerPreference(), options->modelFormat(), options->numThreads(),
       ml);
-
-#if BUILDFLAG(BUILD_WEBNN_WITH_XNNPACK)
-  if (options->deviceType() == V8MLDeviceType::Enum::kCpu) {
-    resolver->Resolve(context);
-  }
-#endif
 
   if (base::FeatureList::IsEnabled(
           webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
