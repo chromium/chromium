@@ -102,14 +102,12 @@ component("webnn_service") {
     ]
     deps += [
       "//third_party/fp16",
+      "//third_party/microsoft_dxheaders:dxguids",
       "//ui/gl",
       "//ui/gl/init",
     ]
 
-    libs = [
-      "dxgi.lib",
-      "dxguid.lib",
-    ]
+    libs = [ "dxgi.lib" ]
   }
 
   if (is_mac) {

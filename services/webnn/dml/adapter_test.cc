@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <d3d11.h>
-#include <dxcore.h>
-#include <wrl.h>
+#include "services/webnn/dml/adapter.h"
+
 #include <memory>
 
-#include "services/webnn/dml/adapter.h"
 #include "services/webnn/dml/test_base.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/microsoft_dxheaders/src/include/directx/dxcore.h"
+
+// Windows SDK headers should be included after DirectX headers.
+#include <d3d11.h>
+#include <wrl.h>
 
 namespace webnn::dml {
 
