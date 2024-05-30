@@ -162,9 +162,6 @@ class Widget::PaintAsActiveLockImpl : public Widget::PaintAsActiveLock {
 ////////////////////////////////////////////////////////////////////////////////
 // Widget, InitParams:
 
-Widget::InitParams::InitParams()
-    : InitParams(NATIVE_WIDGET_OWNS_WIDGET, TYPE_WINDOW) {}
-
 Widget::InitParams::InitParams(Type type)
     : InitParams(NATIVE_WIDGET_OWNS_WIDGET, type) {}
 

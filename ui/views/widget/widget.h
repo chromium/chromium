@@ -248,15 +248,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
                  // relationship to other windows.
     };
 
-    // Default initialization with |type| set to TYPE_WINDOW.
-    // TODO(crbug.com/339619005): Remove the default constructor once call sites
-    //                            have been migrated to always specifying the
-    //                            ownership mode.
-    InitParams();
-
-    // Initialization for other |type| types.
-    // TODO(crbug.com/339619005): Remove this constructor. See comment on the
-    //                            default constructor for more details.
+    // TODO(crbug.com/339619005): Remove this constructor once call sites
+    //                            have been migrated to always specifying
+    //                            the ownership mode as well as the type.
     explicit InitParams(Type type);
 
     // The preferred constructor. Must specify the ownership mode. The ownership
