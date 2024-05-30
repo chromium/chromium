@@ -240,4 +240,20 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchFiltersLowScoringResults) {
   EXPECT_EQ(result.scored_url_rows[1].scored_url.url_id, 3);
 }
 
+TEST_F(HistoryEmbeddingsServiceTest, CountWords) {
+  extern size_t CountWords(const std::string& s);
+  EXPECT_EQ(0u, CountWords(""));
+  EXPECT_EQ(0u, CountWords(" "));
+  EXPECT_EQ(1u, CountWords("a"));
+  EXPECT_EQ(1u, CountWords(" a"));
+  EXPECT_EQ(1u, CountWords("a "));
+  EXPECT_EQ(1u, CountWords(" a "));
+  EXPECT_EQ(1u, CountWords("  a  "));
+  EXPECT_EQ(2u, CountWords("  a  b"));
+  EXPECT_EQ(2u, CountWords("  a  b "));
+  EXPECT_EQ(2u, CountWords("a  bc"));
+  EXPECT_EQ(3u, CountWords("a  bc d"));
+  EXPECT_EQ(3u, CountWords("a  bc  def "));
+}
+
 }  // namespace history_embeddings

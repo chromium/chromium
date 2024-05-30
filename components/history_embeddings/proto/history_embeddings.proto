@@ -18,6 +18,10 @@ message PassagesValue {
 // A single embedding vector for a single passage.
 message EmbeddingVector {
   repeated float floats = 1;
+
+  // Word count of the source passage for this embedding, needed to avoid
+  // having to load and decrypt all passages for embeddings search.
+  uint32 passage_word_count = 2;
 }
 
 // The packed storable value that encapsulates all embeddings vectors for all

@@ -34,6 +34,7 @@ struct UrlPassages {
 class Embedding {
  public:
   explicit Embedding(std::vector<float> data);
+  Embedding(std::vector<float> data, size_t passage_word_count);
   Embedding();
   ~Embedding();
   Embedding(const Embedding&);
@@ -57,8 +58,15 @@ class Embedding {
   // Const accessor used for storage.
   const std::vector<float>& GetData() const { return data_; }
 
+  // Used for search filtering of passages with low word count.
+  size_t GetPassageWordCount() const { return passage_word_count_; }
+  void SetPassageWordCount(size_t passage_word_count) {
+    passage_word_count_ = passage_word_count;
+  }
+
  private:
   std::vector<float> data_;
+  size_t passage_word_count_ = 0;
 };
 
 struct UrlEmbeddings {
@@ -75,7 +83,9 @@ struct UrlEmbeddings {
   bool operator==(const UrlEmbeddings&) const;
 
   // Finds score of embedding nearest to query, and also outputs its index.
-  std::pair<float, size_t> BestScoreWith(const Embedding& query) const;
+  std::pair<float, size_t> BestScoreWith(
+      const Embedding& query,
+      size_t search_minimum_word_count) const;
 
   history::URLID url_id;
   history::VisitID visit_id;

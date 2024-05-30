@@ -22,6 +22,10 @@ extern const base::FeatureParam<int> kPassageExtractionDelay;
 extern const base::FeatureParam<int>
     kPassageExtractionMaxWordsPerAggregatePassage;
 
+// The minimum number of words a query or passage must have in order to be
+// included in similarity search.
+extern const base::FeatureParam<int> kSearchMinimumWordCount;
+
 // Specifies the number of best matching items to take from the search.
 extern const base::FeatureParam<int> kSearchResultItemCount;
 

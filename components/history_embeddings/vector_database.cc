@@ -7,6 +7,7 @@
 #include <queue>
 
 #include "base/timer/elapsed_timer.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 
 namespace history_embeddings {
 
@@ -32,6 +33,10 @@ UrlPassages& UrlPassages::operator=(UrlPassages&&) = default;
 
 Embedding::Embedding(std::vector<float> data) : data_(std::move(data)) {}
 Embedding::Embedding() = default;
+Embedding::Embedding(std::vector<float> data, size_t passage_word_count)
+    : Embedding(data) {
+  passage_word_count_ = passage_word_count;
+}
 Embedding::~Embedding() = default;
 Embedding::Embedding(const Embedding&) = default;
 Embedding& Embedding::operator=(const Embedding&) = default;
@@ -86,11 +91,15 @@ UrlEmbeddings& UrlEmbeddings::operator=(UrlEmbeddings&) = default;
 bool UrlEmbeddings::operator==(const UrlEmbeddings&) const = default;
 
 std::pair<float, size_t> UrlEmbeddings::BestScoreWith(
-    const Embedding& query) const {
+    const Embedding& query,
+    size_t search_minimum_word_count) const {
   size_t index = 0;
   float best = std::numeric_limits<float>::min();
   for (size_t i = 0; i < embeddings.size(); i++) {
-    float score = query.ScoreWith(embeddings[i]);
+    float score =
+        embeddings[i].GetPassageWordCount() < search_minimum_word_count
+            ? 0.0f
+            : query.ScoreWith(embeddings[i]);
     if (score > best) {
       best = score;
       index = i;
@@ -148,6 +157,11 @@ SearchInfo VectorDatabase::FindNearest(
   // Magnitudes are also assumed equal; they are provided normalized by design.
   CHECK_LT(std::abs(query.Magnitude() - kUnitLength), kEpsilon);
 
+  // Embeddings must have source passages with at least this many words in order
+  // to be considered during the search. Insufficient word count embeddings
+  // will score zero against the query.
+  size_t search_minimum_word_count = kSearchMinimumWordCount.Get();
+
   struct Compare {
     bool operator()(const ScoredUrl& a, const ScoredUrl& b) {
       return a.score < b.score;
@@ -172,7 +186,8 @@ SearchInfo VectorDatabase::FindNearest(
     while (q.size() > count) {
       q.pop();
     }
-    const auto [score, score_index] = item->BestScoreWith(query);
+    const auto [score, score_index] =
+        item->BestScoreWith(query, search_minimum_word_count);
     q.emplace(item->url_id, item->visit_id, item->visit_time, score,
               score_index, std::move(item->embeddings[score_index]));
     scoring_elapsed += scoring_timer.Elapsed();

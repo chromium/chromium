@@ -95,6 +95,19 @@ void FinishSearchResultWithHistory(
                         base::BindOnce(std::move(callback), std::move(result)));
 }
 
+size_t CountWords(const std::string& s) {
+  if (s.empty()) {
+    return 0;
+  }
+  size_t word_count = (s[0] == ' ') ? 0 : 1;
+  for (size_t i = 1; i < s.length(); i++) {
+    if (s[i] != ' ' && s[i - 1] == ' ') {
+      word_count++;
+    }
+  }
+  return word_count;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 SearchResult::SearchResult() = default;
@@ -353,6 +366,12 @@ void HistoryEmbeddingsService::Storage::ProcessAndStorePassages(
   // Compute and save embeddings vectors.
   UrlEmbeddings url_embeddings(url_passages);
   url_embeddings.embeddings = std::move(passages_embeddings);
+  CHECK_EQ(url_passages.passages.passages_size(),
+           static_cast<int>(url_embeddings.embeddings.size()));
+  for (int i = 0; i < url_passages.passages.passages_size(); i++) {
+    url_embeddings.embeddings[i].SetPassageWordCount(
+        CountWords(url_passages.passages.passages(i)));
+  }
   vector_database.AddUrlEmbeddings(std::move(url_embeddings));
   vector_database.SaveTo(&sql_database);
 

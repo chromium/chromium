@@ -243,6 +243,7 @@ bool SqlDatabase::AddUrlEmbeddings(const UrlEmbeddings& url_embeddings) {
     for (float f : embedding.GetData()) {
       vector->add_floats(f);
     }
+    vector->set_passage_word_count(embedding.GetPassageWordCount());
   }
   statement.BindBlob(3, value.SerializeAsString());
 
@@ -308,7 +309,8 @@ SqlDatabase::MakeEmbeddingsIterator(
         }
         for (const proto::EmbeddingVector& vector : value.vectors()) {
           data.embeddings.emplace_back(
-              std::vector(vector.floats().cbegin(), vector.floats().cend()));
+              std::vector(vector.floats().cbegin(), vector.floats().cend()),
+              vector.passage_word_count());
         }
 
         return &data;
