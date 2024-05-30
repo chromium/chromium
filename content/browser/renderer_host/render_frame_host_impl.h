@@ -181,6 +181,7 @@
 #include "ui/accessibility/ax_action_handler_base.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/mojom/ax_updates_and_events.mojom.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/base/page_transition_types.h"
@@ -2857,9 +2858,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
                                  JavaScriptResultAndTypeCallback callback);
 
   // Call |HandleAXEvents()| for tests.
-  void HandleAXEventsForTests(
-      const ui::AXTreeID& tree_id,
-      blink::mojom::AXUpdatesAndEventsPtr updates_and_events) {
+  void HandleAXEventsForTests(const ui::AXTreeID& tree_id,
+                              ui::AXUpdatesAndEvents updates_and_events) {
     HandleAXEvents(tree_id, std::move(updates_and_events),
                    *accessibility_reset_token_);
   }
@@ -3416,7 +3416,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   friend class RenderAccessibilityHost;
   void HandleAXEvents(const ui::AXTreeID& tree_id,
-                      blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
+                      ui::AXUpdatesAndEvents updates_and_events,
                       uint32_t reset_token);
   void HandleAXLocationChanges(
       const ui::AXTreeID& tree_id,

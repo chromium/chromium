@@ -11,6 +11,7 @@ import "ui/accessibility/mojom/ax_mode.mojom";
 import "ui/accessibility/mojom/ax_relative_bounds.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
+import "ui/accessibility/mojom/ax_updates_and_events.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
@@ -37,13 +38,6 @@ struct HitTestResponse {
   int32 hit_node_id;
 };
 
-// Structure containing the large parameters to HandleAXEvents, that allows them
-// to be moved rather than copied.
-struct AXUpdatesAndEvents {
-  array<ax.mojom.AXTreeUpdate> updates;
-  array<ax.mojom.AXEvent> events;
-};
-
 // Interface for accessibility messages sent from the renderer to the browser,
 // implemented by RenderAccessibilityHostImpl and forwarded to
 // RenderFrameHostImpl in the browser process.
@@ -64,7 +58,7 @@ interface RenderAccessibilityHost {
   // become arbitrarily large.
   // TODO(crbug.com/1088484) tracks work to improve the payload size.
   [UnlimitedSize]
-  HandleAXEvents(AXUpdatesAndEvents events_and_updates,
+  HandleAXEvents(ax.mojom.AXUpdatesAndEvents events_and_updates,
                  uint32 reset_token) => ();
 
   // Sent to update the browser of the location of accessibility objects.

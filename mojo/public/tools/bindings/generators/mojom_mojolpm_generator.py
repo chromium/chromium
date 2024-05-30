@@ -256,6 +256,7 @@ class Generator(CppGenerator):
         "is_hashable": self._IsHashableKind,
         "is_map_kind": mojom.IsMapKind,
         "is_move_only_kind": self._IsMoveOnlyKind,
+        "is_non_const_ref_kind": self._IsNonConstRefKind,
         "is_nullable_kind": mojom.IsNullableKind,
         "is_object_kind": mojom.IsObjectKind,
         "is_reference_kind": mojom.IsReferenceKind,
@@ -360,6 +361,11 @@ class Generator(CppGenerator):
               or self._IsMoveOnlyKind(kind.key_kind))
     if mojom.IsAnyHandleOrInterfaceKind(kind):
       return True
+    return False
+
+  def _IsNonConstRefKind(self, kind):
+    if self._IsTypemappedKind(kind):
+      return self.typemap[self._GetFullMojomNameForKind(kind)]["non_const_ref"]
     return False
 
   def _GetCppWrapperProtoType(self, kind, add_same_module_namespaces=False):

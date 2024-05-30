@@ -690,8 +690,8 @@ class CONTENT_EXPORT WebContentsImpl
   // Broadcasts the mode change to all frames.
   void ResetAccessibility() override;
   void AXTreeIDForMainFrameHasChanged() override;
-  void AccessibilityEventReceived(
-      const ui::AXUpdatesAndEvents& details) override;
+  void ProcessAccessibilityUpdatesAndEvents(
+      ui::AXUpdatesAndEvents& details) override;
   void AccessibilityLocationChangesReceived(
       const std::vector<ui::AXLocationChanges>& details) override;
   ui::AXNode* GetAccessibilityRootNode() override;

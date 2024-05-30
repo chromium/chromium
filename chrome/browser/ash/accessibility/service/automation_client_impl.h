@@ -45,10 +45,11 @@ class AutomationClientImpl : public ax::mojom::AutomationClient,
   // Receive accessibility information from AutomationEventRouter in ash and
   // forward it along to the service.
   // extensions::AutomationEventRouterInterface:
-  void DispatchAccessibilityEvents(const ui::AXTreeID& tree_id,
-                                   std::vector<ui::AXTreeUpdate> updates,
-                                   const gfx::Point& mouse_location,
-                                   std::vector<ui::AXEvent> events) override;
+  void DispatchAccessibilityEvents(
+      const ui::AXTreeID& tree_id,
+      const std::vector<ui::AXTreeUpdate>& updates,
+      const gfx::Point& mouse_location,
+      const std::vector<ui::AXEvent>& events) override;
   void DispatchAccessibilityLocationChange(
       const ui::AXLocationChanges& details) override;
   void DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) override;
