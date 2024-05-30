@@ -50,7 +50,7 @@ found in the LICENSE file.
 
         <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
             android:key="fingerprinting_protection_toggle"
-            android:title="@string/tracking_protection_fingerprinting_protection_toggle_title"
+            android:title="@string/tracking_protection_fingerprinting_protection_title"
             android:summary="@string/tracking_protection_fingerprinting_protection_toggle_summary"
             app:allowDividerBelow="false"
             app:isPreferenceVisible="false" />

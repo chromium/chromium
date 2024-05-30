@@ -172,6 +172,22 @@ public class PrivacySettingsFragmentTest {
                                 .getBoolean(Pref.IP_PROTECTION_ENABLED));
     }
 
+    private void setFpProtection(boolean fpProtectionEnabled) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                                .setBoolean(
+                                        Pref.FINGERPRINTING_PROTECTION_ENABLED,
+                                        fpProtectionEnabled));
+    }
+
+    private boolean isFpProtectionEnabled() throws ExecutionException {
+        return TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                                .getBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED));
+    }
+
     @Before
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
@@ -361,12 +377,34 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
+    @Features.EnableFeatures(ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING)
+    @Features.DisableFeatures({
+        ChromeFeatureList.TRACKING_PROTECTION_3PCD,
+        ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH
+    })
+    public void testFingerprintingProtectionSettingsE2E() throws ExecutionException {
+        setFpProtection(false);
+        setShowTrackingProtection(false);
+        mSettingsActivityTestRule.startSettingsActivity();
+        // Scroll down and open Privacy Sandbox page.
+        scrollToSetting(withText(R.string.tracking_protection_fingerprinting_protection_title));
+        onView(withText(R.string.tracking_protection_fingerprinting_protection_title))
+                .perform(click());
+        // Verify that the right view is shown depending on feature state.
+        onView(withText(R.string.tracking_protection_fingerprinting_protection_title))
+                .check(matches(isDisplayed()));
+        onView(allOf(withText(R.string.text_off), isDisplayed())).perform(click());
+        assertTrue(isFpProtectionEnabled());
+    }
+
+    @Test
+    @LargeTest
     @Features.EnableFeatures({
         ChromeFeatureList.IP_PROTECTION_V1,
         ChromeFeatureList.TRACKING_PROTECTION_3PCD,
         ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH
     })
-    public void testIpProtectionSettingsWithTrackingProtectionEnabled() throws ExecutionException {
+    public void testIpProtectionSettingsWithTrackingProtectionEnabled() {
         setIpProtection(false);
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
@@ -376,6 +414,25 @@ public class PrivacySettingsFragmentTest {
                 fragment.findPreference(PrivacySettings.PREF_IP_PROTECTION);
 
         assertFalse(ipProtectionPreference.isVisible());
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING,
+        ChromeFeatureList.TRACKING_PROTECTION_3PCD,
+        ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH
+    })
+    public void testFingerprintingProtectionSettingsWithTrackingProtectionEnabled() {
+        setFpProtection(false);
+        mSettingsActivityTestRule.startSettingsActivity();
+        waitForOptionsMenu();
+
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+        Preference fpProtectionPreference =
+                fragment.findPreference(PrivacySettings.PREF_FP_PROTECTION);
+
+        assertFalse(fpProtectionPreference.isVisible());
     }
 
     @Test

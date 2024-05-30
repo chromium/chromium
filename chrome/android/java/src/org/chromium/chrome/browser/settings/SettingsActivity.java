@@ -105,6 +105,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizerUtil;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.privacy_sandbox.FingerprintingProtectionSettingsFragment;
 import org.chromium.components.privacy_sandbox.IpProtectionSettingsFragment;
 import org.chromium.components.privacy_sandbox.TrackingProtectionSettings;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -665,6 +666,13 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             ipProtectionSettingsFragment.setTrackingProtectionDelegate(
                     new ChromeTrackingProtectionDelegate(mProfile));
             ipProtectionSettingsFragment.setCustomTabIntentHelper(
+                    LaunchIntentDispatcher::createCustomTabActivityIntent);
+        }
+        if (fragment
+                instanceof FingerprintingProtectionSettingsFragment fpProtectionSettingsFragment) {
+            fpProtectionSettingsFragment.setTrackingProtectionDelegate(
+                    new ChromeTrackingProtectionDelegate(mProfile));
+            fpProtectionSettingsFragment.setCustomTabIntentHelper(
                     LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof AutofillIbanEditor) {

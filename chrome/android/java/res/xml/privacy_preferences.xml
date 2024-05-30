@@ -42,6 +42,11 @@ found in the LICENSE file.
         android:fragment="org.chromium.components.privacy_sandbox.IpProtectionSettingsFragment"
         app:isPreferenceVisible="false" />
     <Preference
+        android:key="fp_protection"
+        android:title="@string/tracking_protection_fingerprinting_protection_title"
+        android:fragment="org.chromium.components.privacy_sandbox.FingerprintingProtectionSettingsFragment"
+        app:isPreferenceVisible="false" />
+    <Preference
         android:key="privacy_sandbox"
         android:title="@string/ad_privacy_link_row_label"
         android:summary="@string/ad_privacy_link_row_sub_label"

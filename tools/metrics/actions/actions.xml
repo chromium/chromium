@@ -32499,6 +32499,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.FingerprintingProtection.Enabled">
+  <owner>dembski@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    User enables the Fingerprinting Protection in the Privacy settings page.
+  </description>
+</action>
+
 <action name="Settings.GetTheMostOutOfChrome.FirstSectionExpanded">
   <owner>jochen@chromium.org</owner>
   <owner>dwarren@google.com</owner>

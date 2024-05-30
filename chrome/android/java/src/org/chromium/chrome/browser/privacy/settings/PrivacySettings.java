@@ -67,6 +67,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     private static final String PREF_INCOGNITO_LOCK = "incognito_lock";
     private static final String PREF_THIRD_PARTY_COOKIES = "third_party_cookies";
     private static final String PREF_TRACKING_PROTECTION = "tracking_protection";
+    @VisibleForTesting static final String PREF_FP_PROTECTION = "fp_protection";
     @VisibleForTesting static final String PREF_IP_PROTECTION = "ip_protection";
     @VisibleForTesting static final String PREF_CLEAR_BROWSING_DATA = "clear_browsing_data";
 
@@ -80,6 +81,9 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         getActivity().setTitle(R.string.prefs_privacy_security);
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_preferences);
+
+        Preference fpProtectionPreference = findPreference(PREF_FP_PROTECTION);
+        fpProtectionPreference.setVisible(shouldShowFpProtectionUI());
 
         Preference ipProtectionPreference = findPreference(PREF_IP_PROTECTION);
         ipProtectionPreference.setVisible(shouldShowIpProtectionUI());
@@ -302,6 +306,14 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                             : R.string.text_off);
         }
 
+        Preference fpProtectionPref = findPreference(PREF_FP_PROTECTION);
+        if (fpProtectionPref != null) {
+            fpProtectionPref.setSummary(
+                    UserPrefs.get(getProfile()).getBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED)
+                            ? R.string.text_on
+                            : R.string.text_off);
+        }
+
         Preference preloadPagesPreference = findPreference(PREF_PRELOAD_PAGES);
         if (preloadPagesPreference != null) {
             preloadPagesPreference.setSummary(
@@ -364,6 +376,11 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     private boolean shouldShowIpProtectionUI() {
         return !showTrackingProtectionUI()
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_V1);
+    }
+
+    private boolean shouldShowFpProtectionUI() {
+        return !showTrackingProtectionUI()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING);
     }
 
     @Override

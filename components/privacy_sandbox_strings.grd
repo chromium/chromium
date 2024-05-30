@@ -331,7 +331,7 @@
       <message name="IDS_TRACKING_PROTECTION_IP_PROTECTION_LEARN_MORE" desc="" formatter_data="android_java" translateable="false">
         Learn <ph name="BEGIN_LINK">&lt;link&gt;</ph>how IP protection works<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
-      <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TOGGLE_TITLE" desc="" formatter_data="android_java" translateable="false">
+      <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TITLE" desc="" formatter_data="android_java" translateable="false">
         Limit digital fingerprinting
       </message>
       <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TOGGLE_SUMMARY" desc="" formatter_data="android_java" translateable="false">
