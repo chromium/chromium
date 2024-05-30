@@ -104,6 +104,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 - (void)tearDown {
   [super tearDown];
+  // Some tests change the value of this pref, so reset.
+  [ChromeEarlGrey clearUserPrefWithName:prefs::kSigninAllowed];
   [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
 }
@@ -266,23 +268,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGrey verifySignedOut];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
-
-  // Turn on "Allow Chrome Sign-in" feature again. This is necessary to reset
-  // the state before other tests run.
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                   kAllowSigninItemAccessibilityIdentifier,
-                                   /*is_toggled_on=*/NO,
-                                   /*enabled=*/YES)]
-      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
-
-  // Verify that the user is signed out and sign-in is enabled.
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that canceling the "Allow Chrome sign-in" option does not change the
