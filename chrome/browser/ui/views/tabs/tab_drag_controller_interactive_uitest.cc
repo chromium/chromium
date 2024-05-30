@@ -4838,9 +4838,8 @@ IN_PROC_BROWSER_TEST_P(
       ui_test_utils::SendMouseEventsSync(ui_controls::LEFT, ui_controls::UP));
 }
 
-// TODO(crbug.com/333085989): Re-enable flaky tests
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
-    defined(LEAK_SANITIZER)
+// TODO(crbug.com/333085989): Re-enable flaky tests on ChromeOS
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CancelDragTabToWindowIn1stDisplay \
   DISABLED_CancelDragTabToWindowIn1stDisplay
 #else
