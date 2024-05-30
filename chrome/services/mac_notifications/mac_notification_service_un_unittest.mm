@@ -652,7 +652,13 @@ TEST_F(MacNotificationServiceUNTest, CloseProfileNotifications) {
 
   auto profile_identifier =
       mojom::ProfileIdentifier::New("profileId", /*incognito=*/true);
-  service_remote_->CloseNotificationsForProfile(std::move(profile_identifier));
+  service_->CloseNotificationsForProfile(std::move(profile_identifier));
+
+  // Reset `service_` to verify that this still works if `service_` gets
+  // destroyed while waiting for UNUserNotificationCenter to reply back with
+  // the currently displaying notifications.
+  ExpectAndUpdateUNUserNotificationCenterDelegate(/*expect_not_nil=*/false);
+  service_.reset();
 
   run_loop.Run();
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);

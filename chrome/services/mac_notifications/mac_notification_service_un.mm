@@ -354,6 +354,9 @@ void MacNotificationServiceUN::CloseNotificationsForProfile(
   __block auto closed_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&MacNotificationServiceUN::OnNotificationsClosed,
                      weak_factory_.GetWeakPtr()));
+  // Make a local copy of `notification_center_` to avoid implicitly capturing
+  // `this` in the objective-c block below.
+  auto* notification_center = notification_center_;
 
   [notification_center_ getDeliveredNotificationsWithCompletionHandler:^(
                             NSArray<UNNotification*>* _Nonnull toasts) {
@@ -375,7 +378,7 @@ void MacNotificationServiceUN::CloseNotificationsForProfile(
       }
     }
 
-    [notification_center_
+    [notification_center
         removeDeliveredNotificationsWithIdentifiers:identifiers];
     std::move(closed_callback).Run(closed_notification_ids);
   }];
@@ -503,10 +506,13 @@ void MacNotificationServiceUN::InitializeDeliveredNotifications() {
       base::BindPostTaskToCurrentDefault(base::BindOnce(
           &MacNotificationServiceUN::DoInitializeDeliveredNotifications,
           weak_factory_.GetWeakPtr()));
+  // Make a local copy of `notification_center_` to avoid implicitly capturing
+  // `this` in the objective-c block below.
+  auto* notification_center = notification_center_;
 
   [notification_center_ getDeliveredNotificationsWithCompletionHandler:^(
                             NSArray<UNNotification*>* _Nonnull notifications) {
-    [notification_center_
+    [notification_center
         getNotificationCategoriesWithCompletionHandler:^(
             NSSet<UNNotificationCategory*>* _Nonnull categories) {
           std::move(do_initialize).Run(notifications, categories);
