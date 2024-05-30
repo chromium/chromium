@@ -862,6 +862,16 @@ void AppsSection::AddAndroidAppStrings(content::WebUIDataSource* html_source) {
           : l10n_util::GetStringFUTF16(
                 IDS_SETTINGS_ANDROID_APPS_SUBTEXT, ui::GetChromeOSDeviceName(),
                 GetHelpUrlWithBoard(chrome::kAndroidAppsLearnMoreURL)));
+  if (kIsRevampEnabled) {
+    html_source->AddLocalizedString(
+        "androidAppsSubtextDescription",
+        IDS_OS_SETTINGS_REVAMP_ANDROID_APPS_SUBTEXT_DESCRIPTION);
+  } else {
+    html_source->AddString("androidAppsSubtextDescription",
+                           l10n_util::GetStringFUTF16(
+                               IDS_SETTINGS_ANDROID_APPS_SUBTEXT_DESCRIPTION,
+                               ui::GetChromeOSDeviceName()));
+  }
 }
 
 void AppsSection::AddPluginVmLoadTimeData(
