@@ -106,8 +106,29 @@ std::unique_ptr<api::WifiDirectServerSocket> WifiDirectMedium::ListenForService(
     return nullptr;
   }
 
-  return std::make_unique<WifiDirectServerSocket>(task_runner_,
-                                                  std::move(handle), nullptr);
+  std::optional<ash::nearby::TcpServerSocketPort> tcp_port =
+      ash::nearby::TcpServerSocketPort::FromInt(port);
+  if (!tcp_port) {
+    tcp_port = ash::nearby::TcpServerSocketPort::Random();
+  }
+
+  // Open a firewall hole.
+  mojo::PendingRemote<sharing::mojom::FirewallHole> firewall_hole;
+  {
+    base::WaitableEvent waitable_event;
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(&WifiDirectMedium::OpenFirewallHole,
+                                          base::Unretained(this), *tcp_port,
+                                          &firewall_hole, &waitable_event));
+    waitable_event.Wait();
+  }
+
+  if (!firewall_hole) {
+    return nullptr;
+  }
+
+  return std::make_unique<WifiDirectServerSocket>(
+      task_runner_, std::move(handle), std::move(firewall_hole), nullptr);
 }
 
 absl::optional<std::pair<std::int32_t, std::int32_t>>
@@ -209,6 +230,26 @@ void WifiDirectMedium::OnSocketAssociated(bool* did_associate,
                                           base::WaitableEvent* waitable_event,
                                           bool success) {
   *did_associate = success;
+  waitable_event->Signal();
+}
+
+void WifiDirectMedium::OpenFirewallHole(
+    ash::nearby::TcpServerSocketPort port,
+    mojo::PendingRemote<sharing::mojom::FirewallHole>* output,
+    base::WaitableEvent* waitable_event) {
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+  firewall_hole_factory_->OpenFirewallHole(
+      port, base::BindOnce(&WifiDirectMedium::OnFirewallHoleCreated,
+                           base::Unretained(this), output, waitable_event));
+}
+
+void WifiDirectMedium::OnFirewallHoleCreated(
+    mojo::PendingRemote<sharing::mojom::FirewallHole>* output,
+    base::WaitableEvent* waitable_event,
+    mojo::PendingRemote<sharing::mojom::FirewallHole> firewall_hole) {
+  if (firewall_hole.is_valid()) {
+    *output = std::move(firewall_hole);
+  }
   waitable_event->Signal();
 }
 

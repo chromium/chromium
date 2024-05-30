@@ -66,6 +66,15 @@ class WifiDirectMedium : public api::WifiDirectMedium {
                           base::WaitableEvent* waitable_event,
                           bool success);
 
+  void OpenFirewallHole(
+      ash::nearby::TcpServerSocketPort port,
+      mojo::PendingRemote<::sharing::mojom::FirewallHole>* output,
+      base::WaitableEvent* waitable_event);
+  void OnFirewallHoleCreated(
+      mojo::PendingRemote<::sharing::mojom::FirewallHole>* output,
+      base::WaitableEvent* waitable_event,
+      mojo::PendingRemote<::sharing::mojom::FirewallHole> firewall_hole);
+
   void OnDisconnect();
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

@@ -7,6 +7,7 @@
 
 #include "base/synchronization/waitable_event.h"
 #include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "net/socket/tcp_server_socket.h"
 #include "third_party/nearby/src/internal/platform/exception.h"
 #include "third_party/nearby/src/internal/platform/implementation/wifi_direct.h"
@@ -18,6 +19,7 @@ class WifiDirectServerSocket : public api::WifiDirectServerSocket {
   explicit WifiDirectServerSocket(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       mojo::PlatformHandle handle,
+      mojo::PendingRemote<::sharing::mojom::FirewallHole> firewall_hole,
       std::unique_ptr<net::TCPServerSocket> tcp_server_socket);
   WifiDirectServerSocket(const WifiDirectServerSocket&) = delete;
   WifiDirectServerSocket& operator=(const WifiDirectServerSocket&) = delete;
@@ -31,9 +33,11 @@ class WifiDirectServerSocket : public api::WifiDirectServerSocket {
 
  private:
   void CloseSocket(base::WaitableEvent* close_waitable_event);
+  void OnFirewallHoleDisconnect();
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   mojo::PlatformHandle handle_;
+  mojo::SharedRemote<::sharing::mojom::FirewallHole> firewall_hole_;
   std::unique_ptr<net::TCPServerSocket> tcp_server_socket_;
 };
 

@@ -7,6 +7,8 @@
 #include "base/rand_util.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/services/nearby/public/cpp/fake_firewall_hole.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/net_errors.h"
 #include "net/socket/tcp_client_socket.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,6 +27,11 @@ class WifiDirectServerSocketTest : public ::testing::Test {
  public:
   // ::testing::Test
   void SetUp() override {
+    mojo::PendingRemote<::sharing::mojom::FirewallHole> firewall_hole;
+    firewall_hole_ = mojo::MakeSelfOwnedReceiver(
+        std::make_unique<ash::nearby::FakeFirewallHole>(),
+        firewall_hole.InitWithNewPipeAndPassReceiver());
+
     auto tcp_server_socket =
         std::make_unique<net::TCPServerSocket>(nullptr, net::NetLogSource());
 
@@ -43,7 +50,7 @@ class WifiDirectServerSocketTest : public ::testing::Test {
     // Create the subject under test.
     server_socket_ = std::make_unique<WifiDirectServerSocket>(
         task_environment_.GetMainThreadTaskRunner(), mojo::PlatformHandle(),
-        std::move(tcp_server_socket));
+        std::move(firewall_hole), std::move(tcp_server_socket));
   }
 
   WifiDirectServerSocket* socket() { return server_socket_.get(); }
@@ -58,6 +65,7 @@ class WifiDirectServerSocketTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
+  mojo::SelfOwnedReceiverRef<::sharing::mojom::FirewallHole> firewall_hole_;
   std::unique_ptr<WifiDirectServerSocket> server_socket_;
 };
 

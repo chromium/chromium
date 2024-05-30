@@ -11,10 +11,17 @@ namespace nearby::chrome {
 WifiDirectServerSocket::WifiDirectServerSocket(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     mojo::PlatformHandle handle,
+    mojo::PendingRemote<sharing::mojom::FirewallHole> firewall_hole,
     std::unique_ptr<net::TCPServerSocket> tcp_server_socket)
     : task_runner_(std::move(task_runner)),
       handle_(std::move(handle)),
-      tcp_server_socket_(std::move(tcp_server_socket)) {}
+      firewall_hole_(std::move(firewall_hole)),
+      tcp_server_socket_(std::move(tcp_server_socket)) {
+  firewall_hole_.set_disconnect_handler(
+      base::BindOnce(&WifiDirectServerSocket::OnFirewallHoleDisconnect,
+                     base::Unretained(this)),
+      task_runner_);
+}
 
 WifiDirectServerSocket::~WifiDirectServerSocket() {
   Close();
@@ -57,6 +64,14 @@ void WifiDirectServerSocket::CloseSocket(
     base::WaitableEvent* close_waitable_event) {
   tcp_server_socket_.reset();
   close_waitable_event->Signal();
+}
+
+void WifiDirectServerSocket::OnFirewallHoleDisconnect() {
+  // Close the socket so that Nearby Connections knows that there will not be
+  // any new incoming connections.
+  // Note: This is a callback that is bound to the provided `task_runner`, which
+  // is the appropriate place to destroy the stored socket,
+  tcp_server_socket_.reset();
 }
 
 }  // namespace nearby::chrome

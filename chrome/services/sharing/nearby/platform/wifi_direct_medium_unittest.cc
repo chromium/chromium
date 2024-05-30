@@ -6,6 +6,7 @@
 
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
+#include "chrome/services/sharing/nearby/platform/wifi_direct_server_socket.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_firewall_hole_factory.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -19,7 +20,7 @@ constexpr int kTestPort = 61234;
 class FakeWifiDirectConnection
     : public ash::wifi_direct::mojom::WifiDirectConnection {
  public:
-  std::optional<::mojo::PlatformHandle> socket;
+  bool did_associate;
   bool should_associate;
 
  private:
@@ -35,7 +36,7 @@ class FakeWifiDirectConnection
   // ash::wifi_direct::mojom::WifiDirectConnection
   void AssociateSocket(::mojo::PlatformHandle handle,
                        AssociateSocketCallback callback) override {
-    socket = std::move(handle);
+    did_associate = should_associate;
     std::move(callback).Run(should_associate);
   }
 };
@@ -123,6 +124,9 @@ class WifiDirectMediumTest : public ::testing::Test {
 
   WifiDirectMedium* medium() { return medium_.get(); }
   FakeWifiDirectManager* manager() { return wifi_direct_manager_; }
+  ash::nearby::FakeFirewallHoleFactory* firewall_hole_factory() {
+    return firewall_hole_factory_;
+  }
 
   void RunOnTaskRunner(base::OnceClosure task) {
     base::RunLoop run_loop;
@@ -217,10 +221,11 @@ TEST_F(WifiDirectMediumTest, StopWifiDirect_ExistingConnection) {
       medium()));
 }
 
-TEST_F(WifiDirectMediumTest, ListenForService_AssociatesSocket) {
+TEST_F(WifiDirectMediumTest, ListenForService_Success) {
   auto* connection = manager()->SetWifiDirectConnection(
       std::make_unique<FakeWifiDirectConnection>());
   connection->should_associate = true;
+  firewall_hole_factory()->should_succeed_ = true;
 
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
@@ -234,16 +239,16 @@ TEST_F(WifiDirectMediumTest, ListenForService_AssociatesSocket) {
       [](WifiDirectMedium* medium) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
         WifiDirectCredentials credentials;
-        // TODO: Assert result once implementation is complete.
-        medium->ListenForService(kTestPort);
+        EXPECT_TRUE(medium->ListenForService(kTestPort));
       },
       medium()));
 
-  EXPECT_TRUE(connection->socket);
+  EXPECT_TRUE(connection->did_associate);
 }
 
 TEST_F(WifiDirectMediumTest, ListenForService_MissingConnection) {
   manager()->SetWifiDirectConnection(nullptr);
+  firewall_hole_factory()->should_succeed_ = true;
 
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
@@ -257,8 +262,7 @@ TEST_F(WifiDirectMediumTest, ListenForService_MissingConnection) {
       [](WifiDirectMedium* medium) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
         WifiDirectCredentials credentials;
-        // TODO: Assert result once implementation is complete.
-        medium->ListenForService(kTestPort);
+        EXPECT_FALSE(medium->ListenForService(kTestPort));
       },
       medium()));
 }
@@ -267,6 +271,7 @@ TEST_F(WifiDirectMediumTest, ListenForService_FailToAssociatesSocket) {
   auto* connection = manager()->SetWifiDirectConnection(
       std::make_unique<FakeWifiDirectConnection>());
   connection->should_associate = false;
+  firewall_hole_factory()->should_succeed_ = true;
 
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
@@ -280,8 +285,30 @@ TEST_F(WifiDirectMediumTest, ListenForService_FailToAssociatesSocket) {
       [](WifiDirectMedium* medium) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
         WifiDirectCredentials credentials;
-        // TODO: Assert result once implementation is complete.
-        medium->ListenForService(kTestPort);
+        EXPECT_FALSE(medium->ListenForService(kTestPort));
+      },
+      medium()));
+}
+
+TEST_F(WifiDirectMediumTest, ListenForService_FailToOpenFirewallHole) {
+  auto* connection = manager()->SetWifiDirectConnection(
+      std::make_unique<FakeWifiDirectConnection>());
+  connection->should_associate = true;
+  firewall_hole_factory()->should_succeed_ = false;
+
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        WifiDirectCredentials credentials;
+        EXPECT_TRUE(medium->StartWifiDirect(&credentials));
+      },
+      medium()));
+
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        WifiDirectCredentials credentials;
+        EXPECT_FALSE(medium->ListenForService(kTestPort));
       },
       medium()));
 }
