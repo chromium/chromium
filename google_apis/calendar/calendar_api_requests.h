@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -107,6 +108,13 @@ class CalendarApiCalendarListRequest : public CalendarApiGetRequest {
 // Request to fetch calendar events. By default, an event fetch for the primary
 // calendar is requested. If a calendar ID is passed, an event fetch is
 // requested for the calendar matching that ID.
+// |url_generator|  The UrlGenerator to use for the request.
+// |callback|       The callback to send the parsed |EventList| to when the
+//                  request is complete.
+// |start_time|     The minimum time to fetch events for. This will filter
+//                  out events with an end time before this value.
+// |end_time|       The maximum time to fetch events for. This will filter
+//                  out events with a start time after this value.
 class CalendarApiEventsRequest : public CalendarApiGetRequest {
  public:
   CalendarApiEventsRequest(RequestSender* sender,
@@ -122,6 +130,27 @@ class CalendarApiEventsRequest : public CalendarApiGetRequest {
                            const base::Time& start_time,
                            const base::Time& end_time,
                            bool include_attachments = false);
+  // Creates a CalendarApiEventsRequest for the user's primary calendar with
+  // extra params.
+  // |event_types|          A vector of |EventType| to filter
+  //                        for. If the vector is empty, no filtering by
+  //                        event_types will occur.
+  // |experiment|           A string indicating an experiment param to add to
+  //                        the query. This does not filter further, but allows
+  //                        for separating requests by project in the backend.
+  // |order_by|             The field to order the results by. This can be
+  //                        "startTime" or "updated".
+  // |include_attachments|  Boolean of whether to include attachments in the
+  //                        response object. Default is true.
+  CalendarApiEventsRequest(RequestSender* sender,
+                           const CalendarApiUrlGenerator& url_generator,
+                           CalendarEventListCallback callback,
+                           const base::Time& start_time,
+                           const base::Time& end_time,
+                           const std::vector<EventType>& event_types,
+                           const std::string& experiment,
+                           const std::string& order_by,
+                           bool include_attachments = true);
   CalendarApiEventsRequest(const CalendarApiEventsRequest&) = delete;
   CalendarApiEventsRequest& operator=(const CalendarApiEventsRequest&) = delete;
   ~CalendarApiEventsRequest() override;
@@ -148,10 +177,13 @@ class CalendarApiEventsRequest : public CalendarApiGetRequest {
   CalendarEventListCallback callback_;
   const CalendarApiUrlGenerator url_generator_;
 
-  const base::Time start_time_;
-  const base::Time end_time_;
-  const std::string calendar_id_;
   const std::string calendar_color_id_;
+  const std::string calendar_id_;
+  const base::Time end_time_;
+  const std::vector<EventType> event_types_;
+  const std::string experiment_;
+  const std::string order_by_;
+  const base::Time start_time_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

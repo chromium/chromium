@@ -226,6 +226,10 @@ class CalendarEvent {
     self_response_status_ = self_response_status;
   }
 
+  // The location of the event.
+  const std::string& location() const { return location_; }
+  void set_location(const std::string& location) { location_ = location; }
+
   const DateTime& start_time() const { return start_time_; }
   void set_start_time(const DateTime& start_time) { start_time_ = start_time; }
 
@@ -259,6 +263,7 @@ class CalendarEvent {
   std::string color_id_;
   EventStatus status_ = EventStatus::kUnknown;
   ResponseStatus self_response_status_ = ResponseStatus::kUnknown;
+  std::string location_;
   DateTime start_time_;
   DateTime end_time_;
   bool all_day_event_ = false;

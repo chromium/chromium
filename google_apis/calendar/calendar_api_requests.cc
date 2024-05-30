@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
@@ -72,7 +73,7 @@ std::string GetCalendarEventListFields(bool include_attachments) {
        "status,start(date),end(date),start(dateTime),end(dateTime),htmlLink,"
        "attendees(responseStatus,self),attendeesOmitted,"
        "conferenceData(conferenceId,entryPoints(entryPointType,uri)),"
-       "creator(self)",
+       "creator(self),location",
        include_attachments ? ",attachments(title,fileUrl,iconLink,fileId)" : "",
        ")"});
 }
@@ -186,10 +187,10 @@ CalendarApiEventsRequest::CalendarApiEventsRequest(
           GetCalendarEventListFields(/*include_attachments=*/false)),
       callback_(std::move(callback)),
       url_generator_(url_generator),
-      start_time_(start_time),
-      end_time_(end_time),
+      calendar_color_id_(calendar_color_id),
       calendar_id_(calendar_id),
-      calendar_color_id_(calendar_color_id) {
+      end_time_(end_time),
+      start_time_(start_time) {
   CHECK(!callback_.is_null());
 }
 
@@ -204,20 +205,43 @@ CalendarApiEventsRequest::CalendarApiEventsRequest(
                             GetCalendarEventListFields(include_attachments)),
       callback_(std::move(callback)),
       url_generator_(url_generator),
-      start_time_(start_time),
+      calendar_id_(kPrimaryCalendarId),
       end_time_(end_time),
-      calendar_id_(kPrimaryCalendarId) {
+      start_time_(start_time) {
+  CHECK(!callback_.is_null());
+}
+
+CalendarApiEventsRequest::CalendarApiEventsRequest(
+    RequestSender* sender,
+    const CalendarApiUrlGenerator& url_generator,
+    CalendarEventListCallback callback,
+    const base::Time& start_time,
+    const base::Time& end_time,
+    const std::vector<EventType>& event_types,
+    const std::string& experiment,
+    const std::string& order_by,
+    bool include_attachments)
+    : CalendarApiGetRequest(sender,
+                            GetCalendarEventListFields(include_attachments)),
+      callback_(std::move(callback)),
+      url_generator_(url_generator),
+      calendar_id_(kPrimaryCalendarId),
+      end_time_(end_time),
+      event_types_(event_types),
+      experiment_(experiment),
+      order_by_(order_by),
+      start_time_(start_time) {
   CHECK(!callback_.is_null());
 }
 
 CalendarApiEventsRequest::~CalendarApiEventsRequest() = default;
 
 GURL CalendarApiEventsRequest::GetURLInternal() const {
-  return url_generator_.GetCalendarEventListUrl(calendar_id_, start_time_,
-                                                end_time_,
-                                                /*single_events=*/true,
-                                                /*max_attendees=*/kMaxAttendees,
-                                                /*max_results=*/kMaxResults);
+  return url_generator_.GetCalendarEventListUrl(
+      calendar_id_, start_time_, end_time_,
+      /*single_events=*/true,
+      /*max_attendees=*/kMaxAttendees,
+      /*max_results=*/kMaxResults, event_types_, experiment_, order_by_);
 }
 
 void CalendarApiEventsRequest::ProcessURLFetchResults(

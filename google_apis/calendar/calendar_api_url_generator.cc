@@ -4,8 +4,13 @@
 
 #include "google_apis/calendar/calendar_api_url_generator.h"
 
+#include <map>
 #include <optional>
+#include <string>
+#include <string_view>
+#include <vector>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -20,15 +25,26 @@ namespace calendar {
 namespace {
 
 // Hard coded URLs for communication with a google calendar server.
-constexpr char kCalendarV3ColorUrl[] = "calendar/v3/colors";
-constexpr char kCalendarV3EventsUrlFormat[] = "calendar/v3/calendars/%s/events";
 constexpr char kCalendarV3CalendarListUrl[] =
     "calendar/v3/users/me/calendarList";
+constexpr char kCalendarV3ColorUrl[] = "calendar/v3/colors";
+constexpr char kCalendarV3EventsUrlFormat[] = "calendar/v3/calendars/%s/events";
+constexpr char kEventTypesParameterName[] = "eventTypes";
+constexpr char kExperimentParameterName[] = "experiment";
 constexpr char kMaxAttendeesParameterName[] = "maxAttendees";
 constexpr char kMaxResultsParameterName[] = "maxResults";
+constexpr char kOrderByParameterName[] = "orderBy";
 constexpr char kSingleEventsParameterName[] = "singleEvents";
 constexpr char kTimeMaxParameterName[] = "timeMax";
 constexpr char kTimeMinParameterName[] = "timeMin";
+
+constexpr auto kEventTypeToStringMap =
+    base::MakeFixedFlatMap<EventType, std::string_view>(
+        {{EventType::kDefault, "default"},
+         {EventType::kFocusTime, "focusTime"},
+         {EventType::kFromGmail, "fromGmail"},
+         {EventType::kOutOfOffice, "outOfOffice"},
+         {EventType::kWorkingLocation, "workingLocation"}});
 
 }  // namespace
 
@@ -48,7 +64,10 @@ GURL CalendarApiUrlGenerator::GetCalendarEventListUrl(
     const base::Time& end_time,
     bool single_events,
     std::optional<int> max_attendees,
-    std::optional<int> max_results) const {
+    std::optional<int> max_results,
+    const std::vector<EventType>& event_types,
+    const std::string& experiment,
+    const std::string& order_by) const {
   GURL url;
   if (!calendar_id.empty()) {
     url = base_url_.Resolve(base::StringPrintf(
@@ -75,6 +94,21 @@ GURL CalendarApiUrlGenerator::GetCalendarEventListUrl(
     url = net::AppendOrReplaceQueryParameter(
         url, kMaxResultsParameterName,
         base::NumberToString(max_results.value()));
+  }
+  if (!order_by.empty()) {
+    url = net::AppendOrReplaceQueryParameter(url, kOrderByParameterName,
+                                             order_by);
+  }
+  for (const auto& event_type : event_types) {
+    const auto it = kEventTypeToStringMap.find(event_type);
+    if (it != kEventTypeToStringMap.end()) {
+      url =
+          net::AppendQueryParameter(url, kEventTypesParameterName, it->second);
+    }
+  }
+  if (!experiment.empty()) {
+    url = net::AppendOrReplaceQueryParameter(url, kExperimentParameterName,
+                                             experiment);
   }
   return url;
 }

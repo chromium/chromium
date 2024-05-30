@@ -102,7 +102,8 @@
       "reminders": {
         "useDefault": true
       },
-      "eventType": "default"
+      "eventType": "default",
+      "location": "location 1"
     },
     {
       "kind": "calendar#event",
@@ -186,7 +187,8 @@
       "reminders": {
         "useDefault": true
       },
-      "eventType": "default"
+      "eventType": "default",
+      "location": "location 2"
     },
     {
       "kind": "calendar#event",

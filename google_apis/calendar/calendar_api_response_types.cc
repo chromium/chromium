@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/json/json_value_converter.h"
@@ -55,6 +56,7 @@ constexpr char kCalendarEventKind[] = "calendar#event";
 constexpr char kColorId[] = "colorId";
 constexpr char kEnd[] = "end";
 constexpr char kHtmlLink[] = "htmlLink";
+constexpr char kLocation[] = "location";
 constexpr char kStart[] = "start";
 constexpr char kStatus[] = "status";
 constexpr char kSummary[] = "summary";
@@ -368,6 +370,7 @@ void CalendarEvent::RegisterJSONConverter(
   converter->RegisterStringField(kSummary, &CalendarEvent::summary_);
   converter->RegisterStringField(kHtmlLink, &CalendarEvent::html_link_);
   converter->RegisterStringField(kColorId, &CalendarEvent::color_id_);
+  converter->RegisterStringField(kLocation, &CalendarEvent::location_);
   converter->RegisterCustomValueField(kStatus, &CalendarEvent::status_,
                                       &ConvertEventStatus);
   converter->RegisterCustomValueField(kStart, &CalendarEvent::start_time_,
@@ -386,6 +389,7 @@ int CalendarEvent::GetApproximateSizeInBytes() const {
   total_bytes += summary_.length();
   total_bytes += html_link_.length();
   total_bytes += color_id_.length();
+  total_bytes += location_.length();
   total_bytes += sizeof(status_);
   total_bytes += sizeof(self_response_status_);
 

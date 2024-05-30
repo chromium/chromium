@@ -107,6 +107,7 @@ TEST(CalendarAPIResponseTypesTest, ParseEventList) {
   EXPECT_EQ(event.status(), CalendarEvent::EventStatus::kConfirmed);
   EXPECT_EQ(event.self_response_status(),
             CalendarEvent::ResponseStatus::kNeedsAction);
+  EXPECT_EQ(event.location(), "location 1");
 }
 
 TEST(CalendarAPIResponseTypesTest, ParseConferenceDataUri) {

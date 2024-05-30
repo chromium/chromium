@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/time/time.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -15,6 +16,15 @@
 namespace google_apis {
 
 namespace calendar {
+
+// The type of Calendar event for filtering.
+enum class EventType {
+  kDefault,
+  kFocusTime,
+  kFromGmail,
+  kOutOfOffice,
+  kWorkingLocation,
+};
 
 // This class is used to generate URLs for communicating with calendar api
 // servers for production, and a local server for testing.
@@ -39,12 +49,22 @@ class CalendarApiUrlGenerator {
   //                 only the participant is returned. Optional.
   // |max_results|   Maximum number of events returned on one result page.
   //                 Optional.
+  // |order_by|      Name of the field to order the results by. Can be
+  //                 "startTime" or "updated". Optional.
+  // |event_types|   Types of events to include in the results. Can
+  //                 be empty or include multiple event types. When empty, the
+  //                 result will include all event types. Optional.
+  // |experiment|    String to differentiate the different calls in the
+  //                 backend. Optional.
   GURL GetCalendarEventListUrl(const std::string& calendar_id,
                                const base::Time& start_time,
                                const base::Time& end_time,
                                bool single_events,
                                std::optional<int> max_attendees,
-                               std::optional<int> max_results) const;
+                               std::optional<int> max_results,
+                               const std::vector<EventType>& event_types,
+                               const std::string& experiment,
+                               const std::string& order_by) const;
 
   // Returns a URL to fetch a map of calendar color id to color code.
   GURL GetCalendarColorListUrl() const;
