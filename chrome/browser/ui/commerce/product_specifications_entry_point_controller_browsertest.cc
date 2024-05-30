@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   // Navigate to a URL that is not in cluster. After this navigation, there is
   // one URL in this window that belong to the cluster, and the entry point is
   // no longer valid.
-  EXPECT_CALL(*observer_, HideEntryPoint()).Times(1);
+  EXPECT_CALL(*observer_, HideEntryPoint()).Times(testing::AtLeast(1));
   auto* web_contents_two = browser()->tab_strip_model()->GetWebContentsAt(1);
   ASSERT_EQ(web_contents_two->GetLastCommittedURL(), GURL(kTestUrl3));
   ASSERT_TRUE(content::NavigateToURL(web_contents_two, GURL(kTestUrl1)));

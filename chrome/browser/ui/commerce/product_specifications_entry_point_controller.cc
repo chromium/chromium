@@ -110,9 +110,9 @@ void ProductSpecificationsEntryPointController::TabChangedAt(
     content::WebContents* contents,
     int index,
     TabChangeType change_type) {
-  if (change_type == TabChangeType::kAll &&
-      contents->GetLastCommittedURL() != last_committed_url_) {
-    last_committed_url_ = contents->GetLastCommittedURL();
+  if (change_type == TabChangeType::kAll) {
+    // TODO(b/343109556): Instead of hiding, sometimes we'll need to update the
+    // showing entry point.
     MaybeHideEntryPoint();
   }
 }
@@ -156,8 +156,12 @@ void ProductSpecificationsEntryPointController::OnEntryPointHidden() {
 
 void ProductSpecificationsEntryPointController::OnClusterFinishedForNavigation(
     const GURL& url) {
-  // Cluster finished for a navigation that didn't happen in this window.
-  if (last_committed_url_ != url || !cluster_manager_) {
+  // Cluster finished for a navigation that didn't happen in this window, or the
+  // clustering took so long to finish that the user has navigated away.
+  GURL current_url = browser_->tab_strip_model()
+                         ->GetActiveWebContents()
+                         ->GetLastCommittedURL();
+  if (current_url != url || !cluster_manager_) {
     return;
   }
 

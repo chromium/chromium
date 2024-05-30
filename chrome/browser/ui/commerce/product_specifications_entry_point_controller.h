@@ -91,7 +91,6 @@ class ProductSpecificationsEntryPointController
   raw_ptr<ClusterManager, DanglingUntriaged> cluster_manager_;
   raw_ptr<ProductSpecificationsService> product_specifications_service_;
   base::ObserverList<Observer> observers_;
-  GURL last_committed_url_;
   base::ScopedObservation<ClusterManager, ClusterManager::Observer>
       cluster_manager_observations_{this};
   base::WeakPtrFactory<ProductSpecificationsEntryPointController>
