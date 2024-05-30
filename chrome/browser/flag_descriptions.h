@@ -3781,9 +3781,6 @@ extern const char kEcheLauncherListViewDescription[];
 extern const char kEcheLauncherIconsInMoreAppsButtonName[];
 extern const char kEcheLauncherIconsInMoreAppsButtonDescription[];
 
-extern const char kEcheNetworkConnectionStateName[];
-extern const char kEcheNetworkConnectionStateDescription[];
-
 extern const char kEcheSWADebugModeName[];
 extern const char kEcheSWADebugModeDescription[];
 

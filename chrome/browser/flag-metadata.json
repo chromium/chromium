@@ -2207,11 +2207,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "eche-network-connection-state",
-    "owners": ["jonmann@chromium.org", "chromeos-cross-device-eng@google.com"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "eche-swa",
     "owners": [ "nayebi@google.com" ],
     "expiry_milestone": 125
