@@ -244,4 +244,26 @@ void UmaHistogramSparse(const char* name, int sample) {
   histogram->Add(sample);
 }
 
+ScopedUmaHistogramTimer::ScopedUmaHistogramTimer(std::string_view name,
+                                                 ScopedHistogramTiming timing)
+    : constructed_(base::TimeTicks::Now()), timing_(timing), name_(name) {}
+
+ScopedUmaHistogramTimer::~ScopedUmaHistogramTimer() {
+  base::TimeDelta elapsed = base::TimeTicks::Now() - constructed_;
+  switch (timing_) {
+    case ScopedHistogramTiming::kMicrosecondTimes:
+      UmaHistogramMicrosecondsTimes(name_, elapsed);
+      break;
+    case ScopedHistogramTiming::kShortTimes:
+      UmaHistogramTimes(name_, elapsed);
+      break;
+    case ScopedHistogramTiming::kMediumTimes:
+      UmaHistogramMediumTimes(name_, elapsed);
+      break;
+    case ScopedHistogramTiming::kLongTimes:
+      UmaHistogramLongTimes(name_, elapsed);
+      break;
+  }
+}
+
 }  // namespace base

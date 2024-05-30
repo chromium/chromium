@@ -187,6 +187,7 @@ BASE_EXPORT void UmaHistogramCustomTimes(const char* name,
                                          TimeDelta min,
                                          TimeDelta max,
                                          size_t buckets);
+// Reference ScopedUmaHistogramTimer::ScopedHistogramTiming for timing.
 // For short timings from 1 ms up to 10 seconds (50 buckets).
 BASE_EXPORT void UmaHistogramTimes(const std::string& name, TimeDelta sample);
 BASE_EXPORT void UmaHistogramTimes(const char* name, TimeDelta sample);
@@ -262,6 +263,58 @@ BASE_EXPORT void UmaHistogramMemoryLargeMB(const char* name, int sample);
 //   UmaHistogramSparse("My.Histogram", std::clamp(value, 0, 200));
 BASE_EXPORT void UmaHistogramSparse(const std::string& name, int sample);
 BASE_EXPORT void UmaHistogramSparse(const char* name, int sample);
+
+// Scoped class which logs its time on this earth in milliseconds as an UMA
+// histogram. This is recommended for when you want a histogram which measures
+// the time it takes for a method to execute. It uses UmaHistogramTimes() and
+// its variations under the hood.
+//
+// This is equivalent to SCOPED_UMA_HISTOGRAM_TIMER.
+//
+// Sample usages:
+//   void Function() {
+//     ScopedUmaHistogramTimer("Component.FunctionTime");
+//     // useful stuff here
+//     ...
+//   }
+//
+//   void Function() {
+//     ScopedUmaHistogramTimer("Component.FunctionTime",
+//       ScopedUmaHistogramTimer::kMicroSecondTimes);
+//     // useful stuff here
+//     ...
+//   }
+class BASE_EXPORT ScopedUmaHistogramTimer {
+ public:
+  // Reference UmaHistogramTiming() function declarations for timing details
+  // below.
+  enum class ScopedHistogramTiming {
+    // For microseconds timings from 1 microsecond up to 10 seconds (50
+    // buckets).
+    kMicrosecondTimes,
+    // For short timings from 1 ms up to 10 seconds (50 buckets).
+    kShortTimes,
+    // For medium timings up to 3 minutes (50 buckets).
+    kMediumTimes,
+    // For time intervals up to 1 hr (50 buckets).
+    kLongTimes
+  };
+
+  // Constructs the scoped timer with the given histogram name.
+  explicit ScopedUmaHistogramTimer(
+      std::string_view name,
+      ScopedHistogramTiming timing = ScopedHistogramTiming::kShortTimes);
+
+  ScopedUmaHistogramTimer(const ScopedUmaHistogramTimer&) = delete;
+  ScopedUmaHistogramTimer& operator=(const ScopedUmaHistogramTimer&) = delete;
+
+  ~ScopedUmaHistogramTimer();
+
+ private:
+  const base::TimeTicks constructed_;
+  const ScopedHistogramTiming timing_;
+  const std::string name_;
+};
 
 }  // namespace base
 
