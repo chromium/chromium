@@ -574,6 +574,29 @@ void ContentWebState::DidStopLoading() {
   }
 }
 
+void ContentWebState::DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                                    const GURL& validated_url) {
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.PageLoaded(this, web::PageLoadCompletionStatus::SUCCESS);
+  }
+}
+
+void ContentWebState::DidFailLoad(content::RenderFrameHost* render_frame_host,
+                                  const GURL& validated_url,
+                                  int error_code) {
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.PageLoaded(this, web::PageLoadCompletionStatus::FAILURE);
+  }
+}
+
 void ContentWebState::LoadProgressChanged(double progress) {
   for (auto& observer : observers_) {
     observer.LoadProgressChanged(this, progress);
