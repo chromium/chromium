@@ -11,6 +11,7 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"  // IWYU pragma: keep
@@ -63,6 +64,7 @@ void WebKioskBaseTest::PrepareAppLaunch() {
   int ui_update_count = LoginScreenTestApi::GetUiUpdateCount();
   policy::SetDeviceLocalAccounts(settings_->owner_settings_service(),
                                  device_local_accounts);
+  LoginManagerMixin::CreatePreferenceFileForProfile(account_id_);
   // Wait for the Kiosk App configuration to reload.
   LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
 }

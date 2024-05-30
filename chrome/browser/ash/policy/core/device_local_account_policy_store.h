@@ -33,6 +33,7 @@ class DeviceLocalAccountPolicyStore : public UserCloudPolicyStoreBase {
  public:
   DeviceLocalAccountPolicyStore(
       const std::string& account_id,
+      const std::string& user_id,
       ash::SessionManagerClient* client,
       ash::DeviceSettingsService* device_settings_service,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
@@ -102,7 +103,11 @@ class DeviceLocalAccountPolicyStore : public UserCloudPolicyStoreBase {
       bool validate_in_background,
       ash::DeviceSettingsService::OwnershipStatus ownership_status);
 
+  // Save internally the non-dynamic policies.
+  void CacheNonDynamicPolicies();
+
   const std::string account_id_;
+  const std::string user_id_;
   raw_ptr<ash::SessionManagerClient> session_manager_client_;
   raw_ptr<ash::DeviceSettingsService> device_settings_service_;
 

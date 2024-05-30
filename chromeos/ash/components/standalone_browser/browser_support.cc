@@ -130,7 +130,12 @@ bool IsEnabledInternal(const user_manager::User* user,
 
 }  // namespace
 
-BrowserSupport::BrowserSupport(bool is_allowed) : is_allowed_(is_allowed) {
+BrowserSupport::BrowserSupport(bool is_allowed,
+                               bool is_new_profile,
+                               bool is_regular_profile)
+    : is_allowed_(is_allowed),
+      is_new_profile_(is_new_profile),
+      is_regular_profile_(is_regular_profile) {
   DCHECK_EQ(nullptr, g_instance);
   g_instance = this;
 }
@@ -192,7 +197,7 @@ void BrowserSupport::InitializeForPrimaryUser(
   // Calls the constructor, which in turn takes care of tracking the newly
   // created instance in `g_instance`, so that it's not leaked and can
   // later be destroyed via `Shutdown()`.
-  new BrowserSupport(is_allowed);
+  new BrowserSupport(is_allowed, is_new_profile, is_regular_profile);
 }
 
 // static
@@ -202,6 +207,7 @@ void BrowserSupport::Shutdown() {
   delete g_instance;
 }
 
+// static
 bool BrowserSupport::IsInitializedForPrimaryUser() {
   return !!g_instance;
 }
@@ -241,6 +247,14 @@ bool BrowserSupport::IsEnabledInternal(const user_manager::User* user,
 
   return ash::standalone_browser::IsEnabledInternal(user, lacros_availability,
                                                     check_migration_status);
+}
+
+void BrowserSupport::VerifyProfileCondition(bool is_new_profile,
+                                            bool is_regular_profile) {
+  CHECK_EQ(is_new_profile_, is_new_profile)
+      << "Initially new profile set as: " << is_new_profile_;
+  CHECK_EQ(is_regular_profile_, is_regular_profile)
+      << "Initially regular profile set as: " << is_regular_profile_;
 }
 
 }  // namespace ash::standalone_browser

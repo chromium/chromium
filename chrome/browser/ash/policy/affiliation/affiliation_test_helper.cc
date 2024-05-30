@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/startup_utils.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -144,6 +145,7 @@ void AffiliationTestHelper::PreLoginUser(const AccountId& account_id) {
 
   user_manager::KnownUser(g_browser_process->local_state())
       .SaveKnownUser(account_id);
+  ash::LoginManagerMixin::CreatePreferenceFileForProfile(account_id);
 
   ash::StartupUtils::MarkOobeCompleted();
 }

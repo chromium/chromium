@@ -209,6 +209,16 @@ void CacheLacrosAvailability(const policy::PolicyMap& map);
 // LacrosDataBackwardMigrationMode policy.
 void CacheLacrosDataBackwardMigrationMode(const policy::PolicyMap& map);
 
+// Cache the non-dynamic policies related to lacros, specifically
+// LacrosAvailability, LacrosSelection and LacrosDataBackwardMigrationMode.
+// First time it's called the values are stored and cannot be changed after
+// that.
+// Note: This part and other CacheLacros* functions is being migrated to
+// BrowserSupport class.
+void CacheLacrosNonDynamicPolicies(const policy::PolicyMap& map,
+                                   bool is_new_profile,
+                                   bool is_regular_profile);
+
 // Returns the lacros ComponentInfo for a given channel.
 ComponentInfo GetLacrosComponentInfoForChannel(version_info::Channel channel);
 

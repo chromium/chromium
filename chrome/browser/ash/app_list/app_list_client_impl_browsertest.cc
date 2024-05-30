@@ -1135,6 +1135,7 @@ class DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest
     // end test, i.e. the test covering the whole process from OOBE flow to
     // showing the launcher. Therefore we set the current user to be new
     // explicitly.
+    ash::LoginManagerMixin::RemovePreferenceFileForProfile(new_user_id_);
     LoginUser(new_user_id_);
     user_manager::UserManager::Get()->SetIsCurrentUserNew(true);
     AppListClientImpl::GetInstance()->InitializeAsIfNewUserLoginForTest();

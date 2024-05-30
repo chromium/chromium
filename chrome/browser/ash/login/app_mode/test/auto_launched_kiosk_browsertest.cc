@@ -171,6 +171,7 @@ class AutoLaunchedKioskTest : public OobeBaseTest {
   }
 
   void SetUpOnMainThread() override {
+    LoginManagerMixin::CreatePreferenceFileForEmail(GetTestAppUserId());
     extensions::browsertest_util::CreateAndInitializeLocalCache();
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
   }
@@ -314,6 +315,8 @@ class AutoLaunchedKioskEphemeralUsersTest : public AutoLaunchedKioskTest {
     device_policy_update->policy_payload()
         ->mutable_ephemeral_users_enabled()
         ->set_ephemeral_users_enabled(true);
+    LoginManagerMixin::CreatePreferenceFileForProfile(
+        GetChromeAppAccountId(GetTestAppId()));
   }
 };
 

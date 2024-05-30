@@ -84,6 +84,9 @@ class UserCloudPolicyStoreAsh : public UserCloudPolicyStoreBase {
   // policy and publishes it if validation succeeded.
   void OnRetrievedPolicyValidated(UserCloudPolicyValidator* validator);
 
+  // Save internally the non-dynamic policies.
+  void CacheNonDynamicPolicies();
+
   std::unique_ptr<UserCloudPolicyValidator> CreateValidatorForLoad(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy);
 

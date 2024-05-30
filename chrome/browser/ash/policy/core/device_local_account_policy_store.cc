@@ -8,8 +8,10 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/policy/value_validation/onc_user_policy_value_validator.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -18,6 +20,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/user_manager/user_manager.h"
 
 using RetrievePolicyResponseType =
     ash::SessionManagerClient::RetrievePolicyResponseType;
@@ -28,12 +31,14 @@ namespace policy {
 
 DeviceLocalAccountPolicyStore::DeviceLocalAccountPolicyStore(
     const std::string& account_id,
+    const std::string& user_id,
     ash::SessionManagerClient* session_manager_client,
     ash::DeviceSettingsService* device_settings_service,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : UserCloudPolicyStoreBase(background_task_runner,
                                PolicyScope::POLICY_SCOPE_USER),
       account_id_(account_id),
+      user_id_(user_id),
       session_manager_client_(session_manager_client),
       device_settings_service_(device_settings_service) {}
 
@@ -146,6 +151,9 @@ void DeviceLocalAccountPolicyStore::UpdatePolicy(
       std::move(validator->policy()), std::move(validator->policy_data()),
       std::move(validator->payload()), signature_validation_public_key);
   status_ = STATUS_OK;
+
+  CacheNonDynamicPolicies();
+
   NotifyStoreLoaded();
 }
 
@@ -267,6 +275,41 @@ void DeviceLocalAccountPolicyStore::Validate(
         /*signature_validation_public_key=*/key->as_string(),
         /*validator=*/validator.get());
   }
+}
+
+void DeviceLocalAccountPolicyStore::CacheNonDynamicPolicies() {
+  // This would be unexpected but to be on the safe side, we check is user
+  // is initialized
+  if (!user_manager::UserManager::IsInitialized()) {
+    LOG(ERROR) << "User not initialized when policy store is used";
+    return;
+  }
+
+  auto* user_manager = user_manager::UserManager::Get();
+  // Cache the values only if there's a single user session. Note, in case of
+  // Ash crash+restart if there are multiple users logged in, the values are
+  // populated by ProfileImpl objects. So, this method can skip it.
+  if (user_manager->GetLoggedInUsers().size() != 1) {
+    return;
+  }
+  auto* user = user_manager->GetActiveUser();
+  if (!user->IsDeviceLocalAccount()) {
+    return;
+  }
+  if (user_id_ != user->GetAccountId().GetUserEmail()) {
+    return;
+  }
+
+  // DeviceLocalAccounts are regular profiles, so is_regular_profile=true.
+  // IsCurrentUserNew() function is returning if the user is new based
+  // on the data from local_state, while IsNewProfile() from ProfileImpl class
+  // is checking the existence of profile prefs. While these files are
+  // independent the information in both should yield the same value regarding
+  // if it's a new user on the device.
+  // TODO(b/338016928): Make this method be called only once per user session.
+  crosapi::browser_util::CacheLacrosNonDynamicPolicies(
+      policy_map(), /*is_new_profile=*/user_manager->IsCurrentUserNew(),
+      /*is_regular_profile=*/true);
 }
 
 }  // namespace policy

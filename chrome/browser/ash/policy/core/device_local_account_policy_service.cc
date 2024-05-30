@@ -284,8 +284,9 @@ void DeviceLocalAccountPolicyService::UpdateAccountList() {
       broker_initialized = true;
     } else {
       auto store = std::make_unique<DeviceLocalAccountPolicyStore>(
-          device_local_account.account_id, session_manager_client_,
-          device_settings_service_, store_background_task_runner_);
+          device_local_account.account_id, device_local_account.user_id,
+          session_manager_client_, device_settings_service_,
+          store_background_task_runner_);
       scoped_refptr<DeviceLocalAccountExternalDataManager>
           external_data_manager =
               external_data_service_->GetExternalDataManager(
