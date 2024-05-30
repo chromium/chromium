@@ -543,8 +543,9 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
 #if !BUILDFLAG(IS_CHROMEOS)
   html_source->AddBoolean(
       "isClearPrimaryAccountAllowed",
-      ChromeSigninClientFactory::GetForProfile(profile)
-          ->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
+      !profile->IsGuestSession() &&
+          ChromeSigninClientFactory::GetForProfile(profile)
+              ->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false));
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
