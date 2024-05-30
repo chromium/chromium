@@ -44,6 +44,7 @@ using visited_url_ranking::URLVisitAggregatesTransformType;
 using visited_url_ranking::VisitedURLRankingService;
 
 static constexpr FetchSources kForeignSources = {Source::kForeign};
+static constexpr base::TimeDelta kFreshSuggestionWindow = base::Days(1);
 
 // Must match Java Tab.INVALID_TAB_ID.
 static constexpr int kInvalidTabId = -1;
@@ -52,14 +53,25 @@ static constexpr int kInvalidTabId = -1;
 // sources that are currently unavailable. This function returns a simplified
 // FetchOptions instance.
 // TODO(crbug.com/337858147): Incorporate Fetcher::kHistory when ready.
-FetchOptions CreateFetchOptionsForTabResumption(base::Time current_time,
-                                                bool fetch_local_tabs) {
+FetchOptions CreateFetchOptionsForTabResumption(base::Time current_time) {
   return FetchOptions(
       {
-          {Fetcher::kSession,
-           fetch_local_tabs ? FetchOptions::kOriginSources : kForeignSources},
+          {Fetcher::kSession, kForeignSources},
       },
-      current_time - base::Days(1),
+      current_time - kFreshSuggestionWindow,
+      {
+          URLVisitAggregatesTransformType::kDefaultAppUrlFilter,
+      });
+}
+
+FetchOptions CreateFetchOptionsForTabResumptionWithLocalTab(
+    base::Time current_time) {
+  return FetchOptions(
+      {
+          {Fetcher::kSession, FetchOptions::kOriginSources},
+          {Fetcher::kTabModel, FetchOptions::kOriginSources},
+      },
+      current_time - kFreshSuggestionWindow,
       {
           URLVisitAggregatesTransformType::kDefaultAppUrlFilter,
       });
@@ -84,7 +96,9 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
         j_suggestions_(j_suggestions),
         j_callback_(j_callback),
         fetch_options_(
-            CreateFetchOptionsForTabResumption(current_time, fetch_local_tabs)),
+            fetch_local_tabs
+                ? CreateFetchOptionsForTabResumptionWithLocalTab(current_time)
+                : CreateFetchOptionsForTabResumption(current_time)),
         config_({.key = visited_url_ranking::kTabResumptionRankerKey}) {}
 
   void RunFlow() {
@@ -134,8 +148,8 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
           std::get_if<URLVisitAggregate::TabData>(
               &(aggregate.fetcher_data_map.begin()->second));
       if (tab_data) {
-        // TODO(b/343209609) Assign this properly for local tab handling.
-        bool isLocalTab = false;
+        bool is_local_tab =
+            (tab_data->last_active_tab.session_tag == std::nullopt);
 
         Java_VisitedUrlRankingBackend_addSuggestionEntry(
             env_,
@@ -146,7 +160,7 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
             base::android::ConvertUTF16ToJavaString(
                 env_, tab_data->last_active_tab.visit.title),
             tab_data->last_active.InMillisecondsSinceUnixEpoch(),
-            isLocalTab ? tab_data->last_active_tab.id : kInvalidTabId,
+            is_local_tab ? tab_data->last_active_tab.id : kInvalidTabId,
             j_suggestions_);
       }
 

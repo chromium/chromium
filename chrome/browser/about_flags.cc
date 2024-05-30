@@ -2549,7 +2549,7 @@ const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_ml[] = {
     {"enable_v2", "true"},
     {"show_see_more", "true"},
     {"use_salient_image", "true"},
-    {"fetch_local_tabs_backend", " true "},
+    {"fetch_local_tabs_backend", "true"},
 };
 const FeatureEntry::FeatureVariation kTabResumptionModuleAndroidVariations[] = {
     {"Default app filter", kTabResumptionModules_defaul_app_filter,

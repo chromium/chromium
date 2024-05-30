@@ -3299,6 +3299,8 @@ static_library("browser") {
       "supervised_user/child_accounts/child_account_service_android.cc",
       "supervised_user/child_accounts/child_account_service_android.h",
       "tab_group_sync/android/tab_group_sync_service_factory_android.cc",
+      "visited_url_ranking/android_tab_model_url_visit_data_fetcher.cc",
+      "visited_url_ranking/android_tab_model_url_visit_data_fetcher.h",
       "webapps/installable/installed_webapp_bridge.cc",
       "webapps/installable/installed_webapp_bridge.h",
       "webapps/installable/installed_webapp_geolocation_bridge.cc",
