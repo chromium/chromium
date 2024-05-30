@@ -162,7 +162,7 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
   for (auto& observer : observers_) {
     observer.OnStatusChanged(status.controls_visible, status.protections_on,
                              status.enforcement, status.blocking_status,
-                             status.expiration, std::move(status.features));
+                             status.expiration, status.features);
     observer.OnCookieControlsIconStatusChanged(
         ShouldUserBypassIconBeVisible(status.protections_on,
                                       status.controls_visible),
