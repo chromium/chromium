@@ -339,7 +339,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Webapp.ApplySyncDataToApp.ManifestIdMatch"
     enum="BooleanSuccess" expires_after="2025-04-29">
-  <owner>glenrob@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
     Recorded when incoming sync data is applied to an app, whether the resolved
@@ -384,7 +384,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Webapp.CreateWebApp.ManifestIdMatch" enum="BooleanSuccess"
     expires_after="2025-04-29">
-  <owner>glenrob@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
     Recorded at web app database read time for each app, whether the resolved
@@ -1510,7 +1510,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Webapp.SystemApps.FreshInstallDuration" units="ms"
     expires_after="2024-11-03">
   <owner>ortuno@chromium.org</owner>
-  <owner>cros-web-apps-infra-team@google.com</owner>
+  <owner>cros-web-apps-team@google.com</owner>
   <summary>
     Records the time taken to perform a fresh install of all system web apps. It
     measures the time from when we dispatch a call to install them, until we get
@@ -1522,8 +1522,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Webapp.SystemApps.IconsAreHealthyInSession"
     enum="BooleanSuccess" expires_after="2024-09-29">
-  <owner>glenrob@chromium.org</owner>
-  <owner>cros-web-apps-infra-team@google.com</owner>
+  <owner>brettw@chromium.org</owner>
+  <owner>cros-web-apps-team@google.com</owner>
   <summary>
     Records whether system web app icons are healthy for each user session that
     has system web apps installed. Failure indicates that at least one app has
@@ -1533,8 +1533,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Webapp.SystemApps.IconsFixedOnReinstall" enum="BooleanSuccess"
     expires_after="2024-09-29">
-  <owner>glenrob@chromium.org</owner>
-  <owner>cros-web-apps-infra-team@google.com</owner>
+  <owner>brettw@chromium.org</owner>
+  <owner>cros-web-apps-team@google.com</owner>
   <summary>
     Records whether a reinstall fixes previously broken system web app icons.
     This is recorded during icon check after a reinstall (when icons were broken

@@ -4978,8 +4978,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DirectSockets.PermissionDeniedFailures"
     enum="DirectSocketPermissionFailureType" expires_after="2024-09-13">
-  <owner>glenrob@chromium.org</owner>
   <owner>greengrape@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <summary>
     Record how often each permission check (e.g. permissions policy, transient
     activation, user dialog, hostname resolving to non-public address, rate

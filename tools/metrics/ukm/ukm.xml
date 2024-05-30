@@ -30157,8 +30157,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="WebApp.DailyInteraction">
-  <owner>glenrob@chromium.org</owner>
-  <owner>benwells@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
   <summary>
     Features of a web app recorded at most once per day if a user interacted
     with the web app. Recorded for installed and/or promotable (installable) web

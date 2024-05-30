@@ -1525,7 +1525,7 @@
   },
   {
     "name": "content-settings-partitioning",
-    "owners": [ "lxj@google.com", "glenrob@chromium.org"],
+    "owners": [ "brettw@chromium.org", "cros-web-apps-team@google.com"],
     "expiry_milestone": 132
   },
   {
@@ -1612,11 +1612,6 @@
   {
     "name": "cras-processor-wav-dump",
     "owners": ["aaronyu@google.com", "chromeos-audio@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "create-shortcut-ignores-manifest",
-    "owners": [ "glenrob@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 130
   },
   {
@@ -3762,7 +3757,7 @@
   },
   {
     "name": "enable-service-workers-for-chrome-untrusted",
-    "owners": [ "ortuno@chromium.org", "cros-web-apps-infra-team@google.com" ],
+    "owners": [ "ortuno@chromium.org", "cros-web-apps-team@google.com" ],
     "expiry_milestone": 110
   },
   {
@@ -4322,7 +4317,7 @@
   },
   {
     "name": "experimental-web-app-storage-partition-isolation",
-    "owners": [ "lxj@google.com", "glenrob@chromium.org", "chromeos-web-apps-platform-syd@google.com"],
+    "owners": [ "brettw@chromium.org", "cros-web-apps-team@google.com"],
     "expiry_milestone": 130
   },
   {
@@ -6947,11 +6942,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "preinstalled-web-app-window-experiment",
-    "owners": [ "glenrob@chromium.org", "chromeos-web-apps-platform-syd@google.com" ],
-    "expiry_milestone": 123
-  },
-  {
     "name": "prerender-early-document-lifecycle-update",
     "owners": [ "lingqi@chromium.org", "//content/browser/preloading/prerender/OWNERS" ],
     "expiry_milestone": 140
@@ -8861,11 +8851,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "web-app-separate-user-display-mode-for-cros",
-    "owners": [ "glenrob@chromium.org", "cros-web-apps-core@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "web-app-sync-generated-icon-background-fix",
     "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 130
@@ -8878,11 +8863,6 @@
   {
     "name": "web-app-sync-generated-icon-update-fix",
     "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "web-app-sync-only-separate-user-display-mode-for-cros",
-    "owners": [ "glenrob@chromium.org", "cros-web-apps-core@google.com" ],
     "expiry_milestone": 130
   },
   {
