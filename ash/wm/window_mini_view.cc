@@ -37,7 +37,7 @@ namespace {
 
 constexpr int kFocusRingCornerRadius = 14;
 constexpr int kFocusRingCornerRadiusOld = 20;
-constexpr float kFocusRingThickness = 4.0f;
+constexpr float kFocusRingThickness = 3.0f;
 
 // Returns the rounded corners of the preview view scaled by the given value of
 // `scale` for the preview view with given source `window`. If the preview view
@@ -344,7 +344,7 @@ void WindowMiniView::InstallFocusRing() {
   views::FocusRing::Install(this);
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);
-  focus_ring->SetColorId(ui::kColorAshFocusRing);
+  focus_ring->SetColorId(cros_tokens::kCrosSysTertiary);
   focus_ring->SetHaloThickness(kFocusRingThickness);
   focus_ring->SetHasFocusPredicate(
       base::BindRepeating([](const views::View* view) {
@@ -359,6 +359,7 @@ WindowMiniView::GenerateFocusRingPath() {
   const int focus_ring_radius = chromeos::features::IsRoundedWindowsEnabled()
                                     ? kFocusRingCornerRadius
                                     : kFocusRingCornerRadiusOld;
+
   if (exposed_rounded_corners_) {
     const float upper_left =
         exposed_rounded_corners_->upper_left() == 0 ? 0 : focus_ring_radius;
@@ -368,8 +369,35 @@ WindowMiniView::GenerateFocusRingPath() {
         exposed_rounded_corners_->lower_right() == 0 ? 0 : focus_ring_radius;
     const float lower_left =
         exposed_rounded_corners_->lower_left() == 0 ? 0 : focus_ring_radius;
+
+    gfx::Insets focus_ring_insets =
+        gfx::Insets(kWindowMiniViewFocusRingHaloInset);
+
+    // Apply reduced inset to internal edge to prevent focus ring occlusion.
+    // Internal edge corners will be sharp (90 degrees).
+    focus_ring_insets.set_right(
+        exposed_rounded_corners_->upper_right() == 0 &&
+                exposed_rounded_corners_->lower_right() == 0
+            ? kWindowMiniViewFocusRingHaloInternalInset
+            : kWindowMiniViewFocusRingHaloInset);
+    focus_ring_insets.set_left(exposed_rounded_corners_->upper_left() == 0 &&
+                                       exposed_rounded_corners_->lower_left() ==
+                                           0
+                                   ? kWindowMiniViewFocusRingHaloInternalInset
+                                   : kWindowMiniViewFocusRingHaloInset);
+    focus_ring_insets.set_bottom(
+        exposed_rounded_corners_->lower_left() == 0 &&
+                exposed_rounded_corners_->lower_right() == 0
+            ? kWindowMiniViewFocusRingHaloInternalInset
+            : kWindowMiniViewFocusRingHaloInset);
+    focus_ring_insets.set_top(exposed_rounded_corners_->upper_left() == 0 &&
+                                      exposed_rounded_corners_->upper_right() ==
+                                          0
+                                  ? kWindowMiniViewFocusRingHaloInternalInset
+                                  : kWindowMiniViewFocusRingHaloInset);
+
     return std::make_unique<views::RoundRectHighlightPathGenerator>(
-        gfx::Insets(kWindowMiniViewFocusRingHaloInset),
+        focus_ring_insets,
         gfx::RoundedCornersF(upper_left, upper_right, lower_right, lower_left));
   }
 

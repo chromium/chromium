@@ -29,6 +29,10 @@ ASH_EXPORT inline constexpr int kWindowMiniViewHeaderHeight = 40;
 // -3px inset to achieve this.
 inline constexpr int kWindowMiniViewFocusRingHaloInset = -3;
 
+// Decrement the inner outset of the focus ring for `WindowMiniView` (in a
+// SnapGroup) by 1px to avoid potential focus ring occlusion.
+inline constexpr int kWindowMiniViewFocusRingHaloInternalInset = -2;
+
 }  // namespace ash
 
 #endif  // ASH_WM_WM_CONSTANTS_H_
