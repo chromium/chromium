@@ -11,6 +11,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/dbus/regmon/regmon_client.h"
+#include "chromeos/dbus/regmon/regmon_service.pb.h"
 #include "components/prefs/pref_service.h"
 
 NetworkAnnotationMonitor::NetworkAnnotationMonitor() = default;
@@ -34,10 +36,24 @@ void NetworkAnnotationMonitor::Report(int32_t hash_code) {
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetDict(
           prefs::kNetworkAnnotationBlocklist);
 
-  if (blocklist.contains(base::NumberToString(hash_code))) {
-    base::UmaHistogramSparse("NetworkAnnotationMonitor.PolicyViolation",
-                             hash_code);
+  // Ignore any network calls not in the blocklist.
+  if (!blocklist.contains(base::NumberToString(hash_code))) {
+    return;
   }
+
+  chromeos::RegmonClient* client = chromeos::RegmonClient::Get();
+  if (!client) {
+    return;
+  }
+
+  regmon::PolicyViolation policy_violation;
+  policy_violation.set_policy(::regmon::PolicyViolation::POLICY_UNSPECIFIED);
+  policy_violation.set_annotation_hash(hash_code);
+
+  regmon::RecordPolicyViolationRequest request =
+      regmon::RecordPolicyViolationRequest();
+  *request.mutable_violation() = policy_violation;
+  client->RecordPolicyViolation(request);
 }
 
 mojo::PendingRemote<network::mojom::NetworkAnnotationMonitor>

@@ -17,6 +17,7 @@ source_set("unit_tests") {
     "//chromeos/dbus/missive:history_tracker",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/power:unit_tests",
+    "//chromeos/dbus/regmon:unit_tests",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//chromeos/dbus/u2f",

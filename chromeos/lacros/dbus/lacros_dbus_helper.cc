@@ -11,6 +11,7 @@
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/regmon/regmon_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
 #include "chromeos/lacros/dbus/lacros_dbus_thread_manager.h"
@@ -37,6 +38,7 @@ void LacrosInitializeDBus() {
   InitializeDBusClient<TpmManagerClient>(bus);
   InitializeDBusClient<U2FClient>(bus);
   InitializeDBusClient<DlpClient>(bus);
+  InitializeDBusClient<chromeos::RegmonClient>(bus);
 }
 
 void LacrosInitializeFeatureListDependentDBus() {
@@ -60,6 +62,7 @@ void LacrosShutdownDBus() {
     bluez::BluezDBusManager::Shutdown();
   }
 
+  chromeos::RegmonClient::Shutdown();
   DlpClient::Shutdown();
   MissiveClient::Shutdown();
   PermissionBrokerClient::Shutdown();

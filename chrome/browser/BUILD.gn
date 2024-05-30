@@ -5997,6 +5997,8 @@ static_library("browser") {
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus/constants",
       "//chromeos/dbus/power",
+      "//chromeos/dbus/regmon",
+      "//chromeos/dbus/regmon:regmon_proto",
       "//chromeos/ui/clipboard_history",
       "//chromeos/ui/wm",
       "//chromeos/version",

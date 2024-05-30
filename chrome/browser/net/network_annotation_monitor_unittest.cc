@@ -5,13 +5,13 @@
 #include "chrome/browser/net/network_annotation_monitor.h"
 
 #include "base/strings/string_number_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/dbus/regmon/regmon_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -21,7 +21,6 @@ TEST(NetworkAnnotationMonitorTest, ReportTest) {
   constexpr int32_t kTestDisabledHashCode = 123;
   constexpr int32_t kTestAllowedHashCode = 456;
   content::BrowserTaskEnvironment task_environment;
-  base::HistogramTester histogram_tester;
 
   // Setup profile with the disabled hash code in blocklist pref.
   TestingProfileManager profile_manager_(TestingBrowserProcess::GetGlobal());
@@ -37,6 +36,10 @@ TEST(NetworkAnnotationMonitorTest, ReportTest) {
   profile_manager_.local_state()->Get()->SetBoolean(
       prefs::kLacrosSecondaryProfilesAllowed, false);
 
+  // Initialize fake Regmon D-Bus client. This fake client is used below to
+  // verify that violations are reported.
+  chromeos::RegmonClient::InitializeFake();
+
   NetworkAnnotationMonitor monitor;
   mojo::Remote<network::mojom::NetworkAnnotationMonitor> remote;
   remote.Bind(monitor.GetClient());
@@ -46,11 +49,11 @@ TEST(NetworkAnnotationMonitorTest, ReportTest) {
   monitor.FlushForTesting();
 
   // Disabled hash codes should trigger a violation.
-  histogram_tester.ExpectBucketCount("NetworkAnnotationMonitor.PolicyViolation",
-                                     kTestDisabledHashCode, 1);
-  // Other hash codes should not trigger a violation.
-  histogram_tester.ExpectBucketCount("NetworkAnnotationMonitor.PolicyViolation",
-                                     kTestAllowedHashCode, 0);
+  chromeos::RegmonClient::TestInterface* regmon_client =
+      chromeos::RegmonClient::Get()->GetTestInterface();
+  std::list<int32_t> expected_reported_hash_codes{kTestDisabledHashCode};
+  EXPECT_EQ(regmon_client->GetReportedHashCodes(),
+            expected_reported_hash_codes);
 }
 
 // Verify that GetClient() can be called multiple times. This simulates what

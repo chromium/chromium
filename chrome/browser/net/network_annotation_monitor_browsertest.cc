@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/dbus/regmon/regmon_client.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -67,8 +68,6 @@ class NetworkAnnotationMonitorBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(NetworkAnnotationMonitorBrowserTest, FeatureTest) {
-  base::HistogramTester histogram_tester;
-
   policy::PolicyMap policies;
   SetPolicy(&policies, kTestPolicy, base::Value(false));
   // Disable secondary profiles policy since we skip reporting on lacros when
@@ -89,16 +88,17 @@ IN_PROC_BROWSER_TEST_P(NetworkAnnotationMonitorBrowserTest, FeatureTest) {
 
   // Disabled hash codes should trigger a violation only if the feature is
   // enabled.
-  int expected_count = GetParam() == TestCase::kEnabled ? 1 : 0;
-  histogram_tester.ExpectBucketCount(
-      "NetworkAnnotationMonitor.PolicyViolation",
-      kTestDisabledAnnotation.unique_id_hash_code, expected_count);
-
-  // Other hash codes should never trigger a violation, regardless of feature
-  // state.
-  histogram_tester.ExpectBucketCount(
-      "NetworkAnnotationMonitor.PolicyViolation",
-      TRAFFIC_ANNOTATION_FOR_TESTS.unique_id_hash_code, 0);
+  chromeos::RegmonClient* regmon_client = chromeos::RegmonClient::Get();
+  if (GetParam() == TestCase::kEnabled) {
+    std::list<int32_t> expected_hash_codes{
+        kTestDisabledAnnotation.unique_id_hash_code};
+    EXPECT_EQ(regmon_client->GetTestInterface()->GetReportedHashCodes(),
+              expected_hash_codes);
+  } else {
+    std::list<int32_t> expected_hash_codes{};
+    EXPECT_EQ(regmon_client->GetTestInterface()->GetReportedHashCodes(),
+              expected_hash_codes);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

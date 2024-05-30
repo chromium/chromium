@@ -87,6 +87,7 @@
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/regmon/regmon_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
@@ -208,6 +209,7 @@ void InitializeDBus() {
   InitializeDBusClient<UpstartClient>(bus);
   InitializeDBusClient<VirtualFileProviderClient>(bus);
   InitializeDBusClient<VmPluginDispatcherClient>(bus);
+  InitializeDBusClient<chromeos::RegmonClient>(bus);
 
   attestation::AttestationFeatures::Initialize();
   // Initialize the device settings service so that we'll take actions per
@@ -300,6 +302,7 @@ void ShutdownDBus() {
   language_packs::LanguagePackManager::Shutdown();
 
   // Other D-Bus clients are shut down, also in reverse order of initialization.
+  chromeos::RegmonClient::Shutdown();
   VmPluginDispatcherClient::Shutdown();
   VirtualFileProviderClient::Shutdown();
   UpstartClient::Shutdown();

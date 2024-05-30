@@ -1,0 +1,45 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("regmon") {
+  defines = [ "IS_REGMON_IMPL" ]
+
+  public_deps = [
+    ":regmon_proto",
+    "//base",
+    "//dbus",
+  ]
+
+  sources = [
+    "fake_regmon_client.cc",
+    "fake_regmon_client.h",
+    "regmon_client.cc",
+    "regmon_client.h",
+  ]
+}
+
+proto_library("regmon_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/regmon/regmon_service.proto" ]
+
+  proto_out_dir = "chromeos/dbus/regmon"
+}
+
+source_set("unit_tests") {
+  testonly = true
+  public_deps = [ ":regmon" ]
+  deps = [
+    ":regmon_proto",
+    "//base",
+    "//base/test:test_support",
+    "//dbus:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  sources = [ "regmon_client_unittest.cc" ]
+}

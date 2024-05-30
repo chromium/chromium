@@ -16,6 +16,7 @@ source_set("dbus") {
     "//chromeos/dbus/missive",
     "//chromeos/dbus/permission_broker",
     "//chromeos/dbus/power",
+    "//chromeos/dbus/regmon",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/dbus/u2f",
     "//dbus",
