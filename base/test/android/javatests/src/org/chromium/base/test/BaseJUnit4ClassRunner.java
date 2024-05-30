@@ -4,6 +4,8 @@
 
 package org.chromium.base.test;
 
+import static org.junit.Assume.assumeTrue;
+
 import android.app.Application;
 import android.app.job.JobScheduler;
 import android.content.Context;
@@ -99,6 +101,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
 
     protected final RestrictionSkipCheck mRestrictionSkipCheck = new RestrictionSkipCheck();
     private long mTestStartTimeMs;
+    private String mFailedBatchTestName;
 
     /**
      * Create a BaseJUnit4ClassRunner to run {@code klass} and initialize values.
@@ -289,9 +292,17 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         BaseJUnit4ClassRunner.getApplication().getSystemService(JobScheduler.class).cancelAll();
     }
 
-    private static void blockUnitTestsFromStartingBrowser(FrameworkMethod testMethod) {
+    private static boolean isUnitTest(FrameworkMethod testMethod) {
         Batch annotation = testMethod.getDeclaringClass().getAnnotation(Batch.class);
-        if (annotation != null && annotation.value().equals(Batch.UNIT_TESTS)) {
+        return annotation != null && annotation.value().equals(Batch.UNIT_TESTS);
+    }
+
+    private static boolean isBatchedTest(FrameworkMethod testMethod) {
+        return testMethod.getDeclaringClass().getAnnotation(Batch.class) != null;
+    }
+
+    private static void blockUnitTestsFromStartingBrowser(FrameworkMethod testMethod) {
+        if (isUnitTest(testMethod)) {
             if (testMethod.getAnnotation(RequiresRestart.class) != null) return;
             LibraryLoader.setBrowserProcessStartupBlockedForTesting();
         }
@@ -336,6 +347,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
                 onBeforeTestMethod(method);
                 Throwable exception = null;
                 try {
+                    checkBatchedTestFailure(method);
                     // Runs @Rules, then @Befores, then test method.
                     innerStatement.evaluate();
                     performExtraAssertions(method);
@@ -354,10 +366,25 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
                     }
                 }
                 if (exception != null) {
+                    markBatchTestFailed(method);
                     throw exception;
                 }
             }
         };
+    }
+
+    private void markBatchTestFailed(FrameworkMethod method) {
+        if (mFailedBatchTestName == null && isBatchedTest(method) && !isUnitTest(method)) {
+            mFailedBatchTestName = method.getName();
+        }
+    }
+
+    private void checkBatchedTestFailure(FrameworkMethod method) {
+        assumeTrue(
+                "A previous batched test ("
+                        + mFailedBatchTestName
+                        + ") failed leaving chrome in an unknown state. Skipping test.",
+                mFailedBatchTestName == null);
     }
 
     private void onBeforeTestMethod(FrameworkMethod method) {
