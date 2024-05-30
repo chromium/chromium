@@ -5,16 +5,17 @@
 importScripts("/resources/testharness.js");
 importScripts("./webgpu-helpers.js");
 
-// This test parallels transferToWebGPU-initialized-canvas.https.html.
+// This test parallels transferBackFromGPUTexture-destroys-texture.https.html.
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      test_transferToWebGPU_initialized_canvas(
+      return test_transferBackFromGPUTexture_destroys_texture(
           device,
-          new OffscreenCanvas(50, 50));
+          new OffscreenCanvas(50, 50),
+          {});
     });
   },
-  'transferToWebGPU() in a worker should create a texture from an ' +
-  'initialized offscreen canvas.'
+  'transferBackFromGPUTexture() on a worker should destroy the associated ' +
+  'GPUTexture.'
 );
 
 done();

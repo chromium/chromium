@@ -6,9 +6,9 @@
 <script src="./webgpu-helpers.js"></script>
 </head>
 
-<h1>Canvas2D WebGPU Transfer: transferToWebGPU-initialized-canvas</h1>
+<h1>Canvas2D WebGPU Transfer: transferToGPUTexture-initialized-canvas</h1>
 
-<p>transferToWebGPU() creates a texture from an initialized canvas.</p>
+<p>transferToGPUTexture() creates a texture from an initialized canvas.</p>
 
 <canvas id="c" width="50" height="50"></canvas>
 
@@ -16,21 +16,23 @@
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      test_transferToWebGPU_initialized_canvas(
+      test_transferToGPUTexture_initialized_canvas(
           device,
           document.getElementById('c'));
     });
-  }, 'transferToWebGPU() should create a texture from an initialized canvas.'
+  },
+  'transferToGPUTexture() should create a texture from an initialized ' +
+  'canvas.'
 );
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      test_transferToWebGPU_initialized_canvas(
+      test_transferToGPUTexture_initialized_canvas(
           device,
           new OffscreenCanvas(50, 50));
     });
   },
-  'transferToWebGPU() should create a texture from an initialized ' +
+  'transferToGPUTexture() should create a texture from an initialized ' +
   'offscreen canvas.'
 );
 

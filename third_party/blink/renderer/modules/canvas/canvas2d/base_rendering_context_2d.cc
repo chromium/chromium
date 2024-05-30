@@ -3470,7 +3470,7 @@ V8GPUTextureFormat BaseRenderingContext2D::getTextureFormat() const {
   return *format;
 }
 
-GPUTexture* BaseRenderingContext2D::transferToWebGPU(
+GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
     const Canvas2dWebGPUTransferOption* access_options,
     ExceptionState& exception_state) {
   if (!OriginClean()) {
@@ -3553,9 +3553,9 @@ GPUTexture* BaseRenderingContext2D::transferToWebGPU(
     return nullptr;
   }
 
-  // If `transferToWebGPU` is called twice without an intervening call to
-  // `transferBackFromWebGPU`, the previously-generated texture is immediately
-  // destroyed.
+  // If `transferToGPUTexture` is called twice without an intervening call to
+  // `transferBackFromGPUTexture`, the previously-generated texture is
+  // immediately destroyed.
   if (webgpu_access_texture_) {
     webgpu_access_texture_->destroy();
   }
@@ -3610,7 +3610,7 @@ bool BaseRenderingContext2D::CopyGPUTextureToResourceProvider(
   return true;
 }
 
-void BaseRenderingContext2D::transferBackFromWebGPU(
+void BaseRenderingContext2D::transferBackFromGPUTexture(
     ExceptionState& exception_state) {
   // If the context is lost or doesn't exist, this call should be a no-op.
   // We don't want to throw an exception or attempt any changes if
@@ -3645,7 +3645,7 @@ void BaseRenderingContext2D::transferBackFromWebGPU(
   }
 
   // Destroy the WebGPU texture to prevent it from being used after
-  // `transferBackFromWebGPU`.
+  // `transferBackFromGPUTexture`.
   webgpu_access_texture_->destroy();
 
   // We are finished with the WebGPU texture and its associated device.

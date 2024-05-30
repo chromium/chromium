@@ -6,9 +6,10 @@
 <script src="./webgpu-helpers.js"></script>
 </head>
 
-<h1>Canvas2D WebGPU Transfer: transferToWebGPU-untouched-canvas</h1>
+<h1>Canvas2D WebGPU Transfer: transferToGPUTexture-unbalanced-access</h1>
 
-<p>transferToWebGPU() creates a texture from an uninitialized canvas.</p>
+<p>Unbalanced calls to transferToGPUTexture() will destroy the old WebGPU access
+texture.</p>
 
 <canvas id="c" width="50" height="50"></canvas>
 
@@ -16,22 +17,26 @@
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      test_transferToWebGPU_untouched_canvas(
+      return test_transferToGPUTexture_unbalanced_access(
+          adapterInfo,
           device,
           document.getElementById('c'));
     });
-  }, 'transferToWebGPU() should create a texture from an uninitialized canvas.'
+  },
+  'Unbalanced calls to transferToGPUTexture() will destroy the old WebGPU ' +
+  'access texture.'
 );
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      test_transferToWebGPU_untouched_canvas(
+      return test_transferToGPUTexture_unbalanced_access(
+          adapterInfo,
           device,
           new OffscreenCanvas(50, 50));
     });
   },
-  'transferToWebGPU() should create a texture from an uninitialized ' +
-  'offscreen canvas.'
+  'Unbalanced calls to transferToGPUTexture() on an offscreen context will ' +
+  'destroy the old WebGPU access texture.'
 );
 
 </script>

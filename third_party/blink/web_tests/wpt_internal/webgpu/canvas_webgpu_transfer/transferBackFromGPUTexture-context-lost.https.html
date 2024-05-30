@@ -6,9 +6,10 @@
 <script src="./webgpu-helpers.js"></script>
 </head>
 
-<h1>Canvas2D WebGPU Transfer: transferBackFromWebGPU-context-lost</h1>
+<h1>Canvas2D WebGPU Transfer: transferBackFromGPUTexture-context-lost</h1>
 
-<p>transferBackFromWebGPU() should be a no-op if the canvas context is lost.</p>
+<p>transferBackFromGPUTexture() should be a no-op if the canvas context is lost.
+</p>
 
 <canvas id="c" width="50" height="50"></canvas>
 
@@ -16,24 +17,25 @@
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_transferBackFromWebGPU_context_lost(
+      return test_transferBackFromGPUTexture_context_lost(
                  device,
                  document.getElementById('c'),
                  {});
     });
   },
-  'transferBackFromWebGPU() should be a no-op if the 2D context is lost.'
+  'transferBackFromGPUTexture() should be a no-op if the 2D context is lost.'
 );
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_transferBackFromWebGPU_context_lost(
+      return test_transferBackFromGPUTexture_context_lost(
                  device,
                  new OffscreenCanvas(50, 50),
                  {});
     });
   },
-  'transferBackFromWebGPU() should be a no-op if the offscreen context is lost.'
+  'transferBackFromGPUTexture() should be a no-op if the offscreen context ' +
+  'is lost.'
 );
 
 </script>

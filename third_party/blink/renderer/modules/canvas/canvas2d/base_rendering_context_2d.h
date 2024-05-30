@@ -282,14 +282,14 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // can be bound as a color attachment and modified. After its texture is
   // transferred, the canvas will be reset into an empty, freshly-initialized
   // state.
-  GPUTexture* transferToWebGPU(const Canvas2dWebGPUTransferOption*,
-                               ExceptionState& exception_state);
+  GPUTexture* transferToGPUTexture(const Canvas2dWebGPUTransferOption*,
+                                   ExceptionState& exception_state);
 
   // Replaces the canvas' back-buffer texture with the passed-in GPUTexture.
   // The GPUTexture immediately becomes inaccessible to WebGPU.
   // A GPUValidationError will occur if the GPUTexture is used after
   // endWebGPUAccess is called.
-  void transferBackFromWebGPU(ExceptionState& exception_state);
+  void transferBackFromGPUTexture(ExceptionState& exception_state);
 
   // Returns the format of the GPUTexture that beginWebGPUAccess will return.
   // This is useful if you need to create the WebGPU render pipeline before

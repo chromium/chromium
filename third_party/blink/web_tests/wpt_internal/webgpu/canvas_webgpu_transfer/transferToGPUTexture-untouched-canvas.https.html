@@ -6,10 +6,9 @@
 <script src="./webgpu-helpers.js"></script>
 </head>
 
-<h1>Canvas2D WebGPU Transfer: transferToWebGPU-balanced-access</h1>
+<h1>Canvas2D WebGPU Transfer: transferToGPUTexture-untouched-canvas</h1>
 
-<p>transferToWebGPU() allows repeated calls after a call to
-transferBackFromWebGPU().</p>
+<p>transferToGPUTexture() creates a texture from an uninitialized canvas.</p>
 
 <canvas id="c" width="50" height="50"></canvas>
 
@@ -17,24 +16,24 @@ transferBackFromWebGPU().</p>
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      test_transferToWebGPU_balanced_access(
+      test_transferToGPUTexture_untouched_canvas(
           device,
           document.getElementById('c'));
     });
   },
-  'transferToWebGPU() allows repeated calls after a call to ' +
-  'transferBackFromWebGPU().'
+  'transferToGPUTexture() should create a texture from an uninitialized ' +
+  'canvas.'
 );
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      test_transferToWebGPU_balanced_access(
+      test_transferToGPUTexture_untouched_canvas(
           device,
           new OffscreenCanvas(50, 50));
     });
   },
-  'transferToWebGPU() on an offscreen context allows repeated calls after a ' +
-  'call to transferBackFromWebGPU().'
+  'transferToGPUTexture() should create a texture from an uninitialized ' +
+  'offscreen canvas.'
 );
 
 </script>

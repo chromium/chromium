@@ -5,16 +5,16 @@
 importScripts("/resources/testharness.js");
 importScripts("./webgpu-helpers.js");
 
-// This test parallels transferToWebGPU-texture-readback.https.html.
+// This test parallels transferToGPUTexture-initialized-canvas.https.html.
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_transferToWebGPU_texture_readback(
+      test_transferToGPUTexture_initialized_canvas(
           device,
           new OffscreenCanvas(50, 50));
     });
   },
-  'transferToWebGPU() texture retains the contents of the offscreen canvas, ' +
-  'and readback works, from a worker.'
+  'transferToGPUTexture() in a worker should create a texture from an ' +
+  'initialized offscreen canvas.'
 );
 
 done();

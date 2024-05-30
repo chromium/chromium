@@ -5,17 +5,16 @@
 importScripts("/resources/testharness.js");
 importScripts("./webgpu-helpers.js");
 
-// This test parallels transferToWebGPU-unbalanced-access.https.html.
+// This test parallels transferToGPUTexture-untouched-canvas.https.html.
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_transferToWebGPU_unbalanced_access(
-          adapterInfo,
+      test_transferToGPUTexture_untouched_canvas(
           device,
           new OffscreenCanvas(50, 50));
     });
   },
-  'Unbalanced calls to transferToWebGPU() in a worker will destroy the old ' +
-  'WebGPU access texture.'
+  'transferToGPUTexture() in a worker should create a texture from an ' +
+  'uninitialized canvas.'
 );
 
 done();

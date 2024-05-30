@@ -1568,8 +1568,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method stroke
 [Worker]     method strokeRect
 [Worker]     method strokeText
-[Worker]     method transferBackFromWebGPU
-[Worker]     method transferToWebGPU
+[Worker]     method transferBackFromGPUTexture
+[Worker]     method transferToGPUTexture
 [Worker]     method transform
 [Worker]     method translate
 [Worker]     setter direction

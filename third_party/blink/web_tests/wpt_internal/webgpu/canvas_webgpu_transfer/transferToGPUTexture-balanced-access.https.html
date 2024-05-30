@@ -6,10 +6,10 @@
 <script src="./webgpu-helpers.js"></script>
 </head>
 
-<h1>Canvas2D WebGPU Transfer: transferToWebGPU-unbalanced-access</h1>
+<h1>Canvas2D WebGPU Transfer: transferToGPUTexture-balanced-access</h1>
 
-<p>Unbalanced calls to transferToWebGPU() will destroy the old WebGPU access
-texture.</p>
+<p>transferToGPUTexture() allows repeated calls after a call to
+transferBackFromGPUTexture().</p>
 
 <canvas id="c" width="50" height="50"></canvas>
 
@@ -17,26 +17,24 @@ texture.</p>
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_transferToWebGPU_unbalanced_access(
-          adapterInfo,
+      test_transferToGPUTexture_balanced_access(
           device,
           document.getElementById('c'));
     });
   },
-  'Unbalanced calls to transferToWebGPU() will destroy the old WebGPU access ' +
-  'texture.'
+  'transferToGPUTexture() allows repeated calls after a call to ' +
+  'transferBackFromGPUTexture().'
 );
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_transferToWebGPU_unbalanced_access(
-          adapterInfo,
+      test_transferToGPUTexture_balanced_access(
           device,
           new OffscreenCanvas(50, 50));
     });
   },
-  'Unbalanced calls to transferToWebGPU() on an offscreen context will ' +
-  'destroy the old WebGPU access texture.'
+  'transferToGPUTexture() on an offscreen context allows repeated calls ' +
+  'after a call to transferBackFromGPUTexture().'
 );
 
 </script>

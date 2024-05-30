@@ -6,9 +6,9 @@
 <script src="./webgpu-helpers.js"></script>
 </head>
 
-<h1>Canvas2D WebGPU Transfer: transferBackFromWebGPU-canvas-readback</h1>
+<h1>Canvas2D WebGPU Transfer: transferBackFromGPUTexture-canvas-readback</h1>
 
-<p>transferBackFromWebGPU() should preserve texture changes on the 2D canvas.
+<p>transferBackFromGPUTexture() should preserve texture changes on the 2D canvas.
 </p>
 
 <canvas id="c" width="50" height="50"></canvas>
@@ -17,26 +17,26 @@
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_transferBackFromWebGPU_canvas_readback(
+      return test_transferBackFromGPUTexture_canvas_readback(
                  adapterInfo,
                  device,
                  document.getElementById('c'),
                  {});
     });
   },
-  'transferBackFromWebGPU() should preserve texture changes on the 2D canvas.'
+  'transferBackFromGPUTexture() should preserve texture changes on the 2D canvas.'
 );
 
 promise_test(() => {
     return with_webgpu((adapter, adapterInfo, device) => {
-      return test_transferBackFromWebGPU_canvas_readback(
+      return test_transferBackFromGPUTexture_canvas_readback(
                  adapterInfo,
                  device,
                  new OffscreenCanvas(50, 50),
                  {});
     });
   },
-  'transferBackFromWebGPU() should preserve texture changes on a 2D ' +
+  'transferBackFromGPUTexture() should preserve texture changes on a 2D ' +
   'offscreen canvas.'
 );
 

@@ -8,7 +8,7 @@
     Exposed=(Window,Worker),
     SecureContext
 ] interface mixin Canvas2dWebGPUTransfer {
-  [RaisesException] GPUTexture transferToWebGPU(Canvas2dWebGPUTransferOption options);
-  [RaisesException] undefined transferBackFromWebGPU();
+  [RaisesException] GPUTexture transferToGPUTexture(Canvas2dWebGPUTransferOption options);
+  [RaisesException] undefined transferBackFromGPUTexture();
   GPUTextureFormat getTextureFormat();
 };

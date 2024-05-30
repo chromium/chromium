@@ -173,13 +173,16 @@ function test_getTextureFormat_rgba16f(device, canvas) {
   assert_equals(ctx.getTextureFormat(), 'rgba16float');
 }
 
-/** transferToWebGPU() should create a texture from an uninitialized canvas. */
-function test_transferToWebGPU_untouched_canvas(device, canvas) {
+/**
+ * transferToGPUTexture() should create a texture from an uninitialized canvas.
+ */
+function test_transferToGPUTexture_untouched_canvas(device, canvas) {
   // Leave the canvas untouched; it won't have a Canvas2DLayerBridge yet.
 
-  // Next, call transferToWebGPU.
+  // Next, call transferToGPUTexture.
   const ctx = canvas.getContext('2d');
-  const tex = ctx.transferToWebGPU({device: device, label: "hello, webgpu!"});
+  const tex = ctx.transferToGPUTexture({device: device,
+                                         label: "hello, webgpu!"});
 
   // Confirm that we now have a GPU texture that matches our request.
   assert_true(tex instanceof GPUTexture, 'not a GPUTexture');
@@ -188,15 +191,18 @@ function test_transferToWebGPU_untouched_canvas(device, canvas) {
   assert_equals(tex.height, canvas.height);
 }
 
-/** transferToWebGPU() should create a texture from an initialized canvas. */
-function test_transferToWebGPU_initialized_canvas(device, canvas) {
+/**
+ * transferToGPUTexture() should create a texture from an initialized canvas.
+ */
+function test_transferToGPUTexture_initialized_canvas(device, canvas) {
   // Paint into the canvas to ensure it has a valid Canvas2DLayerBridge.
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = "#FFFFFF";
   ctx.fillRect(0, 0, 100, 50);
 
-  // Next, call transferToWebGPU.
-  const tex = ctx.transferToWebGPU({device: device, label: "hello, webgpu!"});
+  // Next, call transferToGPUTexture.
+  const tex = ctx.transferToGPUTexture({device: device,
+                                         label: "hello, webgpu!"});
 
   // Confirm that we now have a GPU texture that matches our request.
   assert_true(tex instanceof GPUTexture, 'not a GPUTexture');
@@ -206,17 +212,17 @@ function test_transferToWebGPU_initialized_canvas(device, canvas) {
 }
 
 /**
- * transferToWebGPU() texture should retain the contents of the canvas, and
+ * transferToGPUTexture() texture should retain the contents of the canvas, and
  * readback works. Returns a promise.
  */
-function test_transferToWebGPU_texture_readback(device, canvas) {
+function test_transferToGPUTexture_texture_readback(device, canvas) {
   // Fill the canvas with a color containing distinct values in each channel.
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = "#4080C0";
   ctx.fillRect(0, 0, 50, 50);
 
   // Convert the canvas to a texture.
-  const tex = ctx.transferToWebGPU({device: device,
+  const tex = ctx.transferToGPUTexture({device: device,
                                      usage: GPUTextureUsage.COPY_SRC});
 
   // Copy the top-left pixel from the texture into a buffer.
@@ -236,10 +242,11 @@ function test_transferToWebGPU_texture_readback(device, canvas) {
 };
 
 /**
- * Unbalanced calls to transferToWebGPU() will destroy the old WebGPU access
+ * Unbalanced calls to transferToGPUTexture() will destroy the old WebGPU access
  * texture.
  */
-function test_transferToWebGPU_unbalanced_access(adapterInfo, device, canvas) {
+function test_transferToGPUTexture_unbalanced_access(adapterInfo, device,
+                                                     canvas) {
   // Skip this test on Mac Swiftshader.
   if (isMacSwiftShader(adapterInfo)) {
     return;
@@ -247,12 +254,12 @@ function test_transferToWebGPU_unbalanced_access(adapterInfo, device, canvas) {
 
   // Begin a WebGPU access session.
   const ctx = canvas.getContext('2d');
-  const tex1 = ctx.transferToWebGPU({device: device,
+  const tex1 = ctx.transferToGPUTexture({device: device,
                                       usage: GPUTextureUsage.COPY_DST |
                                              GPUTextureUsage.COPY_SRC});
 
   // Start a second WebGPU access session, destroying the first texture.
-  const tex2 = ctx.transferToWebGPU({device: device,
+  const tex2 = ctx.transferToGPUTexture({device: device,
                                       usage: GPUTextureUsage.COPY_DST |
                                              GPUTextureUsage.COPY_SRC});
 
@@ -261,23 +268,24 @@ function test_transferToWebGPU_unbalanced_access(adapterInfo, device, canvas) {
 }
 
 /**
- * transferToWebGPU() should allow repeated calls after a call to
- * transferBackFromWebGPU().
+ * transferToGPUTexture() should allow repeated calls after a call to
+ * transferBackFromGPUTexture().
  */
-function test_transferToWebGPU_balanced_access(device, canvas) {
+function test_transferToGPUTexture_balanced_access(device, canvas) {
   const ctx = canvas.getContext('2d');
 
   // Begin and end a WebGPU access session several times.
   for (let count = 0; count < 10; ++count) {
-    const tex = ctx.transferToWebGPU({device: device});
-    ctx.transferBackFromWebGPU();
+    const tex = ctx.transferToGPUTexture({device: device});
+    ctx.transferBackFromGPUTexture();
   }
 }
 
 /**
- * transferBackFromWebGPU() should preserve texture changes on the 2D canvas.
+ * transferBackFromGPUTexture() should preserve texture changes on the 2D
+ * canvas.
  */
-function test_transferBackFromWebGPU_canvas_readback(adapterInfo, device,
+function test_transferBackFromGPUTexture_canvas_readback(adapterInfo, device,
                                                      canvas, canvasFormat) {
   // Skip this test on Mac Swiftshader due to "Invalid Texture" errors.
   if (isMacSwiftShader(adapterInfo)) {
@@ -286,24 +294,26 @@ function test_transferBackFromWebGPU_canvas_readback(adapterInfo, device,
 
   // Convert the canvas to a texture.
   const ctx = canvas.getContext('2d', canvasFormat);
-  const tex = ctx.transferToWebGPU({device: device});
+  const tex = ctx.transferToGPUTexture({device: device});
 
   // Fill the texture with a color containing distinct values in each channel.
   clearTextureToColor(device, tex,
                       { r: 64 / 255, g: 128 / 255, b: 192 / 255, a: 1.0 });
 
   // Finish our WebGPU pass and restore the canvas.
-  ctx.transferBackFromWebGPU(tex);
+  ctx.transferBackFromGPUTexture(tex);
 
   // Verify that the canvas contains our chosen color across every pixel.
   checkCanvasColor(ctx, [0x40, 0x80, 0xC0, 0xFF]);
 }
 
-/** transferBackFromWebGPU() should be a no-op if the canvas context is lost. */
-function test_transferBackFromWebGPU_context_lost(device, canvas) {
+/**
+ * transferBackFromGPUTexture() should be a no-op if the canvas context is lost.
+ */
+function test_transferBackFromGPUTexture_context_lost(device, canvas) {
   // Begin a WebGPU access session.
   const ctx = canvas.getContext('2d');
-  const tex = ctx.transferToWebGPU({device: device});
+  const tex = ctx.transferToGPUTexture({device: device});
 
   // Forcibly lose the canvas context.
   assert_true(!!window.internals, 'Internal APIs unavailable.');
@@ -311,24 +321,24 @@ function test_transferBackFromWebGPU_context_lost(device, canvas) {
 
   // End the WebGPU access session. Nothing should be thrown.
   try {
-    ctx.transferBackFromWebGPU(tex);
+    ctx.transferBackFromGPUTexture(tex);
   } catch {
-    assert_unreached('transferBackFromWebGPU should be safe when context ' +
+    assert_unreached('transferBackFromGPUTexture should be safe when context ' +
                      'is lost.');
   }
 }
 
 /**
- * transferBackFromWebGPU() should cause the GPUTexture returned by
- * transferToWebGPU() to enter a destroyed state.
+ * transferBackFromGPUTexture() should cause the GPUTexture returned by
+ * transferToGPUTexture() to enter a destroyed state.
  */
-function test_transferBackFromWebGPU_destroys_texture(device, canvas) {
+function test_transferBackFromGPUTexture_destroys_texture(device, canvas) {
   // Briefly begin a WebGPU access session.
   const ctx = canvas.getContext('2d');
-  const tex = ctx.transferToWebGPU({device: device,
+  const tex = ctx.transferToGPUTexture({device: device,
                                      usage: GPUTextureUsage.COPY_SRC |
                                             GPUTextureUsage.COPY_DST});
-  ctx.transferBackFromWebGPU();
+  ctx.transferBackFromGPUTexture();
 
   // `tex` should be in a destroyed state.
   return checkForDestroyedTextures(device, [[tex, true]]);
@@ -344,7 +354,7 @@ function test_canvas_reset_orphans_texture(adapterInfo, device, canvas,
 
   // Begin a WebGPU access session.
   const ctx = canvas.getContext('2d');
-  const tex = ctx.transferToWebGPU({device: device,
+  const tex = ctx.transferToGPUTexture({device: device,
                                      usage: GPUTextureUsage.COPY_SRC});
 
   // Reset the canvas. This should abort the WebGPU access session. The canvas'
@@ -374,10 +384,10 @@ function test_canvas_reset_orphans_texture(adapterInfo, device, canvas,
 }
 
 /**
- * transferToWebGPU() should create a texture which honors the requested usage
- * flags.
+ * transferToGPUTexture() should create a texture which honors the requested
+ * usage flags.
  */
-function test_transferToWebGPU_usage_flags(adapter, adapterInfo, device,
+function test_transferToGPUTexture_usage_flags(adapter, adapterInfo, device,
                                            canvas) {
   // Create a base-case promise that just resolves immediately.
   let promise = new Promise((resolve, reject) => { resolve(true); });
@@ -391,7 +401,8 @@ function test_transferToWebGPU_usage_flags(adapter, adapterInfo, device,
   const testOneUsageFlag = function(device, canvas, usageToEnable,
                                     usageToTest) {
     const ctx = canvas.getContext('2d');
-    const tex = ctx.transferToWebGPU({device: device, usage: usageToEnable});
+    const tex = ctx.transferToGPUTexture({device: device,
+                                           usage: usageToEnable});
 
     // Check that the GPUTexture's usage flags match our requested flags.
     assert_equals(tex.usage, usageToEnable);
@@ -421,7 +432,7 @@ function test_transferToWebGPU_usage_flags(adapter, adapterInfo, device,
         assert_not_equals(errors, null, 'enabled ' + usageToEnable +
                                         ', tested ' + usageToTest);
       }
-      ctx.transferBackFromWebGPU();
+      ctx.transferBackFromGPUTexture();
     });
   };
 
@@ -455,9 +466,9 @@ function test_canvas_works_after_cpu_downgrade(adapterInfo, device, canvas) {
   internals.disableCanvasAcceleration(canvas);
 
   // Perform a GPU clear to demonstrate that the canvas still works in WebGPU.
-  const tex = ctx.transferToWebGPU({device: device});
+  const tex = ctx.transferToGPUTexture({device: device});
   clearTextureToColor(device, tex, { r: 0.0, g: 1.0, b: 0.0, a: 1.0 });
-  ctx.transferBackFromWebGPU();
+  ctx.transferBackFromGPUTexture();
 
   // Verify that WebGPU did its job; every pixel on the canvas should be green.
   // TODO(crbug.com/40218893): Linux with an Intel GPU returns the wrong color.

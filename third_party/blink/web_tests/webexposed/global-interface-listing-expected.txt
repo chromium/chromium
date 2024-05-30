@@ -1354,8 +1354,8 @@ interface CanvasRenderingContext2D
     method stroke
     method strokeRect
     method strokeText
-    method transferBackFromWebGPU
-    method transferToWebGPU
+    method transferBackFromGPUTexture
+    method transferToGPUTexture
     method transform
     method translate
     setter direction
@@ -7145,8 +7145,8 @@ interface OffscreenCanvasRenderingContext2D
     method stroke
     method strokeRect
     method strokeText
-    method transferBackFromWebGPU
-    method transferToWebGPU
+    method transferBackFromGPUTexture
+    method transferToGPUTexture
     method transform
     method translate
     setter direction
