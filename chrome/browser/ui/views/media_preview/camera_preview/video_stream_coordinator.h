@@ -75,6 +75,7 @@ class VideoStreamCoordinator
                         video_source_provider = {});
 
   raw_ptr<VideoStreamView> video_stream_view_;
+  raw_ptr<views::View> preview_badge_view_;
   std::unique_ptr<capture_mode::CameraVideoFrameHandler> video_frame_handler_;
 
   // Runs when a new frame is received. Used for testing.

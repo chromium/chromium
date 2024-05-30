@@ -19,6 +19,10 @@
     Connect a camera
   </message>
 
+  <message name="IDS_MEDIA_PREVIEW_VIDEO_STREAM_PREVIEW_BADGE" desc="Appears as a badge on camera video frames. It indicates that the frames are not currently being shared with the site">
+    Preview
+  </message>
+
   <!-- Microphone strings -->
   <message name="IDS_MEDIA_PREVIEW_MIC_ACCESSIBLE_NAME" desc="Text for accessability description of the mic selector combobox">
     Microphone

@@ -8,19 +8,36 @@
 
 #include <utility>
 
+#include "chrome/browser/ui/views/media_preview/camera_preview/preview_badge.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_format_comparison.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_stream_view.h"
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "content/public/browser/context_factory.h"
 #include "media/capture/video_capture_types.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/fill_layout.h"
 
 VideoStreamCoordinator::VideoStreamCoordinator(
     views::View& parent_view,
     media_preview_metrics::Context metrics_context)
     : metrics_context_(metrics_context) {
+  auto* container = parent_view.AddChildView(std::make_unique<views::View>());
+  container->SetLayoutManager(std::make_unique<views::FillLayout>());
+
   video_stream_view_ =
-      parent_view.AddChildView(std::make_unique<VideoStreamView>());
+      container->AddChildView(std::make_unique<VideoStreamView>());
   scoped_observation_.Observe(video_stream_view_);
+
+  auto* badge_holder =
+      container->AddChildView(std::make_unique<views::BoxLayoutView>());
+  badge_holder->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  badge_holder->SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
+  badge_holder->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+
+  preview_badge_view_ =
+      badge_holder->AddChildView(preview_badge::CreatePreviewBadge());
+  preview_badge_view_->SetVisible(false);
 }
 
 VideoStreamCoordinator::~VideoStreamCoordinator() {
@@ -65,6 +82,7 @@ void VideoStreamCoordinator::OnCameraVideoFrame(
 
   if (video_stream_view_) {
     video_stream_view_->ScheduleFramePaint(std::move(frame));
+    preview_badge_view_->SetVisible(!has_permission_);
   }
 
   if (!video_stream_start_time_) {
@@ -80,6 +98,7 @@ void VideoStreamCoordinator::OnFatalErrorOrDisconnection() {
   video_stream_start_time_.reset();
   if (video_stream_view_) {
     video_stream_view_->ClearFrame();
+    preview_badge_view_->SetVisible(false);
   }
 }
 
@@ -103,6 +122,7 @@ void VideoStreamCoordinator::StopInternal(
     // This order is needed as to clear all frame references before resetting
     // the buffers which happens within Close().
     video_stream_view_->ClearFrame();
+    preview_badge_view_->SetVisible(false);
   }
 
   if (video_frame_handler_) {
