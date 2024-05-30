@@ -1570,14 +1570,17 @@ TEST_P(CookieSettingsTestP, GetCookieSetting3pcdMetadataGrants) {
 TEST_P(CookieSettingsTestP, GetCookieSetting3pcdHeuristicsGrants) {
   const GURL first_party_url(kFirstPartySite);
   const GURL third_party_url(kAllowedSite);
-  const base::TimeDelta expiration = base::Seconds(5);
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 0);
 
-  prefs_.SetInteger(prefs::kCookieControlsMode,
-                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
-  prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+  {
+    base::RunLoop run_loop;
+    prefs_.SetInteger(prefs::kCookieControlsMode,
+                      static_cast<int>(CookieControlsMode::kBlockThirdParty));
+    prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+    run_loop.RunUntilIdle();
+  }
 
   // Expect that cookies are blocked before setting the temporary grant.
   EXPECT_EQ(
@@ -1585,6 +1588,7 @@ TEST_P(CookieSettingsTestP, GetCookieSetting3pcdHeuristicsGrants) {
                                          GetCookieSettingOverrides(), nullptr),
       CONTENT_SETTING_BLOCK);
 
+  const base::TimeDelta expiration = base::Seconds(5);
   cookie_settings_->SetTemporaryCookieGrantForHeuristic(
       third_party_url, first_party_url, expiration);
 
