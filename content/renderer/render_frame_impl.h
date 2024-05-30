@@ -518,7 +518,7 @@ class CONTENT_EXPORT RenderFrameImpl
   // blink::WebLocalFrameClient implementation:
   void BindToFrame(blink::WebNavigationControl* frame) override;
   blink::WebPlugin* CreatePlugin(const blink::WebPluginParams& params) override;
-  blink::WebMediaPlayer* CreateMediaPlayer(
+  std::unique_ptr<blink::WebMediaPlayer> CreateMediaPlayer(
       const blink::WebMediaPlayerSource& source,
       blink::WebMediaPlayerClient* client,
       blink::MediaInspectorContext* inspector_context,

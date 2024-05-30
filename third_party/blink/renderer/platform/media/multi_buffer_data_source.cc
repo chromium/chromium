@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/media/multi_buffer_data_source.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/containers/adapters.h"
@@ -158,17 +159,18 @@ bool MultiBufferDataSource::AssumeFullyBuffered() const {
   return !url_data_->url().SchemeIsHTTPOrHTTPS();
 }
 
-void MultiBufferDataSource::SetReader(MultiBufferReader* reader) {
+void MultiBufferDataSource::SetReader(
+    std::unique_ptr<MultiBufferReader> reader) {
   DCHECK(render_task_runner_->BelongsToCurrentThread());
   base::AutoLock auto_lock(lock_);
-  reader_.reset(reader);
+  reader_ = std::move(reader);
 }
 
 void MultiBufferDataSource::CreateResourceLoader(int64_t first_byte_position,
                                                  int64_t last_byte_position) {
   DCHECK(render_task_runner_->BelongsToCurrentThread());
 
-  SetReader(new MultiBufferReader(
+  SetReader(std::make_unique<MultiBufferReader>(
       url_data_->multibuffer(), first_byte_position, last_byte_position,
       is_client_audio_element_,
       base::BindRepeating(&MultiBufferDataSource::ProgressCallback, weak_ptr_),

@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/public/platform/web_audio_source_provider_impl.h"
+
 #include <stddef.h>
 
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_glitch_info.h"
@@ -14,7 +17,6 @@
 #include "media/base/mock_audio_renderer_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_audio_source_provider_impl.h"
 #include "third_party/blink/renderer/platform/media/web_audio_source_provider_client.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -41,8 +43,10 @@ class WebAudioSourceProviderImplTest : public testing::Test,
                 kTestSampleRate,
                 64),
         fake_callback_(0.1, kTestSampleRate),
-        mock_sink_(new media::MockAudioRendererSink()),
-        wasp_impl_(new WebAudioSourceProviderImpl(mock_sink_, &media_log_)) {}
+        mock_sink_(base::MakeRefCounted<media::MockAudioRendererSink>()),
+        wasp_impl_(
+            base::MakeRefCounted<WebAudioSourceProviderImpl>(mock_sink_,
+                                                             &media_log_)) {}
 
   WebAudioSourceProviderImplTest(const WebAudioSourceProviderImplTest&) =
       delete;
@@ -439,7 +443,7 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInputDifferentChannelCount) {
 }
 
 TEST_F(WebAudioSourceProviderImplTest, SetClientCallback) {
-  wasp_impl_ = new WebAudioSourceProviderImpl(
+  wasp_impl_ = base::MakeRefCounted<WebAudioSourceProviderImpl>(
       mock_sink_, &media_log_,
       base::BindOnce(&WebAudioSourceProviderImplTest::OnClientSet,
                      weak_factory_.GetWeakPtr()));

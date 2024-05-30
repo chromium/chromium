@@ -65,7 +65,7 @@ WebMediaPlayerBuilder::WebMediaPlayerBuilder(
 
 WebMediaPlayerBuilder::~WebMediaPlayerBuilder() = default;
 
-WebMediaPlayer* WebMediaPlayerBuilder::Build(
+std::unique_ptr<WebMediaPlayer> WebMediaPlayerBuilder::Build(
     WebLocalFrame* frame,
     WebMediaPlayerClient* client,
     WebMediaPlayerEncryptedMediaClient* encrypted_client,
@@ -98,7 +98,7 @@ WebMediaPlayer* WebMediaPlayerBuilder::Build(
     scoped_refptr<ThreadSafeBrowserInterfaceBrokerProxy> remote_interfaces) {
   DCHECK_EQ(&static_cast<FrameFetchContext*>(fetch_context_.get())->frame(),
             frame);
-  return new WebMediaPlayerImpl(
+  return std::make_unique<WebMediaPlayerImpl>(
       frame, client, encrypted_client, delegate, std::move(factory_selector),
       url_index_.get(), std::move(compositor), std::move(media_log), player_id,
       std::move(defer_load_cb), std::move(audio_renderer_sink),

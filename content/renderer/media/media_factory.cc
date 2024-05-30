@@ -354,7 +354,7 @@ void MediaFactory::SetupMojo() {
 #endif
 }
 
-blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
+std::unique_ptr<blink::WebMediaPlayer> MediaFactory::CreateMediaPlayer(
     const blink::WebMediaPlayerSource& source,
     blink::WebMediaPlayerClient* client,
     blink::MediaInspectorContext* inspector_context,
@@ -766,7 +766,8 @@ MediaFactory::CreateRendererFactorySelector(
   return factory_selector;
 }
 
-blink::WebMediaPlayer* MediaFactory::CreateWebMediaPlayerForMediaStream(
+std::unique_ptr<blink::WebMediaPlayer>
+MediaFactory::CreateWebMediaPlayerForMediaStream(
     blink::WebMediaPlayerClient* client,
     blink::MediaInspectorContext* inspector_context,
     const blink::WebString& sink_id,
@@ -797,7 +798,7 @@ blink::WebMediaPlayer* MediaFactory::CreateWebMediaPlayerForMediaStream(
                             media_log.get(), render_frame_)
           : nullptr;
 
-  return new blink::WebMediaPlayerMS(
+  return std::make_unique<blink::WebMediaPlayerMS>(
       frame, client, GetWebMediaPlayerDelegate(), std::move(media_log),
       render_frame_->GetTaskRunner(blink::TaskType::kInternalMedia),
       blink::Platform::Current()->GetMediaStreamVideoSourceVideoTaskRunner(),

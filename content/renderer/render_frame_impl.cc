@@ -3432,7 +3432,7 @@ blink::WebPlugin* RenderFrameImpl::CreatePlugin(
 #endif  // BUILDFLAG(ENABLE_PPAPI)
 }
 
-blink::WebMediaPlayer* RenderFrameImpl::CreateMediaPlayer(
+std::unique_ptr<blink::WebMediaPlayer> RenderFrameImpl::CreateMediaPlayer(
     const blink::WebMediaPlayerSource& source,
     WebMediaPlayerClient* client,
     blink::MediaInspectorContext* inspector_context,

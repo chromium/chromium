@@ -136,7 +136,7 @@ class PLATFORM_EXPORT MultiBufferDataSource
                                    int64_t last_byte_position);
 
   // Set reader_ while asserting proper locking.
-  void SetReader(MultiBufferReader* reader);
+  void SetReader(std::unique_ptr<MultiBufferReader> reader);
 
   friend class MultiBufferDataSourceTest;
 

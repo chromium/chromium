@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/media/cdm_session_adapter.h"
 
 namespace blink {
+
 namespace {
 
 const char kCloseSessionUMAName[] = "CloseSession";
@@ -354,14 +355,12 @@ void WebContentDecryptionModuleSessionImpl::InitializeNewSession(
   // 10.9 Use the cdm to execute the following steps:
   adapter_->InitializeNewSession(
       eme_init_data_type, sanitized_init_data, session_type_,
-      std::unique_ptr<media::NewSessionCdmPromise>(
-          new NewSessionCdmResultPromise(
-              result, adapter_->GetKeySystemUMAPrefix(),
-              kGenerateRequestUMAName,
-              base::BindOnce(
-                  &WebContentDecryptionModuleSessionImpl::OnSessionInitialized,
-                  weak_ptr_factory_.GetWeakPtr()),
-              {SessionInitStatus::NEW_SESSION})));
+      std::make_unique<NewSessionCdmResultPromise>(
+          result, adapter_->GetKeySystemUMAPrefix(), kGenerateRequestUMAName,
+          base::BindOnce(
+              &WebContentDecryptionModuleSessionImpl::OnSessionInitialized,
+              weak_ptr_factory_.GetWeakPtr()),
+          std::vector<SessionInitStatus>{SessionInitStatus::NEW_SESSION}));
 }
 
 void WebContentDecryptionModuleSessionImpl::Load(
@@ -388,14 +387,14 @@ void WebContentDecryptionModuleSessionImpl::Load(
 
   adapter_->LoadSession(
       session_type_, sanitized_session_id,
-      std::unique_ptr<media::NewSessionCdmPromise>(
-          new NewSessionCdmResultPromise(
-              result, adapter_->GetKeySystemUMAPrefix(), kLoadSessionUMAName,
-              base::BindOnce(
-                  &WebContentDecryptionModuleSessionImpl::OnSessionInitialized,
-                  weak_ptr_factory_.GetWeakPtr()),
-              {SessionInitStatus::NEW_SESSION,
-               SessionInitStatus::SESSION_NOT_FOUND})));
+      std::make_unique<NewSessionCdmResultPromise>(
+          result, adapter_->GetKeySystemUMAPrefix(), kLoadSessionUMAName,
+          base::BindOnce(
+              &WebContentDecryptionModuleSessionImpl::OnSessionInitialized,
+              weak_ptr_factory_.GetWeakPtr()),
+          std::vector<SessionInitStatus>{
+              SessionInitStatus::NEW_SESSION,
+              SessionInitStatus::SESSION_NOT_FOUND}));
 }
 
 void WebContentDecryptionModuleSessionImpl::Update(

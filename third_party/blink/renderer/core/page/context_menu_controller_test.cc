@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <memory>
 #include <optional>
 #include <utility>
 
@@ -112,7 +113,7 @@ class TestWebFrameClientImpl : public frame_test_helpers::TestWebFrameClient {
     host_context_menu_location_ = host_context_menu_location;
   }
 
-  WebMediaPlayer* CreateMediaPlayer(
+  std::unique_ptr<WebMediaPlayer> CreateMediaPlayer(
       const WebMediaPlayerSource&,
       WebMediaPlayerClient*,
       blink::MediaInspectorContext*,
@@ -121,7 +122,7 @@ class TestWebFrameClientImpl : public frame_test_helpers::TestWebFrameClient {
       const WebString& sink_id,
       const cc::LayerTreeSettings* settings,
       scoped_refptr<base::TaskRunner> compositor_worker_task_runner) override {
-    return new MockWebMediaPlayerForContextMenu();
+    return std::make_unique<MockWebMediaPlayerForContextMenu>();
   }
 
   const ContextMenuData& GetContextMenuData() const {

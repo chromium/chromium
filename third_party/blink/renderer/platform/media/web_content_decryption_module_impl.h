@@ -25,11 +25,12 @@ struct CdmConfig;
 }  // namespace media
 
 namespace blink {
+
 class CdmSessionAdapter;
 class WebSecurityOrigin;
 
 using WebCdmCreatedCB =
-    base::OnceCallback<void(WebContentDecryptionModule* cdm,
+    base::OnceCallback<void(std::unique_ptr<WebContentDecryptionModule> cdm,
                             const std::string& error_message)>;
 
 class PLATFORM_EXPORT WebContentDecryptionModuleImpl

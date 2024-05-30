@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/encryptedmedia/media_key_system_access.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -56,16 +57,16 @@ class NewCdmResultPromise : public ContentDecryptionModuleResultPromise {
 
   // ContentDecryptionModuleResult implementation.
   void CompleteWithContentDecryptionModule(
-      WebContentDecryptionModule* cdm) override {
+      std::unique_ptr<WebContentDecryptionModule> cdm) override {
     // NOTE: Continued from step 2.8 of createMediaKeys().
 
     if (!IsValidToFulfillPromise())
       return;
 
     // 2.9. Let media keys be a new MediaKeys object.
-    auto* media_keys = MakeGarbageCollected<MediaKeys>(
-        GetExecutionContext(), supported_session_types_, base::WrapUnique(cdm),
-        config_);
+    auto* media_keys = MakeGarbageCollected<MediaKeys>(GetExecutionContext(),
+                                                       supported_session_types_,
+                                                       std::move(cdm), config_);
 
     // 2.10. Resolve promise with media keys.
     Resolve<MediaKeys>(media_keys);

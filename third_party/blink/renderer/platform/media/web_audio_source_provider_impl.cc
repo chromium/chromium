@@ -123,7 +123,7 @@ WebAudioSourceProviderImpl::WebAudioSourceProviderImpl(
     media::MediaLog* media_log,
     base::OnceClosure on_set_client_callback /* = base::OnceClosure()*/)
     : sink_(std::move(sink)),
-      tee_filter_(new TeeFilter()),
+      tee_filter_(std::make_unique<TeeFilter>()),
       media_log_(media_log),
       on_set_client_callback_(std::move(on_set_client_callback)) {}
 

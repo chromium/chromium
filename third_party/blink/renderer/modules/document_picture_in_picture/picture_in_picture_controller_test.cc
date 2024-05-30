@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <utility>
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
@@ -261,7 +262,7 @@ class PictureInPictureTestWebFrameClient
       std::unique_ptr<WebMediaPlayer> web_media_player)
       : web_media_player_(std::move(web_media_player)) {}
 
-  WebMediaPlayer* CreateMediaPlayer(
+  std::unique_ptr<WebMediaPlayer> CreateMediaPlayer(
       const WebMediaPlayerSource&,
       WebMediaPlayerClient*,
       blink::MediaInspectorContext*,
@@ -270,7 +271,7 @@ class PictureInPictureTestWebFrameClient
       const WebString& sink_id,
       const cc::LayerTreeSettings* settings,
       scoped_refptr<base::TaskRunner> compositor_worker_task_runner) override {
-    return web_media_player_.release();
+    return std::move(web_media_player_);
   }
 
  private:

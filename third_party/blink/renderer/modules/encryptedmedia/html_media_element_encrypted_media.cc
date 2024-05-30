@@ -96,7 +96,7 @@ class SetContentDecryptionModuleResult final
   }
 
   void CompleteWithContentDecryptionModule(
-      WebContentDecryptionModule*) override {
+      std::unique_ptr<WebContentDecryptionModule>) override {
     NOTREACHED_IN_MIGRATION();
     std::move(failure_callback_)
         .Run(kWebContentDecryptionModuleExceptionInvalidStateError,

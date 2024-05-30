@@ -556,7 +556,7 @@ class CORE_EXPORT HTMLMediaElement
                                         const WebString&,
                                         bool) final;
   void RemoveVideoTrack(WebMediaPlayer::TrackId) final;
-  void MediaSourceOpened(WebMediaSource*) final;
+  void MediaSourceOpened(std::unique_ptr<WebMediaSource>) final;
   void RemotePlaybackCompatibilityChanged(const WebURL&,
                                           bool is_compatible) final;
   bool HasSelectedVideoTrack() final;

@@ -20,6 +20,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -511,7 +512,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
 
   // TODO(xhwang): When we use an external Renderer, many methods won't work,
   // e.g. GetCurrentFrameFromCompositor(). See http://crbug.com/434861
-  audio_source_provider_ = new WebAudioSourceProviderImpl(
+  audio_source_provider_ = base::MakeRefCounted<WebAudioSourceProviderImpl>(
       std::move(audio_renderer_sink), media_log_.get(),
       std::move(on_audio_source_provider_set_client_callback));
 
@@ -1858,7 +1859,7 @@ void WebMediaPlayerImpl::OnPipelineResumed() {
 
 void WebMediaPlayerImpl::OnChunkDemuxerOpened(media::ChunkDemuxer* demuxer) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  client_->MediaSourceOpened(new WebMediaSourceImpl(demuxer));
+  client_->MediaSourceOpened(std::make_unique<WebMediaSourceImpl>(demuxer));
 }
 
 void WebMediaPlayerImpl::OnFallback(media::PipelineStatus status) {

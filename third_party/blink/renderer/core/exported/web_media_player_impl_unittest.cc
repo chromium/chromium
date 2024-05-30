@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
@@ -88,6 +89,7 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
+
 namespace {
 
 using ::base::test::RunClosure;
@@ -175,7 +177,7 @@ class MockWebMediaPlayerClient : public WebMediaPlayerClient {
                                        const WebString&,
                                        bool));
   MOCK_METHOD1(RemoveVideoTrack, void(WebMediaPlayer::TrackId));
-  MOCK_METHOD1(MediaSourceOpened, void(WebMediaSource*));
+  MOCK_METHOD1(MediaSourceOpened, void(std::unique_ptr<WebMediaSource>));
   MOCK_METHOD2(RemotePlaybackCompatibilityChanged, void(const WebURL&, bool));
   MOCK_METHOD0(WasAlwaysMuted, bool());
   MOCK_METHOD0(HasSelectedVideoTrack, bool());
@@ -840,11 +842,11 @@ class WebMediaPlayerImplTest
   void OnProgress() { wmpi_->OnProgress(); }
 
   void OnCdmCreated(base::RepeatingClosure quit_closure,
-                    WebContentDecryptionModule* cdm,
+                    std::unique_ptr<WebContentDecryptionModule> cdm,
                     const std::string& error_message) {
     LOG_IF(ERROR, !error_message.empty()) << error_message;
     EXPECT_TRUE(cdm);
-    web_cdm_.reset(cdm);
+    web_cdm_ = std::move(cdm);
     quit_closure.Run();
   }
 

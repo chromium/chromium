@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom-blink.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
@@ -58,7 +60,7 @@ class VideoAutoFullscreenFrameHost : public FakeLocalFrameHost {
 class VideoAutoFullscreenFrameClient
     : public frame_test_helpers::TestWebFrameClient {
  public:
-  WebMediaPlayer* CreateMediaPlayer(
+  std::unique_ptr<WebMediaPlayer> CreateMediaPlayer(
       const WebMediaPlayerSource&,
       WebMediaPlayerClient*,
       blink::MediaInspectorContext*,
@@ -67,7 +69,7 @@ class VideoAutoFullscreenFrameClient
       const WebString& sink_id,
       const cc::LayerTreeSettings* settings,
       scoped_refptr<base::TaskRunner> compositor_worker_task_runner) final {
-    return new EmptyWebMediaPlayer();
+    return std::make_unique<EmptyWebMediaPlayer>();
   }
 };
 

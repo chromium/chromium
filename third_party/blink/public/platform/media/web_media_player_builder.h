@@ -76,7 +76,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerBuilder {
   WebMediaPlayerBuilder& operator=(const WebMediaPlayerBuilder&) = delete;
   ~WebMediaPlayerBuilder();
 
-  WebMediaPlayer* Build(
+  std::unique_ptr<WebMediaPlayer> Build(
       WebLocalFrame* frame,
       WebMediaPlayerClient* client,
       WebMediaPlayerEncryptedMediaClient* encrypted_client,

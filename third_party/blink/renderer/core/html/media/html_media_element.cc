@@ -28,6 +28,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <utility>
 
 #include "base/auto_reset.h"
 #include "base/debug/crash_logging.h"
@@ -4384,10 +4385,11 @@ void HTMLMediaElement::SetCcLayer(cc::Layer* cc_layer) {
   cc_layer_ = cc_layer;
 }
 
-void HTMLMediaElement::MediaSourceOpened(WebMediaSource* web_media_source) {
+void HTMLMediaElement::MediaSourceOpened(
+    std::unique_ptr<WebMediaSource> web_media_source) {
   SetShouldDelayLoadEvent(false);
   media_source_attachment_->CompleteAttachingToMediaElement(
-      media_source_tracer_, base::WrapUnique(web_media_source));
+      media_source_tracer_, std::move(web_media_source));
 }
 
 bool HTMLMediaElement::IsInteractiveContent() const {

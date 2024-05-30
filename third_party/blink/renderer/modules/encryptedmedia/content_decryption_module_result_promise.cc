@@ -7,6 +7,7 @@
 #include "media/base/key_systems.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -65,7 +66,7 @@ void ContentDecryptionModuleResultPromise::Complete() {
 }
 
 void ContentDecryptionModuleResultPromise::CompleteWithContentDecryptionModule(
-    WebContentDecryptionModule* cdm) {
+    std::unique_ptr<WebContentDecryptionModule> cdm) {
   NOTREACHED_IN_MIGRATION();
   if (!IsValidToFulfillPromise())
     return;

@@ -39,7 +39,7 @@ class ContentDecryptionModuleResultPromise
   // ContentDecryptionModuleResult implementation.
   void Complete() override;
   void CompleteWithContentDecryptionModule(
-      WebContentDecryptionModule*) override;
+      std::unique_ptr<WebContentDecryptionModule>) override;
   void CompleteWithSession(
       WebContentDecryptionModuleResult::SessionStatus) override;
   void CompleteWithKeyStatus(

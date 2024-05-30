@@ -560,7 +560,7 @@ class WebMediaPlayerMSTest
     return WebMediaPlayer::TrackId();
   }
   void RemoveVideoTrack(WebMediaPlayer::TrackId) override {}
-  void MediaSourceOpened(WebMediaSource*) override {}
+  void MediaSourceOpened(std::unique_ptr<WebMediaSource>) override {}
   void RemotePlaybackCompatibilityChanged(const WebURL& url,
                                           bool is_compatible) override {}
   bool WasAlwaysMuted() override { return false; }

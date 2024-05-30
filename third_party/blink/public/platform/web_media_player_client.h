@@ -31,6 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MEDIA_PLAYER_CLIENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MEDIA_PLAYER_CLIENT_H_
 
+#include <memory>
+
 #include "base/time/time.h"
 #include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -103,7 +105,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
                                                 const WebString& language,
                                                 bool selected) = 0;
   virtual void RemoveVideoTrack(WebMediaPlayer::TrackId) = 0;
-  virtual void MediaSourceOpened(WebMediaSource*) = 0;
+  virtual void MediaSourceOpened(std::unique_ptr<WebMediaSource>) = 0;
   virtual void RemotePlaybackCompatibilityChanged(const WebURL&,
                                                   bool is_compatible) = 0;
 

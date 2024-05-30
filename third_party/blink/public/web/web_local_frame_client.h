@@ -186,7 +186,7 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // May return null.
   // WebContentDecryptionModule* may be null if one has not yet been set.
-  virtual WebMediaPlayer* CreateMediaPlayer(
+  virtual std::unique_ptr<WebMediaPlayer> CreateMediaPlayer(
       const WebMediaPlayerSource&,
       WebMediaPlayerClient*,
       blink::MediaInspectorContext*,

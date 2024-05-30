@@ -101,7 +101,7 @@ class MediaFactory {
   // |encrypted_client| (otherwise null). |sink_id|, when not empty, identifies
   // the audio sink to use for this player (see HTMLMediaElement.sinkId).
   // |parent_frame_sink_id| identifies the local root widget's FrameSinkId.
-  blink::WebMediaPlayer* CreateMediaPlayer(
+  std::unique_ptr<blink::WebMediaPlayer> CreateMediaPlayer(
       const blink::WebMediaPlayerSource& source,
       blink::WebMediaPlayerClient* client,
       blink::MediaInspectorContext* inspector_context,
@@ -137,7 +137,7 @@ class MediaFactory {
       base::WeakPtr<media::MediaObserver>* out_media_observer,
       int element_id);
 
-  blink::WebMediaPlayer* CreateWebMediaPlayerForMediaStream(
+  std::unique_ptr<blink::WebMediaPlayer> CreateWebMediaPlayerForMediaStream(
       blink::WebMediaPlayerClient* client,
       blink::MediaInspectorContext* inspector_context,
       const blink::WebString& sink_id,
