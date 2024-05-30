@@ -78,6 +78,11 @@ BirchDataProvider* BirchKeyedService::GetRecentTabsProvider() {
   return recent_tabs_provider_.get();
 }
 
+BirchDataProvider* BirchKeyedService::GetLastActiveProvider() {
+  // TODO(jamescook): Add a real provider.
+  return nullptr;
+}
+
 BirchDataProvider* BirchKeyedService::GetMostVisitedProvider() {
   return most_visited_provider_.get();
 }

@@ -168,6 +168,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, WeatherChip) {
   prefs->SetBoolean(prefs::kBirchUseCalendar, false);
   prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
   prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
+  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
   prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
 
@@ -221,6 +222,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, CalendarChip) {
   ASSERT_TRUE(prefs);
   prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
   prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
+  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
   prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
@@ -275,6 +277,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, FileSuggestChip) {
   ASSERT_TRUE(prefs);
   prefs->SetBoolean(prefs::kBirchUseCalendar, false);
   prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
+  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
   prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);

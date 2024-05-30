@@ -151,6 +151,11 @@ class TestBirchClient : public BirchClient {
         base::BindRepeating(&BirchModel::SetRecentTabItems,
                             base::Unretained(birch_model)),
         prefs::kBirchUseRecentTabs);
+    last_active_provider_ =
+        std::make_unique<TestBirchDataProvider<BirchLastActiveItem>>(
+            base::BindRepeating(&BirchModel::SetLastActiveItems,
+                                base::Unretained(birch_model)),
+            prefs::kBirchUseLastActive);
     most_visited_provider_ =
         std::make_unique<TestBirchDataProvider<BirchMostVisitedItem>>(
             base::BindRepeating(&BirchModel::SetMostVisitedItems,
@@ -209,6 +214,7 @@ class TestBirchClient : public BirchClient {
     calendar_provider_->ClearItems();
     file_provider_->ClearItems();
     tab_provider_->ClearItems();
+    last_active_provider_->ClearItems();
     release_notes_provider_->ClearItems();
     self_share_provider_->ClearItems();
     if (weather_provider_) {
@@ -225,6 +231,9 @@ class TestBirchClient : public BirchClient {
   }
   BirchDataProvider* GetRecentTabsProvider() override {
     return tab_provider_.get();
+  }
+  BirchDataProvider* GetLastActiveProvider() override {
+    return last_active_provider_.get();
   }
   BirchDataProvider* GetMostVisitedProvider() override {
     return most_visited_provider_.get();
@@ -258,6 +267,8 @@ class TestBirchClient : public BirchClient {
   std::unique_ptr<TestBirchDataProvider<BirchCalendarItem>> calendar_provider_;
   std::unique_ptr<TestBirchDataProvider<BirchFileItem>> file_provider_;
   std::unique_ptr<TestBirchDataProvider<BirchTabItem>> tab_provider_;
+  std::unique_ptr<TestBirchDataProvider<BirchLastActiveItem>>
+      last_active_provider_;
   std::unique_ptr<TestBirchDataProvider<BirchMostVisitedItem>>
       most_visited_provider_;
   std::unique_ptr<TestBirchDataProvider<BirchSelfShareItem>>

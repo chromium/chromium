@@ -537,6 +537,61 @@ std::u16string BirchTabItem::GetSubtitle(const std::string& session_name,
 
 ////////////////////////////////////////////////////////////////////////////////
 
+BirchLastActiveItem::BirchLastActiveItem(const std::u16string& title,
+                                         const GURL& url,
+                                         ui::ImageModel icon)
+    : BirchItem(title, GetSubtitle()), url_(url), icon_(icon) {}
+
+BirchLastActiveItem::BirchLastActiveItem(BirchLastActiveItem&&) = default;
+
+BirchLastActiveItem::BirchLastActiveItem(const BirchLastActiveItem&) = default;
+
+BirchLastActiveItem& BirchLastActiveItem::operator=(
+    const BirchLastActiveItem&) = default;
+
+bool BirchLastActiveItem::operator==(const BirchLastActiveItem& rhs) const =
+    default;
+
+BirchLastActiveItem::~BirchLastActiveItem() = default;
+
+BirchItemType BirchLastActiveItem::GetType() const {
+  return BirchItemType::kLastActive;
+}
+
+std::string BirchLastActiveItem::ToString() const {
+  std::stringstream ss;
+  ss << "Last active item: {ranking: " << ranking()
+     << ", Title: " << base::UTF16ToUTF8(title()) << ", URL: " << url_;
+  return ss.str();
+}
+
+void BirchLastActiveItem::PerformAction() {
+  if (!url_.is_valid()) {
+    LOG(ERROR) << "No valid URL for last active item";
+    return;
+  }
+  RecordActionMetrics();
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kSwitchToTab);
+}
+
+void BirchLastActiveItem::PerformSecondaryAction() {
+  NOTREACHED_IN_MIGRATION();
+}
+
+void BirchLastActiveItem::LoadIcon(LoadIconCallback callback) const {
+  std::move(callback).Run(icon_);
+}
+
+// static
+std::u16string BirchLastActiveItem::GetSubtitle() {
+  // TODO(jamescook): Localize subtitle.
+  return u"Placeholder";
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 BirchMostVisitedItem::BirchMostVisitedItem(const std::u16string& title,
                                            const GURL& url,
                                            ui::ImageModel icon)

@@ -571,6 +571,7 @@ TEST_F(BirchKeyedServiceTest, BirchFileSuggestProvider_NoFilesAvailable) {
   BirchModel* model = Shell::Get()->birch_model();
   model->SetCalendarItems({});
   model->SetRecentTabItems({});
+  model->SetLastActiveItems({});
   model->SetMostVisitedItems({});
   model->SetSelfShareItems({});
   model->SetWeatherItems({});

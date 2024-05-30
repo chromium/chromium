@@ -892,6 +892,7 @@ chromium-metrics-reviews@google.com.
   <token key="Type">
     <variant name=".Calendar" summary="calendar"/>
     <variant name=".File" summary="file"/>
+    <variant name=".LastActive" summary="last active tab"/>
     <variant name=".MostVisited" summary="most visited URLs"/>
     <variant name=".ReleaseNotes" summary="release notes"/>
     <variant name=".SelfShare" summary="self share"/>
@@ -911,6 +912,7 @@ chromium-metrics-reviews@google.com.
   <token key="Type">
     <variant name=".Calendar" summary="calendar"/>
     <variant name=".FileSuggest" summary="file suggest"/>
+    <variant name=".LastActive" summary="last active tab"/>
     <variant name=".MostVisited" summary="most visited URLs"/>
     <variant name=".RecentTabs" summary="recent tabs"/>
     <variant name=".ReleaseNotes" summary="release notes"/>
@@ -948,6 +950,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".Attachment" summary="calendar event file attachment"/>
     <variant name=".Calendar" summary="calendar"/>
     <variant name=".File" summary="file"/>
+    <variant name=".LastActive" summary="last active tab"/>
     <variant name=".MostVisited" summary="most visited URLs"/>
     <variant name=".ReleaseNotes" summary="release notes"/>
     <variant name=".SelfShare" summary="self share"/>

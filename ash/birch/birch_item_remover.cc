@@ -45,6 +45,11 @@ void BirchItemRemover::RemoveItem(BirchItem* item) {
                       removed_items_proto_->mutable_removed_tab_items());
       return;
     };
+    case BirchItemType::kLastActive: {
+      hash_and_insert(static_cast<BirchLastActiveItem*>(item)->url().spec(),
+                      removed_items_proto_->mutable_removed_tab_items());
+      return;
+    }
     case BirchItemType::kMostVisited: {
       hash_and_insert(static_cast<BirchMostVisitedItem*>(item)->url().spec(),
                       removed_items_proto_->mutable_removed_tab_items());
@@ -81,6 +86,15 @@ void BirchItemRemover::RemoveItem(BirchItem* item) {
 void BirchItemRemover::FilterRemovedTabs(std::vector<BirchTabItem>* tab_items) {
   CHECK(removed_items_proto_.initialized());
   std::erase_if(*tab_items, [this](const BirchTabItem& item) {
+    const std::string hashed_url = base::SHA1HashString(item.url().spec());
+    return removed_items_proto_->removed_tab_items().contains(hashed_url);
+  });
+}
+
+void BirchItemRemover::FilterRemovedLastActiveItems(
+    std::vector<BirchLastActiveItem>* items) {
+  CHECK(removed_items_proto_.initialized());
+  std::erase_if(*items, [this](const BirchLastActiveItem& item) {
     const std::string hashed_url = base::SHA1HashString(item.url().spec());
     return removed_items_proto_->removed_tab_items().contains(hashed_url);
   });

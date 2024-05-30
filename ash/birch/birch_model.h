@@ -97,6 +97,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   void SetFileSuggestItems(
       const std::vector<BirchFileItem>& file_suggest_items);
   void SetRecentTabItems(const std::vector<BirchTabItem>& recent_tab_items);
+  void SetLastActiveItems(const std::vector<BirchLastActiveItem>& items);
   void SetMostVisitedItems(const std::vector<BirchMostVisitedItem>& items);
   void SetSelfShareItems(
       const std::vector<BirchSelfShareItem>& self_share_items);
@@ -122,6 +123,9 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   }
   const std::vector<BirchTabItem>& GetTabsForTest() const {
     return recent_tab_data_.items;
+  }
+  const std::vector<BirchLastActiveItem>& GetLastActiveItemsForTest() const {
+    return last_active_data_.items;
   }
   const std::vector<BirchMostVisitedItem>& GetMostVisitedItemsForTest() const {
     return most_visited_data_.items;
@@ -197,6 +201,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   void OnCalendarPrefChanged();
   void OnFileSuggestPrefChanged();
   void OnRecentTabPrefChanged();
+  void OnLastActivePrefChanged();
   void OnMostVisitedPrefChanged();
   void OnSelfSharePrefChanged();
   void OnWeatherPrefChanged();
@@ -235,6 +240,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   DataTypeInfo<BirchAttachmentItem> attachment_data_;
   DataTypeInfo<BirchFileItem> file_suggest_data_;
   DataTypeInfo<BirchTabItem> recent_tab_data_;
+  DataTypeInfo<BirchLastActiveItem> last_active_data_;
   DataTypeInfo<BirchMostVisitedItem> most_visited_data_;
   DataTypeInfo<BirchSelfShareItem> self_share_data_;
   DataTypeInfo<BirchReleaseNotesItem> release_notes_data_;
@@ -257,6 +263,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   PrefChangeRegistrar calendar_pref_registrar_;
   PrefChangeRegistrar file_suggest_pref_registrar_;
   PrefChangeRegistrar recent_tab_pref_registrar_;
+  PrefChangeRegistrar last_active_pref_registrar_;
   PrefChangeRegistrar most_visited_pref_registrar_;
   PrefChangeRegistrar self_share_pref_registrar_;
   PrefChangeRegistrar weather_pref_registrar_;

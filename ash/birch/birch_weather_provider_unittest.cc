@@ -43,6 +43,7 @@ class StubBirchClient : public BirchClient {
   BirchDataProvider* GetCalendarProvider() override { return &provider_; }
   BirchDataProvider* GetFileSuggestProvider() override { return &provider_; }
   BirchDataProvider* GetRecentTabsProvider() override { return &provider_; }
+  BirchDataProvider* GetLastActiveProvider() override { return &provider_; }
   BirchDataProvider* GetMostVisitedProvider() override { return &provider_; }
   BirchDataProvider* GetSelfShareProvider() override { return &provider_; }
   BirchDataProvider* GetReleaseNotesProvider() override { return &provider_; }

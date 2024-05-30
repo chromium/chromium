@@ -462,6 +462,14 @@ TEST_F(BirchItemTest, Tab_PerformAction_Histograms) {
                                1);
 }
 
+TEST_F(BirchItemTest, LastActive_PerformAction) {
+  BirchLastActiveItem item(u"item", GURL("http://example.com/"),
+                           ui::ImageModel());
+  item.PerformAction();
+  EXPECT_EQ(new_window_delegate_->last_opened_url_,
+            GURL("http://example.com/"));
+}
+
 TEST_F(BirchItemTest, SelfShare_PerformAction) {
   GURL favicon_url("https://www.favicon.com/");
   base::MockCallback<base::RepeatingClosure> activation_callback;

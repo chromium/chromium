@@ -52,6 +52,7 @@ class BirchKeyedService : public KeyedService,
   BirchDataProvider* GetCalendarProvider() override;
   BirchDataProvider* GetFileSuggestProvider() override;
   BirchDataProvider* GetRecentTabsProvider() override;
+  BirchDataProvider* GetLastActiveProvider() override;
   BirchDataProvider* GetMostVisitedProvider() override;
   BirchDataProvider* GetReleaseNotesProvider() override;
   BirchDataProvider* GetSelfShareProvider() override;

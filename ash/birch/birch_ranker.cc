@@ -172,6 +172,13 @@ void BirchRanker::RankRecentTabItems(std::vector<BirchTabItem>* items) {
   }
 }
 
+void BirchRanker::RankLastActiveItems(std::vector<BirchLastActiveItem>* items) {
+  // TODO(jamescook): Use real ranking.
+  for (BirchLastActiveItem& item : *items) {
+    item.set_ranking(19.f);
+  }
+}
+
 void BirchRanker::RankMostVisitedItems(
     std::vector<BirchMostVisitedItem>* items) {
   CHECK(items);
