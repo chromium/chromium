@@ -1603,7 +1603,7 @@ class CONTENT_EXPORT WebContentsImpl
     }
     FrameTreeNode* OuterContentsFrameTreeNode() const;
 
-    FrameTree* focused_frame_tree() { return &*focused_frame_tree_; }
+    FrameTree* focused_frame_tree();
     void SetFocusedFrameTree(FrameTree* frame_tree);
 
     // Returns the inner WebContents within |frame|, if one exists, or nullptr
@@ -1639,7 +1639,7 @@ class CONTENT_EXPORT WebContentsImpl
     // An inner WebContents if focused is responsible for setting this back to
     // another valid during its destruction. See WebContentsImpl destructor.
     // TODO(crbug.com/40200744): Support clearing this for inner frame trees.
-    base::SafeRef<FrameTree> focused_frame_tree_;
+    raw_ptr<FrameTree> focused_frame_tree_;
   };
 
   // Container for WebContentsObservers, which knows when we are iterating over
@@ -2074,14 +2074,14 @@ class CONTENT_EXPORT WebContentsImpl
 
   // Helper classes ------------------------------------------------------------
 
+  // Contains information about the WebContents tree structure.
+  WebContentsTreeNode node_;
+
   // Primary FrameTree of this WebContents instance. This WebContents might have
   // additional FrameTrees for features like prerendering and fenced frames,
   // which either might be standalone (prerendering) to nested within a
   // different FrameTree (fenced frame).
   FrameTree primary_frame_tree_;
-
-  // Contains information about the WebContents tree structure.
-  WebContentsTreeNode node_;
 
   // SavePackage, lazily created.
   scoped_refptr<SavePackage> save_package_;
