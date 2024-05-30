@@ -37,12 +37,6 @@
   --iron-icon-fill-color: currentColor;
 }
 
-:host-context([cros]) cr-dialog::part(dialog) {
-  --cr-dialog-background-color: var(--cros-bg-color-elevation-3);
-  background-image: none;
-  box-shadow: var(--cros-elevation-3-shadow);
-}
-
 :host-context([cros]) cr-radio-button {
   --cr-radio-button-checked-color: var(--cros-radio-button-color);
   --cr-radio-button-checked-ripple-color:
@@ -187,17 +181,6 @@
 :host-context([cros][chrome-refresh-2023]):host-context(.focus-outline-visible)
     cr-checkbox:focus {
   --cr-checkbox-ripple-ring: 2px solid var(--cros-sys-focus_ring);
-}
-
-/* Dialog */
-:host-context(body.jelly-enabled) cr-dialog::part(dialog) {
-  --cr-dialog-background-color: var(--cros-sys-base_elevated);
-  background-image: none;
-  box-shadow: var(--cros-sys-app-elevation-3-shadow);
-}
-
-:host-context(body.jelly-enabled) cr-dialog > [slot='title'] {
-  font: var(--cros-display-7-font);
 }
 
 /* Icon button */

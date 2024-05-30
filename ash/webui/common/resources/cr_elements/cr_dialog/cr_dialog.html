@@ -1,13 +1,16 @@
 <style include="cr-hidden-style cr-icons">
   dialog {
+    --cr-dialog-background-color: var(--cros-sys-dialog_container);
+    --cr-dialog-border-radius: 20px;
+    --cr-dialog-title-font: var(--cros-display-7-font);
     --scroll-border-color: #e0e0e0;  /* --paper-grey-300 */
     --scroll-border: 1px solid var(--scroll-border-color);
-    background-color: var(--cr-dialog-background-color, white);
+
+    background-color: var(--cr-dialog-background-color);
     border: 0;
-    border-radius: var(--cr-dialog-border-radius, 8px);
+    border-radius: var(--cr-dialog-border-radius);
     bottom: 50%;
-    box-shadow: 0 0 16px rgba(0, 0, 0, 0.12),
-                0 16px 16px rgba(0, 0, 0, 0.24);
+    box-shadow: var(--cros-sys-app-elevation-3-shadow);
     color: inherit;
     max-height: initial;
     max-width: initial;
@@ -21,12 +24,6 @@
   @media (prefers-color-scheme: dark) {
     dialog {
       --scroll-border-color: var(--google-grey-700);
-      background-color: var(--cr-dialog-background-color,
-          var(--google-grey-900));
-      /* Note: the colors in linear-gradient() are intentionally the same to
-       * add a 4% white layer on top of the fully opaque background-color. */
-      background-image: linear-gradient(rgba(255, 255, 255, .04),
-                                        rgba(255, 255, 255, .04));
     }
   }
 
@@ -70,9 +67,7 @@
   :host ::slotted([slot=title]) {
     color: var(--cr-primary-text-color);
     flex: 1;
-    font-family: var(--cr-dialog-font-family, inherit);
-    font-size: var(--cr-dialog-title-font-size, calc(15 / 13 * 100%));
-    line-height: 1;
+    font: var(--cr-dialog-title-font);
     padding-bottom: var(--cr-dialog-title-slot-padding-bottom, 16px);
     padding-inline-end:  var(--cr-dialog-title-slot-padding-end, 20px);
     padding-inline-start: var(--cr-dialog-title-slot-padding-start, 20px);
