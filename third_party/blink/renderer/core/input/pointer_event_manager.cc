@@ -786,8 +786,10 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
 bool PointerEventManager::HandleScrollbarTouchDrag(const WebPointerEvent& event,
                                                    Scrollbar* scrollbar) {
   if (!scrollbar ||
-      event.pointer_type != WebPointerProperties::PointerType::kTouch)
+      (event.pointer_type != WebPointerProperties::PointerType::kTouch &&
+       event.pointer_type != WebPointerProperties::PointerType::kPen)) {
     return false;
+  }
 
   if (event.GetType() == WebInputEvent::Type::kPointerDown) {
     captured_scrollbar_ = scrollbar;
