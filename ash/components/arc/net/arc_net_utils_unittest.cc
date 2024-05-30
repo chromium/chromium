@@ -547,5 +547,219 @@ TEST_F(ArcNetUtilsTest, TranslateScanResults) {
   EXPECT_EQ(kFrequency, res[0]->frequency);
   EXPECT_EQ(kRssi, res[0]->rssi);
 }
+
+TEST_F(ArcNetUtilsTest, AreConfigurationsEquivalent) {
+  std::vector<arc::mojom::NetworkConfigurationPtr> networks1;
+  std::vector<arc::mojom::NetworkConfigurationPtr> networks2;
+
+  auto network = arc::mojom::NetworkConfiguration::New();
+  network->arc_network_interface = "arc0";
+  network->guid = kGuid;
+  network->connection_state = arc::mojom::ConnectionStateType::CONNECTED;
+  network->is_default_network = true;
+  network->type = arc::mojom::NetworkType::WIFI;
+  network->is_metered = false;
+  network->network_interface = kTestWiFiDeviceInterface;
+  network->host_mtu = kHostMtu;
+  network->host_search_domains = std::vector<std::string>();
+  network->host_search_domains->push_back("search.domain");
+  network->host_ipv4_address = kTestWiFiAddress;
+  network->host_ipv6_global_addresses = std::vector<std::string>();
+  network->host_ipv6_global_addresses->push_back(kNameServerIpv6);
+  network->host_dns_addresses = std::vector<std::string>();
+  network->host_search_domains->push_back(kNameServer1);
+  network->dns_proxy_addresses = std::vector<std::string>();
+  network->dns_proxy_addresses->push_back("100.115.92.134");
+
+  // Empty vectors should be equivalent
+  networks1.clear();
+  networks2.clear();
+  EXPECT_TRUE(net_utils::AreConfigurationsEquivalent(networks1, networks2));
+
+  // Compare one NetworkConfiguration
+  networks1.clear();
+  networks2.clear();
+  networks1.push_back(network->Clone());
+  networks2.push_back(network->Clone());
+  EXPECT_TRUE(net_utils::AreConfigurationsEquivalent(networks1, networks2));
+
+  // Missing element from one of the vectors
+  networks1.clear();
+  networks2.clear();
+  networks1.push_back(network->Clone());
+  EXPECT_FALSE(net_utils::AreConfigurationsEquivalent(networks1, networks2));
+  networks1.clear();
+  networks2.push_back(network->Clone());
+  EXPECT_FALSE(net_utils::AreConfigurationsEquivalent(networks1, networks2));
+
+  // Different order of NetworkConfigurations should be fine
+  networks1.clear();
+  networks2.clear();
+  auto network1 = network.Clone();
+  auto network2 = network.Clone();
+  network1->arc_network_interface = "arc0";
+  network2->arc_network_interface = "arc1";
+  networks1.push_back(network1->Clone());
+  networks1.push_back(network2->Clone());
+  networks2.push_back(network2->Clone());
+  networks2.push_back(network1->Clone());
+  EXPECT_TRUE(net_utils::AreConfigurationsEquivalent(networks1, networks2));
+
+  // arc_network_interface
+  networks1.clear();
+  networks2.clear();
+  network1 = network.Clone();
+  network2 = network.Clone();
+  network1->arc_network_interface = "arc0";
+  network2->arc_network_interface = "arc1";
+  networks1.push_back(network1->Clone());
+  networks2.push_back(network2->Clone());
+  EXPECT_FALSE(net_utils::AreConfigurationsEquivalent(networks1, networks2));
+
+  // guid
+  networks1.clear();
+  networks2.clear();
+  network1 = network.Clone();
+  network2 = network.Clone();
+  network1->guid = "guid1";
+  network2->guid = "guid2";
+  networks1.push_back(network1->Clone());
+  networks2.push_back(network2->Clone());
+  EXPECT_FALSE(net_utils::AreConfigurationsEquivalent(networks1, networks2));
+
+  // connection_state
+  networks1.clear();
+  networks2.clear();
+  network1 = network.Clone();
+  network2 = network.Clone();
+  network1->connection_state = arc::mojom::ConnectionStateType::CONNECTED;
+  network2->connection_state = arc::mojom::ConnectionStateType::NOT_CONNECTED;
+  networks1.push_back(network1.Clone());
+  networks2.push_back(network2.Clone());
+  EXPECT_FALSE(net_utils::AreConfigurationsEquivalent(networks1, networks2));
+
+  // is_default_network
+  networks1.clear();
+  networks2.clear();
+  network1 = network.Clone();
+  network2 = network.Clone();
+  network1->is_default_network = true;
+  network2->is_default_network = false;
+  networks1.push_back(network1.Clone());
+  networks2.push_back(network2.Clone());
+  EXPECT_FALSE(net_utils::AreConfigurationsEquivalent(networks1, networks2));
+
+  // type
+  networks1.clear();
+  networks2.clear();
+  network1 = network.Clone();
+  network2 = network.Clone();
+  network1->type = arc::mojom::NetworkType::WIFI;
+  network2->type = arc::mojom::NetworkType::CELLULAR;
+  networks1.push_back(network1.Clone());
+  networks2.push_back(network2.Clone());
+  EXPECT_FALSE(net_utils::AreConfigurationsEquivalent(networks1, networks2));
+
+  // is_metered
+  networks1.clear();
+  networks2.clear();
+  network1 = network.Clone();
+  network2 = network.Clone();
+  network1->is_metered = true;
+  network2->is_metered = false;
+  networks1.push_back(network1.Clone());
+  networks2.push_back(network2.Clone());
+  EXPECT_FALSE(net_utils::AreConfigurationsEquivalent(networks1, networks2));
+
+  // network_interface
+  networks1.clear();
+  networks2.clear();
+  network1 = network.Clone();
+  network2 = network.Clone();
+  network1->network_interface = "eth0";
+  network2->network_interface = "wlan0";
+  networks1.push_back(network1.Clone());
+  networks2.push_back(network2.Clone());
+  EXPECT_FALSE(net_utils::AreConfigurationsEquivalent(networks1, networks2));
+
+  // host_mtu
+  networks1.clear();
+  networks2.clear();
+  network1 = network.Clone();
+  network2 = network.Clone();
+  network1->host_mtu = 32;
+  network2->host_mtu = 64;
+  networks1.push_back(network1.Clone());
+  networks2.push_back(network2.Clone());
+  EXPECT_FALSE(net_utils::AreConfigurationsEquivalent(networks1, networks2));
+
+  // host_dns_addresses
+  networks1.clear();
+  networks2.clear();
+  network1 = network.Clone();
+  network2 = network.Clone();
+  network1->host_dns_addresses->push_back("1.1.1.1");
+  network2->host_dns_addresses->push_back("8.8.8.8");
+  networks1.push_back(network1.Clone());
+  networks2.push_back(network2.Clone());
+  EXPECT_FALSE(net_utils::AreConfigurationsEquivalent(networks1, networks2));
+
+  // Mismatching order of same host_dns_addresses is still not equivalent
+  networks1.clear();
+  networks2.clear();
+  network1 = network.Clone();
+  network2 = network.Clone();
+  network1->host_dns_addresses->push_back("1.1.1.1");
+  network1->host_dns_addresses->push_back("8.8.8.8");
+  network2->host_dns_addresses->push_back("8.8.8.8");
+  network2->host_dns_addresses->push_back("1.1.1.1");
+  networks1.push_back(network1.Clone());
+  networks2.push_back(network2.Clone());
+  EXPECT_FALSE(net_utils::AreConfigurationsEquivalent(networks1, networks2));
+
+  // dns_proxy_addresses
+  networks1.clear();
+  networks2.clear();
+  network1 = network.Clone();
+  network2 = network.Clone();
+  network1->dns_proxy_addresses->push_back("100.115.92.0");
+  network2->dns_proxy_addresses->push_back("100.115.92.1");
+  networks1.push_back(network1.Clone());
+  networks2.push_back(network2.Clone());
+  EXPECT_FALSE(net_utils::AreConfigurationsEquivalent(networks1, networks2));
+
+  // host_search_domains
+  networks1.clear();
+  networks2.clear();
+  network1 = network.Clone();
+  network2 = network.Clone();
+  network1->host_search_domains->push_back("search.domain.1");
+  network2->host_search_domains->push_back("search.domain.2");
+  networks1.push_back(network1.Clone());
+  networks2.push_back(network2.Clone());
+  EXPECT_FALSE(net_utils::AreConfigurationsEquivalent(networks1, networks2));
+
+  // host_ipv4_address
+  networks1.clear();
+  networks2.clear();
+  network1 = network.Clone();
+  network2 = network.Clone();
+  network1->host_ipv4_address = "127.0.0.1";
+  network1->host_ipv4_address = "0.0.0.0";
+  networks1.push_back(network1.Clone());
+  networks2.push_back(network2.Clone());
+  EXPECT_FALSE(net_utils::AreConfigurationsEquivalent(networks1, networks2));
+
+  // host_ipv6_global_addresses
+  networks1.clear();
+  networks2.clear();
+  network1 = network.Clone();
+  network2 = network.Clone();
+  network1->host_ipv6_global_addresses->push_back("2001:db8::");
+  network2->host_ipv6_global_addresses->push_back("::1234:5678");
+  networks1.push_back(network1.Clone());
+  networks2.push_back(network2.Clone());
+  EXPECT_FALSE(net_utils::AreConfigurationsEquivalent(networks1, networks2));
+}
 }  // namespace
 }  // namespace arc

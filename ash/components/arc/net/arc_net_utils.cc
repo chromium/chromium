@@ -700,4 +700,44 @@ TranslateSocketConnectionEvent(const mojom::SocketConnectionEventPtr& mojom) {
 
   return msg;
 }
+
+bool AreConfigurationsEquivalent(
+    std::vector<arc::mojom::NetworkConfigurationPtr>& latest_networks,
+    std::vector<arc::mojom::NetworkConfigurationPtr>& cached_networks) {
+  if (cached_networks.size() != latest_networks.size()) {
+    return false;
+  }
+
+  const auto arc_iface_compare =
+      [](const arc::mojom::NetworkConfigurationPtr& a,
+         const arc::mojom::NetworkConfigurationPtr& b) -> bool {
+    return a->arc_network_interface > b->arc_network_interface;
+  };
+  std::sort(cached_networks.begin(), cached_networks.end(), arc_iface_compare);
+  std::sort(latest_networks.begin(), latest_networks.end(), arc_iface_compare);
+
+  for (size_t i = 0; i < latest_networks.size(); ++i) {
+    const arc::mojom::NetworkConfigurationPtr& latest = latest_networks.at(i);
+    const arc::mojom::NetworkConfigurationPtr& cached = cached_networks.at(i);
+
+    if (latest->arc_network_interface != cached->arc_network_interface ||
+        latest->guid != cached->guid ||
+        latest->connection_state != cached->connection_state ||
+        latest->is_default_network != cached->is_default_network ||
+        latest->type != cached->type ||
+        latest->is_metered != cached->is_metered ||
+        latest->network_interface != cached->network_interface ||
+        latest->host_mtu != cached->host_mtu ||
+        latest->host_dns_addresses != cached->host_dns_addresses ||
+        latest->dns_proxy_addresses != cached->dns_proxy_addresses ||
+        latest->host_search_domains != cached->host_search_domains ||
+        latest->host_ipv4_address != cached->host_ipv4_address ||
+        latest->host_ipv6_global_addresses !=
+            cached->host_ipv6_global_addresses) {
+      return false;
+    }
+  }
+
+  return true;
+}
 }  // namespace arc::net_utils

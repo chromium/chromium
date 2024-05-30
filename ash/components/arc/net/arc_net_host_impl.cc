@@ -1308,9 +1308,24 @@ void ArcNetHostImpl::UpdateHostNetworks(
   if (!net_instance)
     return;
 
-  net_instance->ActiveNetworksChanged(net_utils::TranslateNetworkDevices(
-      devices, arc_vpn_service_path_, GetHostActiveNetworks(),
-      shill_network_properties_));
+  std::vector<arc::mojom::NetworkConfigurationPtr> latest_networks =
+      net_utils::TranslateNetworkDevices(devices, arc_vpn_service_path_,
+                                         GetHostActiveNetworks(),
+                                         shill_network_properties_);
+
+  if (net_utils::AreConfigurationsEquivalent(latest_networks,
+                                             cached_arc_networks_)) {
+    NET_LOG(USER) << "Host networks are considered equivalent to ARC, not "
+                  << "forwarding update to ARC";
+    return;
+  }
+
+  // Create clones since the mojo structs are move-only
+  cached_arc_networks_.clear();
+  for (auto& network : latest_networks) {
+    cached_arc_networks_.push_back(network->Clone());
+  }
+  net_instance->ActiveNetworksChanged(std::move(latest_networks));
 }
 
 void ArcNetHostImpl::NetworkListChanged() {

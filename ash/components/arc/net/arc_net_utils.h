@@ -96,6 +96,14 @@ base::Value::List TranslateSubjectNameMatchListToValue(
 // event.
 std::unique_ptr<patchpanel::SocketConnectionEvent>
 TranslateSocketConnectionEvent(const mojom::SocketConnectionEventPtr& mojom);
+
+// Duplicate of ARC's ArcNetworkUtils#areConfigurationsEquivalent. This is meant
+// as a short-term solution to prevent spurious mojo calls to ARC if we know ARC
+// is going to ignore the configuration update anyways. ARC's implementation
+// should be the source of truth. See b/342973880 for more details.
+bool AreConfigurationsEquivalent(
+    std::vector<arc::mojom::NetworkConfigurationPtr>& latest_networks,
+    std::vector<arc::mojom::NetworkConfigurationPtr>& cached_networks);
 }  // namespace arc::net_utils
 
 #endif  // ASH_COMPONENTS_ARC_NET_ARC_NET_UTILS_H_

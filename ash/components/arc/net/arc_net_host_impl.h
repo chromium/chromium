@@ -298,6 +298,11 @@ class ArcNetHostImpl : public KeyedService,
 
   std::unique_ptr<CertManager> cert_manager_;
 
+  // Cached NetworkConfigurations that were last sent to ARC. This is an
+  // already-filtered list of networks, e.g. non-ARC networks aren't included
+  // since we don't send them to ARC.
+  std::vector<arc::mojom::NetworkConfigurationPtr> cached_arc_networks_;
+
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<ArcNetHostImpl> weak_factory_{this};
 };
