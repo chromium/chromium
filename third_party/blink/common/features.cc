@@ -2114,7 +2114,7 @@ BASE_FEATURE(kServiceWorkerClientIdAlignedWithSpec,
 // static routing API.
 BASE_FEATURE(kServiceWorkerStaticRouterNotConditionEnabled,
              "ServiceWorkerStaticRouterNotConditionEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, beacons (and friends) have ResourceLoadPriority::kLow,
 // not ResourceLoadPriority::kVeryLow.
