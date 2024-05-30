@@ -730,12 +730,12 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jclass> GetClass(
 
 template <typename T>
 inline T FromJniType(JNIEnv* env, const JavaRef<jobject>& obj) {
-  static_assert(false, JNI_ZERO_CONVERSION_FAILED_MSG("FromJniType"));
+  static_assert(sizeof(T) == 0, JNI_ZERO_CONVERSION_FAILED_MSG("FromJniType"));
 }
 
 template <typename T>
 inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env, const T& obj) {
-  static_assert(false, JNI_ZERO_CONVERSION_FAILED_MSG("ToJniType"));
+  static_assert(sizeof(T) == 0, JNI_ZERO_CONVERSION_FAILED_MSG("ToJniType"));
 }
 
 // Allow conversions using pointers by wrapping non-pointer conversions.
@@ -765,17 +765,17 @@ template <typename T>
 inline ScopedJavaLocalRef<jobjectArray> ToJniArray(JNIEnv* env,
                                                    const T& obj,
                                                    jclass array_class) {
-  static_assert(false, JNI_ZERO_CONVERSION_FAILED_MSG("ToJniArray"));
+  static_assert(sizeof(T) == 0, JNI_ZERO_CONVERSION_FAILED_MSG("ToJniArray"));
 }
 
 template <typename T>
 inline ScopedJavaLocalRef<jarray> ToJniArray(JNIEnv* env, const T& obj) {
-  static_assert(false, JNI_ZERO_CONVERSION_FAILED_MSG("ToJniArray"));
+  static_assert(sizeof(T) == 0, JNI_ZERO_CONVERSION_FAILED_MSG("ToJniArray"));
 }
 
 template <typename T>
 inline T FromJniArray(JNIEnv* env, const JavaRef<jobject>& obj) {
-  static_assert(false, JNI_ZERO_CONVERSION_FAILED_MSG("FromJniArray"));
+  static_assert(sizeof(T) == 0, JNI_ZERO_CONVERSION_FAILED_MSG("FromJniArray"));
 }
 
 #undef JNI_ZERO_CONVERSION_FAILED_MSG

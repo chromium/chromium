@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/jni_zero/jni_zero.h"
+#ifdef JNI_ZERO_ENABLE_TYPE_CONVERSIONS
 #include "third_party/jni_zero/default_conversions.h"
 
 namespace jni_zero {
@@ -82,3 +84,4 @@ ScopedJavaLocalRef<jarray> ToJniArray<std::vector<uint8_t>>(
   return ScopedJavaLocalRef<jarray>(env, jia);
 }
 }  // namespace jni_zero
+#endif  // JNI_ZERO_ENABLE_TYPE_CONVERSIONS
