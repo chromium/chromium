@@ -724,15 +724,10 @@ void SplitViewDivider::StartObservingTransientChild(aura::Window* transient) {
     return;
   }
 
-  // For now, we only care about dialog bubbles type transient child. We may
-  // observe other types transient child window as well if need arises in the
-  // future.
-  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(transient);
-  if (!widget || !widget->widget_delegate()->AsBubbleDialogDelegate())
-    return;
+  DCHECK(!transient_windows_observations_.IsObservingSource(transient));
 
   // At this moment, the transient window may not have the valid bounds yet.
-  // Start observe the transient window.
+  // Start observing the transient window.
   transient_windows_observations_.AddObservation(transient);
 }
 
