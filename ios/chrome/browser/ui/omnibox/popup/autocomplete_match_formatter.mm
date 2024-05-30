@@ -61,6 +61,10 @@ UIColor* DimColorIncognito() {
   return [[self alloc] initWithMatch:match];
 }
 
++ (NSAttributedString*)spacerAttributedString {
+  return [[NSAttributedString alloc] initWithString:@"  "];
+}
+
 #pragma mark - NSObject
 
 - (NSString*)description {
@@ -133,18 +137,49 @@ UIColor* DimColorIncognito() {
 - (NSAttributedString*)answerDetailText {
   DCHECK(self.hasAnswer);
   if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled) {
-    std::string string = _match.answer_template->answers(0).headline().text();
+    NSMutableAttributedString* result =
+        [[NSMutableAttributedString alloc] initWithString:@""];
+    NSAttributedString* spacer = [[self class] spacerAttributedString];
+
     if (_match.answer_template->answer_type() ==
         omnibox::RichAnswerTemplate::DICTIONARY) {
-      string = _match.answer_template->answers(0).subhead().text();
+      auto subheadFragments =
+          _match.answer_template->answers(0).subhead().fragments();
+
+      for (auto fragment : subheadFragments) {
+        NSAttributedString* fragmentText = [self
+            attributedStringWithString:base::SysUTF8ToNSString(fragment.text())
+                       classifications:nullptr
+                             smallFont:NO
+                                 color:SuggestionDetailTextColor()
+                              dimColor:DimColor()];
+        [result appendAttributedString:fragmentText];
+        [result appendAttributedString:spacer];
+      }
+    } else {
+      auto headLinefragments =
+          _match.answer_template->answers(0).headline().fragments();
+
+      for (auto fragment : headLinefragments) {
+        NSAttributedString* fragmentText = [self
+            attributedStringWithString:base::SysUTF8ToNSString(fragment.text())
+                       classifications:&_match.contents_class
+                             smallFont:NO
+                                 color:SuggestionDetailTextColor()
+                              dimColor:DimColor()];
+        [result appendAttributedString:fragmentText];
+        [result appendAttributedString:spacer];
+      }
     }
 
-    return [self attributedStringWithString:base::SysUTF8ToNSString(string)
-                            classifications:&_match.contents_class
-                                  smallFont:NO
-                                      color:SuggestionDetailTextColor()
-                                   dimColor:DimColor()];
+    // Remove the extra spacer.
+    if (result.length > 0) {
+      NSRange lastCharacterRange =
+          NSMakeRange(result.length - spacer.length, spacer.length);
+      [result deleteCharactersInRange:lastCharacterRange];
+    }
 
+    return result;
   } else {
     if (!_match.answer->IsExceptedFromLineReversal()) {
       NSAttributedString* detailBaseText = [self
@@ -254,18 +289,49 @@ UIColor* DimColorIncognito() {
   UIColor* dimColor = self.incognito ? DimColorIncognito() : DimColor();
 
   if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled) {
-    std::string string = _match.answer_template->answers(0).subhead().text();
+    NSMutableAttributedString* result =
+        [[NSMutableAttributedString alloc] initWithString:@""];
+    NSAttributedString* spacer = [[self class] spacerAttributedString];
+
     if (_match.answer_template->answer_type() ==
         omnibox::RichAnswerTemplate::DICTIONARY) {
-      string = _match.answer_template->answers(0).headline().text();
+      auto headlineFragments =
+          _match.answer_template->answers(0).headline().fragments();
+
+      for (auto fragment : headlineFragments) {
+        NSAttributedString* fragmentText = [self
+            attributedStringWithString:base::SysUTF8ToNSString(fragment.text())
+                       classifications:&_match.contents_class
+                             smallFont:NO
+                                 color:suggestionTextColor
+                              dimColor:dimColor];
+        [result appendAttributedString:fragmentText];
+        [result appendAttributedString:spacer];
+      }
+    } else {
+      auto subheadFragments =
+          _match.answer_template->answers(0).subhead().fragments();
+
+      for (auto fragment : subheadFragments) {
+        NSAttributedString* fragmentText = [self
+            attributedStringWithString:base::SysUTF8ToNSString(fragment.text())
+                       classifications:&_match.contents_class
+                             smallFont:NO
+                                 color:suggestionTextColor
+                              dimColor:DimColor()];
+        [result appendAttributedString:fragmentText];
+        [result appendAttributedString:spacer];
+      }
     }
 
-    return [self attributedStringWithString:base::SysUTF8ToNSString(string)
-                            classifications:&_match.contents_class
-                                  smallFont:NO
-                                      color:suggestionTextColor
-                                   dimColor:dimColor];
+    // Remove the extra spacer.
+    if (result.length > 0) {
+      NSRange lastCharacterRange =
+          NSMakeRange(result.length - spacer.length, spacer.length);
+      [result deleteCharactersInRange:lastCharacterRange];
+    }
 
+    return result;
   } else {
     if (!_match.answer->IsExceptedFromLineReversal()) {
       return [self attributedStringWithAnswerLine:_match.answer->second_line()
@@ -403,10 +469,8 @@ UIColor* DimColorIncognito() {
         useDeemphasizedStyling:(BOOL)useDeemphasizedStyling {
   NSMutableAttributedString* result = [attributedString mutableCopy];
 
-  NSAttributedString* spacer =
-      [[NSAttributedString alloc] initWithString:@"  "];
   if (line.additional_text() != nil) {
-    [result appendAttributedString:spacer];
+    [result appendAttributedString:[[self class] spacerAttributedString]];
     NSAttributedString* extra =
         [self attributedStringForTextfield:line.additional_text()
                     useDeemphasizedStyling:useDeemphasizedStyling];
@@ -414,7 +478,7 @@ UIColor* DimColorIncognito() {
   }
 
   if (line.status_text() != nil) {
-    [result appendAttributedString:spacer];
+    [result appendAttributedString:[[self class] spacerAttributedString]];
     [result appendAttributedString:
                 [self attributedStringForTextfield:line.status_text()
                             useDeemphasizedStyling:useDeemphasizedStyling]];
