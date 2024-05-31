@@ -17,6 +17,7 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/current_thread.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -1110,8 +1111,15 @@ void Widget::RunShellDrag(View* view,
   }
 
   WidgetDeletionObserver widget_deletion_observer(this);
-  native_widget_->RunShellDrag(view, std::move(data), location, operation,
-                               source);
+  {
+    // Since application tasks are needed in drag-induced nested message loops
+    // which occur here, (notably bookmark and download dragging), application
+    // tasks need to run. Only views:: and ui::EventDispatcher stacks are
+    // present, which expect this re-entrancy.
+    base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
+    native_widget_->RunShellDrag(view, std::move(data), location, operation,
+                                 source);
+  }
 
   // The widget may be destroyed during the drag operation.
   if (!widget_deletion_observer.IsWidgetAlive())
