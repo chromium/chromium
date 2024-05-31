@@ -8,9 +8,9 @@
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/plus_addresses/settings/plus_address_setting_sync_test_util.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/model_error.h"
@@ -22,7 +22,6 @@
 #include "components/sync/test/test_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace plus_addresses {
 
@@ -30,19 +29,6 @@ namespace {
 
 using SettingSpecifics = sync_pb::PlusAddressSettingSpecifics;
 using ::testing::Optional;
-
-SettingSpecifics CreateSettingSpecifics(
-    const std::string& name,
-    absl::variant<bool, const char*, int32_t> value) {
-  SettingSpecifics specifics;
-  specifics.set_name(name);
-  absl::visit(base::Overloaded{
-                  [&](bool value) { specifics.set_bool_value(value); },
-                  [&](const char* value) { specifics.set_string_value(value); },
-                  [&](int32_t value) { specifics.set_int_value(value); }},
-              value);
-  return specifics;
-}
 
 // Matchers for `SettingSpecifics` args with given name and values.
 MATCHER_P2(HasBoolSetting, name, value, "") {
@@ -225,7 +211,7 @@ TEST_F(PlusAddressSettingSyncBridgeTest, GetAllDataForDebugging) {
   base::test::TestFuture<std::unique_ptr<syncer::DataBatch>> debug_data;
   bridge().GetAllDataForDebugging(debug_data.GetCallback());
   const std::unique_ptr<syncer::DataBatch>& batch = debug_data.Get();
-  std::vector<sync_pb::PlusAddressSettingSpecifics> specifics;
+  std::vector<SettingSpecifics> specifics;
   while (batch->HasNext()) {
     std::unique_ptr<syncer::EntityData> entity = batch->Next().second;
     ASSERT_TRUE(entity->specifics.has_plus_address_setting());
