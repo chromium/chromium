@@ -37,7 +37,6 @@ import org.chromium.chrome.test.transit.PageStation;
 import org.chromium.chrome.test.transit.TabThumbnailsCapturedFacility;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -70,7 +69,6 @@ public class TabSwitcherLayoutPTTest {
 
     private static EmbeddedTestServer sTestServer;
 
-    private ModalDialogManager mModalDialogManager;
     private PageStation mStartPage;
 
     @Before
