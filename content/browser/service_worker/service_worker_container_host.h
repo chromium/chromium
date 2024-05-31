@@ -180,6 +180,9 @@ class CONTENT_EXPORT ServiceWorkerClient final
   ServiceWorkerContainerHostForClient& container_host() {
     return *container_host_;
   }
+  const ServiceWorkerContainerHostForClient& container_host() const {
+    return *container_host_;
+  }
 
   void set_container_host(
       std::unique_ptr<ServiceWorkerContainerHostForClient> container_host);
@@ -464,8 +467,6 @@ class CONTENT_EXPORT ServiceWorkerClient final
   static SubresourceLoaderParams MaybeCreateSubresourceLoaderParams(
       base::WeakPtr<ServiceWorkerClient> service_worker_client);
 
-  ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
-
   void SetContainerReady();
 
   bool is_inherited() const { return is_inherited_; }
@@ -486,11 +487,6 @@ class CONTENT_EXPORT ServiceWorkerClient final
       blink::mojom::ServiceWorkerContainerHost::EnsureFileAccessCallback
           callback);
   void OnExecutionReady();
-
-  const std::optional<PolicyContainerPolicies>& policy_container_policies()
-      const {
-    return policy_container_policies_;
-  }
 
   // Sets execution ready flag and runs execution ready callbacks.
   // https://html.spec.whatwg.org/multipage/webappapis.html#concept-environment-execution-ready-flag
@@ -582,11 +578,6 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // If it is still not ready to send, the features are buffered again.
   void FlushFeatures();
 
-  // Callback for ServiceWorkerVersion::RunAfterStartWorker()
-  void StartControllerComplete(
-      mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
-      blink::ServiceWorkerStatusCode status);
-
   base::WeakPtr<ServiceWorkerContextCore> context_;
 
   // The corresponding container host.
@@ -650,9 +641,6 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // The type of client.
   std::optional<ServiceWorkerClientInfo> client_info_;
 
-  // The source id of the client's ExecutionContext, set on response commit.
-  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
-
   // The URL used for service worker scope matching. It is empty except in the
   // case of a service worker client with a blob URL.
   GURL scope_match_url_for_blob_client_;
@@ -689,14 +677,6 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // right now because this gets reset on redirects, and potentially sites rely
   // on the GUID format.
   base::UnguessableToken fetch_request_window_id_;
-
-  // The policy container policies of the client. Set on response commit.
-  std::optional<PolicyContainerPolicies> policy_container_policies_;
-
-  // An endpoint connected to the COEP reporter. A clone of this connection is
-  // passed to the service worker. Bound on response commit.
-  mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
-      coep_reporter_;
 
   // Indicates if this container host is in the back-forward cache.
   //
@@ -838,6 +818,14 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
     return *service_worker_client_;
   }
 
+  // Must be called during `ServiceWorkerClient::CommitResponse()`.
+  void CommitResponse(
+      base::PassKey<ServiceWorkerClient>,
+      const PolicyContainerPolicies& policy_container_policies,
+      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+          coep_reporter,
+      ukm::SourceId ukm_source_id);
+
   // Dispatches message event to the client (document, dedicated worker when
   // PlzDedicatedWorker is enabled, or shared worker).
   void PostMessageToClient(ServiceWorkerVersion& version,
@@ -852,6 +840,8 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
       ServiceWorkerRegistration* registration,
       blink::mojom::ChangedServiceWorkerObjectsMaskPtr changed_mask);
   void ReturnRegistrationForReadyIfNeeded();
+  void CloneControllerServiceWorker(
+      mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver);
 
   // Implements blink::mojom::ServiceWorkerContainerHost.
   void Register(const GURL& script_url,
@@ -886,6 +876,8 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
               blink::mojom::ServiceWorkerRegistrationObjectHost::UpdateCallback
                   callback) override;
 
+  ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
+
  private:
   // Callback for ServiceWorkerContextCore::RegisterServiceWorker().
   void RegistrationComplete(const GURL& script_url,
@@ -909,6 +901,10 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
       blink::ServiceWorkerStatusCode status,
       const std::vector<scoped_refptr<ServiceWorkerRegistration>>&
           registrations);
+  // Callback for ServiceWorkerVersion::RunAfterStartWorker()
+  void StartControllerComplete(
+      mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
+      blink::ServiceWorkerStatusCode status);
 
   bool IsValidGetRegistrationMessage(const GURL& client_url,
                                      std::string* out_error) const;
@@ -946,6 +942,17 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
   // |container_| is the remote renderer-side ServiceWorkerContainer that |this|
   // is hosting.
   mojo::AssociatedRemote<blink::mojom::ServiceWorkerContainer> container_;
+
+  // The source id of the client's ExecutionContext, set on response commit.
+  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
+
+  // The policy container policies of the client. Set on response commit.
+  std::optional<PolicyContainerPolicies> policy_container_policies_;
+
+  // An endpoint connected to the COEP reporter. A clone of this connection is
+  // passed to the service worker. Bound on response commit.
+  mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
+      coep_reporter_;
 };
 
 // ServiceWorkerContainerHostForServiceWorker is owned by ServiceWorkerHost,

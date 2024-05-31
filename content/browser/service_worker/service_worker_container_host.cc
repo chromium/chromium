@@ -226,6 +226,25 @@ ServiceWorkerContainerHostForClient::ServiceWorkerContainerHostForClient(
       *this, container_info->host_remote.InitWithNewEndpointAndPassReceiver());
 }
 
+void ServiceWorkerContainerHostForClient::CommitResponse(
+    base::PassKey<ServiceWorkerClient>,
+    const PolicyContainerPolicies& policy_container_policies,
+    mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+        coep_reporter,
+    ukm::SourceId ukm_source_id) {
+  CHECK(!service_worker_client().is_response_committed());
+
+  CHECK(!policy_container_policies_.has_value());
+  policy_container_policies_ = policy_container_policies.Clone();
+
+  if (coep_reporter) {
+    coep_reporter_.Bind(std::move(coep_reporter));
+  }
+
+  CHECK_EQ(ukm_source_id_, ukm::kInvalidSourceId);
+  ukm_source_id_ = ukm_source_id;
+}
+
 void ServiceWorkerContainerHostForClient::Create(
     base::WeakPtr<ServiceWorkerClient> service_worker_client,
     blink::mojom::ServiceWorkerContainerInfoForClientPtr& container_info) {
@@ -332,8 +351,7 @@ void ServiceWorkerContainerHostForClient::Register(
                      base::AsWeakPtr(this), GURL(script_url),
                      GURL(options->scope), std::move(wrapped_callback),
                      trace_id, mojo::GetBadMessageCallback()),
-      global_frame_id,
-      service_worker_client().policy_container_policies().value());
+      global_frame_id, policy_container_policies_.value());
 }
 
 void ServiceWorkerContainerHostForClient::GetRegistration(
@@ -438,21 +456,16 @@ void ServiceWorkerContainerHostForClient::EnsureControllerServiceWorker(
     blink::mojom::ControllerServiceWorkerPurpose purpose) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  service_worker_client().EnsureControllerServiceWorker(std::move(receiver),
-                                                        purpose);
-}
-
-void ServiceWorkerClient::EnsureControllerServiceWorker(
-    mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
-    blink::mojom::ControllerServiceWorkerPurpose purpose) {
   // TODO(kinuko): Log the reasons we drop the request.
-  if (!context_ || !controller_)
+  if (!context() || !service_worker_client().controller()) {
     return;
+  }
 
-  controller_->RunAfterStartWorker(
+  service_worker_client().controller()->RunAfterStartWorker(
       PurposeToEventType(purpose),
-      base::BindOnce(&ServiceWorkerClient::StartControllerComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(receiver)));
+      base::BindOnce(
+          &ServiceWorkerContainerHostForClient::StartControllerComplete,
+          base::AsWeakPtr(this), std::move(receiver)));
 }
 
 void ServiceWorkerContainerHost::CloneContainerHost(
@@ -1078,16 +1091,7 @@ void ServiceWorkerClient::CommitResponse(
     if (controller_) {
       controller_->UpdateForegroundPriority();
     }
-  }
 
-  DCHECK(!policy_container_policies_.has_value());
-  policy_container_policies_ = policy_container_policies.Clone();
-
-  if (coep_reporter) {
-    coep_reporter_.Bind(std::move(coep_reporter));
-  }
-
-  if (IsContainerForWindowClient()) {
     auto* rfh = RenderFrameHostImpl::FromID(*rfh_id);
     // `rfh` may be null in tests (but it should not happen in production).
     if (rfh) {
@@ -1096,8 +1100,9 @@ void ServiceWorkerClient::CommitResponse(
     }
   }
 
-  DCHECK_EQ(ukm_source_id_, ukm::kInvalidSourceId);
-  ukm_source_id_ = ukm_source_id;
+  container_host().CommitResponse(
+      base::PassKey<ServiceWorkerClient>(), policy_container_policies,
+      std::move(coep_reporter), std::move(ukm_source_id));
 
   TransitionToClientPhase(ClientPhase::kResponseCommitted);
 }
@@ -1154,9 +1159,10 @@ void ServiceWorkerClient::UpdateUrlsInternal(
     // Set UUID to the new one.
     std::string previous_client_uuid = client_uuid_;
     client_uuid_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
-    if (context_)
+    if (context_) {
       context_->UpdateServiceWorkerClientClientID(previous_client_uuid,
                                                   client_uuid_);
+    }
   }
 
   SyncMatchingRegistrations();
@@ -1207,23 +1213,29 @@ ServiceWorkerClient::GetRemoteControllerServiceWorker() {
   }
 
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote_controller;
+  container_host().CloneControllerServiceWorker(
+      remote_controller.BindNewPipeAndPassReceiver());
+  return remote_controller;
+}
+
+void ServiceWorkerContainerHostForClient::CloneControllerServiceWorker(
+    mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver) {
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter_to_be_passed;
   if (coep_reporter_) {
-    DCHECK(IsContainerForWindowClient());
+    DCHECK(service_worker_client().IsContainerForWindowClient());
     coep_reporter_->Clone(
         coep_reporter_to_be_passed.InitWithNewPipeAndPassReceiver());
   } else {
     // TODO(crbug.com/41478971): Implement DedicatedWorker and
     // SharedWorker cases.
-    DCHECK(IsContainerForWorkerClient());
+    DCHECK(service_worker_client().IsContainerForWorkerClient());
   }
 
-  controller_->controller()->Clone(
-      remote_controller.BindNewPipeAndPassReceiver(),
+  service_worker_client().controller()->controller()->Clone(
+      std::move(receiver),
       policy_container_policies_->cross_origin_embedder_policy,
       std::move(coep_reporter_to_be_passed));
-  return remote_controller;
 }
 
 bool ServiceWorkerContainerHostForClient::AllowServiceWorker(
@@ -1490,8 +1502,9 @@ void ServiceWorkerClient::SyncMatchingRegistrations() {
   DCHECK(!controller_registration_);
 
   RemoveAllMatchingRegistrations();
-  if (!context_)
+  if (!context_) {
     return;
+  }
   const auto& registrations = context_->GetLiveRegistrations();
   for (const auto& key_registration : registrations) {
     ServiceWorkerRegistration* registration = key_registration.second;
@@ -1710,30 +1723,14 @@ void ServiceWorkerClient::CheckControllerConsistency(bool should_crash) const {
 }
 #endif  // DCHECK_IS_ON()
 
-void ServiceWorkerClient::StartControllerComplete(
+void ServiceWorkerContainerHostForClient::StartControllerComplete(
     mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
     blink::ServiceWorkerStatusCode status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (status == blink::ServiceWorkerStatusCode::kOk) {
-    DCHECK(is_response_committed());
-
-    mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-        coep_reporter_to_be_passed;
-    if (coep_reporter_) {
-      DCHECK(IsContainerForWindowClient());
-      coep_reporter_->Clone(
-          coep_reporter_to_be_passed.InitWithNewPipeAndPassReceiver());
-    } else {
-      // TODO(crbug.com/41478971): Implement DedicatedWorker and
-      // SharedWorker cases.
-      DCHECK(IsContainerForWorkerClient());
-    }
-
-    controller_->controller()->Clone(
-        std::move(receiver),
-        policy_container_policies_->cross_origin_embedder_policy,
-        std::move(coep_reporter_to_be_passed));
+    DCHECK(service_worker_client().is_response_committed());
+    CloneControllerServiceWorker(std::move(receiver));
   }
 }
 

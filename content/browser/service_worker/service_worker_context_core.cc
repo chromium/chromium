@@ -495,8 +495,7 @@ void ServiceWorkerContextCore::OnContainerHostReceiverDisconnected() {
 
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnClientDestroyed,
-      container_host->service_worker_client().ukm_source_id(),
-      container_host->url(),
+      container_host->ukm_source_id(), container_host->url(),
       container_host->service_worker_client().GetClientType());
 
   size_t removed = service_worker_clients_by_uuid_.erase(
@@ -671,8 +670,8 @@ void ServiceWorkerContextCore::NotifyClientIsExecutionReady(
   DCHECK(service_worker_client.is_execution_ready());
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnClientIsExecutionReady,
-      service_worker_client.ukm_source_id(), service_worker_client.url(),
-      service_worker_client.GetClientType());
+      service_worker_client.container_host().ukm_source_id(),
+      service_worker_client.url(), service_worker_client.GetClientType());
 }
 
 bool ServiceWorkerContextCore::MaybeHasRegistrationForStorageKey(
