@@ -63,9 +63,10 @@ class PrefsPinEngineTest : public ::testing::Test {
   // factor support is available.
   void ExpectStartAndList() {
     EXPECT_CALL(mock_udac_, StartAuthSession(_, _))
-        .WillOnce([](auto&&, auto&& callback) {
+        .WillOnce([this](auto&&, auto&& callback) {
           user_data_auth::StartAuthSessionReply reply;
           reply.set_user_exists(true);
+          reply.set_auth_session_id(kAuthSessionId);
           std::move(callback).Run(reply);
         });
     EXPECT_CALL(mock_udac_, ListAuthFactors(_, _))
@@ -95,6 +96,7 @@ class PrefsPinEngineTest : public ::testing::Test {
   // engine-specific functions.
   PrefsPinEngine engine_impl_;
   raw_ptr<AuthFactorEngine> engine_;
+  std::string kAuthSessionId = "31415926535";
 };
 
 TEST_F(PrefsPinEngineTest, GetFactor) {

@@ -65,6 +65,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) PrefsPinEngine
   UsageAllowed usage_allowed_ = UsageAllowed::kDisabled;
   bool is_supported_ = false;
 
+  ShutdownCallback shutdown_callback_;
+
   base::WeakPtrFactory<PrefsPinEngine> weak_factory_{this};
 };
 
