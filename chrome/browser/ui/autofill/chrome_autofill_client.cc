@@ -47,7 +47,6 @@
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller_impl.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
-#include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
@@ -527,11 +526,7 @@ ChromeAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
 
 void ChromeAutofillClient::ShowMandatoryReauthOptInConfirmation() {
 #if BUILDFLAG(IS_ANDROID)
-  if (!autofill_snackbar_controller_impl_) {
-    autofill_snackbar_controller_impl_ =
-        std::make_unique<AutofillSnackbarControllerImpl>(web_contents());
-  }
-  autofill_snackbar_controller_impl_->Show(
+  GetPaymentsAutofillClient()->GetAutofillSnackbarController()->Show(
       AutofillSnackbarType::kMandatoryReauth);
 #else
   MandatoryReauthBubbleControllerImpl::CreateForWebContents(web_contents());
@@ -910,11 +905,8 @@ void ChromeAutofillClient::DismissOfferNotification() {
 void ChromeAutofillClient::OnVirtualCardDataAvailable(
     const VirtualCardManualFallbackBubbleOptions& options) {
 #if BUILDFLAG(IS_ANDROID)
-  if (!autofill_snackbar_controller_impl_) {
-    autofill_snackbar_controller_impl_ =
-        std::make_unique<AutofillSnackbarControllerImpl>(web_contents());
-  }
-  autofill_snackbar_controller_impl_->Show(AutofillSnackbarType::kVirtualCard);
+  GetPaymentsAutofillClient()->GetAutofillSnackbarController()->Show(
+      AutofillSnackbarType::kVirtualCard);
 #else
   VirtualCardManualFallbackBubbleControllerImpl::CreateForWebContents(
       web_contents());

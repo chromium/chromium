@@ -49,7 +49,6 @@ namespace autofill {
 
 class AutofillOptimizationGuide;
 #if BUILDFLAG(IS_ANDROID)
-class AutofillSnackbarControllerImpl;
 class AutofillCvcSaveMessageDelegate;
 #endif  // BUILDFLAG(IS_ANDROID)
 class FormFieldData;
@@ -287,8 +286,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   SaveUpdateAddressProfileFlowManager save_update_address_profile_flow_manager_;
   TouchToFillPaymentMethodController touch_to_fill_payment_method_controller_{
       this};
-  std::unique_ptr<AutofillSnackbarControllerImpl>
-      autofill_snackbar_controller_impl_;
   std::unique_ptr<FastCheckoutClient> fast_checkout_client_;
   std::unique_ptr<AutofillCvcSaveMessageDelegate>
       autofill_cvc_save_message_delegate_;

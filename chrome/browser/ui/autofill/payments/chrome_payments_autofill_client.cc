@@ -9,6 +9,7 @@
 #include "base/check_deref.h"
 #include "chrome/browser/autofill/iban_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
@@ -110,6 +111,16 @@ ChromePaymentsAutofillClient::GetOrCreateAutofillSaveIbanBottomSheetBridge() {
     }
   }
   return autofill_save_iban_bottom_sheet_bridge_.get();
+}
+
+AutofillSnackbarControllerImpl*
+ChromePaymentsAutofillClient::GetAutofillSnackbarController() {
+  if (!autofill_snackbar_controller_impl_) {
+    autofill_snackbar_controller_impl_ =
+        std::make_unique<AutofillSnackbarControllerImpl>(web_contents());
+  }
+
+  return autofill_snackbar_controller_impl_.get();
 }
 #else   // !BUILDFLAG(IS_ANDROID)
 void ChromePaymentsAutofillClient::ShowLocalCardMigrationDialog(

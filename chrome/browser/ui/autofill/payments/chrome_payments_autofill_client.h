@@ -37,6 +37,9 @@ class IbanManager;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
 class VirtualCardEnrollmentManager;
+#if BUILDFLAG(IS_ANDROID)
+class AutofillSnackbarControllerImpl;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace payments {
 
@@ -65,6 +68,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   GetOrCreateAutofillSaveCardBottomSheetBridge() override;
   AutofillSaveIbanBottomSheetBridge*
   GetOrCreateAutofillSaveIbanBottomSheetBridge();
+  AutofillSnackbarControllerImpl* GetAutofillSnackbarController();
 #else   // !BUILDFLAG(IS_ANDROID)
   void ShowLocalCardMigrationDialog(
       base::OnceClosure show_migration_dialog_closure) override;
@@ -160,6 +164,9 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 
   std::unique_ptr<AutofillSaveIbanBottomSheetBridge>
       autofill_save_iban_bottom_sheet_bridge_;
+
+  std::unique_ptr<AutofillSnackbarControllerImpl>
+      autofill_snackbar_controller_impl_;
 #endif
   const raw_ref<ContentAutofillClient> client_;
 
