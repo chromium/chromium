@@ -353,14 +353,13 @@ ContentSetting CookieSettingsBase::GetCookieSetting(
 CookieSettingsBase::ThirdPartyCookieAllowMechanism
 CookieSettingsBase::GetThirdPartyCookieAllowMechanism(
     const GURL& url,
+    const net::SiteForCookies& site_for_cookies,
     const GURL& first_party_url,
     net::CookieSettingOverrides overrides,
     content_settings::SettingInfo* info) const {
-  return GetCookieSettingInternal(
-             url, first_party_url,
-             IsThirdPartyRequest(url,
-                                 net::SiteForCookies::FromUrl(first_party_url)),
-             overrides, info)
+  return GetCookieSettingInternal(url, first_party_url,
+                                  IsThirdPartyRequest(url, site_for_cookies),
+                                  overrides, info)
       .third_party_cookie_allow_mechanism();
 }
 

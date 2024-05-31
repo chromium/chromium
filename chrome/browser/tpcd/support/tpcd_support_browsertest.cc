@@ -338,7 +338,8 @@ IN_PROC_BROWSER_TEST_F(TpcdTrialBrowserTest, EnabledAfterMetaTagAppend) {
                                        nullptr),
             CONTENT_SETTING_ALLOW);
   EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
-                kTrialEnabledSite, embedding_site, {}, nullptr),
+                kTrialEnabledSite, net::SiteForCookies::FromUrl(embedding_site),
+                embedding_site, {}, nullptr),
             content_settings::CookieSettingsBase::
                 ThirdPartyCookieAllowMechanism::kAllowBy3PCD);
 }
@@ -374,11 +375,14 @@ IN_PROC_BROWSER_TEST_F(TpcdTrialBrowserTest,
             CONTENT_SETTING_ALLOW);
 
   EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
-                kTrialEnabledSite, embedding_site, {}, nullptr),
+                kTrialEnabledSite, net::SiteForCookies::FromUrl(embedding_site),
+                embedding_site, {}, nullptr),
             content_settings::CookieSettingsBase::
                 ThirdPartyCookieAllowMechanism::kAllowBy3PCD);
   EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
-                kTrialEnabledSiteSubdomain, embedding_site, {}, nullptr),
+                kTrialEnabledSiteSubdomain,
+                net::SiteForCookies::FromUrl(embedding_site), embedding_site,
+                {}, nullptr),
             content_settings::CookieSettingsBase::
                 ThirdPartyCookieAllowMechanism::kAllowBy3PCD);
 }

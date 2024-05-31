@@ -256,6 +256,7 @@ class CookieSettingsBase {
   // A helper to get third party cookie allow mechanism.
   ThirdPartyCookieAllowMechanism GetThirdPartyCookieAllowMechanism(
       const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
       const GURL& first_party_url,
       net::CookieSettingOverrides overrides,
       content_settings::SettingInfo* info = nullptr) const;

@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest, EnabledUsingMetaTag) {
   EXPECT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSite, {}, nullptr),
             CONTENT_SETTING_ALLOW);
   EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
-                GURL(), kTrialEnabledSite, {}, nullptr),
+                GURL(), net::SiteForCookies(), kTrialEnabledSite, {}, nullptr),
             content_settings::CookieSettingsBase::
                 ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD);
 }
@@ -331,11 +331,12 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
             CONTENT_SETTING_ALLOW);
 
   EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
-                GURL(), kTrialEnabledSiteSubdomain, {}, nullptr),
+                GURL(), net::SiteForCookies(), kTrialEnabledSiteSubdomain, {},
+                nullptr),
             content_settings::CookieSettingsBase::
                 ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD);
   EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
-                GURL(), kTrialEnabledSite, {}, nullptr),
+                GURL(), net::SiteForCookies(), kTrialEnabledSite, {}, nullptr),
             content_settings::CookieSettingsBase::
                 ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD);
 }
@@ -363,11 +364,12 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(GetProfile()).get();
   EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
-                GURL(), kTrialEnabledSiteSubdomain, {}, nullptr),
+                GURL(), net::SiteForCookies(), kTrialEnabledSiteSubdomain, {},
+                nullptr),
             content_settings::CookieSettingsBase::
                 ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD);
   EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
-                GURL(), kTrialEnabledSite, {}, nullptr),
+                GURL(), net::SiteForCookies(), kTrialEnabledSite, {}, nullptr),
             content_settings::CookieSettingsBase::
                 ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD);
 
@@ -400,20 +402,22 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
 
     // Check that a Top-level 3pcd Trial grant now permits third-party cookie
     // access under |kOtherTrialEnabledSite|.
-    EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
-                  GURL(), kOtherTrialEnabledSite, {}, nullptr),
-              content_settings::CookieSettingsBase::
-                  ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD);
+    EXPECT_EQ(
+        settings->GetThirdPartyCookieAllowMechanism(
+            GURL(), net::SiteForCookies(), kOtherTrialEnabledSite, {}, nullptr),
+        content_settings::CookieSettingsBase::ThirdPartyCookieAllowMechanism::
+            kAllowByTopLevel3PCD);
   }
 
   // Check that Top-level 3pcd Trial grants still permit third-party cookie
   // access under |kTrialEnabledSite| and |kTrialEnabledSiteSubdomain|.
   EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
-                GURL(), kTrialEnabledSiteSubdomain, {}, nullptr),
+                GURL(), net::SiteForCookies(), kTrialEnabledSiteSubdomain, {},
+                nullptr),
             content_settings::CookieSettingsBase::
                 ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD);
   EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
-                GURL(), kTrialEnabledSite, {}, nullptr),
+                GURL(), net::SiteForCookies(), kTrialEnabledSite, {}, nullptr),
             content_settings::CookieSettingsBase::
                 ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD);
 }

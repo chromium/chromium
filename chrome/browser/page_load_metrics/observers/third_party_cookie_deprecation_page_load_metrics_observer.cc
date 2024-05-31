@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
@@ -112,7 +113,8 @@ void ThirdPartyCookieDeprecationMetricsObserver::OnCookiesRead(
     bool is_partitioned_access) {
   const ThirdPartyCookieAllowMechanism allow_mechanism =
       cookie_settings_->GetThirdPartyCookieAllowMechanism(
-          url, first_party_url, cookie_setting_overrides);
+          url, net::SiteForCookies::FromUrl(first_party_url), first_party_url,
+          cookie_setting_overrides);
   RecordCookieUseCounters(url, first_party_url, blocked_by_policy,
                           allow_mechanism);
   RecordCookieReadUseCounters(url, first_party_url, blocked_by_policy,
@@ -130,7 +132,8 @@ void ThirdPartyCookieDeprecationMetricsObserver::OnCookieChange(
     bool is_partitioned_access) {
   const ThirdPartyCookieAllowMechanism allow_mechanism =
       cookie_settings_->GetThirdPartyCookieAllowMechanism(
-          url, first_party_url, cookie_setting_overrides);
+          url, net::SiteForCookies::FromUrl(first_party_url), first_party_url,
+          cookie_setting_overrides);
   RecordCookieUseCounters(url, first_party_url, blocked_by_policy,
                           allow_mechanism);
 }
@@ -312,7 +315,8 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieReadUseCounters(
           const ThirdPartyCookieAllowMechanism
               allow_mechanism_without_heuristics =
                   cookie_settings_->GetThirdPartyCookieAllowMechanism(
-                      url, first_party_url, overrides);
+                      url, net::SiteForCookies::FromUrl(first_party_url),
+                      first_party_url, overrides);
 
           // Check if this cookie was blocked because we explicitly skipped 3PCD
           // enablement mitigations.

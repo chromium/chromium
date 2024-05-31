@@ -190,7 +190,8 @@ class ValidityServiceBrowserTestBase : public PlatformBrowserTest {
         settings->GetCookieSetting(embedded_url, top_level_url, {}, nullptr),
         CONTENT_SETTING_ALLOW);
     ASSERT_EQ(settings->GetThirdPartyCookieAllowMechanism(
-                  embedded_url, top_level_url, {}, nullptr),
+                  embedded_url, net::SiteForCookies::FromUrl(top_level_url),
+                  top_level_url, {}, nullptr),
               content_settings::CookieSettingsBase::
                   ThirdPartyCookieAllowMechanism::kAllowBy3PCD);
   }
@@ -213,8 +214,8 @@ class ValidityServiceBrowserTestBase : public PlatformBrowserTest {
         CookieSettingsFactory::GetForProfile(GetProfile()).get();
     ASSERT_EQ(settings->GetCookieSetting(GURL(), top_level_url, {}, nullptr),
               CONTENT_SETTING_ALLOW);
-    ASSERT_EQ(settings->GetThirdPartyCookieAllowMechanism(GURL(), top_level_url,
-                                                          {}, nullptr),
+    ASSERT_EQ(settings->GetThirdPartyCookieAllowMechanism(
+                  GURL(), net::SiteForCookies(), top_level_url, {}, nullptr),
               content_settings::CookieSettingsBase::
                   ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD);
   }
@@ -453,7 +454,8 @@ IN_PROC_BROWSER_TEST_F(ValidityService3pTrialBrowserTest,
       settings->GetCookieSetting(iframe_url, other_top_level_url, {}, nullptr),
       CONTENT_SETTING_ALLOW);
   EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
-                iframe_url, other_top_level_url, {}, nullptr),
+                iframe_url, net::SiteForCookies::FromUrl(other_top_level_url),
+                other_top_level_url, {}, nullptr),
             content_settings::CookieSettingsBase::
                 ThirdPartyCookieAllowMechanism::kAllowBy3PCD);
 
@@ -463,7 +465,8 @@ IN_PROC_BROWSER_TEST_F(ValidityService3pTrialBrowserTest,
                                        nullptr),
             CONTENT_SETTING_ALLOW);
   EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
-                other_embedded_url, top_level_url, {}, nullptr),
+                other_embedded_url, net::SiteForCookies::FromUrl(top_level_url),
+                top_level_url, {}, nullptr),
             content_settings::CookieSettingsBase::
                 ThirdPartyCookieAllowMechanism::kAllowBy3PCD);
 }
@@ -528,7 +531,8 @@ IN_PROC_BROWSER_TEST_F(
       settings->GetCookieSetting(iframe_url, other_top_level_url, {}, nullptr),
       CONTENT_SETTING_ALLOW);
   EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
-                iframe_url, other_top_level_url, {}, nullptr),
+                iframe_url, net::SiteForCookies::FromUrl(other_top_level_url),
+                other_top_level_url, {}, nullptr),
             content_settings::CookieSettingsBase::
                 ThirdPartyCookieAllowMechanism::kAllowBy3PCD);
 
@@ -538,7 +542,8 @@ IN_PROC_BROWSER_TEST_F(
                                        nullptr),
             CONTENT_SETTING_ALLOW);
   EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
-                other_embedded_url, top_level_url, {}, nullptr),
+                other_embedded_url, net::SiteForCookies::FromUrl(top_level_url),
+                top_level_url, {}, nullptr),
             content_settings::CookieSettingsBase::
                 ThirdPartyCookieAllowMechanism::kAllowBy3PCD);
 }
@@ -763,8 +768,8 @@ IN_PROC_BROWSER_TEST_F(ValidityService1pTrialBrowserTest,
     // |top_level_url|.
     ASSERT_EQ(settings->GetCookieSetting(GURL(), top_level_url, {}, nullptr),
               CONTENT_SETTING_ALLOW);
-    ASSERT_EQ(settings->GetThirdPartyCookieAllowMechanism(GURL(), top_level_url,
-                                                          {}, nullptr),
+    ASSERT_EQ(settings->GetThirdPartyCookieAllowMechanism(
+                  GURL(), net::SiteForCookies(), top_level_url, {}, nullptr),
               content_settings::CookieSettingsBase::
                   ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD);
   }

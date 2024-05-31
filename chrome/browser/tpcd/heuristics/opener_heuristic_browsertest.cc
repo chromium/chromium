@@ -38,6 +38,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -564,14 +565,14 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicPastInteractionGrantBrowserTest,
                                         net::CookieSettingOverrides(), nullptr),
       GetParam().write_grant_enabled ? CONTENT_SETTING_ALLOW
                                      : CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(
-      cookie_settings->GetThirdPartyCookieAllowMechanism(
-          initial_url, opener_url, net::CookieSettingOverrides(), nullptr),
-      GetParam().write_grant_enabled
-          ? content_settings::CookieSettingsBase::
-                ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics
-          : content_settings::CookieSettingsBase::
-                ThirdPartyCookieAllowMechanism::kNone);
+  EXPECT_EQ(cookie_settings->GetThirdPartyCookieAllowMechanism(
+                initial_url, net::SiteForCookies::FromUrl(opener_url),
+                opener_url, net::CookieSettingOverrides(), nullptr),
+            GetParam().write_grant_enabled
+                ? content_settings::CookieSettingsBase::
+                      ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics
+                : content_settings::CookieSettingsBase::
+                      ThirdPartyCookieAllowMechanism::kNone);
 
   // Cookie access was NOT granted for the site that the popup redirected to.
   EXPECT_EQ(cookie_settings->GetCookieSetting(

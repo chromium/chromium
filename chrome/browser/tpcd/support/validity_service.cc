@@ -171,8 +171,8 @@ void ValidityService::OnCookiesAccessedImpl(
   // Check for an existing trial setting applicable to the pair.
   ThirdPartyCookieAllowMechanism allow_mechanism =
       cookie_settings->GetThirdPartyCookieAllowMechanism(
-          details.url, details.first_party_url,
-          details.cookie_setting_overrides);
+          details.url, net::SiteForCookies::FromUrl(details.first_party_url),
+          details.first_party_url, details.cookie_setting_overrides);
   std::optional<ContentSettingsType> setting_type =
       GetTrialContentSettingsType(allow_mechanism);
 
