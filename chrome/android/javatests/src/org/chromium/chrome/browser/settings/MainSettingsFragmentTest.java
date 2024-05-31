@@ -234,6 +234,49 @@ public class MainSettingsFragmentTest {
         mRenderTestRule.render(view, "main_settings_signed_in");
     }
 
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void testRenderSignedOutAccountManagementRows_replaceSyncBySigninEnabled()
+            throws IOException {
+        launchSettingsActivity();
+        waitForOptionsMenu();
+
+        View accountRow =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .findViewById(R.id.account_management_account_row);
+        mRenderTestRule.render(
+                accountRow, "main_settings_signed_out_account_replace_sync_by_signin_enabled");
+        View googleServicesRow =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .findViewById(R.id.account_management_google_services_row);
+        mRenderTestRule.render(
+                googleServicesRow,
+                "main_settings_signed_out_google_services_replace_sync_by_signin_enabled");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    @Policies.Add({@Policies.Item(key = "BrowserSignin", string = "0")})
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void testRenderSigninDisabledByPolicyAccountRow_replaceSyncBySigninEnabled()
+            throws IOException {
+        launchSettingsActivity();
+        waitForOptionsMenu();
+
+        View accountRow =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .findViewById(R.id.account_management_account_row);
+        mRenderTestRule.render(
+                accountRow,
+                "main_settings_signin_disabled_by_policy_account_replace_sync_by_signin_enabled");
+    }
+
     /**
      * Test for the "Account" section.
      *

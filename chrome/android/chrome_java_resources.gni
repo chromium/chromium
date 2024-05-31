@@ -347,6 +347,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_fullscreen_enter.xml",
   "java/res/drawable/ic_fullscreen_exit.xml",
   "java/res/drawable/ic_google_services_48dp.xml",
+  "java/res/drawable/ic_google_services_48dp_with_bg.xml",
   "java/res/drawable/ic_image_descriptions.xml",
   "java/res/drawable/ic_incognito.xml",
   "java/res/drawable/ic_incognito_cct_24dp.xml",

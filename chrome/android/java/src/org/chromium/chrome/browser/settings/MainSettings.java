@@ -204,6 +204,13 @@ public class MainSettings extends ChromeBaseSettingsFragment
         SignInPreference signInPreference = findPreference(PREF_SIGN_IN);
         signInPreference.initialize(getProfile(), profileDataCache, accountManagerFacade);
 
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            ChromeBasePreference googleServicePreference = findPreference(PREF_GOOGLE_SERVICES);
+            googleServicePreference.setIcon(R.drawable.ic_google_services_48dp_with_bg);
+            googleServicePreference.setViewId(R.id.account_management_google_services_row);
+        }
+
         cachePreferences();
 
         updateAutofillPreferences();

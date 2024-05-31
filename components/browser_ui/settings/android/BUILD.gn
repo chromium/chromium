@@ -70,6 +70,7 @@ android_resources("java_resources") {
     "java/res/drawable-xxhdpi/ic_business_small.png",
     "java/res/drawable-xxxhdpi/ic_account_child_grey600_36dp.png",
     "java/res/drawable/enterprise_icon.xml",
+    "java/res/drawable/ic_business_small_disabled_with_bg.xml",
     "java/res/drawable/list_divider.xml",
     "java/res/layout-sw360dp/preference_spinner_single_line.xml",
     "java/res/layout/button_preference_button.xml",

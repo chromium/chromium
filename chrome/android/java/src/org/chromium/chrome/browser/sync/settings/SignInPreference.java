@@ -71,6 +71,7 @@ public class SignInPreference extends Preference
     public SignInPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setLayoutResource(R.layout.account_management_account_row);
+        setViewId(R.id.account_management_account_row);
         mIsShowingSigninPromo = false;
     }
 
@@ -157,7 +158,12 @@ public class SignInPreference extends Preference
         setTitle(R.string.sync_promo_turn_on_sync);
         setSummary(R.string.sign_in_to_chrome_disabled_summary);
         setFragment(null);
-        setIcon(ManagedPreferencesUtils.getManagedByEnterpriseIconId());
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            setIcon(R.drawable.ic_business_small_disabled_with_bg);
+        } else {
+            setIcon(ManagedPreferencesUtils.getManagedByEnterpriseIconId());
+        }
         setViewEnabledAndShowAlertIcon(/* enabled= */ false, /* alertIconVisible= */ false);
         setOnPreferenceClickListener(
                 pref -> {
@@ -182,7 +188,14 @@ public class SignInPreference extends Preference
         }
 
         setFragment(null);
-        setIcon(AppCompatResources.getDrawable(getContext(), R.drawable.logo_avatar_anonymous));
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            setIcon(
+                    AppCompatResources.getDrawable(
+                            getContext(), R.drawable.account_circle_with_bg));
+        } else {
+            setIcon(AppCompatResources.getDrawable(getContext(), R.drawable.logo_avatar_anonymous));
+        }
         setViewEnabledAndShowAlertIcon(/* enabled= */ true, /* alertIconVisible= */ false);
         OnPreferenceClickListener clickListener =
                 pref -> {
