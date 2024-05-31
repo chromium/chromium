@@ -72,6 +72,7 @@ export class MouseController {
     this.landmarkWeights_.set('forehead', 1);
 
     this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
+    this.init();
   }
 
   async init(): Promise<void> {
@@ -81,7 +82,9 @@ export class MouseController {
     this.onMouseMovedHandler_.start();
     this.onMouseDraggedHandler_.setNodes(desktop);
     this.onMouseDraggedHandler_.start();
+  }
 
+  async start(): Promise<void> {
     chrome.settingsPrivate.getAllPrefs(prefs => this.updateFromPrefs_(prefs));
     chrome.settingsPrivate.onPrefsChanged.addListener(this.prefsListener_);
 
@@ -268,13 +271,21 @@ export class MouseController {
     chrome.accessibilityPrivate.setCursorPosition({x, y});
   }
 
-  stopEventListeners(): void {
+  reset(): void {
+    this.stop();
     this.onMouseMovedHandler_.stop();
     this.onMouseDraggedHandler_.stop();
+  }
+
+  stop(): void {
     if (this.mouseInterval_ !== -1) {
       clearInterval(this.mouseInterval_);
       this.mouseInterval_ = -1;
     }
+    this.lastLandmarkLocation_ = undefined;
+    this.previousSmoothedLocation_ = undefined;
+    this.lastMouseMovedTime_ = 0;
+    this.buffer_ = [];
     chrome.settingsPrivate.onPrefsChanged.removeListener(this.prefsListener_);
   }
 

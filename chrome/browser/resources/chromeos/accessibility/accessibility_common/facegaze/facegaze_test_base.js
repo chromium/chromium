@@ -22,6 +22,10 @@ class Config {
     this.speeds = null;
     /** @type {number} */
     this.repeatDelayMs = -1;
+    /** @type {boolean} */
+    this.cursorControlEnabled = true;
+    /** @type {boolean} */
+    this.actionsEnabled = true;
   }
 
   /**
@@ -85,6 +89,22 @@ class Config {
    */
   withRepeatDelayMs(repeatDelayMs) {
     this.repeatDelayMs = repeatDelayMs;
+    return this;
+  }
+
+  /**
+   * @param {boolean} cursorControlEnabled
+   */
+  withCursorControlEnabled(cursorControlEnabled) {
+    this.cursorControlEnabled = cursorControlEnabled;
+    return this;
+  }
+
+  /**
+   * @param {boolean} actionsEnabled
+   */
+  withActionsEnabled(actionsEnabled) {
+    this.actionsEnabled = actionsEnabled;
     return this;
   }
 }
@@ -251,6 +271,13 @@ FaceGazeTestBase = class extends E2ETestBase {
         faceGaze.mouseController_.useMouseAcceleration_,
         config.useMouseAcceleration);
 
+    await this.setPref(
+        FaceGaze.PREF_CURSOR_CONTROL_ENABLED, config.cursorControlEnabled);
+    assertEquals(faceGaze.cursorControlEnabled_, config.cursorControlEnabled);
+
+    await this.setPref(FaceGaze.PREF_ACTIONS_ENABLED, config.actionsEnabled);
+    assertEquals(faceGaze.actionsEnabled_, config.actionsEnabled);
+
     return new Promise(resolve => {
       faceGaze.setOnInitCallbackForTest(resolve);
     });
@@ -258,9 +285,14 @@ FaceGazeTestBase = class extends E2ETestBase {
 
   triggerMouseControllerInterval() {
     const intervalId = this.getFaceGaze().mouseController_.mouseInterval_;
-    assertNotEquals(-1, intervalId);
-    assertNotNullNorUndefined(this.intervalCallbacks_[intervalId]);
-    this.intervalCallbacks_[intervalId]();
+    if (this.getFaceGaze().cursorControlEnabled_) {
+      assertNotEquals(-1, intervalId);
+      assertNotNullNorUndefined(this.intervalCallbacks_[intervalId]);
+      this.intervalCallbacks_[intervalId]();
+    } else {
+      // No work to do.
+      assertEquals(-1, intervalId);
+    }
   }
 
   /**
@@ -279,5 +311,14 @@ FaceGazeTestBase = class extends E2ETestBase {
   /** Clears the timestamps at which gestures were last recognized. */
   clearGestureLastRecognizedTime() {
     this.getFaceGaze().gestureHandler_.gestureLastRecognized_.clear();
+  }
+
+  /**
+   * Sends a mock automation mouse event to the Mouse Controller.
+   * @param {chrome.automation.AutomationEvent} mockEvent
+   */
+  sendAutomationMouseEvent(mockEvent) {
+    this.getFaceGaze().mouseController_.onMouseMovedHandler_.handleEvent_(
+        mockEvent);
   }
 };

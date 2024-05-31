@@ -34,10 +34,22 @@ export class GestureHandler {
 
   constructor(mouseController: MouseController) {
     this.mouseController_ = mouseController;
-
     this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
+  }
+
+  start(): void {
     chrome.settingsPrivate.getAllPrefs(prefs => this.updateFromPrefs_(prefs));
     chrome.settingsPrivate.onPrefsChanged.addListener(this.prefsListener_);
+  }
+
+  stop(): void {
+    chrome.settingsPrivate.onPrefsChanged.removeListener(this.prefsListener_);
+    this.previousGestures_ = [];
+    this.gestureLastRecognized_.clear();
+    // TODO(b:341770655): Executing these macros clears their state, so that we
+    // aren't left in a mouse down or key down state. However, that could have
+    // other side effects. It would be best to send a synthetic cancel event.
+    this.macrosToCompleteLater_.clear();
   }
 
   private updateFromPrefs_(prefs: PrefObject[]): void {
