@@ -234,4 +234,9 @@ interface PrintPreviewCrosClient {
   GeneratePrintPreview@0(mojo_base.mojom.UnguessableToken token,
                          PrintSettings settings)
       => (bool success);
+
+  // Handle when the print preview dialog is closed by navigation. For
+  // example, closing dialog via Exit navigation button.
+  [MinVersion=1]HandleDialogClosed@1(mojo_base.mojom.UnguessableToken token)
+      => (bool success);
 };

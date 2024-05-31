@@ -19,6 +19,10 @@ class WebContents;
 
 namespace chromeos {
 
+namespace printing {
+class PrintPreviewWebContentsManagerBrowserTest;
+}  // namespace printing
+
 // Implements PrintViewManagerCrosBase and is the main implementor for printing
 // commands. Facilitates calls from browser to printing services. One instance
 // exists per print preview dialog.
@@ -26,6 +30,7 @@ class PrintViewManagerCros
     : public PrintViewManagerCrosBase,
       public content::WebContentsUserData<PrintViewManagerCros> {
  public:
+  explicit PrintViewManagerCros(content::WebContents* web_contents);
   PrintViewManagerCros(const PrintViewManagerCros&) = delete;
   PrintViewManagerCros& operator=(const PrintViewManagerCros&) = delete;
 
@@ -53,16 +58,23 @@ class PrintViewManagerCros
   bool PrintPreviewNow(content::RenderFrameHost* rfh, bool has_selection);
   void PrintPreviewDone();
 
+  // Inform the PrintRenderFrame that the dialog has been removed and clears out
+  // the render frame host associated with this instance.
+  void HandlePrintPreviewRemoved();
+
   content::RenderFrameHost* render_frame_host_for_testing() {
     return render_frame_host_;
   }
 
- protected:
-  explicit PrintViewManagerCros(content::WebContents* web_contents);
-
  private:
+  friend class chromeos::printing::PrintPreviewWebContentsManagerBrowserTest;
   friend class content::WebContentsUserData<PrintViewManagerCros>;
 
+  // Some tests will not bind to the renderer, this allows tests to directly
+  // inject a RenderFrameHost.
+  void set_render_frame_host_for_testing(content::RenderFrameHost* rfh) {
+    render_frame_host_ = rfh;
+  }
   // The current RFH that is print previewing.
   raw_ptr<content::RenderFrameHost> render_frame_host_ = nullptr;
   // Unique ID of the webcontent tied to this instance. This token is created

@@ -46,6 +46,28 @@ class PrintPreviewDialogControllerCrosTest : public BrowserWithTestWindowTest {
     int on_dialog_closed_ = 0;
   };
 
+  class TestDialogControllerObserver
+      : public PrintPreviewDialogControllerCros::DialogControllerObserver {
+   public:
+    TestDialogControllerObserver() = default;
+
+    TestDialogControllerObserver(const TestDialogControllerObserver&) = delete;
+    TestDialogControllerObserver& operator=(
+        const TestDialogControllerObserver&) = delete;
+
+    ~TestDialogControllerObserver() override = default;
+
+    // TestDialogControllerObserver::DialogControllerObserver
+    void OnDialogClosed(const base::UnguessableToken& token) override {
+      ++on_dialog_closed_;
+    }
+
+    int on_dialog_closed_count() const { return on_dialog_closed_; }
+
+   private:
+    int on_dialog_closed_ = 0;
+  };
+
   PrintPreviewDialogControllerCrosTest() = default;
 
   PrintPreviewDialogControllerCrosTest(
@@ -85,8 +107,12 @@ TEST_F(PrintPreviewDialogControllerCrosTest, TestObserver) {
 
   // Create and add fake test observer.
   auto test_observer = std::make_unique<TestObserver>();
+  auto test_dialog_controller_observer =
+      std::make_unique<TestDialogControllerObserver>();
   original_dialog->AddObserver(test_observer.get());
+  dialog_controller_->AddObserver(test_dialog_controller_observer.get());
   EXPECT_EQ(0, test_observer->on_dialog_closed_count());
+  EXPECT_EQ(0, test_dialog_controller_observer->on_dialog_closed_count());
 
   // Close the dialog.
   views::Widget* parent_widget = views::Widget::GetWidgetForNativeWindow(
@@ -97,6 +123,7 @@ TEST_F(PrintPreviewDialogControllerCrosTest, TestObserver) {
 
   EXPECT_FALSE(dialog_controller_->HasDialogForToken(token));
   EXPECT_EQ(1, test_observer->on_dialog_closed_count());
+  EXPECT_EQ(1, test_dialog_controller_observer->on_dialog_closed_count());
 }
 
 TEST_F(PrintPreviewDialogControllerCrosTest, OpenPrintPreview) {

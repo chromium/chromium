@@ -42,8 +42,19 @@ class FakePrintPreviewBrowserMojoClient : public mojom::PrintPreviewCrosClient {
     std::move(callback).Run(/*success=*/true);
   }
 
+  void HandleDialogClosed(const base::UnguessableToken& token,
+                          HandleDialogClosedCallback callback) override {
+    std::move(callback).Run(/*success=*/true);
+    ++handle_dialog_closed_count_;
+  }
+
+  int handle_dialog_closed_count() const { return handle_dialog_closed_count_; }
+
   mojo::Receiver<mojom::PrintPreviewCrosClient> receiver_{this};
   mojo::Remote<mojom::PrintPreviewCrosDelegate> remote_;
+
+ private:
+  int handle_dialog_closed_count_ = 0;
 };
 
 class FakePrintPreviewBrowserAshClient : public mojom::PrintPreviewCrosClient {
@@ -61,6 +72,17 @@ class FakePrintPreviewBrowserAshClient : public mojom::PrintPreviewCrosClient {
                             GeneratePrintPreviewCallback callback) override {
     std::move(callback).Run(/*success=*/true);
   }
+
+  void HandleDialogClosed(const base::UnguessableToken& token,
+                          HandleDialogClosedCallback callback) override {
+    std::move(callback).Run(/*success=*/true);
+    ++handle_dialog_closed_count_;
+  }
+
+  int handle_dialog_closed_count() const { return handle_dialog_closed_count_; }
+
+ private:
+  int handle_dialog_closed_count_ = 0;
 };
 
 // Calls all crosapi::mojom::PrintPreviewCrosDelegate methods over mojo.
@@ -163,6 +185,48 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewAshBrowserTest, ApiCalls) {
         base::UnguessableToken::Create(),
         chromeos::CreatePrintSettings(/*preview_id=*/1), future3.GetCallback());
     EXPECT_TRUE(future3.Wait());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewAshBrowserTest, HandleDialogClosed) {
+  ASSERT_TRUE(CrosapiManager::IsInitialized());
+
+  auto* print_preview_cros_adapter =
+      CrosapiManager::Get()
+          ->crosapi_ash()
+          ->print_preview_webcontents_adapter_ash();
+  {
+    // Ash client.
+    FakePrintPreviewBrowserAshClient ash_client;
+    print_preview_cros_adapter->RegisterAshClient(&ash_client);
+
+    EXPECT_EQ(0, ash_client.handle_dialog_closed_count());
+    print_preview_cros_adapter->OnDialogClosed(
+        base::UnguessableToken::Create());
+    EXPECT_EQ(1, ash_client.handle_dialog_closed_count());
+  }
+
+  {
+    // Mojo client.
+    FakePrintPreviewBrowserMojoClient mojo_client;
+    print_preview_cros_adapter->BindReceiver(
+        mojo_client.remote_.BindNewPipeAndPassReceiver());
+
+    base::RunLoop run_loop;
+    mojo_client.remote_->RegisterMojoClient(
+        mojo_client.receiver_.BindNewPipeAndPassRemote(),
+        base::BindLambdaForTesting([&](bool success) {
+          EXPECT_TRUE(success);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+
+    EXPECT_EQ(0, mojo_client.handle_dialog_closed_count());
+    base::RunLoop run_loop2;
+    print_preview_cros_adapter->OnDialogClosed(
+        base::UnguessableToken::Create());
+    run_loop2.RunUntilIdle();
+    EXPECT_EQ(1, mojo_client.handle_dialog_closed_count());
   }
 }
 

@@ -113,6 +113,24 @@ void PrintPreviewWebcontentsManager::GeneratePrintPreview(
   // TODO(jimmyxgong): Call into UI wrapper to generate the preview.
 }
 
+void PrintPreviewWebcontentsManager::HandleDialogClosed(
+    const base::UnguessableToken& token,
+    HandleDialogClosedCallback callback) {
+  content::WebContents* webcontents = RemoveTokenMapping(token);
+  if (!webcontents) {
+    // Entry already removed, no-opt. Handles potential race condition if
+    // initiator crashes in the midst of closing the print dialog.
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  PrintViewManagerCros::FromWebContents(webcontents)
+      ->HandlePrintPreviewRemoved();
+
+  // TODO(jimmyxgong): Address other potential failure cases when implemented.
+  std::move(callback).Run(/*success=*/true);
+}
+
 void PrintPreviewWebcontentsManager::RequestPrintPreview(
     const base::UnguessableToken& token,
     content::WebContents* webcontents,
@@ -137,14 +155,11 @@ void PrintPreviewWebcontentsManager::RequestPrintPreview(
 
 void PrintPreviewWebcontentsManager::PrintPreviewDone(
     const base::UnguessableToken& token) {
-  // Confirm mappings exist.
-  const auto found_content = token_to_webcontents_.find(token);
-  if (found_content == token_to_webcontents_.end()) {
+  if (!RemoveTokenMapping(token)) {
+    // Entry already removed, no-opt. Handles potential race condition if
+    // initiator crashes in the midst of closing the print dialog.
     return;
   }
-
-  // Remove webcontents mappings.
-  token_to_webcontents_.erase(found_content->first);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   remote_->PrintPreviewDone(
@@ -185,6 +200,20 @@ void PrintPreviewWebcontentsManager::BindPrintPreviewCrosDelegateForTesting(
   remote_.Bind(std::move(pending_remote));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+content::WebContents* PrintPreviewWebcontentsManager::RemoveTokenMapping(
+    const base::UnguessableToken& token) {
+  // Confirm mappings exist.
+  const auto found_content = token_to_webcontents_.find(token);
+  if (found_content == token_to_webcontents_.end()) {
+    return nullptr;
+  }
+
+  // Remove webcontents mappings.
+  content::WebContents* webcontents = found_content->second;
+  token_to_webcontents_.erase(found_content->first);
+  return webcontents;
+}
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void PrintPreviewWebcontentsManager::SetPrintPreviewCrosDelegateForTesting(
