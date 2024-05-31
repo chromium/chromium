@@ -104,6 +104,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/types/event_type.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/views/widget/widget.h"
@@ -1920,6 +1921,77 @@ INSTANTIATE_TEST_SUITE_P(
                                              kVolumeButtonSideTop),
          std::pair<std::string, std::string>(kVolumeButtonRegionScreen,
                                              kVolumeButtonSideBottom)}));
+
+TEST_F(AcceleratorControllerTest, PressAndReleasePowerButtonWithFunctionKey) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kModifierSplit, features::kPeripheralCustomization,
+       features::kInputDeviceSettingsSplit},
+      {});
+  auto reset = switches::SetIgnoreModifierSplitSecretKeyForTest();
+  Shell::Get()
+      ->keyboard_capability()
+      ->ResetModifierSplitDogfoodControllerForTesting();
+
+  const int kKeyboardDeviceIdWithFunction = 123;
+  const int kKeyboardDeviceId = 456;
+  const ui::KeyboardDevice keyboard_with_function(
+      kKeyboardDeviceIdWithFunction, ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/"test keyboard with function key",
+      /*phys=*/"",
+      base::FilePath("/devices/platform/i8042/serio2/input/input1"),
+      /*vendor=*/-1,
+      /*product=*/-1, /*version=*/-1,
+      /*has_assistant_key=*/true,
+      /*has_function_key=*/true);
+  const ui::KeyboardDevice keyboard(
+      kKeyboardDeviceId, ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/"test keyboard with function key",
+      /*phys=*/"",
+      base::FilePath("/devices/platform/i8042/serio2/input/input1"),
+      /*vendor=*/-1,
+      /*product=*/-1, /*version=*/-1,
+      /*has_assistant_key=*/true,
+      /*has_function_key=*/false);
+
+  // Reset the state of the device manager.
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices({keyboard_with_function});
+
+  // Create an event with a keyboard that has function key. The controller
+  // should not process the lock key event.
+  ui::KeyEvent press_event_with_function(ui::ET_KEY_PRESSED, ui::VKEY_F13,
+                                         /*flags=*/ui::EF_NONE);
+  press_event_with_function.set_source_device_id(kKeyboardDeviceIdWithFunction);
+  const ui::Accelerator press_f13_with_function(press_event_with_function);
+  EXPECT_FALSE(ProcessInController(press_f13_with_function));
+
+  // Test releasing F13 with fn key.
+  ui::KeyEvent release_event_with_function(ui::ET_KEY_RELEASED, ui::VKEY_F13,
+                                           /*flags=*/ui::EF_NONE);
+  release_event_with_function.set_source_device_id(
+      kKeyboardDeviceIdWithFunction);
+  const ui::Accelerator release_f13_with_function(release_event_with_function);
+
+  EXPECT_FALSE(ProcessInController(release_f13_with_function));
+
+  // Reset the state of the device manager.
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
+      {keyboard_with_function, keyboard});
+  // Create an event with a keyboard that does not have function key. The
+  // controller should process the lock key event.
+  ui::KeyEvent press_event(ui::ET_KEY_PRESSED, ui::VKEY_F13,
+                           /*flags=*/ui::EF_NONE);
+  press_event.set_source_device_id(kKeyboardDeviceId);
+  const ui::Accelerator press_f13(press_event);
+  EXPECT_TRUE(ProcessInController(press_f13));
+
+  // Test releaseing F13 without fn key.
+  ui::KeyEvent release_event(ui::ET_KEY_RELEASED, ui::VKEY_F13,
+                             /*flags=*/ui::EF_NONE);
+  release_event.set_source_device_id(kKeyboardDeviceId);
+  const ui::Accelerator release_f13(press_event);
+  EXPECT_TRUE(ProcessInController(release_f13));
+}
 
 TEST_F(AcceleratorControllerTest, ToggleCapsLockAcceleratorsWithFunctionKey) {
   base::test::ScopedFeatureList feature_list;

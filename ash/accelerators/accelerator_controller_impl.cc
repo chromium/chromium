@@ -258,6 +258,18 @@ bool CanHandleDisableCapsLock(const ui::Accelerator& previous_accelerator,
   return Shell::Get()->ime_controller()->IsCapsLockEnabled();
 }
 
+bool CanHandleLockButton(const ui::Accelerator& accelerator) {
+  // Disable the lock button action if the key code is VKEY_F13, and the
+  // modifier split keyboard was enabled.
+  if (accelerator.key_code() == ui::VKEY_F13 &&
+      Shell::Get()->keyboard_capability()->HasFunctionKey(
+          accelerator.source_device_id())) {
+    CHECK(features::IsModifierSplitEnabled());
+    return false;
+  }
+  return true;
+}
+
 bool CanHandleToggleCapsLock(
     const ui::Accelerator& accelerator,
     const ui::Accelerator& previous_accelerator,
@@ -926,6 +938,9 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return accelerators::CanToggleResizeLockMenu();
     case AcceleratorAction::kDebugToggleVideoConferenceCameraTrayIcon:
       return true;
+    case AcceleratorAction::kLockPressed:
+    case AcceleratorAction::kLockReleased:
+      return CanHandleLockButton(accelerator);
 
     // The following are always enabled.
     case AcceleratorAction::kBrightnessDown:
@@ -946,8 +961,6 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kLaunchApp6:
     case AcceleratorAction::kLaunchApp7:
     case AcceleratorAction::kLaunchLastApp:
-    case AcceleratorAction::kLockPressed:
-    case AcceleratorAction::kLockReleased:
     case AcceleratorAction::kMediaFastForward:
     case AcceleratorAction::kMediaNextTrack:
     case AcceleratorAction::kMediaPause:
