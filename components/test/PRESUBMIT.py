@@ -33,6 +33,9 @@ def CheckChange(input_api, output_api):
                 'data/history/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,
+                'data/history_embeddings/unit_tests_bundle_data')
+        results += presubmit_support.CheckBundleData(
+                input_api, output_api,
                 'data/language/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,

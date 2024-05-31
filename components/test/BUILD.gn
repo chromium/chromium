@@ -83,6 +83,10 @@ if (is_ios) {
     testonly = true
     filelist_name = "data/history/unit_tests_bundle_data.filelist"
   }
+  bundle_data_from_filelist("history_embeddings_test_bundle_data") {
+    testonly = true
+    filelist_name = "data/history_embeddings/unit_tests_bundle_data.filelist"
+  }
   bundle_data_from_filelist("language_test_bundle_data") {
     testonly = true
     filelist_name = "data/language/unit_tests_bundle_data.filelist"
