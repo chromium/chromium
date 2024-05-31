@@ -18,9 +18,7 @@ TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithNoneLevel) {
       /*use_updated_connection_security_indicators=*/false,
       /*malicious_content_status=*/
       security_state::MALICIOUS_CONTENT_STATUS_NONE);
-  EXPECT_EQ(icon.name, features::IsChromeRefresh2023()
-                           ? omnibox::kHttpChromeRefreshIcon.name
-                           : omnibox::kHttpIcon.name);
+  EXPECT_EQ(icon.name, omnibox::kHttpChromeRefreshIcon.name);
 }
 
 TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithSecureLevel) {
@@ -29,9 +27,7 @@ TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithSecureLevel) {
       /*use_updated_connection_security_indicators=*/false,
       /*malicious_content_status=*/
       security_state::MALICIOUS_CONTENT_STATUS_NONE);
-  EXPECT_EQ(icon.name, features::IsChromeRefresh2023()
-                           ? omnibox::kSecurePageInfoChromeRefreshIcon.name
-                           : vector_icons::kHttpsValidIcon.name);
+  EXPECT_EQ(icon.name, omnibox::kSecurePageInfoChromeRefreshIcon.name);
 }
 
 TEST(LocationBarModelUtilTest,
@@ -41,9 +37,7 @@ TEST(LocationBarModelUtilTest,
       /*use_updated_connection_security_indicators=*/false,
       /*malicious_content_status=*/
       security_state::MALICIOUS_CONTENT_STATUS_NONE);
-  EXPECT_EQ(icon.name, features::IsChromeRefresh2023()
-                           ? vector_icons::kBusinessChromeRefreshIcon.name
-                           : vector_icons::kBusinessIcon.name);
+  EXPECT_EQ(icon.name, vector_icons::kBusinessChromeRefreshIcon.name);
 }
 
 TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithDangerousLevel) {
@@ -53,9 +47,7 @@ TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithDangerousLevel) {
       /*use_updated_connection_security_indicators=*/false,
       /*malicious_content_status=*/
       security_state::MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING);
-  EXPECT_EQ(icon.name, features::IsChromeRefresh2023()
-                           ? vector_icons::kDangerousChromeRefreshIcon.name
-                           : vector_icons::kDangerousIcon.name);
+  EXPECT_EQ(icon.name, vector_icons::kDangerousChromeRefreshIcon.name);
 }
 
 TEST(LocationBarModelUtilTest,
@@ -65,10 +57,7 @@ TEST(LocationBarModelUtilTest,
       /*use_updated_connection_security_indicators=*/false,
       /*malicious_content_status=*/
       security_state::MALICIOUS_CONTENT_STATUS_BILLING);
-  EXPECT_EQ(icon.name,
-            features::IsChromeRefresh2023()
-                ? vector_icons::kNotSecureWarningChromeRefreshIcon.name
-                : vector_icons::kNotSecureWarningIcon.name);
+  EXPECT_EQ(icon.name, vector_icons::kNotSecureWarningChromeRefreshIcon.name);
 }
 
 TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithWarningLevel) {
@@ -77,8 +66,5 @@ TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithWarningLevel) {
       /*use_updated_connection_security_indicators=*/false,
       /*malicious_content_status=*/
       security_state::MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING);
-  EXPECT_EQ(icon.name,
-            features::IsChromeRefresh2023()
-                ? vector_icons::kNotSecureWarningChromeRefreshIcon.name
-                : vector_icons::kNotSecureWarningIcon.name);
+  EXPECT_EQ(icon.name, vector_icons::kNotSecureWarningChromeRefreshIcon.name);
 }

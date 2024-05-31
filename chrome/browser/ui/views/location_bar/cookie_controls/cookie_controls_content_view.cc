@@ -39,12 +39,6 @@ std::unique_ptr<views::View> CreateSeparator(bool padded) {
                           DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)
                     : 0;
 
-  if (!features::IsChromeRefresh2023()) {
-    // Distance for multi content list is used, but split in half, since there
-    // is a separator in the middle of it. For ChromeRefresh2023, the separator
-    // spacing is larger hence no need to split in half.
-    vmargin /= 2;
-  }
   auto separator = std::make_unique<views::Separator>();
   separator->SetProperty(views::kMarginsKey, gfx::Insets::VH(vmargin, hmargin));
   return separator;
@@ -96,11 +90,7 @@ void CookieControlsContentView::AddContentLabels() {
 
   description_ = label_wrapper_->AddChildView(std::make_unique<views::Label>());
   description_->SetTextContext(views::style::CONTEXT_LABEL);
-  if (features::IsChromeRefresh2023()) {
-    description_->SetTextStyle(views::style::STYLE_BODY_5);
-  } else {
-    description_->SetTextStyle(views::style::STYLE_SECONDARY);
-  }
+  description_->SetTextStyle(views::style::STYLE_BODY_5);
   description_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   description_->SetMultiLine(true);
   description_->SetProperty(views::kElementIdentifierKey, kDescription);
@@ -122,9 +112,7 @@ void CookieControlsContentView::SetToggleVisible(bool visible) {
 
 void CookieControlsContentView::SetToggleLabel(const std::u16string& label) {
   toggle_label_->SetText(label);
-  if (features::IsChromeRefresh2023()) {
-    toggle_label_->SetTextStyle(views::style::STYLE_BODY_5);
-  }
+  toggle_label_->SetTextStyle(views::style::STYLE_BODY_5);
 
   const std::u16string accessible_name = base::JoinString(
       {

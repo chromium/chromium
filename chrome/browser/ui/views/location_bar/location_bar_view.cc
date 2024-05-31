@@ -204,9 +204,7 @@ LocationBarView::LocationBarView(Browser* browser,
           return v->omnibox_view_->model()->is_caret_visible() &&
                  !v->GetOmniboxPopupView()->IsOpen();
         }));
-    if (features::IsChromeRefresh2023()) {
-      views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
-    }
+    views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
     views::InstallPillHighlightPathGenerator(this);
 
 #if BUILDFLAG(IS_MAC)
@@ -387,14 +385,9 @@ void LocationBarView::Init() {
   // mocks.
   params.types_enabled.push_back(PageActionIconType::kAutofillAddress);
 
-  if (browser_) {
-    if (sharing_hub::HasPageAction(profile_, is_popup_mode_) &&
-        !features::IsChromeRefresh2023()) {
-      params.types_enabled.push_back(PageActionIconType::kSharingHub);
-    }
-  }
-  if (browser_ && !is_popup_mode_)
+  if (browser_ && !is_popup_mode_) {
     params.types_enabled.push_back(PageActionIconType::kBookmarkStar);
+  }
 
   params.icon_color = color_provider->GetColor(kColorPageActionIcon);
   params.between_icon_spacing = 8;
@@ -751,14 +744,12 @@ void LocationBarView::Layout(PassKey) {
   add_trailing_decoration(page_action_icon_container_,
                           /*intra_item_padding=*/0);
   for (ContentSettingImageView* view : base::Reversed(content_setting_views_)) {
-    int intra_item_padding =
-        features::IsChromeRefresh2023() ? kContentSettingIntraItemPadding : 0;
+    int intra_item_padding = kContentSettingIntraItemPadding;
     add_trailing_decoration(view, intra_item_padding);
   }
 
   if (intent_chip_) {
-    int intra_item_padding =
-        features::IsChromeRefresh2023() ? kIntentChipIntraItemPadding : 0;
+    int intra_item_padding = kIntentChipIntraItemPadding;
     add_trailing_decoration(intent_chip_, intra_item_padding);
   }
 

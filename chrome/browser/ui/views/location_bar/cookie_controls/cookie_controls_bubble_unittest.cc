@@ -297,9 +297,7 @@ TEST_P(CookieControlsBubbleViewController3pcdStatusesTest,
   EXPECT_CALL(*mock_content_view(), SetToggleIsOn(true));
   EXPECT_CALL(*mock_content_view(),
               SetToggleIcon(testing::Field(&gfx::VectorIcon::name,
-                                           features::IsChromeRefresh2023()
-                                               ? views::kEyeRefreshIcon.name
-                                               : views::kEyeIcon.name)));
+                                           views::kEyeRefreshIcon.name)));
   EXPECT_CALL(*mock_content_view(),
               SetToggleLabel(l10n_util::GetStringUTF16(
                   IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_ALLOWED_LABEL)));
@@ -312,11 +310,9 @@ TEST_P(CookieControlsBubbleViewController3pcdStatusesTest,
 TEST_P(CookieControlsBubbleViewController3pcdStatusesTest,
        DisplaysOffToggleWhenCookiesBlockedOnSite) {
   EXPECT_CALL(*mock_content_view(), SetToggleIsOn(false));
-  EXPECT_CALL(*mock_content_view(), SetToggleIcon(testing::Field(
-                                        &gfx::VectorIcon::name,
-                                        features::IsChromeRefresh2023()
-                                            ? views::kEyeCrossedRefreshIcon.name
-                                            : views::kEyeCrossedIcon.name)));
+  EXPECT_CALL(*mock_content_view(),
+              SetToggleIcon(testing::Field(
+                  &gfx::VectorIcon::name, views::kEyeCrossedRefreshIcon.name)));
   EXPECT_CALL(*mock_content_view(),
               SetToggleLabel(l10n_util::GetStringUTF16(
                   GetParam() == CookieBlocking3pcdStatus::kAll
@@ -506,11 +502,9 @@ TEST_F(CookieControlsBubbleViewControllerPre3pcdTest,
   EXPECT_CALL(*mock_content_view(),
               SetToggleLabel(l10n_util::GetStringUTF16(
                   IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_BLOCKED_LABEL)));
-  EXPECT_CALL(*mock_content_view(), SetToggleIcon(testing::Field(
-                                        &gfx::VectorIcon::name,
-                                        features::IsChromeRefresh2023()
-                                            ? views::kEyeCrossedRefreshIcon.name
-                                            : views::kEyeCrossedIcon.name)));
+  EXPECT_CALL(*mock_content_view(),
+              SetToggleIcon(testing::Field(
+                  &gfx::VectorIcon::name, views::kEyeCrossedRefreshIcon.name)));
   tracking_protection_features_ = GetTrackingProtectionFeatures();
   OnStatusChanged();
 }
@@ -534,9 +528,7 @@ TEST_F(CookieControlsBubbleViewControllerPre3pcdTest,
                   IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_ALLOWED_LABEL)));
   EXPECT_CALL(*mock_content_view(),
               SetToggleIcon(testing::Field(&gfx::VectorIcon::name,
-                                           features::IsChromeRefresh2023()
-                                               ? views::kEyeRefreshIcon.name
-                                               : views::kEyeIcon.name)));
+                                           views::kEyeRefreshIcon.name)));
   protections_on_ = false;
   tracking_protection_features_ = GetTrackingProtectionFeatures();
   OnStatusChanged();
@@ -562,9 +554,7 @@ TEST_F(CookieControlsBubbleViewControllerPre3pcdTest,
                   IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_ALLOWED_LABEL)));
   EXPECT_CALL(*mock_content_view(),
               SetToggleIcon(testing::Field(&gfx::VectorIcon::name,
-                                           features::IsChromeRefresh2023()
-                                               ? views::kEyeRefreshIcon.name
-                                               : views::kEyeIcon.name)));
+                                           views::kEyeRefreshIcon.name)));
   protections_on_ = false;
   tracking_protection_features_ = GetTrackingProtectionFeatures();
   OnStatusChanged(kDaysToExpiration);
