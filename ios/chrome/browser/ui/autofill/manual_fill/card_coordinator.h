@@ -11,18 +11,22 @@ namespace autofill {
 class CreditCard;
 }
 
+@class CardCoordinator;
+
 // Delegate for the coordinator actions.
-// TODO(crbug.com/40577448): revise delegate method names.
 @protocol CardCoordinatorDelegate<FallbackCoordinatorDelegate>
 
 // Open feature to add a credit card.
-- (void)openAddCreditCard;
+- (void)cardCoordinatorDidTriggerOpenAddCreditCard:
+    (CardCoordinator*)cardCoordinator;
 
 // Opens the cards settings.
-- (void)openCardSettings;
+- (void)cardCoordinatorDidTriggerOpenCardSettings:
+    (CardCoordinator*)cardCoordinator;
 
 // Opens the details of the given card.
-- (void)openCardDetails:(const autofill::CreditCard*)card;
+- (void)cardCoordinator:(CardCoordinator*)cardCoordinator
+    didTriggerOpenCardDetails:(const autofill::CreditCard*)card;
 
 @end
 

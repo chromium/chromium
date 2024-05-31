@@ -105,21 +105,21 @@
 - (void)openAddCreditCard {
   __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
-    [weakSelf.delegate openAddCreditCard];
+    [weakSelf.delegate cardCoordinatorDidTriggerOpenAddCreditCard:weakSelf];
   }];
 }
 
 - (void)openCardDetails:(const autofill::CreditCard*)card {
   __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
-    [weakSelf.delegate openCardDetails:card];
+    [weakSelf.delegate cardCoordinator:weakSelf didTriggerOpenCardDetails:card];
   }];
 }
 
 - (void)openCardSettings {
   __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
-    [weakSelf.delegate openCardSettings];
+    [weakSelf.delegate cardCoordinatorDidTriggerOpenCardSettings:weakSelf];
   }];
 }
 

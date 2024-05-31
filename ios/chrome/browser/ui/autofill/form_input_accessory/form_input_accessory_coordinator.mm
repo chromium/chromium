@@ -529,12 +529,14 @@ const CGFloat kIPHVerticalOffset = -5;
 
 #pragma mark - CardCoordinatorDelegate
 
-- (void)openCardSettings {
+- (void)cardCoordinatorDidTriggerOpenCardSettings:
+    (CardCoordinator*)cardCoordinator {
   [self reset];
   [self.navigator openCreditCardSettings];
 }
 
-- (void)openAddCreditCard {
+- (void)cardCoordinatorDidTriggerOpenAddCreditCard:
+    (CardCoordinator*)cardCoordinator {
   [self reset];
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   id<BrowserCoordinatorCommands> handler =
@@ -542,7 +544,8 @@ const CGFloat kIPHVerticalOffset = -5;
   [handler showAddCreditCard];
 }
 
-- (void)openCardDetails:(const autofill::CreditCard*)card {
+- (void)cardCoordinator:(CardCoordinator*)cardCoordinator
+    didTriggerOpenCardDetails:(const autofill::CreditCard*)card {
   [self reset];
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   id<SettingsCommands> settingsCommandsHandler =
