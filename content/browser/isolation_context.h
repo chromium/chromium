@@ -36,16 +36,14 @@ class CONTENT_EXPORT IsolationContext {
                    bool is_guest,
                    bool is_fenced,
                    OriginAgentClusterIsolationState default_isolation_state);
+  IsolationContext(BrowsingInstanceId browsing_instance_id,
+                   BrowserContext* browser_context);
 
+  // Test-only API:
   // Also temporarily allow constructing an IsolationContext not associated
   // with a specific BrowsingInstance.  Callers can use this when they don't
   // know the current BrowsingInstance, or aren't associated with one.
-  //
-  // TODO(alexmos):  This is primarily used in tests, as well as in call sites
-  // which do not yet plumb proper BrowsingInstance information.  Once the
-  // remaining non-test call sites are removed or updated, this should become a
-  // test-only API.
-  explicit IsolationContext(BrowserContext* browser_context);
+  explicit IsolationContext(BrowserContext* browser_context);  // IN-TEST
 
   ~IsolationContext() = default;
 

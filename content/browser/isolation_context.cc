@@ -4,6 +4,8 @@
 
 #include "content/browser/isolation_context.h"
 
+#include "base/check_is_test.h"
+
 namespace content {
 
 IsolationContext::IsolationContext(BrowserContext* browser_context)
@@ -11,6 +13,19 @@ IsolationContext::IsolationContext(BrowserContext* browser_context)
       is_guest_(false),
       is_fenced_(false),
       default_isolation_state_(
+          OriginAgentClusterIsolationState::CreateForDefaultIsolation(
+              browser_context)) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_IS_TEST();
+}
+
+IsolationContext::IsolationContext(BrowsingInstanceId browsing_instance_id,
+                                   BrowserContext* browser_context)
+    : IsolationContext(
+          browsing_instance_id,
+          browser_context,
+          /*is_guest=*/false,
+          /*is_fenced=*/false,
           OriginAgentClusterIsolationState::CreateForDefaultIsolation(
               browser_context)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

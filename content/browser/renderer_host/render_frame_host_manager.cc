@@ -144,6 +144,7 @@ bool ShouldSwapBrowsingInstancesForDynamicIsolation(
   // this, use a new IsolationContext, rather than
   // current_instance->GetIsolationContext().
   IsolationContext future_isolation_context(
+      SiteInstanceImpl::NextBrowsingInstanceId(),
       current_instance->GetBrowserContext());
   auto site_info_in_future_context = SiteInfo::Create(
       future_isolation_context, destination_effective_url_info);
