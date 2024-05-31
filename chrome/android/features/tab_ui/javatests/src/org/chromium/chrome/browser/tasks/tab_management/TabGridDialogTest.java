@@ -2145,7 +2145,8 @@ public class TabGridDialogTest {
         // Verify if the keyboard shows or not.
         CriteriaHelper.pollUiThread(
                 () ->
-                        KeyboardVisibilityDelegate.getInstance()
+                        cta.getWindowAndroid()
+                                .getKeyboardDelegate()
                                 .isKeyboardShowing(cta, cta.getCompositorViewHolderForTesting()));
     }
 
@@ -2306,7 +2307,7 @@ public class TabGridDialogTest {
                 .perform(replaceText(title))
                 .perform(pressImeActionButton());
         // Wait until the keyboard is hidden to make sure the edit has taken effect.
-        KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
+        KeyboardVisibilityDelegate delegate = cta.getWindowAndroid().getKeyboardDelegate();
         CriteriaHelper.pollUiThread(
                 () -> !delegate.isKeyboardShowing(cta, cta.getCompositorViewHolderForTesting()));
     }
@@ -2470,7 +2471,8 @@ public class TabGridDialogTest {
                 () -> {
                     View titleTextView =
                             cta.findViewById(R.id.tab_group_toolbar).findViewById(R.id.title);
-                    KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
+                    KeyboardVisibilityDelegate delegate =
+                            cta.getWindowAndroid().getKeyboardDelegate();
                     boolean keyboardVisible =
                             delegate.isKeyboardShowing(
                                     cta, cta.getCompositorViewHolderForTesting());

@@ -1450,7 +1450,7 @@ public class TabSwitcherLayoutTest {
         onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
                 .check(matches(isDisplayed()));
         // Wait until the keyboard is showing.
-        KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
+        KeyboardVisibilityDelegate delegate = cta.getWindowAndroid().getKeyboardDelegate();
         CriteriaHelper.pollUiThread(
                 () -> delegate.isKeyboardShowing(cta, cta.getCompositorViewHolderForTesting()));
 
@@ -1506,7 +1506,7 @@ public class TabSwitcherLayoutTest {
         onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
                 .check(matches(isDisplayed()));
         // Wait until the keyboard is showing.
-        KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
+        KeyboardVisibilityDelegate delegate = cta.getWindowAndroid().getKeyboardDelegate();
         CriteriaHelper.pollUiThread(
                 () -> delegate.isKeyboardShowing(cta, cta.getCompositorViewHolderForTesting()));
 
@@ -2770,7 +2770,7 @@ public class TabSwitcherLayoutTest {
                 .perform(replaceText(title))
                 .perform(pressImeActionButton());
         // Wait until the keyboard is hidden to make sure the edit has taken effect.
-        KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
+        KeyboardVisibilityDelegate delegate = cta.getWindowAndroid().getKeyboardDelegate();
         CriteriaHelper.pollUiThread(
                 () -> !delegate.isKeyboardShowing(cta, cta.getCompositorViewHolderForTesting()));
     }
@@ -2823,7 +2823,7 @@ public class TabSwitcherLayoutTest {
         onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
                 .check(matches(isDisplayed()));
         // Wait until the keyboard is showing.
-        KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
+        KeyboardVisibilityDelegate delegate = cta.getWindowAndroid().getKeyboardDelegate();
         CriteriaHelper.pollUiThread(
                 () -> delegate.isKeyboardShowing(cta, cta.getCompositorViewHolderForTesting()));
         // Dismiss the tab group visual data dialog.

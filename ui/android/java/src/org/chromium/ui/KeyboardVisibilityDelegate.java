@@ -53,11 +53,15 @@ public class KeyboardVisibilityDelegate {
 
     /**
      * Allows setting a new strategy to override the default {@link KeyboardVisibilityDelegate}.
-     * Caution while using it as it will take precedence over the currently set strategy.
-     * If two delegates are added, the newer one will try to handle any call. If it can't an older
-     * one is called. New delegates can call |method| of a predecessor with {@code super.|method|}.
+     * Caution while using it as it will take precedence over the currently set strategy. If two
+     * delegates are added, the newer one will try to handle any call. If it can't an older one is
+     * called. New delegates can call |method| of a predecessor with {@code super.|method|}.
+     *
      * @param delegate A {@link KeyboardVisibilityDelegate} instance.
+     * @deprecated once {@link #getInstance()} is removed this is no longer required. See
+     *     crbug.com/343936788.
      */
+    @Deprecated
     public static void setInstance(KeyboardVisibilityDelegate delegate) {
         sInstance = delegate;
     }
@@ -65,8 +69,11 @@ public class KeyboardVisibilityDelegate {
     /**
      * Prefer using {@link org.chromium.ui.base.WindowAndroid#getKeyboardDelegate()} over this
      * method. Both return a delegate which allows checking and influencing the keyboard state.
+     *
      * @return the global {@link KeyboardVisibilityDelegate}.
+     * @deprecated get the instance from {@code WindowAndroid} instead. See crbug.com/343936788.
      */
+    @Deprecated
     public static KeyboardVisibilityDelegate getInstance() {
         return sInstance;
     }

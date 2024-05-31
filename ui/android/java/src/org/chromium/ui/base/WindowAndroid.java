@@ -714,7 +714,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
 
     public void setKeyboardDelegate(KeyboardVisibilityDelegate keyboardDelegate) {
         mKeyboardVisibilityDelegate = keyboardDelegate;
-        // TODO(fhorschig): Remove - every caller should use the window to get the delegate.
+        // TODO(crbug.com/343936788): Remove - callers should use the window to get the delegate.
         KeyboardVisibilityDelegate.setInstance(keyboardDelegate);
     }
 
