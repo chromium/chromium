@@ -105,8 +105,7 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
                        base::Unretained(this)),
         base::BindRepeating(&VdaVideoDecoderTest::CreateAndInitializeVda,
                             base::Unretained(this)),
-        GetCapabilities(),
-        VideoDecodeAccelerator::Config::OutputMode::kAllocate);
+        GetCapabilities(), output_mode_);
     vdavd_ = std::make_unique<AsyncDestroyVideoDecoder<VdaVideoDecoder>>(
         base::WrapUnique(vdavd));
     client_ = vdavd;
@@ -156,8 +155,17 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
 
   int32_t ProvidePictureBuffer() {
     std::vector<PictureBuffer> picture_buffers;
-    EXPECT_CALL(*vda_, AssignPictureBuffers(_))
-        .WillOnce(SaveArg<0>(&picture_buffers));
+
+    {
+      testing::InSequence in_sequence;
+      EXPECT_CALL(*vda_, AssignPictureBuffers(_))
+          .WillOnce(SaveArg<0>(&picture_buffers));
+
+      if (output_mode_ == VideoDecodeAccelerator::Config::OutputMode::kImport) {
+        EXPECT_CALL(*vda_, ImportBufferForPicture(_, _, _));
+      }
+    }
+
     gpu_thread_.task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(&VideoDecodeAccelerator::Client::ProvidePictureBuffers,
@@ -264,6 +272,30 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
     RunUntilIdle();
   }
 
+  void UpdateSyncTokenAndDropFrame(scoped_refptr<VideoFrame> video_frame,
+                                   int32_t picture_buffer_id) {
+    if (output_mode_ == VideoDecodeAccelerator::Config::OutputMode::kImport) {
+      // In kImport mode we don't wait on SyncTokens and expect picture buffer
+      // back once video frame is released.
+      if (picture_buffer_id >= 0) {
+        EXPECT_CALL(*vda_, ReusePictureBuffer(picture_buffer_id));
+      }
+      video_frame = nullptr;
+      RunUntilIdle();
+    } else {
+      // In kAllocate mode buffer is reused only after SyncToken is passed.
+      gpu::SyncToken sync_token = GenerateSyncToken(video_frame);
+      video_frame = nullptr;
+      RunUntilIdle();
+
+      // But the VDA won't be notified until the SyncPoint wait completes.
+      if (picture_buffer_id >= 0) {
+        EXPECT_CALL(*vda_, ReusePictureBuffer(picture_buffer_id));
+      }
+      ReleaseSyncToken(sync_token);
+    }
+  }
+
   // TODO(sandersd): This exact code is also used in
   // PictureBufferManagerImplTest. Share the implementation.
   gpu::SyncToken GenerateSyncToken(scoped_refptr<VideoFrame> video_frame) {
@@ -318,6 +350,14 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
 
   raw_ptr<VideoDecodeAccelerator::Client, AcrossTasksDanglingUntriaged> client_;
   uint64_t next_release_count_ = 1;
+
+#if BUILDFLAG(IS_APPLE)
+  static constexpr auto output_mode_ =
+      VideoDecodeAccelerator::Config::OutputMode::kAllocate;
+#else
+  static constexpr auto output_mode_ =
+      VideoDecodeAccelerator::Config::OutputMode::kImport;
+#endif
 };
 
 TEST_P(VdaVideoDecoderTest, CreateAndDestroy) {}
@@ -401,14 +441,7 @@ TEST_P(VdaVideoDecoderTest, Decode_OutputAndReuse) {
   scoped_refptr<VideoFrame> frame =
       PictureReady(bitstream_id, picture_buffer_id);
 
-  // Dropping the frame triggers reuse, which will wait on the SyncPoint.
-  gpu::SyncToken sync_token = GenerateSyncToken(frame);
-  frame = nullptr;
-  RunUntilIdle();
-
-  // But the VDA won't be notified until the SyncPoint wait completes.
-  EXPECT_CALL(*vda_, ReusePictureBuffer(picture_buffer_id));
-  ReleaseSyncToken(sync_token);
+  UpdateSyncTokenAndDropFrame(std::move(frame), picture_buffer_id);
 }
 
 TEST_P(VdaVideoDecoderTest, Decode_OutputAndDismiss) {
@@ -420,13 +453,7 @@ TEST_P(VdaVideoDecoderTest, Decode_OutputAndDismiss) {
   PictureReady_NoRunUntilIdle(&frame, bitstream_id, picture_buffer_id);
   DismissPictureBuffer(picture_buffer_id);
 
-  // Dropping the frame still requires a SyncPoint to wait on.
-  gpu::SyncToken sync_token = GenerateSyncToken(frame);
-  frame = nullptr;
-  RunUntilIdle();
-
-  // But the VDA should not be notified when it completes.
-  ReleaseSyncToken(sync_token);
+  UpdateSyncTokenAndDropFrame(std::move(frame), -1);
 }
 
 TEST_P(VdaVideoDecoderTest, Decode_Output_MaintainsAspect) {
@@ -458,6 +485,8 @@ TEST_P(VdaVideoDecoderTest, Decode_Output_MaintainsAspect) {
   EXPECT_EQ(frame->natural_size(), gfx::Size(640, 240));
   EXPECT_EQ(frame->coded_size(), gfx::Size(1920, 1088));
   EXPECT_EQ(frame->visible_rect(), gfx::Rect(320, 240));
+
+  UpdateSyncTokenAndDropFrame(std::move(frame), picture_buffer_id);
 }
 #endif  // !BUILDFLAG(IS_APPLE)
 

@@ -38,6 +38,10 @@ class MockVideoDecodeAccelerator : public VideoDecodeAccelerator {
   MOCK_METHOD1(AssignPictureBuffers,
                void(const std::vector<PictureBuffer>& buffers));
   MOCK_METHOD1(ReusePictureBuffer, void(int32_t picture_buffer_id));
+  MOCK_METHOD3(ImportBufferForPicture,
+               void(int32_t picture_buffer_id,
+                    VideoPixelFormat pixel_format,
+                    gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle));
   MOCK_METHOD0(Flush, void());
   MOCK_METHOD0(Reset, void());
   MOCK_METHOD0(Destroy, void());

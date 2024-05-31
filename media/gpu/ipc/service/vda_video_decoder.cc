@@ -160,10 +160,8 @@ VdaVideoDecoder::VdaVideoDecoder(
   DCHECK_EQ(vda_capabilities_.flags, 0U);
   DCHECK(media_log_);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  if (output_mode != VideoDecodeAccelerator::Config::OutputMode::kImport) {
-    CHECK_IS_TEST();
-  }
+#if !BUILDFLAG(IS_APPLE)
+  CHECK_EQ(output_mode, VideoDecodeAccelerator::Config::OutputMode::kImport);
 #endif
 
   gpu_weak_this_ = gpu_weak_this_factory_.GetWeakPtr();
