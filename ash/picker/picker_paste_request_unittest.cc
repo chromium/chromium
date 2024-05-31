@@ -24,7 +24,8 @@ using ::testing::_;
 using PickerPasteRequestTest = views::ViewsTestBase;
 
 TEST_F(PickerPasteRequestTest, DoesNotPasteWithoutNewFocus) {
-  auto widget = CreateTestWidget();
+  auto widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->Show();
   views::test::WidgetVisibleWaiter(widget.get()).Wait();
   MockClipboardHistoryController clipboard_history_controller;
@@ -40,7 +41,8 @@ TEST_F(PickerPasteRequestTest, DoesNotPasteWithoutNewFocus) {
 }
 
 TEST_F(PickerPasteRequestTest, PastesOnNewFocus) {
-  auto old_widget = CreateTestWidget();
+  auto old_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   old_widget->Show();
   views::test::WidgetVisibleWaiter(old_widget.get()).Wait();
   MockClipboardHistoryController clipboard_history_controller;
@@ -57,13 +59,15 @@ TEST_F(PickerPasteRequestTest, PastesOnNewFocus) {
       &clipboard_history_controller,
       aura::client::GetFocusClient(old_widget->GetNativeView()), item_id);
   old_widget->CloseNow();
-  auto new_widget = CreateTestWidget();
+  auto new_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   new_widget->Show();
   views::test::WidgetVisibleWaiter(new_widget.get()).Wait();
 }
 
 TEST_F(PickerPasteRequestTest, DoesNotPasteAfterDestruction) {
-  auto old_widget = CreateTestWidget();
+  auto old_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   old_widget->Show();
   views::test::WidgetVisibleWaiter(old_widget.get()).Wait();
   MockClipboardHistoryController clipboard_history_controller;
@@ -78,7 +82,8 @@ TEST_F(PickerPasteRequestTest, DoesNotPasteAfterDestruction) {
         aura::client::GetFocusClient(old_widget->GetNativeView()), item_id);
     old_widget->CloseNow();
   }
-  auto new_widget = CreateTestWidget();
+  auto new_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   new_widget->Show();
   views::test::WidgetVisibleWaiter(new_widget.get()).Wait();
 }

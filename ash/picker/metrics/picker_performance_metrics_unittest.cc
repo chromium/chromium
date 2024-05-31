@@ -49,7 +49,8 @@ TEST_F(PickerPerformanceMetricsTest,
 
 TEST_F(PickerPerformanceMetricsTest, RecordsFirstFocusLatency) {
   base::HistogramTester histogram;
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   const auto trigger_event_timestamp = base::TimeTicks::Now();
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -64,7 +65,8 @@ TEST_F(PickerPerformanceMetricsTest, RecordsFirstFocusLatency) {
 
 TEST_F(PickerPerformanceMetricsTest, RecordsOnlyFirstFocusLatency) {
   base::HistogramTester histogram;
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   const auto trigger_event_timestamp = base::TimeTicks::Now();
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -82,7 +84,8 @@ TEST_F(PickerPerformanceMetricsTest, RecordsOnlyFirstFocusLatency) {
 
 TEST_F(PickerPerformanceMetricsTest, RecordsPresentationLatencyForSearchField) {
   base::HistogramTester histogram;
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   PickerPerformanceMetrics metrics(base::TimeTicks::Now());
   metrics.StartRecording(*widget);
@@ -95,7 +98,8 @@ TEST_F(PickerPerformanceMetricsTest, RecordsPresentationLatencyForSearchField) {
 
 TEST_F(PickerPerformanceMetricsTest, RecordsPresentationLatencyForResults) {
   base::HistogramTester histogram;
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   PickerPerformanceMetrics metrics(base::TimeTicks::Now());
   metrics.StartRecording(*widget);
@@ -108,7 +112,8 @@ TEST_F(PickerPerformanceMetricsTest, RecordsPresentationLatencyForResults) {
 
 TEST_F(PickerPerformanceMetricsTest, RecordsSearchLatencyOnSearchFinished) {
   base::HistogramTester histogram;
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   PickerPerformanceMetrics metrics;
   metrics.StartRecording(*widget);
@@ -123,7 +128,8 @@ TEST_F(PickerPerformanceMetricsTest, RecordsSearchLatencyOnSearchFinished) {
 TEST_F(PickerPerformanceMetricsTest,
     DoesNotRecordSearchLatencyOnCanceledSearch) {
   base::HistogramTester histogram;
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   PickerPerformanceMetrics metrics;
   metrics.StartRecording(*widget);

@@ -22,7 +22,8 @@ using ::testing::Property;
 using PickerContentsViewTest = views::ViewsTestBase;
 
 TEST_F(PickerContentsViewTest, DefaultHasNoChildren) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   auto* view = widget->SetContentsView(std::make_unique<PickerContentsView>(
       PickerLayoutType::kMainResultsBelowSearchField));
@@ -31,7 +32,8 @@ TEST_F(PickerContentsViewTest, DefaultHasNoChildren) {
 }
 
 TEST_F(PickerContentsViewTest, AddPageCreatesHiddenChildren) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   auto* view = widget->SetContentsView(std::make_unique<PickerContentsView>(
       PickerLayoutType::kMainResultsBelowSearchField));
@@ -46,7 +48,8 @@ TEST_F(PickerContentsViewTest, AddPageCreatesHiddenChildren) {
 }
 
 TEST_F(PickerContentsViewTest, SetActivePageChangesVisibility) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   auto* view = widget->SetContentsView(std::make_unique<PickerContentsView>(
       PickerLayoutType::kMainResultsBelowSearchField));
   auto* page1 = view->AddPage(std::make_unique<views::View>());

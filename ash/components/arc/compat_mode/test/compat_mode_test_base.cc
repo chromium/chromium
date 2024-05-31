@@ -85,7 +85,9 @@ void CompatModeTestBase::TearDown() {
 }
 
 std::unique_ptr<views::Widget> CompatModeTestBase::CreateWidget(bool show) {
-  auto widget = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
+  auto widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       views::Widget::InitParams::TYPE_WINDOW);
   widget->widget_delegate()->SetCanResize(true);
   if (show)
     widget->Show();

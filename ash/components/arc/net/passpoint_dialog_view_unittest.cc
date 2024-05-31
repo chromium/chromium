@@ -40,7 +40,8 @@ class PasspointDialogViewTest : public views::ViewsTestBase {
     views::ViewsTestBase::SetUp();
     browser_delegate_ = std::make_unique<TestBrowserUrlOpener>();
 
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     widget_->SetBounds(gfx::Rect(800, 800));
 
     mojom::PasspointApprovalRequestPtr request =

@@ -296,7 +296,8 @@ TEST_F(PickerSearchResultsViewTest, MovesPseudoFocusDown) {
 }
 
 TEST_F(PickerSearchResultsViewTest, AdvancesPseudoFocusForward) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->SetFullscreen(true);
   MockSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
@@ -321,7 +322,8 @@ TEST_F(PickerSearchResultsViewTest, AdvancesPseudoFocusForward) {
 }
 
 TEST_F(PickerSearchResultsViewTest, AdvancesPseudoFocusBackward) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->SetFullscreen(true);
   MockSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
@@ -348,7 +350,8 @@ TEST_F(PickerSearchResultsViewTest, AdvancesPseudoFocusBackward) {
 }
 
 TEST_F(PickerSearchResultsViewTest, ShowsSeeMoreLinkWhenThereAreMoreResults) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   MockSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   auto* view =
@@ -367,7 +370,8 @@ TEST_F(PickerSearchResultsViewTest, ShowsSeeMoreLinkWhenThereAreMoreResults) {
 
 TEST_F(PickerSearchResultsViewTest,
        DoesNotShowSeeMoreLinkWhenThereAreNoMoreResults) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   MockSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   auto* view =
@@ -385,7 +389,8 @@ TEST_F(PickerSearchResultsViewTest,
 }
 
 TEST_F(PickerSearchResultsViewTest, ClickingSeeMoreLinkCallsCallback) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->SetFullscreen(true);
   MockSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
@@ -441,7 +446,8 @@ class PickerSearchResultsViewResultSelectionTest
 
 TEST_P(PickerSearchResultsViewResultSelectionTest, LeftClickSelectsResult) {
   const PickerSearchResultTestCase& test_case = GetParam();
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->SetFullscreen(true);
   MockSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
@@ -467,7 +473,8 @@ TEST_P(PickerSearchResultsViewResultSelectionTest, LeftClickSelectsResult) {
 TEST_P(PickerSearchResultsViewResultSelectionTest,
        PseudoFocusedActionSelectsResult) {
   const PickerSearchResultTestCase& test_case = GetParam();
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->SetFullscreen(true);
   MockSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;

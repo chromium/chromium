@@ -39,7 +39,8 @@ TEST_F(PickerSearchFieldViewTest, DoesNotTriggerSearchOnConstruction) {
 }
 
 TEST_F(PickerSearchFieldViewTest, TriggersSearchOnContentsChange) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   base::test::TestFuture<const std::u16string&> future;
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
@@ -93,7 +94,8 @@ TEST_F(PickerSearchFieldViewTest, DoesNotShowClearButtonInitially) {
 }
 
 TEST_F(PickerSearchFieldViewTest, ShowsClearButtonWithQuery) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
   auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
@@ -106,7 +108,8 @@ TEST_F(PickerSearchFieldViewTest, ShowsClearButtonWithQuery) {
 }
 
 TEST_F(PickerSearchFieldViewTest, HidesClearButtonWithEmptyQuery) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
   auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
@@ -121,7 +124,8 @@ TEST_F(PickerSearchFieldViewTest, HidesClearButtonWithEmptyQuery) {
 
 TEST_F(PickerSearchFieldViewTest,
        ClickingClearButtonResetsQueryAndHidesButton) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->Show();
   base::test::TestFuture<const std::u16string&> future;
   PickerKeyEventHandler key_event_handler;

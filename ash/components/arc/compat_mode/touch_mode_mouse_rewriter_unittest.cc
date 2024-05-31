@@ -97,7 +97,8 @@ class TouchModeMouseRewriterTest : public views::ViewsTestBase {
 
 TEST_F(TouchModeMouseRewriterTest, RightClickConvertedToLongPress) {
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       views::Widget::InitParams::TYPE_CONTROL);
   LongPressReceiverView* view =
       widget->SetContentsView(std::make_unique<LongPressReceiverView>());
   widget->Show();
@@ -129,7 +130,8 @@ TEST_F(TouchModeMouseRewriterTest, RightClickConvertedToLongPress) {
 
 TEST_F(TouchModeMouseRewriterTest, DisabledForWindow) {
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       views::Widget::InitParams::TYPE_CONTROL);
   LongPressReceiverView* view =
       widget->SetContentsView(std::make_unique<LongPressReceiverView>());
   widget->Show();
@@ -138,7 +140,8 @@ TEST_F(TouchModeMouseRewriterTest, DisabledForWindow) {
   touch_mode_mouse_rewriter.EnableForWindow(widget->GetNativeWindow());
 
   std::unique_ptr<views::Widget> widget2 =
-      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       views::Widget::InitParams::TYPE_CONTROL);
   LongPressReceiverView* view2 =
       widget2->SetContentsView(std::make_unique<LongPressReceiverView>());
   widget2->Show();
@@ -158,7 +161,8 @@ TEST_F(TouchModeMouseRewriterTest, DisabledForWindow) {
 
 TEST_F(TouchModeMouseRewriterTest, LeftPressedBeforeRightClick) {
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       views::Widget::InitParams::TYPE_CONTROL);
   LongPressReceiverView* view =
       widget->SetContentsView(std::make_unique<LongPressReceiverView>());
   widget->Show();
@@ -194,7 +198,8 @@ TEST_F(TouchModeMouseRewriterTest, LeftPressedBeforeRightClick) {
 
 TEST_F(TouchModeMouseRewriterTest, RightClickDuringLeftPress) {
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       views::Widget::InitParams::TYPE_CONTROL);
   LongPressReceiverView* view =
       widget->SetContentsView(std::make_unique<LongPressReceiverView>());
   widget->Show();
@@ -226,7 +231,8 @@ TEST_F(TouchModeMouseRewriterTest, RightClickDuringLeftPress) {
 
 TEST_F(TouchModeMouseRewriterTest, LeftClickedAfterRightClick) {
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       views::Widget::InitParams::TYPE_CONTROL);
   LongPressReceiverView* view =
       widget->SetContentsView(std::make_unique<LongPressReceiverView>());
   widget->Show();
@@ -257,7 +263,8 @@ TEST_F(TouchModeMouseRewriterTest, LeftClickedAfterRightClick) {
 
 TEST_F(TouchModeMouseRewriterTest, LeftLongPressedAfterRightClick) {
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       views::Widget::InitParams::TYPE_CONTROL);
   LongPressReceiverView* view =
       widget->SetContentsView(std::make_unique<LongPressReceiverView>());
   widget->Show();
@@ -288,7 +295,8 @@ TEST_F(TouchModeMouseRewriterTest, LeftLongPressedAfterRightClick) {
 
 TEST_F(TouchModeMouseRewriterTest, RightClickedTwice) {
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       views::Widget::InitParams::TYPE_CONTROL);
   LongPressReceiverView* view =
       widget->SetContentsView(std::make_unique<LongPressReceiverView>());
   widget->Show();
@@ -321,7 +329,8 @@ TEST_F(TouchModeMouseRewriterTest, RightClickedTwice) {
 
 TEST_F(TouchModeMouseRewriterTest, VerticalWheelScrollConvertedToSmoothScroll) {
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       views::Widget::InitParams::TYPE_CONTROL);
   ScrollReceiverView* view =
       widget->SetContentsView(std::make_unique<ScrollReceiverView>());
   widget->Show();
@@ -358,7 +367,8 @@ TEST_F(TouchModeMouseRewriterTest, VerticalWheelScrollConvertedToSmoothScroll) {
 TEST_F(TouchModeMouseRewriterTest,
        HorizontalWheelScrollConvertedToSmoothScroll) {
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       views::Widget::InitParams::TYPE_CONTROL);
   ScrollReceiverView* view =
       widget->SetContentsView(std::make_unique<ScrollReceiverView>());
   widget->Show();
@@ -394,7 +404,8 @@ TEST_F(TouchModeMouseRewriterTest,
 
 TEST_F(TouchModeMouseRewriterTest, VerticalWheelScrollCorrectInterval) {
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       views::Widget::InitParams::TYPE_CONTROL);
   ScrollReceiverView* view =
       widget->SetContentsView(std::make_unique<ScrollReceiverView>());
   widget->Show();
