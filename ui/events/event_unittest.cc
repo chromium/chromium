@@ -965,9 +965,17 @@ class EventLatencyTest : public ::testing::Test {
 };
 
 TEST_F(EventLatencyTest, ComputeEventLatencyOSFromTickCount) {
-  // Create events whose timestamps are very close to the max range of
-  // ::GetTickCount.
-  constexpr DWORD timestamp_msec = std::numeric_limits<DWORD>::max() - 10;
+  // Mock a tick clock at 16ms (it's 15.625ms and alternates between 15 and 16ms
+  // in practice but that's irrelevant for this mock).
+  constexpr base::TimeDelta kTickInterval = base::Milliseconds(16);
+
+  // Create events whose timestamps are 5 ticks away from looping around the max
+  // range of ::GetTickCount.
+  constexpr DWORD timestamp_msec =
+      std::numeric_limits<DWORD>::max() -
+      // Remove any portion that's not kTickInterval aligned.
+      (std::numeric_limits<DWORD>::max() % kTickInterval.InMilliseconds()) -
+      4 * kTickInterval.InMilliseconds();
   constexpr TOUCHINPUT touch_input = {
       .dwTime = timestamp_msec,
   };
@@ -980,9 +988,8 @@ TEST_F(EventLatencyTest, ComputeEventLatencyOSFromTickCount) {
   // the mocked result of ::GetTickCount for each measurement. This makes it
   // easier to test the edge case when the 32-bit ::GetTickCount overflows.
 
-  // Measure the latency of an event that's processed not long after the OS
-  // timestamp.
-  UpdateTickClock(timestamp_msec + 5);
+  // Expect 0 within the same tick.
+  UpdateTickClock(timestamp_msec);
   {
     base::HistogramTester histogram_tester;
     ComputeEventLatencyOSFromTOUCHINPUT(ET_TOUCH_PRESSED, touch_input,
@@ -990,12 +997,55 @@ TEST_F(EventLatencyTest, ComputeEventLatencyOSFromTickCount) {
     ComputeEventLatencyOSFromPOINTER_INFO(ET_TOUCH_PRESSED, pointer_info,
                                           base::TimeTicks::Now());
     histogram_tester.ExpectUniqueTimeSample("Event.Latency.OS2.TOUCH_PRESSED",
-                                            base::Milliseconds(5), 2);
+                                            base::Milliseconds(0), 2);
   }
 
-  // Simulate ::GetTickCount advancing 15 msec, which wraps around past 0.
-  constexpr DWORD wrapped_timestamp_msec = timestamp_msec + 15;
-  static_assert(wrapped_timestamp_msec == 4,
+  // Expect 0 within the next tick (optimistically assume the event could have
+  // been generated at the very end of the last tick).
+  UpdateTickClock(timestamp_msec + kTickInterval.InMilliseconds());
+  {
+    base::HistogramTester histogram_tester;
+    ComputeEventLatencyOSFromTOUCHINPUT(ET_TOUCH_PRESSED, touch_input,
+                                        base::TimeTicks::Now());
+    ComputeEventLatencyOSFromPOINTER_INFO(ET_TOUCH_PRESSED, pointer_info,
+                                          base::TimeTicks::Now());
+    histogram_tester.ExpectUniqueTimeSample("Event.Latency.OS2.TOUCH_PRESSED",
+                                            base::Milliseconds(0), 2);
+  }
+
+  // Expect 16ms within two ticks (again, optimistic for the first tick
+  // interval).
+  UpdateTickClock(timestamp_msec + 2 * kTickInterval.InMilliseconds());
+  {
+    base::HistogramTester histogram_tester;
+    ComputeEventLatencyOSFromTOUCHINPUT(ET_TOUCH_PRESSED, touch_input,
+                                        base::TimeTicks::Now());
+    ComputeEventLatencyOSFromPOINTER_INFO(ET_TOUCH_PRESSED, pointer_info,
+                                          base::TimeTicks::Now());
+    histogram_tester.ExpectUniqueTimeSample("Event.Latency.OS2.TOUCH_PRESSED",
+                                            base::Milliseconds(16), 2);
+  }
+
+  // Expect 16ms within two ticks even if both ticked at the lower-end of the
+  // 64hZ clock (15ms).
+  constexpr DWORD kTickIntervalLowEnd = base::Hertz(64).InMilliseconds();
+  static_assert(kTickIntervalLowEnd == 15);
+  UpdateTickClock(timestamp_msec + 2 * kTickIntervalLowEnd);
+  {
+    base::HistogramTester histogram_tester;
+    ComputeEventLatencyOSFromTOUCHINPUT(ET_TOUCH_PRESSED, touch_input,
+                                        base::TimeTicks::Now());
+    ComputeEventLatencyOSFromPOINTER_INFO(ET_TOUCH_PRESSED, pointer_info,
+                                          base::TimeTicks::Now());
+    histogram_tester.ExpectUniqueTimeSample("Event.Latency.OS2.TOUCH_PRESSED",
+                                            base::Milliseconds(16), 2);
+  }
+
+  // Simulate ::GetTickCount wrapping around (expecting 4 * kTickInterval
+  // reported as 1 * kTickInterval is discounted).
+  constexpr DWORD wrapped_timestamp_msec =
+      timestamp_msec + 5 * static_cast<DWORD>(kTickInterval.InMilliseconds());
+  static_assert(wrapped_timestamp_msec == 0,
                 "timestamp should have wrapped around");
   UpdateTickClock(wrapped_timestamp_msec);
   {
@@ -1005,12 +1055,44 @@ TEST_F(EventLatencyTest, ComputeEventLatencyOSFromTickCount) {
     ComputeEventLatencyOSFromPOINTER_INFO(ET_TOUCH_PRESSED, pointer_info,
                                           base::TimeTicks::Now());
     histogram_tester.ExpectUniqueTimeSample("Event.Latency.OS2.TOUCH_PRESSED",
-                                            base::Milliseconds(15), 2);
+                                            4 * kTickInterval, 2);
   }
 
-  // Simulate an event with a bogus timestamp. The delta should be recorded as
-  // 0.
-  UpdateTickClock(timestamp_msec - 1000);
+  // Simulate ::GetTickCount wrapping around multiple intervals. Conveniently,
+  // 15 intervals yields an expected optimistic 14 intervals which is 224ms and
+  // lands precisely on the boundary of the logarithmic timing histogram being
+  // used, catching off-by-one errors (which a previous implementation had when
+  // it reported 223ms in this test).
+  constexpr DWORD wrapped_timestamp_msec2 =
+      timestamp_msec + 15 * static_cast<DWORD>(kTickInterval.InMilliseconds());
+  static_assert(wrapped_timestamp_msec2 == 10 * kTickInterval.InMilliseconds(),
+                "timestamp should have wrapped around");
+  UpdateTickClock(wrapped_timestamp_msec2);
+  {
+    base::HistogramTester histogram_tester;
+    ComputeEventLatencyOSFromTOUCHINPUT(ET_TOUCH_PRESSED, touch_input,
+                                        base::TimeTicks::Now());
+    ComputeEventLatencyOSFromPOINTER_INFO(ET_TOUCH_PRESSED, pointer_info,
+                                          base::TimeTicks::Now());
+    histogram_tester.ExpectUniqueTimeSample("Event.Latency.OS2.TOUCH_PRESSED",
+                                            14 * kTickInterval, 2);
+  }
+
+  // Expect 0 if the clock is somehow reported as behind the event time.
+  UpdateTickClock(timestamp_msec - kTickInterval.InMilliseconds());
+  {
+    base::HistogramTester histogram_tester;
+    ComputeEventLatencyOSFromTOUCHINPUT(ET_TOUCH_PRESSED, touch_input,
+                                        base::TimeTicks::Now());
+    ComputeEventLatencyOSFromPOINTER_INFO(ET_TOUCH_PRESSED, pointer_info,
+                                          base::TimeTicks::Now());
+    histogram_tester.ExpectUniqueTimeSample("Event.Latency.OS2.TOUCH_PRESSED",
+                                            base::TimeDelta(), 2);
+  }
+
+  // Expect 0 if the clock is reported as too far ahead (protection against
+  // bogus event time stamps).
+  UpdateTickClock(timestamp_msec + 300 * 1000);
   {
     base::HistogramTester histogram_tester;
     ComputeEventLatencyOSFromTOUCHINPUT(ET_TOUCH_PRESSED, touch_input,

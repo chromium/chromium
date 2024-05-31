@@ -280,6 +280,10 @@ chromium-metrics-reviews@google.com.
     TimeTicks::IsHighResolution returns true. The exception is touch events
     which usually come from the high-resolution clock when
     TimeTicks::IsHighResolution returns true.
+
+    Note: As of May 29 2024 (M127), the calculation has been updated to be
+    optimistic about the low-frequency clock on Windows (0ms if &lt;= 1x 16ms
+    tick), hence a -16ms shift is expected in the distribution.
   </summary>
   <token key="EventType">
     <variant name="KEY_PRESSED"/>
