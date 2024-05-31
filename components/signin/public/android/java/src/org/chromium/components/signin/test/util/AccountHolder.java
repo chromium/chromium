@@ -17,12 +17,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class is used by the {@link FakeAccountManagerDelegate} and
- * {@link FakeAccountManagerFacade} to hold information about a given
- * account, such as its password and set of granted auth tokens.
+ * This class is used by the {@link FakeAccountManagerDelegate} and {@link FakeAccountManagerFacade}
+ * to hold information about a given account, such as its password and set of granted auth tokens.
  */
 public class AccountHolder {
-    private final AccountInfo mAccountInfo;
+    private AccountInfo mAccountInfo;
     private final Map<String, AccessTokenData> mAuthTokens;
 
     public AccountHolder(AccountInfo accountInfo) {
@@ -87,6 +86,10 @@ public class AccountHolder {
 
     /** Manually replace the previously set capabilities with given accountCapabilities */
     public void setAccountCapabilities(AccountCapabilities accountCapabilities) {
-        mAccountInfo.setAccountCapabilities(accountCapabilities);
+        final AccountInfo oldAccountInfo = mAccountInfo;
+        mAccountInfo =
+                new AccountInfo.Builder(oldAccountInfo)
+                        .accountCapabilities(accountCapabilities)
+                        .build();
     }
 }

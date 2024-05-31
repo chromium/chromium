@@ -153,10 +153,4 @@ public class AccountInfo extends CoreAccountInfo {
                 || !TextUtils.isEmpty(mGivenName)
                 || mAccountImage != null;
     }
-
-    /** Manually replace the previously set capabilities with given accountCapabilities */
-    @VisibleForTesting
-    public void setAccountCapabilities(AccountCapabilities accountCapabilities) {
-        mAccountCapabilities = accountCapabilities;
-    }
 }
