@@ -13,8 +13,8 @@
 #include "base/time/default_tick_clock.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/cdm_context.h"
-#include "media/gpu/decode_surface_handler.h"
 #include "media/gpu/vaapi/va_surface.h"
+#include "media/gpu/vaapi/vaapi_decode_surface_handler.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -40,7 +40,7 @@ void ctr128_inc64(uint8_t* counter) {
 namespace media {
 
 VaapiVideoDecoderDelegate::VaapiVideoDecoderDelegate(
-    DecodeSurfaceHandler<VASurface>* const vaapi_dec,
+    VaapiDecodeSurfaceHandler* const vaapi_dec,
     scoped_refptr<VaapiWrapper> vaapi_wrapper,
     ProtectedSessionUpdateCB on_protected_session_update_cb,
     CdmContext* cdm_context,

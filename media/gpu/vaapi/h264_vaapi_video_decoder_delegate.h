@@ -26,7 +26,7 @@ class H264VaapiVideoDecoderDelegate : public H264Decoder::H264Accelerator,
                                       public VaapiVideoDecoderDelegate {
  public:
   H264VaapiVideoDecoderDelegate(
-      DecodeSurfaceHandler<VASurface>* vaapi_dec,
+      VaapiDecodeSurfaceHandler* vaapi_dec,
       scoped_refptr<VaapiWrapper> vaapi_wrapper,
       ProtectedSessionUpdateCB on_protected_session_update_cb =
           base::DoNothing(),

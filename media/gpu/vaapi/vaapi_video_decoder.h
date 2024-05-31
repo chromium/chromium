@@ -31,7 +31,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame_layout.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
-#include "media/gpu/decode_surface_handler.h"
+#include "media/gpu/vaapi/vaapi_decode_surface_handler.h"
 #include "media/gpu/vaapi/vaapi_status.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -49,7 +49,7 @@ class VASurface;
 class ScopedVASurface;
 
 class VaapiVideoDecoder : public VideoDecoderMixin,
-                          public DecodeSurfaceHandler<VASurface> {
+                          public VaapiDecodeSurfaceHandler {
  public:
   static std::unique_ptr<VideoDecoderMixin> Create(
       std::unique_ptr<MediaLog> media_log,
@@ -79,7 +79,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   void ApplyResolutionChange() override;
   bool NeedsTranscryption() override;
 
-  // DecodeSurfaceHandler<VASurface> implementation.
+  // VaapiDecodeSurfaceHandler implementation.
   scoped_refptr<VASurface> CreateSurface() override;
   void SurfaceReady(scoped_refptr<VASurface> va_surface,
                     int32_t buffer_id,

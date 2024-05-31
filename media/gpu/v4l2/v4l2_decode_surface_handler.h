@@ -7,7 +7,7 @@
 
 #include <linux/videodev2.h>
 
-#include "media/gpu/decode_surface_handler.h"
+#include "media/gpu/v4l2/decode_surface_handler.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
 
 namespace media {

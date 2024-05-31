@@ -6,16 +6,16 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/trace_event/trace_event.h"
-#include "media/gpu/decode_surface_handler.h"
 #include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_common.h"
+#include "media/gpu/vaapi/vaapi_decode_surface_handler.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 
 namespace media {
 
 VP8VaapiVideoDecoderDelegate::VP8VaapiVideoDecoderDelegate(
-    DecodeSurfaceHandler<VASurface>* const vaapi_dec,
+    VaapiDecodeSurfaceHandler* const vaapi_dec,
     scoped_refptr<VaapiWrapper> vaapi_wrapper)
     : VaapiVideoDecoderDelegate(vaapi_dec,
                                 std::move(vaapi_wrapper),

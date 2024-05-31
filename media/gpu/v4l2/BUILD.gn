@@ -15,6 +15,7 @@ assert(use_v4l2_codec)
 source_set("v4l2") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
+    "decode_surface_handler.h",
     "legacy/v4l2_video_decode_accelerator.cc",
     "legacy/v4l2_video_decode_accelerator.h",
     "legacy/v4l2_video_decoder_backend_stateful.cc",

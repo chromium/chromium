@@ -27,7 +27,7 @@ class H265VaapiVideoDecoderDelegate : public H265Decoder::H265Accelerator,
                                       public VaapiVideoDecoderDelegate {
  public:
   H265VaapiVideoDecoderDelegate(
-      DecodeSurfaceHandler<VASurface>* vaapi_dec,
+      VaapiDecodeSurfaceHandler* vaapi_dec,
       scoped_refptr<VaapiWrapper> vaapi_wrapper,
       ProtectedSessionUpdateCB on_protected_session_update_cb,
       CdmContext* cdm_context,

@@ -6,9 +6,9 @@
 
 #include "build/chromeos_buildflags.h"
 #include "media/base/cdm_context.h"
-#include "media/gpu/decode_surface_handler.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_common.h"
+#include "media/gpu/vaapi/vaapi_decode_surface_handler.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 
 namespace media {
@@ -35,7 +35,7 @@ constexpr int kInvalidRefPicIndex = -1;
 using DecodeStatus = H265Decoder::H265Accelerator::Status;
 
 H265VaapiVideoDecoderDelegate::H265VaapiVideoDecoderDelegate(
-    DecodeSurfaceHandler<VASurface>* const vaapi_dec,
+    VaapiDecodeSurfaceHandler* const vaapi_dec,
     scoped_refptr<VaapiWrapper> vaapi_wrapper,
     ProtectedSessionUpdateCB on_protected_session_update_cb,
     CdmContext* cdm_context,

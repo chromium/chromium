@@ -359,7 +359,6 @@ source_set("common") {
   # TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
   if (use_v4l2_codec || use_vaapi) {
     sources += [
-      "decode_surface_handler.h",
       "vp8_decoder.cc",
       "vp8_decoder.h",
       "vp8_picture.cc",

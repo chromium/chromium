@@ -18,7 +18,7 @@ class AV1VaapiVideoDecoderDelegate : public AV1Decoder::AV1Accelerator,
                                      public VaapiVideoDecoderDelegate {
  public:
   AV1VaapiVideoDecoderDelegate(
-      DecodeSurfaceHandler<VASurface>* const vaapi_dec,
+      VaapiDecodeSurfaceHandler* const vaapi_dec,
       scoped_refptr<VaapiWrapper> vaapi_wrapper,
       ProtectedSessionUpdateCB on_protected_session_update_cb =
           base::DoNothing(),

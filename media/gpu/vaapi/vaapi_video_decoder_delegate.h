@@ -32,15 +32,14 @@ class ChromeOsCdmContext;
 namespace media {
 
 class CdmContext;
-template <class T>
-class DecodeSurfaceHandler;
+class VaapiDecodeSurfaceHandler;
 class DecryptConfig;
 class VaapiWrapper;
 class VASurface;
 
 // The common part of each AcceleratedVideoDecoder's Accelerator for VA-API.
 // This class allows clients to reset VaapiWrapper in case of a profile change.
-// DecodeSurfaceHandler must stay alive for the lifetime of this class.
+// VaapiDecodeSurfaceHandler must stay alive for the lifetime of this class.
 // This also handles all of the shared functionality relating to protected
 // sessions in VA-API.
 class VaapiVideoDecoderDelegate {
@@ -51,7 +50,7 @@ class VaapiVideoDecoderDelegate {
   using ProtectedSessionUpdateCB = base::RepeatingCallback<void(bool success)>;
 
   VaapiVideoDecoderDelegate(
-      DecodeSurfaceHandler<VASurface>* const vaapi_dec,
+      VaapiDecodeSurfaceHandler* const vaapi_dec,
       scoped_refptr<VaapiWrapper> vaapi_wrapper,
       ProtectedSessionUpdateCB on_protected_session_update_cb,
       CdmContext* cdm_context,
@@ -133,7 +132,7 @@ class VaapiVideoDecoderDelegate {
   std::string GetDecryptKeyId() const;
 
   // Both owned by caller.
-  const raw_ptr<DecodeSurfaceHandler<VASurface>> vaapi_dec_;
+  const raw_ptr<VaapiDecodeSurfaceHandler> vaapi_dec_;
   scoped_refptr<VaapiWrapper> vaapi_wrapper_;
 
   SEQUENCE_CHECKER(sequence_checker_);

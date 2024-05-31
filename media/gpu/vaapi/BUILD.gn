@@ -42,6 +42,7 @@ source_set("vaapi") {
     "h264_vaapi_video_decoder_delegate.h",
     "h264_vaapi_video_encoder_delegate.cc",
     "h264_vaapi_video_encoder_delegate.h",
+    "vaapi_decode_surface_handler.h",
     "vaapi_dmabuf_video_frame_mapper.cc",
     "vaapi_dmabuf_video_frame_mapper.h",
     "vaapi_image_decode_accelerator_worker.cc",

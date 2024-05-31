@@ -19,7 +19,7 @@ class VP8Picture;
 class VP8VaapiVideoDecoderDelegate : public VP8Decoder::VP8Accelerator,
                                      public VaapiVideoDecoderDelegate {
  public:
-  VP8VaapiVideoDecoderDelegate(DecodeSurfaceHandler<VASurface>* const vaapi_dec,
+  VP8VaapiVideoDecoderDelegate(VaapiDecodeSurfaceHandler* const vaapi_dec,
                                scoped_refptr<VaapiWrapper> vaapi_wrapper);
 
   VP8VaapiVideoDecoderDelegate(const VP8VaapiVideoDecoderDelegate&) = delete;

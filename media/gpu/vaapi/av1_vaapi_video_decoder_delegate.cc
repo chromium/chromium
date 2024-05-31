@@ -6,6 +6,7 @@
 
 #include <string.h>
 #include <va/va.h>
+
 #include <algorithm>
 #include <vector>
 
@@ -14,8 +15,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/chromeos_buildflags.h"
 #include "media/gpu/av1_picture.h"
-#include "media/gpu/decode_surface_handler.h"
 #include "media/gpu/vaapi/vaapi_common.h"
+#include "media/gpu/vaapi/vaapi_decode_surface_handler.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
 #include "third_party/libgav1/src/src/utils/types.h"
@@ -725,7 +726,7 @@ bool FillAV1SliceParameters(
 }  // namespace
 
 AV1VaapiVideoDecoderDelegate::AV1VaapiVideoDecoderDelegate(
-    DecodeSurfaceHandler<VASurface>* const vaapi_dec,
+    VaapiDecodeSurfaceHandler* const vaapi_dec,
     scoped_refptr<VaapiWrapper> vaapi_wrapper,
     ProtectedSessionUpdateCB on_protected_session_update_cb,
     CdmContext* cdm_context,

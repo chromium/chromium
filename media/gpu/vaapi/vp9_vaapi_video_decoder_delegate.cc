@@ -9,10 +9,10 @@
 #include "base/numerics/checked_math.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
-#include "media/gpu/decode_surface_handler.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_common.h"
+#include "media/gpu/vaapi/vaapi_decode_surface_handler.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 
 namespace media {
@@ -20,7 +20,7 @@ namespace media {
 using DecodeStatus = VP9Decoder::VP9Accelerator::Status;
 
 VP9VaapiVideoDecoderDelegate::VP9VaapiVideoDecoderDelegate(
-    DecodeSurfaceHandler<VASurface>* const vaapi_dec,
+    VaapiDecodeSurfaceHandler* const vaapi_dec,
     scoped_refptr<VaapiWrapper> vaapi_wrapper,
     ProtectedSessionUpdateCB on_protected_session_update_cb,
     CdmContext* cdm_context,
