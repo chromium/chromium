@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/task/bind_post_task.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -29,6 +30,10 @@ BASE_FEATURE(kBreakoutBoxEnqueueInSeparateTask,
 
 BASE_FEATURE(kBreakoutBoxPreferCaptureTimestampInVideoFrames,
              "BreakoutBoxPreferCaptureTimestampInVideoFrames",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBreakoutBoxInsertVideoCaptureTimestamp,
+             "BreakoutBoxInsertVideoCaptureTimestamp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
@@ -437,6 +442,19 @@ ScriptWrappable*
 FrameQueueUnderlyingSource<scoped_refptr<media::VideoFrame>>::MakeBlinkFrame(
     scoped_refptr<media::VideoFrame> media_frame) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
+  if (base::FeatureList::IsEnabled(kBreakoutBoxInsertVideoCaptureTimestamp)) {
+    if (!first_frame_ticks_) {
+      first_frame_ticks_ = base::TimeTicks::Now() - media_frame->timestamp();
+    }
+
+    if (!media_frame->metadata().capture_begin_time &&
+        !media_frame->metadata().reference_time) {
+      media_frame->metadata().capture_begin_time =
+          *first_frame_ticks_ + media_frame->timestamp();
+      media_frame->metadata().reference_time =
+          *first_frame_ticks_ + media_frame->timestamp();
+    }
+  }
   TRACE_EVENT(
       "media", "FrameQueueUnderlyingSource::MakeBlinkFrame", "ts",
       media_frame->timestamp(), "rt",
