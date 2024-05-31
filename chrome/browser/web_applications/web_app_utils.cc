@@ -59,7 +59,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/resources/preinstalled_web_apps/internal/container.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/container.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

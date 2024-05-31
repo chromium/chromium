@@ -517,12 +517,12 @@ source_set("web_applications") {
 
     if (is_chromeos) {
       sources += [
-        "//chrome/browser/resources/preinstalled_web_apps/internal/container.cc",
-        "//chrome/browser/resources/preinstalled_web_apps/internal/container.h",
         "preinstalled_web_apps/app_mall.cc",
         "preinstalled_web_apps/app_mall.h",
         "preinstalled_web_apps/calculator.cc",
         "preinstalled_web_apps/calculator.h",
+        "preinstalled_web_apps/container.cc",
+        "preinstalled_web_apps/container.h",
         "preinstalled_web_apps/google_calendar.cc",
         "preinstalled_web_apps/google_calendar.h",
         "preinstalled_web_apps/google_chat.cc",
