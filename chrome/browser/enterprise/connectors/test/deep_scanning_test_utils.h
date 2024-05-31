@@ -68,7 +68,8 @@ class EventReportValidator {
       const std::string& expected_profile_username,
       const std::string& expected_profile_identifier,
       const std::string& expected_scan_id,
-      const std::optional<std::string>& expected_content_transfer_method);
+      const std::optional<std::string>& expected_content_transfer_method,
+      const std::optional<std::u16string>& expected_user_justification);
 
   void ExpectDataControlsSensitiveDataEvent(
       const std::string& expected_url,
@@ -98,7 +99,8 @@ class EventReportValidator {
       const std::string& expected_profile_username,
       const std::string& expected_profile_identifier,
       const std::vector<std::string>& expected_scan_ids,
-      const std::optional<std::string>& expected_content_transfer_method);
+      const std::optional<std::string>& expected_content_transfer_method,
+      const std::optional<std::u16string>& expected_user_justification);
 
   void ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
       const std::string& expected_url,
@@ -246,6 +248,7 @@ class EventReportValidator {
   std::optional<std::string> threat_type_ = std::nullopt;
   std::optional<std::string> unscanned_reason_ = std::nullopt;
   std::optional<std::string> content_transfer_method_ = std::nullopt;
+  std::optional<std::u16string> user_justification_ = std::nullopt;
   std::optional<int64_t> content_size_ = std::nullopt;
   raw_ptr<const std::set<std::string>> mimetypes_ = nullptr;
   std::string username_;

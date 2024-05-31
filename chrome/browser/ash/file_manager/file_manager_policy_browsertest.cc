@@ -48,6 +48,8 @@ constexpr char kWarnSourceUrl[] = "https://warned.com";
 constexpr char kNotSetSourceUrl[] = "https://not-set.com";
 constexpr char kNotBlockedSourceUrl[] = "https://allowed.com";
 
+constexpr char16_t kUserJustification[] = u"User justification";
+
 // Compares DLP AddFilesRequests ignoring the order of repeated fields.
 MATCHER_P(EqualsAddFilesRequestsProto, add_files, "") {
   ::dlp::AddFilesRequest reference(add_files);
@@ -698,7 +700,12 @@ class FileTransferConnectorFilesAppBrowserTestBase {
           /*username*/ kUserName,
           /*profile_identifier*/ profile->GetPath().AsUTF8Unsafe(),
           /*scan_ids*/ expected_scan_ids,
-          /*content_transfer_method*/ std::nullopt);
+          /*content_transfer_method*/ std::nullopt,
+          /*user_justification*/
+          expect_proceed_warning_reports &&
+                  options.bypass_requires_justification
+              ? std::make_optional(kUserJustification)
+              : std::nullopt);
 
       return true;
     }
@@ -1017,7 +1024,7 @@ class FileTransferConnectorFilesAppBrowserTest
       EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
 
       justification_area->InsertText(
-          u"User justification",
+          kUserJustification,
           ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
       EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
 

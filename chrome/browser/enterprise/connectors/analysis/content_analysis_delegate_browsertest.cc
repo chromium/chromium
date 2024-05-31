@@ -782,7 +782,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
       /*username*/ kUserName,
       /*profile_identifier*/ GetProfileIdentifier(),
       /*scan_id*/ kScanId1,
-      /*content_transfer_method*/ std::nullopt);
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
 
   bool called = false;
   base::RunLoop run_loop;
@@ -884,7 +885,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
       /*username*/ kUserName,
       /*profile_identifier*/ GetProfileIdentifier(),
       /*scan_id*/ kScanId1,
-      /*content_transfer_method*/ std::nullopt);
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
 
   bool called = false;
   base::RunLoop run_loop;
@@ -1061,7 +1063,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
       /*username*/ kUserName,
       /*profile_identifier*/ GetProfileIdentifier(),
       /*scan_id*/ kScanId1,
-      /*content_transfer_method*/ std::nullopt);
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
 
   bool called = false;
   base::RunLoop run_loop;
@@ -1167,7 +1170,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
       /*username*/ kUserName,
       /*profile_identifier*/ GetProfileIdentifier(),
       /*scan_id*/ kScanId1,
-      /*content_transfer_method*/ std::nullopt);
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
 
   bool called = false;
   base::RunLoop run_loop;
@@ -1275,7 +1279,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
       /*username*/ kUserName,
       /*profile_identifier*/ GetProfileIdentifier(),
       /*scan_id*/ kScanId2,
-      /*content_transfer_method*/ std::nullopt);
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
 
   ContentAnalysisDelegate::Data data;
   data.image = image();
@@ -1380,7 +1385,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
       /*username*/ kUserName,
       /*profile_identifier*/ GetProfileIdentifier(),
       /*scan_id*/ kScanId2,
-      /*content_transfer_method*/ std::nullopt);
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
 
   ContentAnalysisDelegate::Data data;
   data.image = image();
@@ -2070,7 +2076,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       /*username*/ kUserName,
       /*profile_identifier*/ GetProfileIdentifier(),
       /*scan_id*/ kScanId1,
-      /*content_transfer_method*/ std::nullopt);
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
 
   bool called = false;
   base::RunLoop run_loop;

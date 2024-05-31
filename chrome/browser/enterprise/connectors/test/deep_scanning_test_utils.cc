@@ -188,7 +188,8 @@ void EventReportValidator::ExpectSensitiveDataEvent(
     const std::string& expected_profile_username,
     const std::string& expected_profile_identifier,
     const std::string& expected_scan_id,
-    const std::optional<std::string>& expected_content_transfer_method) {
+    const std::optional<std::string>& expected_content_transfer_method,
+    const std::optional<std::u16string>& expected_user_justification) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
   url_ = expected_url;
   tab_url_ = expected_tab_url;
@@ -204,6 +205,7 @@ void EventReportValidator::ExpectSensitiveDataEvent(
   profile_identifier_ = expected_profile_identifier;
   scan_ids_[expected_filename] = expected_scan_id;
   content_transfer_method_ = expected_content_transfer_method;
+  user_justification_ = expected_user_justification;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
           [this](content::BrowserContext* context, bool include_device_info,
@@ -269,7 +271,8 @@ void EventReportValidator::ExpectSensitiveDataEvents(
     const std::string& expected_profile_username,
     const std::string& expected_profile_identifier,
     const std::vector<std::string>& expected_scan_ids,
-    const std::optional<std::string>& expected_content_transfer_method) {
+    const std::optional<std::string>& expected_content_transfer_method,
+    const std::optional<std::u16string>& expected_user_justification) {
   for (size_t i = 0; i < expected_filenames.size(); ++i) {
     filenames_and_hashes_[expected_filenames[i]] = expected_sha256s[i];
     dlp_verdicts_[expected_filenames[i]] = expected_dlp_verdicts[i];
@@ -288,6 +291,7 @@ void EventReportValidator::ExpectSensitiveDataEvents(
   username_ = expected_profile_username;
   profile_identifier_ = expected_profile_identifier;
   content_transfer_method_ = expected_content_transfer_method;
+  user_justification_ = expected_user_justification;
 
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(expected_filenames.size())
@@ -552,6 +556,8 @@ void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
   ValidateField(event,
                 SafeBrowsingPrivateEventRouter::kKeyContentTransferMethod,
                 content_transfer_method_);
+  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyUserJustification,
+                user_justification_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyProfileUserName,
                 username_);
   ValidateField(event, RealtimeReportingClient::kKeyProfileIdentifier,
