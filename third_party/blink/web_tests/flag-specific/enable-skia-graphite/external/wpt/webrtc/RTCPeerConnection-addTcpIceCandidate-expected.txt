@@ -1,0 +1,44 @@
+This is a testharness.js-based test.
+Found 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] TCP candidate aimed at port 8001 accepted
+  promise_test: Unhandled rejection with value: undefined
+[FAIL] TCP addIceCandidate aimed at port 8001 accepted
+  promise_test: Unhandled rejection with value: undefined
+[FAIL] TCP candidate aimed at Fetch bad port 1719 ignored
+  assert_unreached: Reached unreachable code
+[FAIL] TCP candidate aimed at Fetch bad port 1720 ignored
+  assert_unreached: Reached unreachable code
+[FAIL] TCP candidate aimed at Fetch bad port 1723 ignored
+  assert_unreached: Reached unreachable code
+[FAIL] TCP candidate aimed at Fetch bad port 2049 ignored
+  assert_unreached: Reached unreachable code
+[FAIL] TCP candidate aimed at Fetch bad port 3659 ignored
+  assert_unreached: Reached unreachable code
+[FAIL] TCP candidate aimed at Fetch bad port 4045 ignored
+  assert_unreached: Reached unreachable code
+[FAIL] TCP candidate aimed at Fetch bad port 5060 ignored
+  assert_unreached: Reached unreachable code
+[FAIL] TCP candidate aimed at Fetch bad port 5061 ignored
+  assert_unreached: Reached unreachable code
+[FAIL] TCP candidate aimed at Fetch bad port 6000 ignored
+  assert_unreached: Reached unreachable code
+[FAIL] TCP candidate aimed at Fetch bad port 6566 ignored
+  assert_unreached: Reached unreachable code
+[FAIL] TCP candidate aimed at Fetch bad port 6665 ignored
+  assert_unreached: Reached unreachable code
+[FAIL] TCP candidate aimed at Fetch bad port 6666 ignored
+  assert_unreached: Reached unreachable code
+[FAIL] TCP candidate aimed at Fetch bad port 6667 ignored
+  assert_unreached: Reached unreachable code
+[FAIL] TCP candidate aimed at Fetch bad port 6668 ignored
+  assert_unreached: Reached unreachable code
+[FAIL] TCP candidate aimed at Fetch bad port 6669 ignored
+  assert_unreached: Reached unreachable code
+[FAIL] TCP candidate aimed at Fetch bad port 6697 ignored
+  assert_unreached: Reached unreachable code
+[FAIL] TCP candidate aimed at Fetch bad port 10080 ignored
+  assert_unreached: Reached unreachable code
+[FAIL] TCP addIceCandidate aimed at Fetch bad port 2049 ignored
+  assert_unreached: Reached unreachable code
+Harness: the test ran to completion.
+

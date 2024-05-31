@@ -94429,6 +94429,19 @@
        {}
       ]
      ],
+     "scope-shadow-sharing.html": [
+      "e078721e0f5a07ab90a62495f0632644fb12d754",
+      [
+       null,
+       [
+        [
+         "/css/css-cascade/scope-shadow-sharing-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "scope-visited.html": [
       "392aeb667b201072ff1a70aec745f75019cff54b",
       [
@@ -144076,6 +144089,32 @@
         {}
        ]
       ],
+      "text-box-trim-block-in-inline-start-001.html": [
+       "9d14a08bc2ab509955cf5be11cc797ff9f59e48c",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-block-in-inline-start-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-box-trim-block-in-inline-start-002.html": [
+       "67bfa343781cf35b3ce74297b35ee09c0f89fc05",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-block-in-inline-start-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-box-trim-dynamic-001.html": [
        "5cd25060934ef6a73aa0d01141adde8296103c08",
        [
@@ -167601,6 +167640,45 @@
        [
         [
          "/css/css-properties-values-api/registered-property-change-style-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "registered-property-computation-color-001.html": [
+      "d694908cdd1478a3c41e9f90cdd5eeb956ca78ad",
+      [
+       null,
+       [
+        [
+         "/css/css-properties-values-api/registered-property-computation-color-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "registered-property-computation-color-002.html": [
+      "041697695e3478dfe8429e2354fc84547ee0e7cd",
+      [
+       null,
+       [
+        [
+         "/css/css-properties-values-api/registered-property-computation-color-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "registered-property-computation-color-003.html": [
+      "66092edf41d125c0c77914df4309c818fb524491",
+      [
+       null,
+       [
+        [
+         "/css/css-properties-values-api/registered-property-computation-color-003-ref.html",
          "=="
         ]
        ],
@@ -273952,6 +274030,19 @@
          {}
         ]
        ],
+       "block-in-inline.html": [
+        "6fbde753b53dceee659fa784600835eebdfe2fa7",
+        [
+         null,
+         [
+          [
+           "/html/rendering/widgets/button-layout/block-in-inline-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "display-none-or-contents.html": [
         "8f0ad3ab29c9d976bf18e2f180d4862d41aebb3e",
         [
@@ -287306,6 +287397,32 @@
         {}
        ]
       ],
+      "use-external-resource-target-pseudo-001.html": [
+       "153aedba026055a9dba922ca08385090b9fe9880",
+       [
+        null,
+        [
+         [
+          "/svg/struct/reftests/reference/green-100x100.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "use-external-resource-target-pseudo-002.html": [
+       "0a483aff54d4d9bb9fa363868630e485248e095a",
+       [
+        null,
+        [
+         [
+          "/svg/struct/reftests/reference/green-100x100.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "use-external-resource-with-revalidation.tentative.html": [
        "d899165fa9ccef15d893b599ec6a8f4e005bcb36",
        [
@@ -287688,6 +287805,32 @@
          [
           "/svg/text/reftests/lang-attribute-ref.svg",
           "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "lengthAdjust-large-font-vertical.svg": [
+       "5127081bf6907159d803a5e5af71eb72486e629b",
+       [
+        null,
+        [
+         [
+          "/svg/text/reftests/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "lengthAdjust-large-font.svg": [
+       "7a204fe8a7984a0f9838448b6d81cfb0668e2584",
+       [
+        null,
+        [
+         [
+          "/svg/text/reftests/green-100x100.svg",
+          "=="
          ]
         ],
         {}
@@ -296542,7 +296685,7 @@
      ],
      "support": {
       "304-response.py": [
-       "f9756555f79ee350f9b86de5b5b221c056265e09",
+       "b8d346e448af982e062f74c6a7e34249ee8c5163",
        []
       ],
       "eval.js": [
@@ -298230,14 +298373,6 @@
     "support": {
      "README.md": [
       "a6d33ff6f75c408712f8b1cf6b78b50326d4f3fc",
-      []
-     ],
-     "digital-identity-helper.js": [
-      "8fff82745172154972dcda4c3c6cb98d4a5af5e1",
-      []
-     ],
-     "digital-identity-iframe.html": [
-      "8b3a424d1e21d381b76849deb261762aec016298",
       []
      ],
      "echoing-nester.html": [
@@ -309097,11 +309232,11 @@
       []
      ],
      "at-scope-parsing-expected.txt": [
-      "4ff5b76355be65f7429f3a0c8a9e48049288c232",
+      "3a81a4319e364017b2e0c42fb1dcbdf44f02d19b",
       []
      ],
      "at-scope-relative-syntax-expected.txt": [
-      "57e61c86793552fcad864cbcd36ff3c30db01a40",
+      "6555f68e3a63f29538091136de069668a718dbe0",
       []
      ],
      "important-prop-ref.html": [
@@ -309148,6 +309283,14 @@
      ],
      "scope-pseudo-element-ref.html": [
       "2ad6a0995a9e3bb9db0131eb2c42b19d09768fb4",
+      []
+     ],
+     "scope-shadow-sharing-ref.html": [
+      "4ade124bcd89965d2e4c325c81a6cc29d3686a23",
+      []
+     ],
+     "scope-specificity-expected.txt": [
+      "98bd580ec8f9a008e23cef609f5b91b3dd3d27ff",
       []
      ],
      "scope-visited-ref.html": [
@@ -325647,6 +325790,10 @@
         []
        ]
       },
+      "text-box-trim-block-in-inline-start-001-ref.html": [
+       "dd288036917d9a4a4e85e968b4b7486b0f22a039",
+       []
+      ],
       "text-box-trim-dynamic-001-ref.html": [
        "8f089635faebf04c4acde22bb60ec532661a1eba",
        []
@@ -330594,6 +330741,14 @@
      ],
      "registered-property-change-style-002-ref.html": [
       "758e769d7821fa55b82e339883f1f9c4d4f0d5e7",
+      []
+     ],
+     "registered-property-computation-color-001-ref.html": [
+      "651e943b154a96b6dbb5035e4307d78b9ab9c08f",
+      []
+     ],
+     "registered-property-computation-color-003-ref.html": [
+      "e030fdf37c68bd6cfd3b8efa1c361db880044646",
       []
      ],
      "resources": {
@@ -350284,7 +350439,17 @@
     "META.yml": [
      "8a7db924976bf95537afe45854962916207e5b61",
      []
-    ]
+    ],
+    "support": {
+     "digital-identity-helper.js": [
+      "8fff82745172154972dcda4c3c6cb98d4a5af5e1",
+      []
+     ],
+     "digital-identity-iframe.html": [
+      "8b3a424d1e21d381b76849deb261762aec016298",
+      []
+     ]
+    }
    },
    "direct-sockets": {
     "DIR_METADATA": [
@@ -350854,7 +351019,7 @@
        []
       ],
       "scroll_support.js": [
-       "e536b7d7488cf964ec5da5abdc45d5f3852d8909",
+       "a708364df07cada66cc5ed672af3a328fae3ab9c",
        []
       ],
       "scrollend-event-fires-to-iframe-inner-frame.html": [
@@ -353903,7 +354068,7 @@
       []
      ],
      "events-session-closed-event.js": [
-      "44f683eac854b1f0fea6a845c0ea841e84eb5c26",
+      "f3132f56c1124532bffcaba881c5eca9b71bdf99",
       []
      ],
      "events.js": [
@@ -370389,7 +370554,7 @@
         []
        ],
        "resets-expected.txt": [
-        "cf987664777a5ba05a63917ef2dcf3750fc2e4d1",
+        "ec5639499fac5681ecb7b35aa06b02ac814152af",
         []
        ],
        "select-sizing-001-ref.html": [
@@ -371247,13 +371412,21 @@
         []
        ]
       },
+      "baseline-alignment-and-overflow.tentative-expected.txt": [
+       "053a6129e08ffbe87536ad0f6d36bf4fc89551e2",
+       []
+      ],
       "button-layout": {
        "anonymous-button-content-box-ref.html": [
         "243f0add0deb144ff4fc9d7c822c7b283aef9dba",
         []
        ],
+       "block-in-inline-ref.html": [
+        "57a06d7d836d44260dc019994b75e3983e365de1",
+        []
+       ],
        "computed-style-expected.txt": [
-        "ba78f3f8fa33e909b62fc07fd0ba8d8d0360a59e",
+        "788a6e5c0581ba275fafd5cf360ba84691c54d94",
         []
        ],
        "display-none-or-contents-ref.html": [
@@ -374380,68 +374553,6 @@
          ],
          "worker.sub.js": [
           "ffee312d21e094e9c3ff2627bd74c77b9700717e",
-          []
-         ]
-        }
-       },
-       "defer-script": {
-        "README.md": [
-         "ac5c91c9a2eab22e4815cab7a7603359d2faceb4",
-         []
-        ],
-        "defer-script-xml-expected.txt": [
-         "03b84da7d7a645d79cc14a8c69abd019e67d28dd",
-         []
-        ],
-        "resources": {
-         "async-script-1.js": [
-          "267f324aa650154ff8fc787124132774b91e2259",
-          []
-         ],
-         "defer-script-1.js": [
-          "1a0524f4fbd271f9ffed2d8d37d75682620def47",
-          []
-         ],
-         "defer-script-2.js": [
-          "d644e37f182bb3211659f5a5543b44e16550e74f",
-          []
-         ],
-         "document-open-write-close.js": [
-          "80703d5c0ef1cebdaf9e5b91ff42d75e92c494a5",
-          []
-         ],
-         "document-open-write.js": [
-          "178c374df6999fce51a557701842a857cdae46f9",
-          []
-         ],
-         "document-write-close.js": [
-          "7cdde0d78ffa1ec13a6d47a12883b8f7ed957321",
-          []
-         ],
-         "document-write-iframe.sub.html": [
-          "e3022e3bf1f9a6a8e49337e57250b5e77416d63b",
-          []
-         ],
-         "document-write.js": [
-          "413a9bc6210f52b305356373f58623dd2e6e392e",
-          []
-         ],
-         "helper.js": [
-          "89c6d1e8282097b5258588f688ae9fd2cbd69ad7",
-          []
-         ],
-         "sync-script-1.js": [
-          "726b56346e8c32c79028540085e09806d3105527",
-          []
-         ],
-         "sync-script-2.js": [
-          "ba2edfbf270583ab62e32647fcd234f7b039ed83",
-          []
-         ]
-        },
-        "support": {
-         "async-script.html": [
-          "d513bafe4f6db18b4d5685ceffa1c9ce03837350",
           []
          ]
         }
@@ -391965,6 +392076,10 @@
        "e570958701db47250cf6d87a16f4722a84e626b2",
        []
       ],
+      "shadowrealm-promise-rejection-test-worker.js": [
+       "5c9737a67aa2f085756edf632f087d5c599a0259",
+       []
+      ],
       "silence.oga": [
        "af591880436af43abb4cee59fde320081bcac7ed",
        []
@@ -393639,6 +393754,26 @@
       ],
       "session-history-test-util.js": [
        "c1ca36dc2fa570f9f6eb57f4e9c17fe91a5f4af4",
+       []
+      ],
+      "session-storage-carry-over-to-prerender-page.html": [
+       "39df79c84762fd506b21132972fa7567a8977c2e",
+       []
+      ],
+      "session-storage-isolated-while-prerendering.html": [
+       "46170393deb4ad101bfb4185dcc72fd4558422c9",
+       []
+      ],
+      "session-storage-no-leak-to-initiator-page.html": [
+       "6c0ee4c4adbab917803a2e08377af3004f131430",
+       []
+      ],
+      "session-storage-swap-after-activate.html": [
+       "c5e443721491a7551aa33439f92996b9d6d5a954",
+       []
+      ],
+      "session-storage-utils.js": [
+       "06688e3bd4cf6e8d251ef694ffba40b8dab95248",
        []
       ],
       "shared-worker.py": [
@@ -395556,6 +395691,14 @@
         "1ee578ab6adba89df340fa643a93f63368344421",
         []
        ],
+       "sprites-stacked.svg": [
+        "bebe1bd9198068da848ebadd46d90b19c62a53eb",
+        []
+       ],
+       "sprites-target.svg": [
+        "1eb11bfbfb4271442c83a99e81a8a44ad8c1d1da",
+        []
+       ],
        "sprites.svg": [
         "f73b8851913f402aa41adac40360b15acbad1119",
         []
@@ -396019,6 +396162,10 @@
      "604e765da46d85fe8ab85d3097fe7c2cbe00a930",
      []
     ],
+    "eval-csp-tt-default-policy-mutate-expected.txt": [
+     "b2208ab3d4a11f416a2176409e3d9e0138597860",
+     []
+    ],
     "idlharness.tentative.window-expected.txt": [
      "9d36f476f0a42e895f5845aba7dd5098bb32ac08",
      []
@@ -396053,7 +396200,7 @@
       []
      ],
      "WorkerGlobalScope-eval.https.js": [
-      "0631375208726c23128d2a1655d019c778e10668",
+      "95ac1ff844b3e4e6f01a4abb3cf4846df514bf70",
       []
      ],
      "WorkerGlobalScope-eval.https.js.headers": [
@@ -437113,7 +437260,7 @@
     },
     "generic": {
      "304-response-should-update-csp.sub.html": [
-      "b16eadaedc07ca9dbc60310d850d49ded370d22a",
+      "a882dc289144c176df555c14c83802e018b45250",
       [
        null,
        {}
@@ -442394,15 +442541,6 @@
      [
       null,
       {}
-     ]
-    ],
-    "digital-identity.https.html": [
-     "30e24e5450a463d59a09ccf9150c15170b85e901",
-     [
-      null,
-      {
-       "testdriver": true
-      }
      ]
     ],
     "fedcm-abort.https.html": [
@@ -448890,14 +449028,14 @@
       ]
      ],
      "at-scope-parsing.html": [
-      "8390738dd8a812baa73a7045026888935a5253d6",
+      "e984c1dcc29e1fe1fe199b16f6eafdb5403d1a2b",
       [
        null,
        {}
       ]
      ],
      "at-scope-relative-syntax.html": [
-      "274d9afbebec2be5532a6a55ca1b605a2dbe6559",
+      "8b0e41ab13e1fff6e1ce3a563845553e2d0ca831",
       [
        null,
        {}
@@ -449186,7 +449324,7 @@
       ]
      ],
      "scope-evaluation.html": [
-      "c6ea13c862df3adbcafe6bf61436e11f5ed36c92",
+      "a70d2a59b7f54212b5e267182aac7dd5acdd1658",
       [
        null,
        {}
@@ -449211,7 +449349,7 @@
       ]
      ],
      "scope-implicit-external.html": [
-      "d1ac738b778da33fa0359646a0ef876b339d5a64",
+      "aee0b23856d4aad360d5ac660130dde0472a5c67",
       [
        null,
        {}
@@ -449260,7 +449398,7 @@
       ]
      ],
      "scope-proximity.html": [
-      "c133a71e9a804b52c8d2556b1a8d1f26b3962636",
+      "0d62aa303aa75749b2c958ae04c1b41756bedcaf",
       [
        null,
        {}
@@ -449274,7 +449412,7 @@
       ]
      ],
      "scope-specificity.html": [
-      "0f48c605a852b2b2a40c093a45305bcd21b6c7b4",
+      "fa103ff3742fb341e80bf28b4a753d5a52918ddc",
       [
        null,
        {}
@@ -463291,7 +463429,7 @@
       ]
      },
      "at-property-animation.html": [
-      "f7a8e1697840225ef871f777c3e6b0f6eca48929",
+      "44361a0566b22e1ebced29105ab0bb785bbd7f44",
       [
        null,
        {}
@@ -463481,6 +463619,13 @@
      ],
      "url-resolution.html": [
       "d9327896496a1f170570b132dc7797aaea5e2b1f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "var-reference-registered-properties-002.html": [
+      "9a6c78fc45b09b7a65e93e229090f5ffc4feaa34",
       [
        null,
        {}
@@ -465196,6 +465341,15 @@
      ],
      "snap-at-user-scroll-end.html": [
       "8643b3c1486a294709b1445f32c9eb54e4305164",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "snap-fling-in-large-area.html": [
+      "4797ddbd9a25c8475786bbe9cf5552f7e47ad879",
       [
        null,
        {
@@ -484819,6 +484973,26 @@
          "/resources/idlharness.js"
         ]
        ]
+      }
+     ]
+    ]
+   },
+   "digital-credentials": {
+    "digital-credentials.tentative.https.html": [
+     "30e24e5450a463d59a09ccf9150c15170b85e901",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "non-fully-active.https.html": [
+     "dac4cecb78c03dfd7b09fb14412c11cfbecf533b",
+     [
+      null,
+      {
+       "testdriver": true
       }
      ]
     ]
@@ -587053,47 +587227,6 @@
          {}
         ]
        ],
-       "defer-script": {
-        "async-script-2.html": [
-         "f7377d847adc04163e50c6a51294363b5a45de35",
-         [
-          null,
-          {}
-         ]
-        ],
-        "async-script.html": [
-         "90f657679f922b92f8ac3737b44660e1562defb6",
-         [
-          "html/semantics/scripting-1/the-script-element/defer-script/async-script.html?default",
-          {}
-         ],
-         [
-          "html/semantics/scripting-1/the-script-element/defer-script/async-script.html?reload",
-          {}
-         ]
-        ],
-        "defer-script-xml.xhtml": [
-         "9d02ff39f517c8c5c68c94e3e56fe8e44f88ffd8",
-         [
-          null,
-          {}
-         ]
-        ],
-        "defer-script.html": [
-         "62c3a74014f080f056ae636cd38669a488f212ff",
-         [
-          null,
-          {}
-         ]
-        ],
-        "document-write.html": [
-         "63e251bae5c0a0274481c196c0a942e88e8a3f2d",
-         [
-          null,
-          {}
-         ]
-        ]
-       },
        "emptyish-script-elements.html": [
         "37f4a87c95ea21fdadee85575ad24e7fed9fba55",
         [
@@ -598957,6 +599090,33 @@
       }
      ]
     ],
+    "input-events-arrow-key-on-number-input-delete-document.html": [
+     "20dad0da40a1cb431bd454645f7b480d0827517b",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "input-events-arrow-key-on-number-input-prevent-default.html": [
+     "cc3984fe64dcbc926b1b317a3c6cbf0e77d2611b",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "input-events-arrow-key-on-number-input.html": [
+     "75c594c2cbe517dd8f5df50f2fb723ee7acd207f",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "input-events-cut-paste.html": [
      "f2ca5a0a654f270d33d8662f4e8b25369cd98df7",
      [
@@ -599102,6 +599262,33 @@
     ],
     "input-events-get-target-ranges.html": [
      "bbb275d8d34dbeb173bbffa871db0849927246a5",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "input-events-spin-button-click-on-number-input-delete-document.html": [
+     "1b179952ca446ea2e4c803d85a899c89c16ac486",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "input-events-spin-button-click-on-number-input-prevent-default.html": [
+     "558000940c987e6d1c30d0899244e7ae26ae00b5",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "input-events-spin-button-click-on-number-input.html": [
+     "e86be1798e475b425f2cd170599fb43541950a68",
      [
       null,
       {
@@ -639382,6 +639569,13 @@
        {}
       ]
      ],
+     "shadowrealm-promise-rejection.https.html": [
+      "3fa2331b7f9a8ccbda83a93dad0d47e85e17cdde",
+      [
+       null,
+       {}
+      ]
+     ],
      "skip-waiting-installed.https.html": [
       "b604f651b3c1deb38d891c77394a8f175a19c34e",
       [
@@ -639790,7 +639984,7 @@
    },
    "shadow-dom": {
     "Document-caretPositionFromPoint.tentative.html": [
-     "f3053ee71150932451729aeab07dc1eb2c7920a1",
+     "b01bc0ae6edfef1fedfcfeb5f1aeab94178d8895",
      [
       null,
       {}
@@ -644942,6 +645136,15 @@
      ],
      "session-history-subframe-reload.https.html": [
       "1caf360f1b85b9c997ec5b45cd81bf570d848e8b",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "session-storage.tentative.html": [
+      "92d73285cce8df081691cb13d7bd288ab79b6b52",
       [
        null,
        {
@@ -656666,8 +656869,15 @@
       {}
      ]
     ],
+    "eval-csp-tt-default-policy-mutate.html": [
+     "f7909a32a6ecdd92e902a1034b11c0f8c94b98b4",
+     [
+      null,
+      {}
+     ]
+    ],
     "eval-csp-tt-default-policy.html": [
-     "ab9b98df64ec2fefc29a266dddb57e3b9c5638f6",
+     "4ca9c562f506b3a226213d69a85781929439b56c",
      [
       null,
       {}
@@ -656702,7 +656912,7 @@
      ]
     ],
     "eval-with-permissive-csp.html": [
-     "fb0776852e71440b5b5679e64e05d5d52963a5d8",
+     "b3dc352017675a2634aa96ac1fdea01b55ce9243",
      [
       null,
       {}
@@ -684083,7 +684293,7 @@
       ]
      ],
      "batchNormalization.https.any.js": [
-      "cafd9f9cd50c9caeb1fc251fe7a44d21e024cc38",
+      "a1c79000d202ef793857f3826156d80683b3052a",
       [
        "webnn/validation_tests/batchNormalization.https.any.html",
        {
@@ -686251,10 +686461,12 @@
      ]
     ],
     "RTCPeerConnection-addTcpIceCandidate.html": [
-     "1e7fc3ba9576d0ee124a6d6ee9729d682ee86fe8",
+     "ca7a682708f589941fdca2b8495ee40a89917d49",
      [
       null,
-      {}
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "RTCPeerConnection-addTrack.https.html": [
@@ -725489,7 +725701,7 @@
        },
        "context_created": {
         "context_created.py": [
-         "35692a9684547f70a83639c1c7d090333d1d5dfa",
+         "5172b25d9971bb2538185f9c82475ac76fb2252a",
          [
           null,
           {}

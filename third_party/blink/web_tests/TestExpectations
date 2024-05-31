@@ -2536,6 +2536,8 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/digital-credentials/non-fully-active.https.html [ Timeout ]
+external/wpt/webrtc/RTCPeerConnection-addTcpIceCandidate.html [ Skip Timeout ]
 crbug.com/343515409 external/wpt/focus/focus-event-after-switching-iframes.sub.html [ Timeout ]
 crbug.com/343515409 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/reduction.https.any.worker.html?cpu [ Skip Timeout ]
 crbug.com/343338109 external/wpt/css/css-borders/tentative/border-radius-side-shorthands/border-radius-side-shorthands-001.html [ Failure ]
@@ -2677,7 +2679,6 @@ crbug.com/626703 external/wpt/IndexedDB/ready-state-destroyed-execution-context.
 crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-004.html [ Failure ]
 crbug.com/626703 external/wpt/editing/crashtests/designMode-caret-change.html [ Timeout ]
 crbug.com/626703 virtual/third-party-storage-partitioning/external/wpt/IndexedDB/ready-state-destroyed-execution-context.html [ Timeout ]
-crbug.com/626703 [ Win11-arm64 ] external/wpt/webrtc/RTCPeerConnection-addTcpIceCandidate.html [ Failure Timeout ]
 crbug.com/626703 [ Mac14 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
 crbug.com/626703 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/no-white-flash-before-activation.html [ Timeout ]
 crbug.com/626703 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/no-white-flash-before-activation.html [ Timeout ]
@@ -5015,7 +5016,7 @@ crbug.com/1345752 [ Win ] media/controls/overflow-menu-focus.html [ Failure Pass
 
 # http/tests/intersection-observer/cross-origin-iframe-with-nesting.html tests
 crbug.com/1450030 [ Mac ] http/tests/intersection-observer/cross-origin-iframe-with-nesting.html [ Failure Pass Timeout ]
-crbug.com/1450030 [ Win11-arm64 Release ] http/tests/intersection-observer/cross-origin-iframe-with-nesting.html [ Failure Pass Timeout ]
+crbug.com/1450030 [ Release Win11-arm64 ] http/tests/intersection-observer/cross-origin-iframe-with-nesting.html [ Failure Pass Timeout ]
 
 # Flaky tests in mac11-arm64 or mac12-arm64 or mac13-arm64
 crbug.com/1249176 [ Mac11-arm64 ] transforms/3d/general/cssmatrix-3d-zoom.html [ Failure Pass ]

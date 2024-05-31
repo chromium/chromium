@@ -1,4 +1,10 @@
 This is a testharness.js-based test.
+[FAIL] @scope (.a) to (> .b) is valid
+  assert_equals: expected "@scope (.a) to (:scope > .b) {\\n}" but got "@scope (.a) to (> .b) {\\n}"
+[FAIL] @scope (.a) to (+ .b) is valid
+  assert_equals: expected "@scope (.a) to (:scope + .b) {\\n}" but got "@scope (.a) to (+ .b) {\\n}"
+[FAIL] @scope (.a) to (~ .b) is valid
+  assert_equals: expected "@scope (.a) to (:scope ~ .b) {\\n}" but got "@scope (.a) to (~ .b) {\\n}"
 [FAIL] @scope () is valid
   assert_equals: expected "@scope {\\n}" but got "@scope () {\\n}"
 [FAIL] @scope () to () is valid
