@@ -15,6 +15,7 @@
 #include "components/sync/model/forwarding_model_type_controller_delegate.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/model/model_type_store.h"
+#include "components/sync/protocol/plus_address_setting_specifics.pb.h"
 
 namespace plus_addresses {
 
@@ -31,11 +32,34 @@ PlusAddressSettingService::PlusAddressSettingService(
 
 PlusAddressSettingService::~PlusAddressSettingService() = default;
 
+bool PlusAddressSettingService::GetIsPlusAddressesEnabled() const {
+  // TODO(b/342089839): Finalize setting name.
+  return GetBoolean("plus_address.is_enabled");
+}
+
+bool PlusAddressSettingService::GetHasAcceptedNotice() const {
+  // TODO(b/342089839): Finalize setting name.
+  return GetBoolean("plus_address.has_accepted_notice");
+}
+
+bool PlusAddressSettingService::GetIsOptedInToDogfood() const {
+  // TODO(b/342089839): Finalize setting name.
+  return GetBoolean("plus_address.is_opted_in_to_dogfood");
+}
+
 std::unique_ptr<syncer::ModelTypeControllerDelegate>
 PlusAddressSettingService::GetSyncControllerDelegate() {
   CHECK(base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting));
   return std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
       sync_bridge_->change_processor()->GetControllerDelegate().get());
+}
+
+bool PlusAddressSettingService::GetBoolean(std::string_view name) const {
+  if (auto setting = sync_bridge_->GetSetting(name)) {
+    CHECK(setting->has_bool_value());
+    return setting->bool_value();
+  }
+  return false;
 }
 
 }  // namespace plus_addresses
