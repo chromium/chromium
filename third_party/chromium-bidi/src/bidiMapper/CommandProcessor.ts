@@ -92,7 +92,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     this.#browserProcessor = new BrowserProcessor(browserCdpClient);
     this.#browsingContextProcessor = new BrowsingContextProcessor(
       browserCdpClient,
-      browsingContextStorage
+      browsingContextStorage,
+      eventManager
     );
     this.#cdpProcessor = new CdpProcessor(
       browsingContextStorage,

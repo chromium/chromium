@@ -17,12 +17,13 @@
 
 import type {BidiPlusChannel} from '../../../protocol/chromium-bidi.js';
 import {
+  type BrowsingContext,
   ChromiumBidi,
   InvalidArgumentException,
-  type BrowsingContext,
 } from '../../../protocol/protocol.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
+import type {SubscriptionItem} from './EventManager.js';
 import {isCdpEvent} from './events.js';
 
 /**
@@ -204,36 +205,50 @@ export class SubscriptionManager {
     return false;
   }
 
+  /**
+   * Subscribes to event in the given context and channel.
+   * @param {EventNames} event
+   * @param {BrowsingContext.BrowsingContext | null} contextId
+   * @param {BidiPlusChannel} channel
+   * @return {SubscriptionItem[]} List of
+   * subscriptions. If the event is a whole module, it will return all the specific
+   * events. If the contextId is null, it will return all the top-level contexts which were
+   * not subscribed before the command.
+   */
   subscribe(
     event: ChromiumBidi.EventNames,
     contextId: BrowsingContext.BrowsingContext | null,
     channel: BidiPlusChannel
-  ): void {
+  ): SubscriptionItem[] {
     // All the subscriptions are handled on the top-level contexts.
     contextId = this.#browsingContextStorage.findTopLevelContextId(contextId);
 
     // Check if subscribed event is a whole module
     switch (event) {
       case ChromiumBidi.BiDiModule.BrowsingContext:
-        Object.values(ChromiumBidi.BrowsingContext.EventNames).map(
-          (specificEvent) => this.subscribe(specificEvent, contextId, channel)
-        );
-        return;
+        return Object.values(ChromiumBidi.BrowsingContext.EventNames)
+          .map((specificEvent) =>
+            this.subscribe(specificEvent, contextId, channel)
+          )
+          .flat();
       case ChromiumBidi.BiDiModule.Log:
-        Object.values(ChromiumBidi.Log.EventNames).map((specificEvent) =>
-          this.subscribe(specificEvent, contextId, channel)
-        );
-        return;
+        return Object.values(ChromiumBidi.Log.EventNames)
+          .map((specificEvent) =>
+            this.subscribe(specificEvent, contextId, channel)
+          )
+          .flat();
       case ChromiumBidi.BiDiModule.Network:
-        Object.values(ChromiumBidi.Network.EventNames).map((specificEvent) =>
-          this.subscribe(specificEvent, contextId, channel)
-        );
-        return;
+        return Object.values(ChromiumBidi.Network.EventNames)
+          .map((specificEvent) =>
+            this.subscribe(specificEvent, contextId, channel)
+          )
+          .flat();
       case ChromiumBidi.BiDiModule.Script:
-        Object.values(ChromiumBidi.Script.EventNames).map((specificEvent) =>
-          this.subscribe(specificEvent, contextId, channel)
-        );
-        return;
+        return Object.values(ChromiumBidi.Script.EventNames)
+          .map((specificEvent) =>
+            this.subscribe(specificEvent, contextId, channel)
+          )
+          .flat();
       default:
       // Intentionally left empty.
     }
@@ -248,12 +263,24 @@ export class SubscriptionManager {
     }
     const eventMap = contextToEventMap.get(contextId)!;
 
-    // Do not re-subscribe to events to keep the priority.
-    if (eventMap.has(event)) {
-      return;
+    const affectedContextIds = (
+      contextId === null
+        ? this.#browsingContextStorage.getTopLevelContexts().map((c) => c.id)
+        : [contextId]
+    )
+      // There can be contexts that are already subscribed to the event. Do not include
+      // them to the output.
+      .filter((contextId) => !this.isSubscribedTo(event, contextId));
+
+    if (!eventMap.has(event)) {
+      // Add subscription only if it's not already subscribed.
+      eventMap.set(event, this.#subscriptionPriority++);
     }
 
-    eventMap.set(event, this.#subscriptionPriority++);
+    return affectedContextIds.map((contextId) => ({
+      event,
+      contextId,
+    }));
   }
 
   /**

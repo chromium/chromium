@@ -14,8 +14,9 @@
 # limitations under the License.
 import pytest
 from anys import ANY_DICT, ANY_STR
-from test_helpers import (ANY_TIMESTAMP, execute_command, get_tree, goto_url,
-                          read_JSON_message, send_JSON_command, subscribe)
+from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
+                          get_tree, goto_url, read_JSON_message,
+                          send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -292,4 +293,56 @@ async def test_browsingContext_create_withUserContext(websocket, type):
         'userContext': user_context["userContext"],
         'children': [],
         'parent': None
+    }
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("type", ["window", "tab"])
+@pytest.mark.parametrize("global_subscription", [True, False])
+async def test_browsingContext_subscribe_to_contextCreated_emits_for_existing(
+        websocket, type, context_id, another_context_id, global_subscription):
+    subscribe_command_id = await send_JSON_command(
+        websocket,
+        {
+            "method": "session.subscribe",
+            "params": {
+                # Subscribe to a domain and to a specific event twice. The
+                # events should not be duplicated.
+                "events": [
+                    "browsingContext", "browsingContext.contextCreated",
+                    "browsingContext.contextCreated"
+                ],
+                # Missing "contexts" means global subscription.
+                **({} if global_subscription else {
+                       "contexts": [another_context_id]
+                   })
+            }
+        })
+
+    # In case of global subscription, the events should be emitted for all
+    # contexts. Otherwise, only for the subscribed ones.
+    if global_subscription:
+        resp = await read_JSON_message(websocket)
+        assert resp == AnyExtending({
+            'method': 'browsingContext.contextCreated',
+            'params': {
+                'context': context_id,
+            },
+            'type': 'event',
+        })
+
+    resp = await read_JSON_message(websocket)
+    assert resp == AnyExtending({
+        'method': 'browsingContext.contextCreated',
+        'params': {
+            'context': another_context_id,
+        },
+        'type': 'event',
+    })
+
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        'id': subscribe_command_id,
+        'type': 'success',
+        'result': {}
     }

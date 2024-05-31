@@ -19,12 +19,14 @@ import type {Protocol} from 'devtools-protocol';
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {
   BrowsingContext,
+  ChromiumBidi,
   InvalidArgumentException,
   type EmptyResult,
   NoSuchUserContextException,
   NoSuchAlertException,
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
+import type {EventManager} from '../session/EventManager.js';
 
 import type {BrowsingContextImpl} from './BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
@@ -32,13 +34,20 @@ import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
 export class BrowsingContextProcessor {
   readonly #browserCdpClient: CdpClient;
   readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly #eventManager: EventManager;
 
   constructor(
     browserCdpClient: CdpClient,
-    browsingContextStorage: BrowsingContextStorage
+    browsingContextStorage: BrowsingContextStorage,
+    eventManager: EventManager
   ) {
     this.#browserCdpClient = browserCdpClient;
     this.#browsingContextStorage = browsingContextStorage;
+    this.#eventManager = eventManager;
+    this.#eventManager.addSubscribeHook(
+      ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
+      this.#onContextCreatedSubscribeHook.bind(this)
+    );
   }
 
   getTree(
@@ -284,5 +293,26 @@ export class BrowsingContextProcessor {
   ): Promise<BrowsingContext.LocateNodesResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     return await context.locateNodes(params);
+  }
+
+  #onContextCreatedSubscribeHook(
+    contextId: BrowsingContext.BrowsingContext
+  ): Promise<void> {
+    const context = this.#browsingContextStorage.getContext(contextId);
+    const contextsToReport = [
+      context,
+      ...this.#browsingContextStorage.getContext(contextId).allChildren,
+    ];
+    contextsToReport.forEach((context) => {
+      this.#eventManager.registerEvent(
+        {
+          type: 'event',
+          method: ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
+          params: context.serializeToBidiValue(),
+        },
+        context.id
+      );
+    });
+    return Promise.resolve();
   }
 }

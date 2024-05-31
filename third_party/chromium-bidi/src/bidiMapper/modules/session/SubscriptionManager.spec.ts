@@ -68,7 +68,46 @@ describe('SubscriptionManager', () => {
         return null;
       });
 
+    browsingContextStorage.getTopLevelContexts = sinon.stub().callsFake(() => {
+      return [{id: SOME_CONTEXT}, {id: ANOTHER_CONTEXT}];
+    });
+
     subscriptionManager = new SubscriptionManager(browsingContextStorage);
+  });
+
+  describe('subscribe should return list of added subscriptions', () => {
+    describe('specific context', () => {
+      it('new subscription', () => {
+        expect(
+          subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL)
+        ).to.deep.equal([{event: SOME_EVENT, contextId: SOME_CONTEXT}]);
+      });
+
+      it('existing subscription', () => {
+        subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
+        expect(
+          subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL)
+        ).to.deep.equal([]);
+      });
+    });
+
+    describe('global', () => {
+      it('new subscription', () => {
+        expect(
+          subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL)
+        ).to.deep.equal([
+          {event: SOME_EVENT, contextId: SOME_CONTEXT},
+          {event: SOME_EVENT, contextId: ANOTHER_CONTEXT},
+        ]);
+      });
+
+      it('existing subscription', () => {
+        subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
+        expect(
+          subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL)
+        ).to.deep.equal([{event: SOME_EVENT, contextId: ANOTHER_CONTEXT}]);
+      });
+    });
   });
 
   it('should subscribe twice to global and specific event in proper order', () => {
