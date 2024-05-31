@@ -10,10 +10,11 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
+import {getFallbackTheme, skColorToRgbaWithCustomAlpha} from './color_utils.js';
 import {type CursorTooltipData, CursorTooltipType} from './cursor_tooltip.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
-import type {LensPageCallbackRouter} from './lens.mojom-webui.js';
+import type {LensPageCallbackRouter, OverlayTheme} from './lens.mojom-webui.js';
 import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
 import {getTemplate} from './object_layer.html.js';
 import type {OverlayObject} from './overlay_object.mojom-webui.js';
@@ -104,6 +105,10 @@ export class ObjectLayerElement extends PolymerElement {
         value: () => loadTimeData.getBoolean('enablePreciseHighlight'),
         reflectToAttribute: true,
       },
+      theme: {
+        type: Object,
+        value: getFallbackTheme,
+      },
       screenshotDataUri: String,
     };
   }
@@ -122,6 +127,8 @@ export class ObjectLayerElement extends PolymerElement {
   private renderedObjects: OverlayObject[];
   // Whether precise object highlighting is enabled.
   private preciseHighlight: boolean;
+  // The overlay theme.
+  private theme: OverlayTheme;
 
   private readonly router: LensPageCallbackRouter =
       BrowserProxyImpl.getInstance().callbackRouter;
@@ -334,10 +341,10 @@ export class ObjectLayerElement extends PolymerElement {
         right,
         bottom,
     );
-    gradient.addColorStop(
-        0, 'rgba(255,255,255, 0.65)');  // white with 65% opacity
-    gradient.addColorStop(
-        1, 'rgba(255,255,255, 0.65)');  // white with 65% opacity
+    const segmentationColor =
+        skColorToRgbaWithCustomAlpha(this.theme.selectionElement, 0.65);
+    gradient.addColorStop(0, segmentationColor);
+    gradient.addColorStop(1, segmentationColor);
     context.strokeStyle = gradient;
     context.stroke();
   }
