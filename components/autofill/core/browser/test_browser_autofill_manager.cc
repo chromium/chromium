@@ -52,11 +52,11 @@ void TestBrowserAutofillManager::OnFormsSeen(
 
 void TestBrowserAutofillManager::OnTextFieldDidChange(
     const FormData& form,
-    const FormFieldData& field,
+    const FieldGlobalId& field_id,
     const base::TimeTicks timestamp) {
   TestAutofillManagerWaiter waiter(*this,
                                    {AutofillManagerEvent::kTextFieldDidChange});
-  AutofillManager::OnTextFieldDidChange(form, field, timestamp);
+  AutofillManager::OnTextFieldDidChange(form, field_id, timestamp);
   ASSERT_TRUE(waiter.Wait());
 }
 
@@ -71,24 +71,24 @@ void TestBrowserAutofillManager::OnDidFillAutofillFormData(
 
 void TestBrowserAutofillManager::OnAskForValuesToFill(
     const FormData& form,
-    const FormFieldData& field,
+    const FieldGlobalId& field_id,
     const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source) {
   TestAutofillManagerWaiter waiter(*this,
                                    {AutofillManagerEvent::kAskForValuesToFill});
-  AutofillManager::OnAskForValuesToFill(form, field, caret_bounds,
+  AutofillManager::OnAskForValuesToFill(form, field_id, caret_bounds,
                                         trigger_source);
   ASSERT_TRUE(waiter.Wait());
 }
 
 void TestBrowserAutofillManager::OnJavaScriptChangedAutofilledValue(
     const FormData& form,
-    const FormFieldData& field,
+    const FieldGlobalId& field_id,
     const std::u16string& old_value,
     bool formatting_only) {
   TestAutofillManagerWaiter waiter(
       *this, {AutofillManagerEvent::kJavaScriptChangedAutofilledValue});
-  AutofillManager::OnJavaScriptChangedAutofilledValue(form, field, old_value,
+  AutofillManager::OnJavaScriptChangedAutofilledValue(form, field_id, old_value,
                                                       formatting_only);
   ASSERT_TRUE(waiter.Wait());
 }
@@ -225,13 +225,14 @@ const std::string TestBrowserAutofillManager::GetSubmittedFormSignature() {
 
 void TestBrowserAutofillManager::OnAskForValuesToFillTest(
     const FormData& form,
-    const FormFieldData& field,
+    const FieldGlobalId& field_id,
     AutofillSuggestionTriggerSource trigger_source) {
   TestAutofillManagerWaiter waiter(*this,
                                    {AutofillManagerEvent::kAskForValuesToFill});
-  gfx::PointF p = field.bounds().origin();
+  gfx::PointF p =
+      CHECK_DEREF(form.FindFieldByGlobalId(field_id)).bounds().origin();
   gfx::Rect caret_bounds(gfx::Point(p.x(), p.y()), gfx::Size(0, 10));
-  BrowserAutofillManager::OnAskForValuesToFill(form, field, caret_bounds,
+  BrowserAutofillManager::OnAskForValuesToFill(form, field_id, caret_bounds,
                                                trigger_source);
   ASSERT_TRUE(waiter.Wait());
 }

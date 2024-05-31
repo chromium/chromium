@@ -86,11 +86,11 @@ class AutofillManager
 
     virtual void OnBeforeCaretMovedInFormField(AutofillManager& manager,
                                                const FormGlobalId& form,
-                                               const FieldGlobalId& field,
+                                               const FieldGlobalId& field_id,
                                                const gfx::Rect& caret_bounds) {}
     virtual void OnAfterCaretMovedInFormField(AutofillManager& manager,
                                               const FormGlobalId& form,
-                                              const FieldGlobalId& field,
+                                              const FieldGlobalId& field_id,
                                               const gfx::Rect& caret_bounds) {}
 
     virtual void OnBeforeTextFieldDidChange(AutofillManager& manager,
@@ -214,29 +214,30 @@ class AutofillManager
                                bool known_success,
                                mojom::SubmissionSource source);
   virtual void OnTextFieldDidChange(const FormData& form,
-                                    const FormFieldData& field,
+                                    const FieldGlobalId& field_id,
                                     const base::TimeTicks timestamp);
   void OnDidEndTextFieldEditing();
-  void OnTextFieldDidScroll(const FormData& form, const FormFieldData& field);
+  void OnTextFieldDidScroll(const FormData& form,
+                            const FieldGlobalId& field_id);
   void OnSelectControlDidChange(const FormData& form,
-                                const FormFieldData& field);
+                                const FieldGlobalId& field_id);
   void OnSelectOrSelectListFieldOptionsDidChange(const FormData& form);
-  void OnFocusOnFormField(const FormData& form, const FormFieldData& field);
+  void OnFocusOnFormField(const FormData& form, const FieldGlobalId& field_id);
   void OnFocusOnNonFormField(bool had_interacted_form);
   virtual void OnAskForValuesToFill(
       const FormData& form,
-      const FormFieldData& field,
+      const FieldGlobalId& field_id,
       const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source);
   void OnHidePopup();
   virtual void OnCaretMovedInFormField(const FormData& form,
-                                       const FormFieldData& field,
+                                       const FieldGlobalId& field_id,
                                        const gfx::Rect& caret_bounds);
   virtual void OnDidFillAutofillFormData(const FormData& form,
                                          const base::TimeTicks timestamp);
   virtual void OnJavaScriptChangedAutofilledValue(
       const FormData& form,
-      const FormFieldData& field,
+      const FieldGlobalId& field_id,
       const std::u16string& old_value,
       bool formatting_only);
 
@@ -323,24 +324,24 @@ class AutofillManager
                                    bool known_success,
                                    mojom::SubmissionSource source) = 0;
   virtual void OnCaretMovedInFormFieldImpl(const FormData& form,
-                                           const FormFieldData& field,
+                                           const FieldGlobalId& field_id,
                                            const gfx::Rect& caret_bounds) = 0;
   virtual void OnTextFieldDidChangeImpl(const FormData& form,
-                                        const FormFieldData& field,
+                                        const FieldGlobalId& field_id,
                                         const base::TimeTicks timestamp) = 0;
   virtual void OnDidEndTextFieldEditingImpl() = 0;
   virtual void OnTextFieldDidScrollImpl(const FormData& form,
-                                        const FormFieldData& field) = 0;
+                                        const FieldGlobalId& field_id) = 0;
   virtual void OnSelectControlDidChangeImpl(const FormData& form,
-                                            const FormFieldData& field) = 0;
+                                            const FieldGlobalId& field_id) = 0;
   virtual void OnSelectOrSelectListFieldOptionsDidChangeImpl(
       const FormData& form) = 0;
   virtual void OnFocusOnFormFieldImpl(const FormData& form,
-                                      const FormFieldData& field) = 0;
+                                      const FieldGlobalId& field_id) = 0;
   virtual void OnFocusOnNonFormFieldImpl(bool had_interacted_form) = 0;
   virtual void OnAskForValuesToFillImpl(
       const FormData& form,
-      const FormFieldData& field,
+      const FieldGlobalId& field_id,
       const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source) = 0;
   virtual void OnDidFillAutofillFormDataImpl(
@@ -349,7 +350,7 @@ class AutofillManager
   virtual void OnHidePopupImpl() = 0;
   virtual void OnJavaScriptChangedAutofilledValueImpl(
       const FormData& form,
-      const FormFieldData& field,
+      const FieldGlobalId& field_id,
       const std::u16string& old_value,
       bool formatting_only) = 0;
 

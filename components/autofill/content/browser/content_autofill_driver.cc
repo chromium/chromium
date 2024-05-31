@@ -450,7 +450,7 @@ void ContentAutofillDriver::CaretMovedInFormField(
       [](autofill::AutofillDriver& target, const FormData& form,
          const FormFieldData& field, const gfx::Rect& caret_bounds) {
         target.GetAutofillManager().OnCaretMovedInFormField(
-            WithNewVersion(form), field, caret_bounds);
+            WithNewVersion(form), field.global_id(), caret_bounds);
       });
 }
 
@@ -467,8 +467,8 @@ void ContentAutofillDriver::TextFieldDidChange(const FormData& raw_form,
       *this, std::move(form), field, timestamp,
       [](autofill::AutofillDriver& target, const FormData& form,
          const FormFieldData& field, base::TimeTicks timestamp) {
-        target.GetAutofillManager().OnTextFieldDidChange(WithNewVersion(form),
-                                                         field, timestamp);
+        target.GetAutofillManager().OnTextFieldDidChange(
+            WithNewVersion(form), field.global_id(), timestamp);
       });
 }
 
@@ -485,7 +485,7 @@ void ContentAutofillDriver::TextFieldDidScroll(const FormData& raw_form,
       [](autofill::AutofillDriver& target, const FormData& form,
          const FormFieldData& field) {
         target.GetAutofillManager().OnTextFieldDidScroll(WithNewVersion(form),
-                                                         field);
+                                                         field.global_id());
       });
 }
 
@@ -503,7 +503,7 @@ void ContentAutofillDriver::SelectControlDidChange(
       [](autofill::AutofillDriver& target, const FormData& form,
          const FormFieldData& field) {
         target.GetAutofillManager().OnSelectControlDidChange(
-            WithNewVersion(form), field);
+            WithNewVersion(form), field.global_id());
       });
 }
 
@@ -525,7 +525,8 @@ void ContentAutofillDriver::AskForValuesToFill(
          const FormFieldData& field, const gfx::Rect& caret_bounds,
          AutofillSuggestionTriggerSource trigger_source) {
         target.GetAutofillManager().OnAskForValuesToFill(
-            WithNewVersion(form), field, caret_bounds, trigger_source);
+            WithNewVersion(form), field.global_id(), caret_bounds,
+            trigger_source);
       });
 }
 
@@ -562,7 +563,7 @@ void ContentAutofillDriver::FocusOnFormField(const FormData& raw_form,
       [](autofill::AutofillDriver& target, const FormData& form,
          const FormFieldData& field) {
         target.GetAutofillManager().OnFocusOnFormField(WithNewVersion(form),
-                                                       field);
+                                                       field.global_id());
       },
       [](autofill::AutofillDriver& target) {
         target.GetAutofillManager().OnFocusOnNonFormField(true);
@@ -623,7 +624,8 @@ void ContentAutofillDriver::JavaScriptChangedAutofilledValue(
          const FormFieldData& field, const std::u16string& old_value,
          bool formatting_only) {
         target.GetAutofillManager().OnJavaScriptChangedAutofilledValue(
-            WithNewVersion(form), field, old_value, formatting_only);
+            WithNewVersion(form), field.global_id(), old_value,
+            formatting_only);
       });
 }
 

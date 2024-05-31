@@ -1689,7 +1689,7 @@ TEST_F(FormFillerTest, TrackFillingOriginOnEditedField) {
   // Simulate editing the first field.
   filled_form.fields[0].set_value(u"");
   browser_autofill_manager_->OnTextFieldDidChange(
-      filled_form, filled_form.fields[0], base::TimeTicks::Now());
+      filled_form, filled_form.fields[0].global_id(), base::TimeTicks::Now());
 
   ASSERT_TRUE(form_structure->field(0)->previously_autofilled());
   EXPECT_FALSE(form_structure->field(0)->is_autofilled());
@@ -1776,8 +1776,9 @@ TEST_P(ExpirationDateRefillTest, RefillJavascriptModifiedExpirationDates) {
   FormData form_after_js_modification = first_fill_data;
   form_after_js_modification.fields[2].set_value(test_case.exp_date_from_js);
   browser_autofill_manager_->OnJavaScriptChangedAutofilledValue(
-      form_after_js_modification, form_after_js_modification.fields[2],
-      u"04/2999", /*formatting_only=*/false);
+      form_after_js_modification,
+      form_after_js_modification.fields[2].global_id(), u"04/2999",
+      /*formatting_only=*/false);
 
   testing::Mock::VerifyAndClearExpectations(&autofill_driver_);
 

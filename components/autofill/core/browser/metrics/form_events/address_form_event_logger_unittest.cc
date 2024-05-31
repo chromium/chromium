@@ -56,7 +56,8 @@ class CategoryResolvedKeyMetricsTest
                            const AutofillProfile& profile) {
     ASSERT_TRUE(personal_data().address_data_manager().GetProfileByGUID(
         profile.guid()));
-    autofill_manager().OnAskForValuesToFillTest(form, form.fields.front());
+    autofill_manager().OnAskForValuesToFillTest(
+        form, form.fields.front().global_id());
     autofill_manager().FillOrPreviewProfileForm(
         mojom::ActionPersistence::kFill, form, form.fields.front(), profile,
         {.trigger_source = AutofillTriggerSource::kPopup});
@@ -70,7 +71,8 @@ class CategoryResolvedKeyMetricsTest
 // kNone, but not the correctness metric is not.
 TEST_F(CategoryResolvedKeyMetricsTest, NoAutofill) {
   FormData form = CreateAndSeeForm();
-  autofill_manager().OnAskForValuesToFillTest(form, form.fields.front());
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields.front().global_id());
   SubmitForm(form);
 
   ResetDriverToCommitMetrics();

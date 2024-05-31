@@ -66,7 +66,8 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogShownMetrics) {
   base::HistogramTester histogram_tester;
 
   // Simulate activating the autofill popup for the CVC field.
-  autofill_manager().OnAskForValuesToFillTest(form(), form().fields.front());
+  autofill_manager().OnAskForValuesToFillTest(
+      form(), form().fields.front().global_id());
   DidShowAutofillSuggestions(form(), /*field_index=*/0,
                              SuggestionType::kCreditCardEntry);
   EXPECT_THAT(
@@ -83,7 +84,8 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogShownMetrics) {
               1)));
 
   // Simulate activating the autofill popup for the CVC field again.
-  autofill_manager().OnAskForValuesToFillTest(form(), form().fields.front());
+  autofill_manager().OnAskForValuesToFillTest(
+      form(), form().fields.front().global_id());
   DidShowAutofillSuggestions(form(), /*field_index=*/0,
                              SuggestionType::kCreditCardEntry);
   EXPECT_THAT(
@@ -105,7 +107,8 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSelectedMetrics) {
   base::HistogramTester histogram_tester;
 
   // Simulate selecting the CVC suggestion.
-  autofill_manager().OnAskForValuesToFillTest(form(), form().fields.front());
+  autofill_manager().OnAskForValuesToFillTest(
+      form(), form().fields.front().global_id());
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields.front(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
@@ -149,7 +152,8 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
   base::HistogramTester histogram_tester;
 
   // Simulate filling the CVC suggestion.
-  autofill_manager().OnAskForValuesToFillTest(form(), form().fields.front());
+  autofill_manager().OnAskForValuesToFillTest(
+      form(), form().fields.front().global_id());
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields.front(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
@@ -196,7 +200,8 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSubmitMetrics) {
   base::HistogramTester histogram_tester;
 
   // Simulate filling and then submitting the card.
-  autofill_manager().OnAskForValuesToFillTest(form(), form().fields.front());
+  autofill_manager().OnAskForValuesToFillTest(
+      form(), form().fields.front().global_id());
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields.front(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),

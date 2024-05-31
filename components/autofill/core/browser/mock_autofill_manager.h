@@ -17,7 +17,6 @@
 namespace autofill {
 
 struct FormData;
-class FormFieldData;
 class FormStructure;
 class AutofillDriver;
 
@@ -48,7 +47,7 @@ class MockAutofillManager : public AutofillManager {
   MOCK_METHOD(void,
               OnJavaScriptChangedAutofilledValueImpl,
               (const FormData& form,
-               const FormFieldData& field,
+               const FieldGlobalId& field_id,
                const std::u16string& old_value,
                bool formatting_only),
               (override));
@@ -61,33 +60,33 @@ class MockAutofillManager : public AutofillManager {
   MOCK_METHOD(void,
               OnCaretMovedInFormFieldImpl,
               (const FormData& form,
-               const FormFieldData& field,
+               const FieldGlobalId& field_id,
                const gfx::Rect& caret_bounds),
               (override));
   MOCK_METHOD(void,
               OnTextFieldDidChangeImpl,
               (const FormData& form,
-               const FormFieldData& field,
+               const FieldGlobalId& field_id,
                const base::TimeTicks timestamp),
               (override));
   MOCK_METHOD(void,
               OnTextFieldDidScrollImpl,
-              (const FormData& form, const FormFieldData& field),
+              (const FormData& form, const FieldGlobalId& field_id),
               (override));
   MOCK_METHOD(void,
               OnAskForValuesToFillImpl,
               (const FormData& form,
-               const FormFieldData& field,
+               const FieldGlobalId& field_id,
                const gfx::Rect& caret_bounds,
                AutofillSuggestionTriggerSource trigger_source),
               (override));
   MOCK_METHOD(void,
               OnFocusOnFormFieldImpl,
-              (const FormData& form, const FormFieldData& field),
+              (const FormData& form, const FieldGlobalId& field_id),
               (override));
   MOCK_METHOD(void,
               OnSelectControlDidChangeImpl,
-              (const FormData& form, const FormFieldData& field),
+              (const FormData& form, const FieldGlobalId& field_id),
               (override));
   MOCK_METHOD(bool, ShouldParseForms, (), (override));
   MOCK_METHOD(void, OnBeforeProcessParsedForms, (), (override));

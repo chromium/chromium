@@ -250,7 +250,7 @@ void AutofillDriverIOS::AskForValuesToFill(const FormData& form,
   // The caret position is currently not extracted on iOS .
   gfx::Rect caret_bounds;
   GetAutofillManager().OnAskForValuesToFill(
-      form, field, caret_bounds,
+      form, field.global_id(), caret_bounds,
       autofill::AutofillSuggestionTriggerSource::kiOS);
 }
 
@@ -303,7 +303,8 @@ void AutofillDriverIOS::FormSubmitted(
 void AutofillDriverIOS::CaretMovedInFormField(const FormData& form,
                                               const FormFieldData& field,
                                               const gfx::Rect& caret_bounds) {
-  GetAutofillManager().OnCaretMovedInFormField(form, field, caret_bounds);
+  GetAutofillManager().OnCaretMovedInFormField(form, field.global_id(),
+                                               caret_bounds);
 }
 
 void AutofillDriverIOS::TextFieldDidChange(const FormData& form,
@@ -315,9 +316,7 @@ void AutofillDriverIOS::TextFieldDidChange(const FormData& form,
                                : field.renderer_id());
 
   // TODO(crbug.com/40266699): Route this using AutofillDriverRouter.
-  GetAutofillManager().OnTextFieldDidChange(
-      form, field,
-      timestamp);
+  GetAutofillManager().OnTextFieldDidChange(form, field.global_id(), timestamp);
 }
 
 void AutofillDriverIOS::SetParent(base::WeakPtr<AutofillDriverIOS> parent) {

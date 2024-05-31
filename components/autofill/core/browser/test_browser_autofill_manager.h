@@ -43,17 +43,17 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   void OnFormsSeen(const std::vector<FormData>& updated_forms,
                    const std::vector<FormGlobalId>& removed_forms) override;
   void OnTextFieldDidChange(const FormData& form,
-                            const FormFieldData& field,
+                            const FieldGlobalId& field_id,
                             const base::TimeTicks timestamp) override;
   void OnDidFillAutofillFormData(const FormData& form,
                                  const base::TimeTicks timestamp) override;
   void OnAskForValuesToFill(
       const FormData& form,
-      const FormFieldData& field,
+      const FieldGlobalId& field_id,
       const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source) override;
   void OnJavaScriptChangedAutofilledValue(const FormData& form,
-                                          const FormFieldData& field,
+                                          const FieldGlobalId& field_id,
                                           const std::u16string& old_value,
                                           bool formatting_only) override;
   void OnFormSubmitted(const FormData& form,
@@ -107,7 +107,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   // Helper to skip irrelevant params.
   void OnAskForValuesToFillTest(
       const FormData& form,
-      const FormFieldData& field,
+      const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source =
           AutofillSuggestionTriggerSource::kTextFieldDidChange);
 

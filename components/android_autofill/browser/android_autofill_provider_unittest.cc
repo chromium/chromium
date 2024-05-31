@@ -160,13 +160,13 @@ class TestAndroidAutofillManager : public AndroidAutofillManager {
     gfx::PointF p = field.bounds().origin();
     gfx::Rect caret_bounds(gfx::Point(p.x(), p.y()), gfx::Size(0, 10));
     OnAskForValuesToFillImpl(
-        form, field, caret_bounds,
+        form, field.global_id(), caret_bounds,
         AutofillSuggestionTriggerSource::kTextFieldDidChange);
   }
 
   void SimulateOnFocusOnFormField(const FormData& form,
                                   const FormFieldData& field) {
-    OnFocusOnFormFieldImpl(form, field);
+    OnFocusOnFormFieldImpl(form, field.global_id());
   }
 
   void SimulateOnFormSubmitted(const FormData& form,
@@ -177,12 +177,12 @@ class TestAndroidAutofillManager : public AndroidAutofillManager {
 
   void SimulateOnTextFieldDidChange(const FormData& form,
                                     const FormFieldData& field) {
-    OnTextFieldDidChangeImpl(form, field, base::TimeTicks::Now());
+    OnTextFieldDidChangeImpl(form, field.global_id(), base::TimeTicks::Now());
   }
 
   void SimulateOnTextFieldDidScroll(const FormData& form,
                                     const FormFieldData& field) {
-    OnTextFieldDidScrollImpl(form, field);
+    OnTextFieldDidScrollImpl(form, field.global_id());
   }
 };
 

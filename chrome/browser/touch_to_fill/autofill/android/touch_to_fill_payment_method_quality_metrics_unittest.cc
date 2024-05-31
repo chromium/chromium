@@ -121,7 +121,7 @@ TEST_P(TouchToFillForPaymentMethodsTest,
 
   SeeForm(form);
   autofill_manager().OnAskForValuesToFillTest(
-      form, form.fields[0],
+      form, form.fields[0].global_id(),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
   base::HistogramTester histogram_tester;

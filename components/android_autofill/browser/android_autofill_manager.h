@@ -78,30 +78,30 @@ class AndroidAutofillManager : public AutofillManager,
                            mojom::SubmissionSource source) override;
 
   void OnCaretMovedInFormFieldImpl(const FormData& form,
-                                   const FormFieldData& field,
+                                   const FieldGlobalId& field_id,
                                    const gfx::Rect& caret_bounds) override {}
 
   void OnTextFieldDidChangeImpl(const FormData& form,
-                                const FormFieldData& field,
+                                const FieldGlobalId& field_id,
                                 const base::TimeTicks timestamp) override;
 
   void OnTextFieldDidScrollImpl(const FormData& form,
-                                const FormFieldData& field) override;
+                                const FieldGlobalId& field_id) override;
 
   void OnAskForValuesToFillImpl(
       const FormData& form,
-      const FormFieldData& field,
+      const FieldGlobalId& field_id,
       const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source) override;
 
   void OnFocusOnFormFieldImpl(const FormData& form,
-                              const FormFieldData& field) override;
+                              const FieldGlobalId& field_id) override;
 
   void OnSelectControlDidChangeImpl(const FormData& form,
-                                    const FormFieldData& field) override;
+                                    const FieldGlobalId& field_id) override;
 
   void OnJavaScriptChangedAutofilledValueImpl(const FormData& form,
-                                              const FormFieldData& field,
+                                              const FieldGlobalId& field_id,
                                               const std::u16string& old_value,
                                               bool formatting_only) override {}
 

@@ -828,7 +828,7 @@ class AutofillTestPrerendering : public InProcessBrowserTest {
                 (override));
     MOCK_METHOD(void,
                 OnFocusOnFormFieldImpl,
-                (const FormData&, const FormFieldData&),
+                (const FormData&, const FieldGlobalId&),
                 (override));
   };
 

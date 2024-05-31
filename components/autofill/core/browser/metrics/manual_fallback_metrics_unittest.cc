@@ -35,8 +35,8 @@ class ManualFallbackEventLoggerTest
   void ShowSuggestions(
       const FormData& form,
       AutofillSuggestionTriggerSource fallback_trigger_source) {
-    autofill_manager().OnAskForValuesToFillTest(form, form.fields[0],
-                                                fallback_trigger_source);
+    autofill_manager().OnAskForValuesToFillTest(
+        form, form.fields[0].global_id(), fallback_trigger_source);
     DidShowAutofillSuggestions(
         form, /*field_index=*/0,
         fallback_trigger_source ==

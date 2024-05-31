@@ -49,7 +49,7 @@ TEST_F(PlaceholderMetricsTest, EmitsUmaAutofillPreFilledFieldStatus) {
                                  test::GetServerTypes(form_description),
                                  /*preserve_values_in_form_structure=*/true);
   // Simluate interacting with the form.
-  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0].global_id());
   // Get cached form and modify fields.
   FormStructure* cached_form;
   AutofillField* cached_triggering_field;
@@ -85,7 +85,7 @@ TEST_F(PlaceholderMetricsTest,
                                  test::GetServerTypes(form_description),
                                  /*preserve_values_in_form_structure=*/true);
   // Simluate interacting with the form.
-  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0].global_id());
   // Get cached form and modify fields.
   FormStructure* cached_form;
   AutofillField* cached_triggering_field;
@@ -122,7 +122,7 @@ TEST_F(PlaceholderMetricsTest, EmitsUmaAutofillPreFilledFieldClassifications) {
                                  test::GetServerTypes(form_description),
                                  /*preserve_values_in_form_structure=*/true);
   // Simluate interacting with the form.
-  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0].global_id());
   // Get cached form and modify fields.
   FormStructure* cached_form;
   AutofillField* cached_triggering_field;
@@ -173,7 +173,7 @@ TEST_F(PlaceholderMetricsTest,
                                  test::GetServerTypes(form_description),
                                  /*preserve_values_in_form_structure=*/true);
   // Simluate interacting with the form.
-  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0].global_id());
   // Get cached form and modify fields.
   FormStructure* cached_form;
   AutofillField* cached_triggering_field;
@@ -225,7 +225,8 @@ class PlaceholderMetricsValueStatusTest : public PlaceholderMetricsTest {
                                    test::GetServerTypes(form_description_),
                                    /*preserve_values_in_form_structure=*/true);
     // Simluate interacting with the form.
-    autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+    autofill_manager().OnAskForValuesToFillTest(form_,
+                                                form_.fields[0].global_id());
   }
 
   void ClassifyThePreFilledFieldAsPlaceholder() {

@@ -125,7 +125,8 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
   base::HistogramTester histogram_tester;
 
   // Simulate activating the autofill popup for the credit card field.
-  autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
+  autofill_manager().OnAskForValuesToFillTest(form(),
+                                              form().fields.back().global_id());
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields.size() - 1,
                              SuggestionType::kCreditCardEntry);
 
@@ -171,7 +172,8 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
                                       card_metadata_available(), 0);
 
   // Show the popup again.
-  autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
+  autofill_manager().OnAskForValuesToFillTest(form(),
+                                              form().fields.back().global_id());
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields.size() - 1,
                              SuggestionType::kCreditCardEntry);
 
@@ -216,7 +218,8 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
   base::HistogramTester histogram_tester;
 
   // Simulate selecting the card.
-  autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
+  autofill_manager().OnAskForValuesToFillTest(form(),
+                                              form().fields.back().global_id());
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields.size() - 1,
                              SuggestionType::kCreditCardEntry);
   autofill_manager().AuthenticateThenFillCreditCardForm(
@@ -321,7 +324,8 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
   base::HistogramTester histogram_tester;
 
   // Simulate filling the card.
-  autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
+  autofill_manager().OnAskForValuesToFillTest(form(),
+                                              form().fields.back().global_id());
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields.size() - 1,
                              SuggestionType::kCreditCardEntry);
   autofill_manager().AuthenticateThenFillCreditCardForm(
@@ -408,7 +412,8 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
   base::HistogramTester histogram_tester;
 
   // Simulate filling and then submitting the card.
-  autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
+  autofill_manager().OnAskForValuesToFillTest(form(),
+                                              form().fields.back().global_id());
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields.back(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
@@ -533,7 +538,8 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
   base::HistogramTester histogram_tester;
 
   // Simulate activating the autofill popup for the credit card field.
-  autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
+  autofill_manager().OnAskForValuesToFillTest(form(),
+                                              form().fields.back().global_id());
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields.size() - 1,
                              SuggestionType::kCreditCardEntry);
   task_environment_.FastForwardBy(base::Seconds(2));
@@ -618,7 +624,7 @@ class CardBenefitFormEventMetricsTest
   // Simulating selecting and filling the given `card`.
   void SelectAndFillCard(const CreditCard* card) {
     autofill_manager().OnAskForValuesToFillTest(
-        form(), form().fields[credit_card_number_field_index()]);
+        form(), form().fields[credit_card_number_field_index()].global_id());
     DidShowAutofillSuggestions(form(), credit_card_number_field_index(),
                                SuggestionType::kCreditCardEntry);
     autofill_manager().AuthenticateThenFillCreditCardForm(
@@ -701,7 +707,7 @@ TEST_P(CardBenefitFormEventMetricsTest, LogShownMetrics_SuggestionHasBenefits) {
 
   // Simulate activating the autofill popup for the credit card field.
   autofill_manager().OnAskForValuesToFillTest(
-      form(), form().fields[credit_card_number_field_index()]);
+      form(), form().fields[credit_card_number_field_index()].global_id());
   DidShowAutofillSuggestions(form(), credit_card_number_field_index(),
                              SuggestionType::kCreditCardEntry);
 
@@ -748,7 +754,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
 
   // Simulate activating the autofill popup for the credit card field.
   autofill_manager().OnAskForValuesToFillTest(
-      form(), form().fields[credit_card_number_field_index()]);
+      form(), form().fields[credit_card_number_field_index()].global_id());
   DidShowAutofillSuggestions(form(), credit_card_number_field_index(),
                              SuggestionType::kCreditCardEntry);
 
@@ -799,7 +805,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
 
   // Simulate selecting the card.
   autofill_manager().OnAskForValuesToFillTest(
-      form(), form().fields[credit_card_number_field_index()]);
+      form(), form().fields[credit_card_number_field_index()].global_id());
   DidShowAutofillSuggestions(form(), credit_card_number_field_index(),
                              SuggestionType::kCreditCardEntry);
   autofill_manager().AuthenticateThenFillCreditCardForm(
@@ -866,7 +872,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
 
   // Simulate selecting the card.
   autofill_manager().OnAskForValuesToFillTest(
-      form(), form().fields[credit_card_number_field_index()]);
+      form(), form().fields[credit_card_number_field_index()].global_id());
   DidShowAutofillSuggestions(form(), credit_card_number_field_index(),
                              SuggestionType::kCreditCardEntry);
   autofill_manager().AuthenticateThenFillCreditCardForm(
@@ -935,7 +941,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
 
   // Simulate selecting the card with no benefit.
   autofill_manager().OnAskForValuesToFillTest(
-      form(), form().fields[credit_card_number_field_index()]);
+      form(), form().fields[credit_card_number_field_index()].global_id());
   DidShowAutofillSuggestions(form(), credit_card_number_field_index(),
                              SuggestionType::kCreditCardEntry);
   autofill_manager().AuthenticateThenFillCreditCardForm(

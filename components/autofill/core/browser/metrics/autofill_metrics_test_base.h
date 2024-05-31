@@ -108,10 +108,19 @@ class AutofillMetricsBaseTest {
 
   // Convenience wrapper for `EmulateUserChangedTextFieldTo` that appends
   // '_changed' to the fields value.
-  void SimulateUserChangedTextField(const FormData& form,
-                                    FormFieldData& field,
+  void SimulateUserChangedTextField(FormData& form,
+                                    const FormFieldData& field,
                                     base::TimeTicks timestamp = {}) {
-    SimulateUserChangedTextFieldTo(form, field, field.value() + u"_changed",
+    SimulateUserChangedTextFieldTo(form, field.global_id(),
+                                   field.value() + u"_changed", timestamp);
+  }
+
+  // TODO(crbug.com/40100455): Remove this overload.
+  void SimulateUserChangedTextFieldTo(FormData& form,
+                                      const FormFieldData& field,
+                                      const std::u16string& new_value,
+                                      base::TimeTicks timestamp = {}) {
+    SimulateUserChangedTextFieldTo(form, field.global_id(), new_value,
                                    timestamp);
   }
 
@@ -119,15 +128,18 @@ class AutofillMetricsBaseTest {
   // `is_autofilled` field attribute, settings the field's value to `new_value`
   // and notifying the `AutofillManager` of the change that is emulated to have
   // happened at `timestamp`.
-  void SimulateUserChangedTextFieldTo(const FormData& form,
-                                      FormFieldData& field,
+  void SimulateUserChangedTextFieldTo(FormData& form,
+                                      const FieldGlobalId& field_id,
                                       const std::u16string& new_value,
                                       base::TimeTicks timestamp = {}) {
+    // TODO(crbug.com/40100455): Remove const_cast.
+    FormFieldData& field = const_cast<FormFieldData&>(
+        CHECK_DEREF(form.FindFieldByGlobalId(field_id)));
     // Assert that the field is actually set to a different value.
     ASSERT_NE(field.value(), new_value);
     field.set_is_autofilled(false);
     field.set_value(new_value);
-    autofill_manager().OnTextFieldDidChange(form, field, timestamp);
+    autofill_manager().OnTextFieldDidChange(form, field.global_id(), timestamp);
   }
 
   // TODO(crbug.com/40240189): Remove this method once the metrics are fixed.
@@ -136,7 +148,7 @@ class AutofillMetricsBaseTest {
       FormFieldData& field,
       base::TimeTicks timestamp = {}) {
     field.set_is_autofilled(false);
-    autofill_manager().OnTextFieldDidChange(form, field, timestamp);
+    autofill_manager().OnTextFieldDidChange(form, field.global_id(), timestamp);
   }
 
   void FillAutofillFormData(const FormData& form,

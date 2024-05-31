@@ -77,7 +77,8 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
 
   // Simulate interacting with the form.
   if (user_interacted_with_form) {
-    autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
+    autofill_manager().OnAskForValuesToFillTest(form,
+                                                form.fields[0].global_id());
   }
 
   // Simulate seeing a suggestion.
@@ -207,7 +208,7 @@ TEST_F(FormEventLoggerBaseFunnelTest, AblationState) {
   SeeForm(form);
 
   // Simulate interacting with the form.
-  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0].global_id());
 
   // Don't simulate a suggestion but simulate the user typing.
   SimulateUserChangedTextField(form, form.fields[0]);
@@ -339,7 +340,8 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
 
   // Simulate page load.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields[0].global_id());
 
   SubmitForm(form_);
 
@@ -375,7 +377,8 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogNoProfile) {
   // Simulate that no data is available.
   personal_data().test_address_data_manager().ClearProfiles();
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields[0].global_id());
 
   SimulateUserChangedTextField(form_, form_.fields[0]);
   SimulateUserChangedTextField(form_, form_.fields[1]);
@@ -411,7 +414,8 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
 
   // Simulate that suggestion is shown but user does not accept it.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields[0].global_id());
   DidShowAutofillSuggestions(form_);
 
   SimulateUserChangedTextField(form_, form_.fields[0]);
@@ -449,7 +453,8 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
 
   // Simulate that suggestion is shown and user accepts it.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields[0].global_id());
   DidShowAutofillSuggestions(form_);
   FillTestProfile(form_);
 
@@ -491,7 +496,8 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest,
 
   // Simulate that suggestion is shown and user accepts it.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields[0].global_id());
   DidShowAutofillSuggestions(form_);
   FillTestProfile(form_);
 
@@ -534,7 +540,8 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, NoEmailOnlyLeakage) {
 
   // Simulate that suggestion is shown and user accepts it.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields[0].global_id());
   DidShowAutofillSuggestions(form_);
   FillTestProfile(form_);
   SubmitForm(form_);
@@ -576,7 +583,8 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, UserDoesNotAccept) {
 
   // Simulate that suggestion is shown but user does not accept it.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields[0].global_id());
   DidShowAutofillSuggestions(form_);
   SubmitForm(form_);
 
@@ -591,7 +599,8 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, UserAccepts) {
 
   // Simulate that suggestion is shown and user accepts it.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields[0].global_id());
   DidShowAutofillSuggestions(form_);
   FillTestProfile(form_);
   SubmitForm(form_);
@@ -610,7 +619,8 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, NoEmailField) {
 
   // Simulate that suggestion is shown and user accepts it.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields[0].global_id());
   DidShowAutofillSuggestions(form_);
   FillTestProfile(form_);
   SubmitForm(form_);
@@ -630,7 +640,8 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, ServerTypeKnown) {
 
   // Simulate that suggestion is shown and user accepts it.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields[0].global_id());
   DidShowAutofillSuggestions(form_);
   FillTestProfile(form_);
   SubmitForm(form_);
@@ -649,7 +660,8 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, NotFormTag) {
 
   // Simulate that suggestion is shown and user accepts it.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields[0].global_id());
   DidShowAutofillSuggestions(form_);
   FillTestProfile(form_);
   SubmitForm(form_);
@@ -671,7 +683,8 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, TooManyFields) {
 
   // Simulate that suggestion is shown and user accepts it.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields[0].global_id());
   DidShowAutofillSuggestions(form_);
   FillTestProfile(form_);
   SubmitForm(form_);
@@ -691,7 +704,8 @@ class FormEventLoggerUndoTest : public AutofillMetricsBaseTest,
     // Initialize a FormData, cache it and interact with it.
     form_ = test::CreateTestAddressFormData();
     SeeForm(form_);
-    autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+    autofill_manager().OnAskForValuesToFillTest(form_,
+                                                form_.fields[0].global_id());
   }
   void TearDown() override { TearDownHelper(); }
 

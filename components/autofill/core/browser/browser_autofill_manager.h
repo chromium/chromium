@@ -286,7 +286,7 @@ class BrowserAutofillManager : public AutofillManager {
   bool ShouldClearPreviewedForm() override;
   void OnFocusOnNonFormFieldImpl(bool had_interacted_form) override;
   void OnFocusOnFormFieldImpl(const FormData& form,
-                              const FormFieldData& field) override;
+                              const FieldGlobalId& field_id) override;
   void OnDidFillAutofillFormDataImpl(const FormData& form,
                                      const base::TimeTicks timestamp) override;
   void OnDidEndTextFieldEditingImpl() override;
@@ -294,7 +294,7 @@ class BrowserAutofillManager : public AutofillManager {
   void OnSelectOrSelectListFieldOptionsDidChangeImpl(
       const FormData& form) override;
   void OnJavaScriptChangedAutofilledValueImpl(const FormData& form,
-                                              const FormFieldData& field,
+                                              const FieldGlobalId& field_id,
                                               const std::u16string& old_value,
                                               bool formatting_only) override;
   void Reset() override;
@@ -432,20 +432,20 @@ class BrowserAutofillManager : public AutofillManager {
                            bool known_success,
                            mojom::SubmissionSource source) override;
   void OnCaretMovedInFormFieldImpl(const FormData& form,
-                                   const FormFieldData& field,
+                                   const FieldGlobalId& field_id,
                                    const gfx::Rect& caret_bounds) override {}
   void OnTextFieldDidChangeImpl(const FormData& form,
-                                const FormFieldData& field,
+                                const FieldGlobalId& field_id,
                                 const base::TimeTicks timestamp) override;
   void OnTextFieldDidScrollImpl(const FormData& form,
-                                const FormFieldData& field) override {}
+                                const FieldGlobalId& field_id) override {}
   void OnAskForValuesToFillImpl(
       const FormData& form,
-      const FormFieldData& field,
+      const FieldGlobalId& field_id,
       const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source) override;
   void OnSelectControlDidChangeImpl(const FormData& form,
-                                    const FormFieldData& field) override;
+                                    const FieldGlobalId& field_id) override;
   bool ShouldParseForms() override;
   void OnBeforeProcessParsedForms() override;
   void OnFormProcessed(const FormData& form,

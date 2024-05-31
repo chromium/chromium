@@ -1131,11 +1131,15 @@ void BrowserAutofillManager::ProcessPendingFormForUpload() {
 
 void BrowserAutofillManager::OnTextFieldDidChangeImpl(
     const FormData& form,
-    const FormFieldData& field,
+    const FieldGlobalId& field_id,
     const TimeTicks timestamp) {
+  const FormFieldData* field = form.FindFieldByGlobalId(field_id);
+  if (!field) {
+    return;
+  }
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form, *field, &form_structure, &autofill_field)) {
     return;
   }
 
@@ -1143,7 +1147,7 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
   // If the user types into the same field multiple times, repeated
   // TypingFieldLogEvents are coalesced.
   autofill_field->AppendLogEventIfNotRepeated(TypingFieldLogEvent{
-      .has_value_after_typing = ToOptionalBoolean(!field.value().empty())});
+      .has_value_after_typing = ToOptionalBoolean(!field->value().empty())});
 
   UpdatePendingForm(form);
 
@@ -1270,10 +1274,14 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
 
 void BrowserAutofillManager::OnAskForValuesToFillImpl(
     const FormData& form,
-    const FormFieldData& field,
+    const FieldGlobalId& field_id,
     const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source) {
   if (base::FeatureList::IsEnabled(features::kAutofillDisableFilling)) {
+    return;
+  }
+  const FormFieldData* field = form.FindFieldByGlobalId(field_id);
+  if (!field) {
     return;
   }
 
@@ -1284,16 +1292,16 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     client().NotifyAutofillManualFallbackUsed();
   }
 
-  external_delegate_->SetCurrentDataListValues(field.datalist_options());
-  external_delegate_->OnQuery(form, field, caret_bounds, trigger_source);
+  external_delegate_->SetCurrentDataListValues(field->datalist_options());
+  external_delegate_->OnQuery(form, *field, caret_bounds, trigger_source);
 
   SuggestionsContext context =
-      BuildSuggestionsContext(form, field, trigger_source);
+      BuildSuggestionsContext(form, *field, trigger_source);
 
   GenerateSuggestionsAndMaybeShowUI(
-      form, field, trigger_source, context,
+      form, *field, trigger_source, context,
       base::BindOnce(&BrowserAutofillManager::OnGenerateSuggestionsComplete,
-                     weak_ptr_factory_.GetWeakPtr(), form, field,
+                     weak_ptr_factory_.GetWeakPtr(), form, *field,
                      trigger_source, context));
 }
 
@@ -1757,7 +1765,7 @@ void BrowserAutofillManager::OnFocusOnNonFormFieldImpl(
 
 void BrowserAutofillManager::OnFocusOnFormFieldImpl(
     const FormData& form,
-    const FormFieldData& field) {
+    const FieldGlobalId& field_id) {
   if (pending_form_data_ &&
       pending_form_data_->global_id() != form.global_id()) {
     // A new form has received the focus, so we may have votes to upload for the
@@ -1775,9 +1783,14 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   }
 #endif
 
+  const FormFieldData* field = form.FindFieldByGlobalId(field_id);
+  if (!field) {
+    return;
+  }
+
   // TODO(crbug.com/41392130): Add metrics for performance impact.
   SuggestionsContext context = BuildSuggestionsContext(
-      form, field, AutofillSuggestionTriggerSource::kUnspecified);
+      form, *field, AutofillSuggestionTriggerSource::kUnspecified);
   // This code path checks if suggestions to be announced to a screen reader are
   // available when the focus on a form field changes. This cannot happen in
   // `OnAskForValuesToFillImpl()`, since the `AutofillSuggestionAvailability` is
@@ -1788,7 +1801,7 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   // be done with the `kUnspecified` suggestion trigger source.
   std::vector<Suggestion> suggestions =
       GetAvailableAddressAndCreditCardSuggestions(
-          form, field, AutofillSuggestionTriggerSource::kUnspecified, context);
+          form, *field, AutofillSuggestionTriggerSource::kUnspecified, context);
   external_delegate_->OnAutofillAvailabilityEvent(
       (context.suppress_reason == SuppressReason::kNotSuppressed &&
        !suggestions.empty())
@@ -1798,7 +1811,7 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
 
 void BrowserAutofillManager::OnSelectControlDidChangeImpl(
     const FormData& form,
-    const FormFieldData& field) {
+    const FieldGlobalId& field_id) {
   // TODO(crbug.com/40564270): Handle select control change.
 }
 
@@ -1985,7 +1998,7 @@ void BrowserAutofillManager::OnSelectOrSelectListFieldOptionsDidChangeImpl(
 
 void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
     const FormData& form,
-    const FormFieldData& field,
+    const FieldGlobalId& field_id,
     const std::u16string& old_value,
     bool formatting_only) {
   // Log to chrome://autofill-internals that a field's value was set by
@@ -2006,19 +2019,23 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
   };
   auto GetFieldNumber = [&]() {
     for (size_t i = 0; i < form.fields.size(); ++i) {
-      if (form.fields[i].global_id() == field.global_id()) {
+      if (form.fields[i].global_id() == field_id) {
         return base::StringPrintf("Field %zu", i);
       }
     }
     return std::string("unknown");
   };
+  const FormFieldData* field = form.FindFieldByGlobalId(field_id);
+  if (!field) {
+    return;
+  }
   LogBuffer change(IsLoggingActive(log_manager()));
   LOG_AF(change) << Tag{"div"} << Attrib{"class", "form"};
-  LOG_AF(change) << field << Br{};
+  LOG_AF(change) << *field << Br{};
   LOG_AF(change) << "Old value structure: '"
                  << StructureOfString(old_value.substr(0, 80)) << "'" << Br{};
   LOG_AF(change) << "New value structure: '"
-                 << StructureOfString(field.value().substr(0, 80)) << "'";
+                 << StructureOfString(field->value().substr(0, 80)) << "'";
   LOG_AF(log_manager()) << LoggingScope::kWebsiteModifiedFieldValue
                         << LogMessage::kJavaScriptChangedAutofilledValue << Br{}
                         << Tag{"table"} << Tr{} << GetFieldNumber()
@@ -2026,16 +2043,17 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form, *field, &form_structure, &autofill_field)) {
     return;
   }
-  AnalyzeJavaScriptChangedAutofilledValue(
-      *form_structure, *autofill_field, field.value().empty(), formatting_only);
+  AnalyzeJavaScriptChangedAutofilledValue(*form_structure, *autofill_field,
+                                          field->value().empty(),
+                                          formatting_only);
   if (formatting_only) {
     return;
   }
   form_filler_->MaybeTriggerRefillForExpirationDate(
-      form, field, *form_structure, old_value,
+      form, *field, *form_structure, old_value,
       {.trigger_source =
            AutofillTriggerSource::kJavaScriptChangedAutofilledValue});
 }
