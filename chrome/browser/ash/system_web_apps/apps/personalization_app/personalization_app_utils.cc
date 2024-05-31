@@ -36,6 +36,19 @@
 
 namespace ash::personalization_app {
 
+namespace {
+bool CanAccessMantaFeaturesWithoutMinorRestrictions(Profile* profile) {
+  // Only users who can access manta features without minor restrictions will
+  // have SeaPen enabled.
+  auto* manta_service = manta::MantaServiceFactory::GetForProfile(profile);
+  const bool canAccessMantaFeaturesWithoutMinorRestrictions =
+      manta_service &&
+      manta_service->CanAccessMantaFeaturesWithoutMinorRestrictions() ==
+          manta::FeatureSupportStatus::kSupported;
+  return canAccessMantaFeaturesWithoutMinorRestrictions;
+}
+}  // namespace
+
 std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
     content::WebUI* web_ui,
     const GURL& url) {
@@ -105,14 +118,7 @@ bool IsManagedUserEligibleForSeaPen(Profile* profile) {
     DVLOG(1) << __func__ << " managed profile";
     return false;
   }
-  // Only users who can access manta features without minor restrictions will
-  // have SeaPen enabled.
-  auto* manta_service = manta::MantaServiceFactory::GetForProfile(profile);
-  const bool canAccessMantaFeaturesWithoutMinorRestrictions =
-      manta_service &&
-      manta_service->CanAccessMantaFeaturesWithoutMinorRestrictions() ==
-          manta::FeatureSupportStatus::kSupported;
-  return canAccessMantaFeaturesWithoutMinorRestrictions;
+  return CanAccessMantaFeaturesWithoutMinorRestrictions(profile);
 }
 
 bool IsEligibleForSeaPen(Profile* profile) {
@@ -208,6 +214,20 @@ bool IsManagedSeaPenVcBackgroundEnabled(Profile* profile) {
 
   return profile->GetPrefs()->GetInteger(
              ash::prefs::kGenAIVcBackgroundSettings) == 1;
+}
+
+bool IsEligibleForSeaPenTextInput(Profile* profile) {
+  if (!profile) {
+    LOG(ERROR) << __func__ << " no profile";
+    return false;
+  }
+  if (!features::IsSeaPenTextInputEnabled()) {
+    // Without the experiment, users are not allowed to use SeaPenTextInput.
+    DVLOG(1) << __func__ << " SeaPenTextInput disabled";
+    return false;
+  }
+  return IsEligibleForSeaPen(profile) &&
+         CanAccessMantaFeaturesWithoutMinorRestrictions(profile);
 }
 
 GURL GetJpegDataUrl(const std::string_view encoded_jpg_data) {

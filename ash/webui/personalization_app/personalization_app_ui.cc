@@ -542,27 +542,24 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
                      features::IsCrosPrivacyHubLocationEnabled());
 
   const bool common_sea_pen_requirements =
-      sea_pen_provider_->IsEligibleForSeaPen();
+      sea_pen_provider_->IsEligibleForSeaPen() &&
+      manta::features::IsMantaServiceEnabled();
   source->AddBoolean("isSeaPenEnabled",
                      ::ash::features::IsSeaPenEnabled() &&
-                         manta::features::IsMantaServiceEnabled() &&
                          common_sea_pen_requirements);
   source->AddBoolean("isSeaPenTextInputEnabled",
-                     ::ash::features::IsSeaPenTextInputEnabled() &&
-                         manta::features::IsMantaServiceEnabled() &&
-                         common_sea_pen_requirements);
-  source->AddBoolean("isSeaPenUINextEnabled",
-                     ::ash::features::IsSeaPenUINextEnabled() &&
-                         manta::features::IsMantaServiceEnabled() &&
-                         common_sea_pen_requirements);
+                     common_sea_pen_requirements &&
+                         ::ash::features::IsSeaPenTextInputEnabled() &&
+                         sea_pen_provider_->IsEligibleForSeaPenTextInput());
+  source->AddBoolean(
+      "isSeaPenUINextEnabled",
+      common_sea_pen_requirements && ::ash::features::IsSeaPenUINextEnabled());
   source->AddBoolean("isSeaPenUseExptTemplateEnabled",
-                     ::ash::features::IsSeaPenUseExptTemplateEnabled() &&
-                         manta::features::IsMantaServiceEnabled() &&
-                         common_sea_pen_requirements);
+                     common_sea_pen_requirements &&
+                         ::ash::features::IsSeaPenUseExptTemplateEnabled());
   source->AddBoolean("isSeaPenEnterpriseEnabled",
-                     ::ash::features::IsSeaPenEnterpriseEnabled() &&
-                         manta::features::IsMantaServiceEnabled() &&
-                         common_sea_pen_requirements);
+                     common_sea_pen_requirements &&
+                         ::ash::features::IsSeaPenEnterpriseEnabled());
   source->AddBoolean("isLacrosEnabled",
                      ::crosapi::lacros_startup_state::IsLacrosEnabled());
 }

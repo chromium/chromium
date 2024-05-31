@@ -114,6 +114,7 @@ class MockSeaPenProvider
                   ::ash::personalization_app::mojom::SeaPenProvider> receiver),
               (override));
   bool IsEligibleForSeaPen() override { return true; }
+  bool IsEligibleForSeaPenTextInput() override { return true; }
   // ::ash::personalization_app::mojom::SeaPenProvider:
   MOCK_METHOD(void,
               GetSeaPenThumbnails,

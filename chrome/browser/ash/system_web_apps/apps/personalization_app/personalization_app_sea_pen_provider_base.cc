@@ -70,6 +70,10 @@ bool PersonalizationAppSeaPenProviderBase::IsEligibleForSeaPen() {
   return ::ash::personalization_app::IsEligibleForSeaPen(profile_);
 }
 
+bool PersonalizationAppSeaPenProviderBase::IsEligibleForSeaPenTextInput() {
+  return ::ash::personalization_app::IsEligibleForSeaPenTextInput(profile_);
+}
+
 void PersonalizationAppSeaPenProviderBase::GetSeaPenThumbnails(
     const mojom::SeaPenQueryPtr query,
     GetSeaPenThumbnailsCallback callback) {

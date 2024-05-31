@@ -57,6 +57,8 @@ class PersonalizationAppSeaPenProviderBase
 
   bool IsEligibleForSeaPen() override;
 
+  bool IsEligibleForSeaPenTextInput() override;
+
   // ::ash::personalization_app::mojom::SeaPenProvider:
   void GetSeaPenThumbnails(mojom::SeaPenQueryPtr query,
                            GetSeaPenThumbnailsCallback callback) override;
