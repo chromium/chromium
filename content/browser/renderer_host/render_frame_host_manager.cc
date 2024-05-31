@@ -3396,6 +3396,45 @@ scoped_refptr<SiteInstanceImpl> RenderFrameHostManager::ConvertToSiteInstance(
 
   // If we are asked to return a related SiteInstance but the BrowsingInstance
   // has a different cross_origin_isolated state, something went wrong.
+  SCOPED_CRASH_KEY_BOOL("Bug1503252", "is_main_frame",
+                        frame_tree_node_->IsOutermostMainFrame());
+  SCOPED_CRASH_KEY_BOOL(
+      "Bug1503252", "current_is_isolated",
+      current_instance->GetWebExposedIsolationInfo().is_isolated());
+  SCOPED_CRASH_KEY_BOOL(
+      "Bug1503252", "current_is_isolated_app",
+      current_instance->GetWebExposedIsolationInfo().is_isolated_application());
+  SCOPED_CRASH_KEY_STRING256("Bug1503252", "current_instance_site_info",
+                             current_instance->GetSiteInfo().GetDebugString());
+  bool descriptor_is_isolated =
+      descriptor.dest_url_info.web_exposed_isolation_info
+          ? descriptor.dest_url_info.web_exposed_isolation_info->is_isolated()
+          : false;
+  bool descriptor_is_isolated_application =
+      descriptor.dest_url_info.web_exposed_isolation_info
+          ? descriptor.dest_url_info.web_exposed_isolation_info
+                ->is_isolated_application()
+          : false;
+  SCOPED_CRASH_KEY_BOOL("Bug1503252", "descriptor_is_isolated",
+                        descriptor_is_isolated);
+  SCOPED_CRASH_KEY_BOOL("Bug1503252", "descriptor_is_isolated_app",
+                        descriptor_is_isolated_application);
+  bool origins_match = false;
+  if (descriptor_is_isolated &&
+      current_instance->GetWebExposedIsolationInfo().is_isolated()) {
+    SCOPED_CRASH_KEY_STRING256("Bug1503252", "current_weii_origin",
+                               current_instance->GetWebExposedIsolationInfo()
+                                   .origin()
+                                   .GetDebugString());
+    SCOPED_CRASH_KEY_STRING256(
+        "Bug1503252", "descriptor_weii_origin",
+        descriptor.dest_url_info.web_exposed_isolation_info->origin()
+            .GetDebugString());
+    origins_match =
+        current_instance->GetWebExposedIsolationInfo().origin() ==
+        descriptor.dest_url_info.web_exposed_isolation_info->origin();
+  }
+  SCOPED_CRASH_KEY_BOOL("Bug1503252", "origins_match", origins_match);
   CHECK(descriptor.relation != SiteInstanceRelation::RELATED ||
         WebExposedIsolationInfo::AreCompatible(
             current_instance->GetWebExposedIsolationInfo(),
