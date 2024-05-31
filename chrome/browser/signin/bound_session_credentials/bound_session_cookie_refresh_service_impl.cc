@@ -242,33 +242,31 @@ void BoundSessionCookieRefreshServiceImpl::OnStorageKeyDataCleared(
     content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
     const base::Time begin,
     const base::Time end) {
-  BoundSessionCookieController* controller = cookie_controller();
-  // No active session is running. Nothing to terminate.
-  if (!controller) {
-    return;
-  }
-
   // Only terminate a session if cookies are cleared.
   // TODO(b/296372836): introduce a specific data type for bound sessions.
   if (!(remove_mask & content::StoragePartition::REMOVE_DATA_MASK_COOKIES)) {
     return;
   }
 
-  // Only terminate a session if it was created within the specified time range.
-  base::Time session_creation_time = controller->session_creation_time();
-  if (session_creation_time < begin || session_creation_time > end) {
-    return;
-  }
+  for (auto& [key, controller] : cookie_controllers_) {
+    // Only terminate a session if it was created within the specified time
+    // range.
+    base::Time session_creation_time = controller->session_creation_time();
+    if (session_creation_time < begin || session_creation_time > end) {
+      return;
+    }
 
-  // Only terminate a session if its URL matches `storage_key_matcher`.
-  // Bound sessions are only supported in first-party contexts, so it's
-  // acceptable to use `blink::StorageKey::CreateFirstParty()`.
-  if (!storage_key_matcher.Run(blink::StorageKey::CreateFirstParty(
-          url::Origin::Create(controller->url())))) {
-    return;
-  }
+    // Only terminate a session if its URL matches `storage_key_matcher`.
+    // Bound sessions are only supported in first-party contexts, so it's
+    // acceptable to use `blink::StorageKey::CreateFirstParty()`.
+    if (!storage_key_matcher.Run(blink::StorageKey::CreateFirstParty(
+            url::Origin::Create(controller->url())))) {
+      return;
+    }
 
-  TerminateSession(controller, SessionTerminationTrigger::kCookiesCleared);
+    TerminateSession(controller.get(),
+                     SessionTerminationTrigger::kCookiesCleared);
+  }
 }
 
 std::unique_ptr<BoundSessionCookieController>
