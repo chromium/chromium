@@ -45,7 +45,6 @@ namespace {
 constexpr auto kSearchFieldBorderInsets = gfx::Insets::VH(0, 16);
 constexpr auto kSearchFieldVerticalPadding = gfx::Insets::VH(6, 0);
 constexpr auto kClearButtonHorizontalMargin = gfx::Insets::VH(0, 8);
-constexpr int kClearButtonSizeDip = 20;
 
 // TODO: b/331285414 - Finalize the search field placeholder text.
 std::u16string GetSearchFieldPlaceholderText() {
@@ -57,45 +56,7 @@ std::u16string GetSearchFieldPlaceholderText() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
-class ClearSearchFieldImageButton : public views::ImageButton {
-  METADATA_HEADER(ClearSearchFieldImageButton, views::ImageButton)
-
- public:
-  ClearSearchFieldImageButton() {
-    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-    SetHasInkDropActionOnClick(true);
-    views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
-                                                 /*highlight_on_hover=*/true);
-
-    SetPreferredSize(gfx::Size(kClearButtonSizeDip, kClearButtonSizeDip));
-    SetImageHorizontalAlignment(ALIGN_CENTER);
-    SetImageVerticalAlignment(ALIGN_MIDDLE);
-    SetImageModel(views::ImageButton::STATE_NORMAL,
-                  ui::ImageModel::FromVectorIcon(views::kIcCloseIcon,
-                                                 kColorAshButtonIconColor,
-                                                 kClearButtonSizeDip));
-
-    views::InstallCircleHighlightPathGenerator(this);
-  }
-  ClearSearchFieldImageButton(const ClearSearchFieldImageButton&) = delete;
-  ClearSearchFieldImageButton& operator=(const ClearSearchFieldImageButton&) =
-      delete;
-
-  ~ClearSearchFieldImageButton() override {}
-};
-
-BEGIN_METADATA(ClearSearchFieldImageButton)
-END_METADATA
-
-BEGIN_VIEW_BUILDER(ASH_EXPORT, ClearSearchFieldImageButton, views::ImageButton)
-END_VIEW_BUILDER
-
 }  // namespace
-}  // namespace ash
-
-DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::ClearSearchFieldImageButton)
-
-namespace ash {
 
 PickerSearchFieldView::PickerSearchFieldView(
     SearchCallback search_callback,
@@ -104,9 +65,9 @@ PickerSearchFieldView::PickerSearchFieldView(
     : search_callback_(std::move(search_callback)),
       key_event_handler_(key_event_handler),
       performance_metrics_(performance_metrics) {
-  SetOrientation(views::LayoutOrientation::kHorizontal);
-
   views::Builder<PickerSearchFieldView>(this)
+      .SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetProperty(views::kMarginsKey, kSearchFieldVerticalPadding)
       .AddChild(
           views::Builder<views::Textfield>()
@@ -126,17 +87,16 @@ PickerSearchFieldView::PickerSearchFieldView(
               // TODO(b/309706053): Replace this once the strings are finalized.
               .SetAccessibleName(u"placeholder"))
       .AddChild(
-          views::Builder<ClearSearchFieldImageButton>()
+          views::Builder<views::ImageButton>(
+              views::ImageButton::CreateIconButton(
+                  // `base::Unretained` is safe here since the search field is
+                  // owned by this class.
+                  base::BindRepeating(
+                      &PickerSearchFieldView::ClearButtonPressed,
+                      base::Unretained(this)),
+                  views::kIcCloseIcon, u"placeholder",
+                  views::ImageButton::MaterialIconStyle::kSmall))
               .CopyAddressTo(&clear_button_)
-              // `base::Unretained` is safe here since the search field is owned
-              // by this class.
-              .SetCallback(base::BindRepeating(
-                  &PickerSearchFieldView::ClearButtonPressed,
-                  base::Unretained(this)))
-              .SetProperty(views::kFlexBehaviorKey,
-                           views::FlexSpecification(
-                               views::MinimumFlexSizeRule::kPreferred,
-                               views::MaximumFlexSizeRule::kPreferred))
               .SetProperty(views::kMarginsKey, kClearButtonHorizontalMargin)
               .SetVisible(false)
               // TODO(b/309706053): Replace this once the strings are finalized.
