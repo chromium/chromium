@@ -154,6 +154,8 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
       lastUsedImeAccelerator_: Object,
 
       nextImeAccelerator_: Object,
+
+      hasLauncherKey_: Boolean,
     };
   }
 
@@ -192,6 +194,7 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   private nextImeAccelerator_?: StandardAcceleratorProperties;
   private acceleratorFetcherObserverReceiver_:
       AcceleratorFetcherObserverReceiver;
+  private hasLauncherKey_ = false;
 
   // loadTimeData flags.
   private onDeviceGrammarCheckEnabled_: boolean;
@@ -219,6 +222,10 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
       assert(this.acceleratorFetcher);
       this.acceleratorFetcherObserverReceiver_ =
           new AcceleratorFetcherObserverReceiver(this);
+
+      this.acceleratorFetcher.hasLauncherKey().then(({hasLauncherKey}) => {
+        this.hasLauncherKey_ = hasLauncherKey;
+      });
 
       this.acceleratorFetcher!.observeAcceleratorChanges(
           [
@@ -268,6 +275,7 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
         ...this.lastUsedImeAccelerator_,
         shortcutLabelText:
             this.i18nAdvanced('imeCustomizedShortcutReminderLastUsed'),
+        hasLauncherKey: this.hasLauncherKey_,
       });
     }
 
@@ -276,6 +284,7 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
         ...this.nextImeAccelerator_,
         shortcutLabelText:
             this.i18nAdvanced('imeCustomizedShortcutReminderNext'),
+        hasLauncherKey: this.hasLauncherKey_,
       });
     }
 

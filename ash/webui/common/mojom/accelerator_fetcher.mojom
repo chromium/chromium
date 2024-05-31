@@ -32,4 +32,6 @@ interface AcceleratorFetcher {
   ObserveAcceleratorChanges(
       array<ash.mojom.AcceleratorAction> actionIds,
       pending_remote<AcceleratorFetcherObserver> observer);
+  // Whether there is a Launcher key on any connected keyboard.
+  HasLauncherKey() => (bool has_launcher_key);
 };

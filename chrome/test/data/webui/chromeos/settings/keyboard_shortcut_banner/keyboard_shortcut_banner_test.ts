@@ -141,6 +141,7 @@ suite('<keyboard-shortcut-banner>', () => {
       },
       originalAccelerator: null,
       shortcutLabelText: getTrustedHTML`<a>test string</a>` as TrustedHTML,
+      hasLauncherKey: false,
     }];
     banner.shortcutLabelProperties = expectedAcceleratorProperties;
 

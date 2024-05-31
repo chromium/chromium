@@ -87,9 +87,7 @@
       </div>
     </template>
   </template>
-  <template is="dom-if" if="[[showCustomizedShortcut_]]">
-    <div id="partsContainer"></div>
-  </template>
+  <div id="partsContainer" hidden="[[!showCustomizedShortcut_]]"></div>
 </div>
 
 <cr-button on-click="onDismissClick_" id="dismiss" aria-describedby="dismiss"

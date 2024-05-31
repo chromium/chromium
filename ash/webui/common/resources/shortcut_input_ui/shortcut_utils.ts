@@ -9,6 +9,7 @@ import {ShortcutInputKeyElement} from './shortcut_input_key.js';
 
 export interface ShortcutLabelProperties extends StandardAcceleratorProperties {
   shortcutLabelText: TrustedHTML;
+  hasLauncherKey: boolean;
 }
 
 /**
@@ -119,7 +120,6 @@ export const modifierBitMaskToString = new Map<number, string>([
   [Modifier.COMMAND, 'command'],
 ]);
 
-// TODO(yyhyyh@): Add HasLauncherKey as follow up.
 export function createInputKeyParts(
     shortcutLabelProperties: ShortcutLabelProperties,
     useNarrowLayout: boolean = false): ShortcutInputKeyElement[] {
@@ -130,7 +130,10 @@ export function createInputKeyParts(
       const key: ShortcutInputKeyElement =
           document.createElement('shortcut-input-key');
       key.keyState = KeyInputState.MODIFIER_SELECTED;
-      key.key = modifierName;
+      // Current use cases outside keyboard page or shortcut page only consider
+      // 'meta' instead of 'command'.
+      key.key = modifierName === 'command' ? 'meta' : modifierName;
+      key.hasLauncherButton = shortcutLabelProperties.hasLauncherKey;
       key.narrow = useNarrowLayout;
       inputKeys.push(key);
       pressedModifiers.push(modifierName);

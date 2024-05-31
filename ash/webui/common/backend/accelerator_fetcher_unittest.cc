@@ -19,6 +19,8 @@
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/events/ash/event_rewriter_ash.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
 
 namespace ash {
 
@@ -120,6 +122,45 @@ TEST_F(AcceleratorFetcherTest, ObserveAcceleratorChanges) {
   EXPECT_EQ(observer_->accelerators_.size(), expected_accelerators.size());
   EXPECT_TRUE(
       CompareAccelerators(expected_accelerators, observer_->accelerators_));
+}
+
+TEST_F(AcceleratorFetcherTest, HasLauncherKey) {
+  base::test::TestFuture<bool> future;
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
+      std::vector<ui::KeyboardDevice>{
+          {0, ui::INPUT_DEVICE_UNKNOWN, "unkown keyboard"}});
+
+  ui::KeyboardDevice keyboard_internal(1, ui::INPUT_DEVICE_INTERNAL,
+                                       "internal keyboard");
+  ui::KeyboardDevice keyboard_unknown(2, ui::INPUT_DEVICE_UNKNOWN,
+                                      "unkown keyboard");
+
+  // Setup an internal keyboard with top row layout without a launcher button.
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices({keyboard_internal});
+  ui::KeyboardCapability* keyboard_capability =
+      Shell::Get()->keyboard_capability();
+  ui::KeyboardCapability::KeyboardInfo keyboard_info;
+  keyboard_info.device_type =
+      ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
+  keyboard_info.top_row_layout =
+      ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout1;
+  keyboard_capability->DisableKeyboardInfoTrimmingForTesting();
+  keyboard_capability->SetKeyboardInfoForTesting(keyboard_internal,
+                                                 std::move(keyboard_info));
+  accelerator_fetcher_->HasLauncherKey(future.GetCallback());
+  EXPECT_FALSE(future.Get());
+  future.Clear();
+
+  // Setup an internal keyboard and an external keyboard. There should be at
+  // least one keyboard with launch button.
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
+      {keyboard_internal, keyboard_unknown});
+  keyboard_info.device_type =
+      ui::KeyboardCapability::DeviceType::kDeviceUnknown;
+  keyboard_capability->SetKeyboardInfoForTesting(keyboard_internal,
+                                                 std::move(keyboard_info));
+  accelerator_fetcher_->HasLauncherKey(future.GetCallback());
+  EXPECT_TRUE(future.Get());
 }
 
 }  // namespace ash

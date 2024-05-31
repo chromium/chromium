@@ -17,6 +17,7 @@
 #include "ash/shell.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/ash/keyboard_capability.h"
 
 namespace ash {
 
@@ -97,6 +98,11 @@ void AcceleratorFetcher::OnAcceleratorsUpdated() {
                                   GetAcceleratorsForActionId(action_id));
     }
   }
+}
+
+void AcceleratorFetcher::HasLauncherKey(HasLauncherKeyCallback callback) {
+  std::move(callback).Run(
+      Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard());
 }
 
 void AcceleratorFetcher::OnObserverDisconnect(mojo::RemoteSetElementId id) {

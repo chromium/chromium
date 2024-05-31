@@ -6,9 +6,10 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {CrCheckboxWithPolicyElement, InputsShortcutReminderState, LanguageHelper, LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction, OsSettingsAddItemsDialogElement, OsSettingsInputPageElement, SettingsLanguagesElement} from 'chrome://os-settings/lazy_load.js';
 import {AcceleratorAction, CrCheckboxElement, CrSettingsPrefs, IronListElement, Router, routes, settingMojom, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {StandardAcceleratorProperties} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_info.mojom-webui.js';
 import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
 import {FakeAcceleratorFetcher} from 'chrome://resources/ash/common/shortcut_input_ui/fake_accelerator_fetcher.js';
-import {Modifier, ShortcutLabelProperties} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
+import {Modifier} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
@@ -586,8 +587,8 @@ suite('<os-settings-input-page>', () => {
 
 
     test('dismissing shortcut reminder with accelerator provider', async () => {
-      const expectedLastUsedImeAccelerator: ShortcutLabelProperties = {
-        keyDisplay: stringToMojoString16('m'),  // string16 m.
+      const expectedLastUsedImeAccelerator: StandardAcceleratorProperties = {
+        keyDisplay: stringToMojoString16('m'),
         accelerator: {
           modifiers: Modifier.CONTROL,
           keyCode: VKey.kKeyM,
@@ -597,18 +598,18 @@ suite('<os-settings-input-page>', () => {
           },
         },
         originalAccelerator: null,
-        shortcutLabelText:
-            inputPage.i18nAdvanced('imeCustomizedShortcutReminderNext'),
       };
 
       const acceleratorProvider = new FakeAcceleratorFetcher();
+      inputPage.acceleratorFetcher = acceleratorProvider;
+      await flushTasks();
+
       acceleratorProvider.observeAcceleratorChanges(
           [
             AcceleratorAction.kSwitchToLastUsedIme,
             AcceleratorAction.kSwitchToNextIme,
           ],
           inputPage);
-      inputPage.acceleratorFetcher = acceleratorProvider;
       assertTrue(!!inputPage.acceleratorFetcher);
 
       // Set an updated lastUsedImeAccelerator, the shortcut reminder should
@@ -620,10 +621,10 @@ suite('<os-settings-input-page>', () => {
 
       assertTrue(!!inputPage.get('lastUsedImeAccelerator_'));
       assertEquals(
-          inputPage.get('lastUsedImeAccelerator_'),
-          expectedLastUsedImeAccelerator);
+          inputPage.get('lastUsedImeAccelerator_').keyDisplay,
+          expectedLastUsedImeAccelerator.keyDisplay);
 
-      const updatedLastUsedImeAccelerator: ShortcutLabelProperties = {
+      const updatedLastUsedImeAccelerator: StandardAcceleratorProperties = {
         keyDisplay: stringToMojoString16('k'),
         accelerator: {
           modifiers: Modifier.CONTROL + Modifier.SHIFT,
@@ -634,8 +635,6 @@ suite('<os-settings-input-page>', () => {
           },
         },
         originalAccelerator: null,
-        shortcutLabelText:
-            inputPage.i18nAdvanced('imeCustomizedShortcutReminderLastUsed'),
       };
 
       // Update the last used IME with a new accelerator, the shortcut reminder
@@ -643,10 +642,11 @@ suite('<os-settings-input-page>', () => {
       acceleratorProvider.mockAcceleratorsUpdated(
           AcceleratorAction.kSwitchToLastUsedIme,
           [updatedLastUsedImeAccelerator]);
+      await flushTasks();
       assertTrue(!!inputPage.get('lastUsedImeAccelerator_'));
       assertEquals(
-          inputPage.get('lastUsedImeAccelerator_'),
-          updatedLastUsedImeAccelerator);
+          (inputPage.get('lastUsedImeAccelerator_'))!.keyDisplay,
+          updatedLastUsedImeAccelerator!.keyDisplay);
 
       let element =
           inputPage.shadowRoot!.querySelector('keyboard-shortcut-banner');

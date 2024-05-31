@@ -25,12 +25,14 @@ suite('ShortcutUtils', function() {
       },
       originalAccelerator: null,
       shortcutLabelText: getTrustedHTML`<a>test string</a>` as TrustedHTML,
+      hasLauncherKey: true,
     };
 
     const inputKeyParts = createInputKeyParts(inputAcceleratorProperties);
     assertEquals(inputKeyParts.length, 2);
     assertEquals(inputKeyParts[0]!.key, 'ctrl');
     assertEquals(inputKeyParts[0]!.keyState, KeyInputState.MODIFIER_SELECTED);
+    assertEquals(inputKeyParts[0]!.hasLauncherButton, true);
     assertEquals(inputKeyParts[1]!.key, 'm');
     assertEquals(
         inputKeyParts[1]!.keyState, KeyInputState.ALPHANUMERIC_SELECTED);
