@@ -627,7 +627,7 @@ bool AutofillCrowdsourcingManager::IsEnabled() const {
 
 bool AutofillCrowdsourcingManager::StartQueryRequest(
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
-    net::IsolationInfo isolation_info,
+    std::optional<net::IsolationInfo> isolation_info,
     QueryRequestCompleteCallback callback) {
   if (!IsEnabled())
     return false;
@@ -804,9 +804,12 @@ bool AutofillCrowdsourcingManager::StartRequest(FormRequestData request_data) {
   // NavigationRequest. Not setting an IsolationInfo is safe because no
   // information about the response is passed to the renderer, or is otherwise
   // visible to a page. See crbug/1176635#c22.
+#if BUILDFLAG(IS_IOS)
+  DCHECK(!request_data.isolation_info);
+#else
   DCHECK((request_data.request_type == RequestType::kRequestUpload) ==
          !request_data.isolation_info);
-
+#endif
   // Get the URL and method to use for this request.
   auto [request_url, method] = GetRequestURLAndMethod(request_data);
 
@@ -823,17 +826,12 @@ bool AutofillCrowdsourcingManager::StartRequest(FormRequestData request_data) {
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->method = method;
 
-  // On iOS we have a single, shared URLLoaderFactory provided by BrowserState.
-  // As it is shared, it is not trusted and we cannot assign trusted_params
-  // to the network request.
-#if !BUILDFLAG(IS_IOS)
   if (request_data.isolation_info) {
     resource_request->trusted_params =
         network::ResourceRequest::TrustedParams();
     resource_request->trusted_params->isolation_info =
         *request_data.isolation_info;
   }
-#endif
 
   // Add Chrome experiment state to the request headers.
   variations::AppendVariationsHeaderUnknownSignedIn(

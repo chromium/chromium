@@ -232,7 +232,7 @@ class AutofillCrowdsourcingManagerTest : public ::testing::Test {
   bool StartQueryRequest(
       const std::vector<std::unique_ptr<FormStructure>>& form_structures) {
     return crowdsourcing_manager().StartQueryRequest(
-        ToRawPointerVector(form_structures), driver().IsolationInfo(),
+        ToRawPointerVector(form_structures), driver().GetIsolationInfo(),
         base::BindOnce(
             &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
             weak_ptr_factory_.GetWeakPtr()));
@@ -306,7 +306,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
   // Request with id 0.
   base::HistogramTester histogram;
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
-      ToRawPointerVector(form_structures), driver().IsolationInfo(),
+      ToRawPointerVector(form_structures), driver().GetIsolationInfo(),
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
@@ -397,7 +397,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
 
   // Request with id 4, not successful.
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
-      ToRawPointerVector(form_structures), driver().IsolationInfo(),
+      ToRawPointerVector(form_structures), driver().GetIsolationInfo(),
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
@@ -414,7 +414,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
 
   // Request with id 5. Let's pretend we hit the cache.
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
-      ToRawPointerVector(form_structures), driver().IsolationInfo(),
+      ToRawPointerVector(form_structures), driver().GetIsolationInfo(),
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
@@ -451,7 +451,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITest) {
   // Start the query and check its success. No response has been received yet.
   base::HistogramTester histogram;
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
-      ToRawPointerVector(form_structures), driver().IsolationInfo(),
+      ToRawPointerVector(form_structures), driver().GetIsolationInfo(),
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
@@ -544,7 +544,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITestWhenTooLongUrl) {
   // received yet.
   base::HistogramTester histogram;
   EXPECT_TRUE(crowdsourcing_manager.StartQueryRequest(
-      ToRawPointerVector(form_structures), driver().IsolationInfo(),
+      ToRawPointerVector(form_structures), driver().GetIsolationInfo(),
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
@@ -1182,7 +1182,7 @@ class AutofillServerCommunicationTest
     AutofillCrowdsourcingManager crowdsourcing_manager(
         &client(), version_info::Channel::UNKNOWN, nullptr);
     bool succeeded = crowdsourcing_manager.StartQueryRequest(
-        ToRawPointerVector(form_structures), driver_.IsolationInfo(),
+        ToRawPointerVector(form_structures), driver_.GetIsolationInfo(),
         base::BindOnce(
             &AutofillServerCommunicationTest::OnLoadedServerPredictions,
             weak_ptr_factory_.GetWeakPtr()));

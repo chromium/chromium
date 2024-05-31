@@ -219,22 +219,11 @@ void AutofillDriverIOS::RendererShouldSetSuggestionAvailability(
     const FieldGlobalId& field,
     mojom::AutofillSuggestionAvailability suggestion_availability) {}
 
-net::IsolationInfo AutofillDriverIOS::IsolationInfo() {
-  web::WebFramesManager* frames_manager =
-      AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(web_state_);
-  web::WebFrame* main_web_frame = frames_manager->GetMainWebFrame();
-  if (!main_web_frame)
-    return net::IsolationInfo();
-
-  web::WebFrame* frame = web_frame();
-  if (!frame) {
-    return net::IsolationInfo();
-  }
-
-  return net::IsolationInfo::Create(
-      net::IsolationInfo::RequestType::kOther,
-      url::Origin::Create(main_web_frame->GetSecurityOrigin()),
-      url::Origin::Create(frame->GetSecurityOrigin()), net::SiteForCookies());
+std::optional<net::IsolationInfo> AutofillDriverIOS::GetIsolationInfo() {
+  // On iOS we have a single, shared URLLoaderFactory provided by BrowserState.
+  // As it is shared, it is not trusted and we cannot assign trusted_params
+  // to the network request. On iOS, the IsolationInfo should always be nullopt.
+  return std::nullopt;
 }
 
 web::WebFrame* AutofillDriverIOS::web_frame() const {

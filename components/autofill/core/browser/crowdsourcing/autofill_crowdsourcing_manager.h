@@ -72,7 +72,7 @@ class AutofillCrowdsourcingManager {
   // `forms` - array of forms aggregated in this request.
   virtual bool StartQueryRequest(
       const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
-      net::IsolationInfo isolation_info,
+      std::optional<net::IsolationInfo> isolation_info,
       QueryRequestCompleteCallback callback);
 
   // Starts an upload request for `upload_contents`. If `upload_contents` has

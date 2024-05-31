@@ -133,7 +133,7 @@ class AutofillDriverIOS : public AutofillDriver,
   void RendererShouldSetSuggestionAvailability(
       const FieldGlobalId& field,
       mojom::AutofillSuggestionAvailability suggestion_availability) override;
-  net::IsolationInfo IsolationInfo() override;
+  std::optional<net::IsolationInfo> GetIsolationInfo() override;
 
   bool is_processed() const { return processed_; }
   void set_processed(bool processed) { processed_ = processed; }

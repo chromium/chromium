@@ -91,8 +91,9 @@ class AutofillDriver {
   // The main frame may pass it on to its children.
   virtual bool HasSharedAutofillPermission() const = 0;
 
-  // Returns the IsolationInfo of the associated frame.
-  virtual net::IsolationInfo IsolationInfo() = 0;
+  // Returns the IsolationInfo of the associated frame. May be nullopt if the
+  // IsolationInfo is not used (for example, on iOS).
+  virtual std::optional<net::IsolationInfo> GetIsolationInfo() = 0;
 
   // Returns true iff a popup can be shown on the behalf of the associated
   // frame.

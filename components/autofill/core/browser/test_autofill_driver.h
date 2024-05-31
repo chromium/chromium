@@ -81,7 +81,15 @@ class TestAutofillDriverTemplate : public T {
   void RendererShouldSetSuggestionAvailability(
       const FieldGlobalId& field,
       mojom::AutofillSuggestionAvailability suggestion_availability) override {}
-  net::IsolationInfo IsolationInfo() override { return isolation_info_; }
+  std::optional<net::IsolationInfo> GetIsolationInfo() override {
+    // In AutofillDriverIOS, we always return std::nullopt here. That behavior
+    // should be reflected in iOS tests.
+#if BUILDFLAG(IS_IOS)
+    return std::nullopt;
+#else
+    return isolation_info_;
+#endif
+  }
   void TriggerFormExtractionInDriverFrame() override {}
   void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool)> form_extraction_finished_callback)

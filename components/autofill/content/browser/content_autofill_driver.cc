@@ -224,7 +224,7 @@ gfx::RectF ContentAutofillDriver::TransformBoundingBoxToViewportCoordinates(
       bounding_box.size());
 }
 
-net::IsolationInfo ContentAutofillDriver::IsolationInfo() {
+std::optional<net::IsolationInfo> ContentAutofillDriver::GetIsolationInfo() {
   return render_frame_host_->GetIsolationInfoForSubresources();
 }
 

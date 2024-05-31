@@ -161,7 +161,7 @@ class ContentAutofillDriver : public AutofillDriver,
   bool IsInAnyMainFrame() const override;
   bool HasSharedAutofillPermission() const override;
   bool CanShowAutofillUi() const override;
-  net::IsolationInfo IsolationInfo() override;
+  std::optional<net::IsolationInfo> GetIsolationInfo() override;
 
   // Called on certain types of navigations by ContentAutofillDriverFactory.
   void Reset();
