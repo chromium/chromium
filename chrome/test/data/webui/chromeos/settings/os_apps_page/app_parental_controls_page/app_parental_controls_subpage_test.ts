@@ -102,6 +102,36 @@ suite('AppParentalControlsSubpage', () => {
     assertFalse(app.isBlocked);
   });
 
+  test('Remote app changes update toggle state', async () => {
+    const app = createApp('file-id', 'Files', false);
+    handler.addAppForTesting(app);
+
+    await createPage();
+
+    const apps = getApps();
+    assertEquals(1, apps.length);
+
+    const appElement = apps[0];
+    assertTrue(!!appElement);
+    const appToggle =
+        appElement.shadowRoot!.querySelector<CrToggleElement>('.app-toggle');
+    assertTrue(!!appToggle);
+    assertTrue(appToggle.checked);
+
+    const observer = handler.getObserverRemote();
+    assertTrue(!!observer);
+
+    // Dispatch readiness changed event with block state changed.
+    observer.onReadinessChanged({
+      id: app.id,
+      title: app.title,
+      isBlocked: !app.isBlocked,
+    });
+    await flushTasks();
+
+    assertFalse(appToggle.checked);
+  });
+
   test(
       'Readiness events without block state changes do not update list',
       async () => {

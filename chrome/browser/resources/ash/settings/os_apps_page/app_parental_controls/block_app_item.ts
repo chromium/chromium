@@ -24,14 +24,10 @@ export class BlockAppItemElement extends PolymerElement {
   static get properties() {
     return {
       app: Object,
-
-      // Checked toggle indicates that an app is allowed, unchecked blocked.
-      toggleChecked_: Boolean,
     };
   }
 
   app: App;
-  private toggleChecked_: boolean;
   private mojoInterfaceProvider: AppParentalControlsHandlerInterface;
   private iconVersionCounter: number = 0;
 
@@ -42,11 +38,6 @@ export class BlockAppItemElement extends PolymerElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    if (this.app) {
-      this.toggleChecked_ = this.isAllowed_(this.app);
-    } else {
-      console.error('app-controls: app is undefined');
-    }
   }
 
   private isAllowed_(app: App): boolean {
@@ -54,8 +45,8 @@ export class BlockAppItemElement extends PolymerElement {
   }
 
   private onToggleChange_(e: CustomEvent<boolean>): void {
-    this.toggleChecked_ = e.detail;
-    this.mojoInterfaceProvider.updateApp(this.app.id, !this.toggleChecked_);
+    const isBlocked = !e.detail;
+    this.mojoInterfaceProvider.updateApp(this.app.id, isBlocked);
   }
 
   private getIconUrl_(app: App): string {

@@ -79,4 +79,21 @@ suite('BlockAppItemElementTest', () => {
     assertTrue(!!appToggle);
     assertFalse(appToggle.checked);
   });
+
+  test('Updating app object updates UI', async () => {
+    await createBlockAppItem();
+
+    const appToggle = getAppToggle();
+    assertTrue(!!appToggle);
+    assertTrue(appToggle.checked);
+
+    const updatedApp = {
+      id: app.id,
+      title: app.title,
+      isBlocked: !app.isBlocked,
+    };
+    blockAppItem.app = updatedApp;
+
+    assertFalse(appToggle.checked);
+  });
 });
