@@ -21,8 +21,7 @@ namespace media {
 namespace {
 
 bool UseVTVD() {
-  return base::FeatureList::IsEnabled(kVideoToolboxVideoDecoder) &&
-         IsMultiPlaneFormatForHardwareVideoEnabled();
+  return base::FeatureList::IsEnabled(kVideoToolboxVideoDecoder);
 }
 
 }  // namespace

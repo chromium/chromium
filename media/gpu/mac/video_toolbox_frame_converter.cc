@@ -99,7 +99,6 @@ VideoToolboxFrameConverter::VideoToolboxFrameConverter(
       get_stub_cb_(std::move(get_stub_cb)) {
   DVLOG(1) << __func__;
   DCHECK(get_stub_cb_);
-  CHECK(IsMultiPlaneFormatForHardwareVideoEnabled());
 }
 
 VideoToolboxFrameConverter::~VideoToolboxFrameConverter() {

@@ -1871,8 +1871,7 @@ bool IsMultiPlaneFormatForSoftwareVideoEnabled() {
 }
 
 bool IsWritePixelsYUVEnabled() {
-  return IsMultiPlaneFormatForHardwareVideoEnabled() &&
-         base::FeatureList::IsEnabled(kUseWritePixelsYUV);
+  return base::FeatureList::IsEnabled(kUseWritePixelsYUV);
 }
 
 #if BUILDFLAG(IS_WIN)
