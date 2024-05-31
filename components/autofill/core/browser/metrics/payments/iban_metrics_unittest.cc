@@ -125,4 +125,11 @@ TEST_F(IbanMetricsTest, LogIbanSaveAcceptedCountry) {
                                       Iban::IbanSupportedCountry::kFR, 1);
 }
 
+TEST_F(IbanMetricsTest, LogIbanSelectedCountry) {
+  base::HistogramTester histogram_tester;
+  autofill_metrics::LogIbanSelectedCountry("FR");
+  histogram_tester.ExpectUniqueSample("Autofill.Iban.CountryOfSelectedIban",
+                                      Iban::IbanSupportedCountry::kFR, 1);
+}
+
 }  // namespace autofill::autofill_metrics

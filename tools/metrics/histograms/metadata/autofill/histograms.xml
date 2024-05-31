@@ -2636,6 +2636,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Iban.CountryOfSelectedIban" enum="IbanCountry"
+    expires_after="2025-07-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The country code of an IBAN suggestion that was selected. Recorded when the
+    user clicks on the IBAN suggestion. This metric includes both local and
+    server IBANs.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Iban.ShowSuggestionsBlocklistDecision"
     enum="IbanSuggestionBlockListStatus" expires_after="2025-07-01">
   <owner>qihuizhao@google.com</owner>

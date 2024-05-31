@@ -77,7 +77,7 @@ bool IbanManager::OnGetSingleFieldSuggestions(
 
 void IbanManager::OnSingleFieldSuggestionSelected(const std::u16string& value,
                                                   SuggestionType type) {
-  uma_recorder_.OnIbanSuggestionSelected();
+  uma_recorder_.OnIbanSuggestionSelected(value);
 }
 
 void IbanManager::UmaRecorder::OnIbanSuggestionsShown(
@@ -93,7 +93,9 @@ void IbanManager::UmaRecorder::OnIbanSuggestionsShown(
   most_recent_suggestions_shown_field_global_id_ = field_global_id;
 }
 
-void IbanManager::UmaRecorder::OnIbanSuggestionSelected() {
+void IbanManager::UmaRecorder::OnIbanSuggestionSelected(
+    const std::u16string& value) {
+  autofill_metrics::LogIbanSelectedCountry(Iban::GetCountryCode(value));
   // We log every time the IBAN suggestion is selected.
   autofill_metrics::LogIndividualIbanSuggestionsEvent(
       autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionSelected);

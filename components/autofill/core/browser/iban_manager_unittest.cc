@@ -665,7 +665,7 @@ TEST_F(IbanManagerTest, Metrics_SuggestionSelected) {
   MockSuggestionsReturnedCallback mock_callback;
   EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
       test_field, autofill_client_, mock_callback.Get(), context));
-  iban_manager_.OnSingleFieldSuggestionSelected(u"",
+  iban_manager_.OnSingleFieldSuggestionSelected(u"FR7630006000011234567890189",
                                                 SuggestionType::kIbanEntry);
 
   histogram_tester.ExpectBucketCount(
@@ -677,7 +677,7 @@ TEST_F(IbanManagerTest, Metrics_SuggestionSelected) {
 
   EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
       test_field, autofill_client_, mock_callback.Get(), context));
-  iban_manager_.OnSingleFieldSuggestionSelected(u"",
+  iban_manager_.OnSingleFieldSuggestionSelected(u"FR7630006000011234567890189",
                                                 SuggestionType::kIbanEntry);
 
   histogram_tester.ExpectBucketCount(
@@ -686,6 +686,16 @@ TEST_F(IbanManagerTest, Metrics_SuggestionSelected) {
   histogram_tester.ExpectBucketCount(
       "Autofill.Iban.Suggestions",
       autofill_metrics::IbanSuggestionsEvent::kIbanSuggestionSelectedOnce, 1);
+}
+
+TEST_F(IbanManagerTest, Metrics_SuggestionSelected_CountryOfSelectedIban) {
+  base::HistogramTester histogram_tester;
+  // Simulate selecting one suggested IBAN.
+  iban_manager_.OnSingleFieldSuggestionSelected(u"FR7630006000011234567890189",
+                                                SuggestionType::kIbanEntry);
+
+  histogram_tester.ExpectUniqueSample("Autofill.Iban.CountryOfSelectedIban",
+                                      Iban::IbanSupportedCountry::kFR, 1);
 }
 
 TEST_F(IbanManagerTest, Metrics_NoSuggestionShown) {
