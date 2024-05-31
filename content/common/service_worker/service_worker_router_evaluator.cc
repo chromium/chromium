@@ -33,22 +33,6 @@ class ConditionObject;
 base::Value ConditionToValue(
     const blink::ServiceWorkerRouterCondition& condition);
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ServiceWorkerRouterEvaluatorErrorEnums {
-  kNoError = 0,
-  kInvalidType = 1,
-  kParseError = 2,
-  kCompileError = 3,
-  kEmptyCondition = 4,
-  kEmptySource = 5,
-  kInvalidSource = 6,
-  kInvalidCondition = 7,
-  kExceedMaxConditionDepth = 8,
-  kExceedMaxRouterSize = 9,
-  kMaxValue = kExceedMaxRouterSize,
-};
-
 void RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums e) {
   base::UmaHistogramEnumeration("ServiceWorker.RouterEvaluator.Error", e);
 }
@@ -376,7 +360,8 @@ class BaseCondition {
   BaseCondition(BaseCondition&&) = default;
   BaseCondition& operator=(BaseCondition&&) = default;
   // Returns true on success. Otherwise, false.
-  bool Set(const blink::ServiceWorkerRouterCondition& condition);
+  ServiceWorkerRouterEvaluatorErrorEnums Set(
+      const blink::ServiceWorkerRouterCondition& condition);
   bool Match(const network::ResourceRequest& request,
              std::optional<blink::EmbeddedWorkerStatus> running_status) const;
   bool need_running_status() const { return need_running_status_; }
@@ -401,11 +386,12 @@ class BaseCondition {
   bool need_running_status_ = false;
 };
 
-bool BaseCondition::Set(const blink::ServiceWorkerRouterCondition& condition) {
+ServiceWorkerRouterEvaluatorErrorEnums BaseCondition::Set(
+    const blink::ServiceWorkerRouterCondition& condition) {
   if (condition.IsEmpty()) {
     // At least one condition must be set.
     RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kEmptyCondition);
-    return false;
+    return ServiceWorkerRouterEvaluatorErrorEnums::kEmptyCondition;
   }
   const auto& [url_pattern, request, running_status, or_condition,
                not_condition] = condition.get();
@@ -428,7 +414,7 @@ bool BaseCondition::Set(const blink::ServiceWorkerRouterCondition& condition) {
     type_name##_pattern_ = std::make_unique<RE2>(regex, options);            \
     if (!type_name##_pattern_->ok()) {                                       \
       RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kParseError); \
-      return false;                                                          \
+      return ServiceWorkerRouterEvaluatorErrorEnums::kParseError;            \
     }                                                                        \
   } while (0)
     SET_PATTERN(protocol, URLPatternFieldType::kProtocol);
@@ -447,7 +433,7 @@ bool BaseCondition::Set(const blink::ServiceWorkerRouterCondition& condition) {
     // If performance to evaluate regular expressions matter, fast path can
     // be needed.
   }
-  return true;
+  return ServiceWorkerRouterEvaluatorErrorEnums::kNoError;
 }
 
 bool BaseCondition::Match(
@@ -508,7 +494,8 @@ class OrCondition {
   OrCondition(OrCondition&&) = default;
   OrCondition& operator=(OrCondition&&) = default;
   // Returns true on success. Otherwise, false.
-  bool Set(const std::vector<blink::ServiceWorkerRouterCondition>& conditions);
+  ServiceWorkerRouterEvaluatorErrorEnums Set(
+      const std::vector<blink::ServiceWorkerRouterCondition>& conditions);
   bool Match(const network::ResourceRequest& request,
              std::optional<blink::EmbeddedWorkerStatus> running_status) const;
   bool need_running_status() const { return need_running_status_; }
@@ -532,7 +519,7 @@ class NotCondition {
   NotCondition(NotCondition&&) = default;
   NotCondition& operator=(NotCondition&&) = default;
   // Returns true on success. Otherwise, false.
-  bool Set(
+  ServiceWorkerRouterEvaluatorErrorEnums Set(
       const std::unique_ptr<blink::ServiceWorkerRouterCondition>& condition);
   bool Match(const network::ResourceRequest& request,
              std::optional<blink::EmbeddedWorkerStatus> running_status) const;
@@ -551,11 +538,12 @@ class NotCondition {
 class ConditionObject {
  public:
   // Returns true on success. Otherwise, false.
-  bool Set(const blink::ServiceWorkerRouterCondition& condition) {
+  ServiceWorkerRouterEvaluatorErrorEnums Set(
+      const blink::ServiceWorkerRouterCondition& condition) {
     if (!condition.IsValid()) {
       RecordSetupError(
           ServiceWorkerRouterEvaluatorErrorEnums::kInvalidCondition);
-      return false;
+      return ServiceWorkerRouterEvaluatorErrorEnums::kInvalidCondition;
     }
 
     const auto& or_condition =
@@ -563,9 +551,9 @@ class ConditionObject {
             condition.get());
     if (or_condition) {
       OrCondition v;
-      bool success = v.Set(or_condition->conditions);
+      auto error = v.Set(or_condition->conditions);
       value_ = std::move(v);
-      return success;
+      return error;
     }
 
     const auto& not_condition =
@@ -573,17 +561,17 @@ class ConditionObject {
             condition.get());
     if (not_condition) {
       NotCondition v;
-      bool success = v.Set(not_condition->condition);
+      auto error = v.Set(not_condition->condition);
       value_ = std::move(v);
-      return success;
+      return error;
     }
 
     // Neither the not condition nor the or condition.
     {
       BaseCondition v;
-      bool success = v.Set(condition);
+      auto error = v.Set(condition);
       value_ = std::move(v);
-      return success;
+      return error;
     }
   }
   bool Match(const network::ResourceRequest& request,
@@ -604,20 +592,21 @@ class ConditionObject {
   absl::variant<BaseCondition, OrCondition, NotCondition> value_;
 };
 
-bool OrCondition::Set(
+ServiceWorkerRouterEvaluatorErrorEnums OrCondition::Set(
     const std::vector<blink::ServiceWorkerRouterCondition>& conditions) {
   conditions_.reserve(conditions.size());
   for (const auto& c : conditions) {
     conditions_.emplace_back();
 
     ConditionObject& ob = conditions_.back();
-    if (!ob.Set(c)) {
+    auto error = ob.Set(c);
+    if (error != ServiceWorkerRouterEvaluatorErrorEnums::kNoError) {
       conditions_.clear();
-      return false;
+      return error;
     }
     need_running_status_ = need_running_status_ || ob.need_running_status();
   }
-  return true;
+  return ServiceWorkerRouterEvaluatorErrorEnums::kNoError;
 }
 
 bool OrCondition::Match(
@@ -631,19 +620,20 @@ bool OrCondition::Match(
   return false;
 }
 
-bool NotCondition::Set(
+ServiceWorkerRouterEvaluatorErrorEnums NotCondition::Set(
     const std::unique_ptr<blink::ServiceWorkerRouterCondition>& condition) {
   if (!condition) {
-    return false;
+    return ServiceWorkerRouterEvaluatorErrorEnums::kEmptyCondition;
   }
 
   condition_ = std::make_unique<ConditionObject>();
-  if (!condition_->Set(*condition)) {
+  auto error = condition_->Set(*condition);
+  if (error != ServiceWorkerRouterEvaluatorErrorEnums::kNoError) {
     condition_.reset();
-    return false;
+    return error;
   }
   need_running_status_ = condition_->need_running_status();
-  return true;
+  return ServiceWorkerRouterEvaluatorErrorEnums::kNoError;
 }
 
 bool NotCondition::Match(
@@ -658,15 +648,24 @@ namespace content {
 
 class ServiceWorkerRouterEvaluator::RouterRule {
  public:
-  bool SetRule(const blink::ServiceWorkerRouterRule& rule, std::uint32_t id) {
+  ServiceWorkerRouterEvaluatorErrorEnums SetRule(
+      const blink::ServiceWorkerRouterRule& rule,
+      std::uint32_t id) {
     if (ExceedsMaxConditionDepth(rule.condition)) {
       // Too many recursion in the condition.
       RecordSetupError(
           ServiceWorkerRouterEvaluatorErrorEnums::kExceedMaxConditionDepth);
-      return false;
+      return ServiceWorkerRouterEvaluatorErrorEnums::kExceedMaxConditionDepth;
     }
     id_ = id;
-    return condition_.Set(rule.condition) && SetSources(rule.sources);
+    auto error = condition_.Set(rule.condition);
+    if (error != ServiceWorkerRouterEvaluatorErrorEnums::kNoError) {
+      return error;
+    }
+    if (!SetSources(rule.sources)) {
+      return ServiceWorkerRouterEvaluatorErrorEnums::kInvalidSource;
+    }
+    return ServiceWorkerRouterEvaluatorErrorEnums::kNoError;
   }
   bool Match(const network::ResourceRequest& request,
              std::optional<blink::EmbeddedWorkerStatus> running_status) const {
@@ -712,6 +711,8 @@ void ServiceWorkerRouterEvaluator::Compile() {
   if (rules_.rules.size() >= blink::kServiceWorkerMaxRouterSize) {
     RecordSetupError(
         ServiceWorkerRouterEvaluatorErrorEnums::kExceedMaxRouterSize);
+    invalid_error_code_ =
+        ServiceWorkerRouterEvaluatorErrorEnums::kExceedMaxRouterSize;
     return;
   }
   for (size_t idx = 0; idx < rules_.rules.size(); ++idx) {
@@ -719,7 +720,9 @@ void ServiceWorkerRouterEvaluator::Compile() {
     std::unique_ptr<RouterRule> rule = std::make_unique<RouterRule>();
     // For now, use index as rule ID (1-indexed)
     std::uint32_t id = idx + 1;
-    if (!rule->SetRule(r, id)) {
+    auto error = rule->SetRule(r, id);
+    if (error != ServiceWorkerRouterEvaluatorErrorEnums::kNoError) {
+      invalid_error_code_ = error;
       return;
     }
     need_running_status_ |= rule->need_running_status();

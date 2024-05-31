@@ -13,6 +13,25 @@
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// TODO(crbug.com/41492364): Move this to service_worker.mojom when
+// implementing feedback to the renderer to show that re2 has failed to compile
+// the provided regex.
+enum class ServiceWorkerRouterEvaluatorErrorEnums {
+  kNoError = 0,
+  kInvalidType = 1,
+  kParseError = 2,
+  kCompileError = 3,
+  kEmptyCondition = 4,
+  kEmptySource = 5,
+  kInvalidSource = 6,
+  kInvalidCondition = 7,
+  kExceedMaxConditionDepth = 8,
+  kExceedMaxRouterSize = 9,
+  kMaxValue = kExceedMaxRouterSize,
+};
+
 namespace content {
 
 class CONTENT_EXPORT ServiceWorkerRouterEvaluator {
@@ -67,6 +86,7 @@ class CONTENT_EXPORT ServiceWorkerRouterEvaluator {
   bool need_running_status_ = false;
   bool has_fetch_event_source_ = false;
   bool has_non_fetch_event_source_ = false;
+  std::optional<ServiceWorkerRouterEvaluatorErrorEnums> invalid_error_code_;
 };
 
 }  // namespace content
