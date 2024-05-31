@@ -67,8 +67,10 @@ void DangerousDownloadDialogBridge::Show(download::DownloadItem* download_item,
 void DangerousDownloadDialogBridge::OnDownloadDestroyed(
     download::DownloadItem* download_item) {
   auto iter = base::ranges::find(download_items_, download_item);
-  if (iter != download_items_.end())
+  if (iter != download_items_.end()) {
+    (*iter)->RemoveObserver(this);
     download_items_.erase(iter);
+  }
 }
 
 void DangerousDownloadDialogBridge::Accepted(
@@ -76,8 +78,10 @@ void DangerousDownloadDialogBridge::Accepted(
     const JavaParamRef<jstring>& jdownload_guid) {
   download::DownloadItem* download = DownloadDialogUtils::FindAndRemoveDownload(
       &download_items_, ConvertJavaStringToUTF8(env, jdownload_guid));
-  if (download)
+  if (download) {
+    download->RemoveObserver(this);
     download->ValidateDangerousDownload();
+  }
 }
 
 void DangerousDownloadDialogBridge::Cancelled(
@@ -85,6 +89,8 @@ void DangerousDownloadDialogBridge::Cancelled(
     const JavaParamRef<jstring>& jdownload_guid) {
   download::DownloadItem* download = DownloadDialogUtils::FindAndRemoveDownload(
       &download_items_, ConvertJavaStringToUTF8(env, jdownload_guid));
-  if (download)
+  if (download) {
+    download->RemoveObserver(this);
     download->Remove();
+  }
 }
