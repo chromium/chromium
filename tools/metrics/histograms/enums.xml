@@ -19558,6 +19558,7 @@ from previous Chrome versions.
   <int value="-710794209" label="PersonalizationJelly:enabled"/>
   <int value="-709058455" label="ui-slow-animations"/>
   <int value="-708482536" label="Cormorant:disabled"/>
+  <int value="-707548346" label="MediaAppLens:enabled"/>
   <int value="-707508842" label="PolicyMergeMultiSource:disabled"/>
   <int value="-707407907" label="ScanAppMediaLink:enabled"/>
   <int value="-706733351" label="enable-floating-virtual-keyboard:enabled"/>
@@ -19752,6 +19753,7 @@ from previous Chrome versions.
   <int value="-619582383" label="LacrosLaunchAtLoginScreen:disabled"/>
   <int value="-619329259" label="ScreenlockReauthPromoCard:disabled"/>
   <int value="-619178844" label="NewOverviewLayout:disabled"/>
+  <int value="-619178295" label="MediaAppLens:disabled"/>
   <int value="-617598270" label="kEnableNearbyBleV2GattServer:disabled"/>
   <int value="-617452890" label="media-router"/>
   <int value="-616818899" label="SameSiteByDefaultCookies:enabled"/>

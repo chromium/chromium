@@ -1868,6 +1868,10 @@ const char kFullscreenPopupWindowsDescription[] =
     "windows with a `fullscreen` window.open() features parameter. See "
     "https://chromestatus.com/feature/6002307972464640 for more information.";
 
+const char kGalleryAppLensName[] = "Gallery App Lens";
+const char kGalleryAppLensDescription[] =
+    "Enable Gallery App lens integration.";
+
 const char kGalleryAppPdfEditNotificationName[] =
     "Gallery App Pdf Edit Notification";
 const char kGalleryAppPdfEditNotificationDescription[] =

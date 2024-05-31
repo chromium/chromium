@@ -1065,6 +1065,9 @@ extern const char kForgotPasswordFormSupportDescription[];
 extern const char kFullscreenPopupWindowsName[];
 extern const char kFullscreenPopupWindowsDescription[];
 
+extern const char kGalleryAppLensName[];
+extern const char kGalleryAppLensDescription[];
+
 extern const char kGalleryAppPdfEditNotificationName[];
 extern const char kGalleryAppPdfEditNotificationDescription[];
 
