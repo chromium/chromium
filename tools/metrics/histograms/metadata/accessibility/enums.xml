@@ -1365,6 +1365,11 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Very Loose"/>
 </enum>
 
+<enum name="ReadAnythingNewPage">
+  <int value="0" label="New page distilled"/>
+  <int value="1" label="Speech played on new page"/>
+</enum>
+
 <enum name="ReadAnythingReadAloudSettingsChange">
   <int value="0" label="Voice speed change"/>
   <int value="1" label="Voice name change"/>

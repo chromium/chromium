@@ -78,6 +78,19 @@ const overflowXScroll = 'scroll';
 const minWidthTypical = 'auto';
 const minWidthOverflow = 'fit-content';
 
+// UMA logging constants.
+const NEW_PAGE_UMA = 'Accessibility.ReadAnything.NewPage';
+// Enum for logging when we play speech on a page.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum ReadAnythingNewPage {
+  NEW_PAGE = 0,
+  SPEECH_PLAYED_ON_NEW_PAGE = 1,
+
+  // Must be last.
+  COUNT = 3,
+}
+
 // A two-way map where each key is unique and each value is unique. The keys are
 // DOM nodes and the values are numbers, representing AXNodeIDs.
 class TwoWayMap<K, V> extends Map<K, V> {
@@ -299,6 +312,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private previousHighlights_: HTMLElement[] = [];
   private currentColorSuffix_: string;
   private isHighlightOn_: boolean = true;
+  private previousRootId_: number;
 
   // If the WebUI toolbar should be shown. This happens when the WebUI feature
   // flag is enabled.
@@ -731,6 +745,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
 
+    if (this.previousRootId_ !== rootId) {
+      this.previousRootId_ = rootId;
+      chrome.metricsPrivate.recordEnumerationValue(
+          NEW_PAGE_UMA, ReadAnythingNewPage.NEW_PAGE,
+          ReadAnythingNewPage.COUNT);
+    }
     this.loadImages_();
 
     this.hasContent_ = true;
@@ -1370,6 +1390,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
     if (container.textContent) {
+      // Log that we're playing speech on a new page, but not when resuming.
+      // This helps us compare how many reading mode pages are opened with
+      // speech played and without speech played. Counting resumes would
+      // inflate the speech played number.
+      chrome.metricsPrivate.recordEnumerationValue(
+          NEW_PAGE_UMA, ReadAnythingNewPage.SPEECH_PLAYED_ON_NEW_PAGE,
+          ReadAnythingNewPage.COUNT);
       this.speechPlayingState = {
         paused: false,
         speechStarted: true,

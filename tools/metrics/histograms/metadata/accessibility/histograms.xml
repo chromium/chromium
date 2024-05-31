@@ -2370,6 +2370,16 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.NewPage" enum="ReadAnythingNewPage"
+    expires_after="2025-02-28">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records when the Read Anything panel distills a new page and whether the
+    user uses Read Aloud to play the text aloud for the new page.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.OmniboxIconShown"
     enum="BooleanShown" expires_after="2025-02-28">
   <owner>abigailbklein@google.com</owner>
