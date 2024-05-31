@@ -130,6 +130,8 @@ void LockScreenReauthManager::ForceOnlineReauth() {
   const bool auto_start_reauth = primary_profile_->GetPrefs()->GetBoolean(
       ::prefs::kLockScreenAutoStartOnlineReauth);
   if (auto_start_reauth) {
+    // TODO(b/333882432): Remove this log after the bug fixed.
+    LOG(WARNING) << "b/333882432: LoginScreenReauthManager::ForceOnlineReauth";
     Shell::Get()->login_screen_controller()->ShowGaiaSignin(
         /*prefilled_account=*/account_id);
   }

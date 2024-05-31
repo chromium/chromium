@@ -710,6 +710,8 @@ void LockContentsView::ApplyUserChanges(
         main_view_->AddChildView(std::make_unique<LoginCameraTimeoutView>(
             base::BindRepeating(&LockContentsView::OnBackToSigninButtonTapped,
                                 weak_ptr_factory_.GetWeakPtr())));
+    // TODO(b/333882432): Remove this log after the bug fixed.
+    LOG(WARNING) << " b/333882432: LockContentsView::ApplyUserChanges";
     Shell::Get()->login_screen_controller()->ShowGaiaSignin(
         /*prefilled_account=*/EmptyAccountId());
     return;
@@ -2317,6 +2319,8 @@ void LockContentsView::OnBottomStatusIndicatorTapped() {
 }
 
 void LockContentsView::OnBackToSigninButtonTapped() {
+  // TODO(b/333882432): Remove this log after the bug fixed.
+  LOG(WARNING) << "b/333882432: LockContentsView::OnBackToSigninButtonTapped";
   Shell::Get()->login_screen_controller()->ShowGaiaSignin(
       /*prefilled_account=*/EmptyAccountId());
 }

@@ -919,6 +919,9 @@ void LoginShelfView::OnAddUserButtonClicked() {
     return;
   }
   AuthEventsRecorder::Get()->OnAddUser();
+
+  // TODO(b/333882432): Remove this log after the bug fixed.
+  LOG(WARNING) << "b/333882432: LoginShelfView::OnAddUserButtonClicked";
   Shell::Get()->login_screen_controller()->ShowGaiaSignin(EmptyAccountId());
 }
 
