@@ -1,0 +1,4 @@
+per-file ml_graph_mojo.*=ningxin.hu@intel.com
+per-file ml_graph_mojo.*=rafael.cintron@microsoft.com
+per-file *_type_converter*.*=set noparent
+per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS
