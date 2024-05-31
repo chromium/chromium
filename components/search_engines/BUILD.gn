@@ -103,6 +103,10 @@ static_library("search_engines") {
     "//url",
   ]
 
+  if (!is_fuchsia) {
+    deps += [ "//components/variations/service" ]
+  }
+
   if (is_android) {
     sources += [
       "android/template_url_android.cc",

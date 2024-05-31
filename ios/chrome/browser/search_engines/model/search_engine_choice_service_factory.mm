@@ -42,21 +42,12 @@ SearchEngineChoiceServiceFactory::GetForBrowserState(
 std::unique_ptr<KeyedService>
 SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  int variations_country_id = country_codes::kCountryIDUnknown;
-  if (variations::VariationsService* variations_service =
-          GetApplicationContext()->GetVariationsService()) {
-    // Need to use `GetLatestCountry()` for consistency with:
-    // chrome/browser/search_engine_choice/
-    // search_engine_choice_service_factory.cc
-    variations_country_id = country_codes::CountryStringToCountryID(
-        base::ToUpperASCII(variations_service->GetLatestCountry()));
-  }
-
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<search_engines::SearchEngineChoiceService>(
       CHECK_DEREF(browser_state->GetPrefs()),
-      GetApplicationContext()->GetLocalState(), variations_country_id);
+      GetApplicationContext()->GetLocalState(),
+      GetApplicationContext()->GetVariationsService());
 }
 
 web::BrowserState* SearchEngineChoiceServiceFactory::GetBrowserStateToUse(
