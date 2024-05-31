@@ -211,7 +211,7 @@ void DataDecoder::ParseJson(const std::string& json,
   if (base::JSONReader::UsingRust()) {
 #if BUILDFLAG(BUILD_RUST_JSON_READER)
     base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        FROM_HERE, {base::TaskPriority::USER_VISIBLE},
         base::BindOnce(
             [](const std::string& json) {
               return base::JSONReader::ReadAndReturnValueWithError(
