@@ -12538,6 +12538,9 @@ regressions. -->
     <variant name="ReadingListShowUi"/>
     <variant name="RequestTabletSite"/>
     <variant name="RestoreTab"/>
+    <variant name="SafetyHubNotificationManageExtensions"/>
+    <variant name="SafetyHubNotificationOpenSafetyHub"/>
+    <variant name="SafetyHubNotificationPasswordCheck"/>
     <variant name="SavePage"/>
     <variant name="SendToDevices"/>
     <variant name="SetBrowserAsDefault"/>

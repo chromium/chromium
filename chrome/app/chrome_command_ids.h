@@ -268,7 +268,8 @@
 #define IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS  40277
 #define IDC_OPEN_RECENT_TAB             40278
 #define IDC_OPEN_SAFETY_HUB             40279
-#define IDC_SHOW_PASSWORD_CHECKUP       40280
+#define IDC_SAFETY_HUB_SHOW_PASSWORD_CHECKUP  40280
+#define IDC_SAFETY_HUB_MANAGE_EXTENSIONS  40281
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.

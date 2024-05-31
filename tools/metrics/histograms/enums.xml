@@ -36571,6 +36571,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1" label="ServiceWorker"/>
 </enum>
 
+<!-- LINT.IfChange(WrenchMenuAction) -->
+
 <enum name="WrenchMenuAction">
   <int value="0" label="New tab"/>
   <int value="1" label="New window"/>
@@ -36659,12 +36661,15 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="83" label="Show performance settings"/>
   <int value="84" label="Show history cluster side panel"/>
   <int value="85" label="Show reading mode side panel"/>
-  <int value="86" label="Open Safety Menu settings UI"/>
-  <int value="87" label="Show password manager checkup"/>
+  <int value="86" label="Open Safety Hub settings UI"/>
+  <int value="87" label="Show password manager checkup (Safety Hub)"/>
   <int value="88" label="Set browser as default"/>
   <int value="89" label="Show saved tab groups"/>
   <int value="90" label="Show Lens overlay"/>
+  <int value="91" label="Open extension settings (Safety Hub)"/>
 </enum>
+
+<!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->
 
 <enum name="XHRPageDismissalState">
   <int value="0" label="No page dismissal."/>

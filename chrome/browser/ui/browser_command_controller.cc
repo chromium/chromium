@@ -659,7 +659,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SHOW_PASSWORD_MANAGER:
       ShowPasswordManager(browser_);
       break;
-    case IDC_SHOW_PASSWORD_CHECKUP:
+    case IDC_SAFETY_HUB_SHOW_PASSWORD_CHECKUP:
       ShowPasswordCheck(browser_);
       break;
     case IDC_SHOW_PAYMENT_METHODS:
@@ -869,6 +869,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ShowDownloads(browser_->GetBrowserForOpeningWebUi());
       break;
     case IDC_MANAGE_EXTENSIONS:
+    case IDC_SAFETY_HUB_MANAGE_EXTENSIONS:
       ShowExtensions(browser_->GetBrowserForOpeningWebUi());
       break;
     case IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS:
@@ -1328,7 +1329,7 @@ void BrowserCommandController::InitCommandState() {
                                         !guest_session);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_PASSWORD_MANAGER,
                                         !guest_session);
-  command_updater_.UpdateCommandEnabled(IDC_SHOW_PASSWORD_CHECKUP,
+  command_updater_.UpdateCommandEnabled(IDC_SAFETY_HUB_SHOW_PASSWORD_CHECKUP,
                                         !guest_session);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_PAYMENT_METHODS,
                                         !guest_session);
@@ -1520,6 +1521,9 @@ void BrowserCommandController::UpdateSharedCommandsForIncognitoAvailability(
   // mode. For this reason we disable these commands when incognito is forced.
   command_updater->UpdateCommandEnabled(
       IDC_MANAGE_EXTENSIONS,
+      enable_extensions && !forced_incognito && !is_guest);
+  command_updater->UpdateCommandEnabled(
+      IDC_SAFETY_HUB_MANAGE_EXTENSIONS,
       enable_extensions && !forced_incognito && !is_guest);
 
   command_updater->UpdateCommandEnabled(IDC_IMPORT_SETTINGS,

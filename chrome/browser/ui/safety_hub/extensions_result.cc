@@ -276,7 +276,7 @@ std::u16string SafetyHubExtensionsResult::GetNotificationString() const {
 
 int SafetyHubExtensionsResult::GetNotificationCommandId() const {
   CHECK(is_unpublished_extensions_only_);
-  return IDC_MANAGE_EXTENSIONS;
+  return IDC_SAFETY_HUB_MANAGE_EXTENSIONS;
 }
 
 void SafetyHubExtensionsResult::ClearTriggeringExtensionsForTesting() {

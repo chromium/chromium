@@ -26,6 +26,8 @@ class Browser;
 class ChromeLabsModel;
 
 // Values should correspond to 'WrenchMenuAction' enum in enums.xml.
+//
+// LINT.IfChange(AppMenuAction)
 enum AppMenuAction {
   MENU_ACTION_NEW_TAB = 0,
   MENU_ACTION_NEW_WINDOW = 1,
@@ -107,12 +109,14 @@ enum AppMenuAction {
   MENU_ACTION_SHOW_HISTORY_CLUSTER_SIDE_PANEL = 84,
   MENU_ACTION_SHOW_READING_MODE_SIDE_PANEL = 85,
   MENU_ACTION_SHOW_SAFETY_HUB = 86,
-  MENU_ACTION_SHOW_PASSWORD_CHECKUP = 87,
+  MENU_ACTION_SAFETY_HUB_SHOW_PASSWORD_CHECKUP = 87,
   MENU_ACTION_SET_BROWSER_AS_DEFAULT = 88,
   MENU_ACTION_SHOW_SAVED_TAB_GROUPS = 89,
   MENU_ACTION_SHOW_LENS_OVERLAY = 90,
+  MENU_ACTION_SAFETY_HUB_MANAGE_EXTENSIONS = 91,
   LIMIT_MENU_ACTION
 };
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml:WrenchMenuAction)
 
 enum class AlertMenuItem { kNone, kPasswordManager };
 

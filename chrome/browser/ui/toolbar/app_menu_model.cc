@@ -996,12 +996,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
     case IDC_UPGRADE_DIALOG:
       LogMenuAction(MENU_ACTION_UPGRADE_DIALOG);
       break;
-    case IDC_SHOW_PASSWORD_CHECKUP:
-      LogMenuAction(MENU_ACTION_SHOW_PASSWORD_CHECKUP);
-      break;
-    case IDC_OPEN_SAFETY_HUB:
-      LogMenuAction(MENU_ACTION_SHOW_SAFETY_HUB);
-      break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case IDC_LACROS_DATA_MIGRATION:
       LogMenuAction(MENU_ACTION_LACROS_DATA_MIGRATION);
@@ -1543,6 +1537,30 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
             "WrenchMenu.TimeToAction.SetBrowserAsDefault", delta);
       }
       LogMenuAction(MENU_ACTION_SET_BROWSER_AS_DEFAULT);
+      break;
+    case IDC_SAFETY_HUB_SHOW_PASSWORD_CHECKUP:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.SafetyHubNotificationPasswordCheck",
+            delta);
+      }
+      LogMenuAction(MENU_ACTION_SAFETY_HUB_SHOW_PASSWORD_CHECKUP);
+      break;
+    case IDC_OPEN_SAFETY_HUB:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.SafetyHubNotificationOpenSafetyHub",
+            delta);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_SAFETY_HUB);
+      break;
+    case IDC_SAFETY_HUB_MANAGE_EXTENSIONS:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.SafetyHubNotificationManageExtensions",
+            delta);
+      }
+      LogMenuAction(MENU_ACTION_SAFETY_HUB_MANAGE_EXTENSIONS);
       break;
     default: {
       if (IsOtherProfileCommand(command_id)) {
