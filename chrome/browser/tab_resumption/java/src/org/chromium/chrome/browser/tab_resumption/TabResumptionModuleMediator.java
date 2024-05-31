@@ -326,6 +326,7 @@ public class TabResumptionModuleMediator {
 
     void destroy() {
         assert mSession == null;
+        mModel.set(TabResumptionModuleProperties.URL_IMAGE_PROVIDER, null);
     }
 
     /**
