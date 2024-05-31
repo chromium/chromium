@@ -808,8 +808,7 @@ bool StackSamplingProfiler::IsSupportedForCurrentPlatform() {
     (BUILDFLAG(IS_IOS) && defined(ARCH_CPU_64_BITS)) ||                     \
     (BUILDFLAG(IS_ANDROID) &&                                               \
      ((defined(ARCH_CPU_ARMEL) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)) ||       \
-      (defined(ARCH_CPU_ARM64) &&                                           \
-       BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)))) ||                      \
+      (defined(ARCH_CPU_ARM64)))) ||                                        \
     (BUILDFLAG(IS_CHROMEOS) &&                                              \
      (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)))
 #if BUILDFLAG(IS_WIN)
@@ -822,7 +821,7 @@ bool StackSamplingProfiler::IsSupportedForCurrentPlatform() {
   // https://crbug.com/1018291 and https://crbug.com/1113832.
   if (GetModuleHandleA("tmmon64.dll") || GetModuleHandleA("tmmonmgr64.dll"))
     return false;
-#endif
+#endif  // BUILDFLAG(IS_WIN)
   return true;
 #else
   return false;

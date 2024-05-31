@@ -138,11 +138,10 @@ bool DefaultPlatformConfiguration::IsSupportedForChannel(
          *release_channel == version_info::Channel::BETA;
 }
 
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
-// The configuration to use for the Android platform. Applies to ARM32 which is
-// the only Android architecture currently supported by StackSamplingProfiler.
-// Defined in terms of DefaultPlatformConfiguration where Android does not
-// differ from the default case.
+#if BUILDFLAG(IS_ANDROID)
+// The configuration to use for the Android platform. Defined in terms of
+// DefaultPlatformConfiguration where Android does not differ from the default
+// case.
 class AndroidPlatformConfiguration : public DefaultPlatformConfiguration {
  public:
   explicit AndroidPlatformConfiguration(
@@ -180,7 +179,7 @@ AndroidPlatformConfiguration::AndroidPlatformConfiguration(
                 for (int i = 0;
                      i <= static_cast<int>(
                               metrics::CallStackProfileParams::Thread::kMax);
-                     ++i) {
+                     i++) {
                   threads.push_back(
                       static_cast<metrics::CallStackProfileParams::Thread>(i));
                 }
@@ -266,6 +265,14 @@ bool AndroidPlatformConfiguration::IsEnabledForThread(
     metrics::CallStackProfileParams::Process process,
     metrics::CallStackProfileParams::Thread thread,
     std::optional<version_info::Channel> release_channel) const {
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
+  // For now, we only enable SSM in the Browser process and Main thread on
+  // Android 64, since Libunwindstack doesn't support JavaScript.
+  if (!(process == metrics::CallStackProfileParams::Process::kBrowser &&
+        thread == metrics::CallStackProfileParams::Thread::kMain)) {
+    return false;
+  }
+#endif
   if (!release_channel.has_value() || browser_test_mode_enabled()) {
     return true;
   }
@@ -287,7 +294,7 @@ bool AndroidPlatformConfiguration::IsEnabledForThread(
   }
 }
 
-#endif  // BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -296,7 +303,7 @@ std::unique_ptr<ThreadProfilerPlatformConfiguration>
 ThreadProfilerPlatformConfiguration::Create(
     bool browser_test_mode_enabled,
     base::RepeatingCallback<bool(double)> is_enabled_on_dev_callback) {
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
+#if BUILDFLAG(IS_ANDROID)
   return std::make_unique<AndroidPlatformConfiguration>(
       browser_test_mode_enabled, is_enabled_on_dev_callback);
 #else
@@ -307,16 +314,8 @@ ThreadProfilerPlatformConfiguration::Create(
 
 bool ThreadProfilerPlatformConfiguration::IsSupported(
     std::optional<version_info::Channel> release_channel) const {
-// `ThreadProfiler` is currently not supported on ARM64, even if
-// `base::StackSamplingProfiler` may support it.
-//
-// TODO(crbug.com/40247701): Remove this conditional.
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
-  return false;
-#else
   return base::StackSamplingProfiler::IsSupportedForCurrentPlatform() &&
          IsSupportedForChannel(release_channel);
-#endif
 }
 
 // static

@@ -15,6 +15,7 @@
 
 #if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)) ||           \
+    (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)) ||                   \
     (BUILDFLAG(IS_CHROMEOS) &&                                              \
      (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)))
 #define THREAD_PROFILER_SUPPORTED_ON_PLATFORM true
@@ -150,8 +151,21 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
          ++j) {
       const auto thread =
           static_cast<metrics::CallStackProfileParams::Thread>(j);
+
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
+      if (process == metrics::CallStackProfileParams::Process::kBrowser &&
+          thread == metrics::CallStackProfileParams::Thread::kMain) {
+        EXPECT_TRUE(config()->IsEnabledForThread(
+            process, thread, version_info::Channel::CANARY));
+      } else {
+        EXPECT_FALSE(config()->IsEnabledForThread(
+            process, thread, version_info::Channel::CANARY));
+      }
+#else
       EXPECT_TRUE(config()->IsEnabledForThread(process, thread,
                                                version_info::Channel::CANARY));
+#endif
+
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
       auto android_config1 = ThreadProfilerPlatformConfiguration::Create(
           /* browser_test_mode_enabled=*/false,
@@ -161,6 +175,25 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
       auto android_config2 = ThreadProfilerPlatformConfiguration::Create(
           /* browser_test_mode_enabled=*/false,
           base::BindLambdaForTesting([](double probability) { return false; }));
+      EXPECT_FALSE(android_config2->IsEnabledForThread(
+          process, thread, version_info::Channel::DEV));
+#elif BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
+      auto android_config1 = ThreadProfilerPlatformConfiguration::Create(
+          /* browser_test_mode_enabled=*/false,
+          base::BindLambdaForTesting([](double probability) { return true; }));
+      auto android_config2 = ThreadProfilerPlatformConfiguration::Create(
+          /* browser_test_mode_enabled=*/false,
+          base::BindLambdaForTesting([](double probability) { return false; }));
+
+      if (process == metrics::CallStackProfileParams::Process::kBrowser &&
+          thread == metrics::CallStackProfileParams::Thread::kMain) {
+        EXPECT_TRUE(android_config1->IsEnabledForThread(
+            process, thread, version_info::Channel::DEV));
+      } else {
+        EXPECT_FALSE(android_config1->IsEnabledForThread(
+            process, thread, version_info::Channel::DEV));
+      }
+
       EXPECT_FALSE(android_config2->IsEnabledForThread(
           process, thread, version_info::Channel::DEV));
 #else

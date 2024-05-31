@@ -30,8 +30,7 @@
 #define ANDROID_ARM32_UNWINDING_SUPPORTED 0
 #endif
 
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64) && \
-    BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
 #define ANDROID_ARM64_UNWINDING_SUPPORTED 1
 #else
 #define ANDROID_ARM64_UNWINDING_SUPPORTED 0
@@ -72,7 +71,8 @@ BASE_FEATURE(kInstallAndroidUnwindDfm,
 
 namespace {
 
-// Encapsulates the setup required to create the Chrome unwinder on Android.
+// Encapsulates the setup required to create the Chrome unwinder on 32 bit
+// Android.
 #if ANDROID_ARM32_UNWINDING_SUPPORTED
 class ChromeUnwinderCreator {
  public:
@@ -102,36 +102,29 @@ class ChromeUnwinderCreator {
  private:
   base::MemoryMappedFile chrome_cfi_file_;
 };
-#elif ANDROID_ARM64_UNWINDING_SUPPORTED  // ANDROID_ARM32_UNWINDING_SUPPORTED
-class ChromeUnwinderCreator {
- public:
-  std::unique_ptr<base::Unwinder> Create() {
-    return std::make_unique<base::FramePointerUnwinder>();
-  }
-
-  // Since this class is trivially destructible, it cannot be wrapped in
-  // `base::NoDestructor`. However, other versions of this class *are* wrapped
-  // in `base::NoDestructor`. These overloads allow consistently calling member
-  // functions, regardless of whether a version of this class is wrapped in
-  // `base::NoDestructor` or not (please see `CreateCoreUnwinders` below for
-  // more context).
-  const ChromeUnwinderCreator* operator->() const { return this; }
-  ChromeUnwinderCreator* operator->() { return this; }
-};
 #endif                                   // ANDROID_ARM32_UNWINDING_SUPPORTED
 
 #if ANDROID_UNWINDING_SUPPORTED
+std::vector<std::unique_ptr<base::Unwinder>> CreateLibunwindstackUnwinders(
+    stack_unwinder::Module* const stack_unwinder_module) {
+  CHECK_NE(getpid(), gettid());
+  std::vector<std::unique_ptr<base::Unwinder>> unwinders;
+  unwinders.push_back(stack_unwinder_module->CreateLibunwindstackUnwinder());
+  return unwinders;
+}
+
 std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders(
     stack_unwinder::Module* const stack_unwinder_module,
     bool is_java_name_hashing_enabled) {
   CHECK_NE(getpid(), gettid());
 
+#if ANDROID_ARM64_UNWINDING_SUPPORTED
+  // For now, we only use Libunwindstack on 64 bit (no other unwinders).
+  return CreateLibunwindstackUnwinders(stack_unwinder_module);
+#else
   static base::NoDestructor<NativeUnwinderAndroidMapDelegateImpl> map_delegate(
       stack_unwinder_module);
-  static std::conditional<
-      std::is_trivially_destructible_v<ChromeUnwinderCreator>,
-      ChromeUnwinderCreator, base::NoDestructor<ChromeUnwinderCreator>>::type
-      chrome_unwinder_creator;
+  static base::NoDestructor<ChromeUnwinderCreator> chrome_unwinder_creator;
 
   // Note order matters: the more general unwinder must appear first in the
   // vector.
@@ -140,15 +133,9 @@ std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders(
       map_delegate.get(), reinterpret_cast<uintptr_t>(&__executable_start),
       is_java_name_hashing_enabled));
   unwinders.push_back(chrome_unwinder_creator->Create());
-  return unwinders;
-}
 
-std::vector<std::unique_ptr<base::Unwinder>> CreateLibunwindstackUnwinders(
-    stack_unwinder::Module* const stack_unwinder_module) {
-  CHECK_NE(getpid(), gettid());
-  std::vector<std::unique_ptr<base::Unwinder>> unwinders;
-  unwinders.push_back(stack_unwinder_module->CreateLibunwindstackUnwinder());
   return unwinders;
+#endif
 }
 
 // Manages installation of the module prerequisite for unwinding. Android, in
