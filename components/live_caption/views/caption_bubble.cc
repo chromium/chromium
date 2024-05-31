@@ -339,7 +339,7 @@ class CaptionBubbleLabel : public views::Label {
 
  public:
   CaptionBubbleLabel() {
-    SetAccessibleRole(ax::mojom::Role::kDocument);
+    GetViewAccessibility().SetRole(ax::mojom::Role::kDocument);
     SetAccessibleName(std::u16string(),
                       ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 #if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
