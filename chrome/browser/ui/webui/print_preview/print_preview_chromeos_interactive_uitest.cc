@@ -7,7 +7,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace ash {

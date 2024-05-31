@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
+
+#include "content/public/test/browser_test.h"
 #include "url/gurl.h"
 
 namespace ash {

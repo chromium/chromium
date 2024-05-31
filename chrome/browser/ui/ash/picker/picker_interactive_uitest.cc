@@ -15,7 +15,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
 #include "ui/base/interaction/element_identifier.h"

@@ -23,6 +23,7 @@ include_rules = [
   "+chrome/browser/ui/views/crostini",
   "+chrome/browser/ui/webui/ash",
   "+chrome/services/media_gallery_util",
+  "+chrome/test/base/ash",
   "+chrome/test/base/chrome_ash_test_base.h",
   "+chrome/test/base/chromeos",
 

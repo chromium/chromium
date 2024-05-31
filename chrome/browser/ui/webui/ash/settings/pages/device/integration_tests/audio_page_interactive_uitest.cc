@@ -14,7 +14,7 @@
 #include "base/test/gtest_tags.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/base/interaction/element_identifier.h"

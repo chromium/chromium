@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"

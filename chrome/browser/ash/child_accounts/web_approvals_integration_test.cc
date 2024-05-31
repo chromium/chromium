@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
 #include "chrome/test/base/chromeos/crosier/supervised_user_integration_base_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"

@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_arc_mixin.h"

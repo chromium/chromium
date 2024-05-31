@@ -5,7 +5,7 @@
 #include "base/test/gtest_tags.h"
 #include "chrome/browser/ash/child_accounts/child_user_interactive_base_test.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/supervised_user/supervision_mixin.h"
 #include "url/gurl.h"
 

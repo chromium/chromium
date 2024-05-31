@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_TEST_BASE_CHROMEOS_CROSIER_INTERACTIVE_ASH_TEST_H_
-#define CHROME_TEST_BASE_CHROMEOS_CROSIER_INTERACTIVE_ASH_TEST_H_
+#ifndef CHROME_TEST_BASE_ASH_INTERACTIVE_INTERACTIVE_ASH_TEST_H_
+#define CHROME_TEST_BASE_ASH_INTERACTIVE_INTERACTIVE_ASH_TEST_H_
 
 #include <memory>
 
@@ -114,4 +114,4 @@ class InteractiveAshTest
       const DeepQuery& query);
 };
 
-#endif  // CHROME_TEST_BASE_CHROMEOS_CROSIER_INTERACTIVE_ASH_TEST_H_
+#endif  // CHROME_TEST_BASE_ASH_INTERACTIVE_INTERACTIVE_ASH_TEST_H_

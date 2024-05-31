@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
+
 #include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check.h"
@@ -10,11 +12,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
-
-#include <vector>
 
 namespace ash {
 namespace {

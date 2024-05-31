@@ -1199,8 +1199,6 @@ if (is_chromeos && is_chromeos_device) {
         "base/chromeos/crosier/ash_integration_test.cc",
         "base/chromeos/crosier/ash_integration_test.h",
         "base/chromeos/crosier/ash_integration_test_test.cc",
-        "base/chromeos/crosier/interactive_ash_test.cc",
-        "base/chromeos/crosier/interactive_ash_test.h",
         "base/chromeos/crosier/supervised_user_integration_base_test.cc",
         "base/chromeos/crosier/supervised_user_integration_base_test.h",
       ]
@@ -1219,6 +1217,7 @@ if (is_chromeos && is_chromeos_device) {
 
       deps += [
         "//chrome/browser/ash:test_support",
+        "//chrome/test/base/ash/interactive:test_support",
         "//chrome/test/base/chromeos/crosier:proto",
         "//chrome/test/base/chromeos/crosier/helper:common",
         "//chromeos/ash/components/dbus/printscanmgr:printscanmgr",
@@ -11577,12 +11576,6 @@ if (!is_android && !is_chromeos_device) {
           "../browser/ui/webui/ash/shortcut_customization/integration_tests/shortcut_customization_interactive_uitest.cc",
           "../browser/ui/webui/print_preview/print_preview_chromeos_interactive_uitest.cc",
           "//ash/drag_drop/drag_drop_interactive_uitest.cc",
-
-          # These cannot live in ":test_support" because they use
-          # InProcessBrowserTest which requires HAS_OUT_OF_PROC_TEST_RUNNER.
-          "base/chromeos/crosier/interactive_ash_test.cc",
-          "base/chromeos/crosier/interactive_ash_test.h",
-          "base/chromeos/crosier/interactive_ash_test_uitest.cc",
         ]
 
         if (is_chrome_branded) {
@@ -11598,6 +11591,8 @@ if (!is_android && !is_chromeos_device) {
           "//chrome/browser/ash/crosapi:crosapi",
           "//chrome/browser/ash/system_web_apps/test_support",
           "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+          "//chrome/test/base/ash/interactive:interactive_ui_tests",
+          "//chrome/test/base/ash/interactive:test_support",
           "//chromeos/ash/components/dbus/fwupd:fwupd",
           "//chromeos/ash/components/fwupd:fwupd",
           "//chromeos/ash/components/standalone_browser",

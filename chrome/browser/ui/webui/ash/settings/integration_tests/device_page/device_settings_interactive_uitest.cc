@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <linux/input-event-codes.h>
+
 #include <memory>
 
 #include "ash/ash_element_identifiers.h"
@@ -13,7 +14,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ui_base_features.h"

@@ -12,7 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/interactive_test.h"

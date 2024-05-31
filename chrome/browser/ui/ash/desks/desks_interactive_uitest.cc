@@ -20,7 +20,7 @@
 #include "base/test/gtest_tags.h"
 #include "base/test/test_switches.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/env.h"
 #include "ui/base/interaction/element_identifier.h"

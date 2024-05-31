@@ -16,7 +16,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "components/feature_engagement/public/feature_constants.h"

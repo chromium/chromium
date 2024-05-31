@@ -35,7 +35,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using performance_manager::user_tuning::prefs::BatterySaverModeState;

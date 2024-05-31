@@ -6,7 +6,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "base/test/gtest_tags.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"

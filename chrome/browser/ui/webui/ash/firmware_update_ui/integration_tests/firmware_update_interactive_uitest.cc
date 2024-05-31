@@ -5,7 +5,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/firmware_update_ui/url_constants.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chromeos/ash/components/dbus/fwupd/fake_fwupd_client.h"
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
