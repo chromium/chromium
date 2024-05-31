@@ -26,6 +26,7 @@
 #import "components/metrics/demographics/demographic_metrics_provider.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
+#import "components/safe_browsing/core/common/features.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/sync/base/pref_names.h"
 #import "components/sync/service/sync_service.h"
@@ -1223,6 +1224,11 @@ NSString* SerializedValue(const base::Value* value) {
 
 + (BOOL)isCurrentLayoutBottomOmnibox {
   return IsCurrentLayoutBottomOmnibox(chrome_test_util::GetCurrentBrowser());
+}
+
++ (BOOL)isEnhancedSafeBrowsingInfobarEnabled {
+  return base::FeatureList::IsEnabled(
+      safe_browsing::kEnhancedSafeBrowsingPromo);
 }
 
 #pragma mark - ContentSettings

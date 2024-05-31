@@ -384,6 +384,7 @@ constexpr struct {
     {&kDlpRegionalizedEndpoints, true},
     {&kDownloadReportWithoutUserDecision, true},
     {&kDownloadTailoredWarnings, true},
+    {&kEnhancedSafeBrowsingPromo, true},
     {&kExtensionTelemetryDeclarativeNetRequestActionSignal, true},
     {&kExtensionTelemetryDisableOffstoreExtensions, true},
     {&kExtensionTelemetryInterceptRemoteHostsContactedInRenderer, true},

@@ -91,6 +91,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether the current layout is showing the bottom omnibox.
 - (BOOL)isCurrentLayoutBottomOmnibox;
 
+// Returns whether the Enhanced Safe Browsing Infobar Promo feature is enabled.
+- (BOOL)isEnhancedSafeBrowsingInfobarEnabled;
+
 #pragma mark - History Utilities (EG2)
 
 // Clears browsing history. Raises an EarlGrey exception if history is not
