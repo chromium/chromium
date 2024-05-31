@@ -1430,6 +1430,12 @@ PopupMenu* HTMLSelectElement::PopupForTesting() const {
 
 void HTMLSelectElement::DidRecalcStyle(const StyleRecalcChange change) {
   HTMLFormControlElementWithState::DidRecalcStyle(change);
+  if (auto* style = GetComputedStyle()) {
+    if (style->EffectiveAppearance() == ControlPart::kNoControlPart) {
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kSelectElementAppearanceNone);
+    }
+  }
   select_type_->DidRecalcStyle(change);
 }
 

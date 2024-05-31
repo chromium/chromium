@@ -11639,6 +11639,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4988" label="V8AI_DefaultTextSessionOptions_Method"/>
   <int value="4989" label="V8AITextSession_Destroy_Method"/>
   <int value="4990" label="ImportMapIntegrity"/>
+  <int value="4991" label="SelectElementAppearanceNone"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

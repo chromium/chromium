@@ -4358,6 +4358,7 @@ enum WebFeature {
   kV8AI_DefaultTextSessionOptions_Method = 4988,
   kV8AITextSession_Destroy_Method = 4989,
   kImportMapIntegrity = 4990,
+  kSelectElementAppearanceNone = 4991,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
