@@ -549,12 +549,15 @@ public class TopToolbarCoordinator implements Toolbar {
     /** Tells the Toolbar to update what buttons it is currently displaying. */
     public void updateButtonVisibility() {
         mToolbarLayout.updateButtonVisibility();
-        mOptionalButtonController.updateButtonVisibility();
+        if (mOptionalButtonController != null) {
+            mOptionalButtonController.updateButtonVisibility();
+        }
     }
 
     /**
      * Gets the {@link AdaptiveToolbarButtonVariant} of the currently shown optional button. {@code
      * AdaptiveToolbarButtonVariant.NONE} is returned if there's no visible optional button.
+     *
      * @return A value from {@link AdaptiveToolbarButtonVariant}.
      */
     public @AdaptiveToolbarButtonVariant int getCurrentOptionalButtonVariant() {
