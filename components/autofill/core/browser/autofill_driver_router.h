@@ -169,35 +169,35 @@ class AutofillDriverRouter {
   void CaretMovedInFormField(
       AutofillDriver& source,
       FormData form,
-      const FormFieldData& field,
+      const FieldGlobalId& field_id,
       const gfx::Rect& caret_bounds,
-      RoutedCallback<const FormData&, const FormFieldData&, const gfx::Rect&>
+      RoutedCallback<const FormData&, const FieldGlobalId&, const gfx::Rect&>
           callback);
   void TextFieldDidChange(
       AutofillDriver& source,
       FormData form,
-      const FormFieldData& field,
+      const FieldGlobalId& field_id,
       base::TimeTicks timestamp,
-      RoutedCallback<const FormData&, const FormFieldData&, base::TimeTicks>
+      RoutedCallback<const FormData&, const FieldGlobalId&, base::TimeTicks>
           callback);
   void TextFieldDidScroll(
       AutofillDriver& source,
       FormData form,
-      const FormFieldData& field,
-      RoutedCallback<const FormData&, const FormFieldData&> callback);
+      const FieldGlobalId& field_id,
+      RoutedCallback<const FormData&, const FieldGlobalId&> callback);
   void SelectControlDidChange(
       AutofillDriver& source,
       FormData form,
-      const FormFieldData& field,
-      RoutedCallback<const FormData&, const FormFieldData&> callback);
+      const FieldGlobalId& field_id,
+      RoutedCallback<const FormData&, const FieldGlobalId&> callback);
   void AskForValuesToFill(
       AutofillDriver& source,
       FormData form,
-      const FormFieldData& field,
+      const FieldGlobalId& field_id,
       const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source,
       RoutedCallback<const FormData&,
-                     const FormFieldData&,
+                     const FieldGlobalId&,
                      const gfx::Rect&,
                      AutofillSuggestionTriggerSource> callback);
   // This event is broadcast to all drivers.
@@ -211,8 +211,8 @@ class AutofillDriverRouter {
   void FocusOnFormField(
       AutofillDriver& source,
       FormData form,
-      const FormFieldData& field,
-      RoutedCallback<const FormData&, const FormFieldData&> callback,
+      const FieldGlobalId& field_id,
+      RoutedCallback<const FormData&, const FieldGlobalId&> callback,
       RoutedCallback<> focus_no_longer_on_form);
   // This event is broadcast to all drivers.
   void FocusOnNonFormField(AutofillDriver& source,
@@ -222,11 +222,11 @@ class AutofillDriverRouter {
   void HidePopup(AutofillDriver& source, RoutedCallback<> callback);
   void JavaScriptChangedAutofilledValue(AutofillDriver& source,
                                         FormData form,
-                                        const FormFieldData& field,
+                                        const FieldGlobalId& field_id,
                                         const std::u16string& old_value,
                                         bool formatting_only,
                                         RoutedCallback<const FormData&,
-                                                       const FormFieldData&,
+                                                       const FieldGlobalId&,
                                                        const std::u16string&,
                                                        bool> callback);
   void SelectOrSelectListFieldOptionsDidChange(
@@ -249,7 +249,7 @@ class AutofillDriverRouter {
   void ApplyFieldAction(AutofillDriver& source,
                         mojom::FieldActionType action_type,
                         mojom::ActionPersistence action_persistence,
-                        const FieldGlobalId& field,
+                        const FieldGlobalId& field_id,
                         const std::u16string& value,
                         RoutedCallback<mojom::FieldActionType,
                                        mojom::ActionPersistence,
@@ -287,20 +287,20 @@ class AutofillDriverRouter {
       RoutedCallback<const FormRendererId&, RendererFormHandler> callback);
   void RendererShouldAcceptDataListSuggestion(
       AutofillDriver& source,
-      const FieldGlobalId& field,
+      const FieldGlobalId& field_id,
       const std::u16string& value,
       RoutedCallback<const FieldRendererId&, const std::u16string&> callback);
   void RendererShouldClearPreviewedForm(AutofillDriver& source,
                                         RoutedCallback<> callback);
   void RendererShouldSetSuggestionAvailability(
       AutofillDriver& source,
-      const FieldGlobalId& field,
+      const FieldGlobalId& field_id,
       mojom::AutofillSuggestionAvailability suggestion_availability,
       RoutedCallback<const FieldRendererId&,
                      mojom::AutofillSuggestionAvailability> callback);
   void RendererShouldTriggerSuggestions(
       AutofillDriver& source,
-      const FieldGlobalId& field,
+      const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source,
       RoutedCallback<const FieldRendererId&, AutofillSuggestionTriggerSource>
           callback);

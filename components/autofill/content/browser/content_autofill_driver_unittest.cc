@@ -550,7 +550,7 @@ TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm) {
   FormData form;
   form.fields.emplace_back();
   FormData form2 = test_api(driver()).GetFormWithFrameAndFormMetaData(form);
-  test_api(driver()).SetFrameAndFormMetaData(form, nullptr);
+  test_api(driver()).SetFrameAndFormMetaData(form);
 
   EXPECT_EQ(form.host_frame(), frame_token());
   EXPECT_EQ(form.url(), GURL("https://hostname/path"));
@@ -577,7 +577,7 @@ TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm_AboutScheme) {
   ASSERT_TRUE(main_rfh()->GetLastCommittedURL().IsAboutBlank());
 
   FormData form;
-  test_api(driver()).SetFrameAndFormMetaData(form, nullptr);
+  test_api(driver()).SetFrameAndFormMetaData(form);
 
   EXPECT_TRUE(form.url().is_empty());
 }
@@ -625,30 +625,9 @@ TEST_F(ContentAutofillDriverTest,
   ASSERT_TRUE(grandchild_rfh->GetLastCommittedURL().IsAboutBlank());
 
   FormData form;
-  test_api(*grandchild_driver).SetFrameAndFormMetaData(form, nullptr);
+  test_api(*grandchild_driver).SetFrameAndFormMetaData(form);
 
   EXPECT_EQ(form.url(), GURL("https://hostname"));
-}
-
-TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
-  NavigateAndCommit(GURL("https://username:password@hostname/path?query#hash"));
-  // We test that `SetFrameAndFormMetaData(form, &field) sets the meta data not
-  // just of |form|'s fields but also of an additional individual |field|.
-  FormData form;
-  form.fields.emplace_back();
-  FormFieldData field = form.fields.back();
-  FormSignature signature_without_meta_data = CalculateFormSignature(form);
-  test_api(driver()).SetFrameAndFormMetaData(form, &field);
-
-  EXPECT_NE(signature_without_meta_data, CalculateFormSignature(form));
-  EXPECT_EQ(field.host_frame(), frame_token());
-  EXPECT_EQ(field.host_form_id(), form.renderer_id());
-  EXPECT_EQ(field.host_form_signature(), CalculateFormSignature(form));
-
-  EXPECT_EQ(field.host_frame(), form.fields.front().host_frame());
-  EXPECT_EQ(field.host_form_id(), form.fields.front().host_form_id());
-  EXPECT_EQ(field.host_form_signature(),
-            form.fields.front().host_form_signature());
 }
 
 // Tests that FormsSeen() for an updated form arrives in the AutofillManager.
@@ -766,7 +745,7 @@ TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
   driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
                                        /*removed_forms=*/{});
 
-  test_api(driver()).SetFrameAndFormMetaData(form, nullptr);
+  test_api(driver()).SetFrameAndFormMetaData(form);
   ASSERT_EQ(augmented_forms.size(), 1u);
   EXPECT_TRUE(augmented_forms.front().SameFormAs(form));
 

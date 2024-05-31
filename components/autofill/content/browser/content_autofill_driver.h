@@ -244,41 +244,40 @@ class ContentAutofillDriver : public AutofillDriver,
   // mojom::AutofillDriver:
   void AskForValuesToFill(
       const FormData& form,
-      const FormFieldData& field,
+      FieldRendererId field_id,
       const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source) override;
   void DidFillAutofillFormData(const FormData& form,
                                base::TimeTicks timestamp) override;
   void FocusOnFormField(const FormData& form,
-                        const FormFieldData& field) override;
+                        FieldRendererId field_id) override;
   void FormsSeen(const std::vector<FormData>& updated_forms,
                  const std::vector<FormRendererId>& removed_forms) override;
   void FormSubmitted(const FormData& form,
                      bool known_success,
                      mojom::SubmissionSource submission_source) override;
   void JavaScriptChangedAutofilledValue(const FormData& form,
-                                        const FormFieldData& field,
+                                        FieldRendererId field_id,
                                         const std::u16string& old_value,
                                         bool formatting_only) override;
   void SelectControlDidChange(const FormData& form,
-                              const FormFieldData& field) override;
+                              FieldRendererId field_id) override;
   void SelectOrSelectListFieldOptionsDidChange(const FormData& form) override;
   void CaretMovedInFormField(const FormData& form,
-                             const FormFieldData& field,
+                             FieldRendererId field_id,
                              const gfx::Rect& caret_bounds) override;
   void TextFieldDidChange(const FormData& form,
-                          const FormFieldData& field,
+                          FieldRendererId field_id,
                           base::TimeTicks timestamp) override;
   void TextFieldDidScroll(const FormData& form,
-                          const FormFieldData& field) override;
+                          FieldRendererId field_id) override;
 
   // Sets parameters of |form| and |field| that can be extracted from
-  // |render_frame_host_|. |field| is treated as if it is a field of |form|.
+  // |render_frame_host_|.
   //
-  // These functions must be called for every FormData and FormFieldData
-  // received from the renderer.
-  void SetFrameAndFormMetaData(FormData& form,
-                               base::optional_ref<FormFieldData> field) const;
+  // These functions must be called for every FormData received from the
+  // renderer.
+  void SetFrameAndFormMetaData(FormData& form) const;
   // Returns a copy of `form` after applying `SetFormAndFormMetaData` to it.
   [[nodiscard]] FormData GetFormWithFrameAndFormMetaData(FormData form) const;
   [[nodiscard]] std::optional<FormData> GetFormWithFrameAndFormMetaData(

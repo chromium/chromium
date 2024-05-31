@@ -248,15 +248,15 @@ base::flat_set<FieldGlobalId> ContentAutofillDriver::ApplyFormAction(
 void ContentAutofillDriver::ApplyFieldAction(
     mojom::FieldActionType action_type,
     mojom::ActionPersistence action_persistence,
-    const FieldGlobalId& field,
+    const FieldGlobalId& field_id,
     const std::u16string& value) {
   router().ApplyFieldAction(
-      *this, action_type, action_persistence, field, value,
+      *this, action_type, action_persistence, field_id, value,
       [](autofill::AutofillDriver& target, mojom::FieldActionType action_type,
          mojom::ActionPersistence action_persistence,
-         const FieldRendererId& field, const std::u16string& value) {
+         const FieldRendererId& field_id, const std::u16string& value) {
         cast(target).GetAutofillAgent()->ApplyFieldAction(
-            action_type, action_persistence, field, value);
+            action_type, action_persistence, field_id, value);
       });
 }
 
@@ -352,13 +352,14 @@ void ContentAutofillDriver::SendAutofillTypePredictionsToRenderer(
 }
 
 void ContentAutofillDriver::RendererShouldAcceptDataListSuggestion(
-    const FieldGlobalId& field,
+    const FieldGlobalId& field_id,
     const std::u16string& value) {
   router().RendererShouldAcceptDataListSuggestion(
-      *this, field, value,
-      [](autofill::AutofillDriver& target, const FieldRendererId& field,
+      *this, field_id, value,
+      [](autofill::AutofillDriver& target, const FieldRendererId& field_id,
          const std::u16string& value) {
-        cast(target).GetAutofillAgent()->AcceptDataListSuggestion(field, value);
+        cast(target).GetAutofillAgent()->AcceptDataListSuggestion(field_id,
+                                                                  value);
       });
 }
 
@@ -370,26 +371,26 @@ void ContentAutofillDriver::RendererShouldClearPreviewedForm() {
 }
 
 void ContentAutofillDriver::RendererShouldTriggerSuggestions(
-    const FieldGlobalId& field,
+    const FieldGlobalId& field_id,
     AutofillSuggestionTriggerSource trigger_source) {
   router().RendererShouldTriggerSuggestions(
-      *this, field, trigger_source,
-      [](autofill::AutofillDriver& target, const FieldRendererId& field,
+      *this, field_id, trigger_source,
+      [](autofill::AutofillDriver& target, const FieldRendererId& field_id,
          AutofillSuggestionTriggerSource trigger_source) {
-        cast(target).GetAutofillAgent()->TriggerSuggestions(field,
+        cast(target).GetAutofillAgent()->TriggerSuggestions(field_id,
                                                             trigger_source);
       });
 }
 
 void ContentAutofillDriver::RendererShouldSetSuggestionAvailability(
-    const FieldGlobalId& field,
+    const FieldGlobalId& field_id,
     mojom::AutofillSuggestionAvailability suggestion_availability) {
   router().RendererShouldSetSuggestionAvailability(
-      *this, field, suggestion_availability,
-      [](autofill::AutofillDriver& target, const FieldRendererId& field,
+      *this, field_id, suggestion_availability,
+      [](autofill::AutofillDriver& target, const FieldRendererId& field_id,
          mojom::AutofillSuggestionAvailability suggestion_availability) {
         cast(target).GetAutofillAgent()->SetSuggestionAvailability(
-            field, suggestion_availability);
+            field_id, suggestion_availability);
       });
 }
 
@@ -401,7 +402,7 @@ void ContentAutofillDriver::FormsSeen(
   }
   std::vector<FormData> updated_forms = raw_updated_forms;
   for (FormData& form : updated_forms)
-    SetFrameAndFormMetaData(form, std::nullopt);
+    SetFrameAndFormMetaData(form);
 
   std::vector<FormGlobalId> removed_forms;
   removed_forms.reserve(raw_removed_forms.size());
@@ -436,97 +437,85 @@ void ContentAutofillDriver::FormSubmitted(
 
 void ContentAutofillDriver::CaretMovedInFormField(
     const FormData& raw_form,
-    const FormFieldData& raw_field,
+    FieldRendererId field_id,
     const gfx::Rect& caret_bounds) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
   }
-  FormData form = raw_form;
-  FormFieldData field = raw_field;
-  SetFrameAndFormMetaData(form, field);
   router().CaretMovedInFormField(
-      *this, std::move(form), field,
+      *this, GetFormWithFrameAndFormMetaData(raw_form),
+      FieldGlobalId(GetFrameToken(), field_id),
       TransformBoundingBoxToViewportCoordinates(caret_bounds),
       [](autofill::AutofillDriver& target, const FormData& form,
-         const FormFieldData& field, const gfx::Rect& caret_bounds) {
+         const FieldGlobalId& field_id, const gfx::Rect& caret_bounds) {
         target.GetAutofillManager().OnCaretMovedInFormField(
-            WithNewVersion(form), field.global_id(), caret_bounds);
+            WithNewVersion(form), field_id, caret_bounds);
       });
 }
 
 void ContentAutofillDriver::TextFieldDidChange(const FormData& raw_form,
-                                               const FormFieldData& raw_field,
+                                               FieldRendererId field_id,
                                                base::TimeTicks timestamp) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
   }
-  FormData form = raw_form;
-  FormFieldData field = raw_field;
-  SetFrameAndFormMetaData(form, field);
   router().TextFieldDidChange(
-      *this, std::move(form), field, timestamp,
+      *this, GetFormWithFrameAndFormMetaData(raw_form),
+      FieldGlobalId(GetFrameToken(), field_id), timestamp,
       [](autofill::AutofillDriver& target, const FormData& form,
-         const FormFieldData& field, base::TimeTicks timestamp) {
-        target.GetAutofillManager().OnTextFieldDidChange(
-            WithNewVersion(form), field.global_id(), timestamp);
+         const FieldGlobalId& field_id, base::TimeTicks timestamp) {
+        target.GetAutofillManager().OnTextFieldDidChange(WithNewVersion(form),
+                                                         field_id, timestamp);
       });
 }
 
 void ContentAutofillDriver::TextFieldDidScroll(const FormData& raw_form,
-                                               const FormFieldData& raw_field) {
+                                               FieldRendererId field_id) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
   }
-  FormData form = raw_form;
-  FormFieldData field = raw_field;
-  SetFrameAndFormMetaData(form, field);
   router().TextFieldDidScroll(
-      *this, std::move(form), field,
+      *this, GetFormWithFrameAndFormMetaData(raw_form),
+      FieldGlobalId(GetFrameToken(), field_id),
       [](autofill::AutofillDriver& target, const FormData& form,
-         const FormFieldData& field) {
+         const FieldGlobalId& field_id) {
         target.GetAutofillManager().OnTextFieldDidScroll(WithNewVersion(form),
-                                                         field.global_id());
+                                                         field_id);
       });
 }
 
-void ContentAutofillDriver::SelectControlDidChange(
-    const FormData& raw_form,
-    const FormFieldData& raw_field) {
+void ContentAutofillDriver::SelectControlDidChange(const FormData& raw_form,
+                                                   FieldRendererId field_id) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
   }
-  FormData form = raw_form;
-  FormFieldData field = raw_field;
-  SetFrameAndFormMetaData(form, field);
   router().SelectControlDidChange(
-      *this, std::move(form), field,
+      *this, GetFormWithFrameAndFormMetaData(raw_form),
+      FieldGlobalId(GetFrameToken(), field_id),
       [](autofill::AutofillDriver& target, const FormData& form,
-         const FormFieldData& field) {
+         const FieldGlobalId& field_id) {
         target.GetAutofillManager().OnSelectControlDidChange(
-            WithNewVersion(form), field.global_id());
+            WithNewVersion(form), field_id);
       });
 }
 
 void ContentAutofillDriver::AskForValuesToFill(
     const FormData& raw_form,
-    const FormFieldData& raw_field,
+    FieldRendererId field_id,
     const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
   }
-  FormData form = raw_form;
-  FormFieldData field = raw_field;
-  SetFrameAndFormMetaData(form, field);
   router().AskForValuesToFill(
-      *this, std::move(form), field,
+      *this, GetFormWithFrameAndFormMetaData(raw_form),
+      FieldGlobalId(GetFrameToken(), field_id),
       TransformBoundingBoxToViewportCoordinates(caret_bounds), trigger_source,
       [](autofill::AutofillDriver& target, const FormData& form,
-         const FormFieldData& field, const gfx::Rect& caret_bounds,
+         const FieldGlobalId& field_id, const gfx::Rect& caret_bounds,
          AutofillSuggestionTriggerSource trigger_source) {
         target.GetAutofillManager().OnAskForValuesToFill(
-            WithNewVersion(form), field.global_id(), caret_bounds,
-            trigger_source);
+            WithNewVersion(form), field_id, caret_bounds, trigger_source);
       });
 }
 
@@ -551,19 +540,17 @@ void ContentAutofillDriver::FocusOnNonFormField(bool had_interacted_form) {
 }
 
 void ContentAutofillDriver::FocusOnFormField(const FormData& raw_form,
-                                             const FormFieldData& raw_field) {
+                                             FieldRendererId field_id) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
   }
-  FormData form = raw_form;
-  FormFieldData field = raw_field;
-  SetFrameAndFormMetaData(form, field);
   router().FocusOnFormField(
-      *this, std::move(form), field,
+      *this, GetFormWithFrameAndFormMetaData(raw_form),
+      FieldGlobalId(GetFrameToken(), field_id),
       [](autofill::AutofillDriver& target, const FormData& form,
-         const FormFieldData& field) {
+         const FieldGlobalId& field_id) {
         target.GetAutofillManager().OnFocusOnFormField(WithNewVersion(form),
-                                                       field.global_id());
+                                                       field_id);
       },
       [](autofill::AutofillDriver& target) {
         target.GetAutofillManager().OnFocusOnNonFormField(true);
@@ -609,23 +596,20 @@ void ContentAutofillDriver::SelectOrSelectListFieldOptionsDidChange(
 
 void ContentAutofillDriver::JavaScriptChangedAutofilledValue(
     const FormData& raw_form,
-    const FormFieldData& raw_field,
+    FieldRendererId field_id,
     const std::u16string& old_value,
     bool formatting_only) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
   }
-  FormData form = raw_form;
-  FormFieldData field = raw_field;
-  SetFrameAndFormMetaData(form, field);
   router().JavaScriptChangedAutofilledValue(
-      *this, std::move(form), field, old_value, formatting_only,
+      *this, GetFormWithFrameAndFormMetaData(raw_form),
+      FieldGlobalId(GetFrameToken(), field_id), old_value, formatting_only,
       [](autofill::AutofillDriver& target, const FormData& form,
-         const FormFieldData& field, const std::u16string& old_value,
+         const FieldGlobalId& field_id, const std::u16string& old_value,
          bool formatting_only) {
         target.GetAutofillManager().OnJavaScriptChangedAutofilledValue(
-            WithNewVersion(form), field.global_id(), old_value,
-            formatting_only);
+            WithNewVersion(form), field_id, old_value, formatting_only);
       });
 }
 
@@ -645,9 +629,7 @@ ContentAutofillDriver::GetAutofillAgent() {
   return autofill_agent_;
 }
 
-void ContentAutofillDriver::SetFrameAndFormMetaData(
-    FormData& form,
-    base::optional_ref<FormFieldData> field) const {
+void ContentAutofillDriver::SetFrameAndFormMetaData(FormData& form) const {
   form.set_host_frame(GetFrameToken());
 
   // GetLastCommittedURL doesn't include URL updates due to document.open() and
@@ -666,25 +648,18 @@ void ContentAutofillDriver::SetFrameAndFormMetaData(
   // The form signature must not be calculated before setting FormData::url.
   FormSignature form_signature = CalculateFormSignature(form);
 
-  auto SetFieldMetaData = [&](FormFieldData& f) {
+  for (FormFieldData& f : form.fields) {
     f.set_host_frame(form.host_frame());
     f.set_host_form_id(form.renderer_id());
     f.set_origin(render_frame_host_->GetLastCommittedOrigin());
     f.set_host_form_signature(form_signature);
     f.set_bounds(TransformBoundingBoxToViewportCoordinates(f.bounds()));
-  };
-
-  for (FormFieldData& f : form.fields) {
-    SetFieldMetaData(f);
-  }
-  if (field.has_value()) {
-    SetFieldMetaData(*field);
   }
 }
 
 FormData ContentAutofillDriver::GetFormWithFrameAndFormMetaData(
     FormData form) const {
-  SetFrameAndFormMetaData(form, std::nullopt);
+  SetFrameAndFormMetaData(form);
   return form;
 }
 

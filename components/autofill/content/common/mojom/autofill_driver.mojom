@@ -29,6 +29,8 @@ interface AutofillDriver {
 
   // Notification that a form field's caret moved or selection has changed.
   //
+  // `field_id` must identify a field of `form`.
+  //
   // `caret_bounds` is the bounds of the caret if the selection is empty and
   // otherwise the bounds of the focus
   // (https://w3c.github.io/selection-api/#dfn-focus). That is, its width is
@@ -36,7 +38,7 @@ interface AutofillDriver {
   // validated in any way; in particular, the coordinates may be negative or
   // otherwise outside of the bounds of the viewport.
   CaretMovedInFormField(FormData form,
-                        FormFieldData field,
+                        FieldRendererId field_id,
                         gfx.mojom.Rect caret_bounds);
 
   // Notification that a form field's value has changed by a user edit.
@@ -48,8 +50,10 @@ interface AutofillDriver {
   // - kAutofillTextAreaChangeEvents is enabled: then also for textareas;
   // - kAutofillContentEditableChangeEvents is enabled: then also for
   //   contenteditables.
+  //
+  // `field_id` must identify a field of `form`.
   TextFieldDidChange(FormData form,
-                     FormFieldData field,
+                     FieldRendererId field_id,
                      mojo_base.mojom.TimeTicks timestamp);
 
   // Notification that editing a text-type input element ended.
@@ -60,12 +64,16 @@ interface AutofillDriver {
   DidEndTextFieldEditing();
 
   // Notification that a form field has scrolled.
+  //
+  // `field_id` must identify a field of `form`.
   TextFieldDidScroll(FormData form,
-                     FormFieldData field);
+                     FieldRendererId field_id);
 
   // Notification that a form select control has changed.
+  //
+  // `field_id` must identify a field of `form`.
   SelectControlDidChange(FormData form,
-                         FormFieldData field);
+                         FieldRendererId field_id);
 
   // Notification that a select or selectlist element's options were modified.
   SelectOrSelectListFieldOptionsDidChange(FormData form);
@@ -77,13 +85,17 @@ interface AutofillDriver {
   //   control element or contenteditable whose `FormData` can be extracted.
   // - `FocusOnNonFormField()` iff it does not call `FocusOnFormField()`.
   //
+  // `field_id` must identify a field of `form`.
+  //
   // TODO(crbug.com/40726656): Remove `had_interacted_form` when cleaning up
   // `kAutofillNewFocusEvents`.
-  FocusOnFormField(FormData form, FormFieldData field);
+  FocusOnFormField(FormData form, FieldRendererId field_id);
   FocusOnNonFormField(bool had_interacted_form);
 
   // Queries the browser for Autofill suggestions for a form input field.
   // For autofill this means asking the user which values to fill.
+  //
+  // `field_id` must identify a field of `form`.
   //
   // `caret_bounds` is the bounds of the caret if the selection is empty and
   // otherwise the bounds of the focus
@@ -92,7 +104,7 @@ interface AutofillDriver {
   // validated in any way; in particular, the coordinates may be negative or
   // otherwise outside of the bounds of the viewport.
   AskForValuesToFill(FormData form,
-                     FormFieldData field,
+                     FieldRendererId field_id,
                      gfx.mojom.Rect caret_bounds,
                      AutofillSuggestionTriggerSource trigger_source);
 
@@ -102,7 +114,7 @@ interface AutofillDriver {
   // Sent when a form is filled with Autofill suggestions.
   DidFillAutofillFormData(FormData form, mojo_base.mojom.TimeTicks timestamp);
 
-  // Sent when `field` was in autofilled state but JavaScript modified the
+  // Sent when a field was in autofilled state but JavaScript modified the
   // value.
   //
   // Note that from a renderer's perspective, modifying the value with
@@ -110,11 +122,13 @@ interface AutofillDriver {
   // anymore. So this notification won't be sent again until the field gets
   // autofilled again.
   //
+  // `field_id` must identify a field of `form`.
+  //
   // `formatting_only` is true if JavaScript only modified whitespaces, symbols
   // and capitalization, and in that case, the field is still considered
   // autofilled.
   JavaScriptChangedAutofilledValue(FormData form,
-                                   FormFieldData field,
+                                   FieldRendererId field_id,
                                    mojo_base.mojom.String16 old_value,
                                    bool formatting_only);
 };
