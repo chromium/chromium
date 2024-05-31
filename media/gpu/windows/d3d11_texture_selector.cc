@@ -12,6 +12,7 @@
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/windows/d3d11_copying_texture_wrapper.h"
 #include "media/gpu/windows/d3d11_video_device_format_support.h"
+#include "media/gpu/windows/format_utils.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -38,31 +39,6 @@ bool SupportsZeroCopy(const gpu::GpuPreferences& preferences,
     return false;
 
   return true;
-}
-
-const char* DxgiFormatToString(DXGI_FORMAT format) {
-  switch (format) {
-    case DXGI_FORMAT_Y416:
-      return "Y416";
-    case DXGI_FORMAT_Y216:
-      return "Y216";
-    case DXGI_FORMAT_P016:
-      return "P016";
-    case DXGI_FORMAT_NV12:
-      return "NV12";
-    case DXGI_FORMAT_P010:
-      return "P010";
-    case DXGI_FORMAT_Y210:
-      return "Y210";
-    case DXGI_FORMAT_AYUV:
-      return "AYUV";
-    case DXGI_FORMAT_Y410:
-      return "Y410";
-    case DXGI_FORMAT_YUY2:
-      return "YUY2";
-    default:
-      return "UNKNOWN";
-  }
 }
 
 // static
