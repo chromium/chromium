@@ -7,9 +7,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "components/input/touchpad_tap_suppression_controller.h"
+#include "components/input/touchscreen_tap_suppression_controller.h"
 #include "content/common/content_export.h"
-#include "content/common/input/touchpad_tap_suppression_controller.h"
-#include "content/common/input/touchscreen_tap_suppression_controller.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/events/blink/fling_booster.h"
 
@@ -57,10 +57,10 @@ class CONTENT_EXPORT FlingController {
     Config();
 
     // Controls touchpad-related tap suppression, disabled by default.
-    TapSuppressionController::Config touchpad_tap_suppression_config;
+    input::TapSuppressionController::Config touchpad_tap_suppression_config;
 
     // Controls touchscreen-related tap suppression, disabled by default.
-    TapSuppressionController::Config touchscreen_tap_suppression_config;
+    input::TapSuppressionController::Config touchscreen_tap_suppression_config;
   };
 
   struct ActiveFlingParameters {
@@ -106,7 +106,8 @@ class CONTENT_EXPORT FlingController {
   gfx::Vector2dF CurrentFlingVelocity() const;
 
   // Returns the |TouchpadTapSuppressionController| instance.
-  TouchpadTapSuppressionController* GetTouchpadTapSuppressionController();
+  input::TouchpadTapSuppressionController*
+  GetTouchpadTapSuppressionController();
 
   void set_clock_for_testing(const base::TickClock* clock) { clock_ = clock; }
 
@@ -170,12 +171,13 @@ class CONTENT_EXPORT FlingController {
   // An object tracking the state of touchpad on the delivery of mouse events to
   // the renderer to filter mouse immediately after a touchpad fling canceling
   // tap.
-  TouchpadTapSuppressionController touchpad_tap_suppression_controller_;
+  input::TouchpadTapSuppressionController touchpad_tap_suppression_controller_;
 
   // An object tracking the state of touchscreen on the delivery of gesture tap
   // events to the renderer to filter taps immediately after a touchscreen fling
   // canceling tap.
-  TouchscreenTapSuppressionController touchscreen_tap_suppression_controller_;
+  input::TouchscreenTapSuppressionController
+      touchscreen_tap_suppression_controller_;
 
   // Gesture curve of the current active fling. nullptr while a fling is not
   // active.

@@ -451,7 +451,7 @@ gfx::Vector2dF FlingController::CurrentFlingVelocity() const {
   return current_fling_parameters_.velocity;
 }
 
-TouchpadTapSuppressionController*
+input::TouchpadTapSuppressionController*
 FlingController::GetTouchpadTapSuppressionController() {
   return &touchpad_tap_suppression_controller_;
 }

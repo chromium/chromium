@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_TAP_SUPPRESSION_CONTROLLER_H_
-#define CONTENT_COMMON_INPUT_TAP_SUPPRESSION_CONTROLLER_H_
+#ifndef COMPONENTS_INPUT_TAP_SUPPRESSION_CONTROLLER_H_
+#define COMPONENTS_INPUT_TAP_SUPPRESSION_CONTROLLER_H_
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "content/common/content_export.h"
+#include "base/component_export.h"
 
-namespace content {
+namespace input {
 
 // The core controller for suppression of taps (touchpad or touchscreen)
 // immediately following a GestureFlingCancel event (caused by the same tap).
 // Only taps of sufficient speed and within a specified time window after a
 // GestureFlingCancel are suppressed.
-class CONTENT_EXPORT TapSuppressionController {
+class COMPONENT_EXPORT(INPUT) TapSuppressionController {
  public:
-  struct CONTENT_EXPORT Config {
+  struct COMPONENT_EXPORT(INPUT) Config {
     Config();
 
     // Defaults to false, in which case no suppression is performed.
@@ -75,6 +75,6 @@ class CONTENT_EXPORT TapSuppressionController {
   base::TimeTicks fling_cancel_time_;
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_TAP_SUPPRESSION_CONTROLLER_H_
+#endif  // COMPONENTS_INPUT_TAP_SUPPRESSION_CONTROLLER_H_

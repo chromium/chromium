@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_TOUCHSCREEN_TAP_SUPPRESSION_CONTROLLER_H_
-#define CONTENT_COMMON_INPUT_TOUCHSCREEN_TAP_SUPPRESSION_CONTROLLER_H_
+#ifndef COMPONENTS_INPUT_TOUCHSCREEN_TAP_SUPPRESSION_CONTROLLER_H_
+#define COMPONENTS_INPUT_TOUCHSCREEN_TAP_SUPPRESSION_CONTROLLER_H_
 
 #include "components/input/event_with_latency_info.h"
-#include "content/common/input/tap_suppression_controller.h"
+#include "components/input/tap_suppression_controller.h"
+#include "base/component_export.h"
 
-namespace content {
+namespace input {
 
 // Controls the suppression of touchscreen taps immediately following the
 // dispatch of a GestureFlingCancel event.
-class TouchscreenTapSuppressionController : public TapSuppressionController {
+class COMPONENT_EXPORT(INPUT) TouchscreenTapSuppressionController :
+    public TapSuppressionController {
  public:
   TouchscreenTapSuppressionController(
       const TapSuppressionController::Config& config);
@@ -26,9 +28,9 @@ class TouchscreenTapSuppressionController : public TapSuppressionController {
 
   // Should be called on arrival of any tap-related events. Returns true if the
   // caller should stop normal handling of the gesture.
-  bool FilterTapEvent(const input::GestureEventWithLatencyInfo& event);
+  bool FilterTapEvent(const GestureEventWithLatencyInfo& event);
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_TOUCHSCREEN_TAP_SUPPRESSION_CONTROLLER_H_
+#endif  // COMPONENTS_INPUT_TOUCHSCREEN_TAP_SUPPRESSION_CONTROLLER_H_

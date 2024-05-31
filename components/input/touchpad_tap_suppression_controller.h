@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_TOUCHPAD_TAP_SUPPRESSION_CONTROLLER_H_
-#define CONTENT_COMMON_INPUT_TOUCHPAD_TAP_SUPPRESSION_CONTROLLER_H_
+#ifndef COMPONENTS_INPUT_TOUCHPAD_TAP_SUPPRESSION_CONTROLLER_H_
+#define COMPONENTS_INPUT_TOUCHPAD_TAP_SUPPRESSION_CONTROLLER_H_
 
 #include "components/input/event_with_latency_info.h"
-#include "content/common/input/tap_suppression_controller.h"
+#include "components/input/tap_suppression_controller.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "base/component_export.h"
 
-namespace content {
+namespace input {
 
 // Controls the suppression of touchpad taps immediately following the dispatch
 // of a GestureFlingCancel event.
-class TouchpadTapSuppressionController : public TapSuppressionController {
+class COMPONENT_EXPORT(INPUT) TouchpadTapSuppressionController :
+    public TapSuppressionController {
  public:
   // The |client| must outlive the TouchpadTapSupressionController.
   TouchpadTapSuppressionController(
@@ -28,7 +30,7 @@ class TouchpadTapSuppressionController : public TapSuppressionController {
 
   // Should be called on arrival of MouseDown events. Returns true if the caller
   // should stop normal handling of the MouseDown.
-  bool ShouldSuppressMouseDown(const input::MouseEventWithLatencyInfo& event);
+  bool ShouldSuppressMouseDown(const MouseEventWithLatencyInfo& event);
 
   // Should be called on arrival of MouseUp events. Returns true if the caller
   // should stop normal handling of the MouseUp.
@@ -38,6 +40,6 @@ class TouchpadTapSuppressionController : public TapSuppressionController {
   friend class MockRenderWidgetHost;
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_TOUCHPAD_TAP_SUPPRESSION_CONTROLLER_H_
+#endif  // COMPONENTS_INPUT_TOUCHPAD_TAP_SUPPRESSION_CONTROLLER_H_

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/tap_suppression_controller.h"
+#include "components/input/tap_suppression_controller.h"
 
 #include <memory>
 
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
+namespace input {
 
 class MockTapSuppressionController : public TapSuppressionController {
  public:
@@ -225,4 +225,4 @@ TEST_F(TapSuppressionControllerTest, NoSuppressionIfDisabled) {
             tap_suppression_controller_->state());
 }
 
-}  // namespace content
+}  // namespace input

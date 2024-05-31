@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/touchscreen_tap_suppression_controller.h"
+#include "components/input/touchscreen_tap_suppression_controller.h"
 
 #include <utility>
 
 using blink::WebInputEvent;
 
-namespace content {
+namespace input {
 
 TouchscreenTapSuppressionController::TouchscreenTapSuppressionController(
     const TapSuppressionController::Config& config)
@@ -17,7 +17,7 @@ TouchscreenTapSuppressionController::TouchscreenTapSuppressionController(
 TouchscreenTapSuppressionController::~TouchscreenTapSuppressionController() {}
 
 bool TouchscreenTapSuppressionController::FilterTapEvent(
-    const input::GestureEventWithLatencyInfo& event) {
+    const GestureEventWithLatencyInfo& event) {
   switch (event.event.GetType()) {
     case WebInputEvent::Type::kGestureTapDown:
       return ShouldSuppressTapDown();
@@ -38,4 +38,4 @@ bool TouchscreenTapSuppressionController::FilterTapEvent(
   return false;
 }
 
-}  // namespace content
+}  // namespace input

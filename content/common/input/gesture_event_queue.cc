@@ -6,8 +6,8 @@
 
 #include "base/auto_reset.h"
 #include "base/trace_event/trace_event.h"
-#include "content/common/input/touchpad_tap_suppression_controller.h"
-#include "content/common/input/touchscreen_tap_suppression_controller.h"
+#include "components/input/touchpad_tap_suppression_controller.h"
+#include "components/input/touchscreen_tap_suppression_controller.h"
 #include "ui/events/blink/blink_features.h"
 #include "ui/events/blink/web_input_event_traits.h"
 
@@ -210,7 +210,7 @@ void GestureEventQueue::AckGestureEventToClient(
   client_->OnGestureEventAck(event_with_latency, ack_source, ack_result);
 }
 
-TouchpadTapSuppressionController*
+input::TouchpadTapSuppressionController*
 GestureEventQueue::GetTouchpadTapSuppressionController() {
   return fling_controller_.GetTouchpadTapSuppressionController();
 }

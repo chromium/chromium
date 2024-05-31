@@ -2820,7 +2820,6 @@ test("content_unittests") {
     "../common/input/passthrough_touch_event_queue_unittest.cc",
     "../common/input/synthetic_gesture_controller_unittest.cc",
     "../common/input/synthetic_pointer_action_unittest.cc",
-    "../common/input/tap_suppression_controller_unittest.cc",
     "../common/input/touch_action_filter_unittest.cc",
     "../common/input/touch_event_stream_validator_unittest.cc",
     "../common/input/touchpad_pinch_event_queue_unittest.cc",

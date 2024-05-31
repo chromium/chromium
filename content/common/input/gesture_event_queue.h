@@ -107,7 +107,8 @@ class CONTENT_EXPORT GestureEventQueue {
                          const ui::LatencyInfo& latency);
 
   // Returns the |TouchpadTapSuppressionController| instance.
-  TouchpadTapSuppressionController* GetTouchpadTapSuppressionController();
+  input::TouchpadTapSuppressionController*
+  GetTouchpadTapSuppressionController();
 
   // Sends the gesture event to the renderer. Stores the sent event for when
   // the renderer replies with an ACK.

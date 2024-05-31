@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/tap_suppression_controller.h"
+#include "components/input/tap_suppression_controller.h"
 
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 
-namespace content {
+namespace input {
 
 TapSuppressionController::Config::Config()
     : enabled(false), max_cancel_to_down_time(base::Milliseconds(180)) {}
@@ -73,4 +73,4 @@ base::TimeTicks TapSuppressionController::Now() {
   return base::TimeTicks::Now();
 }
 
-}  // namespace content
+}  // namespace input
