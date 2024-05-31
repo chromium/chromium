@@ -302,7 +302,7 @@ template("mixed_test") {
         } else {
           fuzzer_args = ""
         }
-        fuzzer_args += "--fuzz=$fuzztest_unit"
+        fuzzer_args += "--fuzz=$fuzztest_unit --corpus_database=\"\""
         contents = [ "const char* kFuzzerArgs = \"${fuzzer_args}\"; const char* kFuzzerBinary = \"${_fuzzer_binary_name}\";" ]
       }
 
