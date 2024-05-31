@@ -146,6 +146,13 @@ void LocalTabGroupListener::MoveWebContentsFromLocal(
     return;
   }
 
+  // It is possible that the listener does not track the webcontents. The tab
+  // should get added correctly in `model_` only after being tracked by the
+  // listener. See (b/343519257)
+  if (!web_contents_to_tab_id_map_.contains(web_contents)) {
+    return;
+  }
+
   // Ex:        0 1   2 3 4
   //  TabStrip: A B [ C D E ]
   //  TabGroup:       0 1 2

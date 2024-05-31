@@ -547,6 +547,37 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       MoveTabInsideAndOutsideGroup) {
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+
+  // Add 2 tabs to the group.
+  const tab_groups::TabGroupId local_group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0, 1});
+
+  RunTestSequence(
+      // Show the bookmarks bar where the buttons will be displayed.
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      SaveGroupAndCloseEditorBubble(local_group_id), Do([&]() {
+        browser()->tab_strip_model()->MoveWebContentsAt(1, 2, false);
+      }),
+      CheckResult(
+          [&]() { return browser()->tab_strip_model()->GetTabGroupForTab(2); },
+          std::nullopt),
+      Do([&]() {
+        std::vector<int> indices = {2};
+        browser()->tab_strip_model()->AddToExistingGroup(indices,
+                                                         local_group_id);
+      }),
+      CheckResult(
+          [&]() { return browser()->tab_strip_model()->GetTabGroupForTab(1); },
+          local_group_id));
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        UpdateButtonWhenTabGroupVisualDataChanges) {
   // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
   // open the browser and the added one).
