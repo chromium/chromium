@@ -69,6 +69,9 @@
   },
   "archive_prefix": "libfuzzer-chromeos",
   "builder_group": "chromium.fuzz",
+  "gardener_rotations": [
+    "chromium"
+  ],
   "recipe": "chromium/fuzz",
   "sheriff_rotations": [
     "chromium"

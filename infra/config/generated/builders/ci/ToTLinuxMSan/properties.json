@@ -67,6 +67,9 @@
     ]
   },
   "builder_group": "chromium.clang",
+  "gardener_rotations": [
+    "chromium.clang"
+  ],
   "perf_dashboard_machine_group": "ChromiumClang",
   "recipe": "chromium",
   "sheriff_rotations": [

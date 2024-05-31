@@ -70,6 +70,9 @@
   },
   "archive_prefix": "libfuzzer-ios",
   "builder_group": "chromium.fuzz",
+  "gardener_rotations": [
+    "chromium"
+  ],
   "ios_targets_only": true,
   "recipe": "chromium/fuzz",
   "sheriff_rotations": [

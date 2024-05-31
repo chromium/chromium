@@ -776,7 +776,9 @@ def builder(
 
     sheriff_rotations = defaults.get_value("sheriff_rotations", sheriff_rotations, merge = args.MERGE_LIST)
     if sheriff_rotations:
+        # TODO(343503161): Remove sheriff_rotations after SoM is updated.
         properties["sheriff_rotations"] = sheriff_rotations
+        properties["gardener_rotations"] = sheriff_rotations
 
     ssd = defaults.get_value("ssd", ssd)
     if ssd == args.COMPUTE:

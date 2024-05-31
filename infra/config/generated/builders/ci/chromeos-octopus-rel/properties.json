@@ -83,6 +83,9 @@
     ]
   },
   "builder_group": "chromium.chromiumos",
+  "gardener_rotations": [
+    "chromiumos"
+  ],
   "recipe": "chromium",
   "sheriff_rotations": [
     "chromiumos"
