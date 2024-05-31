@@ -2,55 +2,240 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
+
+#include <numeric>
+#include <optional>
+#include <utility>
+
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
+#include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/ml/webnn/features.mojom-blink.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_buffer_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_compute_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_hard_sigmoid_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_linear_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
+#include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_buffer.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_base.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
 namespace blink_mojom = webnn::mojom::blink;
+
+class FakeWebNNBuffer;
+
+namespace {
+
+// BuildResult is returned by Build() method. If the graph building is
+// successful, `graph` points to the MLGraph and `error_name` and
+// `error_message` are null. Otherwise, `graph` is a nullptr and
+// `error_name` and `error_message` are populated from the JS error or
+// DOMException.
+struct BuildResult {
+  Persistent<MLGraph> graph;
+  String error_name;
+  String error_message;
+};
 
 // Helper struct to create faked mojom result of inference.
 struct ComputeResult {
   WTF::HashMap<WTF::String, WTF::Vector<uint8_t>> output;
 };
 
-class FakeWebNNBuffer;
+template <typename T>
+struct OperandInfo {
+  V8MLOperandDataType::Enum data_type;
+  Vector<uint32_t> dimensions;
+  Vector<T> values;
+};
 
-class MLGraphTest : public MLGraphTestBase {
+struct OperandInfoMojo {
+  blink_mojom::Operand::DataType data_type;
+  Vector<uint32_t> dimensions;
+};
+
+template <typename T>
+T* V8ToObject(V8TestingScope* scope, ScriptValue value) {
+  return NativeValueTraits<T>::NativeValue(scope->GetIsolate(), value.V8Value(),
+                                           scope->GetExceptionState());
+}
+
+String ExceptionCodeToString(ExceptionCode exception_code) {
+  switch (static_cast<ESErrorType>(exception_code)) {
+    case ESErrorType::kTypeError:
+      return "TypeError";
+    default:
+      NOTREACHED_IN_MIGRATION();
+      return "UnknownError";
+  }
+}
+
+std::pair<String, String> GetErrorNameAndMessage(V8TestingScope* scope,
+                                                 ScriptValue value) {
+  v8::Local<v8::Object> object;
+  if (!value.V8Value()
+           ->ToObject(scope->GetScriptState()->GetContext())
+           .ToLocal(&object)) {
+    return {"undefined", "undefined"};
+  }
+  const auto& Get = [&scope, object](const String& key) -> String {
+    v8::Local<v8::Value> prop_value;
+    if (!object
+             ->Get(scope->GetScriptState()->GetContext(),
+                   V8AtomicString(scope->GetScriptState()->GetIsolate(), key))
+             .ToLocal(&prop_value)) {
+      return "undefined";
+    }
+    return ToCoreStringWithUndefinedOrNullCheck(
+        scope->GetScriptState()->GetIsolate(), prop_value);
+  };
+  return {Get("name"), Get("message")};
+}
+
+// Helper function to set the data of an ArrayBufferView from a vector.
+template <typename T>
+void SetArrayBufferViewValues(NotShared<DOMArrayBufferView> array_buffer_view,
+                              const Vector<T>& values) {
+  DCHECK_EQ(array_buffer_view->byteLength(), values.size() * sizeof(T));
+  memcpy(array_buffer_view->BaseAddress(), values.data(),
+         values.size() * sizeof(T));
+}
+
+// Overrode helper function to create an ArrayBufferView given an operand and
+// set its data from a vector.
+template <typename T>
+NotShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
+    const MLOperand* operand,
+    const Vector<T>& values) {
+  auto array_buffer_view = CreateArrayBufferViewForOperand(operand);
+  SetArrayBufferViewValues(array_buffer_view, values);
+  return array_buffer_view;
+}
+
+// Helper function to get the data of an ArrayBufferView into a vector.
+template <typename T>
+Vector<T> GetArrayBufferViewValues(
+    NotShared<DOMArrayBufferView> array_buffer_view) {
+  Vector<T> values(base::checked_cast<wtf_size_t>(
+      array_buffer_view->byteLength() / array_buffer_view->TypeSize()));
+  memcpy(values.data(), array_buffer_view->BaseAddress(),
+         array_buffer_view->byteLength());
+  return values;
+}
+
+template <typename T>
+MLOperand* BuildConstant(MLGraphBuilder* builder,
+                         const Vector<uint32_t>& dimensions,
+                         V8MLOperandDataType::Enum data_type,
+                         const Vector<T>& values,
+                         ExceptionState& exception_state) {
+  size_t buffer_size = std::accumulate(dimensions.begin(), dimensions.end(),
+                                       size_t(1), std::multiplies<uint32_t>());
+  auto buffer = CreateDOMArrayBufferView(buffer_size, data_type);
+  DCHECK_EQ(buffer->byteLength(), values.size() * sizeof(T));
+  memcpy(buffer->BaseAddress(), values.data(), buffer->byteLength());
+  return BuildConstant(builder, dimensions, data_type, exception_state, buffer);
+}
+
+ScriptPromise<MLContext> CreateContext(V8TestingScope& scope,
+                                       MLContextOptions* options) {
+  auto* ml = MakeGarbageCollected<ML>(scope.GetExecutionContext());
+  return ml->createContext(scope.GetScriptState(), options,
+                           scope.GetExceptionState());
+}
+
+MLGraphBuilder* CreateGraphBuilder(V8TestingScope& scope,
+                                   MLContextOptions* options) {
+  ScriptPromiseTester tester(scope.GetScriptState(),
+                             CreateContext(scope, options));
+  tester.WaitUntilSettled();
+  CHECK(tester.IsFulfilled());
+
+  auto* context = NativeValueTraits<MLContext>::NativeValue(
+      scope.GetIsolate(), tester.Value().V8Value(), scope.GetExceptionState());
+  return MLGraphBuilder::Create(context);
+}
+
+std::pair<String, String> ComputeGraph(V8TestingScope& scope,
+                                       MLGraph* graph,
+                                       MLNamedArrayBufferViews& inputs,
+                                       MLNamedArrayBufferViews& outputs) {
+  ScriptPromiseTester tester(
+      scope.GetScriptState(),
+      graph->Compute(ScopedMLTrace("Compute"), inputs, outputs,
+                     scope.GetScriptState(), scope.GetExceptionState()));
+  if (scope.GetExceptionState().HadException()) {
+    return {ExceptionCodeToString(scope.GetExceptionState().Code()),
+            scope.GetExceptionState().Message()};
+  }
+  tester.WaitUntilSettled();
+  if (tester.IsFulfilled()) {
+    // For `MLGraph::Compute()`, the input and output ArrayBufferViews
+    // are transferred. The new ArrayBufferViews are returned via the
+    // MLComputeResult. Set the inputs and outputs to the returned ones.
+    auto* results = V8ToObject<MLComputeResult>(&scope, tester.Value());
+    inputs = results->inputs();
+    outputs = results->outputs();
+    return {};
+  } else {
+    return GetErrorNameAndMessage(&scope, tester.Value());
+  }
+}
+
+}  // namespace
+
+class MLGraphTest : public testing::Test {
  public:
   MLGraphTest()
       : scoped_feature_list_(webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
@@ -75,8 +260,25 @@ class MLGraphTest : public MLGraphTestBase {
     return input_array_buffers_;
   }
 
+  BuildResult BuildGraph(V8TestingScope& scope,
+                         MLGraphBuilder* builder,
+                         const MLNamedOperands& named_operands) {
+    ScriptPromiseTester tester(
+        scope.GetScriptState(),
+        builder->build(scope.GetScriptState(), named_operands,
+                       scope.GetExceptionState()));
+    tester.WaitUntilSettled();
+    if (tester.IsFulfilled()) {
+      return BuildResult{.graph = V8ToObject<MLGraph>(&scope, tester.Value())};
+    } else {
+      auto [name, message] = GetErrorNameAndMessage(&scope, tester.Value());
+      return BuildResult{.error_name = name, .error_message = message};
+    }
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  test::TaskEnvironment task_environment_;
 
   blink_mojom::GraphInfoPtr graph_info_;
   HashMap<String, mojo_base::BigBuffer> input_array_buffers_;
@@ -292,16 +494,10 @@ class ScopedWebNNServiceBinder {
   const raw_ref<const BrowserInterfaceBrokerProxy> interface_broker_;
 };
 
-template <typename T>
-T* V8ToObject(V8TestingScope* scope, ScriptValue value) {
-  return NativeValueTraits<T>::NativeValue(scope->GetIsolate(), value.V8Value(),
-                                           scope->GetExceptionState());
-}
-
 // Build a simple MLGraph asynchronously with only one relu operator.
 ScriptPromise<MLGraph> BuildSimpleGraph(V8TestingScope& scope,
                                         MLContextOptions* context_options) {
-  auto* builder = MLGraphTestBase::CreateGraphBuilder(scope, context_options);
+  auto* builder = CreateGraphBuilder(scope, context_options);
   if (builder == nullptr) {
     return ScriptPromise<MLGraph>::RejectWithDOMException(
         scope.GetScriptState(),
@@ -1125,13 +1321,6 @@ TEST_F(MLGraphTest, WebNNGraphDispatchTest) {
   }
 }
 
-struct OperandInfoMojo {
-  blink_mojom::Operand::DataType data_type;
-  Vector<uint32_t> dimensions;
-};
-
-using OperandInfoBlink = OperandInfo<float>;
-
 TEST_F(MLGraphTest, CreateWebNNGraphTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
@@ -1315,7 +1504,7 @@ void CheckActivation(const webnn::mojom::blink::ActivationPtr& mojom_activation,
 }
 
 struct SoftmaxTester {
-  OperandInfoBlink input;
+  OperandInfo<float> input;
   OperandInfoMojo expected;
 
   void Test(MLGraphTest& helper,
@@ -1489,7 +1678,7 @@ TEST_F(MLGraphTest, ConstantTest) {
 }
 
 struct CastTester {
-  OperandInfoBlink input;
+  OperandInfo<float> input;
   V8MLOperandDataType::Enum output_data_type;
   OperandInfoMojo expected_operand;
 

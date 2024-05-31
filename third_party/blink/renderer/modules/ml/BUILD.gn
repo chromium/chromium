@@ -62,8 +62,6 @@ source_set("unit_tests") {
     "webnn/ml_graph_builder_utils.cc",
     "webnn/ml_graph_builder_utils.h",
     "webnn/ml_graph_test.cc",
-    "webnn/ml_graph_test_base.cc",
-    "webnn/ml_graph_test_base.h",
   ]
 
   deps = [
