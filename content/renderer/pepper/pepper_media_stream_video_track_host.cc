@@ -356,18 +356,19 @@ void PepperMediaStreamVideoTrackHost::OnVideoFrame(
     // no corresponding PP_VideoFrame_Format. Convert the video frame to I420.
     DCHECK_EQ(frame->format(), media::PIXEL_FORMAT_NV12);
     ppformat = PP_VIDEOFRAME_FORMAT_I420;
-    auto* gmb = video_frame->GetGpuMemoryBuffer();
-    if (!gmb->Map()) {
-      DLOG(WARNING) << "Failed to map GpuMemoryBuffer";
+    auto scoped_mapping = video_frame->MapGMBOrSharedImage();
+    if (!scoped_mapping) {
+      DLOG(WARNING) << "Failed to get a scoped_mapping object.";
       return;
     }
     frame = media::VideoFrame::CreateFrame(
         media::PIXEL_FORMAT_I420, video_frame->coded_size(),
         video_frame->visible_rect(), video_frame->natural_size(),
         video_frame->timestamp());
-    int ret = libyuv::NV12ToI420(
-        static_cast<const uint8_t*>(gmb->memory(0)), gmb->stride(0),
-        static_cast<const uint8_t*>(gmb->memory(1)), gmb->stride(1),
+    int ret = libyuv::NV12ToI420(scoped_mapping->Memory(0),
+        scoped_mapping->Stride(0),
+        scoped_mapping->Memory(1),
+        scoped_mapping->Stride(1),
         frame->writable_data(media::VideoFrame::Plane::kY),
         frame->stride(media::VideoFrame::Plane::kY),
         frame->writable_data(media::VideoFrame::Plane::kU),
@@ -375,7 +376,6 @@ void PepperMediaStreamVideoTrackHost::OnVideoFrame(
         frame->writable_data(media::VideoFrame::Plane::kV),
         frame->stride(media::VideoFrame::Plane::kV),
         video_frame->coded_size().width(), video_frame->coded_size().height());
-    gmb->Unmap();
     if (ret != 0) {
       DLOG(WARNING) << "Failed to convert NV12 to I420";
       return;
