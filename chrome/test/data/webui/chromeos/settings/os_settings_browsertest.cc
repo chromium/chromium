@@ -717,6 +717,10 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, SettingsDropdownV2) {
   RunSettingsTest("controls/v2/settings_dropdown_v2_test.js");
 }
 
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, SettingsRow) {
+  RunSettingsTest("controls/v2/settings_row_test.js");
+}
+
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, SettingsSliderV2) {
   RunSettingsTest("controls/v2/settings_slider_v2_test.js");
 }

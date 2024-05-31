@@ -1,0 +1,110 @@
+<style>
+  :host {
+    --settings-row-min-height: 64px;
+
+    --settings-row-icon-fill-color: var(--cros-sys-primary);
+    --settings-row-icon-height: 20px;
+    --settings-row-icon-width: 20px;
+
+    --settings-row-padding-inline-end: 20px;
+    --settings-row-padding-inline-start: 20px;
+    --settings-row-padding-bottom: 6px;
+    --settings-row-padding-top: 6px;
+
+    /* Sizing styles */
+    box-sizing: border-box;
+    min-height: var(--settings-row-min-height);
+    width: 100%;
+
+    /* Flexbox styles */
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+
+    /* Spacing */
+    padding-top: var(--settings-row-padding-top);
+    padding-bottom: var(--settings-row-padding-bottom);
+    padding-inline-end: var(--settings-row-padding-inline-end);
+    padding-inline-start: var(--settings-row-padding-inline-start);
+  }
+
+  #iconContainer {
+    --iron-icon-fill-color: var(--settings-row-icon-fill-color);
+    --iron-icon-height: var(--settings-row-icon-height);
+    --iron-icon-width: var(--settings-row-icon-width);
+  }
+
+  /* If there is an icon, add spacing between the icon and #mainContainer. */
+  #startIcon,
+  slot[name='icon']::slotted(*) {
+    margin-inline-end: 16px;
+  }
+
+  #mainContainer {
+    /* Takes up remaining space */
+    flex: 1;
+  }
+
+  #labelContainer,
+  #sublabelContainer {
+    font: var(--cros-body-2-font);
+  }
+
+  #label {
+    color: var(--cros-sys-on_surface);
+  }
+
+  #sublabel {
+    color: var(--cros-text-color-secondary);
+  }
+
+  #learnMoreLink {
+    color: var(--cr-link-color);
+    margin-inline-start: 5px;
+  }
+
+  #learnMoreLink:focus {
+    outline-color: var(--cros-sys-focus_ring);
+  }
+
+  #controlContainer {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
+
+  slot[name='control']::slotted(*) {
+    /* Spacing between slotted control and #mainContainer. */
+    margin-inline-start: 16px;
+  }
+</style>
+
+<div id="iconContainer">
+  <slot name="icon">
+    <template is="dom-if" if="[[icon]]">
+      <iron-icon id="startIcon" icon="[[icon]]" aria-hidden="true">
+      </iron-icon>
+    </template>
+  </slot>
+</div>
+
+<div id="mainContainer">
+  <div id="labelContainer">
+    <span id="label">[[label]]</span>
+  </div>
+
+  <div id="sublabelContainer">
+    <span id="sublabel">[[sublabel]]</span>
+
+    <template is="dom-if" if="[[learnMoreUrl]]">
+      <a id="learnMoreLink"
+          href="[[learnMoreUrl]]"
+          target="_blank"
+          aria-description="$i18n{opensInNewTab}">$i18n{learnMore}</a>
+    </template>
+  </div>
+</div>
+
+<div id="controlContainer">
+  <slot name="control"></slot>
+</div>
