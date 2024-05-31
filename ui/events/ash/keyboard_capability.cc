@@ -742,6 +742,16 @@ std::vector<mojom::ModifierKey> KeyboardCapability::GetModifierKeys(
   return modifier_keys;
 }
 
+std::vector<mojom::ModifierKey> KeyboardCapability::GetModifierKeys(
+    int device_id) const {
+  auto keyboard = FindKeyboardWithId(device_id);
+  if (!keyboard) {
+    return {};
+  }
+
+  return GetModifierKeys(*keyboard);
+}
+
 DeviceType KeyboardCapability::GetDeviceType(
     const KeyboardDevice& keyboard) const {
   const auto* keyboard_info = GetKeyboardInfo(keyboard);

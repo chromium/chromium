@@ -1013,14 +1013,26 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
 }
 
 void InputDeviceSettingsControllerImpl::ScheduleDeviceSettingsRefresh() {
-  if (!settings_refresh_pending_) {
-    settings_refresh_pending_ = true;
+  if (settings_refresh_pending_) {
+    return;
+  }
+
+  // Modifiers must be refreshed before settings so settings are retrieved for
+  // the correct modifiers.
+  if (features::IsModifierSplitDogfoodEnabled() &&
+      Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()) {
     sequenced_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings,
-            weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&InputDeviceSettingsControllerImpl::RefreshModifierKeys,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
+
+  settings_refresh_pending_ = true;
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
@@ -2556,6 +2568,13 @@ void InputDeviceSettingsControllerImpl::DeviceBatteryChanged(
     graphics_tablet->battery_info = std::move(mojom_battery_info);
     DispatchGraphicsTabletBatteryInfoChanged(device_id);
     return;
+  }
+}
+
+void InputDeviceSettingsControllerImpl::RefreshModifierKeys() {
+  for (auto& [_, keyboard] : keyboards_) {
+    keyboard->modifier_keys =
+        Shell::Get()->keyboard_capability()->GetModifierKeys(keyboard->id);
   }
 }
 

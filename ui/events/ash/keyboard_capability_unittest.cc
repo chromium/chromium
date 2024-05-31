@@ -255,8 +255,6 @@ class KeyboardCapabilityTestBase : public testing::Test {
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
   std::unique_ptr<user_manager::FakeUserManager> user_manager_;
   std::vector<KeyboardDevice> fake_keyboard_devices_;
-  base::AutoReset<bool> modifier_split_reset_ =
-      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
 };
 
 class KeyboardCapabilityTest : public KeyboardCapabilityTestBase,
@@ -277,6 +275,8 @@ class KeyboardCapabilityTest : public KeyboardCapabilityTestBase,
 
  protected:
   std::unique_ptr<base::test::ScopedFeatureList> modifier_split_feature_list_;
+  base::AutoReset<bool> modifier_split_reset_ =
+      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
 };
 
 INSTANTIATE_TEST_SUITE_P(All, KeyboardCapabilityTest, testing::Bool());
@@ -729,7 +729,11 @@ class ModifierKeyTest : public KeyboardCapabilityTestBase,
                             std::tuple<DeviceCapabilities,
                                        KeyboardCapability::DeviceType,
                                        KeyboardCapability::KeyboardTopRowLayout,
-                                       std::vector<mojom::ModifierKey>>> {};
+                                       std::vector<mojom::ModifierKey>>> {
+ protected:
+  base::AutoReset<bool> modifier_split_reset_ =
+      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
+};
 
 // Tests that the given `DeviceCapabilities` and
 // `KeyboardCapability::DeviceType` combo generates the given set of
@@ -802,25 +806,31 @@ TEST_P(KeyboardCapabilityTest, TestGetModifierKeysForSplitModifierKeyboard) {
   EXPECT_EQ(expected_modifier_keys, modifier_keys);
 }
 
-// With the dogfood flag enabled AND no Google account logged in, the feature
-// should act as though its disabled.
-TEST_P(KeyboardCapabilityTest,
-       TestGetModifierKeysForSplitModifierKeyboardDogfood) {
-  if (!ash::features::IsModifierSplitEnabled()) {
-    GTEST_SKIP() << "Test is only valid with Modifier Split flag enabled.";
+class KeyboardCapabilityDogfoodTest : public KeyboardCapabilityTestBase {
+ public:
+  void SetUp() override {
+    modifier_split_feature_list_ =
+        std::make_unique<base::test::ScopedFeatureList>();
+    modifier_split_feature_list_->InitWithFeatures(
+        {ash::features::kModifierSplit, ash::features::kModifierSplitDogfood},
+        {});
+    KeyboardCapabilityTestBase::SetUp();
   }
 
+ protected:
+  std::unique_ptr<base::test::ScopedFeatureList> modifier_split_feature_list_;
+};
+
+// With the dogfood flag enabled AND no Google account logged in, the feature
+// should act as though its disabled.
+TEST_F(KeyboardCapabilityDogfoodTest,
+       TestGetModifierKeysForSplitModifierKeyboardDogfood) {
   AccountId non_google_account_id =
       AccountId::FromUserEmail("testaccount@gmail.com");
   AccountId google_account_id =
       AccountId::FromUserEmail("testaccount@google.com");
   user_manager_->AddUser(non_google_account_id);
   user_manager_->AddUser(google_account_id);
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kModifierSplitDogfood);
-
-  keyboard_capability_->ResetModifierSplitDogfoodControllerForTesting();
 
   // When a non-google account is signed in, keyboard capability should not
   // consider it a split modifier keyboard.
@@ -900,9 +910,9 @@ class KeyEventTest
   }
 
  protected:
+  std::unique_ptr<base::test::ScopedFeatureList> modifier_split_feature_list_;
   base::AutoReset<bool> modifier_split_reset_ =
       ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
-  std::unique_ptr<base::test::ScopedFeatureList> modifier_split_feature_list_;
 };
 
 // Tests that given the keyboard connection type and layout type, check if this
@@ -1354,6 +1364,8 @@ class TopRowLayoutCustomTest
  protected:
   std::vector<TopRowActionKey> top_row_action_keys_;
   std::string custom_layout_string_;
+  base::AutoReset<bool> modifier_split_reset_ =
+      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
 };
 
 INSTANTIATE_TEST_SUITE_P(

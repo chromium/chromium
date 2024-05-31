@@ -240,6 +240,10 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   // current input method.
   void RefreshKeyDisplay();
 
+  // Refresh modifier keys when they potentially changed due to flags being
+  // enabled.
+  void RefreshModifierKeys();
+
   // Get the mouse button config based on the mouse metadata. Return
   // kDefault by default if there is no mouse metadata.
   mojom::MouseButtonConfig GetMouseButtonConfig(const ui::InputDevice& mouse);
