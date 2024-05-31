@@ -608,8 +608,8 @@ bool H264VaapiVideoDecoderDelegate::OutputPicture(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const VaapiH264Picture* vaapi_pic = pic->AsVaapiH264Picture();
-  vaapi_dec_->SurfaceReady(vaapi_pic->va_surface(), vaapi_pic->bitstream_id(),
-                           vaapi_pic->visible_rect(),
+  vaapi_dec_->SurfaceReady(vaapi_pic->va_surface()->id(),
+                           vaapi_pic->bitstream_id(), vaapi_pic->visible_rect(),
                            vaapi_pic->get_colorspace());
   return true;
 }

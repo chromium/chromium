@@ -13,6 +13,8 @@ namespace media {
 class VASurface;
 class VideoColorSpace;
 
+using VASurfaceID = unsigned int;
+
 // Interface representing Vaapi DecodeSurface operations, i.e. a client gets a
 // VASurface to work with by calling CreateSurface() and returns it when
 // finished by calling SurfaceReady(). No assumptions are made about
@@ -30,13 +32,13 @@ class VaapiDecodeSurfaceHandler {
   // Returns a VASurface for decoding into, if available, or nullptr.
   virtual scoped_refptr<VASurface> CreateSurface() = 0;
 
-  // Called by the client to indicate that |dec_surface| is ready to be
+  // Called by the client to indicate that |va_surface_id| is ready to be
   // outputted. This can actually be called before decode is finished in
   // hardware; this method must guarantee that |dec_surface|s are processed in
   // the same order as SurfaceReady() is called. (On Intel, this order doesn't
   // need to be explicitly maintained since the driver will enforce it, together
   // with any necessary dependencies).
-  virtual void SurfaceReady(scoped_refptr<VASurface> dec_surface,
+  virtual void SurfaceReady(VASurfaceID va_surface_id,
                             int32_t bitstream_id,
                             const gfx::Rect& visible_rect,
                             const VideoColorSpace& color_space) = 0;

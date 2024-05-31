@@ -81,7 +81,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
 
   // VaapiDecodeSurfaceHandler implementation.
   scoped_refptr<VASurface> CreateSurface() override;
-  void SurfaceReady(scoped_refptr<VASurface> va_surface,
+  void SurfaceReady(VASurfaceID va_surface_id,
                     int32_t buffer_id,
                     const gfx::Rect& visible_rect,
                     const VideoColorSpace& color_space) override;

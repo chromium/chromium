@@ -536,7 +536,7 @@ scoped_refptr<VASurface> VaapiVideoDecoder::CreateSurface() {
                        va_surface->format(), std::move(release_frame_cb));
 }
 
-void VaapiVideoDecoder::SurfaceReady(scoped_refptr<VASurface> va_surface,
+void VaapiVideoDecoder::SurfaceReady(VASurfaceID va_surface_id,
                                      int32_t buffer_id,
                                      const gfx::Rect& visible_rect,
                                      const VideoColorSpace& color_space) {
@@ -557,8 +557,8 @@ void VaapiVideoDecoder::SurfaceReady(scoped_refptr<VASurface> va_surface,
 
   // Find the frame associated with the surface. We won't erase it from
   // |output_frames_| yet, as the decoder might still be using it for reference.
-  DCHECK_EQ(output_frames_.count(va_surface->id()), 1u);
-  scoped_refptr<FrameResource> frame = output_frames_[va_surface->id()];
+  DCHECK_EQ(output_frames_.count(va_surface_id), 1u);
+  scoped_refptr<FrameResource> frame = output_frames_[va_surface_id];
 
   // Set the timestamp at which the decode operation started on the
   // |frame|. If the frame has been outputted before (e.g. because of VP9

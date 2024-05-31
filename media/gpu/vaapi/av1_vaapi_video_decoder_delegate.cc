@@ -772,7 +772,7 @@ scoped_refptr<AV1Picture> AV1VaapiVideoDecoderDelegate::CreateAV1Picture(
 bool AV1VaapiVideoDecoderDelegate::OutputPicture(const AV1Picture& pic) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto* vaapi_pic = static_cast<const VaapiAV1Picture*>(&pic);
-  vaapi_dec_->SurfaceReady(vaapi_pic->display_va_surface(),
+  vaapi_dec_->SurfaceReady(vaapi_pic->display_va_surface()->id(),
                            vaapi_pic->bitstream_id(), vaapi_pic->visible_rect(),
                            vaapi_pic->get_colorspace());
   return true;
