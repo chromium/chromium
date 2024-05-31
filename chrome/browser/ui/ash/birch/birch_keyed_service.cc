@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/birch/birch_calendar_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_file_suggest_provider.h"
+#include "chrome/browser/ui/ash/birch/birch_last_active_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_most_visited_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_recent_tabs_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_release_notes_provider.h"
@@ -36,6 +37,7 @@ BirchKeyedService::BirchKeyedService(Profile* profile)
       file_suggest_provider_(
           std::make_unique<BirchFileSuggestProvider>(profile)),
       recent_tabs_provider_(std::make_unique<BirchRecentTabsProvider>(profile)),
+      last_active_provider_(std::make_unique<BirchLastActiveProvider>(profile)),
       most_visited_provider_(
           std::make_unique<BirchMostVisitedProvider>(profile)),
       release_notes_provider_(
@@ -79,8 +81,7 @@ BirchDataProvider* BirchKeyedService::GetRecentTabsProvider() {
 }
 
 BirchDataProvider* BirchKeyedService::GetLastActiveProvider() {
-  // TODO(jamescook): Add a real provider.
-  return nullptr;
+  return last_active_provider_.get();
 }
 
 BirchDataProvider* BirchKeyedService::GetMostVisitedProvider() {

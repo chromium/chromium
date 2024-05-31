@@ -8201,6 +8201,9 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE_SUFFIX" desc="End of the subtitle for the suggestion chip with recent tabs from other devices">
         From <ph name="SESSION_NAME">$1<ex>Chromebook</ex></ph>
       </message>
+      <message name="IDS_ASH_BIRCH_LAST_ACTIVE_SUBTITLE" desc="The subtitle for a suggestion chip for a web site that was the last browser tab open">
+        Last tab opened
+      </message>
       <message name="IDS_ASH_BIRCH_MOST_VISITED_SUBTITLE" desc="The subtitle for a suggestion chip for a web site that is frequently visited">
         Frequently visited
       </message>

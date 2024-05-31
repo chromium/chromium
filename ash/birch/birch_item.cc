@@ -586,8 +586,7 @@ void BirchLastActiveItem::LoadIcon(LoadIconCallback callback) const {
 
 // static
 std::u16string BirchLastActiveItem::GetSubtitle() {
-  // TODO(jamescook): Localize subtitle.
-  return u"Placeholder";
+  return l10n_util::GetStringUTF16(IDS_ASH_BIRCH_LAST_ACTIVE_SUBTITLE);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

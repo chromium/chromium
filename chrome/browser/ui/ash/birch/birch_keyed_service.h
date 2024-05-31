@@ -18,6 +18,7 @@ namespace ash {
 
 class BirchCalendarProvider;
 class BirchFileSuggestProvider;
+class BirchLastActiveProvider;
 class BirchMostVisitedProvider;
 class BirchRecentTabsProvider;
 class BirchReleaseNotesProvider;
@@ -81,6 +82,8 @@ class BirchKeyedService : public KeyedService,
   std::unique_ptr<BirchFileSuggestProvider> file_suggest_provider_;
 
   std::unique_ptr<BirchRecentTabsProvider> recent_tabs_provider_;
+
+  std::unique_ptr<BirchLastActiveProvider> last_active_provider_;
 
   std::unique_ptr<BirchMostVisitedProvider> most_visited_provider_;
 

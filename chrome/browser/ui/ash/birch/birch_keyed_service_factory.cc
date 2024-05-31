@@ -40,7 +40,8 @@ BirchKeyedServiceFactory::BirchKeyedServiceFactory()
   // Indirect dependency via calendar_utils, used by BirchCalendarProvider.
   DependsOn(CalendarKeyedServiceFactory::GetInstance());
 
-  // Indirect dependency via BirchMostVisitedProvider.
+  // Indirect dependencies via BirchLastActiveProvider and
+  // BirchMostVisitedProvider.
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(FaviconServiceFactory::GetInstance());
 }
