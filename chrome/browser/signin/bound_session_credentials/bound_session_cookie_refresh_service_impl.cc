@@ -312,24 +312,24 @@ void BoundSessionCookieRefreshServiceImpl::UpdateAllRenderers() {
 void BoundSessionCookieRefreshServiceImpl::TerminateSession(
     BoundSessionCookieController* controller,
     SessionTerminationTrigger trigger) {
-  auto it = cookie_controllers_.find(BoundSessionKey{
-      .site = controller->url(), .session_id = controller->session_id()});
+  BoundSessionKey session_key{.site = controller->url(),
+                              .session_id = controller->session_id()};
+  auto it = cookie_controllers_.find(session_key);
   CHECK(it != cookie_controllers_.end());
   CHECK_EQ(it->second.get(), controller);
-  // Save some values locally on the stack before destroying `controller`.
-  GURL session_url = controller->url();
+  // Save `bound_cookie_names` locally on the stack before destroying
+  // `controller`.
   base::flat_set<std::string> bound_cookie_names =
       controller->bound_cookie_names();
   cookie_controllers_.erase(it);
   // `controller` is no longer valid and must not be used.
 
-  // TODO(b/300627729): stop clearing all params once multiple sessions are
-  // supported.
-  session_params_storage_->ClearAllParams();
+  session_params_storage_->ClearParams(session_key.site.spec(),
+                                       session_key.session_id);
   UpdateAllRenderers();
   RecordSessionTerminationTrigger(trigger);
 
-  NotifyBoundSessionTerminated(session_url, bound_cookie_names);
+  NotifyBoundSessionTerminated(session_key.site, bound_cookie_names);
 }
 
 void BoundSessionCookieRefreshServiceImpl::RecordSessionTerminationTrigger(
