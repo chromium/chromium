@@ -1755,9 +1755,6 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
         service->SetAlwaysOnVpnManager(always_on_vpn_manager_->GetWeakPtr());
       }
 
-      secure_dns_manager_ =
-          std::make_unique<SecureDnsManager>(g_browser_process->local_state());
-
       xdr_manager_ =
           std::make_unique<XdrManager>(g_browser_process->policy_service());
     }
@@ -2518,7 +2515,6 @@ void UserSessionManager::Shutdown() {
   help_app_notification_controller_.reset();
   password_service_voted_.reset();
   password_was_saved_ = false;
-  secure_dns_manager_.reset();
   xdr_manager_.reset();
 }
 
