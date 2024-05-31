@@ -320,13 +320,7 @@ enum class OsScreenAction {
   // around the prompt).
   DISMISSED_SCRIM = 2,
 
-  // Os prompt denied.
-  OS_PROMPT_DENIED = 3,
-
-  // Os prompt allowed.
-  OS_PROMPT_ALLOWED = 4,
-
-  kMaxValue = OS_PROMPT_ALLOWED,
+  kMaxValue = DISMISSED_SCRIM,
 };
 
 // These values are logged to UMA. Entries should not be renumbered and
