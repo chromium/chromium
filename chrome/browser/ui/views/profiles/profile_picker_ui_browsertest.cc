@@ -126,7 +126,13 @@ class ProfilePickerUIPixelTest
       profile_picker_view_;
 };
 
-IN_PROC_BROWSER_TEST_P(ProfilePickerUIPixelTest, InvokeUi_default) {
+// TODO(crbug.com/343757710): Enable this test again.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
+#else
+#define MAYBE_InvokeUi_default InvokeUi_default
+#endif
+IN_PROC_BROWSER_TEST_P(ProfilePickerUIPixelTest, MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
