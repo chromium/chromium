@@ -26,19 +26,6 @@ class CloudPolicyClientRegistrationHelper;
 
 class OidcAuthenticationSigninInterceptorTest;
 
-enum class OidcInterceptionStatus {
-  kNoInterception = 0,
-  kRegister = 1,
-  kConsentCollection = 2,
-  kProfileCreation = 3,
-  kPolicyFetch = 4,
-  kSetPrimaryAccountWithInvalidToken = 5,
-  kCompleted = 6,
-  // TODO(b/319479021): Add more error reporting and retry logics to make the
-  // interceptor class more resilient
-  kError = 7,
-};
-
 class Profile;
 class ProfileAttributesEntry;
 
@@ -82,8 +69,6 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
     client_for_testing_ = std::move(client);
   }
 
-  OidcInterceptionStatus interception_status() { return interception_status_; }
-
  protected:
   virtual void CreateBrowserAfterSigninInterception();
   // Cancels any current signin interception and resets the interceptor to its
@@ -98,7 +83,8 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
   // (aka has a dm token) and various information should be included, most
   // importantly, if the 3P user identity is sync-ed to Google or not.
   void OnClientRegistered(std::unique_ptr<CloudPolicyClient> client,
-                          std::string preset_profile_guid);
+                          std::string preset_profile_guid,
+                          base::TimeTicks registration_start_time);
 
   // Called when user makes a decision on the profile creation dialog.
   void OnProfileCreationChoice(SigninInterceptionResult create);
@@ -107,7 +93,10 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
   // Called when policy fetch response has been received, For Dasher-based
   // profiles, pulls gaia id from fetched policies and user email from DM server
   // response, and sets this AccountId as primary user of the new profile.
-  void OnPolicyFetchCompleteInNewProfile(Profile* new_profile, bool success);
+  void OnPolicyFetchCompleteInNewProfile(
+      Profile* new_profile,
+      base::TimeTicks policy_fetch_start_time,
+      bool success);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
   std::unique_ptr<Delegate> delegate_;
@@ -129,8 +118,7 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
   SkColor profile_color_;
   // TODO(b/319479021): utilize the status variable to have better error
   // handling and in metrics.
-  OidcInterceptionStatus interception_status_ =
-      OidcInterceptionStatus::kNoInterception;
+  bool interception_in_progress_ = false;
 
   std::unique_ptr<policy::CloudPolicyClientRegistrationHelper>
       registration_helper_for_temporary_client_;

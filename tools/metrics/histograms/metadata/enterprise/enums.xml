@@ -2364,6 +2364,37 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Image download cancelled"/>
 </enum>
 
+<enum name="OidcInterceptionFunnelStep">
+  <int value="0" label="Created throttle for valid redirection"/>
+  <int value="1" label="Successfuly parsed out required info for registration"/>
+  <int value="2" label="Enrollment attempt started"/>
+  <int value="3" label="Showed unified consent dialog"/>
+  <int value="4" label="Started OIDC profile registration"/>
+</enum>
+
+<enum name="OidcInterceptionResult">
+  <int value="0" label="Other interception in progress"/>
+  <int value="1" label="Interception is for the current profile"/>
+  <int value="2" label="Can't retrieve info from URL"/>
+  <int value="3" label="Unified consent dialog rejected"/>
+  <int value="4" label="OIDC profile registration failure"/>
+</enum>
+
+<enum name="OidcProfileCreationFunnelStep">
+  <int value="0" label="OIDC-managed profile created"/>
+  <int value="1" label="Started policy fetch"/>
+  <int value="2" label="Adding GAIA user as primary account"/>
+</enum>
+
+<enum name="OidcProfileCreationResult">
+  <int value="0" label="OIDC profile flow succeeds"/>
+  <int value="1" label="Profile Switch"/>
+  <int value="2" label="OIDC-managed profile creation failure"/>
+  <int value="3" label="OIDC profile policy fetch failure"/>
+  <int value="4"
+      label="Dasher-based OIDC profile can't add/set primary account"/>
+</enum>
+
 <enum name="OsSuite">
   <int value="0" label="Windows Home Edition (or unknown)"/>
   <int value="1" label="Windows Professional/Ultimate Editions"/>

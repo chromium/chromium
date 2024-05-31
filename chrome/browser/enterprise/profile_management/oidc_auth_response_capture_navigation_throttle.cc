@@ -15,6 +15,7 @@
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/enterprise/signin/oidc_authentication_signin_interceptor.h"
 #include "chrome/browser/enterprise/signin/oidc_authentication_signin_interceptor_factory.h"
+#include "chrome/browser/enterprise/signin/oidc_metrics_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "content/public/browser/browser_context.h"
@@ -119,11 +120,13 @@ OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerInterception() {
     return PROCEED;
   }
 
+  RecordOidcInterceptionFunnelStep(
+      OidcInterceptionFunnelStep::kValidRedirectionCaptured);
+
   // Extract parameters from the fragment part (#) of the URL. The auth token
   // from OIDC authentication will be decoded and parsed by data_decoder for
   // security reasons. Example URL:
-  // https://chromeprofiletoken/#access_token=<oauth_token>&token_type=Bearer&expires_in=4887&scope=email+openid+profile&id_token=<id_token>&session_state=<session
-  // state>
+  // https://chromeenterprise.google/enroll/#access_token=<oauth_token>&token_type=Bearer&expires_in=4887&scope=email+openid+profile&id_token=<id_token>&session_state=<session_state>
   std::string url_ref = url.ref();
 
   std::string auth_token =
@@ -133,6 +136,7 @@ OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerInterception() {
   if (auth_token.empty() || id_token.empty()) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "Tokens missing from OIDC Redirection URL";
+    RecordOidcInterceptionResult(OidcInterceptionResult::kInvalidUrlOrTokens);
     return PROCEED;
   }
 
@@ -142,6 +146,7 @@ OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerInterception() {
   if (jwt_sections.size() != 3) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "Oauth token from OIDC response has Invalid JWT format.";
+    RecordOidcInterceptionResult(OidcInterceptionResult::kInvalidUrlOrTokens);
     return CANCEL_AND_IGNORE;
   }
 
@@ -150,6 +155,7 @@ OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerInterception() {
                              &json_payload)) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "Oauth token payload from OIDC response can't be decoded.";
+    RecordOidcInterceptionResult(OidcInterceptionResult::kInvalidUrlOrTokens);
     return CANCEL_AND_IGNORE;
   }
 
@@ -174,6 +180,7 @@ void OidcAuthResponseCaptureNavigationThrottle::RegisterWithOidcTokens(
   if (!result.has_value()) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "Failed to parse decoded Oauth token payload.";
+    RecordOidcInterceptionResult(OidcInterceptionResult::kInvalidUrlOrTokens);
     return Resume();
   }
   const base::Value::Dict* parsed_json = result->GetIfDict();
@@ -181,6 +188,7 @@ void OidcAuthResponseCaptureNavigationThrottle::RegisterWithOidcTokens(
   if (!parsed_json) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "Decoded Oauth token payload is empty.";
+    RecordOidcInterceptionResult(OidcInterceptionResult::kInvalidUrlOrTokens);
     return Resume();
   }
 
@@ -188,6 +196,7 @@ void OidcAuthResponseCaptureNavigationThrottle::RegisterWithOidcTokens(
   if (!subject_id || (*subject_id).empty()) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "Subject ID is missing in token payload.";
+    RecordOidcInterceptionResult(OidcInterceptionResult::kInvalidUrlOrTokens);
     return Resume();
   }
 
@@ -198,6 +207,9 @@ void OidcAuthResponseCaptureNavigationThrottle::RegisterWithOidcTokens(
   VLOG_POLICY(2, OIDC_ENROLLMENT)
       << "OIDC redirection meets all requirements, starting enrollment "
          "process.";
+  RecordOidcInterceptionFunnelStep(
+      OidcInterceptionFunnelStep::kSuccessfulInfoParsed);
+
   interceptor->MaybeInterceptOidcAuthentication(
       navigation_handle()->GetWebContents(), tokens, *subject_id,
       base::BindOnce(&OidcAuthResponseCaptureNavigationThrottle::Resume,

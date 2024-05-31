@@ -8,12 +8,14 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/enterprise/signin/mock_oidc_authentication_signin_interceptor.h"
 #include "chrome/browser/enterprise/signin/oidc_authentication_signin_interceptor_factory.h"
+#include "chrome/browser/enterprise/signin/oidc_metrics_utils.h"
 #include "chrome/browser/enterprise/signin/user_policy_oidc_signin_service.h"
 #include "chrome/browser/enterprise/signin/user_policy_oidc_signin_service_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
@@ -59,6 +61,7 @@ using RegistrationParameters =
 using signin::IdentityManager;
 
 namespace {
+const char kOidcEnrollmentHistogramName[] = "Enterprise.OidcEnrollment";
 
 const ProfileManagementOicdTokens kExampleOidcTokens =
     ProfileManagementOicdTokens{.auth_token = "example_auth_token",
@@ -68,6 +71,12 @@ constexpr char kExampleUserDisplayName[] = "Test User";
 constexpr char kExampleUserEmail[] = "user@test.com";
 constexpr char kExampleGaiaId[] = "123";
 constexpr char kExampleDmToken[] = "example_dm_token";
+
+const char kOidcInterceptionSuffix[] = ".Interception";
+const char kOidcProfileCreationSuffix[] = ".ProfileCreation";
+
+const char kOidcFunnelSuffix[] = ".Funnel";
+const char kOidcResultSuffix[] = ".Result";
 
 // Fake OIDC policy sign in service that simulates policy fetch success/failure.
 class FakeUserPolicyOidcSigninService
@@ -255,6 +264,7 @@ class OidcAuthenticationSigninInterceptorTest
         profile(), std::move(delegate));
     // Create the first tab so that web_contents() exists.
     AddTab(browser(), GURL("http://foo/1"));
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void TearDown() override {
@@ -311,12 +321,15 @@ class OidcAuthenticationSigninInterceptorTest
       const std::string& subject_id,
       bool expect_profile_created,
       int expected_number_of_windows,
+      std::variant<OidcInterceptionFunnelStep, OidcProfileCreationFunnelStep>
+          expected_last_funnel_step,
+      std::variant<OidcInterceptionResult, OidcProfileCreationResult>
+          expected_enrollment_result =
+              OidcProfileCreationResult::kEnrollmentSucceeded,
       RegistrationResult expect_registration_attempt =
           RegistrationResult::kSuccess,
       SigninInterceptionResult interception_result =
           SigninInterceptionResult::kAccepted,
-      OidcInterceptionStatus expected_interception_status =
-          OidcInterceptionStatus::kCompleted,
       bool expect_dialog_to_show = true) {
     auto mock_client = std::make_unique<MockCloudPolicyClient>();
     base::RunLoop register_run_loop;
@@ -331,6 +344,7 @@ class OidcAuthenticationSigninInterceptorTest
             mock_client_ptr->NotifyClientError();
             register_run_loop.Quit();
           }));
+
     } else if (expect_registration_attempt == RegistrationResult::kSuccess) {
       EXPECT_CALL(*mock_client_ptr,
                   RegisterWithOidcResponse(_, kExampleOidcTokens.auth_token,
@@ -392,8 +406,6 @@ class OidcAuthenticationSigninInterceptorTest
     }
 
     task_environment()->RunUntilQuit();
-    EXPECT_EQ(interceptor_->interception_status(),
-              expected_interception_status);
 
     int num_profiles_after = TestingBrowserProcess::GetGlobal()
                                  ->profile_manager()
@@ -422,10 +434,82 @@ class OidcAuthenticationSigninInterceptorTest
         }
       }
     }
+
+    CheckFunnelAndResultHistogram(expected_last_funnel_step,
+                                  expected_enrollment_result,
+                                  expect_registration_attempt);
+  }
+
+  std::string GetIdentitySuffix() {
+    return is_3p_identity_synced() ? ".Dasher-based" : ".Dasherless";
+  }
+
+  void CheckFunnelAndResultHistogram(
+      std::variant<OidcInterceptionFunnelStep, OidcProfileCreationFunnelStep>
+          expected_last_funnel_step,
+      std::variant<OidcInterceptionResult, OidcProfileCreationResult>
+          expected_enrollment_result,
+      RegistrationResult expect_registration_attempt) {
+    if (std::holds_alternative<OidcInterceptionFunnelStep>(
+            expected_last_funnel_step)) {
+      histogram_tester_->ExpectBucketCount(
+          base::StrCat({kOidcEnrollmentHistogramName, kOidcInterceptionSuffix,
+                        kOidcFunnelSuffix}),
+          std::get<OidcInterceptionFunnelStep>(expected_last_funnel_step), 1);
+    } else {
+      histogram_tester_->ExpectBucketCount(
+          base::StrCat({kOidcEnrollmentHistogramName,
+                        kOidcProfileCreationSuffix, kOidcFunnelSuffix,
+                        GetIdentitySuffix()}),
+          std::get<OidcProfileCreationFunnelStep>(expected_last_funnel_step),
+          1);
+    }
+
+    if (std::holds_alternative<OidcInterceptionResult>(
+            expected_enrollment_result)) {
+      histogram_tester_->ExpectUniqueSample(
+          base::StrCat({kOidcEnrollmentHistogramName, kOidcInterceptionSuffix,
+                        kOidcResultSuffix}),
+          std::get<OidcInterceptionResult>(expected_enrollment_result), 1);
+    } else {
+      histogram_tester_->ExpectUniqueSample(
+          base::StrCat({kOidcEnrollmentHistogramName,
+                        kOidcProfileCreationSuffix, kOidcResultSuffix,
+                        GetIdentitySuffix()}),
+          std::get<OidcProfileCreationResult>(expected_enrollment_result), 1);
+    }
+
+    if (expect_registration_attempt == RegistrationResult::kFailure) {
+      histogram_tester_->ExpectTotalCount(
+          base::StrCat(
+              {kOidcEnrollmentHistogramName, ".RegistrationLatency.Failure"}),
+          1);
+    } else if (expect_registration_attempt == RegistrationResult::kSuccess) {
+      histogram_tester_->ExpectTotalCount(
+          base::StrCat({kOidcEnrollmentHistogramName, GetIdentitySuffix(),
+                        ".RegistrationLatency.Success"}),
+          1);
+
+      histogram_tester_->ExpectTotalCount(
+          base::StrCat({kOidcEnrollmentHistogramName, GetIdentitySuffix(),
+                        ".PolicyFetchLatency",
+                        will_policy_fetch_succeed_ ? ".Success" : ".Failure"}),
+          1);
+    }
+
+    histogram_tester_.reset();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+  }
+
+  OidcProfileCreationFunnelStep GetLastFunnelStepForSuccess() {
+    return is_3p_identity_synced()
+               ? OidcProfileCreationFunnelStep::kAddingPrimaryAccount
+               : OidcProfileCreationFunnelStep::kPolicyFetchStarted;
   }
 
  protected:
   std::unique_ptr<OidcAuthenticationSigninInterceptor> interceptor_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
   raw_ptr<MockDelegate> delegate_ = nullptr;  // Owned by `interceptor_`
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -438,53 +522,63 @@ class OidcAuthenticationSigninInterceptorTest
 TEST_P(OidcAuthenticationSigninInterceptorTest, ProfileCreationThenSwitch) {
   TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleSubjectIdentifier,
                               /*expect_profile_created=*/true,
-                              /*expected_number_of_windows=*/2);
+                              /*expected_number_of_windows=*/2,
+                              GetLastFunnelStepForSuccess());
 
-  TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleSubjectIdentifier,
-                              /*expect_profile_created=*/false,
-                              /*expected_number_of_windows=*/0,
-                              /*expect_registration_attempt=*/
-                              RegistrationResult::kNoRegistrationExpected);
+  TestProfileCreationOrSwitch(
+      kExampleOidcTokens, kExampleSubjectIdentifier,
+      /*expect_profile_created=*/false,
+      /*expected_number_of_windows=*/0,
+      OidcProfileCreationFunnelStep::kPolicyFetchStarted,
+      OidcProfileCreationResult::kSwitchedToExistingProfile,
+      /*expect_registration_attempt=*/
+      RegistrationResult::kNoRegistrationExpected);
 }
 
 TEST_P(OidcAuthenticationSigninInterceptorTest, MultipleProfileCreation) {
   TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleSubjectIdentifier,
                               /*expect_profile_created=*/true,
-                              /*expected_number_of_windows=*/1);
+                              /*expected_number_of_windows=*/1,
+                              GetLastFunnelStepForSuccess());
 
   TestProfileCreationOrSwitch(kExampleOidcTokens, "new_subject_id",
                               /*expect_profile_created=*/true,
-                              /*expected_number_of_windows=*/1);
+                              /*expected_number_of_windows=*/1,
+                              GetLastFunnelStepForSuccess());
 }
 
 TEST_P(OidcAuthenticationSigninInterceptorTest, UserDidNotAccept) {
   TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleSubjectIdentifier,
                               /*expect_profile_created=*/false,
                               /*expected_number_of_windows=*/0,
+                              OidcInterceptionFunnelStep::kConsetDialogShown,
+                              OidcInterceptionResult::kConsetDialogRejected,
                               RegistrationResult::kNoRegistrationExpected,
-                              SigninInterceptionResult::kDeclined,
-                              OidcInterceptionStatus::kNoInterception);
+                              SigninInterceptionResult::kDeclined);
 
   TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleSubjectIdentifier,
                               /*expect_profile_created=*/false,
                               /*expected_number_of_windows=*/0,
+                              OidcInterceptionFunnelStep::kConsetDialogShown,
+                              OidcInterceptionResult::kConsetDialogRejected,
                               RegistrationResult::kNoRegistrationExpected,
-                              SigninInterceptionResult::kIgnored,
-                              OidcInterceptionStatus::kNoInterception);
+                              SigninInterceptionResult::kIgnored);
 
   TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleSubjectIdentifier,
                               /*expect_profile_created=*/false,
                               /*expected_number_of_windows=*/0,
+                              OidcInterceptionFunnelStep::kConsetDialogShown,
+                              OidcInterceptionResult::kConsetDialogRejected,
                               RegistrationResult::kNoRegistrationExpected,
-                              SigninInterceptionResult::kDismissed,
-                              OidcInterceptionStatus::kNoInterception);
+                              SigninInterceptionResult::kDismissed);
 
   TestProfileCreationOrSwitch(
       kExampleOidcTokens, kExampleSubjectIdentifier,
       /*expect_profile_created=*/false, /*expected_number_of_windows=*/0,
+      OidcInterceptionFunnelStep::kConsetDialogShown,
+      OidcInterceptionResult::kConsetDialogRejected,
       RegistrationResult::kNoRegistrationExpected,
-      SigninInterceptionResult::kAcceptedWithExistingProfile,
-      OidcInterceptionStatus::kNoInterception);
+      SigninInterceptionResult::kAcceptedWithExistingProfile);
 }
 
 TEST_P(OidcAuthenticationSigninInterceptorTest, InterceptionForSameProfile) {
@@ -501,21 +595,24 @@ TEST_P(OidcAuthenticationSigninInterceptorTest, InterceptionForSameProfile) {
   entry->SetProfileManagementOidcTokens(kExampleOidcTokens);
   entry->SetProfileManagementId(kExampleSubjectIdentifier);
 
-  TestProfileCreationOrSwitch(new_example_token, kExampleSubjectIdentifier,
-                              /*expect_profile_created=*/false,
-                              /*expected_number_of_windows=*/0,
-                              RegistrationResult::kNoRegistrationExpected,
-                              SigninInterceptionResult::kAccepted,
-                              OidcInterceptionStatus::kNoInterception,
-                              /*expect_dialog_to_show=*/false);
+  TestProfileCreationOrSwitch(
+      new_example_token, kExampleSubjectIdentifier,
+      /*expect_profile_created=*/false,
+      /*expected_number_of_windows=*/0,
+      OidcInterceptionFunnelStep::kEnrollmentStarted,
+      OidcInterceptionResult::kNoInterceptForCurrentProfile,
+      RegistrationResult::kNoRegistrationExpected,
+      SigninInterceptionResult::kAccepted,
+      /*expect_dialog_to_show=*/false);
 }
 
 TEST_P(OidcAuthenticationSigninInterceptorTest, RegistrationFailure) {
   TestProfileCreationOrSwitch(
       kExampleOidcTokens, kExampleSubjectIdentifier,
       /*expect_profile_created=*/false, /*expected_number_of_windows=*/0,
+      OidcInterceptionFunnelStep::kProfileRegistrationStarted,
+      OidcInterceptionResult::kFailedToRegisterProfile,
       RegistrationResult::kFailure, SigninInterceptionResult::kAccepted,
-      OidcInterceptionStatus::kError,
       /*expect_dialog_to_show=*/true);
 }
 
@@ -535,8 +632,9 @@ TEST_P(OidcAuthenticationSigninInterceptorFailureTest, PolicyFetchFailure) {
   TestProfileCreationOrSwitch(
       kExampleOidcTokens, kExampleSubjectIdentifier,
       /*expect_profile_created=*/true, /*expected_number_of_windows=*/1,
+      OidcProfileCreationFunnelStep::kPolicyFetchStarted,
+      OidcProfileCreationResult::kFailedToFetchPolicy,
       RegistrationResult::kSuccess, SigninInterceptionResult::kAccepted,
-      OidcInterceptionStatus::kError,
       /*expect_dialog_to_show=*/true);
 }
 

@@ -146,6 +146,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".InitialEnrollment" summary="Initial Enrollment Exchange"/>
 </variants>
 
+<variants name="IdentityType">
+  <variant name="Dasher-based" summary="google-backed 3P identity"/>
+  <variant name="Dasherless" summary="non-google-backed 3P identity"/>
+</variants>
+
 <variants name="PolicyLevel">
   <variant name="Mandatory" summary="Mandatory Policy"/>
   <variant name="Recommended" summary="Recommended Policy"/>
@@ -2503,6 +2508,89 @@ chromium-metrics-reviews@google.com.
     measurement does not include the lock screen inactivity timeout. The metric
     would be emitted when the first two images are loaded successfully.
   </summary>
+</histogram>
+
+<histogram name="Enterprise.OidcEnrollment.Interception.Funnel"
+    enum="OidcInterceptionFunnelStep" expires_after="2025-03-20">
+  <owner>xzonghan@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Records the occurrance of each crucial step of the OIDC enrollment flow
+    before profile registration.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.OidcEnrollment.Interception.Result"
+    enum="OidcInterceptionResult" expires_after="2025-03-20">
+  <owner>xzonghan@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Tracks the results of OIDC enrollment flow when it finishes before profile
+    registration.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.OidcEnrollment.ProfileCreation.Funnel.{IdentityType}"
+    enum="OidcProfileCreationFunnelStep" expires_after="2025-03-20">
+  <owner>xzonghan@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Records the occurrance of each crucial step of the OIDC enrollment flow with
+    a {IdentityType} 3P identity after profile registration.
+  </summary>
+  <token key="IdentityType" variants="IdentityType"/>
+</histogram>
+
+<histogram
+    name="Enterprise.OidcEnrollment.ProfileCreation.Result.{IdentityType}"
+    enum="OidcProfileCreationResult" expires_after="2025-03-20">
+  <owner>xzonghan@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Tracks the results of OIDC enrollment flow with a {IdentityType} 3P identity
+    when it finishes after profile registration.
+  </summary>
+  <token key="IdentityType" variants="IdentityType"/>
+</histogram>
+
+<histogram
+    name="Enterprise.OidcEnrollment.{IdentityType}.PolicyFetchLatency.{Result}"
+    units="ms" expires_after="2025-03-20">
+  <owner>xzonghan@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Latency of a {Result} policy fetch operation for an OIDC profile with
+    {IdentityType} 3P identity during enrollment, recorded when the fetch
+    response is received.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="failed"/>
+    <variant name="Success" summary="successful"/>
+  </token>
+  <token key="IdentityType" variants="IdentityType"/>
+</histogram>
+
+<histogram
+    name="Enterprise.OidcEnrollment.{IdentityType}.RegistrationLatency.{Result}"
+    units="ms" expires_after="2025-03-20">
+  <owner>xzonghan@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Latency of a {IdentityType} OIDC profile registration operation when OIDC
+    profiles are first getting created. Failed attempts will always be
+    classified as undecided since we won't know whether it's dasher-based.
+    Recorded when the registration response is received.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="failed"/>
+    <variant name="Success" summary="successful"/>
+  </token>
+  <token key="IdentityType">
+    <variant name="" summary="undecided if 3P identity is google-backed"/>
+    <variant name="Dasher-based" summary="google-backed 3P identity"/>
+    <variant name="Dasherless" summary="non-google-backed 3P identity"/>
+  </token>
 </histogram>
 
 <histogram name="Enterprise.OnBulkDataEntry.DataSize" units="bytes"
