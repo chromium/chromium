@@ -30,8 +30,8 @@
 
 <img class="app-icon" src="[[getIconUrl_(app)]]"
      alt="[[app.title]] app icon." aria-hidden="true">
-<div class="app-title" aria-hidden="true">[[app.title]]</div>
+<div id="appTitle" class="app-title" aria-hidden="true">[[app.title]]</div>
 <cr-toggle class="app-toggle" checked="[[isAllowed_(app)]]"
-           on-change="onToggleChange_" aria-labelledby="app-title">
+           on-change="onToggleChange_" aria-labelledby="appTitle">
 </cr-toggle>
 <slot name="right-content"></slot>
