@@ -45,6 +45,20 @@ camera_app::mojom::ScreenState ToMojoScreenState(ScreenBacklightState s) {
   }
 }
 
+camera_app::mojom::LidState ToMojoLidState(cros::mojom::LidState state) {
+  switch (state) {
+    case cros::mojom::LidState::kOpen:
+      return camera_app::mojom::LidState::kOpen;
+    case cros::mojom::LidState::kClosed:
+      return camera_app::mojom::LidState::kClosed;
+    case cros::mojom::LidState::kNotPresent:
+      return camera_app::mojom::LidState::kNotPresent;
+    default:
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected Lid type: " << static_cast<int>(state);
+  }
+}
+
 camera_app::mojom::FileMonitorResult ToMojoFileMonitorResult(
     CameraAppUIDelegate::FileMonitorResult result) {
   switch (result) {
@@ -567,10 +581,11 @@ void CameraAppHelperImpl::SetLidStateMonitor(
 }
 
 void CameraAppHelperImpl::OnLidStateChanged(cros::mojom::LidState state) {
+  auto lid_state = ToMojoLidState(state);
   if (!lid_callback_.is_null()) {
-    std::move(lid_callback_).Run(state);
+    std::move(lid_callback_).Run(lid_state);
   } else if (lid_state_monitor_.is_bound()) {
-    lid_state_monitor_->Update(state);
+    lid_state_monitor_->Update(lid_state);
   }
 }
 

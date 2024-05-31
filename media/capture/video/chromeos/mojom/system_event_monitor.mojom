@@ -8,11 +8,13 @@ module cros.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
+// LINT.IfChange(LidState)
 enum LidState {
   kOpen,                   // Lid is open.
   kClosed,                 // Lid is closed.
   kNotPresent,             // No lid is present
 };
+// LINT.ThenChange(//ash/webui/camera_app_ui/camera_app_helper.mojom:LidState)
 
 enum DeviceType {
   kAudio,         // Audio device, e.g., microphone.

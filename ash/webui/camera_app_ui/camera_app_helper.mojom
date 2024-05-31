@@ -10,7 +10,6 @@ import "ash/webui/camera_app_ui/ocr.mojom";
 import "ash/webui/camera_app_ui/pdf_builder.mojom";
 import "ash/webui/camera_app_ui/types.mojom";
 import "chromeos/services/machine_learning/public/mojom/document_scanner_param_types.mojom";
-import "media/capture/video/chromeos/mojom/system_event_monitor.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -30,6 +29,21 @@ enum ScreenState {
   kOff,
   kOffAuto,
 };
+
+// Lid state.
+// Reference from media/capture/video/chromeos/mojom/system_event_monitor.mojom
+// Dulplication has the following advantages.
+//   1. 'cca.py dev' doesn't need to parse system_event_monitor.mojom.
+//   2. Make CameraAppHelper independent of system_event_monitor.mojom.
+//   3. No need to generate js mojo files for system_event_monitor.mojom.
+//
+// LINT.IfChange(LidState)
+enum LidState {
+  kOpen,                   // Lid is open.
+  kClosed,                 // Lid is closed.
+  kNotPresent,             // No lid is present
+};
+// LINT.ThenChange(//media/capture/video/chromeos/mojom/system_event_monitor.mojom:LidState)
 
 // Configurations which can be provided by Wi-Fi QR Code.
 struct WifiConfig {
@@ -78,7 +92,7 @@ interface CameraUsageOwnershipMonitor {
 // Interface to monitor lid state changes.
 interface LidStateMonitor {
   // Updates when the lid state is changed.
-  Update(cros.mojom.LidState lid_status);
+  Update(LidState lid_status);
 };
 
 // The window states that we care about.
@@ -294,7 +308,7 @@ interface CameraAppHelper {
   // Registers a LidStateMonitor instance and returns the initial status.
   // Calling the Update() whenever the lid state changes.
   SetLidStateMonitor(pending_remote<LidStateMonitor> monitor)
-      => (cros.mojom.LidState lid_status);
+      => (LidState lid_status);
 
   // Gets an event sender which can be used to send events to CrOS Events.
   GetEventsSender() => (pending_remote<EventsSender> events_sender);
