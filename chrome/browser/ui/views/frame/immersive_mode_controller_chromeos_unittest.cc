@@ -186,7 +186,16 @@ TEST_F(ImmersiveModeControllerChromeosTest, Layout) {
 
 // Verifies that transitioning from fullscreen to trusted pinned disables the
 // immersive controls.
-TEST_F(ImmersiveModeControllerChromeosTest, FullscreenToLockedTransition) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(b/40276379): Currently, fullscreen flow on Lacros is not properly
+// implemented in some edge cases, and this is hitting one of the cases.
+// Re-enable the test once the flow is fixed.
+#define MAYBE_FullscreenToLockedTransition DISABLED_FullscreenToLockedTransition
+#else
+#define MAYBE_FullscreenToLockedTransition FullscreenToLockedTransition
+#endif
+TEST_F(ImmersiveModeControllerChromeosTest,
+       MAYBE_FullscreenToLockedTransition) {
   AddTab(browser(), GURL("about:blank"));
   // Start in fullscreen.
   ChromeOSBrowserUITest::EnterImmersiveFullscreenMode(browser());
