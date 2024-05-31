@@ -853,7 +853,10 @@ void GPMEnclaveController::OnGPMPasskeySelected(
 
   switch (account_state_) {
     case AccountState::kReady:
-      model_->SetStep(Step::kGPMConnecting);
+      if (model_->step() != Step::kConditionalMediation) {
+        // The autofill UI shows its own loading indicator.
+        model_->SetStep(Step::kGPMConnecting);
+      }
       StartTransaction();
       break;
 
@@ -875,7 +878,11 @@ void GPMEnclaveController::OnGPMPasskeySelected(
 
     case AccountState::kLoading:
     case AccountState::kChecking:
-      model_->SetStep(Step::kGPMConnecting);
+      if (model_->step() != Step::kConditionalMediation &&
+          model_->step() != Step::kNotStarted) {
+        // The autofill UI shows its own loading indicator.
+        model_->SetStep(Step::kGPMConnecting);
+      }
       waiting_for_account_state_ =
           base::BindOnce(&GPMEnclaveController::OnGPMPasskeySelected,
                          weak_ptr_factory_.GetWeakPtr(), *selected_cred_id_);
