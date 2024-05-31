@@ -695,15 +695,15 @@ std::vector<Swatch> CalculateColorSwatches(
   // distributed throughout the image). This has a very minor impact on the
   // outcome but improves runtime substantially for large images. 10,007 is a
   // prime number to reduce the chance of picking an unrepresentative sample.
-  const int pixel_increment =
-      std::max(1, pixel_count / kMaxConsideredPixelsForSwatches);
+  const float pixel_increment = std::max(
+      1.0f, static_cast<float>(pixel_count) / kMaxConsideredPixelsForSwatches);
   std::unordered_map<SkColor, int> color_counts(
       kMaxConsideredPixelsForSwatches);
 
   // First extract all colors into counts.
-  for (int i = 0; i < pixel_count; i += pixel_increment) {
-    const int x = region.x() + (i % region.width());
-    const int y = region.y() + (i / region.width());
+  for (float f = 0; f < pixel_count; f += pixel_increment) {
+    const int x = region.x() + static_cast<int>(f) % region.width();
+    const int y = region.y() + static_cast<int>(f) / region.width();
 
     const SkColor pixel = bitmap.getColor(x, y);
     if (SkColorGetA(pixel) == SK_AlphaTRANSPARENT)

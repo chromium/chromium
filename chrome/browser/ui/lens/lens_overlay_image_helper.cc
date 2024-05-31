@@ -236,8 +236,11 @@ SkColor ExtractVibrantOrDominantColorFromImage(const SkBitmap& image,
     // Valid color. Extraction failure returns 0 alpha channel.
     // Population Threshold.
     if (SkColorGetA(swatch.color) != SK_AlphaTRANSPARENT &&
-        (float)swatch.population >=
-            (float)(image.width() * image.height()) * min_population_pct) {
+        static_cast<float>(swatch.population) >=
+            static_cast<float>(
+                std::min(image.width() * image.height(),
+                         color_utils::kMaxConsideredPixelsForSwatches)) *
+                min_population_pct) {
       return swatch.color;
     }
   }

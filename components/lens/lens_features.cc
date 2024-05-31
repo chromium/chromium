@@ -109,7 +109,7 @@ const base::FeatureParam<bool> kDynamicThemeForLensOverlay{
     &kLensOverlay, "use-dynamic-theme", true};
 
 const base::FeatureParam<double> kDynamicThemeMinPopulationPct{
-    &kLensOverlay, "use-dynamic-theme-min-population-pct", 0.02f};
+    &kLensOverlay, "use-dynamic-theme-min-population-pct", 0.002f};
 
 const base::FeatureParam<double> kDynamicThemeMinChroma{
     &kLensOverlay, "use-dynamic-theme-min-chroma", 3.0f};

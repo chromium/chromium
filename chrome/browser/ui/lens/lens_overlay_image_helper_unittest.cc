@@ -15,6 +15,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/color_analysis.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace lens {
@@ -352,11 +353,34 @@ TEST_F(LensOverlayImageHelperTest,
 
 TEST_F(LensOverlayImageHelperTest, ExtractVibrantOrDominantColorFromImage) {
   SkBitmap bitmap;
-  bitmap.allocN32Pixels(100, 100);
-  // muted green for the whole image
-  bitmap.eraseColor(SkColorSetRGB(80, 200, 80));
-  // vibrant green for 40x40, which is 16%
-  bitmap.erase(SK_ColorGREEN, {20, 20, 60, 60});
+  // Larger than sample limit of ~10K pixels
+  bitmap.allocN32Pixels(200, 200);
+  // muted green for the whole image, #80C080
+  bitmap.eraseColor(SkColorSetRGB(128, 192, 128));
+  // vibrant green for 80x80, which is 16%
+  bitmap.erase(SK_ColorGREEN, {40, 40, 120, 120});
+
+  std::vector<color_utils::ColorProfile> profiles;
+  // vibrant color profile
+  profiles.emplace_back(color_utils::LumaRange::ANY,
+                        color_utils::SaturationRange::VIBRANT);
+  // any color profile
+  profiles.emplace_back(color_utils::LumaRange::ANY,
+                        color_utils::SaturationRange::ANY);
+
+  auto vibrantAndDominantColors = color_utils::CalculateProminentColorsOfBitmap(
+      bitmap, profiles, /*region=*/nullptr, color_utils::ColorSwatchFilter());
+
+  EXPECT_EQ(SK_ColorGREEN, vibrantAndDominantColors[0].color);
+  EXPECT_NEAR(0.16,
+              static_cast<float>(vibrantAndDominantColors[0].population) /
+                  color_utils::kMaxConsideredPixelsForSwatches,
+              0.001);
+  EXPECT_EQ(SkColorSetRGB(128, 192, 128), vibrantAndDominantColors[1].color);
+  EXPECT_NEAR(0.84,
+              static_cast<float>(vibrantAndDominantColors[1].population) /
+                  color_utils::kMaxConsideredPixelsForSwatches,
+              0.001);
 
   // Happy path, green.
   {
@@ -366,8 +390,8 @@ TEST_F(LensOverlayImageHelperTest, ExtractVibrantOrDominantColorFromImage) {
 
   // Not enough pixels for green, muted green.
   {
-    SkColor color = ExtractVibrantOrDominantColorFromImage(bitmap, 0.17f);
-    EXPECT_EQ(SkColorSetRGB(80, 200, 80) /* Muted green */, color);
+    SkColor color = ExtractVibrantOrDominantColorFromImage(bitmap, 0.2f);
+    EXPECT_EQ(SkColorSetRGB(128, 192, 128) /* Muted green */, color);
   }
 
   // Not enough pixels for green, background dark gray is
@@ -377,10 +401,48 @@ TEST_F(LensOverlayImageHelperTest, ExtractVibrantOrDominantColorFromImage) {
     // dark gray for the whole image
     bitmap.eraseColor(SK_ColorDKGRAY);
     // vibrant green for 40x40, which is 16%
-    bitmap.erase(SK_ColorGREEN, {20, 20, 60, 60});
+    bitmap.erase(SK_ColorGREEN, {40, 40, 120, 120});
 
     SkColor color = ExtractVibrantOrDominantColorFromImage(bitmap, 0.17f);
     EXPECT_EQ(SK_ColorTRANSPARENT, color);
+  }
+
+  // No colors qualify for vibrant.
+  {
+    // Muted green for the whole image, #80C080, not vibrant, dominant.
+    bitmap.eraseColor(SkColorSetRGB(128, 192, 128));
+    // #73904b, HSL S value < 35%, not vibrant
+    bitmap.erase(SkColorSetRGB(115, 144, 75), {40, 40, 120, 120});
+
+    SkColor color = ExtractVibrantOrDominantColorFromImage(bitmap, 0.15f);
+    EXPECT_EQ(SkColorSetRGB(128, 192, 128), color);
+  }
+
+  // Colors qualify for vibrant.
+  {
+    // Muted green for the whole image, #80C080, not vibrant, dominant.
+    bitmap.eraseColor(SkColorSetRGB(128, 192, 128));
+    // #73a54b, HSL S value > 35%, considered vibrant
+    bitmap.erase(SkColorSetRGB(115, 165, 75), {40, 40, 120, 120});
+
+    SkColor color = ExtractVibrantOrDominantColorFromImage(bitmap, 0.15f);
+    EXPECT_EQ(SkColorSetRGB(115, 165, 75), color);
+  }
+
+  // Test small bitmap, fewer than sample limit of ~10K pixels
+  {
+    SkBitmap small_bitmap;
+    small_bitmap.allocN32Pixels(50, 50);
+    // muted green for the whole image, #80C080
+    small_bitmap.eraseColor(SkColorSetRGB(128, 192, 128));
+    // vibrant green for 80x80, which is 16%
+    small_bitmap.erase(SK_ColorGREEN, {10, 10, 30, 30});
+
+    SkColor color = ExtractVibrantOrDominantColorFromImage(small_bitmap, 0.15f);
+    EXPECT_EQ(SK_ColorGREEN, color);
+
+    color = ExtractVibrantOrDominantColorFromImage(small_bitmap, 0.17f);
+    EXPECT_EQ(SkColorSetRGB(128, 192, 128) /* Muted green */, color);
   }
 }
 
