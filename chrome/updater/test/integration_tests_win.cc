@@ -1535,8 +1535,6 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
   DeleteAppClientKey(scope, appid);
 }
 
-namespace {
-
 void ExpectPolicyStatusValues(
     Microsoft::WRL::ComPtr<IPolicyStatusValue> policy_status_value,
     const std::wstring& expected_source,
@@ -1554,8 +1552,6 @@ void ExpectPolicyStatusValues(
   EXPECT_HRESULT_SUCCEEDED(policy_status_value->get_hasConflict(&has_conflict));
   EXPECT_EQ(has_conflict, expected_has_conflict);
 }
-
-}  // namespace
 
 void ExpectLegacyPolicyStatusSucceeds(UpdaterScope scope) {
   Microsoft::WRL::ComPtr<IUnknown> policy_status_server;

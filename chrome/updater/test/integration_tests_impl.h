@@ -18,6 +18,14 @@
 #include "chrome/updater/test/server.h"
 #include "chrome/updater/update_service.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include <wrl/client.h>
+
+#include "chrome/updater/app/server/win/updater_legacy_idl.h"
+#endif
+
 class GURL;
 
 namespace base {
@@ -293,6 +301,11 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
                                        const std::string& command_id,
                                        const base::Value::List& parameters,
                                        int expected_exit_code);
+void ExpectPolicyStatusValues(
+    Microsoft::WRL::ComPtr<IPolicyStatusValue> policy_status_value,
+    const std::wstring& expected_source,
+    const std::wstring& expected_value,
+    VARIANT_BOOL expected_has_conflict);
 void ExpectLegacyPolicyStatusSucceeds(UpdaterScope scope);
 
 // Calls a function defined in test/service/win/rpc_client.py.

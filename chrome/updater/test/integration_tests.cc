@@ -72,9 +72,12 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
+#include <wrl/client.h>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/com_init_util.h"
 #include "base/win/registry.h"
+#include "base/win/scoped_bstr.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
@@ -2723,6 +2726,127 @@ TEST_F(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp2.appid));
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp3.appid));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTestDeviceManagement, IPolicyStatus) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/true));
+
+  base::Value::Dict policies;
+  policies.Set(kApp2.appid, base::Value::Dict().Set("Update", kPolicyEnabled));
+  ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
+  DMPushEnrollmentToken(kEnrollmentToken);
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+  OmahaSettingsClientProto omaha_settings;
+  omaha_settings.set_download_preference("cacheable");
+  omaha_settings.set_update_default(enterprise_management::UPDATES_DISABLED);
+  omaha_settings.set_cloud_policy_overrides_platform_policy(true);
+  ApplicationSettings app1;
+  app1.set_app_guid(kApp1.appid);
+  app1.set_target_channel("stable");
+  app1.set_update(enterprise_management::AUTOMATIC_UPDATES_ONLY);
+  app1.set_rollback_to_target_version(
+      enterprise_management::ROLLBACK_TO_TARGET_VERSION_ENABLED);
+  app1.set_target_version_prefix("2.0.");
+  omaha_settings.mutable_application_settings()->Add(std::move(app1));
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
+                                           omaha_settings);
+  ExpectAppsUpdateSequence(
+      UpdaterScope::kSystem, test_server_.get(),
+      /*request_attributes=*/{},
+      {
+          AppUpdateExpectation(
+              kApp1.GetInstallCommandLineArgs(/*install_v1=*/false),
+              kApp1.appid, kApp1.v1, kApp1.v2,
+              /*is_install=*/false,
+              /*should_update=*/true, false, "", "",
+              GetInstallerPath(kApp1.v2_crx)),
+      });
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kApp1.appid, kApp1.v2));
+
+  {
+    const bool is_system_install = IsSystemInstall(GetUpdaterScopeForTesting());
+    base::win::AssertComInitialized();
+    Microsoft::WRL::ComPtr<IUnknown> unknown;
+    ASSERT_HRESULT_SUCCEEDED(
+        ::CoCreateInstance(is_system_install ? CLSID_PolicyStatusSystemClass
+                                             : CLSID_PolicyStatusUserClass,
+                           nullptr, CLSCTX_ALL, IID_PPV_ARGS(&unknown)));
+
+    const base::win::ScopedBstr app_id(base::ASCIIToWide(kApp1.appid));
+    Microsoft::WRL::ComPtr<IPolicyStatus4> policy_status;
+    ASSERT_TRUE(SUCCEEDED(unknown.CopyTo(is_system_install
+                                             ? __uuidof(IPolicyStatus4System)
+                                             : __uuidof(IPolicyStatus4User),
+                                         IID_PPV_ARGS_Helper(&policy_status))));
+    {
+      Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
+      EXPECT_HRESULT_SUCCEEDED(
+          policy_status->get_downloadPreferenceGroupPolicy(&policy));
+      ExpectPolicyStatusValues(policy, L"Device Management", L"cacheable",
+                               VARIANT_FALSE);
+    }
+    {
+      Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
+      EXPECT_HRESULT_SUCCEEDED(
+          policy_status->get_cloudPolicyOverridesPlatformPolicy(&policy));
+      ExpectPolicyStatusValues(policy, L"Device Management", L"true",
+                               VARIANT_FALSE);
+    }
+    {
+      Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
+      EXPECT_HRESULT_SUCCEEDED(policy_status->get_effectivePolicyForAppInstalls(
+          app_id.Get(), &policy));
+      ExpectPolicyStatusValues(policy, L"Default", L"1", VARIANT_FALSE);
+    }
+    {
+      Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
+      EXPECT_HRESULT_SUCCEEDED(policy_status->get_effectivePolicyForAppUpdates(
+          app_id.Get(), &policy));
+      ExpectPolicyStatusValues(policy, L"Device Management", L"3",
+                               VARIANT_TRUE);
+    }
+    {
+      Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
+      EXPECT_HRESULT_SUCCEEDED(
+          policy_status->get_targetChannel(app_id.Get(), &policy));
+      ExpectPolicyStatusValues(policy, L"Device Management", L"stable",
+                               VARIANT_FALSE);
+    }
+    {
+      Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
+      EXPECT_HRESULT_SUCCEEDED(
+          policy_status->get_isRollbackToTargetVersionAllowed(app_id.Get(),
+                                                              &policy));
+      ExpectPolicyStatusValues(policy, L"Device Management", L"true",
+                               VARIANT_TRUE);
+    }
+    {
+      Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
+      EXPECT_HRESULT_SUCCEEDED(
+          policy_status->get_targetVersionPrefix(app_id.Get(), &policy));
+      ExpectPolicyStatusValues(policy, L"Device Management", L"2.0.",
+                               VARIANT_FALSE);
+    }
+    {
+      const base::win::ScopedBstr app_id2(base::ASCIIToWide(kApp2.appid));
+      Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
+      EXPECT_HRESULT_SUCCEEDED(policy_status->get_effectivePolicyForAppUpdates(
+          app_id2.Get(), &policy));
+      ExpectPolicyStatusValues(policy, L"Device Management", L"0",
+                               VARIANT_TRUE);
+    }
+  }
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  // Uninstall
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 #endif  // BUILDFLAG(IS_WIN)
