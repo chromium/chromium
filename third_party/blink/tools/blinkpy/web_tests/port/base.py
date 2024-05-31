@@ -435,16 +435,6 @@ class Port(object):
             if self.get_option('nocheck_sys_deps', False):
                 flags.append('--disable-system-font-check')
 
-        # If we're already repeating the tests more than once, then we're not
-        # particularly concerned with speed. Resetting the shell between tests
-        # increases test run time by 2-5X, but provides more consistent results
-        # [less state leaks between tests].
-        if (self.get_option('reset_shell_between_tests')
-                or (self.get_option('repeat_each')
-                    and self.get_option('repeat_each') > 1)
-                or (self.get_option('iterations')
-                    and self.get_option('iterations') > 1)):
-            flags += ['--reset-shell-between-tests']
         return flags
 
     def supports_per_test_timeout(self):
