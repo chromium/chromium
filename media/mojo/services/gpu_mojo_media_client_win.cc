@@ -4,24 +4,30 @@
 
 #include "media/mojo/services/gpu_mojo_media_client.h"
 
+#include <d3d11.h>
+#include <d3d12.h>
+#include <wrl.h>
+
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/win/windows_version.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/media_switches.h"
 #include "media/base/offloading_audio_encoder.h"
+#include "media/base/win/media_foundation_package_runtime_locator.h"
+#include "media/base/win/mf_feature_checks.h"
+#include "media/base/win/mf_initializer.h"
 #include "media/filters/win/media_foundation_audio_decoder.h"
 #include "media/gpu/ipc/service/media_gpu_channel_manager.h"
 #include "media/gpu/windows/d3d11_video_decoder.h"
 #include "media/gpu/windows/mf_audio_encoder.h"
 #include "ui/gl/direct_composition_support.h"
-
-#include <d3d11.h>
-#include <d3d12.h>
-#include <wrl.h>
 
 namespace media {
 
@@ -63,6 +69,42 @@ class GpuMojoMediaClientWin final : public GpuMojoMediaClient {
     return std::make_unique<OffloadingAudioEncoder>(std::move(mf_encoder),
                                                     std::move(encoding_runner),
                                                     std::move(task_runner));
+  }
+
+  std::optional<SupportedAudioDecoderConfigs>
+  GetPlatformSupportedAudioDecoderConfigs() final {
+    SupportedAudioDecoderConfigs audio_configs;
+
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+    if (FindMediaFoundationPackageDecoder(AudioCodec::kAC4)) {
+      audio_configs.emplace_back(AudioCodec::kAC4, AudioCodecProfile::kUnknown);
+    }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+    // MS preloaded Dolby's AC3,EAC3 decoder into Windows image, but from
+    // Windows 11 build 25992, all of them will be removed and provided by Dolby
+    // as codec packs.
+    // Preloaded decoder dll is placed in SYSTEM folder and named as
+    // 'DolbyDecMFT.dll'.
+    base::FilePath dolby_dec_mft_path =
+        base::PathService::CheckedGet(base::DIR_SYSTEM);
+    dolby_dec_mft_path = dolby_dec_mft_path.AppendASCII("DolbyDecMFT.dll");
+    bool has_legacy_dolby_ac3_eac3_mft = base::PathExists(dolby_dec_mft_path);
+    if (has_legacy_dolby_ac3_eac3_mft ||
+        FindMediaFoundationPackageDecoder(AudioCodec::kEAC3)) {
+      audio_configs.emplace_back(AudioCodec::kAC3, AudioCodecProfile::kUnknown);
+      audio_configs.emplace_back(AudioCodec::kEAC3,
+                                 AudioCodecProfile::kUnknown);
+    }
+#endif  // BUILDFLAG (ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+
+    if (base::win::GetVersion() >= base::win::Version::WIN11_22H2 &&
+        InitializeMediaFoundation()) {
+      audio_configs.emplace_back(AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC);
+    }
+
+    return audio_configs;
   }
 
   std::optional<SupportedVideoDecoderConfigs>

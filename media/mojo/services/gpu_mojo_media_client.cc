@@ -159,6 +159,12 @@ VideoDecoderType GpuMojoMediaClient::GetDecoderImplementationType() {
   return GetPlatformDecoderImplementationType();
 }
 
+SupportedAudioDecoderConfigs
+GpuMojoMediaClient::GetSupportedAudioDecoderConfigs() {
+  return GetPlatformSupportedAudioDecoderConfigs().value_or(
+      SupportedAudioDecoderConfigs{});
+}
+
 SupportedVideoDecoderConfigs
 GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
   if (!supported_config_cache_) {
@@ -288,6 +294,12 @@ std::unique_ptr<CdmFactory> GpuMojoMediaClient::CreatePlatformCdmFactory(
     mojom::FrameInterfaceFactory* frame_interfaces) {
   NOTIMPLEMENTED();
   return nullptr;
+}
+
+std::optional<SupportedAudioDecoderConfigs>
+GpuMojoMediaClient::GetPlatformSupportedAudioDecoderConfigs() {
+  NOTIMPLEMENTED();
+  return std::nullopt;
 }
 
 }  // namespace media

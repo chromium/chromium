@@ -248,4 +248,12 @@ bool LoadMediaFoundationPackageDecoder(AudioCodec codec) {
              : false;
 }
 
+bool FindMediaFoundationPackageDecoder(AudioCodec codec) {
+  auto codec_package = AudioCodecToMediaFoundationCodecPackage(codec);
+  return codec_package.has_value()
+             ? MediaFoundationPackageRuntimeLocator::GetInstance().FoundModule(
+                   codec_package.value())
+             : false;
+}
+
 }  // namespace media

@@ -5,6 +5,8 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_browsertest.h"
@@ -15,10 +17,16 @@
 #include "media/base/media_switches.h"
 #include "media/base/supported_types.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/buildflags.h"
 #include "ui/display/display_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#include "media/base/win/media_foundation_package_runtime_locator.h"
 #endif
 
 namespace content {
@@ -99,6 +107,27 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_mp4) {
 #else
   ExecuteTest("testMp4Variants(true, false, false)");
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+#elif BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+  bool is_platform_ac3_eac3_supported = false;
+  base::FilePath dolby_dec_mft_path =
+      base::PathService::CheckedGet(base::DIR_SYSTEM);
+  dolby_dec_mft_path = dolby_dec_mft_path.AppendASCII("DolbyDecMFT.dll");
+  bool has_legacy_dolby_ac3_eac3_mft = false;
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  has_legacy_dolby_ac3_eac3_mft = base::PathExists(dolby_dec_mft_path);
+  if (has_legacy_dolby_ac3_eac3_mft ||
+      media::FindMediaFoundationPackageDecoder(media::AudioCodec::kEAC3)) {
+    is_platform_ac3_eac3_supported = true;
+  }
+  if (is_platform_ac3_eac3_supported) {
+    ExecuteTest("testMp4Variants(true, false, true)");
+  } else {
+    ExecuteTest("testMp4Variants(true, false, false)");
+  }
+#else
+  ExecuteTest("testMp4Variants(true, false, false)");
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 #else
   // Other platforms query the gpu each time to find out, so it would be
   // unreliable on the bots to test for this.
@@ -139,9 +168,19 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_AvcLevels) {
 
 IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_Mp4aVariants) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  if (media::IsSupportedAudioType({media::AudioCodec::kAAC,
-                                   media::AudioCodecProfile::kXHE_AAC,
-                                   false})) {
+  bool is_supported = false;
+#if BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER)
+#if BUILDFLAG(IS_ANDROID)
+  is_supported = base::android::BuildInfo::GetInstance()->sdk_int() >=
+                 base::android::SDK_VERSION_P;
+#elif BUILDFLAG(IS_MAC)
+  is_supported = true;
+#elif BUILDFLAG(IS_WIN)
+  is_supported = base::win::GetVersion() >= base::win::Version::WIN11_22H2;
+#endif
+#endif  // BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER)
+
+  if (is_supported) {
     ExecuteTest(
         "testMp4aVariants(true, true)");  // has_proprietary_codecs=true,
                                           // has_xhe_aac_support=true
