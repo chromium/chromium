@@ -119,14 +119,14 @@ base::WeakPtr<SpdySession> CreateSpdyProxySession(
   connect_job_delegate.StartJobExpectingResult(&connect_job, OK,
                                                false /* expect_sync_result */);
 
-  base::WeakPtr<SpdySession> spdy_session =
+  base::expected<base::WeakPtr<SpdySession>, int> spdy_session_result =
       http_session->spdy_session_pool()->CreateAvailableSessionFromSocket(
           key, connect_job_delegate.ReleaseSocket(),
           LoadTimingInfo::ConnectTiming(), NetLogWithSource());
   // Failure is reported asynchronously.
-  EXPECT_TRUE(spdy_session);
+  EXPECT_TRUE(spdy_session_result.has_value());
   EXPECT_TRUE(HasSpdySession(http_session->spdy_session_pool(), key));
-  return spdy_session;
+  return spdy_session_result.value();
 }
 
 }  // namespace

@@ -13,8 +13,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "net/base/features.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/trace_constants.h"
 #include "net/base/tracing.h"
@@ -160,26 +162,19 @@ int SpdySessionPool::CreateAvailableSessionFromSocketHandle(
 
   new_session->InitializeWithSocketHandle(std::move(client_socket_handle),
                                           this);
-  *session = InsertSession(key, std::move(new_session), net_log,
-                           std::move(dns_aliases));
 
-  if (!(*session)->HasAcceptableTransportSecurity()) {
-    (*session)->CloseSessionOnError(ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY,
-                                    "");
-    return ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY;
+  base::expected<base::WeakPtr<SpdySession>, int> insert_result = InsertSession(
+      key, std::move(new_session), net_log, std::move(dns_aliases),
+      /*perform_post_insertion_checks=*/true);
+  if (insert_result.has_value()) {
+    *session = std::move(insert_result.value());
+    return OK;
   }
-
-  int rv = (*session)->ParseAlps();
-  if (rv != OK) {
-    DCHECK_NE(ERR_IO_PENDING, rv);
-    // ParseAlps() already closed the connection on error.
-    return rv;
-  }
-
-  return OK;
+  return insert_result.error();
 }
 
-base::WeakPtr<SpdySession> SpdySessionPool::CreateAvailableSessionFromSocket(
+base::expected<base::WeakPtr<SpdySession>, int>
+SpdySessionPool::CreateAvailableSessionFromSocket(
     const SpdySessionKey& key,
     std::unique_ptr<StreamSocket> socket_stream,
     const LoadTimingInfo::ConnectTiming& connect_timing,
@@ -194,8 +189,10 @@ base::WeakPtr<SpdySession> SpdySessionPool::CreateAvailableSessionFromSocket(
   new_session->InitializeWithSocket(std::move(socket_stream), connect_timing,
                                     this);
 
+  const bool perform_post_insertion_checks = base::FeatureList::IsEnabled(
+      features::kSpdySessionForProxyAdditionalChecks);
   return InsertSession(key, std::move(new_session), net_log,
-                       std::move(dns_aliases));
+                       std::move(dns_aliases), perform_post_insertion_checks);
 }
 
 base::WeakPtr<SpdySession> SpdySessionPool::FindAvailableSession(
@@ -716,11 +713,12 @@ std::unique_ptr<SpdySession> SpdySessionPool::CreateSession(
       network_quality_estimator_, net_log);
 }
 
-base::WeakPtr<SpdySession> SpdySessionPool::InsertSession(
+base::expected<base::WeakPtr<SpdySession>, int> SpdySessionPool::InsertSession(
     const SpdySessionKey& key,
     std::unique_ptr<SpdySession> new_session,
     const NetLogWithSource& source_net_log,
-    std::set<std::string> dns_aliases) {
+    std::set<std::string> dns_aliases,
+    bool perform_post_insertion_checks) {
   base::WeakPtr<SpdySession> available_session = new_session->GetWeakPtr();
   sessions_.insert(new_session.release());
   MapKeyToAvailableSession(key, available_session, std::move(dns_aliases));
@@ -742,6 +740,23 @@ base::WeakPtr<SpdySession> SpdySessionPool::InsertSession(
     IPEndPoint address;
     if (available_session->GetPeerAddress(&address) == OK)
       aliases_.insert(AliasMap::value_type(address, key));
+  }
+
+  if (!perform_post_insertion_checks) {
+    return available_session;
+  }
+
+  if (!available_session->HasAcceptableTransportSecurity()) {
+    available_session->CloseSessionOnError(
+        ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY, "");
+    return base::unexpected(ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY);
+  }
+
+  int rv = available_session->ParseAlps();
+  if (rv != OK) {
+    DCHECK_NE(ERR_IO_PENDING, rv);
+    // ParseAlps() already closed the connection on error.
+    return base::unexpected(rv);
   }
 
   return available_session;

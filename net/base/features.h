@@ -508,6 +508,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kStoreConnectionSubtype);
 // partitioned, allowing greater connection re-use.
 NET_EXPORT BASE_DECLARE_FEATURE(kPartitionProxyChains);
 
+// Enables more checks when creating a SpdySession for proxy. These checks are
+// already applied to non-proxy SpdySession creations.
+// TODO(crbug.com/343519247): Remove this once we are sure that these checks are
+// not causing any problems.
+NET_EXPORT BASE_DECLARE_FEATURE(kSpdySessionForProxyAdditionalChecks);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

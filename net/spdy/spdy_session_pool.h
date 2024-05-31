@@ -17,6 +17,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_timing_info.h"
@@ -183,7 +184,8 @@ class NET_EXPORT SpdySessionPool
   // disconnected it and then returning it to the socket pool. This is intended
   // for use with H2 proxies, which are layered beneath the socket pools and
   // can have sockets above them for tunnels, which are put in a socket pool.
-  base::WeakPtr<SpdySession> CreateAvailableSessionFromSocket(
+  base::expected<base::WeakPtr<SpdySession>, int>
+  CreateAvailableSessionFromSocket(
       const SpdySessionKey& key,
       std::unique_ptr<StreamSocket> socket_stream,
       const LoadTimingInfo::ConnectTiming& connect_timing,
@@ -389,11 +391,12 @@ class NET_EXPORT SpdySessionPool
                                              NetLog* net_log);
   // Adds a new session previously created with CreateSession to the pool.
   // |source_net_log| is the NetLog for the object that created the session.
-  base::WeakPtr<SpdySession> InsertSession(
+  base::expected<base::WeakPtr<SpdySession>, int> InsertSession(
       const SpdySessionKey& key,
       std::unique_ptr<SpdySession> new_session,
       const NetLogWithSource& source_net_log,
-      std::set<std::string> dns_aliases);
+      std::set<std::string> dns_aliases,
+      bool perform_post_insertion_checks);
 
   // If a session with the specified |key| exists, invokes
   // OnSpdySessionAvailable on all matching members of
