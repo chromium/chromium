@@ -527,7 +527,12 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
   list_container_view_->RemoveAllChildViews();
   total_assignments_ = assignments.size();
 
-  const size_t num_assignments = std::min(kMaxAssignments, assignments.size());
+  // TODO(b/338917100): Revisit to see if we want to limit the number of
+  // assignments to 100 and shows the footer view.
+  const size_t num_assignments =
+      features::AreGlanceablesV2Enabled()
+          ? std::min(kMaxAssignments, assignments.size())
+          : assignments.size();
   for (size_t i = 0; i < num_assignments; ++i) {
     list_container_view_->AddChildView(
         std::make_unique<GlanceablesClassroomItemView>(
