@@ -81,6 +81,25 @@ TEST_F(MahiCacheManagerTest, ReplacingExistingURLWithNewContent) {
   EXPECT_EQ(GetPageCache().at(GURL("http://url1.com")).previous_qa.size(), 1u);
 }
 
+TEST_F(MahiCacheManagerTest, ReplaceSummaryWithExistingUrl) {
+  EXPECT_EQ(GetPageCache().size(), 2u);
+  GetMahiCacheManager()->TryToUpdateSummaryForUrl("http://url1.com",
+                                                  u"new summary");
+  auto result = GetMahiCacheManager()->GetSummaryForUrl("http://url1.com");
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), u"new summary");
+  EXPECT_EQ(GetPageCache().size(), 2u);
+}
+
+TEST_F(MahiCacheManagerTest, UpdateSummaryDoesNothingIfURLIsntInCache) {
+  EXPECT_EQ(GetPageCache().size(), 2u);
+  GetMahiCacheManager()->TryToUpdateSummaryForUrl("http://not-there.com",
+                                                  u"new summary");
+  auto result = GetMahiCacheManager()->GetSummaryForUrl("http://not-there.com");
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(GetPageCache().size(), 2u);
+}
+
 TEST_F(MahiCacheManagerTest, GetSummaryFromTheCacheSameURL) {
   auto result = GetMahiCacheManager()->GetSummaryForUrl("http://url1.com");
   EXPECT_TRUE(result.has_value());

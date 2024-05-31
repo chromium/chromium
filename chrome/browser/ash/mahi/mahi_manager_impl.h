@@ -13,6 +13,8 @@
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
+#include "chrome/browser/ash/mahi/mahi_cache_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "components/manta/mahi_provider.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -69,22 +71,28 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
   void MaybeInitializeAndDiscardPendingRequests();
 
   void OnGetPageContentForSummary(
+      crosapi::mojom::MahiPageInfoPtr request_page_info,
       MahiSummaryCallback callback,
       crosapi::mojom::MahiPageContentPtr mahi_content_ptr);
 
   void OnGetPageContentForQA(
+      crosapi::mojom::MahiPageInfoPtr request_page_info,
       const std::u16string& question,
       MahiAnswerQuestionCallback callback,
       crosapi::mojom::MahiPageContentPtr mahi_content_ptr);
 
-  void OnMahiProviderSummaryResponse(MahiSummaryCallback summary_callback,
-                                     base::Value::Dict dict,
-                                     manta::MantaStatus status);
+  void OnMahiProviderSummaryResponse(
+      crosapi::mojom::MahiPageInfoPtr request_page_info,
+      MahiSummaryCallback summary_callback,
+      base::Value::Dict dict,
+      manta::MantaStatus status);
 
-  void OnMahiProviderQAResponse(const std::u16string& question,
-                                MahiAnswerQuestionCallback callback,
-                                base::Value::Dict dict,
-                                manta::MantaStatus status);
+  void OnMahiProviderQAResponse(
+      crosapi::mojom::MahiPageInfoPtr request_page_info,
+      const std::u16string& question,
+      MahiAnswerQuestionCallback callback,
+      base::Value::Dict dict,
+      manta::MantaStatus status);
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   base::ScopedObservation<SessionController, SessionObserver>
@@ -96,7 +104,9 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
   crosapi::mojom::MahiPageContentPtr current_panel_content_ =
       crosapi::mojom::MahiPageContent::New();
 
-  GURL current_panel_url_;
+  // Stores metadata of the current content in the panel.
+  crosapi::mojom::MahiPageInfoPtr current_panel_info_ =
+      crosapi::mojom::MahiPageInfo::New();
 
   // Pair of question and their corresponding answer for the current panel
   // content
@@ -104,11 +114,15 @@ class MahiManagerImpl : public chromeos::MahiManager, public SessionObserver {
 
   std::unique_ptr<manta::MahiProvider> mahi_provider_;
 
+  raw_ptr<ash::MahiBrowserDelegateAsh> mahi_browser_delegate_ash_ = nullptr;
+
   // Keeps track of the latest result and code, used for feedback.
   std::u16string latest_summary_;
   chromeos::MahiResponseStatus latest_response_status_;
 
   MahiUiController ui_controller_;
+
+  std::unique_ptr<MahiCacheManager> cache_manager_;
 
   // If true, tries to get content from MediaAppContentManager instead.
   bool media_app_pdf_focused_ = false;

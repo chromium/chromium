@@ -59,22 +59,30 @@ class MahiCacheManager {
 
   ~MahiCacheManager();
 
-  // Add page cache for a given url. If the url exists in the cache, replace
+  // Adds page cache for a given url. If the url exists in the cache, replace
   // with the new one.
   void AddCacheForUrl(const std::string& url, const MahiData& data);
 
-  // Return the content for the given url.
+  // Updates summary for a URL that is already in the cache. If the cache
+  // doesn't contain the URL, does nothing.
+  void TryToUpdateSummaryForUrl(const std::string& url,
+                                const std::u16string& summary);
+
+  // Returns the content for the given url.
   std::u16string GetPageContentForUrl(const std::string& url) const;
 
-  // Return the summary for the given url. If it's not in the cache, return
+  // Returns the summary for the given url. If it's not in the cache, return
   // nullopt.
   std::optional<std::u16string> GetSummaryForUrl(const std::string& url) const;
 
-  // Return list of questions and answers for the given url.
+  // Returns list of questions and answers for the given url.
   std::vector<MahiQA> GetQAForUrl(const std::string& url) const;
 
-  // Clear the cache.
+  // Clears the cache.
   void ClearCache();
+
+  // Gets size of the cache.
+  int size() { return page_cache_.size(); }
 
  private:
   friend class MahiCacheManagerTest;

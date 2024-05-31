@@ -55,27 +55,36 @@ MahiCacheManager::~MahiCacheManager() = default;
 
 void MahiCacheManager::AddCacheForUrl(const std::string& url,
                                       const MahiData& data) {
-  auto gurl = GURL(url).GetWithoutRef();
+  const auto gurl = GURL(url).GetWithoutRef();
   page_cache_[gurl] = data;
+}
+
+void MahiCacheManager::TryToUpdateSummaryForUrl(const std::string& url,
+                                                const std::u16string& summary) {
+  const auto gurl = GURL(url).GetWithoutRef();
+  if (!page_cache_.contains(gurl)) {
+    return;
+  }
+  page_cache_[gurl].summary = summary;
 }
 
 std::u16string MahiCacheManager::GetPageContentForUrl(
     const std::string& url) const {
-  auto gurl = GURL(url).GetWithoutRef();
+  const auto gurl = GURL(url).GetWithoutRef();
   return page_cache_.contains(gurl) ? page_cache_.at(gurl).page_content
                                     : std::u16string();
 }
 
 std::optional<std::u16string> MahiCacheManager::GetSummaryForUrl(
     const std::string& url) const {
-  auto gurl = GURL(url).GetWithoutRef();
+  const auto gurl = GURL(url).GetWithoutRef();
   return page_cache_.contains(gurl) ? page_cache_.at(gurl).summary
                                     : std::nullopt;
 }
 
 std::vector<MahiCacheManager::MahiQA> MahiCacheManager::GetQAForUrl(
     const std::string& url) const {
-  auto gurl = GURL(url).GetWithoutRef();
+  const auto gurl = GURL(url).GetWithoutRef();
   return page_cache_.contains(gurl) ? page_cache_.at(gurl).previous_qa
                                     : std::vector<MahiQA>({});
 }

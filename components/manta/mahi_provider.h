@@ -48,7 +48,8 @@ class COMPONENT_EXPORT(MANTA) MahiProvider : public BaseProvider {
   // response is processed and returned to the caller via an
   // `MantaGenericCallback` callback.
   // Will give an empty response if `IdentityManager` is no longer valid.
-  void Summarize(const std::string& input, MantaGenericCallback done_callback);
+  virtual void Summarize(const std::string& input,
+                         MantaGenericCallback done_callback);
 
   // Similar to `Summarize` but outlines the `input`.
   void Outline(const std::string& input, MantaGenericCallback done_callback);

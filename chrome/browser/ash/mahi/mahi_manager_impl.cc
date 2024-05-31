@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -24,6 +25,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
+#include "chrome/browser/ash/mahi/mahi_cache_manager.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -86,19 +88,12 @@ std::unique_ptr<manta::MahiProvider> CreateProvider() {
   return nullptr;
 }
 
-ash::MahiBrowserDelegateAsh* GetMahiBrowserDelgateAsh() {
-  auto* mahi_browser_delegate_ash = crosapi::CrosapiManager::Get()
-                                        ->crosapi_ash()
-                                        ->mahi_browser_delegate_ash();
-  CHECK(mahi_browser_delegate_ash);
-  return mahi_browser_delegate_ash;
-}
-
 }  // namespace
 
 namespace ash {
 
-MahiManagerImpl::MahiManagerImpl() {
+MahiManagerImpl::MahiManagerImpl()
+    : cache_manager_(std::make_unique<MahiCacheManager>()) {
   session_observation_.Observe(Shell::Get()->session_controller());
   PrefService* last_active_user_pref_service =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
@@ -109,6 +104,7 @@ MahiManagerImpl::MahiManagerImpl() {
 
 MahiManagerImpl::~MahiManagerImpl() {
   mahi_provider_.reset();
+  mahi_browser_delegate_ash_ = nullptr;
 }
 
 std::u16string MahiManagerImpl::GetContentTitle() {
@@ -126,17 +122,53 @@ GURL MahiManagerImpl::GetContentUrl() {
 void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
   MaybeInitializeAndDiscardPendingRequests();
 
-  current_panel_url_ = current_page_info_->url;
-  auto get_content_done_callback = base::BindOnce(
-      &MahiManagerImpl::OnGetPageContentForSummary,
-      weak_ptr_factory_for_requests_.GetWeakPtr(), std::move(callback));
+  current_panel_info_ = current_page_info_->Clone();
+
+  // Uses the summary if it is already in the cache.
+  const auto cached_summary =
+      cache_manager_->GetSummaryForUrl(current_panel_info_->url.spec());
+  const auto cached_content =
+      cache_manager_->GetPageContentForUrl(current_panel_info_->url.spec());
+  if (cached_summary.has_value()) {
+    current_panel_content_ = crosapi::mojom::MahiPageContent::New(
+        /*client_id=*/base::UnguessableToken(),
+        /*page_id=*/base::UnguessableToken(), cached_content);
+    current_panel_qa_.clear();
+
+    // TODO(b:338140794): consider loading the QA cache here as well.
+
+    latest_summary_ = cached_summary.value();
+    latest_response_status_ = MahiResponseStatus::kSuccess;
+    std::move(callback).Run(cached_summary.value(),
+                            MahiResponseStatus::kSuccess);
+
+    // TODO(b:338140794): Add metrics here.
+    return;
+  }
+
+  // Uses page content if it is already in the cache.
+  if (!cached_content.empty()) {
+    OnGetPageContentForSummary(
+        current_panel_info_->Clone(), std::move(callback),
+        crosapi::mojom::MahiPageContent::New(
+            /*client_id=*/base::UnguessableToken(),
+            /*page_id=*/base::UnguessableToken(), cached_content));
+
+    // TODO(b:338140794): Add metrics here.
+    return;
+  }
+
+  auto get_content_done_callback =
+      base::BindOnce(&MahiManagerImpl::OnGetPageContentForSummary,
+                     weak_ptr_factory_for_requests_.GetWeakPtr(),
+                     current_panel_info_->Clone(), std::move(callback));
 
   if (media_app_pdf_focused_) {
     chromeos::MahiMediaAppContentManager::Get()->GetContent(
         media_app_client_id_, std::move(get_content_done_callback));
   } else {
-    GetMahiBrowserDelgateAsh()->GetContentFromClient(
-        current_page_info_->client_id, current_page_info_->page_id,
+    mahi_browser_delegate_ash_->GetContentFromClient(
+        current_panel_info_->client_id, current_panel_info_->page_id,
         std::move(get_content_done_callback));
   }
 }
@@ -162,22 +194,38 @@ void MahiManagerImpl::AnswerQuestion(const std::u16string& question,
         base::UTF16ToUTF8(current_panel_content_->page_content),
         current_panel_qa_, base::UTF16ToUTF8(question),
         base::BindOnce(&MahiManagerImpl::OnMahiProviderQAResponse,
-                       weak_ptr_factory_for_requests_.GetWeakPtr(), question,
+                       weak_ptr_factory_for_requests_.GetWeakPtr(),
+                       current_panel_info_->Clone(), question,
                        std::move(callback)));
     return;
   }
 
-  current_panel_url_ = current_page_info_->url;
-  auto get_content_done_callback =
-      base::BindOnce(&MahiManagerImpl::OnGetPageContentForQA,
-                     weak_ptr_factory_for_requests_.GetWeakPtr(), question,
-                     std::move(callback));
+  current_panel_info_ = current_page_info_->Clone();
+
+  // Uses page content if it is already in the cache.
+  const auto cached_content =
+      cache_manager_->GetPageContentForUrl(current_panel_info_->url.spec());
+  if (!cached_content.empty()) {
+    OnGetPageContentForQA(
+        current_panel_info_->Clone(), question, std::move(callback),
+        crosapi::mojom::MahiPageContent::New(
+            /*client_id=*/base::UnguessableToken(),
+            /*page_id=*/base::UnguessableToken(), cached_content));
+
+    // TODO(b:338140794): Add metrics here.
+    return;
+  }
+
+  auto get_content_done_callback = base::BindOnce(
+      &MahiManagerImpl::OnGetPageContentForQA,
+      weak_ptr_factory_for_requests_.GetWeakPtr(), current_panel_info_->Clone(),
+      question, std::move(callback));
   if (media_app_pdf_focused_) {
     chromeos::MahiMediaAppContentManager::Get()->GetContent(
         media_app_client_id_, std::move(get_content_done_callback));
   } else {
-    GetMahiBrowserDelgateAsh()->GetContentFromClient(
-        current_page_info_->client_id, current_page_info_->page_id,
+    mahi_browser_delegate_ash_->GetContentFromClient(
+        current_panel_info_->client_id, current_panel_info_->page_id,
         std::move(get_content_done_callback));
   }
 }
@@ -197,7 +245,7 @@ void MahiManagerImpl::SetCurrentFocusedPageInfo(
 
   const bool availability =
       current_page_info_->IsDistillable.value_or(false) &&
-      !current_panel_url_.EqualsIgnoringRef(current_page_info_->url);
+      !current_panel_info_->url.EqualsIgnoringRef(current_page_info_->url);
   NotifyRefreshAvailability(/*available=*/availability);
 }
 
@@ -295,6 +343,8 @@ void MahiManagerImpl::SetMediaAppPDFFocused() {
 
   // Fits the media app page info into a MahiPageInfoPtr.
   // Particularly, makes up a GURL with the file name.
+  // TODO(b:338140794): Two file with the same name can hit the same cache. Need
+  // to find a way to fix this.
   current_page_info_ = crosapi::mojom::MahiPageInfo::New(
       media_app_client_id_,
       /*page_id=*/media_app_client_id_,
@@ -310,7 +360,7 @@ void MahiManagerImpl::SetMediaAppPDFFocused() {
   }
 
   const bool availability =
-      !current_panel_url_.EqualsIgnoringRef(current_page_info_->url);
+      !current_panel_info_->url.EqualsIgnoringRef(current_page_info_->url);
   NotifyRefreshAvailability(/*available=*/availability);
 }
 
@@ -353,6 +403,7 @@ void MahiManagerImpl::OnMahiPrefChanged() {
   CHECK(pref_change_registrar_->prefs());
   if (!pref_change_registrar_->prefs()->GetBoolean(ash::prefs::kMahiEnabled)) {
     ui_controller_.CloseMahiPanel();
+    cache_manager_->ClearCache();
   }
 }
 
@@ -362,12 +413,21 @@ void MahiManagerImpl::MaybeInitializeAndDiscardPendingRequests() {
   }
   CHECK(mahi_provider_);
 
+  if (!mahi_browser_delegate_ash_) {
+    mahi_browser_delegate_ash_ = crosapi::CrosapiManager::Get()
+                                     ->crosapi_ash()
+                                     ->mahi_browser_delegate_ash();
+  }
+
+  CHECK(mahi_browser_delegate_ash_);
+
   if (weak_ptr_factory_for_requests_.HasWeakPtrs()) {
     weak_ptr_factory_for_requests_.InvalidateWeakPtrs();
   }
 }
 
 void MahiManagerImpl::OnGetPageContentForSummary(
+    crosapi::mojom::MahiPageInfoPtr request_page_info,
     MahiSummaryCallback callback,
     crosapi::mojom::MahiPageContentPtr mahi_content_ptr) {
   if (!mahi_content_ptr) {
@@ -380,15 +440,26 @@ void MahiManagerImpl::OnGetPageContentForSummary(
   current_panel_content_ = std::move(mahi_content_ptr);
   current_panel_qa_.clear();
 
+  // Add page content to the cache.
+  // TODO(b:338140794): consider adding the QA to the cache.
+  cache_manager_->AddCacheForUrl(
+      request_page_info->url.spec(),
+      MahiCacheManager::MahiData(
+          request_page_info->url.spec(), request_page_info->title,
+          current_panel_content_->page_content,
+          request_page_info->favicon_image, /*summary=*/std::nullopt,
+          /*previous_qa=*/{}));
+
   CHECK(mahi_provider_);
   mahi_provider_->Summarize(
       base::UTF16ToUTF8(current_panel_content_->page_content),
       base::BindOnce(&MahiManagerImpl::OnMahiProviderSummaryResponse,
                      weak_ptr_factory_for_requests_.GetWeakPtr(),
-                     std::move(callback)));
+                     std::move(request_page_info), std::move(callback)));
 }
 
 void MahiManagerImpl::OnGetPageContentForQA(
+    crosapi::mojom::MahiPageInfoPtr request_page_info,
     const std::u16string& question,
     MahiAnswerQuestionCallback callback,
     crosapi::mojom::MahiPageContentPtr mahi_content_ptr) {
@@ -402,15 +473,28 @@ void MahiManagerImpl::OnGetPageContentForQA(
   current_panel_content_ = std::move(mahi_content_ptr);
   current_panel_qa_.clear();
 
+  // Add page content to the cache. The summary would be the summary that
+  // is already in the cache (if any).
+  // TODO(b:338140794): consider adding the QA to the cache.
+  cache_manager_->AddCacheForUrl(
+      request_page_info->url.spec(),
+      MahiCacheManager::MahiData(
+          request_page_info->url.spec(), request_page_info->title,
+          current_panel_content_->page_content,
+          request_page_info->favicon_image,
+          cache_manager_->GetSummaryForUrl(request_page_info->url.spec()), {}));
+
   mahi_provider_->QuestionAndAnswer(
       base::UTF16ToUTF8(current_panel_content_->page_content),
       current_panel_qa_, base::UTF16ToUTF8(question),
       base::BindOnce(&MahiManagerImpl::OnMahiProviderQAResponse,
-                     weak_ptr_factory_for_requests_.GetWeakPtr(), question,
+                     weak_ptr_factory_for_requests_.GetWeakPtr(),
+                     std::move(request_page_info), question,
                      std::move(callback)));
 }
 
 void MahiManagerImpl::OnMahiProviderSummaryResponse(
+    crosapi::mojom::MahiPageInfoPtr request_page_info,
     MahiSummaryCallback summary_callback,
     base::Value::Dict dict,
     manta::MantaStatus status) {
@@ -426,6 +510,10 @@ void MahiManagerImpl::OnMahiProviderSummaryResponse(
   if (auto* text = dict.FindString("outputData")) {
     latest_response_status_ = MahiResponseStatus::kSuccess;
     latest_summary_ = base::UTF8ToUTF16(*text);
+
+    cache_manager_->TryToUpdateSummaryForUrl(request_page_info->url.spec(),
+                                             latest_summary_);
+
     std::move(summary_callback).Run(latest_summary_, latest_response_status_);
   } else {
     latest_response_status_ = MahiResponseStatus::kCantFindOutputData;
@@ -435,6 +523,7 @@ void MahiManagerImpl::OnMahiProviderSummaryResponse(
 }
 
 void MahiManagerImpl::OnMahiProviderQAResponse(
+    crosapi::mojom::MahiPageInfoPtr request_page_info,
     const std::u16string& question,
     MahiAnswerQuestionCallback callback,
     base::Value::Dict dict,

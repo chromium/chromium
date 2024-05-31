@@ -22,6 +22,8 @@ source_set("mahi_ash") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "fake_mahi_browser_delegate_ash.cc",
+    "fake_mahi_browser_delegate_ash.h",
     "mahi_browser_delegate_ash_unittest.cc",
     "mahi_cache_manager_unittest.cc",
     "mahi_manager_impl_unittest.cc",
