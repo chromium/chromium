@@ -421,13 +421,6 @@ BASE_FEATURE(kPruneOldTransferCacheEntries,
              "PruneOldTransferCacheEntries",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// A feature that will start a task on a timer to purge old GpuImageDecodeCache
-// entries. This is similar to `kPruneOldTransferCacheEntries` but done on the
-// client side.
-BASE_FEATURE(kPurgeOldCacheEntriesOnTimer,
-             "PurgeOldCacheEntriesOnTimer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Using the new SchedulerDfs GPU scheduler.
 BASE_FEATURE(kUseGpuSchedulerDfs,
              "UseGpuSchedulerDfs",
@@ -694,12 +687,10 @@ bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line) {
 // Set up such that service side purge depends on the client side purge feature
 // being enabled. And enabling service side purge disables client purge
 bool EnablePurgeGpuImageDecodeCache() {
-  return base::FeatureList::IsEnabled(kPurgeOldCacheEntriesOnTimer) &&
-         !base::FeatureList::IsEnabled(kPruneOldTransferCacheEntries);
+  return !base::FeatureList::IsEnabled(kPruneOldTransferCacheEntries);
 }
 bool EnablePruneOldTransferCacheEntries() {
-  return base::FeatureList::IsEnabled(kPurgeOldCacheEntriesOnTimer) &&
-         base::FeatureList::IsEnabled(kPruneOldTransferCacheEntries);
+  return base::FeatureList::IsEnabled(kPruneOldTransferCacheEntries);
 }
 
 bool IsCanvasOopRasterizationEnabled() {
