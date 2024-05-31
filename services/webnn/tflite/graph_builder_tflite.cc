@@ -1842,12 +1842,26 @@ auto GraphBuilderTflite::SerializeReciprocal(
 
 auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
     -> base::expected<OperatorOffset, std::string> {
+  // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
+  // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
+  const mojom::Operand& input_operand = GetOperand(reduce.input_operand_id);
+  if (input_operand.data_type == mojom::Operand::DataType::kFloat16) {
+    return base::unexpected("The 16-bit float data type isn't supported.");
+  }
+
   // Serialize the axes tensor to reduce input tensor.
   ASSIGN_OR_RETURN(const std::vector<int32_t> signed_axes,
                    ToSignedDimensions(reduce.axes));
 
   ::tflite::BuiltinOperator operator_code;
-  const mojom::Operand& input_operand = GetOperand(reduce.input_operand_id);
+  // The input shape has been validated to not overflow before creating tensor.
+  const auto signed_input_dimensions =
+      ToSignedDimensions(input_operand.dimensions);
+  CHECK(signed_input_dimensions.has_value());
+  const ::tflite::TensorType input_tensor_type =
+      MojoOperandTypeToTFLite(input_operand.data_type);
+  int32_t input_tensor_index =
+      operand_to_index_map_.at(reduce.input_operand_id);
   switch (reduce.kind) {
     case mojom::Reduce::Kind::kMax:
       operator_code = ::tflite::BuiltinOperator_REDUCE_MAX;
@@ -1868,23 +1882,75 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
       operator_code = ::tflite::BuiltinOperator_SUM;
       break;
     case mojom::Reduce::Kind::kLogSum:
-    // TODO(crbug.com/333952108): Support reduceLogSum by decomposition.
-    case mojom::Reduce::Kind::kLogSumExp:
-    // TODO(crbug.com/333952108): Support reduceLogSumExp by decomposition.
+      CHECK(kFloatDataTypes.contains(input_operand.data_type));
+      // The reduceLogSum can be emulated with appending log operation after
+      // reduceSum.
+      operator_code = ::tflite::BuiltinOperator_SUM;
+      break;
+    case mojom::Reduce::Kind::kLogSumExp: {
+      // The reduceLogSumExp can be emulated with adding exp operation before
+      // reduceSum and appending log operation after the reduceSum.
+      CHECK(kFloatDataTypes.contains(input_operand.data_type));
+      const int32_t output_tensor_index_of_exp =
+          SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+      operators_.emplace_back(SerializeUnaryOperation(
+          ::tflite::BuiltinOperator_EXP, input_tensor_index,
+          output_tensor_index_of_exp));
+      input_tensor_index = output_tensor_index_of_exp;
+      // A log operation will be appended after the reduce sum.
+      operator_code = ::tflite::BuiltinOperator_SUM;
+      break;
+    }
     case mojom::Reduce::Kind::kL2:
       CHECK(kFloatDataTypes.contains(input_operand.data_type));
       return base::unexpected(OpKindToString(reduce.kind) +
                               " is not implemented.");
-    case mojom::Reduce::Kind::kSumSquare:
-    // TODO(crbug.com/333952108): Support reduceSumSquare by decomposition.
+    case mojom::Reduce::Kind::kSumSquare: {
+      // The reduceSumSquare can be emulated with adding pow operation before
+      // reduceSum.
+      CHECK(kFloatAnd32BitIntDataTypes.contains(input_operand.data_type));
+      int32_t pow_constant_tensor_index;
+      if (input_operand.data_type == mojom::Operand::DataType::kFloat32) {
+        pow_constant_tensor_index = SerializeTensorWithBuffer<float>(
+            /*buffer=*/std::array<float, 1>{2.0},
+            /*dimensions=*/{});
+      } else if (input_operand.data_type == mojom::Operand::DataType::kInt32) {
+        pow_constant_tensor_index = SerializeTensorWithBuffer<int32_t>(
+            /*buffer=*/std::array<int32_t, 1>{2},
+            /*dimensions=*/{});
+      } else {
+        return base::unexpected(base::StrCat(
+            {DataTypeToString(input_operand.data_type), " is not supported."}));
+      }
+      const int32_t output_tensor_index_of_pow =
+          SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+      operators_.emplace_back(SerializeBinaryOperation(
+          ::tflite::BuiltinOperator_POW, input_tensor_index,
+          pow_constant_tensor_index, output_tensor_index_of_pow));
+      input_tensor_index = output_tensor_index_of_pow;
+      operator_code = ::tflite::BuiltinOperator_SUM;
+      break;
+    }
     case mojom::Reduce::Kind::kL1:
       CHECK(kFloatAnd32BitIntDataTypes.contains(input_operand.data_type));
       return base::unexpected(OpKindToString(reduce.kind) +
                               " is not implemented.");
   }
 
+  if (reduce.kind == mojom::Reduce::Kind::kLogSum ||
+      reduce.kind == mojom::Reduce::Kind::kLogSumExp) {
+    const int32_t output_tensor_index_of_sum =
+        SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+    operators_.emplace_back(SerializeReduceOperation(
+        operator_code, input_tensor_index, output_tensor_index_of_sum,
+        signed_axes, reduce.keep_dimensions));
+    return SerializeUnaryOperation(
+        ::tflite::BuiltinOperator_LOG, output_tensor_index_of_sum,
+        operand_to_index_map_.at(reduce.output_operand_id));
+  }
+
   return SerializeReduceOperation(
-      operator_code, operand_to_index_map_.at(reduce.input_operand_id),
+      operator_code, input_tensor_index,
       operand_to_index_map_.at(reduce.output_operand_id), signed_axes,
       reduce.keep_dimensions);
 }
