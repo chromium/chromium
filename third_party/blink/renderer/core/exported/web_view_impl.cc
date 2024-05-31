@@ -57,6 +57,7 @@
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom-blink.h"
+#include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -467,7 +468,7 @@ SkFontHinting RendererPreferencesToSkiaHinting(
 WebView* WebView::Create(
     WebViewClient* client,
     bool is_hidden,
-    bool is_prerendering,
+    blink::mojom::PrerenderParamPtr prerender_param,
     bool is_inside_portal,
     std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
         fenced_frame_mode,
@@ -485,17 +486,17 @@ WebView* WebView::Create(
       client,
       is_hidden ? mojom::blink::PageVisibilityState::kHidden
                 : mojom::blink::PageVisibilityState::kVisible,
-      is_prerendering, is_inside_portal, fenced_frame_mode, compositing_enabled,
-      widgets_never_composited, To<WebViewImpl>(opener), std::move(page_handle),
-      agent_group_scheduler, session_storage_namespace_id,
-      std::move(page_base_background_color), browsing_context_group_info,
-      color_provider_colors);
+      std::move(prerender_param), is_inside_portal, fenced_frame_mode,
+      compositing_enabled, widgets_never_composited, To<WebViewImpl>(opener),
+      std::move(page_handle), agent_group_scheduler,
+      session_storage_namespace_id, std::move(page_base_background_color),
+      browsing_context_group_info, color_provider_colors);
 }
 
 WebViewImpl* WebViewImpl::Create(
     WebViewClient* client,
     mojom::blink::PageVisibilityState visibility,
-    bool is_prerendering,
+    blink::mojom::PrerenderParamPtr prerender_param,
     bool is_inside_portal,
     std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
         fenced_frame_mode,
@@ -509,8 +510,8 @@ WebViewImpl* WebViewImpl::Create(
     const BrowsingContextGroupInfo& browsing_context_group_info,
     const ColorProviderColorMaps* color_provider_colors) {
   return new WebViewImpl(
-      client, visibility, is_prerendering, is_inside_portal, fenced_frame_mode,
-      compositing_enabled, widgets_never_composited, opener,
+      client, visibility, std::move(prerender_param), is_inside_portal,
+      fenced_frame_mode, compositing_enabled, widgets_never_composited, opener,
       std::move(page_handle), agent_group_scheduler,
       session_storage_namespace_id, std::move(page_base_background_color),
       browsing_context_group_info, color_provider_colors);
@@ -566,7 +567,7 @@ void WebViewImpl::CloseWindow() {
 WebViewImpl::WebViewImpl(
     WebViewClient* client,
     mojom::blink::PageVisibilityState visibility,
-    bool is_prerendering,
+    blink::mojom::PrerenderParamPtr prerender_param,
     bool is_inside_portal,
     std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
         fenced_frame_mode,
@@ -612,7 +613,11 @@ WebViewImpl::WebViewImpl(
       *page_, session_storage_namespace_id_);
 
   SetVisibilityState(visibility, /*is_initial_state=*/true);
-  page_->SetIsPrerendering(is_prerendering);
+  if (prerender_param) {
+    page_->SetIsPrerendering(true);
+    page_->SetPrerenderMetricSuffix(
+        String(prerender_param->page_metric_suffix));
+  }
 
   // TODO(crbug.com/40287334): Remove the is_inside_portal parameter.
 

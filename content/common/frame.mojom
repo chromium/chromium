@@ -48,6 +48,7 @@ import "third_party/blink/public/mojom/navigation/navigation_params.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom";
 import "third_party/blink/public/mojom/page/browsing_context_group_info.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
+import "third_party/blink/public/mojom/page/prerender_page_param.mojom";
 import "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom";
 import "third_party/blink/public/mojom/widget/platform_widget.mojom";
 import "third_party/blink/public/mojom/page/widget.mojom";
@@ -121,8 +122,9 @@ struct CreateViewParams {
   // Whether the `blink::WebView` should initially be hidden.
   bool hidden;
 
-  // Prerender2: Whether the `blink::WebView` is for a prerendered page.
-  bool is_prerendering;
+  // Prerender2: This field is set iff the blink::WebView is for a prerendering
+  // page.
+  blink.mojom.PrerenderParam? prerender_param;
 
   // When true, all RenderWidgets under this `blink::WebView` will never be
   // shown to the user, and thus never composited, and will not need to produce

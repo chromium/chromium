@@ -24,6 +24,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
 #include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_renderer.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -148,7 +149,7 @@ class WebRtcAudioRendererTest : public testing::Test {
         web_view_(blink::WebView::Create(
             /*client=*/nullptr,
             /*is_hidden=*/false,
-            /*is_prerendering=*/false,
+            /*prerender_param=*/nullptr,
             /*is_inside_portal=*/false,
             /*fenced_frame_mode=*/std::nullopt,
             /*compositing_enabled=*/false,

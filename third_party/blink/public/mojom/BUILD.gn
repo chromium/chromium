@@ -1339,6 +1339,7 @@ mojom("mojom_core") {
     "page/draggable_region.mojom",
     "page/page.mojom",
     "page/page_visibility_state.mojom",
+    "page/prerender_page_param.mojom",
     "page/widget.mojom",
     "page_state/page_state.mojom",
 

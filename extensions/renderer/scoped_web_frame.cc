@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/web/web_heap.h"
@@ -23,7 +24,7 @@ ScopedWebFrame::ScopedWebFrame()
       view_(blink::WebView::Create(
           /*client=*/nullptr,
           /*is_hidden=*/false,
-          /*is_prerendering=*/false,
+          /*prerender_param=*/nullptr,
           /*is_inside_portal=*/false,
           /*fenced_frame_mode=*/std::nullopt,
           /*compositing_enabled=*/false,

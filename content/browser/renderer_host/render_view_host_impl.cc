@@ -43,6 +43,7 @@
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_process_host.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -84,6 +85,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -458,8 +460,23 @@ bool RenderViewHostImpl::CreateRenderView(
   params->devtools_main_frame_token =
       frame_tree_node->current_frame_host()->devtools_frame_token();
   DCHECK_EQ(&frame_tree_node->frame_tree(), frame_tree_);
-  params->is_prerendering = frame_tree_->is_prerendering() ||
-                            frame_tree_->page_delegate()->IsPageInPreviewMode();
+
+  if (frame_tree_->is_prerendering() ||
+      frame_tree_->page_delegate()->IsPageInPreviewMode()) {
+    std::string suffix;
+    if (frame_tree_->is_prerendering()) {
+      auto* prerender_host =
+          static_cast<PrerenderHost*>(frame_tree_->delegate());
+      CHECK(prerender_host);
+      suffix = prerender_host->GetHistogramSuffix();
+    } else {
+      suffix = ".Preview";
+    }
+    auto prerender_param = blink::mojom::PrerenderParam::New();
+    prerender_param->page_metric_suffix = std::move(suffix);
+    params->prerender_param = std::move(prerender_param);
+  }
+
   params->attribution_support = delegate_->GetAttributionSupport();
 
   if (main_rfh) {

@@ -135,6 +135,9 @@ PrerenderHost::PrerenderHost(
     base::WeakPtr<PreloadingAttempt> attempt,
     std::unique_ptr<DevToolsPrerenderAttempt> devtools_attempt)
     : attributes_(attributes),
+      metric_suffix_(
+          GeneratePrerenderHistogramSuffix(trigger_type(),
+                                           embedder_histogram_suffix())),
       attempt_(std::move(attempt)),
       devtools_attempt_(std::move(devtools_attempt)),
       web_contents_(web_contents),
@@ -1257,6 +1260,10 @@ void PrerenderHost::GetAllowedClientHintsOnPage(
   for (const auto& hint : client_hints_type_.at(origin)) {
     client_hints->SetIsEnabled(hint, true);
   }
+}
+
+std::string PrerenderHost::GetHistogramSuffix() const {
+  return metric_suffix_;
 }
 
 void PrerenderHost::Cancel(PrerenderFinalStatus status) {

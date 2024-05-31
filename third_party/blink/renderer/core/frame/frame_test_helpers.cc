@@ -57,6 +57,7 @@
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom-blink.h"
+#include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -727,10 +728,15 @@ void WebViewHelper::InitializeWebView(
   }
   web_view_client =
       CreateDefaultClientIfNeeded(web_view_client, owned_web_view_client_);
+  blink::mojom::PrerenderParamPtr prerender_param = nullptr;
+  if (is_prerendering) {
+    prerender_param = blink::mojom::PrerenderParam::New();
+    prerender_param->page_metric_suffix = "for_testing";
+  }
+
   web_view_ = To<WebViewImpl>(
       WebView::Create(web_view_client,
-                      /*is_hidden=*/is_prerendering,
-                      /*is_prerendering=*/is_prerendering,
+                      /*is_hidden=*/is_prerendering, std::move(prerender_param),
                       /*is_inside_portal=*/false,
                       /*fenced_frame_mode=*/fenced_frame_mode,
                       /*compositing_enabled=*/true,
@@ -774,7 +780,7 @@ WebViewImpl* WebViewHelper::CreateWebView(WebViewClient* web_view_client,
   return To<WebViewImpl>(
       WebView::Create(web_view_client,
                       /*is_hidden=*/false,
-                      /*is_prerendering=*/false,
+                      /*prerender_param=*/nullptr,
                       /*is_inside_portal=*/false,
                       /*fenced_frame_mode=*/std::nullopt, compositing_enabled,
                       /*widgets_never_composited=*/false,

@@ -65,23 +65,8 @@ int32_t HeaderMismatchHasher(const std::string& header,
 std::string GenerateHistogramName(const std::string& histogram_base_name,
                                   PreloadingTriggerType trigger_type,
                                   const std::string& embedder_suffix) {
-  switch (trigger_type) {
-    case PreloadingTriggerType::kSpeculationRule:
-      CHECK(embedder_suffix.empty());
-      return std::string(histogram_base_name) + ".SpeculationRule";
-    case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
-      CHECK(embedder_suffix.empty());
-      return std::string(histogram_base_name) +
-             ".SpeculationRuleFromIsolatedWorld";
-    case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
-      CHECK(embedder_suffix.empty());
-      return std::string(histogram_base_name) +
-             ".SpeculationRuleFromAutoSpeculationRules";
-    case PreloadingTriggerType::kEmbedder:
-      CHECK(!embedder_suffix.empty());
-      return std::string(histogram_base_name) + ".Embedder_" + embedder_suffix;
-  }
-  NOTREACHED_NORETURN();
+  return histogram_base_name +
+         GeneratePrerenderHistogramSuffix(trigger_type, embedder_suffix);
 }
 
 void ReportHeaderMismatch(const std::string& key,
@@ -283,6 +268,24 @@ PrerenderMismatchedHeaders::~PrerenderMismatchedHeaders() = default;
 
 PrerenderMismatchedHeaders::PrerenderMismatchedHeaders(
     PrerenderMismatchedHeaders&& other) = default;
+
+std::string GeneratePrerenderHistogramSuffix(
+    PreloadingTriggerType trigger_type,
+    const std::string& embedder_suffix) {
+  CHECK(embedder_suffix.empty() ||
+        trigger_type == PreloadingTriggerType::kEmbedder);
+  switch (trigger_type) {
+    case PreloadingTriggerType::kSpeculationRule:
+      return ".SpeculationRule";
+    case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
+      return ".SpeculationRuleFromIsolatedWorld";
+    case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
+      return ".SpeculationRuleFromAutoSpeculationRules";
+    case PreloadingTriggerType::kEmbedder:
+      return ".Embedder_" + embedder_suffix;
+  }
+  NOTREACHED_NORETURN();
+}
 
 void RecordPrerenderTriggered(ukm::SourceId ukm_id) {
   ukm::builders::PrerenderPageLoad(ukm_id).SetTriggeredPrerender(true).Record(

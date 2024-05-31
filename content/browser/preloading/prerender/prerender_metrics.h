@@ -132,6 +132,10 @@ enum class PrerenderCrossOriginRedirectionProtocolChange {
   kMaxValue = kHttpProtocolDowngrade
 };
 
+std::string GeneratePrerenderHistogramSuffix(
+    PreloadingTriggerType trigger_type,
+    const std::string& embedder_suffix);
+
 void RecordPrerenderTriggered(ukm::SourceId ukm_id);
 
 void RecordPrerenderActivationTime(

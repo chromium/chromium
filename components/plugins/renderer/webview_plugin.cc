@@ -25,6 +25,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
+#include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_policy_container.h"
@@ -270,7 +271,7 @@ WebViewPlugin::WebViewHelper::WebViewHelper(
   web_view_ = WebView::Create(
       /*client=*/this,
       /*is_hidden=*/false,
-      /*is_prerendering=*/false,
+      /*prerender_param=*/nullptr,
       /*is_inside_portal=*/false,
       /*fenced_frame_mode=*/std::nullopt,
       /*compositing_enabled=*/false,

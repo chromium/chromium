@@ -61,6 +61,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
+#include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -662,7 +663,8 @@ class HeaderAndFooterContext {
       const blink::WebLocalFrame& source_frame) {
     auto* view = blink::WebView::Create(
         /*client=*/nullptr,
-        /*is_hidden=*/false, /*is_prerendering=*/false,
+        /*is_hidden=*/false,
+        /*prerender_param=*/nullptr,
         /*is_inside_portal=*/false,
         /*fenced_frame_mode=*/std::nullopt,
         /*compositing_enabled=*/false, /*widgets_never_composited=*/false,
@@ -938,7 +940,7 @@ void PrepareFrameAndViewForPrint::CopySelection(
   blink::WebView* web_view = blink::WebView::Create(
       /*client=*/this,
       /*is_hidden=*/false,
-      /*is_prerendering=*/false,
+      /*prerender_param=*/nullptr,
       /*is_inside_portal=*/false,
       /*fenced_frame_mode=*/std::nullopt,
       /*compositing_enabled=*/false,

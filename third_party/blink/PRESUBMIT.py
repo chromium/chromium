@@ -82,6 +82,7 @@ def _CheckForWrongMojomIncludes(input_api, output_api):
         'third_party/blink/public/mojom/loader/resource_load_info_notifier',
         'third_party/blink/public/mojom/loader/transferrable_url_loader',
         'third_party/blink/public/mojom/navigation/renderer_content_settings',
+        'third_party/blink/public/mojom/page/prerender_page_param',
         'third_party/blink/public/mojom/worker/subresource_loader_updater',
         'third_party/blink/public/mojom/worker/worklet_global_scope_creation_params',
         'media/mojo/mojom/interface_factory', 'media/mojo/mojom/audio_decoder',

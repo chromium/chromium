@@ -42,6 +42,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-shared.h"
+#include "third_party/blink/public/mojom/page/prerender_page_param.mojom-forward.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
@@ -108,8 +109,9 @@ class BLINK_EXPORT WebView {
   //
   // clients may be null, but should both be null or not together.
   // |is_hidden| defines the initial visibility of the page.
-  // |is_prerendering| defines whether the page is being prerendered by the
-  // Prerender2 feature (see content/browser/preloading/prerender/README.md).
+  // |prerender_param| defines a set of parameters for prerendering views. It is
+  // set iff the view is created for a prerendering page. (see
+  // content/browser/preloading/prerender/README.md).
   // [is_inside_portal] defines whether the page is inside_portal.
   // [is_fenced_frame] defines whether the page is for a fenced frame.
   // |compositing_enabled| dictates whether accelerated compositing should be
@@ -136,7 +138,7 @@ class BLINK_EXPORT WebView {
   static WebView* Create(
       WebViewClient*,
       bool is_hidden,
-      bool is_prerendering,
+      blink::mojom::PrerenderParamPtr prerender_param,
       bool is_inside_portal,
       std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
           fenced_frame_mode,

@@ -284,6 +284,8 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
       const url::Origin& origin,
       blink::EnabledClientHints* client_hints) const;
 
+  std::string GetHistogramSuffix() const;
+
   // Returns std::nullopt iff prerendering is initiated by the browser (not by
   // a renderer using Speculation Rules API).
   std::optional<url::Origin> initiator_origin() const {
@@ -378,6 +380,11 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   int frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
 
   std::optional<PrerenderFinalStatus> final_status_;
+
+  // Cache the suffix of metrics based on trigger type and embedder suffix.
+  // TODO(https://crbug.com/40243375): Remove the use pattern of
+  // `Report*(base_name, trigger_type(), embedder_suffix())`
+  const std::string metric_suffix_;
 
   base::ObserverList<Observer> observers_;
 

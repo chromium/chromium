@@ -51,6 +51,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-blink.h"
+#include "third_party/blink/public/mojom/page/prerender_page_param.mojom-forward.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
@@ -119,7 +120,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   static WebViewImpl* Create(
       WebViewClient*,
       mojom::blink::PageVisibilityState visibility,
-      bool is_prerendering,
+      blink::mojom::PrerenderParamPtr prerender_param,
       bool is_inside_portal,
       std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
           fenced_frame_mode,
@@ -703,7 +704,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   WebViewImpl(
       WebViewClient*,
       mojom::blink::PageVisibilityState visibility,
-      bool is_prerendering,
+      blink::mojom::PrerenderParamPtr prerender_param,
       bool is_inside_portal,
       std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
           fenced_frame_mode,

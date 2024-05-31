@@ -375,6 +375,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   void SetIsPrerendering(bool is_prerendering) {
     is_prerendering_ = is_prerendering;
   }
+  void SetPrerenderMetricSuffix(const String& suffix) {
+    prerender_metric_suffix_ = suffix;
+  }
   bool IsPrerendering() const { return is_prerendering_; }
 
   void SetTextAutosizerPageInfo(
@@ -635,6 +638,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // this Page. Once initialized, it can only transition from true to false on
   // prerender activation; it does not go from false to true.
   bool is_prerendering_ = false;
+  String prerender_metric_suffix_;
 
   // Whether the the Page's main document is a Fenced Frame document. This is
   // only set for the MPArch implementation and is true when the corresponding
