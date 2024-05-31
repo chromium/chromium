@@ -14,9 +14,11 @@
 #include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/test/supervised_user/family_member.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
@@ -65,6 +67,17 @@ std::string GetToggleAbbrev(FamilyLinkToggleType toggle) {
 
 bool ToggleHasExpectedValue(const FamilyMember& browser_user,
                             FamilyLinkToggleConfiguration toggle) {
+  if (toggle.type == FamilyLinkToggleType::kCookiesToggle) {
+    content_settings::ProviderType provider_type;
+    HostContentSettingsMap* map = HostContentSettingsMapFactory::GetForProfile(
+        browser_user.browser()->profile());
+    map->GetDefaultContentSetting(ContentSettingsType::COOKIES, &provider_type);
+    bool can_block_cookies = static_cast<bool>(toggle.state);
+    return can_block_cookies ==
+           (provider_type !=
+            content_settings::ProviderType::kSupervisedProvider);
+  }
+
   std::string_view pref =
       toggle.type == FamilyLinkToggleType::kExtensionsToggle
           ? prefs::kSkipParentApprovalToInstallExtensions
@@ -254,11 +267,10 @@ BrowserState BrowserState::BlockSite(const GURL& gurl) {
       DefineManualSiteListIntent::BlockUrl(gurl)));
 }
 BrowserState BrowserState::AdvancedSettingsToggles(
-    FamilyLinkToggleConfiguration extensions_toggle,
-    FamilyLinkToggleConfiguration permissions_toggle) {
-  return BrowserState(
-      new ToggleIntent({extensions_toggle, permissions_toggle}));
+    std::list<FamilyLinkToggleConfiguration> toggle_list) {
+  return BrowserState(new ToggleIntent(std::move(toggle_list)));
 }
+
 BrowserState BrowserState::SetAdvancedSettingsDefault() {
   FamilyLinkToggleConfiguration extensions_toggle(
       {.type = FamilyLinkToggleType::kExtensionsToggle,
@@ -266,7 +278,11 @@ BrowserState BrowserState::SetAdvancedSettingsDefault() {
   FamilyLinkToggleConfiguration permissions_toggle(
       {.type = FamilyLinkToggleType::kPermissionsToggle,
        .state = FamilyLinkToggleState::kEnabled});
-  return AdvancedSettingsToggles(extensions_toggle, permissions_toggle);
+  FamilyLinkToggleConfiguration cookies_toggle(
+      {.type = FamilyLinkToggleType::kCookiesToggle,
+       .state = FamilyLinkToggleState::kDisabled});
+  return AdvancedSettingsToggles(
+      {extensions_toggle, permissions_toggle, cookies_toggle});
 }
 
 void BrowserState::Seed(const FamilyMember& supervising_user,
@@ -369,6 +385,10 @@ std::string BrowserState::ToggleIntent::GetRequest() const {
       request.mutable_url_filtering_settings()
           ->set_websites_can_request_permissions(
               static_cast<bool>(toggle.state));
+    }
+    if (toggle.type == FamilyLinkToggleType::kCookiesToggle) {
+      request.mutable_url_filtering_settings()->set_can_block_cookies(
+          static_cast<bool>(toggle.state));
     }
   }
   return request.SerializeAsString();

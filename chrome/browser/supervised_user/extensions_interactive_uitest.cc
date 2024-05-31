@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -256,12 +257,12 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
       WaitForStateSeeding(
           kDefineStateObserverId, head_of_household(), child(),
           BrowserState::AdvancedSettingsToggles(
-              FamilyLinkToggleConfiguration(
-                  {.type = FamilyLinkToggleType::kExtensionsToggle,
-                   .state = GetExtensionsSwitchTargetState()}),
-              FamilyLinkToggleConfiguration(
-                  {.type = FamilyLinkToggleType::kPermissionsToggle,
-                   .state = GetPermissionsSwitchTargetState()}))),
+              {FamilyLinkToggleConfiguration(
+                   {.type = FamilyLinkToggleType::kExtensionsToggle,
+                    .state = GetExtensionsSwitchTargetState()}),
+               FamilyLinkToggleConfiguration(
+                   {.type = FamilyLinkToggleType::kPermissionsToggle,
+                    .state = GetPermissionsSwitchTargetState()})})),
       // Child navigates to the extensions page and tries to enable the
       // extension, if it is disabled.
       Log("When child visits the extensions management page."),

@@ -140,11 +140,11 @@ class BrowserState {
   // Sets the Advanced Setting toggles (Permissions, Extensions, Cookies) to
   // their default values.
   static BrowserState SetAdvancedSettingsDefault();
-  // After issuing, Permissions and Extensions toggles are set to the given
-  // values.
+  // After issuing, Permissions, Extensions and Cookies toggles are set to the
+  // given values, if such a value is provided on the input list.
   static BrowserState AdvancedSettingsToggles(
-      FamilyLinkToggleConfiguration extensions_toggle,
-      FamilyLinkToggleConfiguration permissions_toggle);
+      std::list<FamilyLinkToggleConfiguration> toggle_list);
+
   ~BrowserState();
 
   // Tests whether the browser is in the intended state. The state is checked
