@@ -130,6 +130,21 @@ TEST(AddressI18nTest, CreateAddressDataFromAutofillProfile) {
   EXPECT_EQ(expected, *actual);
 }
 
+TEST(AddressI18nTest, ProfileOnlyWithAddressLine2ReturnsOneAddressLine) {
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+  test::SetProfileInfo(&profile, "", "", "", "", "", "", "Apt 8", "", "", "",
+                       "", "");
+  profile.set_language_code("en");
+  std::unique_ptr<AddressData> actual =
+      CreateAddressDataFromAutofillProfile(profile, "en_US");
+
+  AddressData expected;
+  expected.address_line.push_back("Apt 8");
+  expected.language_code = "en";
+
+  EXPECT_EQ(expected, *actual);
+}
+
 TEST(AddressI18nTest, IsFieldRequired) {
   EXPECT_TRUE(IsFieldRequired(ADDRESS_HOME_LINE1, "CA"));
 

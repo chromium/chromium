@@ -54,7 +54,7 @@ std::unique_ptr<AddressData> CreateAddressData(
   address_data->address_line = base::SplitString(
       base::UTF16ToUTF8(
           get_info.Run(AutofillType(ADDRESS_HOME_STREET_ADDRESS))),
-      "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+      "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   return address_data;
 }
 
