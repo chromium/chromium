@@ -1,6 +1,7 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include "base/containers/adapters.h"
 #include "base/containers/circular_deque.h"
 #include "build/build_config.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
@@ -42,6 +43,18 @@ const base::circular_deque<std::string>& GetEvents() {
   return breadcrumbs::BreadcrumbManager::GetInstance().GetEvents();
 }
 
+// Returns the latest breadcrumb event containing substring `str.` If no logged
+// breadcrumb event contains `str`, returns `std::nullopt`.
+const std::optional<std::string> FindEventContaining(const std::string& str) {
+  const auto& events_new_to_old = base::Reversed(GetEvents());
+  for (const auto& event : events_new_to_old) {
+    if (event.find(str) != std::string::npos) {
+      return event;
+    }
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 // Test fixture for BreadcrumbManagerTabHelper class.
@@ -57,26 +70,22 @@ class BreadcrumbManagerTabHelperBrowserTest : public InProcessBrowserTest {
 };
 
 // Tests download navigation.
-// TODO(crbug.com/41489800): Re-enable this test
-IN_PROC_BROWSER_TEST_F(BreadcrumbManagerTabHelperBrowserTest,
-                       DISABLED_Download) {
-  const size_t num_startup_breadcrumbs = GetEvents().size();
-
+IN_PROC_BROWSER_TEST_F(BreadcrumbManagerTabHelperBrowserTest, Download) {
   const GURL url =
       ui_test_utils::GetTestUrl(base::FilePath().AppendASCII("downloads"),
                                 base::FilePath().AppendASCII("a_zip_file.zip"));
   ui_test_utils::DownloadURL(browser(), url);
 
-  const auto& events = GetEvents();
   // Breadcrumbs should have been logged for starting and finishing the
   // navigation, and the navigation should be labeled as a download.
-  ASSERT_EQ(2u, events.size() - num_startup_breadcrumbs);
+  EXPECT_NE(std::nullopt,
+            FindEventContaining(breadcrumbs::kBreadcrumbDidStartNavigation));
+
+  const auto finish_nav_event =
+      FindEventContaining(breadcrumbs::kBreadcrumbDidFinishNavigation);
+  EXPECT_NE(std::nullopt, finish_nav_event);
   EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbDidFinishNavigation))
-      << events.back();
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbDownload))
-      << events.back();
+            finish_nav_event->find(breadcrumbs::kBreadcrumbDownload));
 }
 
 // Tests changes in security states.
@@ -116,26 +125,23 @@ class BreadcrumbManagerTabHelperSecurityStateBrowserTest
 };
 
 // Broken authentication.
-// Fails on Linux, ChromeOS Lacros, Mac, and Windows. http://crbug.com/1516817
 IN_PROC_BROWSER_TEST_F(BreadcrumbManagerTabHelperSecurityStateBrowserTest,
-                       DISABLED_BrokenAuthentication) {
+                       BrokenAuthentication) {
   SetUpMockCertVerifierForHttpsServer(net::CERT_STATUS_DATE_INVALID,
                                       net::ERR_CERT_DATE_INVALID);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("/ssl/google.html")));
 
   // The breadcrumb event for broken authentication should have been logged.
-  auto events = GetEvents();
+  const auto security_change_event = FindEventContaining(
+      breadcrumbs::kBreadcrumbDidChangeVisibleSecurityState);
+  EXPECT_NE(std::nullopt, security_change_event);
   EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbPageLoaded));
-  events.pop_back();
-  EXPECT_NE(std::string::npos,
-            events.back().find(
-                breadcrumbs::kBreadcrumbDidChangeVisibleSecurityState));
-  EXPECT_NE(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbAuthenticationBroken))
-      << events.back();
+            security_change_event->find(
+                breadcrumbs::kBreadcrumbAuthenticationBroken));
   EXPECT_EQ(std::string::npos,
-            events.back().find(breadcrumbs::kBreadcrumbMixedContent))
-      << events.back();
+            security_change_event->find(breadcrumbs::kBreadcrumbMixedContent));
+
+  EXPECT_NE(std::nullopt,
+            FindEventContaining(breadcrumbs::kBreadcrumbPageLoaded));
 }
