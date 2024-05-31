@@ -419,7 +419,16 @@ void ClipboardHistoryItemView::GetAccessibleNodeData(ui::AXNodeData* data) {
   // A valid role must be set in the AXNodeData prior to setting the name
   // via AXNodeData::SetName.
   data->role = ax::mojom::Role::kMenuItem;
-  data->SetNameChecked(GetAccessibleName());
+
+  // TODO(crbug.com/325137417): Instead of retrieving the accessible name from
+  // the accessibility cache, we will have to compute it here to initialize the
+  // cache with it. This will be fixed on by the ViewsAX crew.
+  std::u16string ax_name = GetAccessibleName();
+  if (ax_name.empty()) {
+    data->SetNameExplicitlyEmpty();
+  } else {
+    data->SetNameChecked(ax_name);
+  }
 
   // In fitting with existing conventions for menu items, we treat clipboard
   // history items as "selected" from an accessibility standpoint if pressing
