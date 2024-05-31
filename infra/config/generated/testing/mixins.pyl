@@ -645,16 +645,6 @@
       ],
     },
   },
-  'ios_runtime_cache_17_4': {
-    'swarming': {
-      'named_caches': [
-        {
-          'name': 'runtime_ios_17_4',
-          'path': 'Runtime-ios-17.4',
-        },
-      ],
-    },
-  },
   'ios_runtime_cache_17_5': {
     'swarming': {
       'named_caches': [
@@ -1481,12 +1471,12 @@
   'xcode_15_main': {
     'args': [
       '--xcode-build-version',
-      '15c500b',
+      '15f31d',
     ],
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_15c500b',
+          'name': 'xcode_ios_15f31d',
           'path': 'Xcode.app',
         },
       ],
