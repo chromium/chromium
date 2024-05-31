@@ -60,22 +60,24 @@ URLVisitAggregate CreateSampleURLVisitAggregate(const GURL& url,
             visibility_score, {}, time)));
   }
   if (fetchers.contains(Fetcher::kSession)) {
-    visit_aggregate.fetcher_data_map.emplace(
-        Fetcher::kSession,
-        URLVisitAggregate::TabData(URLVisitAggregate::Tab(
-            1,
-            URLVisit(url, kSampleTitle, time,
-                     syncer::DeviceInfo::FormFactor::kUnknown,
-                     URLVisit::Source::kLocal),
-            "sample_tag", "sample_session_name")));
+    auto tab_data = URLVisitAggregate::TabData(URLVisitAggregate::Tab(
+        1,
+        URLVisit(url, kSampleTitle, time,
+                 syncer::DeviceInfo::FormFactor::kUnknown,
+                 URLVisit::Source::kLocal),
+        "sample_tag", "sample_session_name"));
+    tab_data.last_active = time;
+    visit_aggregate.fetcher_data_map.emplace(Fetcher::kSession,
+                                             std::move(tab_data));
   }
   if (fetchers.contains(Fetcher::kTabModel)) {
-    visit_aggregate.fetcher_data_map.emplace(
-        Fetcher::kTabModel,
-        URLVisitAggregate::TabData(URLVisitAggregate::Tab(
-            1, URLVisit(url, kSampleTitle, time,
-                        syncer::DeviceInfo::FormFactor::kUnknown,
-                        URLVisit::Source::kLocal))));
+    auto tab_data = URLVisitAggregate::TabData(URLVisitAggregate::Tab(
+        1, URLVisit(url, kSampleTitle, time,
+                    syncer::DeviceInfo::FormFactor::kUnknown,
+                    URLVisit::Source::kLocal)));
+    tab_data.last_active = time;
+    visit_aggregate.fetcher_data_map.emplace(Fetcher::kTabModel,
+                                             std::move(tab_data));
   }
 
   return visit_aggregate;

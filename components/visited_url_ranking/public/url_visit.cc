@@ -63,8 +63,8 @@ URLVisitAggregate::Tab::Tab(const URLVisitAggregate::Tab&) = default;
 
 URLVisitAggregate::Tab::~Tab() = default;
 
-URLVisitAggregate::TabData::TabData(Tab tab)
-    : last_active_tab(std::move(tab)) {}
+URLVisitAggregate::TabData::TabData(Tab last_active_tab_arg)
+    : last_active_tab(std::move(last_active_tab_arg)) {}
 
 URLVisitAggregate::TabData::TabData(const URLVisitAggregate::TabData&) =
     default;

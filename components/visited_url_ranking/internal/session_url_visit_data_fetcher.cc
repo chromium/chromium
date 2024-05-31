@@ -56,7 +56,10 @@ void AddAggregateVisitDataFromSession(
               URLVisit(tab_url, current_navigation.title(), tab->timestamp,
                        session->GetDeviceFormFactor(), source),
               session->GetSessionTag(), session->GetSessionName());
-          url_visit_tab_data_map.emplace(url_key, std::move(last_active_tab));
+          auto tab_data =
+              URLVisitAggregate::TabData(std::move(last_active_tab));
+          tab_data.last_active = tab->last_active_time;
+          url_visit_tab_data_map.insert_or_assign(url_key, std::move(tab_data));
         }
 
         auto& session_tab = url_visit_tab_data_map.at(url_key);

@@ -46,7 +46,6 @@ FetchOptions FetchOptions::CreateDefaultFetchOptionsForTabResumption() {
       {
           URLVisitAggregatesTransformType::kHistoryVisibilityScoreFilter,
           URLVisitAggregatesTransformType::kBookmarkData,
-          URLVisitAggregatesTransformType::kShoppingData,
       });
 }
 

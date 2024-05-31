@@ -17,6 +17,7 @@
 #include "base/test/mock_callback.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/visited_url_ranking/internal/transformer/transformer_test_support.h"
+#include "components/visited_url_ranking/public/test_support.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -50,17 +51,9 @@ class DefaultAppURLVisitAggregatesTransformerTest
 };
 
 TEST_F(DefaultAppURLVisitAggregatesTransformerTest, Transform) {
-  URLVisitAggregate visit_aggregate(kSampleUrl);
-  visit_aggregate.fetcher_data_map.emplace(
-      Fetcher::kSession,
-      URLVisitAggregate::TabData(URLVisitAggregate::Tab(
-          1,
-          URLVisit(GURL(kSampleUrl), u"sample_title", base::Time::Now(),
-                   syncer::DeviceInfo::FormFactor::kUnknown,
-                   URLVisit::Source::kLocal),
-          "sample_tag", "sample_session_name")));
   std::vector<URLVisitAggregate> input_sample_aggregates = {};
-  input_sample_aggregates.push_back(std::move(visit_aggregate));
+  input_sample_aggregates.push_back(
+      CreateSampleURLVisitAggregate(GURL(kSampleUrl)));
 
   DefaultAppURLVisitAggregatesTransformerTest::Result result =
       TransformAndGetResult(std::move(input_sample_aggregates));
@@ -70,17 +63,9 @@ TEST_F(DefaultAppURLVisitAggregatesTransformerTest, Transform) {
 }
 
 TEST_F(DefaultAppURLVisitAggregatesTransformerTest, TransformRemoveUrl) {
-  URLVisitAggregate visit_aggregate(kUrlForDefaultApp);
-  visit_aggregate.fetcher_data_map.emplace(
-      Fetcher::kSession,
-      URLVisitAggregate::TabData(URLVisitAggregate::Tab(
-          1,
-          URLVisit(GURL(kUrlForDefaultApp), u"sample_title", base::Time::Now(),
-                   syncer::DeviceInfo::FormFactor::kUnknown,
-                   URLVisit::Source::kLocal),
-          "sample_tag", "sample_session_name")));
   std::vector<URLVisitAggregate> input_sample_aggregates = {};
-  input_sample_aggregates.push_back(std::move(visit_aggregate));
+  input_sample_aggregates.push_back(
+      CreateSampleURLVisitAggregate(GURL(kUrlForDefaultApp)));
 
   DefaultAppURLVisitAggregatesTransformerTest::Result result =
       TransformAndGetResult(std::move(input_sample_aggregates));
