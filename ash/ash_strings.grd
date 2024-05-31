@@ -1456,10 +1456,12 @@ Style notes:
 
       <!-- Select to Speak keyboard dialog strings -->
       <message name="IDS_ASH_SELECT_TO_SPEAK_KEYBOARD_DIALOG_TITLE" desc="The title of a dialog that is shown when Select to Speak is enabled from the keyboard.">
-        Turn on Select-to-Speak?
+        Turn on Select-to-speak?
       </message>
       <message name="IDS_ASH_SELECT_TO_SPEAK_KEYBOARD_DIALOG_DESCRIPTION" desc="The description of a dialog that is shown when Select-to-Speak is enabled from the keyboard.">
-        Hear specific text read aloud. First, select the Select-to-speak icon on the bottom of your screen, then highlight text. You can also use a keyboard shortcut: Highlight text, then press Search/Launcher + S.
+        To hear text read aloud, select the Select-to-speak icon on the bottom of your screen, then highlight text.
+
+You can also use the keyboard shortcut. First, highlight text, then press <ph name="modifier">$1<ex>launcher</ex></ph> + s.
       </message>
 
       <!-- Accessibility nudges -->
