@@ -106,7 +106,7 @@ void VideoCaptureEffectsProcessor::PostProcessData(
     const VideoCaptureFormat& out_buffer_format,
     VideoCaptureBufferType out_buffer_type,
     VideoCaptureEffectsProcessor::PostProcessDoneCallback post_process_cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!data.empty());
 
   auto in_buffer_mapped_region =
       base::ReadOnlySharedMemoryRegion::Create(data.size());
@@ -135,6 +135,33 @@ void VideoCaptureEffectsProcessor::PostProcessData(
   PostProcessContext context(std::nullopt, std::move(out_buffer),
                              std::move(post_process_cb));
 
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    // VideoCaptureDeviceClient can call us from any thread (the only guarantee
+    // we get is that one thread at a time will call us, which is enforced by
+    // `DFAKE_SCOPED_RECURSIVE_LOCK`), so a thread-hop to the correct sequence
+    // may be needed.
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &VideoCaptureEffectsProcessor::PostProcessDataOnValidSequence,
+            weak_ptr_factory_.GetWeakPtr(), std::move(context),
+            std::move(in_buffer_handle), std::move(frame_info),
+            std::move(out_buffer_handle), out_buffer_format));
+    return;
+  }
+
+  PostProcessDataOnValidSequence(
+      std::move(context), std::move(in_buffer_handle), std::move(frame_info),
+      std::move(out_buffer_handle), out_buffer_format);
+}
+
+void VideoCaptureEffectsProcessor::PostProcessDataOnValidSequence(
+    PostProcessContext context,
+    mojom::VideoBufferHandlePtr in_buffer_handle,
+    mojom::VideoFrameInfoPtr frame_info,
+    mojom::VideoBufferHandlePtr out_buffer_handle,
+    const VideoCaptureFormat& out_buffer_format) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
       "PostProcessContext::PostProcessContext()", context.trace_id);

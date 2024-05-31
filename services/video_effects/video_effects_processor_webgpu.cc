@@ -58,14 +58,15 @@ bool VideoEffectsProcessorWebGpu::Initialize() {
 
   auto* request_adapter_callback = gpu::webgpu::BindWGPUOnceCallback(
       [](base::WeakPtr<VideoEffectsProcessorWebGpu> processor,
-         WGPURequestAdapterStatus status, WGPUAdapter adapter,
+         wgpu::RequestAdapterStatus status, wgpu::Adapter adapter,
          char const* message) {
         if (processor) {
-          processor->OnRequestAdapter(status, adapter, message);
+          processor->OnRequestAdapter(status, std::move(adapter), message);
         }
       },
       weak_ptr_factory_.GetWeakPtr());
-  instance_.RequestAdapter(nullptr, request_adapter_callback->UnboundCallback(),
+  instance_.RequestAdapter(nullptr, wgpu::CallbackMode::AllowSpontaneous,
+                           request_adapter_callback->UnboundCallback(),
                            request_adapter_callback->AsUserdata());
   EnsureFlush();
 
@@ -73,17 +74,17 @@ bool VideoEffectsProcessorWebGpu::Initialize() {
 }
 
 void VideoEffectsProcessorWebGpu::OnRequestAdapter(
-    WGPURequestAdapterStatus status,
-    WGPUAdapter adapter,
+    wgpu::RequestAdapterStatus status,
+    wgpu::Adapter adapter,
     char const* message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (status != WGPURequestAdapterStatus_Success || !adapter) {
+  if (status != wgpu::RequestAdapterStatus::Success || !adapter) {
     MaybeCallOnUnrecoverableError();
     return;
   }
 
-  adapter_ = wgpu::Adapter(adapter);
+  adapter_ = std::move(adapter);
 
   // TODO(bialpio): Determine the limits based on the incoming video frames.
   wgpu::RequiredLimits limits = {
@@ -111,31 +112,31 @@ void VideoEffectsProcessorWebGpu::OnRequestAdapter(
 
   auto* request_device_callback = gpu::webgpu::BindWGPUOnceCallback(
       [](base::WeakPtr<VideoEffectsProcessorWebGpu> processor,
-         WGPURequestDeviceStatus status, WGPUDevice device,
+         wgpu::RequestDeviceStatus status, wgpu::Device device,
          char const* message) {
         if (processor) {
-          processor->OnRequestDevice(status, device, message);
+          processor->OnRequestDevice(status, std::move(device), message);
         }
       },
       weak_ptr_factory_.GetWeakPtr());
-  adapter_.RequestDevice(&descriptor,
+  adapter_.RequestDevice(&descriptor, wgpu::CallbackMode::AllowSpontaneous,
                          request_device_callback->UnboundCallback(),
                          request_device_callback->AsUserdata());
   EnsureFlush();
 }
 
 void VideoEffectsProcessorWebGpu::OnRequestDevice(
-    WGPURequestDeviceStatus status,
-    WGPUDevice device,
+    wgpu::RequestDeviceStatus status,
+    wgpu::Device device,
     char const* message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (status != WGPURequestDeviceStatus_Success || !device) {
+  if (status != wgpu::RequestDeviceStatus::Success || !device) {
     MaybeCallOnUnrecoverableError();
     return;
   }
 
-  device_ = wgpu::Device(device);
+  device_ = std::move(device);
   device_.SetUncapturedErrorCallback(&ErrorCallback, nullptr);
   device_.SetLoggingCallback(&LoggingCallback, nullptr);
 }

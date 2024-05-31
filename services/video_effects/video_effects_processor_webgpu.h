@@ -46,12 +46,12 @@ class VideoEffectsProcessorWebGpu {
   // Calls `on_unrecoverable_error_` if it's set.
   void MaybeCallOnUnrecoverableError();
 
-  void OnRequestAdapter(WGPURequestAdapterStatus status,
-                        WGPUAdapter adapter,
+  void OnRequestAdapter(wgpu::RequestAdapterStatus status,
+                        wgpu::Adapter adapter,
                         char const* message);
 
-  void OnRequestDevice(WGPURequestDeviceStatus status,
-                       WGPUDevice device,
+  void OnRequestDevice(wgpu::RequestDeviceStatus status,
+                       wgpu::Device device,
                        char const* message);
 
   void OnDeviceLost(WGPUDeviceLostReason reason, char const* message);

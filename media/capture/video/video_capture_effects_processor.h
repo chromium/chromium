@@ -122,11 +122,19 @@ class CAPTURE_EXPORT VideoCaptureEffectsProcessor {
     VideoCaptureEffectsProcessor::PostProcessDoneCallback post_process_cb;
   };
 
+  void PostProcessDataOnValidSequence(
+      PostProcessContext context,
+      mojom::VideoBufferHandlePtr in_buffer_handle,
+      mojom::VideoFrameInfoPtr frame_info,
+      mojom::VideoBufferHandlePtr out_buffer_handle,
+      const VideoCaptureFormat& out_buffer_format);
+
   void OnPostProcess(PostProcessContext context,
                      video_effects::mojom::PostProcessResultPtr result);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  mojo::Remote<video_effects::mojom::VideoEffectsProcessor> effects_processor_;
+  mojo::Remote<video_effects::mojom::VideoEffectsProcessor> effects_processor_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
