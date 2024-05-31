@@ -5550,7 +5550,7 @@
       },
       'android-13-x64-rel': {
         'swarming': {
-          'shards': 9,
+          'shards': 12,
         },
       },
       'android-code-coverage-native': {
