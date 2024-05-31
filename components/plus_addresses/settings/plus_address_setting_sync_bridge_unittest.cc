@@ -101,17 +101,6 @@ class PlusAddressSettingSyncBridgeTest : public testing::Test {
                                        std::move(change_list));
   }
 
-  // Adds the `specifics` to the `store()`, returning true if it succeeded.
-  bool InjectSpecifics(const SettingSpecifics& specifics) {
-    auto write_batch = store().CreateWriteBatch();
-    write_batch->WriteData(specifics.name(), specifics.SerializeAsString());
-    base::test::TestFuture<const std::optional<syncer::ModelError>&>
-        write_result;
-    store().CommitWriteBatch(std::move(write_batch),
-                             write_result.GetCallback());
-    return !write_result.Get().has_value();
-  }
-
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<syncer::ModelTypeStore> store_;
@@ -229,16 +218,13 @@ TEST_F(PlusAddressSettingSyncBridgeTest, ApplyDisableSyncChanges) {
 }
 
 TEST_F(PlusAddressSettingSyncBridgeTest, GetAllDataForDebugging) {
-  ASSERT_TRUE(InjectSpecifics(CreateSettingSpecifics("name1", "string")));
-  ASSERT_TRUE(InjectSpecifics(CreateSettingSpecifics("name2", true)));
-  ASSERT_TRUE(InjectSpecifics(CreateSettingSpecifics("name3", 123)));
-  // Recreate the bridge so it reloads the data from the `store()`.
-  RecreateBridge();
-
+  ASSERT_TRUE(
+      StartSyncingWithServerData({CreateSettingSpecifics("name1", "string"),
+                                  CreateSettingSpecifics("name2", true),
+                                  CreateSettingSpecifics("name3", 123)}));
   base::test::TestFuture<std::unique_ptr<syncer::DataBatch>> debug_data;
   bridge().GetAllDataForDebugging(debug_data.GetCallback());
   const std::unique_ptr<syncer::DataBatch>& batch = debug_data.Get();
-  // Since protos don't have an equality operator, compare their encodings.
   std::vector<sync_pb::PlusAddressSettingSpecifics> specifics;
   while (batch->HasNext()) {
     std::unique_ptr<syncer::EntityData> entity = batch->Next().second;
