@@ -22,13 +22,14 @@ class FakeWifiDirectConnection
  public:
   bool did_associate;
   bool should_associate;
+  std::string ipv4_address = kTestIPv4Address;
 
  private:
   // ash::wifi_direct::mojom::WifiDirectConnection
   void GetProperties(GetPropertiesCallback callback) override {
     auto properties =
         ash::wifi_direct::mojom::WifiDirectConnectionProperties::New();
-    properties->ipv4_address = kTestIPv4Address;
+    properties->ipv4_address = ipv4_address;
     properties->credentials = ash::wifi_direct::mojom::WifiCredentials::New();
     std::move(callback).Run(std::move(properties));
   }
@@ -295,6 +296,30 @@ TEST_F(WifiDirectMediumTest, ListenForService_FailToOpenFirewallHole) {
       std::make_unique<FakeWifiDirectConnection>());
   connection->should_associate = true;
   firewall_hole_factory()->should_succeed_ = false;
+
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        WifiDirectCredentials credentials;
+        EXPECT_TRUE(medium->StartWifiDirect(&credentials));
+      },
+      medium()));
+
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        WifiDirectCredentials credentials;
+        EXPECT_FALSE(medium->ListenForService(kTestPort));
+      },
+      medium()));
+}
+
+TEST_F(WifiDirectMediumTest, ListenForService_InvalidAddress) {
+  auto* connection = manager()->SetWifiDirectConnection(
+      std::make_unique<FakeWifiDirectConnection>());
+  connection->should_associate = true;
+  connection->ipv4_address = "nope";
+  firewall_hole_factory()->should_succeed_ = true;
 
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
