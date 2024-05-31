@@ -280,6 +280,9 @@ class PasswordCheckDelegateTest : public ::testing::Test {
   PasswordCheckDelegateTest() {
     prefs_.registry()->RegisterDoublePref(kLastTimePasswordCheckCompleted, 0.0);
     presenter_.Init();
+    delegate_ = std::make_unique<PasswordCheckDelegate>(
+        profile_.get(), &presenter_, &credential_id_generator_,
+        PasswordsPrivateEventRouterFactory::GetForProfile(profile_.get()));
   }
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
@@ -312,11 +315,16 @@ class PasswordCheckDelegateTest : public ::testing::Test {
         SyncServiceFactory::GetForProfile(profile_.get()));
   }
   SavedPasswordsPresenter& presenter() { return presenter_; }
-  PasswordCheckDelegate& delegate() { return delegate_; }
+  PasswordCheckDelegate& delegate() { return *delegate_; }
 
   PasswordCheckDelegate CreateDelegate(SavedPasswordsPresenter* presenter) {
     return PasswordCheckDelegate(profile_.get(), presenter,
                                  &credential_id_generator_);
+  }
+
+  void ResetWithoutEventRouter() {
+    delegate_ = std::make_unique<PasswordCheckDelegate>(
+        profile_.get(), &presenter_, &credential_id_generator_, nullptr);
   }
 
  private:
@@ -336,8 +344,7 @@ class PasswordCheckDelegateTest : public ::testing::Test {
                                      AccountPasswordStoreFactory::GetForProfile(
                                          profile_.get(),
                                          ServiceAccessType::EXPLICIT_ACCESS)};
-  PasswordCheckDelegate delegate_{profile_.get(), &presenter_,
-                                  &credential_id_generator_};
+  std::unique_ptr<PasswordCheckDelegate> delegate_;
 };
 
 }  // namespace
@@ -1117,6 +1124,22 @@ TEST_F(PasswordCheckDelegateTest,
   RunUntilIdle();
 
   EXPECT_THAT(delegate().GetCredentialsWithReusedPassword(), IsEmpty());
+}
+
+// Verify that computation of weak credentials notifies observers.
+TEST_F(PasswordCheckDelegateTest, NoNotificationsWithoutRouter) {
+  ResetWithoutEventRouter();
+  const char* const kEventName =
+      api::passwords_private::OnInsecureCredentialsChanged::kEventName;
+
+  // Verify that the event was not fired during construction.
+  EXPECT_FALSE(base::Contains(event_router_observer().events(), kEventName));
+
+  // Verify that the event gets fired after weak check is complete.
+  delegate().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
+  RunUntilIdle();
+  EXPECT_FALSE(base::Contains(event_router_observer().events(), kEventName));
 }
 
 }  // namespace extensions

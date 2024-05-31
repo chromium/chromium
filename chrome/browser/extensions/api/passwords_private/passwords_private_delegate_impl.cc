@@ -305,9 +305,11 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
           base::BindRepeating(
               &PasswordsPrivateDelegateImpl::OnPasswordsExportProgress,
               base::Unretained(this)))),
-      password_check_delegate_(profile,
-                               &saved_passwords_presenter_,
-                               &credential_id_generator_),
+      password_check_delegate_(
+          profile,
+          &saved_passwords_presenter_,
+          &credential_id_generator_,
+          PasswordsPrivateEventRouterFactory::GetForProfile(profile_)),
       current_entries_initialized_(false),
       is_initialized_(false) {
   auth_timeout_handler_.Init(
