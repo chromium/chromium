@@ -79,9 +79,11 @@ TranslateController::TranslateController(web::WebState* web_state)
 TranslateController::~TranslateController() {
   if (web_state_) {
     web_state_->RemoveObserver(this);
-    TranslateJavaScriptFeature::GetInstance()
-        ->GetWebFramesManager(web_state_)
-        ->RemoveObserver(this);
+    if (web_state_->IsRealized()) {
+      TranslateJavaScriptFeature::GetInstance()
+          ->GetWebFramesManager(web_state_)
+          ->RemoveObserver(this);
+    }
     web_state_ = nullptr;
   }
 }
