@@ -33,7 +33,8 @@ namespace {
 // unbounded handle growth with tiny entries.
 static size_t kMaxCacheEntries = 2000;
 
-constexpr base::TimeDelta kOldEntryCutoffTimeDelta = base::Seconds(30);
+constexpr base::TimeDelta kOldEntryCutoffTimeDelta = base::Seconds(25);
+constexpr base::TimeDelta kOldEntryPruneInterval = base::Seconds(30);
 
 // Alias the image entry to its skia counterpart, taking ownership of the
 // memory and preventing double counting.
@@ -302,7 +303,7 @@ void ServiceTransferCache::MaybePostPruneOldEntries() {
     request_post_prune_old_entries_while_pending_ = true;
     return;
   }
-  prune_old_entries_timer_.Start(FROM_HERE, kOldEntryCutoffTimeDelta, this,
+  prune_old_entries_timer_.Start(FROM_HERE, kOldEntryPruneInterval, this,
                                  &ServiceTransferCache::PruneOldEntries);
 }
 
