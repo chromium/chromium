@@ -5,15 +5,12 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_all_password_coordinator.h"
 
 #import "base/ios/block_types.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
-#import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_saved_passwords_presenter_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -75,13 +72,10 @@
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
 
-  _savedPasswordsPresenter =
-      std::make_unique<password_manager::SavedPasswordsPresenter>(
-          IOSChromeAffiliationServiceFactory::GetForBrowserState(browserState),
-          IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-              browserState, ServiceAccessType::EXPLICIT_ACCESS),
-          IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-              browserState, ServiceAccessType::EXPLICIT_ACCESS));
+  _savedPasswordsPresenter.reset(
+      IOSChromeSavedPasswordsPresenterFactory::GetForBrowserState(
+          browserState));
+
   _savedPasswordsPresenter->Init();
 
   // Initialize `passwordMediator` with a nil `profilePasswordStore` and

@@ -14,7 +14,6 @@
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_bulk_leak_check_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -84,22 +83,16 @@ PasswordCheckState ConvertBulkCheckState(State state) {
 }  // namespace
 
 IOSChromePasswordCheckManager::IOSChromePasswordCheckManager(
-    scoped_refptr<password_manager::PasswordStoreInterface> profile_store,
-    scoped_refptr<password_manager::PasswordStoreInterface> account_store,
-    affiliations::AffiliationService* affiliation_service,
+    password_manager::SavedPasswordsPresenter* saved_passwords_presenter,
     password_manager::BulkLeakCheckServiceInterface* bulk_leak_check_service,
     PrefService* user_prefs)
-    : profile_store_(profile_store),
-      account_store_(account_store),
-      saved_passwords_presenter_(affiliation_service,
-                                 profile_store_,
-                                 account_store_),
-      insecure_credentials_manager_(&saved_passwords_presenter_),
-      bulk_leak_check_service_adapter_(&saved_passwords_presenter_,
+    : saved_passwords_presenter_(saved_passwords_presenter),
+      insecure_credentials_manager_(saved_passwords_presenter),
+      bulk_leak_check_service_adapter_(saved_passwords_presenter,
                                        bulk_leak_check_service,
                                        user_prefs),
       user_prefs_(user_prefs) {
-  observed_saved_passwords_presenter_.Observe(&saved_passwords_presenter_);
+  observed_saved_passwords_presenter_.Observe(saved_passwords_presenter);
 
   observed_insecure_credentials_manager_.Observe(
       &insecure_credentials_manager_);
@@ -107,7 +100,7 @@ IOSChromePasswordCheckManager::IOSChromePasswordCheckManager(
   observed_bulk_leak_check_service_.Observe(bulk_leak_check_service);
 
   // Instructs the presenter and manager to initialize and build their caches.
-  saved_passwords_presenter_.Init();
+  saved_passwords_presenter_->Init();
 }
 
 IOSChromePasswordCheckManager::~IOSChromePasswordCheckManager() {
@@ -153,7 +146,7 @@ void IOSChromePasswordCheckManager::StopPasswordCheck() {
 
 PasswordCheckState IOSChromePasswordCheckManager::GetPasswordCheckState()
     const {
-  if (saved_passwords_presenter_.GetSavedPasswords().empty()) {
+  if (saved_passwords_presenter_->GetSavedPasswords().empty()) {
     return PasswordCheckState::kNoPasswords;
   }
   return ConvertBulkCheckState(

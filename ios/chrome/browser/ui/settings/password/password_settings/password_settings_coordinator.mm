@@ -11,12 +11,9 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/google/core/common/google_util.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_saved_passwords_presenter_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_visits_recorder.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -165,13 +162,9 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 
   _reauthModule = password_manager::BuildReauthenticationModule();
 
-  _savedPasswordsPresenter =
-      std::make_unique<password_manager::SavedPasswordsPresenter>(
-          IOSChromeAffiliationServiceFactory::GetForBrowserState(browserState),
-          IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-              browserState, ServiceAccessType::EXPLICIT_ACCESS),
-          IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-              browserState, ServiceAccessType::EXPLICIT_ACCESS));
+  _savedPasswordsPresenter.reset(
+      IOSChromeSavedPasswordsPresenterFactory::GetForBrowserState(
+          browserState));
 
   _mediator = [[PasswordSettingsMediator alloc]
          initWithReauthenticationModule:_reauthModule
