@@ -854,6 +854,7 @@ source_set("ash") {
     "child_accounts/family_user_session_metrics.h",
     "child_accounts/on_device_controls/app_activity_watcher.cc",
     "child_accounts/on_device_controls/app_activity_watcher.h",
+    "child_accounts/on_device_controls/app_controls_metrics_utils.h",
     "child_accounts/on_device_controls/app_controls_service.cc",
     "child_accounts/on_device_controls/app_controls_service.h",
     "child_accounts/on_device_controls/app_controls_service_factory.cc",

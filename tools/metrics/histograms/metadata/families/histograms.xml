@@ -248,6 +248,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.OnDeviceControls.BlockAppAction"
+    enum="OnDeviceControlsBlockAppAction" expires_after="2024-12-12">
+  <owner>courtneywong@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Recorded when the user interacts with apps with respect to on-device
+    parental controls. It records actions such as blocking apps, unblocking
+    apps, and uninstalling blocked apps. This histogram also records errors,
+    such as if an already-blocked app is being blocked again.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.OnDeviceControls.BlockedAppsCount" units="Apps"
+    expires_after="2024-12-12">
+  <owner>courtneywong@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records the number of apps blocked by on-device parental controls that a
+    user has. Recorded every time an app is blocked or unblocked.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.OnDeviceControls.BlockedAppsEngagement" units="Apps"
+    expires_after="2024-12-12">
+  <owner>courtneywong@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records the number of apps blocked with on-device parental controls that a
+    user has at the beginning of each user session.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.OnDeviceControls.PinSetupCompleted" enum="Boolean"
+    expires_after="2024-12-12">
+  <owner>courtneywong@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records whether the user has set up a PIN for on-device app parental
+    controls. Recorded at the beginning of each user session.
+  </summary>
+</histogram>
+
 <histogram name="FamilyLinkUser.FamilyInfoLogSource.FetchLatency" units="ms"
     expires_after="2024-12-12">
   <owner>ljjlee@google.com</owner>

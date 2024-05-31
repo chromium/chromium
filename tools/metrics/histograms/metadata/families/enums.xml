@@ -232,6 +232,25 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Regular user added"/>
 </enum>
 
+<enum name="OnDeviceControlsBlockAppAction">
+  <int value="0" label="Block app">
+    Recorded when a user has blocked an app with on-device controls.
+  </int>
+  <int value="1" label="Unblock app">
+    Recorded when a user has unblocked an app with on-device controls.
+  </int>
+  <int value="2" label="Uninstall blocked app">
+    Recorded when a user has uninstalled an app that is blocked with on-device
+    controls.
+  </int>
+  <int value="3" label="Block app error">
+    Recorded when attempting to block an already-blocked app.
+  </int>
+  <int value="4" label="Unblock app error">
+    Recorded when attempting to unblock an unblocked app.
+  </int>
+</enum>
+
 <enum name="ParentAccessCodeAction">
   <summary>Action resulting from parent access code dialog</summary>
   <int value="0" label="Validation success"/>

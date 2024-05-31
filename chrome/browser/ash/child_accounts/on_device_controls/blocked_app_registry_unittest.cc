@@ -10,10 +10,14 @@
 #include <string>
 #include <vector>
 
+#include "app_controls_metrics_utils.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_metrics_utils.h"
 #include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -31,6 +35,10 @@ class BlockedAppRegistryTest : public AppControlsTestBase {
 
   BlockedAppRegistry* registry() { return registry_.get(); }
 
+  void set_registry(std::unique_ptr<BlockedAppRegistry> registry) {
+    registry_ = std::move(registry);
+  }
+
   // Returns app readiness or nullopt if the app with `app_id` was not found in
   // the app service cache.
   std::optional<apps::Readiness> GetAppReadiness(const std::string& app_id);
@@ -39,8 +47,11 @@ class BlockedAppRegistryTest : public AppControlsTestBase {
   // AppControlsTestBase:
   void SetUp() override;
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   std::unique_ptr<BlockedAppRegistry> registry_;
+  base::HistogramTester histogram_tester_;
 };
 
 std::optional<apps::Readiness> BlockedAppRegistryTest::GetAppReadiness(
@@ -235,6 +246,112 @@ TEST_F(BlockedAppRegistryTest, UninstallMaxBlockedApps) {
             GetAppReadiness(oldest_uninstalled_app));
   EXPECT_EQ(LocalAppState::kAvailable,
             registry()->GetAppState(oldest_uninstalled_app));
+}
+
+TEST_F(BlockedAppRegistryTest, TestHistogramsOnBlockAndUnblockApp) {
+  histogram_tester().ExpectUniqueSample(
+      kOnDeviceControlsBlockedAppsEngagementHistogramName, /*sample=*/0, 1);
+  histogram_tester().ExpectUniqueSample(
+      kOnDeviceControlsPinSetCompletedHistogramName,
+      /*sample=*/0, 1);
+
+  const std::vector<std::string> app_ids = {"abc", "def"};
+
+  registry()->AddApp(app_ids[0]);
+  histogram_tester().ExpectBucketCount(
+      kOnDeviceControlsBlockedAppsCountHistogramName, /*sample=*/1, 1);
+  histogram_tester().ExpectBucketCount(
+      kOnDeviceControlsBlockAppActionHistogramName,
+      OnDeviceControlsBlockAppAction::kBlockApp, 1);
+
+  registry()->AddApp(app_ids[1]);
+  histogram_tester().ExpectBucketCount(
+      kOnDeviceControlsBlockedAppsCountHistogramName, /*sample=*/2, 1);
+  histogram_tester().ExpectBucketCount(
+      kOnDeviceControlsBlockAppActionHistogramName,
+      OnDeviceControlsBlockAppAction::kBlockApp, 2);
+
+  registry()->RemoveApp(app_ids[0]);
+  histogram_tester().ExpectBucketCount(
+      kOnDeviceControlsBlockedAppsCountHistogramName, /*sample=*/1, 2);
+  histogram_tester().ExpectBucketCount(
+      kOnDeviceControlsBlockAppActionHistogramName,
+      OnDeviceControlsBlockAppAction::kUnblockApp, 1);
+  histogram_tester().ExpectTotalCount(
+      kOnDeviceControlsBlockAppActionHistogramName, 3);
+}
+
+TEST_F(BlockedAppRegistryTest, TestHistogramsOnInitialization) {
+  profile().GetPrefs()->SetBoolean(prefs::kOnDeviceAppControlsSetupCompleted,
+                                   true);
+  const std::vector<std::string> app_ids = {"abc", "def"};
+  registry()->AddApp(app_ids[0]);
+  registry()->AddApp(app_ids[1]);
+
+  // Create new registry and histogram counter to simulate a new user session.
+  base::HistogramTester histogram_tester;
+  set_registry(std::make_unique<BlockedAppRegistry>(app_service_test().proxy(),
+                                                    profile().GetPrefs()));
+
+  histogram_tester.ExpectUniqueSample(
+      kOnDeviceControlsBlockedAppsEngagementHistogramName, /*sample=*/2, 1);
+  histogram_tester.ExpectUniqueSample(
+      kOnDeviceControlsPinSetCompletedHistogramName,
+      /*sample=*/1, 1);
+}
+
+TEST_F(BlockedAppRegistryTest, TestHistogramOnUninstallBlockedApp) {
+  const std::string package_name = "com.example.app1", app_name = "app1";
+  const std::string app_id = InstallArcApp(package_name, app_name);
+  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(app_id));
+
+  registry()->AddApp(app_id);
+  histogram_tester().ExpectUniqueSample(
+      kOnDeviceControlsBlockedAppsCountHistogramName, /*sample=*/1, 1);
+  histogram_tester().ExpectBucketCount(
+      kOnDeviceControlsBlockAppActionHistogramName,
+      OnDeviceControlsBlockAppAction::kBlockApp, 1);
+
+  UninstallArcApp(package_name);
+  histogram_tester().ExpectBucketCount(
+      kOnDeviceControlsBlockAppActionHistogramName,
+      OnDeviceControlsBlockAppAction::kUninstallBlockedApp, 1);
+  histogram_tester().ExpectTotalCount(
+      kOnDeviceControlsBlockAppActionHistogramName, 2);
+}
+
+TEST_F(BlockedAppRegistryTest, TestHistogramOnBlockAndUnblockErrors) {
+  const std::string app_id = "abc";
+
+  registry()->AddApp(app_id);
+  histogram_tester().ExpectUniqueSample(
+      kOnDeviceControlsBlockedAppsCountHistogramName, /*sample=*/1, 1);
+  histogram_tester().ExpectBucketCount(
+      kOnDeviceControlsBlockAppActionHistogramName,
+      OnDeviceControlsBlockAppAction::kBlockApp, 1);
+
+  // Try to add an app that is already added.
+  registry()->AddApp(app_id);
+  histogram_tester().ExpectUniqueSample(
+      kOnDeviceControlsBlockedAppsCountHistogramName, /*sample=*/1, 1);
+  histogram_tester().ExpectBucketCount(
+      kOnDeviceControlsBlockAppActionHistogramName,
+      OnDeviceControlsBlockAppAction::kBlockAppError, 1);
+
+  registry()->RemoveApp(app_id);
+  histogram_tester().ExpectBucketCount(
+      kOnDeviceControlsBlockedAppsCountHistogramName, /*sample=*/0, 1);
+  histogram_tester().ExpectBucketCount(
+      kOnDeviceControlsBlockAppActionHistogramName,
+      OnDeviceControlsBlockAppAction::kUnblockApp, 1);
+
+  // Try to unblock an app that is not blocked.
+  registry()->RemoveApp(app_id);
+  histogram_tester().ExpectBucketCount(
+      kOnDeviceControlsBlockAppActionHistogramName,
+      OnDeviceControlsBlockAppAction::kUnblockAppError, 1);
+  histogram_tester().ExpectTotalCount(
+      kOnDeviceControlsBlockAppActionHistogramName, 4);
 }
 
 }  // namespace ash::on_device_controls
