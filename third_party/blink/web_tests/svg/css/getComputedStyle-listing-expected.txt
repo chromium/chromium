@@ -303,6 +303,7 @@ resize: none
 right: auto
 rotate: none
 row-gap: normal
+ruby-align: space-around
 ruby-position: over
 rx: auto
 ry: auto

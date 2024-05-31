@@ -1576,6 +1576,11 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kWebkitRtlOrdering:
       return value_id == CSSValueID::kLogical ||
              value_id == CSSValueID::kVisual;
+    case CSSPropertyID::kRubyAlign:
+      return value_id == CSSValueID::kSpaceAround ||
+             value_id == CSSValueID::kStart ||
+             value_id == CSSValueID::kCenter ||
+             value_id == CSSValueID::kSpaceBetween;
     case CSSPropertyID::kWebkitRubyPosition:
       return value_id == CSSValueID::kBefore || value_id == CSSValueID::kAfter;
     case CSSPropertyID::kRubyPosition:
@@ -1727,6 +1732,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kOverscrollBehaviorBlock,
     CSSPropertyID::kOverscrollBehaviorX,
     CSSPropertyID::kOverscrollBehaviorY,
+    CSSPropertyID::kRubyAlign,
     CSSPropertyID::kRubyPosition,
     CSSPropertyID::kShapeRendering,
     CSSPropertyID::kSpeak,

@@ -6570,6 +6570,18 @@
       invalidate: ["reshape"],
     },
     {
+      name: "ruby-align",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      inherited: true,
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["space-around", "start", "center", "space-between"],
+      default_value: "space-around",
+      valid_for_permission_element: true,
+      invalidate: ["layout", "paint"],
+      runtime_flag: "CssRubyAlign",
+    },
+    {
       name: "-webkit-ruby-position",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       inherited: true,

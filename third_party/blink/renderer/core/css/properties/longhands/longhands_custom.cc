@@ -10224,6 +10224,14 @@ const CSSValue* WebkitRtlOrdering::CSSValueFromComputedStyleInternal(
                                         : CSSValueID::kLogical);
 }
 
+const CSSValue* RubyAlign::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.RubyAlign());
+}
+
 const CSSValue* WebkitRubyPosition::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,

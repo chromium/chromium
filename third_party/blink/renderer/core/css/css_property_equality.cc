@@ -598,6 +598,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.Resize() == b.Resize();
     case CSSPropertyID::kRight:
       return a.Right() == b.Right();
+    case CSSPropertyID::kRubyAlign:
+      return a.RubyAlign() == b.RubyAlign();
     case CSSPropertyID::kRubyPosition:
       return a.GetRubyPosition() == b.GetRubyPosition();
     case CSSPropertyID::kScrollMarkers:

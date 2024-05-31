@@ -985,6 +985,12 @@
       status: "stable",
     },
     {
+      // crbug.com/40249572
+      name: "CssRubyAlign",
+      status: "test",
+      depends_on: ["RubyLineBreakable"],
+    },
+    {
       // https://drafts.csswg.org/css-scroll-snap-2/#scrollsnapchange
       name: "CSSScrollSnapChangeEvent",
       status: "experimental",
