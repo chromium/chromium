@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
@@ -157,6 +158,7 @@ public class ConnectivityDetectorTest implements ConnectivityDetector.Observer {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "b/343926825")
     public void testProbeDefaultUrlReturning200WithContent() throws Exception {
         String testUrl = sTestServerRule.getServer().getURL("/echo?status=200");
 
