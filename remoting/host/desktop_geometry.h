@@ -5,11 +5,12 @@
 #ifndef REMOTING_HOST_DESKTOP_GEOMETRY_H_
 #define REMOTING_HOST_DESKTOP_GEOMETRY_H_
 
+#include <optional>
+#include <vector>
+
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
-
-#include <vector>
 
 namespace remoting {
 using DesktopScreenId = intptr_t;
