@@ -203,7 +203,8 @@ public class BrowsingDataTest {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         PasswordManagerTestHelper.setAccountForPasswordStore(SigninTestRule.TEST_ACCOUNT_EMAIL);
         PasswordStoreBridge bridge =
-                TestThreadUtils.runOnUiThreadBlockingNoException(() -> new PasswordStoreBridge());
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> new PasswordStoreBridge(sActivityTestRule.getProfile(false)));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     bridge.insertPasswordCredentialInProfileStore(

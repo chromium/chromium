@@ -145,7 +145,7 @@ public class MissingDeviceLockLauncher {
     @VisibleForTesting
     PasswordStoreBridge getPasswordStoreBridge() {
         if (mPasswordStoreBridge == null) {
-            mPasswordStoreBridge = new PasswordStoreBridge();
+            mPasswordStoreBridge = new PasswordStoreBridge(mProfile);
         }
         return mPasswordStoreBridge;
     }

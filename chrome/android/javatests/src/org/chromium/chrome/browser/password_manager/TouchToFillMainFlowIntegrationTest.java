@@ -86,7 +86,8 @@ public class TouchToFillMainFlowIntegrationTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPasswordStoreBridge = new PasswordStoreBridge();
+                    mPasswordStoreBridge =
+                            new PasswordStoreBridge(mActivityTestRule.getProfile(false));
                 });
     }
 

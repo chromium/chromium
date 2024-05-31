@@ -14,6 +14,7 @@ import androidx.lifecycle.Observer;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
@@ -49,6 +50,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
      * @param signinLauncher An instance implementing {@link SigninAndHistoryOptInActivityLauncher}.
      * @param syncLauncher An instance implementing {@link SyncConsentActivityLauncher}.
      * @param modalDialogManagerSupplier An supplier for the {@link ModalDialogManager}.
+     * @param passwordStoreBridge Provides access to stored passwords.
      * @param passwordManagerHelper An instance of {@link PasswordManagerHelper} that provides
      *     access to password management capabilities.
      */
@@ -63,6 +65,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable SyncService syncService,
             PrefService prefService,
+            PasswordStoreBridge passwordStoreBridge,
             PasswordManagerHelper passwordManagerHelper) {
         new SafetyCheckCoordinator(
                 settingsFragment,
@@ -75,6 +78,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                 modalDialogManagerSupplier,
                 syncService,
                 prefService,
+                passwordStoreBridge,
                 passwordManagerHelper);
     }
 
@@ -89,6 +93,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable SyncService syncService,
             PrefService prefService,
+            PasswordStoreBridge passwordStoreBridge,
             PasswordManagerHelper passwordManagerHelper) {
         mSettingsFragment = settingsFragment;
         mUpdatesClient = updatesClient;
@@ -135,6 +140,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                                                     syncLauncher,
                                                     syncService,
                                                     prefService,
+                                                    passwordStoreBridge,
                                                     passwordManagerHelper,
                                                     modalDialogManagerSupplier);
                                 }

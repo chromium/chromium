@@ -103,7 +103,7 @@ public class PasswordCheckupIntegrationTest {
 
         runOnUiThreadBlocking(
                 () -> {
-                    mPasswordStoreBridge = new PasswordStoreBridge();
+                    mPasswordStoreBridge = new PasswordStoreBridge(mSyncTestRule.getProfile(false));
                 });
     }
 

@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/ranges/algorithm.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "url/android/gurl_android.h"
 
@@ -56,13 +57,27 @@ PasswordForm Blocklist(JNIEnv* env, std::string url) {
 // static
 static jlong JNI_PasswordStoreBridge_Init(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& java_bridge) {
-  return reinterpret_cast<intptr_t>(new PasswordStoreBridge(java_bridge));
+    const base::android::JavaParamRef<jobject>& java_bridge,
+    Profile* profile) {
+  return reinterpret_cast<intptr_t>(
+      new PasswordStoreBridge(java_bridge, profile));
 }
 
 PasswordStoreBridge::PasswordStoreBridge(
-    const base::android::JavaParamRef<jobject>& java_bridge)
-    : java_bridge_(java_bridge) {
+    const base::android::JavaParamRef<jobject>& java_bridge,
+    Profile* profile)
+    : java_bridge_(java_bridge),
+      profile_(profile),
+      profile_store_(ProfilePasswordStoreFactory::GetForProfile(
+          profile,
+          ServiceAccessType::EXPLICIT_ACCESS)),
+      account_store_(AccountPasswordStoreFactory::GetForProfile(
+          profile,
+          ServiceAccessType::EXPLICIT_ACCESS)),
+      saved_passwords_presenter_(
+          AffiliationServiceFactory::GetForProfile(profile),
+          profile_store_,
+          account_store_) {
   saved_passwords_presenter_.Init();
   observed_saved_password_presenter_.Observe(&saved_passwords_presenter_);
 }

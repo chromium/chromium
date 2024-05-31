@@ -93,7 +93,8 @@ public class PasswordSavingIntegrationTest {
                     mBottomSheetController =
                             BottomSheetControllerProvider.from(
                                     mActivityTestRule.getActivity().getWindowAndroid());
-                    mPasswordStoreBridge = new PasswordStoreBridge();
+                    mPasswordStoreBridge =
+                            new PasswordStoreBridge(mActivityTestRule.getProfile(false));
                 });
 
         mWebContents = mActivityTestRule.getWebContents();

@@ -13,16 +13,16 @@
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+
+class Profile;
 
 class PasswordStoreBridge
     : public password_manager::SavedPasswordsPresenter::Observer {
  public:
-  explicit PasswordStoreBridge(
-      const base::android::JavaParamRef<jobject>& java_bridge);
+  PasswordStoreBridge(const base::android::JavaParamRef<jobject>& java_bridge,
+                      Profile* profile);
   ~PasswordStoreBridge() override;
 
   PasswordStoreBridge(const PasswordStoreBridge&) = delete;
@@ -79,21 +79,14 @@ class PasswordStoreBridge
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
 
-  const scoped_refptr<password_manager::PasswordStoreInterface> profile_store_ =
-      ProfilePasswordStoreFactory::GetForProfile(
-          ProfileManager::GetLastUsedProfile(),
-          ServiceAccessType::EXPLICIT_ACCESS);
-  const scoped_refptr<password_manager::PasswordStoreInterface> account_store_ =
-      AccountPasswordStoreFactory::GetForProfile(
-          ProfileManager::GetLastUsedProfile(),
-          ServiceAccessType::EXPLICIT_ACCESS);
+  raw_ptr<Profile> profile_;
+
+  const scoped_refptr<password_manager::PasswordStoreInterface> profile_store_;
+  const scoped_refptr<password_manager::PasswordStoreInterface> account_store_;
 
   // Used to fetch and edit passwords.
   // TODO(crbug.com/40267119): Use PasswordStore directly.
-  password_manager::SavedPasswordsPresenter saved_passwords_presenter_{
-      AffiliationServiceFactory::GetForProfile(
-          ProfileManager::GetLastUsedProfile()),
-      profile_store_, account_store_};
+  password_manager::SavedPasswordsPresenter saved_passwords_presenter_;
 
   // A scoped observer for `saved_passwords_presenter_`.
   base::ScopedObservation<password_manager::SavedPasswordsPresenter,

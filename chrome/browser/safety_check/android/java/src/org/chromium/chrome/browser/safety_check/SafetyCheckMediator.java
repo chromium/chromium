@@ -200,6 +200,7 @@ class SafetyCheckMediator {
      * @param settingsLauncher An instance of the {@link SettingsLauncher} implementation.
      * @param signinLauncher An instance implementing {@link SigninAndHistoryOptInActivityLauncher}.
      * @param syncLauncher An instance implementing {@SigninActivityLauncher}.
+     * @param passwordStoreBridge Provides access to stored passwords.
      * @param modalDialogManagerSupplier A supplier for the {@link ModalDialogManager}.
      */
     public SafetyCheckMediator(
@@ -214,6 +215,7 @@ class SafetyCheckMediator {
             SyncConsentActivityLauncher syncLauncher,
             SyncService syncService,
             PrefService prefService,
+            PasswordStoreBridge passwordStoreBridge,
             PasswordManagerHelper passwordManagerHelper,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         this(
@@ -229,7 +231,7 @@ class SafetyCheckMediator {
                 syncService,
                 prefService,
                 new Handler(),
-                new PasswordStoreBridge(),
+                passwordStoreBridge,
                 new PasswordCheckControllerFactory(),
                 passwordManagerHelper);
         mModalDialogManagerSupplier = modalDialogManagerSupplier;

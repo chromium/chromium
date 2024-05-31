@@ -117,7 +117,7 @@ public class PasswordGenerationIntegrationTest {
 
         runOnUiThreadBlocking(
                 () -> {
-                    mPasswordStoreBridge = new PasswordStoreBridge();
+                    mPasswordStoreBridge = new PasswordStoreBridge(mSyncTestRule.getProfile(false));
                     mBottomSheetController =
                             BottomSheetControllerProvider.from(
                                     mSyncTestRule.getActivity().getWindowAndroid());

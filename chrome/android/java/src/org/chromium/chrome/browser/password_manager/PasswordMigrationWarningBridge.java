@@ -69,7 +69,7 @@ class PasswordMigrationWarningBridge {
                         (PasswordListObserver observer) ->
                                 PasswordManagerHandlerProvider.getForProfile(profile)
                                         .addObserver(observer),
-                        new PasswordStoreBridge(),
+                        new PasswordStoreBridge(profile),
                         referrer,
                         ChromePureJavaExceptionReporter::reportJavaException);
         passwordMigrationWarningCoordinator.showWarning();

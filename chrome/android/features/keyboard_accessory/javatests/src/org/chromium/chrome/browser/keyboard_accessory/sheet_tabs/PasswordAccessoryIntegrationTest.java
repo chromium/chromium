@@ -111,7 +111,8 @@ public class PasswordAccessoryIntegrationTest {
         mTestServer = mActivityTestRule.getTestServer();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPasswordStoreBridge = new PasswordStoreBridge();
+                    mPasswordStoreBridge =
+                            new PasswordStoreBridge(mActivityTestRule.getProfile(false));
                 });
     }
 
