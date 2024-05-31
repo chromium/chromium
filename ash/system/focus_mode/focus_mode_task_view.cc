@@ -414,7 +414,15 @@ void FocusModeTaskView::OnDeselectButtonPressed() {
 void FocusModeTaskView::OnAddTaskButtonPressed() {
   if (auto* focus_manager = GetFocusManager()) {
     if (textfield_ != focus_manager->GetFocusedView()) {
-      GetFocusManager()->SetFocusedView(textfield_);
+      // When the `add_task_button_` is visible, it means this view isn't in
+      // selected state. When clicking on the `add_task_button_`, if there is no
+      // content for the `textfield_`, we should activate it and the cursor will
+      // be shown on it; if the `textfield_` has some content, it means the user
+      // is selecting the task, we shouldn't give the focus to the `textfield_`.
+      // More info here b/343623327.
+      if (textfield_->GetText().empty()) {
+        GetFocusManager()->SetFocusedView(textfield_);
+      }
     } else {
       // The `textfield_` may be inactive when it is focused, so we should
       // manually activate it in this case.
