@@ -20,7 +20,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {openMenu, ReadAloudSettingsChange, SPEECH_SETTINGS_CHANGE_UMA} from './common.js';
 import type {LanguageMenuElement} from './language_menu.js';
-import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, isNatural, VoicePackStatus} from './voice_language_util.js';
+import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, isNatural, VoiceClientSideStatusCode} from './voice_language_util.js';
 import {getTemplate} from './voice_selection_menu.html.js';
 
 export interface VoiceSelectionMenuElement {
@@ -58,7 +58,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   // via one way data binding.
   private readonly paused: boolean;
   private readonly voicePackInstallStatus:
-      {[language: string]: VoicePackStatus};
+      {[language: string]: VoiceClientSideStatusCode};
   private voicePlayingWhenMenuOpened_: boolean = false;
 
   static get is() {
@@ -288,9 +288,13 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   }
 
   private computeDownloadingMessages_(
-      voicePackInstallStatus: {[language: string]: VoicePackStatus}): string[] {
+      voicePackInstallStatus: {[language: string]: VoiceClientSideStatusCode}):
+      string[] {
     return Object.entries(voicePackInstallStatus)
-        .filter(([_, status]) => status === VoicePackStatus.INSTALLING)
+        .filter(
+            ([_, status]) => status ===
+                    VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE ||
+                status === VoiceClientSideStatusCode.SENT_INSTALL_REQUEST)
         .map(([lang, _]) => this.getDisplayNameForLocale(lang))
         .filter(possibleName => possibleName.length > 0)
         .map(

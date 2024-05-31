@@ -3,41 +3,42 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+
 
 suite('voice and language utils', () => {
   test('mojoVoicePackStatusToVoicePackStatusEnum', () => {
     // Success codes
     assertEquals(
-        (mojoVoicePackStatusToVoicePackStatusEnum('kNotInstalled')),
-        VoicePackStatus.EXISTS);
+        mojoVoicePackStatusToVoicePackStatusEnum('kNotInstalled').code,
+        VoicePackServerStatusSuccessCode.NOT_INSTALLED);
     assertEquals(
-        (mojoVoicePackStatusToVoicePackStatusEnum('kInstalled')),
-        VoicePackStatus.DOWNLOADED);
+        mojoVoicePackStatusToVoicePackStatusEnum('kInstalled').code,
+        VoicePackServerStatusSuccessCode.INSTALLED);
     assertEquals(
-        (mojoVoicePackStatusToVoicePackStatusEnum('kInstalling')),
-        VoicePackStatus.INSTALLING);
+        mojoVoicePackStatusToVoicePackStatusEnum('kInstalling').code,
+        VoicePackServerStatusSuccessCode.INSTALLING);
 
     // Error codes
     assertEquals(
-        (mojoVoicePackStatusToVoicePackStatusEnum('kUnknown')),
-        VoicePackStatus.INSTALL_ERROR);
+        mojoVoicePackStatusToVoicePackStatusEnum('kUnknown').code,
+        VoicePackServerStatusErrorCode.OTHER);
     assertEquals(
-        (mojoVoicePackStatusToVoicePackStatusEnum('kOther')),
-        VoicePackStatus.INSTALL_ERROR);
+        mojoVoicePackStatusToVoicePackStatusEnum('kOther').code,
+        VoicePackServerStatusErrorCode.OTHER);
     assertEquals(
-        (mojoVoicePackStatusToVoicePackStatusEnum('kWrongId')),
-        VoicePackStatus.INSTALL_ERROR);
+        mojoVoicePackStatusToVoicePackStatusEnum('kWrongId').code,
+        VoicePackServerStatusErrorCode.WRONG_ID);
     assertEquals(
-        (mojoVoicePackStatusToVoicePackStatusEnum('kNeedReboot')),
-        VoicePackStatus.INSTALL_ERROR);
+        mojoVoicePackStatusToVoicePackStatusEnum('kNeedReboot').code,
+        VoicePackServerStatusErrorCode.NEED_REBOOT);
     assertEquals(
-        (mojoVoicePackStatusToVoicePackStatusEnum('kAllocation')),
-        VoicePackStatus.INSTALL_ERROR);
+        mojoVoicePackStatusToVoicePackStatusEnum('kAllocation').code,
+        VoicePackServerStatusErrorCode.ALLOCATION);
     assertEquals(
-        (mojoVoicePackStatusToVoicePackStatusEnum('kUnsupportedPlatform')),
-        VoicePackStatus.INSTALL_ERROR);
+        mojoVoicePackStatusToVoicePackStatusEnum('kUnsupportedPlatform').code,
+        VoicePackServerStatusErrorCode.UNSUPPORTED_PLATFORM);
   });
 
   test('convertLangOrLocaleForVoicePackManager', () => {

@@ -8,15 +8,15 @@ import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js'
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AVAILABLE_GOOGLE_TTS_LOCALES, VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AVAILABLE_GOOGLE_TTS_LOCALES, VoiceClientSideStatusCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-
 
 suite('LanguageMenu', () => {
   let languageMenu: LanguageMenuElement;
   let availableVoices: SpeechSynthesisVoice[];
   let enabledLanguagesInPref: string[];
-  const languagesToNotificationMap: {[language: string]: VoicePackStatus} = {};
+  const languagesToNotificationMap:
+      {[language: string]: VoiceClientSideStatusCode} = {};
 
 
   const setAvailableVoices = () => {
@@ -329,7 +329,8 @@ suite('LanguageMenu', () => {
         languageMenu.baseLanguages = ['it-it'];
         enabledLanguagesInPref = ['it-it', 'English (United States)'];
         setEnabledLanguages();
-        languagesToNotificationMap['it'] = VoicePackStatus.INSTALLING;
+        languagesToNotificationMap['it'] =
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST;
         setNotificationForLanguage();
         assertEquals(getNotificationItems().length, 3);
         assertLanguageNotification(getNotificationItems()[0]!, '');
@@ -337,7 +338,16 @@ suite('LanguageMenu', () => {
         assertLanguageNotification(
             getNotificationItems()[2]!, 'Downloading voices…');
 
-        languagesToNotificationMap['it'] = VoicePackStatus.INSTALLED;
+        languagesToNotificationMap['it'] =
+            VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE;
+        setNotificationForLanguage();
+        assertEquals(getNotificationItems().length, 3);
+        assertLanguageNotification(getNotificationItems()[0]!, '');
+        assertLanguageNotification(getNotificationItems()[1]!, '');
+        assertLanguageNotification(
+            getNotificationItems()[2]!, 'Downloading voices…');
+
+        languagesToNotificationMap['it'] = VoiceClientSideStatusCode.AVAILABLE;
         setNotificationForLanguage();
         assertEquals(getNotificationItems().length, 3);
         assertLanguageNotification(getNotificationItems()[0]!, '');
@@ -356,7 +366,8 @@ suite('LanguageMenu', () => {
           {name: 'espeak voice', lang: 'es'} as SpeechSynthesisVoice,
         ];
         setAvailableVoices();
-        languagesToNotificationMap['es'] = VoicePackStatus.INSTALLING;
+        languagesToNotificationMap['es'] =
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST;
         setNotificationForLanguage();
 
         assertEquals(getNotificationItems().length, 2);
@@ -371,7 +382,7 @@ suite('LanguageMenu', () => {
             enabledLanguagesInPref = ['Italian', 'English (United States)'];
             setEnabledLanguages();
             languagesToNotificationMap['it'] =
-                VoicePackStatus.INSTALL_ERROR_ALLOCATION;
+                VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION;
             setNotificationForLanguage();
             assertEquals(getNotificationItems().length, 3);
             assertLanguageNotification(getNotificationItems()[0]!, '');
@@ -393,7 +404,7 @@ suite('LanguageMenu', () => {
         setAvailableVoices();
 
         languagesToNotificationMap['it'] =
-            VoicePackStatus.INSTALL_ERROR_ALLOCATION;
+            VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION;
         setNotificationForLanguage();
 
         // Languages without an already installed voice are not available

@@ -2,15 +2,67 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export enum VoicePackStatus {
-  NONE,             //  no language pack available
-  EXISTS,           // available, and not installed
-  INSTALLING,       // we've requested a language pack installation
-  DOWNLOADED,       // language pack downloaded, waiting for update to voices
-  INSTALLED,        //  we have natural voices for this language
-  INSTALL_ERROR,    // Catch-all status. Use more specific error status if
-                    // possible.
-  INSTALL_ERROR_ALLOCATION, // Install error due to no memory.
+export type VoicePackStatus = VoicePackServerResponseSuccess|
+    VoicePackServerResponseError|VoicePackServerResponseParsingError;
+
+const STATUS_SUCCESS = 'Successful response';
+const STATUS_FAILURE = 'Unsuccessful response';
+const PARSING_ERROR = 'Cannot parse LanguagePackManager response';
+
+// Representation of server-side LanguagePackManager state
+interface VoicePackServerResponseSuccess {
+  id: 'Successful response';
+  code: VoicePackServerStatusSuccessCode;
+}
+interface VoicePackServerResponseError {
+  id: 'Unsuccessful response';
+  code: VoicePackServerStatusErrorCode;
+}
+
+interface VoicePackServerResponseParsingError {
+  id: 'Cannot parse LanguagePackManager response';
+  code: 'ParseError';
+}
+
+export function isVoicePackStatusSuccess(status: VoicePackStatus):
+    status is VoicePackServerResponseSuccess {
+  return status.id === STATUS_SUCCESS;
+}
+
+export function isVoicePackStatusError(status: VoicePackStatus):
+    status is VoicePackServerResponseError {
+  return status.id === STATUS_FAILURE;
+}
+
+// Representation of server-side LanguagePackManager state. Roughly corresponds
+// to InstallationState in read_anything.mojom
+export enum VoicePackServerStatusSuccessCode {
+  NOT_INSTALLED,  // Available to be downloaded but not installed
+  INSTALLING,     // Currently installing
+  INSTALLED,      // Is downloaded onto the device
+}
+
+// Representation of server-side LanguagePackManager state. Roughly corresponds
+// to ErrorCode in read_anything.mojom. We treat many of these errors in the
+// same way, but these are the states that the server sends us.
+export enum VoicePackServerStatusErrorCode {
+  OTHER,                 // A catch all error
+  WRONG_ID,              // If no language pack for this language
+  NEED_REBOOT,           // Error installing and a reboot should help
+  ALLOCATION,            // Error due to not enough memory
+  UNSUPPORTED_PLATFORM,  // Donloads not supported on this platform
+}
+
+// Our client-side representation tracking voice-pack states.
+export enum VoiceClientSideStatusCode {
+  NOT_INSTALLED,              // Available to be downloaded but not installed
+  SENT_INSTALL_REQUEST,       // We sent an install request
+  INSTALLED_AND_UNAVAILABLE,  // The server says voice is on disk, but it's not
+                              // available to the local speechSynthesis API yet
+  AVAILABLE,  // The voice is installed and available to be used by the local
+              // speechSynthesis API
+  ERROR_INSTALLING,          // Couldn't install
+  INSTALL_ERROR_ALLOCATION,  // Couldn't install due to not enough memory
 }
 
 // This string is not localized and will be in English, even for non-English
@@ -104,26 +156,44 @@ export function convertLangToAnAvailableLangIfPresent(
 // The following possible values of "status" is a union of enum values of
 // enum InstallationState and enum ErrorCode in read_anything.mojom
 export function mojoVoicePackStatusToVoicePackStatusEnum(
-    mojoPackStatus: string) {
+    mojoPackStatus: string): VoicePackStatus {
   if (mojoPackStatus === 'kNotInstalled') {
-    return VoicePackStatus.EXISTS;
+    return {
+      id: STATUS_SUCCESS,
+      code: VoicePackServerStatusSuccessCode.NOT_INSTALLED,
+    };
   } else if (mojoPackStatus === 'kInstalling') {
-    return VoicePackStatus.INSTALLING;
+    return {
+      id: STATUS_SUCCESS,
+      code: VoicePackServerStatusSuccessCode.INSTALLING,
+    };
   } else if (mojoPackStatus === 'kInstalled') {
-    return VoicePackStatus.DOWNLOADED;
+    return {
+      id: STATUS_SUCCESS,
+      code: VoicePackServerStatusSuccessCode.INSTALLED,
+    };
+  } else if (mojoPackStatus === 'kOther' || mojoPackStatus === 'kUnknown') {
+    return {id: STATUS_FAILURE, code: VoicePackServerStatusErrorCode.OTHER};
+  } else if (mojoPackStatus === 'kWrongId') {
+    return {id: STATUS_FAILURE, code: VoicePackServerStatusErrorCode.WRONG_ID};
+  } else if (mojoPackStatus === 'kNeedReboot') {
+    return {
+      id: STATUS_FAILURE,
+      code: VoicePackServerStatusErrorCode.NEED_REBOOT,
+    };
+  } else if (mojoPackStatus === 'kAllocation') {
+    return {
+      id: STATUS_FAILURE,
+      code: VoicePackServerStatusErrorCode.ALLOCATION,
+    };
+  } else if (mojoPackStatus === 'kUnsupportedPlatform') {
+    return {
+      id: STATUS_FAILURE,
+      code: VoicePackServerStatusErrorCode.UNSUPPORTED_PLATFORM,
+    };
+  } else {
+    return {id: PARSING_ERROR, code: 'ParseError'};
   }
-  // The success statuses were not sent so return an Error
-  // TODO (b/331795122) Handle install errors on the UI
-  return VoicePackStatus.INSTALL_ERROR;
-}
-export function errorCodeToVoicePackStatusEnum(errorCode: string) {
-  if (errorCode === 'kAllocation') {
-    return VoicePackStatus.INSTALL_ERROR_ALLOCATION;
-  }
-
-  // TODO: b/331795122 - Handle more error codes from the language pack.
-
-  return VoicePackStatus.INSTALL_ERROR;
 }
 
 // The ChromeOS VoicePackManager labels some voices by locale, and some by

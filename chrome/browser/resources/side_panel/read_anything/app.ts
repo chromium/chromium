@@ -23,7 +23,8 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {getTemplate} from './app.html.js';
 import {minOverflowLengthToScroll, playFromSelectionTimeout, validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, errorCodeToVoicePackStatusEnum, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from './voice_language_util.js';
+import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, isNatural, isVoicePackStatusError, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
+import type {VoicePackStatus} from './voice_language_util.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -350,7 +351,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   private localeToDisplayName: {[locale: string]: string};
 
-  private voicePackInstallStatus: {[language: string]: VoicePackStatus} = {};
+  // Our local representation of the status of voice pack downloads and
+  // availability
+  // TODO (b/344038789) Tests for local state transitions
+  private voiceStatusLocalState:
+      {[language: string]: VoiceClientSideStatusCode} = {};
+
+  // Cache of responses from LanguagePackManager
+  private voicePackInstallStatusServerResponses:
+      {[language: string]: VoicePackStatus} = {};
 
   // Set of languages of the browser and/or of the pages navigated to that we
   // need to download Natural voices for automatically
@@ -437,12 +446,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.clearReadAloudState();
 
       this.synth.onvoiceschanged = () => {
+        // Get a new list of voices. This should be done before we call
+        // refreshVoicePackStatuses();
+        this.getVoices(/*refresh =*/ true);
+
         // Now that the voice list has changed, refresh the VoicePackStatuses in
         // case a language has been uninstalled.
         this.refreshVoicePackStatuses();
-
-        // Get a new list of voices
-        this.getVoices(/*refresh =*/ true);
 
         // If the selected voice is now unavailable, such as after an install,
         // reselect a new voice.
@@ -907,18 +917,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
 
     const voicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
-    if (voicePackStatus === VoicePackStatus.INSTALL_ERROR) {
-      // TODO (b/331795122) Handle more install errors on the UI
-      this.setVoicePackStatus_(lang, errorCodeToVoicePackStatusEnum(status));
-      return;
+
+    if (isVoicePackStatusError(voicePackStatus)) {
+      this.setVoicePackServerStatus_(lang, voicePackStatus);
+    } else {
+      // Do not rely on the status from Install response. It has responded
+      // "installed" for voices that are not installed. Instead, request the
+      // status from GetVoicePackInfo. The result will be returned in
+      // updateVoicePackStatus().
+      this.sendGetVoicePackInfoRequest(lang);
     }
-
-
-    // Do not rely on the status from Install response. It has responded
-    // "installed" for voices that are not installed. Instead, request the
-    // status from GetVoicePackInfo. The result will be returned in
-    // updateVoicePackStatus().
-    this.sendGetVoicePackInfoRequest(lang);
   }
 
   updateVoicePackStatus(lang: string, status: string) {
@@ -926,47 +934,93 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
 
-    const voicePackLangauge = this.getConvertedLangIfExists_(lang);
+    const newVoicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
+    const oldVoicePackStatus = this.getVoicePackServerStatus_(lang);
 
-    const voicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
-    if (voicePackStatus === VoicePackStatus.EXISTS) {
-      if (this.languagesForVoiceDownloads.has(lang)) {
-        // We can't rely on the voice pack manager to reflect that a voice is
-        // installing, so check our local state to see if we've already
-        // triggered an install request.
-        // Only call sendInstallVoicePackRequest() if it's not already
-        // downloading
-        if (this.getVoicePackStatus_(lang) !== VoicePackStatus.INSTALLING) {
-          this.setVoicePackStatus_(lang, VoicePackStatus.INSTALLING);
+    // Keep the server responses
+    this.setVoicePackServerStatus_(lang, newVoicePackStatus);
+
+    // Update application state
+    this.updateApplicationState(lang, newVoicePackStatus, oldVoicePackStatus);
+  }
+
+
+  // Store client side voice pack state and trigger side effects
+  private updateApplicationState(
+      lang: string, newVoicePackStatus: VoicePackStatus,
+      oldVoicePackStatus?: VoicePackStatus) {
+    const newStatusCode = newVoicePackStatus.code;
+    switch (newStatusCode) {
+      case VoicePackServerStatusSuccessCode.NOT_INSTALLED:
+        // Install the voice if 1) it's not currently installed 2) there's no
+        // pending install request, and 3) it's marked as a language that should
+        // be installed
+        if (this.langMarkedForInstallation(lang)) {
+          this.setVoicePackLocalStatus_(
+              lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
+
           chrome.readingMode.sendInstallVoicePackRequest(lang);
+        } else {
+          this.setVoicePackLocalStatus_(
+              lang, VoiceClientSideStatusCode.NOT_INSTALLED);
         }
-      } else {
-        // If the voices shouldn't be installed, update the state as EXISTS
-        this.setVoicePackStatus_(lang, VoicePackStatus.EXISTS);
-      }
-    } else if (voicePackStatus === VoicePackStatus.DOWNLOADED) {
-      if (this.voicePackInstallStatus[voicePackLangauge] ===
-          VoicePackStatus.INSTALLING) {
-        const possibleLanguageConversion =
-            convertLangToAnAvailableLangIfPresent(
-                voicePackLangauge, this.availableLangs, true);
-        this.lastDownloadedLang_ = possibleLanguageConversion ?
-            possibleLanguageConversion :
-            voicePackLangauge;
-        this.showToast_();
-      }
+        break;
+      case VoicePackServerStatusSuccessCode.INSTALLING:
+        // DO nothing- we mark our local state as installing when we send the
+        // request. Locally, we may time out a slow request and mark it as
+        // errored, and we don't want to overwrite that state here.
+        break;
+      case VoicePackServerStatusSuccessCode.INSTALLED:
+        // See if voice is newly downloaded and should have a toast notifying
+        // the user.
+        if (oldVoicePackStatus?.code !==
+            VoicePackServerStatusSuccessCode.INSTALLED) {
+          const possibleLanguageConversion =
+              convertLangToAnAvailableLangIfPresent(
+                  lang, this.availableLangs, true);
+          this.lastDownloadedLang_ =
+              possibleLanguageConversion ? possibleLanguageConversion : lang;
+          this.showToast_();
 
-      this.setVoicePackStatus_(voicePackLangauge, voicePackStatus);
+          // Force a refresh of the voices list since we might not get an update
+          // the voices have changed.
+          this.getVoices(true);
+        }
 
-
-      // Force a refresh of the voices list since we might not get an update the
-      // voices have changed.
-      this.getVoices(true);
-      return;
-    } else {
-      this.setVoicePackStatus_(lang, voicePackStatus);
-      // TODO (b/335472298) Handle voice menu downloading voice spinners
+        // Even though the voice may be installed on disk, it still may not be
+        // available to the speechSynthesis API. Check whether to mark the voice
+        // as AVAILABLE or INSTALLED_AND_UNAVAILABLE
+        const naturalVoicesForLangAreAvailable = this.availableVoices.some(
+            voice => isNatural(voice) &&
+                this.getConvertedLangIfExists_(voice.lang) === lang);
+        this.setVoicePackLocalStatus_(
+            lang,
+            naturalVoicesForLangAreAvailable ?
+                VoiceClientSideStatusCode.AVAILABLE :
+                VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
+        break;
+      case VoicePackServerStatusErrorCode.OTHER:
+      case VoicePackServerStatusErrorCode.WRONG_ID:
+      case VoicePackServerStatusErrorCode.NEED_REBOOT:
+      case VoicePackServerStatusErrorCode.UNSUPPORTED_PLATFORM:
+      case 'ParseError':
+        this.setVoicePackLocalStatus_(
+            lang, VoiceClientSideStatusCode.ERROR_INSTALLING);
+        break;
+      case VoicePackServerStatusErrorCode.ALLOCATION:
+        this.setVoicePackLocalStatus_(
+            lang, VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION);
+        break;
+      default:
+        // This ensures the switch statement is exhaustive
+        return newStatusCode satisfies never;
     }
+  }
+
+  private langMarkedForInstallation(lang: string) {
+    return this.languagesForVoiceDownloads.has(lang) &&
+        this.getVoicePackLocalStatus_(lang) !==
+        VoiceClientSideStatusCode.SENT_INSTALL_REQUEST;
   }
 
   private getLanguageDownloadedTitle_(lang: string) {
@@ -1115,25 +1169,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.availableLangs = [...new Set(availableVoices.map(({lang}) => lang))];
 
       this.populateDisplayNamesForLocaleCodes();
-
-      // Update voice pack install status if we're refreshing the list.
-      if (refresh) {
-        this.availableLangs
-            .filter(
-                lang =>
-                    this.voicePackInstallStatus[this.getConvertedLangIfExists_(
-                        lang)] === VoicePackStatus.DOWNLOADED)
-            .forEach(downloadedLang => {
-              this.setVoicePackStatus_(
-                  downloadedLang, VoicePackStatus.INSTALLED);
-            });
-      }
     }
     return this.availableVoices;
   }
 
   private refreshVoicePackStatuses() {
-    for (const lang of Object.keys(this.voicePackInstallStatus)) {
+    for (const lang of Object.keys(
+             this.voicePackInstallStatusServerResponses)) {
       this.sendGetVoicePackInfoRequest(lang);
     }
   }
@@ -2430,7 +2472,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // page language), this check can be skipped.
     if (onlyInstallExactGoogleLocaleMatch &&
         !AVAILABLE_GOOGLE_TTS_LOCALES.has(langOrLocale)) {
-      this.setVoicePackStatus_(langOrLocale, VoicePackStatus.NONE);
       return;
     }
 
@@ -2438,23 +2479,18 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         convertLangOrLocaleForVoicePackManager(langOrLocale);
 
     if (!langCodeForVoicePackManager) {
-      this.setVoicePackStatus_(langOrLocale, VoicePackStatus.NONE);
       return;
     }
 
     const statusForLang =
-        this.voicePackInstallStatus[langCodeForVoicePackManager];
-    if (!statusForLang || (statusForLang === VoicePackStatus.EXISTS)) {
+        this.voicePackInstallStatusServerResponses[langCodeForVoicePackManager];
+    if (!statusForLang ||
+        (statusForLang.code ===
+         VoicePackServerStatusSuccessCode.NOT_INSTALLED)) {
       this.languagesForVoiceDownloads.add(langCodeForVoicePackManager);
       // Inquire if the voice pack is downloaded. If not, it'll trigger a
       // download when we get the response in updateVoicePackStatus().
       this.sendGetVoicePackInfoRequest(langCodeForVoicePackManager);
-      this.setVoicePackStatus_(
-          langCodeForVoicePackManager, VoicePackStatus.EXISTS);
-    } else if (statusForLang === VoicePackStatus.DOWNLOADED) {
-      // Force a refresh of the voices list since we might not get an update the
-      // voices have changed.
-      this.getVoices(/*refresh=*/ true);
     }
   }
 
@@ -2465,18 +2501,32 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  private getVoicePackStatus_(lang: string): VoicePackStatus|undefined {
+  private getVoicePackServerStatus_(lang: string): VoicePackStatus|undefined {
     const voicePackLanguage = this.getConvertedLangIfExists_(lang);
-    return this.voicePackInstallStatus[voicePackLanguage];
+    return this.voicePackInstallStatusServerResponses[voicePackLanguage];
   }
 
-  private setVoicePackStatus_(lang: string, status: VoicePackStatus) {
+  private getVoicePackLocalStatus_(lang: string): VoiceClientSideStatusCode
+      |undefined {
+    const voicePackLanguage = this.getConvertedLangIfExists_(lang);
+    return this.voiceStatusLocalState[voicePackLanguage];
+  }
+
+  private setVoicePackLocalStatus_(
+      lang: string, status: VoiceClientSideStatusCode) {
+    const voicePackLanguage = this.getConvertedLangIfExists_(lang);
+    this.voiceStatusLocalState = {
+      ...this.voiceStatusLocalState,
+      [voicePackLanguage]: status,
+    };
+  }
+
+  private setVoicePackServerStatus_(lang: string, status: VoicePackStatus) {
     // Convert the language string to ensure consistency across
     // languages and locales when setting the status.
     const voicePackLanguage = this.getConvertedLangIfExists_(lang);
-
-    this.voicePackInstallStatus = {
-      ...this.voicePackInstallStatus,
+    this.voicePackInstallStatusServerResponses = {
+      ...this.voicePackInstallStatusServerResponses,
       [voicePackLanguage]: status,
     };
   }

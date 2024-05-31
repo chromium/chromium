@@ -5,7 +5,8 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {convertLangOrLocaleForVoicePackManager, VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {convertLangOrLocaleForVoicePackManager, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -15,11 +16,11 @@ import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.j
 suite('UpdateVoicePack', () => {
   let app: ReadAnythingElement;
 
-  function getInstallStatus(lang: string) {
+  function getVoicePackServerInstallStatus(lang: string): VoicePackStatus {
     const convertedLang: string|undefined =
         convertLangOrLocaleForVoicePackManager(lang);
     // @ts-ignore
-    return app.voicePackInstallStatus[convertedLang!];
+    return app.voicePackInstallStatusServerResponses[convertedLang!];
   }
 
   setup(() => {
@@ -53,7 +54,8 @@ suite('UpdateVoicePack', () => {
         app.updateVoicePackStatus(voicePackLang, 'kNotInstalled');
 
         assertEquals(
-            getInstallStatus(voicePackLang), VoicePackStatus.INSTALLING);
+            getVoicePackServerInstallStatus(voicePackLang).code,
+            VoicePackServerStatusSuccessCode.NOT_INSTALLED);
         assertEquals(sentInstallRequestFor, voicePackLang);
       });
     });
@@ -79,7 +81,9 @@ suite('UpdateVoicePack', () => {
 
           app.updateVoicePackStatus(lang, 'kInstalled');
 
-          assertEquals(getInstallStatus(lang), VoicePackStatus.DOWNLOADED);
+          assertEquals(
+              getVoicePackServerInstallStatus(lang).code,
+              VoicePackServerStatusSuccessCode.INSTALLED);
         });
 
     test(
@@ -92,7 +96,9 @@ suite('UpdateVoicePack', () => {
           // only has english voices.
           app.updateVoicePackStatus(lang, 'kInstalled');
 
-          assertEquals(getInstallStatus(lang), VoicePackStatus.DOWNLOADED);
+          assertEquals(
+              getVoicePackServerInstallStatus(lang).code,
+              VoicePackServerStatusSuccessCode.INSTALLED);
         });
 
     test(
@@ -102,7 +108,9 @@ suite('UpdateVoicePack', () => {
 
           app.updateVoicePackStatus(lang, 'kInstalled');
 
-          assertEquals(getInstallStatus(lang), VoicePackStatus.INSTALLED);
+          assertEquals(
+              getVoicePackServerInstallStatus(lang).code,
+              VoicePackServerStatusSuccessCode.INSTALLED);
         });
 
     test('installed if natural voices are in the list for this lang', () => {
@@ -111,7 +119,9 @@ suite('UpdateVoicePack', () => {
 
       app.updateVoicePackStatus(lang, 'kInstalled');
 
-      assertEquals(getInstallStatus(lang), VoicePackStatus.INSTALLED);
+      assertEquals(
+          getVoicePackServerInstallStatus(lang).code,
+          VoicePackServerStatusSuccessCode.INSTALLED);
     });
   });
 });

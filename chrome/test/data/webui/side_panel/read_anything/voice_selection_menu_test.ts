@@ -7,7 +7,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {PLAY_PREVIEW_EVENT, VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {PLAY_PREVIEW_EVENT, VoiceClientSideStatusCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
@@ -392,7 +392,7 @@ suite('VoiceSelectionMenu', () => {
   });
 
   suite('with installing voices', () => {
-    function setVoiceStatus(lang: string, status: VoicePackStatus) {
+    function setVoiceStatus(lang: string, status: VoiceClientSideStatusCode) {
       // @ts-ignore
       voiceSelectionMenu.voicePackInstallStatus = {
         // @ts-ignore
@@ -403,11 +403,11 @@ suite('VoiceSelectionMenu', () => {
     }
 
     function startDownload(lang: string) {
-      setVoiceStatus(lang, VoicePackStatus.INSTALLING);
+      setVoiceStatus(lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
     }
 
     function finishDownload(lang: string) {
-      setVoiceStatus(lang, VoicePackStatus.DOWNLOADED);
+      setVoiceStatus(lang, VoiceClientSideStatusCode.AVAILABLE);
     }
 
     function getDownloadMessages(): HTMLElement[] {

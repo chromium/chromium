@@ -10,12 +10,12 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
-import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('LanguageChanged', () => {
@@ -53,12 +53,6 @@ suite('LanguageChanged', () => {
     // Bypass Typescript compiler to allow us to set a private property
     // @ts-ignore
     return app.selectedVoice;
-  }
-
-  function voicePackInstallStatus(): {[language: string]: VoicePackStatus} {
-    // Bypass Typescript compiler to allow us to set a private property
-    // @ts-ignore
-    return app.voicePackInstallStatus;
   }
 
   setup(() => {
@@ -195,9 +189,9 @@ suite('LanguageChanged', () => {
   suite('with flag tries to install voice pack', () => {
     let sentRequest: boolean;
 
-    function setInstallStatus(lang: string, status: VoicePackStatus) {
+    function setVoicePackServerStatus(lang: string, status: VoicePackStatus) {
       // @ts-ignore
-      app.setVoicePackStatus_(lang, status);
+      app.setVoicePackServerStatus_(lang, status);
     }
 
     setup(() => {
@@ -218,9 +212,6 @@ suite('LanguageChanged', () => {
       assertFalse(PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES.has(
           chrome.readingMode.baseLanguageForSpeech));
       assertFalse(sentRequest);
-      assertEquals(
-          voicePackInstallStatus()[chrome.readingMode.baseLanguageForSpeech],
-          VoicePackStatus.NONE);
     });
 
     test('if the language is unsupported but has valid voice pack code', () => {
@@ -235,33 +226,20 @@ suite('LanguageChanged', () => {
       assertFalse(AVAILABLE_GOOGLE_TTS_LOCALES.has(
           chrome.readingMode.baseLanguageForSpeech));
       assertTrue(sentRequest);
-      assertEquals(
-          voicePackInstallStatus()[chrome.readingMode.baseLanguageForSpeech],
-          VoicePackStatus.EXISTS);
     });
 
-    test('and refreshes voice list if already downloaded', () => {
+    test('but doesn\'t if the language is already installing', () => {
       const lang = 'bn-bd';
-      chrome.readingMode.baseLanguageForSpeech = lang;
-      app.synth = new FakeSpeechSynthesis();
-      const voices = app.synth.getVoices();
-      app.synth.getVoices = () => {
-        return voices.concat(
-            {lang: lang, name: 'Wall-e (Natural)'} as SpeechSynthesisVoice,
-            {lang: lang, name: 'Andy (Natural)'} as SpeechSynthesisVoice,
-        );
-      };
-
       const voicePackLang = convertLangOrLocaleForVoicePackManager(lang);
       assertTrue(voicePackLang !== undefined);
 
-      setInstallStatus(voicePackLang, VoicePackStatus.DOWNLOADED);
-
+      setVoicePackServerStatus(voicePackLang, {
+        id: 'Successful response',
+        code: VoicePackServerStatusSuccessCode.INSTALLING,
+      });
       app.languageChanged();
 
       assertFalse(sentRequest);
-      assertEquals(
-          voicePackInstallStatus()[voicePackLang], VoicePackStatus.INSTALLED);
     });
 
     test('and gets voice pack info if no status yet', () => {
@@ -271,10 +249,6 @@ suite('LanguageChanged', () => {
       app.languageChanged();
 
       assertTrue(sentRequest);
-      assertEquals(
-          voicePackInstallStatus()[convertLangOrLocaleForVoicePackManager(lang)!
-      ],
-          VoicePackStatus.EXISTS);
     });
 
     test('and gets voice pack info if we know it exists', () => {
@@ -284,10 +258,6 @@ suite('LanguageChanged', () => {
       app.languageChanged();
 
       assertTrue(sentRequest);
-      assertEquals(
-          voicePackInstallStatus()[convertLangOrLocaleForVoicePackManager(lang)!
-      ],
-          VoicePackStatus.EXISTS);
     });
   });
 

@@ -172,7 +172,8 @@ suite('PrefsTest', () => {
               app.enabledLanguagesInPref = [lang2];
               app.speechSynthesisLanguage = lang2;
               app.restoreSettingsFromPrefs();
-              assertEquals(selectedVoice(), firstVoiceWithLang2);
+              assertEquals(selectedVoice().name, firstVoiceWithLang2.name);
+              assertEquals(selectedVoice().lang, firstVoiceWithLang2.lang);
             });
       });
     });
