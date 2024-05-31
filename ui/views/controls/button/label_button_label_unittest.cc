@@ -54,7 +54,7 @@ class LabelButtonLabelTest : public ViewsTestBase {
   void SetUp() override {
     ViewsTestBase::SetUp();
 
-    widget_ = CreateTestWidget();
+    widget_ = CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     widget_->GetNativeTheme()->set_use_dark_colors(false);
 
     widget_->SetContentsView(

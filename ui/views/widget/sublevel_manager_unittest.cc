@@ -97,7 +97,8 @@ class SublevelManagerTest : public ViewsTestBase,
 // Widgets should be stacked according to their sublevel regardless
 // the order of showing.
 TEST_P(SublevelManagerTest, EnsureSublevel) {
-  std::unique_ptr<Widget> root = CreateTestWidget();
+  std::unique_ptr<Widget> root =
+      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   std::unique_ptr<Widget> children[3];
 
   for (int sublevel = 0; sublevel < 3; sublevel++) {
@@ -130,7 +131,8 @@ TEST_P(SublevelManagerTest, EnsureSublevel) {
 // ignore z-order level (except on ash) and we don't have a reliable way to
 // test desktop widgets.
 TEST_P(SublevelManagerTest, DISABLED_LevelSupersedeSublevel) {
-  std::unique_ptr<Widget> root = CreateTestWidget();
+  std::unique_ptr<Widget> root =
+      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   std::unique_ptr<Widget> low_level_widget, high_level_widget;
 
   // `high_level_widget` should be above `low_level_widget` that has a lower
@@ -153,7 +155,8 @@ TEST_P(SublevelManagerTest, DISABLED_LevelSupersedeSublevel) {
 
 // Widgets are re-ordered only within the same level.
 TEST_P(SublevelManagerTest, SublevelOnlyEnsuredWithinSameLevel) {
-  std::unique_ptr<Widget> root = CreateTestWidget();
+  std::unique_ptr<Widget> root =
+      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   std::unique_ptr<Widget> low_level_widget1, low_level_widget2,
       high_level_widget;
 
@@ -183,7 +186,8 @@ TEST_P(SublevelManagerTest, SublevelOnlyEnsuredWithinSameLevel) {
 
 // SetSublevel() should trigger re-ordering.
 TEST_P(SublevelManagerTest, SetSublevel) {
-  std::unique_ptr<Widget> root = CreateTestWidget();
+  std::unique_ptr<Widget> root =
+      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   std::unique_ptr<Widget> child1, child2;
 
   child1 =
@@ -206,7 +210,8 @@ TEST_P(SublevelManagerTest, SetSublevel) {
 }
 
 TEST_P(SublevelManagerTest, GetSublevel) {
-  std::unique_ptr<Widget> root = CreateTestWidget();
+  std::unique_ptr<Widget> root =
+      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   std::unique_ptr<Widget> child1, child2;
 
   child1 =
@@ -224,7 +229,8 @@ TEST_P(SublevelManagerTest, GetSublevel) {
 // The stacking order between non-sibling widgets depend on the sublevels
 // of the children of their most recent common ancestor.
 TEST_P(SublevelManagerTest, GrandChildren) {
-  std::unique_ptr<Widget> root = CreateTestWidget();
+  std::unique_ptr<Widget> root =
+      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   std::unique_ptr<Widget> children[2];
   std::unique_ptr<Widget> grand_children[2][2];
 
@@ -256,8 +262,10 @@ TEST_P(SublevelManagerTest, GrandChildren) {
 
 // The sublevel manager should be able to handle the Widget re-parenting.
 TEST_P(SublevelManagerTest, WidgetReparent) {
-  std::unique_ptr<Widget> root1 = CreateTestWidget();
-  std::unique_ptr<Widget> root2 = CreateTestWidget();
+  std::unique_ptr<Widget> root1 =
+      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  std::unique_ptr<Widget> root2 =
+      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   std::unique_ptr<Widget> child;
 
   child =
@@ -282,7 +290,8 @@ TEST_P(SublevelManagerTest, WidgetReparent) {
 // stacking above them is no-op (crbug.com/1369180).
 // When they become invisible, sublevels should be respected.
 TEST_P(SublevelManagerTest, SkipInvisibleWidget) {
-  std::unique_ptr<Widget> root = CreateTestWidget();
+  std::unique_ptr<Widget> root =
+      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   std::unique_ptr<Widget> children[3];
 
   ShowWidget(root);

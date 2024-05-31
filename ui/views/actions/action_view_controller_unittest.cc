@@ -143,7 +143,8 @@ TEST_F(ActionViewControllerTest, TestActionViewDestroyed) {
 }
 
 TEST_F(ActionViewControllerTest, TriggerAction) {
-  std::unique_ptr<Widget> test_widget = CreateTestWidget();
+  std::unique_ptr<Widget> test_widget =
+      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   View* parent_view = test_widget->SetContentsView(std::make_unique<View>());
   MdTextButton* action_view =
       parent_view->AddChildView(std::make_unique<MdTextButton>());
@@ -195,7 +196,8 @@ TEST_F(ActionViewControllerTest, TestActionInvocationContext) {
   action_item->SetInvokeActionCallback(
       base::BindRepeating(invoke_action_callback));
 
-  std::unique_ptr<Widget> test_widget = CreateTestWidget();
+  std::unique_ptr<Widget> test_widget =
+      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   View* parent_view = test_widget->SetContentsView(std::make_unique<View>());
   TestActionButton* test_button =
       parent_view->AddChildView(std::make_unique<TestActionButton>());
@@ -211,7 +213,8 @@ TEST_F(ActionViewControllerTest, TestActionInvocationContext) {
 }
 
 TEST_F(ActionViewControllerTest, TestOnViewChanged) {
-  std::unique_ptr<Widget> test_widget = CreateTestWidget();
+  std::unique_ptr<Widget> test_widget =
+      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   View* parent_view = test_widget->SetContentsView(std::make_unique<View>());
   TestActionButton* test_view =
       parent_view->AddChildView(std::make_unique<TestActionButton>());

@@ -1893,7 +1893,8 @@ TEST_F(WidgetCaptureTest, DisableCaptureWidgetFromMousePress) {
 // Tests some grab/ungrab events. Only one Widget can have capture at any given
 // time.
 TEST_F(WidgetCaptureTest, GrabUngrab) {
-  auto top_level = CreateTestWidget();
+  auto top_level =
+      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   top_level->SetContentsView(std::make_unique<MouseView>());
 
   Widget* child1 = new Widget;

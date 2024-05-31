@@ -47,7 +47,8 @@ class WidgetFadeAnimatorTest : public test::WidgetTest {
  public:
   void SetUp() override {
     test::WidgetTest::SetUp();
-    widget_ = CreateTestWidget(Widget::InitParams::Type::TYPE_WINDOW);
+    widget_ = CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                               Widget::InitParams::Type::TYPE_WINDOW);
     delegate_ = std::make_unique<TestWidgetFadeAnimator>(widget_.get());
     delegate_->set_fade_in_duration(kFadeDuration);
     delegate_->set_fade_out_duration(kFadeDuration);

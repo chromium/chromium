@@ -101,7 +101,7 @@ class InteractiveViewsTestTest : public InteractiveViewsTest {
                                     .SetPreferredSize(gfx::Size(100, 100)))));
 
     // Create and show the test widget.
-    widget_ = CreateTestWidget();
+    widget_ = CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     widget_->SetContentsView(std::move(contents).Build());
     WidgetVisibleWaiter waiter(widget_.get());
     widget_->Show();

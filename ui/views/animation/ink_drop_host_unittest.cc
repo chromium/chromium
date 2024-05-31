@@ -374,7 +374,7 @@ class InkDropInWidgetTest : public ViewsTestBase {
  protected:
   void SetUp() override {
     ViewsTestBase::SetUp();
-    widget_ = CreateTestWidget();
+    widget_ = CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     view_ =
         widget_->SetContentsView(std::make_unique<BasicTestViewWithInkDrop>());
   }
@@ -436,7 +436,7 @@ class InkDropHostAttentionTest : public ViewsTestBase {
     InkDrop::Install(host_view_.get(),
                      std::make_unique<InkDropHost>(host_view_.get()));
     ink_drop_host_ = InkDrop::Get(host_view_.get());
-    widget_ = CreateTestWidget();
+    widget_ = CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     ink_drop_host_test_api_ =
         std::make_unique<InkDropHostTestApi>(ink_drop_host_);
 

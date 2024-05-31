@@ -29,7 +29,7 @@ class ProgressBarTest : public ViewsTestBase {
   void SetUp() override {
     ViewsTestBase::SetUp();
 
-    widget_ = CreateTestWidget();
+    widget_ = CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     container_view_ = widget_->SetContentsView(std::make_unique<View>());
     auto* layout =
         container_view_->SetLayoutManager(std::make_unique<FlexLayout>());

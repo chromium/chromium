@@ -60,7 +60,7 @@ class TextfieldTest : public ViewsTestBase, public TextfieldController {
   T* PrepareTextfields(int count,
                        std::unique_ptr<T> textfield_owned,
                        gfx::Rect bounds) {
-    widget_ = CreateTestWidget();
+    widget_ = CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     widget_->SetBounds(bounds);
 
     View* container = widget_->SetContentsView(std::make_unique<View>());

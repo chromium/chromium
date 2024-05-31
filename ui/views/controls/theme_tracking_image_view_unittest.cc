@@ -30,7 +30,7 @@ class ThemeTrackingImageViewTest : public ViewsTestBase {
  public:
   void SetUp() override {
     ViewsTestBase::SetUp();
-    widget_ = CreateTestWidget();
+    widget_ = CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   }
 
   void TearDown() override {

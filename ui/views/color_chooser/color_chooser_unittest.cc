@@ -53,7 +53,9 @@ class ColorChooserTest : public views::ViewsTestBase {
     auto* view = delegate->TransferOwnershipOfContentsView();
 
     view->SetBounds(0, 0, 400, 300);
-    widget_ = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                         views::Widget::InitParams::TYPE_WINDOW);
     widget_->GetContentsView()->AddChildView(std::move(view));
     generator_ = std::make_unique<ui::test::EventGenerator>(
         views::GetRootWindow(widget_.get()), widget_->GetNativeWindow());

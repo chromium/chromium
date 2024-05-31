@@ -79,8 +79,10 @@ class SublevelManagerMacTest
 
 // Disabled widgets are ignored when its siblings are re-ordered.
 TEST_P(SublevelManagerMacTest, ExplicitUntrack) {
-  std::unique_ptr<Widget> root = CreateTestWidget();
-  std::unique_ptr<Widget> root2 = CreateTestWidget();
+  std::unique_ptr<Widget> root =
+      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  std::unique_ptr<Widget> root2 =
+      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   std::unique_ptr<Widget> children[3];
 
   ShowWidget(root);

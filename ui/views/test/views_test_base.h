@@ -98,7 +98,7 @@ class ViewsTestBase : public PlatformTest {
 
   // TODO(crbug.com/339619005): Remove once all uses are explicitly specifying
   // Widget ownership.
-  virtual std::unique_ptr<Widget> CreateTestWidget(
+  std::unique_ptr<Widget> CreateTestWidget(
       Widget::InitParams::Type type =
           Widget::InitParams::TYPE_WINDOW_FRAMELESS);
 

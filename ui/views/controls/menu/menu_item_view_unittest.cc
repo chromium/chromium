@@ -187,7 +187,7 @@ class TouchableMenuItemViewTest : public ViewsTestBase {
 
   void SetUp() override {
     ViewsTestBase::SetUp();
-    widget_ = CreateTestWidget();
+    widget_ = CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     widget_->Show();
 
     menu_delegate_ = std::make_unique<test::TestMenuDelegate>();
