@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/dcheck_is_on.h"
+#include "base/synchronization/lock_subtle.h"
 #include "mojo/core/ports/port.h"
 
 #if DCHECK_IS_ON()
@@ -37,6 +38,15 @@ PortLocker::PortLocker(const PortRef** port_refs, size_t num_ports)
   std::sort(
       port_refs_, port_refs_ + num_ports_,
       [](const PortRef* a, const PortRef* b) { return a->port() < b->port(); });
+
+  // This scope may bring the number of locks held on the thread above the
+  // fixed-sized thread local storage used by `GetLocksHeldByCurrentThread()`
+  // (this was observed with the
+  // "MessagePipeTest.DataPipeConsumerHandlePingPong" test but not in
+  // production). Disable tracking, at the cost of not being able to use these
+  // locks to guarantee mutual exclusion in `SequenceChecker`.
+  base::subtle::DoNotTrackLocks do_not_track_locks;
+
   for (size_t i = 0; i < num_ports_; ++i) {
     // TODO(crbug.com/40522227): Remove this CHECK.
     CHECK(port_refs_[i]->port());

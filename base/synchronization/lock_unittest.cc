@@ -6,11 +6,19 @@
 
 #include <stdlib.h>
 
+#include <cstdint>
+
 #include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
+#include "base/synchronization/lock_subtle.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/platform_thread.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using testing::UnorderedElementsAre;
+using testing::UnorderedElementsAreArray;
 
 namespace base {
 
@@ -267,5 +275,72 @@ TEST_F(TryLockTest, CorrectlyCheckIsAcquired) {
     x_ = 5;
   }
 }
+
+#if DCHECK_IS_ON()
+
+TEST(LockTest, GetLocksHeldByCurrentThread) {
+  Lock lock_a;
+  Lock lock_b;
+  Lock lock_c;
+  const uintptr_t lock_a_ptr = reinterpret_cast<uintptr_t>(&lock_a);
+  const uintptr_t lock_b_ptr = reinterpret_cast<uintptr_t>(&lock_b);
+  const uintptr_t lock_c_ptr = reinterpret_cast<uintptr_t>(&lock_c);
+
+  EXPECT_THAT(subtle::GetLocksHeldByCurrentThread(), UnorderedElementsAre());
+  ReleasableAutoLock auto_lock_a(&lock_a);
+  EXPECT_THAT(subtle::GetLocksHeldByCurrentThread(),
+              UnorderedElementsAre(lock_a_ptr));
+  ReleasableAutoLock auto_lock_b(&lock_b);
+  EXPECT_THAT(subtle::GetLocksHeldByCurrentThread(),
+              UnorderedElementsAre(lock_a_ptr, lock_b_ptr));
+  auto_lock_a.Release();
+  EXPECT_THAT(subtle::GetLocksHeldByCurrentThread(),
+              UnorderedElementsAre(lock_b_ptr));
+  ReleasableAutoLock auto_lock_c(&lock_c);
+  EXPECT_THAT(subtle::GetLocksHeldByCurrentThread(),
+              UnorderedElementsAre(lock_b_ptr, lock_c_ptr));
+  auto_lock_c.Release();
+  EXPECT_THAT(subtle::GetLocksHeldByCurrentThread(),
+              UnorderedElementsAre(lock_b_ptr));
+  auto_lock_b.Release();
+  EXPECT_THAT(subtle::GetLocksHeldByCurrentThread(), UnorderedElementsAre());
+}
+
+TEST(LockTest, GetLocksHeldByCurrentThreadOverCapacity)
+// Thread-safety analysis doesn't handle the array of locks properly.
+NO_THREAD_SAFETY_ANALYSIS {
+  constexpr size_t kHeldLocksCapacity = 10;
+  std::array<Lock, kHeldLocksCapacity + 1> locks;
+
+  for (size_t i = 0; i < kHeldLocksCapacity; ++i) {
+    locks[i].Acquire();
+  }
+
+  EXPECT_DCHECK_DEATH({
+    locks[kHeldLocksCapacity].Acquire();
+    locks[kHeldLocksCapacity].Release();
+  });
+
+  for (size_t i = 0; i < kHeldLocksCapacity; ++i) {
+    locks[i].Release();
+
+    std::vector<uintptr_t> expected_locks;
+    for (size_t j = i + 1; j < kHeldLocksCapacity; ++j) {
+      expected_locks.push_back(reinterpret_cast<uintptr_t>(&locks[j]));
+    }
+
+    EXPECT_THAT(subtle::GetLocksHeldByCurrentThread(),
+                UnorderedElementsAreArray(expected_locks));
+  }
+}
+
+TEST(LockTest, DoNotTrackLocks) {
+  Lock lock;
+  subtle::DoNotTrackLocks do_not_track_locks;
+  AutoLock auto_lock(lock);
+  EXPECT_TRUE(subtle::GetLocksHeldByCurrentThread().empty());
+}
+
+#endif  // DCHECK_IS_ON()
 
 }  // namespace base
