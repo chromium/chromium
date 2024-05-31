@@ -149,11 +149,7 @@ void OfferNotificationBubbleViews::InitWithFreeListingCouponOfferContent() {
 
   auto dialog_insets =
       ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-          views::DialogContentType::kText, views::DialogContentType::kText);
-  if (::features::IsChromeRefresh2023()) {
-    dialog_insets = ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-        views::DialogContentType::kControl, views::DialogContentType::kText);
-  }
+          views::DialogContentType::kControl, views::DialogContentType::kText);
   set_margins(
       gfx::Insets::TLBR(dialog_insets.top(), 0, dialog_insets.bottom(), 0));
 
@@ -177,75 +173,37 @@ OfferNotificationBubbleViews::CreateFreeListingCouponOfferMainPageContent(
   auto main_page_view = std::make_unique<views::View>();
 
   // Create bubble content:
-  if (::features::IsChromeRefresh2023()) {
-    gfx::Insets dialog_insets =
-        ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-            views::DialogContentType::kControl,
-            views::DialogContentType::kText);
+  gfx::Insets dialog_insets =
+      ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
+          views::DialogContentType::kControl, views::DialogContentType::kText);
 
-    auto* layout =
-        main_page_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kVertical,
-            gfx::Insets::TLBR(0, dialog_insets.left(), 0,
-                              dialog_insets.right()),
-            ChromeLayoutProvider::Get()->GetDistanceMetric(
-                views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
-    layout->set_cross_axis_alignment(
-        views::BoxLayout::CrossAxisAlignment::kStart);
-  } else {
-    auto dialog_insets =
-        ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-            views::DialogContentType::kText, views::DialogContentType::kText);
-
-    auto* layout =
-        main_page_view->SetLayoutManager(std::make_unique<views::FlexLayout>());
-    layout->SetOrientation(views::LayoutOrientation::kVertical)
-        .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-        .SetIgnoreDefaultMainAxisMargins(true)
-        .SetCollapseMargins(true)
-        .SetDefault(
-            views::kMarginsKey,
-            gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
-                            dialog_insets.left()))
-        .SetDefault(
-            views::kFlexBehaviorKey,
-            views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                                     views::MaximumFlexSizeRule::kPreferred,
-                                     /*adjust_height_for_width*/ true));
-  }
+  auto* layout =
+      main_page_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical,
+          gfx::Insets::TLBR(0, dialog_insets.left(), 0, dialog_insets.right()),
+          ChromeLayoutProvider::Get()->GetDistanceMetric(
+              views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
 
   std::u16string promo_code_value_prop_string;
 
-  if (::features::IsChromeRefresh2023()) {
-    const int dialog_inset = views::LayoutProvider::Get()
-                                 ->GetInsetsMetric(views::INSETS_DIALOG)
-                                 .left();
-    const int dialog_width = views::LayoutProvider::Get()->GetDistanceMetric(
-        views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
-    auto promo_code_label_view_preferred_size =
-        gfx::Size(dialog_width - dialog_inset * 2, 0);
-    promo_code_label_view_ =
-        main_page_view->AddChildView(std::make_unique<PromoCodeLabelView>(
-            promo_code_label_view_preferred_size,
-            base::ASCIIToUTF16(offer.GetPromoCode()),
-            base::BindRepeating(
-                &OfferNotificationBubbleViews::OnPromoCodeButtonClicked,
-                base::Unretained(this))));
-    promo_code_value_prop_string = l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_PROMO_CODE_OFFERS_USE_THIS_CODE_TEXT);
-  } else {
-    promo_code_label_button_ =
-        main_page_view->AddChildView(std::make_unique<PromoCodeLabelButton>(
-            base::BindRepeating(
-                &OfferNotificationBubbleViews::OnPromoCodeButtonClicked,
-                base::Unretained(this)),
-            base::ASCIIToUTF16(offer.GetPromoCode())));
-    if (!offer.GetDisplayStrings().value_prop_text.empty()) {
-      promo_code_value_prop_string =
-          base::ASCIIToUTF16(offer.GetDisplayStrings().value_prop_text);
-    }
-  }
+  const int dialog_inset = views::LayoutProvider::Get()
+                               ->GetInsetsMetric(views::INSETS_DIALOG)
+                               .left();
+  const int dialog_width = views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+  auto promo_code_label_view_preferred_size =
+      gfx::Size(dialog_width - dialog_inset * 2, 0);
+  promo_code_label_view_ =
+      main_page_view->AddChildView(std::make_unique<PromoCodeLabelView>(
+          promo_code_label_view_preferred_size,
+          base::ASCIIToUTF16(offer.GetPromoCode()),
+          base::BindRepeating(
+              &OfferNotificationBubbleViews::OnPromoCodeButtonClicked,
+              base::Unretained(this))));
+  promo_code_value_prop_string = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_PROMO_CODE_OFFERS_USE_THIS_CODE_TEXT);
 
   auto expiration_date_text = l10n_util::GetStringFUTF16(
       IDS_DISCOUNT_EXPIRATION_DATE, TimeFormatShortDate(offer.GetExpiry()));
@@ -284,11 +242,6 @@ OfferNotificationBubbleViews::CreateFreeListingCouponOfferMainPageContent(
         terms_and_conditions_style_info);
   } else {
     promo_code_value_prop_label_->SetText(promo_code_value_prop_string);
-  }
-
-  if (!::features::IsChromeRefresh2023()) {
-    promo_code_value_prop_label_->SetProperty(views::kCrossAxisAlignmentKey,
-                                              views::LayoutAlignment::kStart);
   }
 
   UpdateButtonTooltipsAndAccessibleNames();
@@ -425,14 +378,8 @@ OfferNotificationBubbleViews::CreateFreeListingCouponOfferMainPageHeaderView() {
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
 
   return std::make_unique<ThemeTrackingNonAccessibleImageView>(
-      ::features::IsChromeRefresh2023()
-          ? *bundle.GetImageSkiaNamed(
-                IDR_AUTOFILL_OFFERS_LIGHT_CHROME_REFRESH_2023)
-          : *bundle.GetImageSkiaNamed(IDR_AUTOFILL_OFFERS),
-      ::features::IsChromeRefresh2023()
-          ? *bundle.GetImageSkiaNamed(
-                IDR_AUTOFILL_OFFERS_DARK_CHROME_REFRESH_2023)
-          : *bundle.GetImageSkiaNamed(IDR_AUTOFILL_OFFERS),
+      *bundle.GetImageSkiaNamed(IDR_AUTOFILL_OFFERS_LIGHT_CHROME_REFRESH_2023),
+      *bundle.GetImageSkiaNamed(IDR_AUTOFILL_OFFERS_DARK_CHROME_REFRESH_2023),
       base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
                           base::Unretained(this)));
 }
@@ -440,17 +387,12 @@ OfferNotificationBubbleViews::CreateFreeListingCouponOfferMainPageHeaderView() {
 std::unique_ptr<views::View>
 OfferNotificationBubbleViews::CreateFreeListingCouponOfferMainPageTitleView(
     const AutofillOfferData& offer) {
-  if (::features::IsChromeRefresh2023()) {
-    auto title_label = std::make_unique<views::Label>(
-        base::ASCIIToUTF16(offer.GetDisplayStrings().value_prop_text),
-        views::style::CONTEXT_DIALOG_TITLE);
-    title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    title_label->SetMultiLine(true);
-    return title_label;
-  }
-
-  return std::make_unique<TitleWithIconAndSeparatorView>(
-      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_G);
+  auto title_label = std::make_unique<views::Label>(
+      base::ASCIIToUTF16(offer.GetDisplayStrings().value_prop_text),
+      views::style::CONTEXT_DIALOG_TITLE);
+  title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_label->SetMultiLine(true);
+  return title_label;
 }
 
 void OfferNotificationBubbleViews::OpenFreeListingCouponOfferMainPage(

@@ -592,14 +592,9 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
       IDS_AUTOFILL_PROMO_CODE_OFFER_BUTTON_TOOLTIP_CLICKED);
   views::LabelButton* copy_promo_code_button;
 
-  if (::features::IsChromeRefresh2023()) {
-    copy_promo_code_button =
-        GetOfferNotificationBubbleViews()
-            ->promo_code_label_view_->GetCopyButtonForTesting();
-  } else {
-    copy_promo_code_button =
-        GetOfferNotificationBubbleViews()->promo_code_label_button_.get();
-  }
+  copy_promo_code_button =
+      GetOfferNotificationBubbleViews()
+          ->promo_code_label_view_->GetCopyButtonForTesting();
 
   EXPECT_EQ(normal_button_tooltip, copy_promo_code_button->GetTooltipText());
   EXPECT_EQ(copy_promo_code_button->GetText() + u" " + normal_button_tooltip,
@@ -641,22 +636,16 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
 
   views::LabelButton* copy_promo_code_button;
 
-  if (::features::IsChromeRefresh2023()) {
     copy_promo_code_button =
         GetOfferNotificationBubbleViews()
             ->promo_code_label_view_->GetCopyButtonForTesting();
     EXPECT_EQ(copy_promo_code_button->GetText(),
               l10n_util::GetStringUTF16(IDS_DISCOUNT_CODE_COPY_BUTTON_TEXT));
-  } else {
-    copy_promo_code_button =
-        GetOfferNotificationBubbleViews()->promo_code_label_button_.get();
-    EXPECT_EQ(copy_promo_code_button->GetText(), test_promo_code);
-  }
 
-  histogram_tester.ExpectBucketCount(
-      "Autofill.OfferNotificationBubblePromoCodeButtonClicked." +
-          GetSubhistogramNameForOfferType(),
-      true, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.OfferNotificationBubblePromoCodeButtonClicked." +
+            GetSubhistogramNameForOfferType(),
+        true, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
@@ -788,19 +777,12 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
   // Click on the omnibox icon to show the bubble and verify.
   SimulateClickOnIconAndReshowBubble();
-  if (::features::IsChromeRefresh2023()) {
-    auto* promo_code_label_view =
-        GetOfferNotificationBubbleViews()->promo_code_label_view_.get();
-    EXPECT_TRUE(promo_code_label_view);
-    EXPECT_EQ(base::ASCIIToUTF16(std::string_view(kDiscountCode)),
-              promo_code_label_view->GetPromoCodeLabelTextForTesting());
-  } else {
-    auto* promo_code_label_button =
-        GetOfferNotificationBubbleViews()->promo_code_label_button_.get();
-    EXPECT_TRUE(promo_code_label_button);
-    EXPECT_EQ(base::ASCIIToUTF16(std::string_view(kDiscountCode)),
-              promo_code_label_button->GetText());
-  }
+  auto* promo_code_label_view =
+      GetOfferNotificationBubbleViews()->promo_code_label_view_.get();
+  EXPECT_TRUE(promo_code_label_view);
+  EXPECT_EQ(base::ASCIIToUTF16(std::string_view(kDiscountCode)),
+            promo_code_label_view->GetPromoCodeLabelTextForTesting());
+
   EXPECT_EQ(nullptr,
             GetOfferNotificationBubbleViews()
                 ->promo_code_value_prop_label_->GetFirstLinkForTesting());
@@ -941,15 +923,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(IsIconVisible());
   EXPECT_TRUE(GetOfferNotificationBubbleViews());
 
-  if (::features::IsChromeRefresh2023()) {
-    auto* promo_code_label_view =
-        GetOfferNotificationBubbleViews()->promo_code_label_view_.get();
-    EXPECT_FALSE(promo_code_label_view);
-  } else {
-    auto* promo_code_label_button =
-        GetOfferNotificationBubbleViews()->promo_code_label_button_.get();
-    EXPECT_FALSE(promo_code_label_button);
-  }
+  auto* promo_code_label_view =
+      GetOfferNotificationBubbleViews()->promo_code_label_view_.get();
+  EXPECT_FALSE(promo_code_label_view);
 
   auto promo_code_styled_label =
       GetOfferNotificationBubbleViews()->promo_code_label_;
@@ -1088,19 +1064,11 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(IsIconVisible());
   EXPECT_TRUE(GetOfferNotificationBubbleViews());
 
-  if (::features::IsChromeRefresh2023()) {
-    auto* promo_code_label_view =
-        GetOfferNotificationBubbleViews()->promo_code_label_view_.get();
-    EXPECT_TRUE(promo_code_label_view);
-    EXPECT_EQ(base::ASCIIToUTF16(discount_code),
-              promo_code_label_view->GetPromoCodeLabelTextForTesting());
-  } else {
-    auto* promo_code_label_button =
-        GetOfferNotificationBubbleViews()->promo_code_label_button_.get();
-    EXPECT_TRUE(promo_code_label_button);
-    EXPECT_EQ(base::ASCIIToUTF16(discount_code),
-              promo_code_label_button->GetText());
-  }
+  auto* promo_code_label_view =
+      GetOfferNotificationBubbleViews()->promo_code_label_view_.get();
+  EXPECT_TRUE(promo_code_label_view);
+  EXPECT_EQ(base::ASCIIToUTF16(discount_code),
+            promo_code_label_view->GetPromoCodeLabelTextForTesting());
 
   auto promo_code_styled_label =
       GetOfferNotificationBubbleViews()->promo_code_label_;
