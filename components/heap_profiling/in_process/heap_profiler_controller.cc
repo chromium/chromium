@@ -49,10 +49,6 @@
 
 namespace heap_profiling {
 
-BASE_FEATURE(kHeapProfilerIncludeZero,
-             "HeapProfilerIncludeZero",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kHeapProfilerCentralControl,
              "HeapProfilerCentralControl",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -456,10 +452,6 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
   // Also summarize over all process types.
   base::UmaHistogramCounts100000("HeapProfiling.InProcess.SamplesPerSnapshot",
                                  samples.size());
-  if (!base::FeatureList::IsEnabled(kHeapProfilerIncludeZero) &&
-      samples.empty()) {
-    return;
-  }
 
   base::ModuleCache module_cache;
   metrics::CallStackProfileParams params(

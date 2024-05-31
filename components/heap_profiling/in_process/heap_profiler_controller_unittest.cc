@@ -605,8 +605,6 @@ struct FeatureTestParams {
   const ProcessTypeSet supported_processes;
   ChannelParams stable;
   ChannelParams nonstable;
-  // Whether HeapProfilerIncludeZero is enabled.
-  bool include_zero_feature_enabled = true;
   // Whether HeapProfilerCentralControl is enabled.
   bool central_control_feature_enabled = false;
   // Probabilities for snapshotting child processes. Only used of
@@ -682,10 +680,6 @@ std::vector<FeatureRefAndParams> FeatureTestParams::GetEnabledFeatures() const {
     enabled_features.push_back(
         FeatureRefAndParams(kHeapProfilerReporting, ToFieldTrialParams()));
   }
-  if (include_zero_feature_enabled) {
-    enabled_features.push_back(
-        FeatureRefAndParams(kHeapProfilerIncludeZero, {}));
-  }
   if (central_control_feature_enabled) {
     enabled_features.push_back(FeatureRefAndParams(
         kHeapProfilerCentralControl,
@@ -703,9 +697,6 @@ std::vector<FeatureRef> FeatureTestParams::GetDisabledFeatures() const {
   std::vector<FeatureRef> disabled_features;
   if (!feature_enabled) {
     disabled_features.push_back(FeatureRef(kHeapProfilerReporting));
-  }
-  if (!include_zero_feature_enabled) {
-    disabled_features.push_back(FeatureRef(kHeapProfilerIncludeZero));
   }
   if (!central_control_feature_enabled) {
     disabled_features.push_back(FeatureRef(kHeapProfilerCentralControl));
@@ -728,7 +719,6 @@ std::ostream& operator<<(std::ostream& os, const FeatureTestParams& params) {
   os << "nonstable/browser:" << params.stable.expect_browser_sample << ",";
   os << "nonstable/child:" << params.stable.expect_child_sample;
   os << "},";
-  os << "include_zero:" << params.include_zero_feature_enabled << ",";
   os << "central_control:" << params.central_control_feature_enabled;
   if (params.central_control_feature_enabled) {
     os << ",gpu-prob:" << params.gpu_snapshot_prob << ",";
@@ -968,6 +958,18 @@ TEST_P(HeapProfilerControllerTest, UnhandledProcess) {
   // processes, because they're not included in the per-process histograms that
   // are aggregated into it.
   histogram_tester_.ExpectTotalCount("HeapProfiling.InProcess.Enabled", 0);
+}
+
+TEST_P(HeapProfilerControllerTest, EmptyProfile) {
+  // Should save an empty profile even though no memory is allocated.
+  ScopedCallbacks callbacks = CreateScopedCallbacks(
+      /*expect_take_snapshot=*/true, /*expect_sampled_profile=*/true);
+  StartHeapProfiling(version_info::Channel::STABLE, ProcessType::kBrowser,
+                     /*expect_enabled=*/true,
+                     callbacks.first_snapshot_callback(),
+                     callbacks.collector_callback());
+  task_env().RunUntilQuit();
+  EXPECT_TRUE(sample_received_);
 }
 
 // Test the feature on various channels in the browser process.
@@ -1249,35 +1251,6 @@ TEST_P(HeapProfilerControllerProcessTest, ChildProcess) {
   EXPECT_EQ(sample_received_, GetParam().stable.expect_child_sample);
 }
 
-// Test the HeapProfilerIncludeZero feature.
-constexpr FeatureTestParams kIncludeZeroConfigs[] = {
-    {
-        .include_zero_feature_enabled = true,
-    },
-    {
-        .include_zero_feature_enabled = false,
-    },
-};
-
-using HeapProfilerControllerIncludeZeroTest = HeapProfilerControllerTest;
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         HeapProfilerControllerIncludeZeroTest,
-                         ::testing::ValuesIn(kIncludeZeroConfigs));
-
-TEST_P(HeapProfilerControllerIncludeZeroTest, EmptyProfile) {
-  // TakeSnapshot() is always called, but since no memory is allocated it will
-  // only save a profile if HeapProfilerIncludeZero is enabled.
-  ScopedCallbacks callbacks = CreateScopedCallbacks(
-      /*expect_take_snapshot=*/true, GetParam().include_zero_feature_enabled);
-  StartHeapProfiling(version_info::Channel::STABLE, ProcessType::kBrowser,
-                     /*expect_enabled=*/true,
-                     callbacks.first_snapshot_callback(),
-                     callbacks.collector_callback());
-  task_env().RunUntilQuit();
-  EXPECT_EQ(sample_received_, GetParam().include_zero_feature_enabled);
-}
-
 #if ENABLE_MULTIPROCESS_TESTS
 
 // Returns a lambda that can be called from a GMock matcher. It will return the
@@ -1309,7 +1282,6 @@ constexpr FeatureTestParams kMultipleChildConfigs[] = {
     {
         .supported_processes = {ProcessType::kBrowser, ProcessType::kGpu,
                                 ProcessType::kUtility, ProcessType::kRenderer},
-        .include_zero_feature_enabled = true,
         .central_control_feature_enabled = true,
         .renderer_snapshot_prob = 66,
         .utility_snapshot_prob = 50,

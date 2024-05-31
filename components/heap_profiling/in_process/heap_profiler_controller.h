@@ -26,11 +26,6 @@ class CommandLine;
 
 namespace heap_profiling {
 
-// If this is enabled, reports with 0 samples (from clients who allocated less
-// than the sampling rate threshold) will be uploaded so that they're included
-// in the average as 0 bytes allocated.
-BASE_DECLARE_FEATURE(kHeapProfilerIncludeZero);
-
 // If this is enabled, heap profiling in subprocesses is controlled centrally
 // from the browser process.
 BASE_DECLARE_FEATURE(kHeapProfilerCentralControl);
