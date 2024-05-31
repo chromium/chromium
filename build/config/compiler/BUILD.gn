@@ -647,6 +647,12 @@ config("compiler") {
     } else {
       cflags_cc += [ "/std:c++20" ]
     }
+    if (!is_clang) {
+      # Required for the __cplusplus macro definition to match the C++ version
+      # on MSVC. clang-cl defines it by default and doesn't need this flag.
+      # See: https://learn.microsoft.com/en-us/cpp/build/reference/zc-cplusplus
+      cflags_cc += [ "/Zc:__cplusplus" ]
+    }
   } else if (!is_nacl) {
     # TODO(mcgrathr) - the NaCl GCC toolchain doesn't support either
     # gnu11/gnu++11 or c11/c++11; we technically don't need this toolchain any
