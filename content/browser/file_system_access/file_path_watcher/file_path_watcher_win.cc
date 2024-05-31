@@ -38,6 +38,7 @@
 #include "base/win/object_watcher.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
+#include "content/browser/file_system_access/file_path_watcher/file_path_watcher_change_tracker.h"
 
 namespace content {
 namespace {
@@ -246,10 +247,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
 
   std::optional<CompletionIOPortThread::WatcherEntryId> watcher_id_;
 
-  // The type of watch requested.
-  Type type_ = Type::kNonRecursive;
-
-  bool target_exists_ = false;
+  std::optional<FilePathWatcherChangeTracker> change_tracker_;
 
   base::WeakPtrFactory<FilePathWatcherImpl> weak_factory_{this};
 };
@@ -462,10 +460,8 @@ bool FilePathWatcherImpl::WatchWithChangeInfo(
   set_task_runner(base::SequencedTaskRunner::GetCurrentDefault());
   callback_ = callback;
   target_ = path;
-  type_ = options.type;
 
-  base::File::Info file_info;
-  target_exists_ = GetFileInfo(target_, &file_info);
+  change_tracker_ = FilePathWatcherChangeTracker(target_, options.type);
 
   return SetupWatchHandleForTarget();
 }
@@ -492,6 +488,8 @@ base::Lock& FilePathWatcherImpl::GetWatchThreadLockForTest() {
 void FilePathWatcherImpl::BufferOverflowed() {
   // `this` may be deleted after `callback_` is run.
   callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/false);
+
+  change_tracker_->MayHaveMissedChanges();
 }
 
 void FilePathWatcherImpl::WatchedDirectoryDeleted(
@@ -513,11 +511,14 @@ void FilePathWatcherImpl::WatchedDirectoryDeleted(
     }
   }
 
-  bool target_was_deleted = target_exists_ || watched_path == target_;
+  bool target_was_deleted =
+      watched_path == target_ || change_tracker_->KnowTargetExists();
   if (target_was_deleted) {
     // `this` may be deleted after `callback_` is run.
     callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/false);
   }
+
+  change_tracker_->MayHaveMissedChanges();
 }
 
 void FilePathWatcherImpl::ProcessNotificationBatch(
@@ -527,17 +528,6 @@ void FilePathWatcherImpl::ProcessNotificationBatch(
   CHECK(!notification_batch.empty());
 
   auto self = weak_factory_.GetWeakPtr();
-
-  // Check whether the event applies to `target_` and notify the callback.
-  base::File::Info target_info;
-  bool target_exists_after_batch = GetFileInfo(target_, &target_info);
-
-  bool target_created_or_deleted = target_exists_after_batch != target_exists_;
-  target_exists_ = target_exists_after_batch;
-
-  // This keeps track of whether we just notified for a
-  // `FILE_ACTION_RENAMED_OLD_NAME`.
-  bool last_event_notified_for_old_name = false;
 
   auto sub_span = notification_batch.as_span();
   bool has_next_entry = true;
@@ -551,48 +541,16 @@ void FilePathWatcherImpl::ProcessNotificationBatch(
       sub_span = sub_span.subspan(file_notify_info.NextEntryOffset);
     }
 
-    DWORD change_type = file_notify_info.Action;
-
-    // A rename will generate two move events, but we only report it as one move
-    // event. So continue if we just reported a `FILE_ACTION_RENAMED_OLD_NAME`.
-    if (last_event_notified_for_old_name &&
-        change_type == FILE_ACTION_RENAMED_NEW_NAME) {
-      last_event_notified_for_old_name = false;
-      continue;
-    }
-    last_event_notified_for_old_name = false;
-
     base::FilePath change_path =
         watched_path.Append(std::basic_string_view<wchar_t>(
             file_notify_info.FileName,
             file_notify_info.FileNameLength / sizeof(wchar_t)));
 
-    // Ancestors of the `target_` are outside the watch scope.
-    if (change_path.IsParent(target_)) {
-      // Only report move events where the target was created or deleted.
-      if ((change_type != FILE_ACTION_RENAMED_NEW_NAME &&
-           change_type != FILE_ACTION_RENAMED_OLD_NAME) ||
-          !target_created_or_deleted) {
-        continue;
-      }
-    } else if (type_ == FilePathWatcher::Type::kNonRecursive &&
-               change_path != target_ && change_path.DirName() != target_) {
-      // For non recursive watches, only report events for the target or its
-      // direct children.
-      continue;
-    }
+    change_tracker_->AddChange(std::move(change_path), file_notify_info.Action);
+  }
 
-    if (change_type == FILE_ACTION_MODIFIED) {
-      // Don't report modified events for directories.
-      base::File::Info file_info;
-      if (GetFileInfo(change_path, &file_info) && file_info.is_directory) {
-        continue;
-      }
-    }
-
-    last_event_notified_for_old_name =
-        change_type == FILE_ACTION_RENAMED_OLD_NAME;
-
+  const int change_count = change_tracker_->PopChangeCount();
+  for (int i = 0; i < change_count; i++) {
     // `this` may be deleted after `callback_` is run.
     callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/false);
     if (!self) {

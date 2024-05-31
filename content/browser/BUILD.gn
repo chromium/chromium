@@ -2806,6 +2806,8 @@ source_set("browser") {
       "device_posture/device_posture_platform_provider_win.h",
       "device_posture/device_posture_registry_watcher_win.cc",
       "device_posture/device_posture_registry_watcher_win.h",
+      "file_system_access/file_path_watcher/file_path_watcher_change_tracker.cc",
+      "file_system_access/file_path_watcher/file_path_watcher_change_tracker.h",
       "file_system_access/file_path_watcher/file_path_watcher_win.cc",
       "font_access/font_enumeration_data_source_win.cc",
       "font_access/font_enumeration_data_source_win.h",
