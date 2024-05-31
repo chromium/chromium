@@ -431,8 +431,8 @@ DesktopNativeWidgetAura::tooltip_controller() {
 }
 
 void DesktopNativeWidgetAura::HandleActivationChanged(bool active) {
-  DCHECK(native_widget_delegate_);
-  if (!native_widget_delegate_->ShouldHandleNativeWidgetActivationChanged(
+  if (!native_widget_delegate_ ||
+      !native_widget_delegate_->ShouldHandleNativeWidgetActivationChanged(
           active)) {
     return;
   }
