@@ -408,7 +408,8 @@ void TabWebContentsDelegateAndroid::ExitPictureInPicture() {
   PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture();
 }
 
-bool TabWebContentsDelegateAndroid::IsBackForwardCacheSupported() {
+bool TabWebContentsDelegateAndroid::IsBackForwardCacheSupported(
+    content::WebContents& web_contents) {
   return true;
 }
 

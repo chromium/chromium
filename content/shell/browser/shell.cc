@@ -691,7 +691,7 @@ void Shell::EnumerateDirectory(WebContents* web_contents,
   }
 }
 
-bool Shell::IsBackForwardCacheSupported() {
+bool Shell::IsBackForwardCacheSupported(WebContents& web_contents) {
   return true;
 }
 

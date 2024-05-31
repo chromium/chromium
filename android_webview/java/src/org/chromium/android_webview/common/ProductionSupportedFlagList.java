@@ -853,7 +853,9 @@ public final class ProductionSupportedFlagList {
                         + " DevTools is attached or the request is for an ad request."),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_BACK_FORWARD_CACHE,
-                "Controls if back/forward cache is enabled."),
+                "Controls if back/forward cache is enabled. Note that it's also possible"
+                        + " to enable BFCache through AwSettings as well. If either of"
+                        + " the flag / setting is enabled, BFCache will be enabled"),
         Flag.baseFeature(
                 ContentFeatures.WEBVIEW_SUPPRESS_TAP_DURING_FLING, "Supress tap during fling."),
         Flag.baseFeature(

@@ -1167,7 +1167,10 @@ class MetricsWebContentsObserverBackForwardCacheTest
   }
 
   // content::WebContentsDelegate:
-  bool IsBackForwardCacheSupported() override { return true; }
+  bool IsBackForwardCacheSupported(
+      content::WebContents& web_contents) override {
+    return true;
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;

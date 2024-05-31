@@ -3838,7 +3838,9 @@ class RenderFrameHostManagerTestWithBackForwardCache
         GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
 
-  bool IsBackForwardCacheSupported() override { return true; }
+  bool IsBackForwardCacheSupported(WebContents& web_contents) override {
+    return true;
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

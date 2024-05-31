@@ -97,7 +97,7 @@ class FindTestWebContentsDelegate : public WebContentsDelegate {
                  const gfx::Rect& selection_rect,
                  int active_match_ordinal,
                  bool final_update) override;
-  bool IsBackForwardCacheSupported() override;
+  bool IsBackForwardCacheSupported(WebContents& web_contents) override;
 
   // Uses |message_loop_runner_| to wait for various things.
   void WaitFor(WaitingFor wait_for);

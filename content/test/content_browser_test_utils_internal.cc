@@ -806,7 +806,8 @@ BeforeUnloadBlockingDelegate::GetJavaScriptDialogManager(WebContents* source) {
   return this;
 }
 
-bool BeforeUnloadBlockingDelegate::IsBackForwardCacheSupported() {
+bool BeforeUnloadBlockingDelegate::IsBackForwardCacheSupported(
+    WebContents& web_contents) {
   return true;
 }
 

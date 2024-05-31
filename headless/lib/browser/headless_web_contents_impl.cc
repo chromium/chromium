@@ -203,7 +203,8 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
     DirectoryEnumerator::Start(path, std::move(listener));
   }
 
-  bool IsBackForwardCacheSupported() override {
+  bool IsBackForwardCacheSupported(
+      content::WebContents& web_contents) override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     return command_line->HasSwitch(switches::kEnableBackForwardCache);
   }

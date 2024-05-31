@@ -3106,7 +3106,10 @@ class DevToolsProtocolBackForwardCacheTest : public DevToolsProtocolTest {
   ~DevToolsProtocolBackForwardCacheTest() override = default;
 
   // content::WebContentsDelegate:
-  bool IsBackForwardCacheSupported() override { return true; }
+  bool IsBackForwardCacheSupported(
+      content::WebContents& web_contents) override {
+    return true;
+  }
 
   std::string Evaluate(const std::string& script,
                        const base::Location& location) {

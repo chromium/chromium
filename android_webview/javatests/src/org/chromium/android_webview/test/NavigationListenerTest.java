@@ -745,9 +745,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
     @Feature({"AndroidWebView", "NavigationListener"})
     @CommandLineFlags.Add({
         "enable-features=EnableNavigationListener",
-        "disable-features=WebViewBackForwardCache"
     })
     public void testNavigationHistoryNavigationBFCacheDisabled() throws Throwable {
+        mAwContents.getSettings().setBackForwardCacheEnabled(false);
         // Navigation #1: Set up the listener and navigate to `url`. This will create a new page and
         // an associated JsReplyProxy.
         final String url = mTestServer.getURL(PAGE_A);
@@ -824,8 +824,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView", "NavigationListener"})
-    @CommandLineFlags.Add({"enable-features=EnableNavigationListener,WebViewBackForwardCache"})
+    @CommandLineFlags.Add({"enable-features=EnableNavigationListener"})
     public void testNavigationHistoryNavigationBFCacheEnabled() throws Throwable {
+        mAwContents.getSettings().setBackForwardCacheEnabled(true);
         // Navigation #1: Set up the listener and navigate to `url`. This will create a new page and
         // an associated JsReplyProxy.
         final String url = mTestServer.getURL(PAGE_A);
@@ -890,9 +891,10 @@ public class NavigationListenerTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView", "NavigationListener"})
-    @CommandLineFlags.Add({"enable-features=EnableNavigationListener,WebViewBackForwardCache"})
+    @CommandLineFlags.Add({"enable-features=EnableNavigationListener"})
     public void testNavigationHistoryNavigationBFCacheEnabled_ListenerDisablesBFCache()
             throws Throwable {
+        mAwContents.getSettings().setBackForwardCacheEnabled(true);
         // Navigation #1: Set up the listener and navigate to `url`. This will create a new page and
         // an associated JsReplyProxy.
         final String url = mTestServer.getURL(PAGE_A);
@@ -970,8 +972,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView", "NavigationListener"})
-    @CommandLineFlags.Add({"enable-features=EnableNavigationListener,WebViewBackForwardCache"})
+    @CommandLineFlags.Add({"enable-features=EnableNavigationListener"})
     public void testNavigationHistoryNavigationToEvictedPageBFCacheEnabled() throws Throwable {
+        mAwContents.getSettings().setBackForwardCacheEnabled(true);
         // Navigation #1: Set up the listener and navigate to `url`. This will create a new page and
         // an associated JsReplyProxy.
         final String url = mTestServer.getURL(PAGE_A);

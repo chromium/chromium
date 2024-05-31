@@ -98,7 +98,7 @@ class TabWebContentsDelegateAndroid
   content::PictureInPictureResult EnterPictureInPicture(
       content::WebContents* web_contents) override;
   void ExitPictureInPicture() override;
-  bool IsBackForwardCacheSupported() override;
+  bool IsBackForwardCacheSupported(content::WebContents& web_contents) override;
   content::PreloadingEligibility IsPrerender2Supported(
       content::WebContents& web_contents) override;
   device::mojom::GeolocationContext* GetInstalledWebappGeolocationContext()

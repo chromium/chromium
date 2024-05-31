@@ -341,8 +341,11 @@ void AwWebContentsDelegate::UpdateUserGestureCarryoverInfo(
     intercept_navigation_delegate->OnResourceRequestWithGesture();
 }
 
-bool AwWebContentsDelegate::IsBackForwardCacheSupported() {
-  return base::FeatureList::IsEnabled(features::kWebViewBackForwardCache);
+bool AwWebContentsDelegate::IsBackForwardCacheSupported(
+    content::WebContents& web_contents) {
+  AwSettings* aw_settings = AwSettings::FromWebContents(&web_contents);
+  return base::FeatureList::IsEnabled(features::kWebViewBackForwardCache) ||
+         aw_settings->IsBackForwardCacheEnabled();
 }
 
 content::PreloadingEligibility AwWebContentsDelegate::IsPrerender2Supported(

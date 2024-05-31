@@ -112,7 +112,8 @@ void FindTestWebContentsDelegate::FindReply(WebContents* web_contents,
   }
 }
 
-bool FindTestWebContentsDelegate::IsBackForwardCacheSupported() {
+bool FindTestWebContentsDelegate::IsBackForwardCacheSupported(
+    WebContents& web_contents) {
   return true;
 }
 

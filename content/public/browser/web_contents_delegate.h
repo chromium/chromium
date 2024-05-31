@@ -723,7 +723,7 @@ class CONTENT_EXPORT WebContentsDelegate {
 
   // Return true if the back forward cache is supported. This is not an
   // indication that the cache will be used.
-  virtual bool IsBackForwardCacheSupported();
+  virtual bool IsBackForwardCacheSupported(WebContents& web_contents);
 
   // Returns PreloadingEligibility::kEligible if Prerender2 (see
   // content/browser/preloading/prerender/README.md for details) is supported.

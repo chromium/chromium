@@ -1611,7 +1611,7 @@ void Browser::ExitPictureInPicture() {
   PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture();
 }
 
-bool Browser::IsBackForwardCacheSupported() {
+bool Browser::IsBackForwardCacheSupported(content::WebContents& web_contents) {
   return true;
 }
 

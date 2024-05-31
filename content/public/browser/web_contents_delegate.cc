@@ -370,7 +370,8 @@ bool WebContentsDelegate::ShouldAllowLazyLoad() {
   return true;
 }
 
-bool WebContentsDelegate::IsBackForwardCacheSupported() {
+bool WebContentsDelegate::IsBackForwardCacheSupported(
+    WebContents& web_contents) {
   return false;
 }
 

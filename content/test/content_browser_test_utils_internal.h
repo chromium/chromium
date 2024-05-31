@@ -457,7 +457,7 @@ class BeforeUnloadBlockingDelegate : public JavaScriptDialogManager,
   JavaScriptDialogManager* GetJavaScriptDialogManager(
       WebContents* source) override;
 
-  bool IsBackForwardCacheSupported() override;
+  bool IsBackForwardCacheSupported(WebContents& web_contents) override;
 
   // JavaScriptDialogManager
 

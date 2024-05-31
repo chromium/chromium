@@ -10347,7 +10347,7 @@ bool WebContentsImpl::IsBackForwardCacheSupported() {
   if (!GetDelegate()) {
     return false;
   }
-  return GetDelegate()->IsBackForwardCacheSupported();
+  return GetDelegate()->IsBackForwardCacheSupported(*this);
 }
 
 FrameTree* WebContentsImpl::LoadingTree() {

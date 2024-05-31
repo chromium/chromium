@@ -33,7 +33,9 @@ class BackForwardCacheWebContentsDelegate : public WebContentsDelegate {
  public:
   BackForwardCacheWebContentsDelegate() = default;
 
-  bool IsBackForwardCacheSupported() override { return true; }
+  bool IsBackForwardCacheSupported(WebContents& web_contents) override {
+    return true;
+  }
 };
 
 }  // namespace

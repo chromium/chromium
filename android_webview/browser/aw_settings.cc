@@ -146,6 +146,10 @@ bool AwSettings::IsPrerender2Allowed() {
   return (spculative_loading_allowed_flags_ & PRERENDER_ENABLED);
 }
 
+bool AwSettings::IsBackForwardCacheEnabled() {
+  return bfcache_enabled_in_java_settings_;
+}
+
 void AwSettings::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
   delete this;
 }
@@ -222,6 +226,7 @@ void AwSettings::UpdateEverythingLocked(JNIEnv* env,
   UpdateMixedContentModeLocked(env, obj);
   UpdateAttributionBehaviorLocked(env, obj);
   UpdateSpeculativeLoadingAllowedLocked(env, obj);
+  UpdateBackForwardCacheEnabledLocked(env, obj);
 }
 
 void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
@@ -457,6 +462,24 @@ void AwSettings::UpdateSpeculativeLoadingAllowedLocked(
   if ((previous & AwSettings::PRERENDER_ENABLED) &&
       !(spculative_loading_allowed_flags_ & AwSettings::PRERENDER_ENABLED)) {
     web_contents()->CancelAllPrerendering();
+  }
+}
+
+void AwSettings::UpdateBackForwardCacheEnabledLocked(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  bool bfcache_enabled_by_feature_flag =
+      base::FeatureList::IsEnabled(features::kWebViewBackForwardCache);
+  bool previous_enabled =
+      bfcache_enabled_in_java_settings_ || bfcache_enabled_by_feature_flag;
+  bfcache_enabled_in_java_settings_ =
+      Java_AwSettings_getBackForwardCacheEnabled(env, obj);
+  bool current_enabled =
+      bfcache_enabled_in_java_settings_ || bfcache_enabled_by_feature_flag;
+
+  if (!current_enabled && previous_enabled && web_contents()) {
+    AwContents* contents = AwContents::FromWebContents(web_contents());
+    contents->FlushBackForwardCache(env);
   }
 }
 

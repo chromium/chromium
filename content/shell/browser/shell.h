@@ -178,7 +178,7 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   void EnumerateDirectory(WebContents* web_contents,
                           scoped_refptr<FileSelectListener> listener,
                           const base::FilePath& path) override;
-  bool IsBackForwardCacheSupported() override;
+  bool IsBackForwardCacheSupported(WebContents& contents) override;
   PreloadingEligibility IsPrerender2Supported(
       WebContents& web_contents) override;
   void UpdateInspectedWebContentsIfNecessary(

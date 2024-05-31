@@ -177,6 +177,10 @@ public class AwSettings {
     private int mSpeculativeLoadingAllowedFlags =
             SpeculativeLoadingAllowedFlags.SPECULATIVE_LOADING_DISABLED;
 
+    // Enabling this setting or the kWebViewBackForwardCache feature will enable BFCache
+    // in WebView.
+    private boolean mBackForwardCacheEnabled;
+
     private boolean mCSSHexAlphaColorEnabled;
     private boolean mScrollTopLeftInteropEnabled;
     private boolean mWillSuppressErrorPage;
@@ -314,6 +318,10 @@ public class AwSettings {
         void updateSpeculativeLoadingAllowedLocked() {
             runOnUiThreadBlockingAndLocked(() -> updateSpeculativeLoadingAllowedOnUiThreadLocked());
         }
+
+        void updateBackForwardCacheEnabled() {
+            runOnUiThreadBlockingAndLocked(() -> updateBackForwardCacheEnabledOnUiThreadLocked());
+        }
     }
 
     interface ZoomSupportChangeListener {
@@ -386,6 +394,7 @@ public class AwSettings {
             mIntegrityApiStatusConfig = new AwMediaIntegrityApiStatusConfig();
             mSpeculativeLoadingAllowedFlags =
                     SpeculativeLoadingAllowedFlags.SPECULATIVE_LOADING_DISABLED;
+            mBackForwardCacheEnabled = false;
         }
         // Defer initializing the native side until a native WebContents instance is set.
     }
@@ -429,18 +438,20 @@ public class AwSettings {
     private void flushBackForwardCacheOnUiThreadLocked() {
         synchronized (mAwSettingsLock) {
             WebContents contents = mWebContents;
-            mEventHandler.maybePostOnUiThread(() -> flushBackForwardCache(contents));
+            Boolean backForwardCacheEnabled = mBackForwardCacheEnabled;
+            mEventHandler.maybePostOnUiThread(
+                    () -> flushBackForwardCache(contents, backForwardCacheEnabled));
         }
     }
 
     private void flushBackForwardCache() {
         assert Thread.holdsLock(mAwSettingsLock);
-        flushBackForwardCache(mWebContents);
+        flushBackForwardCache(mWebContents, mBackForwardCacheEnabled);
     }
 
-    private void flushBackForwardCache(WebContents contents) {
+    private void flushBackForwardCache(WebContents contents, boolean backForwardCacheEnabled) {
         ThreadUtils.assertOnUiThread();
-        if (contents != null) {
+        if (contents != null && backForwardCacheEnabled) {
             AwContents awContents = AwContents.fromWebContents(contents);
             if (awContents != null) {
                 awContents.flushBackForwardCache();
@@ -1778,6 +1789,23 @@ public class AwSettings {
         }
     }
 
+    public void setBackForwardCacheEnabled(boolean enabled) {
+        if (TRACE) Log.i(TAG, "setBackForwardCacheEnabled = " + enabled);
+        synchronized (mAwSettingsLock) {
+            if (mBackForwardCacheEnabled != enabled) {
+                mBackForwardCacheEnabled = enabled;
+                mEventHandler.updateBackForwardCacheEnabled();
+            }
+        }
+    }
+
+    @CalledByNative
+    public boolean getBackForwardCacheEnabled() {
+        synchronized (mAwSettingsLock) {
+            return mBackForwardCacheEnabled;
+        }
+    }
+
     @ForceDarkMode
     public int getForceDarkMode() {
         synchronized (mAwSettingsLock) {
@@ -2079,6 +2107,15 @@ public class AwSettings {
         }
     }
 
+    private void updateBackForwardCacheEnabledOnUiThreadLocked() {
+        assert mEventHandler.mHandler != null;
+        ThreadUtils.assertOnUiThread();
+        if (mNativeAwSettings != 0) {
+            AwSettingsJni.get()
+                    .updateBackForwardCacheEnabledLocked(mNativeAwSettings, AwSettings.this);
+        }
+    }
+
     public void setEnterpriseAuthenticationAppLinkPolicyEnabled(boolean enabled) {
         synchronized (mAwSettingsLock) {
             mEventHandler.runOnUiThreadBlockingAndLocked(
@@ -2187,6 +2224,8 @@ public class AwSettings {
         void updateAllowFileAccessLocked(long nativeAwSettings, AwSettings caller);
 
         void updateSpeculativeLoadingAllowedLocked(long nativeAwSettings, AwSettings caller);
+
+        void updateBackForwardCacheEnabledLocked(long nativeAwSettings, AwSettings caller);
 
         boolean isForceDarkApplied(long nativeAwSettings, AwSettings caller);
 
