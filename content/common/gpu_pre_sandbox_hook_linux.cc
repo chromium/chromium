@@ -199,6 +199,8 @@ void AddArmMaliGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
   static const char kMali0Path[] = "/dev/mali0";
 
   permissions->push_back(BrokerFilePermission::ReadWrite(kMali0Path));
+  // Need to be able to dlopen libmali.so from libEGL.so.
+  permissions->push_back(BrokerFilePermission::ReadOnly(kLibMaliPath));
 
 #if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
   // Files needed for protected DMA allocations.
