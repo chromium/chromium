@@ -90,7 +90,6 @@ import org.chromium.chrome.browser.profiles.ProfileKeyedMap.ProfileSelection;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider;
-import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.tab.state.PersistedTabData;
@@ -664,11 +663,6 @@ public class ProcessInitializationHandler {
 
         // Record the saved restore state in a histogram
         tasks.add(ChromeBackupAgentImpl::recordRestoreHistogram);
-
-        tasks.add(
-                () -> {
-                    RevenueStats.getInstance().retrieveAndApplyTrackingIds();
-                });
 
         tasks.add(
                 () -> {
