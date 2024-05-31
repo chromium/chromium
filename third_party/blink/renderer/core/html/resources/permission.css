@@ -14,6 +14,7 @@ permission {
   box-sizing: border-box !important;
   border-radius: 3px;
   color: #000000;
+  cursor: pointer !important;
   display: inline-block;
   font-weight: normal;
   font-style: normal;
