@@ -74,21 +74,6 @@ class PasswordAuthView::LoginPasswordRow : public views::View {
 BEGIN_METADATA(PasswordAuthView, LoginPasswordRow)
 END_METADATA
 
-PasswordAuthView::TextfieldContentsChangedListener ::
-    TextfieldContentsChangedListener(SystemTextfield* textfield,
-                                     PasswordAuthView* password_auth_view)
-    : SystemTextfieldController(textfield),
-      password_auth_view_(password_auth_view) {}
-
-PasswordAuthView::TextfieldContentsChangedListener ::
-    ~TextfieldContentsChangedListener() = default;
-
-void PasswordAuthView::TextfieldContentsChangedListener::ContentsChanged(
-    views::Textfield* sender,
-    const std::u16string& new_contents) {
-  password_auth_view_->ContentsChanged(new_contents);
-}
-
 void PasswordAuthView::ConfigureRootLayout() {
   // Contains the password layout on the left and the submit button on the
   // right.
@@ -156,13 +141,8 @@ void PasswordAuthView::CreateAndConfigureTextfieldContainer() {
 
   login_textfield_->SetDelegate(this);
 
-  login_textfield_->set_controller(contents_changed_listener_.get());
   login_textfield_->SetPlaceholderText(
       l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_PASSWORD_PLACEHOLDER));
-
-  contents_changed_listener_ =
-      std::make_unique<TextfieldContentsChangedListener>(login_textfield_,
-                                                         this);
 
   password_row_layout_->SetFlexForView(textfield_container, 1);
 }
@@ -263,7 +243,7 @@ void PasswordAuthView::OnDisplayPasswordButtonPressed() {
       std::nullopt});
 }
 
-void PasswordAuthView::ContentsChanged(const std::u16string& new_contents) {
+void PasswordAuthView::OnContentsChanged(const std::u16string& new_contents) {
   // TODO(b/288692954): switch to variant-based implementation of event objects.
   dispatcher_->DispatchEvent(AuthPanelEventDispatcher::UserAction{
       AuthPanelEventDispatcher::UserAction::Type::

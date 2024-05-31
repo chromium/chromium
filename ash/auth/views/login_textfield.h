@@ -5,8 +5,11 @@
 #ifndef ASH_AUTH_VIEWS_LOGIN_TEXTFIELD_H_
 #define ASH_AUTH_VIEWS_LOGIN_TEXTFIELD_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/style/system_textfield.h"
+#include "ash/style/system_textfield_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
@@ -15,13 +18,15 @@ namespace ash {
 
 // A textfield that selects all text on focus and allows to switch between
 // show/hide password modes.
-class ASH_EXPORT LoginTextfield : public SystemTextfield {
+class ASH_EXPORT LoginTextfield : public SystemTextfield,
+                                  public SystemTextfieldController {
   METADATA_HEADER(LoginTextfield, SystemTextfield)
  public:
   class Delegate {
    public:
     virtual void OnTextfieldBlur() {}
     virtual void OnTextfieldFocus() {}
+    virtual void OnContentsChanged(const std::u16string& new_contents) {}
   };
 
   LoginTextfield();
@@ -33,6 +38,10 @@ class ASH_EXPORT LoginTextfield : public SystemTextfield {
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   void OnBlur() override;
   void OnFocus() override;
+
+  // SystemTextfieldController:
+  void ContentsChanged(Textfield* sender,
+                       const std::u16string& new_contents) override;
 
   // This is useful when the display password button is not shown. In such a
   // case, the login text field needs to define its size.

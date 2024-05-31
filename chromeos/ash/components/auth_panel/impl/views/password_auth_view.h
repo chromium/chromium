@@ -25,7 +25,6 @@ namespace views {
 
 class BoxLayout;
 class ImageView;
-class Textfield;
 class ToggleImageButton;
 
 }  // namespace views
@@ -84,25 +83,6 @@ class PasswordAuthView : public FactorAuthView,
   class LoginPasswordRow;
   class DisplayPasswordButton;
 
-  class TextfieldContentsChangedListener : public SystemTextfieldController {
-   public:
-    TextfieldContentsChangedListener(SystemTextfield* textfield,
-                                     PasswordAuthView* password_auth_view);
-    ~TextfieldContentsChangedListener() override;
-
-   private:
-    // views::TextfieldController:
-    void ContentsChanged(views::Textfield* sender,
-                         const std::u16string& new_contents) override;
-
-    raw_ptr<PasswordAuthView> password_auth_view_;
-  };
-
-  friend class TextfieldContentsChangedListener;
-  friend class AuthPanel::TestApi;
-
-  void ContentsChanged(const std::u16string& new_contents);
-
   void ConfigureRootLayout();
   void CreateAndConfigurePasswordRow();
   void CreateAndConfigureCapslockIcon();
@@ -120,6 +100,7 @@ class PasswordAuthView : public FactorAuthView,
   // LoginTextfield::Delegate:
   void OnTextfieldBlur() override;
   void OnTextfieldFocus() override;
+  void OnContentsChanged(const std::u16string& new_contents) override;
 
   raw_ptr<AuthPanelEventDispatcher, DanglingUntriaged> dispatcher_ = nullptr;
 
@@ -134,8 +115,6 @@ class PasswordAuthView : public FactorAuthView,
   raw_ptr<ArrowButtonView> submit_button_ = nullptr;
 
   raw_ptr<LoginTextfield> login_textfield_ = nullptr;
-
-  std::unique_ptr<TextfieldContentsChangedListener> contents_changed_listener_;
 
   base::CallbackListSubscription auth_factor_store_subscription_;
 

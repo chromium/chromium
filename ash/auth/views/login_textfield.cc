@@ -4,7 +4,11 @@
 
 #include "ash/auth/views/login_textfield.h"
 
+#include <string>
+
+#include "ash/style/ash_color_id.h"
 #include "ash/style/system_textfield.h"
+#include "ash/style/system_textfield_controller.h"
 #include "ash/style/typography.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -29,7 +33,8 @@ constexpr int kLogintTextfieldMaxWidthDp = 293;
 
 }
 
-LoginTextfield::LoginTextfield() : SystemTextfield(Type::kMedium) {
+LoginTextfield::LoginTextfield()
+    : SystemTextfield(Type::kMedium), SystemTextfieldController(this) {
   const gfx::FontList font_list =
       ash::TypographyProvider::Get()->ResolveTypographyToken(
           TypographyToken::kCrosBody2);
@@ -73,6 +78,12 @@ void LoginTextfield::OnFocus() {
   SystemTextfield::OnFocus();
   CHECK(delegate_);
   delegate_->OnTextfieldFocus();
+}
+
+void LoginTextfield::ContentsChanged(Textfield* sender,
+                                     const std::u16string& new_contents) {
+  CHECK(delegate_);
+  delegate_->OnContentsChanged(new_contents);
 }
 
 gfx::Size LoginTextfield::CalculatePreferredSize(
