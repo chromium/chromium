@@ -1052,7 +1052,7 @@ class TestScreenEnvironment {
     if ((virtual_display_util_ = display::test::VirtualDisplayUtil::TryCreate(
              display::Screen::GetScreen()))) {
       secondary_display_id_ = virtual_display_util_->AddDisplay(
-          1, display::test::VirtualDisplayUtil::k1920x1080);
+          1, display::test::VirtualDisplayUtil::k1024x768);
     } else {
       GTEST_SKIP() << "Skipping test; unavailable multi-screen support.";
     }
