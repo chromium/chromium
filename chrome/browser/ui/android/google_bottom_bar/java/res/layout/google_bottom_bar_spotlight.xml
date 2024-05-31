@@ -8,7 +8,6 @@ found in the LICENSE file.
 <!--TODO: move page_insights_icon to its own resource target-->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/google_bottom_bar_container"
     android:layout_width="match_parent"
     android:layout_height="@dimen/google_bottom_bar_height"
@@ -17,20 +16,6 @@ found in the LICENSE file.
     android:background="@color/google_bottom_bar_background_color"
     android:baselineAligned="false"
     android:orientation="horizontal">
-  <ImageButton
-      android:id="@+id/google_bottom_bar_page_insights_button"
-      android:layout_width="@dimen/google_bottom_bar_button_size"
-      android:layout_height="@dimen/google_bottom_bar_button_size"
-      android:scaleType="centerInside"
-      android:layout_gravity="center"
-      android:importantForAccessibility="yes"
-      android:contentDescription="@null"
-      android:visibility="visible"
-      android:padding="@dimen/google_bottom_bar_button_padding"
-      android:clickable="true"
-      android:focusable="true"
-      android:background="@drawable/bottom_button_ripple_effect"
-      android:src="@drawable/bottom_bar_page_insights_icon" />
   <LinearLayout
       android:id="@+id/google_bottom_bar_non_spotlit_buttons_container"
       android:layout_width="0dp"
@@ -39,48 +24,5 @@ found in the LICENSE file.
       android:layout_gravity="center_vertical"
       android:gravity="end"
       android:orientation="horizontal">
-    <ImageButton
-        android:id="@+id/google_bottom_bar_save_button"
-        android:layout_width="@dimen/google_bottom_bar_button_size"
-        android:layout_height="@dimen/google_bottom_bar_button_size"
-        android:scaleType="centerInside"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="@dimen/google_bottom_bar_button_padding"
-        android:importantForAccessibility="yes"
-        android:contentDescription="@null"
-        android:padding="@dimen/google_bottom_bar_button_padding"
-        android:clickable="true"
-        android:focusable="true"
-        android:background="@drawable/bottom_button_ripple_effect"
-        android:src="@drawable/bookmark" />
-    <ImageButton
-        android:id="@+id/google_bottom_bar_share_button"
-        android:layout_width="@dimen/google_bottom_bar_button_size"
-        android:layout_height="@dimen/google_bottom_bar_button_size"
-        android:scaleType="centerInside"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="@dimen/google_bottom_bar_button_padding"
-        android:importantForAccessibility="yes"
-        android:contentDescription="@null"
-        android:visibility="visible"
-        android:padding="@dimen/google_bottom_bar_button_padding"
-        android:clickable="true"
-        android:focusable="true"
-        android:background="@drawable/bottom_button_ripple_effect"
-        android:src="@drawable/ic_share_white_24dp" />
-    <ImageButton
-        android:id="@+id/google_bottom_bar_custom_button"
-        android:layout_width="@dimen/google_bottom_bar_button_size"
-        android:layout_height="@dimen/google_bottom_bar_button_size"
-        android:scaleType="centerInside"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="@dimen/google_bottom_bar_button_padding"
-        android:importantForAccessibility="yes"
-        android:contentDescription="@null"
-        android:visibility="gone"
-        android:padding="@dimen/google_bottom_bar_button_padding"
-        android:clickable="true"
-        android:focusable="true"
-        android:background="?attr/selectableItemBackground" />
   </LinearLayout>
 </LinearLayout>
