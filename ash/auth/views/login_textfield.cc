@@ -6,11 +6,11 @@
 
 #include "ash/style/system_textfield.h"
 #include "ash/style/typography.h"
-#include "ash/style/ash_color_id.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/font_list.h"
-#include "ui/views/border.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
 
 namespace ash {
@@ -32,7 +32,7 @@ constexpr int kLogintTextfieldMaxWidthDp = 293;
 LoginTextfield::LoginTextfield() : SystemTextfield(Type::kMedium) {
   const gfx::FontList font_list =
       ash::TypographyProvider::Get()->ResolveTypographyToken(
-          TypographyToken::kLegacyBody1);
+          TypographyToken::kCrosBody2);
 
   SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   set_placeholder_font_list(font_list);
@@ -51,8 +51,8 @@ LoginTextfield::LoginTextfield() : SystemTextfield(Type::kMedium) {
   SetBorder(nullptr);
 
   // Set the text colors.
-  SetTextColorId(kColorAshTextColorPrimary);
-  SetPlaceholderTextColorId(kColorAshTextColorSecondary);
+  SetTextColorId(cros_tokens::kCrosSysOnSurface);
+  SetPlaceholderTextColorId(cros_tokens::kCrosSysDisabled);
 }
 
 LoginTextfield::~LoginTextfield() = default;
