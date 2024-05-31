@@ -24,6 +24,15 @@ fuzzer_test("string_compare_fuzzer") {
   additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
 }
 
+fuzzer_test("string_compare_proto_fuzzer") {
+  sources = [ "string_compare_proto_fuzzer.cc" ]
+  deps = [
+    "//testing/libfuzzer/proto:string_compare_proto",
+    "//third_party/libprotobuf-mutator",
+  ]
+  additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+}
+
 fuzzer_test("courgette_fuzzer") {
   sources = [ "courgette_fuzzer.cc" ]
   deps = [

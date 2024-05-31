@@ -56,4 +56,8 @@ if (!is_cronet_build) {
   proto_library("url_proto") {
     sources = [ "url.proto" ]
   }
+
+  proto_library("string_compare_proto") {
+    sources = [ "string_compare.proto" ]
+  }
 }
