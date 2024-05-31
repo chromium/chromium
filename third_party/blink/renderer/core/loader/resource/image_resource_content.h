@@ -273,35 +273,38 @@ class CORE_EXPORT ImageResourceContent final
         : AutoReset(&content->is_add_remove_observer_prohibited_, true) {}
   };
 
+  Member<ImageResourceInfo> info_;
+
+  float device_pixel_ratio_header_value_ = 1.0;
+
+  scoped_refptr<blink::Image> image_;
+
+  base::TimeTicks discovery_time_;
+
+  HeapHashCountedSet<WeakMember<ImageResourceObserver>> observers_;
+  HeapHashCountedSet<WeakMember<ImageResourceObserver>> finished_observers_;
+
+  // Keep one-byte members together to avoid wasting space on padding.
+
   ResourceStatus content_status_ = ResourceStatus::kNotStarted;
 
   // Indicates if this resource's encoded image data can be purged and refetched
   // from disk cache to save memory usage. See crbug/664437.
-  bool is_refetchable_data_from_disk_cache_;
+  bool is_refetchable_data_from_disk_cache_ = true;
 
   mutable bool is_add_remove_observer_prohibited_ = false;
 
   Image::SizeAvailability size_available_ = Image::kSizeUnavailable;
 
-  Member<ImageResourceInfo> info_;
-
-  float device_pixel_ratio_header_value_;
-  bool has_device_pixel_ratio_header_value_;
-
-  scoped_refptr<blink::Image> image_;
+  bool has_device_pixel_ratio_header_value_ = false;
 
   bool allocated_external_memory_ = false;
 
-  bool is_broken_;
+  bool is_broken_ = false;
 
-  base::TimeTicks discovery_time_;
+  bool is_loaded_from_memory_cache_ = false;
 
-  bool is_loaded_from_memory_cache_;
-
-  bool is_preloaded_with_early_hints_;
-
-  HeapHashCountedSet<WeakMember<ImageResourceObserver>> observers_;
-  HeapHashCountedSet<WeakMember<ImageResourceObserver>> finished_observers_;
+  bool is_preloaded_with_early_hints_ = false;
 
 #if DCHECK_IS_ON()
   bool is_update_image_being_called_ = false;
