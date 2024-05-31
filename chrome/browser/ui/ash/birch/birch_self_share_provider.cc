@@ -89,12 +89,11 @@ void BirchSelfShareProvider::RequestBirchDataFetch() {
         model->GetEntryByGUID(guid);
     if (entry && !entry->IsOpened()) {
       ++active_tasks_;
-      GURL empty_favicon_url;
       const std::string entry_guid = entry->GetGUID();
       items_.emplace_back(
           base::UTF8ToUTF16(entry_guid), base::UTF8ToUTF16(entry->GetTitle()),
           entry->GetURL(), entry->GetSharedTime(),
-          base::UTF8ToUTF16(entry->GetDeviceName()), empty_favicon_url,
+          base::UTF8ToUTF16(entry->GetDeviceName()), GURL(),
           base::BindRepeating(&BirchSelfShareProvider::OnItemPressed,
                               weak_factory_.GetWeakPtr(), entry_guid));
       favicon_service->GetFaviconImageForPageURL(
@@ -119,12 +118,10 @@ void BirchSelfShareProvider::OnFavIconDataAvailable(
                            return item.guid() == u16_guid;
                          });
 
-  if (it != items_.end()) {
+  if (it != items_.end() && !image_result.image.IsEmpty()) {
     // TODO(b/333412417): Investigate why empty image result for tabs shared
     // from a macbook.
-    const GURL empty_icon_url = GURL();
-    it->set_favicon_url(image_result.image.IsEmpty() ? empty_icon_url
-                                                     : image_result.icon_url);
+    it->set_favicon_url(image_result.icon_url);
   }
 
   if (--(active_tasks_) == 0) {

@@ -651,7 +651,7 @@ BirchSelfShareItem::BirchSelfShareItem(const std::u16string& guid,
                                        const GURL& url,
                                        const base::Time& shared_time,
                                        const std::u16string& device_name,
-                                       GURL& favicon_url,
+                                       const GURL& favicon_url,
                                        base::RepeatingClosure callback)
     : BirchItem(title, GetSubtitle(device_name, shared_time)),
       guid_(guid),

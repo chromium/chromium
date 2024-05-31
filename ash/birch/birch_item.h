@@ -331,7 +331,7 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
                      const GURL& url,
                      const base::Time& shared_time,
                      const std::u16string& device_name,
-                     GURL& favicon_url,
+                     const GURL& favicon_url,
                      base::RepeatingClosure activation_callback);
   BirchSelfShareItem(BirchSelfShareItem&&);
   BirchSelfShareItem(const BirchSelfShareItem&);
