@@ -12166,6 +12166,24 @@
             ]
         }
     ],
+    "MediaFoundationBatchRead": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_200",
+                    "params": {
+                        "batch_read_count": "200"
+                    },
+                    "enable_features": [
+                        "MediaFoundationBatchRead"
+                    ]
+                }
+            ]
+        }
+    ],
     "MediaFoundationCameraUsageMonitoring": [
         {
             "platforms": [
