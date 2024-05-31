@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_navigation_throttle.h"
 
 #include "base/logging.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -32,13 +34,17 @@ TEST_F(LensOverlaySidePanelNavigationThrottleTest,
   auto* tester = content::RenderFrameHostTester::For(main_rfh());
   auto* child_frame = tester->AppendChild("results_frame");
   content::MockNavigationHandle handle(GURL(kValidSearchUrl), child_frame);
-  EXPECT_FALSE(LensOverlaySidePanelNavigationThrottle::MaybeCreateFor(&handle));
+  auto* theme_service = ThemeServiceFactory::GetForProfile(profile());
+  EXPECT_FALSE(LensOverlaySidePanelNavigationThrottle::MaybeCreateFor(
+      &handle, theme_service));
 }
 
 TEST_F(LensOverlaySidePanelNavigationThrottleTest,
        MaybeCreateThrottle_TopLevelNavigationFails) {
   content::MockNavigationHandle handle(GURL(kValidSearchUrl), main_rfh());
-  EXPECT_FALSE(LensOverlaySidePanelNavigationThrottle::MaybeCreateFor(&handle));
+  auto* theme_service = ThemeServiceFactory::GetForProfile(profile());
+  EXPECT_FALSE(LensOverlaySidePanelNavigationThrottle::MaybeCreateFor(
+      &handle, theme_service));
 }
 
 }  // namespace lens

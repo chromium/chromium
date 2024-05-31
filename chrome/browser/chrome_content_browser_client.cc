@@ -5330,9 +5330,15 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   }
 
   if (lens::features::IsLensOverlayEnabled()) {
-    MaybeAddThrottle(
-        lens::LensOverlaySidePanelNavigationThrottle::MaybeCreateFor(handle),
-        &throttles);
+    if (profile) {
+      if (ThemeService* theme_service =
+              ThemeServiceFactory::GetForProfile(profile)) {
+        MaybeAddThrottle(
+            lens::LensOverlaySidePanelNavigationThrottle::MaybeCreateFor(
+                handle, theme_service),
+            &throttles);
+      }
+    }
   }
 #endif
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_SIDE_PANEL_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_SIDE_PANEL_NAVIGATION_THROTTLE_H_
 
+#include "chrome/browser/themes/theme_service.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace lens {
@@ -18,7 +19,8 @@ class LensOverlaySidePanelNavigationThrottle
   // Static function that creates the navigation throttle for the provided
   // handle if eligible.
   static std::unique_ptr<content::NavigationThrottle> MaybeCreateFor(
-      content::NavigationHandle* handle);
+      content::NavigationHandle* handle,
+      ThemeService* theme_service);
 
   // NavigationThrottle overrides:
   ThrottleCheckResult WillStartRequest() override;
@@ -28,9 +30,13 @@ class LensOverlaySidePanelNavigationThrottle
 
  private:
   explicit LensOverlaySidePanelNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
+      content::NavigationHandle* navigation_handle,
+      ThemeService* theme_service);
 
   ThrottleCheckResult HandleSidePanelRequest();
+
+  // The theme service associated with the current profile.
+  raw_ptr<ThemeService> theme_service_;
 };
 }  // namespace lens
 

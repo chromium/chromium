@@ -31,9 +31,14 @@
     z-index: 101;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: #B3CEFB;
     border-radius: 12px;
     display: none;
+  }
+
+  /* TODO(b/328294049): Switch all hard-coded colors to CSS color tokens. */
+  :host-context([dark-mode]) .overlay {
+    background-color: #4B5C77;
   }
 
   :host(:hover) .overlay,
@@ -41,9 +46,12 @@
     display: flex;
   }
 
-  /* TODO(b/328294049): Switch color token once UX direction is set. */
   :host(:focus-visible) #container {
-    box-shadow: 0 0 0 3px var(--color-realbox-answer-icon-background);
+    box-shadow: 0 0 0 3px #4285F4;
+  }
+
+  :host-context([dark-mode]):host(:focus-visibile) #container {
+    box-shadow: 0 0 0 3px #8CB7FA;
   }
 
   #remove {

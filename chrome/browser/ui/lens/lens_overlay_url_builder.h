@@ -27,7 +27,8 @@ void AppendTranslateParamsToMap(std::map<std::string, std::string>& params,
                                 const std::string& query,
                                 const std::string& content_language);
 
-GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify);
+GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
+                                       bool use_dark_mode);
 
 GURL AppendSearchContextParamToURL(const GURL& url_to_modify,
                                    std::optional<GURL> page_url,

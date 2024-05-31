@@ -1701,8 +1701,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a url in the side panel should show the results page.
   const GURL first_search_url(
       "https://www.google.com/"
-      "search?cs=0&source=chrome.cr.menu&q=oranges&lns_fp=1&lns_mode=text"
-      "&gsc=1&hl=en-US");
+      "search?source=chrome.cr.menu&q=oranges&lns_fp=1&lns_mode=text"
+      "&gsc=1&hl=en-US&cs=0");
   controller->LoadURLInResultsFrame(first_search_url);
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
@@ -1723,8 +1723,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Loading a second url in the side panel should show the results page.
   const GURL second_search_url(
       "https://www.google.com/"
-      "search?cs=0&source=chrome.cr.menu&q=kiwi&lns_fp=1&lns_mode=text&gsc=1"
-      "&hl=en-US");
+      "search?source=chrome.cr.menu&q=kiwi&lns_fp=1&lns_mode=text&gsc=1"
+      "&hl=en-US&cs=0");
   // We can't use content::WaitForLoadStop here since the last navigation is
   // successful.
   content::TestNavigationObserver observer(
@@ -1800,8 +1800,8 @@ IN_PROC_BROWSER_TEST_F(
   // Issuing a text selection request should show the results page.
   const GURL first_search_url(
       "https://www.google.com/"
-      "search?cs=0&source=chrome.cr.menu&q=oranges&lns_fp=1&lns_mode=text"
-      "&gsc=1&hl=en-US");
+      "search?source=chrome.cr.menu&q=oranges&lns_fp=1&lns_mode=text"
+      "&gsc=1&hl=en-US&cs=0");
   controller->IssueTextSelectionRequestForTesting("oranges", 20, 200);
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
@@ -1824,8 +1824,8 @@ IN_PROC_BROWSER_TEST_F(
   // Issuing a region selection request should update the results page.
   const GURL second_search_url(
       "https://www.google.com/"
-      "search?cs=0&source=chrome.cr.menu&q=&lns_fp=1&lns_mode=un&gsc=1&"
-      "hl=en-US");
+      "search?source=chrome.cr.menu&q=&lns_fp=1&lns_mode=un&gsc=1&"
+      "hl=en-US&cs=0");
   // We can't use content::WaitForLoadStop here and below since the last
   // navigation was already successful.
   content::TestNavigationObserver second_search_observer(
@@ -1850,8 +1850,8 @@ IN_PROC_BROWSER_TEST_F(
   // Loading another url in the side panel should update the results page.
   const GURL third_search_url(
       "https://www.google.com/"
-      "search?cs=0&source=chrome.cr.menu&q=kiwi&lns_fp=1&lns_mode=text&gsc=1"
-      "&hl=en-US");
+      "search?source=chrome.cr.menu&q=kiwi&lns_fp=1&lns_mode=text&gsc=1"
+      "&hl=en-US&cs=0");
   content::TestNavigationObserver third_search_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->IssueTextSelectionRequestForTesting("kiwi", 1, 100);
