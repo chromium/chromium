@@ -80,6 +80,12 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
   // is obtained in the case of an iframe.
   gfx::PointF point = evt->AbsoluteLocation();
   point = layout_view->LocalToAbsolutePoint(point, kTraverseDocumentBoundaries);
+  // Convert to visual viewport space so that page scale factor is taken into
+  // consideration.
+  const VisualViewport& visual_viewport =
+      local_frame_->GetPage()->GetVisualViewport();
+  gfx::PointF point_visual_viewport =
+      visual_viewport.RootFrameToViewport(point);
 
   // Intersect with the visible viewport so that the presentation area can't
   // extend beyond the edges of the window or over the scrollbars. The frame
@@ -107,10 +113,11 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
     layout_view = layout_view->GetFrame()->OwnerLayoutObject()->View();
   }
 
-  border_box_rect_absolute.Intersect(PhysicalRect(
-      local_frame_->GetPage()->GetVisualViewport().VisibleContentRect()));
+  border_box_rect_absolute.Intersect(
+      PhysicalRect(visual_viewport.VisibleContentRect()));
 
   gfx::RectF area = gfx::RectF(border_box_rect_absolute);
+  area = visual_viewport.RootFrameToViewport(area);
 
   // This is used to know if the user starts inking with the pointer down or
   // not, so that we can stop drawing delegated ink trails as quickly as
@@ -127,10 +134,11 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
       !(evt->GetModifiers() & WebInputEvent::Modifiers::kLeftButtonDown);
 
   const double diameter_in_physical_pixels =
-      style->diameter() * layout_view->StyleRef().EffectiveZoom();
+      style->diameter() * layout_view->StyleRef().EffectiveZoom() *
+      local_frame_->GetPage()->PageScaleFactor();
   std::unique_ptr<gfx::DelegatedInkMetadata> metadata =
       std::make_unique<gfx::DelegatedInkMetadata>(
-          point, diameter_in_physical_pixels, color.Rgb(),
+          point_visual_viewport, diameter_in_physical_pixels, color.Rgb(),
           evt->PlatformTimeStamp(), area, is_hovering);
 
   TRACE_EVENT_WITH_FLOW1("delegated_ink_trails",

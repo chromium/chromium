@@ -251,6 +251,138 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport,
   expected_metadata.ExpectEqual(GetActualMetadata());
 }
 
+// Confirm that everything is still calculated correctly when the
+// PageScaleFactor is not 1. Numbers and color used were chosen arbitrarily.
+TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport,
+       NotDefaultPageScaleFactor) {
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    body {
+      margin: 0;
+    }
+    canvas {
+      width: 281px;
+      height: 190px;
+    }
+    </style>
+    <canvas id='canvas'></canvas>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  const float kCanvasWidth = 281.f;
+  const float kCanvasHeight = 190.f;
+
+  TestDelegatedInkMetadata expected_metadata;
+  const float kScale = 2.5;
+  if (!CanvasShouldBePastViewport()) {
+    SetWebViewSizeGreaterThanCanvas(kCanvasWidth * kScale,
+                                    kCanvasHeight * kScale);
+    expected_metadata = TestDelegatedInkMetadata(
+        gfx::RectF(0, 0, kCanvasWidth, kCanvasHeight), kScale);
+  } else {
+    SetWebViewSize();
+    expected_metadata.SetArea(
+        gfx::RectF(0, 0, GetViewportWidth(), GetViewportHeight()));
+  }
+  GetDocument().GetPage()->SetPageScaleFactor(kScale);
+
+  DelegatedInkTrailPresenter* presenter =
+      CreatePresenter(GetDocument().getElementById(AtomicString("canvas")),
+                      GetDocument().GetFrame());
+  DCHECK(presenter);
+
+  InkTrailStyle style;
+  style.setDiameter(101.5);
+  style.setColor("magenta");
+  expected_metadata.SetDiameter(style.diameter() * kScale);
+  expected_metadata.SetColor(SK_ColorMAGENTA);
+
+  DummyExceptionStateForTesting exception_state;
+  gfx::PointF pt(87, 113);
+  presenter->updateInkTrailStartPoint(
+      ToScriptStateForMainWorld(GetDocument().GetFrame()),
+      CreatePointerMoveEvent(pt, /*hovering*/ true), &style, exception_state);
+  expected_metadata.SetHovering(true);
+  pt.Scale(kScale);
+  expected_metadata.SetPoint(pt);
+
+  expected_metadata.ExpectEqual(GetActualMetadata());
+}
+
+// Confirm that everything is still calculated correctly when the
+// PageScaleFactor is not 1 and a scroll offset is applied.
+TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport,
+       NotDefaultPageScaleFactorNonZeroOffset) {
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    body {
+      margin: 0;
+    }
+    canvas {
+      width: 281px;
+      height: 190px;
+    }
+    </style>
+    <canvas id='canvas'></canvas>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  const float kCanvasWidth = 281.f;
+  const float kCanvasHeight = 190.f;
+  const float kOffsetX = 55.f;
+  const float kOffsetY = 41.f;
+  const float kScale = 2.5;
+
+  TestDelegatedInkMetadata expected_metadata;
+
+  if (!CanvasShouldBePastViewport()) {
+    SetWebViewSizeGreaterThanCanvas(kCanvasWidth * kScale,
+                                    kCanvasHeight * kScale);
+    expected_metadata = TestDelegatedInkMetadata(
+        gfx::RectF(0, 0, kCanvasWidth - kOffsetX, kCanvasHeight - kOffsetY),
+        kScale);
+  } else {
+    SetWebViewSize();
+    expected_metadata.SetArea(
+        gfx::RectF(0, 0, GetViewportWidth(), GetViewportHeight()));
+  }
+
+  GetDocument().GetPage()->SetPageScaleFactor(kScale);
+  WebView().SetVisualViewportOffset(gfx::PointF(kOffsetX, kOffsetY));
+
+  DelegatedInkTrailPresenter* presenter =
+      CreatePresenter(GetDocument().getElementById(AtomicString("canvas")),
+                      GetDocument().GetFrame());
+  DCHECK(presenter);
+
+  DummyExceptionStateForTesting exception_state;
+  InkTrailStyle style;
+  style.setDiameter(101.5);
+  style.setColor("magenta");
+  gfx::PointF pt(87, 113);
+  presenter->updateInkTrailStartPoint(
+      ToScriptStateForMainWorld(GetDocument().GetFrame()),
+      CreatePointerMoveEvent(pt, /*hovering*/ true), &style, exception_state);
+
+  gfx::PointF expected_point = pt;
+  expected_point.Offset(-kOffsetX, -kOffsetY);
+  expected_point.Scale(kScale);
+  expected_metadata.SetPoint(expected_point);
+  expected_metadata.SetHovering(true);
+  expected_metadata.SetDiameter(style.diameter() * kScale);
+  expected_metadata.SetColor(SK_ColorMAGENTA);
+
+  expected_metadata.ExpectEqual(GetActualMetadata());
+}
+
 // Confirm that the offset is correct. Numbers and color used were chosen
 // arbitrarily.
 TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport, CanvasNotAtOrigin) {
