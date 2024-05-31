@@ -223,29 +223,25 @@ source_set("authorization") {
 }
 
 source_set("breakpad") {
-  sources = [ "breakpad.h" ]
+  sources = [
+    "breakpad.h",
+    "breakpad_utils.cc",
+    "breakpad_utils.h",
+  ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [ "//base" ]
+  deps = [
+    ":remoting_base_version",
+    "//base",
+  ]
 
   if (is_linux || is_chromeos) {
-    sources += [
-      "breakpad_linux.cc",
-      "breakpad_utils_linux.cc",
-      "breakpad_utils_linux.h",
-    ]
-    deps += [
-      ":remoting_base_version",
-      "//third_party/breakpad:client",
-    ]
-  }
-
-  if (is_mac) {
+    sources += [ "breakpad_linux.cc" ]
+    deps += [ "//third_party/breakpad:client" ]
+  } else if (is_mac) {
     sources += [ "breakpad_mac.mm" ]
-  }
-
-  if (is_win) {
+  } else if (is_win) {
     sources += [ "breakpad_win.cc" ]
     deps += [ "//third_party/breakpad:breakpad_handler" ]
   }
@@ -429,12 +425,6 @@ source_set("unit_tests") {
 
   if (is_win || is_chromeos_ash) {
     deps += [ "//third_party/breakpad:client" ]
-  }
-
-  if (is_win) {
-    sources += [ "breakpad_win_unittest.cc" ]
-    deps += [ "//third_party/breakpad:breakpad_handler" ]
-    libs = [ "rpcrt4.lib" ]  # For UuidCreate in breakpad_win_unittest.cc.
   }
 }
 

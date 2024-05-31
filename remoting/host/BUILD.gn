@@ -38,7 +38,7 @@ group("all") {
       "//remoting/host/webauthn:remote_webauthn",
     ]
 
-    if (is_linux) {
+    if (is_linux || is_win) {
       deps += [ "//remoting/host/crash:remoting_crash_uploader" ]
     }
 
@@ -1234,15 +1234,13 @@ if (enable_me2me_host) {
     group("implementation") {
       deps = [
         ":main",
+        "//remoting/host/crash:crash_uploader_main",
         "//remoting/host/it2me:main",
         "//remoting/host/remote_open_url:main",
         "//remoting/host/setup:native_messaging_host_main",
         "//remoting/host/setup:start_host_main",
         "//remoting/host/webauthn:main",
       ]
-      if (is_linux) {
-        deps += [ "//remoting/host/crash:crash_uploader_main" ]
-      }
       if (is_win) {
         deps += [ "//remoting/host/security_key:main" ]
       }

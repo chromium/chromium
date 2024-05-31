@@ -15,7 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "mojo/core/embedder/embedder.h"
-#include "remoting/base/breakpad_utils_linux.h"
+#include "remoting/base/breakpad_utils.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "remoting/host/base/host_exit_codes.h"
@@ -69,7 +69,7 @@ int CrashUploaderMain(int argc, char** argv) {
 
   CrashDirectoryWatcher crash_directory_watcher;
   crash_directory_watcher.Watch(
-      base::FilePath(kMinidumpPath),
+      GetMinidumpDirectoryPath(),
       base::BindRepeating(&CrashFileUploader::Upload,
                           base::Unretained(&crash_file_uploader)));
 

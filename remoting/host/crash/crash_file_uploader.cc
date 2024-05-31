@@ -19,11 +19,12 @@
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "build/buildflag.h"
 #include "net/base/load_flags.h"
 #include "net/base/mime_util.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "remoting/base/breakpad_utils_linux.h"
+#include "remoting/base/breakpad_utils.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -40,7 +41,18 @@ constexpr char kProcessUptimeKey[] = "ptime";
 constexpr char kMinidumpFileKey[] = "upload_file_minidump";
 constexpr char kMinidumpFileName[] = "dump";
 
+#if BUILDFLAG(IS_WIN)
+constexpr char kProductNameValue[] = "Chromoting";
+#elif BUILDFLAG(IS_LINUX)
 constexpr char kProductNameValue[] = "Chromoting_Linux";
+#elif BUILDFLAG(IS_MAC)
+constexpr char kProductNameValue[] = "Chromoting_Mac";
+#else
+#error Platform not supported
+#endif
+
+const base::FilePath::CharType kDumpExtension[] = FILE_PATH_LITERAL("dmp");
+const base::FilePath::CharType kJsonExtension[] = FILE_PATH_LITERAL("json");
 
 constexpr char kCrashReportUploadUrl[] =
     "https://clients2.google.com/cr/report";
@@ -87,19 +99,23 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "Not implemented."
         })");
 
-base::FilePath GetCrashDirectoryPath(const std::string& crash_guid) {
-  return base::FilePath(kMinidumpPath).Append(crash_guid);
+base::FilePath GetCrashDirectoryPath(const base::FilePath& crash_guid) {
+  return GetMinidumpDirectoryPath().Append(crash_guid);
 }
 
-base::FilePath GetDumpFilePath(const std::string& crash_guid) {
-  return GetCrashDirectoryPath(crash_guid).Append(crash_guid + ".dmp");
+base::FilePath GetCrashFileBase(const base::FilePath& crash_guid) {
+  return GetCrashDirectoryPath(crash_guid).Append(crash_guid);
 }
 
-base::FilePath GetMetadataFilePath(const std::string& crash_guid) {
-  return GetCrashDirectoryPath(crash_guid).Append(crash_guid + ".json");
+base::FilePath GetDumpFilePath(const base::FilePath& crash_guid) {
+  return GetCrashFileBase(crash_guid).AddExtension(kDumpExtension);
 }
 
-bool RetrieveCrashReportDetails(const std::string& crash_guid,
+base::FilePath GetMetadataFilePath(const base::FilePath& crash_guid) {
+  return GetCrashFileBase(crash_guid).AddExtension(kJsonExtension);
+}
+
+bool RetrieveCrashReportDetails(const base::FilePath& crash_guid,
                                 std::string& minidump_file_contents,
                                 base::Value::Dict& metadata,
                                 std::string& error_reason) {
@@ -158,12 +174,13 @@ bool RetrieveCrashReportDetails(const std::string& crash_guid,
 void DeleteDumpFileAndWriteResult(const base::FilePath& crash_file,
                                   const std::string& result) {
   if (!base::DeleteFile(crash_file)) {
-    LOG(WARNING) << "Failed to delete minidump file: " << crash_file.value();
+    LOG(WARNING) << "Failed to delete minidump file: " << crash_file;
   }
 
-  base::FilePath result_file = crash_file.DirName().Append("upload_result.txt");
+  base::FilePath result_file =
+      crash_file.DirName().Append(FILE_PATH_LITERAL("upload_result.txt"));
   if (!base::WriteFile(result_file, result + "\r\n")) {
-    LOG(WARNING) << "Failed to write upload result to: " << result_file.value();
+    LOG(WARNING) << "Failed to write upload result to: " << result_file;
   }
 }
 
@@ -230,13 +247,13 @@ class CrashFileUploader::Core {
   Core& operator=(const Core&) = delete;
   ~Core();
 
-  void Upload(const std::string& crash_guid);
+  void Upload(const base::FilePath& crash_guid);
 
  private:
   using SimpleURLLoaderList =
       std::list<std::unique_ptr<network::SimpleURLLoader>>;
   void OnUploadComplete(SimpleURLLoaderList::iterator it,
-                        std::string crash_guid,
+                        base::FilePath crash_guid,
                         std::unique_ptr<std::string> response_body);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -257,12 +274,11 @@ CrashFileUploader::Core::~Core() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-void CrashFileUploader::Core::Upload(const std::string& crash_guid) {
+void CrashFileUploader::Core::Upload(const base::FilePath& crash_guid) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   base::FilePath crash_report_directory = GetCrashDirectoryPath(crash_guid);
-  LOG(INFO) << "Validating crash report files in "
-            << crash_report_directory.value();
+  LOG(INFO) << "Validating crash report files in " << crash_report_directory;
 
   if (!base::DirectoryExists(crash_report_directory)) {
     LOG(ERROR) << "Upload directory does not exist for report: " << crash_guid;
@@ -293,17 +309,19 @@ void CrashFileUploader::Core::Upload(const std::string& crash_guid) {
   simple_url_loader_ptr->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&CrashFileUploader::Core::OnUploadComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(it), crash_guid),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(it),
+                     std::move(crash_guid)),
       kMaxResponseSize);
 }
 
 void CrashFileUploader::Core::OnUploadComplete(
     SimpleURLLoaderList::iterator it,
-    std::string crash_guid,
+    base::FilePath crash_guid,
     std::unique_ptr<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   std::string upload_result;
+  base::FilePath crash_dump = crash_guid.AddExtension(kDumpExtension);
   if ((*it)->NetError() == net::OK) {
     std::string report_id = (response_body ? *response_body : "empty");
     // Result file format looks like:
@@ -312,14 +330,14 @@ void CrashFileUploader::Core::OnUploadComplete(
     upload_result =
         "report_id: " + report_id + "\r\n" + "http://go/crash/" + report_id;
     // Include the crash report id and go link in the host log.
-    LOG(INFO) << "Successfully uploaded: " << crash_guid << ".dmp\r\n"
+    LOG(INFO) << "Successfully uploaded: " << crash_dump << "\r\n"
               << "    report_id: " << report_id << "\r\n"
               << "    http://go/crash/" << report_id << "\r\n"
               << "    Please note that it may take a few minutes to finish "
               << "processing the report.";
   } else {
     auto response_code = (*it)->ResponseInfo()->headers->response_code();
-    LOG(ERROR) << "Failed to upload crash report: " << crash_guid << ".dmp"
+    LOG(ERROR) << "Failed to upload crash report: " << crash_dump
                << ", response_code: " << response_code;
     upload_result =
         "Upload failed, response code: " + base::NumberToString(response_code);
@@ -343,7 +361,7 @@ CrashFileUploader::~CrashFileUploader() {
   core_task_runner_->DeleteSoon(FROM_HERE, core_.release());
 }
 
-void CrashFileUploader::Upload(const std::string& crash_guid) {
+void CrashFileUploader::Upload(const base::FilePath& crash_guid) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   core_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&CrashFileUploader::Core::Upload,

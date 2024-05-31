@@ -6,7 +6,6 @@
 #define REMOTING_HOST_CRASH_CRASH_FILE_UPLOADER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
@@ -35,7 +34,7 @@ class CrashFileUploader {
   CrashFileUploader& operator=(const CrashFileUploader&) = delete;
   ~CrashFileUploader();
 
-  void Upload(const std::string& crash_guid);
+  void Upload(const base::FilePath& crash_guid);
 
  private:
   class Core;

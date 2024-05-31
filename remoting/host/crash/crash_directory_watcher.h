@@ -5,8 +5,6 @@
 #ifndef REMOTING_HOST_CRASH_CRASH_DIRECTORY_WATCHER_H_
 #define REMOTING_HOST_CRASH_CRASH_DIRECTORY_WATCHER_H_
 
-#include <string>
-
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/functional/callback.h"
@@ -18,11 +16,13 @@ namespace remoting {
 class CrashDirectoryWatcher {
  public:
   using UploadCallback =
-      base::RepeatingCallback<void(const std::string& crash_guid)>;
+      base::RepeatingCallback<void(const base::FilePath& crash_guid)>;
 
   CrashDirectoryWatcher();
+
   CrashDirectoryWatcher(const CrashDirectoryWatcher&) = delete;
   CrashDirectoryWatcher& operator=(const CrashDirectoryWatcher&) = delete;
+
   ~CrashDirectoryWatcher();
 
   void Watch(base::FilePath directory_to_watch, UploadCallback callback);
