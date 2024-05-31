@@ -53,8 +53,10 @@ class SVGImageTest : public testing::Test, private ScopedMockOverlayScrollbars {
 
   void LoadUsingFileName(const String& file_name) {
     String file_path = test::BlinkWebTestsDir() + file_name;
-    scoped_refptr<SharedBuffer> image_data = test::ReadFromFile(file_path);
-    EXPECT_TRUE(image_data.get() && image_data.get()->size());
+    std::optional<Vector<char>> data = test::ReadFromFile(file_path);
+    EXPECT_TRUE(data && data->size());
+    scoped_refptr<SharedBuffer> image_data =
+        SharedBuffer::Create(std::move(*data));
 
     observer_ = MakeGarbageCollected<PauseControlImageObserver>(true);
     image_ = SVGImage::Create(observer_);

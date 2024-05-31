@@ -205,7 +205,9 @@ class MHTMLArchiveTest : public testing::Test {
  private:
   scoped_refptr<SharedBuffer> ReadFile(const char* file_name) {
     String file_path = file_path_ + file_name;
-    return test::ReadFromFile(file_path);
+    std::optional<Vector<char>> data = test::ReadFromFile(file_path);
+    CHECK(data);
+    return SharedBuffer::Create(std::move(*data));
   }
 
   String file_path_;

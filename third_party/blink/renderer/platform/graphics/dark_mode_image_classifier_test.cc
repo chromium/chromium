@@ -32,8 +32,10 @@ class DarkModeImageClassifierTest : public testing::Test {
   scoped_refptr<BitmapImage> GetImage(const String& file_name) {
     SCOPED_TRACE(file_name);
     String file_path = test::BlinkWebTestsDir() + file_name;
-    scoped_refptr<SharedBuffer> image_data = test::ReadFromFile(file_path);
-    EXPECT_TRUE(image_data.get() && image_data.get()->size());
+    std::optional<Vector<char>> data = test::ReadFromFile(file_path);
+    CHECK(data && data->size());
+    scoped_refptr<SharedBuffer> image_data =
+        SharedBuffer::Create(std::move(*data));
 
     scoped_refptr<BitmapImage> image = BitmapImage::Create();
     image->SetData(image_data, true);

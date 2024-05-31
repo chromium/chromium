@@ -26,14 +26,12 @@ class FontDisplayAutoLCPAlignTestBase : public SimTest {
   }
 
   static Vector<char> ReadAhemWoff2() {
-    return test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-        ->CopyAs<Vector<char>>();
+    return *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"));
   }
 
   static Vector<char> ReadMaterialIconsWoff2() {
-    return test::ReadFromFile(
-               test::CoreTestDataPath("MaterialIcons-Regular.woff2"))
-        ->CopyAs<Vector<char>>();
+    return *test::ReadFromFile(
+        test::CoreTestDataPath("MaterialIcons-Regular.woff2"));
   }
 
  protected:
