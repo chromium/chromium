@@ -12,7 +12,6 @@
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/style/system_textfield_controller.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_factor_store.h"
@@ -24,6 +23,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -35,22 +35,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_class_properties.h"
-
-namespace {
-
-ui::ColorId GetEnabledIconColorId() {
-  const bool is_jelly = chromeos::features::IsJellyrollEnabled();
-  return is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-                  : ash::kColorAshIconColorPrimary;
-}
-
-ui::ColorId GetDisabledIconColorId() {
-  const bool is_jelly = chromeos::features::IsJellyrollEnabled();
-  return is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysDisabled)
-                  : ash::kColorAshIconPrimaryDisabledColor;
-}
-
-}  // namespace
 
 namespace ash {
 
@@ -73,32 +57,18 @@ class PasswordAuthView::LoginPasswordRow : public views::View {
 
  public:
   LoginPasswordRow() {
-    if (chromeos::features::IsJellyrollEnabled()) {
       SetBackground(views::CreateThemedRoundedRectBackground(
           cros_tokens::kCrosSysSystemBaseElevated,
           kLoginPasswordRowRoundedRectRadius));
       SetBorder(std::make_unique<views::HighlightBorder>(
           kLoginPasswordRowRoundedRectRadius,
           views::HighlightBorder::Type::kHighlightBorderNoShadow));
-    }
   }
 
   ~LoginPasswordRow() override = default;
   LoginPasswordRow(const LoginPasswordRow&) = delete;
   LoginPasswordRow& operator=(const LoginPasswordRow&) = delete;
 
-  // views::View:
-  void OnPaint(gfx::Canvas* canvas) override {
-    if (!chromeos::features::IsJellyrollEnabled()) {
-      views::View::OnPaint(canvas);
-      cc::PaintFlags flags;
-      flags.setStyle(cc::PaintFlags::kFill_Style);
-      flags.setColor(GetColorProvider()->GetColor(
-          kColorAshControlBackgroundColorInactive));
-      canvas->DrawRoundRect(GetContentsBounds(), kPasswordRowCornerRadiusDp,
-                            flags);
-    }
-  }
 };
 
 BEGIN_METADATA(PasswordAuthView, LoginPasswordRow)
@@ -167,9 +137,9 @@ void PasswordAuthView::CreateAndConfigureCapslockIcon() {
   capslock_icon_->SetVisible(false);
 
   capslock_icon_highlighted_ = ui::ImageModel::FromVectorIcon(
-      kLockScreenCapsLockIcon, GetEnabledIconColorId());
+      kLockScreenCapsLockIcon, cros_tokens::kCrosSysOnSurface);
   capslock_icon_blurred_ = ui::ImageModel::FromVectorIcon(
-      kLockScreenCapsLockIcon, GetDisabledIconColorId());
+      kLockScreenCapsLockIcon, cros_tokens::kCrosSysDisabled);
 }
 
 void PasswordAuthView::CreateAndConfigureTextfieldContainer() {
@@ -202,7 +172,7 @@ void PasswordAuthView::CreateAndConfigureSubmitButton() {
       base::BindRepeating(&PasswordAuthView::OnSubmitButtonPressed,
                           base::Unretained(this)),
       kSubmitButtonContentSizeDp));
-  submit_button_->SetBackgroundColorId(kColorAshControlBackgroundColorInactive);
+  submit_button_->SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase);
   submit_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
   submit_button_->SetAccessibleName(
@@ -226,11 +196,14 @@ void PasswordAuthView::CreateAndConfigureDisplayPasswordButton() {
       ->SetColorId(ui::kColorAshFocusRing);
 
   const ui::ImageModel invisible_icon = ui::ImageModel::FromVectorIcon(
-      kLockScreenPasswordInvisibleIcon, GetEnabledIconColorId(), kIconSizeDp);
+      kLockScreenPasswordInvisibleIcon, cros_tokens::kCrosSysOnSurface,
+      kIconSizeDp);
   const ui::ImageModel visible_icon = ui::ImageModel::FromVectorIcon(
-      kLockScreenPasswordVisibleIcon, GetEnabledIconColorId(), kIconSizeDp);
+      kLockScreenPasswordVisibleIcon, cros_tokens::kCrosSysOnSurface,
+      kIconSizeDp);
   const ui::ImageModel visible_icon_disabled = ui::ImageModel::FromVectorIcon(
-      kLockScreenPasswordVisibleIcon, GetDisabledIconColorId(), kIconSizeDp);
+      kLockScreenPasswordVisibleIcon, cros_tokens::kCrosSysDisabled,
+      kIconSizeDp);
   display_password_button_->SetImageModel(views::Button::STATE_NORMAL,
                                           visible_icon);
   display_password_button_->SetImageModel(views::Button::STATE_DISABLED,

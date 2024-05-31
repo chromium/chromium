@@ -15,6 +15,7 @@ include_rules = [
   "+chromeos/constants",
   "+ui/base",
   "+ui/color",
+  "+ui/chromeos/styles",
   "+ui/gfx",
   "+ui/views",
 ]
