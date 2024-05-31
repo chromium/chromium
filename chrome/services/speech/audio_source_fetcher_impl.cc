@@ -214,8 +214,11 @@ void AudioSourceFetcherImpl::SendAudioToSpeechRecognitionService(
 void AudioSourceFetcherImpl::SendAudioToResample(
     std::unique_ptr<media::AudioBus> audio_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  converter_->Push(std::move(audio_data));
-  DrainConverterOutput();
+  // `converter_` will be null if Stop() has been called.
+  if (converter_) {
+    converter_->Push(std::move(audio_data));
+    DrainConverterOutput();
+  }
 }
 
 void AudioSourceFetcherImpl::SendError() {
