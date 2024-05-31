@@ -195,6 +195,29 @@ void AdAuctionServiceImpl::JoinInterestGroup(
   bool report_result_only = !IsInterestGroupAPIAllowed(
       ContentBrowserClient::InterestGroupApiOperation::kJoin, group.owner);
 
+  // If the group is allowed, we also do a permissions/attestation check on
+  // trusted bidding signals URL, in case it's 3rd party.
+  if (!report_result_only && group.trusted_bidding_signals_url.has_value() &&
+      base::FeatureList::IsEnabled(
+          blink::features::kFledgePermitCrossOriginTrustedSignals)) {
+    url::Origin trusted_bidding_signals_origin =
+        url::Origin::Create(group.trusted_bidding_signals_url.value());
+    if (!trusted_bidding_signals_origin.IsSameOriginWith(group.owner) &&
+        !IsInterestGroupAPIAllowed(
+            ContentBrowserClient::InterestGroupApiOperation::kJoin,
+            trusted_bidding_signals_origin)) {
+      report_result_only = true;
+      render_frame_host().AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kWarning,
+          base::StringPrintf(
+              "joinAdInterestGroup of interest group with owner '%s' blocked "
+              "because it lacks attestation of cross-origin trusted signals "
+              "origin '%s' or that origin is disallowed by user preferences",
+              group.owner.Serialize().c_str(),
+              trusted_bidding_signals_origin.Serialize().c_str()));
+    }
+  }
+
   blink::InterestGroup updated_group = group;
   base::Time max_expiry = base::Time::Now() + kMaxExpiry;
   if (updated_group.expiry > max_expiry) {

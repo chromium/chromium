@@ -24158,15 +24158,21 @@ class InterestGroupCrossOriginTrustedSignalsBrowserTest
 
   void TestTrustedSellerSignals(bool expect_success,
                                 bool add_cors_header,
-                                bool add_script_header);
+                                bool add_script_header,
+                                bool attest_signals_origin);
 
   // Tries to run an auction which uses cross-site trusted bidding signals.
   // `add_cors_header` controls whether the signals JSON has an appropriate
   // Access-Control-Allow-Origin.
   //
+  // `attest_signals_origin` controls whether content_browser_client
+  // permits the origin trusted signals or not.
+  //
   // `expect_success` controls whether the test expects the auction to succeed
   // or not.
-  void TestTrustedBidderSignals(bool expect_success, bool add_cors_header);
+  void TestTrustedBidderSignals(bool expect_success,
+                                bool add_cors_header,
+                                bool attest_signals_origin);
 
  protected:
   base::test::ScopedFeatureList feature_list_;
@@ -24175,16 +24181,22 @@ class InterestGroupCrossOriginTrustedSignalsBrowserTest
 void InterestGroupCrossOriginTrustedSignalsBrowserTest::
     TestTrustedSellerSignals(bool expect_success,
                              bool add_cors_header,
-                             bool add_script_header) {
+                             bool add_script_header,
+                             bool attest_signals_origin) {
   // This test helper cares about kSellerSignals and kSeller being cross-origin.
   // Whether other origins are the same or different does not matter.
   const char kPublisher[] = "a.test";
   const char kBidder[] = "b.test";
   const char kSeller[] = "c.test";
-  const char kSellerSignals[] = "d.test";
+  const char kSellerSignals[] = "trusted-signals.d.test";
 
   GURL seller_signals_url = embedded_https_test_server().GetURL(
       kSellerSignals, "/trusted_scoring_signals.json");
+
+  if (attest_signals_origin) {
+    content_browser_client_->AddToAllowList(
+        {url::Origin::Create(seller_signals_url)});
+  }
 
   GURL ad_url = embedded_https_test_server().GetURL(
       kBidder, "/set-header?Supports-Loading-Mode: fenced-frame");
@@ -24207,6 +24219,15 @@ void InterestGroupCrossOriginTrustedSignalsBrowserTest::
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_https_test_server().GetURL(
                                  kPublisher, "/page_with_iframe.html")));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  if (!attest_signals_origin) {
+    console_observer.SetPattern(
+        "Worklet error: runAdAuction() auction with seller 'https://c.test:*' "
+        "failed because it lacks attestation of cross-origin trusted signals "
+        "origin 'https://trusted-signals.d.test:*' or that origin is "
+        "disallowed by user preferences");
+  }
 
   GURL seller_logic_url = embedded_https_test_server().GetURL(
       kSeller, "/interest_group/decision_logic_need_signals.js");
@@ -24280,16 +24301,22 @@ void InterestGroupCrossOriginTrustedSignalsBrowserTest::
   } else {
     EXPECT_EQ(nullptr, RunAuctionAndWait(config));
   }
+
+  if (!attest_signals_origin) {
+    EXPECT_TRUE(console_observer.Wait());
+  }
 }
 
 void InterestGroupCrossOriginTrustedSignalsBrowserTest::
-    TestTrustedBidderSignals(bool expect_success, bool add_cors_header) {
+    TestTrustedBidderSignals(bool expect_success,
+                             bool add_cors_header,
+                             bool attest_signals_origin) {
   // This test helper cares about kBidder and kBidderSignals being cross-origin.
   // Whether other origins are the same or different does not matter.
   const char kPublisher[] = "a.test";
   const char kBidder[] = "b.test";
   const char kSeller[] = "c.test";
-  const char kBidderSignals[] = "d.test";
+  const char kBidderSignals[] = "trusted-signals.d.test";
 
   GURL bidder_script_url = embedded_https_test_server().GetURL(
       kBidder, "/interest_group/cotbs_bidding_logic.js");
@@ -24297,22 +24324,45 @@ void InterestGroupCrossOriginTrustedSignalsBrowserTest::
   GURL bidder_signals_url = embedded_https_test_server().GetURL(
       kBidderSignals, "/trusted_bidding_signals.json");
 
+  if (attest_signals_origin) {
+    content_browser_client_->AddToAllowList(
+        {url::Origin::Create(bidder_signals_url)});
+  }
+
   GURL ad_url = embedded_https_test_server().GetURL(
       kBidder, "/set-header?Supports-Loading-Mode: fenced-frame");
 
   // Navigate to bidder site, and add an interest group.
   GURL bidder_url = embedded_https_test_server().GetURL(kBidder, "/echo");
   ASSERT_TRUE(NavigateToURL(shell(), bidder_url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  if (!attest_signals_origin) {
+    console_observer.SetPattern(
+        "joinAdInterestGroup of interest group with owner 'https://b.test:*' "
+        "blocked because it lacks attestation of cross-origin trusted signals "
+        "origin 'https://trusted-signals.d.test:*' or that origin is "
+        "disallowed by user preferences");
+  }
+
   url::Origin bidder_origin = url::Origin::Create(bidder_url);
-  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
-                          blink::TestInterestGroupBuilder(
-                              /*owner=*/bidder_origin,
-                              /*name=*/"cars")
-                              .SetBiddingUrl(bidder_script_url)
-                              .SetAds({{{ad_url, /*metadata=*/std::nullopt}}})
-                              .SetTrustedBiddingSignalsUrl(bidder_signals_url)
-                              .SetTrustedBiddingSignalsKeys({{"key1"}})
-                              .Build()));
+  auto ig = blink::TestInterestGroupBuilder(
+                /*owner=*/bidder_origin,
+                /*name=*/"cars")
+                .SetBiddingUrl(bidder_script_url)
+                .SetAds({{{ad_url, /*metadata=*/std::nullopt}}})
+                .SetTrustedBiddingSignalsUrl(bidder_signals_url)
+                .SetTrustedBiddingSignalsKeys({{"key1"}})
+                .Build();
+  if (attest_signals_origin) {
+    EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(ig));
+  } else {
+    // Can't actually tell the join failed, but it won't verify.
+    EXPECT_EQ(kSuccess, JoinInterestGroup(ig));
+    EXPECT_TRUE(console_observer.Wait());
+
+    // Auction will fail w/o an IG available.
+  }
 
   // Navigate to publisher.
   ASSERT_TRUE(
@@ -24394,19 +24444,29 @@ void InterestGroupCrossOriginTrustedSignalsBrowserTest::
 IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
                        SellerSignalsPermitted) {
   TestTrustedSellerSignals(/*expect_success=*/true, /*add_cors_header=*/true,
-                           /*add_script_header=*/true);
+                           /*add_script_header=*/true,
+                           /*attest_signals_origin=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
                        SellerSignalsNoCors) {
   TestTrustedSellerSignals(/*expect_success=*/false, /*add_cors_header=*/false,
-                           /*add_script_header=*/true);
+                           /*add_script_header=*/true,
+                           /*attest_signals_origin=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
                        SellerSignalsNoScriptHeader) {
   TestTrustedSellerSignals(/*expect_success=*/false, /*add_cors_header=*/true,
-                           /*add_script_header=*/false);
+                           /*add_script_header=*/false,
+                           /*attest_signals_origin=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
+                       SellerSignalsNoAttestation) {
+  TestTrustedSellerSignals(/*expect_success=*/false, /*add_cors_header=*/true,
+                           /*add_script_header=*/true,
+                           /*attest_signals_origin=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
@@ -24438,12 +24498,20 @@ IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
                        BidderSignalsCors) {
-  TestTrustedBidderSignals(/*expect_success=*/true, /*add_cors_header=*/true);
+  TestTrustedBidderSignals(/*expect_success=*/true, /*add_cors_header=*/true,
+                           /*attest_signals_origin=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
                        BidderSignalsNoCors) {
-  TestTrustedBidderSignals(/*expect_success=*/false, /*add_cors_header=*/false);
+  TestTrustedBidderSignals(/*expect_success=*/false, /*add_cors_header=*/false,
+                           /*attest_signals_origin=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
+                       BidderSignalsNoAttestation) {
+  TestTrustedBidderSignals(/*expect_success=*/false, /*add_cors_header=*/true,
+                           /*attest_signals_origin=*/false);
 }
 
 class AuctionConfigRealTimeReportingEnabledTest

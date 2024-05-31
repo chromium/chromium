@@ -2507,7 +2507,8 @@ void InterestGroupAuction::StartLoadInterestGroupsPhase(
   // If the seller can't participate in the auction, fail the auction.
   if (!is_interest_group_api_allowed_callback_.Run(
           ContentBrowserClient::InterestGroupApiOperation::kSell,
-          config_->seller)) {
+          config_->seller) ||
+      BlockDueToDisallowedCrossOriginTrustedSellerSignals()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -3788,6 +3789,40 @@ void InterestGroupAuction::MaybeLogPrivateAggregationWebFeatures(
         base::NotFatalUntil::M128);
   maybe_log_private_aggregation_web_features_callback_.Run(
       private_aggregation_requests);
+}
+
+bool InterestGroupAuction::
+    BlockDueToDisallowedCrossOriginTrustedSellerSignals() {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFledgePermitCrossOriginTrustedSignals)) {
+    return false;
+  }
+
+  if (!config_->trusted_scoring_signals_url.has_value()) {
+    return false;
+  }
+
+  url::Origin trusted_scoring_signals_origin =
+      url::Origin::Create(config_->trusted_scoring_signals_url.value());
+
+  if (config_->seller.IsSameOriginWith(trusted_scoring_signals_origin)) {
+    return false;
+  }
+
+  if (is_interest_group_api_allowed_callback_.Run(
+          ContentBrowserClient::InterestGroupApiOperation::kSell,
+          trusted_scoring_signals_origin)) {
+    return false;
+  }
+
+  errors_.push_back(base::StringPrintf(
+      "runAdAuction() auction with seller '%s' failed because it lacks "
+      "attestation of cross-origin trusted signals origin '%s' or that origin "
+      "is disallowed by user preferences",
+      config_->seller.Serialize().c_str(),
+      trusted_scoring_signals_origin.Serialize().c_str()));
+
+  return true;
 }
 
 const InterestGroupAuction::LeaderInfo& InterestGroupAuction::leader_info()
