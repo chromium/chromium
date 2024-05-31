@@ -711,12 +711,6 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Cellular device doesn't exist"/>
 </enum>
 
-<enum name="NetworkCellularESimInstallResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Inhibit failed"/>
-  <int value="2" label="Hermes install failed"/>
-</enum>
-
 <enum name="NetworkCellularESimProfileStatus">
   <int value="0" label="Active"/>
   <int value="1" label="ActiveWithPendingProfiles"/>
