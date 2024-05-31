@@ -234,13 +234,7 @@ PasswordCheckDelegate::PasswordCheckDelegate(
     PasswordsPrivateEventRouter* event_router)
     : profile_(profile),
       saved_passwords_presenter_(presenter),
-      insecure_credentials_manager_(presenter,
-                                    ProfilePasswordStoreFactory::GetForProfile(
-                                        profile,
-                                        ServiceAccessType::EXPLICIT_ACCESS),
-                                    AccountPasswordStoreFactory::GetForProfile(
-                                        profile,
-                                        ServiceAccessType::EXPLICIT_ACCESS)),
+      insecure_credentials_manager_(presenter),
       bulk_leak_check_service_adapter_(
           presenter,
           BulkLeakCheckServiceFactory::GetForProfile(profile_),

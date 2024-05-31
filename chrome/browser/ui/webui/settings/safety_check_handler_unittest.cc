@@ -260,7 +260,7 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
   password_manager::SavedPasswordsPresenter presenter_{
       &affiliation_service_, store_, /*account_store=*/nullptr};
   password_manager::InsecureCredentialsManager credentials_manager_{
-      &presenter_, store_, /*account_store=*/nullptr};
+      &presenter_};
 };
 
 class TestSafetyCheckExtensionService : public TestExtensionService {

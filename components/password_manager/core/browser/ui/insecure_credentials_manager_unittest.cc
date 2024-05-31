@@ -135,8 +135,7 @@ class InsecureCredentialsManagerTest : public testing::TestWithParam<bool> {
   affiliations::FakeAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
                                      /*account_store=*/nullptr};
-  InsecureCredentialsManager provider_{&presenter_, store_,
-                                       /*account_store=*/nullptr};
+  InsecureCredentialsManager provider_{&presenter_};
 };
 
 }  // namespace
@@ -1261,7 +1260,7 @@ TEST_F(InsecureCredentialsManagerTest, ReuseCheckUsesAffiliationInfo) {
   affiliations::MockAffiliationService mock_affiliation_service;
   SavedPasswordsPresenter presenter{&mock_affiliation_service, &store(),
                                     nullptr};
-  InsecureCredentialsManager provider{&presenter, &store(), nullptr};
+  InsecureCredentialsManager provider{&presenter};
   presenter.Init();
   RunUntilIdle();
 
@@ -1366,8 +1365,7 @@ class InsecureCredentialsManagerWithTwoStoresTest : public ::testing::Test {
   affiliations::FakeAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, profile_store_,
                                      account_store_};
-  InsecureCredentialsManager provider_{&presenter_, profile_store_,
-                                       account_store_};
+  InsecureCredentialsManager provider_{&presenter_};
 };
 }  // namespace
 

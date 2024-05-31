@@ -218,13 +218,7 @@ class PasswordCheckManager
 
   // Used to obtain the list of insecure credentials.
   password_manager::InsecureCredentialsManager insecure_credentials_manager_{
-      &saved_passwords_presenter_,
-      ProfilePasswordStoreFactory::GetForProfile(
-          profile_,
-          ServiceAccessType::EXPLICIT_ACCESS),
-      AccountPasswordStoreFactory::GetForProfile(
-          profile_,
-          ServiceAccessType::EXPLICIT_ACCESS)};
+      &saved_passwords_presenter_};
 
   // Adapter used to start, monitor and stop a bulk leak check.
   password_manager::BulkLeakCheckServiceAdapter

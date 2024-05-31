@@ -69,12 +69,8 @@ bool ChangeRequiresRerunningWeakCheck(const PasswordStoreChange& change) {
 }  // namespace
 
 InsecureCredentialsManager::InsecureCredentialsManager(
-    SavedPasswordsPresenter* presenter,
-    scoped_refptr<PasswordStoreInterface> profile_store,
-    scoped_refptr<PasswordStoreInterface> account_store)
-    : presenter_(presenter),
-      profile_store_(std::move(profile_store)),
-      account_store_(std::move(account_store)) {
+    SavedPasswordsPresenter* presenter)
+    : presenter_(presenter) {
   observed_saved_password_presenter_.Observe(presenter_.get());
 }
 
@@ -262,11 +258,6 @@ void InsecureCredentialsManager::NotifyInsecureCredentialsChanged() {
   for (auto& observer : observers_) {
     observer.OnInsecureCredentialsChanged();
   }
-}
-
-PasswordStoreInterface& InsecureCredentialsManager::GetStoreFor(
-    const PasswordForm& form) {
-  return form.IsUsingAccountStore() ? *account_store_ : *profile_store_;
 }
 
 }  // namespace password_manager
