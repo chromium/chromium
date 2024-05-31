@@ -106,6 +106,7 @@ android_library("javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.safety_hub"
   sources = [
+    "javatests/src/org/chromium/chrome/browser/safety_hub/FakeUnusedSitePermissionsBridge.java",
     "javatests/src/org/chromium/chrome/browser/safety_hub/SafetyHubTest.java",
   ]
   deps = [

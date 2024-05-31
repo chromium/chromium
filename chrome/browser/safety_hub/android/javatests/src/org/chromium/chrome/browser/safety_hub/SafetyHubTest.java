@@ -14,8 +14,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
@@ -23,7 +21,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -54,7 +51,8 @@ public final class SafetyHubTest {
 
     @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock public UnusedSitePermissionsBridge.Natives mUnusedPermissionsBridge;
+    private FakeUnusedSitePermissionsBridge mUnusedPermissionsBridge =
+            new FakeUnusedSitePermissionsBridge();
 
     @Before
     public void setUp() {
@@ -64,8 +62,8 @@ public final class SafetyHubTest {
     @Test
     @SmallTest
     public void testPermissionRegrant() {
-        when(mUnusedPermissionsBridge.getRevokedPermissions(any()))
-                .thenReturn(new PermissionsData[] {PERMISSIONS_DATA});
+        mUnusedPermissionsBridge.setPermissionsDataForReview(
+                new PermissionsData[] {PERMISSIONS_DATA});
         mPermissionsFragmentTestRule.startSettingsActivity();
 
         clickOnButtonNextToText(PERMISSIONS_DATA.getOrigin());

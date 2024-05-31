@@ -15,9 +15,10 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 public class SafetyHubPermissionsFragment extends ChromeBaseSettingsFragment
-        implements Preference.OnPreferenceClickListener {
+        implements Preference.OnPreferenceClickListener, UnusedSitePermissionsBridge.Observer {
     private static final String PERMISSIONS_LIST_PREFERENCE = "permissions_list";
 
+    private UnusedSitePermissionsBridge mUnusedSitePermissionsBridge;
     private PreferenceCategory mPermissionsListCategory;
 
     @Override
@@ -25,6 +26,8 @@ public class SafetyHubPermissionsFragment extends ChromeBaseSettingsFragment
         SettingsUtils.addPreferencesFromResource(this, R.xml.safety_hub_permissions_preferences);
         getActivity().setTitle(R.string.safety_hub_permissions_page_title);
 
+        mUnusedSitePermissionsBridge = UnusedSitePermissionsBridge.getForProfile(getProfile());
+        mUnusedSitePermissionsBridge.addObserver(this);
         mPermissionsListCategory = findPreference(PERMISSIONS_LIST_PREFERENCE);
     }
 
@@ -35,25 +38,31 @@ public class SafetyHubPermissionsFragment extends ChromeBaseSettingsFragment
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mUnusedSitePermissionsBridge.removeObserver(this);
+    }
+
+    @Override
     public boolean onPreferenceClick(@NonNull Preference preference) {
         if (preference instanceof SafetyHubPermissionsPreference) {
             PermissionsData permissionsData =
                     ((SafetyHubPermissionsPreference) preference).getPermissionsData();
-            UnusedSitePermissionsBridge.regrantPermissions(
-                    getProfile(), permissionsData.getOrigin());
-
-            // TODO(crbug.com/324562205): Remove this once observers are added to the
-            // bridge.
-            mPermissionsListCategory.removePreference(preference);
+            mUnusedSitePermissionsBridge.regrantPermissions(permissionsData.getOrigin());
         }
         return false;
+    }
+
+    @Override
+    public void revokedPermissionsChanged() {
+        updatePreferenceList();
     }
 
     private void updatePreferenceList() {
         mPermissionsListCategory.removeAll();
 
         PermissionsData[] permissionsDataList =
-                UnusedSitePermissionsBridge.getRevokedPermissions(getProfile());
+                mUnusedSitePermissionsBridge.getRevokedPermissions();
         for (PermissionsData permissionsData : permissionsDataList) {
             SafetyHubPermissionsPreference preference =
                     new SafetyHubPermissionsPreference(getContext(), permissionsData);

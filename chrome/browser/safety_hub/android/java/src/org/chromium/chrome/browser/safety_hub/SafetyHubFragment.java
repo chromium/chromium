@@ -25,11 +25,14 @@ public class SafetyHubFragment extends ChromeBaseSettingsFragment
     private static final String PREF_UNUSED_PERMISSIONS = "permissions";
     private SafetyHubModuleDelegate mDelegate;
     private SettingsLauncher mSettingsLauncher;
+    private UnusedSitePermissionsBridge mUnusedSitePermissionsBridge;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.safety_hub_preferences);
         getActivity().setTitle(R.string.prefs_safety_check);
+
+        mUnusedSitePermissionsBridge = UnusedSitePermissionsBridge.getForProfile(getProfile());
 
         // Set up account-level password check preference.
         Preference passwordCheckPreference = findPreference(PREF_PASSWORDS);
@@ -73,7 +76,7 @@ public class SafetyHubFragment extends ChromeBaseSettingsFragment
         // Set up permissions preference.
         Preference permissionsPreference = findPreference(PREF_UNUSED_PERMISSIONS);
         int sitesWithUnusedPermissionsCount =
-                UnusedSitePermissionsBridge.getRevokedPermissions(getProfile()).length;
+                mUnusedSitePermissionsBridge.getRevokedPermissions().length;
 
         PropertyModel permissionsPropertyModel =
                 new PropertyModel.Builder(SafetyHubModuleProperties.PERMISSIONS_MODULE_KEYS)

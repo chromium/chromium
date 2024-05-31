@@ -7,16 +7,53 @@ package org.chromium.chrome.browser.safety_hub;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 
-public class UnusedSitePermissionsBridge {
-
-    static PermissionsData[] getRevokedPermissions(Profile profile) {
-        return UnusedSitePermissionsBridgeJni.get().getRevokedPermissions(profile);
+/** Java equivalent of unused_site_permissions_bridge.cc. */
+class UnusedSitePermissionsBridge {
+    interface Observer {
+        void revokedPermissionsChanged();
     }
 
-    static void regrantPermissions(Profile profile, String primaryPattern) {
-        UnusedSitePermissionsBridgeJni.get().regrantPermissions(profile, primaryPattern);
+    private static ProfileKeyedMap<UnusedSitePermissionsBridge> sProfileMap;
+
+    private final Profile mProfile;
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
+
+    static UnusedSitePermissionsBridge getForProfile(Profile profile) {
+        if (sProfileMap == null) {
+            sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
+        }
+        return sProfileMap.getForProfile(profile, UnusedSitePermissionsBridge::new);
+    }
+
+    UnusedSitePermissionsBridge(Profile profile) {
+        mProfile = profile;
+    }
+
+    void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
+    }
+
+    PermissionsData[] getRevokedPermissions() {
+        return UnusedSitePermissionsBridgeJni.get().getRevokedPermissions(mProfile);
+    }
+
+    void regrantPermissions(String primaryPattern) {
+        UnusedSitePermissionsBridgeJni.get().regrantPermissions(mProfile, primaryPattern);
+        notifyRevokedPermissionsChanged();
+    }
+
+    private void notifyRevokedPermissionsChanged() {
+        for (Observer observer : mObservers) {
+            observer.revokedPermissionsChanged();
+        }
     }
 
     @NativeMethods
