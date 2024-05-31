@@ -4162,6 +4162,10 @@ bool IsOobeLazyLoadingEnabled() {
 }
 
 bool IsOobeQuickStartEnabled() {
+  if (switches::IsRevenBranding()) {
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(kOobeQuickStart);
 }
 
