@@ -75,6 +75,9 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
+        'mixins': [
+          'skylab-cft',
+        ],
         'test_suites': {
           'skylab_tests': 'chromeos_brya_skylab_tests',
         },
@@ -6533,6 +6536,9 @@
       'chromeos-brya-chrome-dchecks-skylab': {
         'additional_compile_targets': [
           'chromiumos_preflight',
+        ],
+        'mixins': [
+          'skylab-cft',
         ],
         'test_suites': {
           'skylab_tests': 'chromeos_brya_skylab_tests',
