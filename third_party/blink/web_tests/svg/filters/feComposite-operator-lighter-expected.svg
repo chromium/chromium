@@ -1,0 +1,13 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+    <filter id="f" x="0" y="0" width="1" height="1" color-interpolation-filters="srcRGB">
+        <feOffset dx="0" dy="0" in="SourceGraphic"/>
+    </filter>
+    <!-- The test blends a red background with a green-to-blue gradient using the lighter blend
+         mode. That is equivalent to adding #f00 to those color positions, resulting in a gradient
+         from yellow to magenta. -->
+    <linearGradient id="y2m" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0" stop-color="#ff0"/>
+        <stop offset="1" stop-color="#f0f"/>
+    </linearGradient>
+    <rect width="200" height="200" fill="url(#y2m)" filter="url(#f)"/>
+</svg>

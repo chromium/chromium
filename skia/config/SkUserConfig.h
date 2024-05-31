@@ -233,10 +233,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_LEGACY_INITWITHPREV_LAYER_SIZING
 
-#define SK_DONT_PAD_LAYER_IMAGES
-
-#define GRAPHITE_USE_APPROX_FIT_FOR_FILTERS
-
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,

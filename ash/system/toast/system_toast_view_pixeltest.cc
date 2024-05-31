@@ -78,7 +78,7 @@ TEST_F(SystemToastViewPixelTest, WithLeadingIcon) {
       /*dismiss_callback=*/base::DoNothing(), /*leading_icon=*/kTestIcon));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/4, GetContentsView()));
+      "screenshot", /*revision_number=*/5, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, WithButton) {
@@ -86,7 +86,7 @@ TEST_F(SystemToastViewPixelTest, WithButton) {
       /*text=*/kTestText, /*dismiss_text=*/kTestButtonText));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/5, GetContentsView()));
+      "screenshot", /*revision_number=*/6, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, WithLeadingIconAndButton) {
