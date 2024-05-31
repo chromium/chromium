@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_selection_test.h"
 
 #include <iterator>
+#include <string_view>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
@@ -204,7 +206,7 @@ class AXSelectionDeserializer final {
   // Creates an accessibility tree rooted at the given HTML element from the
   // provided HTML snippet and returns |AXSelection| objects that can select the
   // parts of the tree indicated by the selection markers in the snippet.
-  const Vector<AXSelection> Deserialize(const std::string& html_snippet,
+  const Vector<AXSelection> Deserialize(const std::string_view& html_snippet,
                                         HTMLElement& element) {
     element.setInnerHTML(String::FromUTF8(html_snippet));
     element.GetDocument().View()->UpdateAllLifecyclePhasesForTest();
@@ -408,11 +410,8 @@ void AccessibilitySelectionTest::RunSelectionTest(
   const String test_path = test::AccessibilityTestDataPath(relative_path);
 
   const String test_file = test_path + String::FromUTF8(kTestFileSuffix);
-  scoped_refptr<SharedBuffer> test_file_buffer = test::ReadFromFile(test_file);
-  std::string test_file_contents;
-  base::ranges::copy(test_file_buffer->CopyAs<Vector<char>>(),
-                     std::back_inserter(test_file_contents));
-  ASSERT_FALSE(test_file_contents.empty())
+  std::optional<Vector<char>> test_file_data = test::ReadFromFile(test_file);
+  ASSERT_TRUE(test_file_data)
       << "Test file cannot be empty.\n"
       << test_file.Utf8()
       << "\nDid you forget to add a data dependency to the BUILD file?";
@@ -420,20 +419,18 @@ void AccessibilitySelectionTest::RunSelectionTest(
   const String ax_file =
       test_path +
       String::FromUTF8(suffix.empty() ? kAXTestExpectationSuffix : suffix);
-  scoped_refptr<SharedBuffer> ax_file_buffer = test::ReadFromFile(ax_file);
-  std::string ax_file_contents;
-  base::ranges::copy(ax_file_buffer->CopyAs<Vector<char>>(),
-                     std::back_inserter(ax_file_contents));
-  ASSERT_FALSE(ax_file_contents.empty())
+  std::optional<Vector<char>> ax_file_data = test::ReadFromFile(ax_file);
+  ASSERT_TRUE(ax_file_data)
       << "Expectations file cannot be empty.\n"
       << ax_file.Utf8()
       << "\nDid you forget to add a data dependency to the BUILD file?";
+  std::string_view ax_file_contents = base::as_string_view(*ax_file_data);
 
   HTMLElement* body = GetDocument().body();
   ASSERT_NE(nullptr, body);
   Vector<AXSelection> ax_selections =
       AXSelectionDeserializer(GetAXObjectCache())
-          .Deserialize(test_file_contents, *body);
+          .Deserialize(base::as_string_view(*test_file_data), *body);
   std::string actual_ax_file_contents;
 
   for (auto& ax_selection : ax_selections) {

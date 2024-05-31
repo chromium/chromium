@@ -1003,8 +1003,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreEmptyBeforeFocus) {
   Compositor().BeginFrame();
   // Finish font loading, and trigger invalidations.
   font_resource.Complete(
-      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-          ->CopyAs<Vector<char>>());
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
   Vector<gfx::Rect>& actual = widget->GetVisibleLineBoundsOnScreen();
@@ -1046,8 +1045,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterFocusChange) {
   Compositor().BeginFrame();
   // Finish font loading, and trigger invalidations.
   font_resource.Complete(
-      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-          ->CopyAs<Vector<char>>());
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
   HTMLInputElement* first = DynamicTo<HTMLInputElement>(
       GetDocument().getElementById(AtomicString("first")));
@@ -1225,8 +1223,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterLayoutChange) {
   Compositor().BeginFrame();
   // Finish font loading, and trigger invalidations.
   font_resource.Complete(
-      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-          ->CopyAs<Vector<char>>());
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
   HTMLInputElement* first = DynamicTo<HTMLInputElement>(
       GetDocument().getElementById(AtomicString("first")));
@@ -1290,8 +1287,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterPageScroll) {
   Compositor().BeginFrame();
   // Finish font loading, and trigger invalidations.
   font_resource.Complete(
-      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-          ->CopyAs<Vector<char>>());
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
   HTMLTextAreaElement* first = DynamicTo<HTMLTextAreaElement>(
       GetDocument().getElementById(AtomicString("first")));
@@ -1363,8 +1359,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterElementScroll) {
   Compositor().BeginFrame();
   // Finish font loading, and trigger invalidations.
   font_resource.Complete(
-      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-          ->CopyAs<Vector<char>>());
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
   HTMLTextAreaElement* first = DynamicTo<HTMLTextAreaElement>(
       GetDocument().getElementById(AtomicString("first")));
@@ -1428,8 +1423,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterCommit) {
   Compositor().BeginFrame();
   // Finish font loading, and trigger invalidations.
   font_resource.Complete(
-      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-          ->CopyAs<Vector<char>>());
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
   HTMLTextAreaElement* first = DynamicTo<HTMLTextAreaElement>(
       GetDocument().getElementById(AtomicString("first")));
@@ -1493,8 +1487,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterDelete) {
   Compositor().BeginFrame();
   // Finish font loading, and trigger invalidations.
   font_resource.Complete(
-      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-          ->CopyAs<Vector<char>>());
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
   HTMLTextAreaElement* first = DynamicTo<HTMLTextAreaElement>(
       GetDocument().getElementById(AtomicString("first")));
@@ -1595,8 +1588,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsInFrame) {
   Compositor().BeginFrame();
 
   child_font_resource.Complete(
-      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-          ->CopyAs<Vector<char>>());
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
 
   Vector<gfx::Rect> expected(Vector({gfx::Rect(0, /* 123+42= */ 165, 40, 10)}));
@@ -1668,8 +1660,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsWithDifferentZoom) {
   Compositor().BeginFrame();
 
   child_font_resource.Complete(
-      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-          ->CopyAs<Vector<char>>());
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
 
   Vector<gfx::Rect> expected(Vector({gfx::Rect(
@@ -1736,8 +1727,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreClippedInSubframe) {
   Compositor().BeginFrame();
 
   child_font_resource.Complete(
-      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
-          ->CopyAs<Vector<char>>());
+      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
   Compositor().BeginFrame();
 
   // The expected top value is 100 because of the spacer div in the main frame.

@@ -35,10 +35,9 @@ namespace blink {
 namespace {
 
 const Vector<char>& TestImage() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      const Vector<char>, test_image,
-      (test::ReadFromFile(test::CoreTestDataPath("notifications/500x500.png"))
-           ->CopyAs<Vector<char>>()));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(const Vector<char>, test_image,
+                                  (*test::ReadFromFile(test::CoreTestDataPath(
+                                      "notifications/500x500.png"))));
   return test_image;
 }
 

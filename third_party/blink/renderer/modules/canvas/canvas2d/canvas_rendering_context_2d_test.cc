@@ -1282,8 +1282,10 @@ static void TestDrawSingleHighBitDepthPNGOnCanvas(
     Document& document,
     ImageDataSettings* color_setting,
     ScriptState* script_state) {
-  scoped_refptr<SharedBuffer> pixel_buffer = test::ReadFromFile(filepath);
-  ASSERT_EQ(false, pixel_buffer->empty());
+  std::optional<Vector<char>> pixel_buffer_data = test::ReadFromFile(filepath);
+  ASSERT_TRUE(pixel_buffer_data);
+  scoped_refptr<SharedBuffer> pixel_buffer =
+      SharedBuffer::Create(std::move(*pixel_buffer_data));
 
   ImageResourceContent* resource_content =
       ImageResourceContent::CreateNotStarted();
