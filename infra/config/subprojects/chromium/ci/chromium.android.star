@@ -2254,7 +2254,7 @@ ci.builder(
     ),
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
-        category = "on_cq|x64",
+        category = "builder_tester|x64",
         short_name = "12",
     ),
     contact_team_email = "clank-engprod@google.com",
@@ -2263,8 +2263,8 @@ ci.builder(
 
 ci.builder(
     name = "android-13-x64-rel",
-    # TODO(crbug.com/40886566): Enable on branches once stable
-    #branch_selector = branches.selector.ANDROID_BRANCHES,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Run chromium tests on Android 13 emulators.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -2302,10 +2302,10 @@ ci.builder(
     ),
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
-        category = "builder_tester|x64",
+        category = "on_cq|x64",
         short_name = "13",
     ),
-    execution_timeout = 4 * time.hour,
+    contact_team_email = "clank-engprod@google.com",
 )
 
 ci.builder(

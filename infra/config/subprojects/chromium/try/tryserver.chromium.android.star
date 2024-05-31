@@ -106,6 +106,8 @@ try_.builder(
 
 try_.builder(
     name = "android-13-x64-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Run Chromium tests on Android 13 emulator.",
     mirrors = [
         "ci/android-13-x64-rel",
     ],
@@ -115,6 +117,7 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    contact_team_email = "clank-engprod@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -941,12 +944,12 @@ try_.orchestrator_builder(
     branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Run Chromium tests on Android emulators.",
     mirrors = [
-        "ci/android-12-x64-rel",
+        "ci/android-13-x64-rel",
         "ci/android-webview-13-x64-hostside-rel",
     ],
     gn_args = gn_args.config(
         configs = [
-            "ci/android-12-x64-rel",
+            "ci/android-13-x64-rel",
             "release_try_builder",
             "use_clang_coverage",
             "use_java_coverage",
