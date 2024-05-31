@@ -405,12 +405,15 @@ void PineContentsView::CreateChildViews() {
   // `kPreviewContainerWidth` while its height is calculated based on the
   // display's aspect ratio.
   const int screenshot_height = screenshot_size.height();
-  const int pine_contents_height =
+  const int primary_container_height =
       showing_list_view_
           ? kItemsViewContainerHeight
           : std::max(kScreenshotContainerMinHeight, screenshot_height);
-  primary_container_view->SetPreferredSize(
-      gfx::Size(kActionsContainerWidth, pine_contents_height));
+
+  primary_container_view->SetPreferredSize(gfx::Size(
+      kActionsContainerWidth,
+      landscape_mode ? primary_container_height
+                     : primary_container_view->GetPreferredSize().height()));
 
   // Set the screenshot preview container vertical margin based on the height of
   // the screenshot.
