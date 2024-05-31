@@ -6,11 +6,13 @@
 #define MEDIA_MOJO_CLIENTS_MOJO_STABLE_VIDEO_DECODER_H_
 
 #include "base/containers/id_map.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "media/base/video_decoder.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -22,6 +24,8 @@ class FrameResource;
 class GpuVideoAcceleratorFactories;
 class MediaLog;
 class OOPVideoDecoder;
+
+extern const char kMojoStableVideoDecoderDecodeLatencyHistogram[];
 
 // A MojoStableVideoDecoder is analogous to a MojoVideoDecoder but for the
 // stable::mojom::StableVideoDecoder interface, so in essence, it's just an
@@ -98,6 +102,10 @@ class MojoStableVideoDecoder final : public VideoDecoder {
   OOPVideoDecoder* oop_video_decoder();
 
   const OOPVideoDecoder* oop_video_decoder() const;
+
+  // DecodeBuffer/VideoFrame timestamps for histogram/tracing purposes. Must be
+  // large enough to account for any amount of frame reordering.
+  base::LRUCache<int64_t, base::TimeTicks> timestamps_;
 
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);

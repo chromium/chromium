@@ -4449,6 +4449,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.MojoStableVideoDecoder.Decode" units="ms"
+    expires_after="2025-05-24">
+  <owner>andrescj@chromium.org</owner>
+  <owner>chromeos-gfx@chromium.org</owner>
+  <summary>
+    This histogram is analogous to Media.MojoVideoDecoder.Decode but for the
+    MojoStableVideoDecoder. It's the delay between a DecoderBuffer (and encoded
+    chunk) input and a decoded frame being produced by the remote
+    StableVideoDecoder. Output once per successful decode.
+  </summary>
+</histogram>
+
 <histogram name="Media.MojoVideoDecoder.ActiveInstances" units="units"
     expires_after="2024-11-17">
   <owner>sandersd@chromium.org</owner>

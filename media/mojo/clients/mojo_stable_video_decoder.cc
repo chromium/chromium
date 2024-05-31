@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_macros.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -29,6 +30,9 @@
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
+
+const char kMojoStableVideoDecoderDecodeLatencyHistogram[] =
+    "Media.MojoStableVideoDecoder.Decode";
 
 namespace {
 
@@ -190,7 +194,8 @@ MojoStableVideoDecoder::MojoStableVideoDecoder(
     MediaLog* media_log,
     mojo::PendingRemote<stable::mojom::StableVideoDecoder>
         pending_remote_decoder)
-    : media_task_runner_(std::move(media_task_runner)),
+    : timestamps_(128),
+      media_task_runner_(std::move(media_task_runner)),
       gpu_factories_(gpu_factories),
       media_log_(media_log),
       pending_remote_decoder_(std::move(pending_remote_decoder)),
@@ -237,6 +242,10 @@ void MojoStableVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                     DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!!oop_video_decoder_);
+  if (!buffer->end_of_stream()) {
+    timestamps_.Put(buffer->timestamp().InMilliseconds(),
+                    base::TimeTicks::Now());
+  }
   oop_video_decoder_->Decode(std::move(buffer), std::move(decode_cb));
 }
 
@@ -442,6 +451,19 @@ void MojoStableVideoDecoder::OnFrameResourceDecoded(
   mailbox_frame->metadata().read_lock_fences_enabled = true;
   mailbox_frame->metadata().is_webgpu_compatible =
       frame_resource->metadata().is_webgpu_compatible;
+
+  const int64_t timestamp = frame_resource->timestamp().InMilliseconds();
+  const auto timestamp_it = timestamps_.Peek(timestamp);
+  // The OOPVideoDecoder has an internal cache that ensures incoming frames have
+  // a timestamp that corresponds to an earlier Decode() call. The cache in the
+  // OOPVideoDecoder is of the same size as |timestamps_|. Therefore, we should
+  // always be able to find the incoming frame in |timestamps_|, hence the
+  // CHECK().
+  CHECK(timestamp_it != timestamps_.end());
+  const auto decode_start_time = timestamp_it->second;
+  const auto decode_end_time = base::TimeTicks::Now();
+  UMA_HISTOGRAM_TIMES(kMojoStableVideoDecoderDecodeLatencyHistogram,
+                      decode_end_time - decode_start_time);
 
   output_cb_.Run(std::move(mailbox_frame));
 }
