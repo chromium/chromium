@@ -6,6 +6,7 @@
 
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "base/check_deref.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
@@ -13,6 +14,13 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+namespace {
+
+// The percentage of the panel which will be used as the buffer zone around the
+// screen edges.
+constexpr float kBufferRatio = 2.0 / 3.0;
+
+}  // namespace
 
 MahiPanelDragController::MahiPanelDragController(
     MahiUiController* ui_controller)
@@ -31,7 +39,10 @@ void MahiPanelDragController::OnLocatedPanelEvent(ui::LocatedEvent* event) {
     case ui::ET_MOUSE_PRESSED:
     case ui::ET_GESTURE_SCROLL_BEGIN:
       is_dragging_ = true;
-      previous_location_in_root_ = event->root_location();
+      panel_widget_initial_bounds_ =
+          mahi_panel_widget->GetWindowBoundsInScreen();
+      start_dragging_event_location_ =
+          event->target()->GetScreenLocation(*event);
       event->SetHandled();
       break;
     case ui::ET_MOUSE_DRAGGED:
@@ -39,16 +50,28 @@ void MahiPanelDragController::OnLocatedPanelEvent(ui::LocatedEvent* event) {
       if (!is_dragging_) {
         break;
       }
-      gfx::Rect panel_widget_bounds =
-          mahi_panel_widget->GetWindowBoundsInScreen();
-      // Offset the widget bounds by the difference between the current and
-      // previous drag location. Since we are only concerned with the offset, it
-      // is ok that the drag locations are in root window coordinates rather
-      // than screen coordinates.
-      panel_widget_bounds.Offset(event->root_location() -
-                                 previous_location_in_root_);
-      mahi_panel_widget->SetBoundsConstrained(panel_widget_bounds);
-      previous_location_in_root_ = event->root_location();
+
+      gfx::Point event_location = event->target()->GetScreenLocation(*event);
+      gfx::Rect panel_widget_bounds = panel_widget_initial_bounds_;
+      panel_widget_bounds.Offset(event_location -
+                                 start_dragging_event_location_);
+
+      // Establishes a buffer zone around the screen edges equal to
+      // `kBufferRatio` of the height or width of the panel. This will prevent
+      // the panel from being dragged too far that less than 1-`kBufferRatio` of
+      // it remains visible on the screen.
+      auto buff_width = panel_widget_bounds.width() * kBufferRatio;
+      auto buff_height = panel_widget_bounds.height() * kBufferRatio;
+      auto screen_bounds = display::Screen::GetScreen()
+                               ->GetDisplayNearestPoint(event_location)
+                               .bounds();
+      screen_bounds.SetByBounds(
+          screen_bounds.x() - buff_width, screen_bounds.y() - buff_height,
+          screen_bounds.width() + screen_bounds.x() + buff_width,
+          screen_bounds.y() + screen_bounds.height() + buff_height);
+      panel_widget_bounds.AdjustToFit(screen_bounds);
+
+      mahi_panel_widget->SetBounds(panel_widget_bounds);
       event->SetHandled();
       break;
     }

@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ref.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ui {
 class LocatedEvent;
@@ -33,12 +34,16 @@ class ASH_EXPORT MahiPanelDragController {
   // Whether a drag is currently in progress.
   bool is_dragging_ = false;
 
-  // Coordinates of the most recent press or drag event handled by the
-  // controller, in root window coordinates.
-  gfx::Point previous_location_in_root_;
+  // The start coordinates of the most recent press or drag begin event handled
+  // by the controller, in screen coordinates.
+  gfx::Point start_dragging_event_location_;
 
   // The Mahi UI controller which owns this.
   const raw_ref<MahiUiController> ui_controller_;
+
+  // The initial bounds of the panel of the most recent press or drag begin
+  // event handled by the controller, in screen coordinates.
+  gfx::Rect panel_widget_initial_bounds_;
 };
 
 }  // namespace ash
