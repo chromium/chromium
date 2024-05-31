@@ -966,6 +966,8 @@ public class MediaDrmBridge {
 
         closeSessionNoException(sessionId);
         mSessionManager.remove(sessionId);
+        // Code in media_key_session.cc expects the closed event to happen before the close()
+        // promise is resolved.
         onSessionClosed(sessionId);
         onPromiseResolved(promiseId);
         Log.i(TAG, "Session %s closed", sessionId.toHexString());
