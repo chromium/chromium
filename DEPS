@@ -2282,16 +2282,16 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/test_fonts': {
+  'src/third_party/test_fonts/test_fonts': {
       'dep_type': 'gcs',
       'condition': 'non_git_source',
       'bucket': 'chromium-fonts',
       'objects': [
           {
-              'object_name': '336e775eec536b2d785cc80eff6ac39051931286',
-              'sha256sum': 'a2ca2962daf482a8f943163541e1c73ba4b2694fabcd2510981f2db4eda493c8',
-              'size_bytes': 32624734,
-              'generation': 1647440500943755,
+              'object_name': 'f26f29c9d3bfae588207bbc9762de8d142e58935c62a86f67332819b15203b35',
+              'sha256sum': 'f26f29c9d3bfae588207bbc9762de8d142e58935c62a86f67332819b15203b35',
+              'size_bytes': 32750602,
+              'generation': 1717109450425063,
           },
       ],
   },

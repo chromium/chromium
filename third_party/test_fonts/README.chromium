@@ -20,13 +20,13 @@ How to update or add fonts:
     section headers in the LICENSE file: When adding a new license, add a dashed
     line, list the new font files that it applies to, and copy and paste the
     additional license below.)
-4.  Update the `//third_party/test_fonts/` BUILD.gn target to include all the
+4   Update the '//third_party/test_fonts/' BUILD.gn target to include all the
     current fonts and their license files.
-5.  Run the `upload_to_google_storage.py` (from depot_tools) script to upload
-    the files. You must do this in the //third_party/test_fonts directory.  To
+5.  Run the 'upload_to_google_storage_first_class.py' (from depot_tools) script to upload
+    the files. You must do this in the //third_party/test_fonts/test_fonts directory.  To
     do this, execute:
-	$ upload_to_google_storage_first_class.py --bucket=chromium-fonts test_fonts
-6.  Update the entries in DEPS/test_fonts for object_name, sha256sum, size_bytes,
+        $ upload_to_google_storage_first_class.py --bucket=chromium-fonts ./
+6.  Update the entries in DEPS/test_fonts/test_fonts for object_name, sha256sum, size_bytes,
         and generation.
 7.  (optional) Update FONT_FILES in
     third_party/blink/tools/blinkpy/web_tests/port/base.py .
