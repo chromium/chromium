@@ -15,6 +15,7 @@
 #include "ash/system/tray/tray_bubble_view.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/layout/layout_types.h"
 
 namespace ui {
 template <class ItemType>
@@ -59,6 +60,7 @@ class ASH_EXPORT GlanceableTrayBubbleView
 
   // views::View:
   int GetHeightForWidth(int w) const override;
+  views::SizeBounds GetAvailableSize(const View* child) const override;
 
   // TrayBubbleView:
   void AddedToWidget() override;

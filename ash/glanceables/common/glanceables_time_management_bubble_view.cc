@@ -4,9 +4,60 @@
 
 #include "ash/glanceables/common/glanceables_time_management_bubble_view.h"
 
+#include "base/time/time.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/animation/tween.h"
+#include "ui/views/layout/flex_layout_view.h"
 
 namespace ash {
+namespace {
+
+constexpr base::TimeDelta kExpandStateChangeAnimationDuration =
+    base::Milliseconds(300);
+constexpr base::TimeDelta kBubbleExpandAnimationDuration =
+    base::Milliseconds(300);
+constexpr base::TimeDelta kBubbleCollapseAnimationDuration =
+    base::Milliseconds(250);
+constexpr gfx::Tween::Type kBubbleAnimationTweenType =
+    gfx::Tween::FAST_OUT_SLOW_IN;
+constexpr gfx::Tween::Type kExpandStateChangeAnimationTweenType =
+    gfx::Tween::ACCEL_5_70_DECEL_90;
+
+}  // namespace
+
+GlanceablesTimeManagementBubbleView::ResizeAnimation::ResizeAnimation(
+    int start_height,
+    int end_height,
+    gfx::AnimationDelegate* delegate,
+    Type type)
+    : gfx::LinearAnimation(delegate),
+      type_(type),
+      start_height_(start_height),
+      end_height_(end_height) {
+  base::TimeDelta duration;
+  switch (type) {
+    case Type::kContainerExpandStateChanged:
+      duration = kExpandStateChangeAnimationDuration;
+      break;
+    case Type::kChildResize:
+      duration = start_height > end_height ? kBubbleCollapseAnimationDuration
+                                           : kBubbleExpandAnimationDuration;
+      break;
+  }
+  SetDuration(duration *
+              ui::ScopedAnimationDurationScaleMode::duration_multiplier());
+}
+
+int GlanceablesTimeManagementBubbleView::ResizeAnimation::GetCurrentHeight()
+    const {
+  auto tween_type = type_ == Type::kChildResize
+                        ? kBubbleAnimationTweenType
+                        : kExpandStateChangeAnimationTweenType;
+  return gfx::Tween::IntValueBetween(
+      gfx::Tween::CalculateValue(tween_type, GetCurrentValue()), start_height_,
+      end_height_);
+}
 
 GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView() =
     default;
@@ -42,6 +93,35 @@ void GlanceablesTimeManagementBubbleView::ShowErrorMessage(
   error_message_ = AddChildView(std::make_unique<GlanceablesErrorMessageView>(
       std::move(callback), error_message, type));
   error_message_->SetProperty(views::kViewIgnoredByLayoutKey, true);
+}
+
+gfx::Size GlanceablesTimeManagementBubbleView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  const gfx::Size base_preferred_size =
+      views::FlexLayoutView::CalculatePreferredSize(available_size);
+
+  if (resize_animation_) {
+    return gfx::Size(base_preferred_size.width(),
+                     resize_animation_->GetCurrentHeight());
+  }
+
+  return base_preferred_size;
+}
+
+void GlanceablesTimeManagementBubbleView::AnimationEnded(
+    const gfx::Animation* animation) {
+  resize_animation_.reset();
+  PreferredSizeChanged();
+}
+
+void GlanceablesTimeManagementBubbleView::AnimationProgressed(
+    const gfx::Animation* animation) {
+  PreferredSizeChanged();
+}
+
+void GlanceablesTimeManagementBubbleView::AnimationCanceled(
+    const gfx::Animation* animation) {
+  resize_animation_.reset();
 }
 
 void GlanceablesTimeManagementBubbleView::AddObserver(Observer* observer) {

@@ -78,6 +78,10 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   // views::ViewObserver:
   void OnViewFocused(views::View* view) override;
 
+  // GlanceablesTimeManagementBubbleView:
+  bool IsExpanded() const override;
+  int GetCollapsedStatePreferredHeight() const override;
+
   // Invalidates any pending assignments requests. Called when the
   // glanceables bubble widget starts closing to avoid unnecessary UI updates.
   void CancelUpdates();
@@ -86,9 +90,12 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   void CreateElevatedBackground();
 
   void SetExpandState(bool is_expanded);
-  bool is_expanded() const { return is_expanded_; }
 
  private:
+  // Triggers classroom bubble resize animation to new preferred size, if an
+  // animation is required.
+  void AnimateResize();
+
   // Toggles `is_expanded_` and updates the layout.
   void ToggleExpandState();
 

@@ -171,24 +171,6 @@ END_METADATA
 
 }  // namespace
 
-GlanceablesTasksView::ResizeAnimation::ResizeAnimation(
-    int start_height,
-    int end_height,
-    gfx::AnimationDelegate* delegate)
-    : gfx::LinearAnimation(delegate),
-      start_height_(start_height),
-      end_height_(end_height) {
-  SetDuration((start_height > end_height ? kBubbleCollapseAnimationDuration
-                                         : kBubbleExpandAnimationDuration) *
-              ui::ScopedAnimationDurationScaleMode::duration_multiplier());
-}
-
-int GlanceablesTasksView::ResizeAnimation::GetCurrentHeight() const {
-  return gfx::Tween::IntValueBetween(
-      gfx::Tween::CalculateValue(kBubbleAnimationTweenType, GetCurrentValue()),
-      start_height_, end_height_);
-}
-
 // It is the parent container of GlanceablesTasksView that matches the style
 // of GlanceableTrayChildBubble, so `use_glanceables_container_style` is set to
 // false here.
@@ -358,11 +340,11 @@ void GlanceablesTasksView::Layout(PassKey) {
 
 gfx::Size GlanceablesTasksView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  const gfx::Size base_preferred_size =
-      GlanceablesTimeManagementBubbleView::CalculatePreferredSize(
-          available_size);
+  if (running_resize_animation_.has_value() &&
+      *running_resize_animation_ == ResizeAnimation::Type::kChildResize) {
+    const gfx::Size base_preferred_size =
+        views::FlexLayoutView::CalculatePreferredSize(available_size);
 
-  if (resize_animation_) {
     // If bottom of the task list is animating, offset the tasks view
     // preferred size so the tasks matches the animating bottom of the task
     // list. This reduces animation jankiness of the timing of the resize
@@ -375,25 +357,24 @@ gfx::Size GlanceablesTasksView::CalculatePreferredSize(
       return gfx::Size(base_preferred_size.width(),
                        base_preferred_size.height() + sentinel_offset);
     }
-    return gfx::Size(base_preferred_size.width(),
-                     resize_animation_->GetCurrentHeight());
   }
 
-  return base_preferred_size;
+  return GlanceablesTimeManagementBubbleView::CalculatePreferredSize(
+      available_size);
+}
+
+bool GlanceablesTasksView::IsExpanded() const {
+  return is_expanded_;
+}
+
+int GlanceablesTasksView::GetCollapsedStatePreferredHeight() const {
+  return kInteriorGlanceableBubbleMargin + kScrollViewBottomMargin +
+         tasks_header_view_->height();
 }
 
 void GlanceablesTasksView::AnimationEnded(const gfx::Animation* animation) {
-  resize_animation_.reset();
-  PreferredSizeChanged();
-}
-
-void GlanceablesTasksView::AnimationProgressed(
-    const gfx::Animation* animation) {
-  PreferredSizeChanged();
-}
-
-void GlanceablesTasksView::AnimationCanceled(const gfx::Animation* animation) {
-  resize_animation_.reset();
+  running_resize_animation_.reset();
+  GlanceablesTimeManagementBubbleView::AnimationEnded(animation);
 }
 
 void GlanceablesTasksView::CancelUpdates() {
@@ -443,20 +424,23 @@ void GlanceablesTasksView::SetExpandState(bool is_expanded) {
   task_list_combo_box_view_->SetVisible(is_expanded_);
   combobox_replacement_label_->SetVisible(!is_expanded_);
 
+  // Move the `kScrollViewBottomMargin` to the interior margin when the tasks is
+  // collapsed to keep the bottom margin that was used in the scroll view.
   auto target_interior_margin =
       is_expanded_ ? gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
                                        kInteriorGlanceableBubbleMargin, 0,
                                        kInteriorGlanceableBubbleMargin)
                    : gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
                                        kInteriorGlanceableBubbleMargin,
-                                       kInteriorGlanceableBubbleMargin, 12);
+                                       kInteriorGlanceableBubbleMargin,
+                                       kScrollViewBottomMargin);
   SetInteriorMargin(target_interior_margin);
 
   for (auto& observer : observers_) {
     observer.OnExpandStateChanged(Context::kTasks, is_expanded_);
   }
 
-  PreferredSizeChanged();
+  AnimateResize(ResizeAnimation::Type::kContainerExpandStateChanged);
 }
 
 void GlanceablesTasksView::ToggleExpandState() {
@@ -675,7 +659,7 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
 
   if (old_preferred_size != GetPreferredSize()) {
     if (context == ListShownContext::kUserSelectedList) {
-      AnimateResize();
+      AnimateResize(ResizeAnimation::Type::kChildResize);
     } else {
       PreferredSizeChanged();
     }
@@ -753,7 +737,7 @@ void GlanceablesTasksView::HandleTaskViewStateChange(bool view_expanding) {
     target_offset += preferred_size.height() + kListViewBetweenChildSpacing;
   }
 
-  AnimateResize();
+  AnimateResize(ResizeAnimation::Type::kChildResize);
 }
 
 void GlanceablesTasksView::MarkTaskAsCompleted(const std::string& task_list_id,
@@ -904,20 +888,38 @@ void GlanceablesTasksView::OnTaskViewAnimationCompleted() {
   animating_task_view_layer_.reset();
 }
 
-void GlanceablesTasksView::AnimateResize() {
+void GlanceablesTasksView::AnimateResize(ResizeAnimation::Type resize_type) {
   const int current_height = size().height();
   if (current_height == 0) {
     return;
   }
-  resize_animation_.reset();
 
-  const int preferred_height = GetPreferredSize().height();
-  if (current_height == preferred_height) {
+  // Child resize animation should not override the expand/collapse animation.
+  if (resize_type == ResizeAnimation::Type::kChildResize &&
+      running_resize_animation_.has_value() &&
+      *running_resize_animation_ ==
+          ResizeAnimation::Type::kContainerExpandStateChanged) {
     return;
   }
 
+  resize_animation_.reset();
+  running_resize_animation_.reset();
+
   if (!ui::ScopedAnimationDurationScaleMode::duration_multiplier()) {
     PreferredSizeChanged();
+    return;
+  }
+
+  // Check if the available height is large enough for the preferred height, so
+  // that the target height for the animation is correctly bounded.
+  const views::SizeBound available_height =
+      parent()->GetAvailableSize(this).height();
+  const int preferred_height = GetPreferredSize().height();
+  const int target_height =
+      available_height.is_bounded()
+          ? std::min(available_height.value(), preferred_height)
+          : preferred_height;
+  if (current_height == target_height) {
     return;
   }
 
@@ -926,15 +928,17 @@ void GlanceablesTasksView::AnimateResize() {
   // going to change.
   const int visible_scroll_height =
       content_scroll_view_->GetVisibleRect().height();
-  if (content_scroll_view_->contents()->height() > visible_scroll_height &&
+  if (resize_type == ResizeAnimation::Type::kChildResize &&
+      content_scroll_view_->contents()->height() > visible_scroll_height &&
       content_scroll_view_->contents()->GetPreferredSize().height() >
           visible_scroll_height) {
     PreferredSizeChanged();
     return;
   }
 
-  resize_animation_ =
-      std::make_unique<ResizeAnimation>(current_height, preferred_height, this);
+  running_resize_animation_ = resize_type;
+  resize_animation_ = std::make_unique<ResizeAnimation>(
+      current_height, target_height, this, resize_type);
   resize_animation_->Start();
 }
 

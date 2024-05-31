@@ -14,7 +14,8 @@ namespace ash {
 
 // Glanceables Time Management bubble container that is a child of
 // `GlanceableTrayChildBubble`.
-class GlanceablesTimeManagementBubbleView : public views::FlexLayoutView {
+class GlanceablesTimeManagementBubbleView : public views::FlexLayoutView,
+                                            public gfx::AnimationDelegate {
   METADATA_HEADER(GlanceablesTimeManagementBubbleView, views::FlexLayoutView)
 
  public:
@@ -36,11 +37,53 @@ class GlanceablesTimeManagementBubbleView : public views::FlexLayoutView {
   // views::View:
   void ChildPreferredSizeChanged(View* child) override;
   void Layout(PassKey) override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
+
+  // gfx::AnimationDelegate:
+  void AnimationEnded(const gfx::Animation* animation) override;
+  void AnimationProgressed(const gfx::Animation* animation) override;
+  void AnimationCanceled(const gfx::Animation* animation) override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Returns the preferred height of `this` in the collapsed state. This is used
+  // to calculate the available size for glanceables. This should be constant
+  // after the view is laid out.
+  virtual int GetCollapsedStatePreferredHeight() const = 0;
+
+  // Returns the expanded/collapsed state of the bubble view.
+  virtual bool IsExpanded() const = 0;
+
  protected:
+  // Linear animation to track time management bubble resize animation - as the
+  // animation progresses, the bubble view preferred size will change causing
+  // bubble bounds updates. `ResizeAnimation` will provide the expected
+  // preferred time management bubble height.
+  class ResizeAnimation : public gfx::LinearAnimation {
+   public:
+    // The context of the animation that determines the type of tweens and
+    // duration to use.
+    enum class Type {
+      kContainerExpandStateChanged,
+      kChildResize,
+    };
+
+    ResizeAnimation(int start_height,
+                    int end_height,
+                    gfx::AnimationDelegate* delegate,
+                    Type type);
+
+    int GetCurrentHeight() const;
+
+   private:
+    const Type type_;
+
+    const int start_height_;
+    const int end_height_;
+  };
+
   // Removes an active `error_message_` from the view, if any.
   void MaybeDismissErrorMessage();
   void ShowErrorMessage(const std::u16string& error_message,
@@ -48,6 +91,11 @@ class GlanceablesTimeManagementBubbleView : public views::FlexLayoutView {
                         GlanceablesErrorMessageView::ButtonActionType type);
 
   GlanceablesErrorMessageView* error_message() { return error_message_; }
+
+  // Linear animation that drive time management bubble resize animation - the
+  // animation updates the time management bubble view preferred size, which
+  // causes layout updates. Runs when the bubble preferred size changes.
+  std::unique_ptr<ResizeAnimation> resize_animation_;
 
   base::ObserverList<Observer> observers_;
 

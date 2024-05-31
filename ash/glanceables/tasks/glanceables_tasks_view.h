@@ -6,6 +6,7 @@
 #define ASH_GLANCEABLES_TASKS_GLANCEABLES_TASKS_VIEW_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
@@ -43,7 +44,6 @@ class GlanceablesTaskView;
 // Glanceables view responsible for interacting with Google Tasks.
 class ASH_EXPORT GlanceablesTasksView
     : public GlanceablesTimeManagementBubbleView,
-      public gfx::AnimationDelegate,
       public views::ViewObserver {
   METADATA_HEADER(GlanceablesTasksView, GlanceablesTimeManagementBubbleView)
  public:
@@ -57,13 +57,13 @@ class ASH_EXPORT GlanceablesTasksView
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
-  // gfx::AnimationDelegate:
-  void AnimationEnded(const gfx::Animation* animation) override;
-  void AnimationProgressed(const gfx::Animation* animation) override;
-  void AnimationCanceled(const gfx::Animation* animation) override;
-
   // views::ViewObserver:
   void OnViewFocused(views::View* view) override;
+
+  // GlanceablesTimeManagementBubbleView:
+  bool IsExpanded() const override;
+  int GetCollapsedStatePreferredHeight() const override;
+  void AnimationEnded(const gfx::Animation* animation) override;
 
   // Invalidates any pending tasks, or tasks lists requests. Called when the
   // glanceables bubble widget starts closing to avoid unnecessary UI updates.
@@ -77,27 +77,9 @@ class ASH_EXPORT GlanceablesTasksView
   void CreateElevatedBackground();
 
   void SetExpandState(bool is_expanded);
-  bool is_expanded() const { return is_expanded_; }
-
   void EndResizeAnimationForTest();
 
  private:
-  // Linear animation to track tasks bubble resize animation - as the animation
-  // progresses, the bubble view preferred size will change causing bubble
-  // bounds updates. `ResizeAnimation` will provide the expected preferred
-  // tasks bubble height.
-  class ResizeAnimation : public gfx::LinearAnimation {
-   public:
-    ResizeAnimation(int start_height,
-                    int end_height,
-                    gfx::AnimationDelegate* delegate);
-    int GetCurrentHeight() const;
-
-   private:
-    const int start_height_;
-    const int end_height_;
-  };
-
   // The context of why the current task list is shown.
   enum class ListShownContext {
     // The list is a cached one that will be updated later after the lists data
@@ -195,7 +177,7 @@ class ASH_EXPORT GlanceablesTasksView
 
   // Triggers tasks bubble resize animation to new preferred size, if an
   // animation is required.
-  void AnimateResize();
+  void AnimateResize(ResizeAnimation::Type resize_type);
 
   // Animates visibility updates for a task view. It assumes that at most one
   // task view changes visibility at the time - currently, this is exclusively
@@ -248,6 +230,9 @@ class ASH_EXPORT GlanceablesTasksView
   // hierarchy immediately.
   std::unique_ptr<ui::Layer> animating_task_view_layer_;
 
+  // The type of resize animation that is currently running.
+  std::optional<ResizeAnimation::Type> running_resize_animation_ = std::nullopt;
+
   // Whether the view is expanded and showing the contents in
   // `content_scroll_view_`.
   bool is_expanded_ = true;
@@ -274,11 +259,6 @@ class ASH_EXPORT GlanceablesTasksView
 
   // Time stamp of when the view was created.
   const base::Time shown_time_;
-
-  // Linear animation that drive tasks bubble resize animation - the animation
-  // updates the tasks bubble view preferred size, which causes layout updates.
-  // Runs when the bubble preferred size changes.
-  std::unique_ptr<ResizeAnimation> resize_animation_;
 
   // The model containing task views shown within the tasks bubble. Used to set
   // up task view animations in response to a task view change. When animating

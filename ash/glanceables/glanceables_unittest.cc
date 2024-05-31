@@ -223,30 +223,30 @@ TEST_F(GlanceablesTasksAndClassroomTest, TimeManagementExpandStates) {
   auto* const classroom_view = GetClassroomView();
 
   // Initially `tasks_view` is expanded and `classroom_view` is collapsed.
-  EXPECT_TRUE(tasks_view->is_expanded());
-  EXPECT_FALSE(classroom_view->is_expanded());
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
 
   // Expanding/Collapsing `tasks_view` will collapse/expand `classroom_view`.
   auto* const tasks_expand_button = GetTasksExpandButtonView();
   ASSERT_TRUE(tasks_expand_button);
   LeftClickOn(tasks_expand_button);
-  EXPECT_FALSE(tasks_view->is_expanded());
-  EXPECT_TRUE(classroom_view->is_expanded());
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
 
   LeftClickOn(tasks_expand_button);
-  EXPECT_TRUE(tasks_view->is_expanded());
-  EXPECT_FALSE(classroom_view->is_expanded());
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
 
   // Same for `classroom_view`.
   auto* const classroom_expand_button = GetClassroomExpandButtonView();
   ASSERT_TRUE(classroom_expand_button);
   LeftClickOn(classroom_expand_button);
-  EXPECT_FALSE(tasks_view->is_expanded());
-  EXPECT_TRUE(classroom_view->is_expanded());
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
 
   LeftClickOn(classroom_expand_button);
-  EXPECT_TRUE(tasks_view->is_expanded());
-  EXPECT_FALSE(classroom_view->is_expanded());
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
 }
 
 TEST_F(GlanceablesTasksAndClassroomTest,
@@ -256,8 +256,8 @@ TEST_F(GlanceablesTasksAndClassroomTest,
 
   auto* const tasks_view = GetTasksView();
   auto* const classroom_view = GetClassroomView();
-  EXPECT_TRUE(tasks_view->is_expanded());
-  EXPECT_FALSE(classroom_view->is_expanded());
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
 
   view()->GetWidget()->LayoutRootViewIfNecessary();
 
@@ -281,19 +281,19 @@ TEST_F(GlanceablesTasksAndClassroomTest,
 
   // Scrolling upward at the top of the scroll view doesn't change expand state.
   generate_trackpad_scroll_event(/*upward=*/true);
-  EXPECT_TRUE(tasks_view->is_expanded());
-  EXPECT_FALSE(classroom_view->is_expanded());
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
 
   // Scrolling downward when there is scrollable content doesn't change expand
   // state.
   generate_trackpad_scroll_event(/*upward=*/false);
-  EXPECT_TRUE(tasks_view->is_expanded());
-  EXPECT_FALSE(classroom_view->is_expanded());
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
 
   // Scrolling downward at the bottom of the scroll view changes expand state.
   generate_trackpad_scroll_event(/*upward=*/false);
-  EXPECT_FALSE(tasks_view->is_expanded());
-  EXPECT_TRUE(classroom_view->is_expanded());
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
 }
 
 TEST_F(GlanceablesTasksAndClassroomTest,
@@ -303,8 +303,8 @@ TEST_F(GlanceablesTasksAndClassroomTest,
 
   auto* const tasks_view = GetTasksView();
   auto* const classroom_view = GetClassroomView();
-  EXPECT_TRUE(tasks_view->is_expanded());
-  EXPECT_FALSE(classroom_view->is_expanded());
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
 
   view()->GetWidget()->LayoutRootViewIfNecessary();
 
@@ -331,19 +331,19 @@ TEST_F(GlanceablesTasksAndClassroomTest,
 
   // Scrolling upward at the top of the scroll view doesn't change expand state.
   generate_gesture_scroll_event(/*upward=*/true);
-  EXPECT_TRUE(tasks_view->is_expanded());
-  EXPECT_FALSE(classroom_view->is_expanded());
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
 
   // Scrolling downward when there is scrollable content doesn't change expand
   // state.
   generate_gesture_scroll_event(/*upward=*/false);
-  EXPECT_TRUE(tasks_view->is_expanded());
-  EXPECT_FALSE(classroom_view->is_expanded());
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
 
   // Scrolling downward at the bottom of the scroll view changes expand state.
   generate_gesture_scroll_event(/*upward=*/false);
-  EXPECT_FALSE(tasks_view->is_expanded());
-  EXPECT_TRUE(classroom_view->is_expanded());
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
 }
 
 TEST_F(GlanceablesTasksAndClassroomTest,
@@ -353,8 +353,8 @@ TEST_F(GlanceablesTasksAndClassroomTest,
 
   auto* const tasks_view = GetTasksView();
   auto* const classroom_view = GetClassroomView();
-  EXPECT_TRUE(tasks_view->is_expanded());
-  EXPECT_FALSE(classroom_view->is_expanded());
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
 
   view()->GetWidget()->LayoutRootViewIfNecessary();
 
@@ -372,16 +372,16 @@ TEST_F(GlanceablesTasksAndClassroomTest,
   // Using mouse wheel doesn't change expand state in either direction.
   GetEventGenerator()->MoveMouseTo(tasks_scroll_view_center);
   GetEventGenerator()->MoveMouseWheel(0, distance_to_scroll);
-  EXPECT_TRUE(tasks_view->is_expanded());
-  EXPECT_FALSE(classroom_view->is_expanded());
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
 
   GetEventGenerator()->MoveMouseWheel(0, -distance_to_scroll);
-  EXPECT_TRUE(tasks_view->is_expanded());
-  EXPECT_FALSE(classroom_view->is_expanded());
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
 
   GetEventGenerator()->MoveMouseWheel(0, -distance_to_scroll);
-  EXPECT_TRUE(tasks_view->is_expanded());
-  EXPECT_FALSE(classroom_view->is_expanded());
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
 }
 
 TEST_F(GlanceablesTasksAndClassroomTest,
@@ -392,8 +392,8 @@ TEST_F(GlanceablesTasksAndClassroomTest,
   LeftClickOn(classroom_expand_button);
   auto* const tasks_view = GetTasksView();
   auto* const classroom_view = GetClassroomView();
-  EXPECT_FALSE(tasks_view->is_expanded());
-  EXPECT_TRUE(classroom_view->is_expanded());
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
 
   view()->GetWidget()->LayoutRootViewIfNecessary();
 
@@ -419,19 +419,19 @@ TEST_F(GlanceablesTasksAndClassroomTest,
   // Scrolling downward to the bottom of the scroll view doesn't change expand
   // state.
   generate_trackpad_scroll_event(/*upward=*/false);
-  EXPECT_FALSE(tasks_view->is_expanded());
-  EXPECT_TRUE(classroom_view->is_expanded());
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
 
   // Scrolling upward when there is scrollable content doesn't change expand
   // state.
   generate_trackpad_scroll_event(/*upward=*/true);
-  EXPECT_FALSE(tasks_view->is_expanded());
-  EXPECT_TRUE(classroom_view->is_expanded());
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
 
   // Scrolling upward at the top of the scroll view changes expand state.
   generate_trackpad_scroll_event(/*upward=*/true);
-  EXPECT_TRUE(tasks_view->is_expanded());
-  EXPECT_FALSE(classroom_view->is_expanded());
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
 }
 
 TEST_F(GlanceablesTasksAndClassroomTest,
@@ -442,8 +442,8 @@ TEST_F(GlanceablesTasksAndClassroomTest,
   LeftClickOn(classroom_expand_button);
   auto* const tasks_view = GetTasksView();
   auto* const classroom_view = GetClassroomView();
-  EXPECT_FALSE(tasks_view->is_expanded());
-  EXPECT_TRUE(classroom_view->is_expanded());
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
 
   view()->GetWidget()->LayoutRootViewIfNecessary();
 
@@ -473,19 +473,19 @@ TEST_F(GlanceablesTasksAndClassroomTest,
   // Scrolling downward to the bottom of the scroll view doesn't change expand
   // state.
   generate_gesture_scroll_event(/*upward=*/false);
-  EXPECT_FALSE(tasks_view->is_expanded());
-  EXPECT_TRUE(classroom_view->is_expanded());
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
 
   // Scrolling upward when there is scrollable content doesn't change expand
   // state.
   generate_gesture_scroll_event(/*upward=*/true);
-  EXPECT_FALSE(tasks_view->is_expanded());
-  EXPECT_TRUE(classroom_view->is_expanded());
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
 
   // Scrolling upward at the top of the scroll view changes expand state.
   generate_gesture_scroll_event(/*upward=*/true);
-  EXPECT_TRUE(tasks_view->is_expanded());
-  EXPECT_FALSE(classroom_view->is_expanded());
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
 }
 
 TEST_F(GlanceablesTasksAndClassroomTest,
@@ -496,8 +496,8 @@ TEST_F(GlanceablesTasksAndClassroomTest,
   LeftClickOn(classroom_expand_button);
   auto* const tasks_view = GetTasksView();
   auto* const classroom_view = GetClassroomView();
-  EXPECT_FALSE(tasks_view->is_expanded());
-  EXPECT_TRUE(classroom_view->is_expanded());
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
 
   view()->GetWidget()->LayoutRootViewIfNecessary();
 
@@ -516,16 +516,16 @@ TEST_F(GlanceablesTasksAndClassroomTest,
   // Using mouse wheel doesn't change expand state in either direction.
   GetEventGenerator()->MoveMouseTo(classroom_scroll_view_center);
   GetEventGenerator()->MoveMouseWheel(0, -distance_to_scroll);
-  EXPECT_FALSE(tasks_view->is_expanded());
-  EXPECT_TRUE(classroom_view->is_expanded());
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
 
   GetEventGenerator()->MoveMouseWheel(0, distance_to_scroll);
-  EXPECT_FALSE(tasks_view->is_expanded());
-  EXPECT_TRUE(classroom_view->is_expanded());
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
 
   GetEventGenerator()->MoveMouseWheel(0, distance_to_scroll);
-  EXPECT_FALSE(tasks_view->is_expanded());
-  EXPECT_TRUE(classroom_view->is_expanded());
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
 }
 
 }  // namespace ash

@@ -44,6 +44,7 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -174,15 +175,14 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
   SetInteriorMargin(kViewInteriorMargins);
   SetOrientation(views::LayoutOrientation::kVertical);
 
-  auto* tasks_header_container =
+  auto* header_container =
       AddChildView(std::make_unique<views::FlexLayoutView>());
-  tasks_header_container->SetMainAxisAlignment(views::LayoutAlignment::kStart);
-  tasks_header_container->SetCrossAxisAlignment(
-      views::LayoutAlignment::kCenter);
-  tasks_header_container->SetOrientation(views::LayoutOrientation::kHorizontal);
+  header_container->SetMainAxisAlignment(views::LayoutAlignment::kStart);
+  header_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  header_container->SetOrientation(views::LayoutOrientation::kHorizontal);
 
-  header_view_ = tasks_header_container->AddChildView(
-      std::make_unique<views::FlexLayoutView>());
+  header_view_ =
+      header_container->AddChildView(std::make_unique<views::FlexLayoutView>());
   header_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   header_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
   header_view_->SetProperty(
@@ -229,8 +229,8 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
       cros_tokens::kCrosSysOnSurface);
   combobox_replacement_label_->SetVisible(false);
 
-  expand_button_ = tasks_header_container->AddChildView(
-      std::make_unique<ClassroomExpandButton>());
+  expand_button_ =
+      header_container->AddChildView(std::make_unique<ClassroomExpandButton>());
   expand_button_->SetID(
       base::to_underlying(GlanceablesViewId::kClassroomBubbleExpandButton));
   // This is only set visible when both Tasks and Classroom exist, where the
@@ -325,6 +325,14 @@ void GlanceablesClassroomStudentView::OnViewFocused(views::View* view) {
   AnnounceListStateOnComboBoxAccessibility();
 }
 
+bool GlanceablesClassroomStudentView::IsExpanded() const {
+  return is_expanded_;
+}
+
+int GlanceablesClassroomStudentView::GetCollapsedStatePreferredHeight() const {
+  return GetInteriorMargin().height() + header_view_->height();
+}
+
 void GlanceablesClassroomStudentView::CancelUpdates() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
@@ -362,7 +370,7 @@ void GlanceablesClassroomStudentView::SetExpandState(bool is_expanded) {
     observer.OnExpandStateChanged(Context::kClassroom, is_expanded_);
   }
 
-  PreferredSizeChanged();
+  AnimateResize();
 }
 
 void GlanceablesClassroomStudentView::ToggleExpandState() {
@@ -474,6 +482,37 @@ void GlanceablesClassroomStudentView::SelectedAssignmentListChanged(
           IDS_GLANCEABLES_CLASSROOM_STUDENT_EMPTY_ITEM_DONE_LIST));
       return client->GetCompletedStudentAssignments(std::move(callback));
   }
+}
+
+void GlanceablesClassroomStudentView::AnimateResize() {
+  const int current_height = size().height();
+  if (current_height == 0) {
+    return;
+  }
+  resize_animation_.reset();
+
+  if (!ui::ScopedAnimationDurationScaleMode::duration_multiplier()) {
+    PreferredSizeChanged();
+    return;
+  }
+
+  // Check if the available height is large enough for the preferred height, so
+  // that the target height for the animation is correctly bounded.
+  const views::SizeBound available_height =
+      parent()->GetAvailableSize(this).height();
+  const int preferred_height = GetPreferredSize().height();
+  const int target_height =
+      available_height.is_bounded()
+          ? std::min(available_height.value(), preferred_height)
+          : preferred_height;
+  if (current_height == target_height) {
+    return;
+  }
+
+  resize_animation_ = std::make_unique<ResizeAnimation>(
+      current_height, target_height, this,
+      ResizeAnimation::Type::kContainerExpandStateChanged);
+  resize_animation_->Start();
 }
 
 void GlanceablesClassroomStudentView::OnGetAssignments(

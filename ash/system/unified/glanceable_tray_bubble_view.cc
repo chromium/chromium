@@ -14,6 +14,7 @@
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_student_view.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
+#include "ash/glanceables/common/glanceables_time_management_bubble_view.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_metrics.h"
 #include "ash/glanceables/tasks/glanceables_tasks_view.h"
@@ -38,6 +39,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/highlight_border.h"
+#include "ui/views/layout/layout_types.h"
 
 namespace ash {
 
@@ -90,6 +92,48 @@ class TimeManagementContainer : public views::FlexLayoutView {
   TimeManagementContainer(const TimeManagementContainer&) = delete;
   TimeManagementContainer& operator=(const TimeManagementContainer&) = delete;
   ~TimeManagementContainer() override = default;
+
+  views::SizeBounds GetAvailableSize(const View* child) const override {
+    // Only consider setting a bounded available size for
+    // `GlanceablesTimeManagementBubbleView` children.
+    auto* time_management_child =
+        views::AsViewClass<GlanceablesTimeManagementBubbleView>(child);
+    if (!time_management_child || !time_management_child->IsExpanded()) {
+      return views::SizeBounds();
+    }
+
+    const auto container_available_height =
+        parent()->GetAvailableSize(this).height();
+    if (!container_available_height.is_bounded()) {
+      return views::SizeBounds();
+    }
+
+    int available_height =
+        container_available_height.value() - GetInteriorMargin().height();
+    bool is_first_visible_child = true;
+    for (auto child_iter : children()) {
+      if (!child_iter->GetVisible()) {
+        continue;
+      }
+      auto* typed_child =
+          views::AsViewClass<GlanceablesTimeManagementBubbleView>(child_iter);
+      if (!typed_child) {
+        continue;
+      }
+      if (!is_first_visible_child) {
+        available_height -= 8;
+      }
+      // Assume that only one GlanceablesTimeManagementBubbleView is expanded.
+      if (child_iter != time_management_child) {
+        available_height -= typed_child->GetCollapsedStatePreferredHeight();
+      }
+      is_first_visible_child = false;
+    }
+
+    views::SizeBounds available_size;
+    available_size.set_height(available_height);
+    return available_size;
+  }
 
   void ChildPreferredSizeChanged(views::View* child) override {
     PreferredSizeChanged();
@@ -201,6 +245,20 @@ int GlanceableTrayBubbleView::GetHeightForWidth(int width) const {
   // settings into consider.
   return std::min(GetLayoutManager()->GetPreferredHeightForWidth(this, width),
                   CalculateMaxTrayBubbleHeight(shelf_->GetWindow()));
+}
+
+views::SizeBounds GlanceableTrayBubbleView::GetAvailableSize(
+    const View* child) const {
+  if (child != time_management_container_view_) {
+    return TrayBubbleView::GetAvailableSize(child);
+  }
+
+  views::SizeBounds available_size;
+  auto max_height = CalculateMaxTrayBubbleHeight(shelf_->GetWindow());
+  available_size.set_height(max_height -
+                            calendar_view_->GetPreferredSize().height() -
+                            kMarginBetweenGlanceables);
+  return available_size;
 }
 
 void GlanceableTrayBubbleView::AddedToWidget() {
