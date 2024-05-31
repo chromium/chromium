@@ -26,6 +26,8 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/common/pref_names.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
@@ -47,6 +49,30 @@ std::ostream& operator<<(std::ostream& os, const FilteringBehavior& fb) {
 }
 
 namespace {
+
+std::string GetToggleAbbrev(FamilyLinkToggleType toggle) {
+  switch (toggle) {
+    case FamilyLinkToggleType::kPermissionsToggle:
+      return "PERMISSIONS";
+    case FamilyLinkToggleType::kExtensionsToggle:
+      return "EXTENSIONS";
+    case FamilyLinkToggleType::kCookiesToggle:
+      return "COOKIES";
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
+bool ToggleHasExpectedValue(const FamilyMember& browser_user,
+                            FamilyLinkToggleConfiguration toggle) {
+  std::string_view pref =
+      toggle.type == FamilyLinkToggleType::kExtensionsToggle
+          ? prefs::kSkipParentApprovalToInstallExtensions
+          : prefs::kSupervisedUserExtensionsMayRequestPermissions;
+  return browser_user.browser()->profile()->GetPrefs()->GetBoolean(pref) ==
+         static_cast<bool>(toggle.state);
+}
+
 net::NetworkTrafficAnnotationTag TestStateSeedTag() {
   return net::DefineNetworkTrafficAnnotation(
       "supervised_user_test_state_seeding",
@@ -208,7 +234,6 @@ bool UrlFiltersAreEmpty(const FamilyMember& family_member) {
       ->GetURLFilter()
       ->IsManualHostsEmpty();
 }
-
 }  // namespace
 
 BrowserState::~BrowserState() = default;
@@ -227,6 +252,21 @@ BrowserState BrowserState::AllowSite(const GURL& gurl) {
 BrowserState BrowserState::BlockSite(const GURL& gurl) {
   return BrowserState(new DefineManualSiteListIntent(
       DefineManualSiteListIntent::BlockUrl(gurl)));
+}
+BrowserState BrowserState::AdvancedSettingsToggles(
+    FamilyLinkToggleConfiguration extensions_toggle,
+    FamilyLinkToggleConfiguration permissions_toggle) {
+  return BrowserState(
+      new ToggleIntent({extensions_toggle, permissions_toggle}));
+}
+BrowserState BrowserState::SetAdvancedSettingsDefault() {
+  FamilyLinkToggleConfiguration extensions_toggle(
+      {.type = FamilyLinkToggleType::kExtensionsToggle,
+       .state = FamilyLinkToggleState::kDisabled});
+  FamilyLinkToggleConfiguration permissions_toggle(
+      {.type = FamilyLinkToggleType::kPermissionsToggle,
+       .state = FamilyLinkToggleState::kEnabled});
+  return AdvancedSettingsToggles(extensions_toggle, permissions_toggle);
 }
 
 void BrowserState::Seed(const FamilyMember& supervising_user,
@@ -285,8 +325,8 @@ std::string BrowserState::DefineManualSiteListIntent::GetRequest() const {
       kidsmanagement::SAFE_SITES);
   return request.SerializeAsString();
 }
-const FetcherConfig& BrowserState::DefineManualSiteListIntent::GetConfig()
-    const {
+const supervised_user::FetcherConfig&
+BrowserState::DefineManualSiteListIntent::GetConfig() const {
   return kDefineChromeTestStateConfig;
 }
 std::string BrowserState::DefineManualSiteListIntent::ToString() const {
@@ -309,6 +349,61 @@ bool BrowserState::DefineManualSiteListIntent::Check(
       UrlFiltersAreConfigured(browser_user, allowed_url_, blocked_url_);
   LOG(WARNING) << "BrowserState::DefineManualSiteListIntent = "
                << (result ? "true" : "false");
+  return result;
+}
+
+BrowserState::ToggleIntent::ToggleIntent(
+    std::list<FamilyLinkToggleConfiguration> toggle_list)
+    : toggle_list_(std::move(toggle_list)) {}
+
+BrowserState::ToggleIntent::~ToggleIntent() = default;
+
+std::string BrowserState::ToggleIntent::GetRequest() const {
+  kidsmanagement::DefineChromeTestStateRequest request;
+  for (const auto& toggle : toggle_list_) {
+    if (toggle.type == FamilyLinkToggleType::kExtensionsToggle) {
+      request.mutable_url_filtering_settings()->set_can_add_extensions(
+          static_cast<bool>(toggle.state));
+    }
+    if (toggle.type == FamilyLinkToggleType::kPermissionsToggle) {
+      request.mutable_url_filtering_settings()
+          ->set_websites_can_request_permissions(
+              static_cast<bool>(toggle.state));
+    }
+  }
+  return request.SerializeAsString();
+}
+
+const FetcherConfig& BrowserState::ToggleIntent::GetConfig() const {
+  return kDefineChromeTestStateConfig;
+}
+
+std::string BrowserState::ToggleIntent::ToString() const {
+  std::vector<std::string> bits;
+  bits.push_back("Define[");
+  for (const auto& toggle : toggle_list_) {
+    bits.push_back(GetToggleAbbrev(toggle.type) + " = ");
+    bits.push_back((static_cast<bool>(toggle.state) ? "true" : "false") +
+                   std::string(" "));
+  }
+  bits.push_back("]");
+  return base::StrCat(bits);
+}
+
+bool BrowserState::ToggleIntent::Check(const FamilyMember& browser_user) const {
+  bool result = true;
+  for (const auto& toggle : toggle_list_) {
+    bool toggle_has_expected_value =
+        ToggleHasExpectedValue(browser_user, toggle);
+    // Note: we do not exit the loop early on a false condition as we want
+    // to print all the false conditions for debugging purposes.
+    if (!toggle_has_expected_value) {
+      LOG(WARNING) << "BrowserState::ToggleIntent[" +
+                          GetToggleAbbrev(toggle.type) + "] = "
+                   << (toggle_has_expected_value ? "true" : "false");
+    }
+    result = result && toggle_has_expected_value;
+  }
   return result;
 }
 

@@ -112,6 +112,16 @@ message DefineChromeTestStateRequest {
     // Website exceptions to be added in the exception list on top of the filter
     // level
     repeated WebsiteException exceptions = 2;
+
+    // Whether websites can request child sensitive information such as access
+    // to their camera, microphone and location.
+    optional bool websites_can_request_permissions = 3;
+
+    // Whether cookies can be blocked by the child.
+    optional bool can_block_cookies = 4;
+
+    // Whether child can add extensions on Chrome.
+    optional bool can_add_extensions = 5;
   }
 }
 

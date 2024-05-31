@@ -29,6 +29,25 @@ namespace supervised_user {
 
 SupervisedUserService* GetSupervisedUserService(const FamilyMember& member);
 
+// State of a Family Link toggle.
+enum class FamilyLinkToggleState : bool {
+  kEnabled = true,
+  kDisabled = false,
+};
+
+// Toggles provided in the FL Advanced Settings parental controls.
+enum class FamilyLinkToggleType : int {
+  kPermissionsToggle = 0,
+  kExtensionsToggle = 1,
+  kCookiesToggle = 2
+};
+
+// Configured Family Link toggle.
+struct FamilyLinkToggleConfiguration {
+  const FamilyLinkToggleType type;
+  const FamilyLinkToggleState state;
+};
+
 // Creates requests and conditions associated with given state.
 class BrowserState {
  public:
@@ -90,6 +109,22 @@ class BrowserState {
     std::optional<GURL> blocked_url_;
   };
 
+  // Defines configuration for a list of given boolean toggles.
+  class ToggleIntent : public Intent {
+   public:
+    explicit ToggleIntent(std::list<FamilyLinkToggleConfiguration> toggle_list);
+    ~ToggleIntent() override;
+
+    // Intent implementation:
+    std::string GetRequest() const override;
+    const FetcherConfig& GetConfig() const override;
+    std::string ToString() const override;
+    bool Check(const FamilyMember& browser_user) const override;
+
+   private:
+    std::list<FamilyLinkToggleConfiguration> toggle_list_;
+  };
+
   // Use those static constructors to request state as indicated by name.
   // Clears url filter lists and filter settings to server-side defaults. After
   // issuing, url filter lists are empty. FilteringLevel is unset.
@@ -102,7 +137,14 @@ class BrowserState {
   // After issuing, FilteringLevel is set to SAFE_SITES and gurl is added to
   // block list of filtered urls.
   static BrowserState BlockSite(const GURL& gurl);
-
+  // Sets the Advanced Setting toggles (Permissions, Extensions, Cookies) to
+  // their default values.
+  static BrowserState SetAdvancedSettingsDefault();
+  // After issuing, Permissions and Extensions toggles are set to the given
+  // values.
+  static BrowserState AdvancedSettingsToggles(
+      FamilyLinkToggleConfiguration extensions_toggle,
+      FamilyLinkToggleConfiguration permissions_toggle);
   ~BrowserState();
 
   // Tests whether the browser is in the intended state. The state is checked
