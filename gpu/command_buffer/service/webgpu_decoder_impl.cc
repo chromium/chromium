@@ -2033,6 +2033,8 @@ error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
   uint32_t id = static_cast<uint32_t>(c.id);
   uint32_t generation = static_cast<uint32_t>(c.generation);
   wgpu::TextureUsage usage = static_cast<wgpu::TextureUsage>(c.usage);
+  wgpu::TextureUsage internal_usage =
+      static_cast<wgpu::TextureUsage>(c.internal_usage);
   MailboxFlags flags = static_cast<MailboxFlags>(c.flags);
   uint32_t view_format_count = static_cast<uint32_t>(c.view_format_count);
 
@@ -2075,6 +2077,11 @@ error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
          view_format_count * sizeof(wgpu::TextureFormat));
 
   if (usage & ~kAllowedMailboxTextureUsages) {
+    DLOG(ERROR) << "AssociateMailbox: Invalid usage";
+    return error::kInvalidArguments;
+  }
+
+  if (internal_usage & ~kAllowedMailboxTextureUsages) {
     DLOG(ERROR) << "AssociateMailbox: Invalid usage";
     return error::kInvalidArguments;
   }

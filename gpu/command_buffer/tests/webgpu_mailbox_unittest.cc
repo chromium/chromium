@@ -319,6 +319,20 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
               ExecuteImmediateCmd(decoder, cmd.cmd, sizeof(mailbox.name)));
         }
 
+        // Error case: invalid internal texture usage.
+        {
+          AssociateMailboxCmdStorage cmd;
+          cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
+                       reservation.id, reservation.generation,
+                       WGPUTextureUsage_TextureBinding,
+                       WGPUTextureUsage_Force32, webgpu::WEBGPU_MAILBOX_NONE,
+                       0u, ComputeNumEntries(sizeof(mailbox.name)),
+                       reinterpret_cast<const GLuint*>(&mailbox.name));
+          EXPECT_EQ(
+              error::kInvalidArguments,
+              ExecuteImmediateCmd(decoder, cmd.cmd, sizeof(mailbox.name)));
+        }
+
         // Prep packed data for packing view formats and the mailbox.
         std::vector<GLuint> packed_data;
         packed_data.resize(sizeof(mailbox.name) / sizeof(uint32_t));
