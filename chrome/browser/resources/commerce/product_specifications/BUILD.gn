@@ -23,12 +23,16 @@ build_webui("build") {
     "table.ts",
   ]
 
+  css_files = [ "loading_state.css" ]
+
   mojo_files_deps = [
     "//ui/webui/resources/cr_components/commerce:mojo_bindings_ts__generator",
   ]
   mojo_files = [ "$root_gen_dir/ui/webui/resources/cr_components/commerce/shopping_service.mojom-webui.ts" ]
 
   non_web_component_files = [
+    "loading_state.html.ts",
+    "loading_state.ts",
     "router.ts",
     "utils.ts",
   ]
@@ -37,6 +41,7 @@ build_webui("build") {
 
   ts_composite = true
   ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/commerce:build_ts",

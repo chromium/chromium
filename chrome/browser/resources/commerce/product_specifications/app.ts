@@ -4,6 +4,7 @@
 
 import '../strings.m.js';
 import './header.js';
+import './loading_state.js';
 import './new_column_selector.js';
 import './product_selector.js';
 import './table.js';
@@ -26,6 +27,11 @@ import type {TableColumn, TableElement, TableRow} from './table.js';
 interface AggregatedProductData {
   info: ProductInfo;
   spec: ProductSpecificationsProduct|null;
+}
+
+interface LoadingState {
+  loading: boolean;
+  urlCount: number;
 }
 
 function aggregateProductDataByClusterId(
@@ -61,11 +67,7 @@ export class ProductSpecificationsElement extends PolymerElement {
 
   static get properties() {
     return {
-      loading_: {
-        type: Boolean,
-        value: false,
-      },
-
+      loadingState_: Object,
       setName_: String,
 
       showEmptyState_: {
@@ -84,8 +86,8 @@ export class ProductSpecificationsElement extends PolymerElement {
     };
   }
 
-  private minLoadingAnimationMs_: number = 500;
-  private loading_: boolean;
+  private minLoadingAnimationMs_: number = 50000;
+  private loadingState_: LoadingState = {loading: false, urlCount: 0};
   private setName_: string;
   private showEmptyState_: boolean;
   private specsTable_: {columns: TableColumn[], rows: TableRow[]};
@@ -156,7 +158,7 @@ export class ProductSpecificationsElement extends PolymerElement {
   private async populateTable_(urls: string[]) {
     const start = Date.now();
     this.showEmptyState_ = false;
-    this.loading_ = true;
+    this.loadingState_ = {loading: true, urlCount: urls.length};
 
     let aggregatedDatas: Record<string, AggregatedProductData> = {};
     const rows: TableRow[] = [];
@@ -212,7 +214,7 @@ export class ProductSpecificationsElement extends PolymerElement {
       rows,
     };
     this.showEmptyState_ = this.specsTable_.columns.length === 0;
-    this.loading_ = false;
+    this.loadingState_ = {loading: false, urlCount: 0};
   }
 
   override disconnectedCallback() {
@@ -232,7 +234,7 @@ export class ProductSpecificationsElement extends PolymerElement {
   }
 
   private showTable_(): boolean {
-    return !this.loading_ && !this.showEmptyState_;
+    return !this.loadingState_.loading && !this.showEmptyState_;
   }
 
   private addToNewGroup_() {
