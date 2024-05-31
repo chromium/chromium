@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "base/functional/function_ref.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_geometry.h"
@@ -16,6 +16,7 @@
 
 namespace blink {
 
+class ComputeIntersectionsContext;
 class Element;
 class IntersectionObserver;
 class IntersectionObserverEntry;
@@ -69,8 +70,8 @@ class CORE_EXPORT IntersectionObservation final
   int64_t ComputeIntersection(
       unsigned flags,
       gfx::Vector2dF accumulated_scroll_delta_since_last_update,
-      std::optional<base::TimeTicks>& monotonic_time,
-      std::optional<IntersectionGeometry::RootGeometry>& root_geometry);
+      ComputeIntersectionsContext&);
+  void ComputeIntersectionImmediately(ComputeIntersectionsContext&);
   gfx::Vector2dF MinScrollDeltaToUpdate() const;
   void TakeRecords(HeapVector<Member<IntersectionObserverEntry>>&);
   void Disconnect();
@@ -82,17 +83,17 @@ class CORE_EXPORT IntersectionObservation final
 
  private:
   bool ShouldCompute(unsigned flags) const;
-  bool MaybeDelayAndReschedule(unsigned flags, DOMHighResTimeStamp timestamp);
+  bool MaybeDelayAndReschedule(unsigned flags, ComputeIntersectionsContext&);
   unsigned GetIntersectionGeometryFlags(unsigned compute_flags) const;
   // Inspect the geometry to see if there has been a transition event; if so,
   // generate a notification and schedule it for delivery.
   void ProcessIntersectionGeometry(const IntersectionGeometry& geometry,
-                                   DOMHighResTimeStamp timestamp);
+                                   ComputeIntersectionsContext&);
 
   Member<IntersectionObserver> observer_;
   WeakMember<Element> target_;
   HeapVector<Member<IntersectionObserverEntry>> entries_;
-  DOMHighResTimeStamp last_run_time_;
+  base::TimeTicks last_run_time_;
 
   IntersectionGeometry::CachedRects cached_rects_;
 

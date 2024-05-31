@@ -31,15 +31,12 @@ Document& TrackingDocument(const IntersectionObservation* observation) {
 
 IntersectionObservation::IntersectionObservation(IntersectionObserver& observer,
                                                  Element& target)
-    : observer_(observer),
-      target_(&target),
-      last_run_time_(-observer.GetEffectiveDelay()) {}
+    : observer_(observer), target_(&target) {}
 
 int64_t IntersectionObservation::ComputeIntersection(
     unsigned compute_flags,
     gfx::Vector2dF accumulated_scroll_delta_since_last_update,
-    std::optional<base::TimeTicks>& monotonic_time,
-    std::optional<IntersectionGeometry::RootGeometry>& root_geometry) {
+    ComputeIntersectionsContext& context) {
   DCHECK(Observer());
   cached_rects_.min_scroll_delta_to_update -=
       accumulated_scroll_delta_since_last_update;
@@ -66,13 +63,12 @@ int64_t IntersectionObservation::ComputeIntersection(
   if (!ShouldCompute(compute_flags)) {
     return 0;
   }
-
-  if (!monotonic_time.has_value())
-    monotonic_time = base::DefaultTickClock::GetInstance()->NowTicks();
-  DOMHighResTimeStamp timestamp = observer_->GetTimeStamp(*monotonic_time);
-  if (MaybeDelayAndReschedule(compute_flags, timestamp)) {
+  if (MaybeDelayAndReschedule(compute_flags, context)) {
     return 0;
   }
+
+  last_run_time_ = context.GetMonotonicTime();
+  needs_update_ = false;
 
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
   std::optional<IntersectionGeometry::CachedRects> cached_rects_backup;
@@ -101,8 +97,6 @@ int64_t IntersectionObservation::ComputeIntersection(
       cached_rects_backup.emplace(cached_rects_);
 #else
       // This is equivalent to a full update.
-      last_run_time_ = timestamp;
-      needs_update_ = false;
       return 1;
 #endif
     }
@@ -120,7 +114,7 @@ int64_t IntersectionObservation::ComputeIntersection(
       observer_->thresholds(),
       honor_margins ? observer_->TargetMargin() : empty_margin,
       honor_margins ? observer_->ScrollMargin() : empty_margin, geometry_flags,
-      root_geometry, &cached_rects_);
+      context.GetRootGeometry(*observer_, compute_flags), &cached_rects_);
 
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
   if (cached_rects_backup) {
@@ -151,16 +145,19 @@ int64_t IntersectionObservation::ComputeIntersection(
     }
     CHECK_EQ(last_is_visible_, geometry.IsVisible());
     cached_rects_ = cached_rects_backup.value();
-    last_run_time_ = timestamp;
-    needs_update_ = false;
     return 1;
   }
 #endif
 
-  ProcessIntersectionGeometry(geometry, timestamp);
-  last_run_time_ = timestamp;
-  needs_update_ = false;
+  ProcessIntersectionGeometry(geometry, context);
   return geometry.DidComputeGeometry() ? 1 : 0;
+}
+
+void IntersectionObservation::ComputeIntersectionImmediately(
+    ComputeIntersectionsContext& context) {
+  ComputeIntersection(kImplicitRootObserversNeedUpdate |
+                          kExplicitRootObserversNeedUpdate | kIgnoreDelay,
+                      IntersectionGeometry::kInfiniteScrollDelta, context);
 }
 
 gfx::Vector2dF IntersectionObservation::MinScrollDeltaToUpdate() const {
@@ -243,13 +240,23 @@ bool IntersectionObservation::ShouldCompute(unsigned flags) const {
 
 bool IntersectionObservation::MaybeDelayAndReschedule(
     unsigned flags,
-    DOMHighResTimeStamp timestamp) {
-  if (timestamp == -1)
-    return true;
-  base::TimeDelta delay = base::Milliseconds(observer_->GetEffectiveDelay() -
-                                             (timestamp - last_run_time_));
-  if (!(flags & kIgnoreDelay) && delay.is_positive()) {
-    TrackingDocument(this).View()->ScheduleAnimation(delay);
+    ComputeIntersectionsContext& context) {
+  if (flags & kIgnoreDelay) {
+    return false;
+  }
+  if (last_run_time_.is_null()) {
+    return false;
+  }
+  base::TimeDelta delay = observer_->GetEffectiveDelay() -
+                          (context.GetMonotonicTime() - last_run_time_);
+  if (delay.is_positive()) {
+    if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+      context.UpdateNextRunDelay(delay);
+    } else {
+      // TODO(crbug.com/40873583): Handle the case that the frame becomes
+      // throttled during the delay,
+      TrackingDocument(this).View()->ScheduleAnimation(delay);
+    }
     return true;
   }
   return false;
@@ -282,13 +289,13 @@ unsigned IntersectionObservation::GetIntersectionGeometryFlags(
 
 void IntersectionObservation::ProcessIntersectionGeometry(
     const IntersectionGeometry& geometry,
-    DOMHighResTimeStamp timestamp) {
+    ComputeIntersectionsContext& context) {
   CHECK_LT(geometry.ThresholdIndex(), kNotFound);
 
   if (last_threshold_index_ != geometry.ThresholdIndex() ||
       last_is_visible_ != geometry.IsVisible()) {
     entries_.push_back(MakeGarbageCollected<IntersectionObserverEntry>(
-        geometry, timestamp, Target()));
+        geometry, context.GetTimeStamp(*Observer()), Target()));
     Observer()->ReportUpdates(*this);
     last_threshold_index_ = geometry.ThresholdIndex();
     last_is_visible_ = geometry.IsVisible();

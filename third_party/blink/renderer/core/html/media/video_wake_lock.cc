@@ -223,7 +223,7 @@ void VideoWakeLock::StartIntersectionObserver() {
   //
   // TODO(crbug.com/1376286): Delay values appear to be broken. If a change
   // occurs during the delay window, the update is dropped entirely...
-  const auto kDelayMs = 0;
+  constexpr base::TimeDelta kDelay;
 
   visibility_observer_ = IntersectionObserver::Create(
       VideoElement().GetDocument(),
@@ -232,7 +232,7 @@ void VideoWakeLock::StartIntersectionObserver() {
       LocalFrameUkmAggregator::kMediaIntersectionObserver,
       IntersectionObserver::Params{
           .thresholds = {visibility_threshold_},
-          .delay = kDelayMs,
+          .delay = kDelay,
       });
   visibility_observer_->observe(&VideoElement());
 
@@ -250,7 +250,7 @@ void VideoWakeLock::StartIntersectionObserver() {
       IntersectionObserver::Params{
           .thresholds = {kSizeThreshold},
           .semantics = IntersectionObserver::kFractionOfRoot,
-          .delay = kDelayMs,
+          .delay = kDelay,
       });
   size_observer_->observe(&VideoElement());
 }

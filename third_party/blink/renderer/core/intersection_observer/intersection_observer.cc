@@ -270,10 +270,10 @@ IntersectionObserver* IntersectionObserver::Create(
 
   Params params = {
       .root = root,
-      .delay = observer_init->delay(),
+      .delay = base::Milliseconds(observer_init->delay()),
       .track_visibility = observer_init->trackVisibility(),
   };
-  if (params.track_visibility && params.delay < 100) {
+  if (params.track_visibility && params.delay < base::Milliseconds(100)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "To enable the 'trackVisibility' option, you must also use a "
@@ -421,14 +421,8 @@ void IntersectionObserver::observe(Element* target,
       frame_view->ScheduleAnimation();
     }
   } else if (delegate_->NeedsInitialObservationWithDetachedTarget()) {
-    std::optional<base::TimeTicks> monotonic_time;
-    std::optional<IntersectionGeometry::RootGeometry> root_geometry;
-    observation->ComputeIntersection(
-        IntersectionObservation::kImplicitRootObserversNeedUpdate |
-            IntersectionObservation::kExplicitRootObserversNeedUpdate |
-            IntersectionObservation::kIgnoreDelay,
-        IntersectionGeometry::kInfiniteScrollDelta, monotonic_time,
-        root_geometry);
+    ComputeIntersectionsContext context;
+    observation->ComputeIntersectionImmediately(context);
   }
 }
 
@@ -483,53 +477,37 @@ String IntersectionObserver::scrollMargin() const {
   return StringifyMargin(ScrollMargin());
 }
 
-DOMHighResTimeStamp IntersectionObserver::GetEffectiveDelay() const {
-  return throttle_delay_enabled ? delay_ : 0;
-}
-
-DOMHighResTimeStamp IntersectionObserver::GetTimeStamp(
-    base::TimeTicks monotonic_time) const {
-  return DOMWindowPerformance::performance(
-             *To<LocalDOMWindow>(delegate_->GetExecutionContext()))
-      ->MonotonicTimeToDOMHighResTimeStamp(monotonic_time);
+base::TimeDelta IntersectionObserver::GetEffectiveDelay() const {
+  return throttle_delay_enabled ? delay_ : base::TimeDelta();
 }
 
 int64_t IntersectionObserver::ComputeIntersections(
     unsigned flags,
-    std::optional<base::TimeTicks>& monotonic_time,
-    gfx::Vector2dF accumulated_scroll_delta_since_last_update) {
+    ComputeIntersectionsContext& context) {
   DCHECK(!RootIsImplicit());
+  DCHECK(!RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
   if (!RootIsValid() || !GetExecutionContext() || observations_.empty())
     return 0;
 
-  std::optional<IntersectionGeometry::RootGeometry> root_geometry;
   int64_t result = 0;
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    for (auto& observation : observations_) {
-      result += observation->ComputeIntersection(
-          flags, accumulated_scroll_delta_since_last_update, monotonic_time,
-          root_geometry);
-    }
-  } else {
-    // If we're processing post-layout deliveries only and we're not a
-    // post-layout delivery observer, then return early. Likewise, return if we
-    // need to compute non-post-layout-delivery observations but the observer
-    // behavior is post-layout.
-    bool post_layout_delivery_only =
-        flags & IntersectionObservation::kPostLayoutDeliveryOnly;
-    bool is_post_layout_delivery_observer =
-        GetDeliveryBehavior() ==
-        IntersectionObserver::kDeliverDuringPostLayoutSteps;
-    if (post_layout_delivery_only != is_post_layout_delivery_observer) {
-      return 0;
-    }
-    // TODO(szager): Is this copy necessary?
-    HeapVector<Member<IntersectionObservation>> observations_to_process(
-        observations_);
-    for (auto& observation : observations_to_process) {
-      result += observation->ComputeIntersection(flags, gfx::Vector2dF(),
-                                                 monotonic_time, root_geometry);
-    }
+  // If we're processing post-layout deliveries only and we're not a
+  // post-layout delivery observer, then return early. Likewise, return if we
+  // need to compute non-post-layout-delivery observations but the observer
+  // behavior is post-layout.
+  bool post_layout_delivery_only =
+      flags & IntersectionObservation::kPostLayoutDeliveryOnly;
+  bool is_post_layout_delivery_observer =
+      GetDeliveryBehavior() ==
+      IntersectionObserver::kDeliverDuringPostLayoutSteps;
+  if (post_layout_delivery_only != is_post_layout_delivery_observer) {
+    return 0;
+  }
+  // TODO(szager): Is this copy necessary?
+  HeapVector<Member<IntersectionObservation>> observations_to_process(
+      observations_);
+  for (auto& observation : observations_to_process) {
+    result +=
+        observation->ComputeIntersection(flags, gfx::Vector2dF(), context);
   }
   return result;
 }

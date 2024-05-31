@@ -69,8 +69,11 @@ class CORE_EXPORT IntersectionGeometry {
 
     float zoom = 1.0f;
     // The root object's content rect in the root object's own coordinate system
+    gfx::RectF pre_margin_local_root_rect;
     gfx::RectF local_root_rect;
     gfx::Transform root_to_view_transform;
+
+    void UpdateMargin(const Vector<Length>& margin);
   };
 
   struct CachedRects {

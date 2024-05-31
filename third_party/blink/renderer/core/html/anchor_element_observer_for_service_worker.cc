@@ -69,7 +69,7 @@ AnchorElementObserverForServiceWorker::AnchorElementObserverForServiceWorker(
         IntersectionObserver::Params{
             .thresholds = {std::numeric_limits<float>::min()},
             .behavior = IntersectionObserver::kPostTaskToDeliver,
-            .delay = static_cast<DOMHighResTimeStamp>(
+            .delay = base::Milliseconds(
                 features::
                     kSpeculativeServiceWorkerWarmUpIntersectionObserverDelay
                         .Get())});

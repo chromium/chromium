@@ -275,7 +275,7 @@ HTMLPermissionElement::HTMLPermissionElement(Document& document)
           .thresholds = {1.0f},
           .semantics = IntersectionObserver::kFractionOfTarget,
           .behavior = IntersectionObserver::kDeliverDuringPostLifecycleSteps,
-          .delay = 100,
+          .delay = base::Milliseconds(100),
           .track_visibility = true,
       });
 

@@ -56,12 +56,12 @@ wtf_size_t GetMaxNumberOfObservations() {
   return max_observations;
 }
 
-DOMHighResTimeStamp GetIntersectionObserverDelay() {
-  static const DOMHighResTimeStamp intersection_observer_delay = []() {
+base::TimeDelta GetIntersectionObserverDelay() {
+  static const base::TimeDelta intersection_observer_delay = []() {
     const base::FeatureParam<base::TimeDelta> param{
         &features::kNavigationPredictor, "intersection_observer_delay",
         base::Milliseconds(100)};
-    return static_cast<DOMHighResTimeStamp>(param.Get().InMillisecondsF());
+    return param.Get();
   }();
   return intersection_observer_delay;
 }

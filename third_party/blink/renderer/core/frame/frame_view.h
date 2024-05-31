@@ -18,6 +18,7 @@
 namespace blink {
 
 class Frame;
+class ComputeIntersectionsContext;
 struct IntrinsicSizingInfo;
 
 class CORE_EXPORT FrameView : public EmbeddedContentView {
@@ -32,7 +33,7 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
   // is true for any tracked observer in the frame subtree).
   virtual bool UpdateViewportIntersectionsForSubtree(
       unsigned parent_flags,
-      std::optional<base::TimeTicks>& monotonic_time) = 0;
+      ComputeIntersectionsContext&) = 0;
 
   virtual bool GetIntrinsicSizingInfo(IntrinsicSizingInfo&) const = 0;
   virtual bool HasIntrinsicSizingInfo() const = 0;

@@ -54,15 +54,6 @@ PhysicalBoxStrut ResolveMargin(const Vector<Length>& margin,
 }
 
 // Expand rect by the given margin values.
-void ApplyMargin(PhysicalRect& expand_rect,
-                 const Vector<Length>& margin,
-                 float zoom,
-                 const gfx::SizeF& reference_size) {
-  if (margin.empty())
-    return;
-  expand_rect.Expand(ResolveMargin(margin, reference_size, zoom));
-}
-
 void ApplyMargin(gfx::RectF& expand_rect,
                  const Vector<Length>& margin,
                  float zoom,
@@ -74,13 +65,11 @@ void ApplyMargin(gfx::RectF& expand_rect,
       gfx::OutsetsF(ResolveMargin(margin, reference_size, zoom)));
 }
 
-// Returns the root intersect rect for the given root object, with the given
-// margins applied, in the coordinate system of the root object.
+// Returns the root intersect rect for the given root object, before applying
+// margins, in the coordinate system of the root object.
 //
-//   https://w3c.github.io/IntersectionObserver/#intersectionobserver-root-intersection-rectangle
-gfx::RectF InitializeRootRect(const LayoutObject* root,
-                              const Vector<Length>& margin) {
-  DCHECK(margin.empty() || margin.size() == 4);
+// https://w3c.github.io/IntersectionObserver/#intersectionobserver-root-intersection-rectangle
+gfx::RectF InitializeRootRect(const LayoutObject* root) {
   PhysicalRect result;
   auto* layout_view = DynamicTo<LayoutView>(root);
   if (layout_view && root->GetDocument().GetFrame()->IsOutermostMainFrame()) {
@@ -106,8 +95,6 @@ gfx::RectF InitializeRootRect(const LayoutObject* root,
   } else {
     result = To<LayoutInline>(root)->PhysicalLinesBoundingBox();
   }
-  ApplyMargin(result, margin, root->StyleRef().EffectiveZoom(),
-              gfx::SizeF(result.size));
   return gfx::RectF(result);
 }
 
@@ -236,7 +223,8 @@ IntersectionGeometry::RootGeometry::RootGeometry(const LayoutObject* root,
     return;
   }
   zoom = root->StyleRef().EffectiveZoom();
-  local_root_rect = InitializeRootRect(root, margin);
+  pre_margin_local_root_rect = InitializeRootRect(root);
+  UpdateMargin(margin);
   if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
     root_to_view_transform = ObjectToViewTransform(*root);
   } else {
@@ -244,6 +232,12 @@ IntersectionGeometry::RootGeometry::RootGeometry(const LayoutObject* root,
     root->MapLocalToAncestor(nullptr, transform_state, 0);
     root_to_view_transform = transform_state.AccumulatedTransform();
   }
+}
+
+void IntersectionGeometry::RootGeometry::UpdateMargin(
+    const Vector<Length>& margin) {
+  local_root_rect = pre_margin_local_root_rect;
+  ApplyMargin(local_root_rect, margin, zoom, pre_margin_local_root_rect.size());
 }
 
 bool IntersectionGeometry::RootGeometry::operator==(
@@ -614,7 +608,7 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
     target_rect_ = InitializeTargetRect(target, flags_);
     pre_margin_target_rect_is_empty = target_rect_.IsEmpty();
     ApplyMargin(target_rect_, target_margin, root_geometry.zoom,
-                InitializeRootRect(root, {} /* margin */).size());
+                root_geometry.pre_margin_local_root_rect.size());
 
     // We have to map/clip target_rect_ up to the root, so we begin with the
     // intersection rect in target's coordinate system. After ClipToRoot, it
