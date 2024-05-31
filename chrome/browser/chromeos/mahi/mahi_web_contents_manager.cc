@@ -353,18 +353,26 @@ void MahiWebContentsManager::RequestPDFContent(
     return;
   }
 
-  std::vector<content::WebContents*> inner_contents =
-      focused_web_contents_ ? focused_web_contents_->GetInnerWebContents()
-                            : std::vector<content::WebContents*>();
+  // If OOPIF PDF is enabled, we need to observe the focused web contents for
+  // a11y changes. Otherwise, we need to observe the inner web contents.
+  content::WebContents* web_contents_to_observe = focused_web_contents_;
+  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
+    std::vector<content::WebContents*> inner_contents =
+        focused_web_contents_ ? focused_web_contents_->GetInnerWebContents()
+                              : std::vector<content::WebContents*>();
 
-  if (inner_contents.size() != 1u) {
-    LOG(ERROR) << "Couldn't find inner WebContents contains PDF.";
-    std::move(callback).Run(nullptr);
-    return;
+    if (inner_contents.size() != 1u) {
+      LOG(ERROR) << "Couldn't find inner WebContents contains PDF.";
+      std::move(callback).Run(nullptr);
+      return;
+    }
+
+    web_contents_to_observe = inner_contents[0];
   }
 
   pdf_observer_ = std::make_unique<MahiPDFObserver>(
-      inner_contents[0], ui::kAXModeWebContentsOnly, rfh_pdf->GetAXTreeID(),
+      web_contents_to_observe, ui::kAXModeWebContentsOnly,
+      rfh_pdf->GetAXTreeID(),
       base::BindOnce(&MahiWebContentsManager::OnGetAXTreeUpdatesForPDF,
                      weak_pointer_factory_.GetWeakPtr(), std::move(callback)));
 }
