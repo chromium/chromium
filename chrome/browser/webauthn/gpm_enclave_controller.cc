@@ -337,6 +337,13 @@ bool ExpiryTooSoon(base::Time expiry) {
   return expiry < now || (expiry - now) < base::Days(7 * 18);
 }
 
+void ResetDeclinedBootstrappingCount(AuthenticatorRequestDialogModel* model) {
+  Profile::FromBrowserContext(model->GetRenderFrameHost()->GetBrowserContext())
+      ->GetPrefs()
+      ->SetInteger(webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount,
+                   0);
+}
+
 }  // namespace
 
 GPMEnclaveController::GPMEnclaveController(
@@ -665,6 +672,7 @@ void GPMEnclaveController::OnKeysStored() {
 }
 
 void GPMEnclaveController::OnDeviceAdded(bool success) {
+  ResetDeclinedBootstrappingCount(model_.get());
   if (!success) {
     model_->SetStep(Step::kGPMError);
     return;
@@ -920,16 +928,15 @@ void GPMEnclaveController::OnGpmPinChanged(bool success) {
 void GPMEnclaveController::OnTrustThisComputer() {
   CHECK(model_->step() == Step::kTrustThisComputerAssertion ||
         model_->step() == Step::kTrustThisComputerCreation);
+  // Clicking through the bootstrapping dialog resets the count even if it
+  // doesn't end up being successful.
+  ResetDeclinedBootstrappingCount(model_.get());
   if (model_->step() == Step::kTrustThisComputerCreation &&
       model_->is_off_the_record) {
     last_step_ = Step::kTrustThisComputerCreation;
     model_->SetStep(Step::kGPMConfirmOffTheRecordCreate);
     return;
   }
-  Profile::FromBrowserContext(model_->GetRenderFrameHost()->GetBrowserContext())
-      ->GetPrefs()
-      ->SetInteger(webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount,
-                   0);
   model_->SetStep(Step::kRecoverSecurityDomain);
 }
 
