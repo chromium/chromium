@@ -266,8 +266,9 @@ class OverviewSessionTest
 
   // OverviewTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(features::kDesksTemplates,
-                                              DeskTemplatesOn());
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kDesksTemplates, DeskTemplatesOn()},
+         {features::kSnapGroup, true}});
 
     OverviewTestBase::SetUp();
     Shell::Get()->overview_controller()->set_windows_have_snapshot_for_test(
@@ -7046,7 +7047,8 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
  public:
   SplitViewOverviewSessionTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kFasterSplitScreenSetup,
+        /*enabled_features=*/{features::kSnapGroup,
+                              features::kFasterSplitScreenSetup,
                               features::kOsSettingsRevampWayfinding},
         /*disabled_features=*/{});
   }
@@ -11070,7 +11072,7 @@ class OakTest : public OverviewTestBase {
  public:
   OakTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kForestFeature,
+        /*enabled_features=*/{features::kForestFeature, features::kSnapGroup,
                               features::kFasterSplitScreenSetup,
                               features::kOsSettingsRevampWayfinding},
         /*disabled_features=*/{});

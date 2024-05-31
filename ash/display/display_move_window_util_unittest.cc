@@ -8,6 +8,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
@@ -71,7 +72,8 @@ class DisplayMoveWindowUtilTest : public AshTestBase {
  public:
   DisplayMoveWindowUtilTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kFasterSplitScreenSetup,
+        /*enabled_features=*/{features::kSnapGroup,
+                              features::kFasterSplitScreenSetup,
                               features::kOsSettingsRevampWayfinding},
         /*disabled_features=*/{});
   }

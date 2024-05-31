@@ -85,7 +85,7 @@ class TabletModeWindowManagerTest : public AshTestBase {
   // set, |max_size| is the upper limiting size for the window,
   // whereas an empty size means that there is no limit.
   struct InitParams {
-    InitParams(aura::client::WindowType t) : type(t) {}
+    explicit InitParams(aura::client::WindowType t) : type(t) {}
 
     aura::client::WindowType type = aura::client::WINDOW_TYPE_NORMAL;
     gfx::Rect bounds;
@@ -187,6 +187,9 @@ class TabletModeWindowManagerTest : public AshTestBase {
   SplitViewController* split_view_controller() {
     return SplitViewController::Get(Shell::GetPrimaryRootWindow());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{features::kSnapGroup};
 };
 
 // Test that creating the object and destroying it without any windows should

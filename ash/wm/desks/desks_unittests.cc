@@ -502,6 +502,7 @@ class DesksTest : public AshTestBase,
         {{features::kFeatureManagement16Desks, GetParam().use_16_desks},
          {features::kPerDeskShelf, GetParam().per_desk_shelf},
          {features::kOverviewNewFocus, GetParam().overview_new_focus},
+         {features::kSnapGroup, true},
          {features::kFasterSplitScreenSetup, true},
          {features::kOsSettingsRevampWayfinding, true}});
 

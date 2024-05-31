@@ -10,6 +10,7 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/wm/core/window_util.h"
 
@@ -60,6 +61,9 @@ class SplitViewMultiDisplayClamshellTest : public AshTestBase {
     }
     return std::make_pair(primary_bounds, secondary_bounds);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{features::kSnapGroup};
 };
 
 // Tests that using the shortcut to move the snapped window to another display

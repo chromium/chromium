@@ -361,6 +361,7 @@ class FasterSplitScreenTest : public OverviewTestBase {
   FasterSplitScreenTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kFasterSplitScreenSetup,
+                              features::kSnapGroup,
                               features::kOsSettingsRevampWayfinding},
         /*disabled_features=*/{});
   }

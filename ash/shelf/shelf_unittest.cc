@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/shelf/shelf.h"
+
 #include <memory>
 #include <utility>
 
@@ -10,7 +12,6 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
-#include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_app_button.h"
 #include "ash/shelf/shelf_controller.h"
 #include "ash/shelf/shelf_layout_manager.h"
@@ -25,6 +26,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -66,6 +68,8 @@ class ShelfTest : public AshTestBase {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_{features::kSnapGroup};
+
   raw_ptr<ShelfView, DanglingUntriaged> shelf_view_ = nullptr;
   raw_ptr<ShelfModel, DanglingUntriaged> shelf_model_ = nullptr;
   std::unique_ptr<ShelfViewTestAPI> test_;

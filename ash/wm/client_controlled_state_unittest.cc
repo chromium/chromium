@@ -79,7 +79,8 @@ class TestClientControlledStateDelegate
  public:
   TestClientControlledStateDelegate() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kFasterSplitScreenSetup,
+        /*enabled_features=*/{features::kSnapGroup,
+                              features::kFasterSplitScreenSetup,
                               features::kOsSettingsRevampWayfinding},
         /*disabled_features=*/{});
   }
