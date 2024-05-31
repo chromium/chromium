@@ -296,8 +296,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
       base::UmaHistogramEnumeration(
           "SBClientPhishing.PreClassificationCheckResult", reason,
           PreClassificationCheckResult::NO_CLASSIFY_MAX);
-      if (base::FeatureList::IsEnabled(kClientSideDetectionImagesCache) &&
-          base::FeatureList::IsEnabled(
+      if (base::FeatureList::IsEnabled(
               kClientSideDetectionDebuggingMetadataCache) &&
           host_ && host_->delegate_->GetPrefs() &&
           IsEnhancedProtectionEnabled(*host_->delegate_->GetPrefs())) {
@@ -412,8 +411,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
           "SBClientPhishing.PreClassificationCheckResult",
           PreClassificationCheckResult::CLASSIFY,
           PreClassificationCheckResult::NO_CLASSIFY_MAX);
-      if (base::FeatureList::IsEnabled(kClientSideDetectionImagesCache) &&
-          base::FeatureList::IsEnabled(
+      if (base::FeatureList::IsEnabled(
               kClientSideDetectionDebuggingMetadataCache) &&
           host_ && host_->delegate_->GetPrefs() &&
           IsEnhancedProtectionEnabled(*host_->delegate_->GetPrefs())) {
@@ -490,8 +488,7 @@ ClientSideDetectionHost::ClientSideDetectionHost(
   // Note: csd_service_ and sb_service will be nullptr here in testing.
   csd_service_ = delegate_->GetClientSideDetectionService();
 
-  if (csd_service_ &&
-      base::FeatureList::IsEnabled(kClientSideDetectionImagesCache)) {
+  if (csd_service_) {
     ClientSideDetectionFeatureCache::CreateForWebContents(web_contents());
     ClientSideDetectionFeatureCache::FromWebContents(web_contents())
         ->AddClearCacheSubscription(csd_service_);
@@ -608,13 +605,11 @@ void ClientSideDetectionHost::VibrationRequested() {
   // Vibration API can be triggered on a page in intervals between 0 and 1
   // seconds. Because of this, we want to only classify once per given URL since
   // a page can send a request multiple vibration at a time.
-  if (base::FeatureList::IsEnabled(kClientSideDetectionImagesCache)) {
-    ClientSideDetectionFeatureCache::CreateForWebContents(web_contents());
-    ClientSideDetectionFeatureCache* feature_cache_map =
-        ClientSideDetectionFeatureCache::FromWebContents(web_contents());
-    if (!feature_cache_map->WasVibrationClassificationTriggered(current_url_)) {
-      MaybeStartPreClassification(ClientSideDetectionType::VIBRATION_API);
-    }
+  ClientSideDetectionFeatureCache::CreateForWebContents(web_contents());
+  ClientSideDetectionFeatureCache* feature_cache_map =
+      ClientSideDetectionFeatureCache::FromWebContents(web_contents());
+  if (!feature_cache_map->WasVibrationClassificationTriggered(current_url_)) {
+    MaybeStartPreClassification(ClientSideDetectionType::VIBRATION_API);
   }
 }
 
@@ -653,11 +648,9 @@ void ClientSideDetectionHost::PhishingDetectionDone(
 
   ClientSideDetectionFeatureCache* feature_cache_map = nullptr;
 
-  if (base::FeatureList::IsEnabled(kClientSideDetectionImagesCache)) {
-    ClientSideDetectionFeatureCache::CreateForWebContents(web_contents());
-    feature_cache_map =
-        ClientSideDetectionFeatureCache::FromWebContents(web_contents());
-  }
+  ClientSideDetectionFeatureCache::CreateForWebContents(web_contents());
+  feature_cache_map =
+      ClientSideDetectionFeatureCache::FromWebContents(web_contents());
 
   phishing_detector_.reset();
 
@@ -827,8 +820,7 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
       "SBClientPhishing.ClientSideDetectionTypeRequest",
       verdict->client_side_detection_type(), ClientSideDetectionType_MAX + 1);
 
-  if (base::FeatureList::IsEnabled(kClientSideDetectionImagesCache) &&
-      base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           kClientSideDetectionDebuggingMetadataCache) &&
       IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
     ClientSideDetectionFeatureCache::CreateForWebContents(web_contents());
@@ -945,8 +937,7 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
         is_phishing);
   }
 
-  if (base::FeatureList::IsEnabled(kClientSideDetectionImagesCache) &&
-      base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           kClientSideDetectionDebuggingMetadataCache) &&
       IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
       response_code.has_value()) {

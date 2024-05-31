@@ -1772,10 +1772,6 @@ TEST_P(PasswordProtectionServiceBaseTest,
 }
 
 TEST_P(PasswordProtectionServiceBaseTest, TestCSDVerdictInCache) {
-  std::vector<base::test::FeatureRef> enabled_features = {};
-  enabled_features.push_back(kClientSideDetectionImagesCache);
-  SetFeatures(enabled_features, {});
-
   LoginReputationClientResponse expected_response =
       CreateVerdictProto(LoginReputationClientResponse::PHISHING,
                          base::Minutes(10), GURL(kTargetUrl).host());
@@ -1817,7 +1813,6 @@ TEST_P(PasswordProtectionServiceBaseTest, TestCSDDebuggingMetadataInCache) {
   }
 
   std::vector<base::test::FeatureRef> enabled_features = {};
-  enabled_features.push_back(kClientSideDetectionImagesCache);
   enabled_features.push_back(kClientSideDetectionDebuggingMetadataCache);
   SetFeatures(enabled_features, {});
 

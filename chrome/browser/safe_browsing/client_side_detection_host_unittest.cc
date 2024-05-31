@@ -1258,7 +1258,6 @@ TEST_F(ClientSideDetectionHostTest,
   }
 
   std::vector<base::test::FeatureRef> enabled_features = {};
-  enabled_features.push_back(kClientSideDetectionImagesCache);
   enabled_features.push_back(kClientSideDetectionDebuggingMetadataCache);
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
   SetFeatures(enabled_features, {});

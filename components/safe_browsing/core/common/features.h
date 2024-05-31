@@ -312,8 +312,6 @@ extern const base::FeatureParam<std::string> kRedWarningSurveyReportTypeFilter;
 // corresponds to "don't care."
 extern const base::FeatureParam<std::string> kRedWarningSurveyDidProceedFilter;
 
-BASE_DECLARE_FEATURE(kClientSideDetectionImagesCache);
-
 BASE_DECLARE_FEATURE(kClientSideDetectionDebuggingMetadataCache);
 
 // Enables Enhanced Safe Browsing promos for iOS.
