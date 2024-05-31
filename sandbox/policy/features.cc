@@ -183,6 +183,15 @@ BASE_FEATURE(kRestrictCloneParameters,
 
 #if BUILDFLAG(IS_WIN)
 bool IsNetworkSandboxSupported() {
+  // Temporary fix to avoid using network sandbox on ARM64 until root cause for
+  // https://crbug.com/40223285 is diagnosed.
+  if (base::win::OSInfo::GetInstance()->GetArchitecture() ==
+          base::win::OSInfo::ARM64_ARCHITECTURE ||
+      base::win::OSInfo::GetInstance()->IsWowX86OnARM64() ||
+      base::win::OSInfo::GetInstance()->IsWowAMD64OnARM64()) {
+    return false;
+  }
+
   // Network service sandbox uses GetNetworkConnectivityHint which is only
   // supported on Windows 10 Build 19041 (20H1) so versions before that wouldn't
   // have a working network change notifier when running in the sandbox.
