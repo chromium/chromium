@@ -90,6 +90,10 @@ struct Config {
   // How long to wait to show the proactive nudge.
   base::TimeDelta proactive_nudge_delay = base::Seconds(3);
 
+  // If true, nudge at most once per field per navigation. If false, at most
+  // once per field per focus.
+  bool proactive_nudge_field_per_navigation = true;
+
   unsigned int nudge_field_change_event_max = 3;
 
   // The duration that the saved state notification is shown before
