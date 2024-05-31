@@ -23,7 +23,6 @@ web_component_files = [
   "navigation_selector.js",
   "navigation_view_panel.js",
   "page_toolbar.js",
-
   "multidevice_setup/button_bar.js",
   "multidevice_setup/multidevice_setup.js",
   "multidevice_setup/password_page.js",
@@ -137,6 +136,7 @@ non_web_component_files_ts = [
   "connectivity/mojo_connectivity_provider.ts",
   "hotspot/cros_hotspot_config.ts",
   "hotspot/fake_hotspot_config.ts",
+  "metrics/structured_metrics_service.ts",
   "network_health/mojo_interface_provider.ts",
   "network_health/network_diagnostics_types.ts",
   "quick_unlock/lock_screen_constants.ts",
@@ -150,6 +150,8 @@ non_web_component_files_ts = [
 
 mojo_files_ts = [
   "bluetooth/hid_preserving_bluetooth_state_controller.mojom-webui.ts",
+  "metrics/structured_metrics_service.mojom-webui.ts",
+  "metrics/event.mojom-webui.ts",
   "connectivity/passpoint.mojom-webui.ts",
   "hotspot/cros_hotspot_config.mojom-webui.ts",
   "shortcut_input_ui/accelerator_actions.mojom-webui.ts",
@@ -164,6 +166,9 @@ mojo_files_ts = [
   "shortcut_input_ui/simulate_right_click_modifier.mojom-webui.ts",
   "shortcut_input_ui/six_pack_shortcut_modifier.mojom-webui.ts",
 ]
+
+# Files that are generated and can skip the preprocess_if_expr step.
+generated_files_ts = [ "metrics/structured_events.ts" ]
 
 icons_html_files = [
   "keyboard_icons.html",
@@ -239,7 +244,8 @@ webui_ts_library("build_ts") {
   tsconfig_base = "//tools/typescript/tsconfig_base_polymer.json"
   root_dir = preprocessed_dir
   out_dir = preprocessed_dir
-  in_files = non_web_component_files_ts + web_component_files_ts + mojo_files_ts
+  in_files = non_web_component_files_ts + web_component_files_ts +
+             mojo_files_ts + generated_files_ts
   composite = true
   deps = [
     "//ash/webui/common/resources/cr_elements:build_ts",
@@ -263,6 +269,7 @@ webui_ts_library("build_ts") {
     "bluetooth:copy_mojo_files",
     "connectivity:copy_mojo_files",
     "hotspot:copy_mojo_files",
+    "metrics:copy_files",
     "shortcut_input_ui:copy_mojo_files",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources/network:onc_mojo",

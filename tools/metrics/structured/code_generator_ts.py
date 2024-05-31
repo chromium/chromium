@@ -16,6 +16,15 @@ class ProjectInfoTs(ProjectInfoBase):
 class EventInfoTs(EventInfoBase):
   """Codegen-related info about an event in Typescript."""
 
+  def __init__(self, event, project_info):
+    super().__init__(event, project_info)
+
+    if self.is_event_sequence == 'true':
+      self.systemUptime = (
+          '{microseconds: BigInt(Math.floor(Date.now() * 1000))}')
+    else:
+      self.systemUptime = 'null'
+
 
 class MetricInfoTs(MetricInfoBase):
   """Codegen-related info about a metric in Typescript."""

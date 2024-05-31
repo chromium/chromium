@@ -121,7 +121,7 @@ IMPL_METRIC_TEMPLATE = """\
 TS_FILE_TEMPLATE = """\
 // Generated from gen_events.py. DO NOT EDIT!
 // source: structured.xml
-import {{Event as StructuredMetricsEvent}} from '//resources/mojo/components/metrics/structured/mojom/event.mojom-webui.js';
+import {{Event as StructuredMetricsEvent}} from './event.mojom-webui.js';
 
 {project_code}
 
@@ -157,7 +157,7 @@ build(): StructuredMetricsEvent {{
     metrics: {{
       {metric_build_code}
     }},
-    systemUptime: {{microseconds: BigInt(Math.floor(Date.now() * 1000))}},
+    systemUptime: {event.systemUptime},
   }};
 }}
 }}
