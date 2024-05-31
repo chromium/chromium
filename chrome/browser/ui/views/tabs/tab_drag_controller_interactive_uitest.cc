@@ -5051,8 +5051,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
   EXPECT_FALSE(browser()->window()->IsVisible());
 }
 
+// TODO(http://crbug/343503164) This test seems to be attempting to induce a
+// fling gesture event, but it currently fails to do so. If a fling gesture
+// event was produced, the detached window should end up minimized.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
-                       FlingOnStartingDrag) {
+                       DISABLED_FlingOnStartingDrag) {
   SetMinFlingVelocity(1);
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -5078,6 +5081,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
   ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
   ASSERT_FALSE(TabDragController::IsActive());
   EXPECT_EQ(2u, browser_list()->size());
+  auto* browser2 = browser_list()->get(1);
+  EXPECT_TRUE(browser2->window()->IsMinimized());
+  EXPECT_FALSE(browser2->window()->IsVisible());
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
