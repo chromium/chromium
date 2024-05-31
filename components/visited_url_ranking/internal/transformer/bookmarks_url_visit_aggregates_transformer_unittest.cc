@@ -85,7 +85,7 @@ class BookmarksURLVisitAggregatesTransformerTest
 };
 
 TEST_F(BookmarksURLVisitAggregatesTransformerTest, Transform) {
-  URLVisitAggregate visit_aggregate = {};
+  URLVisitAggregate visit_aggregate(kSampleSearchUrl);
   visit_aggregate.fetcher_data_map.emplace(
       Fetcher::kSession,
       URLVisitAggregate::TabData(URLVisitAggregate::Tab(

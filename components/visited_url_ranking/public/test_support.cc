@@ -48,7 +48,7 @@ URLVisitAggregate CreateSampleURLVisitAggregate(const GURL& url,
                                                 float visibility_score,
                                                 base::Time time,
                                                 std::set<Fetcher> fetchers) {
-  URLVisitAggregate visit_aggregate;
+  URLVisitAggregate visit_aggregate(url.spec());
   visit_aggregate.bookmarked = true;
 
   const std::u16string kSampleTitle(u"sample_title");

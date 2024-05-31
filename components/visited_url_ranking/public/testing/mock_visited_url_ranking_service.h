@@ -26,6 +26,11 @@ class MockVisitedURLRankingService : public VisitedURLRankingService {
                void(const Config& config,
                     std::vector<URLVisitAggregate> visits,
                     RankURLVisitAggregatesCallback callback));
+
+  MOCK_METHOD3(RecordAction,
+               void(ScoredURLUserAction action,
+                    const std::string& visit_id,
+                    segmentation_platform::TrainingRequestId visit_request_id));
 };
 
 }  // namespace visited_url_ranking

@@ -58,7 +58,7 @@ TEST_P(HistoryURLVisitAggregatesVisibilityScoreTransformerTest, Transform) {
   history::AnnotatedVisit annotated_visit =
       GenerateSampleAnnotatedVisit(1, u"sample_title", GURL(kSampleSearchUrl),
                                    true, "", test_params.visibility_score);
-  URLVisitAggregate visit_aggregate = {};
+  URLVisitAggregate visit_aggregate(kSampleSearchUrl);
   visit_aggregate.fetcher_data_map.emplace(
       Fetcher::kHistory,
       URLVisitAggregate::HistoryData(std::move(annotated_visit)));

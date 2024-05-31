@@ -160,6 +160,6 @@ BASE_FEATURE(kSegmentationPlatformIosModuleRankerSplitBySurface,
 
 BASE_FEATURE(kSegmentationPlatformURLVisitResumptionRanker,
              "SegmentationPlatformURLVisitResumptionRanker",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace segmentation_platform::features

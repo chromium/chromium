@@ -4,9 +4,11 @@
 
 #include "components/visited_url_ranking/internal/visited_url_ranking_service_impl.h"
 
+#include <array>
 #include <map>
 #include <memory>
 #include <queue>
+#include <string>
 #include <variant>
 #include <vector>
 
@@ -16,6 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/prediction_options.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
@@ -42,6 +45,20 @@ using visited_url_ranking::URLVisit;
 namespace visited_url_ranking {
 
 namespace {
+
+const char* EventNameForAction(ScoredURLUserAction action) {
+  switch (action) {
+    case kSeen:
+      return kURLVisitSeenEventName;
+    case kActivated:
+      return kURLVisitActivatedEventName;
+    case kDismissed:
+      return kURLVisitDismissedEventName;
+    default:
+      NOTREACHED();
+  }
+}
+
 // Combines `URLVisitVariant` data obtained from various fetchers into
 // `URLVisitAggregate` objects. Leverages the `URLMergeKey` in order to
 // reconcile what data belongs to the same aggregate object.
@@ -57,7 +74,12 @@ std::vector<URLVisitAggregate> ComputeURLVisitAggregates(
 
     for (std::pair<const URLMergeKey, URLVisitAggregate::URLVisitVariant>&
              url_data : result.data) {
-      URLVisitAggregate& aggregate = url_visit_map[url_data.first];
+      if (url_visit_map.find(url_data.first) == url_visit_map.end()) {
+        url_visit_map.emplace(url_data.first,
+                              URLVisitAggregate(url_data.first));
+      }
+
+      URLVisitAggregate& aggregate = url_visit_map.at(url_data.first);
       std::visit(
           URLVisitVariantHelper{
               [&aggregate](URLVisitAggregate::TabData& tab_data) {
@@ -134,7 +156,10 @@ void VisitedURLRankingServiceImpl::RankURLVisitAggregates(
     return;
   }
 
-  if (!segmentation_platform_service_) {
+  if (!segmentation_platform_service_ ||
+      !base::FeatureList::IsEnabled(
+          segmentation_platform::features::
+              kSegmentationPlatformURLVisitResumptionRanker)) {
     std::move(callback).Run(ResultStatus::kError, {});
     return;
   }
@@ -146,6 +171,30 @@ void VisitedURLRankingServiceImpl::RankURLVisitAggregates(
   visit_aggregates.clear();
 
   GetNextResult(config.key, std::move(visits_queue), {}, std::move(callback));
+}
+
+void VisitedURLRankingServiceImpl::RecordAction(
+    ScoredURLUserAction action,
+    const std::string& visit_id,
+    segmentation_platform::TrainingRequestId visit_request_id) {
+  DCHECK(!visit_id.empty());
+
+  const char* event_name = EventNameForAction(action);
+  segmentation_platform::DatabaseClient::StructuredEvent visit_event = {
+      event_name, {{visit_id, 1}}};
+  segmentation_platform::DatabaseClient* client =
+      segmentation_platform_service_->GetDatabaseClient();
+  if (client) {
+    client->AddEvent(visit_event);
+  }
+
+  // Trigger UKM data collection on action.
+  auto labels = segmentation_platform::TrainingLabels();
+  labels.output_metric = std::make_pair("action", static_cast<int>(action));
+  segmentation_platform_service_->CollectTrainingData(
+      segmentation_platform::proto::SegmentId::
+          OPTIMIZATION_TARGET_URL_VISIT_RESUMPTION_RANKER,
+      visit_request_id, labels, base::DoNothing());
 }
 
 void VisitedURLRankingServiceImpl::MergeVisitsAndCallback(
@@ -226,6 +275,7 @@ void VisitedURLRankingServiceImpl::OnGetResult(
     model_score = *result.GetResultForLabel(segmentation_key);
   }
   auto visit = std::move(visit_aggregates.front());
+  visit.request_id = result.request_id;
   visit.score = model_score;
   visit_aggregates.pop_front();
   scored_visits.emplace_back(std::move(visit));

@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/segmentation_platform/public/database_client.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/trigger.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
@@ -49,12 +50,16 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
   VisitedURLRankingServiceImpl& operator=(const VisitedURLRankingServiceImpl&) =
       delete;
 
-  // VisitedURLRankingService::
+  // VisitedURLRankingService:
   void FetchURLVisitAggregates(const FetchOptions& options,
                                GetURLVisitAggregatesCallback callback) override;
   void RankURLVisitAggregates(const Config& config,
                               std::vector<URLVisitAggregate> visits,
                               RankURLVisitAggregatesCallback callback) override;
+  void RecordAction(
+      ScoredURLUserAction action,
+      const std::string& visit_id,
+      segmentation_platform::TrainingRequestId visit_request_id) override;
 
  private:
   // Callback invoked when the various fetcher instances have completed.

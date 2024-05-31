@@ -75,7 +75,7 @@ TEST_P(HistoryURLVisitAggregatesCategoriesTransformerTest, Transform) {
       1, u"sample_title", GURL(kSampleSearchUrl), true, "foreign_session_guid",
       1.0f, std::move(categories));
 
-  URLVisitAggregate visit_aggregate = {};
+  URLVisitAggregate visit_aggregate(kSampleSearchUrl);
   visit_aggregate.fetcher_data_map.emplace(
       Fetcher::kHistory,
       URLVisitAggregate::HistoryData(std::move(annotated_visit)));

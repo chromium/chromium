@@ -14,6 +14,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/mojom/history_types.mojom.h"
 #include "components/search/ntp_features.h"
+#include "components/visited_url_ranking/public/test_support.h"
 #include "components/visited_url_ranking/public/testing/mock_visited_url_ranking_service.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -29,22 +30,6 @@ using visited_url_ranking::VisitedURLRankingService;
 using visited_url_ranking::VisitedURLRankingServiceFactory;
 
 namespace {
-
-inline constexpr char kSampleSearchUrl[] =
-    "https://www.google.com/search?q=sample";
-
-URLVisitAggregate CreateSampleURLVisitAggregate() {
-  URLVisitAggregate visit_aggregate = {};
-  visit_aggregate.fetcher_data_map.emplace(
-      Fetcher::kSession,
-      URLVisitAggregate::TabData(URLVisitAggregate::Tab(
-          1,
-          URLVisit(GURL(kSampleSearchUrl), u"sample_title", base::Time::Now(),
-                   syncer::DeviceInfo::FormFactor::kUnknown,
-                   URLVisit::Source::kLocal),
-          "sample_tag", "sample_session_name")));
-  return visit_aggregate;
-}
 
 class MostRelevantTabResumptionPageHandlerTest
     : public BrowserWithTestWindowTest {
@@ -135,7 +120,9 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetTabs) {
           [](const FetchOptions& options,
              VisitedURLRankingService::GetURLVisitAggregatesCallback callback) {
             std::vector<URLVisitAggregate> url_visit_aggregates = {};
-            url_visit_aggregates.emplace_back(CreateSampleURLVisitAggregate());
+            url_visit_aggregates.emplace_back(
+                visited_url_ranking::CreateSampleURLVisitAggregate(
+                    GURL(visited_url_ranking::kSampleSearchUrl)));
 
             std::move(callback).Run(ResultStatus::kSuccess,
                                     std::move(url_visit_aggregates));

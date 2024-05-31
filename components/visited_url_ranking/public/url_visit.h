@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
+#include "components/segmentation_platform/public/trigger.h"
 #include "components/sync_device_info/device_info.h"
 #include "url/gurl.h"
 
@@ -129,11 +130,21 @@ struct URLVisitAggregate {
     size_t visit_count = 1;
   };
 
-  URLVisitAggregate();
+  explicit URLVisitAggregate(std::string key_arg);
   URLVisitAggregate(const URLVisitAggregate&) = delete;
   URLVisitAggregate(URLVisitAggregate&& other);
   URLVisitAggregate& operator=(URLVisitAggregate&& other);
   ~URLVisitAggregate();
+
+  // A unique identifier that maps to a collection of associated URL visits.
+  // Computed via a merging and deduplication strategy and used to record events
+  // associated with the URL visit aggregate.
+  std::string url_key;
+
+  // An ID used to collect metrics associated with the aggregate visit for model
+  // training purposes. See `VisitedURLRankingService::RecordAction` for more
+  // details.
+  segmentation_platform::TrainingRequestId request_id;
 
   // Returns a set of associated visit URLs present in the data provided by the
   // various fetchers that participated in constructing the aggregate object.

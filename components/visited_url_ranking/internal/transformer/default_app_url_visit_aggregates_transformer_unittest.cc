@@ -50,7 +50,7 @@ class DefaultAppURLVisitAggregatesTransformerTest
 };
 
 TEST_F(DefaultAppURLVisitAggregatesTransformerTest, Transform) {
-  URLVisitAggregate visit_aggregate = {};
+  URLVisitAggregate visit_aggregate(kSampleUrl);
   visit_aggregate.fetcher_data_map.emplace(
       Fetcher::kSession,
       URLVisitAggregate::TabData(URLVisitAggregate::Tab(
@@ -70,7 +70,7 @@ TEST_F(DefaultAppURLVisitAggregatesTransformerTest, Transform) {
 }
 
 TEST_F(DefaultAppURLVisitAggregatesTransformerTest, TransformRemoveUrl) {
-  URLVisitAggregate visit_aggregate = {};
+  URLVisitAggregate visit_aggregate(kUrlForDefaultApp);
   visit_aggregate.fetcher_data_map.emplace(
       Fetcher::kSession,
       URLVisitAggregate::TabData(URLVisitAggregate::Tab(

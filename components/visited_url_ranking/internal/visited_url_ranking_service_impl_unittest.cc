@@ -9,12 +9,14 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/segmentation_platform/public/result.h"
+#include "components/segmentation_platform/public/testing/mock_database_client.h"
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "components/visited_url_ranking/public/test_support.h"
 #include "components/visited_url_ranking/public/url_visit.h"
@@ -107,11 +109,16 @@ class VisitedURLRankingServiceImplTest : public testing::Test {
       std::map<Fetcher, std::unique_ptr<URLVisitDataFetcher>> data_fetchers,
       std::map<URLVisitAggregatesTransformType,
                std::unique_ptr<URLVisitAggregatesTransformer>> transformers) {
+    database_client_ =
+        std::make_unique<segmentation_platform::MockDatabaseClient>();
     segmentation_platform_service_ =
         std::make_unique<MockSegmentationPlatformService>();
     service_impl_ = std::make_unique<VisitedURLRankingServiceImpl>(
         segmentation_platform_service_.get(), std::move(data_fetchers),
         std::move(transformers));
+
+    EXPECT_CALL(*segmentation_platform_service_, GetDatabaseClient())
+        .WillRepeatedly(testing::Return(database_client_.get()));
   }
 
   ~VisitedURLRankingServiceImplTest() override {
@@ -158,6 +165,7 @@ class VisitedURLRankingServiceImplTest : public testing::Test {
   }
 
  protected:
+  std::unique_ptr<segmentation_platform::MockDatabaseClient> database_client_;
   std::unique_ptr<VisitedURLRankingServiceImpl> service_impl_;
   std::unique_ptr<MockSegmentationPlatformService>
       segmentation_platform_service_;
@@ -238,6 +246,34 @@ TEST_F(VisitedURLRankingServiceImplTest, RankURLVisitAggregates) {
   EXPECT_EQ(result.first, ResultStatus::kSuccess);
   EXPECT_EQ(result.second.size(), 2u);
   EXPECT_EQ(**result.second[0].GetAssociatedURLs().begin(), kSampleUrl2);
+}
+
+TEST_F(VisitedURLRankingServiceImplTest, RecordAction) {
+  InitService(/*data_fetchers=*/{}, /*transformers=*/{});
+
+  std::pair<segmentation_platform::UkmEventHash,
+            std::map<segmentation_platform::UkmMetricHash, int64_t>>
+      event;
+  EXPECT_CALL(*database_client_, AddEvent(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&event](const segmentation_platform::DatabaseClient::StructuredEvent&
+                       structured_event) {
+            event = std::make_pair(structured_event.event_id,
+                                   structured_event.metric_hash_to_value);
+          }));
+  segmentation_platform::TrainingRequestId test_request_id =
+      segmentation_platform::TrainingRequestId::FromUnsafeValue(0);
+  EXPECT_CALL(*segmentation_platform_service_,
+              CollectTrainingData(_, test_request_id, _, _))
+      .Times(1);
+  service_impl_->RecordAction(ScoredURLUserAction::kActivated, kSampleSearchUrl,
+                              test_request_id);
+
+  segmentation_platform::UkmMetricHash visit_id_metric_hash =
+      segmentation_platform::UkmMetricHash::FromUnsafeValue(
+          base::HashMetricName(kSampleSearchUrl));
+  ASSERT_EQ(event.second.count(visit_id_metric_hash), 1u);
 }
 
 }  // namespace visited_url_ranking
