@@ -8,8 +8,10 @@
 #include <optional>
 
 #include "base/android/build_info.h"
+#include "base/feature_list.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/features.h"
+#include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -17,6 +19,10 @@
 
 namespace viz {
 namespace {
+
+BASE_FEATURE(kAndroidSurfaceControlSingleOnTOp,
+             "AndroidSurfaceControlSingleOnTOp",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 gfx::RectF ClipFromOrigin(gfx::RectF input) {
   if (input.x() < 0.f) {
@@ -48,6 +54,12 @@ OverlayProcessorSurfaceControl::OverlayProcessorSurfaceControl() {
 
   strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(
       this, OverlayStrategyUnderlay::OpaqueMode::AllowTransparentCandidates));
+  if (base::FeatureList::IsEnabled(kAndroidSurfaceControlSingleOnTOp)) {
+    strategies_.push_back(std::make_unique<OverlayStrategySingleOnTop>(this));
+    // Prefer underlay strategy because it is more mature on Android. So turn
+    // off sorting and just attempt the strategies in insertion order.
+    prioritization_config_.power_gain_sort = false;
+  }
 }
 
 OverlayProcessorSurfaceControl::~OverlayProcessorSurfaceControl() {}
