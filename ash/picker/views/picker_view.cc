@@ -345,6 +345,11 @@ void PickerView::PublishSearchResults(
     published_first_results_ = true;
   }
   for (PickerSearchResultsSection& result : results) {
+    // Do not show GIFs.
+    if (result.type() == PickerSectionType::kGifs) {
+      continue;
+    }
+
     search_results_view_->AppendSearchResults(std::move(result));
   }
   performance_metrics_.MarkSearchResultsUpdated();
