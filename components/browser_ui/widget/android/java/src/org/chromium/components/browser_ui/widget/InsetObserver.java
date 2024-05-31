@@ -9,6 +9,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
 import androidx.core.view.DisplayCutoutCompat;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
@@ -245,11 +246,10 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         updateDisplayCutoutRect(insets);
         insets = forwardToInsetConsumers(insets);
         updateKeyboardInset();
+
+        Insets systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
         onInsetChanged(
-                insets.getSystemWindowInsetLeft(),
-                insets.getSystemWindowInsetTop(),
-                insets.getSystemWindowInsetRight(),
-                insets.getSystemWindowInsetBottom());
+                systemInsets.left, systemInsets.top, systemInsets.right, systemInsets.bottom);
         insets =
                 WindowInsetsCompat.toWindowInsetsCompat(
                         view.onApplyWindowInsets(insets.toWindowInsets()));
@@ -264,7 +264,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
      * @param right The updated right inset.
      * @param bottom The updated bottom inset.
      */
-    protected void onInsetChanged(int left, int top, int right, int bottom) {
+    private void onInsetChanged(int left, int top, int right, int bottom) {
         if (mWindowInsets.left == left
                 && mWindowInsets.top == top
                 && mWindowInsets.right == right

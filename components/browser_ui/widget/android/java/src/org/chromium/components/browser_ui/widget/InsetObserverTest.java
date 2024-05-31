@@ -59,6 +59,10 @@ public class InsetObserverTest {
     /** The rect values if there is no cutout. */
     private static final Rect E2E_NO_CUTOUT_RECT = new Rect(0, 0, 0, 2);
 
+    private static final Insets SYSTEM_BAR_INSETS = Insets.of(1, 1, 1, 1);
+
+    private static final Insets SYSTEM_BAR_INSETS_MODIFIED = Insets.of(1, 1, 1, 2);
+
     @Mock private InsetObserver.WindowInsetObserver mObserver;
 
     @Mock private WindowInsetsCompat mInsets;
@@ -89,6 +93,11 @@ public class InsetObserverTest {
                 .when(mContentView)
                 .onApplyWindowInsets(mModifiedNonCompatInsets);
 
+        doReturn(SYSTEM_BAR_INSETS).when(mInsets).getInsets(WindowInsetsCompat.Type.systemBars());
+        doReturn(SYSTEM_BAR_INSETS_MODIFIED)
+                .when(mModifiedInsets)
+                .getInsets(WindowInsetsCompat.Type.systemBars());
+
         mInsetObserver = new InsetObserver(mContentView);
         mInsetObserver.addObserver(mObserver);
     }
@@ -97,10 +106,6 @@ public class InsetObserverTest {
     @Test
     @SmallTest
     public void applyInsets_NotifiesObservers() {
-        doReturn(1).when(mInsets).getSystemWindowInsetLeft();
-        doReturn(1).when(mInsets).getSystemWindowInsetTop();
-        doReturn(1).when(mInsets).getSystemWindowInsetRight();
-        doReturn(1).when(mInsets).getSystemWindowInsetBottom();
         mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
         verify(mObserver, times(1)).onInsetChanged(1, 1, 1, 1);
 
@@ -108,7 +113,9 @@ public class InsetObserverTest {
         mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
         verify(mObserver, times(1)).onInsetChanged(1, 1, 1, 1);
 
-        doReturn(2).when(mInsets).getSystemWindowInsetBottom();
+        doReturn(Insets.of(1, 1, 1, 2))
+                .when(mInsets)
+                .getInsets(WindowInsetsCompat.Type.systemBars());
         mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
         verify(mObserver).onInsetChanged(1, 1, 1, 2);
     }
@@ -119,19 +126,13 @@ public class InsetObserverTest {
         mInsetObserver.addInsetsConsumer(mInsetsConsumer);
 
         doReturn(mModifiedInsets).when(mInsetsConsumer).onApplyWindowInsets(mContentView, mInsets);
-        doReturn(14).when(mModifiedInsets).getSystemWindowInsetLeft();
-        doReturn(17).when(mModifiedInsets).getSystemWindowInsetTop();
-        doReturn(31).when(mModifiedInsets).getSystemWindowInsetRight();
-        doReturn(43).when(mModifiedInsets).getSystemWindowInsetBottom();
+        doReturn(Insets.of(14, 17, 31, 43))
+                .when(mModifiedInsets)
+                .getInsets(WindowInsetsCompat.Type.systemBars());
 
         mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
         verify(mInsetsConsumer).onApplyWindowInsets(mContentView, mInsets);
-        verify(mObserver, times(1))
-                .onInsetChanged(
-                        mModifiedInsets.getSystemWindowInsetLeft(),
-                        mModifiedInsets.getSystemWindowInsetTop(),
-                        mModifiedInsets.getSystemWindowInsetRight(),
-                        mModifiedInsets.getSystemWindowInsetBottom());
+        verify(mObserver, times(1)).onInsetChanged(14, 17, 31, 43);
     }
 
     @Test
