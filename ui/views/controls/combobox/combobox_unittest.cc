@@ -136,7 +136,7 @@ class VectorComboboxModel : public ui::ComboboxModel {
   }
 
  private:
-  size_t default_index_ = 0;
+  std::optional<size_t> default_index_ = std::nullopt;
   const raw_ptr<std::vector<std::string>> values_;
 };
 

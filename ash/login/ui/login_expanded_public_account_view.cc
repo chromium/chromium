@@ -508,7 +508,7 @@ class RightPaneView : public NonAccessibleView {
 
   void PopulateLanguageItems(const std::vector<LocaleItem>& locales) {
     language_items_.clear();
-    int selected_language_index = 0;
+    std::optional<int> selected_language_index = std::nullopt;
     for (const auto& locale : locales) {
       PublicAccountMenuView::Item item;
       if (locale.group_name) {
@@ -547,7 +547,7 @@ class RightPaneView : public NonAccessibleView {
   void PopulateKeyboardItems(
       const std::vector<InputMethodItem>& keyboard_layouts) {
     keyboard_items_.clear();
-    int selected_keyboard_index = 0;
+    std::optional<int> selected_keyboard_index = std::nullopt;
     for (const auto& keyboard : keyboard_layouts) {
       PublicAccountMenuView::Item item;
       item.title = keyboard.title;
