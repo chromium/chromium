@@ -57,7 +57,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="118437560755358292">Zadajte heslo alebo PIN, zvýšite tým zabezpečenie</translation>
 <translation id="118532027333893379">Klepnutím na ľubovoľné miesto nasnímate celú obrazovku</translation>
 <translation id="1190609913194133056">Centrum upozornení</translation>
-<translation id="1190678134285018527">V zariadení sa musíte vrátiť na predchádzajúcu verziu</translation>
 <translation id="1195412055398077112">presah obsahu</translation>
 <translation id="1195667586424773550">Presunutie odkazu na panel s adresou na karte</translation>
 <translation id="119944043368869598">Vymazať všetko</translation>
@@ -108,6 +107,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1333308631814936910">Pripojená obrazovka: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1340378040547539434">Oddialenie na stránke</translation>
 <translation id="1341651618736211726">Rozšírené</translation>
+<translation id="1341926407152459446">Používať <ph name="DEVICE_NAME" /> pre zvukový vstup aj výstup</translation>
 <translation id="1344141078024003905">Prenášate obrazovku. Prenos obrazovky môžete kedykoľvek pozastaviť alebo ukončiť.</translation>
 <translation id="1346748346194534595">Doprava</translation>
 <translation id="1351937230027495976">Zbaliť ponuku</translation>
@@ -145,6 +145,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1486307154719069822">Diktovanie vám umožňuje písať hlasom. Keď prejdete na textové pole, stlačte kláves diktovania alebo vyberte ikonu mikrofónu v dolnej časti obrazovky. Máte nastavené diktovanie v jazyku <ph name="LANGUAGE" />. Reč sa odosiela Googlu na spracovanie. Jazyk diktovania môžete kedykoľvek zmeniť v sekcii Nastavenia &gt; Dostupnosť.</translation>
 <translation id="1487931858675166540">Položka <ph name="FIRST_ITEM_TITLE" /> bola vymenená za <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Zobraziť všetky návrhy</translation>
+<translation id="1501946871587957338">Chcete prepnúť zdroj zvuku?</translation>
 <translation id="1510238584712386396">Spúšťač</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Zobraziť nastavenia upozornení. Upozornenia sú pre aplikáciu vypnuté}few{Zobraziť nastavenia upozornení. Upozornenia sú vypnuté pre # aplikácie}many{Show notification settings. Notifications are off for # apps}other{Zobraziť nastavenia upozornení. Upozornenia sú vypnuté pre # aplikácií}}</translation>
 <translation id="1523032696246003">Batéria: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> do úplného nabitia</translation>
@@ -685,7 +686,6 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="363473492175527493">Zameranie úlohy je nastavené na <ph name="TASK_NAME" />. Ak chcete úlohu upraviť, stlačte Enter.</translation>
 <translation id="3638400994746983214">Prepnúť obrazovku ochrany súkromia. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Minimalizovať okno</translation>
-<translation id="3649505501900178324">Termín aktualizácie ubehol</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> do
@@ -755,7 +755,6 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="3900355044994618856">Relácia sa skončí o <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Pripája sa k sieti <ph name="NAME" /></translation>
 <translation id="3906954721959377182">Tablet</translation>
-<translation id="3922427723338465344">{0,plural, =1{Do minúty obnovte v zariadení predchádzajúcu verziu}few{Do # minút obnovte v zariadení predchádzajúcu verziu}many{Do # minúty obnovte v zariadení predchádzajúcu verziu}other{Do # minút obnovte v zariadení predchádzajúcu verziu}}</translation>
 <translation id="3923494859158167397">Žiadne nastavené mobilné siete</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, načítavajú sa udalosti.</translation>
 <translation id="3932043219784172185">Nie je pripojené žiadne zariadenie</translation>
@@ -773,6 +772,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="397105322502079400">Prebieha výpočet...</translation>
 <translation id="397726367135689299">Nabíjanie batérie môže byť nespoľahlivé.</translation>
 <translation id="3977512764614765090">Batéria je nabitá na <ph name="PERCENTAGE" /> % a nabíja sa.</translation>
+<translation id="3982013579989864579">Chcete prepnúť zvukový výstup?</translation>
 <translation id="3984536049089846927">Ďalšia stránka</translation>
 <translation id="3986082989454912832">Prijať</translation>
 <translation id="3990002060657467458">Často používané ovládacie prvky, ako sú Wi-Fi, Bluetooth a hlasitosť, nájdete v rýchlych nastaveniach. Môžete v nich aj vytvárať snímky obrazovky.</translation>
@@ -816,6 +816,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4150201353443180367">Displej</translation>
 <translation id="4156293514828496577">Zostávajúca batéria: <ph name="PERCENTAGE" /> % (približne <ph name="TIME_LEFT" />).
 Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translation>
+<translation id="4160919062868802509">Bolo zistených viac zdrojov zvuku</translation>
 <translation id="4165275524535002941">Kábel nemusí podporovať obrazovky</translation>
 <translation id="4177415338862979658">Kliknutím skontrolujte podrobnosti</translation>
 <translation id="4177913004758410636">{0,plural, =1{Aktualizujte zariadenie do jedného dňa}few{Aktualizujte zariadenie # dní}many{Aktualizujte zariadenie # dňa}other{Aktualizujte zariadenie # dní}}</translation>
@@ -946,7 +947,6 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="4623167406982293031">Overiť účet</translation>
 <translation id="4628757576491864469">Zariadenia</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, hodnotenie hviezdičkami <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Do jedného dňa obnovte v zariadení predchádzajúcu verziu}few{Do # dní obnovte v zariadení predchádzajúcu verziu}many{Do # dňa obnovte v zariadení predchádzajúcu verziu}other{Do # dní obnovte v zariadení predchádzajúcu verziu}}</translation>
 <translation id="4633636853437260449">Položku odstránite stlačením klávesov Ctrl + W</translation>
 <translation id="4642092649622328492">Vytvorenie čiastočnej snímky obrazovky</translation>
 <translation id="4644727592819780893">Oblasť je príliš malá na zobrazenie ukážky v kamere</translation>
@@ -1015,6 +1015,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="4871905435473761992">Zobraziť podrobnosti o hotspote Vaša mobilná sieť hotspot nepodporuje.</translation>
 <translation id="4872237917498892622">Alt + Hľadať alebo Shift</translation>
 <translation id="4872852897273142380">Označenie alebo zvýraznenie panela so záložkami (ak je zobrazený)</translation>
+<translation id="4876935764454575645">Výber zvuku</translation>
 <translation id="4881323000405981760">Efekty nie sú podporované v aplikáciách pre Linux</translation>
 <translation id="4881695831933465202">Otvoriť</translation>
 <translation id="4889868803215848840">Poskytnite nepovinnú spätnú väzbu na zlepšenie návrhov:</translation>
@@ -1091,6 +1092,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="5121628974188116412">Prechod na koniec stránky</translation>
 <translation id="5122517996953421795">Ukážka plochy <ph name="DESK_NAME" />. Plocha je neaktívna.</translation>
 <translation id="5136175204352732067">Bola pripojená iná klávesnica</translation>
+<translation id="5144005092084035179">Chcete prepnúť zvukový vstup?</translation>
 <translation id="5147567197700016471">Odomknutý</translation>
 <translation id="5150070631291639005">Nastavenia súkromia</translation>
 <translation id="5155897006997040331">Rýchlosť čítania</translation>
@@ -1453,7 +1455,6 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="6477681113376365978">Súbor sa nedá stiahnuť</translation>
 <translation id="6482559668224714696">Lupa na celú obrazovku</translation>
 <translation id="6490471652906364588">Zariadenie USB-C (port vpravo)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> vyžaduje, aby ste zariadenie <ph name="DEVICE_TYPE" /> aktualizovali do stanoveného termínu</translation>
 <translation id="649452524636452238">PIN inteligentnej karty</translation>
 <translation id="6495322433318104734">Zobrazuje sa šetrič obrazovky. Ukončíte ho stlačením ľubovoľného klávesa.</translation>
 <translation id="6495400115277918834">Bol spustený obraz v obraze, označíte ho klávesmi Alt + Shift + V</translation>
@@ -1518,7 +1519,6 @@ Nová inštalácia</translation>
 <translation id="6697913454192220372">Pridať novú plochu</translation>
 <translation id="6700713906295497288">Tlačidlo ponuky IME</translation>
 <translation id="6706742084323792866">Pripnúť klávesnicu</translation>
-<translation id="6707693040195709527">Termín na obnovenie predchádzajúcej verzie v zariadení vypršal</translation>
 <translation id="6710213216561001401">Späť</translation>
 <translation id="6723839937902243910">Napájanie</translation>
 <translation id="672609503628871915">Zobraziť novinky</translation>
@@ -1792,6 +1792,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7780094051999721182">skratky</translation>
 <translation id="7780159184141939021">Otáčanie obrazovky</translation>
 <translation id="7781829728241885113">Včera</translation>
+<translation id="7787212146956232129">Vstupné a výstupné zariadenia sú nastavené. Zmeny môžete vykonať v Nastaveniach.</translation>
 <translation id="7792590255364786396">Viditeľné</translation>
 <translation id="7796735576426975947">Nové upozornenie bolo skryté</translation>
 <translation id="7798302898096527229">Ak to chcete zrušiť, stlačte kláves Hľadať alebo Shift.</translation>
@@ -1811,7 +1812,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7866482334467279021">zapnuté</translation>
 <translation id="7872786842639831132">Vypnuté</translation>
 <translation id="7875575368831396199">Rozhranie Bluetooth je v zariadení <ph name="DEVICE_TYPE" /> zrejme vypnuté. Ak chcete použiť Telefónne centrum, zapnite ho.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Obnovte v zariadení predchádzajúcu verziu}=1{Do sekundy obnovte v zariadení predchádzajúcu verziu}few{Do # sekúnd obnovte v zariadení predchádzajúcu verziu}many{Do # sekundy obnovte v zariadení predchádzajúcu verziu}other{Do # sekúnd obnovte v zariadení predchádzajúcu verziu}}</translation>
 <translation id="7884446017008693258">Nastavenia hotspotu</translation>
 <translation id="7884902759927478774">Zrušenie presúvania kariet</translation>
 <translation id="7886169021410746335">Upravte nastavenia ochrany súkromia</translation>
@@ -1888,7 +1888,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Viac možností zobrazíte pomocou klávesa Tab. Prístup k všetkým plochám získate pomocou šípiek doľava a doprava.</translation>
 <translation id="8091153018031979607">Začína sa o <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Automatické aktualizácie</translation>
 <translation id="8092380135549145188">Ovládanie posúvania</translation>
 <translation id="8098591350844501178">Zastaviť prenos obrazovky do zariadenia <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Odopnutie aplikácie z poličky</translation>
@@ -1934,7 +1933,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8257510091797044096">Nastavenie zariadenia</translation>
 <translation id="8261506727792406068">Odstrániť</translation>
 <translation id="8262312463845990408">Prepnúť prehrávanie</translation>
-<translation id="8270450402312105425">{0,plural, =1{Do hodiny obnovte v zariadení predchádzajúcu verziu}few{Do # hodín obnovte v zariadení predchádzajúcu verziu}many{Do # hodiny obnovte v zariadení predchádzajúcu verziu}other{Do # hodín obnovte v zariadení predchádzajúcu verziu}}</translation>
 <translation id="8277261673056602147">Zvýrazňovať text na obrazovke</translation>
 <translation id="8287009018010202411">Produktivita</translation>
 <translation id="828708037801473432">Vypnuté</translation>
@@ -2001,7 +1999,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8553395910833293175">Už bolo pridelené všetkým plochám.</translation>
 <translation id="8555757996376137129">Odstránenie aktuálnej plochy</translation>
 <translation id="8559845965695780508">Upravil(a) <ph name="USER" /></translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> odporúča, aby ste aktualizovali zariadenie <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Tu je niekoľko návrhov, ktoré môžete vyskúšať</translation>
 <translation id="857201607579416096">Ponuka bola presunutá do pravého dolného rohu obrazovky.</translation>
 <translation id="8581946341807941670">Stlačte <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> a kliknite na odkaz</translation>
@@ -2100,6 +2097,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 súbor}few{# súbory}many{# files}other{# súborov}}</translation>
 <translation id="8936501819958976551">deaktivované</translation>
 <translation id="8938800817013097409">Zariadenie USB-C (pravý port vzadu)</translation>
+<translation id="8939855324412367560">Zvukový vstup je <ph name="INPUT_DEVICE_NAME" /> a zvukový výstup je <ph name="OUTPUT_DEVICE_NAME" />. Zmeny môžete vykonať v Nastaveniach.</translation>
 <translation id="8940956008527784070">Kapacita batérie je nízka (<ph name="PERCENTAGE" /> %)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, začiarkavacie políčko nie je začiarknuté.</translation>
 <translation id="8949925099261528566">Pripojené, bez internetu</translation>
@@ -2155,6 +2153,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="9178475906033259337">Zobrazuje sa jeden výsledok pre <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Táto funkcia vám umožní rýchly prístup k ľubovoľnému prihlásenému používateľovi bez hesla. Používajte ju iba s dôveryhodnými účtami.</translation>
 <translation id="9183456764293710005">Lupa na celú obrazovku</translation>
+<translation id="9192133205265227850">Používať <ph name="DEVICE_NAME" /></translation>
 <translation id="9193626018745640770">Prebieha prenášanie do neznámeho prijímača</translation>
 <translation id="9194617393863864469">Prihlásiť ďalšieho používateľa...</translation>
 <translation id="9198992156681343238">Rozlíšenie obrazovky <ph name="DISPLAY_NAME" /> bolo zmenené na <ph name="RESOLUTION" />. Zmeny ponecháte kliknutím na Potvrdiť. Predchádzajúce nastavenia budú obnovené o <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -2172,7 +2171,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="923686485342484400">Ak sa chcete odhlásiť, stlačte dvakrát kombináciu klávesov Ctrl, Shift a Q.</translation>
 <translation id="92580429198593979">Stlačili ste klávesovú skratku inverzie farieb. Chcete ju zapnúť?</translation>
 <translation id="925832987464884575">Skryť ukážky</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> vyžaduje, aby ste ihneď aktualizovali zariadenie <ph name="DEVICE_TYPE" /></translation>
 <translation id="938407504481277932">Aktuálna plocha: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_INDEX" />. plocha z <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Čo mám v kalendári?</translation>
 <translation id="945383118875625837">Presuňte odkaz na panel so záložkami</translation>

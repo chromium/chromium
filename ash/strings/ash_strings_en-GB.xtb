@@ -57,7 +57,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="118437560755358292">Enter password or PIN for more security</translation>
 <translation id="118532027333893379">Tap anywhere to capture full screen</translation>
 <translation id="1190609913194133056">Notification Centre</translation>
-<translation id="1190678134285018527">Device needs to go back to previous version</translation>
 <translation id="1195412055398077112">overscan</translation>
 <translation id="1195667586424773550">Drag the link to the tab's address bar</translation>
 <translation id="119944043368869598">Clear all</translation>
@@ -687,7 +686,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="363473492175527493">Task set to focus on: <ph name="TASK_NAME" />. Press enter to edit the task.</translation>
 <translation id="3638400994746983214">Toggle privacy screen. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Minimise window</translation>
-<translation id="3649505501900178324">Update overdue</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> to
@@ -757,7 +755,6 @@ Connect your device to power.</translation>
 <translation id="3900355044994618856">Your session will end in <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Connecting to <ph name="NAME" /></translation>
 <translation id="3906954721959377182">Tablet</translation>
-<translation id="3922427723338465344">{0,plural, =1{Change device to previous version within 1 minute}other{Change device to previous version within # minutes}}</translation>
 <translation id="3923494859158167397">No mobile networks set up</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Loading events.</translation>
 <translation id="3932043219784172185">No device connected</translation>
@@ -949,7 +946,6 @@ One device connected.</translation>
 <translation id="4623167406982293031">Verify account</translation>
 <translation id="4628757576491864469">Devices</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, star rating <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Change device to previous version within a day}other{Change device to previous version within # days}}</translation>
 <translation id="4633636853437260449">Press Ctrl+W to delete</translation>
 <translation id="4642092649622328492">Take partial screenshot</translation>
 <translation id="4644727592819780893">Region is too small to fit camera</translation>
@@ -1458,7 +1454,6 @@ No devices connected.</translation>
 <translation id="6477681113376365978">Can’t download file</translation>
 <translation id="6482559668224714696">Full-screen magnifier</translation>
 <translation id="6490471652906364588">USB-C device (right port)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> requires you to update your <ph name="DEVICE_TYPE" /> before the deadline</translation>
 <translation id="649452524636452238">Smart card PIN</translation>
 <translation id="6495322433318104734">Displaying screen saver; press any key to exit</translation>
 <translation id="6495400115277918834">Picture-in-picture started, Alt+Shift+V to focus</translation>
@@ -1523,7 +1518,6 @@ New install</translation>
 <translation id="6697913454192220372">Add new desk</translation>
 <translation id="6700713906295497288">IME menu button</translation>
 <translation id="6706742084323792866">Pin keyboard</translation>
-<translation id="6707693040195709527">Device change to previous version is overdue</translation>
 <translation id="6710213216561001401">Previous</translation>
 <translation id="6723839937902243910">Power</translation>
 <translation id="672609503628871915">See what's new</translation>
@@ -1817,7 +1811,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7866482334467279021">on</translation>
 <translation id="7872786842639831132">Off</translation>
 <translation id="7875575368831396199">Looks like Bluetooth is turned off on your <ph name="DEVICE_TYPE" />. Please turn on Bluetooth to use Phone Hub.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Change device to previous version now}=1{Change device to previous version within 1 second}other{Change device to previous version within # seconds}}</translation>
 <translation id="7884446017008693258">Hotspot settings</translation>
 <translation id="7884902759927478774">Cancel tab dragging</translation>
 <translation id="7886169021410746335">Adjust privacy settings</translation>
@@ -1894,7 +1887,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Use Tab for more options. Use left and right arrows to access all desks.</translation>
 <translation id="8091153018031979607">Starts at <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Automatic updates</translation>
 <translation id="8092380135549145188">Scroll controls</translation>
 <translation id="8098591350844501178">Stop casting screen to <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Unpin app from shelf</translation>
@@ -1940,7 +1932,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8257510091797044096">Set up your device</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8262312463845990408">Toggle -playback</translation>
-<translation id="8270450402312105425">{0,plural, =1{Change device to previous version within an hour}other{Change device to previous version within # hours}}</translation>
 <translation id="8277261673056602147">Highlight text on your screen</translation>
 <translation id="8287009018010202411">Productivity</translation>
 <translation id="828708037801473432">Off</translation>
@@ -2007,7 +1998,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8553395910833293175">Already assigned to all desks.</translation>
 <translation id="8555757996376137129">Remove current desk</translation>
 <translation id="8559845965695780508"><ph name="USER" /> edited</translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> recommends that you update your <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Here are a few suggestions to try</translation>
 <translation id="857201607579416096">Menu moved to the bottom-right corner of the screen.</translation>
 <translation id="8581946341807941670">Press <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> and click a link</translation>
@@ -2182,7 +2172,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="923686485342484400">Press Control Shift Q twice to sign out.</translation>
 <translation id="92580429198593979">You pressed the keyboard shortcut for colour inversion. Do you want to turn it on?</translation>
 <translation id="925832987464884575">Hide previews</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> requires you to update your <ph name="DEVICE_TYPE" /> immediately</translation>
 <translation id="938407504481277932">Current desk: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Desk <ph name="DESK_INDEX" /> of <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">What's on my calendar?</translation>
 <translation id="945383118875625837">Drag link to bookmarks bar</translation>

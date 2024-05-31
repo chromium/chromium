@@ -70,8 +70,8 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="2174917724755363426">Namestitev še ni končana. Ali ste prepričani, da jo želite preklicati?</translation>
 <translation id="2185166961232948079">Chromium – Prijava v omrežje – <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Napaka pri preverjanju posodobitev: <ph name="UPDATE_CHECK_ERROR" />.</translation>
-<translation id="2210682093923538346">Nevarno spletno mesto. Chromium je odstranil obvestila.</translation>
-<translation id="2240214816234246077">Nedavno niste obiskali tega mesta. Chromium je odstranil <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
+<translation id="2210682093923538346">Nevarno spletno mesto. Chromium je odstranil dovoljenje za obvestila.</translation>
+<translation id="2240214816234246077">Nedavno niste obiskali tega mesta. Chromium je odstranil ti dovoljenji: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="2241627712206172106">Če računalnik souporabljate z drugimi, lahko prijatelji in sorodniki ločeno brskajo ter nastavijo Chromium tako, kot ga želijo.</translation>
 <translation id="2313870531055795960">Preveri URL-je, tako da jih primerja s seznamom spletnih mest, ki niso varna, shranjenim v Chromiumu. Če vam spletno mesto poskusi ukrasti geslo ali če prenašate škodljivo datoteko, lahko Chromium prav tako pošlje URL-je, vključno z delčki vsebine strani, Varnemu brskanju.</translation>
 <translation id="2329088755516916767">Če je vklopljena ta nastavitev, Chromium vnaprej naloži strani, kar omogoča hitrejše brskanje in iskanje.</translation>
@@ -271,7 +271,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Prikaži Chromium v tem jeziku</translation>
 <translation id="569897634095159764">Internetne povezave ni mogoče vzpostaviti. Strežnik proxy zahteva preverjanje pristnosti.</translation>
-<translation id="5761096224651992291">Nedavno niste obiskali tega mesta. Chromium je odstranil <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
+<translation id="5761096224651992291">Nedavno niste obiskali tega mesta. Chromium je odstranil ta dovoljenja: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5800158606660203929">Prilagajanje in nadziranje Chromiuma. Nastavite Chromium kot privzeto možnost.</translation>
 <translation id="5809516625706423866">Internetne povezave ni mogoče vzpostaviti. Koda napake HTTP je »401 Unauthorized«. Preverite konfiguracijo strežnika proxy.</translation>
 <translation id="5862307444128926510">Pozdravljeni v Chromiumu</translation>
@@ -357,7 +357,7 @@ Nekatere funkcije morda ne bodo na voljo. Določite drug imenik profila ali upor
 <translation id="6729124504294600478">Če želite uporabljati osebno prilagajanje in druge funkcije, vključite Chromium v dejavnost v spletu in aplikacijah ter povezane Googlove storitve</translation>
 <translation id="6734291798041940871">Chromium je že nameščen za vse uporabnike v računalniku.</translation>
 <translation id="673636774878526923">Če želite do stvari v Chromiumu dostopati v vseh svojih napravah, se prijavite in nato vklopite sinhronizacijo.</translation>
-<translation id="674245979920622322">Nedavno niste obiskali tega mesta. Chromium je odstranil <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="COUNT" />.</translation>
+<translation id="674245979920622322">Nedavno niste obiskali tega mesta. Chromium je odstranil ta dovoljenja: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="COUNT" />.</translation>
 <translation id="67706546131546258">Chromium priporoča, da pregledate to datoteko, saj je morda nevarna.</translation>
 <translation id="6779406956731413166">Chromium OS omogoča dodatna <ph name="BEGIN_LINK_CROS_OSS" />odprtokodna programska oprema<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6847869444787758381">Chromium vam sporoči, ali so gesla ogrožena</translation>
@@ -411,7 +411,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="7553334751796114046">Če želite deliti okno, v sistemskih nastavitvah omogočite snemanje zaslona za Chromium</translation>
 <translation id="7582945390259497898">Chromium lahko oceni vaša zanimanja. Pozneje lahko stran, ki jo obiščete, od Chromiuma zahteva ogled vaših zanimanj zaradi osebnega prilagajanja oglasov, ki so vam prikazani.</translation>
 <translation id="7583399374488819119">Namestitveni program za <ph name="COMPANY_NAME" /></translation>
-<translation id="7585391435984513350">Nedavno niste obiskali tega mesta. Chromium je odstranil <ph name="PERMISSION" />.</translation>
+<translation id="7585391435984513350">Nedavno niste obiskali tega mesta. Chromium je odstranil to dovoljenje: <ph name="PERMISSION" />.</translation>
 <translation id="761356813943268536">Chromium uporablja vašo kamero in mikrofon.</translation>
 <translation id="7617377681829253106">Chromium je pravkar postal še boljši</translation>
 <translation id="7649070708921625228">Pomoč</translation>
@@ -459,7 +459,6 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium znova zaženite v enem dnevu}one{Chromium znova zaženite v # dnevu}two{Chromium znova zaženite v # dnevih}few{Chromium znova zaženite v # dnevih}other{Chromium znova zaženite v # dnevih}}</translation>
 <translation id="8453117565092476964">Arhiv namestitvenega programa je poškodovan ali neveljaven. Znova prenesite Chromium.</translation>
 <translation id="8458614432758743027">Za Chromium potrebujete Windows 10 ali novejšega.</translation>
-<translation id="8461326814397467035">Nekateri podatki v Chromiumu še niso shranjeni v računu Google. Počakajte nekaj minut, preden se odjavite.</translation>
 <translation id="8463672209299734063">Izbirno: Pomagajte izboljšati funkcije sistema Chromium OS in njegovo delovanje s samodejnim pošiljanjem diagnostičnih podatkov in podatkov o uporabi Googlu.</translation>
 <translation id="8493179195440786826">Chromium je zastarel</translation>
 <translation id="8522801943730206384">Chromium lahko preveri gesla, če jih shranite</translation>

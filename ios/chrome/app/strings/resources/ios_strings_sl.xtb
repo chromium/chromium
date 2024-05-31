@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Zgodovina</translation>
 <translation id="164673457281113247">{count,plural, =1{Zaznamek je shranjen}one{Zaznamki so shranjeni}two{Zaznamka sta shranjena}few{Zaznamki so shranjeni}other{Zaznamki so shranjeni}}</translation>
 <translation id="1650222530560417226">Dotaknite se gumba »Začni zapisovanje dnevnikov«, če želite zbirati prihodnje dnevnike konzole za JavaScript in napake z vseh zavihkov. Dnevniki se bodo zbirali (in shranjevali samo v pomnilniku), dokler ta stran ne bo zaprta ali dokler se ne dotaknete »Ustavi zapisovanje dnevnikov«.</translation>
+<translation id="1652333207707886577">Prilagajanje menija</translation>
 <translation id="1653432787084483144">{count,plural, =1{Nad tipkovnico je na voljo {count} shranjeno geslo.}one{Nad tipkovnico je na voljo {count} shranjeno geslo.}two{Nad tipkovnico sta na voljo {count} shranjeni gesli.}few{Nad tipkovnico so na voljo {count} shranjena gesla.}other{Nad tipkovnico je na voljo {count} shranjenih gesel.}}</translation>
 <translation id="1657011748321897393">Deljenje z drugimi ni uspelo, ker niste povezani v omrežje.</translation>
 <translation id="165877110639533037">No Open Tabs</translation>
@@ -471,6 +472,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3435738964857648380">Varnost</translation>
 <translation id="3443810440409579745">Prejet zavihek.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
+<translation id="3445580184527779479">Skupina zavihkov. Razširjeno.</translation>
 <translation id="3448016392200048164">Razdeljeni pogled</translation>
 <translation id="345565170154308620">Upravljanje gesel ...</translation>
 <translation id="3464194322481586217">Cene ni bilo mogoče spremljati.</translation>
@@ -515,6 +517,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3638472932233958418">Vnaprej naloži spletne strani</translation>
 <translation id="3642060527569456384">Skupine zavihkov se samodejno shranjujejo in posodabljajo v vseh napravah.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} geslo je shranjeno samo v tej napravi. Če ga želite uporabiti v drugih napravah, ga shranite v račun Google, {email}.}one{{count} geslo je shranjeno samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}two{{count} gesli sta shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}few{{count} gesla so shranjena samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}other{{count} gesel je shranjenih samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {email}.}}</translation>
+<translation id="3650299480924308502">Po odjavi se neshranjeni podatki izbrišejo iz te naprave. To lahko vključuje gesla, zgodovino in drugo.</translation>
 <translation id="3659297405161482746">Najdeno ni bilo nobeno plačilno sredstvo</translation>
 <translation id="3661160521073045932">Profil konfiguracije je na voljo</translation>
 <translation id="3670030362669914947">Številka</translation>
@@ -531,6 +534,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3738428049780661523">Ustvarjeno: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Skrij prenose</translation>
 <translation id="3745190878148784130">Skrij »Povečaj/pomanjšaj besedilo«</translation>
+<translation id="3747231889390582072">Zaradi zaščite varnosti organizacije bodo neshranjeni podatki izbrisani iz te naprave. To lahko vključuje gesla, zgodovino brskanja, piškotke in drugo.</translation>
 <translation id="3762232513783804601">Ustvarjeno za vaš iPad</translation>
 <translation id="3768725474733206671">Vnovično odpiranje nazadnje zaprtega zavihka</translation>
 <translation id="3771033907050503522">Incognito Tabs</translation>
@@ -970,6 +974,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5971872012779224351">{count,plural, =1{1 zaznamek je izbrisan}one{{count} zaznamek je izbrisan}two{{count} zaznamka sta izbrisana}few{{count} zaznamki so izbrisani}other{{count} zaznamkov je izbrisanih}}</translation>
 <translation id="5979837087407522202">Iskanje gesel</translation>
 <translation id="5981230843984570095">Zapri vse neaktivne</translation>
+<translation id="5982958159110007132">Zavihek skupine zavihkov. <ph name="TAB_INDEX_IN_GROUP" /> od <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="5984222099446776634">Nedavno obiskano</translation>
 <translation id="598634819525651074">Površina</translation>
 <translation id="5988097621740394599">Oglejte si znižanja cen na zavihkih.</translation>
@@ -988,6 +993,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6042308850641462728">Več</translation>
 <translation id="6045460247888249350">Dodajanje naslova</translation>
+<translation id="6051432659151380973">Skupine zavihkov se samodejno shranjujejo</translation>
 <translation id="605721222689873409">LL</translation>
 <translation id="6059830886158432458">Nadzirajte članke in dejavnost tukaj</translation>
 <translation id="6064824697233747382">Vaša organizacija zahteva, da izklopite sinhronizacijo.</translation>
@@ -1272,6 +1278,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="745899714366929493">Ves dan</translation>
 <translation id="7459628154744868585">Izboljšana zaščita je vklopljena</translation>
 <translation id="7465351360025415755">Prejemanje vsebine, ki vam je pomembna</translation>
+<translation id="7470908168505178757">Skupina zavihkov. Strnjeno.</translation>
 <translation id="7472734401283673885">Ime podjetja</translation>
 <translation id="7473891865547856676">Ne, hvala</translation>
 <translation id="7488874549363591659">Dostavljeno</translation>
@@ -1481,6 +1488,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8446884382197647889">Več o tem</translation>
 <translation id="8449347986464073209">Brisanje in odjava</translation>
 <translation id="8459333855531264009">Ni varno</translation>
+<translation id="8466300942149667917">Neshranjeni podatki računa bodo izbrisani</translation>
 <translation id="8473863474539038330">Naslovi in drugo</translation>
 <translation id="8487667956631253959">Vklop</translation>
 <translation id="8487700953926739672">Na voljo brez povezave</translation>
@@ -1609,6 +1617,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="9065203028668620118">Uredi</translation>
 <translation id="9079935439869366234">Označi vse kot neprebrano</translation>
 <translation id="9081058212938299310">Želite posodobiti geslo za <ph name="USERNAME" />?</translation>
+<translation id="9082821980444279398">Če je ta možnost vklopljena, uporabljate in shranjujete podatke v računu Google. Če je izklopljena, se podatki shranjujejo samo v tej napravi in se izbrišejo, če se odjavite.</translation>
 <translation id="9083838294503912307">Če želite sinhronizirati in prilagajati v vseh napravah, vklopite sinhronizacijo.</translation>
 <translation id="9087339162317338348">Kadar je le mogoče, uporabite HTTPS, pred nalaganjem spletnih mest, ki ga ne podpirajo, pa prejmete opozorilo.</translation>
 <translation id="9093271241977565440">Na vrhu zaslona se dotaknite ikone za iskanje.</translation>

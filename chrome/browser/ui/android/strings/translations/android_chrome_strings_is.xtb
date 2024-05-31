@@ -26,6 +26,7 @@
 <translation id="1108938384783527433">Samstilla feril</translation>
 <translation id="1111673857033749125">Bókamerki vistuð í öðrum tækjum munu birtast hér.</translation>
 <translation id="1113597929977215864">Sýna einfaldað yfirlit</translation>
+<translation id="1126696498560056882">Stjórna reikningum í þessu tæki</translation>
 <translation id="1126809382673880764">Ver þig ekki gegn hættulegum vefsvæðum, niðurhali eða viðbótum. Þú munt áfram geta notað örugga vefskoðun, þar sem hún er í boði, í annarri þjónustu Google á borð við Gmail og leit.</translation>
 <translation id="1129510026454351943">Upplýsingar: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1142732900304639782">Ekki bjóða upp á að þýða þessi vefsvæði</translation>
@@ -76,6 +77,7 @@
 <translation id="1332501820983677155">Flýtilyklar eiginleika Google Chrome</translation>
 <translation id="1344653310988386453">Taka með tengil í merktan texta</translation>
 <translation id="1347468774581902829">Stjórna virkni</translation>
+<translation id="1355088659320425659">Ferill og flipar</translation>
 <translation id="1360432990279830238">Skrá út og slökkva á samstillingu?</translation>
 <translation id="1366525380420346469">Þegar kveikt er á eiginleikanum</translation>
 <translation id="1373696734384179344">Ekki nægt minni til að sækja valda efnið.</translation>
@@ -621,6 +623,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="4195643157523330669">Opna í nýjum flipa</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 flipi í þessu tæki}one{# flipi í þessu tæki}other{# flipar í þessu tæki}}</translation>
 <translation id="4198423547019359126">Engar tiltækar niðurhalsstaðsetningar</translation>
+<translation id="4198664641856813238">Skráðu þig inn til að sjá bókamerkin þín, aðgangsorð og fleira í öllum tækjunum þínum</translation>
 <translation id="4202218894997543208">Umfjöllunarefni sem þú hefur sett á bannlista</translation>
 <translation id="4214315110991671325">Chrome kann að nota fótspor við forhleðslu ef þú leyfir fótspor.</translation>
 <translation id="4216511743389425832">Hlusta á þessa síðu</translation>
@@ -809,6 +812,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Aðrar aðgerðir<ph name="END_LINK1" /> kunna að vera vistaðar á Google reikningnum þínum þegar þú ert innskráð(ur). Þú getur eytt þessu hvenær sem er.</translation>
 <translation id="506254248375231072">Engir flipar</translation>
 <translation id="5062960805900435602">Tilkynningu um sameiningu aðgangsorða lokað</translation>
+<translation id="5075939510584558547">Vista án dulkóðunar</translation>
 <translation id="5081960376148623587">Veldu hvort að síðum sé forhlaðið</translation>
 <translation id="5085038751173179818">Skráðu þig inn á þetta vefsvæði og Chrome til að fá bókamerkin þín og fleira í öll tækin þín</translation>
 <translation id="5091199029769593641">Fljótlega sérðu sögur frá <ph name="SITE_NAME" /> þegar þú opnar nýjan flipa. Vefsvæði sem þú fylgir eru vistuð á Google reikningnum þínum. Þú getur stjórnað þeim í stillingum Tillagna.</translation>
@@ -867,6 +871,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5401851137404501592">Til að halda áfram mun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deila nafni þínu, netfangi og prófílmynd með þessu vefsvæði.</translation>
 <translation id="5409881200985013443">Senda <ph name="ONE_TIME_CODE" /> á <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Staðfestir…</translation>
+<translation id="5415871492522952905">Ferillinn og fliparnir verða áfram í öllum tækjunum þínum svo að þú getur haldið áfram þaðan sem frá var horfið</translation>
 <translation id="5423934151118863508">Síðurnar sem þú heimsækir oftast munu birtast hér</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB tiltæk</translation>
 <translation id="543338862236136125">Breyta aðgangsorði</translation>
@@ -895,6 +900,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5554520618550346933">Þegar þú notar aðgangsorð varar Chrome þig við ef það hefur verið birt á netinu. Meðan á þessu stendur eru aðgangsorðin þín og notandanöfnin dulkóðuð svo enginn geti lesið þau, þ.m.t. Google.</translation>
 <translation id="5555525474779371165">Veldu vernd öruggrar vefskoðunar</translation>
 <translation id="5556459405103347317">Endurhlaða</translation>
+<translation id="555671485580955310">Samstilla feril og flipa</translation>
 <translation id="555816257274242153">Hætti að vakta verð</translation>
 <translation id="5561162485081632007">Greinir hættuleg atvik og varar þig við þeim þegar þau eiga sér stað</translation>
 <translation id="5561549206367097665">Bíður eftir neti…</translation>

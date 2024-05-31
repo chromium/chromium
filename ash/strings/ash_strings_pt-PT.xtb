@@ -57,7 +57,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="118437560755358292">Introduzir palavra-passe ou PIN para uma maior segurança</translation>
 <translation id="118532027333893379">Toque em qualquer local para capturar o ecrã inteiro.</translation>
 <translation id="1190609913194133056">Centro de Notificações</translation>
-<translation id="1190678134285018527">O dispositivo tem de voltar à versão anterior</translation>
 <translation id="1195412055398077112">overscan</translation>
 <translation id="1195667586424773550">Arraste o link para a barra de endereço do separador.</translation>
 <translation id="119944043368869598">Limpar tudo</translation>
@@ -108,6 +107,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1333308631814936910">Ecrã <ph name="DISPLAY_NAME" /> ligado.</translation>
 <translation id="1340378040547539434">Diminuir o zoom na página</translation>
 <translation id="1341651618736211726">Menu adicional</translation>
+<translation id="1341926407152459446">Use "<ph name="DEVICE_NAME" />" para a entrada e saída de áudio</translation>
 <translation id="1344141078024003905">Está a transmitir o ecrã. Pode pausar ou parar a transmissão do ecrã em qualquer altura.</translation>
 <translation id="1346748346194534595">Direita</translation>
 <translation id="1351937230027495976">Reduzir menu</translation>
@@ -146,6 +146,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1486307154719069822">Com o ditado, pode escrever através da voz. Prima a tecla de ditado ou selecione o ícone de microfone na parte inferior do ecrã quando estiver num campo de texto. O idioma do ditado está definido como <ph name="LANGUAGE" />. A voz é enviada para a Google para processamento. Pode alterar o idioma do ditado em qualquer altura em Definições &gt; Acessibilidade.</translation>
 <translation id="1487931858675166540">Houve uma troca de <ph name="FIRST_ITEM_TITLE" /> por <ph name="SECOND_ITEM_TITLE" />.</translation>
 <translation id="1500926532737552529">Mostrar todas as sugestões</translation>
+<translation id="1501946871587957338">Mudar de origem de áudio?</translation>
 <translation id="1510238584712386396">Iniciador</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar definições de notificação. As notificações estão desativadas para uma aplicação}other{Mostrar definições de notificação. As notificações estão desativadas para # aplicações}}</translation>
 <translation id="1523032696246003">Bateria: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> até ficar completa</translation>
@@ -687,7 +688,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="363473492175527493">Tarefa definida para se focar em: <ph name="TASK_NAME" />. Prima Enter para editar a tarefa.</translation>
 <translation id="3638400994746983214">Ative/desative o ecrã de privacidade. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Minimizar janela</translation>
-<translation id="3649505501900178324">Atualização vencida</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         de <ph name="START_TIME" /> a
@@ -757,7 +757,6 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="3900355044994618856">A sessão termina dentro de <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">A ligar a <ph name="NAME" /></translation>
 <translation id="3906954721959377182">Tablet</translation>
-<translation id="3922427723338465344">{0,plural, =1{Altere o dispositivo para uma versão anterior dentro de 1 minuto}other{Altere o dispositivo para uma versão anterior dentro de # minutos}}</translation>
 <translation id="3923494859158167397">Nenhuma rede móvel configurada</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, a carregar eventos.</translation>
 <translation id="3932043219784172185">Nenhum dispositivo ligado</translation>
@@ -776,6 +775,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="397105322502079400">A calcular...</translation>
 <translation id="397726367135689299">O carregamento da bateria pode ser instável.</translation>
 <translation id="3977512764614765090">A bateria está <ph name="PERCENTAGE" />% cheia e a carregar.</translation>
+<translation id="3982013579989864579">Mudar de saída de áudio?</translation>
 <translation id="3984536049089846927">Página seguinte</translation>
 <translation id="3986082989454912832">Atender</translation>
 <translation id="3990002060657467458">Os controlos usados frequentemente, como o Wi-Fi, o Bluetooth e o volume, estão nas Definições rápidas. Também pode aceder aqui para fazer capturas de ecrã.</translation>
@@ -819,6 +819,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4150201353443180367">Visualização</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% de bateria restante (cerca de <ph name="TIME_LEFT" />).
 Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</translation>
+<translation id="4160919062868802509">Várias origens de áudio detetadas</translation>
 <translation id="4165275524535002941">O cabo pode não ser compatível com ecrãs</translation>
 <translation id="4177415338862979658">Clique para ver os detalhes</translation>
 <translation id="4177913004758410636">{0,plural, =1{Atualize o dispositivo dentro de um dia}other{Atualize o dispositivo dentro de # dias}}</translation>
@@ -949,7 +950,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4623167406982293031">Validar conta</translation>
 <translation id="4628757576491864469">Dispositivos</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, número de estrelas: <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Altere o dispositivo para uma versão anterior dentro de um dia}other{Altere o dispositivo para uma versão anterior dentro de # dias}}</translation>
 <translation id="4633636853437260449">Prima Ctrl + W para eliminar</translation>
 <translation id="4642092649622328492">Criar uma captura de ecrã parcial</translation>
 <translation id="4644727592819780893">A região é demasiado pequena para se ajustar à câmara</translation>
@@ -1018,6 +1018,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4871905435473761992">Veja os detalhes da zona Wi-Fi. A sua rede móvel não suporta uma zona Wi-Fi.</translation>
 <translation id="4872237917498892622">Alt + Pesquisar ou Shift</translation>
 <translation id="4872852897273142380">Focar ou realçar a barra de marcadores (se visível)</translation>
+<translation id="4876935764454575645">Seleção de áudio</translation>
 <translation id="4881323000405981760">Os efeitos não são suportados em apps para Linux</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4889868803215848840">Envie feedback opcional para melhorar as sugestões:</translation>
@@ -1094,6 +1095,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5121628974188116412">Ir para a parte inferior da página</translation>
 <translation id="5122517996953421795">Pré-visualização de <ph name="DESK_NAME" />. Espaço de trabalho inativo.</translation>
 <translation id="5136175204352732067">Teclado diferente ligado</translation>
+<translation id="5144005092084035179">Mudar de entrada de áudio?</translation>
 <translation id="5147567197700016471">Desbloqueado</translation>
 <translation id="5150070631291639005">Definições de privacidade</translation>
 <translation id="5155897006997040331">Velocidade de leitura</translation>
@@ -1458,7 +1460,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6477681113376365978">Não é possível transferir o ficheiro</translation>
 <translation id="6482559668224714696">Lupa de ecrã inteiro</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta direita)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> exige que atualize o dispositivo <ph name="DEVICE_TYPE" /> antes do prazo</translation>
 <translation id="649452524636452238">PIN do cartão inteligente</translation>
 <translation id="6495322433318104734">A apresentar a proteção de ecrã. Prima uma tecla para sair</translation>
 <translation id="6495400115277918834">Funcionalidade ecrã no ecrã iniciada, Alt+Shift+V para focar</translation>
@@ -1523,7 +1524,6 @@ Nova instalação</translation>
 <translation id="6697913454192220372">Adicionar novo espaço de trabalho</translation>
 <translation id="6700713906295497288">Botão de menu IME</translation>
 <translation id="6706742084323792866">Teclado do PIN</translation>
-<translation id="6707693040195709527">Alteração do dispositivo para a versão anterior vencida</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6723839937902243910">Alimentação</translation>
 <translation id="672609503628871915">Descobrir as novidades mais recentes</translation>
@@ -1797,6 +1797,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7780094051999721182">atalhos</translation>
 <translation id="7780159184141939021">Rodar ecrã</translation>
 <translation id="7781829728241885113">Ontem</translation>
+<translation id="7787212146956232129">Estão definidos dispositivos de entrada e saída. Aceda às Definições para fazer alterações.</translation>
 <translation id="7792590255364786396">Visível</translation>
 <translation id="7796735576426975947">Nova notificação oculta</translation>
 <translation id="7798302898096527229">Prima Pesquisar ou Shift para cancelar.</translation>
@@ -1817,7 +1818,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7866482334467279021">ativado</translation>
 <translation id="7872786842639831132">Desativado</translation>
 <translation id="7875575368831396199">O Bluetooth está desativado no seu <ph name="DEVICE_TYPE" />. Ative o Bluetooth para utilizar o Phone Hub.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Altere o dispositivo para uma versão anterior agora}=1{Altere o dispositivo para uma versão anterior dentro de 1 segundo}other{Altere o dispositivo para uma versão anterior dentro de # segundos}}</translation>
 <translation id="7884446017008693258">Definições da zona Wi-Fi</translation>
 <translation id="7884902759927478774">Cancelar a ação de arrastar o separador</translation>
 <translation id="7886169021410746335">Ajustar as definições de privacidade</translation>
@@ -1894,7 +1894,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Use a tecla Tab para aceder a mais opções. Use as setas para a esquerda e direita para aceder a todos os espaços de trabalho.</translation>
 <translation id="8091153018031979607">Começa à(s) <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Atualizações automáticas</translation>
 <translation id="8092380135549145188">Controlos de deslocamento</translation>
 <translation id="8098591350844501178">Parar a transmissão do ecrã para <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Desafixar a app da prateleira</translation>
@@ -1940,7 +1939,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8257510091797044096">Configurar o dispositivo</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8262312463845990408">Ativar/desativar reprodução</translation>
-<translation id="8270450402312105425">{0,plural, =1{Alteração do dispositivo para uma versão anterior dentro de uma hora}other{Alteração do dispositivo para uma versão anterior dentro de # horas}}</translation>
 <translation id="8277261673056602147">Realce texto no ecrã</translation>
 <translation id="8287009018010202411">Produtividade</translation>
 <translation id="828708037801473432">Desativada</translation>
@@ -2007,7 +2005,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8553395910833293175">Já atribuído a todos os espaços de trabalho.</translation>
 <translation id="8555757996376137129">Remover espaço de trabalho atual</translation>
 <translation id="8559845965695780508">Editado por <ph name="USER" /></translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> recomenda que atualize o dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Aqui estão algumas sugestões para experimentar</translation>
 <translation id="857201607579416096">O menu foi movido para o canto inferior direito do ecrã.</translation>
 <translation id="8581946341807941670">Prima <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> e clique num link</translation>
@@ -2107,6 +2104,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ficheiro}other{# ficheiros}}</translation>
 <translation id="8936501819958976551">desativada</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (porta traseira direita)</translation>
+<translation id="8939855324412367560">A entrada de áudio é "<ph name="INPUT_DEVICE_NAME" />" e a saída de áudio é "<ph name="OUTPUT_DEVICE_NAME" />". Aceda às Definições para fazer alterações.</translation>
 <translation id="8940956008527784070">Bateria fraca (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Caixa de verificação não selecionada.</translation>
 <translation id="8949925099261528566">Ligação estabelecida, sem Internet</translation>
@@ -2164,6 +2162,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="9178475906033259337">A apresentar 1 resultado para <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Esta funcionalidade permite-lhe aceder rapidamente a qualquer utilizador com a sessão iniciada sem ser necessária uma palavra-passe. Utilize esta funcionalidade apenas com contas fidedignas.</translation>
 <translation id="9183456764293710005">Lupa de ecrã inteiro</translation>
+<translation id="9192133205265227850">Use "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">A transmitir para um recetor desconhecido…</translation>
 <translation id="9194617393863864469">Iniciar sessão com outro utilizador...</translation>
 <translation id="9195990613383871904">Amanhã</translation>
@@ -2182,7 +2181,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="923686485342484400">Prima Control Shift Q duas vezes para terminar sessão.</translation>
 <translation id="92580429198593979">Premiu o atalho de teclado da inversão de cores. Quer ativá-la?</translation>
 <translation id="925832987464884575">Ocultar pré-visualizações</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> exige que atualize o dispositivo <ph name="DEVICE_TYPE" /> imediatamente</translation>
 <translation id="938407504481277932">Espaço de trabalho atual: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Espaço de trabalho <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">O que está no meu calendário?</translation>
 <translation id="945383118875625837">Arrastar o link para a barra de marcadores</translation>

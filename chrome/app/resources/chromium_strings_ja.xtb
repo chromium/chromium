@@ -456,7 +456,6 @@
 <translation id="8417404458978023919">{0,plural, =1{1 日以内に Chromium を再起動してください}other{# 日以内に Chromium を再起動してください}}</translation>
 <translation id="8453117565092476964">インストーラ アーカイブが壊れているか無効です。Chromium をダウンロードし直してください。</translation>
 <translation id="8458614432758743027">Chromium のご利用には Windows 10 以上が必要です。</translation>
-<translation id="8461326814397467035">Chromium データの一部が Google アカウントにまだ保存されていません。数分待ってからログアウトしてください。</translation>
 <translation id="8463672209299734063">任意: 診断と使用状況のデータを Google に自動送信して、Chromium OS の機能とパフォーマンスの改善に協力する。</translation>
 <translation id="8493179195440786826">Chromium は古いバージョンです</translation>
 <translation id="8522801943730206384">パスワードを保存すると、Chromium による確認が可能になります</translation>

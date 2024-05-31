@@ -75,6 +75,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="2942241131342758843">Usa Chromium per impostazione predefinita per aprire link, eseguire ricerche dai widget e compilare automaticamente le password in altre app</translation>
 <translation id="2977470724722393594">Chromium è aggiornato</translation>
 <translation id="3044857325852340337">Dati di Chromium eliminati</translation>
+<translation id="3049211156275642309">Completa la configurazione di Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium può aiutarti a monitorare questo pacchetto nella pagina Nuova scheda.}other{Chromium può aiutarti a monitorare questi pacchetti nella pagina Nuova scheda.}}</translation>
 <translation id="3102849287235003384">Per uscire dal tuo Account Google su tutti i siti web, <ph name="BEGIN_LINK" />esci da Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Ricerca vocale in Chromium</translation>
@@ -273,6 +274,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="8754966941001340678">Chromium consiglia la Protezione avanzata</translation>
 <translation id="8759037115129007407">Al momento il tuo membro del gruppo Famiglia non può ricevere password. Chiedi di aggiornare Chromium e sincronizzare le sue password. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Questo account e gli eventuali dati non salvati verranno rimossi da Chromium.</translation>
+<translation id="8826789549860004832">Continua a configurare il browser per usare al meglio Chromium.</translation>
 <translation id="88376265765385899">Consente di aprire i preferiti di Chromium.</translation>
 <translation id="8860548555286245440">Apri gli URL in Chromium in incognito</translation>
 <translation id="8866191443434488382">Chromium rileverà i numeri di riferimento sui siti che visiti e mostrerà gli aggiornamenti relativi ai pacchetti nella pagina Nuova scheda. Il numero di tracciamento della spedizione e il nome del sito web verranno inviati a Chromium per fornire questa funzionalità e migliorare le funzionalità di acquisto per tutti. Puoi aggiornarli in qualsiasi momento nelle <ph name="BEGIN_LINK" />impostazioni di tracciamento della spedizione<ph name="END_LINK" />.</translation>

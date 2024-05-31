@@ -26,6 +26,7 @@
 <translation id="1108938384783527433">Sincronización del historial</translation>
 <translation id="1111673857033749125">Los favoritos guardados en tus otros dispositivos aparecerán aquí.</translation>
 <translation id="1113597929977215864">Mostrar la vista simplificada</translation>
+<translation id="1126696498560056882">Administrar cuentas en este dispositivo</translation>
 <translation id="1126809382673880764">No te protege contra descargas, extensiones ni sitios web peligrosos. Seguirás teniendo la protección (donde esté disponible) de la Navegación segura en otros servicios de Google, como Gmail y la Búsqueda.</translation>
 <translation id="1129510026454351943">Detalles: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1142732900304639782">No ofrecer traducir estos sitios</translation>
@@ -76,6 +77,7 @@
 <translation id="1332501820983677155">Accesos directos a las funciones de Google Chrome</translation>
 <translation id="1344653310988386453">Incluir el vínculo al texto destacado</translation>
 <translation id="1347468774581902829">Administrar actividad</translation>
+<translation id="1355088659320425659">Historial y pestañas</translation>
 <translation id="1360432990279830238">¿Salir y desactivar la sincronización?</translation>
 <translation id="1366525380420346469">Cuando está activada</translation>
 <translation id="1373696734384179344">Memoria insuficiente para descargar el contenido seleccionado</translation>
@@ -620,6 +622,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 pestaña en este dispositivo}other{# pestañas en este dispositivo}}</translation>
 <translation id="4198423547019359126">No hay ubicaciones de descarga disponibles</translation>
+<translation id="4198664641856813238">Accede para obtener tus favoritos, contraseñas y más en todos tus dispositivos</translation>
 <translation id="4202218894997543208">Temas que bloqueaste</translation>
 <translation id="4214315110991671325">Si permites las cookies, Chrome puede usarlas para la precarga.</translation>
 <translation id="4216511743389425832">Escuchar esta página</translation>
@@ -808,6 +811,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5054455334322721892">Es posible que se guarden <ph name="BEGIN_LINK1" />otras formas de actividad<ph name="END_LINK1" /> en tu Cuenta de Google cuando accedes. Podrás borrarlas en cualquier momento.</translation>
 <translation id="506254248375231072">No hay pestañas</translation>
 <translation id="5062960805900435602">La actualización sobre la combinación de contraseñas está cerrada</translation>
+<translation id="5075939510584558547">Guardar sin encriptación</translation>
 <translation id="5081960376148623587">Elige si deseas precargar páginas</translation>
 <translation id="5085038751173179818">Accede a este sitio y a Chrome para obtener tus favoritos y mucho más en todos tus dispositivos</translation>
 <translation id="5091199029769593641">Pronto, cuando abras una nueva pestaña, verás historias de <ph name="SITE_NAME" />. Los sitios que sigues se guardan en tu Cuenta de Google. Puedes administrarlos en la configuración de Descubre.</translation>
@@ -866,6 +870,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5401851137404501592">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu nombre, dirección de correo electrónico y foto de perfil con este sitio.</translation>
 <translation id="5409881200985013443">¿Deseas enviar <ph name="ONE_TIME_CODE" /> a <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verificando…</translation>
+<translation id="5415871492522952905">Verás tu historial y tus pestañas en todos los dispositivos para que puedas retomar la navegación</translation>
 <translation id="5423934151118863508">Aquí aparecerán las páginas que visites con más frecuencia</translation>
 <translation id="5424588387303617268">GB disponibles: <ph name="GIGABYTES" /></translation>
 <translation id="543338862236136125">Editar contraseña</translation>
@@ -894,6 +899,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5554520618550346933">Cuando usas una contraseña, Chrome te advierte si se publicó en línea. Cuando lo haces, se encriptan tus contraseñas y nombres de usuario para que nadie, ni siquiera Google, pueda leer esta información.</translation>
 <translation id="5555525474779371165">Elige tu protección de Navegación segura</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
+<translation id="555671485580955310">Sincronizar historial y pestañas</translation>
 <translation id="555816257274242153">Dejaste de seguir el precio</translation>
 <translation id="5561162485081632007">Detecta eventos peligrosos cuando ocurren y te advierte sobre ellos.</translation>
 <translation id="5561549206367097665">Esperando red…</translation>

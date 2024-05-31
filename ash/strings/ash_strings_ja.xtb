@@ -57,7 +57,6 @@
 <translation id="118437560755358292">セキュリティ強化のためパスワードまたは PIN を入力してください</translation>
 <translation id="118532027333893379">全画面をキャプチャするには任意の場所をタップしてください</translation>
 <translation id="1190609913194133056">通知センター</translation>
-<translation id="1190678134285018527">デバイスを以前のバージョンに戻す必要があります</translation>
 <translation id="1195412055398077112">オーバースキャン</translation>
 <translation id="1195667586424773550">リンクをドラッグしてタブのアドレスバーに移動する</translation>
 <translation id="119944043368869598">すべて削除</translation>
@@ -687,7 +686,6 @@
 <translation id="363473492175527493">集中するタスクを <ph name="TASK_NAME" /> に設定しました。タスクを編集するには Enter キーを押してください。</translation>
 <translation id="3638400994746983214">プライバシー スクリーンを切り替えます。<ph name="STATE_TEXT" />。</translation>
 <translation id="3649256019230929621">ウィンドウを最小化</translation>
-<translation id="3649505501900178324">更新の期限が過ぎています</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />、
         <ph name="START_TIME" /> から
@@ -757,7 +755,6 @@
 <translation id="3900355044994618856">セッションの制限時間まであと <ph name="SESSION_TIME_REMAINING" /> です</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> に接続しています</translation>
 <translation id="3906954721959377182">タブレット</translation>
-<translation id="3922427723338465344">{0,plural, =1{1 分以内にデバイスを以前のバージョンに戻してください}other{# 分以内にデバイスを以前のバージョンに戻してください}}</translation>
 <translation id="3923494859158167397">モバイル ネットワークが設定されていません</translation>
 <translation id="3925540965556789199"><ph name="DATE" />、予定を読み込んでいます。</translation>
 <translation id="3932043219784172185">接続されているデバイスはありません</translation>
@@ -949,7 +946,6 @@
 <translation id="4623167406982293031">アカウントを確認</translation>
 <translation id="4628757576491864469">デバイス</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />、評価 <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{1 日以内にデバイスを以前のバージョンに戻してください}other{# 日以内にデバイスを以前のバージョンに戻してください}}</translation>
 <translation id="4633636853437260449">Ctrl+W キーを押して削除します</translation>
 <translation id="4642092649622328492">画面の一部のスクリーンショットを撮影する</translation>
 <translation id="4644727592819780893">領域が小さすぎてカメラに合いません</translation>
@@ -1458,7 +1454,6 @@
 <translation id="6477681113376365978">ファイルをダウンロードできません</translation>
 <translation id="6482559668224714696">全画面拡大鏡</translation>
 <translation id="6490471652906364588">USB-C デバイス（右側面のポート）</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> が期限までに <ph name="DEVICE_TYPE" /> を更新するよう求めています</translation>
 <translation id="649452524636452238">スマートカードの PIN</translation>
 <translation id="6495322433318104734">スクリーン セーバーを表示しています。終了するにはどれかキーを押してください</translation>
 <translation id="6495400115277918834">ピクチャー イン ピクチャーを開始しました。フォーカスするには Alt+Shift+V キーを押してください</translation>
@@ -1523,7 +1518,6 @@
 <translation id="6697913454192220372">新しいデスクを追加</translation>
 <translation id="6700713906295497288">IME メニューボタン</translation>
 <translation id="6706742084323792866">キーボードを固定</translation>
-<translation id="6707693040195709527">デバイスを以前のバージョンに戻す期限が過ぎています</translation>
 <translation id="6710213216561001401">前へ</translation>
 <translation id="6723839937902243910">電源</translation>
 <translation id="672609503628871915">新機能を確認する</translation>
@@ -1818,7 +1812,6 @@
 <translation id="7866482334467279021">オン</translation>
 <translation id="7872786842639831132">オフ</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> で Bluetooth がオフになっているようです。スマートフォン ハブを使用するには、Bluetooth をオンにしてください。</translation>
-<translation id="7877557217297072640">{0,plural, =0{今すぐデバイスを以前のバージョンに戻してください}=1{1 秒以内にデバイスを以前のバージョンに戻してください}other{# 秒以内にデバイスを以前のバージョンに戻してください}}</translation>
 <translation id="7884446017008693258">アクセス ポイント設定</translation>
 <translation id="7884902759927478774">タブのドラッグをキャンセルする</translation>
 <translation id="7886169021410746335">プライバシー設定を調整する</translation>
@@ -1895,7 +1888,6 @@
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">その他のオプションを表示するには Tab キーを使用します。すべてのデスクにアクセスするには左右の矢印キーを使用します。</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> に開始</translation>
-<translation id="8091387634532529612">自動更新</translation>
 <translation id="8092380135549145188">スクロール設定</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> への画面のキャストを停止する</translation>
 <translation id="810637681351706236">シェルフへのアプリの固定を解除します</translation>
@@ -1941,7 +1933,6 @@
 <translation id="8257510091797044096">デバイスをセットアップする</translation>
 <translation id="8261506727792406068">削除</translation>
 <translation id="8262312463845990408">再生を切り替える</translation>
-<translation id="8270450402312105425">{0,plural, =1{1 時間以内にデバイスを以前のバージョンに戻してください}other{# 時間以内にデバイスを以前のバージョンに戻してください}}</translation>
 <translation id="8277261673056602147">画面上のテキストを選択</translation>
 <translation id="8287009018010202411">仕事効率化</translation>
 <translation id="828708037801473432">オフ</translation>
@@ -2008,7 +1999,6 @@
 <translation id="8553395910833293175">すべてのデスクに割り当て済みです。</translation>
 <translation id="8555757996376137129">現在のデスクを削除する</translation>
 <translation id="8559845965695780508"><ph name="USER" /> さんが編集</translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> が <ph name="DEVICE_TYPE" /> を更新するよう推奨しています</translation>
 <translation id="8569751806372591456">新しい検索候補をお試しください</translation>
 <translation id="857201607579416096">メニューは画面右下に移動しました。</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" />+<ph name="MODIFIER_2" /> キーを押しながらリンクをクリックする</translation>
@@ -2182,7 +2172,6 @@
 <translation id="923686485342484400">ログアウトするには、Ctrl Shift Q を 2 回押します。</translation>
 <translation id="92580429198593979">色反転のキーボード ショートカットを押しました。オンにしますか？</translation>
 <translation id="925832987464884575">プレビューを非表示</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> が今すぐ <ph name="DEVICE_TYPE" /> を更新するよう求めています</translation>
 <translation id="938407504481277932">現在のデスク: <ph name="DESK_NAME" />。<ph name="PROFILE_NAME" /> <ph name="EMAIL" />。デスク <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />。</translation>
 <translation id="938963181863597773">カレンダーに予定は入ってる？</translation>
 <translation id="945383118875625837">リンクをブックマーク バーにドラッグする</translation>

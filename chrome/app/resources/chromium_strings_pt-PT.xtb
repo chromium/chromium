@@ -184,6 +184,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="4055805654398742145">Gestor de P&amp;alavras-passe</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{A sua organização fecha automaticamente o Chromium quando não é usado durante 1 minuto. Os dados de navegação são eliminados. Estas informações podem incluir o histórico, o preenchimento automático e as transferências.}other{A sua organização fecha automaticamente o Chromium quando não é usado durante # minutos. Os dados de navegação são eliminados. Estas informações podem incluir o histórico, o preenchimento automático e as transferências.}}</translation>
 <translation id="4118474109249235144">Navegação anónima do Chromium</translation>
+<translation id="4122186850977583290">Aceder à página Acerca do Chromium</translation>
 <translation id="4148957013307229264">A instalar...</translation>
 <translation id="4149336151887611710">A sua organização pode ver e gerir os dados de navegação no seu perfil de trabalho, como os marcadores, o histórico e as palavras-passe. Não consegue ver dados de navegação em perfis pessoais do Chromium.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Início de sessão na rede – Chromium</translation>
@@ -457,7 +458,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reinicie o Chromium dentro de um dia}other{Reinicie o Chromium dentro de # dias}}</translation>
 <translation id="8453117565092476964">O arquivo do programa de instalação está corrompido ou não é válido. Descarregue novamente o Chromium.</translation>
 <translation id="8458614432758743027">O Chromium requer o Windows 10 ou superior.</translation>
-<translation id="8461326814397467035">Alguns dos seus dados do Chromium ainda não foram guardados na sua Conta Google. Experimente aguardar alguns minutos antes de terminar sessão.</translation>
 <translation id="8463672209299734063">Opcional: ajudar a melhorar as funcionalidades e o desempenho do ChromiumOS ao enviar automaticamente dados de diagnóstico e utilização para a Google.</translation>
 <translation id="8493179195440786826">O Chromium Está Desatualizado</translation>
 <translation id="8522801943730206384">O Chromium consegue verificar as suas palavras-passe quando as guarda</translation>

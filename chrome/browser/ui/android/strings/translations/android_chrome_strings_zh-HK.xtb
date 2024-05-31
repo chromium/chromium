@@ -26,7 +26,7 @@
 <translation id="1108938384783527433">同步處理記錄</translation>
 <translation id="1111673857033749125">儲存在其他裝置上的書籤會在這裡顯示。</translation>
 <translation id="1113597929977215864">顯示簡化檢視模式</translation>
-<translation id="1126696498560056882">管理這部裝置上的帳戶</translation>
+<translation id="1126696498560056882">管理此裝置上的帳戶</translation>
 <translation id="1126809382673880764">無法防範危險網站、下載檔案和擴充程式。您仍可在其他 Google 服務 (例如 Gmail 和搜尋) 中使用「安全瀏覽」功能 (如有)。</translation>
 <translation id="1129510026454351943">詳情：<ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1142732900304639782">不要詢問是否翻譯這些網站</translation>
@@ -77,7 +77,7 @@
 <translation id="1332501820983677155">Google Chrome 功能快速鍵</translation>
 <translation id="1344653310988386453">包含突顯文字的連結</translation>
 <translation id="1347468774581902829">管理活動</translation>
-<translation id="1355088659320425659">歷史記錄和分頁</translation>
+<translation id="1355088659320425659">記錄和分頁</translation>
 <translation id="1360432990279830238">要登出並停用同步功能嗎？</translation>
 <translation id="1366525380420346469">開啟時</translation>
 <translation id="1373696734384179344">記憶體不足，無法下載所選內容。</translation>
@@ -508,6 +508,7 @@
 <translation id="3566639033325271639">更新設定</translation>
 <translation id="357465026686164600">使用手機作為安全密鑰</translation>
 <translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
+<translation id="3577558748185201054">管理興趣和偏好設定</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587596251841506391">協助改善網絡安全</translation>
 <translation id="3597179440835065298">取得更貼近需要的建議</translation>
@@ -622,7 +623,7 @@
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{此裝置上的 1 個分頁}other{此裝置上的 # 個分頁}}</translation>
 <translation id="4198423547019359126">沒有可用的下載位置</translation>
-<translation id="4198664641856813238">只要在裝置上登入帳戶，即可存取你的書籤、密碼等資訊</translation>
+<translation id="4198664641856813238">登入帳戶即可在任何裝置上存取自己的書籤、密碼及其他設定</translation>
 <translation id="4202218894997543208">您已封鎖的主題</translation>
 <translation id="4214315110991671325">如果您允許 Cookie，Chrome 可能會使用 Cookie 預先載入網頁。</translation>
 <translation id="4216511743389425832">朗讀此頁面內容</translation>
@@ -870,7 +871,7 @@
 <translation id="5401851137404501592">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享您的姓名、電郵地址和個人檔案相片。</translation>
 <translation id="5409881200985013443">要在「<ph name="CLIENT_NAME" />」上提交 <ph name="ONE_TIME_CODE" /> 嗎？</translation>
 <translation id="5414836363063783498">正在驗證…</translation>
-<translation id="5415871492522952905">所有已同步的裝置上都會有你的歷史記錄和分頁，方便你繼續執行先前的工作</translation>
+<translation id="5415871492522952905">所有已同步的裝置上都會有你的記錄和分頁，方便你繼續執行先前的工作</translation>
 <translation id="5423934151118863508">您最常瀏覽的網頁會在此顯示</translation>
 <translation id="5424588387303617268">可用空間：<ph name="GIGABYTES" /> GB</translation>
 <translation id="543338862236136125">修改密碼</translation>
@@ -899,7 +900,7 @@
 <translation id="5554520618550346933">使用密碼時，如果密碼已在網上發佈，Chrome 將會提醒你。核對時，您的密碼和使用者名稱將會加密，任何人 (包括 Google) 均無法讀取。</translation>
 <translation id="5555525474779371165">選取您的「安全瀏覽」功能</translation>
 <translation id="5556459405103347317">重新載入</translation>
-<translation id="555671485580955310">同步歷史記錄和分頁</translation>
+<translation id="555671485580955310">同步記錄和分頁</translation>
 <translation id="555816257274242153">已停止追蹤價格</translation>
 <translation id="5561162485081632007">偵測並在危險事件發生時發出警告</translation>
 <translation id="5561549206367097665">正在等待網絡連線…</translation>

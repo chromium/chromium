@@ -791,6 +791,7 @@ Si cette règle n'est pas configurée, les utilisateurs peuvent ajouter des exce
 <translation id="1635748761015837179">Autoriser l'écriture sur des périphériques de stockage externes</translation>
 <translation id="1639468541408865385">Activer le cache d'authentification HTTP à portée globale</translation>
 <translation id="1639673466479276550">Activez l'économiseur d'écran pour l'écran de connexion.</translation>
+<translation id="1640447222731279244">Contrôler l'activation de la fonctionnalité de fond d'écran "Créer avec l'IA" de ChromeOS</translation>
 <translation id="1640824698339859203">Activer le SSO flottant et déplacer les authentifications des services Web de l'utilisateur vers un nouvel appareil</translation>
 <translation id="1641117061932613266">Activer le service <ph name="PRODUCT_NAME" /> V2</translation>
 <translation id="1641394008743444477">Permet de lister les fonctionnalités <ph name="PRODUCT_OS_NAME" /> à désactiver.
@@ -844,6 +845,12 @@ Les origines non spécifiées par la règle ni par les paramètres utilisateur n
 
 Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, aucun événement n'est enregistré.</translation>
 <translation id="1692990221685273468">Détermine si l'outil de vérification des certificats intégré applique des contraintes encodées dans les ancres de confiance chargées depuis le magasin de confiance de la plate-forme.</translation>
+<translation id="1693528798631913178">Cette règle active ou désactive l'arrière-plan de visioconférence "Créer avec l'IA" de ChromeOS.
+0 = Désactiver la fonctionnalité pour les utilisateurs.
+
+1 = Activer la fonctionnalité pour les utilisateurs. Notez qu'aucune donnée n'est envoyée à Google afin d'entraîner ou d'améliorer les modèles d'IA.
+
+Si cette règle n'est pas configurée, la fonctionnalité d'arrière-plan de visioconférence "Créer avec l'IA" est désactivée pour les utilisateurs de la version Enterprise.</translation>
 <translation id="169467210981344373">Désactiver le cache d'authentification HTTP à portée globale</translation>
 <translation id="1696501581280568361">Suggère la séparation des profils</translation>
 <translation id="1698810555265314018">Contrôle la résolution des images imprimées lorsque <ph name="PRODUCT_NAME" /> imprime les PDF après rastérisation.
@@ -1735,6 +1742,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="2326031114717677574">Fréquence d'échantillonnage et de collecte des données audio. La valeur minimale autorisée est de 1 minute.
 
       Si la règle n'est pas configurée, la fréquence par défaut (15 minutes) est appliquée.</translation>
+<translation id="2331028134545182024">Contrôler l'activation de la fonctionnalité d'arrière-plan de visioconférence "Créer avec l'IA" de ChromeOS</translation>
 <translation id="2333228572393176330">Permet de configurer une fonctionnalité de sécurité TLS 1.3 qui protège les connexions contre les attaques par déclassement. Cette règle est rétrocompatible, et elle n'affecte pas les connexions à des serveurs ou proxys conformes à la norme TLS 1.2. Toutefois, les versions plus anciennes de certains proxys interceptant les paramètres TLS sont incompatibles en raison de défauts d'intégration.
 
       Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> active ces protections de sécurité pour toutes les connexions.
@@ -4861,6 +4869,17 @@ Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> applique le pr
       - Si cette règle est définie sur <ph name="SKIP_TOS_DIALOG" />, les fonctionnalités du navigateur sont limitées.
 
       - Si cette règle est définie sur <ph name="SKIP_TOS_DIALOG" />, les administrateurs doivent le signaler aux utilisateurs finaux de l'appareil.</translation>
+<translation id="489760181463331251">Cette règle modifie le niveau d'économies de l'économiseur de mémoire.
+
+Cela n'est appliqué que lorsque l'économiseur de mémoire est activé via les paramètres ou la règle <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" />. Cela affecte aussi la façon dont les heuristiques sont utilisées pour déterminer quand supprimer les onglets. Par exemple, réduire la durée de vie d'un onglet inactif avant de le supprimer peut permettre d'économiser de la mémoire, mais cela signifie aussi que les onglets seront actualisés plus fréquemment, ce qui peut entraîner une mauvaise expérience utilisateur et un trafic réseau plus élevé.
+
+Si cette règle est définie sur 0, l'économiseur de mémoire permet d'obtenir des économies de mémoire modérées. Les onglets deviennent inactifs après une longue période.
+
+Si cette règle est définie sur 1, l'économiseur de mémoire permet d'obtenir des économies de mémoire équilibrées. Les onglets deviennent inactifs après une période optimale.
+
+Si cette règle est définie sur 2, l'économiseur de mémoire permet d'obtenir des économies de mémoire maximales. Les onglets deviennent inactifs après une courte période.
+
+Si cette règle n'est pas configurée, l'utilisateur final peut contrôler ce paramètre dans chrome://settings/performance.</translation>
 <translation id="489803897780524242">Paramètre contrôlant le positionnement des termes de recherche pour le moteur de recherche par défaut</translation>
 <translation id="4899708173828500852">Activer la navigation sécurisée</translation>
 <translation id="4906194810004762807">Fréquence d'actualisation des règles de l'appareil</translation>
@@ -5214,6 +5233,12 @@ Si cette règle n'est pas configurée ou si la liste ne contient aucune référe
       Si ce paramètre n'est pas défini, la période par défaut est fixée à 604 800 000 millisecondes (une semaine).</translation>
 <translation id="5212810195096589189">Spécifier l'autorisation concernant l'interface de ligne de commande pour les machines virtuelles</translation>
 <translation id="5213038356678567351">Sites Web qui ne doivent jamais déclencher un changement de navigateur.</translation>
+<translation id="5215621993623612880">Cette règle active ou désactive le fond d'écran "Créer avec l'IA" de ChromeOS.
+0 = Désactiver la fonctionnalité pour les utilisateurs.
+
+1 = Activer la fonctionnalité pour les utilisateurs. Notez qu'aucune donnée n'est envoyée à Google afin d'entraîner ou d'améliorer les modèles d'IA.
+
+Si cette règle n'est pas configurée, la fonctionnalité de fond d'écran "Créer avec l'IA" est désactivée pour les utilisateurs de la version Enterprise.</translation>
 <translation id="5216815237712190041">Configurez le fond d'écran de l'appareil à afficher sur la page de connexion avant qu'un utilisateur ne se connecte à l'appareil. Pour configurer cette règle, vous devez indiquer l'URL depuis laquelle l'appareil Chrome OS peut télécharger l'image de fond d'écran et un hachage chiffré utilisé pour vérifier l'intégrité du téléchargement. L'image doit être au format JPEG, et sa taille ne doit pas dépasser 16 Mo. L'URL doit être accessible sans authentification. L'image de fond d'écran est téléchargée et mise en cache. Elle sera de nouveau téléchargée à chaque modification de l'URL ou du hachage.
 
       Si la règle relative au fond d'écran est configurée, l'appareil Chrome OS téléchargera et utilisera l'image de fond d'écran sur l'écran de connexion si aucun utilisateur ne s'est encore connecté à l'appareil. Lorsque l'utilisateur se connecte, la règle relative au fond d'écran pour cet utilisateur est activée.
@@ -6748,6 +6773,7 @@ Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> stocke par 
       L'Association express est un nouveau flux d'association Bluetooth qui permet d'ajouter des appareils associés à un compte GAIA.
       Grâce à cette règle, d'autres appareils Chrome OS (et Android) connectés avec le même compte GAIA peuvent être associés automatiquement.
       Si cette règle n'est pas configurée, la valeur par défaut est désactivée pour les utilisateurs gérés par une entreprise et activée sur les comptes non gérés.</translation>
+<translation id="6400959027108936283">Activer la fonctionnalité</translation>
 <translation id="6401669939808766804">Déconnecter l'utilisateur</translation>
 <translation id="640244877779556713">Activer la suggestion d'emoji</translation>
 <translation id="6403114173011456561">Contrôle le clavier virtuel tactile en agissant comme règle complémentaire de la règle <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
@@ -7088,6 +7114,7 @@ Pour que les modifications apportées à cette règle puissent être appliquées
 
       Remarque : Utilisez cette règle avec la règle "<ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />".</translation>
 <translation id="6625136649067113817">Flag booléen spécifiant si le correcteur orthographique est disponible ou non avec le clavier à l'écran.</translation>
+<translation id="6626319579493977784">Paramètres du code dynamique</translation>
 <translation id="66265932317331474">Transmettre les informations concernant le ou les processeurs</translation>
 <translation id="6628120204569232711">Envoyer des rapports sur l'état du stockage</translation>
 <translation id="662991036483361836">Empêcher les utilisateurs d'activer le Partage à proximité</translation>
@@ -8076,6 +8103,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
       Si cette règle est désactivée ou qu'elle n'est pas configurée, les appareils enregistrés n'enregistrent ni ne signalent l'état de sécurité du TPM.
       Exception : Sur les versions M95 et antérieures, les informations concernant le TPM sont contrôlées par la règle <ph name="REPORT_DEVICE_HARDWARE_STATUS" />.</translation>
 <translation id="739556497251174388">Autoriser la réutilisation des identifiants de connexion <ph name="PRODUCT_OS_NAME" /> pour l'authentification réseau</translation>
+<translation id="7402257017733669351">Empêcher le processus du navigateur de créer du code dynamique</translation>
 <translation id="7402772023599097052">Si cette règle est activée ou n'est pas configurée, des avertissements de sécurité s'affichent lorsque des flags de ligne de commande potentiellement dangereux sont utilisés pour lancer Chrome.
 
 Si cette règle est désactivée, ces avertissements ne s'affichent pas quand Chrome est lancé à l'aide de flags de ligne de commande potentiellement dangereux.
@@ -9353,6 +9381,7 @@ Si cette règle n'est pas configurée ou qu'elle est définie sur 0, l'URL sél
 <translation id="8429593528367808164">Activer l'écriture prédictive lors de la saisie au clavier physique</translation>
 <translation id="8433186206711564395">Paramètres réseau</translation>
 <translation id="8433769814000220721">Activer les contenus suggérés</translation>
+<translation id="8435304381855818385">Paramètres par défaut de code dynamique</translation>
 <translation id="843609873781525167">Si cette règle est définie sur "True", <ph name="PRODUCT_NAME" /> vérifie toujours au démarrage s'il est le navigateur par défaut et, si possible, s'enregistre automatiquement. Si cette règle est définie sur "False", <ph name="PRODUCT_NAME" /> ne vérifie jamais s'il est le navigateur par défaut et désactive les commandes utilisateur concernant cette option.
 
       Si cette règle n'est pas configurée, les utilisateurs peuvent contrôler si <ph name="PRODUCT_NAME" /> est le navigateur par défaut et, dans le cas contraire, si une notification doit être affichée pour les en informer.

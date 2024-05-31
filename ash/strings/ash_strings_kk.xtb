@@ -57,7 +57,6 @@
 <translation id="118437560755358292">Қауіпсіздікті күшейту үшін құпия сөзді немесе PIN кодын енгізіңіз.</translation>
 <translation id="118532027333893379">Толық экранды түсіру үшін кез келген жерді басыңыз.</translation>
 <translation id="1190609913194133056">Хабарландыру орталығы</translation>
-<translation id="1190678134285018527">Құрылғыны алдыңғы нұсқаға қайтару керек</translation>
 <translation id="1195412055398077112">көрінбейтін бөлік</translation>
 <translation id="1195667586424773550">Сілтемені қойындының мекенжай жолағына сүйреп апараңыз</translation>
 <translation id="119944043368869598">Барлығын өшіру</translation>
@@ -685,7 +684,6 @@
 <translation id="363473492175527493">Зейін қойылатын тапсырма: <ph name="TASK_NAME" />. Тапсырманы өзгерту үшін Enter пернесін басыңыз.</translation>
 <translation id="3638400994746983214">Құпиялық экранын қосу немесе өшіру. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Терезені жию</translation>
-<translation id="3649505501900178324">Жаңарту мерзімі өтіп кетті</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> –
@@ -755,7 +753,6 @@
 <translation id="3900355044994618856">Сеанс <ph name="SESSION_TIME_REMAINING" /> өткен соң аяқталады</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> желісіне қосылу</translation>
 <translation id="3906954721959377182">Планшет</translation>
-<translation id="3922427723338465344">{0,plural, =1{Құрылғыны 1 минутта алдыңғы нұсқаға қайтару қажет}other{Құрылғыны # минутта алдыңғы нұсқаға қайтару қажет}}</translation>
 <translation id="3923494859158167397">Ешқандай мобильдік желі реттелмеген.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, іс-шаралар жүктелуде.</translation>
 <translation id="3932043219784172185">Жалғанған құрылғы жоқ.</translation>
@@ -946,7 +943,6 @@
 <translation id="4623167406982293031">Аккаунтты растау</translation>
 <translation id="4628757576491864469">Құрылғылар</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, рейтингісі: <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Құрылғыны бір күн ішінде алдыңғы нұсқаға қайтару қажет}other{Құрылғыны # күн ішінде алдыңғы нұсқаға қайтару қажет}}</translation>
 <translation id="4633636853437260449">Жою үшін Ctrl+W пернелер тіркесімін басыңыз.</translation>
 <translation id="4642092649622328492">Экранның бір бөлігін түсіру</translation>
 <translation id="4644727592819780893">Аймақ камераның алғы көрінісін көрсету үшін тым кіші.</translation>
@@ -1453,7 +1449,6 @@
 <translation id="6477681113376365978">Файлды жүктеп алу мүмкін емес</translation>
 <translation id="6482559668224714696">Толық экран ұлғайтқышы</translation>
 <translation id="6490471652906364588">USB-C құрылғысы (оң жақ ұяшық)</translation>
-<translation id="6491071886865974820">Мерзім аяқталғанға дейін, <ph name="MANAGER" /> сізден <ph name="DEVICE_TYPE" /> құрылғысын жаңартуыңызды талап етеді.</translation>
 <translation id="649452524636452238">Смарт картаның PIN коды</translation>
 <translation id="6495322433318104734">Скринсейвер көрсетіліп жатыр, шығу үшін кез келген пернені басыңыз.</translation>
 <translation id="6495400115277918834">"Суреттегі сурет" режимі қосылды, ерекшелеу үшін Alt+Shift+V пернелер тіркесімін басыңыз.</translation>
@@ -1517,7 +1512,7 @@
 <translation id="6696025732084565524">Алынбалы пернетақтаны жаңарту қажет</translation>
 <translation id="6697913454192220372">Жаңа жұмыс үстелін қосу</translation>
 <translation id="6700713906295497288">IME мәзір түймесі</translation>
-<translation id="6707693040195709527">Құрылғыны алдыңғы нұсқаға қайтару мерзімі өтіп кетті</translation>
+<translation id="6706742084323792866">PIN пернетақтасы</translation>
 <translation id="6710213216561001401">Алдыңғы</translation>
 <translation id="6723839937902243910">Күш</translation>
 <translation id="672609503628871915">Жаңалықтарды қарау</translation>
@@ -1810,7 +1805,6 @@
 <translation id="7866482334467279021">Қосу</translation>
 <translation id="7872786842639831132">Өшірулі</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> құрылғыңызда Bluetooth өшірулі сияқты. Phone Hub функциясын пайдалану үшін Bluetooth қосыңыз.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Құрылғыны алдыңғы нұсқаға қазір қайтару}=1{Құрылғыны алдыңғы нұсқаға 1 секундта қайтару}other{Құрылғыны алдыңғы нұсқаға # секундта қайтару}}</translation>
 <translation id="7884446017008693258">Хотспот параметрлері</translation>
 <translation id="7884902759927478774">Қойындыны сүйреуден бас тарту</translation>
 <translation id="7886169021410746335">Құпиялық параметрлерін реттеу</translation>
@@ -1887,7 +1881,6 @@
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Қосымша опцияларды көру үшін Tab пернесін басыңыз. Барлық жұмыс үстеліне кіру үшін сол және оң бағыт пернелерін пайдаланыңыз.</translation>
 <translation id="8091153018031979607">Басталу уақыты: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Автоматты жаңартулар</translation>
 <translation id="8092380135549145188">Айналдыруды басқару элементтері</translation>
 <translation id="8098591350844501178">Экран контентін <ph name="RECEIVER_NAME" /> құрылғысына трансляциялауды тоқтату</translation>
 <translation id="810637681351706236">Сөреден қолданбаны босату</translation>
@@ -1933,7 +1926,6 @@
 <translation id="8257510091797044096">Құрылғы параметрлерін реттеу</translation>
 <translation id="8261506727792406068">Жою</translation>
 <translation id="8262312463845990408">Ойнату/кідірту</translation>
-<translation id="8270450402312105425">{0,plural, =1{Құрылғыны бір сағатта алдыңғы нұсқаға қайтару қажет}other{Құрылғыны # сағатта алдыңғы нұсқаға қайтару қажет}}</translation>
 <translation id="8277261673056602147">Экрандағы мәтінді ерекшелеу</translation>
 <translation id="8287009018010202411">Өнімділік</translation>
 <translation id="828708037801473432">Өшірулі</translation>
@@ -2000,7 +1992,6 @@
 <translation id="8553395910833293175">Барлық жұмыс үстеліне әлдеқашан тағайындалған.</translation>
 <translation id="8555757996376137129">Ағымдағы жұмыс үстелін өшіру</translation>
 <translation id="8559845965695780508"><ph name="USER" /> өзгерткен</translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> сізге <ph name="DEVICE_TYPE" /> құрылғысын жаңартуды ұсынады.</translation>
 <translation id="8569751806372591456">Мұнда ұсыныстар берілген</translation>
 <translation id="857201607579416096">Мәзір экранның төменгі оң жақ бұрышына жылжытылды.</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> пернесін басып, сілтемені түртіңіз</translation>
@@ -2172,7 +2163,6 @@
 <translation id="923686485342484400">Шығу үшін Control + Shift + Q тіркесімін екі рет басыңыз.</translation>
 <translation id="92580429198593979">Түс инверсиясы үшін перне тіркесімін бастыңыз. Оны қосқыңыз келе ме?</translation>
 <translation id="925832987464884575">Алдын ала көріністерді жасыру</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> сізден <ph name="DEVICE_TYPE" /> құрылғысын дереу жаңартуды талап етеді.</translation>
 <translation id="938407504481277932">Қазіргі жұмыс үстелі: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" /> жұмыс үстелі.</translation>
 <translation id="938963181863597773">Күнтізбемде не бар?</translation>
 <translation id="945383118875625837">Сілтемені бетбелгілер жолағына сүйреңіз</translation>

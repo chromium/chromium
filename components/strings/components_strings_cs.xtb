@@ -456,6 +456,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1812527064848182527">na šířku</translation>
 <translation id="1812975699435941848">Zdravotnické vzdělávání a lékařská školení</translation>
 <translation id="1816436748874040213">Může žádat o posouvání a přibližování sdílených karet</translation>
+<translation id="1817364650920811003">Role: Tip pro Chrome. Štítek pro usnadnění přístupu: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Odblokovat</translation>
 <translation id="1818585559878922121">Dokumentární filmy</translation>
 <translation id="182139138257690338">automatické stahování</translation>
@@ -1394,6 +1395,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3642638418806704195">Aplikace:</translation>
 <translation id="3646643500201740985">Měření výkonu reklam</translation>
 <translation id="3647286794400715637">Každý zadaný řetězec adres URL musí obsahovat 1 až 2 adresy URL.</translation>
+<translation id="3647400963805615193">Tlačítko k zavření tipu pro Chrome, zavřete ho stisknutím klávesy Enter, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Ověření proběhlo úspěšně</translation>
 <translation id="3650594806107685466">Z bezpečnostních důvodů zadejte kód CVC na <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Pěší turistika a kempování</translation>
@@ -3364,6 +3366,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7481312909269577407">Vpřed</translation>
 <translation id="7481603210197454575">Obálka italská</translation>
 <translation id="7483482939016730822">Školní potřeby a vybavení tříd</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, tip pro Chrome zavřete stisknutím klávesy Tab a poté Enter.</translation>
 <translation id="7485085230273446323">Obchod a průmysl</translation>
 <translation id="7485870689360869515">Nebyla nalezena žádná data.</translation>
 <translation id="7489392576326061356">Šampony a kondicionéry</translation>

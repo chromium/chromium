@@ -57,7 +57,6 @@
 <translation id="118437560755358292">Унесите лозинку или PIN ради додатне безбедности</translation>
 <translation id="118532027333893379">Додирните било где да бисте снимили цео екран</translation>
 <translation id="1190609913194133056">Центар за обавештења</translation>
-<translation id="1190678134285018527">Уређај мора да се врати на претходну верзију</translation>
 <translation id="1195412055398077112">ивично подручје екрана</translation>
 <translation id="1195667586424773550">Превуците линк у траку за адресу картице</translation>
 <translation id="119944043368869598">Обриши све</translation>
@@ -689,7 +688,6 @@
 <translation id="363473492175527493">Задатак који је подешен за фокусирање: <ph name="TASK_NAME" />. Притисните Enter да бисте изменили задатак.</translation>
 <translation id="3638400994746983214">Укључује/искључује екран за приватност. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Смањивање прозора</translation>
-<translation id="3649505501900178324">Ажурирајте истекло</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         од <ph name="START_TIME" /> до
@@ -759,7 +757,6 @@
 <translation id="3900355044994618856">Сесија се завршава за <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Повезивање са мрежом <ph name="NAME" /></translation>
 <translation id="3906954721959377182">Таблет</translation>
-<translation id="3922427723338465344">{0,plural, =1{Промените верзију уређаја у претходну верзију у року од 1 минута}one{Промените верзију уређаја у претходну верзију у року од # минута}few{Промените верзију уређаја у претходну верзију у року од # минута}other{Промените верзију уређаја у претходну верзију у року од # минута}}</translation>
 <translation id="3923494859158167397">Није подешена ниједна мобилна мрежа</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, догађаји се учитавају.</translation>
 <translation id="3932043219784172185">Нема повезаних уређаја</translation>
@@ -954,7 +951,6 @@
 <translation id="4623167406982293031">Верификујте налог</translation>
 <translation id="4628757576491864469">Уређаји</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, оцена у звездицама <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Промените верзију уређаја у претходну верзију у року од једног дана}one{Промените верзију уређаја у претходну верзију у року од # дана}few{Промените верзију уређаја у претходну верзију у року од # дана}other{Промените верзију уређаја у претходну верзију у року од # дана}}</translation>
 <translation id="4633636853437260449">Притисните Ctrl+W да бисте избрисали</translation>
 <translation id="4642092649622328492">Направите делимичан снимак екрана</translation>
 <translation id="4644727592819780893">Регион је премали да би стала камера</translation>
@@ -1465,7 +1461,6 @@
 <translation id="6477681113376365978">Преузимање фајла није успело</translation>
 <translation id="6482559668224714696">Лупа за цео екран</translation>
 <translation id="6490471652906364588">Уређај са USB прикључком типа C (десни порт)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> тражи да ажурирате <ph name="DEVICE_TYPE" /> пре истека рока</translation>
 <translation id="649452524636452238">PIN паметне картице</translation>
 <translation id="6495322433318104734">Чувар екрана се приказује, притисните било који тастер да бисте га затворили</translation>
 <translation id="6495400115277918834">Покренута је слика у слици, Alt+Shift+V да бисте фокусирали</translation>
@@ -1530,7 +1525,6 @@
 <translation id="6697913454192220372">Додајте нову радну површину</translation>
 <translation id="6700713906295497288">Дугме IME менија</translation>
 <translation id="6706742084323792866">Закачите тастатуру</translation>
-<translation id="6707693040195709527">Рок за промену верзије уређаја у претходну верзију је истекао</translation>
 <translation id="6710213216561001401">Претходно</translation>
 <translation id="6723839937902243910">Енергија</translation>
 <translation id="672609503628871915">Прикажи шта је ново</translation>
@@ -1826,7 +1820,6 @@
 <translation id="7866482334467279021">укључено</translation>
 <translation id="7872786842639831132">Искључено</translation>
 <translation id="7875575368831396199">Изгледа да је искључен Bluetooth на уређају <ph name="DEVICE_TYPE" />. Укључите Bluetooth да бисте користили Phone Hub.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Промените верзију уређаја у претходну верзију одмах}=1{Промените верзију уређаја у претходну верзију у року од 1 секунде}one{Промените верзију уређаја у претходну верзију у року од # секунде}few{Промените верзију уређаја у претходну верзију у року од # секунде}other{Промените верзију уређаја у претходну верзију у року од # секунди}}</translation>
 <translation id="7884446017008693258">Подешавања хотспота</translation>
 <translation id="7884902759927478774">Откажи превлачење картица</translation>
 <translation id="7886169021410746335">Прилагодите подешавања приватности</translation>
@@ -1903,7 +1896,6 @@
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Користите картицу за више опција. Користите стрелице налево и надесно да бисте приступали свим радним површинама.</translation>
 <translation id="8091153018031979607">Почиње у <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Аутоматска ажурирања</translation>
 <translation id="8092380135549145188">Контроле за скроловање</translation>
 <translation id="8098591350844501178">Заустави пребацивање екрана на <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Откачите апликацију са полице</translation>
@@ -1949,7 +1941,6 @@
 <translation id="8257510091797044096">Подесите уређај</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8262312463845990408">Укључите/искључите репродукцију</translation>
-<translation id="8270450402312105425">{0,plural, =1{Промените верзију уређаја у претходну верзију у року од једног сата}one{Промените верзију уређаја у претходну верзију у року од # сата}few{Промените верзију уређаја у претходну верзију у року од # сата}other{Промените верзију уређаја у претходну верзију у року од # сати}}</translation>
 <translation id="8277261673056602147">Истакните текст на екрану</translation>
 <translation id="8287009018010202411">Продуктивност</translation>
 <translation id="828708037801473432">Искључено</translation>
@@ -2016,7 +2007,6 @@
 <translation id="8553395910833293175">Већ је додељено свим радним површинама.</translation>
 <translation id="8555757996376137129">Уклони актуелну радну површину</translation>
 <translation id="8559845965695780508">Изменио/ла: <ph name="USER" /></translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> препоручује да ажурирате <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Ево пар предлога које можете да испробате</translation>
 <translation id="857201607579416096">Мени је премештен у доњи десни угао екрана.</translation>
 <translation id="8581946341807941670">Притисните <ph name="MODIFIER_1" /> <ph name="MODIFIER_2" /> и кликните на линк</translation>
@@ -2193,7 +2183,6 @@
 <translation id="923686485342484400">Двапут притисните Control Shift Q да бисте се одјавили.</translation>
 <translation id="92580429198593979">Притиснули сте тастерску пречицу за инверзију боја. Желите да је искључите?</translation>
 <translation id="925832987464884575">Сакријте прегледе</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> захтева да одмах ажурирате <ph name="DEVICE_TYPE" /></translation>
 <translation id="938407504481277932">Актуелна радна површина: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_INDEX" />. радна површина од <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Шта је у календару?</translation>
 <translation id="945383118875625837">Превуците линк на траку са обележивачима</translation>

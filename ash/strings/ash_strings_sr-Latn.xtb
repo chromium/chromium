@@ -57,7 +57,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="118437560755358292">Unesite lozinku ili PIN radi dodatne bezbednosti</translation>
 <translation id="118532027333893379">Dodirnite bilo gde da biste snimili ceo ekran</translation>
 <translation id="1190609913194133056">Centar za obaveštenja</translation>
-<translation id="1190678134285018527">Uređaj mora da se vrati na prethodnu verziju</translation>
 <translation id="1195412055398077112">ivično područje ekrana</translation>
 <translation id="1195667586424773550">Prevucite link u traku za adresu kartice</translation>
 <translation id="119944043368869598">Obriši sve</translation>
@@ -689,7 +688,6 @@ Broj povezanih uređaja je <ph name="DEVICECOUNT" />.</translation>
 <translation id="363473492175527493">Zadatak koji je podešen za fokusiranje: <ph name="TASK_NAME" />. Pritisnite Enter da biste izmenili zadatak.</translation>
 <translation id="3638400994746983214">Uključuje/isključuje ekran za privatnost. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Smanjivanje prozora</translation>
-<translation id="3649505501900178324">Ažurirajte isteklo</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         od <ph name="START_TIME" /> do
@@ -759,7 +757,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="3900355044994618856">Sesija se završava za <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Povezivanje sa mrežom <ph name="NAME" /></translation>
 <translation id="3906954721959377182">Tablet</translation>
-<translation id="3922427723338465344">{0,plural, =1{Promenite verziju uređaja u prethodnu verziju u roku od 1 minuta}one{Promenite verziju uređaja u prethodnu verziju u roku od # minuta}few{Promenite verziju uređaja u prethodnu verziju u roku od # minuta}other{Promenite verziju uređaja u prethodnu verziju u roku od # minuta}}</translation>
 <translation id="3923494859158167397">Nije podešena nijedna mobilna mreža</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, događaji se učitavaju.</translation>
 <translation id="3932043219784172185">Nema povezanih uređaja</translation>
@@ -954,7 +951,6 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4623167406982293031">Verifikujte nalog</translation>
 <translation id="4628757576491864469">Uređaji</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, ocena u zvezdicama <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Promenite verziju uređaja u prethodnu verziju u roku od jednog dana}one{Promenite verziju uređaja u prethodnu verziju u roku od # dana}few{Promenite verziju uređaja u prethodnu verziju u roku od # dana}other{Promenite verziju uređaja u prethodnu verziju u roku od # dana}}</translation>
 <translation id="4633636853437260449">Pritisnite Ctrl+W da biste izbrisali</translation>
 <translation id="4642092649622328492">Napravite delimičan snimak ekrana</translation>
 <translation id="4644727592819780893">Region je premali da bi stala kamera</translation>
@@ -1465,7 +1461,6 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="6477681113376365978">Preuzimanje fajla nije uspelo</translation>
 <translation id="6482559668224714696">Lupa za ceo ekran</translation>
 <translation id="6490471652906364588">Uređaj sa USB priključkom tipa C (desni port)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> traži da ažurirate <ph name="DEVICE_TYPE" /> pre isteka roka</translation>
 <translation id="649452524636452238">PIN pametne kartice</translation>
 <translation id="6495322433318104734">Čuvar ekrana se prikazuje, pritisnite bilo koji taster da biste ga zatvorili</translation>
 <translation id="6495400115277918834">Pokrenuta je slika u slici, Alt+Shift+V da biste fokusirali</translation>
@@ -1530,7 +1525,6 @@ Novo instaliranje</translation>
 <translation id="6697913454192220372">Dodajte novu radnu površinu</translation>
 <translation id="6700713906295497288">Dugme IME menija</translation>
 <translation id="6706742084323792866">Zakačite tastaturu</translation>
-<translation id="6707693040195709527">Rok za promenu verzije uređaja u prethodnu verziju je istekao</translation>
 <translation id="6710213216561001401">Prethodno</translation>
 <translation id="6723839937902243910">Energija</translation>
 <translation id="672609503628871915">Prikaži šta je novo</translation>
@@ -1826,7 +1820,6 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7866482334467279021">uključeno</translation>
 <translation id="7872786842639831132">Isključeno</translation>
 <translation id="7875575368831396199">Izgleda da je isključen Bluetooth na uređaju <ph name="DEVICE_TYPE" />. Uključite Bluetooth da biste koristili Phone Hub.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Promenite verziju uređaja u prethodnu verziju odmah}=1{Promenite verziju uređaja u prethodnu verziju u roku od 1 sekunde}one{Promenite verziju uređaja u prethodnu verziju u roku od # sekunde}few{Promenite verziju uređaja u prethodnu verziju u roku od # sekunde}other{Promenite verziju uređaja u prethodnu verziju u roku od # sekundi}}</translation>
 <translation id="7884446017008693258">Podešavanja hotspota</translation>
 <translation id="7884902759927478774">Otkaži prevlačenje kartica</translation>
 <translation id="7886169021410746335">Prilagodite podešavanja privatnosti</translation>
@@ -1903,7 +1896,6 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Koristite karticu za više opcija. Koristite strelice nalevo i nadesno da biste pristupali svim radnim površinama.</translation>
 <translation id="8091153018031979607">Počinje u <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Automatska ažuriranja</translation>
 <translation id="8092380135549145188">Kontrole za skrolovanje</translation>
 <translation id="8098591350844501178">Zaustavi prebacivanje ekrana na <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Otkačite aplikaciju sa police</translation>
@@ -1949,7 +1941,6 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8257510091797044096">Podesite uređaj</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8262312463845990408">Uključite/isključite reprodukciju</translation>
-<translation id="8270450402312105425">{0,plural, =1{Promenite verziju uređaja u prethodnu verziju u roku od jednog sata}one{Promenite verziju uređaja u prethodnu verziju u roku od # sata}few{Promenite verziju uređaja u prethodnu verziju u roku od # sata}other{Promenite verziju uređaja u prethodnu verziju u roku od # sati}}</translation>
 <translation id="8277261673056602147">Istaknite tekst na ekranu</translation>
 <translation id="8287009018010202411">Produktivnost</translation>
 <translation id="828708037801473432">Isključeno</translation>
@@ -2016,7 +2007,6 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8553395910833293175">Već je dodeljeno svim radnim površinama.</translation>
 <translation id="8555757996376137129">Ukloni aktuelnu radnu površinu</translation>
 <translation id="8559845965695780508">Izmenio/la: <ph name="USER" /></translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> preporučuje da ažurirate <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Evo par predloga koje možete da isprobate</translation>
 <translation id="857201607579416096">Meni je premešten u donji desni ugao ekrana.</translation>
 <translation id="8581946341807941670">Pritisnite <ph name="MODIFIER_1" /> <ph name="MODIFIER_2" /> i kliknite na link</translation>
@@ -2193,7 +2183,6 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="923686485342484400">Dvaput pritisnite Control Shift Q da biste se odjavili.</translation>
 <translation id="92580429198593979">Pritisnuli ste tastersku prečicu za inverziju boja. Želite da je isključite?</translation>
 <translation id="925832987464884575">Sakrijte preglede</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> zahteva da odmah ažurirate <ph name="DEVICE_TYPE" /></translation>
 <translation id="938407504481277932">Aktuelna radna površina: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_INDEX" />. radna površina od <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Šta je u kalendaru?</translation>
 <translation id="945383118875625837">Prevucite link na traku sa obeleživačima</translation>

@@ -75,6 +75,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="2942241131342758843">Utilisez Chromium par défaut pour ouvrir les liens, faire des recherches depuis les widgets et saisir automatiquement les mots de passe dans d'autres applis</translation>
 <translation id="2977470724722393594">Chromium est à jour</translation>
 <translation id="3044857325852340337">Données Chromium supprimées</translation>
+<translation id="3049211156275642309">Terminer la configuration de Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium peut vous aider à suivre ce colis sur la page "Nouvel onglet".}one{Chromium peut vous aider à suivre ce colis sur la page "Nouvel onglet".}other{Chromium peut vous aider à suivre ces colis sur la page "Nouvel onglet".}}</translation>
 <translation id="3102849287235003384">Pour vous déconnecter de votre compte Google sur tous les sites Web, <ph name="BEGIN_LINK" />déconnectez-vous de Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Faire une recherche vocale dans Chromium</translation>
@@ -272,6 +273,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="8754966941001340678">Chromium recommande une protection renforcée</translation>
 <translation id="8759037115129007407">Le membre de votre famille ne peut pas recevoir de mots de passe pour le moment. Demandez-lui de mettre à jour Chromium et de synchroniser ses mots de passe. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Ce compte et les données non enregistrées seront supprimés de Chromium.</translation>
+<translation id="8826789549860004832">Profitez pleinement de Chromium en continuant à configurer votre navigateur.</translation>
 <translation id="88376265765385899">Ouvre les favoris Chromium.</translation>
 <translation id="8860548555286245440">Ouvrir les URL dans Chromium en navigation privée</translation>
 <translation id="8866191443434488382">Chromium détectera le numéro de suivi sur les sites que vous consulterez et vous présentera les notifications concernant les colis sur la page "Nouvel onglet". Le numéro de suivi du colis et le nom du site Web seront envoyés à Chromium afin de fournir cette fonctionnalité et d'améliorer les fonctionnalités de shopping pour tous. Vous pouvez modifier cette option à tout moment dans les <ph name="BEGIN_LINK" />paramètres de suivi des colis<ph name="END_LINK" />.</translation>

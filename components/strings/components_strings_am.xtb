@@ -456,6 +456,7 @@
 <translation id="1812527064848182527">የመሬት ገጽታ</translation>
 <translation id="1812975699435941848">የጤና ትምህርት እና የህክምና ስልጠና</translation>
 <translation id="1816436748874040213">የተጋሩ ትሮችን ለማሸብለል እና ለማጉላት መጠየቅ ይችላል</translation>
+<translation id="1817364650920811003">ሚና፦ የChrome ጠቃሚ ምክር። የተደራሽነት መሰየሚያ፦ <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">እገዳውን አንሳ</translation>
 <translation id="1818585559878922121">ዘጋቢ ፊልሞች</translation>
 <translation id="182139138257690338">ራስ-ሰር ውርዶች</translation>
@@ -1397,6 +1398,7 @@
 <translation id="3642638418806704195">መተግበሪያ፦</translation>
 <translation id="3646643500201740985">የአንድ ማስታወቂያ አፈጻጸም ምን ያህል ጥሩ እንደሆነ መለካት</translation>
 <translation id="3647286794400715637">እያንዳንዱ የዩአርኤል ሕብረቁምፊ ከ1 እስከ 2 ዩአርኤሎች መያዝ አለበት።</translation>
+<translation id="3647400963805615193">የChrome ጠቃሚ ምክር አዝራርን ያሰናብቱ፣ ለማሰናበት Enter ይጫኑ፣ <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">ማረጋገጥ ተሳክቷል</translation>
 <translation id="3650594806107685466">የእርስዎን ካርድ ደህንነት ለማስጠበቅ እንዲያግዝ፣ በ<ph name="SIDE_OF_CARD" /> ላይ የካርድ ማረጋገጫ ኮዱን ያስገቡ</translation>
 <translation id="3650917416636556301">የእግር ጉዞ እና ካምፕ ማድረግ</translation>
@@ -3369,6 +3371,7 @@
 <translation id="7481312909269577407">ወደ ፊት</translation>
 <translation id="7481603210197454575">የጣሊያን ፖስታ</translation>
 <translation id="7483482939016730822">የትምህርት ቤት ግብዓቶች እና የክፍል መሣሪያዎች</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />፣ የChrome ጠቃሚ ምክርን ለማሰናበት Tab ከዚያ Enter ይጫኑ።</translation>
 <translation id="7485085230273446323">ንግድ እና የኢንዱስትሪ</translation>
 <translation id="7485870689360869515">ምንም ውሂብ አልተገኘም።</translation>
 <translation id="7489392576326061356">ሻምፖዎች እና ኮንዲሽነሮች</translation>

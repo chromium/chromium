@@ -456,6 +456,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1812527064848182527">landskab</translation>
 <translation id="1812975699435941848">Sundhedsundervisning og medicinsk uddannelse</translation>
 <translation id="1816436748874040213">Websitet kan anmode om tilladelse til at rulle i og zoome ind på delte faner</translation>
+<translation id="1817364650920811003">Rolle: Chrome-tip. Tilgængelighedsetiket: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Fjern blokering</translation>
 <translation id="1818585559878922121">Dokumentarfilm</translation>
 <translation id="182139138257690338">automatiske downloads</translation>
@@ -1398,6 +1399,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3642638418806704195">Program:</translation>
 <translation id="3646643500201740985">Måling af en annonces effektivitet</translation>
 <translation id="3647286794400715637">Hver webadressestreng skal indeholde mellem 1 og 2 webadresser.</translation>
+<translation id="3647400963805615193">Knappen Luk Chrome-tip, tryk på Enter for at lukke, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Valideringen er fuldført</translation>
 <translation id="3650594806107685466">Af sikkerhedsmæssige årsager skal du angive din CVC, som du finder på <ph name="SIDE_OF_CARD" />.</translation>
 <translation id="3650917416636556301">Vandreture og camping</translation>
@@ -2298,6 +2300,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="541416427766103491">Stabler 4</translation>
 <translation id="5414446060143308245">Gennemgang er påkrævet før overførsel</translation>
 <translation id="5414511064953050917">Flyt alligevel</translation>
+<translation id="5419311651396341287">Din administrator kan muligvis se følgende:</translation>
 <translation id="5421408724705443535">Rockmusik</translation>
 <translation id="5423269318075950257">Hold øje med prisudviklingen</translation>
 <translation id="5425082381151187189">Boligindretning</translation>
@@ -3370,6 +3373,7 @@ Yderligere oplysninger:
 <translation id="7481312909269577407">Frem</translation>
 <translation id="7481603210197454575">Konvolut Italiensk</translation>
 <translation id="7483482939016730822">Udstyr til skoler og klasselokaler</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, tryk på Tab-tasten efterfulgt af Enter for at lukke Chrome-tippet.</translation>
 <translation id="7485085230273446323">Virksomheder og industri</translation>
 <translation id="7485870689360869515">Der blev ikke fundet nogen data.</translation>
 <translation id="7489392576326061356">Shampoo og balsam</translation>

@@ -75,6 +75,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="2942241131342758843">Usa Chromium de forma predeterminada para abrir enlaces, hacer búsquedas desde widgets y autocompletar contraseñas en otras aplicaciones</translation>
 <translation id="2977470724722393594">Chromium está actualizado</translation>
 <translation id="3044857325852340337">Datos de Chromium eliminados</translation>
+<translation id="3049211156275642309">Termina de configurar Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium puede ayudarte a seguir este paquete en la página Nueva pestaña.}other{Chromium puede ayudarte a seguir estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="3102849287235003384">Para cerrar sesión con tu cuenta de Google en todos los sitios web, <ph name="BEGIN_LINK" />cierra sesión en Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Buscar por voz en Chromium</translation>
@@ -273,6 +274,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="8754966941001340678">Chromium recomienda la protección mejorada</translation>
 <translation id="8759037115129007407">Este miembro de tu familia no puede recibir contraseñas en este momento. Pídele que actualice Chromium y sincronice sus contraseñas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Se quitarán de Chromium esta cuenta y los datos sin guardar.</translation>
+<translation id="8826789549860004832">Sigue configurando tu navegador para sacarle el máximo partido a Chromium.</translation>
 <translation id="88376265765385899">Abre los marcadores de Chromium.</translation>
 <translation id="8860548555286245440">Abrir URLs en Chromium en Incógnito</translation>
 <translation id="8866191443434488382">Chromium detectará los números de seguimiento de los sitios que visites y te mostrará novedades sobre los envíos en la página Nueva pestaña. El número de seguimiento del envío y el nombre del sitio web se enviarán a Chromium para ofrecer esta función y mejorar las funciones de compra para todos. Puedes actualizar esta información en cualquier momento en la <ph name="BEGIN_LINK" />configuración de Seguimiento de envíos<ph name="END_LINK" />.</translation>

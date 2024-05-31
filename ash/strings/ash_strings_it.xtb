@@ -57,7 +57,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="118437560755358292">Inserisci la password o il PIN per una maggior sicurezza</translation>
 <translation id="118532027333893379">Tocca un punto qualsiasi per acquisire l'intera schermata</translation>
 <translation id="1190609913194133056">Centro notifiche</translation>
-<translation id="1190678134285018527">È necessario tornare alla versione precedente del dispositivo</translation>
 <translation id="1195412055398077112">overscan</translation>
 <translation id="1195667586424773550">Trascina il link nella barra degli indirizzi della scheda</translation>
 <translation id="119944043368869598">Cancella tutto</translation>
@@ -131,6 +130,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1420408895951708260">Attiva/disattiva luminosità notturna. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Sì</translation>
 <translation id="1435537621343861112">Impossibile avviare la dettatura. Il microfono è disattivato.</translation>
+<translation id="1447907279406111651">Adesso ⋅ Termina alle ore <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Hotspot del dispositivo</translation>
 <translation id="1455242230282523554">Mostra impostazioni lingua</translation>
 <translation id="1460620680449458626">Il volume è disattivato.</translation>
@@ -481,6 +481,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2894949423239620203">Il cavo può influire sulle prestazioni</translation>
 <translation id="2914580577416829331">Schermate acquisite</translation>
 <translation id="2924416280450782352">Impossibile mostrare elementi. Prova a riaprire questo riquadro.</translation>
+<translation id="292506373491190801">Dell'evento in corso ora</translation>
 <translation id="2931572158271115754">Questa lista di cose da fare è vuota.</translation>
 <translation id="2932487126591186298">10 minuti aggiunti. Mancano <ph name="REMAINING_TIME" />.</translation>
 <translation id="2935225303485967257">Gestisci profili</translation>
@@ -685,7 +686,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="363473492175527493">Attività impostata per concentrarsi su: <ph name="TASK_NAME" />. Premi Invio per modificare l'attività.</translation>
 <translation id="3638400994746983214">Attiva/disattiva Schermata sulla privacy. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Riduce la finestra</translation>
-<translation id="3649505501900178324">Aggiornamento scaduto</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />, <ph name="EVENT_SUMMARY" />, dalle ore <ph name="START_TIME" /> alle ore <ph name="END_TIME" />, <ph name="TIME_ZONE" />. Seleziona per avere maggiori dettagli in Google Calendar.</translation>
 <translation id="3659444876902283058">(giorno <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659667652322717492">Puoi modificare il comportamento del microfono in qualsiasi momento.</translation>
@@ -752,7 +752,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3900355044994618856">La sessione terminerà tra <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Connessione a: <ph name="NAME" /></translation>
 <translation id="3906954721959377182">Tablet</translation>
-<translation id="3922427723338465344">{0,plural, =1{Ripristina la versione precedente del dispositivo entro 1 minuto}other{Ripristina la versione precedente del dispositivo entro # minuti}}</translation>
 <translation id="3923494859158167397">Nessuna rete mobile configurata</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, caricamento eventi in corso…</translation>
 <translation id="3932043219784172185">Nessun dispositivo connesso</translation>
@@ -764,6 +763,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3950272133184491871">Uscire ora?</translation>
 <translation id="3950820424414687140">Accedi</translation>
 <translation id="3953130726459169782">Ancora nessun compito completato.</translation>
+<translation id="3958714870339660776">Tutto il giorno</translation>
 <translation id="3962859241508114581">Traccia precedente</translation>
 <translation id="3969043077941541451">Off</translation>
 <translation id="3970324493235864154">Visualizza le notifiche dello smartphone</translation>
@@ -943,7 +943,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4623167406982293031">Verifica account</translation>
 <translation id="4628757576491864469">Dispositivi</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, valutazione a stelle <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Ripristina la versione precedente del dispositivo entro un giorno}other{Ripristina la versione precedente del dispositivo entro # giorni}}</translation>
 <translation id="4633636853437260449">Premi Ctrl + W per eliminare</translation>
 <translation id="4642092649622328492">Acquisisce lo screenshot parziale</translation>
 <translation id="4644727592819780893">Area troppo piccola per mostrare l'anteprima della fotocamera</translation>
@@ -1217,6 +1216,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5599242528220103262">La scorciatoia da tastiera è disattivata</translation>
 <translation id="5600415762228455511">La modalità Senza distrazioni è attiva, mancano <ph name="REMAINING_TIME" />, ti stai concentrando su: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Premi CTRL + ALT + Z per disattivare la funzione di lettura vocale.</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{Meno di 1 ora fa}=1{1 ora fa}other{# ore fa}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Abbiamo eseguito per te il passaggio a una rete migliore</translation>
 <translation id="5619862035903135339">Il criterio dell'amministratore disattiva l'acquisizione schermo</translation>
@@ -1393,6 +1393,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6228457605945141550">Diminuisce la luminosità</translation>
 <translation id="623116199192908855">Trasmetti lo schermo da Chromebook</translation>
 <translation id="6231419273573514727">Le prestazioni delle periferiche potrebbero essere limitate</translation>
+<translation id="6232416233079464213">Di <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> sta usando la fotocamera e il microfono</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Batteria in esaurimento. Risparmio energetico attivato.</translation>
@@ -1450,7 +1451,6 @@ Nessun dispositivo connesso.</translation>
 <translation id="6477681113376365978">Impossibile scaricare il file</translation>
 <translation id="6482559668224714696">Lente d'ingrandimento a schermo intero</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta a destra)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> richiede l'aggiornamento di <ph name="DEVICE_TYPE" /> entro il termine ultimo</translation>
 <translation id="649452524636452238">PIN della smart card</translation>
 <translation id="6495322433318104734">Visualizzazione del salvaschermo; premi un tasto qualsiasi per uscire</translation>
 <translation id="6495400115277918834">Funzionalità Picture in picture avviata, premi Alt + Maiusc + V per impostare lo stato attivo</translation>
@@ -1514,7 +1514,7 @@ Nuova installazione</translation>
 <translation id="6696025732084565524">La tastiera rimovibile richiede un aggiornamento critico</translation>
 <translation id="6697913454192220372">Aggiungi nuova scrivania</translation>
 <translation id="6700713906295497288">Pulsante di menu IME</translation>
-<translation id="6707693040195709527">Il termine ultimo per il ripristino della versione precedente del dispositivo è trascorso</translation>
+<translation id="6706742084323792866">Blocca tastiera</translation>
 <translation id="6710213216561001401">Precedente</translation>
 <translation id="6723839937902243910">Alimentazione</translation>
 <translation id="672609503628871915">Scopri le novità</translation>
@@ -1794,6 +1794,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="780301667611848630">No grazie</translation>
 <translation id="7807067443225230855">Ricerca e assistente</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">Di un evento nel calendario in programma</translation>
 <translation id="7829386189513694949">Segnale forte</translation>
 <translation id="7830453190047749513">Puoi personalizzare le azioni dei pulsanti, la velocità del cursore e altro ancora per il tuo <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Tempo scaduto</translation>
@@ -1807,7 +1808,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7866482334467279021">on</translation>
 <translation id="7872786842639831132">Off</translation>
 <translation id="7875575368831396199">Sembra che il Bluetooth sia disattivato su <ph name="DEVICE_TYPE" />. Attiva il Bluetooth per utilizzare Phone Hub.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Ripristina la versione precedente del dispositivo ora}=1{Ripristina la versione precedente del dispositivo entro 1 secondo}other{Ripristina la versione precedente del dispositivo entro # secondi}}</translation>
 <translation id="7884446017008693258">Impostazioni hotspot</translation>
 <translation id="7884902759927478774">Annulla il trascinamento delle schede</translation>
 <translation id="7886169021410746335">Modificare le impostazioni sulla privacy</translation>
@@ -1884,7 +1884,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Usa Tab per altre opzioni. Usa la Freccia destra e la Freccia sinistra per accedere a tutte le scrivanie.</translation>
 <translation id="8091153018031979607">Inizia alle ore <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Aggiornamenti automatici</translation>
 <translation id="8092380135549145188">Controlli di scorrimento</translation>
 <translation id="8098591350844501178">Interrompi la trasmissione dello schermo su <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Sblocca app dalla barra delle app</translation>
@@ -1930,7 +1929,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8257510091797044096">Configura il tuo dispositivo</translation>
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="8262312463845990408">Attiva/disattiva riproduzione</translation>
-<translation id="8270450402312105425">{0,plural, =1{Ripristina la versione precedente del dispositivo entro un'ora}other{Ripristina la versione precedente del dispositivo entro # ore}}</translation>
 <translation id="8277261673056602147">Evidenzia il testo sullo schermo</translation>
 <translation id="8287009018010202411">Produttività</translation>
 <translation id="828708037801473432">Off</translation>
@@ -1997,7 +1995,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8553395910833293175">Finestra già assegnata a tutte le scrivanie.</translation>
 <translation id="8555757996376137129">Rimuovi la scrivania corrente</translation>
 <translation id="8559845965695780508">Modificato da <ph name="USER" /></translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> ti consiglia di aggiornare <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Ecco alcuni suggerimenti da provare</translation>
 <translation id="857201607579416096">Menu spostato nell'angolo in basso a destra dello schermo.</translation>
 <translation id="8581946341807941670">Premi <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> e fai clic su un link</translation>
@@ -2110,6 +2107,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="899350903320462459">Sblocca il dispositivo con l'account <ph name="LOGIN_ID" /> per eseguire l'azione di notifica</translation>
 <translation id="8993733019280019776">Stai parlando? Il microfono è disattivato. Seleziona il microfono per attivarlo.</translation>
 <translation id="9000771174482730261">GESTISCI SPAZIO DI ARCHIVIAZIONE</translation>
+<translation id="9002204506712855687">Esplora le ultime funzionalità</translation>
 <translation id="9005984960510803406">Consente di aprire la finestra Crosh</translation>
 <translation id="9017320285115481645">Inserisci il codice accesso genitori di Family Link.</translation>
 <translation id="9022774213089566801">Più visitati</translation>
@@ -2141,6 +2139,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="9098969848082897657">Disattiva audio</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> oppure <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Annulla ultima azione</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{Tra 1 min}other{Tra # min}}</translation>
 <translation id="9129245940793250979">Pulsante posteriore</translation>
 <translation id="9133335900048457298">Impossibile registrare contenuti protetti</translation>
 <translation id="9139720510312328767">Elimina la lettera successiva</translation>
@@ -2153,6 +2152,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="9183456764293710005">Ingrandimento a schermo intero</translation>
 <translation id="9193626018745640770">Trasmissione a un ricevitore sconosciuto</translation>
 <translation id="9194617393863864469">Accedi con un altro account utente...</translation>
+<translation id="9195990613383871904">Domani</translation>
 <translation id="9198992156681343238">La risoluzione di <ph name="DISPLAY_NAME" /> è stata cambiata in <ph name="RESOLUTION" />. Fai clic su Conferma per mantenere le modifiche. Le impostazioni precedenti verranno ripristinate tra <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Connetti <ph name="NAME" /> a questo Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, gestita dall'amministratore</translation>
@@ -2168,7 +2168,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="923686485342484400">Premi due volte Control Maiusc Q per uscire.</translation>
 <translation id="92580429198593979">Hai premuto la scorciatoia da tastiera per l'inversione dei colori. Vuoi attivarla?</translation>
 <translation id="925832987464884575">Nascondi anteprime</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> richiede l'immediato aggiornamento di <ph name="DEVICE_TYPE" /></translation>
 <translation id="938407504481277932">Scrivania corrente: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Scrivania <ph name="DESK_INDEX" /> di <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Cosa è segnato sul mio calendario?</translation>
 <translation id="945383118875625837">Trascina il link nella barra dei preferiti</translation>

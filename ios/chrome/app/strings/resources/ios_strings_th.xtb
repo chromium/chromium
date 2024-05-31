@@ -1472,6 +1472,7 @@
 <translation id="8374977641764177587">เปิดการแจ้งเตือนไหม</translation>
 <translation id="8378714024927312812">จัดการโดยองค์กร</translation>
 <translation id="8386068868580335421">รีเซ็ต</translation>
+<translation id="8386882774665382072">{count,plural, =1{รหัสผ่าน {position} จาก {count} รายการ}other{รหัสผ่าน {position} จาก {count} รายการ}}</translation>
 <translation id="838867811594159347">ป้อนรหัสผ่าน…</translation>
 <translation id="8393889347136007944">แท็บที่ไม่มีการใช้งานเป็นเวลา <ph name="THRESHOLD" /> วัน</translation>
 <translation id="8395339334550012808">เร็วๆ นี้ คุณจะเห็นเนื้อหาจาก และเกี่ยวกับ <ph name="CHANNEL_NAME" /> ใน "กำลังติดตาม"</translation>
@@ -1655,6 +1656,7 @@
 <translation id="96615566463761848">แสดงคำแนะนำแท็บจากอุปกรณ์อื่นๆ</translation>
 <translation id="973493300226275298">ติดตามราคาของผลิตภัณฑ์ในร้านค้าออนไลน์ต่างๆ คุณจะได้รับการแจ้งเตือนเมื่อราคาลดลง</translation>
 <translation id="981498610235328462">องค์กรอนุญาตให้คุณลงชื่อเข้าใช้ด้วยบัญชีบางบัญชีเท่านั้น ระบบซ่อนบัญชีที่ไม่ได้รับอนุญาตไว้</translation>
+<translation id="983800820186631385">{count,plural, =1{วิธีการชำระเงิน {position} จาก {count} วิธี}other{วิธีการชำระเงิน {position} จาก {count} วิธี}}</translation>
 <translation id="984275831282074731">วิธีการชำระเงิน</translation>
 <translation id="984509647832111802">การซิงค์ไม่ทำงาน</translation>
 <translation id="988141524645182168">อุปกรณ์อื่นๆ</translation>

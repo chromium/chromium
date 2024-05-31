@@ -280,7 +280,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1197088940767939838">Orange</translation>
 <translation id="1197185198920566650">It will be saved to <ph name="GOOGLE_PASSWORD_MANAGER" /> for <ph name="EMAIL" />.</translation>
 <translation id="11978075283960463">Data stored in app: <ph name="APP_SIZE" /></translation>
-<translation id="1197935538609051549">Deactivate</translation>
 <translation id="1198066799963193307">Low vision speech tools</translation>
 <translation id="119944043368869598">Clear all</translation>
 <translation id="1199814941632954229">Certificates are being provisioned for these certificate profiles</translation>
@@ -1089,7 +1088,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1781771911845953849">Accounts and sync</translation>
 <translation id="1782101999402987960">Updates are blocked by your administrator</translation>
 <translation id="1782196717298160133">Finding your phone</translation>
-<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 note}other{# notes}}</translation>
 <translation id="1784707308176068866">Run in the background when requested by a cooperating native application</translation>
 <translation id="1784849162047402014">Device is low on disk space</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Uninstalling ‘<ph name="APP_NAME" />’ will also uninstall this app:}other{Uninstalling ‘<ph name="APP_NAME" />’ will also uninstall these apps:}}</translation>
@@ -1232,6 +1230,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1878885068166344708">Item is highlighted when you move focus. Press tab or select an item to change focus.</translation>
 <translation id="1879000426787380528">Sign in as</translation>
 <translation id="18802377548000045">Tabs shrink to a large width</translation>
+<translation id="1880677175115548835">Select text</translation>
 <translation id="1880905663253319515">Delete certificate "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Keyboard layout</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Item}other{# items}}</translation>
@@ -1272,7 +1271,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">Hang up</translation>
 <translation id="1915734383465415025">Shop number</translation>
-<translation id="1916260783734263714">Current tab</translation>
 <translation id="1916502483199172559">Default red avatar</translation>
 <translation id="1916770123977586577">To apply your updated settings to this site, reload this page</translation>
 <translation id="1918127774159128277">Refresh Wi-Fi direct capabilities</translation>
@@ -1861,6 +1859,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2332515770639153015">Enhanced Safe Browsing is on</translation>
 <translation id="2332742915001411729">Reset to default</translation>
 <translation id="2333166365943957309">UI Hierarchy</translation>
+<translation id="233375395665273385">Delete and sign out</translation>
 <translation id="233471714539944337">Sensitive content</translation>
 <translation id="2335111415680198280">{0,plural, =1{Close # window}other{Close # windows}}</translation>
 <translation id="2336228925368920074">Bookmark All Tabs...</translation>
@@ -1922,7 +1921,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2383825469508278924">Change keyboard key mapping, function keys and more</translation>
 <translation id="2387052489799050037">Go home</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (current)</translation>
-<translation id="2390226379317200116">Add a note or thought about this page to revisit later.</translation>
 <translation id="2390347491606624519">Can’t connect to proxy; please sign in again</translation>
 <translation id="2390782873446084770">Wi-Fi Sync</translation>
 <translation id="2391419135980381625">Standard font</translation>
@@ -2049,7 +2047,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2467755475704469005">No device detected. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Touchpad scroll acceleration</translation>
 <translation id="2468205691404969808">Uses cookies to remember your preferences, even if you don’t visit those pages</translation>
-<translation id="2468247643665097563">Order</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470085922875120">You’re using passwords that look hard to guess</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 tab}other{<ph name="GROUP_TITLE" /> – # tabs}}</translation>
@@ -2781,7 +2778,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3004385386820284928">Customise keyboard keys</translation>
 <translation id="3005574332301273731">Don't show</translation>
 <translation id="3006881078666935414">No usage data</translation>
-<translation id="3007410324195400631">Add notes about this page</translation>
 <translation id="3007771295016901659">Duplicate tab</translation>
 <translation id="3008232374986381779">Run Linux tools, editors and IDEs on your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Reset permissions</translation>
@@ -4447,7 +4443,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4258348331913189841">File System</translation>
 <translation id="4259388776256904261">This may take a while</translation>
 <translation id="4260699894265914672">Press a keyboard key to customise</translation>
-<translation id="4260722247480053581">Open in Incognito Window</translation>
 <translation id="4261429981378979799">Extension permissions</translation>
 <translation id="4262004481148703251">Dismiss warning</translation>
 <translation id="4263223596040212967">Check your keyboard layout and try again.</translation>
@@ -6177,7 +6172,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5578059481725149024">Auto sign-in</translation>
 <translation id="5581134892342029705">Translation to <ph name="LANGUAGE" /> complete</translation>
 <translation id="558170650521898289">Microsoft Windows Hardware Driver Verification</translation>
-<translation id="5581876958763461074">All notes</translation>
 <translation id="5581972110672966454">Can't join the device to the domain. Please try again or contact your device owner or administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582634344048669777">8-dot</translation>
 <translation id="5582839680698949063">Main menu</translation>
@@ -9298,7 +9292,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7941179291434537290">Tethering readiness:</translation>
 <translation id="7942349550061667556">Red</translation>
 <translation id="7942846369224063421">Preloaded UI renderer</translation>
-<translation id="7943349879009553083">Not available in Guest Mode</translation>
 <translation id="7943368935008348579">Download PDFs</translation>
 <translation id="7943837619101191061">Add Location...</translation>
 <translation id="79446453817422139">This file may be dangerous</translation>
@@ -9417,7 +9410,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8025291188699172126">About Updates</translation>
 <translation id="8026471514777758216">All your devices</translation>
 <translation id="8026784703228858744">Save your bookmarks and more with sync</translation>
-<translation id="8027581147000338959">Open in new window</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
 <translation id="8028803902702117856">Downloading <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Size</translation>
@@ -9955,7 +9947,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8413956290606243087">Do you want to activate ChromeVox, the built-in screen reader for Chrome OS?</translation>
 <translation id="8414249071344507766">Memories hidden for two days</translation>
 <translation id="8414396119627470038">Sign in to <ph name="SITE_ETLD_PLUS_ONE" /> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="8414685983518053656">Notes</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (case)</translation>
 <translation id="8417065541337558100">Preview of your camera</translation>
 <translation id="8417548266957501132">Parent password</translation>
@@ -10747,7 +10738,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8993945059918628059">Touch the fingerprint sensor with your finger. Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="899403249577094719">Netscape Certificate Base URL</translation>
 <translation id="899657321862108550">Your Chrome, Everywhere</translation>
-<translation id="899671834467367922">Log in as another user to view and take notes on this page.</translation>
 <translation id="8998078711690114234">This type of file can be dangerous. Only save this file if you trust <ph name="ORIGIN" /></translation>
 <translation id="8999027165951679951">Inactive tab: <ph name="MEMORY_SAVINGS" /> freed up</translation>
 <translation id="8999560016882908256">Section syntax error: <ph name="ERROR_LINE" /></translation>

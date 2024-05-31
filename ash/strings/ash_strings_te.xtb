@@ -57,7 +57,6 @@
 <translation id="118437560755358292">మరింత సెక్యూరిటీ కోసం పాస్‌వర్డ్ లేదా PINను ఎంటర్ చేయండి</translation>
 <translation id="118532027333893379">ఫుల్ స్క్రీన్‌ను క్యాప్చర్ చేయడానికి ఎక్కడైనా ట్యాప్ చేయండి</translation>
 <translation id="1190609913194133056">నోటిఫికేషన్ కేంద్రం</translation>
-<translation id="1190678134285018527">పరికరాన్ని దాని మునపటి వెర్షన్‌కు మార్చడం అవసరం</translation>
 <translation id="1195412055398077112">ఓవర్‌స్కాన్</translation>
 <translation id="1195667586424773550">ట్యాబ్ యొక్క అడ్రస్‌ బార్‌లోకి లింక్‌ను లాగండి</translation>
 <translation id="119944043368869598">అన్ని క్లియర్ చేయండి</translation>
@@ -685,7 +684,6 @@
 <translation id="363473492175527493">ఫోకస్ చేయడాన్ని ఆన్ చేయడానికి టాస్క్ సెట్ చేయబడింది: <ph name="TASK_NAME" />. టాస్క్‌ను ఎంటర్ చేయడానికి ఎంటర్‌ను నొక్కండి.</translation>
 <translation id="3638400994746983214">గోప్యతా స్క్రీన్‌ను టోగుల్ చేస్తుంది. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">విండోను కుదించు</translation>
-<translation id="3649505501900178324">అప్‌డేట్ పెండింగ్‌లో ఉంది</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> నుండి
@@ -756,7 +754,6 @@
 <translation id="3900355044994618856"><ph name="SESSION_TIME_REMAINING" /> తర్వాత మీ సెషన్ ముగుస్తుంది</translation>
 <translation id="3901991538546252627"><ph name="NAME" />కి కనెక్ట్ చేస్తోంది</translation>
 <translation id="3906954721959377182">టాబ్లెట్</translation>
-<translation id="3922427723338465344">{0,plural, =1{1 నిమిషంలోపు పరికరాన్ని మునపటి వెర్షన్‌కు మార్చండి}other{# నిమిషాల్లోపు పరికరాన్ని మునపటి వెర్షన్‌కు మార్చండి}}</translation>
 <translation id="3923494859158167397">ఎలాంటి మొబైల్ నెట్‌వర్క్‌లు సెటప్ చేయబడలేదు</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, ఈవెంట్‌లు లోడ్ అవుతున్నాయి.</translation>
 <translation id="3932043219784172185">పరికరం ఏదీ కనెక్ట్ చేయబడలేదు</translation>
@@ -947,7 +944,6 @@
 <translation id="4623167406982293031">ఖాతాను వెరిఫై చేయండి</translation>
 <translation id="4628757576491864469">పరికరాలు</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, నక్షత్ర రేటింగ్ <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{ఒక రోజులోపు పరికరాన్ని మునపటి వెర్షన్‌కు మార్చండి}other{# రోజులలోపు పరికరాన్ని మునపటి వెర్షన్‌కు మార్చండి}}</translation>
 <translation id="4633636853437260449">తొలగించడానికి Ctrl + Wను నొక్కండి</translation>
 <translation id="4642092649622328492">పాక్షిక స్క్రీన్‌షాట్ తీయండి</translation>
 <translation id="4644727592819780893">ప్రాంతం, కెమెరాలో చూపించలేనంత చిన్నదిగా ఉంది</translation>
@@ -1454,7 +1450,6 @@
 <translation id="6477681113376365978">ఫైల్‌ను డౌన్‌లోడ్ చేయలేకపోయింది</translation>
 <translation id="6482559668224714696">ఫుల్-స్క్రీన్‌‌ మాగ్నిఫైయర్</translation>
 <translation id="6490471652906364588">USB-C పరికరం (కుడి పోర్ట్)</translation>
-<translation id="6491071886865974820">గడువుకు ముందే ఈ <ph name="DEVICE_TYPE" />ను అప్‌డేట్ చేయమని <ph name="MANAGER" /> మిమ్మల్ని కోరుతోంది</translation>
 <translation id="649452524636452238">స్మార్ట్ కార్డ్ పిన్</translation>
 <translation id="6495322433318104734">స్క్రీన్ సేవర్ చూపబడుతోంది, నిష్క్రమించడానికి ఏదైనా కీని నొక్కండి</translation>
 <translation id="6495400115277918834">'పిక్చర్-ఇన్-పిక్చర్' ప్రారంభమైంది, ఫోకస్ చేయడానికి Alt+Shift+V కీని నొక్కండి</translation>
@@ -1519,7 +1514,6 @@
 <translation id="6697913454192220372">కొత్త డెస్క్‌ను జోడించండి</translation>
 <translation id="6700713906295497288">IME మెనూ బటన్</translation>
 <translation id="6706742084323792866">కీబోర్డ్‌ను పిన్ చేయండి</translation>
-<translation id="6707693040195709527">పరికరాన్ని మునపటి వెర్షన్‌కు మార్చడానికి గడువు ముగిసింది</translation>
 <translation id="6710213216561001401">మునుపటి</translation>
 <translation id="6723839937902243910">పవర్</translation>
 <translation id="672609503628871915">కొత్తగా ఏమి ఉన్నాయో చూడండి</translation>
@@ -1812,7 +1806,6 @@
 <translation id="7866482334467279021">ఆన్‌లో ఉంది</translation>
 <translation id="7872786842639831132">ఆఫ్</translation>
 <translation id="7875575368831396199">మీ <ph name="DEVICE_TYPE" />లో మీ బ్లూటూత్ ఆఫ్ చేయబడి ఉన్నట్లుగా అనిపిస్తోంది. ఫోన్ హబ్‌ను ఉపయోగించడానికి దయచేసి బ్లూటూత్‌ను ఆన్ చేయండి.</translation>
-<translation id="7877557217297072640">{0,plural, =0{పరికరాన్ని ఇప్పుడు మునుపటి వెర్షన్‌కు మార్చండి}=1{1 సెకనులోపు పరికరాన్ని మునపటి వెర్షన్‌కు మార్చండి}other{# సెకన్లలోపు పరికరాన్ని మునపటి వెర్షన్‌కు మార్చండి}}</translation>
 <translation id="7884446017008693258">హాట్‌స్పాట్ సెట్టింగ్‌లు</translation>
 <translation id="7884902759927478774">ట్యాబ్‌ను లాగడాన్ని రద్దు చేయండి</translation>
 <translation id="7886169021410746335">గోప్యతా సెట్టింగ్‌లను సర్దుబాటు చేయండి</translation>
@@ -1889,7 +1882,6 @@
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">మరిన్ని ఆప్షన్‌ల కోసం ట్యాబ్‌ను ఉపయోగించండి. డెస్క్‌లన్నింటినీ యాక్సెస్ చేయడానికి ఎడమ, కుడి వైపు బాణాలను ఉపయోగించండి.</translation>
 <translation id="8091153018031979607"><ph name="DAYS_ELAPSED" /><ph name="START_TIME" />‌కు ప్రారంభమవుతుంది</translation>
-<translation id="8091387634532529612">ఆటోమేటిక్ అప్‌డేట్‌లు</translation>
 <translation id="8092380135549145188">స్క్రోల్ కంట్రోల్స్</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />కి స్క్రీన్‌ను ప్రసారం చేయడాన్ని ఆపివేయి</translation>
 <translation id="810637681351706236">షెల్ఫ్ నుండి యాప్ పిన్‌ను తీసివేయండి</translation>
@@ -1935,7 +1927,6 @@
 <translation id="8257510091797044096">మీ పరికరాన్ని సెటప్ చేయండి</translation>
 <translation id="8261506727792406068">తొలగించండి</translation>
 <translation id="8262312463845990408">ప్లేబ్యాక్‌ను టోగుల్ చేయండి</translation>
-<translation id="8270450402312105425">{0,plural, =1{ఒక గంటలోపు పరికరాన్ని మునుపటి వెర్షన్‌కు మార్చండి}other{# గంటల్లోపు పరికరాన్ని మునుపటి వెర్షన్‌కు మార్చండి}}</translation>
 <translation id="8277261673056602147">మీ స్క్రీన్‌పై ఉన్న టెక్స్ట్‌ను హైలైట్ చేయండి</translation>
 <translation id="8287009018010202411">ప్రొడక్టివిటీ</translation>
 <translation id="828708037801473432">ఆఫ్</translation>
@@ -2002,7 +1993,6 @@
 <translation id="8553395910833293175">ఇప్పటికే అన్ని డెస్క్‌లకు కేటాయింపు జరిగిపోయింది.</translation>
 <translation id="8555757996376137129">ప్రస్తుత డెస్క్‌ను తీసివేయండి</translation>
 <translation id="8559845965695780508"><ph name="USER" /> ఎడిట్ చేసినది</translation>
-<translation id="856298576161209842">ఈ <ph name="DEVICE_TYPE" />ను అప్‌డేట్ చేయమని <ph name="MANAGER" /> మీకు సిఫార్సు చేస్తోంది</translation>
 <translation id="8569751806372591456">ట్రై చేయడానికి ఇక్కడ కొన్ని సూచనలు ఉన్నాయి</translation>
 <translation id="857201607579416096">స్క్రీన్‌లో కింద కుడి వైపు మూలకు మెనూ తరలించబడింది.</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" />ను నొక్కి, లింక్‌ను క్లిక్ చేయండి</translation>
@@ -2174,7 +2164,6 @@
 <translation id="923686485342484400">సైన్ అవుట్ చేయడానికి Control Shift Qను రెండుసార్లు నొక్కండి.</translation>
 <translation id="92580429198593979">కలర్ మార్పిడి కోసం మీరు కీబోర్డ్ షార్ట్‌కట్‌ను నొక్కారు. మీరు దాన్ని ఆన్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="925832987464884575">ప్రివ్యూలను దాచండి</translation>
-<translation id="937214777182567951">వెంటనే మీ <ph name="DEVICE_TYPE" />ను అప్‌డేట్ చేయాలని <ph name="MANAGER" /> తెలియజేస్తోంది</translation>
 <translation id="938407504481277932">ప్రస్తుత డెస్క్: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_COUNT" /> డెస్క్‌లలో <ph name="DESK_INDEX" />‌వది.</translation>
 <translation id="938963181863597773">నా క్యాలెండర్‌లో ఏమి ఉన్నాయి?</translation>
 <translation id="945383118875625837">‌లింక్‌ను బుక్‌మార్క్‌ల బార్ వద్దకు లాగండి</translation>

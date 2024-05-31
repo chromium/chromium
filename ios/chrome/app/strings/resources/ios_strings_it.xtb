@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Cronologia</translation>
 <translation id="164673457281113247">{count,plural, =1{Preferito salvato}other{Preferiti salvati}}</translation>
 <translation id="1650222530560417226">Tocca il pulsante "Inizia registrazione" per raccogliere i log della console JavaScript e gli errori di tutte le schede. I log verranno raccolti e archiviati unicamente in memoria fino alla chiusura della pagina o finché non toccherai "Interrompi registrazione".</translation>
+<translation id="1652333207707886577">Personalizza il menu</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} password salvata disponibile sopra la tastiera.}other{{count} password salvate disponibili sopra la tastiera.}}</translation>
 <translation id="1657011748321897393">Condivisione non riuscita perché non sei collegato alla rete.</translation>
 <translation id="165877110639533037">Nessuna scheda aperta</translation>
@@ -531,6 +532,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3738428049780661523">Data creazione: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Nascondi download</translation>
 <translation id="3745190878148784130">Nascondi Zoom del testo</translation>
+<translation id="3747231889390582072">Per proteggere la sicurezza della tua organizzazione, i dati non salvati verranno eliminati dal dispositivo. Potrebbero essere inclusi password, cronologia di navigazione, cookie e altro ancora.</translation>
 <translation id="3762232513783804601">Realizzato per il tuo iPad</translation>
 <translation id="3768725474733206671">Riapri l'ultima scheda chiusa</translation>
 <translation id="3771033907050503522">Schede di navigazione in incognito</translation>
@@ -1481,6 +1483,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8446884382197647889">Scopri di più</translation>
 <translation id="8449347986464073209">Elimina ed esci</translation>
 <translation id="8459333855531264009">Non sicuro</translation>
+<translation id="8466300942149667917">I dati dell'account non salvati verranno eliminati</translation>
 <translation id="8473863474539038330">Indirizzi e altro</translation>
 <translation id="8487667956631253959">Attiva</translation>
 <translation id="8487700953926739672">Disponibile offline</translation>

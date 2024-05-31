@@ -128,7 +128,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2770231113462710648">Spremeni privzeti brskalnik na:</translation>
 <translation id="2775140325783767197">Chrome ne more preveriti vaših gesel. Poskusite preveriti internetno povezavo.</translation>
 <translation id="2799223571221894425">Vnovičen zagon</translation>
-<translation id="2825024317344269723">Nevarno spletno mesto. Chrome je odstranil obvestila.</translation>
+<translation id="2825024317344269723">Nevarno spletno mesto. Chrome je odstranil dovoljenje za obvestila.</translation>
 <translation id="2846251086934905009">Napaka pri namestitvi: Namestitveni program se ni dokončal. Namestitev je bila prekinjena.</translation>
 <translation id="2847461019998147611">Prikaži Google Chrome v tem jeziku</translation>
 <translation id="2853415089995957805">Chrome vnaprej naloži strani, ki jih boste verjetno obiskali, da se ob obisku naložijo še hitreje</translation>
@@ -190,7 +190,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3583751698304738917">V drugem profilu za Chrome ste že prijavljeni kot <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3595784445906693824">Se želite v Chromu prijaviti v novem profilu?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome.}=1{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. Anonimno okno se ne bo znova odprlo.}one{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimno okno se ne bo znova odprlo.}two{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimni okni se ne bosta znova odprli.}few{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimna okna se ne bodo znova odprla.}other{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimnih oken se ne bo znova odprlo.}}</translation>
-<translation id="3609788354808247807">Nedavno niste obiskali tega mesta. Chrome je odstranil <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in <ph name="PERMISSION_3" />.</translation>
+<translation id="3609788354808247807">Nedavno niste obiskali tega mesta. Chrome je odstranil ta dovoljenja: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in <ph name="PERMISSION_3" />.</translation>
 <translation id="3622797965165704966">Zdaj je Chrome lažje uporabljati z Google Računom in v računalnikih, ki so v skupni rabi.</translation>
 <translation id="3635073343384702370">Chrome lahko preveri gesla, če jih shranite</translation>
 <translation id="3667616615096815454">Namestitev ni mogoča, ker strežnik ne pozna aplikacije.</translation>
@@ -258,7 +258,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4624065194742029982">Anonimni način v Chromu</translation>
 <translation id="4627412468266359539">Izbirno: Pomagajte izboljšati funkcije sistema ChromeOS Flex ter njegovo delovanje s samodejnim pošiljanjem diagnostičnih podatkov in podatkov o uporabi Googlu.</translation>
 <translation id="4633000520311261472">Zaradi večje varnosti smo v Chromu onemogočili nekatere razširitve, ki niso navedene v storitvi <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> in so bile morda dodane brez vaše vednosti.</translation>
-<translation id="4643107447730827793">Nekateri podatki v Chromu še niso shranjeni v računu Google. Počakajte nekaj minut, preden se odjavite.</translation>
 <translation id="4680828127924988555">Prekliči namestitev</translation>
 <translation id="469553575393225953">Razširitve, aplikacije in teme iz neznanih virov lahko škodijo napravi. Chrome priporoča, da jih namestite samo v Spletni trgovini Chrome.</translation>
 <translation id="4710245680469034439">Osebno prilagodite brskalnik s temami, ki jih je navdihnila narava, zbirkami umetnikov in drugim</translation>
@@ -339,7 +338,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="5941711191222866238">Minimiziraj</translation>
 <translation id="5941830788786076944">Nastavi Google Chrome kot privzeti brskalnik</translation>
 <translation id="5947104538377036631">Bližnjica za Chrome</translation>
-<translation id="5953954252731207958">Nedavno niste obiskali tega mesta. Chrome je odstranil <ph name="PERMISSION" />.</translation>
+<translation id="5953954252731207958">Nedavno niste obiskali tega mesta. Chrome je odstranil to dovoljenje: <ph name="PERMISSION" />.</translation>
 <translation id="6003112304606738118">Prenašanje … Še <ph name="HOURS" /> h.</translation>
 <translation id="6014316319780893079">S <ph name="BEGIN_LINK" />Chromovimi orodji<ph name="END_LINK" /> lahko varno brskate in imate nadzor</translation>
 <translation id="6022659036123304283">Prilagodite si Chrome</translation>
@@ -354,7 +353,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> različica beta Google Chroma</translation>
 <translation id="6182736845697986886">Namestitev ni uspela zaradi notranje napake strežnika za posodobitve.</translation>
-<translation id="6200139057479872438">Nedavno niste obiskali tega mesta. Chrome je odstranil <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
+<translation id="6200139057479872438">Nedavno niste obiskali tega mesta. Chrome je odstranil ti dovoljenji: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="6235018212288296708">Pravilo za dohodni promet za Google Chrome, ki omogoča promet mDNS.</translation>
 <translation id="624230925347970731">Chrome se bo kmalu zaprl</translation>
 <translation id="6247557882553405851">Googlov upravitelj gesel</translation>
@@ -453,7 +452,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="7651907282515937834">Logotip za Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome je blokiral ta prenos, ker ste izklopili Varno brskanje in datoteke ni mogoče preveriti</translation>
 <translation id="7655455401911432608">Zgodovina brskanja, evidenca spletnih mest, ki ste jih obiskali s Chromom v tej napravi.</translation>
-<translation id="7661924425853052955">Nedavno niste obiskali tega mesta. Chrome je odstranil <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="COUNT" />.</translation>
+<translation id="7661924425853052955">Nedavno niste obiskali tega mesta. Chrome je odstranil ta dovoljenja: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="COUNT" />.</translation>
 <translation id="7668816516367091728">Izvajanje opravil, kot so prevajanje, računanje in drugo, neposredno v naslovni vrstici</translation>
 <translation id="769538538642757151">Chrome vas bo obvestil, če boste morali kaj pregledati</translation>
 <translation id="7747138024166251722">Namestitvenemu programu ni uspelo ustvariti začasnega imenika. Preverite, ali je na disku dovolj prostora in ali imate dovoljenje za namestitev programske opreme.</translation>

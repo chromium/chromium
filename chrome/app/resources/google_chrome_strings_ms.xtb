@@ -254,7 +254,6 @@
 <translation id="4624065194742029982">Inkognito Chrome</translation>
 <translation id="4627412468266359539">Bantu kami memperbaik ciri dan prestasi Chrome OS Flex dengan menghantar data diagnostik dan penggunaan kepada Google secara automatik.</translation>
 <translation id="4633000520311261472">Untuk menjadikan Chrome lebih selamat, kami melumpuhkan beberapa sambungan yang tidak disenaraikan dalam <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa pengetahuan anda.</translation>
-<translation id="4643107447730827793">Sesetengah data Chrome anda belum disimpan dalam Google Account anda. Tunggu beberapa minit sebelum log keluar.</translation>
 <translation id="4680828127924988555">Batalkan Pemasangan</translation>
 <translation id="469553575393225953">Sambungan, apl dan tema daripada sumber yang tidak diketahui boleh membahayakan peranti anda. Chrome mengesyorkan agar memasang fail daripada Gedung Web Chrome sahaja</translation>
 <translation id="4710245680469034439">Peribadikan penyemak imbas anda dengan tema yang diilhamkan oleh alam semula jadi, koleksi artis dan pelbagai lagi</translation>
@@ -363,6 +362,7 @@
 <translation id="6412673304250309937">Semak URL melalui perbandingan dengan senarai tapak tidak selamat yang disimpan dalam Chrome. Jika tapak cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chrome juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Penyemakan Imbas Selamat.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisasi anda akan menutup Chrome secara automatik apabila Chrome tidak digunakan selama 1 minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}other{Organisasi anda akan menutup Chrome secara automatik apabila Chrome tidak digunakan selama # minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}}</translation>
 <translation id="6418662306461808273">Tukar kepada profil Chrome yang sedia ada?</translation>
+<translation id="6473905796280459355">Akses halaman Perihal Chrome</translation>
 <translation id="6479881432656947268">Lawati Gedung Web Chrome</translation>
 <translation id="6481963882741794338">Pautkan Chrome dan perkhidmatan Google lain untuk pemeribadian dan tujuan lain</translation>
 <translation id="648319183876919572">Penyemakan Imbas Selamat Dipertingkatkan melakukan lebih banyak lagi untuk melindungi anda daripada laman web dan muat turun berbahaya</translation>

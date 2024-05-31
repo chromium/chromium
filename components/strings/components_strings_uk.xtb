@@ -456,6 +456,7 @@
 <translation id="1812527064848182527">альбомна</translation>
 <translation id="1812975699435941848">Освіта у сфері охорони здоров’я і медичне навчання</translation>
 <translation id="1816436748874040213">Може запитувати дозвіл на зміну масштабу й прокручування вмісту вкладок, які демонструються</translation>
+<translation id="1817364650920811003">Роль: порада щодо Chrome. Мітка доступності: <ph name="CHROME_TIP" />.</translation>
 <translation id="1818522458013171885">Розблокувати</translation>
 <translation id="1818585559878922121">Документальні фільми</translation>
 <translation id="182139138257690338">автоматичні завантаження</translation>
@@ -1398,6 +1399,7 @@
 <translation id="3642638418806704195">Додаток:</translation>
 <translation id="3646643500201740985">Оцінювання ефективності реклами</translation>
 <translation id="3647286794400715637">Кожен рядок URL-адреси має містити від 1 до 2 URL-адрес.</translation>
+<translation id="3647400963805615193">Кнопка "Закрити пораду щодо Chrome"; натисніть Enter, щоб закрити; <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Перевірку закінчено</translation>
 <translation id="3650594806107685466">Для захисту введіть код CVC, указаний на <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Піший туризм і автотуризм</translation>
@@ -3370,6 +3372,7 @@
 <translation id="7481312909269577407">Переслати</translation>
 <translation id="7481603210197454575">Конверт Italian</translation>
 <translation id="7483482939016730822">Шкільне приладдя й обладнання для класу</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />. Щоб закрити пораду щодо Chrome, натисніть Tab, а потім – Enter.</translation>
 <translation id="7485085230273446323">Бізнес і промисловість</translation>
 <translation id="7485870689360869515">Даних не знайдено.</translation>
 <translation id="7489392576326061356">Шампуні й кондиціонери</translation>

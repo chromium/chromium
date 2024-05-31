@@ -57,7 +57,6 @@
 <translation id="118437560755358292">כדי לשפר את רמת ההגנה, צריך להזין סיסמה או קוד אימות</translation>
 <translation id="118532027333893379">כדי לצלם את המסך המלא, יש להקיש במקום כלשהו</translation>
 <translation id="1190609913194133056">מרכז התראות</translation>
-<translation id="1190678134285018527">יש להחזיר את המכשיר לגרסה קודמת</translation>
 <translation id="1195412055398077112">סריקת יתר</translation>
 <translation id="1195667586424773550">גרירת הקישור אל שורת כתובת האתר של הכרטיסייה</translation>
 <translation id="119944043368869598">ניקוי הכול</translation>
@@ -131,6 +130,7 @@
 <translation id="1420408895951708260">הפעלה או כיבוי של תאורת הלילה. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">כן</translation>
 <translation id="1435537621343861112">לא ניתן להתחיל את ההכתבה. המיקרופון כבוי.</translation>
+<translation id="1447907279406111651">עכשיו ⋅ יסתיים בשעה <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">‏הנקודות לשיתוף אינטרנט (Hotspot) במכשיר שלך</translation>
 <translation id="1455242230282523554">הצגת הגדרות השפה</translation>
 <translation id="1460620680449458626">צלילים מושתקים.</translation>
@@ -481,6 +481,7 @@
 <translation id="2894949423239620203">חיבור כבל עשוי להשפיע על הביצועים</translation>
 <translation id="2914580577416829331">צילומי מסך</translation>
 <translation id="2924416280450782352">לא ניתן להציג את הפריטים. אפשר לנסות לפתוח את החלונית הזו מחדש.</translation>
+<translation id="292506373491190801">מאירוע שמתקיים עכשיו</translation>
 <translation id="2931572158271115754">אין משימות לביצוע ברשימת המשימות.</translation>
 <translation id="2932487126591186298">נוספו 10 דקות. הזמן שנותר הוא <ph name="REMAINING_TIME" />.</translation>
 <translation id="2935225303485967257">ניהול פרופילים</translation>
@@ -685,7 +686,6 @@
 <translation id="363473492175527493">‏הוגדר מצב ריכוז למשימה בנושא: <ph name="TASK_NAME" />. אפשר ללחוץ על Enter כדי לערוך את המשימה.</translation>
 <translation id="3638400994746983214">הפעלה וכיבוי של מסך הפרטיות. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">מזעור החלון</translation>
-<translation id="3649505501900178324">צריך לבצע עדכון</translation>
 <translation id="3653999174677652346">‏<ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> עד
@@ -755,7 +755,6 @@
 <translation id="3900355044994618856">הסשן יסתיים בעוד <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">מתבצעת התחברות אל: <ph name="NAME" /></translation>
 <translation id="3906954721959377182">טאבלט</translation>
-<translation id="3922427723338465344">{0,plural, =1{שינוי המכשיר לגרסה קודמת בתוך דקה}one{שינוי המכשיר לגרסה קודמת בתוך # דקות}two{שינוי המכשיר לגרסה קודמת בתוך # דקות}other{שינוי המכשיר לגרסה קודמת בתוך # דקות}}</translation>
 <translation id="3923494859158167397">לא הוגדרו רשתות סלולריות</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, האירועים בטעינה.</translation>
 <translation id="3932043219784172185">אין מכשיר מחובר</translation>
@@ -767,6 +766,7 @@
 <translation id="3950272133184491871">רוצה לצאת עכשיו?</translation>
 <translation id="3950820424414687140">כניסה</translation>
 <translation id="3953130726459169782">עדיין לא הושלמו מטלות.</translation>
+<translation id="3958714870339660776">כל היום</translation>
 <translation id="3962859241508114581">הטראק הקודם</translation>
 <translation id="3969043077941541451">כבוי</translation>
 <translation id="3970324493235864154">הצגת ההתראות שבטלפון</translation>
@@ -946,7 +946,6 @@
 <translation id="4623167406982293031">יש לאמת את החשבון</translation>
 <translation id="4628757576491864469">מכשירים</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, דירוג כוכבים: <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{שינוי המכשיר לגרסה קודמת בתוך יום אחד}one{שינוי המכשיר לגרסה קודמת בתוך # ימים}two{שינוי המכשיר לגרסה קודמת בתוך יומיים}other{שינוי המכשיר לגרסה קודמת בתוך # ימים}}</translation>
 <translation id="4633636853437260449">‏כדי למחוק, מקישים על Ctrl+W.</translation>
 <translation id="4642092649622328492">צילום מסך חלקי</translation>
 <translation id="4644727592819780893">האזור קטן מדי ואי אפשר להציג אותו במצלמה</translation>
@@ -1220,6 +1219,7 @@
 <translation id="5599242528220103262">מקשי הקיצור מושבתים</translation>
 <translation id="5600415762228455511">מצב ריכוז מופעל. הזמן שנותר: <ph name="REMAINING_TIME" />. התרכזות בנושא: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">‏יש להקיש על Ctrl ‏+ Alt ‏+ Z כדי להשבית את המשוב הקולי.</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{לפני פחות משעה}=1{לפני שעה}one{לפני # שעות}two{לפני שעתיים (#)}other{לפני # שעות}}</translation>
 <translation id="5601503069213153581">קוד אימות</translation>
 <translation id="5618148318840095371">העברנו אותך לרשת טובה יותר</translation>
 <translation id="5619862035903135339">לפי המדיניות של מנהל המערכת, צילום המסך מושבת</translation>
@@ -1396,6 +1396,7 @@
 <translation id="6228457605945141550">הפחתת הבהירות</translation>
 <translation id="623116199192908855">‏הפעלת Cast של התוכן מהמסך של ה-Chromebook</translation>
 <translation id="6231419273573514727">ייתכן שהביצועים של הציוד ההיקפי יוגבלו</translation>
+<translation id="6232416233079464213">המקור: <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217">המצלמה והמיקרופון בשימוש כרגע על ידי <ph name="APP_NAME" /></translation>
 <translation id="6237231532760393653">‎1X‎</translation>
 <translation id="62380141479352646">הסוללה חלשה. התכונה 'חיסכון בסוללה' הופעלה.</translation>
@@ -1453,7 +1454,6 @@
 <translation id="6477681113376365978">לא ניתן להוריד את הקובץ</translation>
 <translation id="6482559668224714696">זכוכית מגדלת במסך מלא</translation>
 <translation id="6490471652906364588">‏מכשיר עם יציאת USB-C (יציאה ימנית)</translation>
-<translation id="6491071886865974820">בהתאם לדרישה של <ph name="MANAGER" />, עליך לעדכן את ה-<ph name="DEVICE_TYPE" /> לפני המועד האחרון</translation>
 <translation id="649452524636452238">קוד האימות של הכרטיס החכם</translation>
 <translation id="6495322433318104734">מוצג שומר מסך. כדי לצאת צריך להקיש על מקש כלשהו.</translation>
 <translation id="6495400115277918834">‏הופעלה התכונה 'תמונה בתוך תמונה'. מקישים על Alt+Shift+V כדי להתמקד</translation>
@@ -1517,7 +1517,6 @@
 <translation id="6696025732084565524">למקלדת הניתנת לניתוק דרוש עדכון קריטי</translation>
 <translation id="6697913454192220372">הוספת שולחן עבודה וירטואלי חדש</translation>
 <translation id="6700713906295497288">‏לחצן תפריט IME</translation>
-<translation id="6707693040195709527">מועד שינוי המכשיר לגרסה קודמת כבר חלף</translation>
 <translation id="6710213216561001401">הקודם</translation>
 <translation id="6723839937902243910">חשמל</translation>
 <translation id="672609503628871915">מה חדש</translation>
@@ -1799,6 +1798,7 @@
 <translation id="780301667611848630">לא תודה</translation>
 <translation id="7807067443225230855">‏חיפוש ו-Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ו-<ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">מאירוע קרוב ביומן</translation>
 <translation id="7829386189513694949">אות חזק</translation>
 <translation id="7830453190047749513">אפשר להתאים אישית את פעולות הלחצנים, מהירות הסמן ועוד במכשיר <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">עבר הזמן</translation>
@@ -1812,7 +1812,6 @@
 <translation id="7866482334467279021">פועלת</translation>
 <translation id="7872786842639831132">כבוי</translation>
 <translation id="7875575368831396199">‏נראה שה-Bluetooth כבוי ב-<ph name="DEVICE_TYPE" /> שלך. יש להפעיל את Bluetooth כדי להשתמש ב-Phone Hub.</translation>
-<translation id="7877557217297072640">{0,plural, =0{עליך לשנות את המכשיר לגרסה הקודמת עכשיו}=1{עליך לשנות את המכשיר לגרסה הקודמת בתוך שנייה}one{עליך לשנות את המכשיר לגרסה קודמת בתוך # שניות}two{עליך לשנות את המכשיר לגרסה קודמת בתוך # שניות}other{עליך לשנות את המכשיר לגרסה קודמת בתוך # שניות}}</translation>
 <translation id="7884446017008693258">הגדרות הנקודה לשיתוף אינטרנט</translation>
 <translation id="7884902759927478774">ביטול גרירת הכרטיסייה</translation>
 <translation id="7886169021410746335">התאמת הגדרות הפרטיות</translation>
@@ -1889,7 +1888,6 @@
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">‏אפשר להשתמש במקש Tab כדי להציג אפשרויות נוספות. כדי לגשת לכל שולחנות העבודה הווירטואליים, משתמשים בחץ שמאלה ובחץ ימינה.</translation>
 <translation id="8091153018031979607">מתחיל בשעה <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">עדכונים אוטומטיים</translation>
 <translation id="8092380135549145188">פקדים לגלילה</translation>
 <translation id="8098591350844501178">הפסקת העברת המסך אל <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">ביטול ההצמדה של האפליקציה למדף</translation>
@@ -1935,7 +1933,6 @@
 <translation id="8257510091797044096">הגדרת המכשיר שלך</translation>
 <translation id="8261506727792406068">מחיקה</translation>
 <translation id="8262312463845990408">הפעלה או השהיה של הקראת הטקסט</translation>
-<translation id="8270450402312105425">{0,plural, =1{שינוי המכשיר לגרסה קודמת בתוך שעה}one{שינוי המכשיר לגרסה קודמת בתוך # שעות}two{שינוי המכשיר לגרסה קודמת בתוך שעתיים}other{שינוי המכשיר לגרסה קודמת בתוך # שעות}}</translation>
 <translation id="8277261673056602147">יש להדגיש טקסט במסך</translation>
 <translation id="8287009018010202411">פרודוקטיביות</translation>
 <translation id="828708037801473432">כבויה</translation>
@@ -2002,7 +1999,6 @@
 <translation id="8553395910833293175">כבר מוקצה לכל שולחנות העבודה הווירטואליים.</translation>
 <translation id="8555757996376137129">הסרת שולחן העבודה הווירטואלי הנוכחי</translation>
 <translation id="8559845965695780508">נערך על ידי <ph name="USER" /></translation>
-<translation id="856298576161209842">לפי ההמלצה של <ph name="MANAGER" />, כדאי לעדכן את ה-<ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">הנה כמה הצעות שכדאי לנסות</translation>
 <translation id="857201607579416096">התפריט הועבר לפינה השמאלית התחתונה של המסך.</translation>
 <translation id="8581946341807941670">הקשה על <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> ולחיצה על קישור</translation>
@@ -2116,6 +2112,7 @@
 <translation id="899350903320462459">יש לבטל את נעילת המכשיר כ-<ph name="LOGIN_ID" /> על מנת לבצע את פעולת ההודעה</translation>
 <translation id="8993733019280019776">ניסית לדבר? המיקרופון שלך כבוי. עליך לבחור במיקרופון כדי להפעיל אותו.</translation>
 <translation id="9000771174482730261">ניהול האחסון</translation>
+<translation id="9002204506712855687">רוצה לנסות את התכונות האחרונות?</translation>
 <translation id="9005984960510803406">‏פתיחת חלון Crosh</translation>
 <translation id="9017320285115481645">‏יש להזין את קוד הגישה להורים עבור Family Link.</translation>
 <translation id="9022774213089566801">אתרים עם ביקורים תכופים</translation>
@@ -2147,6 +2144,7 @@
 <translation id="9098969848082897657">השתקת הטלפון</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> או <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">ביטול הפעולה האחרונה</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{בעוד דקה}one{בעוד # דקות}two{בעוד # דקות}other{בעוד # דקות}}</translation>
 <translation id="9129245940793250979">הלחצן האחורי</translation>
 <translation id="9133335900048457298">לא ניתן להקליט תוכן מוגן</translation>
 <translation id="9139720510312328767">מחיקת האות הבאה</translation>
@@ -2161,6 +2159,7 @@
 <translation id="9183456764293710005">הגדלת כל המסך</translation>
 <translation id="9193626018745640770">מתבצעת העברה במכשיר לא ידוע</translation>
 <translation id="9194617393863864469">הוספת משתמש אחר...</translation>
+<translation id="9195990613383871904">מחר</translation>
 <translation id="9198992156681343238">הרזולוציה של <ph name="DISPLAY_NAME" /> שונתה ל-<ph name="RESOLUTION" />. לשמירת השינויים, יש ללחוץ על 'אישור'. ההגדרות הקודמות ישוחזרו בעוד <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">‏יש לחבר את <ph name="NAME" /> ל-Chromebook הזה</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, הרשת מנוהלת על ידי מנהל המערכת שלך</translation>
@@ -2176,7 +2175,6 @@
 <translation id="923686485342484400">‏יש להקיש פעמיים על Control Shift Q כדי לצאת.</translation>
 <translation id="92580429198593979">הקשת על מקש הקיצור להיפוך צבעים. רוצה להפעיל אותו?</translation>
 <translation id="925832987464884575">הסתרה של תצוגות מקדימות</translation>
-<translation id="937214777182567951">בהתאם לדרישה של <ph name="MANAGER" />, עליך לעדכן את ה-<ph name="DEVICE_TYPE" /> באופן מיידי</translation>
 <translation id="938407504481277932">שולחן העבודה הווירטואלי הנוכחי: <ph name="DESK_NAME" />. ‫<ph name="PROFILE_NAME" /> ‏<ph name="EMAIL" />. שולחן עבודה וירטואלי <ph name="DESK_INDEX" /> מתוך <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">אירועים קרובים ביומן שלי</translation>
 <translation id="945383118875625837">גרירת הקישור לסרגל הסימניות</translation>

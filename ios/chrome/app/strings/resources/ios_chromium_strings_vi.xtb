@@ -75,6 +75,7 @@
 <translation id="2942241131342758843">Hãy dùng Chromium theo mặc định để mở đường liên kết, tìm kiếm trong tiện ích và tự động điền mật khẩu trên các ứng dụng khác</translation>
 <translation id="2977470724722393594">Chromium đã được cập nhật</translation>
 <translation id="3044857325852340337">Đã xoá dữ liệu Chromium</translation>
+<translation id="3049211156275642309">Hoàn tất thiết lập Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium có thể giúp bạn theo dõi gói hàng này trên trang Thẻ mới.}other{Chromium có thể giúp bạn theo dõi các gói hàng này trên trang Thẻ mới.}}</translation>
 <translation id="3102849287235003384">Để đăng xuất khỏi Tài khoản Google trên tất cả trang web, hãy <ph name="BEGIN_LINK" />đăng xuất khỏi Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Tìm kiếm bằng giọng nói trong Chromium</translation>
@@ -273,6 +274,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="8754966941001340678">Chromium khuyên dùng chế độ bảo vệ nâng cao</translation>
 <translation id="8759037115129007407">Thành viên gia đình bạn hiện không thể nhận mật khẩu. Hãy đề nghị họ cập nhật Chromium và đồng bộ hoá mật khẩu của họ. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Tài khoản này và mọi dữ liệu chưa lưu sẽ bị xóa khỏi Chromium.</translation>
+<translation id="8826789549860004832">Khai thác tối đa Chromium bằng cách tiếp tục thiết lập trình duyệt của bạn.</translation>
 <translation id="88376265765385899">Mở dấu trang trên Chromium.</translation>
 <translation id="8860548555286245440">Mở URL bằng chế độ Ẩn danh trong Chromium</translation>
 <translation id="8866191443434488382">Chromium sẽ phát hiện số vận đơn trên các trang web bạn truy cập và cho bạn thấy thông tin cập nhật về gói hàng trên trang Thẻ mới. Số vận đơn của gói hàng và tên trang web sẽ được gửi đến Chromium để cung cấp tính năng này và cải thiện các tính năng mua sắm cho mọi người. Bạn có thể cập nhật tuỳ chọn này bất cứ lúc nào trong phần <ph name="BEGIN_LINK" />Cài đặt theo dõi gói hàng<ph name="END_LINK" />.</translation>

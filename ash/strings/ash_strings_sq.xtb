@@ -57,7 +57,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="118437560755358292">Fut fjalëkalimin ose kodin PIN për më shumë siguri</translation>
 <translation id="118532027333893379">Trokit diku për të regjistruar ekranin e plotë</translation>
 <translation id="1190609913194133056">Qendra e njoftimeve</translation>
-<translation id="1190678134285018527">Pajisja duhet të kthehet në versionin e mëparshëm</translation>
 <translation id="1195412055398077112">mbiskanim</translation>
 <translation id="1195667586424773550">Zvarrit lidhjen në shiritin e adresës së skedës</translation>
 <translation id="119944043368869598">Pastroji të gjitha</translation>
@@ -685,7 +684,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="363473492175527493">Detyra e caktuar për t'u fokusuar: <ph name="TASK_NAME" />. Shtyp "Enter" për të modifikuar detyrën.</translation>
 <translation id="3638400994746983214">Ndrysho ekranin e privatësisë. <ph name="STATE_TEXT" /></translation>
 <translation id="3649256019230929621">Minimizo dritaren</translation>
-<translation id="3649505501900178324">Afati i përditësimit ka kaluar</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> deri në
@@ -755,7 +753,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3900355044994618856">Sesioni do të përfundojë për <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Po lidhet me <ph name="NAME" /></translation>
 <translation id="3906954721959377182">Tablet</translation>
-<translation id="3922427723338465344">{0,plural, =1{Kalo pajisjen në versionin e mëparshëm brenda 1 minute}other{Kalo pajisjen në versionin e mëparshëm brenda # minutash}}</translation>
 <translation id="3923494859158167397">Nuk ka asnjë rrjet celular të konfiguruar</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, ngjarjet po ngarkohen.</translation>
 <translation id="3932043219784172185">Nuk është lidhur asnjë pajisje</translation>
@@ -946,7 +943,6 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4623167406982293031">Verifiko llogarinë</translation>
 <translation id="4628757576491864469">Pajisjet</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, vlerësimi me yje <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Kalo pajisjen në versionin e mëparshëm brenda një dite}other{Kalo pajisjen në versionin e mëparshëm brenda # ditësh}}</translation>
 <translation id="4633636853437260449">Shtyp Ctrl+W për të fshirë</translation>
 <translation id="4642092649622328492">Nxirr një pamje të pjesshme të ekranit</translation>
 <translation id="4644727592819780893">Rajoni është shumë i vogël për të shfaqur pamjen paraprake të kamerës</translation>
@@ -1453,7 +1449,6 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6477681113376365978">Skedari nuk mund të shkarkohet</translation>
 <translation id="6482559668224714696">Zmadhuesi në ekran të plotë</translation>
 <translation id="6490471652906364588">Pajisja USB-C (porta djathtas)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> kërkon që ta përditësosh pajisjen tënde <ph name="DEVICE_TYPE" /> përpara afatit</translation>
 <translation id="649452524636452238">Kodi PIN i kartës smart</translation>
 <translation id="6495322433318104734">Po shfaqet mbrojtësi i ekranit. Shtyp një tast për të dalë</translation>
 <translation id="6495400115277918834">"Figurë brenda figurës" filloi; shtyp "Alt+Shift+V" për të fokusuar</translation>
@@ -1517,7 +1512,7 @@ Instalim i ri</translation>
 <translation id="6696025732084565524">Tastiera jote e shkëputshme ka nevojë për një përditësim me rëndësi</translation>
 <translation id="6697913454192220372">Shto një tavolinë të re pune</translation>
 <translation id="6700713906295497288">Butoni i menysë IME</translation>
-<translation id="6707693040195709527">Kalimit të pajisjes në versionin e mëparshëm i ka kaluar afati</translation>
+<translation id="6706742084323792866">Gozhdo tastierën</translation>
 <translation id="6710213216561001401">Prapa</translation>
 <translation id="6723839937902243910">Energjia</translation>
 <translation id="672609503628871915">Shiko ç'të reja ka</translation>
@@ -1810,7 +1805,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7866482334467279021">aktivizuar</translation>
 <translation id="7872786842639831132">Joaktive</translation>
 <translation id="7875575368831396199">Me sa duket Bluetooth-i është çaktivizuar në <ph name="DEVICE_TYPE" />. Aktivizo Bluetooth-in për të përdorur Phone Hub.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Kalo pajisjen në versionin e mëparshëm tani}=1{Kalo pajisjen në versionin e mëparshëm brenda 1 sekonde}other{Kalo pajisjen në versionin e mëparshëm brenda # sekondash}}</translation>
 <translation id="7884446017008693258">Cilësimet e zonës së qasjes për internet</translation>
 <translation id="7884902759927478774">Anulo zvarritjen e skedës</translation>
 <translation id="7886169021410746335">Të rregullojë cilësimet e privatësisë</translation>
@@ -1887,7 +1881,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Përdor tastin Tab për më shumë opsione. Përdor shigjetat majtas dhe djathtas për t'u qasur te të gjitha tavolinat e punës.</translation>
 <translation id="8091153018031979607">Fillon në <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Përditësimet automatike</translation>
 <translation id="8092380135549145188">Kontrollet e lëvizjes</translation>
 <translation id="8098591350844501178">Ndalo transmetimin e ekranit te <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Zhgozhdo aplikacionin nga rafti</translation>
@@ -1933,7 +1926,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8257510091797044096">Konfiguro pajisjen tënde</translation>
 <translation id="8261506727792406068">Fshi</translation>
 <translation id="8262312463845990408">Aktivizo/çaktivizo luajtjen</translation>
-<translation id="8270450402312105425">{0,plural, =1{Kalo pajisjen në versionin e mëparshëm brenda një ore}other{Kalo pajisjen në versionin e mëparshëm brenda # orësh}}</translation>
 <translation id="8277261673056602147">Thekso tekstin në ekranin tënd</translation>
 <translation id="8287009018010202411">Produktivitet</translation>
 <translation id="828708037801473432">Joaktiv</translation>
@@ -2000,7 +1992,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8553395910833293175">Është caktuar tashmë te të gjitha tavolinat e punës.</translation>
 <translation id="8555757996376137129">Hiq tavolinën aktuale të punës</translation>
 <translation id="8559845965695780508">Modifikuar nga <ph name="USER" /></translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> rekomandon që të përditësosh pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Këtu janë disa sugjerime për t'i provuar</translation>
 <translation id="857201607579416096">Menyja u zhvendos në këndin poshtë djathtas të ekranit.</translation>
 <translation id="8581946341807941670">Shtyp <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> dhe kliko një lidhje</translation>
@@ -2172,7 +2163,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="923686485342484400">Shtyp dy herë Control, Shift, Q për të dalë.</translation>
 <translation id="92580429198593979">Ke shtypur shkurtoren e tastierës për anasjelljen e ngjyrës. Dëshiron ta aktivizosh?</translation>
 <translation id="925832987464884575">Fshih pamjet paraprake</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> kërkon që ta përditësosh menjëherë <ph name="DEVICE_TYPE" /></translation>
 <translation id="938407504481277932">Tavolina aktuale e punës: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Tavolina e punës <ph name="DESK_INDEX" /> nga <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Çfarë ka në kalendarin tim?</translation>
 <translation id="945383118875625837">Zvarrit lidhjen te shiriti i faqeshënuesve</translation>

@@ -57,7 +57,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="118437560755358292">Masukkan sandi atau PIN untuk keamanan tambahan</translation>
 <translation id="118532027333893379">Ketuk di mana saja untuk mengambil gambar dalam layar penuh</translation>
 <translation id="1190609913194133056">Pusat Notifikasi</translation>
-<translation id="1190678134285018527">Perangkat perlu kembali ke versi sebelumnya</translation>
 <translation id="1195412055398077112">pemindaian berlebih</translation>
 <translation id="1195667586424773550">Tarik link ke kolom URL tab</translation>
 <translation id="119944043368869598">Hapus semua</translation>
@@ -685,7 +684,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="363473492175527493">Tugas yang ditetapkan untuk difokuskan: <ph name="TASK_NAME" />. Tekan enter untuk mengedit tugas.</translation>
 <translation id="3638400994746983214">Alihkan ke layar privasi. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Meminimalkan jendela</translation>
-<translation id="3649505501900178324">Update melewati batas waktu</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> sampai
@@ -755,7 +753,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3900355044994618856">Sesi akan berakhir dalam <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Menghubungkan ke <ph name="NAME" /></translation>
 <translation id="3906954721959377182">Tablet</translation>
-<translation id="3922427723338465344">{0,plural, =1{Ubah perangkat ke versi sebelumnya dalam 1 menit}other{Ubah perangkat ke versi sebelumnya dalam # menit}}</translation>
 <translation id="3923494859158167397">Tidak ada jaringan seluler yang disiapkan</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Memuat acara.</translation>
 <translation id="3932043219784172185">Tidak ada perangkat yang terhubung</translation>
@@ -946,7 +943,6 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4623167406982293031">Verifikasi akun</translation>
 <translation id="4628757576491864469">Perangkat</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, Rating bintang <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Ubah perangkat ke versi sebelumnya dalam 1 hari}other{Ubah perangkat ke versi sebelumnya dalam # hari}}</translation>
 <translation id="4633636853437260449">Tekan Ctrl+W untuk menghapus</translation>
 <translation id="4642092649622328492">Mengambil screenshot sebagian</translation>
 <translation id="4644727592819780893">Wilayah terlalu kecil untuk ditampilkan di pratinjau kamera</translation>
@@ -1453,7 +1449,6 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6477681113376365978">Tidak dapat mendownload file</translation>
 <translation id="6482559668224714696">Kaca pembesar layar penuh</translation>
 <translation id="6490471652906364588">Perangkat USB-C (port sebelah kanan)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> mengharuskan Anda mengupdate <ph name="DEVICE_TYPE" /> sebelum tiba batas waktu</translation>
 <translation id="649452524636452238">PIN kartu smart</translation>
 <translation id="6495322433318104734">Menampilkan screensaver, tekan sembarang tombol untuk keluar</translation>
 <translation id="6495400115277918834">Picture-in-picture dimulai, Alt+Shift+V untuk memfokuskan</translation>
@@ -1518,7 +1513,6 @@ Baru diinstal</translation>
 <translation id="6697913454192220372">Tambahkan desktop virtual baru</translation>
 <translation id="6700713906295497288">Tombol menu IME</translation>
 <translation id="6706742084323792866">Sematkan keyboard</translation>
-<translation id="6707693040195709527">Perubahan perangkat ke versi sebelumnya sudah lewat batas waktu</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="6723839937902243910">Daya</translation>
 <translation id="672609503628871915">Lihat apa saja yang baru</translation>
@@ -1811,7 +1805,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7866482334467279021">aktif</translation>
 <translation id="7872786842639831132">Nonaktif</translation>
 <translation id="7875575368831396199">Sepertinya Bluetooth dinonaktifkan di <ph name="DEVICE_TYPE" /> Anda. Aktifkan Bluetooth untuk menggunakan Phone Hub.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Ubah perangkat ke versi sebelumnya sekarang juga}=1{Ubah perangkat ke versi sebelumnya dalam 1 detik}other{Ubah perangkat ke versi sebelumnya dalam # detik}}</translation>
 <translation id="7884446017008693258">Setelan Hotspot</translation>
 <translation id="7884902759927478774">Batalkan penarikkan tab</translation>
 <translation id="7886169021410746335">Menyesuaikan setelan privasi</translation>
@@ -1888,7 +1881,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Gunakan tab untuk melihat opsi lainnya. Gunakan panah kiri dan kanan untuk mengakses semua desktop virtual.</translation>
 <translation id="8091153018031979607">Dimulai pukul <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Update otomatis</translation>
 <translation id="8092380135549145188">Kontrol scroll</translation>
 <translation id="8098591350844501178">Hentikan casting layar ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Lepaskan aplikasi dari rak</translation>
@@ -1934,7 +1926,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8257510091797044096">Siapkan perangkat Anda</translation>
 <translation id="8261506727792406068">Hapus</translation>
 <translation id="8262312463845990408">Putar/Jeda pemutaran</translation>
-<translation id="8270450402312105425">{0,plural, =1{Ubah perangkat ke versi sebelumnya dalam 1 jam}other{Ubah perangkat ke versi sebelumnya dalam # jam}}</translation>
 <translation id="8277261673056602147">Tandai teks di layar</translation>
 <translation id="8287009018010202411">Produktivitas</translation>
 <translation id="828708037801473432">Nonaktif</translation>
@@ -2001,7 +1992,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8553395910833293175">Telah ditetapkan ke semua desktop.</translation>
 <translation id="8555757996376137129">Hapus desktop saat ini</translation>
 <translation id="8559845965695780508">Diedit oleh <ph name="USER" /></translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> menyarankan Anda mengupdate <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Berikut beberapa saran untuk dicoba</translation>
 <translation id="857201607579416096">Menu dipindahkan ke pojok kanan bawah layar.</translation>
 <translation id="8581946341807941670">Tekan <ph name="MODIFIER_1" /><ph name="MODIFIER_2" />, lalu klik link</translation>
@@ -2173,7 +2163,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="923686485342484400">Tekan Control Shift Q dua kali untuk keluar.</translation>
 <translation id="92580429198593979">Anda menekan pintasan keyboard untuk inversi warna. Ingin mengaktifkannya?</translation>
 <translation id="925832987464884575">Sembunyikan pratinjau</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> mengharuskan Anda segera mengupdate <ph name="DEVICE_TYPE" /></translation>
 <translation id="938407504481277932">Desktop virtual saat ini: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Desktop virtual <ph name="DESK_INDEX" /> dari <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Apa saja daftar acara di kalender saya?</translation>
 <translation id="945383118875625837">Tarik link ke kolom bookmark</translation>

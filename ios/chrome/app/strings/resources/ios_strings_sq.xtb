@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Historiku</translation>
 <translation id="164673457281113247">{count,plural, =1{Faqeshënuesi u ruajt}other{Faqeshënuesit u ruajtën}}</translation>
 <translation id="1650222530560417226">Trokit butonin "Nis regjistrimin" për të grumbulluar regjistrime dhe gabime të ardhshme të panelit komandues të JavaScript nga të gjitha skedat. Regjistrimet do të grumbullohen (dhe ruhen vetëm në memorie) derisa kjo faqe të mbyllet ose të trokitet mbi "Ndalo regjistrimin".</translation>
+<translation id="1652333207707886577">Personalizo menynë</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} fjalëkalim i ruajtur i disponueshëm mbi tastierën tënde.}other{{count} fjalëkalime të ruajtura të disponueshme mbi tastierën tënde.}}</translation>
 <translation id="1657011748321897393">Ndarja dështoi për shkak se nuk je i lidhur në rrjet.</translation>
 <translation id="165877110639533037">Nuk ka skeda të hapura</translation>
@@ -531,6 +532,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3738428049780661523">Krijuar më <ph name="DATE" /></translation>
 <translation id="374357899112510277">Fshih "Shkarkimet"</translation>
 <translation id="3745190878148784130">Fshih "Zmadho tekstin"</translation>
+<translation id="3747231889390582072">Për të mbrojtur sigurinë e organizatës sate, të dhënat e paruajtura do të fshihen nga kjo pajisje. Kjo mund të përfshijë fjalëkalimet, historikun e shfletimit, kukit etj.</translation>
 <translation id="3762232513783804601">Krijuar për iPad tënd</translation>
 <translation id="3768725474733206671">Rihap skedën e fundit të mbyllur</translation>
 <translation id="3771033907050503522">Skedat "e fshehura"</translation>
@@ -1481,6 +1483,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8446884382197647889">Mëso më shumë</translation>
 <translation id="8449347986464073209">Fshi dhe dil</translation>
 <translation id="8459333855531264009">Jo e sigurt</translation>
+<translation id="8466300942149667917">Të dhënat e paruajtura të llogarisë do të fshihen</translation>
 <translation id="8473863474539038330">Adresat dhe të tjera</translation>
 <translation id="8487667956631253959">Aktivizo</translation>
 <translation id="8487700953926739672">Mundësohet offline</translation>

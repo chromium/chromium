@@ -57,7 +57,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="118437560755358292">Angiv adgangskode eller pinkode som ekstra sikkerhed</translation>
 <translation id="118532027333893379">Tryk et vilkårligt sted for at tage et billede af hele skærmen</translation>
 <translation id="1190609913194133056">Underretningcenter</translation>
-<translation id="1190678134285018527">Der skal skiftes tilbage til en tidligere version af enheden</translation>
 <translation id="1195412055398077112">overscan</translation>
 <translation id="1195667586424773550">Træk linket til adresselinjen på fanen</translation>
 <translation id="119944043368869598">Ryd alle</translation>
@@ -131,6 +130,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1420408895951708260">Slå Nattelys til/fra. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1435537621343861112">Diktering kan ikke startes. Din mikrofon er slukket.</translation>
+<translation id="1447907279406111651">Nu · Slutter kl. <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Hotspots på din enhed</translation>
 <translation id="1455242230282523554">Vis sprogindstillinger</translation>
 <translation id="1460620680449458626">Lyden er slået fra.</translation>
@@ -481,6 +481,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2894949423239620203">Kablet kan påvirke ydeevnen</translation>
 <translation id="2914580577416829331">Screenshots</translation>
 <translation id="2924416280450782352">Elementerne kan ikke vises. Prøv at åbne panelet igen.</translation>
+<translation id="292506373491190801">Fra en igangværende begivenhed</translation>
 <translation id="2931572158271115754">Der er intet på denne huskeliste.</translation>
 <translation id="2932487126591186298">10 minutter er tilføjet. <ph name="REMAINING_TIME" /> tilbage.</translation>
 <translation id="2935225303485967257">Administrer profiler</translation>
@@ -685,7 +686,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="363473492175527493">Opgaven er angivet til at fokusere på: <ph name="TASK_NAME" />. Tryk på Enter for at redigere opgaven.</translation>
 <translation id="3638400994746983214">Slå privatlivsfilter til eller fra. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Minimer vinduet</translation>
-<translation id="3649505501900178324">En opdatering mangler at blive udført</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> til
@@ -755,7 +755,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3900355044994618856">Din session slutter om <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Opretter forbindelse til <ph name="NAME" /></translation>
 <translation id="3906954721959377182">Tablet</translation>
-<translation id="3922427723338465344">{0,plural, =1{Skift til en tidligere version af enheden inden for 1 minut}one{Skift til en tidligere version af enheden inden for # minut}other{Skift til en tidligere version af enheden inden for # minutter}}</translation>
 <translation id="3923494859158167397">Der er ikke konfigureret nogen mobilnetværk</translation>
 <translation id="3925540965556789199"><ph name="DATE" /> – indlæser begivenhederne.</translation>
 <translation id="3932043219784172185">Der er ikke nogen forbundne enheder</translation>
@@ -767,6 +766,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3950272133184491871">Vil du logge ud nu?</translation>
 <translation id="3950820424414687140">Log ind</translation>
 <translation id="3953130726459169782">Ingen opgaver er færdiggjort endnu.</translation>
+<translation id="3958714870339660776">Hele dagen</translation>
 <translation id="3962859241508114581">Forrige nummer</translation>
 <translation id="3969043077941541451">Fra</translation>
 <translation id="3970324493235864154">Se din telefons notifikationer</translation>
@@ -946,7 +946,6 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4623167406982293031">Verificer konto</translation>
 <translation id="4628757576491864469">Enheder</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, antal stjerner <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Skift til en tidligere version af enheden inden for en dag}one{Skift til en tidligere version af enheden inden for # dag}other{Skift til en tidligere version af enheden inden for # dage}}</translation>
 <translation id="4633636853437260449">Tryk på Ctrl+W for at slette</translation>
 <translation id="4642092649622328492">Tag et delvist screenshot</translation>
 <translation id="4644727592819780893">Området er for småt til kameraet</translation>
@@ -1220,6 +1219,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="5599242528220103262">Tastaturgenvej er deaktiveret</translation>
 <translation id="5600415762228455511">Fokus er aktiveret, <ph name="REMAINING_TIME" /> tilbage, fokuserer på: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Tryk på Ctrl+Alt+Z for at deaktivere talefeedback.</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{For mindre end 1 time siden}=1{For 1 time siden}one{For # time siden}other{For # timer siden}}</translation>
 <translation id="5601503069213153581">Pinkode</translation>
 <translation id="5618148318840095371">Vi har ændret dit netværk til et bedre et</translation>
 <translation id="5619862035903135339">Administratorpolitikken tillader ikke screenshots</translation>
@@ -1396,6 +1396,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="6228457605945141550">Skru ned for lysstyrken</translation>
 <translation id="623116199192908855">Cast din skærm fra din Chromebook</translation>
 <translation id="6231419273573514727">Din eksterne enheds ydeevne kan være begrænset</translation>
+<translation id="6232416233079464213">Fra <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> anvender i øjeblikket dit kamera og din mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Lavt batteriniveau. Batterisparefunktion er aktiveret.</translation>
@@ -1453,7 +1454,6 @@ Ingen enheder er forbundet.</translation>
 <translation id="6477681113376365978">Filen kan ikke downloades</translation>
 <translation id="6482559668224714696">Forstørrelse af fuld skærm</translation>
 <translation id="6490471652906364588">USB-C-enhed (højre port)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> kræver, at du opdaterer din <ph name="DEVICE_TYPE" />, før fristen udløber</translation>
 <translation id="649452524636452238">Pinkode til chipkort</translation>
 <translation id="6495322433318104734">Viser pauseskærmen. Tryk på en tast for at afslutte</translation>
 <translation id="6495400115277918834">Integreret billede blev startet – tryk på Alt + Shift + V for at fokusere på dette</translation>
@@ -1517,7 +1517,7 @@ Installeret for nylig</translation>
 <translation id="6696025732084565524">Dit aftagelige tastatur kræver en vigtig opdatering</translation>
 <translation id="6697913454192220372">Tilføj nyt skrivebord</translation>
 <translation id="6700713906295497288">IME-menuknap</translation>
-<translation id="6707693040195709527">Der skal skiftes til en tidligere version af enheden</translation>
+<translation id="6706742084323792866">Fastgør tastatur</translation>
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="6723839937902243910">Strøm</translation>
 <translation id="672609503628871915">Se de nye funktioner</translation>
@@ -1797,6 +1797,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="780301667611848630">Nej tak</translation>
 <translation id="7807067443225230855">Søgning og Assistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> og <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">Fra en kommende kalenderbegivenhed</translation>
 <translation id="7829386189513694949">Stærkt signal</translation>
 <translation id="7830453190047749513">Du kan tilpasse knaphandlinger, markørhastighed m.m. personligt for din <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Tiden er gået</translation>
@@ -1810,7 +1811,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7866482334467279021">til</translation>
 <translation id="7872786842639831132">Fra</translation>
 <translation id="7875575368831396199">Det ser ud til, at Bluetooth er deaktiveret på din <ph name="DEVICE_TYPE" />. Aktivér Bluetooth for at bruge Telefonstyring.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Skift til en tidligere version af enheden nu}=1{Skift til en tidligere version af enheden inden for 1 sekund}one{Skift til en tidligere version af enheden inden for # sekund}other{Skift til en tidligere version af enheden inden for # sekunder}}</translation>
 <translation id="7884446017008693258">Indstillinger for hotspot</translation>
 <translation id="7884902759927478774">Annuller fanetræk</translation>
 <translation id="7886169021410746335">Juster privatlivsindstillinger</translation>
@@ -1887,7 +1887,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Brug Tab-tasten for at se flere valgmuligheder. Brug højrepil og venstrepil for at tilgå alle skriveborde.</translation>
 <translation id="8091153018031979607">Starter <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Automatiske opdateringer</translation>
 <translation id="8092380135549145188">Indstillinger for rulning</translation>
 <translation id="8098591350844501178">Stop skærmcast til <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Frigør app fra hylde</translation>
@@ -1933,7 +1932,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8257510091797044096">Konfigurer din enhed</translation>
 <translation id="8261506727792406068">Slet</translation>
 <translation id="8262312463845990408">Håndter afspilning</translation>
-<translation id="8270450402312105425">{0,plural, =1{Skift til en tidligere version af enheden inden for en time}one{Skift til en tidligere version af enheden inden for # time}other{Skift til en tidligere version af enheden inden for # timer}}</translation>
 <translation id="8277261673056602147">Fremhæv tekst på din skærm</translation>
 <translation id="8287009018010202411">Produktivitet</translation>
 <translation id="828708037801473432">Fra</translation>
@@ -2000,7 +1998,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8553395910833293175">Allerede tildelt til alle skriveborde.</translation>
 <translation id="8555757996376137129">Fjern det aktuelle skrivebord</translation>
 <translation id="8559845965695780508">Redigeret af <ph name="USER" /></translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> anbefaler, at du opdaterer din <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Her er nogle forslag til, hvad du kan prøve</translation>
 <translation id="857201607579416096">Menuen blev flyttet til nederste højre hjørne af skærmen.</translation>
 <translation id="8581946341807941670">Tryk på <ph name="MODIFIER_1" /><ph name="MODIFIER_2" />, og klik på et link</translation>
@@ -2114,6 +2111,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="899350903320462459">Lås enheden op som <ph name="LOGIN_ID" /> for at udføre notifikationshandlingen</translation>
 <translation id="8993733019280019776">Taler du nu? Din mikrofon er slukket. Vælg mikrofonen for at tænde den.</translation>
 <translation id="9000771174482730261">ADMINISTRER LAGERPLADS</translation>
+<translation id="9002204506712855687">Se de nyeste funktioner</translation>
 <translation id="9005984960510803406">Åbn Crosh Window</translation>
 <translation id="9017320285115481645">Angiv forældreadgangskoden til Family Link.</translation>
 <translation id="9022774213089566801">Ofte besøgte</translation>
@@ -2145,6 +2143,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="9098969848082897657">Sæt telefonen på lydløs</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> eller <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Fortryd seneste handling</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{Om 1 min.}one{Om # min.}other{Om # min.}}</translation>
 <translation id="9129245940793250979">Bagsideknap</translation>
 <translation id="9133335900048457298">Der kan ikke optages beskyttet indhold</translation>
 <translation id="9139720510312328767">Slet næste bogstav</translation>
@@ -2157,6 +2156,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="9183456764293710005">Forstørrelse af fuld skærm</translation>
 <translation id="9193626018745640770">Caster på en ukendt modtager</translation>
 <translation id="9194617393863864469">Log ind med en anden bruger...</translation>
+<translation id="9195990613383871904">I morgen</translation>
 <translation id="9198992156681343238">Opløsningen for <ph name="DISPLAY_NAME" /> er blevet ændret til <ph name="RESOLUTION" />. Klik på Bekræft for at gemme ændringerne. De tidligere indstillinger gendannes om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Opret forbindelse mellem <ph name="NAME" /> og denne Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, administreret af din administrator</translation>
@@ -2172,7 +2172,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="923686485342484400">Tryk på Control+Shift+Q to gange for at logge ud.</translation>
 <translation id="92580429198593979">Du trykkede på tastaturgenvejen for ombytning af farver. Vil du aktivere tilstanden?</translation>
 <translation id="925832987464884575">Skjul forhåndsvisninger</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> kræver, at du opdaterer din <ph name="DEVICE_TYPE" /> med det samme</translation>
 <translation id="938407504481277932">Aktuelt skrivebord: <ph name="DESK_NAME" /> <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Skrivebord <ph name="DESK_INDEX" /> af <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Hvad har jeg i kalenderen?</translation>
 <translation id="945383118875625837">Træk linket til bogmærkelinjen</translation>

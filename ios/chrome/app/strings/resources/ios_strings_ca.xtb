@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Historial</translation>
 <translation id="164673457281113247">{count,plural, =1{S'ha desat l'adreça d'interès}other{S'han desat les adreces d'interès}}</translation>
 <translation id="1650222530560417226">Toca el botó Inicia el registre per recopilar els futurs registres i errors de la consola de JavaScript de totes les pestanyes. Els registres es recopilaran (i s'emmagatzemaran només a la memòria) fins que es tanqui aquesta pàgina o es toqui Atura el registre.</translation>
+<translation id="1652333207707886577">Personalitza el menú</translation>
 <translation id="1653432787084483144">{count,plural, =1{Hi ha {count} contrasenya desada disponible a sobre del teclat.}other{Hi ha {count} contrasenyes desades disponibles a sobre del teclat.}}</translation>
 <translation id="1657011748321897393">No s'ha pogut compartir perquè no esteu connectat a la xarxa.</translation>
 <translation id="165877110639533037">No hi ha pestanyes obertes</translation>
@@ -471,6 +472,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3435738964857648380">Seguretat</translation>
 <translation id="3443810440409579745">S'ha rebut una pestanya.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
+<translation id="3445580184527779479">Grup de pestanyes. Desplegat.</translation>
 <translation id="3448016392200048164">Visualització dividida</translation>
 <translation id="345565170154308620">Gestiona les contrasenyes...</translation>
 <translation id="3464194322481586217">No s'ha pogut fer el seguiment del preu.</translation>
@@ -515,6 +517,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3638472932233958418">Precàrrega de pàgines web</translation>
 <translation id="3642060527569456384">Els grups de pestanyes es desen i s'actualitzen automàticament en tots els teus dispositius.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} contrasenya s'ha desat només en aquest dispositiu. Per utilitzar-la en altres dispositius, desa-la al teu Compte de Google {email}.}other{{count} contrasenyes s'han desat només en aquest dispositiu. Per utilitzar-les en altres dispositius, desa-les al teu Compte de Google {email}.}}</translation>
+<translation id="3650299480924308502">Quan tanquis la sessió, les dades no desades se suprimiran d'aquest dispositiu. Això pot incloure contrasenyes, l'historial i més.</translation>
 <translation id="3659297405161482746">No s'ha trobat cap forma de pagament</translation>
 <translation id="3661160521073045932">Perfil de configuració disponible</translation>
 <translation id="3670030362669914947">Número</translation>
@@ -531,6 +534,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3738428049780661523">Data de creació: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Amaga l'opció Baixades</translation>
 <translation id="3745190878148784130">Amaga Amplia el text</translation>
+<translation id="3747231889390582072">Per protegir la seguretat de la teva organització, les dades no desades se suprimiran d'aquest dispositiu. Això pot incloure contrasenyes, l'historial de navegació, galetes i més.</translation>
 <translation id="3762232513783804601">Creat per a l'iPad</translation>
 <translation id="3768725474733206671">Torna a obrir l'última pestanya que es va tancar</translation>
 <translation id="3771033907050503522">Pestanyes d'incògnit</translation>
@@ -970,6 +974,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5971872012779224351">{count,plural, =1{S'ha suprimit 1 adreça d'interès}other{S'han suprimit {count} adreces d'interès}}</translation>
 <translation id="5979837087407522202">Cerca contrasenyes</translation>
 <translation id="5981230843984570095">Tanca totes les inactives</translation>
+<translation id="5982958159110007132">Pestanya Grup de pestanyes. <ph name="TAB_INDEX_IN_GROUP" /> de <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="5984222099446776634">Visitats recentment</translation>
 <translation id="598634819525651074">Àrea</translation>
 <translation id="5988097621740394599">Consulta les baixades de preu a les pestanyes.</translation>
@@ -988,6 +993,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6042308850641462728">Més</translation>
 <translation id="6045460247888249350">Afegeix un títol</translation>
+<translation id="6051432659151380973">Els teus grups de pestanyes es desen automàticament</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla les teves històries i la teva activitat aquí</translation>
 <translation id="6064824697233747382">La teva organització requereix que desactivis la sincronització.</translation>
@@ -1272,6 +1278,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="745899714366929493">Tot el dia</translation>
 <translation id="7459628154744868585">La protecció millorada està activada</translation>
 <translation id="7465351360025415755">Rep contingut que t'interessi</translation>
+<translation id="7470908168505178757">Grup de pestanyes. Replegat.</translation>
 <translation id="7472734401283673885">Nom de l'empresa</translation>
 <translation id="7473891865547856676">No, gràcies</translation>
 <translation id="7488874549363591659">S'ha entregat</translation>
@@ -1481,6 +1488,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8446884382197647889">Més informació</translation>
 <translation id="8449347986464073209">Suprimeix i tanca la sessió</translation>
 <translation id="8459333855531264009">No segur</translation>
+<translation id="8466300942149667917">Se suprimiran les dades del compte no desades</translation>
 <translation id="8473863474539038330">Adreces i més</translation>
 <translation id="8487667956631253959">Activada</translation>
 <translation id="8487700953926739672">Disponible sense connexió</translation>
@@ -1609,6 +1617,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="9065203028668620118">Edita</translation>
 <translation id="9079935439869366234">Marca-ho tot com a no llegit</translation>
 <translation id="9081058212938299310">Vols actualitzar la contrasenya per a <ph name="USERNAME" />?</translation>
+<translation id="9082821980444279398">Quan l'opció està activada, utilitza i desa les dades al teu Compte de Google. Quan està desactivada, les dades només es desen en aquest dispositiu i se suprimeixen si tanques la sessió.</translation>
 <translation id="9083838294503912307">Per sincronitzar i personalitzar el contingut en tots els dispositius, activa la sincronització.</translation>
 <translation id="9087339162317338348">Utilitza HTTPS sempre que puguis i rep un advertiment abans de carregar llocs web que no admeten aquest protocol.</translation>
 <translation id="9093271241977565440">A la part superior de la pantalla, toca la icona de cerca</translation>

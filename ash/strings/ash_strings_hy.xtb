@@ -57,7 +57,6 @@
 <translation id="118437560755358292">Անվտանգության նկատառումներից ելնելով՝ մուտքագրեք PIN կոդը կամ գաղտնաբառը</translation>
 <translation id="118532027333893379">Լիաէկրան ռեժիմում լուսանկարելու համար հպեք էկրանի ցանկացած կետի</translation>
 <translation id="1190609913194133056">Ծանուցումների կենտրոն</translation>
-<translation id="1190678134285018527">Անհրաժեշտ է վերականգնել սարքի նախորդ օպերացիոն համակարգը</translation>
 <translation id="1195412055398077112">էկրանի եզերվածք</translation>
 <translation id="1195667586424773550">Քաշեք հղումը ներդիրի հասցեագոտի</translation>
 <translation id="119944043368869598">Մաքրել բոլորը</translation>
@@ -685,7 +684,6 @@
 <translation id="363473492175527493">Առաջադրանքը, որի վրա պետք է կենտրոնանալ՝ <ph name="TASK_NAME" />։ Առաջադրանքը փոփոխելու համար սեղմեք Enter։</translation>
 <translation id="3638400994746983214">Միացնել/անջատել գաղտնիության էկրանը։ <ph name="STATE_TEXT" />:</translation>
 <translation id="3649256019230929621">Նվազեցնել պատուհանը</translation>
-<translation id="3649505501900178324">Թարմացման ժամկետը լրացել է</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" />-ից մինչև
@@ -755,7 +753,6 @@
 <translation id="3900355044994618856">Ձեր աշխատաշրջանը կավարտվի <ph name="SESSION_TIME_REMAINING" />-ից</translation>
 <translation id="3901991538546252627">Միացում <ph name="NAME" />-ին</translation>
 <translation id="3906954721959377182">Պլանշետ</translation>
-<translation id="3922427723338465344">{0,plural, =1{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին 1 րոպեի ընթացքում}one{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # րոպեի ընթացքում}other{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # րոպեի ընթացքում}}</translation>
 <translation id="3923494859158167397">Բջջային ցանց կարգավորված չէ</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, միջոցառումների բեռնում։</translation>
 <translation id="3932043219784172185">Միացած սարքեր չկան</translation>
@@ -946,7 +943,6 @@
 <translation id="4623167406982293031">Հաստատել հաշիվը</translation>
 <translation id="4628757576491864469">Սարքեր</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, վարկանիշը՝ <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին մեկ օրվա ընթացքում}one{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # օրվա ընթացքում}other{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # օրվա ընթացքում}}</translation>
 <translation id="4633636853437260449">Ջնջելու համար սեղմեք Ctrl+W</translation>
 <translation id="4642092649622328492">Ստանալ էկրանի մասնակի պատկեր</translation>
 <translation id="4644727592819780893">Տարածքը չափազանց փոքր է տեսախցիկի պատկերը դիտելու համար</translation>
@@ -1453,7 +1449,6 @@
 <translation id="6477681113376365978">Չհաջողվեց ներբեռնել ֆայլը</translation>
 <translation id="6482559668224714696">Լիաէկրան խոշորացույց</translation>
 <translation id="6490471652906364588">USB-C սարք (աջ միացք)</translation>
-<translation id="6491071886865974820">Կառավարիչը (<ph name="MANAGER" />) պահանջում է, որ թարմացնեք ձեր <ph name="DEVICE_TYPE" /> սարքը, քանի դեռ վերջնաժամկետը չի լրացել։</translation>
 <translation id="649452524636452238">Խելացի քարտի PIN կոդը</translation>
 <translation id="6495322433318104734">Ցուցադրվում է էկրանապահը. դուրս գալու համար սեղմեք ցանկացած ստեղն</translation>
 <translation id="6495400115277918834">«Նկար նկարի մեջ» ռեժիմը միացված է։ Ֆոկուսը տեղափոխելու համար սեղմեք Alt+Shift+V։</translation>
@@ -1517,7 +1512,7 @@
 <translation id="6696025732084565524">Անհրաժեշտ է թարմացնել արտաքին ստեղնաշարը</translation>
 <translation id="6697913454192220372">Ավելացնել նոր աշխատասեղան</translation>
 <translation id="6700713906295497288">IME ընտրացանկի կոճակ</translation>
-<translation id="6707693040195709527">Օպերացիոն համակարգի նախորդ տարբերակին անցնելու ժամանակը լրացել է</translation>
+<translation id="6706742084323792866">Ամրացնել ստեղնաշարը</translation>
 <translation id="6710213216561001401">Նախորդը</translation>
 <translation id="6723839937902243910">Սնուցում</translation>
 <translation id="672609503628871915">Իմանալ՝ ինչ նոր բան կա</translation>
@@ -1810,7 +1805,6 @@
 <translation id="7866482334467279021">միացված է</translation>
 <translation id="7872786842639831132">Անջատված է</translation>
 <translation id="7875575368831396199">Bluetooth-ն անջատված է ձեր <ph name="DEVICE_TYPE" /> սարքում։ Հեռախոսի կառավարման կենտրոնն օգտագործելու համար միացրեք Bluetooth-ը։</translation>
-<translation id="7877557217297072640">{0,plural, =0{Այժմ վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին}=1{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին 1 վայրկյանի ընթացքում}one{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # վայրկյանի ընթացքում}other{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # վայրկյանի ընթացքում}}</translation>
 <translation id="7884446017008693258">Թեժ կետի կարգավորումներ</translation>
 <translation id="7884902759927478774">Չեղարկել ներդիրի քաշումը</translation>
 <translation id="7886169021410746335">Փոփոխել գաղտնիության կարգավորումները</translation>
@@ -1887,7 +1881,6 @@
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Սեղմեք Tab ստեղնը՝ այլ ընտրանքներ տեսնելու համար։ Աշխատասեղանների միջև անցում կատարելու համար օգտագործեք ձախ և աջ սլաքները։</translation>
 <translation id="8091153018031979607">Մեկնարկը՝ <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Ավտոմատ թարմացումներ</translation>
 <translation id="8092380135549145188">Ոլորման կարգավորումներ</translation>
 <translation id="8098591350844501178">Դադարեցնել էկրանի հեռարձակումը <ph name="RECEIVER_NAME" />-ին</translation>
 <translation id="810637681351706236">Ապամրացնել հավելվածը դարակից</translation>
@@ -1933,7 +1926,6 @@
 <translation id="8257510091797044096">Կարգավորեք ձեր սարքը</translation>
 <translation id="8261506727792406068">Ջնջել</translation>
 <translation id="8262312463845990408">Միացնել/անջատել նվագարկումը</translation>
-<translation id="8270450402312105425">{0,plural, =1{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին մեկ ժամվա ընթացքում}one{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # ժամվա ընթացքում}other{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # ժամվա ընթացքում}}</translation>
 <translation id="8277261673056602147">Ընդգծեք տեքստը էկրանին</translation>
 <translation id="8287009018010202411">Արդյունավետ աշխատանք</translation>
 <translation id="828708037801473432">Անջատված է</translation>
@@ -2000,7 +1992,6 @@
 <translation id="8553395910833293175">Արդեն հասանելի է բոլոր աշխատասեղաններին։</translation>
 <translation id="8555757996376137129">Հեռացնել ընթացիկ աշխատասեղանը</translation>
 <translation id="8559845965695780508">Փոփոխել է <ph name="USER" /> օգտատերը</translation>
-<translation id="856298576161209842">Կառավարիչը (<ph name="MANAGER" />) խորհուրդ է տալիս, որ թարմացնեք ձեր <ph name="DEVICE_TYPE" /> սարքը։</translation>
 <translation id="8569751806372591456">Ահա մի քանի առաջարկ, որոնք կարող եք փորձել</translation>
 <translation id="857201607579416096">Ընտրացանկը տեղափոխվեց էկրանի ներքևի աջ անկյուն։</translation>
 <translation id="8581946341807941670">Սեղմեք <ph name="MODIFIER_1" /><ph name="MODIFIER_2" />, ապա սեղմեք հղման վրա</translation>
@@ -2172,7 +2163,6 @@
 <translation id="923686485342484400">Դուրս գրվելու համար երկու անգամ սեղմեք Control Shift Q:</translation>
 <translation id="92580429198593979">Դուք սեղմեցիք գունաշրջման ստեղնային դյուրանցումը։ Միացնե՞լ։</translation>
 <translation id="925832987464884575">Անջատել նախադիտումը</translation>
-<translation id="937214777182567951">Կառավարիչը (<ph name="MANAGER" />) պահանջում է, որ անհապաղ թարմացնեք <ph name="DEVICE_TYPE" /> սարքը։</translation>
 <translation id="938407504481277932">Ընթացիկ աշխատասեղանը՝ <ph name="DESK_NAME" />։ <ph name="PROFILE_NAME" /> <ph name="EMAIL" />։ Աշխատասեղան <ph name="DESK_INDEX" />՝ <ph name="DESK_COUNT" />-ից։</translation>
 <translation id="938963181863597773">Ի՞նչ ունեմ պլանավորած։</translation>
 <translation id="945383118875625837">Հղումը քաշեք էջանիշների գոտի</translation>

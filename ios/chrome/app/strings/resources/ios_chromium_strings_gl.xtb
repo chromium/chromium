@@ -75,6 +75,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="2942241131342758843">Usa Chromium de forma predeterminada para abrir ligazóns, realizar buscas desde widgets e autocompletar contrasinais noutras aplicacións</translation>
 <translation id="2977470724722393594">Chromium está actualizado</translation>
 <translation id="3044857325852340337">Datos de Chromium eliminados</translation>
+<translation id="3049211156275642309">Remata a configuración de Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium pode axudarche a facer un seguimento deste paquete na páxina Nova pestana.}other{Chromium pode axudarche a facer un seguimento destes paquetes na páxina Nova pestana.}}</translation>
 <translation id="3102849287235003384">Para pechar sesión na túa Conta de Google en todos os sitios web, <ph name="BEGIN_LINK" />pecha sesión en Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Fai buscas por voz en Chromium</translation>
@@ -273,6 +274,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="8754966941001340678">Chromium recomenda protección mellorada</translation>
 <translation id="8759037115129007407">O membro da túa familia non pode recibir contrasinais agora mesmo. Pídelle que actualice Chromium e sincronice os seus contrasinais. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Esta conta e os datos que estean sen gardar quitaranse de Chromium.</translation>
+<translation id="8826789549860004832">Continúa coa configuración do teu navegador para tirar o máximo proveito de Chromium.</translation>
 <translation id="88376265765385899">Abre os marcadores de Chromium.</translation>
 <translation id="8860548555286245440">Abrir os URL no modo de incógnito de Chromium</translation>
 <translation id="8866191443434488382">Chromium detectará os números de seguimento nos sitios que visites e mostrarache a información actualizada dos paquetes na páxina Nova pestana. O número de seguimento do paquete e o nome do sitio web enviaranse ao equipo de Chromium co fin de fornecer este servizo e mellorar as funcións relacionadas coas compras para todo o mundo. Podes modificar esta opción cando queiras na <ph name="BEGIN_LINK" />configuración de seguimento de paquetes<ph name="END_LINK" />.</translation>

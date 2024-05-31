@@ -75,6 +75,7 @@ Du hittar fler inställningar som använder data för att förbättra Chromium-u
 <translation id="2942241131342758843">Använd Chromium som standard när du öppnar länkar och söker med en widget och få lösenord ifyllda i andra appar automatiskt</translation>
 <translation id="2977470724722393594">Chromium är uppdaterat</translation>
 <translation id="3044857325852340337">Data i Chromium har raderats</translation>
+<translation id="3049211156275642309">Slutför inställningen av Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Du kan spåra paketet på sidan Ny flik i Chromium.}other{Du kan spåra paketen på sidan Ny flik i Chromium.}}</translation>
 <translation id="3102849287235003384"><ph name="BEGIN_LINK" />Logga ut från Chromium<ph name="END_LINK" /> om du vill logga ut från Google-kontot på alla webbplatser.</translation>
 <translation id="3219277919172823720">Sök med rösten i Chromium</translation>
@@ -273,6 +274,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="8754966941001340678">Chromium rekommenderar utökat skydd</translation>
 <translation id="8759037115129007407">Dina familjemedlemmar kan inte ta emot lösenord just nu. Be dem att uppdatera Chromium och synkronisera sina lösenord. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Det här kontot och data som inte har sparats tas bort från Chromium.</translation>
+<translation id="8826789549860004832">Få ut mesta möjliga av Chromium genom att fortsätta att ställa in webbläsaren.</translation>
 <translation id="88376265765385899">Öppnar bokmärken i Chromium.</translation>
 <translation id="8860548555286245440">Öppna webbadresser i Chromium i inkognitoläge</translation>
 <translation id="8866191443434488382">Chromium identifierar spårningsnummer på webbplatser du besöker och visar uppdateringar om försändelser på sidan Ny flik. Paketets spårningsnummer och webbplatsens namn skickas till Chromium för att tillhandahålla den här funktionen och förbättra shoppingfunktioner för alla. Du kan uppdatera detta när du vill i <ph name="BEGIN_LINK" />inställningarna för spårning av försändelser<ph name="END_LINK" />.</translation>

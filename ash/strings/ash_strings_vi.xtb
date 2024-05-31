@@ -57,7 +57,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="118437560755358292">Hãy nhập mật khẩu hoặc mã PIN để tăng cường bảo mật</translation>
 <translation id="118532027333893379">Nhấn vào vị trí bất kỳ để chụp toàn màn hình</translation>
 <translation id="1190609913194133056">Trung tâm thông báo</translation>
-<translation id="1190678134285018527">Thiết bị cần quay lại phiên bản trước</translation>
 <translation id="1195412055398077112">quét quá mức</translation>
 <translation id="1195667586424773550">Kéo liên kết vào thanh địa chỉ của thẻ</translation>
 <translation id="119944043368869598">Xóa tất cả</translation>
@@ -685,7 +684,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="363473492175527493">Việc cần làm được thiết lập ở chế độ tập trung: <ph name="TASK_NAME" />. Nhấn phím Enter để chỉnh sửa việc cần làm.</translation>
 <translation id="3638400994746983214">Bật/tắt màn hình bảo vệ quyền riêng tư. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Thu nhỏ cửa sổ</translation>
-<translation id="3649505501900178324">Đã quá hạn cập nhật</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> đến
@@ -755,7 +753,6 @@ Hãy sạc thiết bị.</translation>
 <translation id="3900355044994618856">Phiên hoạt động của bạn sẽ kết thúc sau <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Đang kết nối với <ph name="NAME" /></translation>
 <translation id="3906954721959377182">Máy tính bảng</translation>
-<translation id="3922427723338465344">{0,plural, =1{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 phút}other{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng # phút}}</translation>
 <translation id="3923494859158167397">Bạn chưa thiết lập mạng di động nào</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Đang tải sự kiện.</translation>
 <translation id="3932043219784172185">Không có thiết bị nào được kết nối</translation>
@@ -946,7 +943,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4623167406982293031">Xác minh tài khoản</translation>
 <translation id="4628757576491864469">Thiết bị</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, Xếp hạng theo sao <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng một ngày}other{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng # ngày}}</translation>
 <translation id="4633636853437260449">Nhấn tổ hợp phím Ctrl+W để xoá</translation>
 <translation id="4642092649622328492">Chụp ảnh một phần màn hình</translation>
 <translation id="4644727592819780893">Kích thước khu vực quá nhỏ, không đủ để chụp</translation>
@@ -1453,7 +1449,6 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="6477681113376365978">Không tải được tệp xuống</translation>
 <translation id="6482559668224714696">Phóng to toàn màn hình</translation>
 <translation id="6490471652906364588">Thiết bị USB-C (cổng bên phải)</translation>
-<translation id="6491071886865974820">Theo yêu cầu của <ph name="MANAGER" />, bạn phải cập nhật thiết bị <ph name="DEVICE_TYPE" /> của mình trước thời hạn</translation>
 <translation id="649452524636452238">Mã PIN của thẻ thông minh</translation>
 <translation id="6495322433318104734">Đang hiển thị trình bảo vệ màn hình, hãy nhấn phím bất kỳ để thoát</translation>
 <translation id="6495400115277918834">Tính năng hình trong hình đã bắt đầu, hãy nhấn tổ hợp phím Alt+Shift+V để lấy tâm điểm</translation>
@@ -1517,7 +1512,7 @@ Mới cài đặt</translation>
 <translation id="6696025732084565524">Bàn phím có thể tháo rời của bạn cần một bản cập nhật quan trọng</translation>
 <translation id="6697913454192220372">Thêm không gian làm việc mới</translation>
 <translation id="6700713906295497288">Nút menu IME</translation>
-<translation id="6707693040195709527">Việc hạ cấp hệ điều hành trên thiết bị về phiên bản trước đã quá hạn</translation>
+<translation id="6706742084323792866">Bàn phím để nhập mã PIN</translation>
 <translation id="6710213216561001401">Trước</translation>
 <translation id="6723839937902243910">Nguồn</translation>
 <translation id="672609503628871915">Xem tính năng mới</translation>
@@ -1810,7 +1805,6 @@ Mới cài đặt</translation>
 <translation id="7866482334467279021">đang bật</translation>
 <translation id="7872786842639831132">Tắt</translation>
 <translation id="7875575368831396199">Có vẻ như bạn đã tắt Bluetooth trên <ph name="DEVICE_TYPE" />. Vui lòng bật Bluetooth để sử dụng Trung tâm điều khiển điện thoại.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước ngay bây giờ}=1{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 giây}other{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng # giây}}</translation>
 <translation id="7884446017008693258">Cài đặt điểm phát sóng</translation>
 <translation id="7884902759927478774">Huỷ thao tác kéo thẻ</translation>
 <translation id="7886169021410746335">Điều chỉnh các tùy chọn cài đặt quyền riêng tư</translation>
@@ -1887,7 +1881,6 @@ Mới cài đặt</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Sử dụng phím tab để xem lựa chọn khác. Sử dụng mũi tên trái và phải để truy cập tất cả không gian làm việc.</translation>
 <translation id="8091153018031979607">Bắt đầu lúc <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Cập nhật tự động</translation>
 <translation id="8092380135549145188">Chế độ điều khiển cuộn</translation>
 <translation id="8098591350844501178">Dừng truyền màn hình tới <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Bỏ ghim ứng dụng khỏi kệ</translation>
@@ -1933,7 +1926,6 @@ Mới cài đặt</translation>
 <translation id="8257510091797044096">Thiết lập thiết bị của bạn</translation>
 <translation id="8261506727792406068">Xoá</translation>
 <translation id="8262312463845990408">Phát hoặc dừng phát</translation>
-<translation id="8270450402312105425">{0,plural, =1{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 giờ}other{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng # giờ}}</translation>
 <translation id="8277261673056602147">Đánh dấu văn bản trên màn hình</translation>
 <translation id="8287009018010202411">Năng suất</translation>
 <translation id="828708037801473432">Đang tắt</translation>
@@ -2000,7 +1992,6 @@ Mới cài đặt</translation>
 <translation id="8553395910833293175">Đã được gán cho tất cả không gian làm việc.</translation>
 <translation id="8555757996376137129">Xoá không gian làm việc hiện tại</translation>
 <translation id="8559845965695780508"><ph name="USER" /> đã chỉnh sửa</translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> khuyên bạn nên cập nhật thiết bị <ph name="DEVICE_TYPE" /> của mình</translation>
 <translation id="8569751806372591456">Bạn có thể thử một số gợi ý sau đây</translation>
 <translation id="857201607579416096">Đã di chuyển trình đơn vào góc dưới cùng bên phải màn hình.</translation>
 <translation id="8581946341807941670">Nhấn phím <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> rồi nhấp vào một đường liên kết</translation>
@@ -2172,7 +2163,6 @@ Mới cài đặt</translation>
 <translation id="923686485342484400">Nhấn Control Shift Q hai lần để đăng xuất.</translation>
 <translation id="92580429198593979">Bạn đã nhấn phím tắt cho chế độ đảo màu. Bạn có muốn bật chế độ này không?</translation>
 <translation id="925832987464884575">Ẩn bản xem trước</translation>
-<translation id="937214777182567951">Theo yêu cầu của <ph name="MANAGER" />, bạn phải cập nhật thiết bị <ph name="DEVICE_TYPE" /> của mình ngay lập tức</translation>
 <translation id="938407504481277932">Không gian làm việc hiện tại: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Không gian làm việc số <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Trên lịch của tôi có sự kiện gì?</translation>
 <translation id="945383118875625837">Kéo liên kết vào thanh dấu trang</translation>

@@ -57,7 +57,6 @@
 <translation id="118437560755358292">আরও নিরাপত্তার জন্য পাসওয়ার্ড বা পিন লিখুন</translation>
 <translation id="118532027333893379">ফুল স্ক্রিন ক্যাপচার করতে, যেখানে খুশি ট্যাপ করুন</translation>
 <translation id="1190609913194133056">বিজ্ঞপ্তি কেন্দ্র</translation>
-<translation id="1190678134285018527">ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যেতে হবে</translation>
 <translation id="1195412055398077112">ওভারস্ক্যান</translation>
 <translation id="1195667586424773550">ট্যাব অ্যাড্রেস বারে লিঙ্কটি টেনে আনুন</translation>
 <translation id="119944043368869598">সব পরিষ্কার করুন</translation>
@@ -685,7 +684,6 @@
 <translation id="363473492175527493">এটির উপরে ফোকাস করতে টাস্ক সেট করা হয়েছে: <ph name="TASK_NAME" />। টাস্ক এডিট করতে Enter 'কী' প্রেস করুন।</translation>
 <translation id="3638400994746983214">গোপনীয়তা স্ক্রিন টগল করুন। <ph name="STATE_TEXT" />।</translation>
 <translation id="3649256019230929621">উইন্ডো সংক্ষিপ্তায়ন করুন</translation>
-<translation id="3649505501900178324">আপডেট করতে ডিভাইস রিস্টার্ট করুন</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> থেকে
@@ -755,7 +753,6 @@
 <translation id="3900355044994618856">আপনার সেশনটি <ph name="SESSION_TIME_REMAINING" /> এ শেষ হবে</translation>
 <translation id="3901991538546252627"><ph name="NAME" />-এ সংযোগ করা হচ্ছে</translation>
 <translation id="3906954721959377182">ট্যাবলেট</translation>
-<translation id="3922427723338465344">{0,plural, =1{১ মিনিটের মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}one{# মিনিটের মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}other{# মিনিটের মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}}</translation>
 <translation id="3923494859158167397">কোনও মোবাইল নেটওয়ার্ক সেট-আপ করা নেই</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, ইভেন্ট লোড করা হচ্ছে।</translation>
 <translation id="3932043219784172185">কোনও ডিভাইস কানেক্ট করা নেই</translation>
@@ -946,7 +943,6 @@
 <translation id="4623167406982293031">অ্যাকাউন্ট যাচাই করুন</translation>
 <translation id="4628757576491864469">ডিভাইস</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, <ph name="RATING_SCORE" /> স্টার রেটিং</translation>
-<translation id="4633185660152240791">{0,plural, =1{এক দিনের মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}one{# দিনের মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}other{# দিনের মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}}</translation>
 <translation id="4633636853437260449">মুছে ফেলতে Ctrl + W প্রেস করুন</translation>
 <translation id="4642092649622328492">আংশিক স্ক্রিনশট নিন</translation>
 <translation id="4644727592819780893">ক্যাপচার করার সারফেস ক্যামেরা প্রিভিউয়ের জন্য খুবই ছোট</translation>
@@ -1453,7 +1449,6 @@
 <translation id="6477681113376365978">ফাইল ডাউনলোড করা যাচ্ছে না</translation>
 <translation id="6482559668224714696">ফুল-স্ক্রিন ম্যাগনিফায়ার</translation>
 <translation id="6490471652906364588">USB-C ডিভাইস (ডান পোর্ট)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> আপনাকে ডেডলাইনের আগে <ph name="DEVICE_TYPE" /> আপডেট করতে বলছে</translation>
 <translation id="649452524636452238">স্মার্ট কার্ড পিন</translation>
 <translation id="6495322433318104734">স্ক্রিন সেভার দেখানো হচ্ছে, বেরিয়ে যেতে যেকোনও 'কী' প্রেস করুন</translation>
 <translation id="6495400115277918834">ছবির-মধ্যে-ছবি ফিচার চালু করা হয়েছে, ফোকাস করতে Alt+Shift+V প্রেস করুন</translation>
@@ -1518,7 +1513,6 @@
 <translation id="6697913454192220372">নতুন ডেস্ক যোগ করুন</translation>
 <translation id="6700713906295497288">IME মেনু বোতাম</translation>
 <translation id="6706742084323792866">কীবোর্ড পিন করুন</translation>
-<translation id="6707693040195709527">ডিভাইস আগের ভার্সনে ফিরিয়ে নিয়ে যাওয়ার ডেডলাইন পেরিয়ে গেছে</translation>
 <translation id="6710213216561001401">আগের</translation>
 <translation id="6723839937902243910">পাওয়ার</translation>
 <translation id="672609503628871915">নতুন কী আছে দেখুন</translation>
@@ -1812,7 +1806,6 @@
 <translation id="7866482334467279021">চালু</translation>
 <translation id="7872786842639831132">বন্ধ আছে</translation>
 <translation id="7875575368831396199">মনে হচ্ছে যে আপনার <ph name="DEVICE_TYPE" /> ডিভাইসে ব্লুটুথ বন্ধ রয়েছে। 'ফোন হাব' ফিচারটি ব্যবহার করতে, ব্লুটুথ চালু করুন।</translation>
-<translation id="7877557217297072640">{0,plural, =0{এখনই ডিভাইসটি আগের ভার্সনে পরিবর্তন করুন}=1{১ সেকেন্ডের মধ্যে ডিভাইসটি আগের ভার্সনে পরিবর্তন করুন}one{# সেকেন্ডের মধ্যে ডিভাইসটি আগের ভার্সনে পরিবর্তন করুন}other{# সেকেন্ডের মধ্যে ডিভাইসটি আগের ভার্সনে পরিবর্তন করুন}}</translation>
 <translation id="7884446017008693258">হটস্পট সেটিংস</translation>
 <translation id="7884902759927478774">ট্যাব টেনে আনা বাতিল করুন</translation>
 <translation id="7886169021410746335">গোপনীয়তা সেটিংস অ্যাডজাস্ট করুন</translation>
@@ -1889,7 +1882,6 @@
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">আরও বিকল্পের জন্য ট্যাব ব্যবহার করুন। সব ডেস্ক অ্যাক্সেস করতে বাঁদিকের ও ডানদিকের তীরচিহ্ন ব্যবহার করুন।</translation>
 <translation id="8091153018031979607"><ph name="DAYS_ELAPSED" />-এর <ph name="START_TIME" />-এ শুরু হবে</translation>
-<translation id="8091387634532529612">অটোমেটিক আপডেট</translation>
 <translation id="8092380135549145188">স্ক্রল কন্ট্রোল</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> এ স্ক্রিন কাস্ট করা বন্ধ করুন</translation>
 <translation id="810637681351706236">শেল্ফ থেকে অ্যাপ আনপিন করুন</translation>
@@ -1935,7 +1927,6 @@
 <translation id="8257510091797044096">আপনার ডিভাইস সেট-আপ করুন</translation>
 <translation id="8261506727792406068">মুছুন</translation>
 <translation id="8262312463845990408">প্লেব্যাক টগল করুন</translation>
-<translation id="8270450402312105425">{0,plural, =1{১ ঘণ্টার মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}one{# ঘণ্টার মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}other{# ঘণ্টার মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}}</translation>
 <translation id="8277261673056602147">আপনার স্ক্রিনে টেক্সট হাইলাইট করুন</translation>
 <translation id="8287009018010202411">প্রোডাক্টিভিটি</translation>
 <translation id="828708037801473432">বন্ধ করা আছে</translation>
@@ -2002,7 +1993,6 @@
 <translation id="8553395910833293175">সব ডেস্কে আগেই অ্যাসাইন করা হয়েছে।</translation>
 <translation id="8555757996376137129">বর্তমান ডেস্ক সরিয়ে দিন</translation>
 <translation id="8559845965695780508"><ph name="USER" /> এডিট করেছেন</translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> আপনার <ph name="DEVICE_TYPE" /> আপডেট করার সাজেশন দিচ্ছে</translation>
 <translation id="8569751806372591456">চেষ্টা করে দেখতে পারেন এমন কয়েকটি সাজেশন দেওয়া হল</translation>
 <translation id="857201607579416096">স্ক্রিনের নিচে ডানদিকের কোণায় মেনু সরে গেছে।</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /> <ph name="MODIFIER_2" /> প্রেস করুন এবং একটি লিঙ্কে ক্লিক করুন</translation>
@@ -2174,7 +2164,6 @@
 <translation id="923686485342484400">সাইন-আউট করার জন্য দু'বার Control Shift Q টিপুন৷</translation>
 <translation id="92580429198593979">আপনি কালার ইনভার্সনের জন্য কীবোর্ড শর্টকাট প্রেস করেছেন। আপনি কি এটি চালু করতে চান?</translation>
 <translation id="925832987464884575">প্রিভিউ লুকান</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> আপনাকে এখনই <ph name="DEVICE_TYPE" /> আপডেট করতে বলছে</translation>
 <translation id="938407504481277932">বর্তমান ডেস্ক: <ph name="DESK_NAME" />। <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_COUNT" />টির মধ্যে <ph name="DESK_INDEX" /> নম্বর ডেস্ক।</translation>
 <translation id="938963181863597773">আমার ক্যালেন্ডারে কী কী আছে?</translation>
 <translation id="945383118875625837">বুকমার্ক বারে লিঙ্কটি টেনে আনুন</translation>

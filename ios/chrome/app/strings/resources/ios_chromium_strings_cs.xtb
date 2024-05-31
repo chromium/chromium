@@ -74,6 +74,7 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="2942241131342758843">Používejte Chromium jako výchozí prohlížeč k otevírání odkazů, vyhledávání z widgetů a automatickému vyplňování hesel v jiných aplikacích</translation>
 <translation id="2977470724722393594">Chromium je aktuální</translation>
 <translation id="3044857325852340337">Data prohlížeče Chromium byla smazána</translation>
+<translation id="3049211156275642309">Dokončete nastavení prohlížeče Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium vám může pomoci sledovat tuto zásilku na stránce Nová karta.}few{Chromium vám může pomoci sledovat tyto zásilky na stránce Nová karta.}many{Chromium vám může pomoci sledovat tyto zásilky na stránce Nová karta.}other{Chromium vám může pomoci sledovat tyto zásilky na stránce Nová karta.}}</translation>
 <translation id="3102849287235003384">Pokud se chcete odhlásit z účtu Google na všech webech, <ph name="BEGIN_LINK" />odhlaste se z Chromia<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Vyhledávat hlasem v prohlížeči Chromium</translation>
@@ -272,6 +273,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="8754966941001340678">Chromium doporučuje vylepšenou ochranu</translation>
 <translation id="8759037115129007407">Člen vaší rodiny momentálně nemůže přijímat hesla. Požádejte ho, aby aktualizoval Chromium a synchronizoval svá hesla. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Tento účet a všechna neuložená data budou z prohlížeče Chromium odstraněny.</translation>
+<translation id="8826789549860004832">Pokračujte v nastavování prohlížeče a využijte Chromium na maximum.</translation>
 <translation id="88376265765385899">Otevře záložky prohlížeče Chromium.</translation>
 <translation id="8860548555286245440">Otevřít adresy URL v prohlížeči Chromium v anonymním režimu</translation>
 <translation id="8866191443434488382">Chromium na navštívených webech rozpozná čísla zásilek a bude vám na stránce Nová karta zobrazovat aktuální informace o zásilkách. Sledovací číslo zásilky a název webu se odešlou týmu prohlížeče Chromium, aby bylo možné tuto funkci poskytovat a zlepšovat funkce nakupování pro všechny. Toto nastavení můžete kdykoli změnit v <ph name="BEGIN_LINK" />Nastavení sledování zásilek<ph name="END_LINK" />.</translation>

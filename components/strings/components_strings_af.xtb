@@ -456,6 +456,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1812527064848182527">landskap</translation>
 <translation id="1812975699435941848">Gesondheidsonderwys en mediese opleiding</translation>
 <translation id="1816436748874040213">Kan vra om gedeelde oortjies te rollees en te zoem</translation>
+<translation id="1817364650920811003">Rol: Chrome-wenk. Toeganklikheidetiket: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Deblokkeer</translation>
 <translation id="1818585559878922121">Dokumentêre flieks</translation>
 <translation id="182139138257690338">outomatiese aflaaie</translation>
@@ -1398,6 +1399,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3642638418806704195">Program:</translation>
 <translation id="3646643500201740985">Meet hoe goed ’n advertensie vaar</translation>
 <translation id="3647286794400715637">Elke URL-stringinskrywing moet 1 tot 2 URL'e bevat.</translation>
+<translation id="3647400963805615193">Maak Chrome-wenkknoppie toe, druk Enter om toe te maak, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Stawing suksesvol</translation>
 <translation id="3650594806107685466">Voer die CVC op die <ph name="SIDE_OF_CARD" /> in om te help om jou kaart veilig te hou</translation>
 <translation id="3650917416636556301">Stap en kampeer</translation>
@@ -2298,6 +2300,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="541416427766103491">Stapelaar 4</translation>
 <translation id="5414446060143308245">Kontrolering word vereis voordat lêers oorgedra word</translation>
 <translation id="5414511064953050917">Skuif in elk geval</translation>
+<translation id="5419311651396341287">Jou administrateur sal dalk die volgende kan bekyk:</translation>
 <translation id="5421408724705443535">Rockmusiek</translation>
 <translation id="5423269318075950257">Spoor prys na</translation>
 <translation id="5425082381151187189">Huis en binnenshuise dekor</translation>
@@ -3370,6 +3373,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7481312909269577407">Vorentoe</translation>
 <translation id="7481603210197454575">Koevert Italiaans</translation>
 <translation id="7483482939016730822">Skoolvoorraad en klaskamertoerusting</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, druk Tab dan Enter om Chrome-wenk toe te maak.</translation>
 <translation id="7485085230273446323">Besigheid en nywerheid</translation>
 <translation id="7485870689360869515">Geen data gevind nie.</translation>
 <translation id="7489392576326061356">Sjampoes en opknappers</translation>

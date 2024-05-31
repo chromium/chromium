@@ -186,6 +186,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Awtomatikong isinasara ng iyong organisasyon ang Chromium kapag hindi ito nagamit nang 1 minuto. Ide-delete ang data mula sa pag-browse. Posibleng kasama rito ang history, autofill, at mga download.}one{Awtomatikong isinasara ng iyong organisasyon ang Chromium kapag hindi ito nagamit nang # minuto. Ide-delete ang data mula sa pag-browse. Posibleng kasama rito ang history, autofill, at mga download.}other{Awtomatikong isinasara ng iyong organisasyon ang Chromium kapag hindi ito nagamit nang # na minuto. Ide-delete ang data mula sa pag-browse. Posibleng kasama rito ang history, autofill, at mga download.}}</translation>
 <translation id="4118474109249235144">Incognito sa Chromium</translation>
+<translation id="4122186850977583290">Pumunta sa page na Tungkol sa Chromium</translation>
 <translation id="4148957013307229264">Ini-install...</translation>
 <translation id="4149336151887611710">Makikita at mapapamahalaan ng organisasyon mo ang data mula sa pagba-browse sa iyong profile sa trabaho, tulad ng mga bookmark, history, at mga password mo. Hindi nito makikita ang data mula sa pagba-browse sa mga personal na profile sa Chromium.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Pag-sign in sa Network - Chromium</translation>
@@ -459,7 +460,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Muling ilunsad ang Chromium sa loob ng isang araw}one{Muling ilunsad ang Chromium sa loob ng # araw}other{Muling ilunsad ang Chromium sa loob ng # na araw}}</translation>
 <translation id="8453117565092476964">Sira o di-wasto ang archive ng installer. Mangyaring i-download muli ang Chromium.</translation>
 <translation id="8458614432758743027">Nagre-require ang Chromium ng Windows 10 o mas bago.</translation>
-<translation id="8461326814397467035">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chromium. Subukang maghintay nang ilang minuto bago mag-sign out.</translation>
 <translation id="8463672209299734063">Opsyonal: Tumulong na pahusayin ang mga feature at performance ng ChromiumOS sa pamamagitan ng awtomatikong pagpapadala sa Google ng data ng diagnostic at paggamit.</translation>
 <translation id="8493179195440786826">Luma na ang Chromium</translation>
 <translation id="8522801943730206384">Masusuri ng Chromium ang iyong mga password kapag na-save mo ang mga ito</translation>

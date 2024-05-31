@@ -26,6 +26,7 @@
 <translation id="1108938384783527433">Synchronisation de l'historique</translation>
 <translation id="1111673857033749125">Les favoris enregistrés sur vos autres appareils s'affichent ici.</translation>
 <translation id="1113597929977215864">Afficher la vue simplifiée</translation>
+<translation id="1126696498560056882">Gérer les comptes sur cet appareil</translation>
 <translation id="1126809382673880764">Ce mode ne vous protège pas contre les téléchargements, les extensions et les sites Web dangereux. Le cas échéant, vous bénéficierez toujours de la protection offerte par la navigation sécurisée dans d'autres services Google, tels que Gmail et la recherche.</translation>
 <translation id="1129510026454351943">Détails°: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1142732900304639782">Ne pas proposer de traduire ces sites</translation>
@@ -76,6 +77,7 @@
 <translation id="1332501820983677155">Raccourcis liés aux fonctionnalités de Google Chrome</translation>
 <translation id="1344653310988386453">Inclure le lien vers le texte en surbrillance</translation>
 <translation id="1347468774581902829">Gérer l'activité</translation>
+<translation id="1355088659320425659">Historique et onglets</translation>
 <translation id="1360432990279830238">Se déconnecter et arrêter la synchronisation ?</translation>
 <translation id="1366525380420346469">Lorsque la fonctionnalité est activée</translation>
 <translation id="1373696734384179344">Mémoire insuffisante pour télécharger le contenu sélectionné.</translation>
@@ -620,6 +622,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 onglet sur cet appareil}one{# onglet sur cet appareil}other{# onglets sur cet appareil}}</translation>
 <translation id="4198423547019359126">Aucun emplacement de téléchargements disponible</translation>
+<translation id="4198664641856813238">Connectez-vous pour accéder à vos favoris, mots de passe et bien plus sur tous vos appareils</translation>
 <translation id="4202218894997543208">Thèmes que vous avez bloqués</translation>
 <translation id="4214315110991671325">Si vous autorisez les cookies, Chrome peut les utiliser pour le préchargement.</translation>
 <translation id="4216511743389425832">Écouter cette page</translation>
@@ -808,6 +811,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5054455334322721892">D'<ph name="BEGIN_LINK1" />autres formes d'activité<ph name="END_LINK1" /> peuvent être enregistrées dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="506254248375231072">Aucun onglet</translation>
 <translation id="5062960805900435602">L'avertissement sur la fusion de mots de passe est fermé</translation>
+<translation id="5075939510584558547">Enregistrer sans chiffrement</translation>
 <translation id="5081960376148623587">Choisir de précharger ou non les pages</translation>
 <translation id="5085038751173179818">Connectez-vous à ce site et à Chrome pour accéder sur tous vos appareils à vos favoris et bien plus</translation>
 <translation id="5091199029769593641">Vous verrez bientôt les stories de <ph name="SITE_NAME" /> quand vous ouvrirez un onglet. Les sites que vous suivez seront enregistrés dans votre compte Google. Vous pourrez les gérer dans les paramètres Discover.</translation>
@@ -866,6 +870,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5401851137404501592">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site vos nom, adresse e-mail et photo de profil.</translation>
 <translation id="5409881200985013443">Envoyer <ph name="ONE_TIME_CODE" /> sur <ph name="CLIENT_NAME" /> ?</translation>
 <translation id="5414836363063783498">Validation…</translation>
+<translation id="5415871492522952905">Comme vous aurez accès à votre historique et à vos onglets sur tous vos appareils, vous pourrez continuer vos activités</translation>
 <translation id="5423934151118863508">Les pages les plus consultées s'affichent ici.</translation>
 <translation id="5424588387303617268">Espace disponible : <ph name="GIGABYTES" /> Go</translation>
 <translation id="543338862236136125">Modifier le mot de passe</translation>
@@ -894,6 +899,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5554520618550346933">Lorsque vous utilisez un mot de passe, Chrome vous avertit s'il a été publié en ligne. Lors de cette opération, vos mots de passe et vos noms d'utilisateur sont chiffrés afin que personne ne puisse les consulter, y compris Google.</translation>
 <translation id="5555525474779371165">Choisissez votre mode de navigation sécurisée</translation>
 <translation id="5556459405103347317">Actualiser</translation>
+<translation id="555671485580955310">Synchroniser l'historique et les onglets</translation>
 <translation id="555816257274242153">Suivi du prix arrêté</translation>
 <translation id="5561162485081632007">Il détecte les événements dangereux et vous en informe lorsqu'ils surviennent</translation>
 <translation id="5561549206367097665">En attente de connexion au réseau…</translation>

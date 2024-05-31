@@ -57,7 +57,6 @@
 <translation id="118437560755358292">ป้อนรหัสผ่านหรือ PIN เพื่อความปลอดภัยมากขึ้น</translation>
 <translation id="118532027333893379">แตะที่ใดก็ได้เพื่อจับภาพแบบเต็มหน้าจอ</translation>
 <translation id="1190609913194133056">ศูนย์การแจ้งเตือน</translation>
-<translation id="1190678134285018527">อุปกรณ์ต้องกลับไปใช้เวอร์ชันก่อนหน้า</translation>
 <translation id="1195412055398077112">โอเวอร์สแกน</translation>
 <translation id="1195667586424773550">ลากลิงก์ไปยังแถบที่อยู่ของแท็บ</translation>
 <translation id="119944043368869598">ล้างทั้งหมด</translation>
@@ -108,6 +107,7 @@
 <translation id="1333308631814936910">เชื่อมต่อ <ph name="DISPLAY_NAME" /> แล้ว</translation>
 <translation id="1340378040547539434">ซูมออกในหน้า</translation>
 <translation id="1341651618736211726">รายการเพิ่มเติม</translation>
+<translation id="1341926407152459446">ใช้ "<ph name="DEVICE_NAME" />" สำหรับอินพุตและเอาต์พุตเสียง</translation>
 <translation id="1344141078024003905">กำลังแคสต์หน้าจอ คุณหยุดชั่วคราวหรือหยุดการแคสต์หน้าจอได้ทุกเมื่อ</translation>
 <translation id="1346748346194534595">ขวา</translation>
 <translation id="1351937230027495976">ยุบเมนู</translation>
@@ -146,6 +146,7 @@
 <translation id="1486307154719069822">ฟีเจอร์การพิมพ์ตามคำบอกช่วยให้คุณพิมพ์ด้วยเสียงได้ กดแป้นให้พิมพ์ตามคำบอกหรือเลือกไอคอนไมโครโฟนที่ด้านล่างของหน้าจอเมื่อคุณอยู่ในช่องข้อความ ภาษาสำหรับการพิมพ์ตามคำบอกตั้งค่าเป็น<ph name="LANGUAGE" /> ระบบจะส่งคำพูดไปประมวลผลที่ Google คุณเปลี่ยนภาษาสำหรับการพิมพ์ตามคำบอกได้ทุกเมื่อในการตั้งค่า &gt; การช่วยเหลือพิเศษ</translation>
 <translation id="1487931858675166540">สลับ <ph name="FIRST_ITEM_TITLE" /> กับ <ph name="SECOND_ITEM_TITLE" /> แล้ว</translation>
 <translation id="1500926532737552529">แสดงคำแนะนำทั้งหมด</translation>
+<translation id="1501946871587957338">เปลี่ยนแหล่งที่มาของเสียงไหม</translation>
 <translation id="1510238584712386396">ตัวเรียกใช้งาน</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{แสดงการตั้งค่าการแจ้งเตือน ปิดการแจ้งเตือนไว้สำหรับ 1 แอป}other{แสดงการตั้งค่าการแจ้งเตือน ปิดการแจ้งเตือนไว้สำหรับ # แอป}}</translation>
 <translation id="1523032696246003">แบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />% | อีก <ph name="TIME" /> จะเต็ม</translation>
@@ -687,7 +688,6 @@
 <translation id="363473492175527493">ตั้งค่างานให้โฟกัสที่: <ph name="TASK_NAME" /> กด Enter เพื่อแก้ไขงาน</translation>
 <translation id="3638400994746983214">สลับหน้าจอส่วนตัว <ph name="STATE_TEXT" /></translation>
 <translation id="3649256019230929621">ย่อหน้าต่าง</translation>
-<translation id="3649505501900178324">พ้นกำหนดการอัปเดต</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" /> <ph name="EVENT_SUMMARY" /> เวลา <ph name="START_TIME" /> ถึง <ph name="END_TIME" /> ตาม<ph name="TIME_ZONE" /> เลือกเพื่อดูรายละเอียดเพิ่มเติมใน Google ปฏิทิน</translation>
 <translation id="3659444876902283058">(วันที่ <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659667652322717492">คุณเปลี่ยนลักษณะการทำงานของไมค์ได้ทุกเมื่อในภายหลัง</translation>
@@ -753,7 +753,6 @@
 <translation id="3900355044994618856">เซสชันจะสิ้นสุดใน <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">กำลังเชื่อมต่อกับ <ph name="NAME" /></translation>
 <translation id="3906954721959377182">แท็บเล็ต</translation>
-<translation id="3922427723338465344">{0,plural, =1{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน 1 นาที}other{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน # นาที}}</translation>
 <translation id="3923494859158167397">ไม่ได้ตั้งค่าเครือข่ายมือถือ</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, กำลังโหลดกิจกรรม</translation>
 <translation id="3932043219784172185">ไม่มีอุปกรณ์ที่เชื่อมต่ออยู่</translation>
@@ -772,6 +771,7 @@
 <translation id="397105322502079400">กำลังคำนวณ...</translation>
 <translation id="397726367135689299">การชาร์จแบตเตอรี่อาจไม่ทำงานอย่างที่ควร</translation>
 <translation id="3977512764614765090">แบตเตอรี่เหลือ <ph name="PERCENTAGE" />% และกำลังชาร์จ</translation>
+<translation id="3982013579989864579">เปลี่ยนเอาต์พุตเสียงไหม</translation>
 <translation id="3984536049089846927">หน้าถัดไป</translation>
 <translation id="3986082989454912832">ตอบ</translation>
 <translation id="3990002060657467458">การควบคุมที่ใช้บ่อย เช่น Wi-Fi, บลูทูธ และระดับเสียงจะอยู่ในการตั้งค่าด่วน คุณยังจับภาพหน้าจอได้จากที่นี่ด้วย</translation>
@@ -814,6 +814,7 @@
 <translation id="4146833061457621061">เปิดเพลง</translation>
 <translation id="4150201353443180367">การแสดงผล</translation>
 <translation id="4156293514828496577">แบตเตอรี่เหลืออยู่ <ph name="PERCENTAGE" />% (ใช้ได้อีกประมาณ <ph name="TIME_LEFT" />) ระบบจำกัดฟีเจอร์บางอย่างเพื่อเพิ่มอายุการใช้งานแบตเตอรี่</translation>
+<translation id="4160919062868802509">ตรวจพบแหล่งที่มาของเสียงหลายแหล่ง</translation>
 <translation id="4165275524535002941">สายสัญญาณอาจไม่รองรับจอแสดงผล</translation>
 <translation id="4177415338862979658">คลิกเพื่อดูรายละเอียด</translation>
 <translation id="4177913004758410636">{0,plural, =1{อัปเดตอุปกรณ์ภายใน 1 วัน}other{อัปเดตอุปกรณ์ภายใน # วัน}}</translation>
@@ -944,7 +945,6 @@
 <translation id="4623167406982293031">ยืนยันบัญชี</translation>
 <translation id="4628757576491864469">อุปกรณ์</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, การให้ดาว <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน 1 วัน}other{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน # วัน}}</translation>
 <translation id="4633636853437260449">กด Ctrl+W เพื่อลบ</translation>
 <translation id="4642092649622328492">ถ่ายภาพหน้าจอบางส่วน</translation>
 <translation id="4644727592819780893">พื้นที่เล็กเกินกว่าที่จะแสดงตัวอย่างกล้อง</translation>
@@ -1013,6 +1013,7 @@
 <translation id="4871905435473761992">แสดงรายละเอียดฮอตสปอต เครือข่ายมือถือของคุณไม่รองรับฮอตสปอต</translation>
 <translation id="4872237917498892622">Alt+ค้นหา หรือ Shift</translation>
 <translation id="4872852897273142380">โฟกัสหรือไฮไลต์แถบบุ๊กมาร์ก (หากแสดงอยู่)</translation>
+<translation id="4876935764454575645">การเลือกเสียง</translation>
 <translation id="4881323000405981760">แอป Linux ไม่รองรับเอฟเฟกต์</translation>
 <translation id="4881695831933465202">เปิด</translation>
 <translation id="4889868803215848840">แสดงความคิดเห็น (ไม่บังคับ) เพื่อปรับปรุงคำแนะนำ ดังนี้</translation>
@@ -1089,6 +1090,7 @@
 <translation id="5121628974188116412">ไปที่ด้านล่างสุดของหน้า</translation>
 <translation id="5122517996953421795">ตัวอย่าง <ph name="DESK_NAME" /> เดสก์ที่ไม่ได้ใช้งาน</translation>
 <translation id="5136175204352732067">เชื่อมต่อกับแป้นพิมพ์อื่นแล้ว</translation>
+<translation id="5144005092084035179">เปลี่ยนอินพุตเสียงไหม</translation>
 <translation id="5147567197700016471">ปลดล็อกแล้ว</translation>
 <translation id="5150070631291639005">การตั้งค่าความเป็นส่วนตัว</translation>
 <translation id="5155897006997040331">ความเร็วในการอ่าน</translation>
@@ -1453,7 +1455,6 @@
 <translation id="6477681113376365978">ดาวน์โหลดไฟล์ไม่ได้</translation>
 <translation id="6482559668224714696">แว่นขยายทั้งหน้าจอ</translation>
 <translation id="6490471652906364588">อุปกรณ์ USB-C (พอร์ตด้านขวา)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> กำหนดให้คุณต้องอัปเดต <ph name="DEVICE_TYPE" /> ก่อนเวลาที่กำหนด</translation>
 <translation id="649452524636452238">PIN สมาร์ทการ์ด</translation>
 <translation id="6495322433318104734">กำลังแสดงโปรแกรมรักษาหน้าจอ กดแป้นใดก็ได้เพื่อออก</translation>
 <translation id="6495400115277918834">เริ่มการแสดงภาพซ้อนภาพแล้ว กด Alt+Shift+V เพื่อโฟกัส</translation>
@@ -1518,7 +1519,6 @@
 <translation id="6697913454192220372">เพิ่มเดสก์ใหม่</translation>
 <translation id="6700713906295497288">ปุ่มเมนู IME</translation>
 <translation id="6706742084323792866">ปักหมุดแป้นพิมพ์</translation>
-<translation id="6707693040195709527">เกินกำหนดการเปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าแล้ว</translation>
 <translation id="6710213216561001401">ก่อนหน้า</translation>
 <translation id="6723839937902243910">พลังงาน</translation>
 <translation id="672609503628871915">ดูว่ามีอะไรใหม่</translation>
@@ -1792,6 +1792,7 @@
 <translation id="7780094051999721182">ทางลัด</translation>
 <translation id="7780159184141939021">หมุนหน้าจอ</translation>
 <translation id="7781829728241885113">เมื่อวานนี้</translation>
+<translation id="7787212146956232129">ตั้งค่าอุปกรณ์อินพุตและเอาต์พุตแล้ว โปรดเปลี่ยนที่การตั้งค่า</translation>
 <translation id="7792590255364786396">มองเห็นได้</translation>
 <translation id="7796735576426975947">การแจ้งเตือนใหม่ซ่อนอยู่</translation>
 <translation id="7798302898096527229">กด Search หรือ Shift เพื่อยกเลิก</translation>
@@ -1812,7 +1813,6 @@
 <translation id="7866482334467279021">เปิด</translation>
 <translation id="7872786842639831132">ปิด</translation>
 <translation id="7875575368831396199">ดูเหมือนว่าบลูทูธของ <ph name="DEVICE_TYPE" /> จะปิดอยู่ โปรดเปิดบลูทูธเพื่อใช้ฮับโทรศัพท์</translation>
-<translation id="7877557217297072640">{0,plural, =0{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าในตอนนี้}=1{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน 1 วินาที}other{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน # วินาที}}</translation>
 <translation id="7884446017008693258">การตั้งค่าฮอตสปอต</translation>
 <translation id="7884902759927478774">ยกเลิกการลากแท็บ</translation>
 <translation id="7886169021410746335">ปรับการตั้งค่าความเป็นส่วนตัว</translation>
@@ -1889,7 +1889,6 @@
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">ใช้แท็บเพื่อดูตัวเลือกเพิ่มเติม ใช้ลูกศรซ้ายและขวาเพื่อเข้าถึงเดสก์ทั้งหมด</translation>
 <translation id="8091153018031979607">เริ่มเวลา <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">การอัปเดตอัตโนมัติ</translation>
 <translation id="8092380135549145188">การควบคุมการเลื่อน</translation>
 <translation id="8098591350844501178">หยุดแคสต์หน้าจอไปยัง <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">เลิกปักหมุดแอปที่แถบ</translation>
@@ -1935,7 +1934,6 @@
 <translation id="8257510091797044096">ตั้งค่าอุปกรณ์</translation>
 <translation id="8261506727792406068">ลบ</translation>
 <translation id="8262312463845990408">สลับการเล่น</translation>
-<translation id="8270450402312105425">{0,plural, =1{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน 1 ชั่วโมง}other{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน # ชั่วโมง}}</translation>
 <translation id="8277261673056602147">ไฮไลต์ข้อความในหน้าจอ</translation>
 <translation id="8287009018010202411">ประสิทธิภาพการทำงาน</translation>
 <translation id="828708037801473432">ปิด</translation>
@@ -2002,7 +2000,6 @@
 <translation id="8553395910833293175">มอบหมายให้ทุกเดสก์แล้ว</translation>
 <translation id="8555757996376137129">นำเดสก์ปัจจุบันออก</translation>
 <translation id="8559845965695780508"><ph name="USER" /> แก้ไข</translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> แนะนำให้คุณอัปเดต <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">ลองทำตามคำแนะนำต่อไปนี้</translation>
 <translation id="857201607579416096">เมนูได้ย้ายไปอยู่ที่มุมขวาล่างของหน้าจอ</translation>
 <translation id="8581946341807941670">กด <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> แล้วคลิกลิงก์</translation>
@@ -2102,6 +2099,7 @@
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ไฟล์}other{# ไฟล์}}</translation>
 <translation id="8936501819958976551">ปิดใช้งานอยู่</translation>
 <translation id="8938800817013097409">อุปกรณ์ USB-C (พอร์ตด้านหลังขวา)</translation>
+<translation id="8939855324412367560">เสียงอินพุตคือ "<ph name="INPUT_DEVICE_NAME" />" และเสียงเอาต์พุตคือ "<ph name="OUTPUT_DEVICE_NAME" />" โปรดเปลี่ยนที่การตั้งค่า</translation>
 <translation id="8940956008527784070">แบตเตอรี่ต่ำ (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314">ไม่ได้เลือกช่องทำเครื่องหมาย <ph name="PROFILE_NAME" /> <ph name="EMAIL" /></translation>
 <translation id="8949925099261528566">เชื่อมต่อแล้ว ไม่พบอินเทอร์เน็ต</translation>
@@ -2159,6 +2157,7 @@
 <translation id="9178475906033259337">กำลังแสดงผลการค้นหา 1 รายการสำหรับ "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">ฟีเจอร์นี้ช่วยให้เข้าถึงผู้ใช้ที่ลงชื่อเข้าใช้แล้วได้อย่างรวดเร็วโดยไม่ต้องใช้รหัสผ่าน ใช้ฟีเจอร์นี้กับบัญชีที่คุณเชื่อถือเท่านั้น</translation>
 <translation id="9183456764293710005">แว่นขยายทั้งหน้าจอ</translation>
+<translation id="9192133205265227850">ใช้ "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">กำลังแคสต์ไปยังเครื่องรับที่ไม่รู้จัก</translation>
 <translation id="9194617393863864469">ลงชื่อเข้าใช้ด้วยชื่อผู้ใช้อื่น...</translation>
 <translation id="9195990613383871904">พรุ่งนี้</translation>
@@ -2177,7 +2176,6 @@
 <translation id="923686485342484400">กด Control Shift Q 2 ครั้งเพื่อออกจากระบบ</translation>
 <translation id="92580429198593979">คุณกดแป้นพิมพ์ลัดสำหรับการกลับสี คุณต้องการเปิดฟีเจอร์นี้ไหม</translation>
 <translation id="925832987464884575">ซ่อนตัวอย่าง</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> กำหนดให้คุณต้องอัปเดต <ph name="DEVICE_TYPE" /> โดยทันที</translation>
 <translation id="938407504481277932">เดสก์ปัจจุบัน: <ph name="DESK_NAME" /> <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> เดสก์ที่ <ph name="DESK_INDEX" /> จาก <ph name="DESK_COUNT" /></translation>
 <translation id="938963181863597773">มีอะไรในปฏิทินของฉันบ้าง</translation>
 <translation id="945383118875625837">ลากลิงก์ไปยังแถบบุ๊กมาร์ก</translation>

@@ -26,6 +26,7 @@
 <translation id="1108938384783527433">Sinkronizacija povijesti</translation>
 <translation id="1111673857033749125">Ovdje će se prikazivati oznake koje ste spremili na drugim uređajima.</translation>
 <translation id="1113597929977215864">Prikaži pojednostavljeni prikaz</translation>
+<translation id="1126696498560056882">Upravljajte računima na ovom uređaju</translation>
 <translation id="1126809382673880764">Ne štiti vas od opasnih web-lokacija, preuzimanja i proširenja. Na drugim Googleovim uslugama, kao što su Gmail i Pretraživanje, i dalje ste zaštićeni Sigurnim pregledavanjem, ako je dostupno.</translation>
 <translation id="1129510026454351943">Pojedinosti: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1142732900304639782">Nemoj nuditi prevođenje ovih web-lokacija</translation>
@@ -76,6 +77,7 @@
 <translation id="1332501820983677155">Prečaci za značajke Google Chromea</translation>
 <translation id="1344653310988386453">Uključi vezu na istaknuti tekst</translation>
 <translation id="1347468774581902829">Upravljaj aktivnostima</translation>
+<translation id="1355088659320425659">Povijest i kartice</translation>
 <translation id="1360432990279830238">Odjaviti se i isključiti sinkronizaciju?</translation>
 <translation id="1366525380420346469">Kad je značajka uključena</translation>
 <translation id="1373696734384179344">Nema dovoljno memorije za preuzimanje odabranog sadržaja.</translation>
@@ -506,6 +508,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3566639033325271639">Ažuriraj postavke</translation>
 <translation id="357465026686164600">Telefon kao sigurnosni ključ</translation>
 <translation id="3577473026931028326">Nešto nije u redu. Pokušajte ponovo.</translation>
+<translation id="3577558748185201054">Upravljajte svojim interesima i postavkama</translation>
 <translation id="3587482841069643663">Sve</translation>
 <translation id="3587596251841506391">Za bolju sigurnost na webu</translation>
 <translation id="3597179440835065298">Bolji prijedlozi</translation>
@@ -620,6 +623,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="4195643157523330669">Otvori u novoj kartici</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 kartica na ovom uređaju}one{# kartica na ovom uređaju}few{# kartice na ovom uređaju}other{# kartica na ovom uređaju}}</translation>
 <translation id="4198423547019359126">Lokacije preuzimanja nisu dostupne</translation>
+<translation id="4198664641856813238">Prijavite se kako biste imali pristup svojim oznakama, zaporkama i ostalom na svim svojim uređajima</translation>
 <translation id="4202218894997543208">Teme koje ste blokirali</translation>
 <translation id="4214315110991671325">Ako dopustite kolačiće, Chrome ih može koristiti za predučitavanje.</translation>
 <translation id="4216511743389425832">Poslušajte ovu stranicu</translation>
@@ -808,6 +812,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Ostali oblici aktivnosti<ph name="END_LINK1" /> mogu se spremati na vaš Google račun kad ste prijavljeni. Uvijek ih možete izbrisati.</translation>
 <translation id="506254248375231072">Nema kartica</translation>
 <translation id="5062960805900435602">Zatvoreno je ažuriranje o spajanju zaporki</translation>
+<translation id="5075939510584558547">Spremite bez šifriranja</translation>
 <translation id="5081960376148623587">Odaberite želite li predučitati stranice</translation>
 <translation id="5085038751173179818">Prijavite se na ovu web-lokaciju i Chrome kako biste imali pristup svojim oznakama i drugim značajkama na svim svojim uređajima</translation>
 <translation id="5091199029769593641">Prilikom otvaranja nove kartice uskoro će se prikazivati članci s web-lokacije <ph name="SITE_NAME" />. Web-lokacije koje pratite spremaju se na vašem Google računu. Njima možete upravljati u postavkama Discovera.</translation>
@@ -866,6 +871,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5401851137404501592">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> podijelit će vaše ime, e-adresu i profilnu sliku s ovom web-lokacijom.</translation>
 <translation id="5409881200985013443">Poslati <ph name="ONE_TIME_CODE" /> na klijentu <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Potvrđivanje…</translation>
+<translation id="5415871492522952905">Vaša povijest i kartice bit će dostupne na svim vašim uređajima kako biste mogli nastaviti s onim što radite</translation>
 <translation id="5423934151118863508">Najposjećenije stranice prikazivat će se ovdje</translation>
 <translation id="5424588387303617268">Dostupno: <ph name="GIGABYTES" /> GB</translation>
 <translation id="543338862236136125">Uredite zaporku</translation>
@@ -894,6 +900,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5554520618550346933">Kad upotrijebite zaporku, Chrome vas upozorava ako je objavljena online. Tom su prilikom vaše zaporke i korisnička imena šifrirani, tako da ih nitko ne može pročitati, uključujući Google.</translation>
 <translation id="5555525474779371165">Odaberite svoju zaštitu sigurnog pregledavanja</translation>
 <translation id="5556459405103347317">Ponovno učitaj</translation>
+<translation id="555671485580955310">Sinkronizacija povijesti i kartica</translation>
 <translation id="555816257274242153">Praćenje cijene zaustavljeno</translation>
 <translation id="5561162485081632007">Otkriva opasne događaje i upozorava vas na njih kada se dogode</translation>
 <translation id="5561549206367097665">Čekanje na mrežu…</translation>

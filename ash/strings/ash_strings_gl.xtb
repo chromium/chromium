@@ -57,7 +57,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="118437560755358292">Escribe o contrasinal ou o PIN como medida de seguranza adicional</translation>
 <translation id="118532027333893379">Toca calquera parte para facer unha captura da pantalla completa</translation>
 <translation id="1190609913194133056">Centro de notificacións</translation>
-<translation id="1190678134285018527">O dispositivo debe cambiarse a unha versión anterior</translation>
 <translation id="1195412055398077112">sobrevarrido</translation>
 <translation id="1195667586424773550">Arrastra a ligazón á barra de enderezos da pestana</translation>
 <translation id="119944043368869598">Borrar todo</translation>
@@ -131,6 +130,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1420408895951708260">Activar/desactivar Luz nocturna: <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Si</translation>
 <translation id="1435537621343861112">Non se puido iniciar o ditado. O micrófono está desactivado.</translation>
+<translation id="1447907279406111651">Agora ⋅ Remata á/s <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">As zonas wifi do teu dispositivo</translation>
 <translation id="1455242230282523554">Mostrar a configuración do idioma</translation>
 <translation id="1460620680449458626">O volume está silenciado.</translation>
@@ -481,6 +481,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="2894949423239620203">As conexións por cable poderían afectarlle ao rendemento</translation>
 <translation id="2914580577416829331">Capturas de pantalla</translation>
 <translation id="2924416280450782352">Non se puideron mostrar os elementos. Proba a abrir de novo este panel.</translation>
+<translation id="292506373491190801">Dun evento en curso</translation>
 <translation id="2931572158271115754">Non hai nada nesta lista de tarefas.</translation>
 <translation id="2932487126591186298">10 minutos engadidos. Tempo restante: <ph name="REMAINING_TIME" />.</translation>
 <translation id="2935225303485967257">Xestionar perfís</translation>
@@ -685,7 +686,6 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="363473492175527493">Tarefa definida como obxectivo: <ph name="TASK_NAME" />. Preme Introducir para editala.</translation>
 <translation id="3638400994746983214">Activar/desactivar a pantalla de privacidade. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Minimizar ventá</translation>
-<translation id="3649505501900178324">Actualización pendente</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" />-
@@ -756,7 +756,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3900355044994618856">A sesión finalizará dentro de <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Conectando con <ph name="NAME" /></translation>
 <translation id="3906954721959377182">Tableta</translation>
-<translation id="3922427723338465344">{0,plural, =1{Cambia o dispositivo a unha versión anterior no prazo de 1 minuto}other{Cambia o dispositivo a unha versión anterior no prazo de # minutos}}</translation>
 <translation id="3923494859158167397">Non se configurou ningunha rede móbil</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, cargando eventos.</translation>
 <translation id="3932043219784172185">Ningún dispositivo conectado</translation>
@@ -768,6 +767,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3950272133184491871">Queres pechar sesión agora?</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
 <translation id="3953130726459169782">De momento, non hai ningunha tarefa completada.</translation>
+<translation id="3958714870339660776">Todo o día</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3969043077941541451">Desactivar</translation>
 <translation id="3970324493235864154">Consulta as notificacións do teu teléfono</translation>
@@ -947,7 +947,6 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4623167406982293031">Verificar conta</translation>
 <translation id="4628757576491864469">Dispositivos</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, valoración en estrelas: <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Cambia o dispositivo a unha versión anterior no prazo de 1 día}other{Cambia o dispositivo a unha versión anterior no prazo de # días}}</translation>
 <translation id="4633636853437260449">Preme Control + W para eliminar</translation>
 <translation id="4642092649622328492">Fai unha captura de pantalla parcial</translation>
 <translation id="4644727592819780893">A rexión é demasiado pequena para mostrar a vista previa da cámara</translation>
@@ -1221,6 +1220,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5599242528220103262">O atallo de teclado está desactivado</translation>
 <translation id="5600415762228455511">Modo Sen distraccións activado. Tempo restante: <ph name="REMAINING_TIME" />. Tarefa actual: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Preme Ctrl + Alt + Z para desactivar os comentarios de voz.</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{Hai menos de 1 hora}=1{Hai 1 hora}other{Hai # horas}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Cambiámoste a unha rede mellor</translation>
 <translation id="5619862035903135339">A política do administrador desactivou o modo de captura de pantalla</translation>
@@ -1397,6 +1397,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6228457605945141550">Reduce o brillo</translation>
 <translation id="623116199192908855">Emite a pantalla do Chromebook</translation>
 <translation id="6231419273573514727">É posible que os periféricos teñan un rendemento limitado</translation>
+<translation id="6232416233079464213">De <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> está usando a cámara e o micrófono nestes intres</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Queda pouca batería. Activouse a función Aforro de batería.</translation>
@@ -1454,7 +1455,6 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6477681113376365978">Non se puido descargar o ficheiro</translation>
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
 <translation id="6490471652906364588">Dispositivo USB‑C (porto dereito)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> require que actualices o teu dispositivo (<ph name="DEVICE_TYPE" />) antes de que finalice o prazo</translation>
 <translation id="649452524636452238">PIN da tarxeta intelixente</translation>
 <translation id="6495322433318104734">Mostrando protector de pantalla. Para saír preme calquera tecla</translation>
 <translation id="6495400115277918834">Iniciouse a función da pantalla superposta. Para enfocar esta pantalla, preme Alt + Maiúsculas + V</translation>
@@ -1518,7 +1518,7 @@ Nova instalación</translation>
 <translation id="6696025732084565524">É necesario instalar unha actualización esencial do teclado extraíble</translation>
 <translation id="6697913454192220372">Engadir un novo escritorio</translation>
 <translation id="6700713906295497288">Botón de menú de IME</translation>
-<translation id="6707693040195709527">Está pendente o cambio do dispositivo a unha versión anterior</translation>
+<translation id="6706742084323792866">Fixar o teclado</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6723839937902243910">A</translation>
 <translation id="672609503628871915">Ver as novidades</translation>
@@ -1798,6 +1798,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="780301667611848630">Non, grazas</translation>
 <translation id="7807067443225230855">Busca e Asistente</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">Dun evento próximo do calendario</translation>
 <translation id="7829386189513694949">Sinal forte</translation>
 <translation id="7830453190047749513">Podes personalizar as accións dos botóns ou a velocidade do cursor, entre outras opcións, para <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Acabouse o tempo</translation>
@@ -1811,7 +1812,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7866482334467279021">activado</translation>
 <translation id="7872786842639831132">Desactivado</translation>
 <translation id="7875575368831396199">Parece que tes o Bluetooth desactivado no dispositivo (<ph name="DEVICE_TYPE" />). Para utilizar a función O meu teléfono, activa o Bluetooth.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Cambia o dispositivo a unha versión anterior agora}=1{Cambia o dispositivo a unha versión anterior no prazo de 1 segundo}other{Cambia o dispositivo a unha versión anterior no prazo de # segundos}}</translation>
 <translation id="7884446017008693258">Configuración da zona wifi</translation>
 <translation id="7884902759927478774">Cancelar acción de arrastrar a pestana</translation>
 <translation id="7886169021410746335">Axustar a configuración de privacidade</translation>
@@ -1888,7 +1888,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Utiliza a tecla Tabulador para ver máis opcións. Usa Frecha dereita e Frecha esquerda para acceder a todos os escritorios.</translation>
 <translation id="8091153018031979607">Inicio: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Actualizacións automáticas</translation>
 <translation id="8092380135549145188">Controis de desprazamento</translation>
 <translation id="8098591350844501178">Deter a emisión da pantalla en: <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Deixa de fixar a aplicación no andel</translation>
@@ -1934,7 +1933,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8257510091797044096">Configurar o teu dispositivo</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8262312463845990408">Activar/desactivar reprodución</translation>
-<translation id="8270450402312105425">{0,plural, =1{Cambia o dispositivo a unha versión anterior no prazo de 1 hora}other{Cambia o dispositivo a unha versión anterior no prazo de # horas}}</translation>
 <translation id="8277261673056602147">Destacar o texto na pantalla</translation>
 <translation id="8287009018010202411">Produtividade</translation>
 <translation id="828708037801473432">Desactivada</translation>
@@ -2001,7 +1999,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8553395910833293175">Xa se asignou a todos os escritorios.</translation>
 <translation id="8555757996376137129">Quitar escritorio actual</translation>
 <translation id="8559845965695780508"><ph name="USER" /> editouno</translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> recoméndache actualizar o teu dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="8569751806372591456">Aquí tes algunhas suxestións que podes probar</translation>
 <translation id="857201607579416096">O menú moveuse á esquina inferior dereita da pantalla.</translation>
 <translation id="8581946341807941670">Preme <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> e fai clic nunha ligazón</translation>
@@ -2115,6 +2112,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="899350903320462459">Desbloquea o dispositivo como <ph name="LOGIN_ID" /> para levar a cabo a acción de notificación</translation>
 <translation id="8993733019280019776">Estás falando? O micrófono está desactivado. Selecciónao para activalo.</translation>
 <translation id="9000771174482730261">XESTIONAR ALMACENAMENTO</translation>
+<translation id="9002204506712855687">Explora as últimas funcións</translation>
 <translation id="9005984960510803406">Abre unha ventá de Crosh</translation>
 <translation id="9017320285115481645">Introduce o código de acceso parental de Family Link.</translation>
 <translation id="9022774213089566801">Visitas frecuentes</translation>
@@ -2146,6 +2144,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="9098969848082897657">Silenciar teléfono</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ou <ph name="CTRL" /> <ph name="SEPARATOR1" /> <ph name="SHIFT" /> <ph name="SEPARATOR2" /> <ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Desfai a última acción</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{Dentro de 1 min}other{Dentro de # min}}</translation>
 <translation id="9129245940793250979">Botón traseiro</translation>
 <translation id="9133335900048457298">Non se pode gravar contido protexido</translation>
 <translation id="9139720510312328767">Elimina a letra seguinte</translation>
@@ -2158,6 +2157,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="9183456764293710005">Lupa de pantalla completa</translation>
 <translation id="9193626018745640770">Estase emitindo contido a un receptor descoñecido</translation>
 <translation id="9194617393863864469">Iniciar sesión con outro usuario...</translation>
+<translation id="9195990613383871904">Mañá</translation>
 <translation id="9198992156681343238">A resolución de <ph name="DISPLAY_NAME" /> cambiouse a <ph name="RESOLUTION" />. Para gardar os cambios, fai clic en Confirmar. A configuración anterior restaurarase en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Conecta o dispositivo (<ph name="NAME" />) a este Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, xestionada polo teu administrador</translation>
@@ -2173,7 +2173,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="923686485342484400">Preme Control, maiúsculas e Q dúas veces para pechar sesión.</translation>
 <translation id="92580429198593979">Premiches o atallo de teclado da inversión da cor. Queres activala?</translation>
 <translation id="925832987464884575">Ocultar vistas previas</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> require que actualices o teu dispositivo (<ph name="DEVICE_TYPE" />) de inmediato</translation>
 <translation id="938407504481277932">Escritorio actual: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />). Escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Que hai no meu calendario?</translation>
 <translation id="945383118875625837">Arrastra a ligazón á barra de marcadores</translation>

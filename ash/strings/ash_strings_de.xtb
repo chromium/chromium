@@ -57,7 +57,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="118437560755358292">Für mehr Sicherheit ist das Passwort oder die PIN erforderlich</translation>
 <translation id="118532027333893379">Auf eine beliebige Stelle tippen, um den ganzen Bildschirm aufzunehmen</translation>
 <translation id="1190609913194133056">Benachrichtigungscenter</translation>
-<translation id="1190678134285018527">Das Gerät muss auf eine frühere Version zurückgesetzt werden</translation>
 <translation id="1195412055398077112">Overscan</translation>
 <translation id="1195667586424773550">Link in Adressleiste des Tabs ziehen</translation>
 <translation id="119944043368869598">Alle entfernen</translation>
@@ -131,6 +130,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1420408895951708260">Nachtlicht an/aus. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1435537621343861112">Spracheingabe kann nicht gestartet werden. Das Mikrofon ist aus.</translation>
+<translation id="1447907279406111651">Jetzt · Ende <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Deine Geräte-Hotspots</translation>
 <translation id="1455242230282523554">Spracheinstellungen anzeigen</translation>
 <translation id="1460620680449458626">Ton ist aus.</translation>
@@ -481,6 +481,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2894949423239620203">Kabel beeinträchtigt eventuell die Leistung</translation>
 <translation id="2914580577416829331">Screenshots</translation>
 <translation id="2924416280450782352">Die Elemente können nicht angezeigt werden. Versuche, dieses Steuerfeld noch einmal zu öffnen.</translation>
+<translation id="292506373491190801">Von einem aktuellen Termin</translation>
 <translation id="2931572158271115754">Nichts in dieser Aufgabenliste.</translation>
 <translation id="2932487126591186298">10 Minuten hinzugefügt. Noch <ph name="REMAINING_TIME" />.</translation>
 <translation id="2935225303485967257">Profile verwalten</translation>
@@ -685,7 +686,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="363473492175527493">Für Konzentrationsmodus gewählte Aufgabe: <ph name="TASK_NAME" />. Drücke die Eingabetaste, um die Aufgabe zu bearbeiten.</translation>
 <translation id="3638400994746983214">Der Datenschutzbildschirm kann aktiviert oder deaktiviert werden. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Fenster minimieren</translation>
-<translation id="3649505501900178324">Aktualisierung erforderlich</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> bis
@@ -755,7 +755,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="3900355044994618856">Deine Sitzung wird in <ph name="SESSION_TIME_REMAINING" /> beendet</translation>
 <translation id="3901991538546252627">Verbindung mit <ph name="NAME" /> wird hergestellt.</translation>
 <translation id="3906954721959377182">Tablet</translation>
-<translation id="3922427723338465344">{0,plural, =1{Gerät innerhalb von einer Minute auf eine frühere Version zurücksetzen}other{Gerät innerhalb von # Minuten auf eine frühere Version zurücksetzen}}</translation>
 <translation id="3923494859158167397">Es sind keine Mobilfunknetze eingerichtet</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Termine werden geladen.</translation>
 <translation id="3932043219784172185">Kein Gerät verbunden</translation>
@@ -767,6 +766,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="3950272133184491871">Jetzt abmelden?</translation>
 <translation id="3950820424414687140">Anmelden</translation>
 <translation id="3953130726459169782">Es wurden noch keine Aufgaben erledigt.</translation>
+<translation id="3958714870339660776">Ganztägig</translation>
 <translation id="3962859241508114581">Vorheriger Titel</translation>
 <translation id="3969043077941541451">Aus</translation>
 <translation id="3970324493235864154">Benachrichtigungen auf deinem Smartphone anzeigen</translation>
@@ -946,7 +946,6 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4623167406982293031">Konto bestätigen</translation>
 <translation id="4628757576491864469">Geräte</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, Bewertung von <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Gerät innerhalb von einem Tag auf eine frühere Version zurücksetzen}other{Gerät innerhalb von # Tagen auf eine frühere Version zurücksetzen}}</translation>
 <translation id="4633636853437260449">Drücke zum Löschen Strg + W</translation>
 <translation id="4642092649622328492">Screenshot eines Bildschirmausschnitts erstellen</translation>
 <translation id="4644727592819780893">Aufnahmebereich zu klein für Kamera</translation>
@@ -1220,6 +1219,7 @@ Keine Geräte verbunden.</translation>
 <translation id="5599242528220103262">Die Tastenkombination ist deaktiviert</translation>
 <translation id="5600415762228455511">Konzentrationsmodus ist aktiviert, noch <ph name="REMAINING_TIME" />; du konzentrierst dich auf: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Zum Deaktivieren des gesprochenen Feedbacks drücke Strg + Alt + Z.</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{Vor weniger als 1 Stunde}=1{Vor 1 Stunde}other{Vor # Stunden}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Wir haben dich mit einem besseren Netzwerk verbunden</translation>
 <translation id="5619862035903135339">Die Administratorrichtlinie blockiert die Bildschirmaufnahme</translation>
@@ -1396,6 +1396,7 @@ Keine Geräte verbunden.</translation>
 <translation id="6228457605945141550">Helligkeit verringern</translation>
 <translation id="623116199192908855">Bildschirm deines Chromebooks streamen</translation>
 <translation id="6231419273573514727">Die Leistung der Peripheriegeräte ist möglicherweise eingeschränkt</translation>
+<translation id="6232416233079464213">Von <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> verwendet gerade deine Kamera und dein Mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Niedriger Akkustand. Der Energiesparmodus ist aktiviert.</translation>
@@ -1453,7 +1454,6 @@ Keine Geräte verbunden.</translation>
 <translation id="6477681113376365978">Datei kann nicht heruntergeladen werden</translation>
 <translation id="6482559668224714696">Vollbildlupe</translation>
 <translation id="6490471652906364588">USB-C-Gerät (Port rechts)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> erfordert, dass dein Gerät (<ph name="DEVICE_TYPE" />) vor Ablauf der Frist aktualisiert wird</translation>
 <translation id="649452524636452238">Smartcard-PIN</translation>
 <translation id="6495322433318104734">Bildschirmschoner wird angezeigt. Drücke zum Beenden eine beliebige Taste.</translation>
 <translation id="6495400115277918834">„Bild im Bild“ gestartet, zum Hervorheben Alt + Umschalttaste + V drücken</translation>
@@ -1517,7 +1517,6 @@ Neuinstallation</translation>
 <translation id="6696025732084565524">Wichtiges Update für deine abnehmbare Tastatur</translation>
 <translation id="6697913454192220372">Neuen Desktop hinzufügen</translation>
 <translation id="6700713906295497288">IME-Menüschaltfläche</translation>
-<translation id="6707693040195709527">Das Gerät wurde noch nicht auf eine frühere Version zurückgesetzt</translation>
 <translation id="6710213216561001401">Zurück</translation>
 <translation id="6723839937902243910">Leistung</translation>
 <translation id="672609503628871915">Neuigkeiten</translation>
@@ -1797,6 +1796,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="780301667611848630">Nein, danke</translation>
 <translation id="7807067443225230855">Suche und Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> und <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">Von einem anstehenden Termin</translation>
 <translation id="7829386189513694949">Starkes Signal</translation>
 <translation id="7830453190047749513">Du kannst unter anderem Tastenaktionen, die Cursorgeschwindigkeit und mehr für dein Gerät (<ph name="PERIPHERAL_NAME" />) personalisieren</translation>
 <translation id="7837740436429729974">Die Zeit ist um</translation>
@@ -1810,7 +1810,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7866482334467279021">an</translation>
 <translation id="7872786842639831132">Aus</translation>
 <translation id="7875575368831396199">Bluetooth ist auf deinem Gerät (<ph name="DEVICE_TYPE" />) deaktiviert. Bluetooth aktivieren, um Phone Hub zu nutzen.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Gerät jetzt auf eine frühere Version zurücksetzen}=1{Gerät innerhalb von einer Sekunde auf eine frühere Version zurücksetzen}other{Gerät innerhalb von # Sekunden auf eine frühere Version zurücksetzen}}</translation>
 <translation id="7884446017008693258">Hotspot-Einstellungen</translation>
 <translation id="7884902759927478774">Ziehen des Tabs abbrechen</translation>
 <translation id="7886169021410746335">Datenschutzeinstellungen anpassen</translation>
@@ -1887,7 +1886,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Verwende die Tabulatortaste, um weitere Optionen zu sehen. Verwende den Links- und Rechtspfeil, um auf alle Desktops zuzugreifen.</translation>
 <translation id="8091153018031979607">Beginnt um <ph name="START_TIME" /> Uhr <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Automatische Updates</translation>
 <translation id="8092380135549145188">Einstellungen für Scrollen</translation>
 <translation id="8098591350844501178">Streamen von Bildschirm an <ph name="RECEIVER_NAME" /> beenden</translation>
 <translation id="810637681351706236">App von Ablage loslösen</translation>
@@ -1933,7 +1931,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8257510091797044096">Gerät einrichten</translation>
 <translation id="8261506727792406068">Löschen</translation>
 <translation id="8262312463845990408">Wiedergabe aktivieren/deaktivieren</translation>
-<translation id="8270450402312105425">{0,plural, =1{Gerät innerhalb von einer Stunde auf eine frühere Version zurücksetzen}other{Gerät innerhalb von # Stunden auf eine frühere Version zurücksetzen}}</translation>
 <translation id="8277261673056602147">Text auf dem Bildschirm markieren</translation>
 <translation id="8287009018010202411">Produktivität</translation>
 <translation id="828708037801473432">Aus</translation>
@@ -2000,7 +1997,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8553395910833293175">Ist bereits allen Desktops zugewiesen.</translation>
 <translation id="8555757996376137129">Aktuellen Desktop entfernen</translation>
 <translation id="8559845965695780508">Von <ph name="USER" /> bearbeitet</translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> empfiehlt, dein Gerät (<ph name="DEVICE_TYPE" />) zu aktualisieren</translation>
 <translation id="8569751806372591456">Hier ein paar Vorschläge</translation>
 <translation id="857201607579416096">Menü wurde nach rechts unten auf dem Bildschirm verschoben.</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /> + <ph name="MODIFIER_2" /> drücken und auf einen Link klicken</translation>
@@ -2114,6 +2110,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="899350903320462459">Wenn du die Benachrichtigungsaktion ausführen möchtest, entsperre das Gerät als <ph name="LOGIN_ID" /></translation>
 <translation id="8993733019280019776">Sprichst du gerade? Dein Mikrofon ist deaktiviert. Wähle es aus, um es zu aktivieren.</translation>
 <translation id="9000771174482730261">SPEICHERPLATZ VERWALTEN</translation>
+<translation id="9002204506712855687">Die neuesten Funktionen</translation>
 <translation id="9005984960510803406">Crosh-Fenster öffnen</translation>
 <translation id="9017320285115481645">Gib deinen Eltern-Zugangscode für Family Link ein.</translation>
 <translation id="9022774213089566801">Häufig besucht</translation>
@@ -2145,6 +2142,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="9098969848082897657">Smartphone stummschalten</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> oder <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Letzte Aktion rückgängig machen</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{In 1 Min.}other{In # Min.}}</translation>
 <translation id="9129245940793250979">Hintere Taste</translation>
 <translation id="9133335900048457298">Geschützte Inhalte können nicht aufgezeichnet werden</translation>
 <translation id="9139720510312328767">Nächsten Buchstaben löschen</translation>
@@ -2157,6 +2155,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="9183456764293710005">Vollbildlupe</translation>
 <translation id="9193626018745640770">Streaming an unbekannten Empfänger</translation>
 <translation id="9194617393863864469">Weiteren Nutzer anmelden...</translation>
+<translation id="9195990613383871904">Morgen</translation>
 <translation id="9198992156681343238">Die Auflösung von <ph name="DISPLAY_NAME" /> wurde zu <ph name="RESOLUTION" /> geändert. Bitte bestätigen, um die Änderungen beizubehalten. Die vorherigen Einstellungen werden in <ph name="TIMEOUT_SECONDS" /> wiederhergestellt.</translation>
 <translation id="9201044636667689546"><ph name="NAME" /> mit diesem Chromebook verbinden</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, von deinem Administrator verwaltet</translation>
@@ -2172,7 +2171,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="923686485342484400">Drücke zum Abmelden zweimal Steuerung - Umschalttaste - Q.</translation>
 <translation id="92580429198593979">Du hast die Tastenkombination für die Farbumkehr gedrückt. Möchtest du sie aktivieren?</translation>
 <translation id="925832987464884575">Vorschauen ausblenden</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> erfordert, dass dein Gerät (<ph name="DEVICE_TYPE" />) sofort aktualisiert wird</translation>
 <translation id="938407504481277932">Aktueller Desktop: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" />, <ph name="EMAIL" />. Desktop <ph name="DESK_INDEX" /> von <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Welche Termine stehen an?</translation>
 <translation id="945383118875625837">Link auf die Lesezeichenleiste ziehen</translation>

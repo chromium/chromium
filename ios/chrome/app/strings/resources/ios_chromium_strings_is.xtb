@@ -75,6 +75,7 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chromium-upplifuni
 <translation id="2942241131342758843">Notaðu Chromium sem sjálfgefinn valkost til að opna tengla, leita í græjum og til sjálfvirkrar útfyllingar aðgangsorða í öðrum forritum</translation>
 <translation id="2977470724722393594">Chromium er uppfært</translation>
 <translation id="3044857325852340337">Chromium-gögnum var eytt</translation>
+<translation id="3049211156275642309">Ljúktu við uppsetningu Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium getur hjálpað þér að rekja þennan pakka á síðu nýrra flipa.}one{Chromium getur hjálpað þér að rekja þessa pakka á síðu nýrra flipa.}other{Chromium getur hjálpað þér að rekja þessa pakka á síðu nýrra flipa.}}</translation>
 <translation id="3102849287235003384">Til að skrá þig út af Google reikningnum þínum á öllum vefsvæðum skaltu <ph name="BEGIN_LINK" />skrá þig út af Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Leita með röddinni í Chromium</translation>
@@ -273,6 +274,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="8754966941001340678">Chromium mælir með aukinni vörn</translation>
 <translation id="8759037115129007407">Fjölskyldumeðlimur þinn getur ekki tekið á móti aðgangsorðum eins og er. Biddu viðkomandi um að uppfæra Chromium og samstilla aðgangsorðin sín. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Þessi reikningur og öll óvistuð gögn verða fjarlægð úr Chromium.</translation>
+<translation id="8826789549860004832">Haltu uppsetningu vafrans áfram til að fá sem mest út úr Chromium.</translation>
 <translation id="88376265765385899">Opnar bókamerki Chromium.</translation>
 <translation id="8860548555286245440">Opnaðu vefslóðir í Chromium í huliðsstillingu</translation>
 <translation id="8866191443434488382">Chromium mun greina rakningarnúmer á vefsvæðum sem þú opnar og birta þér fréttir af pökkum á síðu nýrra flipa. Rakningarnúmer pakkans og heiti vefsvæðisins verða send til Chromium í því skyni að veita þennan eiginleika og bæta verslunareiginleika fyrir alla. Þú getur uppfært þetta hvenær sem er í <ph name="BEGIN_LINK" />stillingum pakkarakningar<ph name="END_LINK" />.</translation>

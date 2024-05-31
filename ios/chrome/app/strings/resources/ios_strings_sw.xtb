@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Historia</translation>
 <translation id="164673457281113247">{count,plural, =1{Alamisho imehifadhiwa}other{Alamisho zimehifadhiwa}}</translation>
 <translation id="1650222530560417226">Gusa kitufe cha "Anza Kuweka Kumbukumbu" ili ukusanye kumbukumbu na hitilafu za Kidhibiti cha JavaScript kutoka vichupo vyote. Kumbukumbu zitakusanywa (na kuhifadhiwa katika hifadhi pekee) hadi wakati ukurasa huu unafungwa au kitufe cha "Acha Kuweka Kumbukumbu" kinaguswa.</translation>
+<translation id="1652333207707886577">Badilisha menyu upendavyo</translation>
 <translation id="1653432787084483144">{count,plural, =1{Nenosiri {count} lililohifadhiwa linapatikana juu ya kibodi yako.}other{Manenosiri {count} yaliyohifadhiwa yanapatikana juu ya kibodi yako.}}</translation>
 <translation id="1657011748321897393">Kushiriki kulishindwa kwa sababu hujaunganishwa kwenye mtandao.</translation>
 <translation id="165877110639533037">Hakuna Vichupo Vilivyo Wazi</translation>
@@ -531,6 +532,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3738428049780661523">Kiliundwa tarehe <ph name="DATE" /></translation>
 <translation id="374357899112510277">Kuficha Vipakuliwa</translation>
 <translation id="3745190878148784130">Ficha Chaguo la Kukuza Maandishi</translation>
+<translation id="3747231889390582072">Ili kulinda usalama wa shirika lako, data ambayo haijahifadhiwa itafutwa kwenye kifaa hiki. Data hii inaweza kujumuisha manenosiri, historia ya kuvinjari, vidakuzi na zaidi.</translation>
 <translation id="3762232513783804601">Imeundwa kwa ajili ya iPad Yako</translation>
 <translation id="3768725474733206671">Fungua tena Kichupo Ulichofunga mara ya Mwisho</translation>
 <translation id="3771033907050503522">Vichupo Fiche</translation>
@@ -1481,6 +1483,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8446884382197647889">Pata Maelezo Zaidi</translation>
 <translation id="8449347986464073209">Futa na Uondoke kwenye Akaunti</translation>
 <translation id="8459333855531264009">Si Salama</translation>
+<translation id="8466300942149667917">Data ya akaunti ambayo haijahifadhiwa itafutwa</translation>
 <translation id="8473863474539038330">Anwani na zaidi</translation>
 <translation id="8487667956631253959">Imewashwa</translation>
 <translation id="8487700953926739672">Kinapatikana nje ya mtandao</translation>

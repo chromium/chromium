@@ -74,6 +74,7 @@
 <translation id="2942241131342758843">አገናኞችን ለመክፈት፣ ከመግብሮች ለመፈለግ እና የይለፍ ቃሎችን በራስ-ለመሙላት በሌሎች መተግበሪያዎች ውስጥ በነባሪነት Chromium ይጠቀሙ</translation>
 <translation id="2977470724722393594">Chromium የተዘመነ ነው</translation>
 <translation id="3044857325852340337">የተሰረዘ Chromium ውሂብ</translation>
+<translation id="3049211156275642309">Chromiumን ማቀናበር ያጠናቅቁ</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium ይህን ጥቅል በአዲስ ትር ገፅ ላይ እንዲከታተሉ ሊያግዝዎት ይችላል።}one{Chromium ይህን ጥቅል በአዲስ ትር ገፅ ላይ እንዲከታተሉ ሊያግዝዎት ይችላል።}other{Chromium እነዚህን ጥቅሎች በአዲስ ትር ገፅ ላይ እንዲከታተሉ ሊያግዝዎት ይችላል።}}</translation>
 <translation id="3102849287235003384">በሁሉም ድር ጣቢያዎች ላይ የእርስዎን የGoogle መለያ ዘግተው ለመውጣት <ph name="BEGIN_LINK" />ከChromium ዘግተው ይውጡ<ph name="END_LINK" />።</translation>
 <translation id="3219277919172823720">በChromium ውስጥ በጽምፅ ይፈልጉ</translation>
@@ -272,6 +273,7 @@
 <translation id="8754966941001340678">Chromium የላቀ ጥበቃን ይመክራል</translation>
 <translation id="8759037115129007407">በአሁኑ ጊዜ የቤተሰብ አባልዎ የይለፍ ቃሎችን መቀበል አይችሉም። Chromium እንዲያዘምኑ እና የይለፍ ቃላቸውን እንዲያሰምሩ ይጠይቋቸው። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">ይህ መለያ እና ማንኛውም ያልተቀመጠ ውሂብ ከChromium ይወገዳል።</translation>
+<translation id="8826789549860004832">አሳሽዎን ማቀናበር በመቀጠል ከChromium ማግኘት የሚችሉትን ሁሉ ያግኙ።</translation>
 <translation id="88376265765385899">የChromium እልባቶችን ይከፍታል።</translation>
 <translation id="8860548555286245440">የማይታወቁ ዩአርኤልዎችን በማንነት የማያሳውቅ Chromium ይክፈቱ</translation>
 <translation id="8866191443434488382">Chromium በሚጎበኟቸው ጣቢያዎች ላይ ያሉ የመከታተያ ቁጥሮች ለይቶ ያውቃል እና በአዲሱ የትር ገፅ ላይ የጥቅል ዝማኔዎች ያሳይዎታል። ይህንን ባህሪ ለማቅረብ እና ለሁሉም ሰው የግዢ ባህሪያትን ለማሻሻል የጥቅል መከታተያ ቁጥሩ እና የድር ጣቢያው ስም ወደ Chromium ይላካል። ይህንን በማንኛውም ጊዜ <ph name="BEGIN_LINK" />በጥቅል መከታተያ ቅንብሮች<ph name="END_LINK" /> ውስጥ ማዘመን ይችላሉ።</translation>

@@ -456,6 +456,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1812527064848182527">mlalo</translation>
 <translation id="1812975699435941848">Elimu ya Afya na Mafunzo ya Utabibu</translation>
 <translation id="1816436748874040213">Inaweza kukuomba isogeze na ikuze vichupo unavyotumia na wengine</translation>
+<translation id="1817364650920811003">Jukumu: kidokezo cha Chrome. Lebo ya ufikivu: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Ruhusu</translation>
 <translation id="1818585559878922121">Filamu za Matukio halisi</translation>
 <translation id="182139138257690338">upakuaji wa kiotomatiki</translation>
@@ -1398,6 +1399,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3642638418806704195">Programu:</translation>
 <translation id="3646643500201740985">Kupima kiwango cha utendaji wa tangazo</translation>
 <translation id="3647286794400715637">Kila ingizo la URL lazima liwe na kati ya URL 1 hadi 2.</translation>
+<translation id="3647400963805615193">Kitufe cha Kuondoa Kidokezo cha Chrome, bonyeza ‘Enter’ ili uondoe, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Uhalalishaji umefanikiwa</translation>
 <translation id="3650594806107685466">Ili kulinda kadi yako, weka CVC iliyo <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Matembezi Marefu na Kupiga Kambi</translation>
@@ -3368,6 +3370,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7481312909269577407">Mbele</translation>
 <translation id="7481603210197454575">Bahasha ya muundo wa Kitaliano</translation>
 <translation id="7483482939016730822">Vifaa vya Shuleni na Darasani</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, bonyeza ‘Tab’ kisha ‘Enter’ ili Uondoe Kidokezo cha Chrome.</translation>
 <translation id="7485085230273446323">Biashara na Viwanda</translation>
 <translation id="7485870689360869515">Hakuna data iliyopatikana.</translation>
 <translation id="7489392576326061356">Shampoo na Bidhaa za Kulainisha Nywele</translation>

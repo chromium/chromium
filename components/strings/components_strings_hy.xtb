@@ -460,6 +460,7 @@
 <translation id="1812527064848182527">հորիզոնական</translation>
 <translation id="1812975699435941848">Կրթություն առողջապահության ոլորտում և բուժպատրաստություն</translation>
 <translation id="1816436748874040213">Կարող է խնդրել ոլորումով փոխել մասշտաբը</translation>
+<translation id="1817364650920811003">Դերը՝ Chrome-ի խորհուրդ։ Հատուկ գործառույթների կոճակ՝ «<ph name="CHROME_TIP" />»</translation>
 <translation id="1818522458013171885">Արգելաբացել</translation>
 <translation id="1818585559878922121">Վավերագրական ֆիլմեր</translation>
 <translation id="182139138257690338">ավտոմատ ներբեռնումներ</translation>
@@ -1404,6 +1405,7 @@
 <translation id="3642638418806704195">Ծրագիրը՝</translation>
 <translation id="3646643500201740985">Գովազդի արդյունավետության գնահատում</translation>
 <translation id="3647286794400715637">URL-ների տողի յուրաքանչյուր գրառում պետք է պարունակի 1-ից 2 URL։</translation>
+<translation id="3647400963805615193">«Փակել Chrome-ի խորհուրդը» կոճակ․ սեղմեք Enter՝ փակելու համար, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Վավերացումը հաջողվեց</translation>
 <translation id="3650594806107685466">Ձեր քարտն ապահով պահելու գամար մուտքագրեք <ph name="SIDE_OF_CARD" /> գտնվող CVC կոդը</translation>
 <translation id="3650917416636556301">Արշավներ և վրանային ճամբարներ</translation>
@@ -3381,6 +3383,7 @@
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7481603210197454575">Envelope Italian</translation>
 <translation id="7483482939016730822">Դպրոցական պարագաներ և դասարանային կահավորանք</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, սեղմեք Tab, այնուհետև՝ Enter, որպեսզի փակեք Chrome-ի խորհուրդը։</translation>
 <translation id="7485085230273446323">Բիզնես և արդյունաբերություն</translation>
 <translation id="7485870689360869515">Տվյալներ չեն գտնվել:</translation>
 <translation id="7489392576326061356">Շամպուններ և կոնդիցիոներներ</translation>

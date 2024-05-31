@@ -57,7 +57,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="118437560755358292">Informe a senha ou o PIN para aumentar a segurança</translation>
 <translation id="118532027333893379">Toque em qualquer lugar para capturar a tela cheia</translation>
 <translation id="1190609913194133056">Central de Notificações</translation>
-<translation id="1190678134285018527">O dispositivo precisa voltar à versão anterior</translation>
 <translation id="1195412055398077112">overscan</translation>
 <translation id="1195667586424773550">Arrastar o link até a barra de endereço da guia</translation>
 <translation id="119944043368869598">Remover tudo</translation>
@@ -685,7 +684,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="363473492175527493">Tarefa definida para se concentrar em: <ph name="TASK_NAME" />. Pressione Enter para editar a tarefa.</translation>
 <translation id="3638400994746983214">Alternar tela de privacidade. <ph name="STATE_TEXT" /></translation>
 <translation id="3649256019230929621">Minimizar janela</translation>
-<translation id="3649505501900178324">Atualização atrasada</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> a
@@ -755,7 +753,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3900355044994618856">Sua sessão terminará em <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Conectando-se a <ph name="NAME" /></translation>
 <translation id="3906954721959377182">Tablet</translation>
-<translation id="3922427723338465344">{0,plural, =1{Reverta o dispositivo para a versão anterior em até 1 minuto}one{Reverta o dispositivo para a versão anterior em até # minuto}other{Reverta o dispositivo para a versão anterior em até # minutos}}</translation>
 <translation id="3923494859158167397">Nenhuma rede móvel configurada</translation>
 <translation id="3925540965556789199"><ph name="DATE" />. Carregando eventos.</translation>
 <translation id="3932043219784172185">Nenhum dispositivo conectado</translation>
@@ -946,7 +943,6 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4623167406982293031">Verificar conta</translation>
 <translation id="4628757576491864469">Dispositivos</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, avaliado com <ph name="RATING_SCORE" /> estrelas</translation>
-<translation id="4633185660152240791">{0,plural, =1{Reverta o dispositivo para a versão anterior em até 1 dia}one{Reverta o dispositivo para a versão anterior em até # dia}other{Reverta o dispositivo para a versão anterior em até # dias}}</translation>
 <translation id="4633636853437260449">Pressione Ctrl+W para excluir</translation>
 <translation id="4642092649622328492">Fazer uma captura de tela parcial</translation>
 <translation id="4644727592819780893">A região é muito pequena para caber na câmera</translation>
@@ -1453,7 +1449,6 @@ Nenhum dispositivo conectado.</translation>
 <translation id="6477681113376365978">Não é possível fazer o download do arquivo</translation>
 <translation id="6482559668224714696">Lupa de tela cheia</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta da direita)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> precisa que você atualize seu <ph name="DEVICE_TYPE" /> antes do fim do prazo</translation>
 <translation id="649452524636452238">PIN do cartão inteligente</translation>
 <translation id="6495322433318104734">Mostrando o protetor de tela. Pressione qualquer tecla para sair.</translation>
 <translation id="6495400115277918834">O picture-in-picture foi iniciado. Pressione "Alt + Shift + V" para focar</translation>
@@ -1518,7 +1513,6 @@ Nova instalação</translation>
 <translation id="6697913454192220372">Adicionar novo espaço de trabalho</translation>
 <translation id="6700713906295497288">Botão do menu do IME</translation>
 <translation id="6706742084323792866">Fixar teclado</translation>
-<translation id="6707693040195709527">A mudança do dispositivo para a versão anterior está atrasada</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6723839937902243910">Energia</translation>
 <translation id="672609503628871915">Veja o que há de novo</translation>
@@ -1811,7 +1805,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7866482334467279021">ativada</translation>
 <translation id="7872786842639831132">Desativado</translation>
 <translation id="7875575368831396199">Parece que o Bluetooth está desativado no seu <ph name="DEVICE_TYPE" />. Ative-o para usar o recurso Seu smartphone.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Reverta o dispositivo para a versão anterior agora}=1{Reverta o dispositivo para a versão anterior em até 1 segundo}one{Reverta o dispositivo para a versão anterior em até # segundo}other{Reverta o dispositivo para a versão anterior em até # segundos}}</translation>
 <translation id="7884446017008693258">Configurações de ponto de acesso</translation>
 <translation id="7884902759927478774">Cancelar o gesto de arrastar guia</translation>
 <translation id="7886169021410746335">ajustar configurações de privacidade.</translation>
@@ -1888,7 +1881,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Use a tecla Tab para conferir mais opções. Use as setas para a esquerda e direita para acessar todos os espaços de trabalho.</translation>
 <translation id="8091153018031979607">Início: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Atualizações automáticas</translation>
 <translation id="8092380135549145188">Controles de rolagem</translation>
 <translation id="8098591350844501178">Parar de transmitir tela para <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Liberar app da estante</translation>
@@ -1934,7 +1926,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8257510091797044096">Configurar o dispositivo</translation>
 <translation id="8261506727792406068">Excluir</translation>
 <translation id="8262312463845990408">Pausar/continuar a reprodução</translation>
-<translation id="8270450402312105425">{0,plural, =1{Reverta o dispositivo para a versão anterior em até 1 hora}one{Reverta o dispositivo para a versão anterior em até # hora}other{Reverta o dispositivo para a versão anterior em até # horas}}</translation>
 <translation id="8277261673056602147">Destacar texto na tela</translation>
 <translation id="8287009018010202411">Produtividade</translation>
 <translation id="828708037801473432">Desativada</translation>
@@ -2001,7 +1992,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8553395910833293175">Já atribuído a todos os espaços de trabalho.</translation>
 <translation id="8555757996376137129">Remover o espaço de trabalho atual</translation>
 <translation id="8559845965695780508">Editado por <ph name="USER" /></translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> recomenda que você atualize seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Confira algumas sugestões</translation>
 <translation id="857201607579416096">O menu foi movido para o canto inferior direito da tela.</translation>
 <translation id="8581946341807941670">Pressione <ph name="MODIFIER_1" /> + <ph name="MODIFIER_2" /> e clique em um link</translation>
@@ -2173,7 +2163,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="923686485342484400">Pressione Control+Shift+Q duas vezes para sair.</translation>
 <translation id="92580429198593979">Você pressionou o atalho de teclado para inversão de cores. Quer ativar o recurso?</translation>
 <translation id="925832987464884575">Ocultar visualizações</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> precisa que você atualize seu <ph name="DEVICE_TYPE" /> imediatamente</translation>
 <translation id="938407504481277932">Espaço de trabalho atual: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Espaço de trabalho <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">O que tem na minha agenda?</translation>
 <translation id="945383118875625837">Arrastar um link até a barra de favoritos</translation>

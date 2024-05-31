@@ -57,7 +57,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="118437560755358292">Segurtasuna areagotzeko, idatzi pasahitza edo PINa</translation>
 <translation id="118532027333893379">Sakatu pantailako edozein puntu pantaila osoaren argazkia ateratzeko</translation>
 <translation id="1190609913194133056">Jakinarazpen-zentroa</translation>
-<translation id="1190678134285018527">Gailuaren aurreko bertsiora itzuli behar da</translation>
 <translation id="1195412055398077112">bistaratzen ez den eremua</translation>
 <translation id="1195667586424773550">Arrastatu esteka fitxaren helbide-barrara</translation>
 <translation id="119944043368869598">Garbitu guztiak</translation>
@@ -685,7 +684,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="363473492175527493">Kontzentratzeko ezarritako zeregina: <ph name="TASK_NAME" />. Zeregina editatzeko, sakatu Sartu.</translation>
 <translation id="3638400994746983214">Aktibatu/Desaktibatu pribatutasun-pantaila. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Minimizatu leihoa</translation>
-<translation id="3649505501900178324">Eguneratze bat dago egiteke</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> eta
@@ -756,7 +754,6 @@ Aurrera egiteko, erabiltzaile guztiek saioa amaitu behar dute.</translation>
 <translation id="3900355044994618856"><ph name="SESSION_TIME_REMAINING" /> barru amaituko da saioa</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> sarera konektatzen</translation>
 <translation id="3906954721959377182">Tableta</translation>
-<translation id="3922427723338465344">{0,plural, =1{Itzuli gailuaren aurreko bertsiora minutu bat barru}other{Itzuli gailuaren aurreko bertsiora # minutu barru}}</translation>
 <translation id="3923494859158167397">Ez da konfiguratu sare mugikorrik</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Gertaerak kargatzen.</translation>
 <translation id="3932043219784172185">Ez dago gailurik konektatuta</translation>
@@ -947,7 +944,6 @@ Gailu bat dago konektatuta.</translation>
 <translation id="4623167406982293031">Egiaztatu kontua</translation>
 <translation id="4628757576491864469">Gailuak</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" /> aplikazioa. <ph name="RATING_SCORE" /> izarreko balorazioa dauka.</translation>
-<translation id="4633185660152240791">{0,plural, =1{Itzuli gailuaren aurreko bertsiora egun bat barru}other{Itzuli gailuaren aurreko bertsiora # egun barru}}</translation>
 <translation id="4633636853437260449">Sakatu Ktrl+W ezabatzeko</translation>
 <translation id="4642092649622328492">Atera eremu baten pantaila-argazkia</translation>
 <translation id="4644727592819780893">Eremua txikiegia da kameraren aurrebistan erakusteko</translation>
@@ -1454,7 +1450,6 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="6477681113376365978">Ezin da deskargatu fitxategia</translation>
 <translation id="6482559668224714696">Pantaila osoko lupa</translation>
 <translation id="6490471652906364588">USB-C gailua (eskuinaldeko ataka)</translation>
-<translation id="6491071886865974820"><ph name="DEVICE_TYPE" /> gailua epemuga heldu aurretik eguneratzea eskatu dizu <ph name="MANAGER" /> kudeatzaileak</translation>
 <translation id="649452524636452238">Txartel adimendunaren PINa</translation>
 <translation id="6495322433318104734">Pantaila-babeslea bistaratzen. Irteteko, sakatu edozein tekla</translation>
 <translation id="6495400115277918834">Pantaila txiki gainjarria abiarazi da. Fokuratzeko, sakatu Alt, Maius eta V.</translation>
@@ -1519,7 +1514,6 @@ Berriki instalatu da</translation>
 <translation id="6697913454192220372">Gehitu lan-eremu bat</translation>
 <translation id="6700713906295497288">IME menu-botoia</translation>
 <translation id="6706742084323792866">Ainguratu teklatua</translation>
-<translation id="6707693040195709527">Gailua aurreko bertsiora itzultzeko epemuga gainditu da</translation>
 <translation id="6710213216561001401">Aurrekoa</translation>
 <translation id="6723839937902243910">Bateria</translation>
 <translation id="672609503628871915">Ikusi azken berrikuntzak</translation>
@@ -1812,7 +1806,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7866482334467279021">aktibatuta</translation>
 <translation id="7872786842639831132">Desaktibatuta</translation>
 <translation id="7875575368831396199">Bluetootha desaktibatuta dago <ph name="DEVICE_TYPE" /> gailuan. Aktiba ezazu Phone Hub erabiltzeko.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Itzuli gailuaren aurreko bertsiora orain}=1{Itzuli gailuaren aurreko bertsiora segundo bat barru}other{Itzuli gailuaren aurreko bertsiora # segundo barru}}</translation>
 <translation id="7884446017008693258">Wifi-gunearen ezarpenak</translation>
 <translation id="7884902759927478774">Utzi fitxa arrastatzeari</translation>
 <translation id="7886169021410746335">Doitu pribatutasun-ezarpenak</translation>
@@ -1889,7 +1882,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Aukera gehiago ikusteko, erabili tabuladorea. Lan-eremu guztietan sartzeko, erabili ezkerrera eta eskuinera egiteko gezi-teklak.</translation>
 <translation id="8091153018031979607">Hasiera-ordua: <ph name="START_TIME" /> (<ph name="DAYS_ELAPSED" />)</translation>
-<translation id="8091387634532529612">Eguneratze automatikoak</translation>
 <translation id="8092380135549145188">Gora/behera egiteko modua kontrolatzeko aukerak</translation>
 <translation id="8098591350844501178">Utzi pantaila <ph name="RECEIVER_NAME" /> izeneko gailura igortzeari</translation>
 <translation id="810637681351706236">Kendu aplikazioaren aingura apaletik</translation>
@@ -1935,7 +1927,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8257510091797044096">Konfiguratu gailua</translation>
 <translation id="8261506727792406068">Ezabatu</translation>
 <translation id="8262312463845990408">Erreproduzitu/Pausatu</translation>
-<translation id="8270450402312105425">{0,plural, =1{Itzuli gailuaren aurreko bertsiora ordubete barru}other{Itzuli gailuaren aurreko bertsiora # ordu barru}}</translation>
 <translation id="8277261673056602147">Nabarmendu pantailako testua</translation>
 <translation id="8287009018010202411">Produktibitatea</translation>
 <translation id="828708037801473432">Desaktibatuta</translation>
@@ -2002,7 +1993,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8553395910833293175">Lan-eremu guztiei esleitu zaie dagoeneko.</translation>
 <translation id="8555757996376137129">Kendu lan-eremu hau</translation>
 <translation id="8559845965695780508"><ph name="USER" /> erabiltzaileak editatu du</translation>
-<translation id="856298576161209842"><ph name="DEVICE_TYPE" /> gailua eguneratzeko gomendatzen dizu <ph name="MANAGER" /> kudeatzaileak</translation>
 <translation id="8569751806372591456">Hona hemen proba ditzakezun gauza batzuk:</translation>
 <translation id="857201607579416096">Pantailaren beheko eskuineko izkinara eraman da menua.</translation>
 <translation id="8581946341807941670">Sakatu <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> eta egin klik esteka batean</translation>
@@ -2174,7 +2164,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="923686485342484400">Saioa amaitzeko, sakatu Kontrol + Maius + Q bi aldiz.</translation>
 <translation id="92580429198593979">Koloreak alderantzikatzeko lasterbidea sakatu duzu. Koloreak alderantzikatzeko modua aktibatu nahi duzu?</translation>
 <translation id="925832987464884575">Ezkutatu aurrebistak</translation>
-<translation id="937214777182567951"><ph name="DEVICE_TYPE" /> gailua berehala eguneratzea eskatu dizu <ph name="MANAGER" /> kudeatzaileak</translation>
 <translation id="938407504481277932">Oraingo lan-eremua: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />). <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" /> lan-eremua.</translation>
 <translation id="938963181863597773">Zer daukat egutegian?</translation>
 <translation id="945383118875625837">Arrastatu esteka laster-marken barrara</translation>

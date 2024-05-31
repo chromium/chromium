@@ -75,6 +75,7 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="2942241131342758843">Përdor Chromium si parazgjedhje për të hapur lidhjet, për të kërkuar nga miniaplikacionet dhe për të plotësuar automatikisht fjalëkalimet në aplikacione të tjera</translation>
 <translation id="2977470724722393594">Chromium është i përditësuar</translation>
 <translation id="3044857325852340337">Të dhënat e Chromium u fshinë</translation>
+<translation id="3049211156275642309">Përfundo konfigurimin e Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium mund të të ndihmojë ta gjurmosh këtë paketë në faqen e skedës së re.}other{Chromium mund të të ndihmojë t'i gjurmosh këto paketa në faqen e skedës së re.}}</translation>
 <translation id="3102849287235003384">Për të dalë nga "Llogaria jote e Google" në të gjitha uebsajtet, <ph name="BEGIN_LINK" />dil nga Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Kërko me zë në Chromium</translation>
@@ -272,6 +273,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="8754966941001340678">Chromium rekomandon mbrojtjen e përmirësuar</translation>
 <translation id="8759037115129007407">Anëtari i familjes nuk mund t'i marrë fjalëkalimet në këtë moment. Kërkoji që të përditësojë Chromium dhe sinkronizo fjalëkalimet e atij anëtari. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Kjo llogari dhe të dhënat e paruajtura do të hiqen nga Chromium.</translation>
+<translation id="8826789549860004832">Përfito sa më shumë nga Chromium duke vazhduar konfigurimin e shfletuesit.</translation>
 <translation id="88376265765385899">Hap faqeshënuesit e Chromium.</translation>
 <translation id="8860548555286245440">Hap URL-të në Chromium në modalitetin "I fshehtë"</translation>
 <translation id="8866191443434488382">Chromium do të zbulojë numrat e gjurmimit në sajtet që viziton ti dhe do të të shfaqë përditësime për pakot në faqen e skedës së re. Numri i gjurmimit i pakos dhe emri i uebsajtit do të dërgohen te Chromium për të ofruar këtë veçori dhe për të përmirësuar veçoritë e blerjeve për të gjithë. Mund ta përditësosh këtë në çdo kohë te <ph name="BEGIN_LINK" />Cilësimet e gjurmimit të pakove<ph name="END_LINK" />.</translation>

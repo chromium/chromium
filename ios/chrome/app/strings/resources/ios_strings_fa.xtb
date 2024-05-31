@@ -472,6 +472,7 @@
 <translation id="3435738964857648380">امنیت</translation>
 <translation id="3443810440409579745">برگه دریافت شد.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقیقه</translation>
+<translation id="3445580184527779479">گروه برگه. ازهم بازشده.</translation>
 <translation id="3448016392200048164">نمای تقسیم</translation>
 <translation id="345565170154308620">مدیریت گذرواژه‌ها…</translation>
 <translation id="3464194322481586217">قیمت پیگیری نشد.</translation>
@@ -516,6 +517,7 @@
 <translation id="3638472932233958418">صفحات وب از پیش بارگیری شده</translation>
 <translation id="3642060527569456384">گروه‌های برگه به‌طور خودکار در همه دستگاه‌هایتان ذخیره و به‌روز می‌شود.</translation>
 <translation id="3643338347976071250">{count,plural, =1{‏{count} گذرواژه فقط در این دستگاه ذخیره شده است. برای استفاده از آن در دستگاه‌های دیگرتان، آن را در «حساب Google» خود ({email}) ذخیره کنید.}one{‏{count} گذرواژه فقط در این دستگاه ذخیره شده است. برای استفاده از آن در دستگاه‌های دیگرتان، آن را در «حساب Google» خود ({email}) ذخیره کنید.}other{‏{count} گذرواژه فقط در این دستگاه ذخیره شده است. برای استفاده از آن‌ها در دستگاه‌های دیگرتان، آن‌ها را در «حساب Google» خود ({email}) ذخیره کنید.}}</translation>
+<translation id="3650299480924308502">پس‌از خروج از سیستم، داده‌های ذخیره‌نشده از این دستگاه حذف خواهد شد. این داده‌ها می‌تواند شامل گذرواژه‌ها، سابقه، و موارد دیگر باشد.</translation>
 <translation id="3659297405161482746">روش پرداختی پیدا نشد</translation>
 <translation id="3661160521073045932">پیکربندی نمایه دردسترس است</translation>
 <translation id="3670030362669914947">عدد</translation>
@@ -972,6 +974,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5971872012779224351">{count,plural, =1{یک نشانک حذف شد}one{{count} نشانک حذف شد}other{{count} نشانک حذف شد}}</translation>
 <translation id="5979837087407522202">جستجوی گذرواژه‌ها</translation>
 <translation id="5981230843984570095">بستن همه برگه‌های غیرفعال</translation>
+<translation id="5982958159110007132">برگه گروه برگه. ‫<ph name="TAB_INDEX_IN_GROUP" /> از <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="5984222099446776634">به‌تازگی بازدیدشده</translation>
 <translation id="598634819525651074">مساحت</translation>
 <translation id="5988097621740394599">کاهش قیمت را در برگه‌ها مشاهده کنید.</translation>
@@ -990,6 +993,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6040143037577758943">بستن</translation>
 <translation id="6042308850641462728">بیشتر</translation>
 <translation id="6045460247888249350">افزودن عنوان</translation>
+<translation id="6051432659151380973">گروه‌های برگه به‌طور خودکار ذخیره می‌شود</translation>
 <translation id="605721222689873409">سال</translation>
 <translation id="6059830886158432458">داستان‌ها و فعالیت خود را اینجا کنترل کنید</translation>
 <translation id="6064824697233747382">سازمانتان اجازه نمی‌دهد همگام‌سازی را روشن کنید.</translation>
@@ -1274,6 +1278,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="745899714366929493">تمام روز</translation>
 <translation id="7459628154744868585">«محافظت بهبودیافته» روشن است</translation>
 <translation id="7465351360025415755">محتوایی را که برایتان مهم است دریافت کنید</translation>
+<translation id="7470908168505178757">گروه برگه. جمع‌شده.</translation>
 <translation id="7472734401283673885">نام شرکت</translation>
 <translation id="7473891865547856676">نه متشکرم</translation>
 <translation id="7488874549363591659">تحویل داده شد</translation>
@@ -1612,6 +1617,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="9065203028668620118">ویرایش</translation>
 <translation id="9079935439869366234">علامت‌گذاری همه موارد به‌‌عنوان خوانده‌شده</translation>
 <translation id="9081058212938299310">گذرواژه <ph name="USERNAME" /> به‌روزرسانی شود؟</translation>
+<translation id="9082821980444279398">‏وقتی روشن باشد، از داده‌های «حساب Google» شما استفاده می‌شود و داده‌ها در حساب ذخیره می‌شود. وقتی خاموش باشد، داده‌ها فقط در این دستگاه ذخیره می‌شود و اگر از سیستم خارج شوید حذف می‌شود.</translation>
 <translation id="9083838294503912307">برای همگام‌سازی و شخصی‌سازی در همه دستگاه‌ها، همگام‌سازی را روشن کنید.</translation>
 <translation id="9087339162317338348">‏درصورت امکان از HTTPS استفاده می‌شود و قبل‌از بار شدن سایت‌هایی که از آن پشتیبانی نمی‌کنند هشدار دریافت می‌کنید.</translation>
 <translation id="9093271241977565440">در بالای صفحه، روی «نماد جستجو» ضربه بزنید</translation>

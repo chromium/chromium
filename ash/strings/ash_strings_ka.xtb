@@ -57,7 +57,6 @@
 <translation id="118437560755358292">დამატებითი უსაფრთხოებისთვის შეიყვანეთ პაროლი ან PIN-კოდი</translation>
 <translation id="118532027333893379">სრული ეკრანის აღსაბეჭდად შეეხეთ ნებისმიერ ადგილს</translation>
 <translation id="1190609913194133056">შეტყობინებათა ცენტრი</translation>
-<translation id="1190678134285018527">მოწყობილობა უნდა დაბრუნდეს წინა ვერსიაზე</translation>
 <translation id="1195412055398077112">არასამუშაო არე</translation>
 <translation id="1195667586424773550">ჩავლებით გადაიტანეთ ბმული ჩანართის მისამართთა ზოლში</translation>
 <translation id="119944043368869598">ყველაფრის გასუფთავება</translation>
@@ -689,7 +688,6 @@
 <translation id="363473492175527493">ამოცანა, რომელზეც ჩაირთო ფოკუსირების რეჟიმი: <ph name="TASK_NAME" />. ამოცანის რედაქტირებისთვის დააჭირეთ შეყვანის ღილაკს.</translation>
 <translation id="3638400994746983214">კონფიდენციალურობის ეკრანის გადართვა. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">ფანჯრის ჩაკეცვა</translation>
-<translation id="3649505501900178324">განახლება დაგვიანებულია</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> —
@@ -759,7 +757,6 @@
 <translation id="3900355044994618856">თქვენი სესიის დასრულებამდე დარჩა <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627"><ph name="NAME" />-თან დაკავშირება</translation>
 <translation id="3906954721959377182">ტაბლეტი</translation>
-<translation id="3922427723338465344">{0,plural, =1{დააბრუნეთ მოწყობილობა წინა ვერსიაზე 1 წუთის განმავლობაში}other{დააბრუნეთ მოწყობილობა წინა ვერსიაზე # წუთის განმავლობაში}}</translation>
 <translation id="3923494859158167397">მობილური ქსელები დაყენებული არ არის</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, მომდინარეობს მოვლენების ჩატვირთვა.</translation>
 <translation id="3932043219784172185">დაკავშირებული მოწყობილობები არ არის</translation>
@@ -953,7 +950,6 @@
 <translation id="4623167406982293031">დაადასტურეთ ანგარიში</translation>
 <translation id="4628757576491864469">მოწყობილობები</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, შეფასებულია <ph name="RATING_SCORE" /> ვარსკვლავით</translation>
-<translation id="4633185660152240791">{0,plural, =1{დააბრუნეთ მოწყობილობა წინა ვერსიაზე ერთი დღის განმავლობაში}other{დააბრუნეთ მოწყობილობა წინა ვერსიაზე # დღის განმავლობაში}}</translation>
 <translation id="4633636853437260449">წასაშლელად დააჭირეთ კლავიშთა კომბინაციას Ctrl+W</translation>
 <translation id="4642092649622328492">ეკრანის ნაწილობრივი ანაბეჭდის გადაღება</translation>
 <translation id="4644727592819780893">რეგიონი ზედმეტად პატარაა კამერის მოსათავსებლად</translation>
@@ -1464,7 +1460,6 @@
 <translation id="6477681113376365978">ფაილი ვერ ჩამოიტვირთა</translation>
 <translation id="6482559668224714696">სრულეკრანიანი ლუპა</translation>
 <translation id="6490471652906364588">USB-C მოწყობილობა (მარჯვენა პორტი)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> ითხოვს, განაახლოთ თქვენი <ph name="DEVICE_TYPE" /> ბოლო ვადამდე</translation>
 <translation id="649452524636452238">სმარტ-ბარათის PIN-კოდი</translation>
 <translation id="6495322433318104734">ნაჩვენებია ეკრანმზოგი, გასასვლელად დააჭირეთ ნებისმიერ კლავიშს</translation>
 <translation id="6495400115277918834">გაეშვა რეჟიმი ეკრანი ეკრანში, ფოკუსირებისთვის გამოიყენეთ კლავიშთა კომბინაცია Alt+Shift+V</translation>
@@ -1529,7 +1524,6 @@
 <translation id="6697913454192220372">ახალი სამუშაო მაგიდის დამატება</translation>
 <translation id="6700713906295497288">IME მენიუს ღილაკი</translation>
 <translation id="6706742084323792866">კლავიატურის ჩამაგრება</translation>
-<translation id="6707693040195709527">მოწყობილობის წინა ვერსიაზე დაბრუნება ვადაგადაცილებულია</translation>
 <translation id="6710213216561001401">წინა</translation>
 <translation id="6723839937902243910">ენერგია</translation>
 <translation id="672609503628871915">ნახეთ სიახლეებირა სიახლეა</translation>
@@ -1824,7 +1818,6 @@
 <translation id="7866482334467279021">ჩართული</translation>
 <translation id="7872786842639831132">გამორთვა</translation>
 <translation id="7875575368831396199">როგორც ჩანს, თქვენს <ph name="DEVICE_TYPE" />-ზე გამორთულია Bluetooth. ტელეფონის ცენტრის გამოსაყენებლად ჩართეთ Bluetooth.</translation>
-<translation id="7877557217297072640">{0,plural, =0{დააბრუნეთ მოწყობილობა წინა ვერსიაზე ახლავე}=1{დააბრუნეთ მოწყობილობა წინა ვერსიაზე 1 წამის განმავლობაში}other{დააბრუნეთ მოწყობილობა წინა ვერსიაზე # წამის განმავლობაში}}</translation>
 <translation id="7884446017008693258">უსადენო ქსელის პარამეტრები</translation>
 <translation id="7884902759927478774">ჩანართის ჩავლებით გადატანის გაუქმება</translation>
 <translation id="7886169021410746335">კონფიდენციალურობის პარამეტრების კორექტირება</translation>
@@ -1901,7 +1894,6 @@
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">მეტი ვარიანტის გასაცნობად გამოიყენეთ Tab. ყველა სამუშაო მაგიდაზე წვდომისთვის გამოიყენეთ კლავიშები მარცხნივ და მარჯვნივ მიმართული ისრით.</translation>
 <translation id="8091153018031979607">იწყება <ph name="START_TIME" />-ზე (<ph name="DAYS_ELAPSED" />)</translation>
-<translation id="8091387634532529612">ავტომატური განახლებები</translation>
 <translation id="8092380135549145188">გადაადგილების მართვის საშუალებები</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />-ში ეკრანის ტრანსლირების შეწყვეტა</translation>
 <translation id="810637681351706236">აპის ჩამაგრების მოხსნა თაროდან</translation>
@@ -1947,7 +1939,6 @@
 <translation id="8257510091797044096">თქვენი მოწყობილობის დაყენება</translation>
 <translation id="8261506727792406068">წაშლა</translation>
 <translation id="8262312463845990408">დაკვრის გადართვა</translation>
-<translation id="8270450402312105425">{0,plural, =1{დააბრუნეთ მოწყობილობა წინა ვერსიაზე ერთი საათის განმავლობაში}other{დააბრუნეთ მოწყობილობა წინა ვერსიაზე # საათის განმავლობაში}}</translation>
 <translation id="8277261673056602147">ტექსტის გამოყოფა თქვენს ეკრანზე</translation>
 <translation id="8287009018010202411">პროდუქტიულობა</translation>
 <translation id="828708037801473432">გამორთვა</translation>
@@ -2014,7 +2005,6 @@
 <translation id="8553395910833293175">უკვე მიმაგრებულია ყველა სამუშაო მაგიდაზე.</translation>
 <translation id="8555757996376137129">ამჟამინდელი სამუშაო მაგიდის წაშლა</translation>
 <translation id="8559845965695780508"><ph name="USER" />-მა დაარედაქტირა</translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> გირჩევთ, განაახლოთ თქვენი <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">აი, რამდენიმე საცდელი შემოთავაზება</translation>
 <translation id="857201607579416096">მენიუ გადატანილია ეკრანის ქვედა მარჯვენა კუთხეში.</translation>
 <translation id="8581946341807941670">დაჭერით აირჩიეთ <ph name="MODIFIER_1" /><ph name="MODIFIER_2" />, შემდეგ კი დააწკაპუნეთ ბმულზე</translation>
@@ -2191,7 +2181,6 @@
 <translation id="923686485342484400">დააჭირეთ Control Shift Q ორჯერ, რათა გამოხვიდეთ.</translation>
 <translation id="92580429198593979">თქვენ დააჭირეთ კლავიატურის მალსახმობს ფერთა ინვერსიისთვის. გსურთ მისი ჩართვა?</translation>
 <translation id="925832987464884575">გადახედვის გამორთვა</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> ითხოვს, დაუყოვნებლივ განაახლოთ ეს <ph name="DEVICE_TYPE" /></translation>
 <translation id="938407504481277932">ამჟამინდელი სამუშაო მაგიდა: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. სამუშაო მაგიდა <ph name="DESK_INDEX" /> / <ph name="DESK_COUNT" />-დან.</translation>
 <translation id="938963181863597773">რა მაქვს კალენდარში?</translation>
 <translation id="945383118875625837">ჩავლებით გადაიტანეთ ბმული სანიშნეების ზოლზე</translation>

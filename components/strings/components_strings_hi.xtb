@@ -457,6 +457,7 @@
 <translation id="1812527064848182527">लैंडस्केप</translation>
 <translation id="1812975699435941848">स्वास्थ्य शिक्षा और मेडिकल ट्रेनिंग</translation>
 <translation id="1816436748874040213">साइट को शेयर किए गए टैब में स्क्रोल और ज़ूम करने की अनुमति का अनुरोध करें</translation>
+<translation id="1817364650920811003">भूमिका: Chrome से जुड़ी सलाह. सुलभता का लेबल: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">अनब्लॉक करें</translation>
 <translation id="1818585559878922121">डॉक्यूमेंट्री फ़िल्में</translation>
 <translation id="182139138257690338">अपने-आप होने वाले डाउनलोड</translation>
@@ -1398,6 +1399,7 @@
 <translation id="3642638418806704195">ऐप्लिकेशन:</translation>
 <translation id="3646643500201740985">विज्ञापन की परफ़ॉर्मेंस का आकलन करना</translation>
 <translation id="3647286794400715637">हर यूआरएल स्ट्रिंग में, यूआरएल की संख्या एक से दो के बीच होनी चाहिए.</translation>
+<translation id="3647400963805615193">Chrome से जुड़ी सलाह खारिज करने के लिए बटन. <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> को खारिज करने के लिए Enter दबाएं</translation>
 <translation id="3650584904733503804">मान्यकरण सफल</translation>
 <translation id="3650594806107685466">अपने कार्ड को सुरक्षित रखने के लिए, <ph name="SIDE_OF_CARD" /> मौजूद सीवीसी डालें</translation>
 <translation id="3650917416636556301">हाइकिंग और कैंपिंग</translation>
@@ -2298,6 +2300,7 @@
 <translation id="541416427766103491">स्टैकर 4</translation>
 <translation id="5414446060143308245">ट्रांसफ़र करने से पहले, समीक्षा करना ज़रूरी है</translation>
 <translation id="5414511064953050917">फिर भी ट्रांसफ़र करें</translation>
+<translation id="5419311651396341287">आपका एडमिन यह जानकारी देख सकता है:</translation>
 <translation id="5421408724705443535">रॉक म्यूज़िक</translation>
 <translation id="5423269318075950257">कीमत ट्रैक करें</translation>
 <translation id="5425082381151187189">होम और इंटीरियर डेकोरेशन</translation>
@@ -3370,6 +3373,7 @@
 <translation id="7481312909269577407">आगे जाएं</translation>
 <translation id="7481603210197454575">इटैलियन साइज़ का लिफ़ाफ़ा</translation>
 <translation id="7483482939016730822">स्कूल और क्लास के इक्विपमेंट</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chrome से जुड़ी सलाह को खारिज करने के लिए, Tab और फिर Enter दबाएं.</translation>
 <translation id="7485085230273446323">कारोबार और औद्योगिक</translation>
 <translation id="7485870689360869515">कोई डेटा नहीं मिला</translation>
 <translation id="7489392576326061356">शैम्पू और कंडिशनर</translation>

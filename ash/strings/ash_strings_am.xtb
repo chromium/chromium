@@ -57,7 +57,6 @@
 <translation id="118437560755358292">ለበለጠ ደህንነት የይለፍ ቃል ወይም ፒን ያስገቡ</translation>
 <translation id="118532027333893379">ሙሉ ማያ ገጽን ለመቅረጽ በማንኛውም ቦታ ላይ መታ ያድርጉ</translation>
 <translation id="1190609913194133056">የማሳወቂያ ማዕከል</translation>
-<translation id="1190678134285018527">መሣሪያው ወደ ቀዳሚው ስሪት መመለስ አለበት</translation>
 <translation id="1195412055398077112">ትርፍ ቅኝት</translation>
 <translation id="1195667586424773550">አገናኙን ወደ የትሩ አድራሻ አሞሌ ይጎትቱት</translation>
 <translation id="119944043368869598">ሁሉንም አጽዳ</translation>
@@ -685,7 +684,6 @@
 <translation id="363473492175527493">ተግባሩ በ<ph name="TASK_NAME" /> ላይ እንዲያተኩር ተቀናብሯል።. ተግባሩን ዓርታኦት ለመስጠት አስገባ የሚለውን ይጫኑ።</translation>
 <translation id="3638400994746983214">የግላዊነት ማያ ገጽን ቀያይር። <ph name="STATE_TEXT" />።</translation>
 <translation id="3649256019230929621">መስኮትን ያሳንሱት</translation>
-<translation id="3649505501900178324">ዝማኔ ጊዜው ደርሶ አልፏል</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> ከ
@@ -755,7 +753,6 @@
 <translation id="3900355044994618856">የእርስዎ ክፍለ ጊዜ በ<ph name="SESSION_TIME_REMAINING" /> ውስጥ ያበቃል</translation>
 <translation id="3901991538546252627">ከ<ph name="NAME" /> ጋር በመገናኘት ላይ</translation>
 <translation id="3906954721959377182">ጡባዊ</translation>
-<translation id="3922427723338465344">{0,plural, =1{በ1 ደቂቃ ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}one{በ# ደቂቃዎች ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}other{በ# ደቂቃዎች ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}}</translation>
 <translation id="3923494859158167397">ምንም የተንቀሳቃሽ ስልክ አውታረ መረቦች አልተቀናበሩም</translation>
 <translation id="3925540965556789199">የ<ph name="DATE" /> ክስተቶችን በመጫን ላይ።</translation>
 <translation id="3932043219784172185">ምንም መሣሪያ አልተገናኘም</translation>
@@ -946,7 +943,6 @@
 <translation id="4623167406982293031">መለያን ያረጋግጡ</translation>
 <translation id="4628757576491864469">መሣሪያዎች</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />፣ ኮከብ ደረጃ አሰጣጥ <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{በአንድ ቀን ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይለውጡ}one{መሣሪያውን በ# ቀናት ውስጥ ወደ ቀዳሚው ስሪት ይለውጡ}other{መሣሪያውን በ# ቀናት ውስጥ ወደ ቀዳሚው ስሪት ይለውጡ}}</translation>
 <translation id="4633636853437260449">ለመሰረዝ Ctrl+Wን ይጫኑ</translation>
 <translation id="4642092649622328492">ከፊል ቅጽበታዊ ገፅ ዕይታን ያንሱ</translation>
 <translation id="4644727592819780893">ካሜራን ለማስገባት ቦታው በጣም ትንሽ ነው</translation>
@@ -1453,7 +1449,6 @@
 <translation id="6477681113376365978">ፋይል ማውረድ አልተቻለም</translation>
 <translation id="6482559668224714696">የሙሉ ማያ ገፅ ማጉያ</translation>
 <translation id="6490471652906364588">USB-C መሣሪያ (የቀኝ ወደብ)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> የእርስዎን <ph name="DEVICE_TYPE" /> ከቀነገደቡ በፊት እንዲያዘምኑት ይፈልግብዎታል።</translation>
 <translation id="649452524636452238">የዘመናዊ ካርድ ፒን</translation>
 <translation id="6495322433318104734">ማያ ገፅ ቆጣቢን በማሳየት ላይ፣ ለመውጣት ማንኛውንም ቁልፍ ይጫኑ</translation>
 <translation id="6495400115277918834">ሥዕል-ላይ-ሥዕል ተጀምሯል፣ ለማተኮር Alt+Shift+V</translation>
@@ -1517,7 +1512,7 @@
 <translation id="6696025732084565524">የእርስዎ ተነቃይ የቁልፍ ሰሌዳ ወሳኝ የሆነ ዝማኔ ያስፈልገዋል</translation>
 <translation id="6697913454192220372">አዲስ ዴስክ ያክሉ</translation>
 <translation id="6700713906295497288">የIME ምናሌ አዝራር</translation>
-<translation id="6707693040195709527">የመሣሪያ ወደ ቀዳሚው ስሪት መቀየር ጊዜ አልፎበታል</translation>
+<translation id="6706742084323792866">ተሰኪ ቁልፍ ሰሌዳ</translation>
 <translation id="6710213216561001401">ቀዳሚ</translation>
 <translation id="6723839937902243910">ኃይል</translation>
 <translation id="672609503628871915">ምን አዲስ ነገር እንዳለ ይመልከቱ</translation>
@@ -1811,7 +1806,6 @@
 <translation id="7866482334467279021">በርቷል</translation>
 <translation id="7872786842639831132">አጥፋ</translation>
 <translation id="7875575368831396199">ብሉቱዝ በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የጠፋ ይመስላል። የስልክ ሃብን ለመጠቀም እባክዎ ብሉቱዝን ያብሩ።</translation>
-<translation id="7877557217297072640">{0,plural, =0{አሁን መሣሪያውን ወደ ቀዳሚው ስሪት ይለውጡ}=1{በ1 ሰከንድ ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይለውጡ}one{በ# ሰከንዶች ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ቀይር}other{በ# ሰከንዶች ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ቀይር}}</translation>
 <translation id="7884446017008693258">የመገናኛ ነጥብ ቅንብሮች</translation>
 <translation id="7884902759927478774">የትር ማንሸራተትን ይሰርዙ</translation>
 <translation id="7886169021410746335">የግላዊነት ቅንብሮችን ያስተካክሉ</translation>
@@ -1888,7 +1882,6 @@
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">ለተጨማሪ አማራጮች ትርን ይጠቀሙ። ሁሉንም ዴስኮችን ለመድረስ ግራ እና ቀኝ ቀስቶችን ይጠቀሙ።</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> ላይ ይጀመራል</translation>
-<translation id="8091387634532529612">ራስ-ሰር ዝማኔዎች</translation>
 <translation id="8092380135549145188">የመሸብለል መቆጣጠሪያዎች</translation>
 <translation id="8098591350844501178">ማያ ገጹን ወደ <ph name="RECEIVER_NAME" /> Cast ማድረግ አስቁም</translation>
 <translation id="810637681351706236">መተግበሪያን ከመደርደሪያ ንቀል</translation>
@@ -1934,7 +1927,6 @@
 <translation id="8257510091797044096">መሣሪያዎን ያዋቅሩ</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>
 <translation id="8262312463845990408">መልሶ ማጫወትን ይቀያይሩ</translation>
-<translation id="8270450402312105425">{0,plural, =1{በአንድ ሰዓት ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}one{በ# ሰዓታት ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}other{በ# ሰዓታት ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}}</translation>
 <translation id="8277261673056602147">በማያ ገጽዎ ላይ ጽሁፍ ያድምቁ</translation>
 <translation id="8287009018010202411">አምራችነት</translation>
 <translation id="828708037801473432">ጠፍቷል</translation>
@@ -2001,7 +1993,6 @@
 <translation id="8553395910833293175">ለሁሉም ዴስኮች ቀድሞውኑ ተመድቧል።</translation>
 <translation id="8555757996376137129">የአሁኑን ዴስክ አስወግድ</translation>
 <translation id="8559845965695780508"><ph name="USER" /> አርትዖት አድርገዋል</translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> የእርስዎን <ph name="DEVICE_TYPE" /> እንዲያዘምኑ ይመክራል</translation>
 <translation id="8569751806372591456">የመሞከሪያ ጥቂት ጥቆማዎች እነሆ</translation>
 <translation id="857201607579416096">ምናሌ ወደ የማያ ገጹ የታችኛው ቀኝ ጥግ ተወስዷል።</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" />ን ይጫኑ እና አገናኝ ላይ ጠቅ ያድርጉ</translation>
@@ -2174,7 +2165,6 @@
 <translation id="923686485342484400">ዘግተው ለመውጣት Ctrl Shift Qን ሁለቴ ይጫኑ።</translation>
 <translation id="92580429198593979">የተቃራኒ ቀለም የቁልፍ ሰሌዳ አቋራጩን ተጭነዋል። እሱን ማብራት ይፈልጋሉ?</translation>
 <translation id="925832987464884575">ቅድመ-እይታዎችን ደብቅ</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> የእርስዎን <ph name="DEVICE_TYPE" /> ወዲያውኑ እንዲያዘምኑት ይፈልግብዎታል</translation>
 <translation id="938407504481277932">የአሁኑ ዴስክ፦ <ph name="DESK_NAME" />። <ph name="PROFILE_NAME" /> <ph name="EMAIL" />። <ph name="DESK_INDEX" /> ዴስክ ከ<ph name="DESK_COUNT" />።</translation>
 <translation id="938963181863597773">የቀን መቁጠሪያዬ ላይ ምን አለ?</translation>
 <translation id="945383118875625837">አገናኝን ወደ የዕልባቶች አሞሌ ይጎትቱ</translation>

@@ -456,6 +456,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1812527064848182527">ngang</translation>
 <translation id="1812975699435941848">Giáo dục sức khoẻ và đào tạo y khoa</translation>
 <translation id="1816436748874040213">Có thể yêu cầu cuộn và thu phóng các thẻ được chia sẻ</translation>
+<translation id="1817364650920811003">Vai trò: Mẹo sử dụng Chrome. Nhãn trợ năng: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Bỏ chặn</translation>
 <translation id="1818585559878922121">Phim tài liệu</translation>
 <translation id="182139138257690338">tự động tải xuống</translation>
@@ -1398,6 +1399,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3642638418806704195">Ứng dụng:</translation>
 <translation id="3646643500201740985">Đo lường hiệu suất quảng cáo</translation>
 <translation id="3647286794400715637">Mỗi mục nhập chuỗi url phải chứa từ 1 đến 2 URL.</translation>
+<translation id="3647400963805615193">Nút Đóng mẹo sử dụng Chrome, nhấn Enter để đóng, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Xác thực thành công</translation>
 <translation id="3650594806107685466">Để đảm bảo an toàn cho thẻ của bạn, hãy nhập mã CVC trên <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Đi bộ đường dài và Cắm trại</translation>
@@ -3370,6 +3372,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7481312909269577407">Chuyển tiếp</translation>
 <translation id="7481603210197454575">Phong bì kiểu Ý</translation>
 <translation id="7483482939016730822">Thiết bị trường học và lớp học</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, nhấn phím Tab rồi nhấn phím Enter để Đóng mẹo sử dụng Chrome.</translation>
 <translation id="7485085230273446323">Kinh doanh và công nghiệp</translation>
 <translation id="7485870689360869515">Không tìm thấy dữ liệu.</translation>
 <translation id="7489392576326061356">Dầu gội và dầu xả</translation>

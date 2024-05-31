@@ -472,6 +472,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3443810440409579745">Onglet reçu.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
+<translation id="3445580184527779479">Groupe d'onglets. Développé.</translation>
 <translation id="3448016392200048164">Vue partagée</translation>
 <translation id="345565170154308620">Gérer les mots de passe…</translation>
 <translation id="3464194322481586217">Impossible d'effectuer le suivi du prix.</translation>
@@ -516,6 +517,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3638472932233958418">Précharger pages Web</translation>
 <translation id="3642060527569456384">Les groupes d'onglets sont automatiquement enregistrés et mis à jour sur l'ensemble de vos appareils.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google, {email}.}one{{count} mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google, {email}.}other{{count} mots de passe sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google, {email}.}}</translation>
+<translation id="3650299480924308502">Une fois que vous vous êtes déconnecté, les données non enregistrées seront supprimées de cet appareil. Cela peut inclure les mots de passe, l'historique et plus encore.</translation>
 <translation id="3659297405161482746">Modes de paiement introuvable</translation>
 <translation id="3661160521073045932">Profil de configuration proposé</translation>
 <translation id="3670030362669914947">Numéro</translation>
@@ -972,6 +974,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5971872012779224351">{count,plural, =1{1 favori supprimé}one{{count} favoris supprimés}other{{count} favoris supprimés}}</translation>
 <translation id="5979837087407522202">Rechercher des mots de passe</translation>
 <translation id="5981230843984570095">Fermer tous les onglets inactifs</translation>
+<translation id="5982958159110007132">Onglet de groupe d'onglets. <ph name="TAB_INDEX_IN_GROUP" /> sur <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="5984222099446776634">Dossiers récents</translation>
 <translation id="598634819525651074">Zone</translation>
 <translation id="5988097621740394599">Faites le suivi des réductions dans vos onglets.</translation>
@@ -990,6 +993,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6042308850641462728">Plus</translation>
 <translation id="6045460247888249350">Ajouter un titre</translation>
+<translation id="6051432659151380973">Vos groupes d'onglets sont automatiquement enregistrés</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Gérez vos histoires et votre activité ici</translation>
 <translation id="6064824697233747382">Votre organisation vous demande de désactiver la synchronisation.</translation>
@@ -1274,6 +1278,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="745899714366929493">Toute la journée</translation>
 <translation id="7459628154744868585">La protection renforcée est activée</translation>
 <translation id="7465351360025415755">Obtenez le contenu qui compte pour vous</translation>
+<translation id="7470908168505178757">Groupe d'onglets. Réduit.</translation>
 <translation id="7472734401283673885">Nom d'entreprise</translation>
 <translation id="7473891865547856676">Non, merci</translation>
 <translation id="7488874549363591659">Livré</translation>
@@ -1612,6 +1617,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9079935439869366234">Tout marquer comme non lu</translation>
 <translation id="9081058212938299310">Mettre à jour le mot de passe pour <ph name="USERNAME" />?</translation>
+<translation id="9082821980444279398">Activée : utilisez et enregistrez des données dans votre compte Google. Désactivée : les données sont enregistrées uniquement sur cet appareil et elles sont supprimées si vous vous déconnectez.</translation>
 <translation id="9083838294503912307">Pour profiter de la synchronisation et d'une expérience personnalisée sur tous vos appareils, activez la synchronisation.</translation>
 <translation id="9087339162317338348">Dans la mesure du possible, utilisez le protocole HTTPS et soyez averti avant de charger des sites qui ne le prennent pas en charge.</translation>
 <translation id="9093271241977565440">Dans la partie supérieure de l'écran, touchez l'icône de recherche</translation>

@@ -57,7 +57,6 @@
 <translation id="118437560755358292">थप सुरक्षाका लागि पासवर्ड वा PIN हाल्नुहोस्</translation>
 <translation id="118532027333893379">फुल स्क्रिनको फोटो खिच्न कुनै ठाउँमा ट्याप गर्नुहोस्</translation>
 <translation id="1190609913194133056">सूचना केन्द्र</translation>
-<translation id="1190678134285018527">यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नु पर्छ</translation>
 <translation id="1195412055398077112">अत्याधिकस्क्यान</translation>
 <translation id="1195667586424773550">लिंकलाई ट्याबको ठेगाना पट्टीमा ड्र्याग गर्नुहोस्</translation>
 <translation id="119944043368869598">सबै सफा गर्नुहोस्</translation>
@@ -131,6 +130,7 @@
 <translation id="1420408895951708260">रात्रि प्रकाश टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">हो</translation>
 <translation id="1435537621343861112">स्पिच-टु-टेक्स्ट सुरु गर्न मिल्दैन। तपाईंको माइक अफ छ।</translation>
+<translation id="1447907279406111651">अहिले चलिरहेको · <ph name="END_TIME" /> मा सकिन्छ</translation>
 <translation id="1448963928642384376">तपाईंको डिभाइसका हटस्पट</translation>
 <translation id="1455242230282523554">भाषासम्बन्धी सेटिङहरू देखाउनुहोस्</translation>
 <translation id="1460620680449458626">भोल्युम म्युट गरिएको छ।</translation>
@@ -481,6 +481,7 @@
 <translation id="2894949423239620203">केबल जोडेपछि पर्फर्मेन्समा प्रभाव पर्न सक्छ</translation>
 <translation id="2914580577416829331">स्क्रिनका फोटोहरू</translation>
 <translation id="2924416280450782352">वस्तुहरू देखाउन सकिएन। यो प्यानल फेरि खोली हेर्नुहोस्।</translation>
+<translation id="292506373491190801">अहिले चलिरहेको कार्यक्रमबाट लिइएको</translation>
 <translation id="2931572158271115754">गर्नु पर्ने कार्यको यो सूचीमा केही पनि छैन।</translation>
 <translation id="2932487126591186298">१० मिनेट थपियो। <ph name="REMAINING_TIME" /> बाँकी छ।</translation>
 <translation id="2935225303485967257">प्रोफाइलहरू व्यवस्थापन गर्नुहोस्</translation>
@@ -685,7 +686,6 @@
 <translation id="363473492175527493">फोकस गर्न सेट गरिएको कार्य: <ph name="TASK_NAME" />। यो कार्य परिवर्तन गर्न इन्टर की थिच्नुहोस्।</translation>
 <translation id="3638400994746983214">गोपनीयताको स्क्रिन टगल गर्नुहोस्। <ph name="STATE_TEXT" />।</translation>
 <translation id="3649256019230929621">सन्झ्याल सानो बनाउनुहोस्</translation>
-<translation id="3649505501900178324">अद्यावधिक हुन बाँकी</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> देखि
@@ -755,7 +755,6 @@
 <translation id="3900355044994618856">तपाईंको सत्र <ph name="SESSION_TIME_REMAINING" /> मा समाप्त हुने छ</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> मा कनेक्ट गरिँदै छ</translation>
 <translation id="3906954721959377182">ट्याब्लेट</translation>
-<translation id="3922427723338465344">{0,plural, =1{१ मिनेटभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}other{# मिनेटभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}}</translation>
 <translation id="3923494859158167397">कुनै पनि मोबाइल नेटवर्क सेटअप गरिएको छैन</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, कार्यक्रमहरू लोड गरिँदै छन्।</translation>
 <translation id="3932043219784172185">कुनै पनि डिभाइस कनेक्ट गरिएको छैन</translation>
@@ -767,6 +766,7 @@
 <translation id="3950272133184491871">अहिले नै साइन आउट गर्ने हो?</translation>
 <translation id="3950820424414687140">साइन इन गर्नुहोस्</translation>
 <translation id="3953130726459169782">अहिलेसम्म कुनै पनि असाइनमेन्ट पूरा गरिएको छैन।</translation>
+<translation id="3958714870339660776">दिनभर</translation>
 <translation id="3962859241508114581">अघिल्लो ट्र्याक</translation>
 <translation id="3969043077941541451">अफ छ</translation>
 <translation id="3970324493235864154">आफ्नो फोनमा भएका सूचनाहरू हेर्नुहोस्</translation>
@@ -946,7 +946,6 @@
 <translation id="4623167406982293031">खाता पुष्टि गर्नुहोस्</translation>
 <translation id="4628757576491864469">यन्त्रहरू</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, तारा चिन्ह प्रयोग गरी गरिने मूल्याङ्कन <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{एक दिनभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}other{# दिनभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}}</translation>
 <translation id="4633636853437260449">मेटाउन Ctrl+W थिच्नुहोस्</translation>
 <translation id="4642092649622328492">आंशिक स्क्रिनसट लिनुहोस्</translation>
 <translation id="4644727592819780893">यो क्षेत्र धेरै सानो भएकाले यसमा क्यामेराको प्रिभ्यू देखाउन मिल्दैन</translation>
@@ -1220,6 +1219,7 @@
 <translation id="5599242528220103262">किबोर्डका सर्टकट अफ छन्</translation>
 <translation id="5600415762228455511">फोकस मोड अन छ, <ph name="REMAINING_TIME" /> बाँकी छ, यो कार्यमा फोकस गरिँदै छ: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">बोली प्रतिक्रिया असक्षम पार्न Ctrl + Alt + Z थिच्नुहोस्।</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{&lt;१ घण्टाअघि}=1{१ घण्टाअघि}other{# घण्टाअघि}}</translation>
 <translation id="5601503069213153581">पिन</translation>
 <translation id="5618148318840095371">तपाईंको डिभाइस अझ राम्रो नेटवर्कमा कनेक्ट गरिएको छ</translation>
 <translation id="5619862035903135339">एड्मिनले तोक्नुभएको नीतिअनुसार स्क्रिन क्याप्चर गर्ने सुविधा अफ गरिन्छ</translation>
@@ -1396,6 +1396,7 @@
 <translation id="6228457605945141550">उज्यालो कम गर्नुहोस्‌</translation>
 <translation id="623116199192908855">Chromebook बाट आफ्नो स्क्रिन कास्ट गर्नुहोस्</translation>
 <translation id="6231419273573514727">सहायक यन्त्रले पूर्ण रूपमा काम नगर्न सक्छ</translation>
+<translation id="6232416233079464213"><ph name="SESSION_NAME" /> मार्फत</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ले हाल तपाईंको क्यामेरा र माइक्रोफोन प्रयोग गरिरहेको छ</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">ब्याट्री कम छ। ब्याट्री सेभर अन गरिएको छ।</translation>
@@ -1453,7 +1454,6 @@
 <translation id="6477681113376365978">यो फाइल डाउनलोड गर्न सकिएन</translation>
 <translation id="6482559668224714696">फुल स्क्रिन म्याग्निफायर</translation>
 <translation id="6490471652906364588">USB-C यन्त्र (दायाँ पोर्ट)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> का अनुसार तपाईंले म्याद सकिनुअघि नै आफ्नो <ph name="DEVICE_TYPE" /> अपडेट गर्नु पर्ने हुन्छ</translation>
 <translation id="649452524636452238">स्मार्ट कार्डको PIN</translation>
 <translation id="6495322433318104734">स्क्रिन सेभर देखाइँदै छ। तपाईं बाहिरिन चाहनुहुन्छ भने कुनै पनि की थिच्नुहोस्</translation>
 <translation id="6495400115277918834">picture-in-picture मोड सुरु गरिएको छ, फोकस गर्न Alt+Shift+V थिच्नुहोस्</translation>
@@ -1518,7 +1518,6 @@
 <translation id="6697913454192220372">नयाँ डेस्क हाल्नुहोस्</translation>
 <translation id="6700713906295497288">IME सम्बन्धी मेनुको बटन</translation>
 <translation id="6706742084323792866">किबोर्ड पिन गर्नुहोस्</translation>
-<translation id="6707693040195709527">यो डिभाइसमा अझै पनि अघिल्लो संस्करण रिस्टोर गरिएको छैन</translation>
 <translation id="6710213216561001401">अघिल्लो</translation>
 <translation id="6723839937902243910">पावर</translation>
 <translation id="672609503628871915">नयाँ के छ हेर्नुहोस्</translation>
@@ -1798,6 +1797,7 @@
 <translation id="780301667611848630">पर्दैन, धन्यवाद</translation>
 <translation id="7807067443225230855">खोज र सहायक</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> र <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">पात्रोमा सेट गरिएको आगामी कार्यक्रमबाट लिइएको</translation>
 <translation id="7829386189513694949">बलियो सिग्नल</translation>
 <translation id="7830453190047749513">तपाईं <ph name="PERIPHERAL_NAME" /> का लागि बटनमार्फत गरिने कारबाही, कर्सरको गतिलगायतका कुराहरू पर्सनलाइज गर्न सक्नुहुन्छ</translation>
 <translation id="7837740436429729974">समय सकियो</translation>
@@ -1811,7 +1811,6 @@
 <translation id="7866482334467279021">अन छ</translation>
 <translation id="7872786842639831132">अफ छ</translation>
 <translation id="7875575368831396199">तपाईंको <ph name="DEVICE_TYPE" /> मा ब्लुटुथ अफ गरिएको छ जस्तो देखिन्छ। फोन हब नामक सुविधा प्रयोग गर्न कृपया ब्लुटुथ अन गर्नुहोस्।</translation>
-<translation id="7877557217297072640">{0,plural, =0{अहिले नै यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}=1{१ सेकेन्डभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}other{# सेकेन्डभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}}</translation>
 <translation id="7884446017008693258">हटस्पटसम्बन्धी सेटिङ</translation>
 <translation id="7884902759927478774">ट्याब ड्र्याग गर्ने कार्य रद्द गर्नुहोस्</translation>
 <translation id="7886169021410746335">गोपनीयतासम्बन्धी सेटिङहरूको समायोजन गर्नुहोस्</translation>
@@ -1888,7 +1887,6 @@
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">थप विकल्प हेर्न ट्याब की प्रयोग गर्नुहोस्। सबै डेस्क एक्सेस गर्न लेफ्ट र राइट एरो प्रयोग गर्नुहोस्।</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> मा सुरु हुन्छ</translation>
-<translation id="8091387634532529612">स्वतः अपडेट गर्ने सुविधा</translation>
 <translation id="8092380135549145188">स्क्रोल कन्ट्रोलहरू</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> मा स्क्रिन casting गर्ने काम रोक्नुहोस्</translation>
 <translation id="810637681351706236">सेल्फबाट एप अनपिन गर्नुहोस्</translation>
@@ -1934,7 +1932,6 @@
 <translation id="8257510091797044096">आफ्नो डिभाइस सेटअप गर्नुहोस्</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="8262312463845990408">प्लेब्याक टगल गर्नुहोस्</translation>
-<translation id="8270450402312105425">{0,plural, =1{एक घन्टाभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}other{# घन्टाभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}}</translation>
 <translation id="8277261673056602147">स्क्रिनमा देखाइएको टेक्स्ट हाइलाइट गर्नुहोस्</translation>
 <translation id="8287009018010202411">उत्पादकत्व</translation>
 <translation id="828708037801473432">अफ</translation>
@@ -2001,7 +1998,6 @@
 <translation id="8553395910833293175">सबै डेस्कलाई काम जिम्मा दिइसकिएको छ।</translation>
 <translation id="8555757996376137129">हालको डेस्क हटाउनुहोस्</translation>
 <translation id="8559845965695780508"><ph name="USER" /> ले सम्पादन गर्नुभएको</translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> तपाईंलाई <ph name="DEVICE_TYPE" /> अपडेट गर्न सिफारिस गर्छ।</translation>
 <translation id="8569751806372591456">तपाईंले अपनाई हेर्न सक्ने केही सुझाव यस प्रकार छन्</translation>
 <translation id="857201607579416096">मेनु सारेर स्क्रिनको फेदको दायाँ कुनामा लगियो।</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> थिच्नुहोस् र कुनै लिंकमा क्लिक गर्नुहोस्</translation>
@@ -2115,6 +2111,7 @@
 <translation id="899350903320462459">सूचनासम्बन्धी कारबाही गर्न यन्त्रलाई <ph name="LOGIN_ID" /> का रूपमा अनलक गर्नुहोस्</translation>
 <translation id="8993733019280019776">तपाईं बोल्दै हुनुहुन्छ? तपाईंको माइक अफ छ। माइक चयन गरेर सो माइक अन गर्नुहोस्।</translation>
 <translation id="9000771174482730261">भण्डारण व्यवस्थापन गर्नुहोस्</translation>
+<translation id="9002204506712855687">नवीनतम सुविधाहरू अन्वेषण गर्नुहोस्</translation>
 <translation id="9005984960510803406">Crosh विन्डो खोल्नुहोस्‌</translation>
 <translation id="9017320285115481645">Family Link को अभिभावकको पहुँचसम्बन्धी कोड हाल्नुहोस्।</translation>
 <translation id="9022774213089566801">बारम्बार हेरिएका</translation>
@@ -2146,6 +2143,7 @@
 <translation id="9098969848082897657">फोन साइलेन्ट राख्नुहोस्</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> वा <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">पछिल्लो कारबाही अन्डू गर्नुहोस्</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{१ मिनेटमा}other{# मिनेटमा}}</translation>
 <translation id="9129245940793250979">पछाडिको बटन</translation>
 <translation id="9133335900048457298">संरक्षित सामग्री रेकर्ड गर्न मिल्दैन</translation>
 <translation id="9139720510312328767">अर्को अक्षर मेटाउनुहोस्</translation>
@@ -2158,6 +2156,7 @@
 <translation id="9183456764293710005">फुल स्क्रिन म्याग्निफायर</translation>
 <translation id="9193626018745640770">कुनै अज्ञात प्रापकमा cast गर्दै</translation>
 <translation id="9194617393863864469">अर्को प्रयोगकर्तालाई साइन इन गर्नुहोस् ...</translation>
+<translation id="9195990613383871904">भोलि</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> रिजोल्युसन परिवर्तन गरी <ph name="RESOLUTION" /> पारियो। परिवर्तनहरू सुरक्षित गर्न पुष्टि गर्नुहोस् नामक बटनमा क्लिक गर्नुहोस्। अघिल्ला सेटिङहरूलाई <ph name="TIMEOUT_SECONDS" /> भित्र पुनर्स्थापना गरिने छ।</translation>
 <translation id="9201044636667689546">यो Chromebook मा <ph name="NAME" /> कनेक्ट गर्नुहोस्</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
@@ -2173,7 +2172,6 @@
 <translation id="923686485342484400">साइन आउट गर्न दुई पटक Control Q थिच्नुहोस्।</translation>
 <translation id="92580429198593979">तपाईंले कलर इन्भर्सन अन/अफ गर्ने किबोर्ड सर्टकट थिच्नुभयो। तपाईं उक्त सुविधा अन गर्न चाहनुहुन्छ?</translation>
 <translation id="925832987464884575">प्रिभ्यूहरू लुकाउनुहोस्</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> का अनुसार तपाईंले तुरुन्तै आफ्नो <ph name="DEVICE_TYPE" /> अपडेट गर्नु पर्ने हुन्छ</translation>
 <translation id="938407504481277932">हालको डेस्क: <ph name="DESK_NAME" />। <ph name="PROFILE_NAME" /> <ph name="EMAIL" />। <ph name="DESK_COUNT" /> वटामध्ये <ph name="DESK_INDEX" /> औँ डेस्क।</translation>
 <translation id="938963181863597773">मेरो क्यालेन्डरमा के छ?</translation>
 <translation id="945383118875625837">लिंकलाई ड्र्याग गरी पुस्तक चिन्ह पट्टीमा लैजानुहोस्</translation>

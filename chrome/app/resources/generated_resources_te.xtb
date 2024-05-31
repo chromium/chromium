@@ -280,7 +280,6 @@
 <translation id="1197088940767939838">నారింజ రంగు</translation>
 <translation id="1197185198920566650">ఇది <ph name="EMAIL" /> కోసం <ph name="GOOGLE_PASSWORD_MANAGER" />‌కు సేవ్ చేయబడుతుంది.</translation>
 <translation id="11978075283960463">యాప్‌లో డేటా స్టోర్ చేయబడింది: <ph name="APP_SIZE" /></translation>
-<translation id="1197935538609051549">డీయాక్టివేట్ చేయండి</translation>
 <translation id="1198066799963193307">చూపు సమస్య ఉన్న వారికి సహాయపడే స్పీచ్ టూల్స్</translation>
 <translation id="119944043368869598">అన్ని క్లియర్ చేయండి</translation>
 <translation id="1199814941632954229">ఈ సర్టిఫికెట్ ప్రొఫైల్‌లకు సర్టిఫికెట్‌లు అందించబడుతాయి</translation>
@@ -1087,7 +1086,6 @@
 <translation id="1781771911845953849">ఖాతాలు మరియు సింక్‌</translation>
 <translation id="1782101999402987960">మీ అడ్మినిస్ట్రేటర్ ద్వారా అప్‌డేట్‌లు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="1782196717298160133">మీ ఫోన్‌ను కనుగొంటోంది</translation>
-<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 గమనిక}other{# గమనికలు}}</translation>
 <translation id="1784707308176068866">సహకారం అందించే నేటివ్ అప్లికేషన్ రిక్వెస్ట్ చేసినప్పుడు బ్యాక్‌గ్రౌండ్‌లో అమలు అవుతుంది</translation>
 <translation id="1784849162047402014">పరికరంలో ఖాళీ స్టోరేజ్‌ స్థలం తక్కువగా ఉంది</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{"<ph name="APP_NAME" />"ను అన్‌ఇన్‌స్టాల్ చేయడం వలన ఈ యాప్ కూడా అన్‌ఇన్‌స్టాల్ అవుతుంది:}other{"<ph name="APP_NAME" />"ను అన్‌ఇన్‌స్టాల్ చేయడం వలన ఈ యాప్‌లు కూడా అన్‌ఇన్‌స్టాల్ అవుతాయి:}}</translation>
@@ -1230,6 +1228,7 @@
 <translation id="1878885068166344708">మీరు ఐటెమ్‌పై ఫోకస్ చేసినప్పుడు, ఐటెమ్ హైలైట్ అవుతుంది. ఫోకస్‌ను మార్చడానికి ట్యాబ్‌ను నొక్కండి లేదా ఐటెమ్‌ను ఎంచుకోండి.</translation>
 <translation id="1879000426787380528">ఇలా సైన్ ఇన్ చేయండి</translation>
 <translation id="18802377548000045">ట్యాబ్‌లు అధిక వెడల్పునకు కుదించబడతాయి</translation>
+<translation id="1880677175115548835">వచనాన్ని ఎంచుకోండి</translation>
 <translation id="1880905663253319515">ప్రమాణపత్రం "<ph name="CERTIFICATE_NAME" />"ను తొలగించాలా?</translation>
 <translation id="1881445033931614352">కీబోర్డ్ లేఅవుట్</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{ఐటెమ్}other{# ఐటెమ్‌లు}}</translation>
@@ -1270,7 +1269,6 @@
 <translation id="1915073950770830761">కెనరీ</translation>
 <translation id="1915307458270490472">కాల్‌ను ముగించు</translation>
 <translation id="1915734383465415025">స్టోర్ నంబర్</translation>
-<translation id="1916260783734263714">ప్రస్తుత ట్యాబ్</translation>
 <translation id="1916502483199172559">డిఫాల్ట్ ఎరుపు రంగు అవతార్</translation>
 <translation id="1916770123977586577">ఈ సైట్ విషయంలో మీరు అప్‌డేట్ చేసిన సెట్టింగ్‌లను వర్తింపజేయడానికి, ఈ పేజీని మళ్లీ లోడ్ చేయండి</translation>
 <translation id="1918127774159128277">WiFi Direct సామర్థ్యాలను రిఫ్రెష్ చేయండి</translation>
@@ -1859,6 +1857,7 @@
 <translation id="2332515770639153015">మెరుగైన సురక్షిత బ్రౌజింగ్ ఆన్‌లో ఉంది</translation>
 <translation id="2332742915001411729">ఆటోమేటిక్ సెట్టింగ్‌కు రీసెట్ చేయండి</translation>
 <translation id="2333166365943957309">UI హైరార్కీ</translation>
+<translation id="233375395665273385">తొలగించి, సైన్ అవుట్ చేయండి</translation>
 <translation id="233471714539944337">గోప్యమైన కంటెంట్</translation>
 <translation id="2335111415680198280">{0,plural, =1{# విండోను మూసివేయండి}other{# విండోలను మూసివేయండి}}</translation>
 <translation id="2336228925368920074">అన్ని ట్యాబ్‌లను బుక్‌మార్క్ చేయండి...</translation>
@@ -1920,7 +1919,6 @@
 <translation id="2383825469508278924">కీబోర్డ్ కీ మ్యాపింగ్, ఫంక్షన్ కీలు, మరిన్నింటిని మార్చండి</translation>
 <translation id="2387052489799050037">హోమ్‌కు వెళ్లండి</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (ప్రస్తుతం)</translation>
-<translation id="2390226379317200116">తర్వాత చూడటానికి వీలుగా ఈ పేజికి గమనికను లేదా ఒక ఆలోచనను జోడించండి.</translation>
 <translation id="2390347491606624519">ప్రాక్సీకి కనెక్ట్ చేయడం సాధ్యపడలేదు, దయచేసి మళ్లీ సైన్ ఇన్ చేయండి</translation>
 <translation id="2390782873446084770">Wi-Fi సింక్</translation>
 <translation id="2391419135980381625">ప్రామాణిక ఫాంట్</translation>
@@ -2047,7 +2045,6 @@
 <translation id="2467755475704469005">ఏ పరికరం గుర్తించబడలేదు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">టచ్‌ప్యాడ్ స్క్రోల్ యాక్సిలరేషన్‌</translation>
 <translation id="2468205691404969808">మీ ప్రాధాన్యతలను గుర్తుంచుకోవడానికి కుక్కీలను ఉపయోగిస్తుంది, మీరు ఆ పేజీలను సందర్శించకపోయినా కూడా అది అమలవుతుంది</translation>
-<translation id="2468247643665097563">ఆర్డర్</translation>
 <translation id="2468402215065996499">టమగోచి</translation>
 <translation id="2468470085922875120">మీరు ఊహించడానికి కష్టంగా కనిపించే పాస్‌వర్డ్‌లను ఉపయోగిస్తున్నారు</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 ట్యాబ్}other{<ph name="GROUP_TITLE" /> - # ట్యాబ్‌లు}}</translation>
@@ -2779,7 +2776,6 @@
 <translation id="3004385386820284928">కీబోర్డ్ కీలను అనుకూలంగా మార్చండి</translation>
 <translation id="3005574332301273731">చూపవద్దు</translation>
 <translation id="3006881078666935414">వినియోగ డేటా లేదు</translation>
-<translation id="3007410324195400631">ఈ పేజీకి సంబంధించిన గమనికలను జోడించండి</translation>
 <translation id="3007771295016901659">ట్యాబ్ యొక్క నకిలీని రూపొందించు</translation>
 <translation id="3008232374986381779">మీ <ph name="DEVICE_TYPE" />లో Linux టూల్‌లు, ఎడిటర్‌లు, IDEలను రన్ చేయండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">అనుమతులను రీసెట్ చేయండి</translation>
@@ -4444,7 +4440,6 @@
 <translation id="4258348331913189841">ఫైల్ సిస్టమ్‌లు</translation>
 <translation id="4259388776256904261">దీనికి కొంత సమయం పట్టవచ్చు</translation>
 <translation id="4260699894265914672">అనుకూలంగా మార్చడానికి కీబోర్డ్ కీని నొక్కండి</translation>
-<translation id="4260722247480053581">ఒక అజ్ఞాత విండోలో తెరువు</translation>
 <translation id="4261429981378979799">ఎక్స్‌టెన్షన్ అనుమతులు</translation>
 <translation id="4262004481148703251">హెచ్చరికను విస్మరించండి</translation>
 <translation id="4263223596040212967">మీ కీబోర్డ్ లేఅవుట్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
@@ -6171,7 +6166,6 @@
 <translation id="5578059481725149024">ఆటోమేటిక్ సైన్-ఇన్</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" /> భాషకు అనువాదం పూర్తయింది</translation>
 <translation id="558170650521898289">Microsoft Windows హార్డ్‌వేర్ డ్రైవర్ ధృవీకరణ</translation>
-<translation id="5581876958763461074">అన్ని గమనికలు</translation>
 <translation id="5581972110672966454">పరికరాన్ని డొమైన్‌కు చేర్చడం సాధ్యపడదు. దయచేసి మళ్లీ ట్రై చేయండి లేదా మీ పరికర ఓనర్‌ను లేదా అడ్మినిస్ట్రేట‌ర్‌ను సంప్రదించండి. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582634344048669777">8-డాట్</translation>
 <translation id="5582839680698949063">ప్రధాన మెనూ</translation>
@@ -9289,7 +9283,6 @@
 <translation id="7941179291434537290">టెథరింగ్ సంసిద్ధత:</translation>
 <translation id="7942349550061667556">ఎరుపు</translation>
 <translation id="7942846369224063421">ప్రీ - లోడెడ్ UI రెండరర్</translation>
-<translation id="7943349879009553083">గెస్ట్ మోడ్‌లో అందుబాటులో లేదు</translation>
 <translation id="7943368935008348579">PDFలను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="7943837619101191061">స్థానాన్ని జోడించండి...</translation>
 <translation id="79446453817422139">ఈ ఫైల్ ప్రమాదకరమైనది కావచ్చు</translation>
@@ -9405,7 +9398,6 @@
 <translation id="8025291188699172126">అప్‌డేట్‌ల గురించి</translation>
 <translation id="8026471514777758216">మీ అన్ని పరికరాలు</translation>
 <translation id="8026784703228858744">సింక్‌ను ఉపయోగించి మీ బుక్‌మార్క్‌లు, మరిన్నింటిని సేవ్ చేయండి</translation>
-<translation id="8027581147000338959">కొత్త విండోలో తెరవండి</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
 <translation id="8028803902702117856"><ph name="SIZE" />, <ph name="FILE_NAME" /> డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="8028993641010258682">సైజ్‌</translation>
@@ -9943,7 +9935,6 @@
 <translation id="8413956290606243087">ChromeOSకు బిల్ట్-ఇన్ స్క్రీన్ రీడర్ అయిన ChromeVoxను మీరు యాక్టివేట్ చేసుకోవాలనుకుంటున్నారా?</translation>
 <translation id="8414249071344507766">జ్ఞాపకాలు రెండు రోజులు దాచబడ్డాయి</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> లో <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> తో సైన్ ఇన్ చేయండి</translation>
-<translation id="8414685983518053656">గమనికలు</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (కేస్)</translation>
 <translation id="8417065541337558100">మీ కెమెరా ప్రివ్యూ</translation>
 <translation id="8417548266957501132">తల్లి/తండ్రి పాస్‌వర్డ్‌</translation>
@@ -10735,7 +10726,6 @@
 <translation id="8993945059918628059">వేలిముద్ర సెన్సార్‌ను మీ వేలితో తాకండి. మీ వేలిముద్ర డేటా సురక్షితంగా స్టోర్ చేయబడుతుంది, ఎప్పటికీ మీ <ph name="DEVICE_TYPE" />‌లోనే ఉంటుంది.</translation>
 <translation id="899403249577094719">Netscape సర్టిఫికెట్ ఆధార URL</translation>
 <translation id="899657321862108550">మీ Chrome, అన్ని పరికరాలలో పొందవచ్చు</translation>
-<translation id="899671834467367922">మరొక యూజర్‌లా లాగిన్ అయ్యి, ఈ పేజీలో గమనికలు చూడండి, అలాగే రాయండి.</translation>
 <translation id="8998078711690114234">ఈ రకమైన ఫైల్ ప్రమాదకరమైనది కావచ్చు. మీరు <ph name="ORIGIN" />‌ను విశ్వసిస్తేనే ఈ ఫైల్‌ను సేవ్ చేయండి</translation>
 <translation id="8999027165951679951">ఇన్‌యాక్టివ్ ట్యాబ్: <ph name="MEMORY_SAVINGS" /> మెమరీ ఖాళీ చేయబడింది</translation>
 <translation id="8999560016882908256">ఒక విభాగంలో సింటాక్స్ ఎర్రర్: <ph name="ERROR_LINE" /></translation>

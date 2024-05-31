@@ -456,6 +456,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1812527064848182527">ležeče</translation>
 <translation id="1812975699435941848">Zdravstvena vzgoja in izobraževanje</translation>
 <translation id="1816436748874040213">Lahko zahteva pomikanje in povečavo/pomanjšavo deljenih zavihkov</translation>
+<translation id="1817364650920811003">Vloga: Nasvet za Chrome. Oznaka za dostopnost: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Odblokiraj</translation>
 <translation id="1818585559878922121">Dokumentarni filmi</translation>
 <translation id="182139138257690338">samodejni prenosi</translation>
@@ -1398,6 +1399,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3642638418806704195">Program:</translation>
 <translation id="3646643500201740985">Merjenje uspešnosti oglasa</translation>
 <translation id="3647286794400715637">Vsak vnos z nizom URL-jev mora vsebovati od 1 do 2 URL-ja.</translation>
+<translation id="3647400963805615193">Gumb za opustitev nasveta za Chrome, pritisnite Enter, če želite opustiti, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Preverjanje veljavnosti uspešno</translation>
 <translation id="3650594806107685466">Zaradi zaščite kartice vnesite kodo CVC, ki je na <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Pohodništvo in kampiranje</translation>
@@ -2298,6 +2300,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="541416427766103491">Zlagalnik 4</translation>
 <translation id="5414446060143308245">Pred prenosom je zahtevan pregled</translation>
 <translation id="5414511064953050917">Vseeno premakni</translation>
+<translation id="5419311651396341287">Skrbnik si bo morda lahko ogledal:</translation>
 <translation id="5421408724705443535">Rock glasba</translation>
 <translation id="5423269318075950257">Spremljanje cene</translation>
 <translation id="5425082381151187189">Dom in notranja oprema</translation>
@@ -3370,6 +3373,7 @@ Dodatne podrobnosti:
 <translation id="7481312909269577407">Naprej</translation>
 <translation id="7481603210197454575">Italijanska kuverta</translation>
 <translation id="7483482939016730822">Oprema za šole in učilnice</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, pritisnite tabulatorko, nato Enter, če želite opustiti nasvet za Chrome.</translation>
 <translation id="7485085230273446323">Posel in industrija</translation>
 <translation id="7485870689360869515">Ni podatkov.</translation>
 <translation id="7489392576326061356">Šamponi in balzami</translation>

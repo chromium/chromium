@@ -471,6 +471,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3435738964857648380">Sicherheit</translation>
 <translation id="3443810440409579745">Tab erhalten.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
+<translation id="3445580184527779479">Tabgruppe. Maximiert.</translation>
 <translation id="3448016392200048164">Geteilte Ansicht</translation>
 <translation id="345565170154308620">Passwörter verwalten…</translation>
 <translation id="3464194322481586217">Preis kann nicht beobachtet werden.</translation>
@@ -515,6 +516,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3638472932233958418">Webseiten vorabladen</translation>
 <translation id="3642060527569456384">Tabgruppen werden automatisch auf allen deinen Geräten gespeichert und aktualisiert.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} Passwort ist nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Google-Konto {email}.}other{{count} Passwörter sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto {email}.}}</translation>
+<translation id="3650299480924308502">Nachdem du dich abmeldest, werden nicht gespeicherte Daten von diesem Gerät gelöscht. Dazu gehören beispielsweise Passwörter und der Verlauf.</translation>
 <translation id="3659297405161482746">Keine Zahlungsmethoden gefunden</translation>
 <translation id="3661160521073045932">Konfigurationsprofil verfügbar</translation>
 <translation id="3670030362669914947">Nummer</translation>
@@ -970,6 +972,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5971872012779224351">{count,plural, =1{1 Lesezeichen gelöscht}other{{count} Lesezeichen gelöscht}}</translation>
 <translation id="5979837087407522202">Passwörter suchen</translation>
 <translation id="5981230843984570095">Alle inaktiven Tabs schließen</translation>
+<translation id="5982958159110007132">Tab-Gruppe „Tab“. <ph name="TAB_INDEX_IN_GROUP" /> von <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="5984222099446776634">Kürzlich besucht</translation>
 <translation id="598634819525651074">Bereich</translation>
 <translation id="5988097621740394599">Du siehst Preisnachlässe auf deinen Tabs.</translation>
@@ -988,6 +991,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6042308850641462728">Mehr</translation>
 <translation id="6045460247888249350">Titel hinzufügen</translation>
+<translation id="6051432659151380973">Deine Tabgruppen werden automatisch gespeichert</translation>
 <translation id="605721222689873409">JJ</translation>
 <translation id="6059830886158432458">Hier kannst du festlegen, welche Meldungen und Aktivitäten dir angezeigt werden</translation>
 <translation id="6064824697233747382">Deine Organisation verlangt, dass du die Synchronisierung deaktivierst.</translation>
@@ -1272,6 +1276,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="745899714366929493">Ganztägig</translation>
 <translation id="7459628154744868585">Erweiterter Schutz ist aktiviert</translation>
 <translation id="7465351360025415755">Inhalte erhalten, die dich interessieren</translation>
+<translation id="7470908168505178757">Tabgruppe. Minimiert.</translation>
 <translation id="7472734401283673885">Unternehmensname</translation>
 <translation id="7473891865547856676">Nein, Danke</translation>
 <translation id="7488874549363591659">Zugestellt</translation>
@@ -1609,6 +1614,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="9065203028668620118">Bearbeiten</translation>
 <translation id="9079935439869366234">Alle als ungelesen markieren</translation>
 <translation id="9081058212938299310">Passwort für <ph name="USERNAME" /> aktualisieren?</translation>
+<translation id="9082821980444279398">Wenn der Schalter aktiviert ist, kannst du Daten in deinem Google-Konto nutzen und speichern. Ist er deaktiviert, werden Daten nur auf diesem Gerät gespeichert und gelöscht, wenn du dich abmeldest.</translation>
 <translation id="9083838294503912307">Aktiviere die Synchronisierung, um geräteübergreifend zu synchronisieren und zu personalisieren.</translation>
 <translation id="9087339162317338348">Es wird nach Möglichkeit HTTPS verwendet und du erhältst eine Warnung, bevor Websites geladen werden, die das Protokoll nicht unterstützen.</translation>
 <translation id="9093271241977565440">Oben auf dem Bildschirm auf das Suchsymbol tippen</translation>

@@ -457,7 +457,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8417404458978023919">{0,plural, =1{請在 1 天內重新啟動 Chromium}other{請在 # 天內重新啟動 Chromium}}</translation>
 <translation id="8453117565092476964">安裝程式封存檔案已毀損或無效，請重新下載 Chromium。</translation>
 <translation id="8458614432758743027">Chromium 僅支援 Windows 10 以上版本的作業系統。</translation>
-<translation id="8461326814397467035">部分 Chromium 資料尚未儲存到 Google 帳戶，請稍候幾分鐘後再登出。</translation>
 <translation id="8463672209299734063">選用：自動將診斷資訊和使用資料傳送給 Google，協助改善 Chromium OS 的功能與效能。</translation>
 <translation id="8493179195440786826">Chromium 版本過舊</translation>
 <translation id="8522801943730206384">Chromium 可以檢查你儲存的密碼</translation>

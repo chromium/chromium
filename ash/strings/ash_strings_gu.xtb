@@ -57,7 +57,6 @@
 <translation id="118437560755358292">વધુ સુરક્ષા માટે પાસવર્ડ અથવા પિન દાખલ કરો</translation>
 <translation id="118532027333893379">પૂર્ણ સ્ક્રીન કૅપ્ચર કરવા માટે ગમે ત્યાં ટૅપ કરો</translation>
 <translation id="1190609913194133056">સૂચના કેન્દ્ર</translation>
-<translation id="1190678134285018527">ડિવાઇસ અગાઉના વર્ઝન પર પરત ફરે તે જરૂરી છે</translation>
 <translation id="1195412055398077112">ઓવરસ્કૅન</translation>
 <translation id="1195667586424773550">ટૅબના ઍડ્રેસ બારમાં લિંકને ખેંચો</translation>
 <translation id="119944043368869598">બધા દૂર કરો</translation>
@@ -685,7 +684,6 @@
 <translation id="363473492175527493">કાર્યને આના પર ફોકસ કરવા માટે સેટ કરેલું છે: <ph name="TASK_NAME" />. કાર્યમાં ફેરફાર કરવા માટે Enter દબાવો.</translation>
 <translation id="3638400994746983214">પ્રાઇવસી સ્ક્રીનને ટૉગલ કરો. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">વિંડો નાની કરો</translation>
-<translation id="3649505501900178324">અપડેટ કરવાનું બાકી છે</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" />થી
@@ -755,7 +753,6 @@
 <translation id="3900355044994618856">તમારું સત્ર <ph name="SESSION_TIME_REMAINING" />માં સમાપ્ત થશે</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> થી કનેક્ટ કરી રહ્યું છે</translation>
 <translation id="3906954721959377182">ટૅબ્લેટ</translation>
-<translation id="3922427723338465344">{0,plural, =1{1 મિનિટની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}one{# મિનિટની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}other{# મિનિટની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}}</translation>
 <translation id="3923494859158167397">કોઈ મોબાઇલ નેટવર્ક સેટઅપ કરેલા નથી</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, ઇવેન્ટ લોડ થઈ રહી છે.</translation>
 <translation id="3932043219784172185">કોઈ ડિવાઇસ કનેક્ટ કરેલું નથી</translation>
@@ -946,7 +943,6 @@
 <translation id="4623167406982293031">એકાઉન્ટ ચકાસો</translation>
 <translation id="4628757576491864469">ડિવાઇસ</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, સ્ટાર રેટિંગ <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{એક દિવસની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}one{# દિવસની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}other{# દિવસની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}}</translation>
 <translation id="4633636853437260449">ડિલીટ કરવા માટે Ctrl+W દબાવો</translation>
 <translation id="4642092649622328492">આંશિક સ્ક્રીનશૉટ લો</translation>
 <translation id="4644727592819780893">વિસ્તાર ઘણો નાનો હોવાને કારણે કૅમેરામાં બંધ બેસી શકે તેમ નથી</translation>
@@ -1453,7 +1449,6 @@
 <translation id="6477681113376365978">ફાઇલ ડાઉનલોડ કરી શકાતી નથી</translation>
 <translation id="6482559668224714696">પૂર્ણ-સ્ક્રીન મૅગ્નિફાયર</translation>
 <translation id="6490471652906364588">USB-C ઉપકરણ (જમણું પોર્ટ)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે સમયસીમા સમાપ્ત થાય તે પહેલાં તમારું <ph name="DEVICE_TYPE" /> અપડેટ કરો</translation>
 <translation id="649452524636452238">સ્માર્ટ કાર્ડ પિન</translation>
 <translation id="6495322433318104734">સ્ક્રીન સેવર બતાવે છે, બહાર નીકળવા માટે કોઈપણ કી દબાવો</translation>
 <translation id="6495400115277918834">ચિત્ર-માં-ચિત્ર સુવિધા ચાલુ થઈ ગઈ છે, ફોકસ કરવા માટે Alt+Shift+V દબાવો</translation>
@@ -1518,7 +1513,6 @@
 <translation id="6697913454192220372">નવું ડેસ્ક ઉમેરો</translation>
 <translation id="6700713906295497288">IME મેનૂ બટન</translation>
 <translation id="6706742084323792866">કીબોર્ડને પિન કરો</translation>
-<translation id="6707693040195709527">ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરવા માટે નિયત કરતાં વધુ સમય થઈ ગયો છે</translation>
 <translation id="6710213216561001401">પાછલી</translation>
 <translation id="6723839937902243910">પાવર</translation>
 <translation id="672609503628871915">શું નવું છે તે જુઓ</translation>
@@ -1811,7 +1805,6 @@
 <translation id="7866482334467279021">ચાલુ</translation>
 <translation id="7872786842639831132">બંધ છે</translation>
 <translation id="7875575368831396199">એવું લાગે છે કે તમારા <ph name="DEVICE_TYPE" /> પર બ્લૂટૂથ બંધ કરેલું છે. કૃપા કરીને ફોન હબનો ઉપયોગ કરવા માટે બ્લૂટૂથ ચાલુ કરો.</translation>
-<translation id="7877557217297072640">{0,plural, =0{ડિવાઇસને હમણાં જ પાછલા વર્ઝનમાં બદલો}=1{ડિવાઇસને 1 સેકન્ડની અંદર પાછલા વર્ઝનમાં બદલો}one{ડિવાઇસને # સેકન્ડની અંદર પાછલા વર્ઝનમાં બદલો}other{ડિવાઇસને # સેકન્ડની અંદર પાછલા વર્ઝનમાં બદલો}}</translation>
 <translation id="7884446017008693258">હૉટસ્પૉટના સેટિંગ</translation>
 <translation id="7884902759927478774">ટૅબને ખેંચવાનું રદ કરો</translation>
 <translation id="7886169021410746335">ગોપનીયતા સેટિંગ ગોઠવો</translation>
@@ -1888,7 +1881,6 @@
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">વધુ વિકલ્પો માટે ટૅબનો ઉપયોગ કરો. તમામ ડેસ્ક ઍક્સેસ કરવા માટે ડાબી અને જમણી ઍરો કીનો ઉપયોગ કરો.</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> વાગ્યે શરૂ થશે <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">ઑટોમૅટિક અપડેટ</translation>
 <translation id="8092380135549145188">સ્ક્રોલના નિયંત્રણો</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> પર સ્ક્રીન કાસ્ટ કરવાનું રોકો</translation>
 <translation id="810637681351706236">શેલ્ફ પરથી ઍપને અનપિન કરો</translation>
@@ -1934,7 +1926,6 @@
 <translation id="8257510091797044096">તમારા ડિવાઇસનું સેટઅપ કરો</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
 <translation id="8262312463845990408">પ્લેબૅક ટૉગલ કરો</translation>
-<translation id="8270450402312105425">{0,plural, =1{એક કલાકની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}one{# કલાકની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}other{# કલાકની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}}</translation>
 <translation id="8277261673056602147">તમારી સ્ક્રીન પરના ટેક્સ્ટને હાઇલાઇટ કરો</translation>
 <translation id="8287009018010202411">પ્રૉડક્ટિવિટી</translation>
 <translation id="828708037801473432">બંધ</translation>
@@ -2001,7 +1992,6 @@
 <translation id="8553395910833293175">બધા ડેસ્ક માટે પહેલેથી જ સોંપણી કરવામાં આવી છે.</translation>
 <translation id="8555757996376137129">વર્તમાન ડેસ્ક કાઢી નાખો</translation>
 <translation id="8559845965695780508"><ph name="USER" /> દ્વારા ફેરફાર કરાયેલી</translation>
-<translation id="856298576161209842">તમે તમારું <ph name="DEVICE_TYPE" /> અપડેટ કરો તેવો <ph name="MANAGER" />નો સુઝાવ છે</translation>
 <translation id="8569751806372591456">અહીં અજમાવવા જેવા અમુક સૂચનો આપવામાં આવ્યા છે</translation>
 <translation id="857201607579416096">મેનૂને સ્ક્રીનની નીચેના જમણા ખૂણામાં ખસેડ્યું.</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" />+<ph name="MODIFIER_2" /> દબાવો અને લિંકને ક્લિક કરો</translation>
@@ -2173,7 +2163,6 @@
 <translation id="923686485342484400">સાઇન આઉટ કરવા માટે બે વાર Control Shift Q દબાવો.</translation>
 <translation id="92580429198593979">તમે વિપરીત રંગમાં બદલવા માટે કીબોર્ડ શૉર્ટકટ દબાવ્યો છે. શું તમે તેને ચાલુ કરવા માગો છો?</translation>
 <translation id="925832987464884575">પ્રીવ્યૂ છુપાવો</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે તમારું <ph name="DEVICE_TYPE" /> તરત જ અપડેટ કરો</translation>
 <translation id="938407504481277932">વર્તમાન ડેસ્ક: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_COUNT" />માંથી ડેસ્ક <ph name="DESK_INDEX" />.</translation>
 <translation id="938963181863597773">મારા કૅલેન્ડરમાં શું છે?</translation>
 <translation id="945383118875625837">લિંકને બુકમાર્ક બાર પર ખેંચો</translation>

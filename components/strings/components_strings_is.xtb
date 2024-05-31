@@ -456,6 +456,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1812527064848182527">langsnið</translation>
 <translation id="1812975699435941848">Heilbrigðismenntun og þjálfun lækna</translation>
 <translation id="1816436748874040213">Getur beðið um að fletta og stækka/minnka samnýtta flipa</translation>
+<translation id="1817364650920811003">Hlutverk: Ábending frá Chrome. Aðgengisflokkur: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Taka af bannlista</translation>
 <translation id="1818585559878922121">Heimildarmyndir</translation>
 <translation id="182139138257690338">sjálfvirkt niðurhal</translation>
@@ -1398,6 +1399,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3642638418806704195">Forrit:</translation>
 <translation id="3646643500201740985">Mæla árangur auglýsingar</translation>
 <translation id="3647286794400715637">Hver innsleginn vefslóðarstrengur verður að innihalda 1 til 2 vefslóðir</translation>
+<translation id="3647400963805615193">Hnappur til að hunsa ábendingu frá Chrome, ýttu á Enter til að hunsa, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Sannvottun heppnaðist</translation>
 <translation id="3650594806107685466">Til að vernda kortið skaltu slá inn CVC-númerið á <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Gönguferðir og útilegur</translation>
@@ -2298,6 +2300,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="541416427766103491">Staflari 4</translation>
 <translation id="5414446060143308245">Yfirferðar er krafist fyrir flutning</translation>
 <translation id="5414511064953050917">Flytja samt</translation>
+<translation id="5419311651396341287">Kerfisstjórinn þinn gæti séð:</translation>
 <translation id="5421408724705443535">Rokktónlist</translation>
 <translation id="5423269318075950257">Vakta verð</translation>
 <translation id="5425082381151187189">Heimilis- og innanhússhönnun</translation>
@@ -3370,6 +3373,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7481312909269577407">Áfram</translation>
 <translation id="7481603210197454575">Umslag: ítalskt</translation>
 <translation id="7483482939016730822">Skólavörur og búnaður fyrir kennslustofur</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, ýttu á dálkalykilinn og síðan á Enter til að hunsa ábendingu Chrome.</translation>
 <translation id="7485085230273446323">Viðskipti og iðnaður</translation>
 <translation id="7485870689360869515">Engin gögn fundust.</translation>
 <translation id="7489392576326061356">Sjampó og hárnæring</translation>

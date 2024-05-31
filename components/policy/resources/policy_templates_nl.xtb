@@ -1661,6 +1661,7 @@ Als je dit beleid niet instelt of niet toepast, is bestandsoverdracht niet toege
 <translation id="2258126710006312594">Toestaan dat gebruikers met externe toegang bestanden overzetten van/naar de host</translation>
 <translation id="225830954785359083">Voorkomen dat pagina's pop-ups tonen tijdens het unloaden</translation>
 <translation id="2261648512244797294">Verouderde Privet-afdrukken uitzetten</translation>
+<translation id="2263881357524831360">Toestaan dat wachtwoordmanagers van derden worden gebruikt in <ph name="PRODUCT_NAME" /> op <ph name="ANDROID_NAME" /></translation>
 <translation id="2264286153777425328">Lijst met acties die moeten worden uitgevoerd als de time-out van het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> is bereikt.
 
 Waarschuwing: Als je dit beleid instelt, kan dit gevolgen hebben voor lokale persoonsgegevens en kunnen deze definitief worden verwijderd. We raden je aan de instellingen te testen voordat je ze implementeert om te voorkomen dat persoonsgegevens per ongeluk worden verwijderd.
@@ -2540,6 +2541,7 @@ Het beleid <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> kr
 <translation id="2960128438010718932">De gefaseerde planning voor het toepassen van nieuwe updates</translation>
 <translation id="2960691910306063964">Verificatie zonder pincode aan- of uitzetten voor hosts voor externe toegang</translation>
 <translation id="2960999045613902792">Gebruikers toestaan printers van derden toe te voegen, in te stellen en ermee af te drukken</translation>
+<translation id="296100724744272922">Toestaan dat wachtwoordmanagers van derden worden gebruikt in Chrome</translation>
 <translation id="2962972237615992440"><ph name="CLOUD_PRINT_NAME" />-proxy uitzetten</translation>
 <translation id="2963292398266537394">Dicteren uitzetten</translation>
 <translation id="2964373560810620158">Niet toestaan dat gebruikers de <ph name="LACROS_NAME" />-browser gebruiken</translation>
@@ -7770,6 +7772,14 @@ Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen of overschrijven.
 Als je dit beleid niet instelt, staat het vergrootglas in eerste instantie uit op het inlogscherm. De gebruiker kan deze functie op elk moment aanzetten.</translation>
 <translation id="7109384070286741861">CECPQ2 uitzetten</translation>
 <translation id="7113439794629928551">Mediabediening tonen voor <ph name="PRODUCT_NAME" />-sessies die worden gestart door andere apparaten</translation>
+<translation id="7113803652772945829">Als je het beleid instelt op Waar, kunnen gebruikers een wachtwoordmanager van derden gebruiken.
+Die wachtwoordmanager zorgt voor het opslaan en invullen van alle wachtwoorden, betaalmethoden en gegevens voor automatisch invullen.
+Als je het beleid instelt op Waar of niet instelt, kan met een instelling worden gewisseld tussen de ingebouwde wachtwoordmanager van <ph name="PRODUCT_NAME" /> en de wachtwoordmanager die is ingesteld in de Android-instellingen.
+Omdat <ph name="PRODUCT_NAME" /> dezelfde gegevens gebruikt als Automatisch invullen met Google, kan de instelling alleen worden gewijzigd om wachtwoordmanagers van derden te gebruiken als een andere manager dan Automatisch invullen met Google is ingesteld in de systeeminstellingen van Android.
+
+Als je het beleid instelt op Onwaar, gebruikt <ph name="PRODUCT_NAME" /> altijd de ingebouwde wachtwoordmanager.
+
+Dit beleid is niet van invloed op wachtwoordmanagers van derden die API's voor toegankelijkheid gebruiken.</translation>
 <translation id="7114169791477667553">De standaard zoekprovider uitzetten</translation>
 <translation id="7121046543122812054">Dit beleid is beëindigd. Overweeg in plaats daarvan <ph name="BROWSER_SIGNIN_POLICY_NAME" /> te gebruiken.
 
@@ -10439,6 +10449,7 @@ De standaardinstelling is RollbackDisabled.</translation>
 2 = De functie uitzetten. 2 is de standaardwaarde voor Education-accounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
 
 Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
+<translation id="949192525372487705">Wisselen naar een wachtwoordmanager van derden blokkeren</translation>
 <translation id="957322141096206402">De DNS-omzetting van het systeem kan binnen of buiten het netwerkproces worden uitgevoerd, afhankelijk van de systeemconfiguratie en functievlaggen.</translation>
 <translation id="957778406002650056">De URL waar de <ph name="PLUGIN_VM_NAME" />-afbeelding kan worden gedownload.</translation>
 <translation id="957920984193041197">Toestaan dat pagina's pop-ups tonen tijdens het unloaden</translation>

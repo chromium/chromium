@@ -57,7 +57,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="118437560755358292">Sisestage tugevama turvalisuse jaoks PIN-kood</translation>
 <translation id="118532027333893379">Täisekraani jäädvustamiseks puudutage ekraanikuval kus tahes</translation>
 <translation id="1190609913194133056">Märguannete keskus</translation>
-<translation id="1190678134285018527">Seade peab kasutama operatsioonisüsteemi eelmist versiooni</translation>
 <translation id="1195412055398077112">liighälvitus</translation>
 <translation id="1195667586424773550">Lohistage link vahelehe aadressiribale</translation>
 <translation id="119944043368869598">Tühjenda kõik</translation>
@@ -685,7 +684,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="363473492175527493">Keskendumise ülesanne: <ph name="TASK_NAME" />. Ülesande muutmiseks vajutage sisestusklahvi.</translation>
 <translation id="3638400994746983214">Privaatsuskuvale lülitamine. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Minimeeri aken</translation>
-<translation id="3649505501900178324">Värskendamise tähtaeg on möödas</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> kuni
@@ -756,7 +754,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="3900355044994618856">Teie seanss lõpeb <ph name="SESSION_TIME_REMAINING" /> pärast</translation>
 <translation id="3901991538546252627">Võrguga <ph name="NAME" /> ühenduse loomine</translation>
 <translation id="3906954721959377182">Tahvelarvuti</translation>
-<translation id="3922427723338465344">{0,plural, =1{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega 1 minut}other{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega # minutit}}</translation>
 <translation id="3923494859158167397">Ühtegi mobiilsidevõrku pole seadistatud</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, sündmusi laaditakse.</translation>
 <translation id="3932043219784172185">Ükski seade ei ole ühendatud</translation>
@@ -947,7 +944,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4623167406982293031">Kinnitage konto</translation>
 <translation id="4628757576491864469">Seadmed</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, tärnhinnang <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega üks päev}other{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega # päeva}}</translation>
 <translation id="4633636853437260449">Kustutamiseks vajutage klahve Ctrl + W</translation>
 <translation id="4642092649622328492">Osalise ekraanipildi jäädvustamine</translation>
 <translation id="4644727592819780893">Ala on kaamera mahutamiseks liiga väike</translation>
@@ -1454,7 +1450,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6477681113376365978">Faili ei saa alla laadida</translation>
 <translation id="6482559668224714696">Täisekraani luup</translation>
 <translation id="6490471652906364588">C-tüüpi USB-seade (parempoolne port)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> nõuab, et värskendaksite seadme <ph name="DEVICE_TYPE" /> operatsioonisüsteemi enne tähtaega</translation>
 <translation id="649452524636452238">Kiipkaardi PIN-kood</translation>
 <translation id="6495322433318104734">Ekraanisäästja kuvamisel vajutage väljumiseks mis tahes klahvi</translation>
 <translation id="6495400115277918834">Pilt pildis käivitati, esiletõstmiseks vajutage klahvikombinatsiooni Alt + Tõstuklahv + V</translation>
@@ -1518,7 +1513,7 @@ Uus installimine</translation>
 <translation id="6696025732084565524">Eemaldatav klaviatuur vajab kriitilist värskendust</translation>
 <translation id="6697913454192220372">Uue töölaua lisamine</translation>
 <translation id="6700713906295497288">IME menüünupp</translation>
-<translation id="6707693040195709527">Seadme operatsioonisüsteemi eelmisele versioonile ülemineku tähtaeg on möödunud</translation>
+<translation id="6706742084323792866">Klaviatuuri kinnitamine</translation>
 <translation id="6710213216561001401">Eelmine</translation>
 <translation id="6723839937902243910">Toide</translation>
 <translation id="672609503628871915">Vaadake, mis on uut</translation>
@@ -1811,7 +1806,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7866482334467279021">sisse</translation>
 <translation id="7872786842639831132">Väljas</translation>
 <translation id="7875575368831396199">Näib, et Bluetooth on teie seadmes <ph name="DEVICE_TYPE" /> välja lülitatud. Lülitage Bluetooth Phone Hubi kasutamiseks sisse.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Viige seadme operatsioonisüsteem kohe tagasi eelmisele versioonile}=1{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega 1 sekund}other{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega # sekundit}}</translation>
 <translation id="7884446017008693258">Kuumkoha seaded</translation>
 <translation id="7884902759927478774">Vahelehe lohistamise tühistamine</translation>
 <translation id="7886169021410746335">Privaatsusseadete kohandamine</translation>
@@ -1888,7 +1882,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Lisavalikute nägemiseks kasutage vahelehte. Kõigile töölaudadele juurdepääsemiseks kasutage parem- ja vasaknoolt.</translation>
 <translation id="8091153018031979607">Algab kell <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Automaatsed värskendused</translation>
 <translation id="8092380135549145188">Kerimise juhtelemendid</translation>
 <translation id="8098591350844501178">Peata ekraani ülekandmine vastuvõtjasse <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Vabasta rakendus riiulist</translation>
@@ -1934,7 +1927,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8257510091797044096">Seadistage oma seade</translation>
 <translation id="8261506727792406068">Kustuta</translation>
 <translation id="8262312463845990408">Taasesituse käivitamine/peatamine</translation>
-<translation id="8270450402312105425">{0,plural, =1{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega üks tund}other{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega # tundi}}</translation>
 <translation id="8277261673056602147">Tõstke tekst oma ekraanikuval esile</translation>
 <translation id="8287009018010202411">Produktiivsus</translation>
 <translation id="828708037801473432">Väljas</translation>
@@ -2001,7 +1993,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8553395910833293175">Juba määratud kõigile töölaudadele.</translation>
 <translation id="8555757996376137129">Eemaldage aktiivne töölaud</translation>
 <translation id="8559845965695780508"><ph name="USER" /> muutis</translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> soovitab seadet <ph name="DEVICE_TYPE" /> värskendada</translation>
 <translation id="8569751806372591456">Siin on proovimiseks mõned soovitused</translation>
 <translation id="857201607579416096">Menüü teisaldati ekraanikuva paremasse alanurka.</translation>
 <translation id="8581946341807941670">Vajutage klahvi <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> ja klõpsake lingil</translation>
@@ -2173,7 +2164,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="923686485342484400">Väljalogimiseks vajutage kaks korda klahvikombinatsiooni Ctrl + tõstuklahv + Q.</translation>
 <translation id="92580429198593979">Vajutasite värvide ümberpööramise klaviatuuri otseteed. Kas soovite selle sisse lülitada?</translation>
 <translation id="925832987464884575">Peida eelvaated</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> nõuab, et värskendaksite seadme <ph name="DEVICE_TYPE" /> operatsioonisüsteemi kohe</translation>
 <translation id="938407504481277932">Praegune töölaud: <ph name="DESK_NAME" /> <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Töölaud <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Mis on minu kalendris?</translation>
 <translation id="945383118875625837">Lohistage link järjehoidjaribale</translation>

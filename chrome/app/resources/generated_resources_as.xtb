@@ -281,7 +281,6 @@
 <translation id="1197088940767939838">কমলা</translation>
 <translation id="1197185198920566650"><ph name="EMAIL" />ৰ বাবে এইটো <ph name="GOOGLE_PASSWORD_MANAGER" />ত ছেভ কৰা হ’ব।</translation>
 <translation id="11978075283960463">এপত ষ্ট’ৰ কৰা ডেটা: <ph name="APP_SIZE" /></translation>
-<translation id="1197935538609051549">নিষ্ক্ৰিয় কৰক</translation>
 <translation id="1198066799963193307">কম দৃষ্টিশক্তিসম্পন্ন লোকৰ বাবে কথনৰ সঁজুলি</translation>
 <translation id="119944043368869598">সকলো মচক</translation>
 <translation id="1199814941632954229">এই প্ৰমাণপত্ৰ প্ৰ’ফাইলসমূহৰ বাবে প্ৰমাণপত্ৰৰ ব্যৱস্থা কৰি থকা হৈছে</translation>
@@ -1087,7 +1086,6 @@
 <translation id="1781771911845953849">একাউণ্ট আৰু ছিংক</translation>
 <translation id="1782101999402987960">আপোনাৰ প্ৰশাসকে আপডে’টসমূহ অৱৰোধ কৰিছে</translation>
 <translation id="1782196717298160133">আপোনাৰ ফ’নটো বিচাৰি থকা হৈছে</translation>
-<translation id="1782541958479207225">{NUM_NOTES,plural, =1{১ টা টোকা}one{# টা টোকা}other{# টা টোকা}}</translation>
 <translation id="1784707308176068866">সহযোগ কৰা কোনো স্থানীয় এপ্লিকেশ্বনে অনুৰোধ কৰিলে নেপথ্যত চলাওক</translation>
 <translation id="1784849162047402014">ডিভাইচৰ ডিস্কত খালী ঠাই কমিছে</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{"<ph name="APP_NAME" />" আনইনষ্টল কৰাটোৱে এই এপ্‌টোও আনইনষ্টল কৰিব:}one{"<ph name="APP_NAME" />" আনইনষ্টল কৰাটোৱে এই এপ্‌বোৰো আনইনষ্টল কৰিব:}other{"<ph name="APP_NAME" />" আনইনষ্টল কৰাটোৱে এই এপ্‌বোৰো আনইনষ্টল কৰিব:}}</translation>
@@ -1270,7 +1268,6 @@
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">কল শেষ কৰক</translation>
 <translation id="1915734383465415025">দোকানৰ নম্বৰ</translation>
-<translation id="1916260783734263714">বৰ্তমান টেব</translation>
 <translation id="1916502483199172559">ডিফ’ল্ট ৰঙা অৱতাৰ</translation>
 <translation id="1916770123977586577">আপোনাৰ আপডে’ট কৰা ছেটিংসমূহ এই ছাইটটোত প্ৰয়োগ কৰিবলৈ এই পৃষ্ঠাটো পুনৰ ল’ড কৰক</translation>
 <translation id="1918127774159128277">ৱাই-ফাই ডাইৰেক্টৰ সক্ষমতা ৰিফ্ৰেশ্ব কৰক</translation>
@@ -1859,6 +1856,7 @@
 <translation id="2332515770639153015">বৰ্ধিত সুৰক্ষিত ব্ৰাউজিং সুবিধাটো অন আছে</translation>
 <translation id="2332742915001411729">ডিফ’ল্টলৈ ৰিছেট কৰক</translation>
 <translation id="2333166365943957309">UIৰ পদানুক্ৰম</translation>
+<translation id="233375395665273385">মচক আৰু ছাইন আউট কৰক</translation>
 <translation id="233471714539944337">সংবেদনশীল সমল</translation>
 <translation id="2335111415680198280">{0,plural, =1{#খন ৱিণ্ড' বন্ধ কৰক}one{#খন ৱিণ্ড' বন্ধ কৰক}other{#খন ৱিণ্ড' বন্ধ কৰক}}</translation>
 <translation id="2336228925368920074">সকলো টেব বুকমার্ক কৰক...</translation>
@@ -1920,7 +1918,6 @@
 <translation id="2383825469508278924">কীব’ৰ্ডৰ কী মেপিং, ফাংশ্বন কী আৰু অধিক সলনি কৰক</translation>
 <translation id="2387052489799050037">গৃহপৃষ্ঠালৈ যাওক</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (বৰ্তমান)</translation>
-<translation id="2390226379317200116">পাছত পুনৰ চাবলৈ এই পৃষ্ঠাটোৰ বিষয়ে এটা টোকা অথবা ধাৰণা যোগ দিয়ক।</translation>
 <translation id="2390347491606624519">প্ৰক্সিৰ সৈতে সংযোগ কৰিব নোৱাৰি, অনুগ্ৰহ কৰি পুনৰ ছাইন ইন কৰক</translation>
 <translation id="2390782873446084770">ৱাই-ফাই ছিংক</translation>
 <translation id="2391419135980381625">মান্য ফণ্ট</translation>
@@ -2047,7 +2044,6 @@
 <translation id="2467755475704469005">কোনো ডিভাইচ চিনাক্ত কৰা হোৱা নাই। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">টাচ্‌পেড স্ক্ৰ’লৰ এক্সিলাৰেশ্বন</translation>
 <translation id="2468205691404969808">আপুনি সেই পৃষ্ঠাবোৰলৈ নগ'লেও আপোনাৰ পচন্দসমূহ মনত ৰাখিবলৈ কুকি ব্যৱহাৰ কৰে</translation>
-<translation id="2468247643665097563">অৰ্ডাৰ</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470085922875120">আপুনি অনুমান কৰিবলৈ টান পাছৱৰ্ড ব্যৱহাৰ কৰি আছে</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - ১ টা টেব}one{<ph name="GROUP_TITLE" /> - # টা টেব}other{<ph name="GROUP_TITLE" /> - # টা টেব}}</translation>
@@ -2779,7 +2775,6 @@
 <translation id="3004385386820284928">কীব’ৰ্ডৰ কী কাষ্টমাইজ কৰক</translation>
 <translation id="3005574332301273731">নেদেখুৱাব</translation>
 <translation id="3006881078666935414">ব্যৱহাৰৰ কোনো ডেটা নাই</translation>
-<translation id="3007410324195400631">এই পৃষ্ঠা সম্পর্কে টোকা যোগ দিয়ক</translation>
 <translation id="3007771295016901659">ডুপ্লিকেট টেব</translation>
 <translation id="3008232374986381779">আপোনাৰ <ph name="DEVICE_TYPE" />ত Linux সঁজুলি, সম্পাদক আৰু IDEসমূহ চলাওক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">অনুমতি ৰিছেট কৰক</translation>
@@ -4444,7 +4439,6 @@
 <translation id="4258348331913189841">ফাইলৰ ছিষ্টেম</translation>
 <translation id="4259388776256904261">এইটোৰ বাবে কিছু সময় লাগিব পাৰে</translation>
 <translation id="4260699894265914672">কাষ্টমাইজ কৰিবলৈ কীব’ৰ্ডৰ এটা কী টিপক</translation>
-<translation id="4260722247480053581">ইনক’গনিট’ ৱিণ্ড’ত খোলক</translation>
 <translation id="4261429981378979799">এক্সটেনশ্বনৰ অনুমতি</translation>
 <translation id="4262004481148703251">সকীয়নি অগ্ৰাহ্য কৰক</translation>
 <translation id="4263223596040212967">আপোনাৰ কীব'ৰ্ডৰ লে’আউট পৰীক্ষা কৰক আৰু আকৌ চেষ্টা কৰক</translation>
@@ -5811,6 +5805,7 @@
 <translation id="5300719150368506519">আপুনি চোৱা পৃষ্ঠাসমূহৰ URLসমূহ Googleলৈ পঠিয়াওক</translation>
 <translation id="5301751748813680278">অতিথি হিচাপে ছাইন ইন কৰি থকা হৈছে।</translation>
 <translation id="5301954838959518834">ঠিক আছে, বুজি পালোঁ</translation>
+<translation id="5302032366299160685">পুনৰ চেষ্টা কৰাৰ পূৰ্বে ফাইলটো খোলালৈ অপেক্ষা কৰক</translation>
 <translation id="5302048478445481009">ভাষা</translation>
 <translation id="5302932258331363306">সলনা-সলনিবোৰ দেখুৱাওক</translation>
 <translation id="5305145881844743843">এই একাউণ্টটো <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" />এ পৰিচালনা কৰে</translation>
@@ -6173,7 +6168,6 @@
 <translation id="5578059481725149024">স্বয়ংক্ৰিয়ভাৱে ছাইন ইন কৰক</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" /> ভাষালৈ অনুবাদ সম্পূৰ্ণ হৈছে</translation>
 <translation id="558170650521898289">Microsoft Windows হাৰ্ডৱেৰ ড্ৰাইভাৰৰ সত্যাপন</translation>
-<translation id="5581876958763461074">আটাইবোৰ টোকা</translation>
 <translation id="5581972110672966454">ডিভাইচটো ড’মেইনত যোগ দিব নোৱাৰি। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক অথবা আপোনাৰ ডিভাইচৰ গৰাকী অথবা প্ৰশাসকৰ সৈতে যোগাযোগ কৰক। আসোঁৱাহ ক’ড: <ph name="ERROR_CODE" />।</translation>
 <translation id="5582634344048669777">৮ টা বিন্দু</translation>
 <translation id="5582839680698949063">মুখ্য মেনু</translation>
@@ -6309,6 +6303,7 @@
 <translation id="5678955352098267522">আপোনাৰ ডেটা <ph name="WEBSITE_1" />ত পঢ়ক</translation>
 <translation id="5679785611070310751">আপুনি <ph name="MONTH_AND_YEAR" />ত এই Chromebookৰ বাবে সুৰক্ষা সম্পৰ্কীয় আপডে’ট পোৱা বন্ধ হ’ব। শেহতীয়া সুৰক্ষা আৰু ছফ্টৱেৰৰ বাবে আপগ্ৰে’ড কৰাৰ সময় হৈছে। অফাৰৰ চৰ্তাৱলী প্ৰযোজ্য।</translation>
 <translation id="5680050361008726776">"<ph name="ESIM_PROFILE_NAME" />" আঁতৰাবনে?</translation>
+<translation id="5681586175480958839">ফাইলটো ইতিমধ্যে খোলা হৈছে</translation>
 <translation id="5684181005476681636">ৱাই-ফাইৰ সবিশেষ</translation>
 <translation id="5684661240348539843">সম্পত্তি চিনাক্তকাৰী</translation>
 <translation id="5684950556880280580">আপোনাৰ পাছৱৰ্ড আপডে’ট কৰা হৈছে</translation>
@@ -9294,7 +9289,6 @@
 <translation id="7941179291434537290">টেডাৰিঙৰ প্ৰস্তুতি:</translation>
 <translation id="7942349550061667556">ৰঙা</translation>
 <translation id="7942846369224063421">আগতীয়াকৈ ল’ড কৰা UI ৰেণ্ডাৰাৰ</translation>
-<translation id="7943349879009553083">অতিথি ম’ডত উপলব্ধ নহয়</translation>
 <translation id="7943368935008348579">PDF ডাউনল’ড কৰক</translation>
 <translation id="7943837619101191061">অৱস্থান যোগ কৰক...</translation>
 <translation id="79446453817422139">এই ফাইলটো বিপজ্জনক হ'ব পাৰে</translation>
@@ -9412,7 +9406,6 @@
 <translation id="8025291188699172126">আপডে’টৰ বিষয়ে</translation>
 <translation id="8026471514777758216">Al jou toestelle</translation>
 <translation id="8026784703228858744">ছিংকৰ জৰিয়তে আপোনাৰ বুকমাৰ্ক আৰু আন বহুতো ছেভ কৰক</translation>
-<translation id="8027581147000338959">নতুন ৱিণ্ড’ত খোলক</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
 <translation id="8028803902702117856"><ph name="SIZE" />, <ph name="FILE_NAME" /> ডাউনল’ড কৰি থকা হৈছে</translation>
 <translation id="8028993641010258682">আকাৰ</translation>
@@ -9950,7 +9943,6 @@
 <translation id="8413956290606243087">আপুনি ChromeOSৰ বাবে বিল্ট-ইন স্ক্ৰীন ৰীডাৰ, ChromeVox সক্ৰিয় কৰিবলৈ বিচাৰেনে?</translation>
 <translation id="8414249071344507766">মেম’ৰি দুদিনৰ বাবে লুকুওৱা হৈছে</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ৰ জৰিয়তে <ph name="SITE_ETLD_PLUS_ONE" />ত ছাইন ইন কৰক</translation>
-<translation id="8414685983518053656">টোকা</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (কে’ছ)</translation>
 <translation id="8417065541337558100">আপোনাৰ কেমেৰাৰ পূৰ্বদৰ্শন</translation>
 <translation id="8417548266957501132">অভিভাৱকৰ পাছৱৰ্ড</translation>
@@ -10743,7 +10735,6 @@
 <translation id="8993945059918628059">আপোনাৰ আঙুলিৰে ফিংগাৰপ্ৰিণ্ট ছেন্সৰটো স্পৰ্শ কৰক। আপোনাৰ ফিংগাৰপ্ৰিণ্টৰ ডেটা সুৰক্ষিতভাৱে ষ্ট’ৰ কৰা হয় আৰু সেইখিনি সদায় আপোনাৰ <ph name="DEVICE_TYPE" />ত থাকে।</translation>
 <translation id="899403249577094719">Netscape প্ৰমাণপত্ৰ ভিত্তিক URL</translation>
 <translation id="899657321862108550">আপোনাৰ Chrome সকলোতে ব্যৱহাৰ কৰক</translation>
-<translation id="899671834467367922">এই পৃষ্ঠাটো চাবলৈ আৰু ইয়াৰ টোকা ল’বলৈ আন এগৰাকী ব্যৱহাৰকাৰী হিচাপে লগ ইন কৰক।</translation>
 <translation id="8998078711690114234">এই প্ৰকাৰৰ ফাইল বিপজ্জনক হ’ব পাৰে। যদি আপুনি <ph name="ORIGIN" />ক বিশ্বাস কৰে, তেন্তে এই ফাইলটো ছেভ কৰক</translation>
 <translation id="8999027165951679951">নিষ্ক্ৰিয় টেব: <ph name="MEMORY_SAVINGS" /> খালী কৰা হৈছে</translation>
 <translation id="8999560016882908256">Section syntax error: <ph name="ERROR_LINE" /></translation>

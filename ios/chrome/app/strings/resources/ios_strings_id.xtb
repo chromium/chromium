@@ -472,6 +472,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3435738964857648380">Keamanan</translation>
 <translation id="3443810440409579745">Tab diterima.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> menit</translation>
+<translation id="3445580184527779479">Grup Tab. Diluaskan.</translation>
 <translation id="3448016392200048164">Layar Terpisah</translation>
 <translation id="345565170154308620">Kelola Sandi...</translation>
 <translation id="3464194322481586217">Tidak dapat memantau harga.</translation>
@@ -516,6 +517,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3638472932233958418">Pramuat Halaman Web</translation>
 <translation id="3642060527569456384">Grup tab disimpan dan diperbarui otomatis di semua perangkat Anda.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} sandi hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda, {email}.}other{{count} sandi hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda, {email}.}}</translation>
+<translation id="3650299480924308502">Setelah Anda logout, data yang belum disimpan akan dihapus dari perangkat ini. Data ini dapat mencakup sandi, histori, dan lainnya.</translation>
 <translation id="3659297405161482746">Metode pembayaran tidak ditemukan</translation>
 <translation id="3661160521073045932">Profil Konfigurasi Tersedia</translation>
 <translation id="3670030362669914947">Nomor</translation>
@@ -972,6 +974,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5971872012779224351">{count,plural, =1{1 bookmark dihapus}other{{count} bookmark dihapus}}</translation>
 <translation id="5979837087407522202">Telusuri Sandi</translation>
 <translation id="5981230843984570095">Tutup Semua Tab Tidak Aktif</translation>
+<translation id="5982958159110007132">Tab dari Grup Tab. <ph name="TAB_INDEX_IN_GROUP" /> dari <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="5984222099446776634">Barusan Dikunjungi</translation>
 <translation id="598634819525651074">Area</translation>
 <translation id="5988097621740394599">Lihat diskon di tab.</translation>
@@ -990,6 +993,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6042308850641462728">Lainnya</translation>
 <translation id="6045460247888249350">Tambahkan judul</translation>
+<translation id="6051432659151380973">Grup tab Anda otomatis disimpan</translation>
 <translation id="605721222689873409">TT</translation>
 <translation id="6059830886158432458">Kontrol artikel dan aktivitas Anda di sini</translation>
 <translation id="6064824697233747382">Organisasi mengharuskan Anda menonaktifkan sinkronisasi.</translation>
@@ -1274,6 +1278,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="745899714366929493">Sepanjang hari</translation>
 <translation id="7459628154744868585">Perlindungan yang Ditingkatkan Aktif</translation>
 <translation id="7465351360025415755">Dapatkan konten yang penting bagi Anda</translation>
+<translation id="7470908168505178757">Grup Tab. Diciutkan.</translation>
 <translation id="7472734401283673885">Nama Perusahaan</translation>
 <translation id="7473891865547856676">Lain Kali</translation>
 <translation id="7488874549363591659">Terkirim</translation>
@@ -1612,6 +1617,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9079935439869366234">Tandai Semua Belum Dibaca</translation>
 <translation id="9081058212938299310">Perbarui sandi untuk <ph name="USERNAME" />?</translation>
+<translation id="9082821980444279398">Jika diaktifkan, data akan digunakan dan disimpan di Akun Google Anda. Jika dinonaktifkan, data hanya disimpan ke data perangkat ini dan akan dihapus jika Anda logout.</translation>
 <translation id="9083838294503912307">Untuk menyinkronkan dan mempersonalisasi berbagai perangkat, aktifkan sinkronisasi.</translation>
 <translation id="9087339162317338348">Gunakan HTTPS jika memungkinkan dan dapatkan peringatan sebelum memuat situs yang tidak mendukungnya.</translation>
 <translation id="9093271241977565440">Di Bagian Atas Layar, Ketuk Ikon Penelusuran</translation>

@@ -472,6 +472,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3435738964857648380">Suojaus</translation>
 <translation id="3443810440409579745">Välilehti vastaanotettu</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
+<translation id="3445580184527779479">Välilehtiryhmä. Laajennettu.</translation>
 <translation id="3448016392200048164">Jaettu näkymä</translation>
 <translation id="345565170154308620">Salasanavalinnat…</translation>
 <translation id="3464194322481586217">Hintaa ei voitu seurata.</translation>
@@ -516,6 +517,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3638472932233958418">Lataa verkkosivut</translation>
 <translation id="3642060527569456384">Välilehtiryhmät tallentuvat ja päivittyvät automaattisesti kaikilla laitteillasi.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} salasana tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteillasi, tallenna se Google-tilillesi ({email}).}other{{count} salasanaa tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi ({email}).}}</translation>
+<translation id="3650299480924308502">Kun kirjaudut ulos, tallentamaton data poistetaan tältä laitteelta. Dataan sisältyy esimerkiksi salasanat ja historia.</translation>
 <translation id="3659297405161482746">Maksutapoja ei löytynyt</translation>
 <translation id="3661160521073045932">Määritysprofiili saatavilla</translation>
 <translation id="3670030362669914947">Numero</translation>
@@ -972,6 +974,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5971872012779224351">{count,plural, =1{1 kirjanmerkki poistettu}other{{count} kirjanmerkkiä poistettu}}</translation>
 <translation id="5979837087407522202">Hae salasanoista</translation>
 <translation id="5981230843984570095">Sulje kaikki ei-aktiiviset</translation>
+<translation id="5982958159110007132">Välilehtiryhmän välilehti. <ph name="TAB_INDEX_IN_GROUP" />/<ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="5984222099446776634">Viimeksi vieraillut</translation>
 <translation id="598634819525651074">Pinta-ala</translation>
 <translation id="5988097621740394599">Katso hinnanalennukset välilehdiltä.</translation>
@@ -990,6 +993,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6042308850641462728">Lisää</translation>
 <translation id="6045460247888249350">Lisää nimi</translation>
+<translation id="6051432659151380973">Välilehtiryhmät tallentuvat automaattisesti</translation>
 <translation id="605721222689873409">VV</translation>
 <translation id="6059830886158432458">Muuta tarinoiden ja toiminnan asetuksia täällä</translation>
 <translation id="6064824697233747382">Organisaatiosi edellyttää, että laitat synkronoinnin pois päältä.</translation>
@@ -1274,6 +1278,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="745899714366929493">Koko päivä</translation>
 <translation id="7459628154744868585">Parannettu suojaus on päällä</translation>
 <translation id="7465351360025415755">Saat sinulle tärkeää sisältöä</translation>
+<translation id="7470908168505178757">Välilehtiryhmä. Tiivistetty.</translation>
 <translation id="7472734401283673885">Yrityksen nimi</translation>
 <translation id="7473891865547856676">Ei kiitos</translation>
 <translation id="7488874549363591659">Toimitettu</translation>
@@ -1612,6 +1617,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="9065203028668620118">Muokkaa</translation>
 <translation id="9079935439869366234">Merkitse kaikki lukemattomiksi</translation>
 <translation id="9081058212938299310">Päivitetäänkö salasana: <ph name="USERNAME" />?</translation>
+<translation id="9082821980444279398">Kun tämä on päällä, voit tallentaa dataa Google-tilille ja käyttää sitä. Kun asetus on pois päältä, vain tämän laitteen data tallennetaan vain tälle laitteelle. Data poistetaan, jos kirjaudut ulos.</translation>
 <translation id="9083838294503912307">Ota synkronointi käyttöön, niin sisältö synkronoidaan ja yksilöidään eri laitteilla.</translation>
 <translation id="9087339162317338348">Käytä HTTPS:ää aina kun mahdollista. Saat varoituksen ennen sellaisten sivustojen lataamista, jotka eivät tue sitä.</translation>
 <translation id="9093271241977565440">Napauta näytön yläreunasta hakukuvaketta</translation>

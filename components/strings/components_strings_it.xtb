@@ -456,6 +456,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1812527064848182527">orizzontale</translation>
 <translation id="1812975699435941848">Istruzione e formazione medica</translation>
 <translation id="1816436748874040213">Può chiedere di scorrere e aumentare lo zoom delle schede condivise</translation>
+<translation id="1817364650920811003">Ruolo: suggerimento di Chrome. Etichetta di accessibilità: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Sblocca</translation>
 <translation id="1818585559878922121">Documentari</translation>
 <translation id="182139138257690338">download automatici</translation>
@@ -1395,6 +1396,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3642638418806704195">Applicazione:</translation>
 <translation id="3646643500201740985">Misurazione del rendimento di un annuncio</translation>
 <translation id="3647286794400715637">Ogni voce della stringa dell'URL deve contenere da 1 a 2 URL.</translation>
+<translation id="3647400963805615193">Pulsante chiusura suggerimento di Chrome, premi Invio per chiudere, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Convalida riuscita</translation>
 <translation id="3650594806107685466">Per contribuire a proteggere la tua carta, inserisci il codice CVC indicato sulla <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Escursioni e campeggio</translation>
@@ -2295,6 +2297,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="541416427766103491">Fascicolatore 4</translation>
 <translation id="5414446060143308245">La revisione è obbligatoria prima del trasferimento</translation>
 <translation id="5414511064953050917">Sposta comunque</translation>
+<translation id="5419311651396341287">L'amministratore potrebbe essere in grado di visualizzare:</translation>
 <translation id="5421408724705443535">Musica rock</translation>
 <translation id="5423269318075950257">Monitora prezzo</translation>
 <translation id="5425082381151187189">Arredamento e decorazione di interni</translation>
@@ -3366,6 +3369,7 @@ Ulteriori dettagli:
 <translation id="7481312909269577407">Avanti</translation>
 <translation id="7481603210197454575">Busta Italian</translation>
 <translation id="7483482939016730822">Forniture per la scuola e attrezzature per le aule</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, premi Tab poi Invio per chiudere il suggerimento di Chrome.</translation>
 <translation id="7485085230273446323">Imprese e industria</translation>
 <translation id="7485870689360869515">Nessun dato trovato.</translation>
 <translation id="7489392576326061356">Shampoo e balsami</translation>

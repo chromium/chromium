@@ -26,6 +26,7 @@
 <translation id="1108938384783527433">Sincronització de l'historial</translation>
 <translation id="1111673857033749125">Les adreces d'interès desades als altres dispositius es mostraran aquí.</translation>
 <translation id="1113597929977215864">Mostra la visualització simplificada</translation>
+<translation id="1126696498560056882">Gestiona els comptes en aquest dispositiu</translation>
 <translation id="1126809382673880764">No et protegeix contra baixades, extensions ni llocs web perillosos. Continuaràs obtenint protecció mitjançant Navegació segura, sempre que estigui disponible, en altres serveis de Google, com ara Gmail i la Cerca.</translation>
 <translation id="1129510026454351943">Detalls: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1142732900304639782">No proposis traduir aquests llocs web</translation>
@@ -76,6 +77,7 @@
 <translation id="1332501820983677155">Dreceres per a funcions de Google Chrome</translation>
 <translation id="1344653310988386453">Inclou un enllaç al text marcat</translation>
 <translation id="1347468774581902829">Gestiona l'activitat</translation>
+<translation id="1355088659320425659">Historial i pestanyes</translation>
 <translation id="1360432990279830238">Vols tancar la sessió i desactivar la sincronització?</translation>
 <translation id="1366525380420346469">Quan aquesta opció està activada</translation>
 <translation id="1373696734384179344">No hi ha prou memòria per baixar el contingut seleccionat.</translation>
@@ -506,6 +508,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3566639033325271639">Actualitza la configuració</translation>
 <translation id="357465026686164600">Telèfon com a clau de seguretat</translation>
 <translation id="3577473026931028326">S'ha produït un error. Torna-ho a provar.</translation>
+<translation id="3577558748185201054">Gestiona els teus interessos i les teves preferències</translation>
 <translation id="3587482841069643663">Tots</translation>
 <translation id="3587596251841506391">Millora la seguretat al web</translation>
 <translation id="3597179440835065298">Obtén suggeriments millors</translation>
@@ -620,6 +623,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4195643157523330669">Obre en una pestanya nova</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 pestanya en aquest dispositiu}other{# pestanyes en aquest dispositiu}}</translation>
 <translation id="4198423547019359126">No hi ha cap ubicació de baixada disponible</translation>
+<translation id="4198664641856813238">Inicia la sessió per obtenir les teves adreces d'interès, contrasenyes i més en tots els dispositius</translation>
 <translation id="4202218894997543208">Temes que has bloquejat</translation>
 <translation id="4214315110991671325">Si permets les galetes, Chrome pot utilitzar-les per a la precàrrega.</translation>
 <translation id="4216511743389425832">Escolta aquesta pàgina</translation>
@@ -808,6 +812,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5054455334322721892">És possible que es desin <ph name="BEGIN_LINK1" />altres tipus d'activitats<ph name="END_LINK1" /> al teu Compte de Google quan tinguis la sessió iniciada. Les pots suprimir en qualsevol moment.</translation>
 <translation id="506254248375231072">No hi ha cap pestanya</translation>
 <translation id="5062960805900435602">L'actualització sobre la combinació de contrasenyes s'ha tancat</translation>
+<translation id="5075939510584558547">Desa sense encriptació</translation>
 <translation id="5081960376148623587">Tria si vols precarregar les pàgines</translation>
 <translation id="5085038751173179818">Inicia la sessió en aquest lloc web i a Chrome per accedir a les teves adreces d'interès i més contingut en tots els teus dispositius</translation>
 <translation id="5091199029769593641">Aviat, quan obris una pestanya nova, veuràs històries de: <ph name="SITE_NAME" />. Els llocs web que segueixes es desen al teu Compte de Google. Pots gestionar-los a la configuració de Discover.</translation>
@@ -866,6 +871,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5401851137404501592">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà el teu nom, la teva adreça electrònica i la teva foto de perfil amb aquest lloc web.</translation>
 <translation id="5409881200985013443">Vols enviar <ph name="ONE_TIME_CODE" /> a <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">S'està verificant...</translation>
+<translation id="5415871492522952905">Tindràs el teu historial i les teves pestanyes en tots els dispositius perquè puguis continuar el que estaves fent</translation>
 <translation id="5423934151118863508">Les pàgines més visitades es mostraran aquí</translation>
 <translation id="5424588387303617268">GB disponibles: <ph name="GIGABYTES" /></translation>
 <translation id="543338862236136125">Edita la contrasenya</translation>
@@ -894,6 +900,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5554520618550346933">Quan utilitzes una contrasenya, Chrome t'avisa si s'ha publicat en línia. Quan ho fa, les teves contrasenyes i els teus noms d'usuari s'encripten i, per tant, ningú no els pot llegir (ni tan sols Google).</translation>
 <translation id="5555525474779371165">Tria la teva protecció de Navegació segura</translation>
 <translation id="5556459405103347317">Torna a carregar</translation>
+<translation id="555671485580955310">Sincronitza l'historial i les pestanyes</translation>
 <translation id="555816257274242153">S'ha aturat el seguiment del preu</translation>
 <translation id="5561162485081632007">Detecta esdeveniments perillosos quan es produeixen i t'avisa</translation>
 <translation id="5561549206367097665">S'està esperant la xarxa…</translation>

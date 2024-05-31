@@ -57,7 +57,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="118437560755358292">Oppgi passordet eller PIN-koden for høyere sikkerhet</translation>
 <translation id="118532027333893379">Trykk hvor som helst for å ta bilde i fullskjerm</translation>
 <translation id="1190609913194133056">Varselsenter</translation>
-<translation id="1190678134285018527">Enheten må gå tilbake til en tidligere versjon</translation>
 <translation id="1195412055398077112">overscan</translation>
 <translation id="1195667586424773550">Dra linken til adressefeltet i fanen</translation>
 <translation id="119944043368869598">Fjern alle</translation>
@@ -685,7 +684,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="363473492175527493">Fokus-gjøremål: <ph name="TASK_NAME" />. Trykk på Enter for å endre gjøremålet.</translation>
 <translation id="3638400994746983214">Slå av/på personvernskjermen. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Minimer vinduet</translation>
-<translation id="3649505501900178324">Oppdateringen er forfalt</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> til
@@ -755,7 +753,6 @@ Koble enheten til strøm.</translation>
 <translation id="3900355044994618856">Økten din avsluttes om <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Kobler til <ph name="NAME" /></translation>
 <translation id="3906954721959377182">Nettbrett</translation>
-<translation id="3922427723338465344">{0,plural, =1{Nedgrader enheten til en tidligere versjon innen 1 minutt}other{Nedgrader enheten til en tidligere versjon innen # minutter}}</translation>
 <translation id="3923494859158167397">Ingen mobilnettverk er konfigurert</translation>
 <translation id="3925540965556789199"><ph name="DATE" /> – laster inn hendelser.</translation>
 <translation id="3932043219784172185">Ingen enheter er koblet til</translation>
@@ -946,7 +943,6 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4623167406982293031">Bekreft kontoen</translation>
 <translation id="4628757576491864469">Enheter</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" /> – stjernevurdering <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Nedgrader enheten til en tidligere versjon innen en dag}other{Nedgrader enheten til en tidligere versjon innen # dager}}</translation>
 <translation id="4633636853437260449">Trykk på Ctrl + W for å slette</translation>
 <translation id="4642092649622328492">Ta en delvis skjermdump</translation>
 <translation id="4644727592819780893">Regionen er for liten – det er ikke plass til kameraet</translation>
@@ -1453,7 +1449,6 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6477681113376365978">Kan ikke laste ned filen</translation>
 <translation id="6482559668224714696">Lupe for hele skjermen</translation>
 <translation id="6490471652906364588">USB-C-enhet (porten på høyre side)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> krever at du oppdaterer <ph name="DEVICE_TYPE" /> før tidsfristen</translation>
 <translation id="649452524636452238">PIN-koden til smartkortet</translation>
 <translation id="6495322433318104734">Viser skjermspareren. Trykk på en hvilken som helst tast for å avslutte</translation>
 <translation id="6495400115277918834">Bilde-i-bilde er startet – trykk på Alt + Shift + V for å fokusere</translation>
@@ -1518,7 +1513,6 @@ Nylig installert</translation>
 <translation id="6697913454192220372">Legg til nytt skrivebord</translation>
 <translation id="6700713906295497288">IME-menyknappen</translation>
 <translation id="6706742084323792866">PIN-tastatur</translation>
-<translation id="6707693040195709527">Nedgraderingen til en tidligere versjon på enheten har forfalt</translation>
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="6723839937902243910">Strøm</translation>
 <translation id="672609503628871915">Se hva som er nytt</translation>
@@ -1811,7 +1805,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7866482334467279021">på</translation>
 <translation id="7872786842639831132">Av</translation>
 <translation id="7875575368831396199">Det ser ut til at Bluetooth er slått av på <ph name="DEVICE_TYPE" />. Slå på Bluetooth for å bruke Telefonstyring.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Nedgrader enheten til en tidligere versjon nå}=1{Nedgrader enheten til en tidligere versjon innen 1 sekund}other{Nedgrader enheten til en tidligere versjon innen # sekunder}}</translation>
 <translation id="7884446017008693258">Innstillinger for wifi-sone</translation>
 <translation id="7884902759927478774">Avbryt fanedraing</translation>
 <translation id="7886169021410746335">justere personverninnstillinger</translation>
@@ -1888,7 +1881,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Bruk Tab for å se flere alternativer. Bruk venstre- og høyrepilene til å finne alle skrivebord.</translation>
 <translation id="8091153018031979607">Starter kl. <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Automatiske oppdateringer</translation>
 <translation id="8092380135549145188">Rullekontroller</translation>
 <translation id="8098591350844501178">Slutt å caste skjermen til <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Løsne appen fra hyllen</translation>
@@ -1934,7 +1926,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8257510091797044096">Konfigurer enheten</translation>
 <translation id="8261506727792406068">Slett</translation>
 <translation id="8262312463845990408">Slå av/på avspilling</translation>
-<translation id="8270450402312105425">{0,plural, =1{Nedgrader enheten til en tidligere versjon innen en time}other{Nedgrader enheten til en tidligere versjon innen # timer}}</translation>
 <translation id="8277261673056602147">Marker tekst på skjermen</translation>
 <translation id="8287009018010202411">Produktivitet</translation>
 <translation id="828708037801473432">Av</translation>
@@ -2001,7 +1992,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8553395910833293175">Allerede tilordnet til alle skrivebord.</translation>
 <translation id="8555757996376137129">Fjern gjeldende skrivebord</translation>
 <translation id="8559845965695780508"><ph name="USER" /> redigerte</translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> anbefaler at du oppdaterer <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Her er noen forslag du kan prøve</translation>
 <translation id="857201607579416096">Menyen ble flyttet til nedre høyre hjørne av skjermen.</translation>
 <translation id="8581946341807941670">Trykk på <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> og klikk på en link</translation>
@@ -2173,7 +2163,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="923686485342484400">Trykk på Control+Shift+Q to ganger for å logge av.</translation>
 <translation id="92580429198593979">Du har trykket på hurtigtasten for modus for fargeinvertering. Vil du slå den på?</translation>
 <translation id="925832987464884575">Skjul forhåndsvisninger</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> krever at du oppdaterer <ph name="DEVICE_TYPE" /> umiddelbart</translation>
 <translation id="938407504481277932">Gjeldende skrivebord: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />). Skrivebord <ph name="DESK_INDEX" /> av <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Hva er i kalenderen min?</translation>
 <translation id="945383118875625837">Dra linken til bokmerkeraden</translation>

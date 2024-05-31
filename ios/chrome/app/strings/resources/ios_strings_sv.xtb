@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Historik</translation>
 <translation id="164673457281113247">{count,plural, =1{Bokmärket har sparats}other{Bokmärkena har sparats}}</translation>
 <translation id="1650222530560417226">Tryck på Starta loggning för att registrera loggar och fel från JavaScript-konsoler från alla flikar. Loggar registreras (och sparas bara i minnet) tills den här sidan stängs eller du trycker på Avbryt loggning.</translation>
+<translation id="1652333207707886577">Anpassa menyn</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} sparat lösenord visas ovanför tangentbordet.}other{{count} sparade lösenord visas ovanför tangentbordet.}}</translation>
 <translation id="1657011748321897393">Det går inte att dela. Du är inte ansluten till nätverket.</translation>
 <translation id="165877110639533037">Inga öppna flikar</translation>
@@ -531,6 +532,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3738428049780661523">Skapades <ph name="DATE" /></translation>
 <translation id="374357899112510277">Dölj nedladdningar</translation>
 <translation id="3745190878148784130">Dölj Zooma text</translation>
+<translation id="3747231889390582072">Data som inte har sparats raderas från den här enheten för att skydda organisationen. Det kan handla om lösenord, webbhistorik, cookies med mera.</translation>
 <translation id="3762232513783804601">Byggd för iPad</translation>
 <translation id="3768725474733206671">Öppna senast stängda flik igen</translation>
 <translation id="3771033907050503522">Inkognitoflikar</translation>
@@ -1481,6 +1483,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8446884382197647889">Läs mer</translation>
 <translation id="8449347986464073209">Radera och logga ut</translation>
 <translation id="8459333855531264009">Inte säkert</translation>
+<translation id="8466300942149667917">Kontodata som inte har sparats raderas</translation>
 <translation id="8473863474539038330">Adresser och annat</translation>
 <translation id="8487667956631253959">På</translation>
 <translation id="8487700953926739672">Tillgänglig offline</translation>

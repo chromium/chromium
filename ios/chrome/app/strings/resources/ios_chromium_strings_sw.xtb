@@ -75,6 +75,7 @@ Kwa mipangilio zaidi inayotumia data kuboresha hali yako ya utumiaji wa Chromium
 <translation id="2942241131342758843">Tumia Chromium kwa chaguomsingi kufungua viungo, kutafuta kwenye wijeti na kujaza manenosiri kiotomatiki katika programu zingine</translation>
 <translation id="2977470724722393594">Chromium imesasishwa</translation>
 <translation id="3044857325852340337">Umefuta data kwenye Chromium</translation>
+<translation id="3049211156275642309">Maliza Kuweka Mipangilio ya Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium inaweza kukusaidia kufuatilia kifurushi hiki kwenye Ukurasa Mpya wa Kichupo.}other{Chromium inaweza kukusaidia kufuatilia vifurushi hivi kwenye Ukurasa Mpya wa Kichupo.}}</translation>
 <translation id="3102849287235003384">Ili uondoke kwenye akaunti yako ya Google katika tovuti zote, <ph name="BEGIN_LINK" />ondoka kwenye akaunti yako katika kivinjari cha Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Tafuta Ukitumia Sauti kwenye Chromium</translation>
@@ -273,6 +274,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="8754966941001340678">Chromium inapendekeza ulinzi ulioboreshwa</translation>
 <translation id="8759037115129007407">Mwanafamilia hawezi kupokea manenosiri sasa hivi. Mwambie asasishe Chromium na asawazishe manenosiri yake. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Akaunti hii na data yoyote ambayo haijahifadhiwa itaondolewa kwenye Chromium.</translation>
+<translation id="8826789549860004832">Nufaika zaidi na Chromium kwa kuendelea kuweka mipangilio ya kivinjari chako.</translation>
 <translation id="88376265765385899">Hufungua alamisho za Chromium.</translation>
 <translation id="8860548555286245440">Fungua URL kwenye Chromium katika Hali ya Faraghani</translation>
 <translation id="8866191443434488382">Chromium itagundua namba za ufuatiliaji kwenye tovuti unazotembelea na kukuonyesha taarifa za kifurushi kwenye ukurasa wa Kichupo Kipya. Namba ya ufuatiliaji wa kifurushi na jina la tovuti zitatumwa kwenye Chromium ili kutoa kipengele hiki na kuboresha vipengele vya ununuzi kwa kila mtu. Unaweza kusasisha mchakato huu wakati wowote katika <ph name="BEGIN_LINK" />Mipangilio ya Ufuatiliaji wa Kifurushi<ph name="END_LINK" />.</translation>

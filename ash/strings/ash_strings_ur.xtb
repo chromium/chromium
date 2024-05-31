@@ -57,7 +57,6 @@
 <translation id="118437560755358292">‏مزید سیکیورٹی کے لیے پاس ورڈ یا PIN درج کریں</translation>
 <translation id="118532027333893379">فُل اسکرین کیپچر کرنے کیلئے کہیں پر بھی تھپتھپائیں</translation>
 <translation id="1190609913194133056">اطلاعاتی مرکز</translation>
-<translation id="1190678134285018527">آلہ کو گزشتہ ورژن پر واپس جانے کی ضرورت ہے</translation>
 <translation id="1195412055398077112">اوور سکین</translation>
 <translation id="1195667586424773550">لنک کو گھسیٹ کر ٹیب کے ایڈریس بار تک لے جائیں</translation>
 <translation id="119944043368869598">سب کو صاف کریں</translation>
@@ -685,7 +684,6 @@
 <translation id="363473492175527493">ٹاسک کو اس پر فوکس کرنے کے لیے سیٹ کیا گیا ہے: <ph name="TASK_NAME" />۔ ٹاسک میں ترمیم کرنے کے لیے اینٹر دبائیں۔</translation>
 <translation id="3638400994746983214">رازداری کا اسکرین ٹوگل کریں۔ <ph name="STATE_TEXT" />۔</translation>
 <translation id="3649256019230929621">ونڈو کو کم از کم کریں</translation>
-<translation id="3649505501900178324">اپ ڈیٹ کرنا باقی ہے</translation>
 <translation id="3653999174677652346">‏<ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />،
         <ph name="START_TIME" /> تا
@@ -755,7 +753,6 @@
 <translation id="3900355044994618856">آپ کا سیشن <ph name="SESSION_TIME_REMAINING" /> میں ختم ہو جائے گا</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> سے منسلک کیا جا رہا ہے</translation>
 <translation id="3906954721959377182">ٹیبلیٹ</translation>
-<translation id="3922427723338465344">{0,plural, =1{1 منٹ کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}other{# منٹ کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}}</translation>
 <translation id="3923494859158167397">کوئی موبائل نیٹ ورک سیٹ اپ نہیں کیا گیا</translation>
 <translation id="3925540965556789199"><ph name="DATE" />، ایونٹس لوڈ ہو رہے ہیں۔</translation>
 <translation id="3932043219784172185">کوئی آلہ منسلک نہیں ہے</translation>
@@ -946,7 +943,6 @@
 <translation id="4623167406982293031">اکاؤنٹ کی توثیق کریں</translation>
 <translation id="4628757576491864469">آلات</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />، ستارہ کی درجہ بندی <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{ایک دن کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}other{# دن کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}}</translation>
 <translation id="4633636853437260449">‏حذف کرنے کے لیے Ctrl+W دبائیں</translation>
 <translation id="4642092649622328492">جزوی اسکرین شاٹ لیں</translation>
 <translation id="4644727592819780893">کیمرا فٹ کرنے کے لیے علاقہ بہت چھوٹا ہے</translation>
@@ -1453,7 +1449,6 @@
 <translation id="6477681113376365978">فائل ڈاؤن لوڈ نہیں کر سکتے</translation>
 <translation id="6482559668224714696">پوری اسکرین مکبّر</translation>
 <translation id="6490471652906364588">‏USB-C آلہ (دایاں پورٹ)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> کا تقاضہ ہے کہ آپ آخری تاریخ سے پہلے اپنے <ph name="DEVICE_TYPE" /> کو اپ ڈیٹ کریں</translation>
 <translation id="649452524636452238">‏اسمارٹ کارڈ PIN</translation>
 <translation id="6495322433318104734">اسکرین سیور ڈسپلے کر رہا ہے، باہر نکلنے کے لیے کسی بھی کلید کو دبائیں</translation>
 <translation id="6495400115277918834">‏تصویر میں تصویر شروع ہو گئی ہے، فوکس کرنے کے لیے Alt+Shift+V دبائیں</translation>
@@ -1517,7 +1512,6 @@
 <translation id="6697913454192220372">نیا ڈیسک شامل کریں</translation>
 <translation id="6700713906295497288">‏IME مینیو بٹن</translation>
 <translation id="6706742084323792866">کی بورڈ کو پن کریں</translation>
-<translation id="6707693040195709527">گزشتہ ورژن میں آلہ کی تبدیلی کا وقت گزر گیا ہے</translation>
 <translation id="6710213216561001401">گزشتہ</translation>
 <translation id="6723839937902243910">پاور</translation>
 <translation id="672609503628871915">دیکھیں کہ نیا کیا ہے</translation>
@@ -1810,7 +1804,6 @@
 <translation id="7866482334467279021">آن</translation>
 <translation id="7872786842639831132">آف</translation>
 <translation id="7875575368831396199">ایسا لگتا ہے کہ آپ کے <ph name="DEVICE_TYPE" /> پر بلوٹوتھ آف ہے۔ فون ہب کا استعمال کرنے کیلئے براہ کرم بلوٹوتھ آن کریں۔</translation>
-<translation id="7877557217297072640">{0,plural, =0{ابھی آلہ کو گزشتہ ورژن میں تبدیل کریں}=1{1 سیکنڈ کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}other{# سیکنڈ کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}}</translation>
 <translation id="7884446017008693258">ہاٹ اسپاٹ کی ترتیبات</translation>
 <translation id="7884902759927478774">ٹیب گھسیٹنا منسوخ کریں</translation>
 <translation id="7886169021410746335">رازداری کی ترتیبات کو ایڈجسٹ کریں</translation>
@@ -1887,7 +1880,6 @@
 <translation id="8085765914647468715">‫YouTube Music</translation>
 <translation id="8088141034189573826">مزید اختیارات کے لیے ٹیب کا استعمال کریں۔ تمام ڈیسک تک رسائی کے لیے بائیں اور دائیں تیر کے نشانات کی کلیدوں کا استعمال کریں۔</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> کو شروع ہوگا</translation>
-<translation id="8091387634532529612">خودکار اپ ڈیٹس</translation>
 <translation id="8092380135549145188">اسکرول کنٹرولز</translation>
 <translation id="8098591350844501178">اسکرین کو <ph name="RECEIVER_NAME" /> پر کاسٹ کرنا بند کریں</translation>
 <translation id="810637681351706236">ایپ کا پن شیلف سے ہٹائیں</translation>
@@ -1933,7 +1925,6 @@
 <translation id="8257510091797044096">اپنا آلہ سیٹ اپ کریں</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
 <translation id="8262312463845990408">پلے بیک ٹوگل کریں</translation>
-<translation id="8270450402312105425">{0,plural, =1{ایک گھنٹے کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}other{# گھنٹے کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}}</translation>
 <translation id="8277261673056602147">اپنی اسکرین پر ٹیکسٹ کو نمایاں کریں</translation>
 <translation id="8287009018010202411">پروڈکٹیوٹی</translation>
 <translation id="828708037801473432">آف</translation>
@@ -2000,7 +1991,6 @@
 <translation id="8553395910833293175">پہلے ہی تمام ڈیسکس کو تفویض کر دیا گیا۔</translation>
 <translation id="8555757996376137129">حالیہ ڈیسک کو ہٹائیں</translation>
 <translation id="8559845965695780508"><ph name="USER" /> نے ترمیم کی</translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> کی تجویز ہے کہ آپ اپنے <ph name="DEVICE_TYPE" /> کو اپ ڈیٹ کریں</translation>
 <translation id="8569751806372591456">کوشش کرنے کے لیے یہاں کچھ تجاویز ہیں</translation>
 <translation id="857201607579416096">مینیو کو اسکرین کے نچلے دائیں کونے میں منتقل کر دیا گیا۔</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> دبائیں اور کسی لنک پر کلک کریں</translation>
@@ -2172,7 +2162,6 @@
 <translation id="923686485342484400">‏سائن آؤٹ کرنے کیلئے Control Shift Q کو دو بار دبائیں۔</translation>
 <translation id="92580429198593979">رنگوں کی تقلیب کیلئے آپ نے کی بورڈ شارٹ کٹ دبایا۔ کیا آپ اسے آن کرنا چاہتے ہیں؟</translation>
 <translation id="925832987464884575">پیش مناظر چھپائیں</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> کو درکار ہے کہ آپ <ph name="DEVICE_TYPE" /> کو فوری طور پر اپ ڈیٹ کریں</translation>
 <translation id="938407504481277932">موجودہ ڈیسک: <ph name="DESK_NAME" />۔ <ph name="PROFILE_NAME" /> <ph name="EMAIL" />۔ <ph name="DESK_COUNT" /> میں سے <ph name="DESK_INDEX" /> ڈیسک۔</translation>
 <translation id="938963181863597773">میرے کیلینڈر میں کیا ہے؟</translation>
 <translation id="945383118875625837">لنک کو بُک مارکس بار پر گھسیٹیں</translation>

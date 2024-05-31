@@ -75,6 +75,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="2942241131342758843">Utilitza Chromium de manera predeterminada per obrir enllaços, cercar des de widgets i emplenar automàticament contrasenyes en altres aplicacions</translation>
 <translation id="2977470724722393594">Chromium està actualitzat</translation>
 <translation id="3044857325852340337">S'han suprimit les dades de Chromium</translation>
+<translation id="3049211156275642309">Acaba de configurar Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium et pot ajudar a fer un seguiment d'aquest paquet a la pàgina Pestanya nova.}other{Chromium et pot ajudar a fer un seguiment d'aquests paquets a la pàgina Pestanya nova.}}</translation>
 <translation id="3102849287235003384">Per tancar la sessió del teu Compte de Google en tots els llocs web, <ph name="BEGIN_LINK" />tanca la sessió de Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Cerca amb la veu a Chromium</translation>
@@ -273,6 +274,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="8754966941001340678">Chromium recomana la protecció millorada</translation>
 <translation id="8759037115129007407">El membre de la teva família no pot rebre contrasenyes en aquest moment. Demana-li que actualitzi Chromium i que sincronitzi les seves contrasenyes. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Aquest compte i totes les dades que no s'hagin desat se suprimiran de Chromium.</translation>
+<translation id="8826789549860004832">Continua configurant el navegador per treure el màxim partit de Chromium.</translation>
 <translation id="88376265765385899">Obre les adreces d'interès de Chromium.</translation>
 <translation id="8860548555286245440">Obre els URL en mode d'incògnit a Chromium</translation>
 <translation id="8866191443434488382">Chromium detectarà els números de seguiment als llocs web que visitis i et mostrarà novetats sobre els paquets a la pàgina Pestanya nova. El número de seguiment de l'enviament i el nom del lloc web s'enviaran a Chromium per oferir aquesta funció i millorar les funcions de compra per a tothom. Pots actualitzar-ho en qualsevol moment a la <ph name="BEGIN_LINK" />configuració del seguiment d'enviaments<ph name="END_LINK" />.</translation>

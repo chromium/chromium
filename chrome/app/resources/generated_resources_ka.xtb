@@ -280,7 +280,6 @@
 <translation id="1197088940767939838">ნარინჯისფერი</translation>
 <translation id="1197185198920566650">მას შეინახავს <ph name="GOOGLE_PASSWORD_MANAGER" /> <ph name="EMAIL" />-ისთვის.</translation>
 <translation id="11978075283960463">აპში შენახული მონაცემები: <ph name="APP_SIZE" /></translation>
-<translation id="1197935538609051549">დეაქტივაცია</translation>
 <translation id="1198066799963193307">მეტყველების ხელსაწყოები სუსტი მხედველობისთვის</translation>
 <translation id="119944043368869598">ყველაფრის გასუფთავება</translation>
 <translation id="1199814941632954229">ამ სერტიფიკატების პროფილებისთვის გაიცემა სერტიფიკატები</translation>
@@ -1080,7 +1079,6 @@
 <translation id="1781771911845953849">ანგარიშები და სინქრონიზაცია</translation>
 <translation id="1782101999402987960">განახლებები დაბლოკილია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="1782196717298160133">თქვენი ტელეფონის ძებნა</translation>
-<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 ჩანიშვნა}other{# ჩანიშვნა}}</translation>
 <translation id="1784707308176068866">ფონურ რეჟიმში გაშვება შესაბამისი მშობლიური აპლიკაციის მოთხოვნის საფუძველზე</translation>
 <translation id="1784849162047402014">მოწყობილობის დისკზე ხელმისაწვდომი მეხსიერება არასაკმარისია</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{„<ph name="APP_NAME" />“-ის დეინსტალაციის შემთხვევაში, მოხდება შემდეგი აპის დეინსტალაციაც:}other{„<ph name="APP_NAME" />“-ის დეინსტალაციის შემთხვევაში, მოხდება შემდეგი აპების დეინსტალაციაც:}}</translation>
@@ -1222,6 +1220,7 @@
 <translation id="1878885068166344708">ფოკუსის გადანაცვლებისას ერთეულის გამოყოფა მოხდება. ფოკუსის შესაცვლელად დააჭირეთ კლავიშს Tab ან აირჩიეთ ერთეული.</translation>
 <translation id="1879000426787380528">შესვლა, როგორც</translation>
 <translation id="18802377548000045">ჩანართები შევიწროვდება დიდ სიგანეზე</translation>
+<translation id="1880677175115548835">ტექსტის არჩევა</translation>
 <translation id="1880905663253319515">წავშალოთ სერთიფიკატი „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="1881445033931614352">კლავიატურის განლაგება</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{ერთეული}other{# ერთეული}}</translation>
@@ -1262,7 +1261,6 @@
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">გათიშვა</translation>
 <translation id="1915734383465415025">მაღაზიის ნომერი</translation>
-<translation id="1916260783734263714">ამჟამინდელი ჩანართი</translation>
 <translation id="1916502483199172559">ნაგულისხმევი წითელი ავატარი</translation>
 <translation id="1916770123977586577">განახლებული პარამეტრების ამ საიტისთვის მისასადაგებლად საჭიროა გვერდის გადატვირთვა</translation>
 <translation id="1918127774159128277">Wi‑Fi Direct-ის შესაძლებლობების განახლება</translation>
@@ -1848,6 +1846,7 @@
 <translation id="2332515770639153015">გაძლიერებული Safe Browsing ჩართულია</translation>
 <translation id="2332742915001411729">დააბრუნეთ ნაგულისხმევზე</translation>
 <translation id="2333166365943957309">UI იერარქია</translation>
+<translation id="233375395665273385">წაშლა და გასვლა</translation>
 <translation id="233471714539944337">სენსიტიური კონტენტი</translation>
 <translation id="2335111415680198280">{0,plural, =1{# ფანჯრის დახურვა}other{# ფანჯრის დახურვა}}</translation>
 <translation id="2336228925368920074">ყველა ჩანართის სანიშნეებში დამატება…</translation>
@@ -1909,7 +1908,6 @@
 <translation id="2383825469508278924">შეცვალეთ კლავიატურის კლავიშების განლაგება, ფუნქციური კლავიშები და სხვა</translation>
 <translation id="2387052489799050037">მთავარზე გადასვლა</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (ამჟამინდელი)</translation>
-<translation id="2390226379317200116">დაამატეთ შენიშვნა ან მოსაზრება ამ გვერდის შესახებ მოგვიანებით სანახავად.</translation>
 <translation id="2390347491606624519">პროქსი-სერვერთან დაკავშირება ვერ მოხერხდა, ხელახლა შედით სისტემაში</translation>
 <translation id="2390782873446084770">Wi-Fi სინქრონიზაცია</translation>
 <translation id="2391419135980381625">სტანდარტული შრიფტი</translation>
@@ -2036,7 +2034,6 @@
 <translation id="2467755475704469005">მოწყობილობა აღმოჩენილი არ არის. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">სენსორული პანელით გადაადგილების აჩქარება</translation>
 <translation id="2468205691404969808">იყენებს ქუქი-ჩანაწერებს თქვენთვის სასურველი პარამეტრების დასამახსოვრებლად, მაშინაც კი, როცა ამ გვერდებს არ სტუმრობთ</translation>
-<translation id="2468247643665097563">მიმდევრობა</translation>
 <translation id="2468402215065996499">ტამაგოჩი</translation>
 <translation id="2468470085922875120">თქვენი პაროლები რთულად გამოსაცნობი ჩანს</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> — 1 ჩანართი}other{<ph name="GROUP_TITLE" /> — # ჩანართი}}</translation>
@@ -2768,7 +2765,6 @@
 <translation id="3004385386820284928">კლავიატურის კლავიშების მორგება</translation>
 <translation id="3005574332301273731">არ გამოჩნდეს</translation>
 <translation id="3006881078666935414">გამოყენების შესახებ მონაცემები არ არის</translation>
-<translation id="3007410324195400631">ამ გვერდის შესახებ შენიშვნების დამატება</translation>
 <translation id="3007771295016901659">ჩანართის დუბლიკატის შექმნა</translation>
 <translation id="3008232374986381779">თქვენს <ph name="DEVICE_TYPE" />-ზე Linux-ის ხელსაწყოების, რედაქტორებისა და IDE-ების გაშვება. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">ნებართვების გადაყენება</translation>
@@ -4436,7 +4432,6 @@
 <translation id="4258348331913189841">ფაილის სისტემები</translation>
 <translation id="4259388776256904261">ამას შეიძლება გარკვეული დრო დასჭირდეს</translation>
 <translation id="4260699894265914672">მოსარგებად დააჭირეთ კლავიატურის კლავიშს</translation>
-<translation id="4260722247480053581">გახსენით ინკოგნიტო ფანჯარაში</translation>
 <translation id="4261429981378979799">გაფართოებების ნებართვები</translation>
 <translation id="4262004481148703251">გაფრთხილების უარყოფა</translation>
 <translation id="4263223596040212967">შეამოწმეთ თქვენი კლავიატურის განლაგება და სცადეთ ხელახლა.</translation>
@@ -5231,6 +5226,7 @@
 <translation id="4867433544163083783">ახლავე შეამოწმეთ, შესაძლებელია თუ არა ჩანართების ორგანიზება</translation>
 <translation id="4868281708609571334">ასწავლეთ Google ასისტენტს <ph name="SUPERVISED_USER_NAME" />-ის ხმის ამოცნობა</translation>
 <translation id="4868284252360267853">ეს დიალოგი ამჟამად არ არის მოქცეული ფოკუსში. ამ დიალოგის ფოკუსში მოსაქცევად დააჭირეთ კლავიშთა კომბინაციას Command+Shift+Option+A.</translation>
+<translation id="4868351661310357223">დააინსტალირეთ აპები და თამაშები Google Play-დან თქვენს <ph name="DEVICE_TYPE" />-ზე.</translation>
 <translation id="4869170227080975044">ChromeOS ქსელის ინფორმაციის წაკითხვა</translation>
 <translation id="4870724079713069532">ამ აპის მეშვეობით შეგიძლიათ გახსნათ და დაარედაქტიროთ მხარდაჭერილი ფაილები File Explorer-იდან ან სხვა აპებიდან. იმისთვის, რომ გააკონტროლოთ, ნაგულისხმევად რომელმა ფაილებმა გახსნას ეს აპი, გადადით <ph name="BEGIN_LINK" />Windows-ის პარამეტრებზე<ph name="END_LINK" />.</translation>
 <translation id="4870995365819149457">ზოგიერთი მხარდაჭერილი ბმული კვლავ გაიხსნება <ph name="APP_NAME" />-ში, <ph name="APP_NAME_2" />-ში, <ph name="APP_NAME_3" />-სა და 1 სხვა აპში.</translation>
@@ -6166,7 +6162,6 @@
 <translation id="5578059481725149024">ავტომატური შესვლა</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" /> თარგმანი მზადაა</translation>
 <translation id="558170650521898289">Microsoft Windows აპარატურის დრაივერის გადამოწმება</translation>
-<translation id="5581876958763461074">ყველა ჩანიშვნა</translation>
 <translation id="5581972110672966454">მოწყობილობის გაწევრიანება დომენში ვერ მოხერხდა. ცადეთ ხელახლა ან დაუკავშირდით მოწყობილობის მფლობელს/ადმინისტრატორს. შეცდომის კოდი: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582634344048669777">8-წერტილიანი</translation>
 <translation id="5582839680698949063">მთავარი მენიუ</translation>
@@ -8052,6 +8047,7 @@
 <translation id="7007648447224463482">ყველას გახსნა ახალ ფანჯარაში</translation>
 <translation id="7008815993384338777">როუმინგი ამჟამად არ გამოიყენება</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> იყენებს თქვენს კამერას</translation>
+<translation id="701020165009334820">Android აპებისა და თამაშების ჩამოტვირთვა Play Store-იდან შეგიძლიათ.</translation>
 <translation id="701080569351381435">წყაროს ნახვა</translation>
 <translation id="7011797924920577670">შეესაბამება თქვენს ინტერესებს</translation>
 <translation id="7012430956470647760">მშობელთა კონტროლი აპებისთვის</translation>
@@ -9285,7 +9281,6 @@
 <translation id="7941179291434537290">ტეტერინგის მზადყოფნა:</translation>
 <translation id="7942349550061667556">წითელი</translation>
 <translation id="7942846369224063421">სამომხმარებლო ინტერფეისის წინასწარ ჩატვირთული ვიზუალიზატორი</translation>
-<translation id="7943349879009553083">მიუწვდომელია სტუმრის რეჟიმში</translation>
 <translation id="7943368935008348579">PDF-ების ჩამოტვირთვა</translation>
 <translation id="7943837619101191061">მდებარეობის დამატება…</translation>
 <translation id="79446453817422139">ეს ფაილი, შესაძლოა, სახიფათო იყოს</translation>
@@ -9403,7 +9398,6 @@
 <translation id="8025291188699172126">განახლებების შესახებ</translation>
 <translation id="8026471514777758216">თქვენი ყველა მოწყობილობა</translation>
 <translation id="8026784703228858744">შეინახეთ თქვენი სანიშნეები და სხვა კონტენტი სინქრონიზაციის მეშვეობით</translation>
-<translation id="8027581147000338959">ახალ ფანჯარაში გახსნა</translation>
 <translation id="8028060951694135607">Microsoft-ის გასაღების აღდგენა</translation>
 <translation id="8028803902702117856">მიმდინარეობს <ph name="SIZE" />-ის ჩამოტვირთვა, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">ზომა</translation>
@@ -9941,7 +9935,6 @@
 <translation id="8413956290606243087">გსურთ, გაააქტიუროთ ChromeVox, ChromeOS-ში ჩაშენებული ეკრანის წამკითხველი?</translation>
 <translation id="8414249071344507766">მოგონებები დამალულია ორი დღით</translation>
 <translation id="8414396119627470038">შედით <ph name="SITE_ETLD_PLUS_ONE" />-ში <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ით</translation>
-<translation id="8414685983518053656">შენიშვნები</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (სათავსო)</translation>
 <translation id="8417065541337558100">თქვენი კამერის წინასწარი ვერსია</translation>
 <translation id="8417548266957501132">მშობლის პაროლი</translation>
@@ -10733,7 +10726,6 @@
 <translation id="8993945059918628059">შეეხეთ თითის ანაბეჭდის სენსორს თითით. თქვენი თითის ანაბეჭდის მონაცემები უსაფრთხოდ შეინახება მხოლოდ და მხოლოდ თქვენს <ph name="DEVICE_TYPE" />-ზე.</translation>
 <translation id="899403249577094719">Netscape სერტიფიკატის ბაზის URL</translation>
 <translation id="899657321862108550">თქვენი Chrome ნებისმიერ ადგილას</translation>
-<translation id="899671834467367922">ამ გვერდის სანახავად და შენიშვნების მასზე შენიშვნების დასართავად შედით სხვა მომხმარებლის სახელით.</translation>
 <translation id="8998078711690114234">ამ ტიპის ფაილი შეიძლება სახიფათო იყოს. შეინახეთ ეს ფაილი მხოლოდ იმ შემთხვევაში, თუ <ph name="ORIGIN" />-ს ენდობით</translation>
 <translation id="8999027165951679951">უმოქმედო ჩანართი: გათავისუფლებულია <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">სექციის სინტაქსის შეცდომა: <ph name="ERROR_LINE" /></translation>

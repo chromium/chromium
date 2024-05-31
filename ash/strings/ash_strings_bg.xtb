@@ -57,7 +57,6 @@
 <translation id="118437560755358292">За по-голяма сигурност въведете парола или ПИН</translation>
 <translation id="118532027333893379">Докоснете произволно място, за да се заснеме целият екран</translation>
 <translation id="1190609913194133056">Център за известия</translation>
-<translation id="1190678134285018527">Устройството трябва да бъде върнато към предишна версия</translation>
 <translation id="1195412055398077112">допълнителна област</translation>
 <translation id="1195667586424773550">Преместете с плъзгане връзката в адресната лента на раздела</translation>
 <translation id="119944043368869598">Изчистване на всички</translation>
@@ -687,7 +686,6 @@
 <translation id="363473492175527493">Задача, над която да се концентрирате: <ph name="TASK_NAME" />. Натиснете Enter, за да я редактирате.</translation>
 <translation id="3638400994746983214">Превключване на екрана за поверителност. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Намаляване на прозореца</translation>
-<translation id="3649505501900178324">Просрочена актуализация</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         от <ph name="START_TIME" /> до
@@ -757,7 +755,6 @@
 <translation id="3900355044994618856">Сесията ви ще приключи след <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Установява се връзка със: <ph name="NAME" /></translation>
 <translation id="3906954721959377182">Таблет</translation>
-<translation id="3922427723338465344">{0,plural, =1{Връщане на устройството към предишна версия в рамките на 1 минута}other{Връщане на устройството към предишна версия в рамките на # минути}}</translation>
 <translation id="3923494859158167397">Няма настроени мобилни мрежи</translation>
 <translation id="3925540965556789199"><ph name="DATE" /> – Събитията се зареждат.</translation>
 <translation id="3932043219784172185">Няма свързано устройство</translation>
@@ -949,7 +946,6 @@
 <translation id="4623167406982293031">Потвърждаване на профила</translation>
 <translation id="4628757576491864469">Устройства</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, оценка със звезди: <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Връщане на устройството към предишна версия в рамките на един ден}other{Връщане на устройството към предишна версия в рамките на # дни}}</translation>
 <translation id="4633636853437260449">Натиснете Ctrl + W за изтриване</translation>
 <translation id="4642092649622328492">Създаване на частична екранна снимка</translation>
 <translation id="4644727592819780893">Областта е твърде малка за визуализиране в камерата</translation>
@@ -1458,7 +1454,6 @@
 <translation id="6477681113376365978">Файлът не може да бъде изтеглен</translation>
 <translation id="6482559668224714696">Лупа за увеличаване на целия екран</translation>
 <translation id="6490471652906364588">USB-C устройство (десният порт)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> изисква да актуализирате устройството си <ph name="DEVICE_TYPE" /> преди крайния срок</translation>
 <translation id="649452524636452238">ПИН за смарткартата</translation>
 <translation id="6495322433318104734">Показва се скрийнсейвър. Натиснете произволен клавиш за изход</translation>
 <translation id="6495400115277918834">Режимът „Картина в картината“ стартира. Натиснете Alt+Shift+V за поставяне на фокуса</translation>
@@ -1523,7 +1518,6 @@
 <translation id="6697913454192220372">Добавяне на нов работен кът</translation>
 <translation id="6700713906295497288">Бутон за меню на редактора за метод на въвеждане</translation>
 <translation id="6706742084323792866">Фиксиране на клавиатурата</translation>
-<translation id="6707693040195709527">Срокът за връщане на устройството към предишна версия е изтекъл</translation>
 <translation id="6710213216561001401">Предишно</translation>
 <translation id="6723839937902243910">Захранване</translation>
 <translation id="672609503628871915">Вижте новите неща</translation>
@@ -1817,7 +1811,6 @@
 <translation id="7866482334467279021">включено</translation>
 <translation id="7872786842639831132">Изкл.</translation>
 <translation id="7875575368831396199">Изглежда, че функцията за Bluetooth на <ph name="DEVICE_TYPE" /> е изключена. Включете я, за да използвате Phone Hub.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Връщане на устройството към предишна версия сега}=1{Връщане на устройството към предишна версия в рамките на 1 секунда}other{Връщане на устройството към предишна версия в рамките на # секунди}}</translation>
 <translation id="7884446017008693258">Настройки за точката за достъп</translation>
 <translation id="7884902759927478774">Анулиране на преместването на раздела с плъзгане</translation>
 <translation id="7886169021410746335">да коригира настройките за поверителност.</translation>
@@ -1894,7 +1887,6 @@
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Използвайте Tab за повече опции. Използвайте стрелките за наляво и надясно за достъп до всички работни кътове.</translation>
 <translation id="8091153018031979607">Започва в <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Автоматични актуализации</translation>
 <translation id="8092380135549145188">Контроли за превъртане</translation>
 <translation id="8098591350844501178">Спиране на предаването на екрана към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="810637681351706236">Освобождаване на приложение от лентата</translation>
@@ -1940,7 +1932,6 @@
 <translation id="8257510091797044096">Настройване на устройството ви</translation>
 <translation id="8261506727792406068">Изтриване</translation>
 <translation id="8262312463845990408">Превключване на възпроизвеждането</translation>
-<translation id="8270450402312105425">{0,plural, =1{Връщане на устройството към предишна версия в рамките на един час}other{Връщане на устройството към предишна версия в рамките на # часа}}</translation>
 <translation id="8277261673056602147">Открояване на текста на екрана</translation>
 <translation id="8287009018010202411">Продуктивност</translation>
 <translation id="828708037801473432">Изключено</translation>
@@ -2007,7 +1998,6 @@
 <translation id="8553395910833293175">Вече е прехвърлено във всички работни кътове.</translation>
 <translation id="8555757996376137129">Премахване на текущия работен кът</translation>
 <translation id="8559845965695780508">Редактирано от <ph name="USER" /></translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> препоръчва да актуализирате устройството си <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Ето няколко предложения, които да изпробвате</translation>
 <translation id="857201607579416096">Менюто е преместено в долния десен ъгъл на екрана.</translation>
 <translation id="8581946341807941670">Натиснете <ph name="MODIFIER_1" /> + <ph name="MODIFIER_2" /> и кликнете върху връзка</translation>
@@ -2182,7 +2172,6 @@
 <translation id="923686485342484400">Натиснете два пъти „Control+Shift+Q“ за изход.</translation>
 <translation id="92580429198593979">Използвахте клавишната комбинация за инвертиране на цветовете. Искате ли да включите функцията?</translation>
 <translation id="925832987464884575">Скриване на визуализациите</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> изисква незабавно да актуализирате устройството си <ph name="DEVICE_TYPE" /></translation>
 <translation id="938407504481277932">Текущ работен кът: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Работен кът <ph name="DESK_INDEX" /> от <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">„What's on my calendar?“ („Какво има в календара ми?“)</translation>
 <translation id="945383118875625837">С плъзгане преместете връзката в лентата на отметките</translation>

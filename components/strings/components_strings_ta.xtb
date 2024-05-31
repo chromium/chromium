@@ -456,6 +456,7 @@
 <translation id="1812527064848182527">லேண்ட்ஸ்கேப்</translation>
 <translation id="1812975699435941848">சுகாதாரக் கல்வி &amp; மருத்துவப் பயிற்சி</translation>
 <translation id="1816436748874040213">பகிர்ந்த பக்கங்களில் ஸ்க்ரோல் செய்யவும், அளவை மாற்றவும் அனுமதி கேட்கும்</translation>
+<translation id="1817364650920811003">பொறுப்பு: Chrome உதவிக்குறிப்பு. அணுகல்தன்மை லேபிள்: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">அனுமதி</translation>
 <translation id="1818585559878922121">ஆவணத் திரைப்படங்கள்</translation>
 <translation id="182139138257690338">தானியங்குப் பதிவிறக்கங்கள்</translation>
@@ -1394,6 +1395,7 @@
 <translation id="3642638418806704195">ஆப்ஸ்:</translation>
 <translation id="3646643500201740985">விளம்பரம் எவ்வளவு சிறப்பாகச் செயல்படுகிறது என்பதை அளவிடுதல்</translation>
 <translation id="3647286794400715637">ஒவ்வொரு URLலுக்கும் அதன் வார்த்தைகள் பகுதியில் 1 முதல் 2 URLகள் வரை இருக்க வேண்டும்.</translation>
+<translation id="3647400963805615193">Chrome உதவிக்குறிப்பை மூடும் பட்டன், மூட Enter அழுத்தவும், <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">சரிபார்ப்பு வெற்றி</translation>
 <translation id="3650594806107685466">உங்கள் கார்டைப் பாதுகாப்பாக வைத்திருக்க உதவ, <ph name="SIDE_OF_CARD" /> உள்ள CVCயை டைப் செய்யுங்கள்</translation>
 <translation id="3650917416636556301">மலையேறுதல் &amp; முகாமிடுதல்</translation>
@@ -3365,6 +3367,7 @@
 <translation id="7481312909269577407">அடுத்த பக்கம்</translation>
 <translation id="7481603210197454575">என்வெலப் இத்தாலியன்</translation>
 <translation id="7483482939016730822">பள்ளிக்குத் தேவையான பொருட்கள் &amp; வகுப்பறை உபகரணங்கள்</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chrome உதவிக்குறிப்பை மூட Tab அழுத்திய பிறகு Enter அழுத்தவும்.</translation>
 <translation id="7485085230273446323">பிசினஸ் மற்றும் தொழில்துறை</translation>
 <translation id="7485870689360869515">தரவு எதுவும் இல்லை.</translation>
 <translation id="7489392576326061356">ஷாம்பூ &amp; கண்டிஷனர்</translation>

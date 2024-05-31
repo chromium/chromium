@@ -281,7 +281,6 @@
 <translation id="1197088940767939838">কমলা</translation>
 <translation id="1197185198920566650"><ph name="EMAIL" />-এর জন্য <ph name="GOOGLE_PASSWORD_MANAGER" />-এ এটি সেভ করা হবে।</translation>
 <translation id="11978075283960463">অ্যাপে সেভ থাকা ডেটা: <ph name="APP_SIZE" /></translation>
-<translation id="1197935538609051549">বন্ধ করুন</translation>
 <translation id="1198066799963193307">স্বল্প দৃষ্টিশক্তি সম্পন্ন ব্যক্তিদের জন্য স্পিচ টুল</translation>
 <translation id="119944043368869598">সব পরিষ্কার করুন</translation>
 <translation id="1199814941632954229">এই সার্টিফিকেট প্রোফাইলগুলির জন্য সার্টিফিকেটের অ্যাক্সেস দেওয়া হচ্ছে</translation>
@@ -1090,7 +1089,6 @@
 <translation id="1781771911845953849">অ্যাকাউন্ট এবং সিঙ্ক</translation>
 <translation id="1782101999402987960">আপনার অ্যাডমিনিস্ট্রেটর আপডেটগুলি ব্লক করেছেন</translation>
 <translation id="1782196717298160133">আপনার ফোন খোঁজা হচ্ছে</translation>
-<translation id="1782541958479207225">{NUM_NOTES,plural, =1{১টি নোট}one{#টি নোট}other{#টি নোট}}</translation>
 <translation id="1784707308176068866">কোনও সহযোগী নেটিভ অ্যাপ্লিকেশন অনুরোধ করলে ব্যাকগ্রাউন্ডে চালান</translation>
 <translation id="1784849162047402014">ডিভাইসে ডিস্কের জায়গা কম আছে</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{"<ph name="APP_NAME" />" আনইনস্টল করা হলে এই অ্যাপও আনইনস্টল হয়ে যাবে:}one{"<ph name="APP_NAME" />" আনইনস্টল করা হলে এই অ্যাপও আনইনস্টল হয়ে যাবে:}other{"<ph name="APP_NAME" />" আনইনস্টল করা হলে এই অ্যাপও আনইনস্টল হয়ে যাবে:}}</translation>
@@ -1233,6 +1231,7 @@
 <translation id="1878885068166344708">আপনি ফোকাস সরালে, আইটেম হাইলাইট করা হয়। ফোকাস পরিবর্তন করতে, ট্যাব প্রেস করুন বা কোনও একটি আইটেম বেছে নিন।</translation>
 <translation id="1879000426787380528">কোন আইডি দিয়ে সাইন-ইন করবেন</translation>
 <translation id="18802377548000045">ট্যাব চওড়া হয়ে সঙ্কুচিত হয়</translation>
+<translation id="1880677175115548835">টেক্সট বেছে নিন</translation>
 <translation id="1880905663253319515">সার্টিফিকেট মুছবেন "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">কীবোর্ডের লেআউট</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{আইটেম}one{#টি আইটেম}other{#টি আইটেম}}</translation>
@@ -1273,7 +1272,6 @@
 <translation id="1915073950770830761">ক্যানারি</translation>
 <translation id="1915307458270490472">কল নামিয়ে রাখুন</translation>
 <translation id="1915734383465415025">স্টোর নম্বর</translation>
-<translation id="1916260783734263714">বর্তমান ট্যাব</translation>
 <translation id="1916502483199172559">ডিফল্ট লাল রঙের অবতার</translation>
 <translation id="1916770123977586577">আপডেট করা সেটিংস এই সাইটে প্রয়োগ করতে পৃষ্ঠাটি আবার লোড করুন</translation>
 <translation id="1918127774159128277">ওয়াই-ফাই ডিরেক্টের সুবিধা রিফ্রেশ করুন</translation>
@@ -1862,6 +1860,7 @@
 <translation id="2332515770639153015">উন্নত Safe Browsing চালু আছে</translation>
 <translation id="2332742915001411729">ডিফল্টে রিসেট করুন</translation>
 <translation id="2333166365943957309">UI হায়ারার্কি</translation>
+<translation id="233375395665273385">মুছুন ও সাইন-আউট করুন</translation>
 <translation id="233471714539944337">সংবেদনশীল কন্টেন্ট</translation>
 <translation id="2335111415680198280">{0,plural, =1{#টি উইন্ডো বন্ধ করুন}one{#টি উইন্ডো বন্ধ করুন}other{#টি উইন্ডো বন্ধ করুন}}</translation>
 <translation id="2336228925368920074">সকল ট্যাব বুকমার্ক করুন...</translation>
@@ -1923,7 +1922,6 @@
 <translation id="2383825469508278924">কীবোর্ড কী ম্যাপিং, ফাংশন কী ও আরও অনেক কিছু পরিবর্তন করুন</translation>
 <translation id="2387052489799050037">হোম স্ক্রিনে যান</translation>
 <translation id="2387602571959163792">(বর্তমান) <ph name="DESK_NAME" /></translation>
-<translation id="2390226379317200116">পরে আবার দেখার জন্য এই পৃষ্ঠা সম্পর্কে একটি নোট বা চিন্তা যোগ করুন।</translation>
 <translation id="2390347491606624519">প্রক্সি সার্ভারে কানেক্ট করা যাচ্ছে না, আবার সাইন-ইন করুন</translation>
 <translation id="2390782873446084770">ওয়াই-ফাই সিঙ্ক</translation>
 <translation id="2391419135980381625">মানক হরফ</translation>
@@ -2050,7 +2048,6 @@
 <translation id="2467755475704469005">কোনও ডিভাইস শনাক্ত করা যায়নি। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">টাচপ্যাডের মাধ্যমে স্ক্রল করার অ্যাক্সিলারেশন</translation>
 <translation id="2468205691404969808">আপনার পছন্দ মনে রাখার জন্য কুকি ব্যবহার করুন, সেই সমস্ত পৃষ্ঠায় যদি না যান, তাহলেও</translation>
-<translation id="2468247643665097563">ক্রম</translation>
 <translation id="2468402215065996499">তামাগচি</translation>
 <translation id="2468470085922875120">আপনি যেসব পাসওয়ার্ড ব্যবহার করছেন তা অনুমান করা কঠিন বলে মনে হচ্ছে</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - ১টি ট্যাব}one{<ph name="GROUP_TITLE" /> - #টি ট্যাব}other{<ph name="GROUP_TITLE" /> - #টি ট্যাব}}</translation>
@@ -2782,7 +2779,6 @@
 <translation id="3004385386820284928">কীবোর্ডের 'কী' কাস্টমাইজ করুন</translation>
 <translation id="3005574332301273731">দেখাবেন না</translation>
 <translation id="3006881078666935414">কোনও ব্যবহারের ডেটা নেই</translation>
-<translation id="3007410324195400631">এই পৃষ্ঠা সম্পর্কে নোট যোগ করুন</translation>
 <translation id="3007771295016901659">ট্যাব ডুপ্লিকেট করুন</translation>
 <translation id="3008232374986381779">আপনার <ph name="DEVICE_TYPE" />-এ Linux টুল, এডিটর ও IDE চালান। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">অনুমতি রিসেট করুন</translation>
@@ -4447,7 +4443,6 @@
 <translation id="4258348331913189841">ফাইল সিস্টেম</translation>
 <translation id="4259388776256904261">এর জন্য কিছু সময় লাগতে পারে</translation>
 <translation id="4260699894265914672">কাস্টমাইজ করতে, কীবোর্ডের কোনও 'কী' প্রেস করুন</translation>
-<translation id="4260722247480053581">ছদ্মবেশী উইন্ডোতে খুলুন</translation>
 <translation id="4261429981378979799">এক্সটেনশনকে দেওয়া অনুমতি</translation>
 <translation id="4262004481148703251">সতর্কতা বাতিল করুন</translation>
 <translation id="4263223596040212967">আপনার কীবোর্ড লে-আউট ভাল করে দেখে নিয়ে আবার চেষ্টা করুন।</translation>
@@ -6176,7 +6171,6 @@
 <translation id="5578059481725149024">অটো সাইন-ইন</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" /> ভাষায় অনুবাদ করা হয়ে গেছে</translation>
 <translation id="558170650521898289">Microsoft Windows Hardware Driver Verification </translation>
-<translation id="5581876958763461074">সব নোট</translation>
 <translation id="5581972110672966454">ডোমেনে ডিভাইসটি যোগ করা যাচ্ছে না। আবার চেষ্টা করুন অথবা আপনার ডিভাইসের মালিক বা অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" /></translation>
 <translation id="5582634344048669777">৮-ডট</translation>
 <translation id="5582839680698949063">প্রধান মেনু</translation>
@@ -9298,7 +9292,6 @@
 <translation id="7941179291434537290">টেথারিং রেডিনেস:</translation>
 <translation id="7942349550061667556">লাল</translation>
 <translation id="7942846369224063421">প্রিলোড করা UI রেন্ডার</translation>
-<translation id="7943349879009553083">'গেস্ট মোডে' উপলভ্য নেই</translation>
 <translation id="7943368935008348579">পিডিএফ ফাইল ডাউনলোড করুন</translation>
 <translation id="7943837619101191061">লোকেশন যোগ করুন...</translation>
 <translation id="79446453817422139">এই ফাইল বিপজ্জনক হতে পারে</translation>
@@ -9417,7 +9410,6 @@
 <translation id="8025291188699172126">আপডেট সম্পর্কে</translation>
 <translation id="8026471514777758216">আপনার সব ডিভাইস</translation>
 <translation id="8026784703228858744">সিঙ্ক ব্যবহার করে আপনার বুকমার্ক ও আরও অনেক কিছু সেভ করুন</translation>
-<translation id="8027581147000338959">নতুন উইন্ডোতে খুলুন</translation>
 <translation id="8028060951694135607">Microsoft মূল পুনরুদ্ধার</translation>
 <translation id="8028803902702117856">ডাউনলোড হচ্ছে <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">সাইজ</translation>
@@ -9955,7 +9947,6 @@
 <translation id="8413956290606243087">আপনি কি ChromeOS-এর বিল্ট-ইন স্ক্রিন রিডার ChromeVox অ্যাক্টিভেট করতে চাইছেন?</translation>
 <translation id="8414249071344507766">মেমরি দুদিন ধরে লুকানো আছে</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-এর মাধ্যমে <ph name="SITE_ETLD_PLUS_ONE" />-এ সাইন-ইন করুন</translation>
-<translation id="8414685983518053656">নোট</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (কেস)</translation>
 <translation id="8417065541337558100">আপনার ক্যামেরার প্রিভিউ</translation>
 <translation id="8417548266957501132">অভিভাবকের পাসওয়ার্ড</translation>
@@ -10748,7 +10739,6 @@
 <translation id="8993945059918628059">ফিঙ্গারপ্রিন্ট সেন্সরটিকে আপনার আঙুল দিয়ে টাচ করুন। আপনার ফিঙ্গারপ্রিন্ট ডেটা সুরক্ষিতভাবে স্টোর করে রাখা হয় এবং তা <ph name="DEVICE_TYPE" /> থেকে কখনও শেয়ার করা হয় না।</translation>
 <translation id="899403249577094719">Netscape সার্টিফিকেট বেস ইউআরএল</translation>
 <translation id="899657321862108550">যেকোনও জায়গায় আপনার পছন্দের ব্রাউজার Chrome ব্যবহার করুন</translation>
-<translation id="899671834467367922">এই পৃষ্ঠাটি দেখতে এবং নোট নিতে অন্য ব্যবহারকারী হিসেবে লগ-ইন করুন।</translation>
 <translation id="8998078711690114234">এই ধরনের ফাইল বিপজ্জনক হতে পারে। আপনি <ph name="ORIGIN" />-কে বিশ্বাস করলে শুধুমাত্র তখনই এই ফাইল সেভ করুন</translation>
 <translation id="8999027165951679951">চালু না থাকা ট্যাব: <ph name="MEMORY_SAVINGS" /> খালি করা হয়েছে</translation>
 <translation id="8999560016882908256">বিভাগের সিন্ট্যাক্সে সমস্যা হয়েছে: <ph name="ERROR_LINE" /></translation>

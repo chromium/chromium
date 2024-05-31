@@ -458,7 +458,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Relaunch Chromium within a day}other{Relaunch Chromium within # days}}</translation>
 <translation id="8453117565092476964">The installer archive is corrupted or invalid. Please download Chromium again.</translation>
 <translation id="8458614432758743027">Chromium requires Windows 10 or higher.</translation>
-<translation id="8461326814397467035">Some of your Chromium data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out.</translation>
 <translation id="8463672209299734063">Optional: Help improve Chromium OS features and performance by automatically sending diagnostic and usage data to Google.</translation>
 <translation id="8493179195440786826">Chromium is Out of Date</translation>
 <translation id="8522801943730206384">Chromium can check your passwords when you save them</translation>

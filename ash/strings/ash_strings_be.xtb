@@ -57,7 +57,6 @@
 <translation id="118437560755358292">Для дадатковай бяспекі ўвядзіце пароль або PIN-код</translation>
 <translation id="118532027333893379">Каб зняць увесь экран, націсніце ў любым яго месцы</translation>
 <translation id="1190609913194133056">Цэнтр апавяшчэнняў</translation>
-<translation id="1190678134285018527">Неабходна вярнуцца да ранейшай версіі АС</translation>
 <translation id="1195412055398077112">вылет разгорткі</translation>
 <translation id="1195667586424773550">Перацягнуць спасылку на адрасны радок укладкі</translation>
 <translation id="119944043368869598">Выдаліць усё</translation>
@@ -685,7 +684,6 @@
 <translation id="363473492175527493">Канцэнтрацыя ўвагі на задачы: <ph name="TASK_NAME" />. Каб адрэдагаваць задачу, націсніце Увод.</translation>
 <translation id="3638400994746983214">Уключыць або выключыць экран прыватнасці. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Згарнуць акно</translation>
-<translation id="3649505501900178324">Абнаўленне пратэрмінавана</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> да
@@ -755,7 +753,6 @@
 <translation id="3900355044994618856">Сеанс завершыцца праз <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Ідзе падключэнне да сеткі <ph name="NAME" /></translation>
 <translation id="3906954721959377182">Планшэт</translation>
-<translation id="3922427723338465344">{0,plural, =1{Вярніцеся да ранейшай версіі АС на працягу 1 хвіліны}one{Вярніцеся да ранейшай версіі АС на працягу # хвіліны}few{Вярніцеся да ранейшай версіі АС на працягу # хвілін}many{Вярніцеся да ранейшай версіі АС на працягу # хвіліны}other{Вярніцеся да ранейшай версіі АС на працягу # хвіліны}}</translation>
 <translation id="3923494859158167397">Мабільныя сеткі не наладжаны</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, падзеі загружаюцца.</translation>
 <translation id="3932043219784172185">Няма падключаных прылад</translation>
@@ -946,7 +943,6 @@
 <translation id="4623167406982293031">Пацвердзіць уліковы запіс</translation>
 <translation id="4628757576491864469">Прылады</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, ацэнка: <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Вярніцеся да ранейшай версіі АС на працягу дня}one{Вярніцеся да ранейшай версіі АС на працягу # дня}few{Вярніцеся да ранейшай версіі АС на працягу # дзён}many{Вярніцеся да ранейшай версіі АС на працягу # дзён}other{Вярніцеся да ранейшай версіі АС на працягу # дня}}</translation>
 <translation id="4633636853437260449">Каб выдаліць, націсніце Ctrl + W</translation>
 <translation id="4642092649622328492">Зрабіць здымак часткі экрана</translation>
 <translation id="4644727592819780893">Вобласць занадта малая, перадпрагляд з камеры ў ёй не змесціцца</translation>
@@ -1453,7 +1449,6 @@
 <translation id="6477681113376365978">Не ўдаецца спампаваць файл</translation>
 <translation id="6482559668224714696">Лупа для поўнаэкраннага рэжыму</translation>
 <translation id="6490471652906364588">Прылада USB-C (правы порт)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> патрабуе, каб вы абнавілі прыладу <ph name="DEVICE_TYPE" /> да заканчэння тэрміну</translation>
 <translation id="649452524636452238">PIN-код разумнай карткі</translation>
 <translation id="6495322433318104734">Паказваецца застаўка. Каб выйсці, націсніце любую клавішу.</translation>
 <translation id="6495400115277918834">Рэжым "Відарыс у відарысе" запушчаны, для пераходу выкарыстайце спалучэнне клавіш Alt + Shift + V</translation>
@@ -1518,7 +1513,6 @@
 <translation id="6697913454192220372">Дадаць новы працоўны стол</translation>
 <translation id="6700713906295497288">Кнопка меню рэдактара метадаў уводу</translation>
 <translation id="6706742084323792866">Замацаваць клавіятуру</translation>
-<translation id="6707693040195709527">Час на вяртанне да ранейшай версіі АС мінуў</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6723839937902243910">Кнопка сілкавання</translation>
 <translation id="672609503628871915">Пазнаёмцеся з навінкамі</translation>
@@ -1811,7 +1805,6 @@
 <translation id="7866482334467279021">ўключаны</translation>
 <translation id="7872786842639831132">Выключана</translation>
 <translation id="7875575368831396199">Здаецца, на прыладзе <ph name="DEVICE_TYPE" /> выключана падключэнне па Bluetooth. Уключыце яго, каб выкарыстоваць функцыю "Тэлефонны цэнтр".</translation>
-<translation id="7877557217297072640">{0,plural, =0{Вярніцеся да ранейшай версіі АС зараз}=1{Вярніцеся да ранейшай версіі АС на працягу 1 секунды}one{Вярніцеся да ранейшай версіі АС на працягу # секунды}few{Вярніцеся да ранейшай версіі АС на працягу # секунд}many{Вярніцеся да ранейшай версіі АС на працягу # секунд}other{Вярніцеся да ранейшай версіі АС на працягу # секунды}}</translation>
 <translation id="7884446017008693258">Налады хот-спота</translation>
 <translation id="7884902759927478774">Скасаваць перацягванне ўкладкі</translation>
 <translation id="7886169021410746335">Змяняць налады прыватнасці</translation>
@@ -1888,7 +1881,6 @@
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Каб праглядзець іншыя параметры, націсніце клавішу Tab. Для пераходу паміж працоўнымі сталамі выкарыстоўвайце клавішы са стрэлкамі ўлева і ўправа.</translation>
 <translation id="8091153018031979607">Пачынаецца ў <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Аўтаматычныя абнаўленні</translation>
 <translation id="8092380135549145188">Налады пракруткі</translation>
 <translation id="8098591350844501178">Спыніць трансляцыю экрана на прыёмнік "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="810637681351706236">Адмацаваць праграму з панэлі доступу</translation>
@@ -1934,7 +1926,6 @@
 <translation id="8257510091797044096">Наладзіць прыладу</translation>
 <translation id="8261506727792406068">Выдаліць</translation>
 <translation id="8262312463845990408">Уключыць/выключыць прайграванне</translation>
-<translation id="8270450402312105425">{0,plural, =1{Вярніцеся да ранейшай версіі АС на працягу гадзіны}one{Вярніцеся да ранейшай версіі АС на працягу # гадзіны}few{Вярніцеся да ранейшай версіі АС на працягу # гадзін}many{Вярніцеся да ранейшай версіі АС на працягу # гадзін}other{Вярніцеся да ранейшай версіі АС на працягу # гадзіны}}</translation>
 <translation id="8277261673056602147">Вылучыць тэкст на экране</translation>
 <translation id="8287009018010202411">Прадукцыйнасць</translation>
 <translation id="828708037801473432">Выключана</translation>
@@ -2001,7 +1992,6 @@
 <translation id="8553395910833293175">Акно ўжо даступнае на ўсіх працоўных сталах.</translation>
 <translation id="8555757996376137129">Выдаліць бягучы працоўны стол</translation>
 <translation id="8559845965695780508">Карыстальнік <ph name="USER" /> змяніў</translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> рэкамендуе вам абнавіць прыладу <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Вось некалькі прапаноў</translation>
 <translation id="857201607579416096">Меню перамешчана ў правы ніжні вугал экрана.</translation>
 <translation id="8581946341807941670">Трымайце <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> і націсніце на спасылку</translation>
@@ -2173,7 +2163,6 @@
 <translation id="923686485342484400">Каб выйсці з уліковага запісу, двойчы націсніце "Ctrl+Shift+Q".</translation>
 <translation id="92580429198593979">Вы націснулі спалучэнне клавіш для інверсіі колераў. Уключыць яе?</translation>
 <translation id="925832987464884575">Выключыць перадпрагляд</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> патрабуе, каб вы неадкладна абнавілі прыладу <ph name="DEVICE_TYPE" /></translation>
 <translation id="938407504481277932">Бягучы працоўны стол: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Працоўны стол <ph name="DESK_INDEX" /> з <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Што ў маім календары?</translation>
 <translation id="945383118875625837">Перацягнуць спасылку на панэль закладак</translation>

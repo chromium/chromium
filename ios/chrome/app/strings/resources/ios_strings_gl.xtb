@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Historial</translation>
 <translation id="164673457281113247">{count,plural, =1{Gardouse o marcador}other{Gardáronse os marcadores}}</translation>
 <translation id="1650222530560417226">Toca o botón Iniciar o rexistro; obterás rexistros e erros futuros da consola de JavaScript procedentes de todas as pestanas. Os rexistros compilaranse (e almacenaranse só na memoria) ata que se peche a páxina ou se toque o botón Deter rexistro.</translation>
+<translation id="1652333207707886577">Personaliza o teu menú</translation>
 <translation id="1653432787084483144">{count,plural, =1{Hai {count} contrasinal gardado dispoñible sobre o teclado.}other{Hai {count} contrasinais gardados dispoñibles sobre o teclado.}}</translation>
 <translation id="1657011748321897393">Non se puido compartir porque non tes conexión á rede.</translation>
 <translation id="165877110639533037">Non hai pestanas abertas</translation>
@@ -471,6 +472,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3435738964857648380">Seguranza</translation>
 <translation id="3443810440409579745">Recibiuse unha pestana.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
+<translation id="3445580184527779479">Grupo de pestanas. Despregado.</translation>
 <translation id="3448016392200048164">Vista dividida</translation>
 <translation id="345565170154308620">Xestionar contrasinais…</translation>
 <translation id="3464194322481586217">Non se puido facer un seguimento do prezo.</translation>
@@ -515,6 +517,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3638472932233958418">Precargar páxinas web</translation>
 <translation id="3642060527569456384">Os grupos de pestanas gárdanse e actualízanse automaticamente en todos os dispositivos.</translation>
 <translation id="3643338347976071250">{count,plural, =1{Hai {count} contrasinal gardado só neste dispositivo. Para usalo noutros aparellos, gárdao na túa Conta de Google ({email}).}other{Hai {count} contrasinais gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google ({email}).}}</translation>
+<translation id="3650299480924308502">Despois de pechar a sesión, os datos que non se gardasen eliminaranse deste dispositivo. Esta información pode incluír contrasinais ou datos do historial, entre outras cousas.</translation>
 <translation id="3659297405161482746">Non se atopou ningún método de pago</translation>
 <translation id="3661160521073045932">Hai un perfil de configuración dispoñible</translation>
 <translation id="3670030362669914947">Número</translation>
@@ -531,6 +534,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3738428049780661523">Data de creación: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Ocultar Descargas</translation>
 <translation id="3745190878148784130">Ocultar Aplicar zoom ao texto</translation>
+<translation id="3747231889390582072">Para protexer a túa organización, eliminaranse deste dispositivo os datos que non estean gardados. Esta información pode incluír contrasinais, cookies ou o historial de navegación, entre outras cousas.</translation>
 <translation id="3762232513783804601">Deseñado para iPad</translation>
 <translation id="3768725474733206671">Reabrir última pestana pechada</translation>
 <translation id="3771033907050503522">Pestanas de incógnito</translation>
@@ -970,6 +974,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5971872012779224351">{count,plural, =1{Eliminouse 1 marcador}other{Elimináronse {count} marcadores}}</translation>
 <translation id="5979837087407522202">Buscar contrasinais</translation>
 <translation id="5981230843984570095">Pechar todas as pestanas inactivas</translation>
+<translation id="5982958159110007132">Pestana do grupo de pestanas. <ph name="TAB_INDEX_IN_GROUP" /> de <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="5984222099446776634">Visitados recentemente</translation>
 <translation id="598634819525651074">Superficie</translation>
 <translation id="5988097621740394599">Consulta as baixadas de prezo nas túas pestanas.</translation>
@@ -988,6 +993,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6042308850641462728">Máis</translation>
 <translation id="6045460247888249350">Engade un título</translation>
+<translation id="6051432659151380973">Os teus grupos de pestanas gárdanse automaticamente</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla as túas historias e a túa actividade aquí</translation>
 <translation id="6064824697233747382">A túa organización esixe que desactives a sincronización.</translation>
@@ -1272,6 +1278,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="745899714366929493">Todo o día</translation>
 <translation id="7459628154744868585">A protección mellorada está activada</translation>
 <translation id="7465351360025415755">Recibe contido que che interese</translation>
+<translation id="7470908168505178757">Grupo de pestanas. Contraído.</translation>
 <translation id="7472734401283673885">Nome da empresa</translation>
 <translation id="7473891865547856676">Non, grazas</translation>
 <translation id="7488874549363591659">Entregado</translation>
@@ -1481,6 +1488,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8446884382197647889">Máis información</translation>
 <translation id="8449347986464073209">Eliminar e pechar sesión</translation>
 <translation id="8459333855531264009">Non seguro</translation>
+<translation id="8466300942149667917">Eliminaranse os datos da conta que non se gardasen</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
 <translation id="8487667956631253959">Activada</translation>
 <translation id="8487700953926739672">Dispoñible sen conexión</translation>
@@ -1609,6 +1617,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9079935439869366234">Marcar todo como non lido</translation>
 <translation id="9081058212938299310">Queres actualizar o contrasinal do usuario <ph name="USERNAME" />?</translation>
+<translation id="9082821980444279398">Se esta opción está activada, podes utilizar e gardar os datos na túa Conta de Google. Cando está desactivada, os datos gárdanse só neste dispositivo e elimínanse ao pechar a sesión.</translation>
 <translation id="9083838294503912307">Para sincronizar e personalizar todos os teus dispositivos, activa a sincronización.</translation>
 <translation id="9087339162317338348">Usa HTTPS sempre que sexa posible e recibe advertencias antes de cargar sitios que non admitan este protocolo.</translation>
 <translation id="9093271241977565440">Na parte superior da pantalla, toca a icona da Busca</translation>

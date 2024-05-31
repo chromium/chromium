@@ -456,6 +456,7 @@
 <translation id="1812527064848182527">газрын гадаргуу</translation>
 <translation id="1812975699435941848">Эрүүл мэндийн боловсрол болон эмнэлгийн сургалт</translation>
 <translation id="1816436748874040213">Хуваалцсан табуудыг гүйлгэж, томруулахыг хүсэх боломжтой</translation>
+<translation id="1817364650920811003">Үүрэг: Chrome-н зөвлөгөө. Хандалтын шошго: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Блокоос гаргах</translation>
 <translation id="1818585559878922121">Баримтат кинонууд</translation>
 <translation id="182139138257690338">Автомат таталтууд</translation>
@@ -1399,6 +1400,7 @@
 <translation id="3642638418806704195">Аппликэйшн:</translation>
 <translation id="3646643500201740985">Зар хэр сайн гүйцэтгэлтэй байгааг хэмжих</translation>
 <translation id="3647286794400715637">URL-н мөрийн оролт бүр 1-ээс 2-ын хооронд URL агуулсан байх ёстой.</translation>
+<translation id="3647400963805615193">Chrome-н зөвлөгөөг хаах товчлуур, хаахын тулд Enter дарна уу, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Баталгаажуулалтын амжилттай боллоо</translation>
 <translation id="3650594806107685466">Та картаа аюулгүй байлгахад туслахын тулд <ph name="SIDE_OF_CARD" /> дээрх Карт баталгаажуулалтын кодоо оруулна уу</translation>
 <translation id="3650917416636556301">Явган аялал болон майхантай аялал</translation>
@@ -2299,6 +2301,7 @@
 <translation id="541416427766103491">Гарах цаасыг зэрэгцүүлэх тавцан 4</translation>
 <translation id="5414446060143308245">Шилжүүлэхээс өмнө шалгах шаардлагатай</translation>
 <translation id="5414511064953050917">Ямартай ч зөөх</translation>
+<translation id="5419311651396341287">Танай администратор дараахыг харах боломжтой байж магадгүй:</translation>
 <translation id="5421408724705443535">Рок хөгжим</translation>
 <translation id="5423269318075950257">Үнэ хянах</translation>
 <translation id="5425082381151187189">Гэр, интерьер чимэглэл</translation>
@@ -3370,6 +3373,7 @@
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7481603210197454575">Итали дугтуй</translation>
 <translation id="7483482939016730822">Сургуулийн хангамж болон ангийн тоног төхөөрөмж</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chrome-н зөвлөгөөг хаахын тулд Tab, дараа нь Enter дарна уу.</translation>
 <translation id="7485085230273446323">Бизнес, аж үйлдвэр</translation>
 <translation id="7485870689360869515">Мэдээлэл байхгүй байна.</translation>
 <translation id="7489392576326061356">Шампунь болон ангижруулагч</translation>

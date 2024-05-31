@@ -26,6 +26,7 @@
 <translation id="1108938384783527433">Synkronisering af historik</translation>
 <translation id="1111673857033749125">Bogmærker, der er gemt på dine andre enheder, vises her.</translation>
 <translation id="1113597929977215864">Se enkel visning</translation>
+<translation id="1126696498560056882">Administrer konti på denne enhed</translation>
 <translation id="1126809382673880764">Beskytter dig ikke mod skadelige websites, downloads og udvidelser. Du er stadig beskyttet med Beskyttet browsing i andre Google-tjenester som f.eks. Gmail og Søgning, hvor dette er tilgængeligt.</translation>
 <translation id="1129510026454351943">Info: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1142732900304639782">Tilbyd ikke at oversætte disse websites</translation>
@@ -76,6 +77,7 @@
 <translation id="1332501820983677155">Funktionsgenveje i Google Chrome</translation>
 <translation id="1344653310988386453">Medtag link til fremhævning</translation>
 <translation id="1347468774581902829">Administrer aktivitet</translation>
+<translation id="1355088659320425659">Historik og faner</translation>
 <translation id="1360432990279830238">Log ud, og deaktiver synkronisering?</translation>
 <translation id="1366525380420346469">Når funktionen er aktiveret</translation>
 <translation id="1373696734384179344">Der er ikke nok hukommelse til at downloade det valgte indhold.</translation>
@@ -620,6 +622,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4195643157523330669">Åbn på ny fane</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 fane på denne enhed}one{# fane på denne enhed}other{# faner på denne enhed}}</translation>
 <translation id="4198423547019359126">Der er ingen tilgængelige downloadplaceringer</translation>
+<translation id="4198664641856813238">Log ind for at få adgang til dine bogmærker, adgangskoder og meget mere på alle dine enheder</translation>
 <translation id="4202218894997543208">Emner, du har blokeret</translation>
 <translation id="4214315110991671325">Hvis du tillader cookies, kan Chrome bruge dem til forudindlæsning.</translation>
 <translation id="4216511743389425832">Få oplæst denne side</translation>
@@ -808,6 +811,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Andre former for aktivitet<ph name="END_LINK1" /> kan blive gemt på din Google-konto, når du er logget ind. Du kan til enhver tid slette dem.</translation>
 <translation id="506254248375231072">Der er ingen faner</translation>
 <translation id="5062960805900435602">Opdatering om fletning af adgangskoder er lukket</translation>
+<translation id="5075939510584558547">Gem uden kryptering</translation>
 <translation id="5081960376148623587">Vælg, om der skal forudindlæses sider</translation>
 <translation id="5085038751173179818">Log ind på dette website og i Chrome for at få adgang til dine bogmærker og meget mere på alle dine enheder</translation>
 <translation id="5091199029769593641">Du får snart vist historier fra <ph name="SITE_NAME" />, når du åbner en ny fane. De websites, du følger, gemmes på din Google-konto. Du kan administrere dem i indstillingerne for Discover.</translation>
@@ -866,6 +870,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5401851137404501592">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse og dit profilbillede med dette website.</translation>
 <translation id="5409881200985013443">Vil du angive <ph name="ONE_TIME_CODE" /> på <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verificerer...</translation>
+<translation id="5415871492522952905">Du har adgang til din historik og dine faner på alle dine enheder, så du kan fortsætte med det, du var i gang med</translation>
 <translation id="5423934151118863508">Dine mest besøgte sider vises her</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB ledig plads</translation>
 <translation id="543338862236136125">Rediger adgangskode</translation>
@@ -894,6 +899,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5554520618550346933">Når du bruger en adgangskode, underretter Chrome dig, hvis den er blevet afsløret online. I forbindelse med dette krypteres dine adgangskoder og brugernavne, så de kan ikke læses af nogen, heller ikke Google.</translation>
 <translation id="5555525474779371165">Vælg din beskyttelse i Beskyttet browsing</translation>
 <translation id="5556459405103347317">Genindlæs</translation>
+<translation id="555671485580955310">Synkroniser historik og faner</translation>
 <translation id="555816257274242153">Der holdes ikke længere øje med prisen</translation>
 <translation id="5561162485081632007">Registrerer og advarer dig om skadelige hændelser, når de opstår</translation>
 <translation id="5561549206367097665">Venter på netværk…</translation>

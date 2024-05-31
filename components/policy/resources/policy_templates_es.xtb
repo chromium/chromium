@@ -792,6 +792,7 @@ Si no se establece esta política, los usuarios podrán añadir excepciones para
 <translation id="1635748761015837179">Permitir la escritura en dispositivos de almacenamiento externo</translation>
 <translation id="1639468541408865385">Habilitar la caché de autenticación de HTTP con alcance global</translation>
 <translation id="1639673466479276550">Habilitar el salvapantallas en la pantalla de inicio de sesión.</translation>
+<translation id="1640447222731279244">Controlar si se habilitará la función Crear con IA para fondos de pantalla en ChromeOS</translation>
 <translation id="1640824698339859203">Habilitar el SSO flotante y mover las autenticaciones de los servicios web del usuario a un dispositivo nuevo</translation>
 <translation id="1641117061932613266">Habilitar la versión 2 del servicio <ph name="PRODUCT_NAME" /></translation>
 <translation id="1641394008743444477">Te permite establecer una lista con funciones de <ph name="PRODUCT_OS_NAME" /> para inhabilitarlas.
@@ -845,6 +846,12 @@ Los orígenes no especificados en la política ni en la configuración del usuar
 
 Si se le asigna el valor False a esta política o no se define, no se capturará ningún evento.</translation>
 <translation id="1692990221685273468">Determina si el verificador de certificados integrado implementará obligatoriamente las restricciones codificadas en las anclas de confianza cargadas desde el almacén de confianza de la plataforma.</translation>
+<translation id="1693528798631913178">Esta política habilita o inhabilita la función Crear con IA para VC Background en ChromeOS.
+0 = Inhabilita la función para los usuarios.
+
+1 = Habilita la función para los usuarios. Ten en cuenta que no se envían datos a Google para entrenar ni mejorar modelos de IA.
+
+Si no se define esta política, la función Crear con IA para VC Background estará inhabilitada para los usuarios de empresa.</translation>
 <translation id="169467210981344373">Inhabilitar la caché de autenticación de HTTP con alcance global</translation>
 <translation id="1696501581280568361">Sugiere la separación de perfiles</translation>
 <translation id="1698810555265314018">Controla la resolución de impresión de imágenes cuando <ph name="PRODUCT_NAME" /> imprime PDFs con rasterización.
@@ -1737,6 +1744,7 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 <translation id="2326031114717677574">Intervalo con el que los datos de audio se muestrean y recogen. El valor mínimo permitido es 1 minuto.
 
       Si no se establece esta política, se aplicará el intervalo predeterminado de 15 minutos.</translation>
+<translation id="2331028134545182024">Controlar si se habilitará la función Crear con IA para VC Background en ChromeOS</translation>
 <translation id="2333228572393176330">Esta política controla una función de seguridad de TLS 1.3 que protege las conexiones frente a ataques de cambio a versión inferior. Es retrocompatible y no afectará a las conexiones de servidores y proxies que cumplan con el protocolo TLS 1.2. Sin embargo, las versiones anteriores de algunos proxies que interceptan TLS tienen un error de implementación que provoca que los proxies sean incompatibles.
 
       Si se asigna el valor "True" a esta política o no se le asigna ninguno, <ph name="PRODUCT_NAME" /> habilitará estas protecciones de seguridad en todas las conexiones.
@@ -4876,6 +4884,17 @@ Si no se define esta política, <ph name="PRODUCT_NAME" /> seguirá el proceso d
       - Si se le asigna el valor <ph name="SKIP_TOS_DIALOG" /> a esta política, las funciones del navegador estarán limitadas.
 
       - Si se le asigna el valor <ph name="SKIP_TOS_DIALOG" /> a esta política, los administradores deberán comunicárselo a los usuarios finales del dispositivo.</translation>
+<translation id="489760181463331251">Esta política cambia el nivel de ahorro de la función Ahorro de memoria.
+
+Esta política solo tendrá efecto si la función Ahorro de memoria se habilita a través de la configuración o de la política <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" /> y afectará a la forma en que se usan métodos heurísticos para determinar cuándo se deben descartar las pestañas. Por ejemplo, reducir el tiempo que tardarán en descartarse las pestañas inactivas puede ahorrar memoria, pero las pestañas se volverán a cargar con más frecuencia, lo cual puede afectar negativamente a la experiencia de usuario y provocar un aumento del consumo de tráfico de red.
+
+Si se asigna el valor 0 a esta política, Ahorro de memoria proporcionará un ahorro de memoria moderado. Las pestañas se desactivarán cuando haya transcurrido un periodo más largo.
+
+Si se asigna el valor 1 a esta política, Ahorro de memoria proporcionará un ahorro de memoria equilibrado. Las pestañas se desactivarán cuando haya transcurrido un periodo óptimo.
+
+Si se asigna el valor 2 a esta política, Ahorro de memoria proporcionará el máximo ahorro de memoria. Las pestañas se desactivarán cuando haya transcurrido un periodo más breve.
+
+Si no se define esta política, el usuario final podrá controlar este ajuste en chrome://settings/performance.</translation>
 <translation id="489803897780524242">Parámetro que controla el emplazamiento de los términos de búsqueda para el proveedor de búsquedas predeterminado</translation>
 <translation id="4899708173828500852">Habilitar Navegación segura</translation>
 <translation id="4906194810004762807">Frecuencia de actualización de Device Policy</translation>
@@ -5235,6 +5254,12 @@ Si no se define esta política o la lista no contiene ninguna referencia a una i
       Si no se asigna ningún valor, se usa el periodo predeterminado de 604.800.000 milisegundos (una semana).</translation>
 <translation id="5212810195096589189">Especificar el permiso de la interfaz de línea de comandos para máquinas virtuales</translation>
 <translation id="5213038356678567351">Sitios web que nunca deben activar un cambio de navegador.</translation>
+<translation id="5215621993623612880">Esta política habilita o inhabilita la función Crear con IA para fondos de pantalla en ChromeOS.
+0 = Inhabilita la función para los usuarios.
+
+1 = Habilita la función para los usuarios. Ten en cuenta que no se envían datos a Google para entrenar ni mejorar modelos de IA.
+
+Si no se define esta política, la función Crear con IA para fondos de pantalla estará inhabilitada para los usuarios de empresa.</translation>
 <translation id="5216815237712190041">Permite configurar en cada dispositivo la imagen de fondo de pantalla que se muestra en la pantalla de inicio de sesión si ningún usuario ha iniciado sesión en el dispositivo. La política se define especificando la URL desde la que el dispositivo ChromeOS puede descargar la imagen de fondo de pantalla y un hash criptográfico que se utiliza para verificar la integridad de la descarga. La imagen debe tener formato JPEG y un tamaño que no supere los 16 MB. Se debe poder acceder a la URL sin autenticación. La imagen de fondo de pantalla se descargará y almacenará en caché. Se volverá a descargar si se cambia la URL o el hash.
 
       Si se establece la política de fondo de pantalla del dispositivo, el dispositivo ChromeOS descargará y utilizará la imagen de fondo en la pantalla de inicio de sesión si ningún usuario ha iniciado sesión en el dispositivo. Una vez que el usuario inicie sesión, se aplicará la política de fondo de pantalla del usuario.
@@ -6785,6 +6810,7 @@ Si la política no se define, <ph name="PRODUCT_OS_NAME" /> usará el directorio
       Esto permite que otros dispositivos ChromeOS (o Android) que hayan iniciado sesión con la misma cuenta de GAIA se emparejen automáticamente.
       Si no se establece esta política, el valor predeterminado hará que la función se inhabilite en el caso de los usuarios de empresa y se habilite en el caso de las
       cuentas no gestionadas.</translation>
+<translation id="6400959027108936283">Habilitar la función</translation>
 <translation id="6401669939808766804">Cerrar la sesión del usuario</translation>
 <translation id="640244877779556713">Habilitar sugerencias de emojis</translation>
 <translation id="6403114173011456561">Controla el teclado virtual táctil. Actúa como política complementaria respecto a la política <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
@@ -7125,6 +7151,7 @@ Los cambios de esta política solo se podrán aplicar si ARC no se está ejecuta
 
       Nota: Usa la política junto a <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />.</translation>
 <translation id="6625136649067113817">Un indicador booleano que especifica si el teclado en pantalla permite usar la función de corrector ortográfico.</translation>
+<translation id="6626319579493977784">Configuración de código dinámico</translation>
 <translation id="66265932317331474">Proporcionar información sobre la CPU</translation>
 <translation id="6628120204569232711">Informar sobre el estado del almacenamiento</translation>
 <translation id="662991036483361836">Impedir que los usuarios habiliten Compartir con Nearby</translation>
@@ -8115,6 +8142,7 @@ Esta política sustituye a la obsoleta de <ph name="WINDOW_PLACEMENT_BLOCKED_FOR
       Si se inhabilita la política o no se establece, los dispositivos registrados no informarán ni registrarán el estado de seguridad del TPM.
       Excepción: <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> controla la información del TPM en M95 y versiones anteriores.</translation>
 <translation id="739556497251174388">Permitir reutilizar las credenciales de inicio de sesión de <ph name="PRODUCT_OS_NAME" /> para la autenticación de red</translation>
+<translation id="7402257017733669351">Impedir que el proceso del navegador cree código dinámico</translation>
 <translation id="7402772023599097052">Si la política se habilita o no se define, se mostrarán advertencias de seguridad cuando se usen marcas de línea de comandos potencialmente peligrosas para iniciar Chrome.
 
 Si se inhabilita esta política, no se mostrará ninguna advertencia de seguridad cuando se inicie Chrome con marcas de línea de comandos potencialmente peligrosas.
@@ -9404,6 +9432,7 @@ Si la política no se define o el valor es 0, al ir a una URL designada se abrir
 <translation id="8429593528367808164">Habilitar la escritura predictiva en el teclado físico cuando los usuarios escriban</translation>
 <translation id="8433186206711564395">Configuración de red</translation>
 <translation id="8433769814000220721">Habilitar sugerencias de contenido</translation>
+<translation id="8435304381855818385">Configuración predeterminada de código dinámico</translation>
 <translation id="843609873781525167">Si se asigna el valor "Verdadero" a esta política, <ph name="PRODUCT_NAME" /> siempre comprobará al iniciarse si es el navegador predeterminado y, si es posible, se registrará a sí mismo automáticamente. Si se le asigna el valor "Falso", <ph name="PRODUCT_NAME" /> dejará de comprobar si es el navegador predeterminado y desactivará los controles del usuario correspondientes a esta opción.
 
       Si no se le asigna ningún valor, <ph name="PRODUCT_NAME" /> permitirá a los usuarios controlar si es el navegador predeterminado y, en caso contrario, si deberían aparecer las notificaciones de usuario.

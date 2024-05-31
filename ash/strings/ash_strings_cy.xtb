@@ -57,7 +57,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="118437560755358292">Rhowch gyfrinair neu PIN i gael rhagor o ddiogelwch</translation>
 <translation id="118532027333893379">Tapiwch unrhyw le i dynnu sgrinlun o'r sgrîn lawn</translation>
 <translation id="1190609913194133056">Canolfan Hysbysiadau</translation>
-<translation id="1190678134285018527">Mae angen i'r ddyfais fynd yn ôl i'r fersiwn flaenorol</translation>
 <translation id="1195412055398077112">tros-sganio</translation>
 <translation id="1195667586424773550">Llusgwch y ddolen i far cyfeiriadau'r tab</translation>
 <translation id="119944043368869598">Clirio popeth</translation>
@@ -685,7 +684,6 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="363473492175527493">Tasg a osodwyd i ganolbwyntio arni: <ph name="TASK_NAME" />. Pwyswch Enter i olygu'r dasg.</translation>
 <translation id="3638400994746983214">Toglo'r sgrîn preifatrwydd. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Lleihau'r ffenestr</translation>
-<translation id="3649505501900178324">Mae Diweddariad yn hwyr</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> i
@@ -755,7 +753,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="3900355044994618856">Bydd eich sesiwn yn dod i ben mewn <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Cysylltu â <ph name="NAME" /></translation>
 <translation id="3906954721959377182">Llechen</translation>
-<translation id="3922427723338465344">{0,plural, =1{Newid dyfais i'r fersiwn flaenorol o fewn 1 funud}zero{Newid dyfais i'r fersiwn flaenorol o fewn # munud}two{Newid dyfais i'r fersiwn flaenorol o fewn # funud}few{Newid dyfais i'r fersiwn flaenorol o fewn # munud}many{Newid dyfais i'r fersiwn flaenorol o fewn # munud}other{Newid dyfais i'r fersiwn flaenorol o fewn # munud}}</translation>
 <translation id="3923494859158167397">Ni osodwyd unrhyw rwydweithiau symudol</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Wrthi'n llwytho digwyddiadau.</translation>
 <translation id="3932043219784172185">Ni chysylltwyd dyfais</translation>
@@ -946,7 +943,6 @@ Mae 1 ddyfais yn gysylltiedig.</translation>
 <translation id="4623167406982293031">Dilyswch eich cyfrif</translation>
 <translation id="4628757576491864469">Dyfeisiau</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, Sgôr seren <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Newid dyfais i'r fersiwn flaenorol o fewn diwrnod}zero{Newid dyfais i'r fersiwn flaenorol o fewn # diwrnod}two{Newid dyfais i'r fersiwn flaenorol o fewn # ddiwrnod}few{Newid dyfais i'r fersiwn flaenorol o fewn # diwrnod}many{Newid dyfais i'r fersiwn flaenorol o fewn # diwrnod}other{Newid dyfais i'r fersiwn flaenorol o fewn # diwrnod}}</translation>
 <translation id="4633636853437260449">Pwyswch Ctrl+W i ddileu</translation>
 <translation id="4642092649622328492">Tynnu sgrinlun rhannol</translation>
 <translation id="4644727592819780893">Rhanbarth yn rhy fach i ffitio camera</translation>
@@ -1453,7 +1449,6 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="6477681113376365978">Methu â lawrlwytho'r ffeil</translation>
 <translation id="6482559668224714696">Chwyddwr sgrîn lawn</translation>
 <translation id="6490471652906364588">Dyfais USB-C (porth de)</translation>
-<translation id="6491071886865974820">Mae <ph name="MANAGER" /> gofyn i chi ddiweddaru eich <ph name="DEVICE_TYPE" /> cyn y dyddiad terfyn</translation>
 <translation id="649452524636452238">PIN cerdyn smart</translation>
 <translation id="6495322433318104734">Wrthi'n arddangos arbedwr sgrîn, pwyswch unrhyw fysell i adael</translation>
 <translation id="6495400115277918834">Wedi cychwyn llun mewn llun, Alt+Shift+V i ffocysu</translation>
@@ -1518,7 +1513,6 @@ Gosodiad newydd</translation>
 <translation id="6697913454192220372">Ychwanegu desg newydd</translation>
 <translation id="6700713906295497288">Botwm dewislen IME</translation>
 <translation id="6706742084323792866">Pinio bysellfwrdd</translation>
-<translation id="6707693040195709527">Mae newid dyfais i'r fersiwn flaenorol yn ddyledus</translation>
 <translation id="6710213216561001401">Blaenorol</translation>
 <translation id="6723839937902243910">Pŵer</translation>
 <translation id="672609503628871915">Gweld beth sy'n newydd</translation>
@@ -1811,7 +1805,6 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7866482334467279021">ymlaen</translation>
 <translation id="7872786842639831132">Diffodd</translation>
 <translation id="7875575368831396199">Mae'n ymddangos bod Bluetooth wedi'i ddiffodd ar eich <ph name="DEVICE_TYPE" />. Trowch Bluetooth ymlaen i ddefnyddio Phone Hub.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Newid dyfais i'r fersiwn flaenorol nawr}=1{Newid dyfais i'r fersiwn flaenorol o fewn 1 eiliad}two{Newid dyfais i'r fersiwn flaenorol o fewn # eiliad}few{Newid dyfais i'r fersiwn flaenorol o fewn # eiliad}many{Newid dyfais i'r fersiwn flaenorol o fewn # eiliad}other{Newid dyfais i'r fersiwn flaenorol o fewn # eiliad}}</translation>
 <translation id="7884446017008693258">Gosodiadau Poethfan</translation>
 <translation id="7884902759927478774">Canslo llusgo tab</translation>
 <translation id="7886169021410746335">Addasu gosodiadau preifatrwydd</translation>
@@ -1888,7 +1881,6 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Defnyddiwch Tab am ragor o opsiynau. Defnyddiwch saethau chwith a dde i gael mynediad i bob desg.</translation>
 <translation id="8091153018031979607">Yn dechrau am <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Diweddariadau awtomatig</translation>
 <translation id="8092380135549145188">Rheolyddion sgrolio</translation>
 <translation id="8098591350844501178">Stopio castio'r sgrîn i <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Dad-binio ap o'r silff</translation>
@@ -1934,7 +1926,6 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8257510091797044096">Gosod eich dyfais</translation>
 <translation id="8261506727792406068">Dileu</translation>
 <translation id="8262312463845990408">Toglo chwarae yn ôl</translation>
-<translation id="8270450402312105425">{0,plural, =1{Newid dyfais i'r fersiwn flaenorol o fewn awr}zero{Newid dyfais i'r fersiwn flaenorol o fewn # awr}two{Newid dyfais i'r fersiwn flaenorol o fewn # awr}few{Newid dyfais i'r fersiwn flaenorol o fewn # awr}many{Newid dyfais i'r fersiwn flaenorol o fewn # awr}other{Newid dyfais i'r fersiwn flaenorol o fewn # awr}}</translation>
 <translation id="8277261673056602147">Amlygu testun ar eich sgrîn</translation>
 <translation id="8287009018010202411">Cynhyrchiant</translation>
 <translation id="828708037801473432">Diffodd</translation>
@@ -2001,7 +1992,6 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8553395910833293175">Wedi'i haseinio i bob desg yn barod.</translation>
 <translation id="8555757996376137129">Tynnu'r ddesg bresennol</translation>
 <translation id="8559845965695780508">Gwnaeth <ph name="USER" /> olygu</translation>
-<translation id="856298576161209842">Mae <ph name="MANAGER" /> yn argymell eich bod yn diweddaru eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Dyma ychydig o awgrymiadau i roi cynnig arnynt</translation>
 <translation id="857201607579416096">Cafodd y ddewislen ei symud i gornel dde waelod y sgrîn.</translation>
 <translation id="8581946341807941670">Pwyswch <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> a chliciwch ddolen</translation>
@@ -2173,7 +2163,6 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="923686485342484400">Pwyswch Control Shift Q ddwywaith i allgofnodi.</translation>
 <translation id="92580429198593979">Gwnaethoch bwyso llwybr byr y bysellfwrdd ar gyfer gwrthdroad lliw. Ydych chi am ei droi ymlaen?</translation>
 <translation id="925832987464884575">Cuddio rhagolygon</translation>
-<translation id="937214777182567951">Mae <ph name="MANAGER" /> yn gofyn i chi ddiweddaru'ch <ph name="DEVICE_TYPE" /> ar unwaith</translation>
 <translation id="938407504481277932">Desg bresennol: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Desg <ph name="DESK_INDEX" /> o <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Beth sydd ar fy nghalendr?</translation>
 <translation id="945383118875625837">Llusgo'r ddolen i'r bar nodau tudalen</translation>

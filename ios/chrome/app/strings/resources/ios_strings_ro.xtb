@@ -472,6 +472,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3435738964857648380">Securitate</translation>
 <translation id="3443810440409579745">Fila a fost primită.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
+<translation id="3445580184527779479">Un grup de file. Extins.</translation>
 <translation id="3448016392200048164">Vizualizare împărțită</translation>
 <translation id="345565170154308620">Gestionează parolele...</translation>
 <translation id="3464194322481586217">Nu s-a putut urmări prețul.</translation>
@@ -516,6 +517,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3638472932233958418">Preîncarcă pagini</translation>
 <translation id="3642060527569456384">Grupurile de file se salvează și se actualizează automat pe toate dispozitivele.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} parolă se salvează numai pe acest dispozitiv. Pentru a-l folosi pe celelalte dispozitive, salvează-l în Contul tău Google, {email}.}few{{count} parole se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google {email}.}other{{count} de parole se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google {email}.}}</translation>
+<translation id="3650299480924308502">După ce te deconectezi, datele nesalvate se vor șterge de pe acest dispozitiv. Aici pot fi incluse parole, istoric și altele.</translation>
 <translation id="3659297405161482746">Nu s-a găsit nicio metodă de plată</translation>
 <translation id="3661160521073045932">Este disponibil un profil de configurare</translation>
 <translation id="3670030362669914947">Număr</translation>
@@ -972,6 +974,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5971872012779224351">{count,plural, =1{Un marcaj șters}few{{count} marcaje șterse}other{{count} de marcaje șterse}}</translation>
 <translation id="5979837087407522202">Caută parole</translation>
 <translation id="5981230843984570095">Închide toate elementele inactive</translation>
+<translation id="5982958159110007132">Fila Grup de file. <ph name="TAB_INDEX_IN_GROUP" /> din <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="5984222099446776634">Recently visited (Vizitate recent)</translation>
 <translation id="598634819525651074">Zonă</translation>
 <translation id="5988097621740394599">Vezi scăderile de prețuri din file</translation>
@@ -990,6 +993,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6042308850641462728">Mai multe</translation>
 <translation id="6045460247888249350">Adaugă un titlu</translation>
+<translation id="6051432659151380973">Grupurile de file se salvează automat</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Gestionează subiectele și activitatea aici</translation>
 <translation id="6064824697233747382">Organizația îți solicită să dezactivezi sincronizarea.</translation>
@@ -1274,6 +1278,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="745899714366929493">Toată ziua</translation>
 <translation id="7459628154744868585">Protecția îmbunătățită este activată</translation>
 <translation id="7465351360025415755">Primește conținut relevant pentru tine</translation>
+<translation id="7470908168505178757">Un grup de file. Restrâns.</translation>
 <translation id="7472734401283673885">Numele companiei</translation>
 <translation id="7473891865547856676">Nu, Mulțumesc</translation>
 <translation id="7488874549363591659">Livrat</translation>
@@ -1612,6 +1617,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="9065203028668620118">Editează</translation>
 <translation id="9079935439869366234">Marchează-le pe toate ca necitite</translation>
 <translation id="9081058212938299310">Actualizezi parola pentru <ph name="USERNAME" />?</translation>
+<translation id="9082821980444279398">Când opțiunea este activată, folosești și salvezi date în Contul Google. Când este dezactivată, datele se salvează numai pe acest dispozitiv și se șterg dacă te deconectezi.</translation>
 <translation id="9083838294503912307">Pentru a sincroniza și a personaliza pe toate dispozitivele, activează sincronizarea.</translation>
 <translation id="9087339162317338348">Folosește HTTPS ori de câte ori este posibil și primește un avertisment înainte de a încărca site-urile care nu acceptă acest protocol.</translation>
 <translation id="9093271241977565440">În partea de sus a ecranului, atinge pictograma de căutare</translation>

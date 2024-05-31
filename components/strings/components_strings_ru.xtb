@@ -456,6 +456,7 @@
 <translation id="1812527064848182527">горизонтальная ориентация</translation>
 <translation id="1812975699435941848">Санитарное просвещение и медицинское образование</translation>
 <translation id="1816436748874040213">Может запрашивать разрешение на изменение масштаба и прокрутку содержимого демонстрируемых вкладок</translation>
+<translation id="1817364650920811003">Роль: совет по работе с Chrome. Ярлык специальных возможностей: "<ph name="CHROME_TIP" />".</translation>
 <translation id="1818522458013171885">Разблокировать</translation>
 <translation id="1818585559878922121">Документальные фильмы</translation>
 <translation id="182139138257690338">автоматическое скачивание</translation>
@@ -1397,6 +1398,7 @@
 <translation id="3642638418806704195">Приложение:</translation>
 <translation id="3646643500201740985">Оценка эффективности рекламы</translation>
 <translation id="3647286794400715637">Каждая запись должна содержать 1–2 URL.</translation>
+<translation id="3647400963805615193">Кнопка "Закрыть совет по работе с Chrome". Для выполнения действия нажмите Ввод. <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
 <translation id="3650584904733503804">Проверка выполнена успешно</translation>
 <translation id="3650594806107685466">Чтобы получить доступ к данным банковской карты, введите CVC-код (<ph name="SIDE_OF_CARD" />).</translation>
 <translation id="3650917416636556301">Пеший туризм и кемпинг</translation>
@@ -2297,6 +2299,7 @@
 <translation id="541416427766103491">Укладчик 4</translation>
 <translation id="5414446060143308245">Проверьте файлы, перед тем как переносить их</translation>
 <translation id="5414511064953050917">Все равно переместить</translation>
+<translation id="5419311651396341287">Вашему администратору может быть доступна следующая информация:</translation>
 <translation id="5421408724705443535">Рок-музыка</translation>
 <translation id="5423269318075950257">Отслеживание цен</translation>
 <translation id="5425082381151187189">Обустройство дома и отделка помещений</translation>
@@ -3369,6 +3372,7 @@
 <translation id="7481312909269577407">Вперед</translation>
 <translation id="7481603210197454575">Конверт Italian</translation>
 <translation id="7483482939016730822">Школьные принадлежности и оборудование для аудиторий</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />. Если вы хотите закрыть совет по работе с Chrome, нажмите Tab, а затем Ввод.</translation>
 <translation id="7485085230273446323">Бизнес и промышленность</translation>
 <translation id="7485870689360869515">Данные не найдены.</translation>
 <translation id="7489392576326061356">Шампуни и кондиционеры для волос</translation>

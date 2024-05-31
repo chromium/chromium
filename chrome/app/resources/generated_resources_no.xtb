@@ -280,7 +280,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1197088940767939838">Oransje</translation>
 <translation id="1197185198920566650">Det blir lagret i <ph name="GOOGLE_PASSWORD_MANAGER" /> for <ph name="EMAIL" />.</translation>
 <translation id="11978075283960463">Data som er lagret i appen: <ph name="APP_SIZE" /></translation>
-<translation id="1197935538609051549">Deaktiver</translation>
 <translation id="1198066799963193307">Taleverktøy for brukere med nedsatt synsevne</translation>
 <translation id="119944043368869598">Fjern alle</translation>
 <translation id="1199814941632954229">Sertifikater blir levert for disse sertifikatprofilene</translation>
@@ -1084,7 +1083,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1781771911845953849">Kontoer og synkronisering</translation>
 <translation id="1782101999402987960">Administratoren din blokkerer oppdateringer</translation>
 <translation id="1782196717298160133">Finner telefonen din</translation>
-<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 merknad}other{# merknader}}</translation>
 <translation id="1784707308176068866">Kjør i bakgrunnen når et samarbeidende, integrert program spør om det</translation>
 <translation id="1784849162047402014">Det er lite plass på enheten</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Hvis du avinstallerer «<ph name="APP_NAME" />», blir denne appen også avinstallert:}other{Hvis du avinstallerer «<ph name="APP_NAME" />», blir disse appene også avinstallert:}}</translation>
@@ -1226,6 +1224,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1878885068166344708">Elementet fremheves når du flytter fokuset. Trykk på Tab eller velg et element for å bytte fokus.</translation>
 <translation id="1879000426787380528">Logg på som</translation>
 <translation id="18802377548000045">Faner krymper til stor bredde</translation>
+<translation id="1880677175115548835">Merk tekst</translation>
 <translation id="1880905663253319515">Vil du slette sertifikatet «<ph name="CERTIFICATE_NAME" />»?</translation>
 <translation id="1881445033931614352">Tastaturoppsett</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Element}other{# elementer}}</translation>
@@ -1266,7 +1265,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">Legg på</translation>
 <translation id="1915734383465415025">Butikknummer</translation>
-<translation id="1916260783734263714">Gjeldende fane</translation>
 <translation id="1916502483199172559">Rødt standardbrukerbilde</translation>
 <translation id="1916770123977586577">Last inn denne siden på nytt for å ta i bruk de oppdaterte innstillingene dine på dette nettstedet.</translation>
 <translation id="1918127774159128277">Oppdater Wifi Direct-egenskaper</translation>
@@ -1856,6 +1854,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2332515770639153015">Safe Browsing med økt beskyttelse er påslått</translation>
 <translation id="2332742915001411729">Tilbakestill til standard</translation>
 <translation id="2333166365943957309">UI-hierarki</translation>
+<translation id="233375395665273385">Slett og logg av</translation>
 <translation id="233471714539944337">Sensitivt innhold</translation>
 <translation id="2335111415680198280">{0,plural, =1{Lukk # vindu}other{Lukk # vinduer}}</translation>
 <translation id="2336228925368920074">Legg inn bokmerke for alle åpne faner</translation>
@@ -1917,7 +1916,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2383825469508278924">Endre tastaturtilordninger, funksjonstaster med mer</translation>
 <translation id="2387052489799050037">Gå til startsiden</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (gjeldende)</translation>
-<translation id="2390226379317200116">Legg til et notat eller en tanke på denne siden for å se den senere.</translation>
 <translation id="2390347491606624519">Kan ikke koble til proxy-tjeneren – logg på på nytt</translation>
 <translation id="2390782873446084770">Wifi-synkronisering</translation>
 <translation id="2391419135980381625">Standardskrift</translation>
@@ -2044,7 +2042,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2467755475704469005">Fant ingen enheter. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Rulleakselerasjon for styreflaten</translation>
 <translation id="2468205691404969808">Bruker informasjonskapsler til å huske preferansene dine, selv om du ikke går til de sidene</translation>
-<translation id="2468247643665097563">Bestill</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470085922875120">Du bruker passord som virker vanskelige å gjette</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 fane}other{<ph name="GROUP_TITLE" /> – # faner}}</translation>
@@ -2776,7 +2773,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3004385386820284928">Tilpass tastaturtaster</translation>
 <translation id="3005574332301273731">Ikke vis</translation>
 <translation id="3006881078666935414">Ingen bruksdata</translation>
-<translation id="3007410324195400631">Legg til notater om denne siden</translation>
 <translation id="3007771295016901659">Dupliser fanen</translation>
 <translation id="3008232374986381779">Kjør Linux-verktøy, -redigeringsverktøy og -IDE-er på <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Tilbakestill tillatelser</translation>
@@ -4439,7 +4435,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4258348331913189841">Filsystemer</translation>
 <translation id="4259388776256904261">Dette kan ta en stund</translation>
 <translation id="4260699894265914672">Trykk på en tastaturtast for å tilpasse</translation>
-<translation id="4260722247480053581">Åpne i inkognitovindu</translation>
 <translation id="4261429981378979799">Utvidelsestillatelser</translation>
 <translation id="4262004481148703251">Avvis varsel</translation>
 <translation id="4263223596040212967">Kontroller tastaturoppsettet og prøv på nytt.</translation>
@@ -6165,7 +6160,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5578059481725149024">Automatisk pålogging</translation>
 <translation id="5581134892342029705">Oversettelse til <ph name="LANGUAGE" /> er fullført</translation>
 <translation id="558170650521898289">Verifisering av maskinvaredriver for Microsoft Windows</translation>
-<translation id="5581876958763461074">Alle notater</translation>
 <translation id="5581972110672966454">Kan ikke knytte enheten til domenet. Prøv på nytt, eller kontakt eieren eller administratoren av enheten. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582634344048669777">8-punkts</translation>
 <translation id="5582839680698949063">Hovedmeny</translation>
@@ -9284,7 +9278,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7941179291434537290">Tilgjengelighet for internettdeling:</translation>
 <translation id="7942349550061667556">Rød</translation>
 <translation id="7942846369224063421">Forhåndslastet UI-gjengivelse</translation>
-<translation id="7943349879009553083">Ikke tilgjengelig i gjestemodus</translation>
 <translation id="7943368935008348579">Last ned PDF-filer</translation>
 <translation id="7943837619101191061">Legg til plassering</translation>
 <translation id="79446453817422139">Denne filen kan være farlig</translation>
@@ -9403,7 +9396,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8025291188699172126">Om oppdateringer</translation>
 <translation id="8026471514777758216">Alle enhetene dine</translation>
 <translation id="8026784703228858744">Lagre blant annet bokmerkene dine med synkronisering</translation>
-<translation id="8027581147000338959">Åpne i nytt vindu</translation>
 <translation id="8028060951694135607">Microsoft nøkkelgjenoppretting</translation>
 <translation id="8028803902702117856">Laster ned <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Størrelse</translation>
@@ -9941,7 +9933,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8413956290606243087">Vil du slå på ChromeVox, den innebygde skjermleseren for ChromeOS?</translation>
 <translation id="8414249071344507766">Minner er skjult i to dager</translation>
 <translation id="8414396119627470038">Logg på <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="8414685983518053656">Notater</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (etui)</translation>
 <translation id="8417065541337558100">Forhåndsvisning av kameraet</translation>
 <translation id="8417548266957501132">Foreldrepassord</translation>
@@ -10733,7 +10724,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="8993945059918628059">Trykk på fingeravtrykkssensoren med fingeren. Fingeravtrykksdataene lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>
 <translation id="899403249577094719">Primære nettadresse for Netscape-sertifikat</translation>
 <translation id="899657321862108550">Din egen Chrome – uansett hvor du er</translation>
-<translation id="899671834467367922">Logg på som en annen bruker for å vise og ta notater på denne siden.</translation>
 <translation id="8998078711690114234">Denne filtypen kan være farlig. Du bør bare lagre denne filen hvis du stoler på <ph name="ORIGIN" /></translation>
 <translation id="8999027165951679951">Inaktiv fane: <ph name="MEMORY_SAVINGS" /> er frigjort</translation>
 <translation id="8999560016882908256">Syntaksfeil i seksjon: <ph name="ERROR_LINE" /></translation>

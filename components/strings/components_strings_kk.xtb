@@ -456,6 +456,7 @@
 <translation id="1812527064848182527">альбомдық</translation>
 <translation id="1812975699435941848">Санитарлық сауаттандыру және медициналық дайындық</translation>
 <translation id="1816436748874040213">Ортақ қойындыларды айналдыру мен масштабтауды сұрай алады</translation>
+<translation id="1817364650920811003">Рөл: Chrome кеңесі. Арнайы мүмкіндіктер белгішесі: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Блоктан шығару</translation>
 <translation id="1818585559878922121">Деректі фильмдер</translation>
 <translation id="182139138257690338">автоматты жүктеулер</translation>
@@ -1397,6 +1398,7 @@
 <translation id="3642638418806704195">Қолданба:</translation>
 <translation id="3646643500201740985">Жарнама өнімділігін өлшеу</translation>
 <translation id="3647286794400715637">Әрбір URL жолы жазбасында 1–2 URL болуы керек.</translation>
+<translation id="3647400963805615193">Chrome кеңесін жабу түймесі. Жабу үшін Enter пернесін басыңыз. <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Тексеру сәтті аяқталды</translation>
 <translation id="3650594806107685466">Картаңыздың қауіпсіздігін сақтауға көмектесу үшін <ph name="SIDE_OF_CARD" /> жағындағы CVC кодын енгізіңіз</translation>
 <translation id="3650917416636556301">Жаяу жүру және табиғатта демалу</translation>
@@ -3369,6 +3371,7 @@
 <translation id="7481312909269577407">Басқаға жіберу</translation>
 <translation id="7481603210197454575">Italian хатқалтасы</translation>
 <translation id="7483482939016730822">Мектеп керек-жарақтары және сынып жабдығы</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />. Chrome кеңесін жабу үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="7485085230273446323">Бизнес және өнеркәсіп</translation>
 <translation id="7485870689360869515">Деректер табылмады.</translation>
 <translation id="7489392576326061356">Сусабын және кондиционер</translation>

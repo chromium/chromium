@@ -456,6 +456,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1812527064848182527">horizontal</translation>
 <translation id="1812975699435941848">Educación sanitaria y formación médica</translation>
 <translation id="1816436748874040213">Puede solicitar permiso para desplazarse por las pestañas compartidas y ampliarlas</translation>
+<translation id="1817364650920811003">Función: consejo de Chrome. Etiqueta de accesibilidad: <ph name="CHROME_TIP" />.</translation>
 <translation id="1818522458013171885">Desbloquear</translation>
 <translation id="1818585559878922121">Películas documentales</translation>
 <translation id="182139138257690338">descargas automáticas</translation>
@@ -1398,6 +1399,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3642638418806704195">Aplicación:</translation>
 <translation id="3646643500201740985">Medir el rendimiento de un anuncio</translation>
 <translation id="3647286794400715637">Cada entrada de la cadena de URLs debe contener entre 1 y 2 URLs.</translation>
+<translation id="3647400963805615193">Botón para cerrar el consejo de Chrome, pulsa Intro para cerrarlo, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Validación correcta</translation>
 <translation id="3650594806107685466">Para proteger tu tarjeta, introduce el CVC que aparece en el <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Senderismo y acampada</translation>
@@ -3370,6 +3372,7 @@ Más información:
 <translation id="7481312909269577407">Adelante</translation>
 <translation id="7481603210197454575">Sobre italiano</translation>
 <translation id="7483482939016730822">Suministros para escuelas y equipamiento para aulas</translation>
+<translation id="7483863401933039889"><ph name="CHROME_TIP" />, pulsa Tabulador y, después, Intro para cerrar el consejo de Chrome.</translation>
 <translation id="7485085230273446323">Comercio e industria</translation>
 <translation id="7485870689360869515">No se han encontrado datos.</translation>
 <translation id="7489392576326061356">Champús y acondicionadores</translation>

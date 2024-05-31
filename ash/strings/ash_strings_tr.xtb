@@ -57,7 +57,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="118437560755358292">Daha fazla güvenlik için şifre veya PIN girin</translation>
 <translation id="118532027333893379">Tam ekran görüntüsü almak için herhangi bir yere dokunun</translation>
 <translation id="1190609913194133056">Bildirim Merkezi</translation>
-<translation id="1190678134285018527">Cihazın önceki sürüme dönmesi gerekiyor</translation>
 <translation id="1195412055398077112">fazla tarama</translation>
 <translation id="1195667586424773550">Bağlantıyı sekmenin adres çubuğuna sürükleyin</translation>
 <translation id="119944043368869598">Tümünü temizle</translation>
@@ -685,7 +684,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="363473492175527493">Odaklanılacak görev: <ph name="TASK_NAME" />. Görevi düzenlemek için Enter tuşuna basın.</translation>
 <translation id="3638400994746983214">Gizlilik ekranını aç/kapat. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Pencereyi simge durumuna küçült</translation>
-<translation id="3649505501900178324">Güncelleme zamanı geçti</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" />-
@@ -755,7 +753,6 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="3900355044994618856">Oturumunuz <ph name="SESSION_TIME_REMAINING" /> içinde sona erecek</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> ağına bağlanılıyor</translation>
 <translation id="3906954721959377182">Tablet</translation>
-<translation id="3922427723338465344">{0,plural, =1{Cihazı 1 dakika içinde önceki sürüme geçirin}other{Cihazı # dakika içinde önceki sürüme geçirin}}</translation>
 <translation id="3923494859158167397">Kurulu mobil ağ yok</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Etkinlikler yükleniyor.</translation>
 <translation id="3932043219784172185">Bağlı cihaz yok</translation>
@@ -946,7 +943,6 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4623167406982293031">Hesabı doğrulama</translation>
 <translation id="4628757576491864469">Cihazlar</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, <ph name="RATING_SCORE" /> Yıldız puanı</translation>
-<translation id="4633185660152240791">{0,plural, =1{Cihazı bir gün içinde önceki sürüme geçirin}other{Cihazı # gün içinde önceki sürüme geçirin}}</translation>
 <translation id="4633636853437260449">Silmek için Ctrl+W tuşlarına basın</translation>
 <translation id="4642092649622328492">Kısmi ekran görüntüsü alır</translation>
 <translation id="4644727592819780893">Bölge, kamera önizlemesi için çok küçük</translation>
@@ -1453,7 +1449,6 @@ Bağlı cihaz yok.</translation>
 <translation id="6477681113376365978">Dosya indirilemiyor</translation>
 <translation id="6482559668224714696">Tam ekran büyüteci</translation>
 <translation id="6490471652906364588">USB-C cihaz (sağ bağlantı noktası)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> son tarihten önce bu <ph name="DEVICE_TYPE" /> cihazı güncellemenizi gerektiriyor</translation>
 <translation id="649452524636452238">Akıllı kart PIN'i</translation>
 <translation id="6495322433318104734">Ekran koruyucu gösteriliyor, çıkmak için herhangi bir tuşa basın</translation>
 <translation id="6495400115277918834">Pencere içinde pencere başlatıldı, odaklamak için Alt+Üst Karakter+V tuşlarına basın</translation>
@@ -1518,7 +1513,6 @@ Yeni yüklenmiş</translation>
 <translation id="6697913454192220372">Yeni masa ekle</translation>
 <translation id="6700713906295497288">IME menü düğmesi</translation>
 <translation id="6706742084323792866">PIN klavyesi</translation>
-<translation id="6707693040195709527">Cihazın önceki sürüme geçiş işlemi gecikti</translation>
 <translation id="6710213216561001401">Önceki</translation>
 <translation id="6723839937902243910">Güç</translation>
 <translation id="672609503628871915">Yenilikleri görüntüle</translation>
@@ -1811,7 +1805,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7866482334467279021">açık</translation>
 <translation id="7872786842639831132">Kapalı</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> cihazınızda Bluetooth kapalı görünüyor. Telefon Merkezini kullanmak için lütfen Bluetooth'u açın.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Cihazı şimdi önceki sürüme geçirin}=1{Cihazı 1 saniye içinde önceki sürüme geçirin}other{Cihazı # saniye içinde önceki sürüme geçirin}}</translation>
 <translation id="7884446017008693258">Hotspot Ayarları</translation>
 <translation id="7884902759927478774">Sekme sürükleme işlemini iptal et</translation>
 <translation id="7886169021410746335">Gizlilik ayarlarını yapma</translation>
@@ -1888,7 +1881,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Diğer seçenekler için sekmeyi kullanın. Tüm masalara erişmek için sol ve sağ okları kullanın.</translation>
 <translation id="8091153018031979607">Başlama zamanı: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Otomatik güncellemeler</translation>
 <translation id="8092380135549145188">Kaydırma denetimleri</translation>
 <translation id="8098591350844501178">Ekranın <ph name="RECEIVER_NAME" /> cihazına yayınını durdur</translation>
 <translation id="810637681351706236">Uygulamanın raftaki sabitlemesini kaldırın</translation>
@@ -1934,7 +1926,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8257510091797044096">Cihazınızı ayarlayın</translation>
 <translation id="8261506727792406068">Sil</translation>
 <translation id="8262312463845990408">Çal/duraklat</translation>
-<translation id="8270450402312105425">{0,plural, =1{Cihazı bir saat içinde önceki sürüme geçirin}other{Cihazı # saat içinde önceki sürüme geçirin}}</translation>
 <translation id="8277261673056602147">Ekrandaki metni vurgula</translation>
 <translation id="8287009018010202411">Verimlilik</translation>
 <translation id="828708037801473432">Kapalı</translation>
@@ -2001,7 +1992,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8553395910833293175">Zaten tüm masalara atandı.</translation>
 <translation id="8555757996376137129">Geçerli masayı kaldır</translation>
 <translation id="8559845965695780508"><ph name="USER" /> düzenledi</translation>
-<translation id="856298576161209842"><ph name="MANAGER" />, <ph name="DEVICE_TYPE" /> cihazınızı güncellemenizi öneriyor</translation>
 <translation id="8569751806372591456">Deneyebileceğiniz birkaç öneriyi burada bulabilirsiniz</translation>
 <translation id="857201607579416096">Menü, ekranın sağ alt köşesine taşındı.</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> tuşunu basılı tutarken bağlantıyı tıklayın</translation>
@@ -2173,7 +2163,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="923686485342484400">Oturumu kapatmak için Control ÜstKrktr Q tuşlarına iki defa basın.</translation>
 <translation id="92580429198593979">Rengi ters çevirmek için klavye kısayoluna bastınız. Bu modu etkinleştirmek istiyor musunuz?</translation>
 <translation id="925832987464884575">Önizlemeleri gizle</translation>
-<translation id="937214777182567951"><ph name="MANAGER" />, hemen <ph name="DEVICE_TYPE" /> cihazınızı güncellemenizi gerektiriyor</translation>
 <translation id="938407504481277932">Geçerli masa: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Masa <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Takvimimde ne var?</translation>
 <translation id="945383118875625837">Bağlantıyı yer işaretleri çubuğuna sürükleyin</translation>

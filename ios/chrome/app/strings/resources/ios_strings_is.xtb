@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Ferill</translation>
 <translation id="164673457281113247">{count,plural, =1{Bókamerki vistað}one{Bókamerki vistuð}other{Bókamerki vistuð}}</translation>
 <translation id="1650222530560417226">Ýttu á hnappinn „Hefja skráningu annála“ til að safna annálum JavaScript-stjórnborðs og villum úr öllum flipum. Annálum verður safnað (og þeir aðeins geymdir í minni) þar til þessari síðu er lokað eða ýtt er á „Stöðva skráningu annála“.</translation>
+<translation id="1652333207707886577">Sérsníddu valmyndina þína</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} vistað aðgangsorð tiltækt ofan við lyklaborðið.}one{{count} vistað aðgangsorð tiltækt ofan við lyklaborðið.}other{{count} vistuð aðgangsorð tiltæk ofan við lyklaborðið.}}</translation>
 <translation id="1657011748321897393">Mistókst að deila vegna þess að þú ert ekki með tengingu við netið.</translation>
 <translation id="165877110639533037">Engir opnir flipar</translation>
@@ -533,6 +534,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3738428049780661523">Búið til <ph name="DATE" /></translation>
 <translation id="374357899112510277">Fela niðurhal</translation>
 <translation id="3745190878148784130">Fela „Stækka/minnka texta“</translation>
+<translation id="3747231889390582072">Óvistuðum gögnum verður eytt úr tækinu til að gæta að öryggi fyrirtækisins þíns. Þetta gæti falið í sér að aðgangsorðum, vafraferli, fótsporum og fleiru verði eytt.</translation>
 <translation id="3762232513783804601">Sérhannað fyrir iPad</translation>
 <translation id="3768725474733206671">Opna aftur flipann sem síðast var lokað</translation>
 <translation id="3771033907050503522">Huliðsflipar</translation>
@@ -1486,6 +1488,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8446884382197647889">Frekari upplýsingar</translation>
 <translation id="8449347986464073209">Eyða og skrá út</translation>
 <translation id="8459333855531264009">Ekki öruggt</translation>
+<translation id="8466300942149667917">Óvistuðum reikningsgögnum verður eytt</translation>
 <translation id="8473863474539038330">Heimilisföng og fleira</translation>
 <translation id="8487667956631253959">Kveikt</translation>
 <translation id="8487700953926739672">Í boði án nettengingar</translation>

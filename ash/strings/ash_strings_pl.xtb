@@ -57,7 +57,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="118437560755358292">Dla większego bezpieczeństwa podaj kod PIN lub hasło</translation>
 <translation id="118532027333893379">Aby zrobić zrzut całego ekranu, kliknij w dowolnym miejscu</translation>
 <translation id="1190609913194133056">Centrum powiadomień</translation>
-<translation id="1190678134285018527">Na tym urządzeniu należy przywrócić wcześniejszą wersję systemu operacyjnego</translation>
 <translation id="1195412055398077112">nadmiarowość obrazu</translation>
 <translation id="1195667586424773550">Przeciągnij link na pasek adresu na karcie</translation>
 <translation id="119944043368869598">Wyczyść wszystko</translation>
@@ -131,6 +130,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1420408895951708260">Włącz lub wyłącz Podświetlenie nocne. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Tak</translation>
 <translation id="1435537621343861112">Nie udało się rozpocząć dyktowania. Twój mikrofon jest wyłączony.</translation>
+<translation id="1447907279406111651">Teraz · Zakończenie: <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Hotspoty Twojego urządzenia</translation>
 <translation id="1455242230282523554">Pokaż ustawienia języka</translation>
 <translation id="1460620680449458626">Dźwięk jest wyciszony.</translation>
@@ -481,6 +481,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2894949423239620203">Kabel może wpływać na wydajność</translation>
 <translation id="2914580577416829331">Zrzuty ekranu</translation>
 <translation id="2924416280450782352">Nie można wyświetlić elementów. Spróbuj ponownie otworzyć ten panel.</translation>
+<translation id="292506373491190801">Z trwającego wydarzenia</translation>
 <translation id="2931572158271115754">Na tej liście zadań nic nie ma.</translation>
 <translation id="2932487126591186298">Dodano 10 minut. Pozostały czas: <ph name="REMAINING_TIME" />.</translation>
 <translation id="2935225303485967257">Zarządzaj profilami</translation>
@@ -685,7 +686,6 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="363473492175527493">Zadanie, na którym chcesz się skupić: <ph name="TASK_NAME" />. Aby edytować zadanie, naciśnij Enter.</translation>
 <translation id="3638400994746983214">Przełącz ekran chroniący prywatność. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Minimalizuj okno</translation>
-<translation id="3649505501900178324">Zaległa aktualizacja</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> do
@@ -755,7 +755,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3900355044994618856">Sesja kończy się za <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Łączę z: <ph name="NAME" /></translation>
 <translation id="3906954721959377182">Tablet</translation>
-<translation id="3922427723338465344">{0,plural, =1{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu 1 minuty}few{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # minut}many{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # minut}other{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # minuty}}</translation>
 <translation id="3923494859158167397">Brak skonfigurowanych sieci komórkowych</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, ładuję wydarzenia.</translation>
 <translation id="3932043219784172185">Brak podłączonych urządzeń</translation>
@@ -767,6 +766,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3950272133184491871">Chcesz się wylogować?</translation>
 <translation id="3950820424414687140">Zaloguj się</translation>
 <translation id="3953130726459169782">Brak ukończonych projektów.</translation>
+<translation id="3958714870339660776">Cały dzień</translation>
 <translation id="3962859241508114581">Poprzedni utwór</translation>
 <translation id="3969043077941541451">Wyłączone</translation>
 <translation id="3970324493235864154">Wyświetlaj powiadomienia z telefonu</translation>
@@ -946,7 +946,6 @@ Połączono 1 urządzenie.</translation>
 <translation id="4623167406982293031">Zweryfikuj konto</translation>
 <translation id="4628757576491864469">Urządzenia</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, liczba gwiazdek <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu 1 dnia}few{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # dni}many{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # dni}other{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # dnia}}</translation>
 <translation id="4633636853437260449">Aby usunąć, naciśnij Ctrl+W</translation>
 <translation id="4642092649622328492">Zrób zrzut części ekranu</translation>
 <translation id="4644727592819780893">Region jest za mały i nie można go pokazać na podglądzie z aparatu</translation>
@@ -1220,6 +1219,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="5599242528220103262">Skrót klawiszowy jest wyłączony</translation>
 <translation id="5600415762228455511">Tryb skupienia jest włączony, zostało <ph name="REMAINING_TIME" />. Zadanie: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Naciśnij Ctrl + Alt + Z, by wyłączyć komunikaty głosowe.</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{Mniej niż godzinę temu}=1{1 godzinę temu}few{# godziny temu}many{# godzin temu}other{# godziny temu}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Przełączyliśmy Cię do lepszej sieci</translation>
 <translation id="5619862035903135339">Możliwość robienia zrzutów ekranu jest wyłączona przez zasadę administratora</translation>
@@ -1396,6 +1396,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6228457605945141550">Zmniejsz jasność</translation>
 <translation id="623116199192908855">Przesyłanie ekranu z Chromebooka</translation>
 <translation id="6231419273573514727">Wydajność urządzeń peryferyjnych może być ograniczona</translation>
+<translation id="6232416233079464213">Z: <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> używa teraz kamery i mikrofonu</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Słaba bateria. Zostało włączone Oszczędzanie baterii.</translation>
@@ -1453,7 +1454,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="6477681113376365978">Nie można pobrać pliku</translation>
 <translation id="6482559668224714696">Lupa pełnoekranowa</translation>
 <translation id="6490471652906364588">Urządzenie USB-C (prawy port)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> wymaga zaktualizowania tego urządzenia <ph name="DEVICE_TYPE" /> przed podanym terminem</translation>
 <translation id="649452524636452238">Kod PIN karty elektronicznej</translation>
 <translation id="6495322433318104734">Wyświetlam wygaszacz ekranu. Naciśnij dowolny klawisz, aby go zamknąć</translation>
 <translation id="6495400115277918834">Uruchomiono obraz w obrazie, Alt+Shift+V, aby zaznaczyć</translation>
@@ -1517,7 +1517,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="6697913454192220372">Dodaj nowe biurko</translation>
 <translation id="6700713906295497288">Przycisk menu IME</translation>
 <translation id="6706742084323792866">Przypnij klawiaturę</translation>
-<translation id="6707693040195709527">Minął termin przywrócenia na tym urządzeniu wcześniejszej wersji systemu operacyjnego</translation>
 <translation id="6710213216561001401">Poprzedni</translation>
 <translation id="6723839937902243910">Zasilanie</translation>
 <translation id="672609503628871915">Zobacz, co nowego</translation>
@@ -1797,6 +1796,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="780301667611848630">Nie, dziękuję</translation>
 <translation id="7807067443225230855">Wyszukiwanie i Asystent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">Z nadchodzącego wydarzenia w kalendarzu</translation>
 <translation id="7829386189513694949">silny sygnał</translation>
 <translation id="7830453190047749513">Możesz dostosować działanie przycisków, szybkość kursora i inne ustawienia urządzenia <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Czas minął</translation>
@@ -1810,7 +1810,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7866482334467279021">włączono</translation>
 <translation id="7872786842639831132">Wyłączono</translation>
 <translation id="7875575368831396199">Wygląda na to, że Twoje urządzenie (<ph name="DEVICE_TYPE" />) ma wyłączony Bluetooth. Włącz go, by korzystać ze sterowania telefonem.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego teraz}=1{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu 1 sekundy}few{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # sekund}many{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # sekund}other{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # sekundy}}</translation>
 <translation id="7884446017008693258">Ustawienia hotspota</translation>
 <translation id="7884902759927478774">Anuluj przeciąganie karty</translation>
 <translation id="7886169021410746335">Dostosowywać ustawienia prywatności</translation>
@@ -1887,7 +1886,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Aby wyświetlić więcej opcji, naciśnij Tab. Strzałki w lewo i w prawo umożliwiają dostęp do wszystkich biurek.</translation>
 <translation id="8091153018031979607">Rozpoczęcie o <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Automatyczne aktualizacje</translation>
 <translation id="8092380135549145188">Elementy sterujące przewijaniem</translation>
 <translation id="8098591350844501178">Zakończ przesyłanie ekranu do: <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Odepnij aplikację od półki</translation>
@@ -1933,7 +1931,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8257510091797044096">Skonfiguruj urządzenie</translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="8262312463845990408">Włącz lub wyłącz odtwarzanie</translation>
-<translation id="8270450402312105425">{0,plural, =1{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu 1 godziny}few{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godzin}many{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godzin}other{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godziny}}</translation>
 <translation id="8277261673056602147">Zaznacz tekst na ekranie</translation>
 <translation id="8287009018010202411">Produktywność</translation>
 <translation id="828708037801473432">Wyłączono</translation>
@@ -2000,7 +1997,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8553395910833293175">Już przypisano do wszystkich biurek.</translation>
 <translation id="8555757996376137129">Usuń bieżące biurko</translation>
 <translation id="8559845965695780508">Edytował(a) <ph name="USER" /></translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> zaleca aktualizację tego urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Oto kilka sugestii, które możesz wypróbować</translation>
 <translation id="857201607579416096">Menu zostało przeniesione w prawy dolny róg ekranu.</translation>
 <translation id="8581946341807941670">Naciśnij <ph name="MODIFIER_1" /> + <ph name="MODIFIER_2" /> i kliknij link</translation>
@@ -2114,6 +2110,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="899350903320462459">Odblokuj urządzenie jako <ph name="LOGIN_ID" />, by zareagować na powiadomienie</translation>
 <translation id="8993733019280019776">Mówisz coś? Twój mikrofon jest wyłączony. Wybierz mikrofon, który chcesz włączyć.</translation>
 <translation id="9000771174482730261">ZARZĄDZAJ MIEJSCEM NA DANE</translation>
+<translation id="9002204506712855687">Poznaj najnowsze funkcje</translation>
 <translation id="9005984960510803406">Otwórz okno terminala Crosh</translation>
 <translation id="9017320285115481645">Wpisz kod dostępu rodzica w Family Link.</translation>
 <translation id="9022774213089566801">Często odwiedzane</translation>
@@ -2145,6 +2142,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="9098969848082897657">Wycisz telefon</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> lub <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Cofnij ostatnią czynność</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{Za 1 min}few{Za # min}many{Za # min}other{Za # min}}</translation>
 <translation id="9129245940793250979">Przycisk z tyłu</translation>
 <translation id="9133335900048457298">Nie można nagrać treści chronionej</translation>
 <translation id="9139720510312328767">Usuń następną literę</translation>
@@ -2157,6 +2155,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="9183456764293710005">Lupa pełnego ekranu</translation>
 <translation id="9193626018745640770">Przesyłam do nieznanego odbiornika</translation>
 <translation id="9194617393863864469">Zaloguj innego użytkownika...</translation>
+<translation id="9195990613383871904">Jutro</translation>
 <translation id="9198992156681343238">Rozdzielczość ekranu <ph name="DISPLAY_NAME" /> została zmieniona na <ph name="RESOLUTION" />. Kliknij „Potwierdź”, by zachować zmiany. Poprzednie ustawienia zostaną przywrócone za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Połącz urządzenie <ph name="NAME" /> z tym Chromebookiem</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, zarządzana przez administratora</translation>
@@ -2172,7 +2171,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="923686485342484400">Naciśnij dwukrotnie Control Shift Q, by się wylogować.</translation>
 <translation id="92580429198593979">Naciśnięto skrót klawiszowy odwrócenia kolorów. Czy chcesz włączyć tę opcję?</translation>
 <translation id="925832987464884575">Ukryj podglądy</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> wymaga jak najszybszego zaktualizowania urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="938407504481277932">Bieżące biurko: <ph name="DESK_NAME" /> <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Biurko <ph name="DESK_INDEX" /> z <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Co mam w kalendarzu?</translation>
 <translation id="945383118875625837">Przeciągnij link na pasek zakładek</translation>

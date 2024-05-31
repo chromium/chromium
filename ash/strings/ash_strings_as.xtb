@@ -57,7 +57,6 @@
 <translation id="118437560755358292">অধিক সুৰক্ষাৰ বাবে পিন অথবা পাছৱর্ড দিয়ক</translation>
 <translation id="118532027333893379">পূৰ্ণ স্ক্ৰীন কেপচাৰ কৰিবলৈ যিকোনো ঠাইতে টিপক</translation>
 <translation id="1190609913194133056">জাননী কেন্দ্ৰ</translation>
-<translation id="1190678134285018527">ডিভাইচটোক পূৰ্বৱৰ্তী সংস্কৰণটোলৈ লৈ যোৱাৰ আৱশ্যক</translation>
 <translation id="1195412055398077112">অ'ভাৰস্কেন</translation>
 <translation id="1195667586424773550">ঠিকনা বাৰলৈ লিংকটো টানি আনক</translation>
 <translation id="119944043368869598">সকলো মচক</translation>
@@ -131,6 +130,7 @@
 <translation id="1420408895951708260">ৰাতিৰ লাইট ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">হয়</translation>
 <translation id="1435537621343861112">শ্ৰুতলিপি আৰম্ভ কৰিব নোৱাৰি। আপোনাৰ মাইকটো অফ হৈ আছে।</translation>
+<translation id="1447907279406111651">এতিয়া ⋅ <ph name="END_TIME" />ত সমাপ্ত হ’ব</translation>
 <translation id="1448963928642384376">আপোনাৰ ডিভাইচৰ হ’টস্প’ট</translation>
 <translation id="1455242230282523554">ভাষাৰ ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="1460620680449458626">ভলিউম মিউট কৰা আছে।</translation>
@@ -481,6 +481,7 @@
 <translation id="2894949423239620203">কে’বলে কাৰ্যক্ষমতাত প্ৰভাৱ পেলাব পাৰে</translation>
 <translation id="2914580577416829331">স্ক্ৰীন কেপচাৰ</translation>
 <translation id="2924416280450782352">বস্তু দেখুৱাব নোৱাৰি। এই পেনেলটো পুনৰ খুলি চাওক।</translation>
+<translation id="292506373491190801">এতিয়া হৈ থকা অনুষ্ঠানৰ পৰা</translation>
 <translation id="2931572158271115754">এই টু-ডু লিষ্টত একো নাই।</translation>
 <translation id="2932487126591186298">১০ মিনিট যোগ দিয়া হৈছে। <ph name="REMAINING_TIME" /> বাকী আছে।</translation>
 <translation id="2935225303485967257">প্ৰ’ফাইল পৰিচালনা কৰক</translation>
@@ -685,7 +686,6 @@
 <translation id="363473492175527493">এই কাৰ্যটো ফ’কাছ অন কৰিবলৈ ছেট কৰা হৈছে: <ph name="TASK_NAME" />। কাৰ্যটো সম্পাদনা কৰিবলৈ এণ্টাৰ টিপক।</translation>
 <translation id="3638400994746983214">গোপনীয়তাৰ স্ক্ৰীন ট’গল কৰক। <ph name="STATE_TEXT" />।</translation>
 <translation id="3649256019230929621">ৱিণ্ড’ মিনিমাইজ কৰক</translation>
-<translation id="3649505501900178324">আপডে'ট বাকী আছে</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" />ৰ পৰা
@@ -755,7 +755,6 @@
 <translation id="3900355044994618856">আপোনাৰ ছেশ্বনটো <ph name="SESSION_TIME_REMAINING" />ত অন্ত পৰিব</translation>
 <translation id="3901991538546252627"><ph name="NAME" />ৰ সৈতে সংযোগ কৰি থকা হৈছে</translation>
 <translation id="3906954721959377182">টেবলেট</translation>
-<translation id="3922427723338465344">{0,plural, =1{১ মিনিটৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}one{# মিনিটৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}other{# মিনিটৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}}</translation>
 <translation id="3923494859158167397">কোনো ম'বাইলৰ নেটৱৰ্ক ছেট আপ কৰা হোৱা নাই</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, অনুষ্ঠান ল’ড কৰি থকা হৈছে।</translation>
 <translation id="3932043219784172185">কোনো ডিভাইচ সংযোগ কৰি থোৱা নাই</translation>
@@ -767,6 +766,7 @@
 <translation id="3950272133184491871">এতিয়া ছাইন আউট কৰিবনে?</translation>
 <translation id="3950820424414687140">ছাইন ইন কৰক</translation>
 <translation id="3953130726459169782">কোনো এছাইনমেণ্ট এইপৰ্যন্ত সম্পূৰ্ণ কৰা নাই।</translation>
+<translation id="3958714870339660776">দিনজোৰা</translation>
 <translation id="3962859241508114581">পূৰ্বৱৰ্তী ট্ৰেক</translation>
 <translation id="3969043077941541451">অফ আছে</translation>
 <translation id="3970324493235864154">আপোনাৰ ফ’নৰ জাননী চাওক</translation>
@@ -946,7 +946,6 @@
 <translation id="4623167406982293031">একাউণ্টটোৰ সত্যাপন কৰক</translation>
 <translation id="4628757576491864469">ডিভাইচ</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, তৰাযুক্ত মূল্যাংকন <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{এদিনৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}one{# দিনৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}other{# দিনৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}}</translation>
 <translation id="4633636853437260449">মচিবলৈ Ctrl+W টিপক</translation>
 <translation id="4642092649622328492">আংশিক স্ক্ৰীনশ্বট লওক</translation>
 <translation id="4644727592819780893">কেমেৰাত খাপ খাবলৈ অঞ্চলটোৰ আকাৰ অতি সৰু</translation>
@@ -1220,6 +1219,7 @@
 <translation id="5599242528220103262">কীব’ৰ্ডৰ শ্বৰ্টকাটটো অফ হৈ আছে</translation>
 <translation id="5600415762228455511">ফ’কাছ অন আছে, <ph name="REMAINING_TIME" /> বাকী আছে, ইয়াত ফ’কাছ কৰি থকা হৈছে: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">কথিত প্ৰতিক্ৰিয়া অক্ষম কৰিবলৈ Ctrl + Alt + Z দবাওক।</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{&lt; ১ ঘণ্টা পূৰ্বে}=1{১ ঘণ্টা পূৰ্বে}one{# ঘণ্টা পূৰ্বে}other{# ঘণ্টা পূৰ্বে}}</translation>
 <translation id="5601503069213153581">পিন</translation>
 <translation id="5618148318840095371">আমি আপোনাক এটা উন্নত নেটৱৰ্কৰ সৈতে সংযুক্ত কৰিছোঁ</translation>
 <translation id="5619862035903135339">স্ক্ৰীন কেপচাৰ কৰাটো প্ৰশাসকৰ নীতিয়ে অক্ষম কৰে</translation>
@@ -1396,6 +1396,7 @@
 <translation id="6228457605945141550">উজ্জ্বলতা কমাওক</translation>
 <translation id="623116199192908855">আপোনাৰ Chromebookৰ পৰা আপোনাৰ স্ক্ৰীনখন কাষ্ট কৰক</translation>
 <translation id="6231419273573514727">পৰিধীয় আহিলাৰ কাৰ্যক্ষমতা সীমিত হ’ব পাৰে</translation>
+<translation id="6232416233079464213"><ph name="SESSION_NAME" />ৰ পৰা</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" />এ আপোনাৰ কেমেৰা আৰু মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰি আছে</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">বেটাৰী কমিছে। বেটাৰী সঞ্চয়কাৰী অন কৰা হৈছে।</translation>
@@ -1453,7 +1454,6 @@
 <translation id="6477681113376365978">ফাইল ডাউনল’ড কৰিব নোৱাৰি</translation>
 <translation id="6482559668224714696">সম্পূর্ণ স্ক্ৰীনৰ বিৱৰ্ধক</translation>
 <translation id="6490471652906364588">USB-C ডিভাইচ (সোঁফালৰ পর্ট)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" />ৰ বাবে আপুনি নিৰ্ধাৰিত সময়সীমা পাৰ হোৱাৰ পূৰ্বে এই <ph name="DEVICE_TYPE" />টো আপডে’ট কৰাৰ আৱশ্যক</translation>
 <translation id="649452524636452238">স্মার্ট কার্ডৰ পিন</translation>
 <translation id="6495322433318104734">স্ক্ৰীন ছেভাৰ দেখুৱাই থকা হৈছে, বাহিৰ হ’বলৈ যিকোনো এটা কী টিপক</translation>
 <translation id="6495400115277918834">Picture-in-picture আৰম্ভ হৈছে, ফ’কাছ কৰিবলৈ Alt+Shift+V টিপক</translation>
@@ -1518,7 +1518,6 @@
 <translation id="6697913454192220372">নতুন ডেস্ক যোগ দিয়ক</translation>
 <translation id="6700713906295497288">IME মেনু বুটাম</translation>
 <translation id="6706742084323792866">কীব’ৰ্ড পিন কৰক</translation>
-<translation id="6707693040195709527">ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰাৰ সময় উকলিছে</translation>
 <translation id="6710213216561001401">পূৰ্বৱৰ্তী</translation>
 <translation id="6723839937902243910">পাৱাৰ</translation>
 <translation id="672609503628871915">নতুন কি আছে চাওক</translation>
@@ -1798,6 +1797,7 @@
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
 <translation id="7807067443225230855">Search আৰু Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> আৰু <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">অনাগত কেলেণ্ডাৰৰ অনুষ্ঠানৰ পৰা</translation>
 <translation id="7829386189513694949">শক্তিশালী ছিগনেল</translation>
 <translation id="7830453190047749513">আপুনি আপোনাৰ <ph name="PERIPHERAL_NAME" />ৰ বাবে বুটামৰ কাৰ্যসমূহ, কাৰ্ছৰৰ গতিবেগ আৰু আন বহুতো বস্তু ব্যক্তিগতকৰণ কৰিব পাৰে</translation>
 <translation id="7837740436429729974">সময় শেষ হ’ল</translation>
@@ -1811,7 +1811,6 @@
 <translation id="7866482334467279021">অন আছে</translation>
 <translation id="7872786842639831132">অফ আছে</translation>
 <translation id="7875575368831396199">আপোনাৰ <ph name="DEVICE_TYPE" />ত ব্লুটুথ অফ কৰি থোৱা আছে যেন লাগিছে। ফ’ন হাব ব্যৱহাৰ কৰিবলৈ অনুগ্ৰহ কৰি ব্লুটুথ অন কৰক।</translation>
-<translation id="7877557217297072640">{0,plural, =0{এতিয়াই ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}=1{১ ছেকেণ্ডৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}one{# ছেকেণ্ডৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}other{# ছেকেণ্ডৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}}</translation>
 <translation id="7884446017008693258">হটস্পটৰ ছেটিং</translation>
 <translation id="7884902759927478774">টেব টানি অনাটো বাতিল কৰক</translation>
 <translation id="7886169021410746335">গোপনীয়তাৰ ছেটিংসমূহ মিলাওক</translation>
@@ -1888,7 +1887,6 @@
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">অধিক বিকল্পৰ বাবে টেব ব্যৱহাৰ কৰক। আটাইবোৰ ডেস্ক এক্সেছ কৰিবলৈ বাওঁ আৰু সোঁ কাঁড়চিহ্ন ব্যৱহাৰ কৰক।</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" />ত আৰম্ভ হ’ব</translation>
-<translation id="8091387634532529612">স্বয়ংক্ৰিয় আপডে’ট</translation>
 <translation id="8092380135549145188">স্ক্ৰ’লৰ নিয়ন্ত্ৰণ</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> লৈ স্ক্ৰীন কাষ্ট কৰা বন্ধ কৰক</translation>
 <translation id="810637681351706236">শ্বেল্ফৰ পৰা এপ্‌ আনপিন কৰক</translation>
@@ -1934,7 +1932,6 @@
 <translation id="8257510091797044096">আপোনাৰ ডিভাইচটো ছেট আপ কৰক</translation>
 <translation id="8261506727792406068">মচক</translation>
 <translation id="8262312463845990408">প্লে’বেক ট’গল কৰক</translation>
-<translation id="8270450402312105425">{0,plural, =1{এঘণ্টাৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}one{# ঘণ্টাৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}other{# ঘণ্টাৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}}</translation>
 <translation id="8277261673056602147">আপোনাৰ স্ক্ৰীনত থকা পাঠ হাইলাইট কৰক</translation>
 <translation id="8287009018010202411">উৎপাদনশীলতা</translation>
 <translation id="828708037801473432">অফ আছে</translation>
@@ -2001,7 +1998,6 @@
 <translation id="8553395910833293175">ইতিমধ্যে আটাইবোৰ ডেস্কক দায়িত্ব প্ৰদান কৰা হৈছে।</translation>
 <translation id="8555757996376137129">বৰ্তমানৰ ডেস্ক আঁতৰাওক</translation>
 <translation id="8559845965695780508"><ph name="USER" />এ সম্পাদনা কৰিছে</translation>
-<translation id="856298576161209842"><ph name="MANAGER" />এ আপোনাক নিজৰ <ph name="DEVICE_TYPE" />টো আপডে’ট কৰিবলৈ চুপাৰিছ কৰে</translation>
 <translation id="8569751806372591456">এয়া আপুনি কৰিব চাব পৰা কিছুমান পৰামৰ্শ</translation>
 <translation id="857201607579416096">স্ক্ৰীনখনৰ তলৰ সোঁফালৰ কোণটোলৈ মেনুখন নিয়া হৈছে।</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> টিপক আৰু এটা লিংকত ক্লিক কৰক</translation>
@@ -2115,6 +2111,7 @@
 <translation id="899350903320462459">জাননী সম্পর্কীয় কার্যসমূহ কৰিবলৈ <ph name="LOGIN_ID" /> হিচাপে ডিভাইচটো আনলক কৰক</translation>
 <translation id="8993733019280019776">আপুনি কথা কৈ আছে নেকি? আপোনাৰ মাইকটো অফ আছে। অন কৰিবলৈ মাইকটো বাছনি কৰক।</translation>
 <translation id="9000771174482730261">ষ্ট’ৰেজ পৰিচালনা কৰক</translation>
+<translation id="9002204506712855687">শেহতীয়া সুবিধাসমূহ অন্বেষণ কৰক</translation>
 <translation id="9005984960510803406">Crosh ৱিণ্ড’ খোলক</translation>
 <translation id="9017320285115481645">Family Linkৰ অভিভাৱকৰ এক্সেছ ক'ডটো দিয়ক।</translation>
 <translation id="9022774213089566801">সঘনাই যোৱা</translation>
@@ -2146,6 +2143,7 @@
 <translation id="9098969848082897657">ফ’নটো নীৰৱ কৰক</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> অথবা <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">শেষ কাৰ্যটো আনডু কৰক</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{১ মিনিটত}one{# মিনিটত}other{# মিনিটত}}</translation>
 <translation id="9129245940793250979">পিছফালৰ বুটাম</translation>
 <translation id="9133335900048457298">সুৰক্ষিত সমল ৰেকৰ্ড কৰিব নোৱাৰি</translation>
 <translation id="9139720510312328767">পৰৱৰ্তী বৰ্ণটো মচক</translation>
@@ -2158,6 +2156,7 @@
 <translation id="9183456764293710005">পূৰ্ণ স্ক্রীনৰ বিৱৰ্ধক</translation>
 <translation id="9193626018745640770">কোনো অজ্ঞাত ৰিচিভাৰ কাষ্ট কৰি থকা হৈছে</translation>
 <translation id="9194617393863864469">অন্য ব্যৱহাৰকাৰীক ছাইন ইন কৰাওক...</translation>
+<translation id="9195990613383871904">কাইলৈ</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" />ৰ ৰিজ’লিউশ্বনটো <ph name="RESOLUTION" />লৈ সলনি কৰা হৈছে। সালসলনিসমূহ ৰাখিবলৈ নিশ্চিত কৰকত ক্লিক কৰক। পূৰ্বৱৰ্তী ছেটিংসমূহ <ph name="TIMEOUT_SECONDS" />ত পুনঃস্থাপন কৰা হ’ব।</translation>
 <translation id="9201044636667689546">এই Chromebookটোৰ সৈতে <ph name="NAME" /> সংযোগ কৰক</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
@@ -2173,7 +2172,6 @@
 <translation id="923686485342484400">ছাইন আউট কৰিবলৈ Control Shift Q দুবাৰ টিপক।</translation>
 <translation id="92580429198593979">আপুনি ৰং বিপৰীতকৰণৰ বাবে কীব’ৰ্ডৰ শ্বৰ্টকাটত টিপিছে। আপুনি এইটো অন কৰিব বিচাৰেনে?</translation>
 <translation id="925832987464884575">পূৰ্বদৰ্শন লুকুৱাওক</translation>
-<translation id="937214777182567951"><ph name="MANAGER" />ৰ বাবে আপুনি তৎক্ষণাৎ আপোনাৰ <ph name="DEVICE_TYPE" />টো আপডে’ট কৰাৰ আৱশ্যক</translation>
 <translation id="938407504481277932">বৰ্তমানৰ ডেস্ক: <ph name="DESK_NAME" />। <ph name="PROFILE_NAME" /> <ph name="EMAIL" />। <ph name="DESK_COUNT" />ৰ ভিতৰত <ph name="DESK_INDEX" /> তম ডেস্ক।</translation>
 <translation id="938963181863597773">আপোনাৰ কেলেণ্ডাৰত কি আছে?</translation>
 <translation id="945383118875625837">লিংকটো বুকমাৰ্কৰ বাৰলৈ টানি আনক</translation>

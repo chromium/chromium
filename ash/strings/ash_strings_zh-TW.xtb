@@ -57,7 +57,6 @@
 <translation id="118437560755358292">基於安全考量，請輸入密碼或 PIN 碼</translation>
 <translation id="118532027333893379">輕觸任一處即可擷取全螢幕畫面</translation>
 <translation id="1190609913194133056">通知中心</translation>
-<translation id="1190678134285018527">裝置需要復原為先前的版本</translation>
 <translation id="1195412055398077112">遮視區域</translation>
 <translation id="1195667586424773550">將連結拖曳至該分頁的網址列</translation>
 <translation id="119944043368869598">全部清除</translation>
@@ -131,6 +130,7 @@
 <translation id="1420408895951708260">切換夜燈模式。<ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1435537621343861112">無法啟動語音輸入，因為麥克風已關閉。</translation>
+<translation id="1447907279406111651">進行中 · 結束時間：<ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">裝置無線基地台</translation>
 <translation id="1455242230282523554">顯示語言設定</translation>
 <translation id="1460620680449458626">音量已設為靜音。</translation>
@@ -481,6 +481,7 @@
 <translation id="2894949423239620203">連接線可能會影響效能</translation>
 <translation id="2914580577416829331">螢幕截圖</translation>
 <translation id="2924416280450782352">無法顯示項目。請嘗試重新開啟這個面板。</translation>
+<translation id="292506373491190801">來自進行中的活動</translation>
 <translation id="2931572158271115754">這份待辦事項清單沒有任何項目。</translation>
 <translation id="2932487126591186298">已延長 10 分鐘，還剩 <ph name="REMAINING_TIME" />。</translation>
 <translation id="2935225303485967257">管理個人資料</translation>
@@ -685,7 +686,6 @@
 <translation id="363473492175527493">目前設定要專心處理的工作：<ph name="TASK_NAME" />。按下 Enter 鍵即可編輯工作。</translation>
 <translation id="3638400994746983214">切換隱私保護畫面。<ph name="STATE_TEXT" />。</translation>
 <translation id="3649256019230929621">將視窗縮到最小</translation>
-<translation id="3649505501900178324">更新已逾期</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />：
         <ph name="START_TIME" /> 至 <ph name="END_TIME" /> (<ph name="TIME_ZONE" />)。選取活動即可在 Google 日曆中查看詳情。</translation>
@@ -753,7 +753,6 @@
 <translation id="3900355044994618856">你的工作階段將於 <ph name="SESSION_TIME_REMAINING" />後結束</translation>
 <translation id="3901991538546252627">正在連線至：<ph name="NAME" /></translation>
 <translation id="3906954721959377182">平板電腦</translation>
-<translation id="3922427723338465344">{0,plural, =1{在 1 分鐘內將裝置復原為先前的版本}other{在 # 分鐘內將裝置復原為先前的版本}}</translation>
 <translation id="3923494859158167397">尚未設定行動網路</translation>
 <translation id="3925540965556789199"><ph name="DATE" />，正在載入活動。</translation>
 <translation id="3932043219784172185">未連線到任何裝置</translation>
@@ -765,6 +764,7 @@
 <translation id="3950272133184491871">要立即登出嗎？</translation>
 <translation id="3950820424414687140">登入</translation>
 <translation id="3953130726459169782">尚未完成任何作業。</translation>
+<translation id="3958714870339660776">全天</translation>
 <translation id="3962859241508114581">上一首曲目</translation>
 <translation id="3969043077941541451">關閉</translation>
 <translation id="3970324493235864154">查看手機的通知</translation>
@@ -943,7 +943,6 @@
 <translation id="4623167406982293031">驗證帳戶</translation>
 <translation id="4628757576491864469">裝置</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />，星級評等 <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{在 1 天內將裝置復原為先前的版本}other{在 # 天內將裝置復原為先前的版本}}</translation>
 <translation id="4633636853437260449">按下 Ctrl 和 W 鍵即可刪除</translation>
 <translation id="4642092649622328492">擷取部分螢幕畫面</translation>
 <translation id="4644727592819780893">區域太小，無法顯示攝影機預覽畫面</translation>
@@ -1217,6 +1216,7 @@
 <translation id="5599242528220103262">鍵盤快速鍵已關閉</translation>
 <translation id="5600415762228455511">專注模式已開啟，還剩 <ph name="REMAINING_TIME" />，目前正在專心處理「<ph name="TASK_NAME" />」</translation>
 <translation id="5600837773213129531">按下 Ctrl + Alt + Z 鍵即可停用互動朗讀功能。</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{1 小時內}=1{1 小時前}other{# 小時前}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">已切換至連線品質更好的網路</translation>
 <translation id="5619862035903135339">系統管理員政策已停用螢幕畫面擷取功能</translation>
@@ -1393,6 +1393,7 @@
 <translation id="6228457605945141550">調低亮度</translation>
 <translation id="623116199192908855">透過 Chromebook 投放畫面</translation>
 <translation id="6231419273573514727">周邊裝置效能可能受到限制</translation>
+<translation id="6232416233079464213">來自 <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217">「<ph name="APP_NAME" />」正在使用你的攝影機和麥克風</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">電力不足，已開啟省電模式。</translation>
@@ -1450,7 +1451,6 @@
 <translation id="6477681113376365978">無法下載檔案</translation>
 <translation id="6482559668224714696">全螢幕放大鏡</translation>
 <translation id="6490471652906364588">USB-C 裝置 (右側連接埠)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> 要求你在期限內更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="649452524636452238">智慧型卡片 PIN 碼</translation>
 <translation id="6495322433318104734">目前顯示的是螢幕保護程式，按下任一按鍵即可退出</translation>
 <translation id="6495400115277918834">已開啟子母畫面，按下 Alt+Shift+V 可聚焦</translation>
@@ -1514,7 +1514,6 @@
 <translation id="6697913454192220372">新增桌面</translation>
 <translation id="6700713906295497288">IME 選單按鈕</translation>
 <translation id="6706742084323792866">PIN 碼鍵盤</translation>
-<translation id="6707693040195709527">未在期限內將裝置復原為先前的版本</translation>
 <translation id="6710213216561001401">返回</translation>
 <translation id="6723839937902243910">電源</translation>
 <translation id="672609503628871915">查看新功能</translation>
@@ -1794,6 +1793,7 @@
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7807067443225230855">搜尋與 Google 助理</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> 小時 <ph name="MINUTE" /> 分鐘</translation>
+<translation id="7825412704590278437">來自近期日曆活動</translation>
 <translation id="7829386189513694949">訊號穩定</translation>
 <translation id="7830453190047749513">你可以視需要設定「<ph name="PERIPHERAL_NAME" />」的按鈕動作、游標速度等等</translation>
 <translation id="7837740436429729974">時間到</translation>
@@ -1807,7 +1807,6 @@
 <translation id="7866482334467279021">開啟</translation>
 <translation id="7872786842639831132">關閉</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> 的藍牙功能似乎已關閉。請開啟藍牙功能，才能使用 Phone Hub。</translation>
-<translation id="7877557217297072640">{0,plural, =0{立即將裝置復原為較舊的版本}=1{在 1 秒內將裝置復原為較舊的版本}other{在 # 秒內將裝置復原為較舊的版本}}</translation>
 <translation id="7884446017008693258">無線基地台設定</translation>
 <translation id="7884902759927478774">取消分頁拖曳</translation>
 <translation id="7886169021410746335">調整隱私權設定</translation>
@@ -1884,7 +1883,6 @@
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">使用 Tab 鍵查看更多選項，使用向左鍵和向右鍵可存取所有桌面。</translation>
 <translation id="8091153018031979607">開始時間：<ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">自動更新</translation>
 <translation id="8092380135549145188">捲動控制選項</translation>
 <translation id="8098591350844501178">停止將畫面投放到「<ph name="RECEIVER_NAME" />」</translation>
 <translation id="810637681351706236">不再讓應用程式顯示在檔案櫃中</translation>
@@ -1930,7 +1928,6 @@
 <translation id="8257510091797044096">設定裝置</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8262312463845990408">切換播放</translation>
-<translation id="8270450402312105425">{0,plural, =1{在 1 小時內將裝置復原為先前的版本}other{在 # 小時內將裝置復原為先前的版本}}</translation>
 <translation id="8277261673056602147">醒目顯示畫面上的文字</translation>
 <translation id="8287009018010202411">效率提升</translation>
 <translation id="828708037801473432">關閉</translation>
@@ -1997,7 +1994,6 @@
 <translation id="8553395910833293175">已指派給所有桌面。</translation>
 <translation id="8555757996376137129">移除目前的桌面</translation>
 <translation id="8559845965695780508"><ph name="USER" />編輯過</translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> 建議你更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">試試以下幾項搜尋建議</translation>
 <translation id="857201607579416096">已將選單移至畫面右下角。</translation>
 <translation id="8581946341807941670">按下 <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> 鍵，然後點選連結</translation>
@@ -2110,6 +2106,7 @@
 <translation id="899350903320462459">以 <ph name="LOGIN_ID" /> 帳戶解鎖裝置，即可執行通知動作</translation>
 <translation id="8993733019280019776">你在說話嗎？你的麥克風已關閉，只要選取麥克風即可開啟。</translation>
 <translation id="9000771174482730261">管理儲存空間</translation>
+<translation id="9002204506712855687">瞭解最新功能</translation>
 <translation id="9005984960510803406">開啟 Crosh 視窗</translation>
 <translation id="9017320285115481645">請輸入 Family Link 家長存取碼。</translation>
 <translation id="9022774213089566801">經常造訪</translation>
@@ -2141,6 +2138,7 @@
 <translation id="9098969848082897657">將手機設為靜音</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> 或 <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">復原上一個動作</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{1 分鐘後}other{# 分鐘後}}</translation>
 <translation id="9129245940793250979">背面按鈕</translation>
 <translation id="9133335900048457298">無法錄製受保護的內容</translation>
 <translation id="9139720510312328767">刪除下一個字母</translation>
@@ -2153,6 +2151,7 @@
 <translation id="9183456764293710005">全螢幕放大鏡</translation>
 <translation id="9193626018745640770">正在透過不明接收器投放</translation>
 <translation id="9194617393863864469">登入其他使用者帳戶...</translation>
+<translation id="9195990613383871904">明天</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> 的解析度已變更為 <ph name="RESOLUTION" />。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
 <translation id="9201044636667689546">請將 <ph name="NAME" /> 連結到 Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />，由系統管理員管理</translation>
@@ -2168,7 +2167,6 @@
 <translation id="923686485342484400">按兩下 Ctrl+Shift+Q 鍵即可登出。</translation>
 <translation id="92580429198593979">你已按下色彩反轉模式的鍵盤快速鍵。要開啟這項功能嗎？</translation>
 <translation id="925832987464884575">隱藏預覽</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> 要求你立即更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="938407504481277932">目前的桌面：<ph name="DESK_NAME" />。<ph name="PROFILE_NAME" /> (<ph name="EMAIL" />)。第 <ph name="DESK_INDEX" /> 個桌面，共 <ph name="DESK_COUNT" /> 個。</translation>
 <translation id="938963181863597773">我的日曆上有什麼活動？</translation>
 <translation id="945383118875625837">將連結拖曳到書籤列</translation>

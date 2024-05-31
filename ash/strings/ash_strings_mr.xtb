@@ -57,7 +57,6 @@
 <translation id="118437560755358292">आणखी सुरक्षिततेसाठी पासवर्ड किंवा पिन एंटर करा</translation>
 <translation id="118532027333893379">फुल स्क्रीन कॅप्चर करण्यासाठी कुठेही टॅप करा</translation>
 <translation id="1190609913194133056">सूचना केंद्र</translation>
-<translation id="1190678134285018527">डिव्हाइस मागील आवृत्तीवर जाणे आवश्यक आहे</translation>
 <translation id="1195412055398077112">ओव्हरस्कॅन</translation>
 <translation id="1195667586424773550">लिंक ड्रॅग करून टॅबच्या अ‍ॅड्रेस बारवर आणा</translation>
 <translation id="119944043368869598">सर्व साफ करा</translation>
@@ -685,7 +684,6 @@
 <translation id="363473492175527493">फोकस करण्यासाठी टास्क सेट केली आहे: <ph name="TASK_NAME" />. टास्क संपादित करण्यासाठी एंटर प्रेस करा.</translation>
 <translation id="3638400994746983214">गोपनीयता स्क्रीन टॉगल करा. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">विंडो लहान करा</translation>
-<translation id="3649505501900178324">अपडेटची मुदत संपली आहे</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> ते
@@ -755,7 +753,6 @@
 <translation id="3900355044994618856"><ph name="SESSION_TIME_REMAINING" /> मध्ये तुमचे सेशन समाप्त होईल</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> वर कनेक्ट करीत आहे</translation>
 <translation id="3906954721959377182">टॅबलेट</translation>
-<translation id="3922427723338465344">{0,plural, =1{एक मिनिटामध्ये डिव्हाइस मागील आवृत्तीवर बदला}other{# मिनिटांमध्ये डिव्हाइस मागील आवृत्तीवर बदला}}</translation>
 <translation id="3923494859158167397">कोणतीही मोबाइल नेटवर्क सेट केलेली नाहीत</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, इव्हेंट लोड करत आहे.</translation>
 <translation id="3932043219784172185">कोणतेही डिव्हाइस कनेक्ट केले नाही</translation>
@@ -946,7 +943,6 @@
 <translation id="4623167406982293031">खात्याची पडताळणी करा</translation>
 <translation id="4628757576491864469">डिव्हाइस</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, तारा रेटिंग <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{एक दिवसामध्ये डिव्हाइस मागील आवृत्तीवर बदला}other{# दिवसांमध्ये डिव्हाइस मागील आवृत्तीवर बदला}}</translation>
 <translation id="4633636853437260449">हटवण्यासाठी Ctrl+W प्रेस करा</translation>
 <translation id="4642092649622328492">अर्धा स्क्रीनशॉट घ्या</translation>
 <translation id="4644727592819780893">कॅमेरा बसवण्यासाठी जागा खूप लहान आहे</translation>
@@ -1453,7 +1449,6 @@
 <translation id="6477681113376365978">फाइल डाउनलोड करू शकत नाही</translation>
 <translation id="6482559668224714696">फुल-स्क्रीन मॅग्निफायर</translation>
 <translation id="6490471652906364588">USB-C डिव्‍हाइस (उजवे पोर्ट)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> ला तुम्ही तुमचे <ph name="DEVICE_TYPE" /> डिव्हाइस डेडलाइनच्या आधी अपडेट करणे आवश्यक आहे</translation>
 <translation id="649452524636452238">स्मार्ट कार्डाचा पिन</translation>
 <translation id="6495322433318104734">स्क्रीन सेव्हर डिस्प्ले करत आहे, बाहेर पडण्यासाठी कोणतीही की प्रेस करा</translation>
 <translation id="6495400115277918834">चित्रात-चित्र सुरू केले आहे, फोकस करण्यासाठी Alt+Shift+V प्रेस करा</translation>
@@ -1518,7 +1513,6 @@
 <translation id="6697913454192220372">नवीन डेस्क जोडा</translation>
 <translation id="6700713906295497288">IME मेनू बटण</translation>
 <translation id="6706742084323792866">कीबोर्ड पिन करा</translation>
-<translation id="6707693040195709527">डिव्हाइस मागील आवृत्तीवर बदलण्याची मुदत संपली आहे</translation>
 <translation id="6710213216561001401">मागील</translation>
 <translation id="6723839937902243910">पॉवर</translation>
 <translation id="672609503628871915">नवीन काय ते पहा</translation>
@@ -1811,7 +1805,6 @@
 <translation id="7866482334467279021">सुरू</translation>
 <translation id="7872786842639831132">बंद करा</translation>
 <translation id="7875575368831396199">तुमच्या <ph name="DEVICE_TYPE" /> चा ब्लूटूथ बंद असल्याचे दिसते. कृपया फोन हब वापरण्यासाठी ब्लूटूथ सुरू करा.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Change device to previous version now}=1{एका सेकंदामध्ये डिव्हाइस मागील आवृत्तीवर बदला}other{# सेकंदांमध्ये डिव्हाइस मागील आवृत्तीवर बदला}}</translation>
 <translation id="7884446017008693258">हॉटस्पॉट सेटिंग्ज</translation>
 <translation id="7884902759927478774">टॅब ड्रॅग करणे रद्द करा</translation>
 <translation id="7886169021410746335">गोपनीयता सेटिंग्ज ॲडजस्ट करा</translation>
@@ -1888,7 +1881,6 @@
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">अधिक पर्यायांसाठी टॅब वापरा. सर्व डेस्क अ‍ॅक्सेस करण्यासाठी लेफ्ट आणि राइट अ‍ॅरो वापरा.</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> वाजता सुरू होईल</translation>
-<translation id="8091387634532529612">ऑटोमॅटिक अपडेट</translation>
 <translation id="8092380135549145188">स्क्रोल नियंत्रणे</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> वर स्क्रीन कास्ट करणे थांबवा</translation>
 <translation id="810637681351706236">शेल्फमधून अ‍ॅप अनपिन करा</translation>
@@ -1934,7 +1926,6 @@
 <translation id="8257510091797044096">तुमचे डिव्हाइस सेट करा</translation>
 <translation id="8261506727792406068">हटवा</translation>
 <translation id="8262312463845990408">प्लेबॅक टॉगल करा</translation>
-<translation id="8270450402312105425">{0,plural, =1{एक तासामध्ये डिव्हाइस मागील आवृत्तीवर बदला}other{# तासांमध्ये डिव्हाइस मागील आवृत्तीवर बदला}}</translation>
 <translation id="8277261673056602147">तुमच्या स्क्रीनवरील मजकूर हायलाइट करा</translation>
 <translation id="8287009018010202411">उत्पादनक्षमता</translation>
 <translation id="828708037801473432">बंद</translation>
@@ -2001,7 +1992,6 @@
 <translation id="8553395910833293175">सर्व डेस्कना आधीपासून असाइन केले आहे.</translation>
 <translation id="8555757996376137129">सध्याचा डेस्क काढून टाका</translation>
 <translation id="8559845965695780508"><ph name="USER" /> यांनी संपादित केली आहे</translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> तुम्हाला तुमचे <ph name="DEVICE_TYPE" /> अपडेट करण्याची शिफारस करतो</translation>
 <translation id="8569751806372591456">वापरून पाहण्यासाठी या काही सूचना आहेत</translation>
 <translation id="857201607579416096">मेनू स्क्रीनच्या तळाशी उजव्या कोपर्‍यात हलवला.</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> प्रेस करा आणि लिंकवर क्लिक करा</translation>
@@ -2173,7 +2163,6 @@
 <translation id="923686485342484400">साइन आउट करण्यासाठी Control Shift Q दोनदा प्रेस करा.</translation>
 <translation id="92580429198593979">तुम्ही कलर इन्व्हर्जनसाठी कीबोर्ड शॉर्टकट दाबला आहे. तुम्हाला ते बंद करायचे आहे का?</translation>
 <translation id="925832987464884575">पूर्वावलोकने लपवा</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> नुसार तुम्ही तुमचे <ph name="DEVICE_TYPE" /> त्वरित अपडेट करणे आवश्यक आहे</translation>
 <translation id="938407504481277932">सध्याचा डेस्क: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_COUNT" /> पैकी <ph name="DESK_INDEX" /> डेस्‍क.</translation>
 <translation id="938963181863597773">माझ्या कॅलेंडरमधील इव्हेंट काय आहेत?</translation>
 <translation id="945383118875625837">लिंक बुकमार्क बारवर ड्रॅग करा</translation>

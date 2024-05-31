@@ -53,11 +53,10 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1182225749592316782">Permet l'accés a totes les aplicacions i tots els llocs web amb permisos per accedir a la càmera i al micròfon.</translation>
 <translation id="1182876754474670069">Inici</translation>
 <translation id="1183863904939664422">No m'interessa aquest suggeriment</translation>
-<translation id="1184126796192815024">Aquesta xarxa no admet les aplicacions de reproducció en línia del telèfon. Prova d'utilitzar el punt d'accés Wi-Fi del telèfon. <ph name="LEARN_MORE" /></translation>
+<translation id="1184126796192815024">Aquesta xarxa no admet les aplicacions d'estríming del telèfon. Prova d'utilitzar el punt d'accés Wi-Fi del telèfon. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Introdueix la contrasenya o el PIN per augmentar la seguretat</translation>
 <translation id="118532027333893379">Toca en qualsevol lloc per capturar la pantalla completa</translation>
 <translation id="1190609913194133056">Centre de notificacions</translation>
-<translation id="1190678134285018527">El dispositiu ha de tornar a la versió anterior</translation>
 <translation id="1195412055398077112">ajusta la mida</translation>
 <translation id="1195667586424773550">Arrossega l'enllaç a la barra d'adreces de la pestanya</translation>
 <translation id="119944043368869598">Esborra-ho tot</translation>
@@ -685,7 +684,6 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="363473492175527493">Tasca en què concentrar-se: <ph name="TASK_NAME" />. Prem Retorn per editar la tasca.</translation>
 <translation id="3638400994746983214">Commuta la pantalla de privadesa. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Minimitza la finestra</translation>
-<translation id="3649505501900178324">Actualització pendent</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> a
@@ -755,7 +753,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3900355044994618856">La sessió finalitzarà d'aquí a <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">S'està connectant amb <ph name="NAME" /></translation>
 <translation id="3906954721959377182">Tauleta</translation>
-<translation id="3922427723338465344">{0,plural, =1{Canvia el dispositiu a la versió anterior en el termini d’1 minut}other{Canvia el dispositiu a la versió anterior en el termini de # minuts}}</translation>
 <translation id="3923494859158167397">No hi ha cap xarxa mòbil configurada</translation>
 <translation id="3925540965556789199"><ph name="DATE" />. S'estan carregant els esdeveniments.</translation>
 <translation id="3932043219784172185">No hi ha cap dispositiu connectat</translation>
@@ -946,7 +943,6 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="4623167406982293031">Verifica el compte</translation>
 <translation id="4628757576491864469">Dispositius</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />; puntuació en estrelles: <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{Canvia el dispositiu a la versió anterior que tenia fa un dia}other{Canvia el dispositiu a la versió anterior que tenia fa # dies}}</translation>
 <translation id="4633636853437260449">Prem Ctrl+W per suprimir</translation>
 <translation id="4642092649622328492">Fes una captura de pantalla parcial</translation>
 <translation id="4644727592819780893">La zona és massa petita perquè s'ajusti a la càmera</translation>
@@ -1453,7 +1449,6 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6477681113376365978">No es pot baixar el fitxer</translation>
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
 <translation id="6490471652906364588">Dispositiu USB-C (port dret)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> requereix que actualitzis el dispositiu <ph name="DEVICE_TYPE" /> abans del termini establert</translation>
 <translation id="649452524636452238">PIN de la targeta intel·ligent</translation>
 <translation id="6495322433318104734">S'està mostrant l'estalvi de pantalla; prem qualsevol tecla per sortir</translation>
 <translation id="6495400115277918834">S'ha iniciat la imatge sobre imatge; prem Alt+Maj+V per posar-hi el focus</translation>
@@ -1517,7 +1512,7 @@ Instal·lació nova</translation>
 <translation id="6696025732084565524">El teclat extraïble necessita una actualització crítica</translation>
 <translation id="6697913454192220372">Afegeix un escriptori nou</translation>
 <translation id="6700713906295497288">Botó del menú d'IME</translation>
-<translation id="6707693040195709527">El canvi del dispositiu a la versió anterior ha vençut</translation>
+<translation id="6706742084323792866">Fixa el teclat</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6723839937902243910">Bateria</translation>
 <translation id="672609503628871915">Novetats</translation>
@@ -1810,7 +1805,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7866482334467279021">activat</translation>
 <translation id="7872786842639831132">Desactivat</translation>
 <translation id="7875575368831396199">Sembla que el Bluetooth està desactivat al teu <ph name="DEVICE_TYPE" />. Activa el Bluetooth per utilitzar El meu telèfon.</translation>
-<translation id="7877557217297072640">{0,plural, =0{Canvia el dispositiu a la versió anterior ara}=1{Canvia el dispositiu a la versió anterior en el termini d’1 segon}other{Canvia el dispositiu a la versió anterior en el termini de # segons}}</translation>
 <translation id="7884446017008693258">Configuració del punt d'accés Wi‐Fi</translation>
 <translation id="7884902759927478774">Cancel·la l'arrossegament de pestanyes</translation>
 <translation id="7886169021410746335">Ajustar la configuració de privadesa</translation>
@@ -1887,7 +1881,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Utilitza el tabulador per veure més opcions. Utilitza les fletxes esquerra i dreta per accedir a tots els escriptoris.</translation>
 <translation id="8091153018031979607">Inici: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">Actualitzacions automàtiques</translation>
 <translation id="8092380135549145188">Controls de desplaçament</translation>
 <translation id="8098591350844501178">Deixa d'emetre la pantalla a <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Deixa de fixar l'aplicació al prestatge</translation>
@@ -1933,7 +1926,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8257510091797044096">Configura el dispositiu</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8262312463845990408">Commuta la reproducció</translation>
-<translation id="8270450402312105425">{0,plural, =1{Canvia el dispositiu a la versió anterior en el termini d’una hora}other{Canvia el dispositiu a la versió anterior en el termini de # hores}}</translation>
 <translation id="8277261673056602147">Marca el text en pantalla</translation>
 <translation id="8287009018010202411">Productivitat</translation>
 <translation id="828708037801473432">Desactivada</translation>
@@ -2000,7 +1992,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8553395910833293175">Ja està assignada a tots els escriptoris.</translation>
 <translation id="8555757996376137129">Suprimeix l'escriptori actual</translation>
 <translation id="8559845965695780508"><ph name="USER" /> l'ha editat</translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> et recomana que actualitzis el dispositiu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Aquí tens alguns suggeriments que pots provar</translation>
 <translation id="857201607579416096">El menú s'ha mogut a l'extrem inferior dret de la pantalla.</translation>
 <translation id="8581946341807941670">Prem <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> i fes clic en un enllaç</translation>
@@ -2172,7 +2163,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="923686485342484400">Premeu Control+Maj+Q dues vegades per tancar la sessió.</translation>
 <translation id="92580429198593979">Has premut la tecla de drecera de la inversió de colors. Vols activar-la?</translation>
 <translation id="925832987464884575">Amaga les previsualitzacions</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> requereix que actualitzis el dispositiu <ph name="DEVICE_TYPE" /> immediatament</translation>
 <translation id="938407504481277932">Escriptori actual: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />). Escriptori <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Què tinc programat al calendari?</translation>
 <translation id="945383118875625837">Arrossega l'enllaç a la barra d'adreces d'interès</translation>

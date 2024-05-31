@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Historique</translation>
 <translation id="164673457281113247">{count,plural, =1{Favori enregistré}one{Favori enregistré}other{Favoris enregistrés}}</translation>
 <translation id="1650222530560417226">Appuyez sur le bouton "Débuter la journalisation" pour recueillir les prochains journaux de la console JavaScript et les erreurs à partir de tous les onglets. Les journaux sont recueillis (et stockés uniquement en mémoire) jusqu'à ce que cette page soit fermée ou que vous appuyiez sur "Débuter la journalisation".</translation>
+<translation id="1652333207707886577">Personnaliser le menu</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} mot de passe enregistré disponible au-dessus de votre clavier.}one{{count} mot de passe enregistré disponible au-dessus de votre clavier.}other{{count} mots de passe enregistrés disponibles au-dessus de votre clavier.}}</translation>
 <translation id="1657011748321897393">Échec du partage, car vous n'êtes pas connecté au réseau.</translation>
 <translation id="165877110639533037">Aucun onglet ouvert</translation>
@@ -531,6 +532,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3738428049780661523">Créé le <ph name="DATE" /></translation>
 <translation id="374357899112510277">Masquer les téléchargements</translation>
 <translation id="3745190878148784130">Masquer "Agrandir le texte"</translation>
+<translation id="3747231889390582072">Pour protéger la sécurité de votre organisation, les données non enregistrées seront supprimées de cet appareil. Il peut s'agir de mots de passe, d'historique de navigation, de cookies, etc.</translation>
 <translation id="3762232513783804601">Conçu pour votre iPad</translation>
 <translation id="3768725474733206671">Dernier onglet fermé</translation>
 <translation id="3771033907050503522">Ongl. navig. priv.</translation>
@@ -1482,6 +1484,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8446884382197647889">En savoir plus</translation>
 <translation id="8449347986464073209">Supprimer et se déconnecter</translation>
 <translation id="8459333855531264009">Non sécurisé</translation>
+<translation id="8466300942149667917">Les données non enregistrées du compte seront supprimées</translation>
 <translation id="8473863474539038330">Adresses et autres</translation>
 <translation id="8487667956631253959">Allumée</translation>
 <translation id="8487700953926739672">Disponible hors connexion</translation>

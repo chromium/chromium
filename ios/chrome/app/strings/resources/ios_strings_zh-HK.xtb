@@ -472,6 +472,7 @@
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3443810440409579745">已收到分頁。</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
+<translation id="3445580184527779479">分頁群組。打開咗。</translation>
 <translation id="3448016392200048164">分割檢視</translation>
 <translation id="345565170154308620">管理密碼…</translation>
 <translation id="3464194322481586217">無法追蹤價格。</translation>
@@ -516,6 +517,7 @@
 <translation id="3638472932233958418">預先載入網頁</translation>
 <translation id="3642060527569456384">分頁群組會自動儲存並同步至所有裝置。</translation>
 <translation id="3643338347976071250">{count,plural, =1{這 {count} 個密碼只會儲存至此裝置。如要在其他裝置上使用，請儲存至 Google 帳戶 ({email})。}other{這 {count} 個密碼只會儲存至此裝置。如要在其他裝置上使用，請儲存至 Google 帳戶 ({email})。}}</translation>
+<translation id="3650299480924308502">登出後，此裝置上未儲存的資料將會刪除，包括密碼、記錄等項目。</translation>
 <translation id="3659297405161482746">找不到付款方法</translation>
 <translation id="3661160521073045932">有可用的設定描述檔。</translation>
 <translation id="3670030362669914947">號碼</translation>
@@ -532,7 +534,7 @@
 <translation id="3738428049780661523">於 <ph name="DATE" />建立</translation>
 <translation id="374357899112510277">隱藏「下載檔案」</translation>
 <translation id="3745190878148784130">隱藏「縮放文字」</translation>
-<translation id="3747231889390582072">為確保貴機構的安全，系統將從這部裝置中刪除未儲存的資料，可能包括密碼、瀏覽記錄和 Cookie 等等。</translation>
+<translation id="3747231889390582072">為確保機構的安全，系統將從此裝置中刪除未儲存的資料，可能包括密碼、瀏覽記錄和 Cookie 等等。</translation>
 <translation id="3762232513783804601">專為 iPad 而設</translation>
 <translation id="3768725474733206671">重新開啟最近關閉的分頁</translation>
 <translation id="3771033907050503522">無痕式分頁</translation>
@@ -972,6 +974,7 @@
 <translation id="5971872012779224351">{count,plural, =1{已刪除 1 個書籤}other{已刪除 {count} 個書籤}}</translation>
 <translation id="5979837087407522202">搜尋密碼</translation>
 <translation id="5981230843984570095">關閉所有閒置分頁</translation>
+<translation id="5982958159110007132">分頁群組分頁。<ph name="NUMBER_OF_TABS_IN_GROUP" /> 個分頁入面嘅第 <ph name="TAB_INDEX_IN_GROUP" /> 個。</translation>
 <translation id="5984222099446776634">最近瀏覽的網站</translation>
 <translation id="598634819525651074">面積</translation>
 <translation id="5988097621740394599">在分頁上查看降價資料。</translation>
@@ -990,6 +993,7 @@
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6042308850641462728">更多選項</translation>
 <translation id="6045460247888249350">新增標題</translation>
+<translation id="6051432659151380973">分頁群組將會自動儲存</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">請在這裡控制您的報導和活動</translation>
 <translation id="6064824697233747382">您的機構要求您關閉同步功能。</translation>
@@ -1274,6 +1278,7 @@
 <translation id="745899714366929493">全日</translation>
 <translation id="7459628154744868585">已開啟「強化保護功能」</translation>
 <translation id="7465351360025415755">取得你關注的內容</translation>
+<translation id="7470908168505178757">分頁群組。收埋咗。</translation>
 <translation id="7472734401283673885">公司名稱</translation>
 <translation id="7473891865547856676">不用了，謝謝</translation>
 <translation id="7488874549363591659">已送達</translation>
@@ -1483,7 +1488,7 @@
 <translation id="8446884382197647889">瞭解詳情</translation>
 <translation id="8449347986464073209">刪除並登出</translation>
 <translation id="8459333855531264009">不安全</translation>
-<translation id="8466300942149667917">系統將刪除未儲存的帳戶資料</translation>
+<translation id="8466300942149667917">未儲存的帳戶資料將被刪除</translation>
 <translation id="8473863474539038330">地址及其他資料</translation>
 <translation id="8487667956631253959">開</translation>
 <translation id="8487700953926739672">可離線使用</translation>
@@ -1612,6 +1617,7 @@
 <translation id="9065203028668620118">編輯</translation>
 <translation id="9079935439869366234">全部標示為未讀</translation>
 <translation id="9081058212938299310">要更新 <ph name="USERNAME" /> 的密碼嗎？</translation>
+<translation id="9082821980444279398">開啟時，可在 Google 帳戶中使用及儲存資料。關閉後，資料只會儲存至此裝置，並會在你登出後刪除。</translation>
 <translation id="9083838294503912307">如要在不同裝置上同步並享受個人化體驗，請開啟同步處理功能。</translation>
 <translation id="9087339162317338348">盡量使用 HTTPS，並在系統載入不支援 HTTPS 的網站前先接收提醒。</translation>
 <translation id="9093271241977565440">輕按畫面頂部的「搜尋」圖示</translation>

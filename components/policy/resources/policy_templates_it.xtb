@@ -797,6 +797,7 @@ Se questo criterio non viene configurato, gli utenti potranno aggiungere eccezio
 <translation id="1635748761015837179">Consenti la scrittura su dispositivi di archiviazione esterni</translation>
 <translation id="1639468541408865385">Attiva cache di autenticazione HTTP con ambito globale</translation>
 <translation id="1639673466479276550">Attiva il salvaschermo nella schermata di accesso.</translation>
+<translation id="1640447222731279244">Controlla l'attivazione della funzionalità "Crea con l'AI" per gli sfondi di ChromeOS</translation>
 <translation id="1640824698339859203">Attiva il servizio SSO mobile e trasferisci le autenticazioni del web service dell'utente sul nuovo dispositivo</translation>
 <translation id="1641117061932613266">Attiva il servizio <ph name="PRODUCT_NAME" /> V2</translation>
 <translation id="1641394008743444477">Consente di impostare un elenco di funzionalità di <ph name="PRODUCT_OS_NAME" /> da disattivare.
@@ -858,6 +859,12 @@ attivazione dall'utente per chiamare questa API.</translation>
 
 Se il criterio viene impostato su False o se non viene configurato, non viene registrato alcun evento.</translation>
 <translation id="1692990221685273468">Consente di stabilire se lo strumento di verifica dei certificati integrato forzerà o meno l'applicazione di vincoli codificati nei trust anchor caricati dall'archivio di attendibilità della piattaforma.</translation>
+<translation id="1693528798631913178">Questo criterio attiva o disattiva la funzionalità "Crea con l'AI" per gli sfondi delle videoconferenze di ChromeOS.
+0 = disattiva la funzionalità per gli utenti.
+
+1 = attiva la funzionalità per gli utenti. Tieni presente che non vengono inviati dati a Google per l'addestramento o il miglioramento dei modelli di AI.
+
+Se questo criterio viene impostato su Unset, la funzionalità "Crea con l'AI" per gli sfondi delle videoconferenze è disattivata per gli utenti aziendali.</translation>
 <translation id="169467210981344373">Disattiva cache di autenticazione HTTP con ambito globale</translation>
 <translation id="1696501581280568361">Suggerisce la separazione dei profili</translation>
 <translation id="1698810555265314018">Consente di stabilire la risoluzione dell'immagine di stampa quando <ph name="PRODUCT_NAME" /> stampa i file PDF con la rasterizzazione.
@@ -1763,6 +1770,7 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
 <translation id="2326031114717677574">La frequenza di campionamento e raccolta dei dati audio. Il valore minimo consentito è 1 minuto.
 
       Se il criterio non viene configurato, viene applicata la frequenza predefinita di 15 minuti.</translation>
+<translation id="2331028134545182024">Controlla l'attivazione della funzionalità "Crea con l'AI" per gli sfondi delle videoconferenze di ChromeOS</translation>
 <translation id="2333228572393176330">Questo criterio consente di controllare una funzionalità di sicurezza nel protocollo TLS 1.3, che protegge le connessioni da attacchi di downgrade. È compatibile con le versioni precedenti e non interessa le connessioni a server o proxy TLS 1.2 conformi. Tuttavia, un difetto di implementazione nelle versioni precedenti di alcuni proxy che intercettano connessioni TLS li rende incompatibili.
 
       Se questo criterio viene impostato su Vero o se non viene configurato, <ph name="PRODUCT_NAME" /> attiva queste protezioni di sicurezza per tutte le connessioni.
@@ -4910,6 +4918,17 @@ Se non viene configurato, <ph name="PRODUCT_NAME" /> seguirà la procedura di im
       - Se questo criterio viene impostato su <ph name="SKIP_TOS_DIALOG" />, il browser ha una funzionalità limitata.
 
       - Se questo criterio viene impostato su <ph name="SKIP_TOS_DIALOG" />, gli amministratori devono comunicarlo agli utenti finali del dispositivo.</translation>
+<translation id="489760181463331251">Questo criterio modifica il livello di risparmio della funzionalità Risparmio memoria.
+
+Questo criterio viene applicato soltanto quando il Risparmio memoria viene attivato tramite le impostazioni o mediante il criterio <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" /> e inciderà sul modo in cui vengono utilizzate le euristiche per stabilire quando eliminare le schede. Ad esempio, ridurre la durata di una scheda inattiva prima di eliminarla può far risparmiare memoria, ma significa anche che le schede verranno ricaricate più di frequente. Ciò potrebbe comportare un'esperienza utente scadente e un maggiore traffico di rete.
+
+Se imposti il criterio su 0, il Risparmio memoria offrirà un risparmio di memoria moderato. Le schede diventano inattive dopo un periodo di tempo più lungo
+
+Se imposti il criterio su 1, il Risparmio memoria offrirà un risparmio di memoria bilanciato. Le schede diventano inattive dopo un periodo di tempo ottimale.
+
+Se imposti il criterio su 2, il Risparmio memoria offrirà un risparmio di memoria massimo. Le schede diventano inattive dopo un periodo di tempo più breve.
+
+Se questo criterio non è impostato, l'utente finale può controllare questa impostazione all'indirizzo chrome://settings/performance.</translation>
 <translation id="489803897780524242">Parametro di controllo sostituzione termini di ricerca per fornitore ricerca predefinito</translation>
 <translation id="4899708173828500852">Consenti Navigazione sicura</translation>
 <translation id="4906194810004762807">Frequenza di aggiornamento per norma dispositivo</translation>
@@ -5268,6 +5287,12 @@ Se questo criterio non viene configurato o se l'elenco non contiene riferimenti 
       Se il criterio non viene impostato, viene usato il periodo predefinito di 604800000 millisecondi (una settimana).</translation>
 <translation id="5212810195096589189">Specifica l'autorizzazione per l'interfaccia a riga di comando delle macchine virtuali</translation>
 <translation id="5213038356678567351">Siti web che non devono mai attivare il cambio di browser.</translation>
+<translation id="5215621993623612880">Questo criterio attiva o disattiva la funzionalità "Crea con l'AI" per gli sfondi di ChromeOS.
+0 = disattiva la funzionalità per gli utenti.
+
+1 = attiva la funzionalità per gli utenti. Tieni presente che non vengono inviati dati a Google per l'addestramento o il miglioramento dei modelli di AI.
+
+Se questo criterio viene impostato su Unset, la funzionalità "Crea con AI" per gli sfondi è disattivata per gli utenti aziendali.</translation>
 <translation id="5216815237712190041">Configura l'immagine di sfondo a livello di dispositivo da mostrare nella schermata di accesso se ancora nessun utente ha effettuato l'accesso al dispositivo. Il criterio viene impostato specificando l'URL da cui il dispositivo ChromeOS può scaricare l'immagine di sfondo e un hash crittografico utilizzato per verificare l'integrità del download. L'immagine deve essere in formato JPEG e avere dimensioni non superiori a 16 MB. L'URL deve essere accessibile senza autenticazione. L'immagine di sfondo viene scaricata e memorizzata nella cache. Verrà scaricata nuovamente ogni volta che l'URL o l'hash cambiano.
 
       Se il criterio dello sfondo del dispositivo viene configurato, il dispositivo ChromeOS scarica e utilizza l'immagine di sfondo nella schermata di accesso se ancora nessun utente ha effettuato l'accesso al dispositivo. Quando un utente esegue l'accesso, si attiva il criterio dello sfondo dell'utente.
@@ -6823,6 +6848,7 @@ Se il criterio non viene configurato, significa che <ph name="PRODUCT_OS_NAME" /
       In questo modo possono essere accoppiati automaticamente altri dispositivi ChromeOS (e Android) su cui è stato eseguito l'accesso con lo stesso account GAIA.
       Se non viene configurato, il valore predefinito è disabled per gli utenti aziendali ed enabled per gli account
       non gestiti.</translation>
+<translation id="6400959027108936283">Attiva la funzionalità</translation>
 <translation id="6401669939808766804">Disconnetti l'utente</translation>
 <translation id="640244877779556713">Attiva suggerimento di emoji</translation>
 <translation id="6403114173011456561">Consente di controllare la tastiera virtuale touch, fungendo da criterio aggiuntivo rispetto al criterio <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
@@ -7174,6 +7200,7 @@ Le modifiche al criterio vengono applicate solo mentre ARC non è in esecuzione,
 
       Nota: usa questo criterio insieme al criterio <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />.</translation>
 <translation id="6625136649067113817">Un flag booleano che indica se la tastiera sullo schermo può offrire il controllo ortografico.</translation>
+<translation id="6626319579493977784">Impostazioni codice dinamico</translation>
 <translation id="66265932317331474">Segnala informazioni sulla CPU</translation>
 <translation id="6628120204569232711">Segnala lo stato di archiviazione</translation>
 <translation id="662991036483361836">Impedisci agli utenti di attivare la Condivisione nelle vicinanze</translation>
@@ -8168,6 +8195,7 @@ Questo sostituisce il criterio <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLIC
       Se il criterio viene impostato su Disattivato o se non viene configurato, i dispositivi registrati non registrano o non segnalano lo stato di sicurezza TPM.
       Eccezione: le informazioni relative a TPM vengono controllate tramite il criterio <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> per M95 e versioni precedenti.</translation>
 <translation id="739556497251174388">Consenti il riutilizzo delle credenziali di accesso di <ph name="PRODUCT_OS_NAME" /> per l'autenticazione della rete</translation>
+<translation id="7402257017733669351">Impedisci al processo del browser di creare codice dinamico</translation>
 <translation id="7402772023599097052">Se il criterio viene attivato o se non viene configurato, vengono mostrati avvisi di sicurezza quando flag della riga di comando potenzialmente pericolosi vengono utilizzati per avviare Chrome.
 
 Se il criterio viene disattivato, viene impedita la visualizzazione degli avvisi di sicurezza quando Chrome viene avviato con flag della riga di comando potenzialmente pericolosi.
@@ -9452,6 +9480,7 @@ la configurazione.</translation>
 <translation id="8429593528367808164">Attiva la scrittura predittiva sulla tastiera fisica durante la digitazione da parte degli utenti</translation>
 <translation id="8433186206711564395">Impostazioni di rete</translation>
 <translation id="8433769814000220721">Attiva contenuti suggeriti</translation>
+<translation id="8435304381855818385">Impostazioni predefinite codice dinamico</translation>
 <translation id="843609873781525167">Se il criterio è impostato su True, all'avvio <ph name="PRODUCT_NAME" /> verifica sempre di essere il browser predefinito e, se possibile, si registra automaticamente. Se il criterio è impostato su False, <ph name="PRODUCT_NAME" /> non verifica mai di essere il browser predefinito e disattiva i controlli degli utenti per questa opzione.
 
       Se il criterio non è configurato, <ph name="PRODUCT_NAME" /> consente agli utenti di controllare se è impostato come browser predefinito e, in caso contrario, se devono essere visualizzate le notifiche per gli utenti.

@@ -57,7 +57,6 @@
 <translation id="118437560755358292">ଅଧିକ ସୁରକ୍ଷା ପାଇଁ ପାସୱାର୍ଡ କିମ୍ବା PIN ଲେଖନ୍ତୁ</translation>
 <translation id="118532027333893379">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍ କରିବାକୁ ସ୍କ୍ରିନର ଯେ କୌଣସି ସ୍ଥାନରେ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="1190609913194133056">ବିଜ୍ଞପ୍ତି କେନ୍ଦ୍ର</translation>
-<translation id="1190678134285018527">ଡିଭାଇସ ଏହାର ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ଫେରିବା ଆବଶ୍ୟକ</translation>
 <translation id="1195412055398077112">ଓଭର୍‌ସ୍କାନ୍</translation>
 <translation id="1195667586424773550">ଲିଙ୍କ୍‌କୁ ଟାବ୍‌ର ଠିକଣା ବାର୍‌କୁ ଟାଣନ୍ତୁ</translation>
 <translation id="119944043368869598">ସମସ୍ତ ଖାଲି କରନ୍ତୁ</translation>
@@ -685,7 +684,6 @@
 <translation id="363473492175527493">ଏହି ଟାସ୍କରେ ଫୋକସ ଚାଲୁ କରିବା ପାଇଁ ସେଟ କରାହୋଇଛି: <ph name="TASK_NAME" />। ଟାସ୍କକୁ ଏଡିଟ କରିବା ପାଇଁ ଏଣ୍ଟର କୀ'କୁ ଦବାନ୍ତୁ।</translation>
 <translation id="3638400994746983214">ଗୋପନୀୟତା ସ୍କ୍ରିନ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE_TEXT" />।</translation>
 <translation id="3649256019230929621">ୱିଣ୍ଡୋ ଛୋଟ କରନ୍ତୁ</translation>
-<translation id="3649505501900178324">ଅପ୍‌ଡେଟ୍ ହେବାକୁ ବାକି ଅଛି</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" />ରୁ
@@ -755,7 +753,6 @@
 <translation id="3900355044994618856">ଆପଣଙ୍କ ଅବଧି <ph name="SESSION_TIME_REMAINING" />ରେ ସମାପ୍ତ ହେବ</translation>
 <translation id="3901991538546252627"><ph name="NAME" />କୁ ସଂଯୋଗ ହେଉଛି</translation>
 <translation id="3906954721959377182">ଟାବ୍‌ଲେଟ୍</translation>
-<translation id="3922427723338465344">{0,plural, =1{ଡିଭାଇସକୁ 1 ମିନିଟ ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}other{ଡିଭାଇସକୁ # ମିନିଟ ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}}</translation>
 <translation id="3923494859158167397">କୌଣସି ମୋବାଇଲ ନେଟୱାର୍କ ସେଟ୍ ଅପ୍ କରାଯାଇନାହିଁ</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, ଇଭେଣ୍ଟଗୁଡ଼ିକ ଲୋଡ ହେଉଛି।</translation>
 <translation id="3932043219784172185">କୌଣସି ଡିଭାଇସ ସଂଯୋଗ କରାଯାଇନାହିଁ</translation>
@@ -946,7 +943,6 @@
 <translation id="4623167406982293031">ଆକାଉଣ୍ଟ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4628757576491864469">ଡିଭାଇସ୍</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, ତାରା ମୂଲ୍ୟାଙ୍କନ <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{ଡିଭାଇସକୁ ଗୋଟିଏ ଦିନ ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}other{ଡିଭାଇସକୁ # ଦିନ ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}}</translation>
 <translation id="4633636853437260449">ଡିଲିଟ କରିବାକୁ Ctrl+W ଦବାନ୍ତୁ</translation>
 <translation id="4642092649622328492">ଆଶିଂକ ସ୍କ୍ରିନ୍‌ସଟ୍‍ ନିଅନ୍ତୁ</translation>
 <translation id="4644727592819780893">କ୍ୟାମେରା ପ୍ରିଭ୍ୟୁ ଦେଖାଇବା ପାଇଁ ଅଞ୍ଚଳଟି ବହୁତ ଛୋଟ ଅଟେ</translation>
@@ -1453,7 +1449,6 @@
 <translation id="6477681113376365978">ଫାଇଲକୁ ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="6482559668224714696">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ ମ୍ୟାଗ୍ନିଫାୟର୍</translation>
 <translation id="6490471652906364588">USB-C ଡିଭାଇସ୍‍ (ଡାହାଣ ପୋର୍ଟ)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> ପାଇଁ ଆପଣ ସମୟସୀମା ପୂର୍ବରୁ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ଅପଡେଟ କରିବା ଆବଶ୍ୟକ</translation>
 <translation id="649452524636452238">ସ୍ମାର୍ଟ କାର୍ଡ PIN</translation>
 <translation id="6495322433318104734">ସ୍କ୍ରିନ ସେଭର ଡିସପ୍ଲେ ହେଉଛି, ବାହାରି ଯିବା ପାଇଁ ଯେ କୌଣସି କୀ'କୁ ଦବାନ୍ତୁ</translation>
 <translation id="6495400115277918834">ପିକଚର-ଇନ-ପିକଚର ଆରମ୍ଭ ହୋଇଛି, ଫୋକସ କରିବାକୁ Alt+Shift+V ଦବାନ୍ତୁ</translation>
@@ -1517,7 +1512,6 @@
 <translation id="6697913454192220372">ନୂଆ ଡେସ୍କ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6700713906295497288">IME ମେନୁ ବଟନ୍</translation>
 <translation id="6706742084323792866">କୀବୋର୍ଡ ପିନ କରନ୍ତୁ</translation>
-<translation id="6707693040195709527">ଡିଭାଇସକୁ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରିବାର ସମୟସୀମା ଅତିକ୍ରମ କରିଯାଇଛି</translation>
 <translation id="6710213216561001401">ପୂର୍ବବର୍ତ୍ତୀ</translation>
 <translation id="6723839937902243910">ପାୱର୍</translation>
 <translation id="672609503628871915">କ’ଣ ନୂଆ ଅଛି ଦେଖନ୍ତୁ</translation>
@@ -1810,7 +1804,6 @@
 <translation id="7866482334467279021">ଚାଲୁ ଅଛି</translation>
 <translation id="7872786842639831132">ବନ୍ଦ ଅଛି</translation>
 <translation id="7875575368831396199">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ବ୍ଲୁଟୁଥ୍ ବନ୍ଦ କରାଯାଇଥିବା ପରି ଜଣାପଡ଼ୁଛି। ଦୟାକରି ଫୋନ୍ ହବ୍ ବ୍ୟବହାର କରିବା ପାଇଁ ବ୍ଲୁଟୁଥକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
-<translation id="7877557217297072640">{0,plural, =0{ଡିଭାଇସକୁ ବର୍ତ୍ତମାନ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}=1{ଡିଭାଇସକୁ 1 ସେକେଣ୍ଡ ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}other{ଡିଭାଇସକୁ # ସେକେଣ୍ଡ ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}}</translation>
 <translation id="7884446017008693258">ହଟସ୍ପଟ ସେଟିଂସ</translation>
 <translation id="7884902759927478774">ଟାବ ଟାଣିବାକୁ ବାତିଲ କରନ୍ତୁ</translation>
 <translation id="7886169021410746335">ଗୋପନୀୟତା ସେଟିଂସ ଆଡଜଷ୍ଟ କରନ୍ତୁ</translation>
@@ -1887,7 +1880,6 @@
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">ଅଧିକ ବିକଳ୍ପ ପାଇଁ ଟାବ ବ୍ୟବହାର କରନ୍ତୁ। ସମସ୍ତ ଡେସ୍କକୁ ଆକ୍ସେସ କରିବା ପାଇଁ ବାମ ଏବଂ ଡାହାଣ ତୀରକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" />ରେ ଆରମ୍ଭ ହେଉଛି <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">ସ୍ୱଚାଳିତ ଅପଡେଟଗୁଡ଼ିକ</translation>
 <translation id="8092380135549145188">ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକୁ ସ୍କ୍ରୋଲ କରନ୍ତୁ</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />ରେ ସ୍କ୍ରିନ୍‍ କାଷ୍ଟ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="810637681351706236">ସେଲ୍ଫରୁ ଆପକୁ ଅନପିନ କରନ୍ତୁ</translation>
@@ -1933,7 +1925,6 @@
 <translation id="8257510091797044096">ଆପଣଙ୍କ ଡିଭାଇସ ସେଟ ଅପ କରନ୍ତୁ</translation>
 <translation id="8261506727792406068">ବିଲୋପ</translation>
 <translation id="8262312463845990408">ପ୍ଲେବେକ ଟୋଗଲ କରନ୍ତୁ</translation>
-<translation id="8270450402312105425">{0,plural, =1{ଡିଭାଇସକୁ ଏକ ଘଣ୍ଟା ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}other{ଡିଭାଇସକୁ # ଘଣ୍ଟା ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}}</translation>
 <translation id="8277261673056602147">ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ଟେକ୍ସଟକୁ ହାଇଲାଇଟ କରନ୍ତୁ</translation>
 <translation id="8287009018010202411">ଉତ୍ପାଦନକ୍ଷମତା</translation>
 <translation id="828708037801473432">ବନ୍ଦ</translation>
@@ -2000,7 +1991,6 @@
 <translation id="8553395910833293175">ସମସ୍ତ ଡେସ୍କକୁ ପୂର୍ବରୁ ଆସାଇନ୍ କରାଯାଇଛି।</translation>
 <translation id="8555757996376137129">ବର୍ତ୍ତମାନର ଡେସ୍କ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="8559845965695780508"><ph name="USER" /> ଏଡିଟ କରିଛନ୍ତି</translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> ଆପଣଙ୍କୁ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ଅପଡେଟ କରିବା ପାଇଁ ସୁପାରିଶ କରିଥାଏ</translation>
 <translation id="8569751806372591456">ବ୍ୟବହାର କରିବାକୁ ଏଠାରେ କିଛି ପରାମର୍ଶ ଅଛି</translation>
 <translation id="857201607579416096">ସ୍କ୍ରିନର ନିମ୍ନ-ଡାହାଣ କୋଣକୁ ମେନୁ ମୁଭ୍ କରାଯାଇଛି।</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" />କୁ ଦବାଇ ଏକ ଲିଙ୍କରେ କ୍ଲିକ କରନ୍ତୁ</translation>
@@ -2172,7 +2162,6 @@
 <translation id="923686485342484400">ସାଇନ୍‍ ଆଉଟ୍‍ ହେବାକୁ ଦୁଇଥର Control Shift Q ଦବାନ୍ତୁ।</translation>
 <translation id="92580429198593979">କଲର ଇନଭର୍ସନ ପାଇଁ ଆପଣ କୀବୋର୍ଡ ସର୍ଟକଟ ଦବାଇଛନ୍ତି। ଆପଣ ଏହାକୁ ଚାଲୁ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="925832987464884575">ପ୍ରିଭ୍ୟୁଗୁଡ଼ିକୁ ଲୁଚାନ୍ତୁ</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> ପାଇଁ ଆପଣ ତୁରନ୍ତ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ଅପଡେଟ କରିବା ଆବଶ୍ୟକ</translation>
 <translation id="938407504481277932">ବର୍ତ୍ତମାନର ଡେସ୍କ: <ph name="DESK_NAME" />। <ph name="PROFILE_NAME" /> <ph name="EMAIL" />। <ph name="DESK_COUNT" />ରୁ <ph name="DESK_INDEX" /> ଡେସ୍କ।</translation>
 <translation id="938963181863597773">ମୋ କ୍ୟାଲେଣ୍ଡରରେ କ’ଣ ଅଛି?</translation>
 <translation id="945383118875625837">ବୁକ୍‌ମାର୍କ ବାର୍‌କୁ ଲିଙ୍କ୍‍ ଟାଣନ୍ତୁ</translation>

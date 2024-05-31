@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Historial</translation>
 <translation id="164673457281113247">{count,plural, =1{Se guardó el favorito}other{Se guardaron los favoritos}}</translation>
 <translation id="1650222530560417226">Presiona el botón "Iniciar registro" para recopilar de todas las pestañas futuros errores y registros de la Consola de JavaScript. Se recopilarán los registros (y almacenarán solo en memoria) hasta que se cierre esta página o se presione el botón "Detener registro".</translation>
+<translation id="1652333207707886577">Personaliza el menú</translation>
 <translation id="1653432787084483144">{count,plural, =1{Hay {count} contraseña guardada disponible sobre el teclado.}other{Hay {count} contraseñas guardadas disponibles sobre el teclado.}}</translation>
 <translation id="1657011748321897393">Error al compartir por falta de conexión a la red</translation>
 <translation id="165877110639533037">No hay pestañas abiertas.</translation>
@@ -531,6 +532,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3738428049780661523">Creación: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Ocultar la opción Descargas</translation>
 <translation id="3745190878148784130">Ocultar la opción Hacer zoom en el texto</translation>
+<translation id="3747231889390582072">Para proteger la seguridad de tu organización, se borrarán los datos no guardados de este dispositivo. Esto puede incluir las contraseñas, el historial de navegación, las cookies y mucho más.</translation>
 <translation id="3762232513783804601">Diseñado para tu iPad</translation>
 <translation id="3768725474733206671">Volver a abrir última pestaña</translation>
 <translation id="3771033907050503522">Pestañas de incógnito</translation>
@@ -1481,6 +1483,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8446884382197647889">Más información</translation>
 <translation id="8449347986464073209">Borrar y salir</translation>
 <translation id="8459333855531264009">No seguro</translation>
+<translation id="8466300942149667917">Se borrarán los datos no guardados de la cuenta</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
 <translation id="8487667956631253959">Encendida</translation>
 <translation id="8487700953926739672">Disponible sin conexión</translation>

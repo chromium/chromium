@@ -130,6 +130,7 @@
 <translation id="1644574205037202324">Historik</translation>
 <translation id="164673457281113247">{count,plural, =1{Bogmærket er gemt}one{Bogmærket er gemt}other{Bogmærkerne er gemt}}</translation>
 <translation id="1650222530560417226">Tryk på knappen "Start logføring" for at indsamle fremtidige JavaScript-konsollogfiler og -fejl fra alle faner. Logfiler indsamles (og gemmes kun i hukommelsen), indtil denne side lukkes, eller der trykkes på "Stop logføring".</translation>
+<translation id="1652333207707886577">Tilpas din menu</translation>
 <translation id="1653432787084483144">{count,plural, =1{{count} gemt adgangskode er tilgængelig over dit tastatur.}one{{count} gemt adgangskode er tilgængelig over dit tastatur.}other{{count} gemte adgangskoder er tilgængelige over dit tastatur.}}</translation>
 <translation id="1657011748321897393">Deling mislykkedes. Du har ikke forbindelse til netværket.</translation>
 <translation id="165877110639533037">Ingen åbne faner</translation>
@@ -531,6 +532,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3738428049780661523">Oprettet <ph name="DATE" /></translation>
 <translation id="374357899112510277">Skjul downloads</translation>
 <translation id="3745190878148784130">Skjul Zoom ind/ud på tekst</translation>
+<translation id="3747231889390582072">Data, der ikke er gemt, slettes fra denne enhed for at beskytte din organisation. Dette kan omfatte adgangskoder, browserhistorik, cookies m.m.</translation>
 <translation id="3762232513783804601">Udviklet til din iPad</translation>
 <translation id="3768725474733206671">Åbn seneste fane</translation>
 <translation id="3771033907050503522">Inkognitofaner</translation>
@@ -1481,6 +1483,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8446884382197647889">Få flere oplysninger</translation>
 <translation id="8449347986464073209">Slet, og log ud</translation>
 <translation id="8459333855531264009">Ikke sikker</translation>
+<translation id="8466300942149667917">Kontodata, der ikke er gemt, slettes</translation>
 <translation id="8473863474539038330">Adresser m.m.</translation>
 <translation id="8487667956631253959">Til</translation>
 <translation id="8487700953926739672">Tilgængelig offline</translation>

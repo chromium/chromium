@@ -186,6 +186,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="4055805654398742145">Správca hesiel</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Vaša organizácia Chromium automaticky zavrie, keď sa nebude používať jednu minútu. Dáta prehliadania budú odstránené. Môže v nich byť zahrnutá história, automatické dopĺňanie a stiahnuté súbory.}few{Vaša organizácia Chromium automaticky zavrie, keď sa nebude používať # minúty. Dáta prehliadania budú odstránené. Môže v nich byť zahrnutá história, automatické dopĺňanie a stiahnuté súbory.}many{Vaša organizácia Chromium automaticky zavrie, keď sa nebude používať # minúty. Dáta prehliadania budú odstránené. Môže v nich byť zahrnutá história, automatické dopĺňanie a stiahnuté súbory.}other{Vaša organizácia Chromium automaticky zavrie, keď sa nebude používať # minút. Dáta prehliadania budú odstránené. Môže v nich byť zahrnutá história, automatické dopĺňanie a stiahnuté súbory.}}</translation>
 <translation id="4118474109249235144">Režim Inkognito prehliadača Chromium</translation>
+<translation id="4122186850977583290">Prejsť na stránku informácií o prehliadači Chromium</translation>
 <translation id="4148957013307229264">Inštaluje sa...</translation>
 <translation id="4149336151887611710">Vaša organizácia si môže zobraziť a spravovať dáta prehliadania vo vašom pracovnom profile, napríklad záložky, históriu a heslá. Nemôže si zobraziť dáta prehliadania v osobných profiloch prehliadača Chromium.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – prihlásenie do siete – Chromium</translation>
@@ -459,7 +460,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium znova spustite do jedného dňa}few{Chromium znova spustite do # dní}many{Chromium znova spustite do # dňa}other{Chromium znova spustite do # dní}}</translation>
 <translation id="8453117565092476964">Archív inštalácie je poškodený alebo neplatný. Stiahnite prehliadač Chromium znova.</translation>
 <translation id="8458614432758743027">Chromium vyžaduje systém Windows 10 alebo novší.</translation>
-<translation id="8461326814397467035">Niektoré údaje prehliadača Chromium zatiaľ neboli vo vašom účte Google uložené. Pred odhlásením skúste počkať niekoľko minút.</translation>
 <translation id="8463672209299734063">Nepovinné: Pomôžte zlepšovať funkcie a výkonnosť systému Chromium OS automatickým odosielaním diagnostík a údajov o využití Googlu</translation>
 <translation id="8493179195440786826">Prehliadač Chromium je zastaraný</translation>
 <translation id="8522801943730206384">Chromium môže skontrolovať heslá, keď ich uložíte</translation>

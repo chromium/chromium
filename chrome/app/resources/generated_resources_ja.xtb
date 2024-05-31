@@ -280,7 +280,6 @@
 <translation id="1197088940767939838">オレンジ</translation>
 <translation id="1197185198920566650"><ph name="EMAIL" /> の <ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されます。</translation>
 <translation id="11978075283960463">アプリに保存されたデータ: <ph name="APP_SIZE" /></translation>
-<translation id="1197935538609051549">無効にする</translation>
 <translation id="1198066799963193307">ロービジョン音声ツール</translation>
 <translation id="119944043368869598">すべて削除</translation>
 <translation id="1199814941632954229">次の証明書プロファイルに対する証明書を準備しています</translation>
@@ -1079,7 +1078,6 @@
 <translation id="1781771911845953849">アカウントと同期</translation>
 <translation id="1782101999402987960">更新は管理者によりブロックされています</translation>
 <translation id="1782196717298160133">スマートフォンを検出中</translation>
-<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 件のメモ}other{# 件のメモ}}</translation>
 <translation id="1784707308176068866">連携するネイティブ アプリケーションからのリクエストに応じてバックグラウンドで実行する</translation>
 <translation id="1784849162047402014">デバイスのディスク空き領域が少なくなっています</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{「<ph name="APP_NAME" />」をアンインストールすると、次のアプリもアンインストールされます。}other{「<ph name="APP_NAME" />」をアンインストールすると、次のアプリもアンインストールされます。}}</translation>
@@ -1219,6 +1217,7 @@
 <translation id="1878885068166344708">フォーカスを移動すると、項目がハイライト表示されます。フォーカスを変更するには Tab キーを押すか、項目を選択します。</translation>
 <translation id="1879000426787380528">次のアカウントでログイン</translation>
 <translation id="18802377548000045">タブを大サイズまで縮小</translation>
+<translation id="1880677175115548835">テキストを選択</translation>
 <translation id="1880905663253319515">証明書「<ph name="CERTIFICATE_NAME" />」を削除しますか？</translation>
 <translation id="1881445033931614352">キーボードのレイアウト</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{アイテム}other{# 件のアイテム}}</translation>
@@ -1259,7 +1258,6 @@
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">通話を終了</translation>
 <translation id="1915734383465415025">販売店の番号</translation>
-<translation id="1916260783734263714">現在のタブ</translation>
 <translation id="1916502483199172559">デフォルトの赤のアバター</translation>
 <translation id="1916770123977586577">更新後の設定をこのサイトに適用するには、このページを再読み込みしてください</translation>
 <translation id="1918127774159128277">Wi-Fi Direct 機能を更新</translation>
@@ -1843,6 +1841,7 @@
 <translation id="2332515770639153015">セーフ ブラウジング保護強化機能はオンになっています</translation>
 <translation id="2332742915001411729">デフォルトに戻す</translation>
 <translation id="2333166365943957309">UI 階層</translation>
+<translation id="233375395665273385">削除してログアウト</translation>
 <translation id="233471714539944337">機密コンテンツ</translation>
 <translation id="2335111415680198280">{0,plural, =1{# 個のウィンドウを閉じる}other{# 個のウィンドウを閉じる}}</translation>
 <translation id="2336228925368920074">すべてのタブをブックマークに追加...</translation>
@@ -1904,7 +1903,6 @@
 <translation id="2383825469508278924">キーボードのキーマッピング、ファンクション キーなどを変更します</translation>
 <translation id="2387052489799050037">ホームに移動</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" />（現在）</translation>
-<translation id="2390226379317200116">このページのメモや感想を追加して、後からアクセスする際に参考にできます。</translation>
 <translation id="2390347491606624519">プロキシに接続できません。もう一度ログインしてください</translation>
 <translation id="2390782873446084770">Wi-Fi 同期</translation>
 <translation id="2391419135980381625">標準フォント</translation>
@@ -2031,7 +2029,6 @@
 <translation id="2467755475704469005">デバイスは検出されませんでした。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">タッチパッドのスクロール アクセラレーション</translation>
 <translation id="2468205691404969808">Cookie を使って設定を保存します（これらのページにアクセスしない場合も Cookie が保持されます）</translation>
-<translation id="2468247643665097563">注文</translation>
 <translation id="2468402215065996499">たまごっち</translation>
 <translation id="2468470085922875120">推測しにくいパスワードが使用されています</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 個のタブ}other{<ph name="GROUP_TITLE" /> - # 個のタブ}}</translation>
@@ -2762,7 +2759,6 @@
 <translation id="3004385386820284928">キーボードのキーをカスタマイズ</translation>
 <translation id="3005574332301273731">表示しない</translation>
 <translation id="3006881078666935414">使用状況データはありません</translation>
-<translation id="3007410324195400631">このページのメモを追加する</translation>
 <translation id="3007771295016901659">タブを複製</translation>
 <translation id="3008232374986381779"><ph name="DEVICE_TYPE" /> で Linux のツール、エディタ、IDE を実行します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">権限をリセット</translation>
@@ -4423,7 +4419,6 @@
 <translation id="4258348331913189841">ファイル システム</translation>
 <translation id="4259388776256904261">しばらくお待ちください</translation>
 <translation id="4260699894265914672">カスタマイズするには、キーボードのキーを押してください</translation>
-<translation id="4260722247480053581">シークレット ウインドウで開く</translation>
 <translation id="4261429981378979799">拡張機能の権限</translation>
 <translation id="4262004481148703251">警告を閉じる</translation>
 <translation id="4263223596040212967">キーボード レイアウトを確認してから、もう一度お試しください。</translation>
@@ -5217,6 +5212,7 @@
 <translation id="4867433544163083783">タブを整理できるかどうかを今すぐ確認</translation>
 <translation id="4868281708609571334">Google アシスタントに <ph name="SUPERVISED_USER_NAME" /> さんの声を認識させる</translation>
 <translation id="4868284252360267853">このダイアログは現在フォーカスされていません。このダイアログをフォーカスするには command+shift+option+a キーを押してください。</translation>
+<translation id="4868351661310357223">Google Play のアプリとゲームを <ph name="DEVICE_TYPE" /> にインストールします。</translation>
 <translation id="4869170227080975044">ChromeOS のネットワーク情報を読み取る</translation>
 <translation id="4870724079713069532">エクスプローラーからこのアプリまたは他のアプリで、サポートされているファイルを開いて編集できます。デフォルトでこのアプリを使用して開くファイルを管理するには、<ph name="BEGIN_LINK" />Windows の設定<ph name="END_LINK" />に移動してください。</translation>
 <translation id="4870995365819149457">サポートされているリンクの一部は、引き続き <ph name="APP_NAME" />、<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" />、その他 1 件のアプリで開かれます。</translation>
@@ -6149,7 +6145,6 @@
 <translation id="5578059481725149024">自動ログイン</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" /> への翻訳が完了しました</translation>
 <translation id="558170650521898289">Microsoft Windows ハードウェア ドライバの確認</translation>
-<translation id="5581876958763461074">すべてのメモ</translation>
 <translation id="5581972110672966454">デバイスをドメインに追加できません。もう一度お試しいただくか、デバイス所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="5582634344048669777">8 点式</translation>
 <translation id="5582839680698949063">メインメニュー</translation>
@@ -8033,6 +8028,7 @@
 <translation id="7007648447224463482">すべてを新しいウィンドウで開く</translation>
 <translation id="7008815993384338777">現在ローミングなし</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> がカメラを使用しています</translation>
+<translation id="701020165009334820">Google Play ストアから Android のアプリやゲームをダウンロードできます。</translation>
 <translation id="701080569351381435">ソースを表示</translation>
 <translation id="7011797924920577670">興味 / 関心を推定</translation>
 <translation id="7012430956470647760">アプリの保護者による使用制限</translation>
@@ -9265,7 +9261,6 @@
 <translation id="7941179291434537290">テザリングの準備:</translation>
 <translation id="7942349550061667556">赤</translation>
 <translation id="7942846369224063421">プリロード済み UI レンダラ</translation>
-<translation id="7943349879009553083">ゲストモードでは使用できません</translation>
 <translation id="7943368935008348579">PDF をダウンロードする</translation>
 <translation id="7943837619101191061">位置情報を追加...</translation>
 <translation id="79446453817422139">このファイルは危険な可能性があります</translation>
@@ -9384,7 +9379,6 @@
 <translation id="8025291188699172126">更新について</translation>
 <translation id="8026471514777758216">デバイス間で連携</translation>
 <translation id="8026784703228858744">同期してブックマークやその他のデータを保存できます</translation>
-<translation id="8027581147000338959">新しいウインドウで開く</translation>
 <translation id="8028060951694135607">Microsoft キー回復</translation>
 <translation id="8028803902702117856"><ph name="FILE_NAME" /> をダウンロードしています。<ph name="SIZE" /> 完了</translation>
 <translation id="8028993641010258682">サイズ</translation>
@@ -9922,7 +9916,6 @@
 <translation id="8413956290606243087">ChromeVox を有効にしますか？ChromeVox は Chrome OS 用の組み込みのスクリーン リーダーです。</translation>
 <translation id="8414249071344507766">思い出を 2 日間非表示にします</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> に <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の情報を使用してログイン</translation>
-<translation id="8414685983518053656">メモ</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%（ケース）</translation>
 <translation id="8417065541337558100">カメラのプレビュー</translation>
 <translation id="8417548266957501132">保護者のパスワード</translation>
@@ -10714,7 +10707,6 @@
 <translation id="8993945059918628059">指紋認証センサーに指を置いてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="899403249577094719">Netscape 証明書基本 URL</translation>
 <translation id="899657321862108550">あなたの Chrome をいつでもどこでも</translation>
-<translation id="899671834467367922">このページのメモを見たり記録したりするには、別のユーザーとしてログインしてください。</translation>
 <translation id="8998078711690114234">この種類のファイルは危険な可能性があります。<ph name="ORIGIN" /> を信頼できる場合のみ、このファイルを保存してください</translation>
 <translation id="8999027165951679951">非アクティブなタブ: <ph name="MEMORY_SAVINGS" /> を解放しました</translation>
 <translation id="8999560016882908256">セクションの構文エラーです: <ph name="ERROR_LINE" /></translation>
