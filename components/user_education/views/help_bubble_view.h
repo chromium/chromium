@@ -67,6 +67,12 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBodyTextIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTitleTextIdForTesting);
 
+  // Minimum width of the bubble.
+  static constexpr int kMinWidthDip = 200;
+
+  // Maximum width of the bubble. Longer strings will cause wrapping.
+  static constexpr int kMaxWidthDip = 340;
+
   HelpBubbleView(const HelpBubbleDelegate* delegate,
                  const internal::HelpBubbleAnchorParams& anchor,
                  HelpBubbleParams params);
@@ -108,6 +114,13 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   void OnTimeout();
 
   const raw_ptr<const HelpBubbleDelegate> delegate_;
+
+  // In some (mostly South Asian) languages, a button could be wider than the
+  // normal max width *for the bubble*, after taking margins into account (see
+  // crbug.com/329216536). So if the minimum width of the bubble - even after
+  // buttons have gone to a vertical stack - is greater than the normal max
+  // width, allow the bubble to grow slightly.
+  int max_bubble_width_ = kMaxWidthDip;
 
   // If set, overrides the anchor bounds within the anchor view.
   std::optional<gfx::Rect> local_anchor_bounds_;

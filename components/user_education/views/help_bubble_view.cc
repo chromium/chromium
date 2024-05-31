@@ -76,11 +76,6 @@ namespace user_education {
 
 namespace {
 
-// Minimum width of the bubble.
-constexpr int kBubbleMinWidthDip = 200;
-// Maximum width of the bubble. Longer strings will cause wrapping.
-constexpr int kBubbleMaxWidthDip = 340;
-
 // Translates from HelpBubbleArrow to the Views equivalent.
 views::BubbleBorder::Arrow TranslateArrow(HelpBubbleArrow arrow) {
   switch (arrow) {
@@ -818,11 +813,17 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
   // cases - and only those cases - the bubble can switch to a vertical button
   // alignment.
   if (button_container->GetMinimumSize().width() >
-      kBubbleMaxWidthDip - contents_insets.width()) {
+      kMaxWidthDip - contents_insets.width()) {
     button_layout.SetOrientation(views::LayoutOrientation::kVertical)
         .SetCrossAxisAlignment(views::LayoutAlignment::kEnd)
         .SetDefault(views::kMarginsKey, gfx::Insets::VH(default_spacing, 0))
         .SetIgnoreDefaultMainAxisMargins(true);
+
+    // Calculate the closest the bubble can be to the normal max width without
+    // cutting off an especially long button caption.
+    max_bubble_width_ =
+        std::max(kMaxWidthDip, button_container->GetMinimumSize().width() +
+                                   contents_insets.width());
   }
 
   button_container->SetProperty(
@@ -956,15 +957,14 @@ gfx::Size HelpBubbleView::CalculatePreferredSize(
       View::CalculatePreferredSize(available_size);
 
   // Wrap if the width is larger than |kBubbleMaxWidthDip|.
-  if (layout_manager_preferred_size.width() > kBubbleMaxWidthDip) {
-    return gfx::Size(kBubbleMaxWidthDip,
+  if (layout_manager_preferred_size.width() > max_bubble_width_) {
+    return gfx::Size(max_bubble_width_,
                      GetLayoutManager()->GetPreferredHeightForWidth(
-                         this, kBubbleMaxWidthDip));
+                         this, max_bubble_width_));
   }
 
-  if (layout_manager_preferred_size.width() < kBubbleMinWidthDip) {
-    return gfx::Size(kBubbleMinWidthDip,
-                     layout_manager_preferred_size.height());
+  if (layout_manager_preferred_size.width() < kMinWidthDip) {
+    return gfx::Size(kMinWidthDip, layout_manager_preferred_size.height());
   }
 
   return layout_manager_preferred_size;
