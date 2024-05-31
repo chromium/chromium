@@ -34,6 +34,7 @@ class CreditCardOtpAuthenticator;
 class CreditCardRiskBasedAuthenticator;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
+struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
 
 namespace payments {
@@ -63,6 +64,10 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   void CreditCardUploadCompleted(bool card_saved,
                                  std::optional<OnConfirmationClosedCallback>
                                      on_confirmation_closed_callback) override;
+  void ShowVirtualCardEnrollDialog(
+      const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
+      base::OnceClosure accept_virtual_card_callback,
+      base::OnceClosure decline_virtual_card_callback) override;
   void ShowCardUnmaskOtpInputDialog(
       const CardUnmaskChallengeOption& challenge_option,
       base::WeakPtr<OtpUnmaskDelegate> delegate) override;

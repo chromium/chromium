@@ -338,7 +338,7 @@ void VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble() {
     }
   }
 
-  autofill_client_->ShowVirtualCardEnrollDialog(
+  autofill_client_->GetPaymentsAutofillClient()->ShowVirtualCardEnrollDialog(
       state_.virtual_card_enrollment_fields,
       base::BindOnce(
           &VirtualCardEnrollmentManager::Enroll, weak_ptr_factory_.GetWeakPtr(),

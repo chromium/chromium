@@ -107,11 +107,6 @@ profile_metrics::BrowserProfileType AutofillClient::GetProfileType() const {
 FastCheckoutClient* AutofillClient::GetFastCheckoutClient() {
   return nullptr;
 }
-void AutofillClient::ShowVirtualCardEnrollDialog(
-    const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
-    base::OnceClosure accept_virtual_card_callback,
-    base::OnceClosure decline_virtual_card_callback) {
-}
 
 payments::MandatoryReauthManager*
 AutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {

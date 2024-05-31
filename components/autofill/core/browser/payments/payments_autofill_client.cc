@@ -60,6 +60,11 @@ void PaymentsAutofillClient::CreditCardUploadCompleted(
 
 void PaymentsAutofillClient::HideSaveCardPrompt() {}
 
+void PaymentsAutofillClient::ShowVirtualCardEnrollDialog(
+    const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
+    base::OnceClosure accept_virtual_card_callback,
+    base::OnceClosure decline_virtual_card_callback) {}
+
 void PaymentsAutofillClient::VirtualCardEnrollCompleted(bool is_vcn_enrolled) {}
 
 void PaymentsAutofillClient::ConfirmSaveIbanLocally(

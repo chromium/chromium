@@ -20,10 +20,12 @@
 #import "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #import "components/autofill/core/browser/payments/otp_unmask_result.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
+#import "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
+#import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
@@ -84,6 +86,18 @@ void IOSChromePaymentsAutofillClient::CloseAutofillProgressDialog(
         show_confirmation_before_closing,
         std::move(no_interactive_authentication_callback));
   }
+}
+
+void IOSChromePaymentsAutofillClient::ShowVirtualCardEnrollDialog(
+    const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
+    base::OnceClosure accept_virtual_card_callback,
+    base::OnceClosure decline_virtual_card_callback) {
+  AutofillBottomSheetTabHelper* bottom_sheet_tab_helper =
+      AutofillBottomSheetTabHelper::FromWebState(web_state_);
+  bottom_sheet_tab_helper->ShowVirtualCardEnrollmentBottomSheet(
+      VirtualCardEnrollUiModel::Create(virtual_card_enrollment_fields),
+      VirtualCardEnrollmentCallbacks(std::move(accept_virtual_card_callback),
+                                     std::move(decline_virtual_card_callback)));
 }
 
 void IOSChromePaymentsAutofillClient::ShowCardUnmaskOtpInputDialog(

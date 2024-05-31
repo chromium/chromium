@@ -501,19 +501,6 @@ void ChromeAutofillClient::ShowAutofillSettings(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-void ChromeAutofillClient::ShowVirtualCardEnrollDialog(
-    const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
-    base::OnceClosure accept_virtual_card_callback,
-    base::OnceClosure decline_virtual_card_callback) {
-  VirtualCardEnrollBubbleControllerImpl::CreateForWebContents(web_contents());
-  VirtualCardEnrollBubbleControllerImpl* controller =
-      VirtualCardEnrollBubbleControllerImpl::FromWebContents(web_contents());
-  DCHECK(controller);
-  controller->ShowBubble(virtual_card_enrollment_fields,
-                         std::move(accept_virtual_card_callback),
-                         std::move(decline_virtual_card_callback));
-}
-
 payments::MandatoryReauthManager*
 ChromeAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
   if (!payments_mandatory_reauth_manager_) {

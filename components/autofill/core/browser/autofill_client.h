@@ -94,7 +94,6 @@ class PersonalDataManager;
 class StrikeDatabase;
 struct Suggestion;
 class TouchToFillDelegate;
-struct VirtualCardEnrollmentFields;
 struct VirtualCardManualFallbackBubbleOptions;
 enum class WebauthnDialogState;
 
@@ -477,12 +476,6 @@ class AutofillClient {
 
   // Causes the Autofill settings UI to be shown.
   virtual void ShowAutofillSettings(FillingProduct main_filling_product) = 0;
-
-  // Shows a dialog for the user to enroll in a virtual card.
-  virtual void ShowVirtualCardEnrollDialog(
-      const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
-      base::OnceClosure accept_virtual_card_callback,
-      base::OnceClosure decline_virtual_card_callback);
 
   // Gets or creates a payments autofill mandatory re-auth manager. This will be
   // used to handle payments mandatory re-auth related flows.

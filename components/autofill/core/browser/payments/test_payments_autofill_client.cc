@@ -75,6 +75,11 @@ bool TestPaymentsAutofillClient::CloseWebauthnDialog() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+TestPaymentsNetworkInterface*
+TestPaymentsAutofillClient::GetPaymentsNetworkInterface() {
+  return payments_network_interface_.get();
+}
+
 void TestPaymentsAutofillClient::ShowAutofillProgressDialog(
     AutofillProgressDialogType autofill_progress_dialog_type,
     base::OnceClosure cancel_callback) {
@@ -87,11 +92,6 @@ void TestPaymentsAutofillClient::CloseAutofillProgressDialog(
   if (no_user_perceived_authentication_callback) {
     std::move(no_user_perceived_authentication_callback).Run();
   }
-}
-
-TestPaymentsNetworkInterface*
-TestPaymentsAutofillClient::GetPaymentsNetworkInterface() {
-  return payments_network_interface_.get();
 }
 
 void TestPaymentsAutofillClient::ShowAutofillErrorDialog(

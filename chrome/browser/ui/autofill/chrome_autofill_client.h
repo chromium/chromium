@@ -53,7 +53,6 @@ class AutofillCvcSaveMessageDelegate;
 #endif  // BUILDFLAG(IS_ANDROID)
 class FormFieldData;
 struct OfferNotificationOptions;
-struct VirtualCardEnrollmentFields;
 struct VirtualCardManualFallbackBubbleOptions;
 
 namespace payments {
@@ -131,10 +130,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<webauthn::InternalAuthenticator>
   CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;
   void ShowAutofillSettings(FillingProduct main_filling_product) override;
-  void ShowVirtualCardEnrollDialog(
-      const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
-      base::OnceClosure accept_virtual_card_callback,
-      base::OnceClosure decline_virtual_card_callback) override;
   payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
       override;
   void ShowMandatoryReauthOptInConfirmation() override;

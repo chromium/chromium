@@ -36,6 +36,7 @@ class IbanAccessManager;
 class IbanManager;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
+struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
 #if BUILDFLAG(IS_ANDROID)
 class AutofillSnackbarControllerImpl;
@@ -93,6 +94,10 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
                                  std::optional<OnConfirmationClosedCallback>
                                      on_confirmation_closed_callback) override;
   void HideSaveCardPrompt() override;
+  void ShowVirtualCardEnrollDialog(
+      const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
+      base::OnceClosure accept_virtual_card_callback,
+      base::OnceClosure decline_virtual_card_callback) override;
   void VirtualCardEnrollCompleted(bool is_vcn_enrolled) override;
   void ConfirmSaveIbanLocally(const Iban& iban,
                               bool should_show_prompt,

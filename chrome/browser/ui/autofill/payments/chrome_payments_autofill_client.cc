@@ -219,6 +219,19 @@ void ChromePaymentsAutofillClient::HideSaveCardPrompt() {
 #endif
 }
 
+void ChromePaymentsAutofillClient::ShowVirtualCardEnrollDialog(
+    const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
+    base::OnceClosure accept_virtual_card_callback,
+    base::OnceClosure decline_virtual_card_callback) {
+  VirtualCardEnrollBubbleControllerImpl::CreateForWebContents(web_contents());
+  VirtualCardEnrollBubbleControllerImpl* controller =
+      VirtualCardEnrollBubbleControllerImpl::FromWebContents(web_contents());
+  DCHECK(controller);
+  controller->ShowBubble(virtual_card_enrollment_fields,
+                         std::move(accept_virtual_card_callback),
+                         std::move(decline_virtual_card_callback));
+}
+
 void ChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
     bool is_vcn_enrolled) {
   if (base::FeatureList::IsEnabled(

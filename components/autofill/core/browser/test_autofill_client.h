@@ -255,11 +255,6 @@ class TestAutofillClientTemplate : public T {
 
   void ShowAutofillSettings(FillingProduct main_filling_product) override {}
 
-  void ShowVirtualCardEnrollDialog(
-      const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
-      base::OnceClosure accept_virtual_card_callback,
-      base::OnceClosure decline_virtual_card_callback) override {}
-
   payments::MockMandatoryReauthManager*
   GetOrCreatePaymentsMandatoryReauthManager() override {
     if (!mock_payments_mandatory_reauth_manager_) {

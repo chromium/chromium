@@ -32,6 +32,7 @@ class IbanManager;
 class MigratableCreditCard;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
+struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
 enum class WebauthnDialogCallbackType;
 
@@ -160,6 +161,12 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Hides save card offer or confirmation prompt.
   virtual void HideSaveCardPrompt();
+
+  // Shows a dialog for the user to enroll in a virtual card.
+  virtual void ShowVirtualCardEnrollDialog(
+      const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
+      base::OnceClosure accept_virtual_card_callback,
+      base::OnceClosure decline_virtual_card_callback);
 
   // Called after virtual card enrollment is finished. Shows enrollment
   // result to users. `is_vcn_enrolled` indicates if the card was successfully
