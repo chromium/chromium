@@ -22,65 +22,28 @@
 
 namespace media {
 namespace {
-std::pair<std::vector<gpu::ExportedSharedImage>, gpu::SyncToken>
-CreateSharedImages(const VideoCaptureDevice::Client::Buffer& buffer,
-                   const mojom::VideoFrameInfo& frame_info) {
+std::pair<gpu::ExportedSharedImage, gpu::SyncToken> CreateSharedImage(
+    const VideoCaptureDevice::Client::Buffer& buffer,
+    const mojom::VideoFrameInfo& frame_info) {
   CHECK_EQ(frame_info.pixel_format, VideoPixelFormat::PIXEL_FORMAT_NV12);
 
   auto& gpu_channel_host = VideoCaptureGpuChannelHost::GetInstance();
 
   auto* sii = gpu_channel_host.SharedImageInterface();
-  auto* gmb_manager = gpu_channel_host.GetGpuMemoryBufferManager();
-
   CHECK(sii);
-  CHECK(gmb_manager);
 
-  gpu::GpuMemoryBufferSupport gmb_support;
+  // Create a single shared image to back a multiplanar video frame.
+  gpu::SharedImageInfo info(
+      viz::MultiPlaneFormat::kNV12, frame_info.coded_size,
+      frame_info.color_space,
+      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+          gpu::SHARED_IMAGE_USAGE_RASTER_READ,
+      "VideoCaptureEffectsProcessorMultiPlanarSharedImage");
+  scoped_refptr<gpu::ClientSharedImage> shared_image = sii->CreateSharedImage(
+      std::move(info), buffer.handle_provider->GetGpuMemoryBufferHandle());
+  CHECK(shared_image);
 
-  std::vector<gpu::ExportedSharedImage> result;
-
-  // `IsMultiPlaneFormatForHardwareVideoEnabled()` controls whether we can use a
-  // `viz::MultiPlaneFormat` format when creating a shared image. If yes, this
-  // means we can create a single shared image to back a multiplanar video
-  // frame. If no, this means we have to create one shared image per plane.
-  if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
-    gpu::SharedImageInfo info(
-        viz::MultiPlaneFormat::kNV12, frame_info.coded_size,
-        frame_info.color_space,
-        gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-            gpu::SHARED_IMAGE_USAGE_RASTER_READ,
-        "VideoCaptureEffectsProcessorMultiPlanarSharedImage");
-    scoped_refptr<gpu::ClientSharedImage> shared_image = sii->CreateSharedImage(
-        std::move(info), buffer.handle_provider->GetGpuMemoryBufferHandle());
-    CHECK(shared_image);
-
-    result.push_back(shared_image->Export());
-  } else {
-    constexpr size_t kNumPlanes = 2;
-    constexpr gfx::BufferPlane kPlanes[kNumPlanes] = {gfx::BufferPlane::Y,
-                                                      gfx::BufferPlane::UV};
-
-    auto gmb = gmb_support.CreateGpuMemoryBufferImplFromHandle(
-        buffer.handle_provider->GetGpuMemoryBufferHandle(),
-        frame_info.coded_size, gfx::BufferFormat::YUV_420_BIPLANAR,
-        gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE, base::DoNothing());
-    CHECK(gmb);
-
-    for (auto plane : kPlanes) {
-      gpu::SharedImageInfo info(
-          frame_info.color_space, GrSurfaceOrigin::kTopLeft_GrSurfaceOrigin,
-          SkAlphaType::kPremul_SkAlphaType,
-          gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-              gpu::SHARED_IMAGE_USAGE_RASTER_READ,
-          "VideoCaptureEffectsProcessorSinglePlanarSharedImage");
-      scoped_refptr<gpu::ClientSharedImage> shared_image =
-          sii->CreateSharedImage(gmb.get(), gmb_manager, plane,
-                                 std::move(info));
-      CHECK(shared_image);
-
-      result.push_back(shared_image->Export());
-    }
-  }
+  gpu::ExportedSharedImage result = shared_image->Export();
 
   auto sync_token = sii->GenVerifiedSyncToken();
   return std::make_pair(result, sync_token);
@@ -98,12 +61,13 @@ mojom::VideoBufferHandlePtr CreateBufferHandle(
       return mojom::VideoBufferHandle::NewUnsafeShmemRegion(
           buffer.handle_provider->DuplicateAsUnsafeRegion());
     case VideoCaptureBufferType::kGpuMemoryBuffer: {
-      auto [shared_images, sync_token] = CreateSharedImages(buffer, frame_info);
-      auto shared_images_set = mojom::SharedImageBufferHandleSet::New(
-          std::move(shared_images), sync_token, GL_TEXTURE_2D);
+      auto [shared_image, sync_token] = CreateSharedImage(buffer, frame_info);
+      auto shared_image_set = mojom::SharedImageBufferHandleSet::New(
+          std::vector<gpu::ExportedSharedImage>{shared_image}, sync_token,
+          GL_TEXTURE_2D);
 
       return mojom::VideoBufferHandle::NewSharedImageHandles(
-          std::move(shared_images_set));
+          std::move(shared_image_set));
     }
     case VideoCaptureBufferType::kMailboxHolder:
       NOTREACHED_NORETURN();
