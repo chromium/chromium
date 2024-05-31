@@ -1,17 +1,9 @@
 <style>
   :host {
-    --cr-toast-background: #323232;
-    --cr-toast-button-color: var(--google-blue-300);
-    --cr-toast-text-color: #fff;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :host {
-      --cr-toast-background: var(--google-grey-900)
-          linear-gradient(rgba(255, 255, 255, .06), rgba(255, 255, 255, .06));
-      --cr-toast-button-color: var(--google-blue-300);
-      --cr-toast-text-color: var(--google-grey-200);
-    }
+    --cr-toast-background: var(--cros-toast-background-color);
+    --cr-toast-button-color: var(--cros-toast-button-color);
+    --cr-toast-text-color: var(--cros-toast-text-color);
+    --iron-icon-fill-color: var(--cros-toast-icon-color);
   }
 
   :host {
@@ -36,12 +28,6 @@
   }
 
   :host-context([chrome-refresh-2023]):host {
-    --cr-toast-background: var(--color-toast-background,
-        var(--cr-fallback-color-inverse-surface));
-    --cr-toast-button-color: var(--color-toast-button,
-        var(--cr-fallback-color-inverse-primary));
-    --cr-toast-text-color: var(--color-toast-foreground,
-        var(--cr-fallback-color-inverse-on-surface));
     border-radius: 8px;
     line-height: 20px;
     padding: 0 16px;
