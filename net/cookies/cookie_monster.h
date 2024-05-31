@@ -771,6 +771,10 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // for typical use.
   bool seen_global_task_ = false;
 
+  // If a global cookie operation is seen during the loading, record when it
+  // happens, to help measure how much extra blocking it introduced.
+  std::optional<base::TimeTicks> time_start_block_load_all_;
+
   NetLogWithSource net_log_;
 
   scoped_refptr<PersistentCookieStore> store_;

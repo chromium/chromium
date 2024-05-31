@@ -1169,6 +1169,19 @@ chromium-metrics-reviews@google.com.
   <summary>The amount of time (ms) to initialize the cookies database.</summary>
 </histogram>
 
+<histogram name="Cookie.TimeOpsBlockedDueToGlobalOp" units="ms"
+    expires_after="2025-05-30">
+  <owner>morlovich@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    The amount of time (ms) cookie operations are blocked due to a global
+    operation happening on startup. 0 if this didn't happen.
+
+    Recorded after all cookies finished loading from disk for a given cookie
+    store.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.TimeToRecordPeriodicStats" units="ms"
     expires_after="2024-06-30">
   <owner>bingler@chromium.org</owner>

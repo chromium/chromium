@@ -3417,15 +3417,6 @@ void StoragePartitionImpl::InitNetworkContext() {
       network_context_client_receiver_.BindNewPipeAndPassRemote());
   network_context_owner_->network_context.set_disconnect_handler(base::BindOnce(
       &StoragePartitionImpl::InitNetworkContext, weak_factory_.GetWeakPtr()));
-
-  if (base::FeatureList::IsEnabled(features::kPreloadCookies)) {
-    mojo::Remote<::network::mojom::CookieManager> cookie_manager;
-    mojo::PendingRemote<::network::mojom::CookieManager> cookie_manager_remote;
-    network_context_owner_->network_context->GetCookieManager(
-        cookie_manager_remote.InitWithNewPipeAndPassReceiver());
-    cookie_manager.Bind(std::move(cookie_manager_remote));
-    cookie_manager->GetAllCookies(base::NullCallback());
-  }
 }
 
 network::mojom::URLLoaderFactoryParamsPtr
