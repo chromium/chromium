@@ -40,6 +40,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.payments.ShippingStrings;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.LineItemBreakdownSection;
@@ -1199,9 +1200,14 @@ public class PaymentRequestUI
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
         if (identityManager == null) return null;
-        CoreAccountInfo info = identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC);
-        if (info == null) return null;
-        return info.getEmail();
+        @ConsentLevel
+        int consentLevel =
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                        ? ConsentLevel.SIGNIN
+                        : ConsentLevel.SYNC;
+        CoreAccountInfo info = identityManager.getPrimaryAccountInfo(consentLevel);
+        return CoreAccountInfo.getEmailFrom(info);
     }
 
     private Callback<SectionInformation> createUpdateSectionCallback(@DataType final int type) {
