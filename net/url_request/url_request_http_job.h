@@ -174,6 +174,8 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   int64_t GetTotalSentBytes() const override;
   void DoneReading() override;
   void DoneReadingRedirectResponse() override;
+  void DoneReadingRetryResponse() override;
+  bool NeedsRetryWithStorageAccess() override;
 
   IPEndPoint GetResponseRemoteEndpoint() const override;
   void NotifyURLRequestDestroyed() override;

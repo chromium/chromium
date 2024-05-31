@@ -35,6 +35,8 @@ int NetworkDelegateImpl::OnHeadersReceived(
 void NetworkDelegateImpl::OnBeforeRedirect(URLRequest* request,
                                            const GURL& new_location) {}
 
+void NetworkDelegateImpl::OnBeforeRetry(URLRequest* request) {}
+
 void NetworkDelegateImpl::OnResponseStarted(URLRequest* request,
                                             int net_error) {}
 

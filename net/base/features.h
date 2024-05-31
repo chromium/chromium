@@ -508,6 +508,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kStoreConnectionSubtype);
 // partitioned, allowing greater connection re-use.
 NET_EXPORT BASE_DECLARE_FEATURE(kPartitionProxyChains);
 
+// Enables the `Activate-Storage-Access: retry` semantics.
+NET_EXPORT BASE_DECLARE_FEATURE(kStorageAccessHeaderRetry);
+
 // Enables more checks when creating a SpdySession for proxy. These checks are
 // already applied to non-proxy SpdySession creations.
 // TODO(crbug.com/343519247): Remove this once we are sure that these checks are

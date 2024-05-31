@@ -1093,6 +1093,10 @@ bool HttpResponseHeaders::IsRedirect(std::string* location) const {
   return true;
 }
 
+bool HttpResponseHeaders::HasStorageAccessRetryHeader() const {
+  return HasHeaderValue("Activate-Storage-Access", "retry");
+}
+
 // static
 bool HttpResponseHeaders::IsRedirectResponseCode(int response_code) {
   // Users probably want to see 300 (multiple choice) pages, so we don't count

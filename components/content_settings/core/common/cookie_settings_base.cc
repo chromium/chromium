@@ -760,7 +760,9 @@ bool CookieSettingsBase::IsAllowedByStorageAccessGrant(
     const GURL& url,
     const GURL& first_party_url,
     net::CookieSettingOverrides overrides) const {
-  if (!overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible)) {
+  if (!overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible) &&
+      !overrides.Has(
+          net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader)) {
     return false;
   }
   // The Storage Access API allows access in A(B(A)) case (or similar). Do the
@@ -776,11 +778,14 @@ bool CookieSettingsBase::IsAllowedByStorageAccessGrant(
                         /*info=*/nullptr) == CONTENT_SETTING_ALLOW) {
     return true;
   }
-  // Note: no need to check permissions policy here. If the appropriate
-  // permissions policy was not present, then no matching
-  // FEDERATED_IDENTITY_SHARING setting would be sent to this instance from the
-  // browser process.
-  return GetContentSetting(url, first_party_url,
+  // Note: If the `kStorageAccessGrantEligible` override is present, then the
+  // browser process must have already verified the presence of the permissions
+  // policy for this access. If the appropriate permissions policy was not
+  // present, then no matching FEDERATED_IDENTITY_SHARING setting would be sent
+  // to this instance from the browser process.
+  return overrides.Has(
+             net::CookieSettingOverride::kStorageAccessGrantEligible) &&
+         GetContentSetting(url, first_party_url,
                            ContentSettingsType::FEDERATED_IDENTITY_SHARING,
                            /*info=*/nullptr) == CONTENT_SETTING_ALLOW;
 }

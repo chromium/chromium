@@ -45,11 +45,12 @@ const int kStageBeforeURLRequest = 1 << 0;
 const int kStageBeforeStartTransaction = 1 << 1;
 const int kStageHeadersReceived = 1 << 2;
 const int kStageBeforeRedirect = 1 << 3;
-const int kStageResponseStarted = 1 << 4;
-const int kStageCompletedSuccess = 1 << 5;
-const int kStageCompletedError = 1 << 6;
-const int kStageURLRequestDestroyed = 1 << 7;
-const int kStageDestruction = 1 << 8;
+const int kStageBeforeRetry = 1 << 4;
+const int kStageResponseStarted = 1 << 5;
+const int kStageCompletedSuccess = 1 << 6;
+const int kStageCompletedError = 1 << 7;
+const int kStageURLRequestDestroyed = 1 << 8;
+const int kStageDestruction = 1 << 9;
 
 const char kTestNetworkDelegateRequestIdKey[] =
     "TestNetworkDelegateRequestIdKey";
@@ -366,10 +367,9 @@ int TestNetworkDelegate::OnHeadersReceived(
   InitRequestStatesIfNew(req_id);
   EXPECT_TRUE(next_states_[req_id] & kStageHeadersReceived) <<
       event_order_[req_id];
-  next_states_[req_id] =
-      kStageBeforeRedirect |
-      kStageResponseStarted |
-      kStageCompletedError;  // e.g. proxy resolution problem
+  next_states_[req_id] = kStageBeforeRedirect | kStageBeforeRetry |
+                         kStageResponseStarted |
+                         kStageCompletedError;  // e.g. proxy resolution problem
 
   // Basic authentication sends a second request from the URLRequestHttpJob
   // layer before the URLRequest reports that a response has started.
@@ -421,6 +421,14 @@ void TestNetworkDelegate::OnBeforeRedirect(URLRequest* request,
   // A redirect can lead to a file or a data URL. In this case, we do not send
   // headers.
   next_states_[req_id] |= kStageResponseStarted;
+}
+
+void TestNetworkDelegate::OnBeforeRetry(URLRequest* request) {
+  int req_id = GetRequestId(request);
+  InitRequestStatesIfNew(req_id);
+  event_order_[req_id] += "OnBeforeRetry\n";
+  EXPECT_TRUE(next_states_[req_id] & kStageBeforeRetry) << event_order_[req_id];
+  next_states_[req_id] = kStageBeforeURLRequest;
 }
 
 void TestNetworkDelegate::OnResponseStarted(URLRequest* request,

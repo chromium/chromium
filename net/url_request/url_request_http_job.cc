@@ -36,6 +36,7 @@
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/load_flags.h"
@@ -55,6 +56,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
@@ -376,7 +378,7 @@ void URLRequestHttpJob::Start() {
   // url and initiator are same-site, to prevent cross-site sibling iframes
   // benefit from each other's storage access API grants.
   request()->cookie_setting_overrides().PutOrRemove(
-      net::CookieSettingOverride::kStorageAccessGrantEligible,
+      CookieSettingOverride::kStorageAccessGrantEligible,
       request()->has_storage_access() && request_initiator_site().has_value() &&
           IsSameSiteIgnoringWebSocketProtocol(request_initiator_site().value(),
                                               request()->url()));
@@ -1467,6 +1469,25 @@ bool URLRequestHttpJob::NeedsAuth() {
   return false;
 }
 
+bool URLRequestHttpJob::NeedsRetryWithStorageAccess() {
+  if (!base::FeatureList::IsEnabled(features::kStorageAccessHeaderRetry)) {
+    return false;
+  }
+  if (!ShouldAddCookieHeader() ||
+      request_->cookie_setting_overrides().Has(
+          CookieSettingOverride::kStorageAccessGrantEligible) ||
+      request_->cookie_setting_overrides().Has(
+          CookieSettingOverride::kStorageAccessGrantEligibleViaHeader)) {
+    // We're not allowed to read cookies for this request, or this request
+    // already had all the relevant settings overrides, so retrying it wouldn't
+    // change anything.
+    return false;
+  }
+
+  HttpResponseHeaders* headers = request_->response_headers();
+  return headers && headers->HasStorageAccessRetryHeader();
+}
+
 std::unique_ptr<AuthChallengeInfo> URLRequestHttpJob::GetAuthChallengeInfo() {
   DCHECK(transaction_.get());
   DCHECK(response_info_);
@@ -1650,6 +1671,13 @@ void URLRequestHttpJob::DoneReadingRedirectResponse() {
       transaction_->StopCaching();
     }
   }
+  DoneWithRequest(FINISHED);
+}
+
+void URLRequestHttpJob::DoneReadingRetryResponse() {
+  // We don't bother calling `transaction_->DoneReading()` here, since that
+  // marks the cache entry as valid but we know that we're about to retry the
+  // request and bypass the cache regardless.
   DoneWithRequest(FINISHED);
 }
 

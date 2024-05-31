@@ -992,6 +992,10 @@ EVENT_TYPE(URL_REQUEST_START_JOB)
 //   }
 EVENT_TYPE(URL_REQUEST_REDIRECTED)
 
+// This event is sent once a net::URLRequest receives a (valid)
+// `Activate-Storage-Access: retry` response header.
+EVENT_TYPE(URL_REQUEST_RETRY_WITH_STORAGE_ACCESS)
+
 // Measures the time between when a net::URLRequest calls a delegate that can
 // block it, and when the delegate allows the request to resume. Each delegate
 // type has a corresponding event type.

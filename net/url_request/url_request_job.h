@@ -261,6 +261,10 @@ class NET_EXPORT URLRequestJob {
   // destruction. Does not close H2/H3 sessions.
   virtual void CloseConnectionOnDestruction();
 
+  // Returns true if the request should be retried after activating Storage
+  // Access.
+  virtual bool NeedsRetryWithStorageAccess();
+
   // Given |policy|, |original_referrer|, and |destination|, returns the
   // referrer URL mandated by |request|'s referrer policy.
   //
@@ -335,6 +339,10 @@ class NET_EXPORT URLRequestJob {
   // This is needed so that redirect headers can be cached even though their
   // bodies are never read.
   virtual void DoneReadingRedirectResponse();
+
+  // Called to tell the job that the body won't be read (and headers won't be
+  // cached) because we're going to retry the request.
+  virtual void DoneReadingRetryResponse();
 
   // Called to set up a SourceStream chain for this request.
   // Subclasses should return the appropriate last SourceStream of the chain,

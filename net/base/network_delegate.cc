@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/threading/thread_checker.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
@@ -77,6 +78,12 @@ void NetworkDelegate::NotifyBeforeRedirect(URLRequest* request,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(request);
   OnBeforeRedirect(request, new_location);
+}
+
+void NetworkDelegate::NotifyBeforeRetry(URLRequest* request) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  CHECK(request);
+  OnBeforeRetry(request);
 }
 
 void NetworkDelegate::NotifyCompleted(URLRequest* request,

@@ -304,6 +304,10 @@ class NET_EXPORT HttpResponseHeaders
   // location of the redirect is optionally returned if location is non-null.
   bool IsRedirect(std::string* location) const;
 
+  // Returns true if this response included the `Activate-Storage-Access: retry`
+  // header.
+  bool HasStorageAccessRetryHeader() const;
+
   // Returns true if the HTTP response code passed in corresponds to a
   // redirect.
   static bool IsRedirectResponseCode(int response_code);

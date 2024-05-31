@@ -97,8 +97,10 @@ std::unique_ptr<net::CanonicalCookie> MakeCanonicalSameSiteNoneCookie(
 enum GrantSource {
   // Not eligible for additional grants.
   kNoneGranted,
-  // Eligible for StorageAccess grants.
-  kStorageAccessGrantsEligible,
+  // Eligible for StorageAccess grants via API usage.
+  kStorageAccessGrantsEligibleViaAPI,
+  // Can use Storage Access permission grants via an HTTP response header.
+  kStorageAccessGrantsEligibleViaHeader,
   // Eligible for TopLevelStorageAccess grants.
   kTopLevelStorageAccessGrantEligible,
 
@@ -197,9 +199,14 @@ class CookieSettingsTestP : public CookieSettingsTestBase,
            IsTrackingProtectionEnabledFor3pcd();
   }
 
-  bool IsStorageAccessGrantEligible() const {
+  bool IsStorageAccessGrantEligibleViaAPI() const {
     return std::get<TestVariables::kGrantSource>(GetParam()) ==
-           GrantSource::kStorageAccessGrantsEligible;
+           GrantSource::kStorageAccessGrantsEligibleViaAPI;
+  }
+
+  bool IsStorageAccessGrantEligibleViaHeader() const {
+    return std::get<TestVariables::kGrantSource>(GetParam()) ==
+           GrantSource::kStorageAccessGrantsEligibleViaHeader;
   }
 
   bool IsTopLevelStorageAccessGrantEligible() const {
@@ -209,8 +216,12 @@ class CookieSettingsTestP : public CookieSettingsTestBase,
 
   net::CookieSettingOverrides GetCookieSettingOverrides() const {
     net::CookieSettingOverrides overrides;
-    if (IsStorageAccessGrantEligible()) {
+    if (IsStorageAccessGrantEligibleViaAPI()) {
       overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
+    }
+    if (IsStorageAccessGrantEligibleViaHeader()) {
+      overrides.Put(
+          net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader);
     }
     if (IsTopLevelStorageAccessGrantEligible()) {
       overrides.Put(
@@ -225,7 +236,19 @@ class CookieSettingsTestP : public CookieSettingsTestBase,
   ContentSetting SettingWithSaaOverride(ContentSetting allow) const {
     DCHECK(allow == CONTENT_SETTING_ALLOW ||
            allow == CONTENT_SETTING_SESSION_ONLY);
-    return IsStorageAccessGrantEligible() ? allow : CONTENT_SETTING_BLOCK;
+    return IsStorageAccessGrantEligibleViaAPI() ||
+                   IsStorageAccessGrantEligibleViaHeader()
+               ? allow
+               : CONTENT_SETTING_BLOCK;
+  }
+
+  // Assumes that cookie access would be blocked if not for some usage of the
+  // Storage Access API. Note that this is not the same thing as having a SAA
+  // permission grant.
+  ContentSetting SettingWithSaaViaAPI(ContentSetting allow) const {
+    DCHECK(allow == CONTENT_SETTING_ALLOW ||
+           allow == CONTENT_SETTING_SESSION_ONLY);
+    return IsStorageAccessGrantEligibleViaAPI() ? allow : CONTENT_SETTING_BLOCK;
   }
 
   // A version of above that considers Top-Level Storage Access API
@@ -241,7 +264,20 @@ class CookieSettingsTestP : public CookieSettingsTestBase,
   // Access API grant.
   net::cookie_util::StorageAccessResult
   BlockedStorageAccessResultWithSaaOverride() const {
-    if (IsStorageAccessGrantEligible()) {
+    if (IsStorageAccessGrantEligibleViaAPI() ||
+        IsStorageAccessGrantEligibleViaHeader()) {
+      return net::cookie_util::StorageAccessResult::
+          ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
+    }
+    return net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
+  }
+
+  // The cookie access result would be blocked if not for some Storage Access
+  // API usage. Note that this is not the same thing as presence of a permission
+  // grant.
+  net::cookie_util::StorageAccessResult
+  BlockedStorageAccessResultWithSaaViaAPI() const {
+    if (IsStorageAccessGrantEligibleViaAPI()) {
       return net::cookie_util::StorageAccessResult::
           ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
     }
@@ -481,13 +517,20 @@ TEST_P(CookieSettingsTestP, GetCookieSettingSAAUnblocks) {
                                       GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
 
-  histogram_tester.ExpectBucketCount(kAllowedRequestsHistogram,
-                                     net::cookie_util::StorageAccessResult::
-                                         ACCESS_ALLOWED_STORAGE_ACCESS_GRANT,
-                                     IsStorageAccessGrantEligible() ? 1 : 0);
+  histogram_tester.ExpectBucketCount(
+      kAllowedRequestsHistogram,
+      net::cookie_util::StorageAccessResult::
+          ACCESS_ALLOWED_STORAGE_ACCESS_GRANT,
+      IsStorageAccessGrantEligibleViaAPI() ||
+              IsStorageAccessGrantEligibleViaHeader()
+          ? 1
+          : 0);
   histogram_tester.ExpectBucketCount(
       kAllowedRequestsHistogram, BlockedStorageAccessResultWithSaaOverride(),
-      IsStorageAccessGrantEligible() ? 1 : 2);
+      IsStorageAccessGrantEligibleViaAPI() ||
+              IsStorageAccessGrantEligibleViaHeader()
+          ? 1
+          : 2);
 
   // Invalid pairs where a |third_url| is used.
   EXPECT_EQ(settings.GetCookieSetting(url, third_url,
@@ -551,23 +594,23 @@ TEST_P(CookieSettingsTestP, GetCookieSettingSAAUnblocksViaFedCM) {
   // should still be blocked.
   EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
                                       GetCookieSettingOverrides(), nullptr),
-            SettingWithSaaOverride(CONTENT_SETTING_ALLOW));
+            SettingWithSaaViaAPI(CONTENT_SETTING_ALLOW));
   histogram_tester.ExpectUniqueSample(
-      kAllowedRequestsHistogram, BlockedStorageAccessResultWithSaaOverride(),
-      1);
+      kAllowedRequestsHistogram, BlockedStorageAccessResultWithSaaViaAPI(), 1);
 
   // Grants are not bidirectional.
   EXPECT_EQ(settings.GetCookieSetting(top_level_url, url,
                                       GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
 
-  histogram_tester.ExpectBucketCount(kAllowedRequestsHistogram,
-                                     net::cookie_util::StorageAccessResult::
-                                         ACCESS_ALLOWED_STORAGE_ACCESS_GRANT,
-                                     IsStorageAccessGrantEligible() ? 1 : 0);
   histogram_tester.ExpectBucketCount(
-      kAllowedRequestsHistogram, BlockedStorageAccessResultWithSaaOverride(),
-      IsStorageAccessGrantEligible() ? 1 : 2);
+      kAllowedRequestsHistogram,
+      net::cookie_util::StorageAccessResult::
+          ACCESS_ALLOWED_STORAGE_ACCESS_GRANT,
+      IsStorageAccessGrantEligibleViaAPI() ? 1 : 0);
+  histogram_tester.ExpectBucketCount(
+      kAllowedRequestsHistogram, BlockedStorageAccessResultWithSaaViaAPI(),
+      IsStorageAccessGrantEligibleViaAPI() ? 1 : 2);
 
   // Unrelated contexts do not get access.
   EXPECT_EQ(settings.GetCookieSetting(url, third_url,
@@ -973,7 +1016,8 @@ TEST_P(CookieSettingsTestP, IsPrivacyModeEnabled) {
   // top_frame_origin matches.
   const net::NetworkDelegate::PrivacySetting
       first_party_partitioned_or_all_allowed =
-          IsStorageAccessGrantEligible()
+          IsStorageAccessGrantEligibleViaAPI() ||
+                  IsStorageAccessGrantEligibleViaHeader()
               ? net::NetworkDelegate::PrivacySetting::kStateAllowed
               : net::NetworkDelegate::PrivacySetting::
                     kPartitionedStateAllowedOnly;
@@ -1062,15 +1106,18 @@ TEST_P(CookieSettingsTestP, IsCookieAccessible_SameSiteNoneCookie) {
                 *cookie, GURL(kURL), net::SiteForCookies(),
                 url::Origin::Create(GURL(kURL)), net::FirstPartySetMetadata(),
                 GetCookieSettingOverrides(), &status),
-            IsStorageAccessGrantEligible());
+            IsStorageAccessGrantEligibleViaAPI() ||
+                IsStorageAccessGrantEligibleViaHeader());
   EXPECT_THAT(status.HasExclusionReason(
                   IsTPCDEnabled()
                       ? net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT
                       : net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES),
-              Not(IsStorageAccessGrantEligible()));
+              Not(IsStorageAccessGrantEligibleViaAPI() ||
+                  IsStorageAccessGrantEligibleViaHeader()));
   EXPECT_THAT(status.exemption_reason() ==
                   net::CookieInclusionStatus::ExemptionReason::kStorageAccess,
-              IsStorageAccessGrantEligible());
+              IsStorageAccessGrantEligibleViaAPI() ||
+                  IsStorageAccessGrantEligibleViaHeader());
 
   // No override can overrule a site-specific setting.
   settings.set_content_settings(
@@ -1145,7 +1192,8 @@ TEST_P(CookieSettingsTestP, IsCookieAccessible_SameSiteLaxCookie) {
                 *cookie, GURL(kURL), net::SiteForCookies(),
                 url::Origin::Create(GURL(kURL)), net::FirstPartySetMetadata(),
                 GetCookieSettingOverrides(), &status),
-            IsStorageAccessGrantEligible());
+            IsStorageAccessGrantEligibleViaAPI() ||
+                IsStorageAccessGrantEligibleViaHeader());
   // This cookie is not SameSite=None cookie, thus exemption reason is
   // irrelevant.
   EXPECT_EQ(status.exemption_reason(),
@@ -1283,7 +1331,8 @@ TEST_P(CookieSettingsTestP, IsCookieAccessible_NoneExemptionReason) {
               net::CookieInclusionStatus::ExemptionReason::kNone);
 
   // Sets exemptions
-  if (IsStorageAccessGrantEligible()) {
+  if (IsStorageAccessGrantEligibleViaAPI() ||
+      IsStorageAccessGrantEligibleViaHeader()) {
     // Sets the storage access granted by Storage Access API.
     settings.set_content_settings(
         ContentSettingsType::STORAGE_ACCESS,
@@ -1692,8 +1741,9 @@ TEST_P(CookieSettingsTestP,
            net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY))}};
   url::Origin origin = url::Origin::Create(GURL(kDomainURL));
 
-  const bool expected_any_allowed =
-      IsStorageAccessGrantEligible() || IsTPCDEnabled();
+  const bool expected_any_allowed = IsStorageAccessGrantEligibleViaAPI() ||
+                                    IsStorageAccessGrantEligibleViaHeader() ||
+                                    IsTPCDEnabled();
 
   // Note that the site of `url` matches the site of `top_frame_origin`. This is
   // a third-party context for the purposes of third-party-cookie-blocking, even
@@ -1707,7 +1757,8 @@ TEST_P(CookieSettingsTestP,
                 excluded_cookies),
             expected_any_allowed);
 
-  if (IsStorageAccessGrantEligible()) {
+  if (IsStorageAccessGrantEligibleViaAPI() ||
+      IsStorageAccessGrantEligibleViaHeader()) {
     EXPECT_THAT(
         maybe_included_cookies,
         ElementsAre(

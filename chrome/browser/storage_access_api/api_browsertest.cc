@@ -55,7 +55,9 @@
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_request_headers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -93,6 +95,7 @@ constexpr char kGrantIsImplicitHistogram[] =
 
 // Path for URL of custom response
 const char* kEchoCookiesWithCorsPath = "/echocookieswithcors";
+constexpr char kRetryPath[] = "/retry-with-storage-access";
 
 constexpr char kQueryStorageAccessPermission[] =
     "navigator.permissions.query({name: 'storage-access'}).then("
@@ -127,6 +130,16 @@ constexpr std::tuple<const char*, const char*, const char*>
                                  // `echoheader?cookie`)
         );
 
+void SetCORSHeaders(const net::test_server::HttpRequest& request,
+                    net::test_server::BasicHttpResponse& response) {
+  if (auto it = request.headers.find(net::HttpRequestHeaders::kOrigin);
+      it != request.headers.end()) {
+    response.AddCustomHeader("Access-Control-Allow-Origin", it->second);
+    response.AddCustomHeader("Vary", "origin");
+    response.AddCustomHeader("Access-Control-Allow-Credentials", "true");
+  }
+}
+
 // Responds to a request to /echocookieswithcors with the cookies that were sent
 // with the request. We can't use the default handler /echoheader?Cookie here,
 // because it doesn't send the appropriate Access-Control-Allow-Origin and
@@ -147,12 +160,30 @@ HandleEchoCookiesWithCorsRequest(const net::test_server::HttpRequest& request) {
 
   http_response->set_code(net::HTTP_OK);
   http_response->set_content_type("text/plain");
-  // Set the cors enabled headers.
-  if (auto it = request.headers.find(net::HttpRequestHeaders::kOrigin);
+  SetCORSHeaders(request, *http_response);
+  http_response->set_content(content);
+
+  return http_response;
+}
+
+std::unique_ptr<net::test_server::HttpResponse> HandleRetryRequest(
+    int& fetch_count,
+    const net::test_server::HttpRequest& request) {
+  if (request.relative_url != kRetryPath) {
+    return nullptr;
+  }
+
+  fetch_count++;
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_OK);
+  http_response->set_content_type("text/plain");
+  http_response->AddCustomHeader("Activate-Storage-Access", "retry");
+  SetCORSHeaders(request, *http_response);
+
+  std::string content = "None";
+  if (auto it = request.headers.find(net::HttpRequestHeaders::kCookie);
       it != request.headers.end()) {
-    http_response->AddCustomHeader("Access-Control-Allow-Origin", it->second);
-    http_response->AddCustomHeader("Vary", "origin");
-    http_response->AddCustomHeader("Access-Control-Allow-Credentials", "true");
+    content = it->second;
   }
   http_response->set_content(content);
 
@@ -226,6 +257,10 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
     https_server_.RegisterRequestHandler(
         base::BindRepeating(&HandleEchoCookiesWithCorsRequest));
+    https_server_.RegisterRequestHandler(base::BindLambdaForTesting(
+        [&](const net::test_server::HttpRequest& request) {
+          return HandleRetryRequest(retry_path_fetch_count_, request);
+        }));
     ASSERT_TRUE(https_server_.Start());
 
     // All the sites used during these tests should have a cookie.
@@ -388,11 +423,12 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
     return url;
   }
 
-  std::string CookiesFromFetch(content::RenderFrameHost* render_frame_host,
-                               const std::string& subresource_host) {
+  std::string CookiesFromFetch(
+      content::RenderFrameHost* render_frame_host,
+      const std::string& subresource_host,
+      const std::string_view path = kEchoCookiesWithCorsPath) {
     return storage::test::FetchWithCredentials(
-        render_frame_host,
-        https_server_.GetURL(subresource_host, kEchoCookiesWithCorsPath),
+        render_frame_host, https_server_.GetURL(subresource_host, path),
         /*cors_enabled=*/true);
   }
 
@@ -487,6 +523,8 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
     return content_settings::PageSpecificContentSettings::GetForFrame(
         GetPrimaryMainFrame());
   }
+
+  int retry_path_fetch_count_ = 0;
 
  private:
   net::test_server::EmbeddedTestServer https_server_;
@@ -2727,6 +2765,155 @@ IN_PROC_BROWSER_TEST_F(
                   /*iframe_id=*/"child-0");
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+}
+
+class StorageAccessHeadersDisabledBrowserTest
+    : public StorageAccessAPIBrowserTest {
+ public:
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    return {
+        {net::features::kStorageAccessHeaderRetry},
+    };
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersDisabledBrowserTest, RetryHeader) {
+  SetBlockThirdPartyCookies(true);
+
+  // Pre-seed with a <A, B> permission grant.
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  // Now attempt to use that permission grant for a B subresource fetched by an
+  // A document, without invoking the Storage Access API.
+  NavigateToPage(kHostA, "/empty.html");
+  EXPECT_EQ(CookiesFromFetch(GetPrimaryMainFrame(), kHostB, kRetryPath),
+            "None");
+  EXPECT_EQ(retry_path_fetch_count_, 1);
+}
+
+class StorageAccessHeadersBrowserTest : public StorageAccessAPIBrowserTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {
+        {net::features::kStorageAccessHeaderRetry, {}},
+    };
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest, RetryHeader) {
+  SetBlockThirdPartyCookies(true);
+
+  // Pre-seed with a <A, B> permission grant.
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  // Now attempt to use that permission grant for a B subresource fetched by an
+  // A document, without invoking the Storage Access API.
+  NavigateToPage(kHostA, "/empty.html");
+  EXPECT_EQ(CookiesFromFetch(GetPrimaryMainFrame(), kHostB, kRetryPath),
+            "cross-site=b.test");
+  EXPECT_EQ(retry_path_fetch_count_, 2);
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
+                       RetryHeader_NoopWithoutGrant) {
+  SetBlockThirdPartyCookies(true);
+
+  // Note: we do *not* pre-seed with a <A, B> permission grant.
+
+  // Now attempt to use the `retry` header for a B subresource fetched by an A
+  // document, without invoking the Storage Access API.
+  NavigateToPage(kHostA, "/empty.html");
+  EXPECT_EQ(CookiesFromFetch(GetPrimaryMainFrame(), kHostB, kRetryPath),
+            "None");
+  // TODO(https://crbug.com/332335089): this should really not bother to do the
+  // retry at all, since the client should know ahead of time that the
+  // additional override won't make a difference. So this count should be 1.
+  EXPECT_EQ(retry_path_fetch_count_, 2);
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
+                       RetryHeader_ABAContext) {
+  SetBlockThirdPartyCookies(true);
+
+  // Attempt to get Storage Access for an A subresource fetched by a B document
+  // (embedded under an A top-level document), without invoking the Storage
+  // Access API. There's no privacy boundary here (since the top-level site and
+  // the subresource fetch are for the same site); there's just a security
+  // boundary, which the header opt-in disables.
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(GetURL(kHostB, "/empty.html"));
+  EXPECT_EQ(CookiesFromFetch(GetFrame(), kHostA, kRetryPath),
+            "cross-site=a.test");
+  EXPECT_EQ(retry_path_fetch_count_, 2);
+}
+
+class StorageAccessHeadersWithThirdPartyCookiesBrowserTest
+    : public StorageAccessHeadersBrowserTest {
+ public:
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    std::vector<base::test::FeatureRef> features =
+        StorageAccessHeadersBrowserTest::GetDisabledFeatures();
+    features.push_back(content_settings::features::kTrackingProtection3pcd);
+    return features;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersWithThirdPartyCookiesBrowserTest,
+                       RetryHeader_NoopWhenCookiesAllowed) {
+  SetBlockThirdPartyCookies(false);
+
+  // Note: we do *not* pre-seed with a <A, B> permission grant.
+
+  // Now attempt to use the `retry` header for a B subresource fetched by an A
+  // document, without invoking the Storage Access API.
+  NavigateToPage(kHostA, "/empty.html");
+  EXPECT_EQ(CookiesFromFetch(GetPrimaryMainFrame(), kHostB, kRetryPath),
+            "cross-site=b.test");
+  // TODO(https://crbug.com/332335089): this should really not bother to do the
+  // retry at all, since the client should know ahead of time that the
+  // additional override won't make a difference. So this count should be 1.
+  EXPECT_EQ(retry_path_fetch_count_, 2);
+}
+
+class StorageAccessHeadersWithFedCMBrowserTest
+    : public StorageAccessAPIAutograntsWithFedCMBrowserTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    std::vector<base::test::FeatureRefAndParams> features =
+        StorageAccessAPIAutograntsWithFedCMBrowserTest::GetEnabledFeatures();
+    features.push_back({net::features::kStorageAccessHeaderRetry, {}});
+    return features;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersWithFedCMBrowserTest, RetryHeader) {
+  SetBlockThirdPartyCookies(true);
+  GrantFedCMPermission();
+
+  NavigateToPageWithPermissionsPolicyIframes({kHostA, kHostB});
+  NavigateFrameTo(EchoCookiesURL(kHostB), browser(), /*iframe_id=*/"child-0");
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(
+      GetFrame(), /*omit_user_gesture=*/true));
+
+  // Attempt to use the FedCM permission grant for a B subresource fetched by an
+  // A document, without invoking the Storage Access API. Since there was no
+  // `identity-credentials-get` permissions policy associated with this
+  // particular opt-in, the FedCM grant should not be usable via the header.
+  NavigateToPage(kHostA, "/empty.html");
+  EXPECT_EQ(CookiesFromFetch(GetPrimaryMainFrame(), kHostB, kRetryPath),
+            "None");
+  // TODO(https://crbug.com/332335089): this should really not bother to do the
+  // retry at all, since the client should know ahead of time that the
+  // additional override won't make a difference. So this count should be 1.
+  EXPECT_EQ(retry_path_fetch_count_, 2);
 }
 
 // TODO(): Add test cases of 3PC enabled by other mechanisms.

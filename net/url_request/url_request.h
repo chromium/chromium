@@ -571,7 +571,13 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   const HttpResponseInfo& response_info() const { return response_info_; }
 
   // Access the LOAD_* flags modifying this request (see load_flags.h).
-  int load_flags() const { return load_flags_; }
+  int load_flags() const {
+    if (cookie_setting_overrides().Has(
+            CookieSettingOverride::kStorageAccessGrantEligibleViaHeader)) {
+      return partial_load_flags_ | LOAD_BYPASS_CACHE;
+    }
+    return partial_load_flags_;
+  }
 
   bool is_created_from_network_anonymization_key() const {
     return is_created_from_network_anonymization_key_;
@@ -866,6 +872,10 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
                 const std::optional<std::vector<std::string>>& removed_headers,
                 const std::optional<net::HttpRequestHeaders>& modified_headers);
 
+  // Allow the URLRequestJob to retry this request, after having activated
+  // Storage Access (if possible).
+  void RetryWithStorageAccess();
+
   // Called by URLRequestJob to allow interception when a redirect occurs.
   void NotifyReceivedRedirect(const RedirectInfo& redirect_info,
                               bool* defer_redirect);
@@ -986,7 +996,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   HttpRequestHeaders extra_request_headers_;
   // Flags indicating the request type for the load. Expected values are LOAD_*
   // enums above.
-  int load_flags_ = LOAD_NORMAL;
+  int partial_load_flags_ = LOAD_NORMAL;
   // Whether the request is allowed to send credentials in general. Set by
   // caller.
   bool allow_credentials_ = true;

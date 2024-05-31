@@ -276,6 +276,10 @@ ConnectionAttempts URLRequestJob::GetConnectionAttempts() const {
 
 void URLRequestJob::CloseConnectionOnDestruction() {}
 
+bool URLRequestJob::NeedsRetryWithStorageAccess() {
+  return false;
+}
+
 namespace {
 
 // Assuming |url| has already been stripped for use as a referrer, if
@@ -429,6 +433,28 @@ void URLRequestJob::NotifyHeadersComplete() {
   int http_status_code;
   bool insecure_scheme_was_upgraded;
 
+  if (NeedsAuth()) {
+    CHECK(!IsRedirectResponse(&new_location, &http_status_code,
+                              &insecure_scheme_was_upgraded));
+    std::unique_ptr<AuthChallengeInfo> auth_info = GetAuthChallengeInfo();
+    // Need to check for a NULL auth_info because the server may have failed
+    // to send a challenge with the 401 response.
+    if (auth_info) {
+      request_->NotifyAuthRequired(std::move(auth_info));
+      // Wait for SetAuth or CancelAuth to be called.
+      return;
+    }
+    NotifyFinalHeadersReceived();
+    // |this| may be destroyed at this point.
+    return;
+  }
+
+  if (NeedsRetryWithStorageAccess()) {
+    DoneReadingRetryResponse();
+    request_->RetryWithStorageAccess();
+    return;
+  }
+
   if (IsRedirectResponse(&new_location, &http_status_code,
                          &insecure_scheme_was_upgraded)) {
     CHECK(!NeedsAuth());
@@ -474,19 +500,6 @@ void URLRequestJob::NotifyHeadersComplete() {
                      std::nullopt /* modified_headers */);
     }
     return;
-  }
-
-  if (NeedsAuth()) {
-    CHECK(!IsRedirectResponse(&new_location, &http_status_code,
-                              &insecure_scheme_was_upgraded));
-    std::unique_ptr<AuthChallengeInfo> auth_info = GetAuthChallengeInfo();
-    // Need to check for a NULL auth_info because the server may have failed
-    // to send a challenge with the 401 response.
-    if (auth_info) {
-      request_->NotifyAuthRequired(std::move(auth_info));
-      // Wait for SetAuth or CancelAuth to be called.
-      return;
-    }
   }
 
   NotifyFinalHeadersReceived();
@@ -650,6 +663,8 @@ void URLRequestJob::DoneReading() {
 
 void URLRequestJob::DoneReadingRedirectResponse() {
 }
+
+void URLRequestJob::DoneReadingRetryResponse() {}
 
 std::unique_ptr<SourceStream> URLRequestJob::SetUpSourceStream() {
   return std::make_unique<URLRequestJobSourceStream>(this);
