@@ -34,10 +34,6 @@ class NTPTilesInternalsMessageHandlerClient {
   // False if in a browser mode (e.g. incognito) where tiles aren't supported.
   virtual bool SupportsNTPTiles() = 0;
 
-  // Returns true if the given source is enabled (even if, in practice, none of
-  // the tiles would come from it).
-  virtual bool DoesSourceExist(TileSource source) = 0;
-
   // Creates a new MostVisitedSites based on the context pf the WebUI page.
   virtual std::unique_ptr<ntp_tiles::MostVisitedSites>
   MakeMostVisitedSites() = 0;

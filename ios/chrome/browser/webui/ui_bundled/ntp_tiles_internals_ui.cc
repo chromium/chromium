@@ -46,7 +46,6 @@ class IOSNTPTilesInternalsMessageHandlerBridge
 
   // ntp_tiles::NTPTilesInternalsMessageHandlerClient
   bool SupportsNTPTiles() override;
-  bool DoesSourceExist(ntp_tiles::TileSource source) override;
   std::unique_ptr<ntp_tiles::MostVisitedSites> MakeMostVisitedSites() override;
   PrefService* GetPrefs() override;
   using MessageCallback =
@@ -66,22 +65,6 @@ void IOSNTPTilesInternalsMessageHandlerBridge::RegisterMessages() {
 
 bool IOSNTPTilesInternalsMessageHandlerBridge::SupportsNTPTiles() {
   return !ChromeBrowserState::FromWebUIIOS(web_ui())->IsOffTheRecord();
-}
-
-bool IOSNTPTilesInternalsMessageHandlerBridge::DoesSourceExist(
-    ntp_tiles::TileSource source) {
-  switch (source) {
-    case ntp_tiles::TileSource::TOP_SITES:
-    case ntp_tiles::TileSource::POPULAR:
-    case ntp_tiles::TileSource::POPULAR_BAKED_IN:
-    case ntp_tiles::TileSource::HOMEPAGE:
-      return true;
-    case ntp_tiles::TileSource::CUSTOM_LINKS:
-    case ntp_tiles::TileSource::ALLOWLIST:
-      return false;
-  }
-  NOTREACHED_IN_MIGRATION();
-  return false;
 }
 
 std::unique_ptr<ntp_tiles::MostVisitedSites>

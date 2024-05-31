@@ -59,7 +59,6 @@ class ChromeNTPTilesInternalsMessageHandlerClient
 
   // ntp_tiles::NTPTilesInternalsMessageHandlerClient
   bool SupportsNTPTiles() override;
-  bool DoesSourceExist(ntp_tiles::TileSource source) override;
   std::unique_ptr<ntp_tiles::MostVisitedSites> MakeMostVisitedSites() override;
   PrefService* GetPrefs() override;
   void RegisterMessageCallback(
@@ -80,31 +79,6 @@ void ChromeNTPTilesInternalsMessageHandlerClient::RegisterMessages() {
 bool ChromeNTPTilesInternalsMessageHandlerClient::SupportsNTPTiles() {
   Profile* profile = Profile::FromWebUI(web_ui());
   return !(profile->IsGuestSession() || profile->IsOffTheRecord());
-}
-
-bool ChromeNTPTilesInternalsMessageHandlerClient::DoesSourceExist(
-    ntp_tiles::TileSource source) {
-  switch (source) {
-    case ntp_tiles::TileSource::TOP_SITES:
-    case ntp_tiles::TileSource::ALLOWLIST:
-    case ntp_tiles::TileSource::HOMEPAGE:
-      return true;
-    case ntp_tiles::TileSource::POPULAR_BAKED_IN:
-    case ntp_tiles::TileSource::POPULAR:
-#if BUILDFLAG(IS_ANDROID)
-      return true;
-#else
-      return false;
-#endif
-    case ntp_tiles::TileSource::CUSTOM_LINKS:
-#if BUILDFLAG(IS_ANDROID)
-      return false;
-#else
-      return true;
-#endif
-  }
-  NOTREACHED_IN_MIGRATION();
-  return false;
 }
 
 std::unique_ptr<ntp_tiles::MostVisitedSites>
