@@ -41,11 +41,7 @@ class ProfileTokenQualityTest : public testing::Test {
   // Creates a form and registers it with the `bam_` as-if it had the given
   // `types` as predictions.
   FormData GetFormWithTypes(const std::vector<FieldType>& types) {
-    test::FormDescription form_description;
-    for (FieldType type : types) {
-      form_description.fields.emplace_back(type);
-    }
-    FormData form_data = test::GetFormData(form_description);
+    FormData form_data = test::GetFormData(types);
     bam_.AddSeenForm(form_data, types);
     return form_data;
   }

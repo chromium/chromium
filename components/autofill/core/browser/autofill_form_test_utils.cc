@@ -154,6 +154,15 @@ FormData GetFormData(const FormDescription& d) {
   return f;
 }
 
+FormData GetFormData(const std::vector<FieldType>& field_types) {
+  FormDescription form_description;
+  form_description.fields.reserve(field_types.size());
+  for (FieldType type : field_types) {
+    form_description.fields.emplace_back(type);
+  }
+  return GetFormData(form_description);
+}
+
 std::vector<FieldType> GetHeuristicTypes(
     const FormDescription& form_description) {
   std::vector<FieldType> heuristic_types;

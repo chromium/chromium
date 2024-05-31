@@ -132,6 +132,9 @@ FormFieldData GetFormFieldData(const FieldDescription& fd);
 // Creates a FormData to be fed to the parser.
 FormData GetFormData(const FormDescription& test_form_attributes);
 
+// Creates a FormData with `field_types`.
+FormData GetFormData(const std::vector<FieldType>& field_types);
+
 // Extracts the heuristic types from the form description. If the heuristic type
 // is not explicitly set for a given field it is extracted from the field's
 // role.
