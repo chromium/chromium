@@ -114,6 +114,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   void OnGraphicsTabletListUpdated(
       std::vector<ui::InputDevice> graphics_tablets_to_add,
       std::vector<DeviceId> graphics_tablet_ids_to_remove);
+  const mojom::Keyboard* GetGeneralizedKeyboard();
   bool GetGeneralizedTopRowAreFKeys();
   void RestoreDefaultKeyboardRemappings(DeviceId id) override;
 

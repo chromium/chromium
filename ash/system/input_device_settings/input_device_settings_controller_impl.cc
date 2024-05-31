@@ -2000,12 +2000,12 @@ void InputDeviceSettingsControllerImpl::InitializeKeyboardSettings(
       << GetKeyboardSettingsLog("Login screen settings initialized", *keyboard);
 }
 
-// GetGeneralizedTopRowAreFKeys returns false if there is no keyboard. If there
-// is only internal keyboard, GetGeneralizedTopRowAreFKeys returns the
-// top_row_are_fkeys of it. If there are multiple keyboards,
-// GetGeneralizedTopRowAreFKeys returns the top_row_are_fkeys of latest external
-// keyboard which has the largest device id.
-bool InputDeviceSettingsControllerImpl::GetGeneralizedTopRowAreFKeys() {
+// GetGeneralizedKeyboard returns the keyboard for generalized settings. If
+// there is only internal keyboard, GetGeneralizedKeyboard returns it.
+// If there are multiple keyboards, GetGeneralizedKeyboard returns the
+// latest external keyboard which has the largest device id.
+const mojom::Keyboard*
+InputDeviceSettingsControllerImpl::GetGeneralizedKeyboard() {
   auto external_iter = base::ranges::find(
       keyboards_.rbegin(), keyboards_.rend(), /*value=*/true,
       [](const auto& keyboard) { return keyboard.second->is_external; });
@@ -2013,12 +2013,29 @@ bool InputDeviceSettingsControllerImpl::GetGeneralizedTopRowAreFKeys() {
       keyboards_.rbegin(), keyboards_.rend(), /*value=*/false,
       [](const auto& keyboard) { return keyboard.second->is_external; });
   if (external_iter != keyboards_.rend()) {
-    return external_iter->second->settings->top_row_are_fkeys;
+    return external_iter->second.get();
   }
+
   if (internal_iter != keyboards_.rend()) {
-    return internal_iter->second->settings->top_row_are_fkeys;
+    return internal_iter->second.get();
   }
-  return false;
+
+  return nullptr;
+}
+
+// GetGeneralizedTopRowAreFKeys returns false if there is no keyboard. If there
+// is only internal keyboard, GetGeneralizedTopRowAreFKeys returns the
+// top_row_are_fkeys of it. If there are multiple keyboards,
+// GetGeneralizedTopRowAreFKeys returns the top_row_are_fkeys of latest external
+// keyboard which has the largest device id.
+bool InputDeviceSettingsControllerImpl::GetGeneralizedTopRowAreFKeys() {
+  const mojom::Keyboard* generalized_keyboard(
+      InputDeviceSettingsControllerImpl::GetGeneralizedKeyboard());
+  if (generalized_keyboard == nullptr) {
+    return false;
+  }
+
+  return generalized_keyboard->settings->top_row_are_fkeys;
 }
 
 void InputDeviceSettingsControllerImpl::InitializeMouseSettings(

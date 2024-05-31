@@ -1283,6 +1283,23 @@ TEST_F(InputDeviceSettingsControllerTest, RecordsMetadataMetrics) {
                                      /*expected_count=*/2u);
 }
 
+TEST_F(InputDeviceSettingsControllerTest, GetGeneralizedKeyboard) {
+  // If there are no keyboards, return nullptr.
+  EXPECT_EQ(nullptr, controller_->GetGeneralizedKeyboard());
+
+  // If there is only internal keyboard, return it.
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices({kSampleKeyboardInternal});
+  EXPECT_EQ((DeviceId)kSampleKeyboardInternal.id,
+            controller_->GetGeneralizedKeyboard()->id);
+
+  // If there are multiple external keyboards, return the external keyboard
+  // which has the largest device id.
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
+      {kSampleKeyboardInternal, kSampleKeyboardUsb, kSampleKeyboardUsb2});
+  EXPECT_EQ((DeviceId)kSampleKeyboardUsb2.id,
+            controller_->GetGeneralizedKeyboard()->id);
+}
+
 TEST_F(InputDeviceSettingsControllerTest, GetGeneralizedTopRowAreFKeys) {
   // If there no keyboards, return false.
   EXPECT_EQ(false, controller_->GetGeneralizedTopRowAreFKeys());
@@ -1291,7 +1308,7 @@ TEST_F(InputDeviceSettingsControllerTest, GetGeneralizedTopRowAreFKeys) {
   ui::DeviceDataManagerTestApi().SetKeyboardDevices({kSampleKeyboardInternal});
 
   auto internal_keyboard_settings = CreateNewKeyboardSettings();
-  ;
+
   internal_keyboard_settings->top_row_are_fkeys = true;
   controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
                                    internal_keyboard_settings.Clone());
