@@ -160,6 +160,7 @@ mojo_files_ts = [
   "shortcut_input_ui/shortcut_input_provider.mojom-webui.ts",
   "shortcut_input_ui/extended_fkeys_modifier.mojom-webui.ts",
   "shortcut_input_ui/modifier_key.mojom-webui.ts",
+  "shortcut_input_ui/meta_key.mojom-webui.ts",
   "shortcut_input_ui/simulate_right_click_modifier.mojom-webui.ts",
   "shortcut_input_ui/six_pack_shortcut_modifier.mojom-webui.ts",
 ]

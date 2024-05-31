@@ -25,8 +25,10 @@
 #include "components/user_manager/user_manager.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/ash/mojom/meta_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -178,7 +180,6 @@ class FakeDeviceManager {
                        bool has_custom_top_row = false) {
     fake_keyboard_devices_.push_back(fake_keyboard);
 
-    DeviceDataManagerTestApi().SetKeyboardDevices({});
     DeviceDataManagerTestApi().SetKeyboardDevices(fake_keyboard_devices_);
     DeviceDataManagerTestApi().OnDeviceListsComplete();
 
@@ -199,6 +200,7 @@ class FakeDeviceManager {
   void RemoveAllDevices() {
     fake_udev_.Reset();
     fake_keyboard_devices_.clear();
+    DeviceDataManagerTestApi().SetKeyboardDevices({});
   }
 
  private:
@@ -390,6 +392,110 @@ TEST_P(KeyboardCapabilityTest, TestHasLauncherButton) {
   fake_keyboard3.sys_path = base::FilePath("path3");
   fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard3, kKbdTopRowLayout1Tag);
   EXPECT_TRUE(keyboard_capability_->HasLauncherButtonOnAnyKeyboard());
+}
+
+TEST_P(KeyboardCapabilityTest, TestGetMetaKey) {
+  // Add a non-layout2 keyboard.
+  KeyboardDevice fake_keyboard1(
+      /*id=*/kDeviceId1, /*type=*/InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/"Keyboard1");
+  fake_keyboard1.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard1, kKbdTopRowLayout1Tag);
+
+  // Provide specific keyboard. Launcher button depends on if the keyboard is
+  // layout2 type.
+  EXPECT_EQ(mojom::MetaKey::kSearch,
+            keyboard_capability_->GetMetaKey(fake_keyboard1));
+  // Do not provide specific keyboard. Launcher button depends on if any one
+  // of the keyboards is layout2 type.
+  EXPECT_EQ(mojom::MetaKey::kSearch,
+            keyboard_capability_->GetMetaKeyToDisplay());
+
+  // Add a layout2 keyboard.
+  KeyboardDevice fake_keyboard2(
+      /*id=*/kDeviceId2, /*type=*/InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/"Keyboard2");
+  fake_keyboard1.sys_path = base::FilePath("path2");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard2, kKbdTopRowLayout2Tag);
+
+  EXPECT_EQ(mojom::MetaKey::kSearch,
+            keyboard_capability_->GetMetaKey(fake_keyboard1));
+  EXPECT_EQ(mojom::MetaKey::kLauncher,
+            keyboard_capability_->GetMetaKey(fake_keyboard2));
+  EXPECT_EQ(mojom::MetaKey::kLauncher,
+            keyboard_capability_->GetMetaKeyToDisplay());
+}
+
+TEST_P(KeyboardCapabilityTest, TestGetMetaKey_ExternalChromeOS) {
+  KeyboardDevice fake_keyboard1(
+      /*id=*/kDeviceId1, /*type=*/InputDeviceType::INPUT_DEVICE_USB,
+      /*name=*/"Keyboard1");
+  fake_keyboard1.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard1, kKbdTopRowLayout1Tag);
+  EXPECT_EQ(mojom::MetaKey::kLauncher,
+            keyboard_capability_->GetMetaKey(fake_keyboard1));
+  EXPECT_EQ(mojom::MetaKey::kLauncher,
+            keyboard_capability_->GetMetaKeyToDisplay());
+
+  fake_keyboard_manager_->RemoveAllDevices();
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard1, kKbdTopRowLayout2Tag);
+  EXPECT_EQ(mojom::MetaKey::kLauncher,
+            keyboard_capability_->GetMetaKey(fake_keyboard1));
+  EXPECT_EQ(mojom::MetaKey::kLauncher,
+            keyboard_capability_->GetMetaKeyToDisplay());
+}
+
+TEST_P(KeyboardCapabilityTest, TestGetMetaKey_ExternalNonChromeOS) {
+  KeyboardDevice fake_keyboard1(
+      /*id=*/kDeviceId1, /*type=*/InputDeviceType::INPUT_DEVICE_USB,
+      /*name=*/"Keyboard1");
+  fake_keyboard1.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard1,
+                                          kKbdTopRowLayoutUnspecified);
+  EXPECT_EQ(mojom::MetaKey::kExternalMeta,
+            keyboard_capability_->GetMetaKey(fake_keyboard1));
+  EXPECT_EQ(ash::features::IsModifierSplitEnabled()
+                ? mojom::MetaKey::kLauncherRefresh
+                : mojom::MetaKey::kLauncher,
+            keyboard_capability_->GetMetaKeyToDisplay());
+
+  // When an internal keyboard is added, it overrides the meta key from the
+  // external keyboard.
+  KeyboardDevice internal_keyboard(
+      /*id=*/kDeviceId2, /*type=*/InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/"Keyboard2");
+  fake_keyboard1.sys_path = base::FilePath("path2");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard,
+                                          kKbdTopRowLayout2Tag);
+  EXPECT_EQ(mojom::MetaKey::kLauncher,
+            keyboard_capability_->GetMetaKey(internal_keyboard));
+  EXPECT_EQ(mojom::MetaKey::kLauncher,
+            keyboard_capability_->GetMetaKeyToDisplay());
+}
+
+TEST_P(KeyboardCapabilityTest, TestGetMetaKey_SplitModifierKeyboard) {
+  if (!ash::features::IsModifierSplitEnabled()) {
+    GTEST_SKIP()
+        << "This test is only applicable with split modifier feature enabled.";
+  }
+
+  const KeyboardDevice split_modifier_keyboard =
+      AddFakeKeyboardInfoToKeyboardCapability(
+          kDeviceId1, kSplitModifierKeyboard,
+          KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
+          KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom);
+  EXPECT_EQ(mojom::MetaKey::kLauncherRefresh,
+            keyboard_capability_->GetMetaKey(split_modifier_keyboard));
+  EXPECT_EQ(mojom::MetaKey::kLauncherRefresh,
+            keyboard_capability_->GetMetaKeyToDisplay());
+}
+
+TEST_P(KeyboardCapabilityTest, TestGetMetaKey_NoKeyboardsConnected) {
+  ASSERT_TRUE(DeviceDataManager::GetInstance()->GetKeyboardDevices().empty());
+  EXPECT_EQ(ash::features::IsModifierSplitEnabled()
+                ? mojom::MetaKey::kLauncherRefresh
+                : mojom::MetaKey::kLauncher,
+            keyboard_capability_->GetMetaKeyToDisplay());
 }
 
 TEST_P(KeyboardCapabilityTest, TestHasSixPackKey) {

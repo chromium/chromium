@@ -146,6 +146,7 @@ export class KeyboardRemapModifierKeyRowElement extends
       // Launcher and Search key will display icon instead of text.
       case MetaKey.kLauncher:
       case MetaKey.kSearch:
+      case MetaKey.kLauncherRefresh:
         return this.i18n('perDeviceKeyboardKeySearch');
     }
   }
@@ -250,7 +251,9 @@ export class KeyboardRemapModifierKeyRowElement extends
       if (this.metaKey === MetaKey.kSearch) {
         return 'cr:search';
       }
-      if (this.metaKey === MetaKey.kLauncher) {
+      // TODO(dpad): Support launch refresh icon separately.
+      if (this.metaKey === MetaKey.kLauncher ||
+          this.metaKey === MetaKey.kLauncherRefresh) {
         return 'os-settings:launcher';
       }
     } else if (this.key === ModifierKey.kAssistant) {

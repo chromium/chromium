@@ -1,0 +1,16 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.mojom;
+
+// MetaKey denotes all the possible options deducable from the users external or
+// internal keyboard. Used to show the correct key to the user in the settings
+// UI.
+enum MetaKey {
+  kSearch,
+  kLauncher,
+  kLauncherRefresh,
+  kExternalMeta,
+  kCommand
+};

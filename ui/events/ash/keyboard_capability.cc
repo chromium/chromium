@@ -36,6 +36,7 @@
 #include "ui/events/ash/keyboard_info_metrics.h"
 #include "ui/events/ash/keyboard_layout_util.h"
 #include "ui/events/ash/modifier_split_dogfood_controller.h"
+#include "ui/events/ash/mojom/meta_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
@@ -644,6 +645,7 @@ KeyboardCapability::GetCorrespondingActionKeyForFKey(
   return keyboard_info->top_row_action_keys[index];
 }
 
+// TODO(dpad): Remove once modifier split launches.
 bool KeyboardCapability::HasLauncherButton(
     const KeyboardDevice& keyboard) const {
   // TODO(dpad): This is not entirely correct. Some devices which have custom
@@ -662,6 +664,7 @@ bool KeyboardCapability::HasLauncherButton(
   }
 }
 
+// TODO(dpad): Remove once modifier split launches.
 bool KeyboardCapability::HasLauncherButtonOnAnyKeyboard() const {
   for (const ui::KeyboardDevice& keyboard :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
@@ -1025,6 +1028,87 @@ bool KeyboardCapability::HasRightAltKey(int device_id) const {
   return HasRightAltKey(*keyboard);
 }
 
+ui::mojom::MetaKey KeyboardCapability::GetMetaKey(
+    const KeyboardDevice& keyboard) const {
+  const auto device_type = GetDeviceType(keyboard);
+  switch (device_type) {
+    case ui::KeyboardCapability::DeviceType::kDeviceExternalAppleKeyboard:
+      return mojom::MetaKey::kCommand;
+    case ui::KeyboardCapability::DeviceType::kDeviceUnknown:
+    case ui::KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard:
+    case ui::KeyboardCapability::DeviceType::kDeviceExternalUnknown:
+    case ui::KeyboardCapability::DeviceType::kDeviceInternalRevenKeyboard:
+    case ui::KeyboardCapability::DeviceType::
+        kDeviceExternalNullTopRowChromeOsKeyboard:
+      return mojom::MetaKey::kExternalMeta;
+    case ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard:
+    case ui::KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard:
+    case ui::KeyboardCapability::DeviceType::kDeviceHotrodRemote:
+    case ui::KeyboardCapability::DeviceType::kDeviceVirtualCoreKeyboard:
+      break;
+  };
+
+  if (IsSplitModifierKeyboard(keyboard)) {
+    return mojom::MetaKey::kLauncherRefresh;
+  }
+
+  // TODO(dpad): This is not entirely correct. Some devices which have custom
+  // top rows have a search icon on their keyboard (ie jinlon).
+  // In general, only chromebooks with layout1 top rows use the search icon.
+  auto top_row_layout = GetTopRowLayout(keyboard);
+  switch (top_row_layout) {
+    case KeyboardTopRowLayout::kKbdTopRowLayout1:
+      return IsInternalKeyboard(keyboard) ? mojom::MetaKey::kSearch
+                                          : mojom::MetaKey::kLauncher;
+    case KeyboardTopRowLayout::kKbdTopRowLayout2:
+    case KeyboardTopRowLayout::kKbdTopRowLayoutWilco:
+    case KeyboardTopRowLayout::kKbdTopRowLayoutDrallion:
+    case KeyboardTopRowLayout::kKbdTopRowLayoutCustom:
+      return mojom::MetaKey::kLauncher;
+  }
+}
+
+ui::mojom::MetaKey KeyboardCapability::GetMetaKeyToDisplay() const {
+  ui::mojom::MetaKey current_best = ui::mojom::MetaKey::kExternalMeta;
+  for (const ui::KeyboardDevice& keyboard :
+       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    const ui::mojom::MetaKey meta_key = GetMetaKey(keyboard);
+    // Ordered in priority order. If a keyboard is connected with a refreshed
+    // launcher key, it should have ultimate priority.
+    switch (meta_key) {
+      case mojom::MetaKey::kLauncherRefresh:
+        current_best = mojom::MetaKey::kLauncherRefresh;
+        break;
+      case mojom::MetaKey::kLauncher:
+        if (current_best != mojom::MetaKey::kLauncherRefresh) {
+          current_best = mojom::MetaKey::kLauncher;
+        }
+        break;
+      case mojom::MetaKey::kSearch:
+        if (current_best == mojom::MetaKey::kExternalMeta) {
+          current_best = mojom::MetaKey::kSearch;
+        }
+        break;
+      case mojom::MetaKey::kExternalMeta:
+      case mojom::MetaKey::kCommand:
+        break;
+    }
+  }
+
+  if (current_best != mojom::MetaKey::kExternalMeta &&
+      current_best != mojom::MetaKey::kCommand) {
+    return current_best;
+  }
+
+  // Override meta key icon for external keyboards to be the highest priority
+  // icon.
+  if (modifier_split_dogfood_controller_->IsEnabled()) {
+    return mojom::MetaKey::kLauncherRefresh;
+  } else {
+    return mojom::MetaKey::kLauncher;
+  }
+}
+
 void KeyboardCapability::OnDeviceListsComplete() {
   TrimKeyboardInfoMap();
 }
@@ -1130,6 +1214,11 @@ bool KeyboardCapability::HasTopRowActionKeyOnAnyKeyboard(
     }
   }
   return false;
+}
+
+bool KeyboardCapability::IsSplitModifierKeyboard(
+    const KeyboardDevice& keyboard) const {
+  return HasRightAltKey(keyboard) && HasFunctionKey(keyboard);
 }
 
 bool KeyboardCapability::IsChromeOSKeyboard(int device_id) const {

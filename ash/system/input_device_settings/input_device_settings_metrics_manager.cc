@@ -137,8 +137,9 @@ constexpr uint32_t kSplitModifierDefaultModifierHash =
 std::string GetKeyboardMetricsPrefix(const mojom::Keyboard& keyboard) {
   if (!keyboard.is_external) {
     return "ChromeOS.Settings.Device.Keyboard.Internal.";
-  } else if (keyboard.meta_key == mojom::MetaKey::kLauncher ||
-             keyboard.meta_key == mojom::MetaKey::kSearch) {
+  } else if (keyboard.meta_key == ui::mojom::MetaKey::kLauncherRefresh ||
+             keyboard.meta_key == ui::mojom::MetaKey::kLauncher ||
+             keyboard.meta_key == ui::mojom::MetaKey::kSearch) {
     return "ChromeOS.Settings.Device.Keyboard.ExternalChromeOS.";
   } else {
     return "ChromeOS.Settings.Device.Keyboard.External.";
@@ -251,7 +252,7 @@ std::string GetSixPackKeyMetricName(const std::string& prefix,
 void RecordKeyboardNumberOfKeysRemapped(const mojom::Keyboard& keyboard) {
   base::flat_map<ui::mojom::ModifierKey, ui::mojom::ModifierKey>
       default_remappings;
-  if (keyboard.meta_key == mojom::MetaKey::kCommand) {
+  if (keyboard.meta_key == ui::mojom::MetaKey::kCommand) {
     default_remappings[ui::mojom::ModifierKey::kControl] =
         ui::mojom::ModifierKey::kMeta;
     default_remappings[ui::mojom::ModifierKey::kMeta] =

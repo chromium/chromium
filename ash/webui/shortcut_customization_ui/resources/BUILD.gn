@@ -63,6 +63,7 @@ build_webui("build") {
     "$root_gen_dir/ash/webui/shortcut_customization_ui/backend/search/search.mojom-webui.ts",
     "$root_gen_dir/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.ts",
     "$root_gen_dir/ui/events/ash/mojom/extended_fkeys_modifier.mojom-webui.ts",
+    "$root_gen_dir/ui/events/ash/mojom/meta_key.mojom-webui.ts",
     "$root_gen_dir/ui/events/ash/mojom/modifier_key.mojom-webui.ts",
     "$root_gen_dir/ui/events/ash/mojom/simulate_right_click_modifier.mojom-webui.ts",
     "$root_gen_dir/ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-webui.ts",

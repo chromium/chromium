@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/mojom/meta_key.mojom-shared.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash::settings {
@@ -725,7 +726,7 @@ void InputDeviceSettingsProvider::HasLauncherButton(
   auto keyboards =
       InputDeviceSettingsController::Get()->GetConnectedKeyboards();
   for (const ::ash::mojom::KeyboardPtr& keyboard : keyboards) {
-    if (keyboard->meta_key == ::ash::mojom::MetaKey::kLauncher) {
+    if (keyboard->meta_key == ::ui::mojom::MetaKey::kLauncher) {
       std::move(callback).Run(true);
       return;
     }

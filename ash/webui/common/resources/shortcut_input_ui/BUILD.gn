@@ -24,6 +24,7 @@ copy("copy_mojo_files") {
     "$root_gen_dir/ash/webui/common/mojom/accelerator_fetcher.mojom-webui.ts",
     "$root_gen_dir/ash/webui/common/mojom/shortcut_input_provider.mojom-webui.ts",
     "$root_gen_dir/ui/events/ash/mojom/extended_fkeys_modifier.mojom-webui.ts",
+    "$root_gen_dir/ui/events/ash/mojom/meta_key.mojom-webui.ts",
     "$root_gen_dir/ui/events/ash/mojom/modifier_key.mojom-webui.ts",
     "$root_gen_dir/ui/events/ash/mojom/simulate_right_click_modifier.mojom-webui.ts",
     "$root_gen_dir/ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-webui.ts",

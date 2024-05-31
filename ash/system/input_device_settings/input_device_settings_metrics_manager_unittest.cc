@@ -152,7 +152,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
   mojom::Keyboard keyboard_external;
   keyboard_external.device_key = kExternalKeyboardId;
   keyboard_external.is_external = true;
-  keyboard_external.meta_key = mojom::MetaKey::kCommand;
+  keyboard_external.meta_key = ui::mojom::MetaKey::kCommand;
   keyboard_external.settings = CreateNewKeyboardSettings();
   auto& settings_external = *keyboard_external.settings;
   settings_external.top_row_are_fkeys = true;
@@ -163,7 +163,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
   mojom::Keyboard keyboard_external_chromeos;
   keyboard_external_chromeos.device_key = kExternalChromeOSKeyboardId;
   keyboard_external_chromeos.is_external = true;
-  keyboard_external_chromeos.meta_key = mojom::MetaKey::kSearch;
+  keyboard_external_chromeos.meta_key = ui::mojom::MetaKey::kSearch;
   keyboard_external_chromeos.settings = CreateNewKeyboardSettings();
   auto& settings_external_chromeos = *keyboard_external_chromeos.settings;
   settings_external_chromeos.top_row_are_fkeys = false;
@@ -344,7 +344,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordMetricOncePerKeyboard) {
   mojom::Keyboard keyboard_external;
   keyboard_external.device_key = kExternalKeyboardId;
   keyboard_external.is_external = true;
-  keyboard_external.meta_key = mojom::MetaKey::kCommand;
+  keyboard_external.meta_key = ui::mojom::MetaKey::kCommand;
   keyboard_external.settings = CreateNewKeyboardSettings();
   auto& settings_external = *keyboard_external.settings;
   settings_external.top_row_are_fkeys = true;
@@ -1239,7 +1239,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
   mojom::KeyboardPtr keyboard = mojom::Keyboard::New();
   keyboard->device_key = kExternalKeyboardId;
   keyboard->is_external = true;
-  keyboard->meta_key = mojom::MetaKey::kCommand;
+  keyboard->meta_key = ui::mojom::MetaKey::kCommand;
   keyboard->modifier_keys = {
       ui::mojom::ModifierKey::kMeta,      ui::mojom::ModifierKey::kControl,
       ui::mojom::ModifierKey::kAlt,       ui::mojom::ModifierKey::kCapsLock,

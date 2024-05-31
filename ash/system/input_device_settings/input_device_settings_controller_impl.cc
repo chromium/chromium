@@ -79,29 +79,6 @@ constexpr char kGraphicsTabletDeviceType[] = "GraphicsTablet";
 constexpr char kGraphicsTabletPenDeviceType[] = "GraphicsTabletPen";
 constexpr char kMouseDeviceType[] = "Mouse";
 
-mojom::MetaKey GetMetaKeyForKeyboard(const ui::KeyboardDevice& keyboard) {
-  const auto device_type =
-      Shell::Get()->keyboard_capability()->GetDeviceType(keyboard);
-  switch (device_type) {
-    case ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard:
-    case ui::KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard:
-    case ui::KeyboardCapability::DeviceType::kDeviceHotrodRemote:
-    case ui::KeyboardCapability::DeviceType::kDeviceVirtualCoreKeyboard:
-      return Shell::Get()->keyboard_capability()->HasLauncherButton(keyboard)
-                 ? mojom::MetaKey::kLauncher
-                 : mojom::MetaKey::kSearch;
-    case ui::KeyboardCapability::DeviceType::kDeviceExternalAppleKeyboard:
-      return mojom::MetaKey::kCommand;
-    case ui::KeyboardCapability::DeviceType::kDeviceUnknown:
-    case ui::KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard:
-    case ui::KeyboardCapability::DeviceType::kDeviceExternalUnknown:
-    case ui::KeyboardCapability::DeviceType::kDeviceInternalRevenKeyboard:
-    case ui::KeyboardCapability::DeviceType::
-        kDeviceExternalNullTopRowChromeOsKeyboard:
-      return mojom::MetaKey::kExternalMeta;
-  };
-}
-
 constexpr mojom::TopRowActionKey ConvertTopRowActionKey(
     ui::TopRowActionKey action_key) {
   switch (action_key) {
@@ -279,7 +256,8 @@ mojom::KeyboardPtr BuildMojomKeyboard(
   if (features::IsInputDeviceSettingsSplitEnabled()) {
     mojom_keyboard->modifier_keys =
         Shell::Get()->keyboard_capability()->GetModifierKeys(keyboard);
-    mojom_keyboard->meta_key = GetMetaKeyForKeyboard(keyboard);
+    mojom_keyboard->meta_key =
+        Shell::Get()->keyboard_capability()->GetMetaKey(keyboard);
   }
   if (::features::AreF11AndF12ShortcutsEnabled()) {
     mojom_keyboard->top_row_action_keys = GetTopRowActionKeys(keyboard);
@@ -448,8 +426,8 @@ bool KeyboardSettingsAreValid(
   }
 
   const bool is_non_chromeos_keyboard =
-      (keyboard.meta_key != mojom::MetaKey::kLauncher &&
-       keyboard.meta_key != mojom::MetaKey::kSearch);
+      (keyboard.meta_key != ui::mojom::MetaKey::kLauncher &&
+       keyboard.meta_key != ui::mojom::MetaKey::kSearch);
   if (is_non_chromeos_keyboard && ::features::AreF11AndF12ShortcutsEnabled() &&
       (settings.f11.has_value() || settings.f12.has_value())) {
     return false;
@@ -1972,7 +1950,7 @@ void InputDeviceSettingsControllerImpl::RestoreDefaultKeyboardRemappings(
   mojom::KeyboardSettingsPtr new_settings = keyboard.settings->Clone();
   new_settings->modifier_remappings = {};
   new_settings->six_pack_key_remappings = mojom::SixPackKeyInfo::New();
-  if (keyboard.meta_key == mojom::MetaKey::kCommand) {
+  if (keyboard.meta_key == ui::mojom::MetaKey::kCommand) {
     new_settings->modifier_remappings[ui::mojom::ModifierKey::kControl] =
         ui::mojom::ModifierKey::kMeta;
     new_settings->modifier_remappings[ui::mojom::ModifierKey::kMeta] =

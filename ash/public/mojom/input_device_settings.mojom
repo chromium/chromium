@@ -8,6 +8,7 @@ import "ash/public/mojom/accelerator_actions.mojom";
 import "ash/public/mojom/accelerator_keys.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/events/ash/mojom/extended_fkeys_modifier.mojom";
+import "ui/events/ash/mojom/meta_key.mojom";
 import "ui/events/ash/mojom/modifier_key.mojom";
 import "ui/events/ash/mojom/simulate_right_click_modifier.mojom";
 import "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom";
@@ -88,16 +89,6 @@ struct MousePolicies {
   InputDeviceSettingsPolicy? swap_right_policy;
 };
 
-// MetaKey denotes all the possible options deducable from the users external or
-// internal keyboard. Used to show the correct key to the user in the settings
-// UI.
-enum MetaKey {
-  kSearch,
-  kLauncher,
-  kExternalMeta,
-  kCommand
-};
-
 // Contains top row action keys found on different keyboards.
 // Note: that this enumeration will need to be extended if new keys are added.
 enum TopRowActionKey {
@@ -164,7 +155,7 @@ struct Keyboard {
   // Example: 5022:18d1.
   string device_key;
   // Meta key type (launcher, search, etc) for this keyboard.
-  MetaKey meta_key;
+  ui.mojom.MetaKey meta_key;
   // List of modifier keys (caps lock, assistant, etc) present on this device.
   array<ui.mojom.ModifierKey> modifier_keys;
   // List of top row action keys (back, refresh, etc) present on this device.

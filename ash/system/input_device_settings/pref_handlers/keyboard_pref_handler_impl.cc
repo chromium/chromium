@@ -62,12 +62,12 @@ static constexpr auto kKeyboardModifierMappings =
           ::prefs::kLanguageRemapCapsLockKeyTo}});
 
 static constexpr auto kMetaKeyMapping =
-    base::MakeFixedFlatMap<mojom::MetaKey, const char*>(
-        {{mojom::MetaKey::kSearch, ::prefs::kLanguageRemapSearchKeyTo},
-         {mojom::MetaKey::kLauncher, ::prefs::kLanguageRemapSearchKeyTo},
-         {mojom::MetaKey::kExternalMeta,
+    base::MakeFixedFlatMap<ui::mojom::MetaKey, const char*>(
+        {{ui::mojom::MetaKey::kSearch, ::prefs::kLanguageRemapSearchKeyTo},
+         {ui::mojom::MetaKey::kLauncher, ::prefs::kLanguageRemapSearchKeyTo},
+         {ui::mojom::MetaKey::kExternalMeta,
           ::prefs::kLanguageRemapExternalMetaKeyTo},
-         {mojom::MetaKey::kCommand,
+         {ui::mojom::MetaKey::kCommand,
           ::prefs::kLanguageRemapExternalCommandKeyTo}});
 
 bool GetDefaultTopRowAreFKeysValue(
@@ -366,7 +366,7 @@ RetrieveModifierRemappings(const mojom::Keyboard& keyboard,
     modifier_remappings[from_key] = to_key;
   }
 
-  if (keyboard.meta_key == mojom::MetaKey::kCommand) {
+  if (keyboard.meta_key == ui::mojom::MetaKey::kCommand) {
     if (!modifier_remappings_dict.contains(base::NumberToString(
             static_cast<int>(ui::mojom::ModifierKey::kMeta)))) {
       modifier_remappings[ui::mojom::ModifierKey::kMeta] =
@@ -452,7 +452,7 @@ base::Value::Dict ConvertModifierRemappingsToDict(
   base::Value::Dict modifier_remappings;
   for (const auto& [from, to] : keyboard.settings->modifier_remappings) {
     // Avoid saving modifier remappings that are default for apple keyboards.
-    if (keyboard.meta_key == mojom::MetaKey::kCommand &&
+    if (keyboard.meta_key == ui::mojom::MetaKey::kCommand &&
         IsAppleKeyboardDefaultModifierRemapping(from, to)) {
       continue;
     }
@@ -464,7 +464,7 @@ base::Value::Dict ConvertModifierRemappingsToDict(
   // Since Apple keyboards default remaps Meta -> Control and Control -> Meta,
   // this must be taken in to account when saving prefs so we store them when
   // they are non-default.
-  if (keyboard.meta_key == mojom::MetaKey::kCommand) {
+  if (keyboard.meta_key == ui::mojom::MetaKey::kCommand) {
     if (!keyboard.settings->modifier_remappings.contains(
             ui::mojom::ModifierKey::kMeta)) {
       modifier_remappings.Set(

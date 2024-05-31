@@ -7,6 +7,7 @@ import * as AcceleratorKeysTypes from '../mojom-webui/accelerator_keys.mojom-web
 import * as ExtendedFkeysModifierTypes from '../mojom-webui/extended_fkeys_modifier.mojom-webui.js';
 import * as InputDeviceSettingsTypes from '../mojom-webui/input_device_settings.mojom-webui.js';
 import * as InputDeviceSettingsProviderTypes from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
+import * as MetaKeyTypes from '../mojom-webui/meta_key.mojom-webui.js';
 import * as ModifierKeyTypes from '../mojom-webui/modifier_key.mojom-webui.js';
 import * as ShortcutInputProviderTypes from '../mojom-webui/shortcut_input_provider.mojom-webui.js';
 import * as SimulateRightClickModifierTypes from '../mojom-webui/simulate_right_click_modifier.mojom-webui.js';
@@ -17,8 +18,8 @@ import * as SixPackShortcutModifierTypes from '../mojom-webui/six_pack_shortcut_
  * Type alias for the add input device settings API.
  */
 
-export type MetaKey = InputDeviceSettingsTypes.MetaKey;
-export const MetaKey = InputDeviceSettingsTypes.MetaKey;
+export type MetaKey = MetaKeyTypes.MetaKey;
+export const MetaKey = MetaKeyTypes.MetaKey;
 export type ModifierKey = ModifierKeyTypes.ModifierKey;
 export const ModifierKey = ModifierKeyTypes.ModifierKey;
 

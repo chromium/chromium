@@ -281,7 +281,7 @@ class KeyboardPrefHandlerTest : public AshTestBase {
     mojom::KeyboardPtr keyboard = mojom::Keyboard::New();
     keyboard->settings = settings.Clone();
     keyboard->device_key = device_key;
-    keyboard->meta_key = mojom::MetaKey::kLauncher;
+    keyboard->meta_key = ui::mojom::MetaKey::kLauncher;
 
     pref_handler_->UpdateDefaultChromeOSKeyboardSettings(
         pref_service_.get(),
@@ -294,7 +294,7 @@ class KeyboardPrefHandlerTest : public AshTestBase {
     mojom::KeyboardPtr keyboard = mojom::Keyboard::New();
     keyboard->settings = settings.Clone();
     keyboard->device_key = device_key;
-    keyboard->meta_key = mojom::MetaKey::kExternalMeta;
+    keyboard->meta_key = ui::mojom::MetaKey::kExternalMeta;
 
     pref_handler_->UpdateDefaultNonChromeOSKeyboardSettings(
         pref_service_.get(),
@@ -307,7 +307,7 @@ class KeyboardPrefHandlerTest : public AshTestBase {
     mojom::KeyboardPtr keyboard = mojom::Keyboard::New();
     keyboard->settings = settings.Clone();
     keyboard->device_key = device_key;
-    keyboard->meta_key = mojom::MetaKey::kLauncher;
+    keyboard->meta_key = ui::mojom::MetaKey::kLauncherRefresh;
     keyboard->modifier_keys = {ui::mojom::ModifierKey::kFunction,
                                ui::mojom::ModifierKey::kRightAlt};
 
@@ -751,7 +751,7 @@ TEST_F(KeyboardPrefHandlerTest,
        KeyboardSendFunctionKeysTransitionPrefAlwaysConsistent) {
   mojom::Keyboard keyboard;
   keyboard.is_external = true;
-  keyboard.meta_key = mojom::MetaKey::kExternalMeta;
+  keyboard.meta_key = ui::mojom::MetaKey::kExternalMeta;
   keyboard.device_key = kKeyboardKey1;
   {
     base::test::ScopedFeatureList disable_settings_split_feature_list;
@@ -782,7 +782,7 @@ TEST_F(KeyboardPrefHandlerTest, ModifierRemappingsFromGlobalPrefs) {
       ui::mojom::ModifierKey::kAlt,       ui::mojom::ModifierKey::kControl,
       ui::mojom::ModifierKey::kAssistant, ui::mojom::ModifierKey::kBackspace,
       ui::mojom::ModifierKey::kMeta,      ui::mojom::ModifierKey::kEscape};
-  keyboard.meta_key = mojom::MetaKey::kSearch;
+  keyboard.meta_key = ui::mojom::MetaKey::kSearch;
   // Remap Alt + Meta keys.
   pref_service_->SetInteger(
       ::prefs::kLanguageRemapAltKeyTo,
@@ -804,7 +804,7 @@ TEST_F(KeyboardPrefHandlerTest, ModifierRemappingsFromGlobalPrefs) {
 TEST_F(KeyboardPrefHandlerTest, SwitchControlAndCommandForAppleKeyboard) {
   mojom::Keyboard keyboard;
   keyboard.device_key = kKeyboardKey1;
-  keyboard.meta_key = mojom::MetaKey::kCommand;
+  keyboard.meta_key = ui::mojom::MetaKey::kCommand;
   mojom::KeyboardSettingsPtr settings =
       CallInitializeKeyboardSettings(keyboard);
 
@@ -876,7 +876,7 @@ TEST_F(KeyboardPrefHandlerTest,
 
   mojom::Keyboard keyboard;
   keyboard.device_key = kKeyboardKey1;
-  keyboard.meta_key = mojom::MetaKey::kSearch;
+  keyboard.meta_key = ui::mojom::MetaKey::kSearch;
 
   pref_handler_->InitializeKeyboardSettings(pref_service_.get(), policies,
                                             &keyboard);
@@ -932,7 +932,7 @@ TEST_F(KeyboardPrefHandlerTest,
       ui::mojom::ExtendedFkeysModifier::kAlt);
   mojom::Keyboard keyboard;
   keyboard.device_key = kKeyboardKey1;
-  keyboard.meta_key = mojom::MetaKey::kSearch;
+  keyboard.meta_key = ui::mojom::MetaKey::kSearch;
 
   pref_handler_->InitializeKeyboardSettings(pref_service_.get(), policies,
                                             &keyboard);
@@ -974,7 +974,7 @@ TEST_F(KeyboardPrefHandlerTest,
       ui::mojom::ExtendedFkeysModifier::kAlt);
   mojom::Keyboard keyboard;
   keyboard.device_key = kKeyboardKey1;
-  keyboard.meta_key = mojom::MetaKey::kSearch;
+  keyboard.meta_key = ui::mojom::MetaKey::kSearch;
 
   pref_handler_->InitializeKeyboardSettings(
       pref_service_.get(), /*keyboard_policies=*/{}, &keyboard);
@@ -1015,7 +1015,7 @@ TEST_F(KeyboardPrefHandlerTest,
       ui::mojom::ExtendedFkeysModifier::kAlt);
   mojom::Keyboard keyboard;
   keyboard.device_key = kKeyboardKey1;
-  keyboard.meta_key = mojom::MetaKey::kSearch;
+  keyboard.meta_key = ui::mojom::MetaKey::kSearch;
 
   pref_handler_->InitializeKeyboardSettings(
       pref_service_.get(), /*keyboard_policies=*/{}, &keyboard);
@@ -1161,7 +1161,7 @@ TEST_F(KeyboardPrefHandlerTest,
        NewSplitModifierKeyboardUseDefaultsFromLastUpdatedSettings) {
   mojom::Keyboard split_modifier_keyboard;
   split_modifier_keyboard.device_key = kKeyboardKey3;
-  split_modifier_keyboard.meta_key = mojom::MetaKey::kLauncher;
+  split_modifier_keyboard.meta_key = ui::mojom::MetaKey::kLauncher;
   split_modifier_keyboard.modifier_keys = {ui::mojom::ModifierKey::kFunction};
 
   base::Value::Dict dict1;
@@ -1197,12 +1197,12 @@ TEST_F(KeyboardPrefHandlerTest, UpdateSplitModifierKeyboardDefaultSettings) {
 TEST_F(KeyboardPrefHandlerTest, RememberDefaultsFromLastUpdatedSettings) {
   mojom::Keyboard chromeos_keyboard;
   chromeos_keyboard.device_key = kKeyboardKey2;
-  chromeos_keyboard.meta_key = mojom::MetaKey::kLauncher;
+  chromeos_keyboard.meta_key = ui::mojom::MetaKey::kLauncher;
   chromeos_keyboard.is_external = true;
 
   mojom::Keyboard non_chromeos_keyboard;
   non_chromeos_keyboard.device_key = kKeyboardKey3;
-  non_chromeos_keyboard.meta_key = mojom::MetaKey::kExternalMeta;
+  non_chromeos_keyboard.meta_key = ui::mojom::MetaKey::kExternalMeta;
   non_chromeos_keyboard.modifier_keys = {ui::mojom::ModifierKey::kControl};
   non_chromeos_keyboard.is_external = true;
 
@@ -1375,7 +1375,7 @@ TEST_F(KeyboardPrefHandlerTest, ExtendedFkeysOnlyAddedForChromeOSKeyboards) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(::features::kSupportF11AndF12KeyShortcuts);
   mojom::Keyboard keyboard;
-  keyboard.meta_key = mojom::MetaKey::kCommand;
+  keyboard.meta_key = ui::mojom::MetaKey::kCommand;
   mojom::KeyboardSettingsPtr settings =
       CallInitializeKeyboardSettings(keyboard);
   EXPECT_FALSE(settings->f11.has_value());
@@ -1384,7 +1384,7 @@ TEST_F(KeyboardPrefHandlerTest, ExtendedFkeysOnlyAddedForChromeOSKeyboards) {
 
 TEST_F(KeyboardPrefHandlerTest, AppleKeyboardDefaultRemappingsNotSaved) {
   mojom::Keyboard keyboard;
-  keyboard.meta_key = mojom::MetaKey::kCommand;
+  keyboard.meta_key = ui::mojom::MetaKey::kCommand;
   keyboard.device_key = kKeyboardKey1;
   keyboard.is_external = true;
 
