@@ -24,8 +24,15 @@ extern const char kHistogramPrerenderPredictionStatusDefaultSearchEngine[];
 extern const char kHistogramPrerenderPredictionStatusDirectUrlInput[];
 }  // namespace internal
 
+// If you change this, please follow the process in
+// go/preloading-dashboard-updates to update the mapping reflected in dashboard,
+// or if you are not a Googler, please file an FYI bug on https://crbug.new with
+// component Internals>Preload.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange
 enum class PrerenderPredictionStatus {
   // The prerender was not started at all for this omnibox interaction.
   kNotStarted = 0,
@@ -37,6 +44,7 @@ enum class PrerenderPredictionStatus {
   kHitFinished = 3,
   kMaxValue = kHitFinished,
 };
+// LINT.ThenChange()
 
 // Manages running prerenders in the //chrome.
 // Chrome manages running prerenders separately, as it prioritizes the latest

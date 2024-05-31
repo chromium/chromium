@@ -18,6 +18,12 @@ namespace content {
 // https://docs.google.com/document/d/1PnrfowsZMt62PX1EvvTp2Nqs3ji1zrklrAEe1JYbkTk
 // to ensure failure reasons are correctly shown in the DevTools
 // frontend.
+//
+// If you change this, please follow the process in
+// go/preloading-dashboard-updates to update the mapping reflected in dashboard,
+// or if you are not a Googler, please file an FYI bug on https://crbug.new with
+// component Internals>Preload.
+// LINT.IfChange
 enum class PrefetchStatus {
   // Deprecated. Replaced by `kPrefetchResponseUsed`.
   //
@@ -215,6 +221,7 @@ enum class PrefetchStatus {
   // The max value of the PrefetchStatus. Update this when new enums are added.
   kMaxValue = kPrefetchEvictedForNewerPrefetch,
 };
+// LINT.ThenChange()
 
 // Mapping from `PrefetchStatus` to `PreloadingFailureReason`.
 static_assert(

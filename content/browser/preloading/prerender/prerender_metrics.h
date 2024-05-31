@@ -182,10 +182,17 @@ void RecordPrerenderActivationTransition(
     PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 
+// If you change this, please follow the process in
+// go/preloading-dashboard-updates to update the mapping reflected in dashboard,
+// or if you are not a Googler, please file an FYI bug on https://crbug.new with
+// component Internals>Preload.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // These are also mapped onto the second content internal range of
 // `PreloadingEligibility`.
+//
+// LINT.IfChange
 enum class PrerenderBackNavigationEligibility {
   kEligible = 0,
 
@@ -202,6 +209,7 @@ enum class PrerenderBackNavigationEligibility {
 
   kMaxValue = kRelatedActiveContents,
 };
+// LINT.ThenChange()
 
 // Maps `eligibility` onto a content internal range of PreloadingEligibility.
 CONTENT_EXPORT PreloadingEligibility

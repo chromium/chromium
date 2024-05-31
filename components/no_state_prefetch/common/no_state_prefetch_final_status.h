@@ -9,11 +9,18 @@ namespace prerender {
 
 // FinalStatus indicates whether |this| was used, or why it was cancelled.
 // NOTE: New values need to be appended, since they are used in histograms.
-
+//
+// If you change this, please follow the process in
+// go/preloading-dashboard-updates to update the mapping reflected in dashboard,
+// or if you are not a Googler, please file an FYI bug on https://crbug.new with
+// component Internals>Preload.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. The values should remain
 // synchronized with the enum PrerenderFinalStatus in
 // //tools/metrics/histograms/enums.xml.
+//
+// LINT.IfChange
 enum FinalStatus {
   FINAL_STATUS_USED = 0,
   FINAL_STATUS_TIMED_OUT = 1,
@@ -82,6 +89,7 @@ enum FinalStatus {
   FINAL_STATUS_PREFETCH_HOLDBACK = 64,
   FINAL_STATUS_MAX,
 };
+// LINT.ThenChange()
 
 // Return a human-readable name for |final_status|. |final_status|
 // is expected to be a valid value.

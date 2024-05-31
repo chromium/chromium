@@ -43,12 +43,15 @@ struct ResourceRequest;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
 // Any updates to this class need to be propagated to enums.xml.
-
+//
 // If you change this, please follow the process in
-// go/preloading-dashboard-updates to update the mapping reflected in
-// dashboard, or if you are not a Googler, please file an FYI bug on
-// https://crbug.new with component Internals>Preload.
+// go/preloading-dashboard-updates to update the mapping reflected in dashboard,
+// or if you are not a Googler, please file an FYI bug on https://crbug.new with
+// component Internals>Preload.
+//
+// LINT.IfChange
 enum class SearchPrefetchEligibilityReason {
   // The prefetch was started.
   kPrefetchStarted = 0,
@@ -71,10 +74,19 @@ enum class SearchPrefetchEligibilityReason {
   kThrottled = 8,
   kMaxValue = kThrottled,
 };
+// LINT.ThenChange()
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
 // Any updates to this class need to be propagated to enums.xml.
+//
+// If you change this, please follow the process in
+// go/preloading-dashboard-updates to update the mapping reflected in dashboard,
+// or if you are not a Googler, please file an FYI bug on https://crbug.new with
+// component Internals>Preload.
+//
+// LINT.IfChange
 enum class SearchPrefetchServingReason {
   // The prefetch was started.
   kServed = 0,
@@ -102,6 +114,7 @@ enum class SearchPrefetchServingReason {
   kRequestInFlightNotReady = 11,
   kMaxValue = kRequestInFlightNotReady,
 };
+// LINT.ThenChange()
 
 class SearchPrefetchService : public KeyedService,
                               public TemplateURLServiceObserver {

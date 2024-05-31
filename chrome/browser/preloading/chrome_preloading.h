@@ -31,6 +31,8 @@ class TemplateURLService;
 // (inclusive) as 99 and below are reserved for content-public and
 // content-internal definitions. Both the value and the name should be unique
 // across all the namespaces.
+//
+// LINT.IfChange
 namespace chrome_preloading_predictor {
 // When the preloading URL is predicted from the Omnibox Direct URL Input
 // (DUI). This is used to perform various preloading operations like prefetch
@@ -117,13 +119,13 @@ static constexpr content::PreloadingPredictor kLinkPreview(112, "LinkPreview");
 static constexpr content::PreloadingPredictor
     kMouseHoverOrMouseDownOnBookmarkBar(113,
                                         "MouseHoverOrMouseDownOnBookmarkBar");
-
-// TODO(crbug.com/40219645): Integrate more Preloading predictors with
-// Preloading logging APIs.
 }  // namespace chrome_preloading_predictor
+// LINT.ThenChange()
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange
 enum class ChromePreloadingEligibility {
   // Numbering starts from `kPreloadingEligibilityContentEnd` defined in
   // //content/public/preloading.h . Advance numbering by +1 when adding a new
@@ -174,6 +176,7 @@ enum class ChromePreloadingEligibility {
 
   kMaxValue = kPreloadingErrorBackOff,
 };
+// LINT.ThenChange()
 
 // Helper method to convert ChromePreloadingEligibility to
 // content::PreloadingEligibility to avoid casting.
