@@ -128,7 +128,7 @@ std::unique_ptr<Widget> CreateWidgetWithNativeWidgetWithParams(
 }
 
 std::unique_ptr<Widget> CreateWidgetWithNativeWidget() {
-  Widget::InitParams params(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+  Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
                             Widget::InitParams::TYPE_WINDOW);
   params.delegate = nullptr;
   params.remove_standard_frame = true;
@@ -277,9 +277,8 @@ class CustomSizeWidget : public Widget {
 
 TEST_F(DesktopWindowTreeHostPlatformTest, SetBoundsWithMinMax) {
   CustomSizeWidget widget;
-  Widget::InitParams params =
-      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                   Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(200, 100);
   widget.Init(std::move(params));
   widget.Show();
@@ -355,9 +354,8 @@ TEST_F(DesktopWindowTreeHostPlatformTest, MakesParentChildRelationship) {
   auto widget = CreateWidgetWithNativeWidget();
   widget->Show();
 
-  Widget::InitParams widget_2_params(
-      Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-      Widget::InitParams::TYPE_MENU);
+  Widget::InitParams widget_2_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                     Widget::InitParams::TYPE_MENU);
   widget_2_params.bounds = gfx::Rect(110, 110, 100, 100);
   widget_2_params.parent = widget->GetNativeWindow();
   auto widget2 =
@@ -374,9 +372,8 @@ TEST_F(DesktopWindowTreeHostPlatformTest, MakesParentChildRelationship) {
   EXPECT_EQ(host_platform2->window_parent_, host_platform);
   EXPECT_EQ(*host_platform->window_children_.begin(), host_platform2);
 
-  Widget::InitParams widget_3_params(
-      Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-      Widget::InitParams::TYPE_MENU);
+  Widget::InitParams widget_3_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                     Widget::InitParams::TYPE_MENU);
   widget_3_params.bounds = gfx::Rect(120, 120, 50, 80);
   widget_3_params.parent = widget->GetNativeWindow();
   auto widget3 =
@@ -392,9 +389,8 @@ TEST_F(DesktopWindowTreeHostPlatformTest, MakesParentChildRelationship) {
   EXPECT_NE(host_platform->window_children_.find(host_platform3),
             host_platform->window_children_.end());
 
-  Widget::InitParams widget_4_params(
-      Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-      Widget::InitParams::TYPE_TOOLTIP);
+  Widget::InitParams widget_4_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                     Widget::InitParams::TYPE_TOOLTIP);
   widget_4_params.bounds = gfx::Rect(105, 105, 10, 10);
   widget_4_params.context = widget->GetNativeWindow();
   auto widget4 =
@@ -438,9 +434,8 @@ TEST_F(DesktopWindowTreeHostPlatformTest, OnRotateFocus) {
   using Direction = ui::PlatformWindowDelegate::RotateDirection;
 
   auto delegate = std::make_unique<TestWidgetDelegate>();
-  Widget::InitParams widget_params =
-      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                   Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams widget_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   widget_params.bounds = gfx::Rect(110, 110, 100, 100);
   widget_params.delegate = delegate.get();
   auto widget = std::make_unique<Widget>();
@@ -539,7 +534,7 @@ class ScopedPlatformWindowFactoryDelegate
 };
 
 TEST_F(DesktopWindowTreeHostPlatformTest, ShowInitiallyMinimizedWidget) {
-  Widget::InitParams params(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+  Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
                             Widget::InitParams::TYPE_WINDOW);
   params.delegate = nullptr;
   params.remove_standard_frame = true;
@@ -585,9 +580,8 @@ TEST_F(DesktopWindowTreeHostPlatformTest, FocusParentWindowWillActivate) {
       widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
   widget->Show();
 
-  Widget::InitParams widget_2_params(
-      Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-      Widget::InitParams::TYPE_BUBBLE);
+  Widget::InitParams widget_2_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                     Widget::InitParams::TYPE_BUBBLE);
   widget_2_params.bounds = gfx::Rect(110, 110, 100, 100);
   widget_2_params.parent = widget->GetNativeWindow();
   auto widget2 =

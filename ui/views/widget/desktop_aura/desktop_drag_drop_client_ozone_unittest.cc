@@ -284,7 +284,7 @@ class DesktopDragDropClientOzoneTest : public ViewsTestBase {
 
     // Create widget to initiate the drags.
     widget_ = std::make_unique<Widget>();
-    Widget::InitParams params(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+    Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
                               Widget::InitParams::TYPE_WINDOW);
     params.bounds = kDragWidgetBounds;
     widget_->Init(std::move(params));
@@ -415,7 +415,7 @@ TEST_F(DesktopDragDropClientOzoneTest, TargetDestroyedDuringDrag) {
   // Create another window with its own DnD facility and simulate that the drag
   // enters it and then the window is destroyed.
   auto another_widget = std::make_unique<Widget>();
-  Widget::InitParams params(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+  Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
                             Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(100, 100);
   another_widget->Init(std::move(params));

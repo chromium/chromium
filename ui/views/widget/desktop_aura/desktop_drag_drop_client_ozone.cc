@@ -60,7 +60,7 @@ std::unique_ptr<Widget> CreateDragWidget(
     const gfx::ImageSkia& image,
     const gfx::Vector2d& drag_widget_offset) {
   auto widget = std::make_unique<Widget>();
-  Widget::InitParams params(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+  Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
                             Widget::InitParams::TYPE_DRAG);
   params.accept_events = false;
   params.opacity = Widget::InitParams::WindowOpacity::kTranslucent;

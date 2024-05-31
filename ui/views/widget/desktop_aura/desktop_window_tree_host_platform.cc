@@ -187,8 +187,9 @@ ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
 }
 
 SkPath GetWindowMask(const Widget* widget) {
-  if (!widget->non_client_view())
+  if (!widget || !widget->non_client_view()) {
     return SkPath();
+  }
 
   SkPath window_mask;
   // Some frame views define a custom (non-rectanguar) window mask.
@@ -1065,11 +1066,13 @@ gfx::Rect DesktopWindowTreeHostPlatform::ToPixelRect(
 }
 
 Widget* DesktopWindowTreeHostPlatform::GetWidget() {
-  return native_widget_delegate_->AsWidget();
+  return native_widget_delegate_ ? native_widget_delegate_->AsWidget()
+                                 : nullptr;
 }
 
 const Widget* DesktopWindowTreeHostPlatform::GetWidget() const {
-  return native_widget_delegate_->AsWidget();
+  return native_widget_delegate_ ? native_widget_delegate_->AsWidget()
+                                 : nullptr;
 }
 
 views::corewm::TooltipController*
@@ -1078,6 +1081,9 @@ DesktopWindowTreeHostPlatform::tooltip_controller() {
 }
 
 void DesktopWindowTreeHostPlatform::ScheduleRelayout() {
+  if (!native_widget_delegate_) {
+    return;
+  }
   Widget* widget = native_widget_delegate_->AsWidget();
   NonClientView* non_client_view = widget->non_client_view();
   // non_client_view may be NULL, especially during creation.
