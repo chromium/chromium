@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/close_button.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -84,9 +85,10 @@ OverviewItemView::OverviewItemView(
           std::make_unique<CloseButton>(std::move(close_callback),
                                         CloseButton::Type::kMediumFloating))) {
   CHECK(overview_item_);
-  // This should not be focusable. It's also to avoid accessibility error when
-  // |window->GetTitle()| is empty.
-  SetFocusBehavior(FocusBehavior::NEVER);
+  // Focusable so we can add accelerators to this view.
+  SetFocusBehavior(features::IsOverviewNewFocusEnabled()
+                       ? views::View::FocusBehavior::ALWAYS
+                       : views::View::FocusBehavior::NEVER);
 
   views::InkDrop::Get(close_button_)
       ->SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);

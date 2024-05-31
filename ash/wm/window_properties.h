@@ -28,6 +28,12 @@ class WindowState;
 ASH_EXPORT extern const aura::WindowProperty<bool>* const
     kHideDuringWindowDragging;
 
+// A property key attached to the overview windows (contains header, backdrop,
+// etc.). Overview windows behave a little different from windows tagged with
+// just `kOverviewUiKey`. For instance, they do not get moved if the active desk
+// is destroyed.
+extern const aura::WindowProperty<bool>* const kIsOverviewItemKey;
+
 // If this is set to true, the window stays in the same root window even if the
 // bounds outside of its root window is set.
 ASH_EXPORT extern const aura::WindowProperty<bool>* const kLockedToRootKey;

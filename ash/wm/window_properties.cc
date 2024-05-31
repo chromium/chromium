@@ -12,6 +12,8 @@ namespace ash {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideDuringWindowDragging, false)
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsOverviewItemKey, false)
+
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kLockedToRootKey, false)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kOverviewUiKey, false)

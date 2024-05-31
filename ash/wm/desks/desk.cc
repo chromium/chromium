@@ -78,18 +78,18 @@ void UpdateBackdropController(aura::Window* desk_container) {
 }
 
 bool IsOverviewUiWindow(aura::Window* window) {
-  return window->GetProperty(kOverviewUiKey);
+  return window->GetProperty(kOverviewUiKey) &&
+         !window->GetProperty(kIsOverviewItemKey);
 }
 
-// Returns true if |window| can be managed by the desk, and therefore can be
+// Returns true if `window` can be managed by the desk, and therefore can be
 // moved out of the desk when the desk is removed.
 bool CanMoveWindowOutOfDeskContainer(aura::Window* window) {
-  // The desks bar widget is an activatable window placed in the active desk's
-  // container, therefore it should be allowed to move outside of its desk when
-  // its desk is removed. The save desk as template widget is not activatable
-  // but should also be moved to the next active desk.
-  if (IsOverviewUiWindow(window))
+  // Overview Ui windows such as the desks bar and saved desk library should be
+  // moved outside the desk when the desk is removed.
+  if (IsOverviewUiWindow(window)) {
     return true;
+  }
 
   // We never move transient descendants directly, this is taken care of by
   // `wm::TransientWindowManager::OnWindowHierarchyChanged()`.

@@ -151,6 +151,7 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
+  void OnWindowStackingChanged(aura::Window* window) override;
   void OnWindowDestroying(aura::Window* window) override;
 
   // WindowStateObserver:

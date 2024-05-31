@@ -711,11 +711,8 @@ std::unique_ptr<views::Widget> DeskBarViewBase::CreateDeskWidget(
   }
 
   widget->Init(std::move(params));
-
-  auto* window = widget->GetNativeWindow();
-  window->SetId(kShellWindowId_DesksBarWindow);
-  wm::SetWindowVisibilityAnimationTransition(window, wm::ANIMATE_NONE);
-
+  wm::SetWindowVisibilityAnimationTransition(widget->GetNativeWindow(),
+                                             wm::ANIMATE_NONE);
   return widget;
 }
 
