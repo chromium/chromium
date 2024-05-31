@@ -425,8 +425,10 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
     // not history-traversable).
     // Exclude the WebView not being composited because we won't present any
     // frame if it is not being actively drawn.
+    bool navigation_with_screenshot = false;
     if (IsCompositedOutermostMainFrame(web_frame_) &&
         commit_type != kWebHistoryInertCommit) {
+      navigation_with_screenshot = true;
       WebFrameWidgetImpl* frame_widget = web_frame_->FrameWidgetImpl();
       // The outermost mainframe must have a frame widget.
       CHECK(frame_widget);
@@ -451,6 +453,9 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
           },
           base::TimeTicks::Now()));
     }
+    base::UmaHistogramBoolean("Navigation.SameDocumentNavigationWithScreenshot",
+                              navigation_with_screenshot);
+
     std::optional<blink::SameDocNavigationScreenshotDestinationToken> token =
         std::nullopt;
     if (!screenshot_destination.is_empty()) {
