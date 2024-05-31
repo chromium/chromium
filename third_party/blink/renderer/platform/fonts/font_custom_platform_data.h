@@ -32,6 +32,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_CUSTOM_PLATFORM_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_CUSTOM_PLATFORM_DATA_H_
 
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_optical_sizing.h"
 #include "third_party/blink/renderer/platform/fonts/font_orientation.h"
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
@@ -59,7 +60,11 @@ class PLATFORM_EXPORT FontCustomPlatformData
  public:
   static FontCustomPlatformData* Create(SharedBuffer*,
                                         String& ots_parse_message);
-  FontCustomPlatformData(sk_sp<SkTypeface>, size_t data_size);
+  static FontCustomPlatformData* Create(sk_sp<SkTypeface>, size_t data_size);
+
+  using PassKey = base::PassKey<FontCustomPlatformData>;
+
+  FontCustomPlatformData(PassKey, sk_sp<SkTypeface>, size_t data_size);
   FontCustomPlatformData(const FontCustomPlatformData&) = delete;
   FontCustomPlatformData& operator=(const FontCustomPlatformData&) = delete;
   ~FontCustomPlatformData();
