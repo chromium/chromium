@@ -4,14 +4,14 @@
   // vscode with Chrome. Please modify and change as necessary.
   // All settings are optional, but some more "optional" settings at the end
   // are disabled by default. Feel free to enable them.
-
   // Default tab size of 2, for consistency with internal codebase.
   "editor.tabSize": 2,
   // Do not figure out tab size from opening a file.
   "editor.detectIndentation": false,
   // Add a line at 80 characters.
-  "editor.rulers": [80],
-
+  "editor.rulers": [
+    80
+  ],
   // Except for Java where we add a line at 100 characters per that style guide
   // and the tab width should be 4 spaces.
   // The chrome java style guide:
@@ -19,19 +19,11 @@
   // does not override this and defers to the android style guide:
   // https://source.android.com/docs/setup/contribute/code-style
   "[java]": {
-    "editor.rulers": [100],
+    "editor.rulers": [
+      100
+    ],
     "editor.tabSize": 4
   },
-
-  "extensions": {
-    "recommendations": [
-      // The GN language server from Microsoft.
-      //
-      // Provides support for .gn and .gni files.
-      "msedge-dev.gnls",
-    ],
-  },
-
   // Forces LF instead of "auto" which uses CRLF on Windows.
   "files.eol": "\n",
   // Trim tailing whitespace on save.
@@ -39,17 +31,14 @@
   // Insert trimmed final new line.
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
-
   "files.associations": {
     // Adds xml syntax highlighting for grd files.
-    "*.grd" : "xml",
+    "*.grd": "xml"
   },
-
   "files.exclude": {
     // Ignore build output folders.
     "out*/**": true
   },
-
   "files.watcherExclude": {
     // Don't watch out*/ and third_party/ for changes to fix an issue
     // where vscode doesn't notice that files have changed.
@@ -60,11 +49,9 @@
     "**/out*/**": true,
     "**/third_party/**": true
   },
-
   // Wider author column for annotator extension.
   // https://marketplace.visualstudio.com/items?itemName=ryu1kn.annotator
   "annotator.annotationColumnWidth": "24em",
-
   // C++ clang format settings. |workspaceFolder| is assumed to be Chromium's
   // src/ directory.
   "C_Cpp.clang_format_path": "${workspaceFolder}/third_party/depot_tools/clang-format",
@@ -73,19 +60,15 @@
   "C_Cpp.intelliSenseEngine": "disabled",
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "modifications",
-
   // Don't format HTML files automatically on save, as VSCode's default
   // formatter doesn't deal well with Chromium Polymer files.
   "[html]": {
-    "editor.formatOnSave": false,
+    "editor.formatOnSave": false
   },
-
   // Disable automatic task detection to speed up opening the task menu.
   "task.autoDetect": "off",
-
   // Used by tasks.json for integration with Chrome tests and builds.
-  "chrome.outputDir": "${workspaceFolder}/out/current_link",
-
+  "chrome.outputDir": "${workspaceFolder}/out/current_link"
   // Optional: Highlight current line at the left of the editor.
   // "editor.renderLineHighlight": "gutter",
   // Optional: Don't automatically add closing brackets. It gets in the way.

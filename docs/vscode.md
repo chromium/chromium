@@ -242,15 +242,24 @@ of compile errors/warnings, Javadocs, etc.) when editing `.java` files in
 Chromium:
 
 1. **Add the following to your VS Code workspace `settings.json`:**
-    * `"java.import.gradle.enabled": false`
-      `"java.import.maven.enabled": false`
-      This will prevent the language server from attempting to build *all*
-      Gradle and Maven projects that can be found anywhere in the Chromium
-      source tree, which typically results in hilarity.
-    * `"java.jdt.ls.java.home": "<< ABSOLUTE PATH TO YOUR WORKING COPY OF CHROMIUM >>/src/third_party/jdk/current"`
-      This one is optional but reduces the likelihood of problems by making sure
-      the language server uses the same JDK as the Chromium build system (as
-      opposed to some random JDK from your host system).
+
+   ```
+   "java.import.gradle.enabled": false,
+   "java.import.maven.enabled": false
+   ```
+
+   This will prevent the language server from attempting to build *all* Gradle
+   and Maven projects that can be found anywhere in the Chromium source tree,
+   which typically results in hilarity.
+
+   ```
+   "java.jdt.ls.java.home": "<< ABSOLUTE PATH TO YOUR WORKING COPY OF CHROMIUM >>/src/third_party/jdk/current"
+   ```
+
+   This one is optional but reduces the likelihood of problems by making sure
+   the language server uses the same JDK as the Chromium build system (as
+   opposed to some random JDK from your host system).
+
 2. **Install the
    [*Language Support for Java™ by Red Hat*](https://marketplace.visualstudio.com/items?itemName=redhat.java)
    extension.**
