@@ -272,6 +272,19 @@ bool IsValidRole(ax::mojom::blink::Role role) {
 }
 #endif
 
+HashSet<ax::mojom::blink::Role> GetExpectedParentRole(
+    ax::mojom::blink::Role role) {
+  switch (role) {
+      // TODO(crbug.com/341369908): Add other roles that have required parents.
+    case ax::mojom::blink::Role::kRow:
+      return {ax::mojom::blink::Role::kTable, ax::mojom::blink::Role::kGrid,
+              ax::mojom::blink::Role::kRowGroup,
+              ax::mojom::blink::Role::kTreeGrid};
+    default:
+      return {};
+  }
+}
+
 constexpr wtf_size_t kNumRoles =
     static_cast<wtf_size_t>(ax::mojom::blink::Role::kMaxValue) + 1;
 
@@ -2686,6 +2699,19 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
         (ancestor.current_->RoleValue() == ax::mojom::blink::Role::kGrid ||
          ancestor.current_->RoleValue() == ax::mojom::blink::Role::kTreeGrid)) {
       return ax::mojom::blink::Role::kGridCell;
+    }
+  }
+
+  // CORE-AAM requires that, for elements with roles not contained in the
+  // required context, user agents must ignore the role token and return the
+  // computed role as if the ignored role token had not been included.
+  // See https://w3c.github.io/core-aam/#roleMappingComputedRole
+  HashSet<ax::mojom::blink::Role> expected_parent_role =
+      GetExpectedParentRole(role_);
+  if (!expected_parent_role.empty()) {
+    AXObject* ancestor = ParentObjectUnignoredNonGeneric();
+    if (!ancestor || !expected_parent_role.Contains(ancestor->RoleValue())) {
+      return NativeRoleIgnoringAria();
     }
   }
 
@@ -5826,8 +5852,11 @@ AXObject* AXObject::ParentObjectUnignored() const {
 
 AXObject* AXObject::ParentObjectUnignoredNonGeneric() const {
   AXObject* parent;
+  // Null check for parent is not needed here since the root is never ignored.
   for (parent = ParentObject();
-       parent && parent->IsIgnored() && parent->RoleValue() == ax::mojom::blink::Role::kGenericContainer;
+       parent->IsIgnored() ||
+       parent->RoleValue() == ax::mojom::blink::Role::kGenericContainer ||
+       parent->RoleValue() == ax::mojom::blink::Role::kNone;
        parent = parent->ParentObject()) {
   }
 

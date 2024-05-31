@@ -2645,8 +2645,8 @@ IN_PROC_BROWSER_TEST_F(
                aria-haspopup="true" aria-autocomplete="list"
                aria-activedescendant="option1" aria-owns="list">
         <ul id="list" role="listbox">
-        <li id="option1" role="row" tabindex="-1">Apple</li>
-        <li id="option2" role="row" tabindex="-1">Orange</li>
+        <div id="option1" role="row" tabindex="-1">Apple</div>
+        <div id="option2" role="row" tabindex="-1">Orange</div>
         </ul>
       </body></html>)HTML");
 

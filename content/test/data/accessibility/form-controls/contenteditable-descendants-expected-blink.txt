@@ -8,7 +8,7 @@ rootWebArea
 ++++++staticText name='Button'
 ++++staticText editable richlyEditable name='.'
 ++++staticText editable richlyEditable name='Always expose editable tables as tables.'
-++++listItem editable ignored richlyEditable
+++++genericContainer editable ignored richlyEditable
 ++++++listMarker ignored
 ++++++++staticText name='1. '
 ++++++staticText editable richlyEditable name='Editable list item.'
