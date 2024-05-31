@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/page_info/core/about_this_site_validation.h"
@@ -160,6 +161,9 @@ TEST_P(AboutThisSiteServiceTest, ValidResponse) {
 
 // Tests the language specific feature check.
 TEST_P(AboutThisSiteServiceTest, FeatureCheck) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kPageInfoAboutThisSite);
+
   const char* enabled[]{"en-US", "en-UK",  "en", "pt", "pt-BR", "pt-PT",
                         "fr",    "fr-CA",  "it", "nl", "de",    "de-DE",
                         "es",    "es-419", "da", "id", "zh-TW", "ja"};
