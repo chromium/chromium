@@ -2101,6 +2101,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
       base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials);
   bool specific_phones_listed = false;
   bool specific_local_passkeys_listed = false;
+  bool enclave_passkeys_shown = false;
   if (is_get_assertion && !use_conditional_mediation_) {
     // List passkeys instead of mechanisms for platform & GPM authenticators.
     for (const auto& cred : transport_availability_.recognized_credentials) {
@@ -2112,11 +2113,13 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
           !allow_icloud_keychain_) {
         continue;
       }
-      if (cred.source == device::AuthenticatorType::kEnclave &&
-          enclave_needs_reauth_) {
-        // Do not list passkeys from the enclave if it needs reauth before
-        // proceeding.  Instead, we'll show a button to trigger reauth.
-        continue;
+      if (cred.source == device::AuthenticatorType::kEnclave) {
+        if (enclave_needs_reauth_) {
+          // Do not list passkeys from the enclave if it needs reauth before
+          // proceeding.  Instead, we'll show a button to trigger reauth.
+          continue;
+        }
+        enclave_passkeys_shown = true;
       }
       if (cred.source == device::AuthenticatorType::kPhone) {
         specific_phones_listed = true;
@@ -2258,7 +2261,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   // synced phone name to use a non-discoverable credential from their synced
   // phone.
   bool all_matching_phone_creds_listed =
-      list_phone_passkeys &&
+      list_phone_passkeys && !enclave_passkeys_shown &&
       (specific_phones_listed || transport_availability_.has_empty_allow_list);
   if (base::Contains(transport_availability_.available_transports, kCable) &&
       !all_matching_phone_creds_listed && !windows_handles_hybrid) {
