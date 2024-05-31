@@ -1838,7 +1838,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     for (let i = 0; i < nextTextIds.length; i++) {
       const nodeId = nextTextIds[i];
-      const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
+      const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId) as HTMLElement;
       if (!element) {
         continue;
       }
@@ -1848,8 +1848,35 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         // If the start or end index is invalid, don't use this node.
         continue;
       }
-      this.highlightCurrentText_(
-          start, end, element as HTMLElement, scrollIntoView);
+      this.highlightCurrentText_(start, end, element);
+    }
+
+    if (!scrollIntoView) {
+      return;
+    }
+
+    // Ensure all the current highlights are in view.
+    // TODO: b/40927698 - Handle if the highlight is longer than the full height
+    // of the window (e.g. when font size is very large). Possibly using word
+    // boundaries to know when we've reached the bottom of the window and need
+    // to scroll so the rest of the current highlight is showing.
+    const currentHighlights =
+        document.querySelectorAll<HTMLElement>('.' + currentReadHighlightClass);
+    if (!currentHighlights.length) {
+      return;
+    }
+    const firstHighlight = currentHighlights.item(0);
+    const lastHighlight = currentHighlights.item(currentHighlights.length - 1);
+    const highlightBottom = lastHighlight.getBoundingClientRect().bottom;
+    const highlightHeight =
+        highlightBottom - firstHighlight.getBoundingClientRect().top;
+    if (highlightHeight > (window.innerHeight / 2)) {
+      // If the bottom of the highlight would be offscreen if we center it,
+      // scroll the first highlight to the top instead of centering it.
+      firstHighlight.scrollIntoView({block: 'start'});
+    } else if (highlightBottom > window.innerHeight) {
+      // Otherwise center the current highlight if part of it would be cut off.
+      firstHighlight.scrollIntoView({block: 'center'});
     }
   }
 
@@ -1873,8 +1900,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   //   suffix text
   // </span>
   private highlightCurrentText_(
-      highlightStart: number, highlightEnd: number, currentNode: HTMLElement,
-      scrollIntoView: boolean = true): void {
+      highlightStart: number, highlightEnd: number,
+      currentNode: HTMLElement): void {
     const parentOfHighlight = document.createElement('span');
     parentOfHighlight.classList.add(parentOfHighlightClass);
 
@@ -1913,11 +1940,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // node.
     this.previousHighlights_.push(readingHighlight);
     this.replaceElement(currentNode, parentOfHighlight);
-
-    // Automatically scroll the text so the highlight stays roughly centered.
-    if (scrollIntoView) {
-      readingHighlight.scrollIntoViewIfNeeded();
-    }
   }
 
   private onSpeechFinished() {
