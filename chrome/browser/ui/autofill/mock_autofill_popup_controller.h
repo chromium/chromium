@@ -116,6 +116,7 @@ class MockAutofillPopupController : public AutofillPopupController {
               HandleKeyPressEvent,
               (const input::NativeWebKeyboardEvent& event),
               (override));
+  MOCK_METHOD(bool, HasFilteredOutSuggestions, (), (const override));
 
   void set_suggestions(const std::vector<SuggestionType>& ids) {
     suggestions_.clear();
