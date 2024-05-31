@@ -362,13 +362,19 @@ float GetSdrLumForScreenBrightness(float percent, float hdr_max_lum) {
   }
 
   DCHECK_LE(sdr_lum, hdr_max_lum);
-  DCHECK_GE(sdr_lum, sdr_min);
+  DCHECK_GT(sdr_lum, sdr_min);
   return sdr_lum;
 }
 
 gfx::DisplayColorSpaces UpdateMaxLuminanceValue(
     const gfx::DisplayColorSpaces display_color_spaces,
     float brightness) {
+  // On lid close or error state, do not alter the brightness settings of the
+  // external display.
+  if (brightness <= 0.f || brightness > 100.f) {
+    return display_color_spaces;
+  }
+
   // Only change the HDR headroom if the output space is affected by the SDR
   // brightness level.
   auto hdr_space = display_color_spaces.GetOutputColorSpace(
