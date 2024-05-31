@@ -6,6 +6,7 @@
 
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
@@ -61,6 +63,8 @@ BirchRecentTabsProvider::BirchRecentTabsProvider(Profile* profile)
 BirchRecentTabsProvider::~BirchRecentTabsProvider() = default;
 
 void BirchRecentTabsProvider::RequestBirchDataFetch() {
+  // TODO(b/338286403): Check if ChromeSync integration is disabled on lacros
+  // side.
   if (crosapi::browser_util::IsLacrosEnabled()) {
     crosapi::CrosapiManager::Get()
         ->crosapi_ash()
@@ -78,6 +82,16 @@ void BirchRecentTabsProvider::RequestBirchDataFetch() {
   if (!tab_sync_enabled) {
     // Complete the request with an empty set of tabs when tab sync is
     // disabled
+    Shell::Get()->birch_model()->SetRecentTabItems({});
+    return;
+  }
+
+  const auto* const pref_service = profile_->GetPrefs();
+  if (!pref_service ||
+      !base::Contains(pref_service->GetList(
+                          prefs::kContextualGoogleIntegrationsConfiguration),
+                      prefs::kChromeSyncIntegrationName)) {
+    // ChromeSync integration is disabled by policy.
     Shell::Get()->birch_model()->SetRecentTabItems({});
     return;
   }

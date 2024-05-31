@@ -10,6 +10,7 @@
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/files/file_path.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
@@ -47,6 +49,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/test/fake_model_type_controller_delegate.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
@@ -384,7 +387,6 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     sync_service_ = nullptr;
     release_notes_storage_ = nullptr;
     favicon_service_ = nullptr;
-    fake_user_manager_.Reset();
     BrowserWithTestWindowTest::TearDown();
     switches::SetIgnoreForestSecretKeyForTest(false);
   }
@@ -399,8 +401,8 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
-    return profile_manager()->CreateTestingProfile(profile_name,
-                                                   GetTestingFactories());
+    return profile_manager()->CreateTestingProfile(
+        profile_name, {}, u"user_name", /*avatar_id=*/0, GetTestingFactories());
   }
 
   void SetUpReleaseNotesStorage() {
@@ -424,7 +426,7 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
 
   void ClearReleaseNotesSurfacesTimesLeftToShowPref() {
     GetProfile()->GetPrefs()->ClearPref(
-        prefs::kReleaseNotesSuggestionChipTimesLeftToShow);
+        ::prefs::kReleaseNotesSuggestionChipTimesLeftToShow);
   }
 
   void MarkMilestoneUpToDate() {
@@ -433,7 +435,8 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
 
   void MarkReleaseNotesSurfacesTimesLeftToShow(int times_left_to_show) {
     GetProfile()->GetPrefs()->SetInteger(
-        prefs::kReleaseNotesSuggestionChipTimesLeftToShow, times_left_to_show);
+        ::prefs::kReleaseNotesSuggestionChipTimesLeftToShow,
+        times_left_to_show);
   }
 
   int GetCurrentMilestone() {
@@ -481,6 +484,10 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     };
   }
 
+  sync_preferences::TestingPrefServiceSyncable* GetDefaultPrefs() const {
+    return profile()->GetTestingPrefService();
+  }
+
  private:
   user_manager::TypedScopedUserManager<FakeChromeUserManager>
       fake_user_manager_;
@@ -512,7 +519,6 @@ TEST_F(BirchKeyedServiceTest, HasDataProviders) {
   WaitUntilFileSuggestServiceReady(
       ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
           GetProfile()));
-  task_environment()->RunUntilIdle();
 
   EXPECT_TRUE(birch_keyed_service()->GetCalendarProvider());
   EXPECT_TRUE(birch_keyed_service()->GetFileSuggestProvider());
@@ -566,7 +572,6 @@ TEST_F(BirchKeyedServiceTest, BirchFileSuggestProvider_NoFilesAvailable) {
   WaitUntilFileSuggestServiceReady(
       ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
           GetProfile()));
-  task_environment()->RunUntilIdle();
 
   BirchModel* model = Shell::Get()->birch_model();
   model->SetCalendarItems({});
@@ -617,7 +622,6 @@ TEST_F(BirchKeyedServiceTest, BirchRecentTabProvider) {
   WaitUntilFileSuggestServiceReady(
       ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
           GetProfile()));
-  task_environment()->RunUntilIdle();
 
   // No tabs data exists before a data fetch has occurred.
   EXPECT_EQ(Shell::Get()->birch_model()->GetTabsForTest().size(), 0u);
@@ -661,7 +665,6 @@ TEST_F(BirchKeyedServiceTest, ReleaseNotesProvider) {
   model->SetRecentTabItems(std::vector<BirchTabItem>());
   model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
   model->SetFileSuggestItems(std::vector<BirchFileItem>());
-  task_environment()->RunUntilIdle();
   auto& release_notes_items = model->GetReleaseNotesItemsForTest();
 
   ASSERT_EQ(release_notes_items.size(), 1u);
@@ -669,7 +672,7 @@ TEST_F(BirchKeyedServiceTest, ReleaseNotesProvider) {
   EXPECT_EQ(release_notes_items[0].subtitle(), u"Explore the latest features");
   EXPECT_EQ(release_notes_items[0].url(), GURL("chrome://help-app/updates"));
   EXPECT_EQ(GetProfile()->GetPrefs()->GetInteger(
-                prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
+                ::prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
             3);
 
   MarkMilestoneUpToDate();
@@ -681,14 +684,13 @@ TEST_F(BirchKeyedServiceTest, ReleaseNotesProvider) {
   model->SetRecentTabItems(std::vector<BirchTabItem>());
   model->SetFileSuggestItems(std::vector<BirchFileItem>());
   model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
-  task_environment()->RunUntilIdle();
 
   EXPECT_EQ(model->GetReleaseNotesItemsForTest().size(), 1u);
   EXPECT_EQ(GetProfile()->GetPrefs()->GetInteger(
-                prefs::kHelpAppNotificationLastShownMilestone),
+                ::prefs::kHelpAppNotificationLastShownMilestone),
             GetCurrentMilestone());
   EXPECT_EQ(GetProfile()->GetPrefs()->GetInteger(
-                prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
+                ::prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
             1);
 
   ClearReleaseNotesSurfacesTimesLeftToShowPref();
@@ -698,21 +700,19 @@ TEST_F(BirchKeyedServiceTest, ReleaseNotesProvider) {
   model->SetRecentTabItems(std::vector<BirchTabItem>());
   model->SetFileSuggestItems(std::vector<BirchFileItem>());
   model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
-  task_environment()->RunUntilIdle();
 
   EXPECT_EQ(model->GetReleaseNotesItemsForTest().size(), 0u);
   EXPECT_EQ(GetProfile()->GetPrefs()->GetInteger(
-                prefs::kHelpAppNotificationLastShownMilestone),
+                ::prefs::kHelpAppNotificationLastShownMilestone),
             GetCurrentMilestone());
   EXPECT_TRUE(
       GetProfile()
           ->GetPrefs()
-          ->FindPreference(prefs::kReleaseNotesSuggestionChipTimesLeftToShow)
+          ->FindPreference(::prefs::kReleaseNotesSuggestionChipTimesLeftToShow)
           ->IsDefaultValue());
 }
 
 TEST_F(BirchKeyedServiceTest, BirchRecentTabsWaitForForeignSessionsChange) {
-  task_environment()->RunUntilIdle();
   SetSessionServiceToReturnOpenTabsDelegate(false);
 
   // Request tab data, and check that no tabs are set when no open tabs delegate
@@ -743,13 +743,30 @@ TEST_F(BirchKeyedServiceTest, SelfShareProvider) {
   model->SetRecentTabItems(std::vector<BirchTabItem>());
   model->SetFileSuggestItems(std::vector<BirchFileItem>());
   model->SetReleaseNotesItems(std::vector<BirchReleaseNotesItem>());
-  task_environment()->RunUntilIdle();
   EXPECT_EQ(model->GetSelfShareItemsForTest().size(), 1u);
 
   // Mark Self Share Item as opened, the provider should now return zero items.
   model->GetSelfShareItemsForTest()[0].PerformAction();
   self_share_provider->RequestBirchDataFetch();
-  task_environment()->RunUntilIdle();
+  EXPECT_EQ(model->GetSelfShareItemsForTest().size(), 0u);
+}
+
+TEST_F(BirchKeyedServiceTest, NoTabSuggestionsWithDisabledChromeSyncPref) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  // Request birch data fetch, verify that tabs are populated.
+  birch_keyed_service()->GetRecentTabsProvider()->RequestBirchDataFetch();
+  AddNewChromeSyncEntry();
+  birch_keyed_service()->GetSelfShareProvider()->RequestBirchDataFetch();
+  EXPECT_EQ(model->GetTabsForTest().size(), 2u);
+  EXPECT_EQ(model->GetSelfShareItemsForTest().size(), 1u);
+
+  // Disable ChromeSync integrations by policy, no tabs should be fetched.
+  GetDefaultPrefs()->SetList(prefs::kContextualGoogleIntegrationsConfiguration,
+                             {});
+  birch_keyed_service()->GetRecentTabsProvider()->RequestBirchDataFetch();
+  birch_keyed_service()->GetSelfShareProvider()->RequestBirchDataFetch();
+  EXPECT_EQ(model->GetTabsForTest().size(), 0u);
   EXPECT_EQ(model->GetSelfShareItemsForTest().size(), 0u);
 }
 

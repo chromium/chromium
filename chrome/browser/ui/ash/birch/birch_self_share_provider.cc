@@ -6,12 +6,15 @@
 
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/prefs/pref_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 
@@ -24,6 +27,16 @@ BirchSelfShareProvider::BirchSelfShareProvider(Profile* profile)
 BirchSelfShareProvider::~BirchSelfShareProvider() = default;
 
 void BirchSelfShareProvider::RequestBirchDataFetch() {
+  const auto* const pref_service = profile_->GetPrefs();
+  if (!pref_service ||
+      !base::Contains(pref_service->GetList(
+                          prefs::kContextualGoogleIntegrationsConfiguration),
+                      prefs::kChromeSyncIntegrationName)) {
+    // ChromeSync integration is disabled by policy.
+    Shell::Get()->birch_model()->SetSelfShareItems({});
+    return;
+  }
+
   bool refresh = false;
 
   send_tab_to_self::SendTabToSelfModel* model =
