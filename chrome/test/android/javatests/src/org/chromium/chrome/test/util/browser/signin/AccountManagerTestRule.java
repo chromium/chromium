@@ -41,13 +41,21 @@ import java.util.HashMap;
  * <p>The rule will not invoke any native code, therefore it is safe to use it in Robolectric tests.
  */
 public class AccountManagerTestRule implements TestRule {
-    // TODO(crbug.com/40234741): Add TEST_ACCOUNT_2 and migrate tests that don't need to create
-    // their own accounts to these constants.
+    // TODO(crbug.com/40234741): Migrate tests that don't need to create their own accounts to these
+    // constants.
     public static final AccountInfo TEST_ACCOUNT_1 =
             new AccountInfo.Builder(
                             "test@gmail.com", FakeAccountManagerFacade.toGaiaId("test@gmail.com"))
                     .fullName("Test1 Full")
                     .givenName("Test1 Given")
+                    .accountImage(createAvatar())
+                    .build();
+
+    public static final AccountInfo TEST_ACCOUNT_2 =
+            new AccountInfo.Builder(
+                            "test2@gmail.com", FakeAccountManagerFacade.toGaiaId("test2@gmail.com"))
+                    .fullName("Test2 Full")
+                    .givenName("Test2 Given")
                     .accountImage(createAvatar())
                     .build();
 

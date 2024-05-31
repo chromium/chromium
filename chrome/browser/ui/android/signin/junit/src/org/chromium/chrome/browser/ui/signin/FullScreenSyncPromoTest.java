@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -107,7 +106,7 @@ public class FullScreenSyncPromoTest {
 
     @Test
     public void whenAccountCacheNotPopulated() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         mPrefManager.setSigninPromoLastShownVersion(38);
         mFakeAccountManagerFacade.blockGetCoreAccountInfos(/* populateCache= */ false);
         Assert.assertFalse(
@@ -125,7 +124,7 @@ public class FullScreenSyncPromoTest {
 
     @Test
     public void whenNoLastShownVersionShouldReturnFalseAndSaveVersion() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         Assert.assertFalse(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
                         mContext,
@@ -141,7 +140,7 @@ public class FullScreenSyncPromoTest {
     @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     @Test
     public void promoVisibleWhenForcingSigninPromoAtStartup() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         Assert.assertTrue(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
                         mContext,
@@ -162,7 +161,7 @@ public class FullScreenSyncPromoTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @Test
     public void promoVisibleWhenForcingSigninPromoAtStartup_replaceSyncWithSigninPromosEnabled() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         Assert.assertTrue(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
                         mContext,
@@ -175,11 +174,10 @@ public class FullScreenSyncPromoTest {
     }
 
     @Test
-    public void whenSignedInShouldReturnFalse() {
-        final CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+    public void whenSignedInAndSyncingShouldReturnFalse() {
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SYNC))
-                .thenReturn(coreAccountInfo);
+                .thenReturn(AccountManagerTestRule.TEST_ACCOUNT_1);
         mPrefManager.setSigninPromoLastShownVersion(38);
         Assert.assertFalse(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
@@ -196,9 +194,9 @@ public class FullScreenSyncPromoTest {
 
     @Test
     public void manuallySignedOutReturnsFalse() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         when(mPrefServiceMock.getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_USERNAME))
-                .thenReturn(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+                .thenReturn(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail());
         mPrefManager.setSigninPromoLastShownVersion(38);
         Assert.assertFalse(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
@@ -215,7 +213,7 @@ public class FullScreenSyncPromoTest {
 
     @Test
     public void whenVersionDifferenceTooSmallShouldReturnFalse() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         mPrefManager.setSigninPromoLastShownVersion(41);
         Assert.assertFalse(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
@@ -249,14 +247,10 @@ public class FullScreenSyncPromoTest {
     @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     @Test
     public void whenNoAccountListStoredShouldReturnTrue() {
-        final AccountInfo accountInfo =
-                mAccountManagerTestRule.addAccount(
-                        "test@gmail.com",
-                        mAccountCapabilitiesBuilder
-                                .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(true)
-                                .build());
-        when(mIdentityManagerMock.findExtendedAccountInfoByEmailAddress(accountInfo.getEmail()))
-                .thenReturn(accountInfo);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        when(mIdentityManagerMock.findExtendedAccountInfoByEmailAddress(
+                        AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail()))
+                .thenReturn(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         mPrefManager.setSigninPromoLastShownVersion(40);
         // Old implementation hasn't been storing account list
         Assert.assertTrue(
@@ -273,7 +267,7 @@ public class FullScreenSyncPromoTest {
         Assert.assertEquals(CURRENT_MAJOR_VERSION, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertArrayEquals(
                 mPrefManager.getSigninPromoLastAccountEmails().toArray(),
-                new String[] {accountInfo.getEmail()});
+                new String[] {AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail()});
     }
 
     @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
@@ -281,11 +275,14 @@ public class FullScreenSyncPromoTest {
     @Test
     public void whenNoAccountListStoredShouldReturnTrue_replaceSyncWithSigninPromosEnabled() {
         final AccountInfo accountInfo =
-                mAccountManagerTestRule.addAccount(
-                        "test@gmail.com",
-                        mAccountCapabilitiesBuilder
-                                .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(true)
-                                .build());
+                new AccountInfo.Builder(AccountManagerTestRule.TEST_ACCOUNT_1)
+                        .accountCapabilities(
+                                mAccountCapabilitiesBuilder
+                                        .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(
+                                                true)
+                                        .build())
+                        .build();
+        mAccountManagerTestRule.addAccount(accountInfo);
         when(mIdentityManagerMock.findExtendedAccountInfoByEmailAddress(accountInfo.getEmail()))
                 .thenReturn(accountInfo);
         mPrefManager.setSigninPromoLastShownVersion(40);
@@ -306,8 +303,9 @@ public class FullScreenSyncPromoTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void whenCapabilityIsNotAvailable() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         mPrefManager.setSigninPromoLastShownVersion(40);
         Assert.assertFalse(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
@@ -322,21 +320,34 @@ public class FullScreenSyncPromoTest {
                 .launchUpgradePromoActivityIfAllowed(any(), any());
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void whenCapabilityIsNotAvailable_replaceSyncWithSigninPromosEnabled() {
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mPrefManager.setSigninPromoLastShownVersion(40);
+        Assert.assertTrue(
+                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                        mContext,
+                        mProfile,
+                        mSyncPromoLauncherMock,
+                        mUpgradePromoLauncherMock,
+                        CURRENT_MAJOR_VERSION));
+        verify(mSyncPromoLauncherMock, never())
+                .launchActivityIfAllowed(mContext, SigninAccessPoint.SIGNIN_PROMO);
+        verify(mUpgradePromoLauncherMock).launchUpgradePromoActivityIfAllowed(mContext, mProfile);
+    }
+
     @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     @Test
     public void whenHasNewAccountShouldReturnTrue() {
-        final AccountInfo account1 =
-                mAccountManagerTestRule.addAccount(
-                        "test1@gmail.com",
-                        mAccountCapabilitiesBuilder
-                                .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(true)
-                                .build());
-        when(mIdentityManagerMock.findExtendedAccountInfoByEmailAddress(account1.getEmail()))
-                .thenReturn(account1);
-        mAccountManagerTestRule.addAccount("test2@gmail.com");
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        when(mIdentityManagerMock.findExtendedAccountInfoByEmailAddress(
+                        AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail()))
+                .thenReturn(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_2);
         mPrefManager.setSigninPromoLastShownVersion(40);
         mPrefManager.setSigninPromoLastAccountEmails(
-                Set.of(AccountManagerTestRule.TEST_ACCOUNT_EMAIL));
+                Set.of(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail()));
         Assert.assertTrue(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
                         mContext,
@@ -356,18 +367,14 @@ public class FullScreenSyncPromoTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @Test
     public void whenHasNewAccountShouldReturnTrue_replaceSyncWithSigninPromosEnabled() {
-        final AccountInfo account1 =
-                mAccountManagerTestRule.addAccount(
-                        "test1@gmail.com",
-                        mAccountCapabilitiesBuilder
-                                .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(true)
-                                .build());
-        when(mIdentityManagerMock.findExtendedAccountInfoByEmailAddress(account1.getEmail()))
-                .thenReturn(account1);
-        mAccountManagerTestRule.addAccount("test2@gmail.com");
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        when(mIdentityManagerMock.findExtendedAccountInfoByEmailAddress(
+                        AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail()))
+                .thenReturn(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_2);
         mPrefManager.setSigninPromoLastShownVersion(40);
         mPrefManager.setSigninPromoLastAccountEmails(
-                Set.of(AccountManagerTestRule.TEST_ACCOUNT_EMAIL));
+                Set.of(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail()));
         Assert.assertTrue(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
                         mContext,
@@ -382,11 +389,12 @@ public class FullScreenSyncPromoTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void whenAccountListUnchangedShouldReturnFalse() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         mPrefManager.setSigninPromoLastShownVersion(40);
         mPrefManager.setSigninPromoLastAccountEmails(
-                Set.of(AccountManagerTestRule.TEST_ACCOUNT_EMAIL));
+                Set.of(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail()));
         Assert.assertFalse(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
                         mContext,
@@ -401,15 +409,42 @@ public class FullScreenSyncPromoTest {
         Assert.assertEquals(40, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertArrayEquals(
                 mPrefManager.getSigninPromoLastAccountEmails().toArray(),
-                new String[] {AccountManagerTestRule.TEST_ACCOUNT_EMAIL});
+                new String[] {AccountManagerTestRule.TEST_ACCOUNT_1.getEmail()});
     }
 
     @Test
-    public void whenNoNewAccountsShouldReturnFalse() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void whenAccountListUnchangedShouldReturnFalse_replaceSyncWithSigninPromosEnabled() {
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         mPrefManager.setSigninPromoLastShownVersion(40);
         mPrefManager.setSigninPromoLastAccountEmails(
-                Set.of(AccountManagerTestRule.TEST_ACCOUNT_EMAIL, "test2@gmail.com"));
+                Set.of(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail()));
+        Assert.assertFalse(
+                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                        mContext,
+                        mProfile,
+                        mSyncPromoLauncherMock,
+                        mUpgradePromoLauncherMock,
+                        CURRENT_MAJOR_VERSION));
+        verify(mFakeAccountManagerFacade).getCoreAccountInfos();
+        verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
+        verify(mUpgradePromoLauncherMock, never())
+                .launchUpgradePromoActivityIfAllowed(any(), any());
+        Assert.assertEquals(40, mPrefManager.getSigninPromoLastShownVersion());
+        Assert.assertArrayEquals(
+                mPrefManager.getSigninPromoLastAccountEmails().toArray(),
+                new String[] {AccountManagerTestRule.TEST_ACCOUNT_1.getEmail()});
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void whenNoNewAccountsShouldReturnFalse() {
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mPrefManager.setSigninPromoLastShownVersion(40);
+        mPrefManager.setSigninPromoLastAccountEmails(
+                Set.of(
+                        AccountManagerTestRule.TEST_ACCOUNT_1.getEmail(),
+                        AccountManagerTestRule.TEST_ACCOUNT_2.getEmail()));
         Assert.assertFalse(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
                         mContext,
@@ -426,13 +461,35 @@ public class FullScreenSyncPromoTest {
     }
 
     @Test
-    public void promoHiddenWhenDefaultAccountCanNotOfferExtendedSyncPromos() {
-        mAccountManagerTestRule.addAccount(
-                "test1@gmail.com",
-                mAccountCapabilitiesBuilder
-                        .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(false)
-                        .build());
-        mAccountManagerTestRule.addAccount("test2@gmail.com");
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void whenNoNewAccountsShouldReturnFalse_replaceSyncWithSigninPromos() {
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mPrefManager.setSigninPromoLastShownVersion(40);
+        mPrefManager.setSigninPromoLastAccountEmails(
+                Set.of(
+                        AccountManagerTestRule.TEST_ACCOUNT_1.getEmail(),
+                        AccountManagerTestRule.TEST_ACCOUNT_2.getEmail()));
+        Assert.assertFalse(
+                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                        mContext,
+                        mProfile,
+                        mSyncPromoLauncherMock,
+                        mUpgradePromoLauncherMock,
+                        CURRENT_MAJOR_VERSION));
+        verify(mFakeAccountManagerFacade).getCoreAccountInfos();
+        verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
+        verify(mUpgradePromoLauncherMock, never())
+                .launchUpgradePromoActivityIfAllowed(any(), any());
+        Assert.assertEquals(40, mPrefManager.getSigninPromoLastShownVersion());
+        Assert.assertEquals(2, mPrefManager.getSigninPromoLastAccountEmails().size());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void
+            promoHiddenWhenDefaultAccountCanNotShowHistorySyncOptInsWithoutMinorModeRestrictions() {
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_2);
         mPrefManager.setSigninPromoLastShownVersion(38);
 
         Assert.assertFalse(
@@ -448,25 +505,38 @@ public class FullScreenSyncPromoTest {
                 .launchUpgradePromoActivityIfAllowed(any(), any());
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void
+            promoVisibleWhenDefaultAccountCanNotShowHistorySyncOptInsWithoutMinorModeRestrictions_replaceSyncWithSigninPromosEnabled() {
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_2);
+        mPrefManager.setSigninPromoLastShownVersion(38);
+
+        Assert.assertTrue(
+                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                        mContext,
+                        mProfile,
+                        mSyncPromoLauncherMock,
+                        mUpgradePromoLauncherMock,
+                        CURRENT_MAJOR_VERSION));
+
+        verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
+        verify(mUpgradePromoLauncherMock).launchUpgradePromoActivityIfAllowed(mContext, mProfile);
+    }
+
     @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     @Test
-    public void promoVisibleWhenTheSecondaryAccountCanNotOfferExtendedSyncPromos() {
-        final AccountInfo account1 =
-                mAccountManagerTestRule.addAccount(
-                        "test1@gmail.com",
-                        mAccountCapabilitiesBuilder
-                                .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(true)
-                                .build());
-        final AccountInfo account2 =
-                mAccountManagerTestRule.addAccount(
-                        "test2@gmail.com",
-                        mAccountCapabilitiesBuilder
-                                .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(false)
-                                .build());
-        when(mIdentityManagerMock.findExtendedAccountInfoByEmailAddress(eq(account1.getEmail())))
-                .thenReturn(account1);
-        when(mIdentityManagerMock.findExtendedAccountInfoByEmailAddress(eq(account2.getEmail())))
-                .thenReturn(account2);
+    public void
+            promoVisibleWhenTheSecondaryAccountCanNotShowHistorySyncOptInsWithoutMinorModeRestrictions() {
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        when(mIdentityManagerMock.findExtendedAccountInfoByEmailAddress(
+                        eq(AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail())))
+                .thenReturn(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        when(mIdentityManagerMock.findExtendedAccountInfoByEmailAddress(
+                        eq(AccountManagerTestRule.AADC_MINOR_ACCOUNT.getEmail())))
+                .thenReturn(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
         mPrefManager.setSigninPromoLastShownVersion(38);
         Assert.assertTrue(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
@@ -486,23 +556,15 @@ public class FullScreenSyncPromoTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @Test
     public void
-            promoVisibleWhenTheSecondaryAccountCanNotOfferExtendedSyncPromos_replaceSyncWithSigninPromosEnabled() {
-        final AccountInfo account1 =
-                mAccountManagerTestRule.addAccount(
-                        "test1@gmail.com",
-                        mAccountCapabilitiesBuilder
-                                .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(true)
-                                .build());
-        final AccountInfo account2 =
-                mAccountManagerTestRule.addAccount(
-                        "test2@gmail.com",
-                        mAccountCapabilitiesBuilder
-                                .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(false)
-                                .build());
-        when(mIdentityManagerMock.findExtendedAccountInfoByEmailAddress(eq(account1.getEmail())))
-                .thenReturn(account1);
-        when(mIdentityManagerMock.findExtendedAccountInfoByEmailAddress(eq(account2.getEmail())))
-                .thenReturn(account2);
+            promoVisibleWhenTheSecondaryAccountCanNotShowHistorySyncOptInsWithoutMinorModeRestrictions_replaceSyncWithSigninPromosEnabled() {
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        when(mIdentityManagerMock.findExtendedAccountInfoByEmailAddress(
+                        eq(AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail())))
+                .thenReturn(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        when(mIdentityManagerMock.findExtendedAccountInfoByEmailAddress(
+                        eq(AccountManagerTestRule.AADC_MINOR_ACCOUNT.getEmail())))
+                .thenReturn(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
         mPrefManager.setSigninPromoLastShownVersion(38);
         Assert.assertTrue(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(

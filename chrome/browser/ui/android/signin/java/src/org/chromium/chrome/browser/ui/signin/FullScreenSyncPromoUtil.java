@@ -76,7 +76,6 @@ public final class FullScreenSyncPromoUtil {
         return false;
     }
 
-    // TODO(b/41493788): Check the PRD to see if the conditions on showing this promo have changed.
     private static boolean shouldLaunchPromo(
             Profile profile, SigninPreferencesManager prefManager, final int currentMajorVersion) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO)) {
@@ -121,14 +120,18 @@ public final class FullScreenSyncPromoUtil {
         final @Nullable AccountInfo firstAccount =
                 identityManager.findExtendedAccountInfoByEmailAddress(
                         coreAccountInfos.get(0).getEmail());
-        if (!(firstAccount != null
-                && firstAccount
-                                .getAccountCapabilities()
-                                .canShowHistorySyncOptInsWithoutMinorModeRestrictions()
-                        == Tribool.TRUE)) {
-            // Show promo only when CanShowHistorySyncOptInsWithoutMinorModeRestrictions capability
-            // for the first account
-            // is fetched and true.
+        final boolean canShowSyncPromos =
+                firstAccount != null
+                        && firstAccount
+                                        .getAccountCapabilities()
+                                        .canShowHistorySyncOptInsWithoutMinorModeRestrictions()
+                                == Tribool.TRUE;
+        final boolean isSyncPromo =
+                !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
+        if (isSyncPromo && !canShowSyncPromos) {
+            // Show sync promo only when CanShowHistorySyncOptInsWithoutMinorModeRestrictions
+            // capability for the first account is fetched and true.
             return false;
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS)) {

@@ -39,6 +39,15 @@ public class AccountInfo extends CoreAccountInfo {
             mCoreAccountInfo = coreAccountInfo;
         }
 
+        /** Creates a builder constructor which holds a copy of {@param accountInfo}. */
+        public Builder(AccountInfo accountInfo) {
+            this(accountInfo.getEmail(), accountInfo.getGaiaId());
+            mFullName = accountInfo.getFullName();
+            mGivenName = accountInfo.getGivenName();
+            mAccountImage = accountInfo.getAccountImage();
+            mAccountCapabilities = accountInfo.getAccountCapabilities();
+        }
+
         public Builder fullName(String fullName) {
             mFullName = fullName;
             return this;
