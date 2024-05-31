@@ -81,7 +81,21 @@ enum ReadAnythingSettingsChange {
   COUNT = 6,
 }
 
+// Enum for logging the reading highlight state.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum ReadAloudHighlightState {
+  HIGHLIGHT_ON = 0,
+  HIGHLIGHT_OFF = 1,
+
+  // Must be last.
+  COUNT = 2,
+}
+
 const TEXT_SETTINGS_CHANGE_UMA = 'Accessibility.ReadAnything.SettingsChange';
+const HIGHLIGHT_STATE_UMA =
+    'Accessibility.ReadAnything.ReadAloud.HighlightState';
+const VOICE_SPEED_UMA = 'Accessibility.ReadAnything.ReadAloud.VoiceSpeed';
 export const moreOptionsClass = '.more-options-icon';
 
 // Link toggle button constants.
@@ -680,6 +694,12 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     } else {
       chrome.readingMode.turnedHighlightOn();
     }
+
+    const newHighlightState = this.isHighlightOn_ ?
+        ReadAloudHighlightState.HIGHLIGHT_OFF :
+        ReadAloudHighlightState.HIGHLIGHT_ON;
+    chrome.metricsPrivate.recordEnumerationValue(
+        HIGHLIGHT_STATE_UMA, newHighlightState, ReadAloudHighlightState.COUNT);
     this.setHighlightState_(!this.isHighlightOn_);
   }
 
@@ -758,6 +778,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     chrome.metricsPrivate.recordEnumerationValue(
         SPEECH_SETTINGS_CHANGE_UMA, ReadAloudSettingsChange.VOICE_SPEED_CHANGE,
         ReadAloudSettingsChange.COUNT);
+    // Log which rate is chosen by index rather than the rate value itself.
+    chrome.metricsPrivate.recordSmallCount(VOICE_SPEED_UMA, event.model.index);
     chrome.readingMode.onSpeechRateChange(event.model.item);
     this.emitEvent_(RATE_EVENT, {
       rate: event.model.item,

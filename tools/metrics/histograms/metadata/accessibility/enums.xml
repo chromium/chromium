@@ -1346,6 +1346,11 @@ Unknown properties are collapsed to zero. -->
   <int value="6" label="STIX Two Text"/>
 </enum>
 
+<enum name="ReadAnythingHighlightState">
+  <int value="0" label="Reading highlight shown"/>
+  <int value="1" label="Reading highlight hidden"/>
+</enum>
+
 <enum name="ReadAnythingLetterSpacing">
   <int value="0" label="Tight (Deprecated)"/>
   <int value="1" label="Standard"/>
