@@ -794,7 +794,7 @@ GpuProcessHost::~GpuProcessHost() {
   }
 #endif
 
-  // This is only called on the IO thread so no race against the constructor
+  // This is only called on the UI thread so no race against the constructor
   // for another GpuProcessHost.
   if (g_gpu_process_hosts[kind_] == this)
     g_gpu_process_hosts[kind_] = nullptr;
@@ -1237,7 +1237,7 @@ GpuProcessKind GpuProcessHost::kind() {
 
 // Atomically shut down the GPU process with a normal termination status.
 void GpuProcessHost::ForceShutdown() {
-  // This is only called on the IO thread so no race against the constructor
+  // This is only called on the UI thread so no race against the constructor
   // for another GpuProcessHost.
   if (g_gpu_process_hosts[kind_] == this)
     g_gpu_process_hosts[kind_] = nullptr;
