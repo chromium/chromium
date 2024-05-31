@@ -19,6 +19,7 @@
 #include "gpu/ipc/common/gpu_memory_buffer_impl_io_surface.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/shared_image_stub.h"
+#include "media/base/mac/color_space_util_mac.h"
 #include "media/base/mac/video_frame_mac.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
@@ -183,6 +184,17 @@ void VideoToolboxFrameConverter::Convert(
   const gfx::Size natural_size =
       metadata->aspect_ratio.GetNaturalSize(visible_rect);
 
+  bool allow_overlay = true;
+  gfx::ColorSpace color_space = GetImageBufferColorSpace(image.get());
+  if (!color_space.IsValid()) {
+    // Chrome and macOS do not agree on the color space; force compositing to
+    // ensure a consistent result. See crbug.com/343014700.
+    allow_overlay = false;
+    // Always use limited range since we request a limited range output format.
+    color_space = metadata->color_space.GetWithMatrixAndRange(
+        metadata->color_space.GetMatrixID(), gfx::ColorSpace::RangeID::LIMITED);
+  }
+
   gfx::GpuMemoryBufferHandle handle;
   handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
@@ -204,7 +216,7 @@ void VideoToolboxFrameConverter::Convert(
 
   gpu::Mailbox mailbox = gpu::Mailbox::Generate();
   bool result = sis_->CreateSharedImage(
-      mailbox, std::move(handle), *format, coded_size, metadata->color_space,
+      mailbox, std::move(handle), *format, coded_size, color_space,
       kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, kSharedImageUsage,
       kSharedImageDebugLabel);
   if (!result) {
@@ -247,20 +259,14 @@ void VideoToolboxFrameConverter::Convert(
     return;
   }
 
-  // TODO(crbug.com/40227557): Ensure that the frame color space matches the
-  // IOSurface color space. There doesn't seem to be a way to specify it for
-  // H.264 unless we create the format description manually.
-  frame->set_color_space(metadata->color_space);
+  frame->set_color_space(color_space);
   frame->set_hdr_metadata(metadata->hdr_metadata);
   frame->set_shared_image_format_type(
       SharedImageFormatType::kSharedImageFormat);
   if (metadata->duration != kNoTimestamp && !metadata->duration.is_zero()) {
     frame->metadata().frame_duration = metadata->duration;
   }
-  // CVImageBuffer doesn't support the GBR matrix, disabling overlay could
-  // resolve the wrong color issue. See: crbug.com/343014700.
-  frame->metadata().allow_overlay =
-      metadata->color_space.GetMatrixID() != gfx::ColorSpace::MatrixID::GBR;
+  frame->metadata().allow_overlay = allow_overlay;
   // Releasing |image| must happen after command buffer commands are complete
   // (not just submitted).
   frame->metadata().read_lock_fences_enabled = true;
