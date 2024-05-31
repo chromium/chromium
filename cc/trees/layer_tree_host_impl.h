@@ -946,6 +946,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   BeginFrameTracker current_begin_frame_tracker_;
 
  private:
+  // Holds image decode cache instance. It can either be a shared cache or
+  // a cache create by this instance. Which is used depends on the settings.
+  class ImageDecodeCacheHolder;
+
   void UpdateChildLocalSurfaceId();
 
   void CollectScrollbarUpdatesForCommit(
@@ -1012,11 +1016,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                             bool lost);
 
   void NotifyLatencyInfoSwapPromiseMonitors();
-
- private:
-  // Holds image decode cache instance. It can either be a shared cache or
-  // a cache create by this instance. Which is used depends on the settings.
-  class ImageDecodeCacheHolder;
 
   void SetMemoryPolicyImpl(const ManagedMemoryPolicy& policy);
   void SetContextVisibility(bool is_visible);
