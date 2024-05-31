@@ -3905,6 +3905,17 @@ handles::NetworkHandle QuicChromiumClientSession::GetCurrentNetwork() const {
 
 void QuicChromiumClientSession::OnServerPreferredAddressAvailable(
     const quic::QuicSocketAddress& server_preferred_address) {
+  // If this is a proxied connection, we cannot perform any migration, so
+  // ignore the server preferred address.
+  if (!session_key_.proxy_chain().is_direct()) {
+    net_log_.AddEvent(NetLogEventType::QUIC_CONNECTION_MIGRATION_FAILURE, [&] {
+      return NetLogQuicMigrationFailureParams(
+          connection_id(),
+          "Ignored server preferred address received via proxied connection");
+    });
+    return;
+  }
+
   current_migration_cause_ = ON_SERVER_PREFERRED_ADDRESS_AVAILABLE;
 
   net_log_.BeginEvent(

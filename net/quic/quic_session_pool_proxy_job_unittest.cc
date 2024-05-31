@@ -10,6 +10,7 @@
 #include "net/base/proxy_server.h"
 #include "net/base/session_usage.h"
 #include "net/cert/x509_certificate.h"
+#include "net/quic/address_utils.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/mock_quic_data.h"
 #include "net/quic/quic_context.h"
@@ -22,6 +23,7 @@
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/quic_config_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -459,6 +461,110 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateSessionFails) {
   socket_data.Resume();
 
   ASSERT_EQ(ERR_QUIC_HANDSHAKE_FAILED, callback_.WaitForResult());
+}
+
+// If the server in a proxied session provides an SPA, the client does not
+// follow it.
+TEST_P(QuicSessionPoolProxyJobTest,
+       ProxiedQuicSessionWithServerPreferredAddressShouldNotMigrate) {
+  IPEndPoint server_preferred_address = IPEndPoint(IPAddress(1, 2, 3, 4), 123);
+  FLAGS_quic_enable_chaos_protection = false;
+
+  // Enable server preferred address on the client side.
+  quic_params_->connection_options.push_back(quic::kSPAD);
+
+  Initialize();
+
+  GURL url("https://www.example.org/");
+  GURL proxy(kProxy1Url);
+  auto origin = url::SchemeHostPort(url);
+  auto proxy_origin = url::SchemeHostPort(proxy);
+  auto nak = NetworkAnonymizationKey();
+
+  scoped_refptr<X509Certificate> cert(
+      ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem"));
+  ASSERT_TRUE(cert->VerifyNameMatch(origin.host()));
+  ASSERT_TRUE(cert->VerifyNameMatch(proxy_origin.host()));
+  ASSERT_FALSE(cert->VerifyNameMatch(kDifferentHostname));
+
+  ProofVerifyDetailsChromium verify_details;
+  verify_details.cert_verify_result.verified_cert = cert;
+  verify_details.cert_verify_result.is_issued_by_known_root = true;
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  // Set the config for the _endpoint_ to send a preferred address.
+  quic::QuicConfig config;
+  config.SetIPv4AlternateServerAddressToSend(
+      ToQuicSocketAddress(server_preferred_address));
+  quic::test::QuicConfigPeer::SetPreferredAddressConnectionIdAndToken(
+      &config, kNewCID, quic::QuicUtils::GenerateStatelessResetToken(kNewCID));
+  crypto_client_stream_factory_.SetConfigForServerId(
+      quic::QuicServerId("www.example.org", 443), config);
+
+  // QUIC proxies do not use priority header.
+  client_maker_.set_use_priority_header(false);
+
+  // Use a separate packet maker for the connection to the endpoint.
+  QuicTestPacketMaker endpoint_maker(
+      version_,
+      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
+      context_.clock(), kDefaultServerHostName, quic::Perspective::IS_CLIENT,
+      /*client_priority_uses_incremental=*/true,
+      /*use_priority_header=*/true);
+
+  const uint64_t stream_id = GetNthClientInitiatedBidirectionalStreamId(0);
+  MockQuicData socket_data(version_);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
+  socket_data.AddWrite(
+      SYNCHRONOUS, ConstructConnectUdpRequestPacket(
+                       2, stream_id, proxy.host(),
+                       "/.well-known/masque/udp/www.example.org/443/", false));
+  socket_data.AddRead(ASYNC, ConstructServerSettingsPacket(3));
+  socket_data.AddRead(ASYNC, ConstructOkResponsePacket(4, stream_id, true));
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(ASYNC, client_maker_.MakeAckPacket(3, 3, 4, 3));
+  socket_data.AddWrite(ASYNC, ConstructClientH3DatagramPacket(
+                                  4, stream_id, kConnectUdpContextId,
+                                  endpoint_maker.MakeInitialSettingsPacket(1)));
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create socket data which should never be consumed. A packet with a
+  // PathChallengeFrame written to this socket indicates that the client
+  // incorrectly tried to connect directly to the server at its alternate
+  // address.
+  MockQuicData socket_data_alt_addr(version_);
+  socket_data_alt_addr.AddReadPauseForever();
+  socket_data_alt_addr.AddSocketDataToFactory(socket_factory_.get());
+
+  auto proxy_chain = ProxyChain::ForIpProtection({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_QUIC,
+                                         proxy_origin.host(), 443),
+  });
+  EXPECT_TRUE(proxy_chain.IsValid());
+
+  RequestBuilder builder(this);
+  builder.destination = origin;
+  builder.proxy_chain = proxy_chain;
+  builder.http_user_agent_settings = &http_user_agent_settings_;
+  builder.url = url;
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  ASSERT_EQ(OK, callback_.WaitForResult());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream.get());
+  QuicChromiumClientSession* session =
+      GetActiveSession(origin, nak, proxy_chain);
+  ASSERT_TRUE(session);
+
+  // Ensure the session finishes creating before proceeding.
+  RunUntilIdle();
+
+  // Double-check that no migration occurred, so the peer address is not the
+  // server's preferred address.
+  IPEndPoint peer_address = ToIPEndPoint(session->peer_address());
+  EXPECT_NE(peer_address, server_preferred_address);
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 }  // namespace net::test
