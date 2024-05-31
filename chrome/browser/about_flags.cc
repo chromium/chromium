@@ -421,16 +421,6 @@ const FeatureEntry::Choice kTouchTextSelectionStrategyChoices[] = {
      blink::switches::kTouchTextSelectionStrategy,
      blink::switches::kTouchTextSelectionStrategy_Direction}};
 
-const FeatureEntry::Choice kEnableSearchEngineChoice[] = {
-    {"Default", "", ""},
-    {"Enabled", switches::kEnableFeatures,
-     "SearchEngineChoiceTrigger:for_tagged_profiles_only/false"},
-    {"Disabled", switches::kDisableSearchEngineChoiceScreen, ""},
-    {"Enabled - WithForcedEeaCountry", switches::kEnableFeatures,
-     "SearchEngineChoiceTrigger:with_force_eea_country/true/"
-     "for_tagged_profiles_only/false"},
-};
-
 #if BUILDFLAG(IS_WIN)
 const FeatureEntry::FeatureParam kMediaFoundationClearStrategyUseFrameServer[] =
     {{"strategy", "frame-server"}};
@@ -805,6 +795,12 @@ const FeatureEntry::FeatureVariation kForceDarkVariations[] = {
      kForceDark_TransparencyAndNumColors,
      std::size(kForceDark_TransparencyAndNumColors), nullptr}};
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+const FeatureEntry::FeatureParam kSearchEngineChoiceEnabledWithForcedEea[] = {
+    {"with_force_eea_country", "true"}};
+const FeatureEntry::FeatureVariation kSearchEngineChoiceVariations[] = {
+    {"WithForcedEeaCountry", kSearchEngineChoiceEnabledWithForcedEea,
+     std::size(kSearchEngineChoiceEnabledWithForcedEea), nullptr}};
 
 const FeatureEntry::FeatureParam
     kWebIdentityDigitalIdentityCredentialNoDialogParam[] = {
@@ -5140,8 +5136,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-search-engine-choice",
      flag_descriptions::kEnableSearchEngineChoiceName,
      flag_descriptions::kEnableSearchEngineChoiceDescription,
-     kOsMac | kOsWin | kOsLinux | kOsCrOS | kOsAndroid | kOsLacros,
-     MULTI_VALUE_TYPE(kEnableSearchEngineChoice)},
+     kOsDesktop | kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kSearchEngineChoiceTrigger,
+                                    kSearchEngineChoiceVariations,
+                                    "SearchEngineChoiceTrigger")},
 
 #if BUILDFLAG(IS_MAC)
     {"mac-syscall-sandbox", flag_descriptions::kMacSyscallSandboxName,
