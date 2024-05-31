@@ -242,6 +242,22 @@ function test_transferToGPUTexture_texture_readback(device, canvas) {
 };
 
 /**
+ * Calling transferBackFromGPUTexture() without any preceding call to
+ * transferToGPUTexture should raise an exception.
+ */
+function test_transferBackFromGPUTexture_first_throws(device, canvas) {
+  const ctx = canvas.getContext('2d');
+
+  try {
+    ctx.transferBackFromGPUTexture();
+    assert_unreached('transferBackFromGPUTexture should have thrown.');
+  } catch (ex) {
+    assert_true(ex instanceof DOMException);
+    assert_equals(ex.name, 'InvalidStateError');
+  }
+}
+
+/**
  * Unbalanced calls to transferToGPUTexture() will destroy the old WebGPU access
  * texture.
  */

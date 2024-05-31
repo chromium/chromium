@@ -3754,6 +3754,21 @@ void BaseRenderingContext2D::transferBackFromGPUTexture(
     return;
   }
 
+  // Prevent unbalanced calls to transferBackFromGPUTexture without an earlier
+  // call to transferToGPUTexture.
+  if (!webgpu_access_texture_) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "This canvas is not currently in use by WebGPU.");
+    return;
+  }
+
+  if (webgpu_access_texture_->Destroyed()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The texture has been destroyed.");
+    return;
+  }
+
   // TODO(crbug.com/343211830): if this canvas already has a resource provider,
   // we should raise an exception and prevent transferring back.
 
@@ -3762,12 +3777,6 @@ void BaseRenderingContext2D::transferBackFromGPUTexture(
   CanvasResourceProvider* resource_provider =
       host->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
   if (UNLIKELY(!resource_provider)) {
-    return;
-  }
-
-  if (webgpu_access_texture_->Destroyed()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The texture has been destroyed.");
     return;
   }
 
