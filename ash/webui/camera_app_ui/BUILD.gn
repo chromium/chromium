@@ -141,6 +141,8 @@ mojom("mojo_bindings") {
     "types.mojom",
   ]
 
+  public_deps = [ "//mojo/public/mojom/base" ]
+
   deps = [
     ":ocr",
     ":pdf_builder",

@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/services/machine_learning/public/mojom/document_scanner.mojom.h"
 #include "media/capture/video/chromeos/mojom/system_event_monitor.mojom.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -117,7 +118,7 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
                               SetScreenLockedMonitorCallback callback) override;
   void RenderPdfAsJpeg(const std::vector<uint8_t>& pdf_data,
                        RenderPdfAsJpegCallback callback) override;
-  void PerformOcr(const std::vector<uint8_t>& jpeg_data,
+  void PerformOcr(mojo_base::BigBuffer jpeg_data,
                   PerformOcrCallback callback) override;
   void CreatePdfBuilder(
       mojo::PendingReceiver<camera_app::mojom::PdfBuilder> receiver) override;

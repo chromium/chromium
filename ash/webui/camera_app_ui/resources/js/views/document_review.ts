@@ -21,7 +21,7 @@ import {
 import {Filenamer} from '../models/file_namer.js';
 import {getI18nMessage} from '../models/load_time_data.js';
 import {ResultSaver} from '../models/result_saver.js';
-import {ChromeHelper} from '../mojo/chrome_helper.js';
+import {ChromeHelper, createBigBufferFromBlob} from '../mojo/chrome_helper.js';
 import {
   BigBuffer,
   PdfBuilderRemote,
@@ -632,10 +632,7 @@ class PdfBuilder {
    */
   async addPage(jpg: Blob, index: number): Promise<void> {
     assert(this.builder !== null);
-
-    const jpgBytes = new Uint8Array(await jpg.arrayBuffer());
-    const bigBuffer = this.createBigBuffer(jpgBytes);
-
+    const bigBuffer = await createBigBufferFromBlob(jpg);
     this.builder.addPage(bigBuffer, index);
   }
 
@@ -689,35 +686,5 @@ class PdfBuilder {
       bytes = new Uint8Array(buffer);
     }
     return new Blob([assertExists(bytes)], {type: MimeType.PDF});
-  }
-
-  /**
-   * Creates a BigBuffer from `jpg`.
-   */
-  private createBigBuffer(jpg: Uint8Array): BigBuffer {
-    const size = jpg.byteLength;
-
-    const sharedBuffer = Mojo.createSharedBuffer(size);
-    assert(sharedBuffer.result === Mojo.RESULT_OK);
-
-    const mapBuffer = sharedBuffer.handle.mapBuffer(0, size);
-    assert(mapBuffer.result === Mojo.RESULT_OK);
-
-    const uint8View = new Uint8Array(mapBuffer.buffer);
-    uint8View.set(jpg);
-
-    // BigBuffer type wants all properties but Mojo expects only one of them.
-    const bigBuffer: BigBuffer = {
-      sharedMemory: {
-        bufferHandle: sharedBuffer.handle,
-        size,
-      },
-      invalidBuffer: undefined,
-      bytes: undefined,
-    };
-    delete bigBuffer.invalidBuffer;
-    delete bigBuffer.bytes;
-
-    return bigBuffer;
   }
 }

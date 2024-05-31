@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "components/onc/onc_constants.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/url_util.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
 #include "ui/aura/window.h"
@@ -602,7 +603,7 @@ void CameraAppHelperImpl::RenderPdfAsJpeg(const std::vector<uint8_t>& pdf_data,
   camera_app_ui_->delegate()->RenderPdfAsJpeg(pdf_data, std::move(callback));
 }
 
-void CameraAppHelperImpl::PerformOcr(const std::vector<uint8_t>& jpeg_data,
+void CameraAppHelperImpl::PerformOcr(mojo_base::BigBuffer jpeg_data,
                                      PerformOcrCallback callback) {
   camera_app_ui_->delegate()->PerformOcr(jpeg_data, std::move(callback));
 }

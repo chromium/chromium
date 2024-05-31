@@ -13,6 +13,7 @@
 
 #include "ash/webui/camera_app_ui/ocr.mojom-forward.h"
 #include "ash/webui/camera_app_ui/pdf_builder.mojom-forward.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -162,7 +163,7 @@ class CameraAppUIDelegate {
 
   // Performs OCR on the image and returns the OCR result.
   virtual void PerformOcr(
-      const std::vector<uint8_t>& jpeg_data,
+      base::span<const uint8_t> jpeg_data,
       base::OnceCallback<void(camera_app::mojom::OcrResultPtr)> callback) = 0;
 
   // Creates a PDF and provides operations to add and delete pages, and save the

@@ -14,6 +14,7 @@ import {
 import {windowController} from '../window_controller.js';
 
 import {
+  BigBuffer,
   CameraAppHelper,
   CameraAppHelperRemote,
   CameraIntentAction,
@@ -69,6 +70,37 @@ function castToMojoRotation(rotation: number): Rotation {
     default:
       assertNotReached(`Invalid rotation ${rotation}`);
   }
+}
+
+/**
+ * Creates a BigBuffer from `blob`.
+ */
+export async function createBigBufferFromBlob(blob: Blob): Promise<BigBuffer> {
+  const bytes = new Uint8Array(await blob.arrayBuffer());
+  const size = bytes.byteLength;
+
+  const sharedBuffer = Mojo.createSharedBuffer(size);
+  assert(sharedBuffer.result === Mojo.RESULT_OK);
+
+  const mapBuffer = sharedBuffer.handle.mapBuffer(0, size);
+  assert(mapBuffer.result === Mojo.RESULT_OK);
+
+  const uint8View = new Uint8Array(mapBuffer.buffer);
+  uint8View.set(bytes);
+
+  // BigBuffer type wants all properties but Mojo expects only one of them.
+  const bigBuffer: BigBuffer = {
+    sharedMemory: {
+      bufferHandle: sharedBuffer.handle,
+      size,
+    },
+    invalidBuffer: undefined,
+    bytes: undefined,
+  };
+  delete bigBuffer.invalidBuffer;
+  delete bigBuffer.bytes;
+
+  return bigBuffer;
 }
 
 export abstract class ChromeHelper {
@@ -495,9 +527,8 @@ class ChromeHelperImpl extends ChromeHelper {
   }
 
   override async performOcr(jpeg: Blob): Promise<OcrResult> {
-    const buffer = new Uint8Array(await jpeg.arrayBuffer());
-    const numArray = castToNumberArray(buffer);
-    const {ocrResult} = await this.remote.performOcr(numArray);
+    const bigBuffer = await createBigBufferFromBlob(jpeg);
+    const {ocrResult} = await this.remote.performOcr(bigBuffer);
     return ocrResult;
   }
 

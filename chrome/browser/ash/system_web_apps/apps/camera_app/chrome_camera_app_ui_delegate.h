@@ -11,6 +11,7 @@
 #include "ash/webui/camera_app_ui/camera_app_ui_delegate.h"
 #include "ash/webui/camera_app_ui/pdf_builder.mojom.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/files/file_path_watcher.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -219,7 +220,7 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   void RenderPdfAsJpeg(
       const std::vector<uint8_t>& pdf,
       base::OnceCallback<void(const std::vector<uint8_t>&)> callback) override;
-  void PerformOcr(const std::vector<uint8_t>& jpeg_data,
+  void PerformOcr(base::span<const uint8_t> jpeg_data,
                   base::OnceCallback<void(ash::camera_app::mojom::OcrResultPtr)>
                       callback) override;
   void CreatePdfBuilder(

@@ -12,6 +12,7 @@
 #include "ash/webui/camera_app_ui/pdf_builder.mojom.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -779,7 +780,7 @@ void ChromeCameraAppUIDelegate::RenderPdfAsJpeg(
 }
 
 void ChromeCameraAppUIDelegate::PerformOcr(
-    const std::vector<uint8_t>& jpeg_data,
+    base::span<const uint8_t> jpeg_data,
     base::OnceCallback<void(ash::camera_app::mojom::OcrResultPtr)> callback) {
   std::unique_ptr<SkBitmap> bitmap =
       gfx::JPEGCodec::Decode(jpeg_data.data(), jpeg_data.size());

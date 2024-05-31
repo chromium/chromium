@@ -11,6 +11,7 @@ import "ash/webui/camera_app_ui/pdf_builder.mojom";
 import "ash/webui/camera_app_ui/types.mojom";
 import "chromeos/services/machine_learning/public/mojom/document_scanner_param_types.mojom";
 import "media/capture/video/chromeos/mojom/system_event_monitor.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
@@ -308,7 +309,7 @@ interface CameraAppHelper {
   RenderPdfAsJpeg(array<uint8> pdf_data) => (array<uint8> jpeg_data);
 
   // Performs OCR on the image and returns the OCR result.
-  PerformOcr(array<uint8> jpeg_data) => (OcrResult ocr_result);
+  PerformOcr(mojo_base.mojom.BigBuffer jpeg_data) => (OcrResult ocr_result);
 
   // Creates a PDF builder.
   CreatePdfBuilder(pending_receiver<PdfBuilder> builder);
