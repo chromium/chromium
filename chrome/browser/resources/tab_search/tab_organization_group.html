@@ -63,7 +63,7 @@
   }
 
   :host(:not([show-reject])) .icon-edit,
-  .icon-clear {
+  #rejectButton {
     margin-inline-end: var(--cr-icon-ripple-margin);
   }
 
@@ -119,7 +119,7 @@
       <template is="dom-if" if="[[showReject]]">
         <cr-icon-button id="rejectButton"
             aria-label="[[getRejectButtonAriaLabel_(name)]]"
-            class="icon-clear"
+            iron-icon="mwb16:close"
             on-click="onRejectGroupClick_">
         </cr-icon-button>
       </template>
