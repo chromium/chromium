@@ -39,6 +39,7 @@ build_webui("build") {
   ]
 
   css_files = [
+    "cluster_menu.css",
     "history_clusters_shared_style.css",
     "history_clusters_shared_style_lit.css",
     "horizontal_carousel.css",
