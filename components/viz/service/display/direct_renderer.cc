@@ -109,14 +109,15 @@ void DirectRenderer::QuadRectTransform(gfx::Transform* quad_rect_transform,
   quad_rect_transform->Scale(quad_rect.width(), quad_rect.height());
 }
 
-void DirectRenderer::InitializeViewport(DrawingFrame* frame,
-                                        const gfx::Size& viewport_size) {
-  const gfx::Rect draw_rect = frame->current_render_pass->output_rect;
-  frame->target_to_device_transform = gfx::OrthoProjectionTransform(
-      draw_rect.x(), draw_rect.right(), draw_rect.y(), draw_rect.bottom());
-  frame->target_to_device_transform.PostConcat(gfx::WindowTransform(
+gfx::AxisTransform2d DirectRenderer::CalculateTargetToDeviceTransform(
+    const gfx::Rect& draw_rect,
+    const gfx::Size& viewport_size) {
+  gfx::AxisTransform2d target_to_device_transform =
+      gfx::OrthoProjectionTransform(draw_rect.x(), draw_rect.right(),
+                                    draw_rect.y(), draw_rect.bottom());
+  target_to_device_transform.PostConcat(gfx::WindowTransform(
       0, 0, viewport_size.width(), viewport_size.height()));
-  current_viewport_size_ = viewport_size;
+  return target_to_device_transform;
 }
 
 gfx::Rect DirectRenderer::MoveFromDrawToWindowSpace(
@@ -674,7 +675,7 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
     return;
   }
 
-  UseRenderPass(render_pass);
+  EnsureRenderPassAllocated(render_pass);
 
   // TODO(crbug.com/40454563): This change applies only when Vulkan is enabled
   // and it will be removed once SkiaRenderer has complete support for Vulkan.
@@ -689,8 +690,15 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
   const gfx::Rect render_pass_update_rect = MoveFromDrawToWindowSpace(
       render_pass_is_clipped ? render_pass_scissor_in_draw_space
                              : surface_rect_in_draw_space);
+
+  const gfx::Size viewport_size = is_root_render_pass
+                                      ? current_frame()->device_viewport_size
+                                      : render_pass->output_rect.size();
+  current_frame()->target_to_device_transform =
+      CalculateTargetToDeviceTransform(
+          /*draw_rect=*/render_pass->output_rect, viewport_size);
   BeginDrawingRenderPass(render_pass, should_clear_surface,
-                         render_pass_update_rect);
+                         render_pass_update_rect, viewport_size);
 
   if (is_root_render_pass)
     last_root_render_pass_scissor_rect_ = render_pass_scissor_in_draw_space;
@@ -833,10 +841,10 @@ DirectRenderer::CalculateRenderPassRequirements(
   return requirements;
 }
 
-void DirectRenderer::UseRenderPass(const AggregatedRenderPass* render_pass) {
+void DirectRenderer::EnsureRenderPassAllocated(
+    const AggregatedRenderPass* render_pass) {
   const bool is_root = render_pass == current_frame()->root_render_pass;
   if (is_root && !output_surface_->capabilities().renderer_allocates_images) {
-    InitializeViewport(current_frame(), current_frame()->device_viewport_size);
     return;
   }
 
@@ -848,13 +856,6 @@ void DirectRenderer::UseRenderPass(const AggregatedRenderPass* render_pass) {
                               enlarge_pass_texture_amount_.height());
   }
   AllocateRenderPassResourceIfNeeded(render_pass->id, requirements);
-
-  // TODO(crbug.com/40454563): This change applies only when Vulkan is enabled
-  // and it will be removed once SkiaRenderer has complete support for Vulkan.
-  if (!IsRenderPassResourceAllocated(render_pass->id))
-    return;
-
-  InitializeViewport(current_frame(), render_pass->output_rect.size());
 }
 
 gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(

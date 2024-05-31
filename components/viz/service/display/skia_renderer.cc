@@ -1467,7 +1467,8 @@ gfx::ColorSpace SkiaRenderer::CurrentDrawLayerColorSpace() const {
 void SkiaRenderer::BeginDrawingRenderPass(
     const AggregatedRenderPass* render_pass,
     bool needs_clear,
-    const gfx::Rect& render_pass_update_rect) {
+    const gfx::Rect& render_pass_update_rect,
+    const gfx::Size& viewport_size) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("viz.quads"),
                "SkiaRenderer::BeginDrawingRenderPass");
 
@@ -1496,7 +1497,7 @@ void SkiaRenderer::BeginDrawingRenderPass(
     current_canvas_ = skia_output_surface_->RecordOverdrawForCurrentPaint();
   }
 
-  if (render_pass_update_rect == gfx::Rect(current_viewport_size_)) {
+  if (render_pass_update_rect == gfx::Rect(viewport_size)) {
     EnsureScissorTestDisabled();
   } else {
     SetScissorTestRect(render_pass_update_rect);

@@ -221,9 +221,11 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   static void QuadRectTransform(gfx::Transform* quad_rect_transform,
                                 const gfx::Transform& quad_transform,
                                 const gfx::RectF& quad_rect);
-  // This function takes DrawingFrame as an argument because RenderPass drawing
-  // code uses its computations for buffer sizing.
-  void InitializeViewport(DrawingFrame* frame, const gfx::Size& viewport_size);
+  // Returns a transform that maps the the draw rect (i.e. the render pass
+  // output rect) to the device space (i.e. buffer space).
+  gfx::AxisTransform2d CalculateTargetToDeviceTransform(
+      const gfx::Rect& draw_rect,
+      const gfx::Size& viewport_size);
   gfx::Rect MoveFromDrawToWindowSpace(const gfx::Rect& draw_rect) const;
 
   gfx::Rect DeviceViewportRectInDrawSpace() const;
@@ -252,7 +254,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // This may be because the RenderPass is already cached, or because it is
   // entirely clipped out, for instance.
   bool CanSkipRenderPass(const AggregatedRenderPass* render_pass) const;
-  void UseRenderPass(const AggregatedRenderPass* render_pass);
+  void EnsureRenderPassAllocated(const AggregatedRenderPass* render_pass);
   gfx::Rect ComputeScissorRectForRenderPass(
       const AggregatedRenderPass* render_pass) const;
 
@@ -290,10 +292,10 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
 
   virtual void SetScissorTestRect(const gfx::Rect& scissor_rect) = 0;
   // |render_pass_update_rect| is in render pass backing buffer space.
-  virtual void BeginDrawingRenderPass(
-      const AggregatedRenderPass* render_pass,
-      bool needs_clear,
-      const gfx::Rect& render_pass_update_rect) = 0;
+  virtual void BeginDrawingRenderPass(const AggregatedRenderPass* render_pass,
+                                      bool needs_clear,
+                                      const gfx::Rect& render_pass_update_rect,
+                                      const gfx::Size& viewport_size) = 0;
   // |clip_region| is a (possibly null) pointer to a quad in the same
   // space as the quad. When non-null only the area of the quad that overlaps
   // with clip_region will be drawn.
@@ -386,12 +388,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
 
   bool visible_ = false;
   bool disable_color_checks_for_testing_ = false;
-
-  // For use in deciding whether to enable the scissor rect test.
-  //
-  // During a draw, this stores the value for the current render pass; between
-  // draws, it retains the value for the root render pass of the last draw.
-  gfx::Size current_viewport_size_;
 
   DrawingFrame* current_frame() {
     DCHECK(current_frame_valid_);

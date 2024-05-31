@@ -204,7 +204,8 @@ void SoftwareRenderer::ClearFramebuffer() {
 void SoftwareRenderer::BeginDrawingRenderPass(
     const AggregatedRenderPass* render_pass,
     bool needs_clear,
-    const gfx::Rect& render_pass_update_rect) {
+    const gfx::Rect& render_pass_update_rect,
+    const gfx::Size& viewport_size) {
   if (render_pass == current_frame()->root_render_pass) {
     DCHECK(!root_canvas_);
 
@@ -227,7 +228,7 @@ void SoftwareRenderer::BeginDrawingRenderPass(
     current_canvas_ = current_framebuffer_canvas_.get();
   }
 
-  if (render_pass_update_rect == gfx::Rect(current_viewport_size_)) {
+  if (render_pass_update_rect == gfx::Rect(viewport_size)) {
     EnsureScissorTestDisabled();
   } else {
     SetScissorTestRect(render_pass_update_rect);

@@ -58,10 +58,10 @@ class VIZ_SERVICE_EXPORT SoftwareRenderer : public DirectRenderer {
   gfx::Size GetRenderPassBackingPixelSize(
       const AggregatedRenderPassId& render_pass_id) override;
   void SetScissorTestRect(const gfx::Rect& scissor_rect) override;
-  void BeginDrawingRenderPass(
-      const AggregatedRenderPass* render_pass,
-      bool needs_clear,
-      const gfx::Rect& render_pass_update_rect) override;
+  void BeginDrawingRenderPass(const AggregatedRenderPass* render_pass,
+                              bool needs_clear,
+                              const gfx::Rect& render_pass_update_rect,
+                              const gfx::Size& viewport_size) override;
   void DoDrawQuad(const DrawQuad* quad, const gfx::QuadF* draw_region) override;
   void BeginDrawingFrame() override;
   void FinishDrawingFrame() override;
