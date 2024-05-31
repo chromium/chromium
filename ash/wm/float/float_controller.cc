@@ -95,8 +95,7 @@ void UpdateWindowBoundsForTablet(
   // `SetBoundsWMEvent` instead. Otherwise, the window bounds are updated only
   // in Chrome-side whereas ARC++ doesn’t know the changes. (See comments in
   // `TabletModeWindowState::UpdateWindowPosition`.)
-  if (window->GetProperty(chromeos::kAppTypeKey) ==
-      chromeos::AppType::ARC_APP) {
+  if (window_state->is_client_controlled()) {
     // If any animation is requested, it will directly animate the
     // client-controlled windows for a rich animation. The client bounds change
     // will follow.
@@ -586,13 +585,15 @@ gfx::Rect FloatController::GetFloatWindowTabletBounds(aura::Window* window) {
   const int width = preferred_size.width();
   const int height = preferred_size.height();
 
-  // Get `floated_window_info` from the float controller. For non ARC apps, it
-  // is expected we call this function on already floated windows.
+  // Get `floated_window_info` from the float controller. For non
+  // client-controlled apps, it is expected we call this function on already
+  // floated windows. For client controlled windows, we need to send the floated
+  // bounds before the client applies the float state, which results in using
+  // `GetFloatWindowTabletBounds` before `FloatImpl` is called.
   auto* floated_window_info =
       Shell::Get()->float_controller()->MaybeGetFloatedWindowInfo(window);
 #if DCHECK_IS_ON()
-  if (window->GetProperty(chromeos::kAppTypeKey) !=
-      chromeos::AppType::ARC_APP) {
+  if (!WindowState::Get(window)->is_client_controlled()) {
     DCHECK(floated_window_info);
   }
 #endif
@@ -964,8 +965,7 @@ void FloatController::OnScreenRotationAnimationFinished(
   // TODO(b/278519956): Remove this workaround once ARC/Exo handle rotation
   // bounds better.
   for (auto& [window, info] : floated_window_info_map_) {
-    if (window->GetProperty(chromeos::kAppTypeKey) ==
-        chromeos::AppType::ARC_APP) {
+    if (WindowState::Get(window)->is_client_controlled()) {
       const gfx::Rect bounds =
           display::Screen::GetScreen()->InTabletMode()
               ? GetFloatWindowTabletBounds(window)

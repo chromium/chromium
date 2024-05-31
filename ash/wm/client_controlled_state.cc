@@ -91,9 +91,13 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
 
 void ClientControlledState::AttachState(
     WindowState* window_state,
-    WindowState::State* state_in_previous_mode) {}
+    WindowState::State* state_in_previous_mode) {
+  window_state->is_client_controlled_ = true;
+}
 
-void ClientControlledState::DetachState(WindowState* window_state) {}
+void ClientControlledState::DetachState(WindowState* window_state) {
+  window_state->is_client_controlled_ = false;
+}
 
 void ClientControlledState::HandleWorkspaceEvents(WindowState* window_state,
                                                   const WMEvent* event) {

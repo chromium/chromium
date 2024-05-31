@@ -180,6 +180,17 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
   }
 };
 
+class TestEmptyState : public WindowState::State {
+ public:
+  void OnWMEvent(WindowState* window_state, const WMEvent* event) override {}
+  chromeos::WindowStateType GetType() const override {
+    return chromeos::WindowStateType::kDefault;
+  }
+  void AttachState(WindowState* window_state, State* previous_state) override {}
+  void DetachState(WindowState* window_state) override {}
+  void OnWindowDestroying(WindowState* window_state) override {}
+};
+
 void VerifySnappedBounds(aura::Window* window, float expected_snap_ratio) {
   const WindowState* window_state = WindowState::Get(window);
   // `window` must be in any snapped state to use this method.
@@ -393,6 +404,19 @@ class ClientControlledStateTestClamshellAndTablet
 INSTANTIATE_TEST_SUITE_P(All,
                          ClientControlledStateTestClamshellAndTablet,
                          testing::Bool());
+
+TEST_F(ClientControlledStateTest, ClientControlledFlag) {
+  ASSERT_TRUE(window_state()->is_client_controlled());
+
+  // Attach `TestEmptyState` to detach `ClientControlledState`.
+  window_state()->SetStateObject(std::make_unique<TestEmptyState>());
+  EXPECT_FALSE(window_state()->is_client_controlled());
+
+  // Attach `ClientControlledState` to detach `TestEmptyState`.
+  window_state()->SetStateObject(std::make_unique<ClientControlledState>(
+      std::make_unique<TestClientControlledStateDelegate>()));
+  EXPECT_TRUE(window_state()->is_client_controlled());
+}
 
 // Make sure that calling Maximize()/Minimize()/Fullscreen() result in
 // sending the state change request and won't change the state immediately.
@@ -767,7 +791,6 @@ TEST_F(ClientControlledStateTest, SnapInSecondaryDisplay) {
 
 TEST_P(ClientControlledStateTestClamshellAndTablet, SnapMinimizeAndUnminimize) {
   UpdateDisplay("900x600");
-  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   widget_delegate()->EnableSnap();
 
   const WindowSnapWMEvent snap_left_event(WM_EVENT_SNAP_PRIMARY);
@@ -1035,8 +1058,6 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, SnapAndRotate) {
       display::test::DisplayManagerTestApi(display_manager())
           .SetFirstDisplayAsInternalDisplay();
 
-  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
-
   ScreenOrientationControllerTestApi orientation_test_api(
       Shell::Get()->screen_orientation_controller());
   // Snap enabled.
@@ -1093,7 +1114,6 @@ TEST_F(ClientControlledStateTest, ResizeToDismissSplitView) {
   ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
   auto* const split_view_controller = SplitViewController::Get(window());
 
-  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   widget_delegate()->EnableSnap();
   ASSERT_TRUE(window_state()->CanResize());
   ASSERT_TRUE(window_state()->CanSnap());
@@ -1148,7 +1168,6 @@ TEST_F(ClientControlledStateTest, ResizeToDismissSplitView) {
 TEST_F(ClientControlledStateTest, DragCaptionToSnap) {
   auto* const event_generator = GetEventGenerator();
 
-  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   widget_delegate()->EnableSnap();
   ASSERT_TRUE(window_state()->CanResize());
   ASSERT_TRUE(window_state()->CanSnap());
@@ -1227,7 +1246,6 @@ TEST_F(ClientControlledStateTest, SwapSnappedWindows) {
   UpdateDisplay("900x600");
   auto* const split_view_controller = SplitViewController::Get(window());
 
-  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   widget_delegate()->EnableSnap();
   ASSERT_TRUE(window_state()->CanResize());
   ASSERT_TRUE(window_state()->CanSnap());
@@ -1277,7 +1295,6 @@ TEST_F(ClientControlledStateTest, ClamshellTabletConversionWithSnappedWindow) {
   UpdateDisplay("900x600");
   auto* const split_view_controller = SplitViewController::Get(window());
 
-  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   widget_delegate()->EnableSnap();
   ASSERT_TRUE(window_state()->CanResize());
   ASSERT_TRUE(window_state()->CanSnap());
@@ -1594,7 +1611,6 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, ResizeSnappedWindow) {
   // Set screen width.
   UpdateDisplay("1200x600");
 
-  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   ASSERT_EQ(chromeos::OrientationType::kLandscapePrimary,
             GetCurrentScreenOrientation());
 
@@ -1665,7 +1681,6 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, ResizeSnappedWindow) {
 TEST_P(ClientControlledStateTestClamshellAndTablet,
        LeaveSnappedStateByNewStateChange) {
   auto* const split_view_controller = SplitViewController::Get(window());
-  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   widget_delegate()->EnableSnap();
 
   for (const auto new_state_type :

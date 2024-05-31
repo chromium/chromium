@@ -453,6 +453,31 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // Allows for caller to prevent property changes within scope.
   base::AutoReset<bool> GetScopedIgnorePropertyChange();
 
+  // Returns true if `current_state_` is `ClientControlledState`.
+  // A client-controlled window behaves in a manner distinct from other windows
+  // (e.g., windows backed by `DefaultState`). So when making modifications to a
+  // window management component, be careful about the following considerations.
+  // 1. Client dominance
+  //  All window state/bounds changes (excluding “direct methods”) made to a
+  //  client-controlled window are considered as just a “request” to the client.
+  //  The client has permission to accept or ignore the request so don’t expect
+  //  the request is always fulfilled. Also, window state and bounds may be
+  //  altered by the client-side without any prior request from the ash-side.
+  // 2. Asynchronous changes
+  //  All window state/bounds changes (excluding “direct methods”) are not
+  //  immediately applied but applied asynchronously when the client accepts the
+  //  change request. If you want to perform something sequentially after
+  //  changes, use `aura::WindowObserver::OnWindowBoundsChanged` or
+  //  `WindowStateObserver::OnPostWindowStateTypeChange`.
+  // 3. Direct methods
+  //  `SetBoundsDirect*` directly changes the window bounds without informing
+  //  the client, bypassing the client-controlled model. These methods can be
+  //  useful for implementing ash-decorated window animations that the client is
+  //  not interested in. However because the client is unaware of the current
+  //  bounds, it may overwrite the current bounds with its preferred bounds at
+  //  any time.
+  bool is_client_controlled() const { return is_client_controlled_; }
+
   class TestApi {
    public:
     static State* GetStateImpl(WindowState* window_state) {
@@ -685,6 +710,9 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // See `kWindowStateRestoreHistoryLayerMap` in the cc file for what window
   // state types can be put in the restore history stack.
   std::vector<chromeos::WindowStateType> window_state_restore_history_;
+
+  // True if `current_state_` is `ClientControlledState`.
+  bool is_client_controlled_{false};
 };
 
 }  // namespace ash
