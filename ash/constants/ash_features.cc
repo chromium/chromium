@@ -1299,7 +1299,7 @@ BASE_FEATURE(kGlanceablesTimeManagementClassroomStudentData,
 // Enables Tasks Glanceable on time management surface.
 BASE_FEATURE(kGlanceablesTimeManagementTasksView,
              "GlanceablesTimeManagementTasksView",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables fetching assigned (shared) tasks for Google Tasks integration.
 BASE_FEATURE(kGlanceablesTimeManagementTasksViewAssignedTasks,

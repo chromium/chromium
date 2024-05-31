@@ -9,6 +9,7 @@
 
 #include "ash/calendar/calendar_client.h"
 #include "ash/calendar/calendar_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/session/session_controller_impl.h"
@@ -94,7 +95,11 @@ class CalendarViewControllerTestObserver
 
 class CalendarViewTest : public AshTestBase {
  public:
-  CalendarViewTest() = default;
+  CalendarViewTest() {
+    features_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kGlanceablesTimeManagementTasksView});
+  }
   CalendarViewTest(const CalendarViewTest&) = delete;
   CalendarViewTest& operator=(const CalendarViewTest&) = delete;
   ~CalendarViewTest() override = default;
@@ -341,6 +346,7 @@ class CalendarViewTest : public AshTestBase {
   static void SetFakeNow(base::Time fake_now) { fake_time_ = fake_now; }
 
  private:
+  base::test::ScopedFeatureList features_;
   const AccountId account_id_ = AccountId::FromUserEmail("user1@email.com");
   calendar_test_utils::CalendarClientTestImpl client_;
   std::unique_ptr<views::Widget> widget_;
@@ -1418,8 +1424,9 @@ class CalendarViewAnimationTest
  public:
   CalendarViewAnimationTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitWithFeatureState(
-        ash::features::kMultiCalendarSupport, IsMultiCalendarEnabled());
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kMultiCalendarSupport, IsMultiCalendarEnabled()},
+         {features::kGlanceablesTimeManagementTasksView, false}});
   }
   CalendarViewAnimationTest(const CalendarViewAnimationTest&) = delete;
   CalendarViewAnimationTest& operator=(const CalendarViewAnimationTest&) =

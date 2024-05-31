@@ -143,8 +143,9 @@ class DateTrayTest
       public testing::WithParamInterface</*glanceables_v2_enabled=*/bool> {
  public:
   DateTrayTest() {
-    scoped_feature_list_.InitWithFeatureState(features::kGlanceablesV2,
-                                              AreGlanceablesV2Enabled());
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kGlanceablesV2, AreGlanceablesV2Enabled()},
+         {features::kGlanceablesTimeManagementTasksView, false}});
   }
 
   void SetUp() override {
