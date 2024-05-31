@@ -3182,6 +3182,24 @@
             ]
         }
     ],
+    "CCTGoogleBottomBar": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithBalancedLayout_Dev",
+                    "params": {
+                        "google_bottom_bar_button_list": "0,3,1,2"
+                    },
+                    "enable_features": [
+                        "CCTGoogleBottomBar"
+                    ]
+                }
+            ]
+        }
+    ],
     "CPSS-V2-Android": [
         {
             "platforms": [
