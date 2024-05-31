@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
-
 #include <memory>
 
 #include "base/component_export.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
+#include "chromeos/ash/components/chromebox_for_meetings/features.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -87,6 +87,17 @@ class COMPONENT_EXPORT(CHROMEOS_CFMSERVICE) ServiceConnectionCfmAshImpl
 void ServiceConnectionCfmAshImpl::BindServiceContext(
     mojo::PendingReceiver<mojom::CfmServiceContext> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // If experiment is disabled reset receiver
+  if (!base::FeatureList::IsEnabled(ash::cfm::features::kMojoServices)) {
+    receiver.ResetWithReason(
+        static_cast<uint32_t>(
+            chromeos::cfm::mojom::DisconnectReason::kFinchDisabledCode),
+        chromeos::cfm::mojom::DisconnectReason::kFinchDisabledMessage);
+
+    VLOG(2) << "CfMServiceContext disabled, receiver reset";
+    return;
+  }
 
   BindPlatformServiceContextIfNeeded();
 
