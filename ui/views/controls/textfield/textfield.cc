@@ -1052,8 +1052,9 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd,
                              base::checked_cast<int32_t>(range.end()));
 
-  // TODO(ViewsAX): In order to update the cache whenever the offset changes,
-  // we could set this attribute in Textfield::UpdateCursorViewPosition.
+  // TODO(crbug.com/325137417): In order to update the cache whenever the offset
+  // changes, we could set this attribute in
+  // Textfield::UpdateCursorViewPosition.
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kScrollX,
                              GetRenderText()->GetUpdatedDisplayOffset().x());
 
@@ -1067,10 +1068,10 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
        needs_ax_text_offsets_update_)) {
     GetViewAccessibility().ClearTextOffsets();
 
-    // TODO(ViewsAX): When this function is only used to initialize the cache
-    // with these values, refactor this part to not rely on the cache as it will
-    // cause a chicken and egg situation. For now, this is necessary to keep the
-    // text offsets up to date.
+    // TODO(crbug.com/325137417): When this function is only used to initialize
+    // the cache with these values, refactor this part to not rely on the cache
+    // as it will cause a chicken and egg situation. For now, this is necessary
+    // to keep the text offsets up to date.
     RefreshAccessibleTextOffsets();
     ax_value_used_to_compute_offsets_ = ax_value;
     needs_ax_text_offsets_update_ = false;

@@ -177,13 +177,13 @@ class VIEWS_EXPORT ViewAccessibility {
   // because of a function of the same name in AXPlatformNodeDelegate.
   // ViewAXPlatformNodeDelegate extends both ViewAccessibility and
   // AXPlatformNodeDelegate, which would lead to conflicts and confusion.
-  // TODO(accessibility): Rename to GetRole once the ViewsAX project is
+  // TODO(crbug.com/325137417): Rename to GetRole once the ViewsAX project is
   // completed and we don't have ViewAXPlatformNodeDelegate anymore.
   ax::mojom::Role GetCachedRole() const;
 
   // For the same reasons as GetCachedRole, this function cannot
   // follow the established pattern and be named GetName()
-  // TODO(accessibility): Rename to GetName once the ViewsAX project is
+  // TODO(crbug.com/325137417): Rename to GetName once the ViewsAX project is
   // completed and we don't have ViewAXPlatformNodeDelegate anymore.
   std::u16string GetCachedName() const;
 
@@ -192,8 +192,8 @@ class VIEWS_EXPORT ViewAccessibility {
   // This function cannot currently be named GetNameFrom() because of a function
   // of the same name in AXPlatformNodeDelegate. ViewAXPlatformNodeDelegate
   // extends both ViewAccessibility and AXPlatformNodeDelegate.
-  // TODO(accessibility): Rename to GetNameFrom once the ViewsAX project is
-  // completed and we don't have ViewAXPlatformNodeDelegate anymore.
+  // TODO(crbug.com/325137417): Rename to GetNameFrom once the ViewsAX project
+  // is completed and we don't have ViewAXPlatformNodeDelegate anymore.
   ax::mojom::NameFrom GetCachedNameFrom() const;
 
   // Sets the accessible name to the specified string and source type.
@@ -266,8 +266,8 @@ class VIEWS_EXPORT ViewAccessibility {
   // AXPlatformNodeDelegate. ViewAXPlatformNodeDelegate extends both
   // ViewAccessibility and AXPlatformNodeDelegate, which would lead to conflicts
   // and confusion.
-  // TODO(accessibility): Rename to GetDescription once the ViewsAX project is
-  // completed and we don't have ViewAXPlatformNodeDelegate anymore.
+  // TODO(crbug.com/325137417): Rename to GetDescription once the ViewsAX
+  // project is completed and we don't have ViewAXPlatformNodeDelegate anymore.
   std::u16string GetCachedDescription() const;
 
   void SetCheckedState(ax::mojom::CheckedState checked_state);
@@ -468,7 +468,7 @@ class VIEWS_EXPORT ViewAccessibility {
   // If set to true, anything that is a descendant of this view will be
   // hidden from accessibility. DEPRECATED: This is being replaced by
   // is_leaf_.
-  // TODO(javiercon): Remove this once OverrideIsLeaf is removed.
+  // TODO(crbug.com/325137417): Remove this once OverrideIsLeaf is removed.
   bool overridden_is_leaf_ = false;
 
   // If set to true, anything that is a descendant of this view will be hidden

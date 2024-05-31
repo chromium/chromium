@@ -160,8 +160,8 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
     data->role = ax::mojom::Role::kUnknown;
     data->SetRestriction(ax::mojom::Restriction::kDisabled);
 
-    // TODO(accessibility): Returning early means that any custom data which
-    // had been set via the Override functions is not included. Preserving
+    // TODO(crbug.com/325137417): Returning early means that any custom data
+    // which had been set via the Override functions is not included. Preserving
     // and exposing these properties might be worth doing, even in the case
     // of object destruction.
 
@@ -191,7 +191,7 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
 
   view_->GetAccessibleNodeData(data);
 
-  // TODO(accessibility): This next check should be added to SetRole.
+  // TODO(crbug.com/325137417): This next check should be added to SetRole.
   if (data->role == ax::mojom::Role::kAlertDialog) {
     // When an alert dialog is used, indicate this with xml-roles. This helps
     // JAWS understand that it's a dialog and not just an ordinary alert, even
@@ -363,8 +363,8 @@ void ViewAccessibility::SetIsLeaf(bool value) {
 }
 
 bool ViewAccessibility::IsLeaf() const {
-  // TODO(javiercon): The overridden check is temporary until all of ash/ has
-  // been migrated to use the new setters.
+  // TODO(crbug.com/325137417): The overridden check is temporary until all of
+  // ash/ has been migrated to use the new setters.
   return is_leaf_ || overridden_is_leaf_;
 }
 
@@ -470,9 +470,9 @@ void ViewAccessibility::SetName(std::u16string name,
     // |AXNodeData::SetName| expects a valid role. Some Views call |SetRole|
     // prior to setting the name. For those that don't, see if we can get the
     // default role from the View.
-    // TODO(accessibility): This is a temporary workaround to avoid a DCHECK,
-    // once we have migrated all Views to use the new setters and we always set
-    // a role in the constructors for views, we can remove this.
+    // TODO(crbug.com/325137417): This is a temporary workaround to avoid a
+    // DCHECK, once we have migrated all Views to use the new setters and we
+    // always set a role in the constructors for views, we can remove this.
     if (data_.role == ax::mojom::Role::kUnknown) {
       ui::AXNodeData data;
       view_->GetAccessibleNodeData(&data);
@@ -506,13 +506,13 @@ void ViewAccessibility::SetName(View& naming_view) {
   // platform accessibility API is used.
   InitializeCacheIfNeeded();
 
-  // TODO(javiercon): This is a temporary workaround to avoid the DCHECK below
-  // in the scenario where the View's accessible name is being set through
-  // either the GetAccessibleNodeData override pipeline or the SetAccessibleName
-  // pipeline, which would make the call to `GetCachedName` return an
-  // empty string. (this is the case for `Label` view). Once these are migrated
-  // we can remove this `if`, otherwise we must retrieve the name from there if
-  // needed.
+  // TODO(crbug.com/325137417): This is a temporary workaround to avoid the
+  // DCHECK below in the scenario where the View's accessible name is being set
+  // through either the GetAccessibleNodeData override pipeline or the
+  // SetAccessibleName pipeline, which would make the call to `GetCachedName`
+  // return an empty string. (this is the case for `Label` view). Once these are
+  // migrated we can remove this `if`, otherwise we must retrieve the name from
+  // there if needed.
   if (naming_view.GetViewAccessibility().GetCachedName().empty()) {
     ui::AXNodeData label_data;
     const_cast<View&>(naming_view).GetAccessibleNodeData(&label_data);

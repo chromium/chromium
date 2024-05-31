@@ -43,8 +43,8 @@ class ASH_EXPORT PrivacyScreenToastView : public views::View,
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
 
-  // TODO(ViewsAX): Remove this member and update the accessible name directly
-  // in the cache of the RootView that needs it.
+  // TODO(crbug.com/325137417): Remove this member and update the accessible
+  // name directly in the cache of the RootView that needs it.
   std::u16string accessible_name_;
 
   raw_ptr<PrivacyScreenToastController> controller_ = nullptr;

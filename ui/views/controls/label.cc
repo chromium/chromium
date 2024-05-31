@@ -1011,10 +1011,10 @@ void Label::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     GetViewAccessibility().ClearTextOffsets();
     ax_name_used_to_compute_offsets_.clear();
 
-    // TODO(ViewsAX): When this function is only used to initialize the cache
-    // with these values, refactor this part to not rely on the cache as it will
-    // cause a chicken and egg situation. For now, this is necessary to keep the
-    // text offsets up to date.
+    // TODO(crbug.com/325137417): When this function is only used to initialize
+    // the cache with these values, refactor this part to not rely on the cache
+    // as it will cause a chicken and egg situation. For now, this is necessary
+    // to keep the text offsets up to date.
     if (RefreshAccessibleTextOffsets()) {
       ax_name_used_to_compute_offsets_ = GetViewAccessibility().GetCachedName();
       node_data->AddIntListAttribute(

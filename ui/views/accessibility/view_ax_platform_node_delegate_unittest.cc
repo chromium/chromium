@@ -1014,10 +1014,10 @@ TEST_F(ViewAXPlatformNodeDelegateTest, GetUnignoredSelection) {
   textfield_->SetSelectedRange(
       gfx::Range(expected_anchor_offset, expected_focus_offset));
 
-  // TODO(accessibility): This is not obvious, but we need to call `GetData` to
-  // refresh the text offsets and accessible name. This won't be needed anymore
-  // once we finish the ViewsAX project and remove the temporary solution.
-  // See https://crbug.com/1468416.
+  // TODO(crbug.com/1468416): This is not obvious, but we need to call `GetData`
+  // to refresh the text offsets and accessible name. This won't be needed
+  // anymore once we finish the ViewsAX project and remove the temporary
+  // solution.
   textfield_accessibility()->GetData();
 
   const ui::AXSelection selection_2 =
