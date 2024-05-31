@@ -17,6 +17,29 @@ message Action {
   // This doesn't give stable test cases - see comments in .cc file.
   repeated uint32 path_to_control = 1;
 
-  // The type of action to take
-  uint32 action_id = 2;
+  // Wait until idle after the action.
+  bool wait_afterwards = 2;
+
+  oneof action_choice {
+    // Take an "action" in an ATSPI sense, e.g. click a button
+    TakeAction take_action = 3;
+
+    // Edit some text.
+    ReplaceText replace_text = 4;
+
+    // Select items from a list.
+    SetSelection set_selection = 5;
+  }
+
+  message TakeAction {
+    uint32 action_id = 1;
+  }
+
+  message ReplaceText {
+    string new_text = 1;
+  }
+
+  message SetSelection {
+    repeated uint32 selected_child = 1;
+  }
 }

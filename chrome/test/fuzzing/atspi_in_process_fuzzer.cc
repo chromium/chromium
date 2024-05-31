@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <cstdlib>
 #include <string_view>
 
@@ -64,6 +65,11 @@ class AtspiInProcessFuzzer
       ScopedAtspiAccessible& node);
   static std::string GetNodeName(ScopedAtspiAccessible& node);
   static bool InvokeAction(ScopedAtspiAccessible& node, size_t action_id);
+  static bool ReplaceText(ScopedAtspiAccessible& node,
+                          const std::string& newtext);
+  static bool SetSelection(ScopedAtspiAccessible& node,
+                           const std::vector<uint32_t>& new_selection);
+  static bool CheckOk(gboolean ok, GError** error);
 };
 
 REGISTER_TEXT_PROTO_IN_PROCESS_FUZZER(AtspiInProcessFuzzer)
@@ -156,13 +162,36 @@ int AtspiInProcessFuzzer::Fuzz(
       return -1;  // don't explore this case further
     }
 
-    if (!InvokeAction(current_control, action.action_id())) {
-      return 0;  // didn't work this time, but could conceivably work in future,
-                 // so don't reject it from the corpus
+    switch (action.action_choice_case()) {
+      case test::fuzzing::atspi_fuzzing::Action::kTakeAction:
+        if (!InvokeAction(current_control, action.take_action().action_id())) {
+          return 0;  // didn't work this time, but could conceivably work in
+                     // future, so don't reject it from the corpus
+        }
+        break;
+      case test::fuzzing::atspi_fuzzing::Action::kReplaceText:
+        if (!ReplaceText(current_control, action.replace_text().new_text())) {
+          return 0;  // didn't work this time, but could conceivably work in
+                     // future, so don't reject it from the corpus
+        }
+        break;
+      case test::fuzzing::atspi_fuzzing::Action::kSetSelection: {
+        std::vector<uint32_t> new_selection(
+            action.set_selection().selected_child().begin(),
+            action.set_selection().selected_child().end());
+        if (!SetSelection(current_control, new_selection)) {
+          return 0;  // didn't work this time, but could conceivably work in
+                     // future, so don't reject it from the corpus
+        }
+      } break;
+      case test::fuzzing::atspi_fuzzing::Action::ACTION_CHOICE_NOT_SET:
+        break;
     }
-    // In the future, we might want to do RunUntilIdle selectively based on fuzz
-    // test case input
-    base::RunLoop().RunUntilIdle();
+
+    if (action.wait_afterwards()) {
+      // Sometimes we might not want to; e.g. to find race conditions
+      base::RunLoop().RunUntilIdle();
+    }
   }
 
   return 0;
@@ -225,6 +254,14 @@ std::vector<ScopedAtspiAccessible> AtspiInProcessFuzzer::GetChildren(
   return children;
 }
 
+bool AtspiInProcessFuzzer::CheckOk(gboolean ok, GError** error) {
+  if (*error) {
+    g_clear_error(error);
+    return false;
+  }
+  return ok;
+}
+
 std::string AtspiInProcessFuzzer::GetNodeName(ScopedAtspiAccessible& node) {
   std::string retval;
   GError* error = nullptr;
@@ -250,10 +287,47 @@ bool AtspiInProcessFuzzer::InvokeAction(ScopedAtspiAccessible& node,
     g_clear_error(&error);
     return false;
   }
-  atspi_action_do_action(action, action_id % num_actions, &error);
-  if (error) {
-    g_clear_error(&error);
+  gboolean ok = atspi_action_do_action(action, action_id % num_actions, &error);
+  return CheckOk(ok, &error);
+}
+
+bool AtspiInProcessFuzzer::ReplaceText(ScopedAtspiAccessible& node,
+                                       const std::string& newtext) {
+  AtspiEditableText* editable = atspi_accessible_get_editable_text_iface(node);
+  if (!editable) {
     return false;
+  }
+  GError* error = nullptr;
+  gboolean ok =
+      atspi_editable_text_set_text_contents(editable, newtext.data(), &error);
+  return CheckOk(ok, &error);
+}
+
+bool AtspiInProcessFuzzer::SetSelection(
+    ScopedAtspiAccessible& node,
+    const std::vector<uint32_t>& new_selection) {
+  AtspiSelection* selection = atspi_accessible_get_selection_iface(node);
+  if (!selection) {
+    return false;
+  }
+  GError* error = nullptr;
+  int child_count = atspi_accessible_get_child_count(node, &error);
+  if (!CheckOk(error != nullptr, &error)) {
+    return false;
+  }
+  std::set<uint32_t> children_to_select;
+  for (uint32_t id : new_selection) {
+    children_to_select.insert(id % child_count);
+  }
+  gboolean ok = atspi_selection_clear_selection(selection, &error);
+  if (!CheckOk(ok, &error)) {
+    return false;
+  }
+  for (auto idx : children_to_select) {
+    ok = atspi_selection_select_child(selection, idx, &error);
+    if (!CheckOk(ok, &error)) {
+      return false;
+    }
   }
   return true;
 }
