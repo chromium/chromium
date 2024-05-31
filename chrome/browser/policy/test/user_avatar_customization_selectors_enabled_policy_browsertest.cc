@@ -86,13 +86,13 @@ IN_PROC_BROWSER_TEST_F(UserAvatarCustomizationSelectorsEnabledPolicyTest,
   SetPolicy(false);
 
   // Verify user starts with default image
-  EXPECT_TRUE(user_->HasDefaultImage());
+  EXPECT_TRUE(ash::default_user_image::IsValidIndex(user_->image_index()));
 
   // Attempt to save custom local image
   const gfx::ImageSkia& image = ash::default_user_image::GetStubDefaultImage();
   user_image_manager_->SaveUserImage(user_manager::UserImage::CreateAndEncode(
       image, user_manager::UserImage::FORMAT_JPEG));
-  EXPECT_TRUE(user_->HasDefaultImage());
+  EXPECT_TRUE(ash::default_user_image::IsValidIndex(user_->image_index()));
 
   // Attempt to save custom local image from file
   const base::FilePath custom_image_path =
@@ -101,18 +101,17 @@ IN_PROC_BROWSER_TEST_F(UserAvatarCustomizationSelectorsEnabledPolicyTest,
       ash::test::ImageLoader(custom_image_path).Load();
   ASSERT_FALSE(custom_image.isNull());
   user_image_manager_->SaveUserImageFromFile(custom_image_path);
-  EXPECT_TRUE(user_->HasDefaultImage());
+  EXPECT_TRUE(ash::default_user_image::IsValidIndex(user_->image_index()));
 
   // Attempt to save image from profile
   user_image_manager_->SaveUserImageFromProfileImage();
-  EXPECT_TRUE(user_->HasDefaultImage());
+  EXPECT_TRUE(ash::default_user_image::IsValidIndex(user_->image_index()));
 
   // Save default image. This should not be affected by policy
   int index = ash::default_user_image::GetRandomDefaultImageIndex();
   UserImageChangedWaiter waiter;
   user_image_manager_->SaveUserDefaultImageIndex(index);
   waiter.Wait();
-  EXPECT_TRUE(user_->HasDefaultImage());
   EXPECT_EQ(index, user_->image_index());
 }
 
@@ -152,7 +151,6 @@ IN_PROC_BROWSER_TEST_F(UserAvatarCustomizationSelectorsEnabledPolicyTest,
   waiter.Reset();
   user_image_manager_->SaveUserDefaultImageIndex(index);
   waiter.Wait();
-  EXPECT_TRUE(user_->HasDefaultImage());
   EXPECT_EQ(index, user_->image_index());
 }
 }  // namespace policy

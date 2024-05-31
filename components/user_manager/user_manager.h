@@ -484,9 +484,6 @@ class USER_MANAGER_EXPORT UserManager {
   // user's session.
   virtual bool HasBrowserRestarted() const = 0;
 
-  // Returns true if |image_index| is a valid default user image index.
-  virtual bool IsValidDefaultUserImageId(int image_index) const = 0;
-
   // Returns the instance of multi user sign-in policy controller.
   virtual MultiUserSignInPolicyController*
   GetMultiUserSignInPolicyController() = 0;

@@ -406,6 +406,8 @@ void UserImageManagerImpl::Job::UpdateUser(
     return;
   }
   if (!user_image->image().isNull()) {
+    DCHECK(default_user_image::IsValidIndex(image_index_) ||
+           user_image->has_image_bytes());
     user->SetImage(std::move(user_image), image_index_);
   } else {
     user->SetStubImage(

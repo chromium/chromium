@@ -1517,7 +1517,6 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, UserAvatarImage) {
   const base::FilePath saved_image_path =
       user_data_dir.Append(account_id_1_.GetUserEmail()).AddExtension("jpg");
 
-  EXPECT_FALSE(user->HasDefaultImage());
   EXPECT_EQ(user_manager::UserImage::Type::kExternal, user->image_index());
   EXPECT_TRUE(ash::test::AreImagesEqual(policy_image, user->GetImage()));
   const base::Value::Dict& images_pref =

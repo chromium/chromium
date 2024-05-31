@@ -122,7 +122,6 @@ class FakeChromeUserManager : public user_manager::UserManagerBase {
   void AsyncRemoveCryptohome(const AccountId& account_id) const override;
   bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const override;
-  bool IsValidDefaultUserImageId(int image_index) const override;
 
   // user_manager::UserManagerBase override.
   void LoadDeviceLocalAccounts(std::set<AccountId>* users_set) override;

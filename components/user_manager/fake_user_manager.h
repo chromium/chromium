@@ -114,7 +114,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   void AsyncRemoveCryptohome(const AccountId& account_id) const override;
   bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const override;
-  bool IsValidDefaultUserImageId(int image_index) const override;
 
   // UserManagerBase overrides:
   void SetEphemeralModeConfig(

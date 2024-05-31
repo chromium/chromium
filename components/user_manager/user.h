@@ -133,9 +133,6 @@ class USER_MANAGER_EXPORT User {
   // returns false as fallback.
   bool CanLock() const;
 
-  // Whether the user has a default image.
-  bool HasDefaultImage() const;
-
   int image_index() const { return image_index_; }
   bool has_image_bytes() const { return user_image_->has_image_bytes(); }
   // Returns bytes representation of static user image for WebUI.

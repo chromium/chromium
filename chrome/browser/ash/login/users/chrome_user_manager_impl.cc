@@ -755,10 +755,6 @@ bool ChromeUserManagerImpl::IsDeprecatedSupervisedAccountId(
          user_manager::kSupervisedUserDomain;
 }
 
-bool ChromeUserManagerImpl::IsValidDefaultUserImageId(int image_index) const {
-  return default_user_image::IsValidIndex(image_index);
-}
-
 std::unique_ptr<user_manager::User>
 ChromeUserManagerImpl::CreateUserFromDeviceLocalAccount(
     const AccountId& account_id,

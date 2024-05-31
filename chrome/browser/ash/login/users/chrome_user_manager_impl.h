@@ -61,7 +61,6 @@ class ChromeUserManagerImpl
   void AsyncRemoveCryptohome(const AccountId& account_id) const override;
   bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const override;
-  bool IsValidDefaultUserImageId(int image_index) const override;
 
   // DeviceSettingsService::Observer:
   void OwnershipStatusChanged() override;

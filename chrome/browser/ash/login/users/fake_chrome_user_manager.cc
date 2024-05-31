@@ -266,10 +266,6 @@ bool FakeChromeUserManager::IsDeprecatedSupervisedAccountId(
          user_manager::kSupervisedUserDomain;
 }
 
-bool FakeChromeUserManager::IsValidDefaultUserImageId(int image_index) const {
-  return default_user_image::IsValidIndex(image_index);
-}
-
 const user_manager::UserList& FakeChromeUserManager::GetUsers() const {
   return users_;
 }

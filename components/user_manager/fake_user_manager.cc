@@ -365,9 +365,4 @@ bool FakeUserManager::IsDeprecatedSupervisedAccountId(
   return false;
 }
 
-bool FakeUserManager::IsValidDefaultUserImageId(int image_index) const {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 }  // namespace user_manager

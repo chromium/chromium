@@ -347,7 +347,6 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserDefaultImageIndex) {
   user_image_manager->SaveUserDefaultImageIndex(
       default_user_image::kFirstDefaultImageIndex);
 
-  EXPECT_TRUE(user->HasDefaultImage());
   EXPECT_EQ(default_user_image::kFirstDefaultImageIndex, user->image_index());
   ExpectUserImageInfo(test_account_id1_,
                       default_user_image::kFirstDefaultImageIndex,
@@ -376,7 +375,6 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserImage) {
       custom_image, user_manager::UserImage::FORMAT_JPEG));
   run_loop_->Run();
 
-  EXPECT_FALSE(user->HasDefaultImage());
   EXPECT_EQ(user_manager::UserImage::Type::kExternal, user->image_index());
   EXPECT_TRUE(test::AreImagesEqual(custom_image, user->GetImage()));
   ExpectUserImageInfo(test_account_id1_,
@@ -412,7 +410,6 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserImageFromFile) {
   user_image_manager->SaveUserImageFromFile(custom_image_path);
   run_loop_->Run();
 
-  EXPECT_FALSE(user->HasDefaultImage());
   EXPECT_EQ(user_manager::UserImage::Type::kExternal, user->image_index());
   EXPECT_TRUE(test::AreImagesEqual(custom_image, user->GetImage()));
   ExpectUserImageInfo(test_account_id1_,
@@ -481,7 +478,6 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserImageFromProfileImage) {
   const gfx::ImageSkia& profile_image =
       user_image_manager->DownloadedProfileImage();
 
-  EXPECT_FALSE(user->HasDefaultImage());
   EXPECT_EQ(user_manager::UserImage::Type::kProfile, user->image_index());
   EXPECT_TRUE(test::AreImagesEqual(profile_image, user->GetImage()));
   ExpectUserImageInfo(test_account_id1_,
@@ -621,7 +617,6 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, SetAndClear) {
   store->Load();
   run_loop_->Run();
 
-  EXPECT_FALSE(user->HasDefaultImage());
   EXPECT_EQ(user_manager::UserImage::Type::kExternal, user->image_index());
   EXPECT_TRUE(test::AreImagesEqual(policy_image_, user->GetImage()));
   ExpectUserImageInfo(enterprise_account_id_,
@@ -652,7 +647,6 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, SetAndClear) {
   base::RunLoop().RunUntilIdle();
 
   const int default_image_index = user->image_index();
-  EXPECT_TRUE(user->HasDefaultImage());
   EXPECT_TRUE(default_user_image::IsValidIndex(default_image_index));
   EXPECT_TRUE(default_user_image::IsInCurrentImageSet(default_image_index));
   ExpectUserImageInfo(enterprise_account_id_, default_image_index,
@@ -671,7 +665,6 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, SetAndClear) {
       UserImageManagerRegistry::Get()->GetManager(enterprise_account_id_);
   user_image_manager->SaveUserDefaultImageIndex(user_image_index);
 
-  EXPECT_TRUE(user->HasDefaultImage());
   EXPECT_EQ(user_image_index, user->image_index());
   ExpectUserImageInfo(enterprise_account_id_, user_image_index,
                       base::FilePath());
@@ -700,7 +693,6 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, PolicyOverridesUser) {
   user_image_manager->SaveUserDefaultImageIndex(
       default_user_image::kFirstDefaultImageIndex);
 
-  EXPECT_TRUE(user->HasDefaultImage());
   EXPECT_EQ(default_user_image::kFirstDefaultImageIndex, user->image_index());
   ExpectUserImageInfo(enterprise_account_id_,
                       default_user_image::kFirstDefaultImageIndex,
@@ -717,7 +709,6 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, PolicyOverridesUser) {
   store->Load();
   run_loop_->Run();
 
-  EXPECT_FALSE(user->HasDefaultImage());
   EXPECT_EQ(user_manager::UserImage::Type::kExternal, user->image_index());
   EXPECT_TRUE(test::AreImagesEqual(policy_image_, user->GetImage()));
   ExpectUserImageInfo(enterprise_account_id_,
@@ -758,7 +749,6 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, UserDoesNotOverridePolicy) {
   store->Load();
   run_loop_->Run();
 
-  EXPECT_FALSE(user->HasDefaultImage());
   EXPECT_EQ(user_manager::UserImage::Type::kExternal, user->image_index());
   EXPECT_TRUE(test::AreImagesEqual(policy_image_, user->GetImage()));
   ExpectUserImageInfo(enterprise_account_id_,
@@ -780,7 +770,6 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, UserDoesNotOverridePolicy) {
   user_image_manager->SaveUserDefaultImageIndex(
       default_user_image::kFirstDefaultImageIndex);
 
-  EXPECT_FALSE(user->HasDefaultImage());
   EXPECT_EQ(user_manager::UserImage::Type::kExternal, user->image_index());
   EXPECT_TRUE(test::AreImagesEqual(policy_image_, user->GetImage()));
   ExpectUserImageInfo(enterprise_account_id_,
