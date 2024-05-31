@@ -197,15 +197,10 @@ class SplitViewControllerTest : public AshTestBase {
         /*enabled_features=*/{features::kFasterSplitScreenSetup,
                               features::kOsSettingsRevampWayfinding},
         /*disabled_features=*/{});
-    faster_split_screen_enabled_ = features::IsFasterSplitScreenSetupEnabled();
   }
   SplitViewControllerTest(const SplitViewControllerTest&) = delete;
   SplitViewControllerTest& operator=(const SplitViewControllerTest&) = delete;
   ~SplitViewControllerTest() override = default;
-
-  bool faster_split_screen_enabled() const {
-    return faster_split_screen_enabled_;
-  }
 
   // test::AshTestBase:
   void SetUp() override {
@@ -344,8 +339,6 @@ class SplitViewControllerTest : public AshTestBase {
   base::HistogramTester histograms_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  bool faster_split_screen_enabled_ = false;
 };
 
 // Tests the basic functionalities.
@@ -3993,8 +3986,8 @@ TEST_F(SplitViewControllerTest,
   constexpr char kDeviceOrientationInSplitView[] =
       "Ash.SplitView.OrientationInSplitView";
   const gfx::Rect bounds(0, 0, 400, 400);
-  std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
-  std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
+  std::unique_ptr<aura::Window> window1(CreateAppWindow(bounds));
+  std::unique_ptr<aura::Window> window2(CreateAppWindow(bounds));
 
   wm::ActivateWindow(window1.get());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
@@ -4022,12 +4015,10 @@ TEST_F(SplitViewControllerTest,
   // snapping a window without being in overview case.
   histogram_tester.ExpectBucketCount(
       kDeviceOrientationClamshell,
-      SplitViewMetricsController::DeviceOrientation::kPortrait,
-      faster_split_screen_enabled() ? 1 : 0);
+      SplitViewMetricsController::DeviceOrientation::kPortrait, 1);
   histogram_tester.ExpectBucketCount(
       kDeviceOrientationEntryPoint,
-      SplitViewMetricsController::DeviceOrientation::kPortrait,
-      faster_split_screen_enabled() ? 1 : 0);
+      SplitViewMetricsController::DeviceOrientation::kPortrait, 1);
 
   // Activate `window2` to snap to the right. With windows snapped to both side,
   // split view metric controller should start recording metrics.
@@ -4035,12 +4026,10 @@ TEST_F(SplitViewControllerTest,
   WindowState::Get(window2.get())->OnWMEvent(&wm_secondary_snap_event);
   histogram_tester.ExpectBucketCount(
       kDeviceOrientationClamshell,
-      SplitViewMetricsController::DeviceOrientation::kPortrait,
-      faster_split_screen_enabled() ? 2 : 1);
+      SplitViewMetricsController::DeviceOrientation::kPortrait, 1);
   histogram_tester.ExpectBucketCount(
       kDeviceOrientationEntryPoint,
-      SplitViewMetricsController::DeviceOrientation::kPortrait,
-      faster_split_screen_enabled() ? 2 : 1);
+      SplitViewMetricsController::DeviceOrientation::kPortrait, 1);
 
   // 2. Test landscape orientation.
   histogram_tester.ExpectBucketCount(

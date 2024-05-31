@@ -69,6 +69,7 @@
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
 #include "ash/wm/overview/scoped_overview_wallpaper_clipper.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/faster_split_view.h"
 #include "ash/wm/splitview/faster_split_view_old.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -620,8 +621,13 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
 
   const bool in_split_view =
       SplitViewController::Get(root_window_)->InSplitViewMode();
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  const bool should_report_split_view_metrics =
+      in_split_view ||
+      (snap_group_controller &&
+       snap_group_controller->GetTopmostVisibleSnapGroup(root_window_));
   // OverviewGrid in splitscreen does not include the window to be activated.
-  if (!item_list_.empty() || in_split_view) {
+  if (!item_list_.empty() || should_report_split_view_metrics) {
     const bool minimized_in_tablet =
         overview_session_->enter_exit_overview_type() ==
         OverviewEnterExitType::kFadeOutExit;
@@ -630,8 +636,9 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
         !display::Screen::GetScreen()->InTabletMode();
     // The following instance self-destructs when shutdown animation ends.
     new ShutdownAnimationMetricsTrackerObserver(
-        root_window_->layer()->GetCompositor(), in_split_view,
-        single_animation_in_clamshell, minimized_in_tablet);
+        root_window_->layer()->GetCompositor(),
+        should_report_split_view_metrics, single_animation_in_clamshell,
+        minimized_in_tablet);
   }
 
   drop_target_ = nullptr;
@@ -2604,13 +2611,15 @@ void OverviewGrid::OnSplitViewStateChanged(
       state == SplitViewController::State::kNoSnap &&
       end_reason == SplitViewController::EndReason::kUnsnappableWindowActivated;
 
-  // If two windows were snapped to both sides of the screen and/or we ended
-  // split view by adding a Snap Group, or an unsnappable window was just
-  // activated, or we're in single split mode in clamshell mode and there is no
-  // window in overview, end overview mode and bail out.
-  if (state == SplitViewController::State::kBothSnapped ||
-      end_reason == SplitViewController::EndReason::kSnapGroups ||
-      unsnappable_window_activated ||
+  // If two windows were snapped to both sides of the screen or an unsnappable
+  // window was just activated, or we're in single split mode in clamshell mode
+  // and there is no window in overview, end overview mode and bail out.
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  const bool both_snapped_windows =
+      state == SplitViewController::State::kBothSnapped ||
+      (snap_group_controller &&
+       snap_group_controller->GetTopmostVisibleSnapGroup(root_window_));
+  if (both_snapped_windows || unsnappable_window_activated ||
       (split_view_controller->InClamshellSplitViewMode() &&
        overview_session_->IsEmpty())) {
     overview_session_->RestoreWindowActivation(false);

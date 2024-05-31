@@ -9290,7 +9290,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
 
   // 1. Test the 1 window scenario.
   const gfx::Rect bounds(400, 400);
-  std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
+  std::unique_ptr<aura::Window> window1(CreateAppWindow(bounds));
   WindowState* window_state1 = WindowState::Get(window1.get());
   EXPECT_FALSE(window_state1->IsSnapped());
   ToggleOverview();
@@ -9308,7 +9308,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
   // 2. Test if one window is snapped, the other windows are showing in
   // overview, close all windows in overview will end overview and also
   // splitview.
-  std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
+  std::unique_ptr<aura::Window> window2(CreateAppWindow(bounds));
   ToggleOverview();
   EXPECT_TRUE(GetOverviewController()->InOverviewSession());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
@@ -9327,7 +9327,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 
   // 3. Test that snap 2 windows will end overview and splitview.
-  std::unique_ptr<aura::Window> window3(CreateWindow(bounds));
+  std::unique_ptr<aura::Window> window3(CreateAppWindow(bounds));
   ToggleOverview();
   overview_item1 = GetOverviewItemForWindow(window1.get());
   DragWindowTo(overview_item1, gfx::PointF(0, 0));
@@ -9339,10 +9339,14 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
   EXPECT_FALSE(GetOverviewController()->InOverviewSession());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 
+  // Maximize `window3` as `window1` and `window3` may form a Snap Group with
+  // `kSnapGroup` enabled.
+  WindowState::Get(window3.get())->Maximize();
+
   // 4. Test if one window is snapped, the other windows are showing in
   // overview, we can drag another window in overview to snap in splitview, and
   // the previous snapped window will be put back into overview.
-  std::unique_ptr<aura::Window> window4(CreateWindow(bounds));
+  std::unique_ptr<aura::Window> window4(CreateAppWindow(bounds));
   ToggleOverview();
   overview_item1 = GetOverviewItemForWindow(window1.get());
   DragWindowTo(overview_item1, gfx::PointF(0, 0));
@@ -9475,8 +9479,8 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
   const gfx::Rect bounds(400, 400);
-  std::unique_ptr<aura::Window> left_window(CreateWindow(bounds));
-  std::unique_ptr<aura::Window> right_window(CreateWindow(bounds));
+  std::unique_ptr<aura::Window> left_window(CreateAppWindow(bounds));
+  std::unique_ptr<aura::Window> right_window(CreateAppWindow(bounds));
   CheckOverviewEnterExitHistogram("Init", {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0});
 
   ToggleOverview();
