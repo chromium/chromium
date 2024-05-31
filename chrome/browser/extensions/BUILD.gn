@@ -570,6 +570,8 @@ source_set("extensions") {
     "extension_menu_icon_loader.h",
     "extension_migrator.cc",
     "extension_migrator.h",
+    "extension_safety_check_utils.cc",
+    "extension_safety_check_utils.h",
     "extension_service.cc",
     "extension_service.h",
     "extension_side_panel_view_host.cc",
