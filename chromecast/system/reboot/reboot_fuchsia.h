@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 
 namespace sys {
 class ServiceDirectory;

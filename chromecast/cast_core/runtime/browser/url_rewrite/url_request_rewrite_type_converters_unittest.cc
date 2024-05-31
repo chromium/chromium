@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "components/url_rewrite/browser/url_request_rewrite_rules_validation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
