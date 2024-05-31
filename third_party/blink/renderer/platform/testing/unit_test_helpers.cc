@@ -25,8 +25,6 @@
 
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
-#include <optional>
-
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
@@ -38,8 +36,8 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 namespace test {
@@ -122,13 +120,13 @@ base::FilePath HyphenationDictionaryDir() {
   return exe_dir.AppendASCII("gen/hyphen-data");
 }
 
-std::optional<Vector<char>> ReadFromFile(const String& path) {
+scoped_refptr<SharedBuffer> ReadFromFile(const String& path) {
   base::FilePath file_path = blink::WebStringToFilePath(path);
   std::string buffer;
   if (!base::ReadFileToString(file_path, &buffer)) {
-    return std::nullopt;
+    return nullptr;
   }
-  return Vector<char>(buffer);
+  return SharedBuffer::Create(buffer.data(), buffer.size());
 }
 
 String BlinkWebTestsFontsTestDataPath(const String& relative_path) {

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/span.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
@@ -3304,8 +3303,8 @@ TEST_P(CompositingSimTest, CompositorAnimationRevealsChild) {
 
 static String ImageFileAsDataURL(const String& filename) {
   return "data:image/jpeg;base64," +
-         Base64Encode(base::as_byte_span(
-             *test::ReadFromFile(test::CoreTestDataPath(filename))));
+         Base64Encode(test::ReadFromFile(test::CoreTestDataPath(filename))
+                          ->CopyAs<Vector<uint8_t>>());
 }
 
 TEST_P(CompositingSimTest, CompositedImageWithSubpixelOffset) {

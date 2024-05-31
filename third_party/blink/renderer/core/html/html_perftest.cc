@@ -35,11 +35,10 @@ TEST(HTMLParsePerfTest, Speedometer) {
 
   auto reporter = perf_test::PerfResultReporter("BlinkHTML", label);
 
-  std::optional<Vector<char>> serialized =
+  scoped_refptr<SharedBuffer> serialized =
       test::ReadFromFile(test::CoreTestDataPath(filename));
-  CHECK(serialized);
-  std::optional<base::Value> json =
-      base::JSONReader::Read(base::as_string_view(*serialized));
+  std::optional<base::Value> json = base::JSONReader::Read(
+      std::string_view(serialized->Data(), serialized->size()));
   if (!json.has_value()) {
     char msg[256];
     snprintf(msg, sizeof(msg), "Skipping %s test because %s could not be read",

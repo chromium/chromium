@@ -20,10 +20,7 @@ namespace {
 class TestFontSelector : public FontSelector {
  public:
   static TestFontSelector* Create(const String& path) {
-    std::optional<Vector<char>> data = test::ReadFromFile(path);
-    CHECK(data);
-    scoped_refptr<SharedBuffer> font_buffer =
-        SharedBuffer::Create(std::move(*data));
+    scoped_refptr<SharedBuffer> font_buffer = test::ReadFromFile(path);
     String ots_parse_message;
     return MakeGarbageCollected<TestFontSelector>(
         FontCustomPlatformData::Create(font_buffer.get(), ots_parse_message));

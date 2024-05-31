@@ -6,7 +6,6 @@
 
 #include <gtest/gtest.h>
 
-#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -126,12 +125,11 @@ class TextFragmentHandlerTest : public SimTest {
   }
 
   void LoadAhem() {
-    std::optional<Vector<char>> data =
+    scoped_refptr<SharedBuffer> shared_buffer =
         test::ReadFromFile(test::CoreTestDataPath("Ahem.ttf"));
-    ASSERT_TRUE(data);
     auto* buffer =
         MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
-            DOMArrayBuffer::Create(base::as_byte_span(*data)));
+            DOMArrayBuffer::Create(shared_buffer));
     FontFace* ahem = FontFace::Create(GetDocument().GetExecutionContext(),
                                       AtomicString("Ahem"), buffer,
                                       FontFaceDescriptors::Create());

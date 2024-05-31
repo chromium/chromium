@@ -34,10 +34,8 @@ class ImageDecoderCoreTest : public testing::Test {
     file_path.Append(test::BlinkWebTestsDir());
     file_path.Append('/');
     file_path.Append(file_name);
-    std::optional<Vector<char>> data = test::ReadFromFile(file_path.ToString());
-    CHECK(data);
     return SegmentReader::CreateFromSharedBuffer(
-        SharedBuffer::Create(std::move(*data)));
+        test::ReadFromFile(file_path.ToString()));
   }
   test::TaskEnvironment task_environment_;
 };

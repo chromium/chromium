@@ -2427,8 +2427,9 @@ TEST_F(EventHandlerSimTest, LargeCustomCursorIntersectsViewport) {
       )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
 
-  cursor_request.Complete(
-      *test::ReadFromFile(test::CoreTestDataPath("notifications/100x100.png")));
+  scoped_refptr<SharedBuffer> img =
+      test::ReadFromFile(test::CoreTestDataPath("notifications/100x100.png"));
+  cursor_request.Complete(img->CopyAs<Vector<char>>());
 
   Compositor().BeginFrame();
 
@@ -2505,8 +2506,9 @@ TEST_F(EventHandlerSimTest, SmallCustomCursorIntersectsViewport) {
 
   GetDocument().UpdateStyleAndLayoutTree();
 
-  cursor_request.Complete(
-      *test::ReadFromFile(test::CoreTestDataPath("notifications/48x48.png")));
+  scoped_refptr<SharedBuffer> img =
+      test::ReadFromFile(test::CoreTestDataPath("notifications/48x48.png"));
+  cursor_request.Complete(img->CopyAs<Vector<char>>());
 
   Compositor().BeginFrame();
 

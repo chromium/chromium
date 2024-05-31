@@ -79,10 +79,8 @@ class MHTMLLoadingTest : public testing::Test {
   void SetUp() override { helper_.Initialize(); }
 
   void LoadURLInTopFrame(const WebURL& url, const std::string& file_name) {
-    std::optional<Vector<char>> data = test::ReadFromFile(
+    scoped_refptr<SharedBuffer> buffer = test::ReadFromFile(
         test::CoreTestDataPath(WebString::FromUTF8("mhtml/" + file_name)));
-    ASSERT_TRUE(data);
-    scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create(std::move(*data));
     WebLocalFrameImpl* frame = helper_.GetWebView()->MainFrameImpl();
     auto params = std::make_unique<WebNavigationParams>();
     params->url = url;

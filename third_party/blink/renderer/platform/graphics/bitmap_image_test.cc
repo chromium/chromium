@@ -147,9 +147,7 @@ class BitmapImageTest : public testing::Test {
 
   static scoped_refptr<SharedBuffer> ReadFile(const char* file_name) {
     String file_path = test::PlatformTestDataPath(file_name);
-    std::optional<Vector<char>> data = test::ReadFromFile(file_path);
-    CHECK(data && data->size());
-    return SharedBuffer::Create(std::move(*data));
+    return test::ReadFromFile(file_path);
   }
 
   // Accessors to BitmapImage's protected methods.
@@ -174,10 +172,9 @@ class BitmapImageTest : public testing::Test {
     CreateImage();
 
     String file_path = test::BlinkWebTestsImagesTestDataPath(relative_path);
-    std::optional<Vector<char>> data = test::ReadFromFile(file_path);
-    ASSERT_TRUE(data && data->size());
-    scoped_refptr<SharedBuffer> image_data =
-        SharedBuffer::Create(std::move(*data));
+    scoped_refptr<SharedBuffer> image_data = test::ReadFromFile(file_path);
+    ASSERT_TRUE(image_data.get());
+
     image_->SetData(image_data, true);
   }
 

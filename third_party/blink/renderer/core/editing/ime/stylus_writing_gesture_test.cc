@@ -57,7 +57,8 @@ class StylusWritingGestureTest : public SimTest,
 
  protected:
   static Vector<char> ReadAhemWoff2() {
-    return *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"));
+    return test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
+        ->CopyAs<Vector<char>>();
   }
 
   HTMLInputElement* SetUpSingleInput(bool);

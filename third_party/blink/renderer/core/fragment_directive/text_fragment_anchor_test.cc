@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -117,12 +116,11 @@ class TextFragmentAnchorTestController : public TextFragmentAnchorTestBase {
   }
 
   void LoadAhem() {
-    std::optional<Vector<char>> data =
+    scoped_refptr<SharedBuffer> shared_buffer =
         test::ReadFromFile(test::CoreTestDataPath("Ahem.ttf"));
-    ASSERT_TRUE(data);
     auto* buffer =
         MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
-            DOMArrayBuffer::Create(base::as_byte_span(*data)));
+            DOMArrayBuffer::Create(shared_buffer));
     FontFace* ahem = FontFace::Create(GetDocument().GetFrame()->DomWindow(),
                                       AtomicString("Ahem"), buffer,
                                       FontFaceDescriptors::Create());

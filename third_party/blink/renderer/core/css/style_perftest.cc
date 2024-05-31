@@ -12,7 +12,6 @@
 #include <string_view>
 
 #include "base/command_line.h"
-#include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "testing/perf/perf_result_reporter.h"
 #include "testing/perf/perf_test.h"
@@ -188,7 +187,7 @@ static StylePerfResult MeasureStyleForDumpedPage(
   std::unique_ptr<DummyPageHolder> page;
 
   {
-    std::optional<Vector<char>> serialized =
+    scoped_refptr<SharedBuffer> serialized =
         test::ReadFromFile(test::StylePerfTestDataPath(filename));
     if (!serialized) {
       // Some test data is very large and needs to be downloaded separately,
@@ -197,8 +196,8 @@ static StylePerfResult MeasureStyleForDumpedPage(
       result.skipped = true;
       return result;
     }
-    std::optional<base::Value> json =
-        base::JSONReader::Read(base::as_string_view(*serialized));
+    std::optional<base::Value> json = base::JSONReader::Read(
+        std::string_view(serialized->Data(), serialized->size()));
     CHECK(json.has_value());
     page = LoadDumpedPage(json->GetDict(), result.parse_time, reporter);
   }

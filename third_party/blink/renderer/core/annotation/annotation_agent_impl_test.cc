@@ -6,7 +6,6 @@
 
 #include <gtest/gtest.h>
 
-#include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -180,12 +179,11 @@ class AnnotationAgentImplTest : public SimTest {
   bool IsRemoved(AnnotationAgentImpl* agent) { return agent->IsRemoved(); }
 
   void LoadAhem() {
-    std::optional<Vector<char>> data =
+    scoped_refptr<SharedBuffer> shared_buffer =
         test::ReadFromFile(test::CoreTestDataPath("Ahem.ttf"));
-    ASSERT_TRUE(data);
     auto* buffer =
         MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
-            DOMArrayBuffer::Create(base::as_byte_span(*data)));
+            DOMArrayBuffer::Create(shared_buffer));
     FontFace* ahem = FontFace::Create(GetDocument().GetFrame()->DomWindow(),
                                       AtomicString("Ahem"), buffer,
                                       FontFaceDescriptors::Create());

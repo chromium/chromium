@@ -5693,7 +5693,8 @@ TEST_F(StyleEngineSimTest, UserFontFaceOverrideWithCascadeLayers) {
   Compositor().BeginFrame();
 
   ahem_resource.Complete(
-      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
+      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
+          ->CopyAs<Vector<char>>());
 
   test::RunPendingTasks();
   Compositor().BeginFrame();
@@ -5746,7 +5747,8 @@ TEST_F(StyleEngineSimTest, UserAndAuthorFontFaceOverrideWithCascadeLayers) {
   Compositor().BeginFrame();
 
   ahem_resource.Complete(
-      *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2")));
+      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
+          ->CopyAs<Vector<char>>());
 
   test::RunPendingTasks();
   Compositor().BeginFrame();

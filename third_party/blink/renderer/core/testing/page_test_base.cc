@@ -6,7 +6,6 @@
 
 #include <sstream>
 
-#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
 #include "base/time/default_clock.h"
@@ -226,11 +225,10 @@ void PageTestBase::LoadFontFromFile(LocalFrame& frame,
                                     String font_path,
                                     const AtomicString& family_name) {
   Document& document = *frame.DomWindow()->document();
-  std::optional<Vector<char>> data = test::ReadFromFile(font_path);
-  ASSERT_TRUE(data);
+  scoped_refptr<SharedBuffer> shared_buffer = test::ReadFromFile(font_path);
   auto* buffer =
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
-          DOMArrayBuffer::Create(base::as_byte_span(*data)));
+          DOMArrayBuffer::Create(shared_buffer));
   FontFace* ahem = FontFace::Create(frame.DomWindow(), family_name, buffer,
                                     FontFaceDescriptors::Create());
 

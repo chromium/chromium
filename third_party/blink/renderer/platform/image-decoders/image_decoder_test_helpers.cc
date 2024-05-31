@@ -21,9 +21,7 @@ scoped_refptr<SharedBuffer> ReadFile(StringView file_name) {
   StringBuilder file_path;
   file_path.Append(test::BlinkWebTestsDir());
   file_path.Append(file_name);
-  std::optional<Vector<char>> data = test::ReadFromFile(file_path.ToString());
-  CHECK(data && data->size());
-  return SharedBuffer::Create(std::move(*data));
+  return test::ReadFromFile(file_path.ToString());
 }
 
 scoped_refptr<SharedBuffer> ReadFile(const char* dir, const char* file_name) {
@@ -39,9 +37,7 @@ scoped_refptr<SharedBuffer> ReadFile(const char* dir, const char* file_name) {
   }
   file_path.Append('/');
   file_path.Append(file_name);
-  std::optional<Vector<char>> data = test::ReadFromFile(file_path.ToString());
-  CHECK(data && data->size());
-  return SharedBuffer::Create(std::move(*data));
+  return test::ReadFromFile(file_path.ToString());
 }
 
 unsigned HashBitmap(const SkBitmap& bitmap) {

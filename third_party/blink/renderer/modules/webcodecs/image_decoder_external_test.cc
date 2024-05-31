@@ -47,8 +47,10 @@ class ImageDecoderTest : public testing::Test {
     auto* init = MakeGarbageCollected<ImageDecoderInit>();
     init->setType(mime_type);
 
+    auto data = ReadFile(file_name);
+    DCHECK(!data->empty()) << "Missing file: " << file_name;
     init->setData(MakeGarbageCollected<V8ImageBufferSource>(
-        DOMArrayBuffer::Create(base::as_byte_span(ReadFile(file_name)))));
+        DOMArrayBuffer::Create(std::move(data))));
     return ImageDecoderExternal::Create(v8_scope->GetScriptState(), init,
                                         v8_scope->GetExceptionState());
   }
@@ -67,14 +69,12 @@ class ImageDecoderTest : public testing::Test {
     return options;
   }
 
-  Vector<char> ReadFile(StringView file_name) {
+  scoped_refptr<SharedBuffer> ReadFile(StringView file_name) {
     StringBuilder file_path;
     file_path.Append(test::BlinkWebTestsDir());
     file_path.Append('/');
     file_path.Append(file_name);
-    std::optional<Vector<char>> data = test::ReadFromFile(file_path.ToString());
-    CHECK(data && data->size()) << "Missing file: " << file_name;
-    return std::move(*data);
+    return test::ReadFromFile(file_path.ToString());
   }
 
   bool IsTypeSupported(V8TestingScope* v8_scope, String type) {
@@ -169,9 +169,10 @@ TEST_F(ImageDecoderTest, DecodeNeuteredAtDecodeTime) {
   init->setType(kImageType);
 
   constexpr char kTestFile[] = "images/resources/animated.gif";
-  Vector<char> data = ReadFile(kTestFile);
+  auto data = ReadFile(kTestFile);
+  DCHECK(!data->empty()) << "Missing file: " << kTestFile;
 
-  auto* buffer = DOMArrayBuffer::Create(base::as_byte_span(data));
+  auto* buffer = DOMArrayBuffer::Create(std::move(data));
 
   init->setData(MakeGarbageCollected<V8ImageBufferSource>(buffer));
 
@@ -523,7 +524,7 @@ TEST_F(ImageDecoderTest, DecoderReadableStream) {
   constexpr char kImageType[] = "image/gif";
   EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
 
-  Vector<char> data = ReadFile("images/resources/animated-10color.gif");
+  auto data = ReadFile("images/resources/animated-10color.gif");
 
   Persistent<TestUnderlyingSource> underlying_source =
       MakeGarbageCollected<TestUnderlyingSource>(v8_scope.GetScriptState());
@@ -542,12 +543,12 @@ TEST_F(ImageDecoderTest, DecoderReadableStream) {
   EXPECT_EQ(decoder->type(), kImageType);
 
   constexpr size_t kNumChunks = 2;
-  const size_t chunk_size = (data.size() + 1) / kNumChunks;
-  base::span<const uint8_t> data_span = base::as_byte_span(data);
+  const size_t chunk_size = (data->size() + 1) / kNumChunks;
+
+  const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(data->Data());
 
   v8::Local<v8::Value> v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
-      v8_scope.GetScriptState(),
-      DOMUint8Array::Create(data_span.subspan(0, chunk_size)));
+      v8_scope.GetScriptState(), DOMUint8Array::Create(data_ptr, chunk_size));
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
@@ -566,8 +567,8 @@ TEST_F(ImageDecoderTest, DecoderReadableStream) {
 
   // Enqueue remaining data.
   v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
-      v8_scope.GetScriptState(), DOMUint8Array::Create(data_span.subspan(
-                                     chunk_size, data.size() - chunk_size)));
+      v8_scope.GetScriptState(),
+      DOMUint8Array::Create(data_ptr + chunk_size, data->size() - chunk_size));
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
@@ -628,7 +629,7 @@ TEST_F(ImageDecoderTest, DecoderReadableStreamAvif) {
   constexpr char kImageType[] = "image/avif";
   EXPECT_EQ(IsTypeSupported(&v8_scope, kImageType), HasAv1Decoder());
 
-  Vector<char> data = ReadFile("images/resources/avif/star-animated-8bpc.avif");
+  auto data = ReadFile("images/resources/avif/star-animated-8bpc.avif");
 
   Persistent<TestUnderlyingSource> underlying_source =
       MakeGarbageCollected<TestUnderlyingSource>(v8_scope.GetScriptState());
@@ -647,10 +648,9 @@ TEST_F(ImageDecoderTest, DecoderReadableStreamAvif) {
   EXPECT_EQ(decoder->type(), kImageType);
 
   // Enqueue a single byte and ensure nothing breaks.
-  base::span<const uint8_t> data_span = base::as_byte_span(data);
+  const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(data->Data());
   v8::Local<v8::Value> v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
-      v8_scope.GetScriptState(),
-      DOMUint8Array::Create(data_span.subspan(0, 1)));
+      v8_scope.GetScriptState(), DOMUint8Array::Create(data_ptr, 1));
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
@@ -673,7 +673,7 @@ TEST_F(ImageDecoderTest, DecoderReadableStreamAvif) {
   // Append the rest of the data.
   v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
       v8_scope.GetScriptState(),
-      DOMUint8Array::Create(data_span.subspan(1, data.size() - 1)));
+      DOMUint8Array::Create(data_ptr + 1, data->size() - 1));
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
@@ -705,8 +705,7 @@ TEST_F(ImageDecoderTest, ReadableStreamAvifStillYuvDecoding) {
   constexpr char kImageType[] = "image/avif";
   EXPECT_EQ(IsTypeSupported(&v8_scope, kImageType), HasAv1Decoder());
 
-  Vector<char> data =
-      ReadFile("images/resources/avif/red-limited-range-420-8bpc.avif");
+  auto data = ReadFile("images/resources/avif/red-limited-range-420-8bpc.avif");
 
   Persistent<TestUnderlyingSource> underlying_source =
       MakeGarbageCollected<TestUnderlyingSource>(v8_scope.GetScriptState());
@@ -725,9 +724,10 @@ TEST_F(ImageDecoderTest, ReadableStreamAvifStillYuvDecoding) {
   EXPECT_EQ(decoder->type(), kImageType);
 
   // Append all data, but don't mark the stream as complete yet.
+  const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(data->Data());
+
   v8::Local<v8::Value> v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
-      v8_scope.GetScriptState(),
-      DOMUint8Array::Create(base::as_byte_span(data)));
+      v8_scope.GetScriptState(), DOMUint8Array::Create(data_ptr, data->size()));
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
@@ -789,10 +789,9 @@ TEST_F(ImageDecoderTest, DecodePartialImage) {
   init->setType(kImageType);
 
   // Read just enough to get the header and some of the image data.
-  Vector<char> data = ReadFile("images/resources/dice.png");
+  auto data = ReadFile("images/resources/dice.png");
   auto* array_buffer = DOMArrayBuffer::Create(128, 1);
-  array_buffer->ByteSpan().copy_from(
-      base::as_byte_span(data).subspan(0, array_buffer->ByteLength()));
+  ASSERT_TRUE(data->GetBytes(array_buffer->Data(), array_buffer->ByteLength()));
 
   init->setData(MakeGarbageCollected<V8ImageBufferSource>(array_buffer));
   auto* decoder = ImageDecoderExternal::Create(v8_scope.GetScriptState(), init,
@@ -829,7 +828,7 @@ TEST_F(ImageDecoderTest, DecodeClosedDuringReadableStream) {
   constexpr char kImageType[] = "image/gif";
   EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
 
-  Vector<char> data = ReadFile("images/resources/animated-10color.gif");
+  auto data = ReadFile("images/resources/animated-10color.gif");
 
   Persistent<TestUnderlyingSource> underlying_source =
       MakeGarbageCollected<TestUnderlyingSource>(v8_scope.GetScriptState());
@@ -847,11 +846,11 @@ TEST_F(ImageDecoderTest, DecodeClosedDuringReadableStream) {
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
   EXPECT_EQ(decoder->type(), kImageType);
 
-  base::span<const uint8_t> data_span = base::as_byte_span(data);
+  const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(data->Data());
 
   v8::Local<v8::Value> v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
       v8_scope.GetScriptState(),
-      DOMUint8Array::Create(data_span.subspan(0, data.size() / 2)));
+      DOMUint8Array::Create(data_ptr, data->size() / 2));
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
@@ -879,7 +878,7 @@ TEST_F(ImageDecoderTest, DecodeInvalidFileViaReadableStream) {
   constexpr char kImageType[] = "image/webp";
   EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
 
-  Vector<char> data = ReadFile("images/resources/invalid-animated-webp.webp");
+  auto data = ReadFile("images/resources/invalid-animated-webp.webp");
 
   Persistent<TestUnderlyingSource> underlying_source =
       MakeGarbageCollected<TestUnderlyingSource>(v8_scope.GetScriptState());
@@ -897,11 +896,11 @@ TEST_F(ImageDecoderTest, DecodeInvalidFileViaReadableStream) {
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
   EXPECT_EQ(decoder->type(), kImageType);
 
-  base::span<const uint8_t> data_span = base::as_byte_span(data);
+  const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(data->Data());
 
   v8::Local<v8::Value> v8_data_array = ToV8Traits<DOMUint8Array>::ToV8(
       v8_scope.GetScriptState(),
-      DOMUint8Array::Create(data_span.subspan(0, data.size() / 2)));
+      DOMUint8Array::Create(data_ptr, data->size() / 2));
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
@@ -985,9 +984,10 @@ TEST_F(ImageDecoderTest, TransferBuffer) {
   auto* init = MakeGarbageCollected<ImageDecoderInit>();
   init->setType(kImageType);
 
-  Vector<char> data = ReadFile("images/resources/animated.gif");
+  auto data = ReadFile("images/resources/animated.gif");
+  DCHECK(!data->empty());
 
-  auto* buffer = DOMArrayBuffer::Create(base::as_byte_span(data));
+  auto* buffer = DOMArrayBuffer::Create(std::move(data));
   init->setData(MakeGarbageCollected<V8ImageBufferSource>(buffer));
 
   HeapVector<Member<DOMArrayBuffer>> transfer;
