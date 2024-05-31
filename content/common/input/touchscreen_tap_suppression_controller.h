@@ -5,7 +5,7 @@
 #ifndef CONTENT_COMMON_INPUT_TOUCHSCREEN_TAP_SUPPRESSION_CONTROLLER_H_
 #define CONTENT_COMMON_INPUT_TOUCHSCREEN_TAP_SUPPRESSION_CONTROLLER_H_
 
-#include "content/common/input/event_with_latency_info.h"
+#include "components/input/event_with_latency_info.h"
 #include "content/common/input/tap_suppression_controller.h"
 
 namespace content {
@@ -26,7 +26,7 @@ class TouchscreenTapSuppressionController : public TapSuppressionController {
 
   // Should be called on arrival of any tap-related events. Returns true if the
   // caller should stop normal handling of the gesture.
-  bool FilterTapEvent(const GestureEventWithLatencyInfo& event);
+  bool FilterTapEvent(const input::GestureEventWithLatencyInfo& event);
 };
 
 }  // namespace content

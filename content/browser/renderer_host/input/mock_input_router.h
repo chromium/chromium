@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "cc/input/touch_action.h"
-#include "content/common/input/event_with_latency_info.h"
+#include "components/input/event_with_latency_info.h"
 #include "content/common/input/input_router.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
 
@@ -34,15 +34,17 @@ class MockInputRouter : public InputRouter {
   ~MockInputRouter() override {}
 
   // InputRouter:
-  void SendMouseEvent(const MouseEventWithLatencyInfo& mouse_event,
+  void SendMouseEvent(const input::MouseEventWithLatencyInfo& mouse_event,
                       MouseEventCallback event_result_callback) override;
   void SendWheelEvent(
-      const MouseWheelEventWithLatencyInfo& wheel_event) override;
-  void SendKeyboardEvent(const NativeWebKeyboardEventWithLatencyInfo& key_event,
-                         KeyboardEventCallback event_result_callback) override;
+      const input::MouseWheelEventWithLatencyInfo& wheel_event) override;
+  void SendKeyboardEvent(
+      const input::NativeWebKeyboardEventWithLatencyInfo& key_event,
+      KeyboardEventCallback event_result_callback) override;
   void SendGestureEvent(
-      const GestureEventWithLatencyInfo& gesture_event) override;
-  void SendTouchEvent(const TouchEventWithLatencyInfo& touch_event) override;
+      const input::GestureEventWithLatencyInfo& gesture_event) override;
+  void SendTouchEvent(
+      const input::TouchEventWithLatencyInfo& touch_event) override;
   void NotifySiteIsMobileOptimized(bool is_mobile_optimized) override {}
   bool HasPendingEvents() const override;
   void SetDeviceScaleFactor(float device_scale_factor) override {}

@@ -1524,7 +1524,7 @@ void RenderWidgetHostImpl::ForwardMouseEventWithLatencyInfo(
     return;
   }
 
-  MouseEventWithLatencyInfo mouse_with_latency(mouse_event, latency);
+  input::MouseEventWithLatencyInfo mouse_with_latency(mouse_event, latency);
   DispatchInputEventWithLatencyInfo(
       mouse_with_latency.event, &mouse_with_latency.latency,
       &mouse_with_latency.event.GetModifiableEventLatencyMetadata());
@@ -1554,7 +1554,8 @@ void RenderWidgetHostImpl::ForwardWheelEventWithLatencyInfo(
     return;
   }
 
-  MouseWheelEventWithLatencyInfo wheel_with_latency(wheel_event, latency);
+  input::MouseWheelEventWithLatencyInfo wheel_with_latency(wheel_event,
+                                                           latency);
   DispatchInputEventWithLatencyInfo(
       wheel_with_latency.event, &wheel_with_latency.latency,
       &wheel_with_latency.event.GetModifiableEventLatencyMetadata());
@@ -1641,7 +1642,8 @@ void RenderWidgetHostImpl::ForwardGestureEventWithLatencyInfo(
     return;
   }
 
-  GestureEventWithLatencyInfo gesture_with_latency(gesture_event, latency);
+  input::GestureEventWithLatencyInfo gesture_with_latency(gesture_event,
+                                                          latency);
   DispatchInputEventWithLatencyInfo(
       gesture_with_latency.event, &gesture_with_latency.latency,
       &gesture_with_latency.event.GetModifiableEventLatencyMetadata());
@@ -1662,7 +1664,7 @@ void RenderWidgetHostImpl::ForwardTouchEventWithLatencyInfo(
   // Always forward TouchEvents for touch stream consistency. They will be
   // ignored if appropriate in FilterInputEvent().
 
-  TouchEventWithLatencyInfo touch_with_latency(touch_event, latency);
+  input::TouchEventWithLatencyInfo touch_with_latency(touch_event, latency);
   DispatchInputEventWithLatencyInfo(
       touch_with_latency.event, &touch_with_latency.latency,
       &touch_with_latency.event.GetModifiableEventLatencyMetadata());
@@ -1786,8 +1788,8 @@ void RenderWidgetHostImpl::ForwardKeyboardEventWithCommands(
   if (touch_emulator && touch_emulator->HandleKeyboardEvent(key_event)) {
     return;
   }
-  NativeWebKeyboardEventWithLatencyInfo key_event_with_latency(key_event,
-                                                               latency);
+  input::NativeWebKeyboardEventWithLatencyInfo key_event_with_latency(key_event,
+                                                                      latency);
   key_event_with_latency.event.is_browser_shortcut = is_shortcut;
   DispatchInputEventWithLatencyInfo(
       key_event_with_latency.event, &key_event_with_latency.latency,
@@ -2367,7 +2369,7 @@ bool RenderWidgetHostImpl::IsContentRenderingTimeoutRunning() const {
 }
 
 void RenderWidgetHostImpl::OnMouseEventAck(
-    const MouseEventWithLatencyInfo& mouse_event,
+    const input::MouseEventWithLatencyInfo& mouse_event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   latency_tracker_.OnInputEventAck(mouse_event.event, &mouse_event.latency,
@@ -2501,7 +2503,7 @@ void RenderWidgetHostImpl::ClearDisplayedGraphics() {
 }
 
 void RenderWidgetHostImpl::OnKeyboardEventAck(
-    const NativeWebKeyboardEventWithLatencyInfo& event,
+    const input::NativeWebKeyboardEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   latency_tracker_.OnInputEventAck(event.event, &event.latency, ack_result);
@@ -3398,7 +3400,7 @@ void RenderWidgetHostImpl::DispatchInputEventWithLatencyInfo(
 }
 
 void RenderWidgetHostImpl::OnWheelEventAck(
-    const MouseWheelEventWithLatencyInfo& wheel_event,
+    const input::MouseWheelEventWithLatencyInfo& wheel_event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   latency_tracker_.OnInputEventAck(wheel_event.event, &wheel_event.latency,
@@ -3418,7 +3420,7 @@ void RenderWidgetHostImpl::OnWheelEventAck(
 }
 
 void RenderWidgetHostImpl::OnGestureEventAck(
-    const GestureEventWithLatencyInfo& event,
+    const input::GestureEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   latency_tracker_.OnInputEventAck(event.event, &event.latency, ack_result);
@@ -3438,7 +3440,7 @@ void RenderWidgetHostImpl::OnGestureEventAck(
 }
 
 void RenderWidgetHostImpl::OnTouchEventAck(
-    const TouchEventWithLatencyInfo& event,
+    const input::TouchEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   latency_tracker_.OnInputEventAck(event.event, &event.latency, ack_result);

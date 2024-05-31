@@ -96,7 +96,7 @@ class TracingRenderWidgetHost : public RenderWidgetHostImpl {
                              std::make_unique<FrameTokenMessageQueue>()) {}
 
   void OnMouseEventAck(
-      const MouseEventWithLatencyInfo& event,
+      const input::MouseEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) override {
     RenderWidgetHostImpl::OnMouseEventAck(event, ack_source, ack_result);

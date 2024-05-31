@@ -21,12 +21,12 @@
 #include "base/process/kill.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/input/event_with_latency_info.h"
 #include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/common/surfaces/scoped_surface_id_allocator.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/browser/renderer_host/display_feature.h"
 #include "content/common/content_export.h"
-#include "content/common/input/event_with_latency_info.h"
 #include "content/common/input/input_router_impl.h"
 #include "content/common/input/render_widget_host_view_input.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
@@ -141,7 +141,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   void ProcessGestureEvent(const blink::WebGestureEvent& event,
                            const ui::LatencyInfo& latency) override;
   void ProcessAckedTouchEvent(
-      const TouchEventWithLatencyInfo& touch,
+      const input::TouchEventWithLatencyInfo& touch,
       blink::mojom::InputEventResultState ack_result) override;
   void DidOverscroll(const ui::DidOverscrollParams& params) override {}
   void DidStopFlinging() override {}

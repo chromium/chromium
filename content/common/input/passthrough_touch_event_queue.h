@@ -13,8 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "components/input/event_with_latency_info.h"
 #include "content/common/content_export.h"
-#include "content/common/input/event_with_latency_info.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/events/blink/blink_features.h"
@@ -30,10 +30,10 @@ class CONTENT_EXPORT PassthroughTouchEventQueueClient {
   virtual ~PassthroughTouchEventQueueClient() {}
 
   virtual void SendTouchEventImmediately(
-      const TouchEventWithLatencyInfo& event) = 0;
+      const input::TouchEventWithLatencyInfo& event) = 0;
 
   virtual void OnTouchEventAck(
-      const TouchEventWithLatencyInfo& event,
+      const input::TouchEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) = 0;
 
@@ -95,7 +95,7 @@ class CONTENT_EXPORT PassthroughTouchEventQueue {
 
   ~PassthroughTouchEventQueue();
 
-  void QueueEvent(const TouchEventWithLatencyInfo& event);
+  void QueueEvent(const input::TouchEventWithLatencyInfo& event);
 
   void PrependTouchScrollNotification();
 
@@ -105,7 +105,7 @@ class CONTENT_EXPORT PassthroughTouchEventQueue {
                        const uint32_t unique_touch_event_id,
                        bool should_stop_timeout_monitor);
 
-  void OnGestureEventAck(const GestureEventWithLatencyInfo& event,
+  void OnGestureEventAck(const input::GestureEventWithLatencyInfo& event,
                          blink::mojom::InputEventResultState ack_result);
 
   void OnHasTouchEventHandlers(bool has_handlers);
@@ -128,7 +128,7 @@ class CONTENT_EXPORT PassthroughTouchEventQueue {
 
  protected:
   void SendTouchCancelEventForTouchEvent(
-      const TouchEventWithLatencyInfo& event_to_cancel);
+      const input::TouchEventWithLatencyInfo& event_to_cancel);
   void UpdateTouchConsumerStates(
       const blink::WebTouchEvent& event,
       blink::mojom::InputEventResultState ack_result);
@@ -170,9 +170,10 @@ class CONTENT_EXPORT PassthroughTouchEventQueue {
   friend class TouchTimeoutHandler;
 
   class TouchEventWithLatencyInfoAndAckState
-      : public TouchEventWithLatencyInfo {
+      : public input::TouchEventWithLatencyInfo {
    public:
-    TouchEventWithLatencyInfoAndAckState(const TouchEventWithLatencyInfo&);
+    TouchEventWithLatencyInfoAndAckState(
+        const input::TouchEventWithLatencyInfo&);
     blink::mojom::InputEventResultState ack_state() const { return ack_state_; }
     blink::mojom::InputEventResultSource ack_source() const {
       return ack_source_;
@@ -219,11 +220,12 @@ class CONTENT_EXPORT PassthroughTouchEventQueue {
   PreFilterResult FilterBeforeForwardingImpl(const blink::WebTouchEvent& event);
   bool ShouldFilterForEvent(const blink::WebTouchEvent& event);
 
-  void AckTouchEventToClient(const TouchEventWithLatencyInfo& acked_event,
-                             blink::mojom::InputEventResultSource ack_source,
-                             blink::mojom::InputEventResultState ack_result);
+  void AckTouchEventToClient(
+      const input::TouchEventWithLatencyInfo& acked_event,
+      blink::mojom::InputEventResultSource ack_source,
+      blink::mojom::InputEventResultState ack_result);
 
-  void SendTouchEventImmediately(TouchEventWithLatencyInfo* touch,
+  void SendTouchEventImmediately(input::TouchEventWithLatencyInfo* touch,
                                  bool wait_for_ack);
 
   void AckCompletedEvents();

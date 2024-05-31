@@ -115,7 +115,6 @@ source_set("common") {
     "input/actions_parser.h",
     "input/cursor_manager.cc",
     "input/cursor_manager.h",
-    "input/event_with_latency_info.h",
     "input/events_helper.cc",
     "input/events_helper.h",
     "input/fling_controller.cc",

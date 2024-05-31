@@ -5,8 +5,8 @@
 #ifndef CONTENT_COMMON_INPUT_INPUT_DISPOSITION_HANDLER_H_
 #define CONTENT_COMMON_INPUT_INPUT_DISPOSITION_HANDLER_H_
 
+#include "components/input/event_with_latency_info.h"
 #include "components/input/native_web_keyboard_event.h"
-#include "content/common/input/event_with_latency_info.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
@@ -19,15 +19,15 @@ class InputDispositionHandler {
 
   // Called upon event ack receipt from the renderer.
   virtual void OnWheelEventAck(
-      const MouseWheelEventWithLatencyInfo& event,
+      const input::MouseWheelEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) = 0;
   virtual void OnTouchEventAck(
-      const TouchEventWithLatencyInfo& event,
+      const input::TouchEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) = 0;
   virtual void OnGestureEventAck(
-      const GestureEventWithLatencyInfo& event,
+      const input::GestureEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) = 0;
 };

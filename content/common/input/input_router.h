@@ -10,9 +10,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/task/sequenced_task_runner.h"
 #include "cc/input/touch_action.h"
+#include "components/input/event_with_latency_info.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/common/content_export.h"
-#include "content/common/input/event_with_latency_info.h"
 #include "content/common/input/gesture_event_queue.h"
 #include "content/common/input/passthrough_touch_event_queue.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -41,28 +41,29 @@ class InputRouter {
   // *synchronously*. If |this| is destroyed while waiting on a result from
   // the renderer, then callbacks are *not* run.
   using MouseEventCallback =
-      base::OnceCallback<void(const MouseEventWithLatencyInfo& event,
+      base::OnceCallback<void(const input::MouseEventWithLatencyInfo& event,
                               blink::mojom::InputEventResultSource ack_source,
                               blink::mojom::InputEventResultState ack_result)>;
-  virtual void SendMouseEvent(const MouseEventWithLatencyInfo& mouse_event,
-                              MouseEventCallback event_result_callback) = 0;
+  virtual void SendMouseEvent(
+      const input::MouseEventWithLatencyInfo& mouse_event,
+      MouseEventCallback event_result_callback) = 0;
 
   virtual void SendWheelEvent(
-      const MouseWheelEventWithLatencyInfo& wheel_event) = 0;
+      const input::MouseWheelEventWithLatencyInfo& wheel_event) = 0;
 
   using KeyboardEventCallback = base::OnceCallback<void(
-      const NativeWebKeyboardEventWithLatencyInfo& event,
+      const input::NativeWebKeyboardEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result)>;
   virtual void SendKeyboardEvent(
-      const NativeWebKeyboardEventWithLatencyInfo& key_event,
+      const input::NativeWebKeyboardEventWithLatencyInfo& key_event,
       KeyboardEventCallback event_result_callback) = 0;
 
   virtual void SendGestureEvent(
-      const GestureEventWithLatencyInfo& gesture_event) = 0;
+      const input::GestureEventWithLatencyInfo& gesture_event) = 0;
 
   virtual void SendTouchEvent(
-      const TouchEventWithLatencyInfo& touch_event) = 0;
+      const input::TouchEventWithLatencyInfo& touch_event) = 0;
 
   // Notify the router about whether the current page is mobile-optimized (i.e.,
   // the site has a mobile-friendly viewport).

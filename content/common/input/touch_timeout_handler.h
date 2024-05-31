@@ -10,7 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "content/common/input/event_with_latency_info.h"
+#include "components/input/event_with_latency_info.h"
 #include "content/common/input/timeout_monitor.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
@@ -27,7 +27,7 @@ class TouchTimeoutHandler {
 
   ~TouchTimeoutHandler();
 
-  void StartIfNecessary(const TouchEventWithLatencyInfo& event);
+  void StartIfNecessary(const input::TouchEventWithLatencyInfo& event);
   bool ConfirmTouchEvent(uint32_t unique_touch_event_id,
                          blink::mojom::InputEventResultState ack_result,
                          bool should_stop_timeout_monitor);
@@ -67,7 +67,7 @@ class TouchTimeoutHandler {
   PendingAckState pending_ack_state_;
 
   // The event for which the ack timeout is triggered.
-  TouchEventWithLatencyInfo timeout_event_;
+  input::TouchEventWithLatencyInfo timeout_event_;
 
   // Provides timeout-based callback behavior.
   TimeoutMonitor timeout_monitor_;

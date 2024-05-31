@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_EVENT_WITH_LATENCY_INFO_H_
-#define CONTENT_COMMON_INPUT_EVENT_WITH_LATENCY_INFO_H_
+#ifndef COMPONENTS_INPUT_EVENT_WITH_LATENCY_INFO_H_
+#define COMPONENTS_INPUT_EVENT_WITH_LATENCY_INFO_H_
 
 #include "base/check_op.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -14,7 +14,7 @@
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/latency/latency_info.h"
 
-namespace content {
+namespace input {
 
 template <typename T>
 class EventWithLatencyInfo {
@@ -70,9 +70,9 @@ typedef EventWithLatencyInfo<blink::WebMouseEvent>
 typedef EventWithLatencyInfo<blink::WebTouchEvent>
     TouchEventWithLatencyInfo;
 
-typedef EventWithLatencyInfo<input::NativeWebKeyboardEvent>
+typedef EventWithLatencyInfo<NativeWebKeyboardEvent>
     NativeWebKeyboardEventWithLatencyInfo;
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_EVENT_WITH_LATENCY_INFO_H_
+#endif  // COMPONENTS_INPUT_EVENT_WITH_LATENCY_INFO_H_

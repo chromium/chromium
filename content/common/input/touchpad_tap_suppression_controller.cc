@@ -13,7 +13,7 @@ TouchpadTapSuppressionController::TouchpadTapSuppressionController(
 TouchpadTapSuppressionController::~TouchpadTapSuppressionController() {}
 
 bool TouchpadTapSuppressionController::ShouldSuppressMouseDown(
-    const MouseEventWithLatencyInfo& event) {
+    const input::MouseEventWithLatencyInfo& event) {
   return ShouldSuppressTapDown();
 }
 

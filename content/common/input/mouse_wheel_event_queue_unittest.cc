@@ -155,7 +155,7 @@ class MouseWheelEventQueueTest : public testing::Test,
 
   // MouseWheelEventQueueClient
   void SendMouseWheelEventImmediately(
-      const MouseWheelEventWithLatencyInfo& event,
+      const input::MouseWheelEventWithLatencyInfo& event,
       MouseWheelEventHandledCallback callback) override {
     WebMouseWheelEvent* cloned_event = new WebMouseWheelEvent();
     std::unique_ptr<WebInputEvent> cloned_event_holder(cloned_event);
@@ -163,7 +163,7 @@ class MouseWheelEventQueueTest : public testing::Test,
     sent_events_.push_back(std::move(cloned_event_holder));
     callbacks_.emplace_back(base::BindOnce(
         [](MouseWheelEventHandledCallback callback,
-           const MouseWheelEventWithLatencyInfo& event,
+           const input::MouseWheelEventWithLatencyInfo& event,
            blink::mojom::InputEventResultSource ack_source,
            blink::mojom::InputEventResultState ack_result) {
           std::move(callback).Run(event, ack_source, ack_result);
@@ -186,7 +186,7 @@ class MouseWheelEventQueueTest : public testing::Test,
   }
 
   void OnMouseWheelEventAck(
-      const MouseWheelEventWithLatencyInfo& event,
+      const input::MouseWheelEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) override {
     ++acked_event_count_;
@@ -261,7 +261,7 @@ class MouseWheelEventQueueTest : public testing::Test,
     event.momentum_phase = momentum_phase;
     event.rails_mode = rails_mode;
     event.has_synthetic_phase = has_synthetic_phase;
-    queue_->QueueEvent(MouseWheelEventWithLatencyInfo(event));
+    queue_->QueueEvent(input::MouseWheelEventWithLatencyInfo(event));
   }
   void SendMouseWheel(float x,
                       float y,
@@ -284,7 +284,7 @@ class MouseWheelEventQueueTest : public testing::Test,
                           ui::EventTimeForNow(),
                           blink::WebGestureDevice::kTouchscreen);
     queue_->OnGestureScrollEvent(
-        GestureEventWithLatencyInfo(event, ui::LatencyInfo()));
+        input::GestureEventWithLatencyInfo(event, ui::LatencyInfo()));
   }
 
   static void RunTasksAndWait(base::TimeDelta delay) {

@@ -73,7 +73,7 @@ ui::EventType WebTouchPointStateToEventType(blink::WebTouchPoint::State state) {
 // caller to do any co-ordinate system mapping (typically to get them into
 // the Aura EventDispatcher co-ordinate system).
 bool MakeUITouchEventsFromWebTouchEvents(
-    const TouchEventWithLatencyInfo& touch_with_latency,
+    const input::TouchEventWithLatencyInfo& touch_with_latency,
     std::vector<std::unique_ptr<ui::TouchEvent>>* list,
     TouchEventCoordinateSystem coordinate_system) {
   const blink::WebTouchEvent& touch = touch_with_latency.event;
@@ -148,7 +148,7 @@ SyntheticGestureTargetAura::~SyntheticGestureTargetAura() {
 void SyntheticGestureTargetAura::DispatchWebTouchEventToPlatform(
     const WebTouchEvent& web_touch,
     const ui::LatencyInfo& latency_info) {
-  TouchEventWithLatencyInfo touch_with_latency(web_touch, latency_info);
+  input::TouchEventWithLatencyInfo touch_with_latency(web_touch, latency_info);
   for (size_t i = 0; i < touch_with_latency.event.touches_length; i++) {
     touch_with_latency.event.touches[i].radius_x *= device_scale_factor_;
     touch_with_latency.event.touches[i].radius_y *= device_scale_factor_;

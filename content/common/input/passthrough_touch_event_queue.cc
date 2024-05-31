@@ -56,8 +56,9 @@ const base::FeatureParam<std::string>
         blink::features::kSkipTouchEventFilterTypeParamValueDiscrete};
 
 PassthroughTouchEventQueue::TouchEventWithLatencyInfoAndAckState::
-    TouchEventWithLatencyInfoAndAckState(const TouchEventWithLatencyInfo& event)
-    : TouchEventWithLatencyInfo(event),
+    TouchEventWithLatencyInfoAndAckState(
+        const input::TouchEventWithLatencyInfo& event)
+    : input::TouchEventWithLatencyInfo(event),
       ack_state_(blink::mojom::InputEventResultState::kUnknown) {}
 
 PassthroughTouchEventQueue::PassthroughTouchEventQueue(
@@ -81,8 +82,8 @@ PassthroughTouchEventQueue::PassthroughTouchEventQueue(
 PassthroughTouchEventQueue::~PassthroughTouchEventQueue() {}
 
 void PassthroughTouchEventQueue::SendTouchCancelEventForTouchEvent(
-    const TouchEventWithLatencyInfo& event_to_cancel) {
-  TouchEventWithLatencyInfo event = event_to_cancel;
+    const input::TouchEventWithLatencyInfo& event_to_cancel) {
+  input::TouchEventWithLatencyInfo event = event_to_cancel;
   WebTouchEventTraits::ResetTypeAndTouchStates(
       WebInputEvent::Type::kTouchCancel,
       // TODO(rbyers): Shouldn't we use a fresh timestamp?
@@ -91,7 +92,7 @@ void PassthroughTouchEventQueue::SendTouchCancelEventForTouchEvent(
 }
 
 void PassthroughTouchEventQueue::QueueEvent(
-    const TouchEventWithLatencyInfo& event) {
+    const input::TouchEventWithLatencyInfo& event) {
   TRACE_EVENT0("input", "PassthroughTouchEventQueue::QueueEvent");
 
   if (FilterBeforeForwarding(event.event) != PreFilterResult::kUnfiltered) {
@@ -105,7 +106,7 @@ void PassthroughTouchEventQueue::QueueEvent(
     AckCompletedEvents();
     return;
   }
-  TouchEventWithLatencyInfo cloned_event(event);
+  input::TouchEventWithLatencyInfo cloned_event(event);
   SendTouchEventImmediately(&cloned_event, true);
 }
 
@@ -113,9 +114,9 @@ void PassthroughTouchEventQueue::PrependTouchScrollNotification() {
   TRACE_EVENT0("input",
                "PassthroughTouchEventQueue::PrependTouchScrollNotification");
 
-  TouchEventWithLatencyInfo touch(WebInputEvent::Type::kTouchScrollStarted,
-                                  WebInputEvent::kNoModifiers,
-                                  ui::EventTimeForNow(), LatencyInfo());
+  input::TouchEventWithLatencyInfo touch(
+      WebInputEvent::Type::kTouchScrollStarted, WebInputEvent::kNoModifiers,
+      ui::EventTimeForNow(), LatencyInfo());
   touch.event.dispatch_type = WebInputEvent::DispatchType::kEventNonBlocking;
   SendTouchEventImmediately(&touch, true);
 }
@@ -147,7 +148,7 @@ void PassthroughTouchEventQueue::ProcessTouchAck(
 }
 
 void PassthroughTouchEventQueue::OnGestureEventAck(
-    const GestureEventWithLatencyInfo& event,
+    const input::GestureEventWithLatencyInfo& event,
     blink::mojom::InputEventResultState ack_result) {
   // When the scroll finishes allow TouchEvents to be blocking again.
   if (event.event.GetType() == blink::WebInputEvent::Type::kGestureScrollEnd) {
@@ -237,7 +238,7 @@ void PassthroughTouchEventQueue::AckCompletedEvents() {
 }
 
 void PassthroughTouchEventQueue::AckTouchEventToClient(
-    const TouchEventWithLatencyInfo& acked_event,
+    const input::TouchEventWithLatencyInfo& acked_event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   UpdateTouchConsumerStates(acked_event.event, ack_result);
@@ -249,7 +250,7 @@ void PassthroughTouchEventQueue::AckTouchEventToClient(
 }
 
 void PassthroughTouchEventQueue::SendTouchEventImmediately(
-    TouchEventWithLatencyInfo* touch,
+    input::TouchEventWithLatencyInfo* touch,
     bool wait_for_ack) {
   // Note: Touchstart events are marked cancelable to allow transitions between
   // platform scrolling and JS pinching. Touchend events, however, remain

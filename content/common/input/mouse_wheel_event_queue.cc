@@ -30,7 +30,7 @@ MouseWheelEventQueue::~MouseWheelEventQueue() {
 }
 
 void MouseWheelEventQueue::QueueEvent(
-    const MouseWheelEventWithLatencyInfo& event) {
+    const input::MouseWheelEventWithLatencyInfo& event) {
   TRACE_EVENT0("input", "MouseWheelEventQueue::QueueEvent");
 
   if (event_sent_for_gesture_ack_ && !wheel_queue_.empty()) {
@@ -53,7 +53,8 @@ void MouseWheelEventQueue::QueueEvent(
     }
   }
 
-  MouseWheelEventWithLatencyInfo event_with_action(event.event, event.latency);
+  input::MouseWheelEventWithLatencyInfo event_with_action(event.event,
+                                                          event.latency);
   event_with_action.event.event_action =
       WebMouseWheelEvent::GetPlatformSpecificDefaultEventAction(event.event);
   // Update the expected event action before queuing the event. From this point
@@ -100,7 +101,7 @@ bool MouseWheelEventQueue::CanGenerateGestureScroll(
 }
 
 void MouseWheelEventQueue::ProcessMouseWheelAck(
-    const MouseWheelEventWithLatencyInfo& ack_event,
+    const input::MouseWheelEventWithLatencyInfo& ack_event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   TRACE_EVENT0("input", "MouseWheelEventQueue::ProcessMouseWheelAck");
@@ -240,7 +241,7 @@ void MouseWheelEventQueue::ProcessMouseWheelAck(
 }
 
 void MouseWheelEventQueue::OnGestureScrollEvent(
-    const GestureEventWithLatencyInfo& gesture_event) {
+    const input::GestureEventWithLatencyInfo& gesture_event) {
   if (gesture_event.event.GetType() ==
       blink::WebInputEvent::Type::kGestureScrollBegin) {
     scrolling_device_ = gesture_event.event.SourceDevice();

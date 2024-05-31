@@ -66,7 +66,7 @@ class PassthroughTouchEventQueueTest : public testing::Test,
 
   // PassthroughTouchEventQueueClient
   void SendTouchEventImmediately(
-      const TouchEventWithLatencyInfo& event) override {
+      const input::TouchEventWithLatencyInfo& event) override {
     sent_events_.push_back(event.event);
     sent_events_ids_.push_back(event.event.unique_touch_event_id);
     if (sync_ack_result_) {
@@ -77,7 +77,7 @@ class PassthroughTouchEventQueueTest : public testing::Test,
   }
 
   void OnTouchEventAck(
-      const TouchEventWithLatencyInfo& event,
+      const input::TouchEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) override {
     ++acked_event_count_;
@@ -139,7 +139,8 @@ class PassthroughTouchEventQueueTest : public testing::Test,
       event.moved_beyond_slop_region =
           event.GetType() == WebInputEvent::Type::kTouchMove;
     }
-    queue_->QueueEvent(TouchEventWithLatencyInfo(event, ui::LatencyInfo()));
+    queue_->QueueEvent(
+        input::TouchEventWithLatencyInfo(event, ui::LatencyInfo()));
   }
 
   void SendTouchEventAck(blink::mojom::InputEventResultState ack_result) {
@@ -168,8 +169,9 @@ class PassthroughTouchEventQueueTest : public testing::Test,
 
   void SendGestureEventAck(WebInputEvent::Type type,
                            blink::mojom::InputEventResultState ack_result) {
-    GestureEventWithLatencyInfo event(type, blink::WebInputEvent::kNoModifiers,
-                                      ui::EventTimeForNow(), ui::LatencyInfo());
+    input::GestureEventWithLatencyInfo event(
+        type, blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow(),
+        ui::LatencyInfo());
     queue_->OnGestureEventAck(event, ack_result);
   }
 

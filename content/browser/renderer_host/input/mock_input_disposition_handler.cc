@@ -33,7 +33,7 @@ MockInputDispositionHandler::CreateMouseEventCallback() {
 }
 
 void MockInputDispositionHandler::OnWheelEventAck(
-    const MouseWheelEventWithLatencyInfo& event,
+    const input::MouseWheelEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   VLOG(1) << __FUNCTION__ << " called!";
@@ -43,7 +43,7 @@ void MockInputDispositionHandler::OnWheelEventAck(
 }
 
 void MockInputDispositionHandler::OnTouchEventAck(
-    const TouchEventWithLatencyInfo& event,
+    const input::TouchEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   VLOG(1) << __FUNCTION__ << " called!";
@@ -56,7 +56,7 @@ void MockInputDispositionHandler::OnTouchEventAck(
 }
 
 void MockInputDispositionHandler::OnGestureEventAck(
-    const GestureEventWithLatencyInfo& event,
+    const input::GestureEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   VLOG(1) << __FUNCTION__ << " called!";
@@ -79,7 +79,7 @@ void MockInputDispositionHandler::RecordAckCalled(
 }
 
 void MockInputDispositionHandler::OnKeyboardEventAck(
-    const NativeWebKeyboardEventWithLatencyInfo& event,
+    const input::NativeWebKeyboardEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   VLOG(1) << __FUNCTION__ << " called!";
@@ -89,7 +89,7 @@ void MockInputDispositionHandler::OnKeyboardEventAck(
 }
 
 void MockInputDispositionHandler::OnMouseEventAck(
-    const MouseEventWithLatencyInfo& event,
+    const input::MouseEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   VLOG(1) << __FUNCTION__ << " called!";

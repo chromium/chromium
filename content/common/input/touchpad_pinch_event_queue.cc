@@ -75,10 +75,11 @@ blink::WebMouseWheelEvent CreateSyntheticWheelFromTouchpadPinchEvent(
 }  // namespace
 
 // This is a single queued pinch event to which we add trace events.
-class QueuedTouchpadPinchEvent : public GestureEventWithLatencyInfo {
+class QueuedTouchpadPinchEvent : public input::GestureEventWithLatencyInfo {
  public:
-  QueuedTouchpadPinchEvent(const GestureEventWithLatencyInfo& original_event)
-      : GestureEventWithLatencyInfo(original_event) {
+  QueuedTouchpadPinchEvent(
+      const input::GestureEventWithLatencyInfo& original_event)
+      : input::GestureEventWithLatencyInfo(original_event) {
     TRACE_EVENT_ASYNC_BEGIN0("input", "TouchpadPinchEventQueue::QueueEvent",
                              this);
   }
@@ -101,7 +102,7 @@ TouchpadPinchEventQueue::TouchpadPinchEventQueue(
 TouchpadPinchEventQueue::~TouchpadPinchEventQueue() = default;
 
 void TouchpadPinchEventQueue::QueueEvent(
-    const GestureEventWithLatencyInfo& event) {
+    const input::GestureEventWithLatencyInfo& event) {
   TRACE_EVENT0("input", "TouchpadPinchEventQueue::QueueEvent");
 
   if (!pinch_queue_.empty()) {
@@ -126,7 +127,7 @@ void TouchpadPinchEventQueue::QueueEvent(
 }
 
 void TouchpadPinchEventQueue::ProcessMouseWheelAck(
-    const MouseWheelEventWithLatencyInfo& ack_event,
+    const input::MouseWheelEventWithLatencyInfo& ack_event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   TRACE_EVENT0("input", "TouchpadPinchEventQueue::ProcessMouseWheelAck");
@@ -198,7 +199,7 @@ void TouchpadPinchEventQueue::TryForwardNextEventToRenderer() {
   blink::WebMouseWheelEvent wheel_event_awaiting_ack =
       CreateSyntheticWheelFromTouchpadPinchEvent(
           pinch_event_awaiting_ack_->event, phase, cancelable);
-  const MouseWheelEventWithLatencyInfo synthetic_wheel(
+  const input::MouseWheelEventWithLatencyInfo synthetic_wheel(
       wheel_event_awaiting_ack, pinch_event_awaiting_ack_->latency);
 
   client_->SendMouseWheelEventForPinchImmediately(

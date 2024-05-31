@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/event_with_latency_info.h"
+#include "components/input/event_with_latency_info.h"
 
 #include <limits>
 
@@ -17,7 +17,7 @@ using blink::WebTouchEvent;
 using blink::WebTouchPoint;
 using std::numeric_limits;
 
-namespace content {
+namespace input {
 namespace {
 
 using EventWithLatencyInfoTest = testing::Test;
@@ -369,4 +369,4 @@ TEST_F(EventWithLatencyInfoTest, TimestampCoalescing) {
 }
 
 }  // namespace
-}  // namespace content
+}  // namespace input

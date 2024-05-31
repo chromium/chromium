@@ -189,7 +189,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void GestureEventAck(const blink::WebGestureEvent& event,
                        blink::mojom::InputEventResultState ack_result) override;
   void ProcessAckedTouchEvent(
-      const TouchEventWithLatencyInfo& touch,
+      const input::TouchEventWithLatencyInfo& touch,
       blink::mojom::InputEventResultState ack_result) override;
 
   void DidOverscroll(const ui::DidOverscrollParams& params) override;

@@ -5,10 +5,9 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MOCK_RENDER_WIDGET_HOST_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MOCK_RENDER_WIDGET_HOST_H_
 
-#include "content/browser/renderer_host/render_view_host_impl.h"
-
+#include "components/input/event_with_latency_info.h"
 #include "content/browser/renderer_host/input/mock_input_router.h"
-#include "content/common/input/event_with_latency_info.h"
+#include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/test/mock_render_input_router.h"
 #include "content/test/mock_widget_input_handler.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -34,7 +33,7 @@ class MockRenderWidgetHost : public RenderWidgetHostImpl {
 
   ~MockRenderWidgetHost() override;
 
-  void OnTouchEventAck(const TouchEventWithLatencyInfo& event,
+  void OnTouchEventAck(const input::TouchEventWithLatencyInfo& event,
                        blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result) override;
 

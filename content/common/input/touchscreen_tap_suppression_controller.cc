@@ -17,7 +17,7 @@ TouchscreenTapSuppressionController::TouchscreenTapSuppressionController(
 TouchscreenTapSuppressionController::~TouchscreenTapSuppressionController() {}
 
 bool TouchscreenTapSuppressionController::FilterTapEvent(
-    const GestureEventWithLatencyInfo& event) {
+    const input::GestureEventWithLatencyInfo& event) {
   switch (event.event.GetType()) {
     case WebInputEvent::Type::kGestureTapDown:
       return ShouldSuppressTapDown();

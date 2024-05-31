@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "components/input/event_with_latency_info.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -33,7 +34,6 @@
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/common/content_switches_internal.h"
-#include "content/common/input/event_with_latency_info.h"
 #include "content/common/input/render_widget_host_input_event_router.h"
 #include "content/common/input/render_widget_host_view_input_observer.h"
 #include "content/public/common/page_visibility_state.h"
@@ -510,7 +510,7 @@ bool RenderWidgetHostViewBase::RequestRepaintForTesting() {
 }
 
 void RenderWidgetHostViewBase::ProcessAckedTouchEvent(
-    const TouchEventWithLatencyInfo& touch,
+    const input::TouchEventWithLatencyInfo& touch,
     blink::mojom::InputEventResultState ack_result) {
   DUMP_WILL_BE_NOTREACHED_NORETURN();
 }

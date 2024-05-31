@@ -32,6 +32,7 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "cc/mojom/render_frame_metadata.mojom.h"
+#include "components/input/event_with_latency_info.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
@@ -42,7 +43,6 @@
 #include "content/browser/scheduler/browser_ui_thread_scheduler.h"
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom-forward.h"
-#include "content/common/input/event_with_latency_info.h"
 #include "content/common/input/input_disposition_handler.h"
 #include "content/common/input/input_router_impl.h"
 #include "content/common/input/render_input_router.h"
@@ -1008,19 +1008,19 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   virtual void NotifyNewContentRenderingTimeoutForTesting() {}
 
   // InputDispositionHandler
-  void OnWheelEventAck(const MouseWheelEventWithLatencyInfo& event,
+  void OnWheelEventAck(const input::MouseWheelEventWithLatencyInfo& event,
                        blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result) override;
-  void OnTouchEventAck(const TouchEventWithLatencyInfo& event,
+  void OnTouchEventAck(const input::TouchEventWithLatencyInfo& event,
                        blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result) override;
   void OnGestureEventAck(
-      const GestureEventWithLatencyInfo& event,
+      const input::GestureEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) override;
 
   // virtual for testing.
-  virtual void OnMouseEventAck(const MouseEventWithLatencyInfo& event,
+  virtual void OnMouseEventAck(const input::MouseEventWithLatencyInfo& event,
                                blink::mojom::InputEventResultSource ack_source,
                                blink::mojom::InputEventResultState ack_result);
   // ---------------------------------------------------------------------------
@@ -1086,9 +1086,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // InputRouter::SendKeyboardEvent() callbacks to this. This may be called
   // synchronously.
-  void OnKeyboardEventAck(const NativeWebKeyboardEventWithLatencyInfo& event,
-                          blink::mojom::InputEventResultSource ack_source,
-                          blink::mojom::InputEventResultState ack_result);
+  void OnKeyboardEventAck(
+      const input::NativeWebKeyboardEventWithLatencyInfo& event,
+      blink::mojom::InputEventResultSource ack_source,
+      blink::mojom::InputEventResultState ack_result);
 
   // Release the pointer lock
   void UnlockPointer();

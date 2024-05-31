@@ -122,7 +122,7 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient {
                               const ui::MenuSourceType source_type);
 
   void SendGestureEventWithLatencyInfo(
-      const GestureEventWithLatencyInfo& gesture_with_latency);
+      const input::GestureEventWithLatencyInfo& gesture_with_latency);
 
   // Signals if this host has forwarded a GestureScrollBegin without yet having
   // forwarded a matching GestureScrollEnd/GestureFlingStart.

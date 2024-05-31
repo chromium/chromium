@@ -15,13 +15,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
+#include "components/input/event_with_latency_info.h"
 #include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/common/hit_test/hit_test_region_observer.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/common/input/touch_emulator_client.h"
 #include "content/common/input/render_widget_targeter.h"
 #include "content/common/content_export.h"
-#include "content/common/input/event_with_latency_info.h"
 #include "content/common/input/render_widget_host_view_input_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -103,7 +103,7 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
                          const blink::WebGestureEvent* event,
                          const ui::LatencyInfo& latency);
   void OnHandledTouchStartOrFirstTouchMove(uint32_t unique_touch_event_id);
-  void ProcessAckedTouchEvent(const TouchEventWithLatencyInfo& event,
+  void ProcessAckedTouchEvent(const input::TouchEventWithLatencyInfo& event,
                               blink::mojom::InputEventResultState ack_result,
                               RenderWidgetHostViewInput* view);
   void RouteTouchEvent(RenderWidgetHostViewInput* root_view,

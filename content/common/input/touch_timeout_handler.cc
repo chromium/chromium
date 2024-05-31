@@ -56,7 +56,7 @@ TouchTimeoutHandler::~TouchTimeoutHandler() {
 }
 
 void TouchTimeoutHandler::StartIfNecessary(
-    const TouchEventWithLatencyInfo& event) {
+    const input::TouchEventWithLatencyInfo& event) {
   if (pending_ack_state_ != PENDING_ACK_NONE)
     return;
 

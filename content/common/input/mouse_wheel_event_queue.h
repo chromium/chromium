@@ -11,8 +11,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
+#include "components/input/event_with_latency_info.h"
 #include "content/common/content_export.h"
-#include "content/common/input/event_with_latency_info.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
@@ -20,10 +20,11 @@ namespace content {
 
 // This class represents a single queued mouse wheel event. Its main use
 // is that it is reported via trace events.
-class QueuedWebMouseWheelEvent : public MouseWheelEventWithLatencyInfo {
+class QueuedWebMouseWheelEvent : public input::MouseWheelEventWithLatencyInfo {
  public:
-  QueuedWebMouseWheelEvent(const MouseWheelEventWithLatencyInfo& original_event)
-      : MouseWheelEventWithLatencyInfo(original_event) {
+  QueuedWebMouseWheelEvent(
+      const input::MouseWheelEventWithLatencyInfo& original_event)
+      : input::MouseWheelEventWithLatencyInfo(original_event) {
     TRACE_EVENT_ASYNC_BEGIN0("input", "MouseWheelEventQueue::QueueEvent", this);
   }
 
@@ -39,16 +40,16 @@ class QueuedWebMouseWheelEvent : public MouseWheelEventWithLatencyInfo {
 // and dispatch mouse wheel event responses.
 class CONTENT_EXPORT MouseWheelEventQueueClient {
  public:
-  using MouseWheelEventHandledCallback =
-      base::OnceCallback<void(const MouseWheelEventWithLatencyInfo& ack_event,
-                              blink::mojom::InputEventResultSource ack_source,
-                              blink::mojom::InputEventResultState ack_result)>;
+  using MouseWheelEventHandledCallback = base::OnceCallback<void(
+      const input::MouseWheelEventWithLatencyInfo& ack_event,
+      blink::mojom::InputEventResultSource ack_source,
+      blink::mojom::InputEventResultState ack_result)>;
   virtual ~MouseWheelEventQueueClient() {}
   virtual void SendMouseWheelEventImmediately(
-      const MouseWheelEventWithLatencyInfo& event,
+      const input::MouseWheelEventWithLatencyInfo& event,
       MouseWheelEventHandledCallback callback) = 0;
   virtual void OnMouseWheelEventAck(
-      const MouseWheelEventWithLatencyInfo& event,
+      const input::MouseWheelEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) = 0;
   virtual void ForwardGestureEventWithLatencyInfo(
@@ -87,13 +88,14 @@ class CONTENT_EXPORT MouseWheelEventQueue {
   // queued events (e.g. consecutive mouse-wheel events can be coalesced into a
   // single mouse-wheel event). The event may also be immediately forwarded to
   // the renderer (e.g. when there are no other queued mouse-wheel event).
-  void QueueEvent(const MouseWheelEventWithLatencyInfo& event);
+  void QueueEvent(const input::MouseWheelEventWithLatencyInfo& event);
 
   // When GestureScrollBegin is received, and it is a different source
   // than mouse wheels terminate the current GestureScroll if there is one.
   // When Gesture{ScrollEnd,FlingStart} is received, resume generating
   // gestures.
-  void OnGestureScrollEvent(const GestureEventWithLatencyInfo& gesture_event);
+  void OnGestureScrollEvent(
+      const input::GestureEventWithLatencyInfo& gesture_event);
 
   [[nodiscard]] bool has_pending() const {
     return !wheel_queue_.empty() || event_sent_for_gesture_ack_;
@@ -107,9 +109,10 @@ class CONTENT_EXPORT MouseWheelEventQueue {
  private:
   // Notifies the queue that a mouse wheel event has been processed by the
   // renderer.
-  void ProcessMouseWheelAck(const MouseWheelEventWithLatencyInfo& ack_event,
-                            blink::mojom::InputEventResultSource ack_source,
-                            blink::mojom::InputEventResultState ack_result);
+  void ProcessMouseWheelAck(
+      const input::MouseWheelEventWithLatencyInfo& ack_event,
+      blink::mojom::InputEventResultSource ack_source,
+      blink::mojom::InputEventResultState ack_result);
 
   void TryForwardNextEventToRenderer();
   void SendScrollEnd(blink::WebGestureEvent update_event, bool synthetic);

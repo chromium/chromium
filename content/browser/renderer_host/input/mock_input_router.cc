@@ -10,25 +10,25 @@
 namespace content {
 
 void MockInputRouter::SendMouseEvent(
-    const MouseEventWithLatencyInfo& mouse_event,
+    const input::MouseEventWithLatencyInfo& mouse_event,
     MouseEventCallback event_result_callback) {
   sent_mouse_event_ = true;
 }
 void MockInputRouter::SendWheelEvent(
-    const MouseWheelEventWithLatencyInfo& wheel_event) {
+    const input::MouseWheelEventWithLatencyInfo& wheel_event) {
   sent_wheel_event_ = true;
 }
 void MockInputRouter::SendKeyboardEvent(
-    const NativeWebKeyboardEventWithLatencyInfo& key_event,
+    const input::NativeWebKeyboardEventWithLatencyInfo& key_event,
     KeyboardEventCallback event_result_callback) {
   sent_keyboard_event_ = true;
 }
 void MockInputRouter::SendGestureEvent(
-    const GestureEventWithLatencyInfo& gesture_event) {
+    const input::GestureEventWithLatencyInfo& gesture_event) {
   sent_gesture_event_ = true;
 }
 void MockInputRouter::SendTouchEvent(
-    const TouchEventWithLatencyInfo& touch_event) {
+    const input::TouchEventWithLatencyInfo& touch_event) {
   send_touch_event_not_cancelled_ =
       client_->FilterInputEvent(touch_event.event, touch_event.latency) ==
       blink::mojom::InputEventResultState::kNotConsumed;

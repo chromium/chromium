@@ -10,10 +10,10 @@
 #include <string>
 #include <vector>
 
+#include "components/input/event_with_latency_info.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/common/content_export.h"
-#include "content/common/input/event_with_latency_info.h"
 #include "content/common/input/input_router_impl.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/display/screen_infos.h"
@@ -76,7 +76,7 @@ class CONTENT_EXPORT RenderWidgetHostViewInput : public StylusInterface {
   // |touch|'s coordinates are in the coordinate space of the view to which it
   // was targeted.
   virtual void ProcessAckedTouchEvent(
-      const TouchEventWithLatencyInfo& touch,
+      const input::TouchEventWithLatencyInfo& touch,
       blink::mojom::InputEventResultState ack_result) = 0;
 
   virtual void DidOverscroll(const ui::DidOverscrollParams& params) = 0;

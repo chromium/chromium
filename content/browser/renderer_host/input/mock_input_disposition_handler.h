@@ -28,14 +28,14 @@ class MockInputDispositionHandler : public InputDispositionHandler {
   InputRouter::MouseEventCallback CreateMouseEventCallback();
 
   // InputDispositionHandler
-  void OnWheelEventAck(const MouseWheelEventWithLatencyInfo& event,
+  void OnWheelEventAck(const input::MouseWheelEventWithLatencyInfo& event,
                        blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result) override;
-  void OnTouchEventAck(const TouchEventWithLatencyInfo& event,
+  void OnTouchEventAck(const input::TouchEventWithLatencyInfo& event,
                        blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result) override;
   void OnGestureEventAck(
-      const GestureEventWithLatencyInfo& event,
+      const input::GestureEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) override;
 
@@ -46,12 +46,12 @@ class MockInputDispositionHandler : public InputDispositionHandler {
   }
 
   void set_followup_touch_event(
-      std::unique_ptr<GestureEventWithLatencyInfo> event) {
+      std::unique_ptr<input::GestureEventWithLatencyInfo> event) {
     gesture_followup_event_ = std::move(event);
   }
 
   void set_followup_touch_event(
-      std::unique_ptr<TouchEventWithLatencyInfo> event) {
+      std::unique_ptr<input::TouchEventWithLatencyInfo> event) {
     touch_followup_event_ = std::move(event);
   }
 
@@ -69,7 +69,7 @@ class MockInputDispositionHandler : public InputDispositionHandler {
   const blink::WebMouseWheelEvent& acked_wheel_event() const {
     return acked_wheel_event_;
   }
-  const TouchEventWithLatencyInfo& acked_touch_event() const {
+  const input::TouchEventWithLatencyInfo& acked_touch_event() const {
     return acked_touch_event_;
   }
   const blink::WebGestureEvent& acked_gesture_event() const {
@@ -80,10 +80,11 @@ class MockInputDispositionHandler : public InputDispositionHandler {
   void RecordAckCalled(blink::WebInputEvent::Type eventType,
                        blink::mojom::InputEventResultState ack_result);
 
-  void OnKeyboardEventAck(const NativeWebKeyboardEventWithLatencyInfo& event,
-                          blink::mojom::InputEventResultSource ack_source,
-                          blink::mojom::InputEventResultState ack_result);
-  void OnMouseEventAck(const MouseEventWithLatencyInfo& event,
+  void OnKeyboardEventAck(
+      const input::NativeWebKeyboardEventWithLatencyInfo& event,
+      blink::mojom::InputEventResultSource ack_source,
+      blink::mojom::InputEventResultState ack_result);
+  void OnMouseEventAck(const input::MouseEventWithLatencyInfo& event,
                        blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result);
 
@@ -95,12 +96,12 @@ class MockInputDispositionHandler : public InputDispositionHandler {
   blink::mojom::InputEventResultState acked_wheel_event_state_;
   std::unique_ptr<input::NativeWebKeyboardEvent> acked_key_event_;
   blink::WebMouseWheelEvent acked_wheel_event_;
-  TouchEventWithLatencyInfo acked_touch_event_;
+  input::TouchEventWithLatencyInfo acked_touch_event_;
   blink::WebGestureEvent acked_gesture_event_;
   blink::WebMouseEvent acked_mouse_event_;
 
-  std::unique_ptr<GestureEventWithLatencyInfo> gesture_followup_event_;
-  std::unique_ptr<TouchEventWithLatencyInfo> touch_followup_event_;
+  std::unique_ptr<input::GestureEventWithLatencyInfo> gesture_followup_event_;
+  std::unique_ptr<input::TouchEventWithLatencyInfo> touch_followup_event_;
 };
 
 }  // namespace content

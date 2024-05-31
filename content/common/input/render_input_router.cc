@@ -295,7 +295,7 @@ void RenderInputRouter::ShowContextMenuAtPoint(
 }
 
 void RenderInputRouter::SendGestureEventWithLatencyInfo(
-    const GestureEventWithLatencyInfo& gesture_with_latency) {
+    const input::GestureEventWithLatencyInfo& gesture_with_latency) {
   const blink::WebGestureEvent& gesture_event = gesture_with_latency.event;
   if (gesture_event.GetType() == WebInputEvent::Type::kGestureScrollBegin) {
     DCHECK(

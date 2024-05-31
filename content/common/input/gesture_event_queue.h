@@ -11,8 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/input/event_with_latency_info.h"
 #include "content/common/content_export.h"
-#include "content/common/input/event_with_latency_info.h"
 #include "content/common/input/fling_controller.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -28,10 +28,10 @@ class CONTENT_EXPORT GestureEventQueueClient {
   virtual ~GestureEventQueueClient() {}
 
   virtual void SendGestureEventImmediately(
-      const GestureEventWithLatencyInfo& event) = 0;
+      const input::GestureEventWithLatencyInfo& event) = 0;
 
   virtual void OnGestureEventAck(
-      const GestureEventWithLatencyInfo& event,
+      const input::GestureEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) = 0;
 };
@@ -60,7 +60,7 @@ class CONTENT_EXPORT GestureEventQueueClient {
 // event is ACK'd.
 class CONTENT_EXPORT GestureEventQueue {
  public:
-  using GestureQueue = base::circular_deque<GestureEventWithLatencyInfo>;
+  using GestureQueue = base::circular_deque<input::GestureEventWithLatencyInfo>;
   struct CONTENT_EXPORT Config {
     Config();
 
@@ -86,15 +86,15 @@ class CONTENT_EXPORT GestureEventQueue {
   // Allow the fling controller to observe the gesture event. Returns true if
   // the event was filtered by the fling controller and shouldn't be further
   // forwarded.
-  bool PassToFlingController(const GestureEventWithLatencyInfo&);
+  bool PassToFlingController(const input::GestureEventWithLatencyInfo&);
 
   // Filter the event for debouncing or forward it to the renderer. Returns
   // true if the event was forwarded, false if was filtered for debouncing.
-  bool DebounceOrForwardEvent(const GestureEventWithLatencyInfo&);
+  bool DebounceOrForwardEvent(const input::GestureEventWithLatencyInfo&);
 
   // Adds a gesture to the queue of events that needs to be deferred until the
   // touch action is known.
-  void QueueDeferredEvents(const GestureEventWithLatencyInfo&);
+  void QueueDeferredEvents(const input::GestureEventWithLatencyInfo&);
 
   // Returns events in the |deferred_gesture_queue_| and empty the queue.
   GestureQueue TakeDeferredEvents();
@@ -111,7 +111,8 @@ class CONTENT_EXPORT GestureEventQueue {
 
   // Sends the gesture event to the renderer. Stores the sent event for when
   // the renderer replies with an ACK.
-  void ForwardGestureEvent(const GestureEventWithLatencyInfo& gesture_event);
+  void ForwardGestureEvent(
+      const input::GestureEventWithLatencyInfo& gesture_event);
 
   bool empty() const {
     return sent_events_awaiting_ack_.empty() &&
@@ -131,7 +132,7 @@ class CONTENT_EXPORT GestureEventQueue {
   // event queue, but this is needed to pass them through to the
   // FlingController. The FlingController should probably be owned by the
   // InputRouter instead.
-  void OnWheelEventAck(const MouseWheelEventWithLatencyInfo& event,
+  void OnWheelEventAck(const input::MouseWheelEventWithLatencyInfo& event,
                        blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result);
 
@@ -142,9 +143,10 @@ class CONTENT_EXPORT GestureEventQueue {
   friend class MockRenderWidgetHost;
 
   class GestureEventWithLatencyInfoAckState
-      : public GestureEventWithLatencyInfo {
+      : public input::GestureEventWithLatencyInfo {
    public:
-    GestureEventWithLatencyInfoAckState(const GestureEventWithLatencyInfo&);
+    GestureEventWithLatencyInfoAckState(
+        const input::GestureEventWithLatencyInfo&);
     blink::mojom::InputEventResultState ack_state() const { return ack_state_; }
     void set_ack_info(blink::mojom::InputEventResultSource source,
                       blink::mojom::InputEventResultState state) {
@@ -168,12 +170,12 @@ class CONTENT_EXPORT GestureEventQueue {
 
   // Sub-filter for removing bounces from in-progress scrolls.
   bool ShouldForwardForBounceReduction(
-      const GestureEventWithLatencyInfo& gesture_event);
+      const input::GestureEventWithLatencyInfo& gesture_event);
 
   // ACK completed events in order until we have reached an incomplete event.
   // Will preserve the FIFO order as events originally arrived.
   void AckCompletedEvents();
-  void AckGestureEventToClient(const GestureEventWithLatencyInfo&,
+  void AckGestureEventToClient(const input::GestureEventWithLatencyInfo&,
                                blink::mojom::InputEventResultSource,
                                blink::mojom::InputEventResultState);
 

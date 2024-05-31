@@ -69,7 +69,7 @@ FlingController::FlingController(
 FlingController::~FlingController() = default;
 
 bool FlingController::ObserveAndFilterForTapSuppression(
-    const GestureEventWithLatencyInfo& gesture_event) {
+    const input::GestureEventWithLatencyInfo& gesture_event) {
   switch (gesture_event.event.GetType()) {
     case WebInputEvent::Type::kGestureFlingCancel:
       // The controllers' state is affected by the cancel event and assumes
@@ -105,7 +105,7 @@ bool FlingController::ObserveAndFilterForTapSuppression(
 }
 
 bool FlingController::ObserveAndMaybeConsumeGestureEvent(
-    const GestureEventWithLatencyInfo& gesture_event) {
+    const input::GestureEventWithLatencyInfo& gesture_event) {
   TRACE_EVENT0("input", "FlingController::ObserveAndMaybeConsumeGestureEvent");
   // FlingCancel events arrive when a finger is touched down regardless of
   // whether there is an ongoing fling. These can affect state so if there's no
@@ -160,7 +160,7 @@ bool FlingController::ObserveAndMaybeConsumeGestureEvent(
 }
 
 void FlingController::ProcessGestureFlingStart(
-    const GestureEventWithLatencyInfo& gesture_event) {
+    const input::GestureEventWithLatencyInfo& gesture_event) {
   // Don't start a touchpad gesture fling if the previous scroll events were
   // consumed.
   if (gesture_event.event.SourceDevice() ==
@@ -192,7 +192,7 @@ void FlingController::ScheduleFlingProgress() {
 }
 
 void FlingController::ProcessGestureFlingCancel(
-    const GestureEventWithLatencyInfo& gesture_event) {
+    const input::GestureEventWithLatencyInfo& gesture_event) {
   DCHECK(fling_curve_);
 
   // Note: We don't want to reset the fling booster here because a FlingCancel
@@ -275,7 +275,7 @@ void FlingController::GenerateAndSendWheelEvents(
     base::TimeTicks current_time,
     const gfx::Vector2dF& delta,
     blink::WebMouseWheelEvent::Phase phase) {
-  MouseWheelEventWithLatencyInfo synthetic_wheel(
+  input::MouseWheelEventWithLatencyInfo synthetic_wheel(
       WebInputEvent::Type::kMouseWheel, current_fling_parameters_.modifiers,
       current_time, ui::LatencyInfo(ui::SourceEventType::WHEEL));
   synthetic_wheel.event.delta_units =
@@ -298,7 +298,7 @@ void FlingController::GenerateAndSendGestureScrollEvents(
     base::TimeTicks current_time,
     WebInputEvent::Type type,
     const gfx::Vector2dF& delta /* = gfx::Vector2dF() */) {
-  GestureEventWithLatencyInfo synthetic_gesture(
+  input::GestureEventWithLatencyInfo synthetic_gesture(
       type, current_fling_parameters_.modifiers, current_time,
       ui::LatencyInfo(ui::SourceEventType::INERTIAL));
   synthetic_gesture.event.SetPositionInWidget(current_fling_parameters_.point);
@@ -457,7 +457,7 @@ FlingController::GetTouchpadTapSuppressionController() {
 }
 
 void FlingController::OnWheelEventAck(
-    const MouseWheelEventWithLatencyInfo& event,
+    const input::MouseWheelEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   last_wheel_event_consumed_ =

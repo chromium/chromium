@@ -18,8 +18,8 @@ namespace content {
 
 GestureEventQueue::GestureEventWithLatencyInfoAckState::
     GestureEventWithLatencyInfoAckState(
-        const GestureEventWithLatencyInfo& event)
-    : GestureEventWithLatencyInfo(event) {}
+        const input::GestureEventWithLatencyInfo& event)
+    : input::GestureEventWithLatencyInfo(event) {}
 
 GestureEventQueue::Config::Config() {}
 
@@ -42,7 +42,7 @@ GestureEventQueue::GestureEventQueue(
 GestureEventQueue::~GestureEventQueue() {}
 
 bool GestureEventQueue::DebounceOrForwardEvent(
-    const GestureEventWithLatencyInfo& gesture_event) {
+    const input::GestureEventWithLatencyInfo& gesture_event) {
   // GFS and GFC should have been filtered in PassToFlingController.
   DCHECK_NE(gesture_event.event.GetType(),
             WebInputEvent::Type::kGestureFlingStart);
@@ -57,12 +57,12 @@ bool GestureEventQueue::DebounceOrForwardEvent(
 }
 
 bool GestureEventQueue::PassToFlingController(
-    const GestureEventWithLatencyInfo& gesture_event) {
+    const input::GestureEventWithLatencyInfo& gesture_event) {
   return fling_controller_.ObserveAndMaybeConsumeGestureEvent(gesture_event);
 }
 
 void GestureEventQueue::QueueDeferredEvents(
-    const GestureEventWithLatencyInfo& gesture_event) {
+    const input::GestureEventWithLatencyInfo& gesture_event) {
   deferred_gesture_queue_.push_back(gesture_event);
 }
 
@@ -85,7 +85,7 @@ bool GestureEventQueue::FlingInProgressForTest() const {
 }
 
 bool GestureEventQueue::ShouldForwardForBounceReduction(
-    const GestureEventWithLatencyInfo& gesture_event) {
+    const input::GestureEventWithLatencyInfo& gesture_event) {
   if (debounce_interval_ <= base::TimeDelta()) {
     return true;
   }
@@ -144,7 +144,7 @@ bool GestureEventQueue::ShouldForwardForBounceReduction(
 }
 
 void GestureEventQueue::ForwardGestureEvent(
-    const GestureEventWithLatencyInfo& gesture_event) {
+    const input::GestureEventWithLatencyInfo& gesture_event) {
   // GFS and GFC should have been filtered in PassToFlingController to get
   // handled by fling controller.
   DCHECK_NE(gesture_event.event.GetType(),
@@ -204,7 +204,7 @@ void GestureEventQueue::AckCompletedEvents() {
 }
 
 void GestureEventQueue::AckGestureEventToClient(
-    const GestureEventWithLatencyInfo& event_with_latency,
+    const input::GestureEventWithLatencyInfo& event_with_latency,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   client_->OnGestureEventAck(event_with_latency, ack_source, ack_result);
@@ -234,7 +234,7 @@ void GestureEventQueue::SendScrollEndingEventsNow() {
 }
 
 void GestureEventQueue::OnWheelEventAck(
-    const MouseWheelEventWithLatencyInfo& event,
+    const input::MouseWheelEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   fling_controller_.OnWheelEventAck(event, ack_source, ack_result);

@@ -65,7 +65,7 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
 
   // FlingControllerEventSenderClient
   void SendGeneratedWheelEvent(
-      const MouseWheelEventWithLatencyInfo& wheel_event) override {
+      const input::MouseWheelEventWithLatencyInfo& wheel_event) override {
     wheel_event_count_++;
     last_sent_wheel_ = wheel_event.event;
     first_wheel_event_sent_ = true;
@@ -74,7 +74,7 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
       first_wheel_event_sent_ = false;
   }
   void SendGeneratedGestureScrollEvents(
-      const GestureEventWithLatencyInfo& gesture_event) override {
+      const input::GestureEventWithLatencyInfo& gesture_event) override {
     fling_controller_->ObserveAndMaybeConsumeGestureEvent(gesture_event);
     sent_scroll_gesture_count_++;
     last_sent_gesture_ = gesture_event.event;
@@ -107,7 +107,7 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
                                 NowTicks(), source_device);
     fling_start.data.fling_start.velocity_x = velocity.x();
     fling_start.data.fling_start.velocity_y = velocity.y();
-    GestureEventWithLatencyInfo fling_start_with_latency(fling_start);
+    input::GestureEventWithLatencyInfo fling_start_with_latency(fling_start);
     if (wait_before_processing) {
       // Wait for up to one frame before processing the event.
       AdvanceTime(base::RandInt(0, static_cast<int>(kFrameDelta)));
@@ -126,7 +126,7 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
         WebGestureEvent::InertialPhaseState::kNonMomentum;
     scroll_begin.data.scroll_begin.delta_hint_units =
         ui::ScrollGranularity::kScrollByPrecisePixel;
-    GestureEventWithLatencyInfo scroll_begin_with_latency(scroll_begin);
+    input::GestureEventWithLatencyInfo scroll_begin_with_latency(scroll_begin);
 
     fling_controller_->ObserveAndMaybeConsumeGestureEvent(
         scroll_begin_with_latency);
@@ -144,7 +144,8 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
         WebGestureEvent::InertialPhaseState::kNonMomentum;
     scroll_update.data.scroll_update.delta_units =
         ui::ScrollGranularity::kScrollByPrecisePixel;
-    GestureEventWithLatencyInfo scroll_update_with_latency(scroll_update);
+    input::GestureEventWithLatencyInfo scroll_update_with_latency(
+        scroll_update);
 
     fling_controller_->ObserveAndMaybeConsumeGestureEvent(
         scroll_update_with_latency);
@@ -157,7 +158,7 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
     // autoscroll fling cancel doesn't allow fling boosting.
     if (source_device == blink::WebGestureDevice::kSyntheticAutoscroll)
       fling_cancel.data.fling_cancel.prevent_boosting = true;
-    GestureEventWithLatencyInfo fling_cancel_with_latency(fling_cancel);
+    input::GestureEventWithLatencyInfo fling_cancel_with_latency(fling_cancel);
     fling_controller_->ObserveAndMaybeConsumeGestureEvent(
         fling_cancel_with_latency);
   }
@@ -574,7 +575,7 @@ TEST_P(FlingControllerTest, TouchpadFlingWithOldEvent) {
                               event_time, blink::WebGestureDevice::kTouchpad);
   fling_start.data.fling_start.velocity_x = 0.f;
   fling_start.data.fling_start.velocity_y = -1000.f;
-  GestureEventWithLatencyInfo fling_start_with_latency(fling_start);
+  input::GestureEventWithLatencyInfo fling_start_with_latency(fling_start);
 
   // Move time forward. Assume a frame occurs here.
   AdvanceTime(1.f);
@@ -737,7 +738,7 @@ TEST_P(FlingControllerTest, MiddleClickAutoScrollFling) {
 TEST_P(FlingControllerTest, NoFlingStartAfterWheelEventConsumed) {
   // First ensure that a fling can start after a not consumed wheel event.
   fling_controller_->OnWheelEventAck(
-      MouseWheelEventWithLatencyInfo(),
+      input::MouseWheelEventWithLatencyInfo(),
       blink::mojom::InputEventResultSource::kCompositorThread,
       blink::mojom::InputEventResultState::kNotConsumed);
 
@@ -751,7 +752,7 @@ TEST_P(FlingControllerTest, NoFlingStartAfterWheelEventConsumed) {
 
   // Now test that a consumed touchpad wheel event results in no fling.
   fling_controller_->OnWheelEventAck(
-      MouseWheelEventWithLatencyInfo(),
+      input::MouseWheelEventWithLatencyInfo(),
       blink::mojom::InputEventResultSource::kCompositorThread,
       blink::mojom::InputEventResultState::kConsumed);
 

@@ -5,7 +5,7 @@
 #ifndef CONTENT_COMMON_INPUT_TOUCHPAD_TAP_SUPPRESSION_CONTROLLER_H_
 #define CONTENT_COMMON_INPUT_TOUCHPAD_TAP_SUPPRESSION_CONTROLLER_H_
 
-#include "content/common/input/event_with_latency_info.h"
+#include "components/input/event_with_latency_info.h"
 #include "content/common/input/tap_suppression_controller.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 
@@ -28,7 +28,7 @@ class TouchpadTapSuppressionController : public TapSuppressionController {
 
   // Should be called on arrival of MouseDown events. Returns true if the caller
   // should stop normal handling of the MouseDown.
-  bool ShouldSuppressMouseDown(const MouseEventWithLatencyInfo& event);
+  bool ShouldSuppressMouseDown(const input::MouseEventWithLatencyInfo& event);
 
   // Should be called on arrival of MouseUp events. Returns true if the caller
   // should stop normal handling of the MouseUp.

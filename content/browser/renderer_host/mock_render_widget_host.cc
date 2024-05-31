@@ -15,7 +15,7 @@ namespace content {
 MockRenderWidgetHost::~MockRenderWidgetHost() {}
 
 void MockRenderWidgetHost::OnTouchEventAck(
-    const TouchEventWithLatencyInfo& event,
+    const input::TouchEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   // Sniff touch acks.

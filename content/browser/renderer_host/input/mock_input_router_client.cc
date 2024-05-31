@@ -60,7 +60,7 @@ void MockInputRouterClient::ForwardGestureEventWithLatencyInfo(
     const ui::LatencyInfo& latency_info) {
   if (input_router_)
     input_router_->SendGestureEvent(
-        GestureEventWithLatencyInfo(gesture_event, latency_info));
+        input::GestureEventWithLatencyInfo(gesture_event, latency_info));
 
   if (gesture_event.SourceDevice() != blink::WebGestureDevice::kTouchpad)
     return;
@@ -78,7 +78,7 @@ void MockInputRouterClient::ForwardWheelEventWithLatencyInfo(
     const ui::LatencyInfo& latency_info) {
   if (input_router_) {
     input_router_->SendWheelEvent(
-        MouseWheelEventWithLatencyInfo(wheel_event, latency_info));
+        input::MouseWheelEventWithLatencyInfo(wheel_event, latency_info));
   }
 }
 

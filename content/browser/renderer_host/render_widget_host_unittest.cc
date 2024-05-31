@@ -221,7 +221,7 @@ class TestView : public TestRenderWidgetHostView {
   }
 
   void ProcessAckedTouchEvent(
-      const TouchEventWithLatencyInfo& touch,
+      const input::TouchEventWithLatencyInfo& touch,
       blink::mojom::InputEventResultState ack_result) override {
     acked_event_ = touch.event;
     ++acked_event_count_;
@@ -1993,7 +1993,8 @@ TEST_F(RenderWidgetHostTest, RendererExitedResetsInputRouter) {
   EXPECT_FALSE(host_->input_router()->HasPendingEvents());
   blink::WebMouseWheelEvent event;
   event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
-  host_->input_router()->SendWheelEvent(MouseWheelEventWithLatencyInfo(event));
+  host_->input_router()->SendWheelEvent(
+      input::MouseWheelEventWithLatencyInfo(event));
   EXPECT_TRUE(host_->input_router()->HasPendingEvents());
 
   // RendererExited will delete the view.
@@ -2022,7 +2023,8 @@ TEST_F(RenderWidgetHostTest, DestroyingRenderWidgetResetsInputRouter) {
   EXPECT_FALSE(host_->input_router()->HasPendingEvents());
   blink::WebMouseWheelEvent event;
   event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
-  host_->input_router()->SendWheelEvent(MouseWheelEventWithLatencyInfo(event));
+  host_->input_router()->SendWheelEvent(
+      input::MouseWheelEventWithLatencyInfo(event));
   EXPECT_TRUE(host_->input_router()->HasPendingEvents());
 
   // The RenderWidget is destroyed in the renderer process as the main frame

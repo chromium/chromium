@@ -72,7 +72,7 @@ class GestureEventQueueTest : public testing::Test,
 
   // GestureEventQueueClient
   void SendGestureEventImmediately(
-      const GestureEventWithLatencyInfo& event) override {
+      const input::GestureEventWithLatencyInfo& event) override {
     ++sent_gesture_event_count_;
     if (sync_ack_result_) {
       std::unique_ptr<blink::mojom::InputEventResultState> ack_result =
@@ -82,7 +82,7 @@ class GestureEventQueueTest : public testing::Test,
   }
 
   void OnGestureEventAck(
-      const GestureEventWithLatencyInfo& event,
+      const input::GestureEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) override {
     ++acked_gesture_event_count_;
@@ -95,9 +95,9 @@ class GestureEventQueueTest : public testing::Test,
 
   // FlingControllerEventSenderClient
   void SendGeneratedWheelEvent(
-      const MouseWheelEventWithLatencyInfo& wheel_event) override {}
+      const input::MouseWheelEventWithLatencyInfo& wheel_event) override {}
   void SendGeneratedGestureScrollEvents(
-      const GestureEventWithLatencyInfo& gesture_event) override {}
+      const input::GestureEventWithLatencyInfo& gesture_event) override {}
   gfx::Size GetRootWidgetViewportSize() override {
     return gfx::Size(1920, 1080);
   }
@@ -119,7 +119,7 @@ class GestureEventQueueTest : public testing::Test,
   }
 
   void SimulateGestureEvent(const WebGestureEvent& gesture) {
-    GestureEventWithLatencyInfo gesture_event(gesture);
+    input::GestureEventWithLatencyInfo gesture_event(gesture);
     if (!queue()->PassToFlingController(gesture_event)) {
       queue()->DebounceOrForwardEvent(gesture_event);
     }

@@ -10,7 +10,10 @@ assert(
 
 component("input") {
   defines = [ "IS_INPUT_IMPL" ]
-  sources = [ "native_web_keyboard_event.h" ]
+  sources = [
+    "event_with_latency_info.h",
+    "native_web_keyboard_event.h",
+  ]
   deps = [
     "//base",
     "//third_party/blink/public/common:headers",
@@ -52,7 +55,7 @@ component("input") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = []
+  sources = [ "event_with_latency_info_unittest.cc" ]
   deps = [
     ":input",
     "//base:base",

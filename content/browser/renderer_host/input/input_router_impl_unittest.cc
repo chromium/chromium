@@ -335,7 +335,7 @@ class InputRouterImplTestBase : public testing::Test {
   }
 
   void SimulateKeyboardEvent(WebInputEvent::Type type) {
-    NativeWebKeyboardEventWithLatencyInfo key_event(
+    input::NativeWebKeyboardEventWithLatencyInfo key_event(
         type, WebInputEvent::kNoModifiers, ui::EventTimeForNow(),
         ui::LatencyInfo());
     input_router_->SendKeyboardEvent(
@@ -354,17 +354,18 @@ class InputRouterImplTestBase : public testing::Test {
         precise ? ui::ScrollGranularity::kScrollByPrecisePixel
                 : ui::ScrollGranularity::kScrollByPixel);
     wheel_event.phase = phase;
-    input_router_->SendWheelEvent(MouseWheelEventWithLatencyInfo(wheel_event));
+    input_router_->SendWheelEvent(
+        input::MouseWheelEventWithLatencyInfo(wheel_event));
   }
 
   void SimulateWheelEvent(WebMouseWheelEvent::Phase phase) {
-    input_router_->SendWheelEvent(MouseWheelEventWithLatencyInfo(
+    input_router_->SendWheelEvent(input::MouseWheelEventWithLatencyInfo(
         SyntheticWebMouseWheelEventBuilder::Build(phase)));
   }
 
   void SimulateMouseEvent(WebInputEvent::Type type, int x, int y) {
     input_router_->SendMouseEvent(
-        MouseEventWithLatencyInfo(
+        input::MouseEventWithLatencyInfo(
             SyntheticWebMouseEventBuilder::Build(type, x, y, 0)),
         disposition_handler_->CreateMouseEventCallback());
   }
@@ -392,7 +393,8 @@ class InputRouterImplTestBase : public testing::Test {
       gesture.data.fling_cancel.prevent_boosting = true;
     }
 
-    input_router_->SendGestureEvent(GestureEventWithLatencyInfo(gesture));
+    input_router_->SendGestureEvent(
+        input::GestureEventWithLatencyInfo(gesture));
   }
 
   void SimulateGestureEvent(WebInputEvent::Type type,
@@ -453,7 +455,8 @@ class InputRouterImplTestBase : public testing::Test {
 
   uint32_t SendTouchEvent() {
     uint32_t touch_event_id = touch_event_.unique_touch_event_id;
-    input_router_->SendTouchEvent(TouchEventWithLatencyInfo(touch_event_));
+    input_router_->SendTouchEvent(
+        input::TouchEventWithLatencyInfo(touch_event_));
     touch_event_.ResetPoints();
     return touch_event_id;
   }
@@ -535,7 +538,7 @@ class InputRouterImplTestBase : public testing::Test {
     EXPECT_EQ(input_router_->AllowedTouchAction().value(),
               cc::TouchAction::kAuto);
     input_router_->TouchEventHandled(
-        TouchEventWithLatencyInfo(touch_event_),
+        input::TouchEventWithLatencyInfo(touch_event_),
         blink::mojom::InputEventResultSource::kMainThread, ui::LatencyInfo(),
         blink::mojom::InputEventResultState::kNoConsumerExists, nullptr,
         blink::mojom::TouchActionOptional::New(cc::TouchAction::kPanY));
@@ -547,15 +550,16 @@ class InputRouterImplTestBase : public testing::Test {
       blink::mojom::TouchActionOptionalPtr touch_action,
       blink::mojom::InputEventResultState state) {
     PressTouchPoint(1, 1);
-    input_router_->SendTouchEvent(TouchEventWithLatencyInfo(touch_event_));
+    input_router_->SendTouchEvent(
+        input::TouchEventWithLatencyInfo(touch_event_));
     input_router_->TouchEventHandled(
-        TouchEventWithLatencyInfo(touch_event_),
+        input::TouchEventWithLatencyInfo(touch_event_),
         blink::mojom::InputEventResultSource::kMainThread, ui::LatencyInfo(),
         state, nullptr, std::move(touch_action));
     EXPECT_EQ(input_router_->touch_action_filter_.num_of_active_touches_, 1);
     ReleaseTouchPoint(0);
     input_router_->OnTouchEventAck(
-        TouchEventWithLatencyInfo(touch_event_),
+        input::TouchEventWithLatencyInfo(touch_event_),
         blink::mojom::InputEventResultSource::kMainThread, state);
     EXPECT_EQ(input_router_->touch_action_filter_.num_of_active_touches_, 0);
   }
@@ -563,10 +567,11 @@ class InputRouterImplTestBase : public testing::Test {
   void StopTimeoutMonitorTest() {
     ResetTouchAction();
     PressTouchPoint(1, 1);
-    input_router_->SendTouchEvent(TouchEventWithLatencyInfo(touch_event_));
+    input_router_->SendTouchEvent(
+        input::TouchEventWithLatencyInfo(touch_event_));
     EXPECT_TRUE(input_router_->touch_event_queue_.IsTimeoutRunningForTesting());
     input_router_->TouchEventHandled(
-        TouchEventWithLatencyInfo(touch_event_),
+        input::TouchEventWithLatencyInfo(touch_event_),
         blink::mojom::InputEventResultSource::kCompositorThread,
         ui::LatencyInfo(), blink::mojom::InputEventResultState::kNotConsumed,
         nullptr, blink::mojom::TouchActionOptional::New(cc::TouchAction::kPan));
@@ -586,9 +591,10 @@ class InputRouterImplTestBase : public testing::Test {
     input_router_->OnHasTouchEventConsumers(std::move(touch_event_consumers));
     EXPECT_FALSE(input_router_->AllowedTouchAction().has_value());
     PressTouchPoint(1, 1);
-    input_router_->SendTouchEvent(TouchEventWithLatencyInfo(touch_event_));
-    input_router_->OnTouchEventAck(TouchEventWithLatencyInfo(touch_event_),
-                                   source, ack_state);
+    input_router_->SendTouchEvent(
+        input::TouchEventWithLatencyInfo(touch_event_));
+    input_router_->OnTouchEventAck(
+        input::TouchEventWithLatencyInfo(touch_event_), source, ack_state);
     EXPECT_EQ(input_router_->AllowedTouchAction(), expected_touch_action);
     EXPECT_EQ(
         input_router_->touch_action_filter_.compositor_allowed_touch_action(),

@@ -1458,7 +1458,7 @@ void RenderWidgetHostViewMac::GestureEventAck(
 }
 
 void RenderWidgetHostViewMac::ProcessAckedTouchEvent(
-    const TouchEventWithLatencyInfo& touch,
+    const input::TouchEventWithLatencyInfo& touch,
     blink::mojom::InputEventResultState ack_result) {
   const bool event_consumed =
       ack_result == blink::mojom::InputEventResultState::kConsumed;

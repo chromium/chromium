@@ -10,8 +10,8 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "components/input/event_with_latency_info.h"
 #include "content/common/content_export.h"
-#include "content/common/input/event_with_latency_info.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
@@ -25,16 +25,16 @@ class CONTENT_EXPORT TouchpadPinchEventQueueClient {
  public:
   virtual ~TouchpadPinchEventQueueClient() = default;
 
-  using MouseWheelEventHandledCallback =
-      base::OnceCallback<void(const MouseWheelEventWithLatencyInfo& event,
-                              blink::mojom::InputEventResultSource ack_source,
-                              blink::mojom::InputEventResultState ack_result)>;
+  using MouseWheelEventHandledCallback = base::OnceCallback<void(
+      const input::MouseWheelEventWithLatencyInfo& event,
+      blink::mojom::InputEventResultSource ack_source,
+      blink::mojom::InputEventResultState ack_result)>;
 
   virtual void SendMouseWheelEventForPinchImmediately(
-      const MouseWheelEventWithLatencyInfo& event,
+      const input::MouseWheelEventWithLatencyInfo& event,
       MouseWheelEventHandledCallback callback) = 0;
   virtual void OnGestureEventForPinchAck(
-      const GestureEventWithLatencyInfo& event,
+      const input::GestureEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) = 0;
 };
@@ -57,16 +57,17 @@ class CONTENT_EXPORT TouchpadPinchEventQueue {
 
   // Adds the given touchpad pinch |event| to the queue. The event may be
   // coalesced with previously queued events.
-  void QueueEvent(const GestureEventWithLatencyInfo& event);
+  void QueueEvent(const input::GestureEventWithLatencyInfo& event);
 
   [[nodiscard]] bool has_pending() const;
 
  private:
   // Notifies the queue that a synthetic mouse wheel event has been processed
   // by the renderer.
-  void ProcessMouseWheelAck(const MouseWheelEventWithLatencyInfo& ack_event,
-                            blink::mojom::InputEventResultSource ack_source,
-                            blink::mojom::InputEventResultState ack_result);
+  void ProcessMouseWheelAck(
+      const input::MouseWheelEventWithLatencyInfo& ack_event,
+      blink::mojom::InputEventResultSource ack_source,
+      blink::mojom::InputEventResultState ack_result);
 
   void TryForwardNextEventToRenderer();
 
