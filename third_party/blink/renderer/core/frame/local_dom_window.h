@@ -149,7 +149,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   ScriptController& GetScriptController() const { return *script_controller_; }
 
   void Initialize();
-  void ClearForReuse() { document_ = nullptr; }
+  void ClearForReuse();
 
   void ResetWindowAgent(WindowAgent*);
 
@@ -568,6 +568,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // Return the viewport size including scrollbars.
   gfx::Size GetViewportSize() const;
 
+  void UpdateEventListenerCountsToDocumentForReuseIfNeeded();
+
   Member<ScriptController> script_controller_;
 
   Member<Document> document_;
@@ -685,6 +687,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // https://html.spec.whatwg.org/multipage/browsing-the-web.html#has-been-revealed
   bool has_been_revealed_ = false;
+
+  // Used to indicate if the DOM window is reused or not.
+  bool is_dom_window_reused_ = false;
 };
 
 template <>

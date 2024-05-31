@@ -266,6 +266,18 @@ void LocalDOMWindow::Initialize() {
   network_state_observer_->Initialize();
 }
 
+void LocalDOMWindow::ClearForReuse() {
+  is_dom_window_reused_ = true;
+  // update event listener counts before clearing document_
+  if (document_ && HasEventListeners()) {
+    GetEventTargetData()->event_listener_map.ForAllEventListenerTypes(
+        [this](const AtomicString& event_type, uint32_t count) {
+          document_->DidRemoveEventListeners(count);
+        });
+  }
+  document_ = nullptr;
+}
+
 void LocalDOMWindow::ResetWindowAgent(WindowAgent* agent) {
   GetAgent()->DetachContext(this);
   ResetAgent(agent);
@@ -822,6 +834,8 @@ Document* LocalDOMWindow::InstallNewDocument(const DocumentInit& init) {
       GetFrame()->IsCrossOriginToNearestMainFrame());
 
   GetFrame()->GetPage()->GetChromeClient().InstallSupplements(*GetFrame());
+
+  UpdateEventListenerCountsToDocumentForReuseIfNeeded();
 
   return document_.Get();
 }
@@ -2030,6 +2044,7 @@ void LocalDOMWindow::AddedEventListener(
   }
 
   document()->AddListenerTypeIfNeeded(event_type, *this);
+  document()->DidAddEventListeners(/*count*/ 1);
 
   for (auto& it : event_listener_observers_) {
     it->DidAddEventListener(this, event_type);
@@ -2055,6 +2070,7 @@ void LocalDOMWindow::RemovedEventListener(
     const AtomicString& event_type,
     const RegisteredEventListener& registered_listener) {
   DOMWindow::RemovedEventListener(event_type, registered_listener);
+  document()->DidRemoveEventListeners(/*count*/ 1);
   if (auto* frame = GetFrame()) {
     frame->GetEventHandlerRegistry().DidRemoveEventHandler(
         *this, event_type, registered_listener.Options());
@@ -2130,14 +2146,21 @@ void LocalDOMWindow::RemoveAllEventListeners() {
       NumberOfEventListeners(event_type_names::kPagehide);
   int previous_visibility_change_handlers_count =
       NumberOfEventListeners(event_type_names::kVisibilitychange);
+  if (document_ && HasEventListeners()) {
+    GetEventTargetData()->event_listener_map.ForAllEventListenerTypes(
+        [this](const AtomicString& event_type, uint32_t count) {
+          document_->DidRemoveEventListeners(count);
+        });
+  }
   EventTarget::RemoveAllEventListeners();
 
   for (auto& it : event_listener_observers_) {
     it->DidRemoveAllEventListeners(this);
   }
 
-  if (GetFrame())
+  if (GetFrame()) {
     GetFrame()->GetEventHandlerRegistry().DidRemoveAllEventHandlers(*this);
+  }
 
   // Update sudden termination disabler state if we previously have listeners
   // for unload/beforeunload/pagehide/visibilitychange.
@@ -2553,5 +2576,19 @@ void LocalDOMWindow::SetHasBeenRevealed(bool revealed) {
   has_been_revealed_ = revealed;
   CHECK(document_);
   ViewTransitionSupplement::From(*document_)->DidChangeRevealState();
+}
+
+void LocalDOMWindow::UpdateEventListenerCountsToDocumentForReuseIfNeeded() {
+  if (!is_dom_window_reused_) {
+    return;
+  }
+  if (document_ && HasEventListeners()) {
+    GetEventTargetData()->event_listener_map.ForAllEventListenerTypes(
+        [this](const AtomicString& event_type, uint32_t count) {
+          document_->AddListenerTypeIfNeeded(event_type, *this);
+          document_->DidAddEventListeners(count);
+        });
+  }
+  is_dom_window_reused_ = false;
 }
 }  // namespace blink

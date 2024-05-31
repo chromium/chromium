@@ -225,19 +225,20 @@ inline void TreeScopeAdopter::MoveNodeToNewDocument(
             element, new_document);
       }
     }
+
+    if (old_document.HasAnyNodeWithEventListeners()) {
+      node.MoveEventListenersToNewDocument(old_document, new_document);
+    }
   } else {
     // DCHECK all the fast adoption conditions
     DCHECK(!old_document.HasNodeIterators());
     DCHECK(!old_document.HasRanges());
+    DCHECK(!old_document.HasAnyNodeWithEventListeners());
     DCHECK(!old_document.HasMutationObservers());
     DCHECK(!old_document.ShouldInvalidateNodeListCaches());
     DCHECK(!old_document.HasExplicitlySetAttrElements());
     DCHECK(!old_document.HasCachedAttrAssociatedElements());
   }
-
-  // TODO(crbug.com/341104769): revisit to see if the logic of moving event
-  // listeners could be optimized for fast adoption.
-  node.MoveEventListenersToNewDocument(old_document, new_document);
 
   if (node.GetCustomElementState() == CustomElementState::kCustom) {
     CustomElement::EnqueueAdoptedCallback(To<Element>(node), old_document,
@@ -258,6 +259,7 @@ inline void TreeScopeAdopter::MoveNodeToNewDocument(
 inline bool TreeScopeAdopter::IsDocumentEligibleForFastAdoption(
     Document& old_document) const {
   return !old_document.HasNodeIterators() && !old_document.HasRanges() &&
+         !old_document.HasAnyNodeWithEventListeners() &&
          !old_document.HasMutationObservers() &&
          !old_document.ShouldInvalidateNodeListCaches() &&
          !old_document.HasExplicitlySetAttrElements() &&

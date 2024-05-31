@@ -6171,6 +6171,17 @@ void Document::AddListenerTypeIfNeeded(const AtomicString& event_type,
   }
 }
 
+void Document::DidAddEventListeners(uint32_t count) {
+  DCHECK(count);
+  event_listener_counts_ += count;
+}
+
+void Document::DidRemoveEventListeners(uint32_t count) {
+  DCHECK(count);
+  DCHECK_GE(event_listener_counts_, count);
+  event_listener_counts_ -= count;
+}
+
 HTMLFrameOwnerElement* Document::LocalOwner() const {
   if (!GetFrame())
     return nullptr;

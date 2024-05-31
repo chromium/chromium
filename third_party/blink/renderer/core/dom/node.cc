@@ -2651,6 +2651,7 @@ void Node::AddedEventListener(const AtomicString& event_type,
                               RegisteredEventListener& registered_listener) {
   EventTarget::AddedEventListener(event_type, registered_listener);
   GetDocument().AddListenerTypeIfNeeded(event_type, *this);
+  GetDocument().DidAddEventListeners(/*count*/ 1);
   if (auto* frame = GetDocument().GetFrame()) {
     frame->GetEventHandlerRegistry().DidAddEventHandler(
         *this, event_type, registered_listener.Options());
@@ -2668,6 +2669,7 @@ void Node::RemovedEventListener(
     const AtomicString& event_type,
     const RegisteredEventListener& registered_listener) {
   EventTarget::RemovedEventListener(event_type, registered_listener);
+  GetDocument().DidRemoveEventListeners(/*count*/ 1);
   // FIXME: Notify Document that the listener has vanished. We need to keep
   // track of a number of listeners for each type, not just a bool - see
   // https://bugs.webkit.org/show_bug.cgi?id=33861
@@ -2681,15 +2683,23 @@ void Node::RemovedEventListener(
 
 void Node::RemoveAllEventListeners() {
   Vector<AtomicString> event_types = EventTypes();
-  if (HasEventListeners() && GetDocument().GetPage())
-    GetDocument()
-        .GetFrame()
-        ->GetEventHandlerRegistry()
-        .DidRemoveAllEventHandlers(*this);
+  Document& document = GetDocument();
+  if (HasEventListeners()) {
+    GetEventTargetData()->event_listener_map.ForAllEventListenerTypes(
+        [&document](const AtomicString& event_type, uint32_t count) {
+          document.DidRemoveEventListeners(count);
+        });
+
+    if (document.GetPage()) {
+      document.GetFrame()->GetEventHandlerRegistry().DidRemoveAllEventHandlers(
+          *this);
+    }
+  }
   EventTarget::RemoveAllEventListeners();
-  if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
-    for (const AtomicString& event_type : event_types)
+  if (AXObjectCache* cache = document.ExistingAXObjectCache()) {
+    for (const AtomicString& event_type : event_types) {
       cache->HandleEventListenerRemoved(*this, event_type);
+    }
   }
 }
 
@@ -2709,9 +2719,13 @@ void Node::MoveEventListenersToNewDocument(Document& old_document,
     const EventListenerMap& listener_map =
         event_target_data->event_listener_map;
     if (!listener_map.IsEmpty()) {
-      for (const auto& type : listener_map.EventTypes()) {
-        new_document.AddListenerTypeIfNeeded(type, *this);
-      }
+      listener_map.ForAllEventListenerTypes(
+          [this, &old_document, &new_document](const AtomicString& event_type,
+                                               uint32_t count) {
+            old_document.DidRemoveEventListeners(count);
+            new_document.AddListenerTypeIfNeeded(event_type, *this);
+            new_document.DidAddEventListeners(count);
+          });
     }
   }
 

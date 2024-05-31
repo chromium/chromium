@@ -77,6 +77,13 @@ class CORE_EXPORT EventListenerMap final {
   EventListenerVector* Find(const AtomicString& event_type);
   Vector<AtomicString> EventTypes() const;
 
+  template <typename CallbackType>
+  void ForAllEventListenerTypes(CallbackType callback) const {
+    for (const auto& entry : entries_) {
+      callback(entry.first, entry.second->size());
+    }
+  }
+
   void CopyEventListenersNotCreatedFromMarkupToTarget(EventTarget*);
 
   void Trace(Visitor*) const;

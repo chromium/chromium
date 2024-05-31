@@ -1185,9 +1185,12 @@ class CORE_EXPORT Document : public ContainerNode,
         kDOMCharacterDataModifiedListener,
   };
 
-  bool HasAnyListenerTypes() const { return listener_types_; }
   bool HasListenerType(ListenerType listener_type) const;
   void AddListenerTypeIfNeeded(const AtomicString& event_type, EventTarget&);
+
+  void DidAddEventListeners(uint32_t count);
+  void DidRemoveEventListeners(uint32_t count);
+  bool HasAnyNodeWithEventListeners() const { return event_listener_counts_; }
 
   bool HasMutationObserversOfType(MutationType type) const {
     return mutation_observer_types_ & type;
@@ -2485,6 +2488,10 @@ class CORE_EXPORT Document : public ContainerNode,
   AttachedRangeSet ranges_;
 
   uint16_t listener_types_;
+
+  // Used to record the counts of event listeners added from the nodes in the
+  // document.
+  uint32_t event_listener_counts_;
 
   MutationObserverOptions mutation_observer_types_;
 
