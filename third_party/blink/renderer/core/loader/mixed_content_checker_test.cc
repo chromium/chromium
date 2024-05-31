@@ -86,8 +86,8 @@ TEST(MixedContentCheckerTest, ContextTypeForInspector) {
   test::TaskEnvironment task_environment;
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(gfx::Size(1, 1));
   dummy_page_holder->GetFrame().Loader().CommitNavigation(
-      WebNavigationParams::CreateWithHTMLBufferForTesting(
-          SharedBuffer::Create(), KURL("http://example.test")),
+      WebNavigationParams::CreateWithEmptyHTMLForTesting(
+          KURL("http://example.test")),
       nullptr /* extra_data */);
   blink::test::RunPendingTasks();
 
@@ -98,8 +98,8 @@ TEST(MixedContentCheckerTest, ContextTypeForInspector) {
                 &dummy_page_holder->GetFrame(), not_mixed_content));
 
   dummy_page_holder->GetFrame().Loader().CommitNavigation(
-      WebNavigationParams::CreateWithHTMLBufferForTesting(
-          SharedBuffer::Create(), KURL("https://example.test")),
+      WebNavigationParams::CreateWithEmptyHTMLForTesting(
+          KURL("https://example.test")),
       nullptr /* extra_data */);
   blink::test::RunPendingTasks();
 
@@ -167,8 +167,7 @@ TEST(MixedContentCheckerTest, DetectMixedForm) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(
       gfx::Size(1, 1), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
   dummy_page_holder->GetFrame().Loader().CommitNavigation(
-      WebNavigationParams::CreateWithHTMLBufferForTesting(
-          SharedBuffer::Create(), main_resource_url),
+      WebNavigationParams::CreateWithEmptyHTMLForTesting(main_resource_url),
       nullptr /* extra_data */);
   blink::test::RunPendingTasks();
 
@@ -198,8 +197,7 @@ TEST(MixedContentCheckerTest, DetectMixedFavicon) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(
       gfx::Size(1, 1), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
   dummy_page_holder->GetFrame().Loader().CommitNavigation(
-      WebNavigationParams::CreateWithHTMLBufferForTesting(
-          SharedBuffer::Create(), main_resource_url),
+      WebNavigationParams::CreateWithEmptyHTMLForTesting(main_resource_url),
       nullptr /* extra_data */);
   blink::test::RunPendingTasks();
   dummy_page_holder->GetFrame().GetSettings()->SetAllowRunningOfInsecureContent(
@@ -252,8 +250,7 @@ TEST(MixedContentCheckerTest, DetectUpgradeableMixedContent) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(
       gfx::Size(1, 1), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
   dummy_page_holder->GetFrame().Loader().CommitNavigation(
-      WebNavigationParams::CreateWithHTMLBufferForTesting(
-          SharedBuffer::Create(), main_resource_url),
+      WebNavigationParams::CreateWithEmptyHTMLForTesting(main_resource_url),
       nullptr /* extra_data */);
   blink::test::RunPendingTasks();
   dummy_page_holder->GetFrame().GetSettings()->SetAllowRunningOfInsecureContent(

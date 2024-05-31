@@ -80,8 +80,7 @@ std::unique_ptr<DummyPageHolder> DummyPageHolder::CreateAndCommitNavigation(
       std::move(setting_overrider), clock);
   if (url.IsValid()) {
     holder->GetFrame().Loader().CommitNavigation(
-        WebNavigationParams::CreateWithHTMLBufferForTesting(
-            SharedBuffer::Create(), url),
+        WebNavigationParams::CreateWithEmptyHTMLForTesting(url),
         /*extra_data=*/nullptr);
     blink::test::RunPendingTasks();
   }

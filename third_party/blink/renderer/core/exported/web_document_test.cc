@@ -284,8 +284,8 @@ TEST_F(WebDocumentFirstPartyTest, Empty) {
 TEST_F(WebDocumentFirstPartyTest, EmptySandbox) {
   web_view_helper_.Initialize();
   WebLocalFrameImpl* frame = web_view_helper_.GetWebView()->MainFrameImpl();
-  auto params = WebNavigationParams::CreateWithHTMLStringForTesting(
-      /*html=*/"", KURL("https://a.com"));
+  auto params =
+      WebNavigationParams::CreateWithEmptyHTMLForTesting(KURL("https://a.com"));
   MockPolicyContainerHost mock_policy_container_host;
   params->policy_container = std::make_unique<blink::WebPolicyContainer>(
       blink::WebPolicyContainerPolicies(),

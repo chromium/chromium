@@ -175,8 +175,7 @@ class FrameFetchContextTest : public testing::Test {
     dummy_page_holder = nullptr;
     dummy_page_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
     if (url.IsValid()) {
-      auto params = WebNavigationParams::CreateWithHTMLBufferForTesting(
-          SharedBuffer::Create(), url);
+      auto params = WebNavigationParams::CreateWithEmptyHTMLForTesting(url);
       if (!permissions_policy_header.empty()) {
         params->response.SetHttpHeaderField(http_names::kFeaturePolicy,
                                             permissions_policy_header);

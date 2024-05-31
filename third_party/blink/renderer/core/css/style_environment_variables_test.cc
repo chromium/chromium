@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
 
@@ -78,8 +77,7 @@ class StyleEnvironmentVariablesTest : public PageTestBase {
   void SimulateNavigation() {
     const KURL& url = KURL(NullURL(), "https://www.example.com");
     GetDocument().GetFrame()->Loader().CommitNavigation(
-        WebNavigationParams::CreateWithHTMLBufferForTesting(
-            SharedBuffer::Create(), url),
+        WebNavigationParams::CreateWithEmptyHTMLForTesting(url),
         nullptr /* extra_data */);
     blink::test::RunPendingTasks();
     ASSERT_EQ(url.GetString(), GetDocument().Url().GetString());

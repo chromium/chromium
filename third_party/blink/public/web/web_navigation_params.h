@@ -63,7 +63,6 @@ class TickClock;
 
 namespace blink {
 
-class KURL;
 class WebDocumentLoader;
 class WebServiceWorkerNetworkProvider;
 
@@ -231,16 +230,11 @@ struct BLINK_EXPORT WebNavigationParams {
       const WebNavigationInfo&);
 
   // Shortcut for loading html with "text/html" mime type and "UTF8" encoding.
+  static std::unique_ptr<WebNavigationParams> CreateWithEmptyHTMLForTesting(
+      const WebURL& base_url);
   static std::unique_ptr<WebNavigationParams> CreateWithHTMLStringForTesting(
       base::span<const char> html,
       const WebURL& base_url);
-
-#if INSIDE_BLINK
-  // Shortcut for loading html with "text/html" mime type and "UTF8" encoding.
-  static std::unique_ptr<WebNavigationParams> CreateWithHTMLBufferForTesting(
-      scoped_refptr<SharedBuffer> buffer,
-      const KURL& base_url);
-#endif
 
   // Fills |body_loader| based on the provided static data.
   static void FillBodyLoader(WebNavigationParams*, base::span<const char> data);

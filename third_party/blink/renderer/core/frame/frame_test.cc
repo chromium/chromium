@@ -33,8 +33,7 @@ class FrameTest : public PageTestBase {
   void Navigate(const String& destinationUrl, bool user_activated) {
     const KURL& url = KURL(NullURL(), destinationUrl);
     auto navigation_params =
-        WebNavigationParams::CreateWithHTMLBufferForTesting(
-            SharedBuffer::Create(), url);
+        WebNavigationParams::CreateWithEmptyHTMLForTesting(url);
     if (user_activated)
       navigation_params->is_user_activated = true;
     GetDocument().GetFrame()->Loader().CommitNavigation(

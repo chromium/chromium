@@ -47,8 +47,8 @@ class InstalledAppControllerTest : public testing::Test {
     url_test_helpers::RegisterMockedURLLoad(
         KURL("https://example.com/manifest.json"), "", "");
     GetFrame().Loader().CommitNavigation(
-        WebNavigationParams::CreateWithHTMLBufferForTesting(
-            SharedBuffer::Create(), KURL("https://example.com")),
+        WebNavigationParams::CreateWithEmptyHTMLForTesting(
+            KURL("https://example.com")),
         nullptr /* extra_data */);
     test::RunPendingTasks();
 

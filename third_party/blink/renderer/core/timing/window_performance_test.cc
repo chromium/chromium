@@ -276,8 +276,7 @@ TEST(PerformanceLifetimeTest, SurviveContextSwitch) {
 
   // Simulate changing the document while keeping the window.
   std::unique_ptr<WebNavigationParams> params =
-      WebNavigationParams::CreateWithHTMLBufferForTesting(
-          SharedBuffer::Create(), url);
+      WebNavigationParams::CreateWithEmptyHTMLForTesting(url);
   MockPolicyContainerHost mock_policy_container_host;
   params->policy_container = std::make_unique<WebPolicyContainer>(
       WebPolicyContainerPolicies(),

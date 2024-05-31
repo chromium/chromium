@@ -62,8 +62,7 @@ class LocalDOMWindowTest : public PageTestBase {
   void NavigateWithSandbox(
       const KURL& url,
       WebSandboxFlags sandbox_flags = WebSandboxFlags::kAll) {
-    auto params = WebNavigationParams::CreateWithHTMLStringForTesting(
-        /*html=*/"", url);
+    auto params = WebNavigationParams::CreateWithEmptyHTMLForTesting(url);
     MockPolicyContainerHost mock_policy_container_host;
     params->policy_container = std::make_unique<blink::WebPolicyContainer>(
         blink::WebPolicyContainerPolicies(),

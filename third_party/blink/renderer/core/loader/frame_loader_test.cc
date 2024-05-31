@@ -253,8 +253,7 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredOnCommitNavigation) {
 
   const KURL& url = KURL(NullURL(), "https://www.example.com/bar.html");
   std::unique_ptr<WebNavigationParams> params =
-      WebNavigationParams::CreateWithHTMLBufferForTesting(
-          SharedBuffer::Create(), url);
+      WebNavigationParams::CreateWithEmptyHTMLForTesting(url);
   MockPolicyContainerHost mock_policy_container_host;
   params->policy_container = std::make_unique<WebPolicyContainer>(
       WebPolicyContainerPolicies{
