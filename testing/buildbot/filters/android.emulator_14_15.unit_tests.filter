@@ -1,6 +1,8 @@
-# TODO (rnanjappan) : Create separate bugs for failing tests
+# crbug.com/343800065
 -SigninManagerAndroidTest.*
 -SigninManagerAndroidWithLocalUpmTest.*
+
+# crbug.com/343782003
 -ChromeBrowsingDataRemoverDelegateOriginTrialsTest.*
 -ChromeBrowsingDataRemoverDelegateTest.AllTypesAreGettingDeleted
 -ChromeBrowsingDataRemoverDelegateTest.RemovePersistentIsolatedOrigins

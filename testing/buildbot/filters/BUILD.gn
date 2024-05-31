@@ -414,7 +414,7 @@ source_set("unit_tests_filters") {
 
   data = [
     "//testing/buildbot/filters/android.asan.unit_tests.filter",
-    "//testing/buildbot/filters/android.emulator_15.unit_tests.filter",
+    "//testing/buildbot/filters/android.emulator_14_15.unit_tests.filter",
     "//testing/buildbot/filters/linux-lacros.unit_tests.filter",
     "//testing/buildbot/filters/ozone-linux.unit_tests_wayland.filter",
   ]
