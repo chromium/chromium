@@ -1369,8 +1369,10 @@ class LayerTreeHostScrollTestImplOnlyScrollSnap
 
 // TODO(crbug.com/40762489): Flaky on Fuchsia, ChromeOS, and Linux.
 // TODO(crbug.com/41495136): Flaky on Windows ASAN.
+// TODO(crbug.com/342502558): Flaky on Mac ASAN.
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_CHROMEOS) && \
-    !BUILDFLAG(IS_LINUX) && !(BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+    !BUILDFLAG(IS_LINUX) &&                              \
+    !((BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)) && defined(ADDRESS_SANITIZER))
 MULTI_THREAD_TEST_F(LayerTreeHostScrollTestImplOnlyScrollSnap);
 #endif
 
