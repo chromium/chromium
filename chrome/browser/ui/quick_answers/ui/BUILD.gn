@@ -26,3 +26,31 @@ source_set("loading_view") {
     "//ui/views",
   ]
 }
+
+source_set("result_view") {
+  sources = [
+    "result_view.cc",
+    "result_view.h",
+  ]
+  deps = [
+    "//chromeos/components/quick_answers",
+    "//chromeos/strings:strings_grit",
+    "//ui/base/metadata",
+    "//ui/views",
+    "//ui/views/controls/webview",
+  ]
+}
+
+source_set("retry_view") {
+  sources = [
+    "retry_view.cc",
+    "retry_view.h",
+  ]
+  deps = [
+    "//chromeos/components/quick_answers",
+    "//chromeos/strings:strings_grit",
+    "//ui/base/metadata",
+    "//ui/views",
+    "//ui/views/controls/webview",
+  ]
+}

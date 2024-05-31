@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
 
+#include <string>
 #include <string_view>
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_view.h"
@@ -18,6 +20,8 @@
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_stage_button.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_text_label.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_util.h"
+#include "chrome/browser/ui/quick_answers/ui/result_view.h"
+#include "chrome/browser/ui/quick_answers/ui/retry_view.h"
 #include "chrome/browser/ui/views/editor_menu/utils/focus_search.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
@@ -33,6 +37,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -52,8 +57,12 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/painter.h"
+#include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
@@ -99,17 +108,10 @@ constexpr int kDogfoodButtonSizeDip = 20;
 constexpr int kSettingsButtonSizeDip = 14;
 constexpr int kSettingsButtonBorderDip = 3;
 
-// Phonetics audio button.
-constexpr auto kPhoneticsAudioButtonMarginInsets =
-    gfx::Insets::TLBR(0, 4, 0, 4);
-constexpr int kPhoneticsAudioButtonSizeDip = 14;
-constexpr int kPhoneticsAudioButtonBorderDip = 3;
-
 // Expansion affordance indicator.
 constexpr int kExpansionIndicatorLabelFontSize = 12;
 constexpr int kExpansionIndicatorIconSizeDip = 12;
 constexpr int kExpansionIndicatorIconBorderDip = 4;
-constexpr int kExpansionIndicatorSizeDip = 72;
 constexpr auto kExpansionIndicatorViewInsets = gfx::Insets::TLBR(4, 8, 16, 12);
 
 gfx::Insets GetContentViewInsets(bool is_rich_answers_enabled) {
@@ -122,20 +124,6 @@ int GetMaximumViewHeight(bool is_rich_answers_enabled) {
   return kMainViewInsets.height() +
          GetContentViewInsets(is_rich_answers_enabled).height() +
          kMaxRows * kDefaultLineHeightDip + (kMaxRows - 1) * kLineSpacingDip;
-}
-
-// `MaybeASingleQuickAnswersTextLabel` returns a pointer of
-// `QuickAnswersTextLabel` if `container` only contains a
-// `QuickAnswersTextLabel`. Otherwise, this returns `nullptr`.
-quick_answers::QuickAnswersTextLabel* MaybeASingleQuickAnswersTextLabel(
-    views::View* container) {
-  if (container->children().size() != 1) {
-    return nullptr;
-  }
-
-  // `AsViewClass` returns `nullptr` if a view is not a specified class.
-  return views::AsViewClass<quick_answers::QuickAnswersTextLabel>(
-      container->children().front());
 }
 
 views::Builder<views::FlexLayoutView> DefaultResultTypeIconBuilder(
@@ -168,6 +156,20 @@ views::Builder<views::FlexLayoutView> GoogleIconBuilder() {
                         kGoogleIconSizeDip)));
 }
 
+std::u16string ExtractText(QuickAnswerUiElement* quick_answer_ui_element) {
+  if (!quick_answer_ui_element) {
+    return std::u16string();
+  }
+
+  if (quick_answer_ui_element->type != QuickAnswerUiElementType::kText) {
+    return std::u16string();
+  }
+
+  QuickAnswerText* quick_answer_text =
+      static_cast<QuickAnswerText*>(quick_answer_ui_element);
+  return quick_answer_text->text;
+}
+
 }  // namespace
 
 namespace quick_answers {
@@ -198,11 +200,15 @@ QuickAnswersView::QuickAnswersView(
   main_view_layout->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetInteriorMargin(kMainViewInsets);
 
-  views::View* content_view;
   views::ImageView* result_type_icon;
 
-  main_view_.SetView(AddChildView(
+  QuickAnswersStageButton* quick_answers_stage_button;
+  LoadingView* loading_view;
+  RetryView* retry_view;
+  ResultView* result_view;
+  AddChildView(
       views::Builder<QuickAnswersStageButton>()
+          .CopyAddressTo(&quick_answers_stage_button)
           .SetCallback(base::BindRepeating(
               &QuickAnswersView::SendQuickAnswersQuery, base::Unretained(this)))
           .SetAccessibleName(
@@ -213,18 +219,51 @@ QuickAnswersView::QuickAnswersView(
                         : GoogleIconBuilder())
           .AddChild(
               views::Builder<LoadingView>()
+                  .CopyAddressTo(&loading_view)
                   .SetFirstLineText(base::UTF8ToUTF16(title_))
                   .SetInteriorMargin(
                       GetContentViewInsets(is_rich_answers_enabled_))
                   .SetProperty(views::kFlexBehaviorKey,
                                views::FlexSpecification(
                                    views::MinimumFlexSizeRule::kScaleToZero,
-                                   views::MaximumFlexSizeRule::kPreferred))
-                  .CopyAddressTo(&content_view))
-          .Build()));
+                                   views::MaximumFlexSizeRule::kPreferred)))
+          .AddChild(
+              views::Builder<RetryView>()
+                  .CopyAddressTo(&retry_view)
+                  .SetVisible(false)
+                  .SetFirstLineText(base::UTF8ToUTF16(title))
+                  .SetInteriorMargin(
+                      GetContentViewInsets(is_rich_answers_enabled_))
+                  .SetRetryButtonCallback(base::BindRepeating(
+                      &QuickAnswersUiController::OnRetryLabelPressed,
+                      controller_))
+                  .SetProperty(views::kFlexBehaviorKey,
+                               views::FlexSpecification(
+                                   views::MinimumFlexSizeRule::kScaleToZero,
+                                   views::MaximumFlexSizeRule::kPreferred)))
+          .AddChild(
+              views::Builder<ResultView>()
+                  .CopyAddressTo(&result_view)
+                  .SetVisible(false)
+                  .SetInteriorMargin(
+                      GetContentViewInsets(is_rich_answers_enabled_))
+                  .SetProperty(views::kFlexBehaviorKey,
+                               views::FlexSpecification(
+                                   views::MinimumFlexSizeRule::kScaleToZero,
+                                   views::MaximumFlexSizeRule::kPreferred,
+                                   /*adjust_height_for_width=*/true))
+                  .SetGenerateTtsCallback(base::BindRepeating(
+                      &QuickAnswersView::GenerateTts, base::Unretained(this))))
+          .Build());
 
-  CHECK(content_view);
-  content_view_.SetView(content_view);
+  CHECK(quick_answers_stage_button);
+  quick_answers_stage_button_ = quick_answers_stage_button;
+  CHECK(loading_view);
+  loading_view_ = loading_view;
+  CHECK(retry_view);
+  retry_view_ = retry_view;
+  CHECK(result_view);
+  result_view_ = result_view;
 
   if (is_rich_answers_enabled_) {
     CHECK(result_type_icon);
@@ -245,13 +284,13 @@ QuickAnswersView::~QuickAnswersView() = default;
 void QuickAnswersView::RequestFocus() {
   // When the Quick Answers view is focused, we actually want `main_view_`
   // to have the focus for highlight and selection purposes.
-  main_view_.view()->RequestFocus();
+  quick_answers_stage_button_->RequestFocus();
 }
 
 bool QuickAnswersView::HasFocus() const {
   // When the Quick Answers view is focused, `main_view_` should have
   // the focus.
-  return main_view_.view()->HasFocus();
+  return quick_answers_stage_button_->HasFocus();
 }
 
 void QuickAnswersView::OnFocus() {
@@ -299,7 +338,7 @@ void QuickAnswersView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
   // The view itself is not focused for retry-mode, so should not be announced
   // by the screen reader.
-  if (retry_label_) {
+  if (retry_view_->GetVisible()) {
     node_data->SetNameExplicitlyEmpty();
     return;
   }
@@ -317,11 +356,7 @@ gfx::Size QuickAnswersView::GetMaximumSize() const {
 }
 
 void QuickAnswersView::UpdateBoundsForQuickAnswers() {
-  // Multi-line labels need to be resized to be compatible with bounds width.
-  // TODO(b/331271987): Remove this. This should be handled by a layout manager.
-  if (first_answer_label_) {
-    first_answer_label_->SetMaximumWidth(GetLabelWidth(/*is_title=*/false));
-  }
+  // TODO(b/331271987): Remove this and the interface.
 }
 
 void QuickAnswersView::SendQuickAnswersQuery() {
@@ -331,50 +366,19 @@ void QuickAnswersView::SendQuickAnswersQuery() {
 }
 
 void QuickAnswersView::UpdateView(const QuickAnswer& quick_answer) {
-  retry_label_ = nullptr;
-
   UpdateQuickAnswerResult(quick_answer);
 }
 
+void QuickAnswersView::SwitchTo(views::View* view) {
+  CHECK(view == loading_view_ || view == retry_view_ || view == result_view_);
+
+  loading_view_->SetVisible(view == loading_view_);
+  retry_view_->SetVisible(view == retry_view_);
+  result_view_->SetVisible(view == result_view_);
+}
+
 void QuickAnswersView::ShowRetryView() {
-  if (retry_label_) {
-    return;
-  }
-
-  ResetContentView();
-
-  // TODO(b/335701090): Utilize main_view_ for handling OnRetryLabelPressed.
-  main_view_.view()->SetBackground(nullptr);
-
-  // Add title.
-  auto* title_label = content_view_.view()->AddChildView(
-      std::make_unique<quick_answers::QuickAnswersTextLabel>(
-          QuickAnswerText(title_)));
-  title_label->SetMaximumWidthSingleLine(GetLabelWidth(/*is_title=*/true));
-
-  // Add error label.
-  std::vector<std::unique_ptr<QuickAnswerUiElement>> description_labels;
-  description_labels.push_back(std::make_unique<QuickAnswerResultText>(
-      l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_NETWORK_ERROR)));
-  auto* description_container =
-      AddHorizontalUiElements(content_view_.view(), description_labels);
-
-  // Add retry label.
-  retry_label_ =
-      description_container->AddChildView(std::make_unique<views::LabelButton>(
-          base::BindRepeating(&QuickAnswersUiController::OnRetryLabelPressed,
-                              controller_),
-          l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_RETRY)));
-  retry_label_->SetEnabledTextColors(
-      GetColorProvider()->GetColor(ui::kColorProgressBar));
-  retry_label_->SetRequestFocusOnPress(true);
-  retry_label_->button_controller()->set_notify_action(
-      views::ButtonController::NotifyAction::kOnPress);
-  retry_label_->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_NAME_TEMPLATE,
-      l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT)));
-  retry_label_->GetViewAccessibility().SetDescription(
-      l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_DESC));
+  SwitchTo(retry_view_);
 }
 
 ui::ImageModel QuickAnswersView::GetIconImageModelForTesting() {
@@ -425,51 +429,12 @@ bool QuickAnswersView::ShouldAddPhoneticsAudioButton(ResultType result_type,
   return !phonetics_audio.is_empty() || tts_audio_enabled;
 }
 
-void QuickAnswersView::AddPhoneticsAudioButton(
-    const PhoneticsInfo& phonetics_info,
-    View* container) {
-  auto* phonetics_audio_view =
-      container->AddChildView(std::make_unique<views::View>());
-
-  auto* layout = phonetics_audio_view->SetLayoutManager(
-      std::make_unique<views::FlexLayout>());
-  layout->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetInteriorMargin(kPhoneticsAudioButtonMarginInsets)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kEnd);
-  phonetics_audio_button_ =
-      phonetics_audio_view->AddChildView(std::make_unique<views::ImageButton>(
-          base::BindRepeating(&QuickAnswersView::OnPhoneticsAudioButtonPressed,
-                              base::Unretained(this), phonetics_info)));
-  phonetics_audio_button_->SetImageModel(
-      views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(
-          vector_icons::kVolumeUpIcon,
-          GetColorProvider()->GetColor(ui::kColorButtonBackgroundProminent),
-          kPhoneticsAudioButtonSizeDip));
-  phonetics_audio_button_->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_RICH_ANSWERS_VIEW_PHONETICS_BUTTON_A11Y_NAME_TEXT));
-  phonetics_audio_button_->SetBorder(
-      views::CreateEmptyBorder(kPhoneticsAudioButtonBorderDip));
-}
-
-int QuickAnswersView::GetLabelWidth(bool is_title) {
-  int label_width = context_menu_bounds().width() - kMainViewInsets.width() -
-                    GetContentViewInsets(is_rich_answers_enabled_).width() -
-                    kGoogleIconInsets.width() - kGoogleIconSizeDip;
-
-  // If the rich card feature flag is enabled, leave additional space
-  // for the expansion affordance indicator.
-  // This only applies to non-title text labels.
-  if (is_rich_answers_enabled_ && !is_title) {
-    return label_width - kExpansionIndicatorSizeDip;
-  }
-
-  return label_width;
-}
-
-void QuickAnswersView::ResetContentView() {
-  content_view_.view()->RemoveAllChildViews();
-  first_answer_label_ = nullptr;
+void QuickAnswersView::SetMockGenerateTtsCallbackForTesting(
+    QuickAnswersView::MockGenerateTtsCallback mock_generate_tts_callback) {
+  CHECK_IS_TEST();
+  CHECK(!mock_generate_tts_callback.is_null());
+  CHECK(mock_generate_tts_callback_.is_null());
+  mock_generate_tts_callback_ = mock_generate_tts_callback;
 }
 
 bool QuickAnswersView::HasFocusInside() {
@@ -488,7 +453,6 @@ void QuickAnswersView::UpdateQuickAnswerResult(
   // Check if the view (or any of its children) had focus before resetting the
   // view, so it can be restored for the updated view.
   bool pane_already_had_focus = HasFocusInside();
-  ResetContentView();
 
   // Update the icon representing the quick answers result type if it's shown.
   // In the case that the rich card feature is not enabled, this icon is null
@@ -500,40 +464,17 @@ void QuickAnswersView::UpdateQuickAnswerResult(
         /*icon_size=*/kResultTypeIconSizeDip));
   }
 
-  // Add title.
-  View* title_view =
-      AddHorizontalUiElements(content_view_.view(), quick_answer.title);
-  auto* title_label = static_cast<Label*>(title_view->children().front());
-  title_label->SetMaximumWidthSingleLine(GetLabelWidth(/*is_title=*/true));
-
-  // Add phonetics audio button for definition results.
-  if (ShouldAddPhoneticsAudioButton(
+  SwitchTo(result_view_);
+  result_view_->SetFirstLineText(ExtractText(quick_answer.title.front().get()));
+  result_view_->SetPhoneticsInfo(
+      ShouldAddPhoneticsAudioButton(
           quick_answer.result_type, quick_answer.phonetics_info.phonetics_audio,
-          quick_answer.phonetics_info.tts_audio_enabled)) {
-    AddPhoneticsAudioButton(quick_answer.phonetics_info, title_view);
-  }
-
-  // Add first row answer.
-  if (!quick_answer.first_answer_row.empty()) {
-    views::View* first_answer_row = AddHorizontalUiElements(
-        content_view_.view(), quick_answer.first_answer_row);
-
-    QuickAnswersTextLabel* quick_answers_text_label =
-        MaybeASingleQuickAnswersTextLabel(first_answer_row);
-    if (quick_answers_text_label) {
-      GetViewAccessibility().SetDescription(l10n_util::GetStringFUTF16(
-          IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE_V2,
-          title_label->GetText(), quick_answers_text_label->GetText()));
-
-      quick_answers_text_label->SetMultiLine(true);
-      // Max lines is kMaxRows-1. 1 is for the title row.
-      quick_answers_text_label->SetMaxLines(kMaxRows - 1);
-
-      // TODO(b/331271987): Remove this caching and manual re-layout.
-      first_answer_label_ = quick_answers_text_label;
-      UpdateBoundsForQuickAnswers();
-    }
-  }
+          quick_answer.phonetics_info.tts_audio_enabled)
+          ? quick_answer.phonetics_info
+          : PhoneticsInfo());
+  result_view_->SetSecondLineText(
+      ExtractText(quick_answer.first_answer_row.front().get()));
+  GetViewAccessibility().SetDescription(result_view_->GetA11yDescription());
 
   // Restore focus if the view had one prior to updating the answer.
   if (pane_already_had_focus) {
@@ -544,6 +485,7 @@ void QuickAnswersView::UpdateQuickAnswerResult(
         l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_ALERT_TEXT));
   }
 
+  // TODO(b/335701090): remove more indicator for the UX change.
   if (is_rich_answers_enabled_ &&
       quick_answer.result_type != ResultType::kNoResult) {
     // Show the expansion affordance indicator if rich card view is available.
@@ -575,30 +517,14 @@ void QuickAnswersView::UpdateQuickAnswerResult(
   }
 }
 
-std::vector<views::View*> QuickAnswersView::GetFocusableViews() {
-  std::vector<views::View*> focusable_views;
-  // The main view does not gain focus for retry-view and transfers it to the
-  // retry-label, and so is not included when this is the case.
-  if (!retry_label_) {
-    focusable_views.push_back(main_view_.view());
+// TODO(b/335701090): Move this out from QuickAnswersView to the controller.
+void QuickAnswersView::GenerateTts(const PhoneticsInfo& phonetics_info) {
+  if (!mock_generate_tts_callback_.is_null()) {
+    CHECK_IS_TEST();
+    mock_generate_tts_callback_.Run(phonetics_info);
+    return;
   }
-  if (dogfood_feedback_button_ && dogfood_feedback_button_->GetVisible()) {
-    focusable_views.push_back(dogfood_feedback_button_);
-  }
-  if (settings_button_ && settings_button_->GetVisible()) {
-    focusable_views.push_back(settings_button_);
-  }
-  if (phonetics_audio_button_ && phonetics_audio_button_->GetVisible()) {
-    focusable_views.push_back(phonetics_audio_button_);
-  }
-  if (retry_label_ && retry_label_->GetVisible()) {
-    focusable_views.push_back(retry_label_);
-  }
-  return focusable_views;
-}
 
-void QuickAnswersView::OnPhoneticsAudioButtonPressed(
-    const PhoneticsInfo& phonetics_info) {
   if (!phonetics_audio_web_view_) {
     // Setup an invisible WebView to play phonetics audio.
     std::unique_ptr<views::WebView> web_view = std::make_unique<views::WebView>(
@@ -619,6 +545,34 @@ void QuickAnswersView::OnPhoneticsAudioButtonPressed(
 
   GenerateTTSAudio(phonetics_audio_web_view->GetBrowserContext(),
                    phonetics_info.query_text, phonetics_info.locale);
+}
+
+std::vector<views::View*> QuickAnswersView::GetFocusableViews() {
+  std::vector<views::View*> focusable_views;
+  // The main view does not gain focus for retry-view and transfers it to the
+  // retry-label, and so is not included when this is the case.
+  if (!retry_view_->GetVisible()) {
+    focusable_views.push_back(quick_answers_stage_button_);
+  }
+
+  if (dogfood_feedback_button_ && dogfood_feedback_button_->GetVisible()) {
+    focusable_views.push_back(dogfood_feedback_button_);
+  }
+
+  if (settings_button_ && settings_button_->GetVisible()) {
+    focusable_views.push_back(settings_button_);
+  }
+
+  if (retry_view_->GetVisible()) {
+    focusable_views.push_back(retry_view_->retry_label_button());
+  }
+
+  if (result_view_->GetVisible() &&
+      result_view_->phonetics_audio_button()->GetVisible()) {
+    focusable_views.push_back(result_view_->phonetics_audio_button());
+  }
+
+  return focusable_views;
 }
 
 BEGIN_METADATA(QuickAnswersView)

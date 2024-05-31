@@ -6,11 +6,18 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/test/chrome_quick_answers_test_base.h"
+#include "chrome/browser/ui/quick_answers/ui/result_view.h"
+#include "chrome/browser/ui/quick_answers/ui/retry_view.h"
+#include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
+#include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/view_utils.h"
 
+namespace quick_answers {
 namespace {
 
 constexpr int kMarginDip = 10;
@@ -39,8 +46,9 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
   void TearDown() override { ChromeQuickAnswersTestBase::TearDown(); }
 
   // Currently instantiated QuickAnswersView instance.
-  views::View* GetQuickAnswersView() {
-    return GetUiController()->quick_answers_view();
+  QuickAnswersView* GetQuickAnswersView() {
+    return views::AsViewClass<QuickAnswersView>(
+        GetUiController()->quick_answers_view());
   }
 
   // Needed to poll the current bounds of the mock anchor.
@@ -61,12 +69,43 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
     GetUiController()->GetReadWriteCardsUiController().SetContextMenuBounds(
         anchor_bounds_);
 
+    static_cast<QuickAnswersControllerImpl*>(QuickAnswersController::Get())
+        ->SetVisibility(QuickAnswersVisibility::kQuickAnswersVisible);
     // TODO(b/222422130): Rewrite QuickAnswersViewsTest to expand coverage.
     GetUiController()->CreateQuickAnswersView(GetProfile(), "title", "query",
                                               /*is_internal=*/false);
   }
 
+  void MockGenerateTtsCallback() {
+    GetQuickAnswersView()->SetMockGenerateTtsCallbackForTesting(
+        base::BindRepeating(&QuickAnswersViewsTest::MockGenerateTts,
+                            base::Unretained(this)));
+  }
+
+  void MockGenerateTts(const PhoneticsInfo& phonetics_info) {
+    mock_phonetics_info_ = phonetics_info;
+  }
+
+  void FakeOnRetryPressed() {
+    GetUiController()->SetFakeOnRetryLabelPressedCallbackForTesting(
+        base::BindRepeating(&QuickAnswersViewsTest::OnRetryPressed,
+                            base::Unretained(this)));
+  }
+
+  void OnRetryPressed() {
+    QuickAnswer quick_answer;
+    quick_answer.result_type = ResultType::kDefinitionResult;
+    quick_answer.title.push_back(std::make_unique<QuickAnswerText>("Title"));
+    quick_answer.first_answer_row.push_back(
+        std::make_unique<QuickAnswerText>("FirstAnswerRow"));
+
+    GetUiController()->RenderQuickAnswersViewWithResult(quick_answer);
+  }
+
+  PhoneticsInfo mock_phonetics_info() { return mock_phonetics_info_; }
+
  private:
+  PhoneticsInfo mock_phonetics_info_;
   chromeos::ReadWriteCardsUiController controller_;
   gfx::Rect anchor_bounds_;
 };
@@ -109,3 +148,65 @@ TEST_F(QuickAnswersViewsTest, FocusProperties) {
   GetQuickAnswersView()->RequestFocus();
   EXPECT_TRUE(GetQuickAnswersView()->HasFocus());
 }
+
+TEST_F(QuickAnswersViewsTest, Retry) {
+  FakeOnRetryPressed();
+  CreateQuickAnswersView(GetAnchorBounds());
+
+  GetUiController()->ShowRetry();
+  RetryView* retry_view = GetQuickAnswersView()->GetRetryViewForTesting();
+  ASSERT_TRUE(retry_view);
+  EXPECT_TRUE(retry_view->GetVisible());
+  GetEventGenerator()->MoveMouseTo(
+      retry_view->retry_label_button()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  EXPECT_FALSE(GetQuickAnswersView()->GetRetryViewForTesting()->GetVisible());
+  EXPECT_TRUE(GetQuickAnswersView()->GetResultViewForTesting()->GetVisible());
+}
+
+TEST_F(QuickAnswersViewsTest, Result) {
+  CreateQuickAnswersView(GetAnchorBounds());
+
+  QuickAnswer quick_answer;
+  quick_answer.result_type = ResultType::kDefinitionResult;
+  quick_answer.title.push_back(std::make_unique<QuickAnswerText>("Title"));
+  quick_answer.first_answer_row.push_back(
+      std::make_unique<QuickAnswerText>("FirstAnswerRow"));
+  GetUiController()->RenderQuickAnswersViewWithResult(quick_answer);
+
+  ResultView* result_view = GetQuickAnswersView()->GetResultViewForTesting();
+  ASSERT_TRUE(result_view);
+  EXPECT_TRUE(result_view->GetVisible());
+  EXPECT_FALSE(result_view->phonetics_audio_button()->GetVisible());
+}
+
+TEST_F(QuickAnswersViewsTest, ResultWithPhoneticsAudio) {
+  CreateQuickAnswersView(GetAnchorBounds());
+  MockGenerateTtsCallback();
+
+  const GURL kTestPhoneticsAudio = GURL("https://example.com/");
+
+  QuickAnswer quick_answer;
+  quick_answer.result_type = ResultType::kDefinitionResult;
+  quick_answer.title.push_back(std::make_unique<QuickAnswerText>("Title"));
+  quick_answer.first_answer_row.push_back(
+      std::make_unique<QuickAnswerText>("FirstAnswerRow"));
+  quick_answer.phonetics_info.query_text = "QueryText";
+  quick_answer.phonetics_info.phonetics_audio = kTestPhoneticsAudio;
+  quick_answer.phonetics_info.tts_audio_enabled = true;
+  GetUiController()->RenderQuickAnswersViewWithResult(quick_answer);
+
+  ResultView* result_view = GetQuickAnswersView()->GetResultViewForTesting();
+  ASSERT_TRUE(result_view);
+  EXPECT_TRUE(result_view->GetVisible());
+  EXPECT_TRUE(result_view->phonetics_audio_button()->GetVisible());
+
+  GetEventGenerator()->MoveMouseTo(
+      result_view->phonetics_audio_button()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  EXPECT_EQ(mock_phonetics_info().phonetics_audio, kTestPhoneticsAudio);
+}
+
+}  // namespace quick_answers

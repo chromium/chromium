@@ -8896,6 +8896,8 @@ test("unit_tests") {
       "//chrome/browser/ui/chromeos/magic_boost:test_support",
       "//chrome/browser/ui/chromeos/read_write_cards",
       "//chrome/browser/ui/quick_answers",
+      "//chrome/browser/ui/quick_answers/ui:result_view",
+      "//chrome/browser/ui/quick_answers/ui:retry_view",
       "//chrome/browser/ui/views/editor_menu:utils",
       "//chrome/browser/ui/views/editor_menu:views",
       "//chrome/browser/ui/views/mahi",

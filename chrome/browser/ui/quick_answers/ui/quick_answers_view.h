@@ -7,23 +7,27 @@
 
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_view.h"
+#include "chrome/browser/ui/quick_answers/ui/loading_view.h"
+#include "chrome/browser/ui/quick_answers/ui/quick_answers_stage_button.h"
+#include "chrome/browser/ui/quick_answers/ui/result_view.h"
+#include "chrome/browser/ui/quick_answers/ui/retry_view.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace views {
 class ImageButton;
 class ImageView;
-class Label;
-class LabelButton;
 class WebView;
 }  // namespace views
 
@@ -42,6 +46,9 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   METADATA_HEADER(QuickAnswersView, chromeos::ReadWriteCardsView)
 
  public:
+  using MockGenerateTtsCallback =
+      base::RepeatingCallback<void(const PhoneticsInfo&)>;
+
   QuickAnswersView(const std::string& title,
                    bool is_internal,
                    base::WeakPtr<QuickAnswersUiController> controller);
@@ -71,6 +78,12 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
 
   ui::ImageModel GetIconImageModelForTesting();
 
+  LoadingView* GetLoadingViewForTesting() { return loading_view_; }
+  RetryView* GetRetryViewForTesting() { return retry_view_; }
+  ResultView* GetResultViewForTesting() { return result_view_; }
+  void SetMockGenerateTtsCallbackForTesting(
+      MockGenerateTtsCallback mock_generate_tts_callback);
+
  private:
   bool HasFocusInside();
   void AddFrameButtons();
@@ -83,6 +96,8 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   int GetLabelWidth(bool is_title);
   void ResetContentView();
   void UpdateQuickAnswerResult(const quick_answers::QuickAnswer& quick_answer);
+  void GenerateTts(const PhoneticsInfo& phonetics_info);
+  void SwitchTo(views::View* view);
 
   // FocusSearch::GetFocusableViewsCallback to poll currently focusable views.
   std::vector<views::View*> GetFocusableViews();
@@ -97,15 +112,16 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   const bool is_rich_answers_enabled_;
   const bool maximum_view_height_;
 
-  views::ViewTracker base_view_;
-  views::ViewTracker main_view_;
-  views::ViewTracker content_view_;
-  raw_ptr<views::Label> first_answer_label_ = nullptr;
-  raw_ptr<views::LabelButton> retry_label_ = nullptr;
+  raw_ptr<QuickAnswersStageButton> quick_answers_stage_button_ = nullptr;
+  raw_ptr<LoadingView> loading_view_ = nullptr;
+  raw_ptr<RetryView> retry_view_ = nullptr;
+  raw_ptr<ResultView> result_view_ = nullptr;
+
   raw_ptr<views::ImageButton> dogfood_feedback_button_ = nullptr;
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
-  raw_ptr<views::ImageButton> phonetics_audio_button_ = nullptr;
   raw_ptr<views::ImageView> result_type_icon_ = nullptr;
+
+  MockGenerateTtsCallback mock_generate_tts_callback_;
 
   // Invisible WebView to play phonetics audio for definition results. WebView
   // is lazy created to improve performance.

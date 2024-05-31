@@ -10,21 +10,24 @@
 #include "ui/color/color_id.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_utils.h"
 
 namespace quick_answers {
 namespace {
-constexpr int kLineSpacingDip = 4;
+// TODO(b/335701090): Use LayoutProvider.
+constexpr int kItemSpacing = 4;
 }
 
 LoadingView::LoadingView() {
   SetOrientation(views::LayoutOrientation::kVertical);
   SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  SetDefault(views::kMarginsKey, gfx::Insets::TLBR(0, 0, kLineSpacingDip, 0));
+  SetDefault(views::kMarginsKey, gfx::Insets::VH(kItemSpacing, 0));
+  SetCollapseMargins(true);
 
   first_line_label_.SetView(AddChildView(
       views::Builder<views::Label>()
-          .SetEnabledColor(ui::kColorLabelForeground)
+          .SetEnabledColorId(ui::kColorLabelForeground)
           // Default is `ALIGN_CENTER`. See `Label::Init`.
           // `SetHorizontalAlignment` flips the value for RTL.
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
@@ -37,8 +40,12 @@ LoadingView::LoadingView() {
   AddChildView(
       views::Builder<views::Label>()
           .SetText(l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_LOADING))
-          .SetEnabledColor(ui::kColorLabelForegroundSecondary)
+          .SetEnabledColorId(ui::kColorLabelForegroundSecondary)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+          .SetProperty(
+              views::kFlexBehaviorKey,
+              views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                       views::MaximumFlexSizeRule::kPreferred))
           .Build());
 }
 

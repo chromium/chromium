@@ -41,6 +41,8 @@ source_set("quick_answers") {
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/quick_answers/ui:loading_view",
     "//chrome/browser/ui/quick_answers/ui:quick_answers_stage_button",
+    "//chrome/browser/ui/quick_answers/ui:result_view",
+    "//chrome/browser/ui/quick_answers/ui:retry_view",
     "//chrome/browser/ui/views/editor_menu",
     "//chrome/browser/ui/views/editor_menu:utils",
     "//chrome/browser/ui/views/mahi",

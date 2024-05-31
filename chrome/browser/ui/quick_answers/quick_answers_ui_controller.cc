@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
@@ -161,7 +162,22 @@ bool QuickAnswersUiController::CloseRichAnswersView() {
 }
 
 void QuickAnswersUiController::OnRetryLabelPressed() {
+  if (!fake_on_retry_label_pressed_callback_.is_null()) {
+    CHECK_IS_TEST();
+    fake_on_retry_label_pressed_callback_.Run();
+    return;
+  }
+
   controller_->OnRetryQuickAnswersRequest();
+}
+
+void QuickAnswersUiController::SetFakeOnRetryLabelPressedCallbackForTesting(
+    QuickAnswersUiController::FakeOnRetryLabelPressedCallback
+        fake_on_retry_label_pressed_callback) {
+  CHECK_IS_TEST();
+  CHECK(!fake_on_retry_label_pressed_callback.is_null());
+  CHECK(fake_on_retry_label_pressed_callback_.is_null());
+  fake_on_retry_label_pressed_callback_ = fake_on_retry_label_pressed_callback;
 }
 
 void QuickAnswersUiController::RenderQuickAnswersViewWithResult(

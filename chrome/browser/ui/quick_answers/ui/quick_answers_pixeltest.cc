@@ -22,6 +22,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 namespace quick_answers {
 namespace {
@@ -29,6 +30,7 @@ namespace {
 constexpr char kScreenshotPrefix[] = "quick_answers";
 constexpr char kTestTitle[] = "TestTitle. A selected text.";
 constexpr char kTestQuery[] = "TestQuery";
+constexpr char kTestPhoneticsUrl[] = "https://example.com/";
 constexpr char kTestDefinition[] =
     "TestDefinition. A test definition for TestTitle.";
 constexpr gfx::Rect kContextMenuRectNarrow = {100, 100, 100, 200};
@@ -112,6 +114,9 @@ class QuickAnswersPixelTest
     if (IsRichAnswersEnabled(GetParam())) {
       scoped_feature_list_.InitAndEnableFeature(
           chromeos::features::kQuickAnswersRichCard);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          chromeos::features::kQuickAnswersRichCard);
     }
 
     InProcessBrowserTest::SetUp();
@@ -186,7 +191,6 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTest, Loading) {
       GetScreenshotName("Loading", GetParam()), widget->GetContentsView()));
 }
 
-// TODO(b/331271987): layout is known to be broken for width change now.
 IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTest, Result) {
   QuickAnswersUiController* quick_answers_ui_controller =
       GetQuickAnswersUiController();
@@ -211,10 +215,38 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTest, Result) {
   quick_answer.title.push_back(std::make_unique<QuickAnswerText>(kTestTitle));
   quick_answer.first_answer_row.push_back(
       std::make_unique<QuickAnswerText>(kTestDefinition));
+  quick_answer.phonetics_info.query_text = kTestQuery;
+  quick_answer.phonetics_info.phonetics_audio = GURL(kTestPhoneticsUrl);
+  quick_answer.phonetics_info.tts_audio_enabled = true;
   quick_answers_ui_controller->RenderQuickAnswersViewWithResult(quick_answer);
 
   EXPECT_TRUE(pixel_diff_->CompareViewScreenshot(
       GetScreenshotName("Result", GetParam()), widget->GetContentsView()));
+}
+
+IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTest, Retry) {
+  QuickAnswersUiController* quick_answers_ui_controller =
+      GetQuickAnswersUiController();
+  ASSERT_TRUE(quick_answers_ui_controller);
+  chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller =
+      quick_answers_ui_controller->GetReadWriteCardsUiController();
+
+  quick_answers_ui_controller->CreateQuickAnswersView(
+      browser()->profile(), kTestTitle, kTestQuery, /*is_internal=*/false);
+  read_write_cards_ui_controller.SetContextMenuBounds(GetContextMenuRect());
+  views::Widget* widget = read_write_cards_ui_controller.widget_for_test();
+  ASSERT_TRUE(widget);
+
+  QuickAnswersController* quick_answers_controller =
+      QuickAnswersController::Get();
+  ASSERT_TRUE(quick_answers_controller);
+  quick_answers_controller->SetVisibility(
+      QuickAnswersVisibility::kQuickAnswersVisible);
+
+  quick_answers_ui_controller->ShowRetry();
+
+  EXPECT_TRUE(pixel_diff_->CompareViewScreenshot(
+      GetScreenshotName("Retry", GetParam()), widget->GetContentsView()));
 }
 
 }  // namespace quick_answers

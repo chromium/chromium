@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
@@ -19,7 +20,6 @@
 #include "ui/views/widget/widget.h"
 
 class Profile;
-class QuickAnswersView;
 class QuickAnswersControllerImpl;
 
 namespace chromeos {
@@ -36,6 +36,8 @@ struct QuickAnswer;
 // answers view.
 class QuickAnswersUiController {
  public:
+  using FakeOnRetryLabelPressedCallback = base::RepeatingCallback<void()>;
+
   explicit QuickAnswersUiController(QuickAnswersControllerImpl* controller);
   ~QuickAnswersUiController();
 
@@ -59,6 +61,8 @@ class QuickAnswersUiController {
   void OnGoogleSearchLabelPressed();
 
   void OnRetryLabelPressed();
+  void SetFakeOnRetryLabelPressedCallbackForTesting(
+      FakeOnRetryLabelPressedCallback fake_on_retry_label_pressed_callback);
 
   void RenderQuickAnswersViewWithResult(
       const quick_answers::QuickAnswer& quick_answer);
@@ -133,6 +137,8 @@ class QuickAnswersUiController {
 
   raw_ptr<Profile> profile_ = nullptr;
   std::string query_;
+
+  FakeOnRetryLabelPressedCallback fake_on_retry_label_pressed_callback_;
 
   base::WeakPtrFactory<QuickAnswersUiController> weak_factory_{this};
 };
