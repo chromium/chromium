@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 // Used by method `transferToGPUTexture` as defined in
-// canvas_2d_webgpu_transfer.idl
-dictionary Canvas2dWebGPUTransferOption {
+// canvas_2d_gpu_transfer.idl
+dictionary Canvas2dGPUTransferOption {
   // This GPUDevice will be given access to the canvas' texture.
   GPUDevice device;
 

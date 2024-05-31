@@ -50,7 +50,7 @@
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_2d_webgpu_transfer_option.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_2d_gpu_transfer_option.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_font_stretch.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_text_rendering.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_format.h"
@@ -3601,7 +3601,7 @@ V8GPUTextureFormat BaseRenderingContext2D::getTextureFormat() const {
 }
 
 GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
-    const Canvas2dWebGPUTransferOption* access_options,
+    const Canvas2dGPUTransferOption* access_options,
     ExceptionState& exception_state) {
   if (!OriginClean()) {
     exception_state.ThrowSecurityError(

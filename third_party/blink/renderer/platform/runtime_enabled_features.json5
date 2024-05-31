@@ -553,6 +553,10 @@
       status: "experimental",
     },
     {
+      name: "Canvas2dGPUTransfer",
+      status: "experimental",
+    },
+    {
       name: "Canvas2dImageChromium",
       base_feature: "none",
       public: true,
@@ -566,10 +570,6 @@
     },
     {
       name: "Canvas2dScrollPathIntoView",
-      status: "experimental",
-    },
-    {
-      name: "Canvas2dWebGPUTransfer",
       status: "experimental",
     },
     {

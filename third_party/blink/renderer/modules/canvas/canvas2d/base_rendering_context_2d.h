@@ -85,7 +85,7 @@ MODULES_EXPORT BASE_DECLARE_FEATURE(kDisableCanvasOverdrawOptimization);
 class BeginLayerOptions;
 class CanvasGradient;
 class CanvasImageSource;
-class Canvas2dWebGPUTransferOption;
+class Canvas2dGPUTransferOption;
 class CanvasPattern;
 class CanvasRenderingContextHost;
 class CanvasResourceProvider;
@@ -344,7 +344,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // can be bound as a color attachment and modified. After its texture is
   // transferred, the canvas will be reset into an empty, freshly-initialized
   // state.
-  GPUTexture* transferToGPUTexture(const Canvas2dWebGPUTransferOption*,
+  GPUTexture* transferToGPUTexture(const Canvas2dGPUTransferOption*,
                                    ExceptionState& exception_state);
 
   // Replaces the canvas' back-buffer texture with the passed-in GPUTexture.
