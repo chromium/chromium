@@ -26,9 +26,6 @@
                 "target_platform": "win"
               },
               "legacy_gclient_config": {
-                "apply_configs": [
-                  "angle_internal"
-                ],
                 "config": "chromium"
               }
             }
