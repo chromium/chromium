@@ -82,10 +82,11 @@ class FullRestoreService : public KeyedService,
   class Delegate {
    public:
     virtual ~Delegate() = default;
-    // Starts overview with the pine dialog unless overview is already active.
-    virtual void MaybeStartPineOverviewSession(
-        std::unique_ptr<PineContentsData> pine_contents_data) = 0;
-    virtual void MaybeEndPineOverviewSession() = 0;
+    // Starts overview with the informed restore dialog unless overview is
+    // already active.
+    virtual void MaybeStartInformedRestoreOverviewSession(
+        std::unique_ptr<PineContentsData> contents_data) = 0;
+    virtual void MaybeEndInformedRestoreOverviewSession() = 0;
   };
 
   static FullRestoreService* GetForProfile(Profile* profile);
@@ -163,9 +164,9 @@ class FullRestoreService : public KeyedService,
 
   void OnAppTerminating();
 
-  // Callbacks for the pine dialog buttons.
-  void RestoreForForest();
-  void CancelForForest();
+  // Callbacks for the informed restore dialog buttons.
+  void OnDialogRestore();
+  void OnDialogCancel();
 
   // Callbacks run after querying for data from the session service(s).
   // `OnGotSessionAsh` is run after receiving data from either the normal
@@ -183,17 +184,17 @@ class FullRestoreService : public KeyedService,
       std::vector<crosapi::mojom::SessionWindowPtr> all_session_windows);
 
   // Called when session information is ready to be processed. Constructs the
-  // object needed to show the pine dialog. It will be passed to ash which will
-  // then use its contents to create and display the pine dialog. `restore_data`
-  // is the data read from the full restore file. `session_windows_map` is the
-  // browser info retrieved from session restore.
+  // object needed to show the informed restore dialog. It will be passed to ash
+  // which will then use its contents to create and display the dialog.
+  // `restore_data` is the data read from the full restore file.
+  // `session_windows_map` is the browser info retrieved from session restore.
   void OnSessionInformationReceived(
       ::app_restore::RestoreData* restore_data,
       const SessionWindowsMap& session_windows_map,
       bool last_session_crashed);
 
-  // Starts pine onboarding dialog when there is no restore data.
-  void MaybeShowPineOnboarding();
+  // Shows the informed restore onboarding dialog when there is no restore data.
+  void MaybeShowInformedRestoreOnboarding();
 
   raw_ptr<Profile> profile_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;

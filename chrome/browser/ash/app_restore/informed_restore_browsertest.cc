@@ -57,8 +57,8 @@ const PineContentsView* GetPineContentsView() {
   return views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
 }
 
-// Retrieve the "Restore" button from the pine dialog, if we are in a overview
-// pine session.
+// Retrieve the "Restore" button from the informed restore dialog, if we are in
+// a overview pine session.
 const PillButton* GetPineDialogRestoreButton() {
   const PineContentsView* pine_contents_view = GetPineContentsView();
   return pine_contents_view
@@ -104,15 +104,15 @@ class BrowsersWaiter : public BrowserListObserver {
   base::RunLoop run_loop_;
 };
 
-class PineBrowserTest : public InProcessBrowserTest {
+class InformedRestoreTest : public InProcessBrowserTest {
  public:
-  PineBrowserTest() {
+  InformedRestoreTest() {
     switches::SetIgnoreForestSecretKeyForTest(true);
     set_launch_browser_for_testing(nullptr);
   }
-  PineBrowserTest(const PineBrowserTest&) = delete;
-  PineBrowserTest& operator=(const PineBrowserTest&) = delete;
-  ~PineBrowserTest() override {
+  InformedRestoreTest(const InformedRestoreTest&) = delete;
+  InformedRestoreTest& operator=(const InformedRestoreTest&) = delete;
+  ~InformedRestoreTest() override {
     switches::SetIgnoreForestSecretKeyForTest(false);
   }
 
@@ -120,7 +120,7 @@ class PineBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     // Set the restore pref setting as "Ask every time". This will ensure the
-    // pine dialog comes up on the next session.
+    // informed restore dialog comes up on the next session.
     auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
     prefs->SetInteger(prefs::kRestoreAppsAndPagesPrefName,
                       static_cast<int>(RestoreOption::kAskEveryTime));
@@ -135,7 +135,7 @@ class PineBrowserTest : public InProcessBrowserTest {
 };
 
 // Creates 2 browser windows that will be restored in the main test.
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_LaunchBrowsers) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_LaunchBrowsers) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_LaunchBrowsers) {
 
 // Verify that with two elements in the full restore file, we enter overview on
 // login. Then when we click the restore button, we restore two browsers.
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, LaunchBrowsers) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, LaunchBrowsers) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   // Verify we have entered overview. The restore button will be null if we
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, LaunchBrowsers) {
 }
 
 // Creates SWAs that will be restored in the main test.
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_LaunchSWA) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_LaunchSWA) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   // Create two SWAs, files and settings.
@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_LaunchSWA) {
 
 // Verify that with two elements in the full restore file, we enter overview on
 // login. Then when we click the restore button, we restore SWAs.
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, LaunchSWA) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, LaunchSWA) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   test::InstallSystemAppsForTesting(ProfileManager::GetActiveUserProfile());
@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, LaunchSWA) {
 
 // Creates 3 browser windows on 3 different desks that will be restored in the
 // main test.
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_LaunchBrowsersToDesks) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_LaunchBrowsersToDesks) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_LaunchBrowsersToDesks) {
 }
 
 // Tests that the three browser windows are restored to their old desks.
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, LaunchBrowsersToDesks) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, LaunchBrowsersToDesks) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   // Verify we have entered overview. The restore button will be null if we
@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, LaunchBrowsersToDesks) {
   EXPECT_EQ(1u, desks[2]->windows().size());
 }
 
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_WindowStates) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_WindowStates) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_WindowStates) {
 
 // TODO(crbug.com/330516096): Test is flaky.
 // Tests that the browser windows are restored to their old window states.
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, DISABLED_WindowStates) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, DISABLED_WindowStates) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   // Verify we have entered overview. The restore button will be null if we
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, DISABLED_WindowStates) {
   EXPECT_TRUE(window_state->IsMaximized());
 }
 
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_ClickCancelButton) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_ClickCancelButton) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_ClickCancelButton) {
 
 // Verify that with two elements in the full restore file, if we click cancel no
 // browsers are launched.
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, ClickCancelButton) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, ClickCancelButton) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   // Verify we have entered overview. The cancel button will be null if we
@@ -399,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, ClickCancelButton) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 }
 
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_TabInfoWithinLimit) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_TabInfoWithinLimit) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   Browser* browser = CreateBrowser(ProfileManager::GetActiveUserProfile());
@@ -427,10 +427,11 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_TabInfoWithinLimit) {
 
 // Verify that the tab info that is sent to ash shell is as expected, when the
 // most recent active tab is one of the first five tabs.
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, TabInfoWithinLimit) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, TabInfoWithinLimit) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
-  // The pine dialog is built based on the values in this data structure.
+  // The informed restore dialog is built based on the values in this data
+  // structure.
   const PineContentsData* pine_contents_data =
       Shell::Get()->pine_controller()->pine_contents_data();
   ASSERT_TRUE(pine_contents_data);
@@ -449,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, TabInfoWithinLimit) {
   EXPECT_EQ(GURL(url::kAboutBlankURL), apps_infos[0].tab_urls[4]);
 }
 
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_TabInfoOutsideLimit) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_TabInfoOutsideLimit) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   Browser* browser = CreateBrowser(ProfileManager::GetActiveUserProfile());
@@ -478,10 +479,11 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_TabInfoOutsideLimit) {
 
 // Verify that the tab info that is sent to ash shell is as expected, when the
 // most recent active tab is outside of the first five tabs.
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, TabInfoOutsideLimit) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, TabInfoOutsideLimit) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
-  // The pine dialog is built based on the values in this data structure.
+  // The informed restore dialog is built based on the values in this data
+  // structure.
   const PineContentsData* pine_contents_data =
       Shell::Get()->pine_controller()->pine_contents_data();
   ASSERT_TRUE(pine_contents_data);
@@ -503,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, TabInfoOutsideLimit) {
   EXPECT_EQ(GURL("https://x.company/"), apps_infos[0].tab_urls[4]);
 }
 
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_AppInfo) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_AppInfo) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   // Create multiple SWAs that will be added to the restore data. Each SWA is
@@ -529,10 +531,11 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_AppInfo) {
 
 // Verify that the app info that is sent to ash shell is as expected, with the
 // apps appearing in order from most recently used to least recently used.
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, AppInfo) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, AppInfo) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
-  // The pine dialog is built based on the values in this data structure.
+  // The informed restore dialog is built based on the values in this data
+  // structure.
   const PineContentsData* pine_contents_data =
       Shell::Get()->pine_controller()->pine_contents_data();
   ASSERT_TRUE(pine_contents_data);
@@ -555,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, AppInfo) {
   EXPECT_EQ("jhdjimmaggjajfjphpljagpgkidjilnj", apps_infos[3].app_id);
 }
 
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_ReenterOverviewPineSession) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_ReenterOverviewPineSession) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
   CreateBrowser(ProfileManager::GetActiveUserProfile());
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
@@ -565,11 +568,11 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_ReenterOverviewPineSession) {
 }
 
 // Test that if we exit overview and reenter without opening a new window, we
-// see the pine dialog again.
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, ReenterOverviewPineSession) {
+// see the informed restore dialog again.
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, ReenterOverviewPineSession) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
-  // Verify we have entered overview with the pine dialog.
+  // Verify we have entered overview with the informed restore dialog.
   WaitForOverviewEnterAnimation();
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_TRUE(GetPineDialogRestoreButton());
@@ -585,8 +588,8 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, ReenterOverviewPineSession) {
   WaitForOverviewEnterAnimation();
   EXPECT_TRUE(GetPineDialogRestoreButton());
 
-  // Open a new window using the accelerator. This should delete the pine dialog
-  // data and the next overview enter will not show the dialog.
+  // Open a new window using the accelerator. This should delete the informed
+  // restore dialog data and the next overview enter will not show the dialog.
   ToggleOverview();
   WaitForOverviewExitAnimation();
   BrowsersWaiter waiter(/*expected_count=*/1);
@@ -601,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, ReenterOverviewPineSession) {
   EXPECT_FALSE(GetPineDialogRestoreButton());
 }
 
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_RestoreOff) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_RestoreOff) {
   auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   prefs->SetInteger(prefs::kRestoreAppsAndPagesPrefName,
                     static_cast<int>(RestoreOption::kDoNotRestore));
@@ -609,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_RestoreOff) {
 }
 
 // Tests that when Restore is off, we show the onboarding dialog.
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, RestoreOff) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, RestoreOff) {
   // The first time after rebooting, we show the onboarding dialog.
   auto* onboarding_dialog = PineTestApi().GetOnboardingDialog();
   ASSERT_TRUE(onboarding_dialog);
@@ -628,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, RestoreOff) {
                 prefs::kRestoreAppsAndPagesPrefName));
 }
 
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_NoRestoreData) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_NoRestoreData) {
   auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   EXPECT_EQ(static_cast<int>(RestoreOption::kAskEveryTime),
             prefs->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
@@ -637,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_NoRestoreData) {
 
 // Tests that when Restore is 'Ask every time' and there is no restore data, we
 // show the onboarding dialog.
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, NoRestoreData) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, NoRestoreData) {
   // The first time after rebooting, we show the onboarding dialog.
   auto* onboarding_dialog = PineTestApi().GetOnboardingDialog();
   ASSERT_TRUE(onboarding_dialog);
@@ -651,7 +654,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, NoRestoreData) {
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
 }
 
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_Onboarding) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_Onboarding) {
   // The restore pref setting is 'Ask every time' by default.
   auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   EXPECT_EQ(static_cast<int>(RestoreOption::kAskEveryTime),
@@ -668,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_Onboarding) {
 
 // Tests that when Restore is 'Ask every time' and there is restore data, we
 // show the onboarding dialog.
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, Onboarding) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, Onboarding) {
   // The first time after rebooting, we show the onboarding dialog.
   auto* onboarding_dialog = PineTestApi().GetOnboardingDialog();
   ASSERT_TRUE(onboarding_dialog);

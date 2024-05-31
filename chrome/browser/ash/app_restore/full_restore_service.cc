@@ -145,18 +145,18 @@ class DelegateImpl : public FullRestoreService::Delegate {
   DelegateImpl& operator=(const DelegateImpl&) = delete;
   ~DelegateImpl() override = default;
 
-  void MaybeStartPineOverviewSession(
-      std::unique_ptr<PineContentsData> pine_contents_data) override {
+  void MaybeStartInformedRestoreOverviewSession(
+      std::unique_ptr<PineContentsData> contents_data) override {
     // A unit test that does not override this default delegate may not have ash
     // shell.
     if (Shell::HasInstance()) {
       CHECK(Shell::Get()->pine_controller());
       Shell::Get()->pine_controller()->MaybeStartPineOverviewSession(
-          std::move(pine_contents_data));
+          std::move(contents_data));
     }
   }
 
-  void MaybeEndPineOverviewSession() override {
+  void MaybeEndInformedRestoreOverviewSession() override {
     // A unit test that does not override this default delegate may not have ash
     // shell.
     if (Shell::HasInstance()) {
@@ -314,7 +314,7 @@ void FullRestoreService::Init(bool& show_notification) {
       break;
     case RestoreOption::kDoNotRestore:
       if (IsForestFeatureEnabled()) {
-        MaybeShowPineOnboarding();
+        MaybeShowInformedRestoreOnboarding();
       }
       ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
       MaybeInitiateAdminTemplateAutoLaunch();
@@ -526,7 +526,7 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
   const bool last_session_crashed = id == kRestoreForCrashNotificationId;
   if (!app_launch_handler_->HasRestoreData()) {
     CHECK(IsForestFeatureEnabled());
-    MaybeShowPineOnboarding();
+    MaybeShowInformedRestoreOnboarding();
     return;
   }
   CHECK(app_launch_handler_->HasRestoreData());
@@ -678,16 +678,16 @@ void FullRestoreService::OnAppTerminating() {
   ::full_restore::FullRestoreSaveHandler::GetInstance()->SetShutDown();
 }
 
-void FullRestoreService::RestoreForForest() {
+void FullRestoreService::OnDialogRestore() {
   VLOG(1) << "The restore button is clicked for " << profile_->GetPath();
 
   Restore();
-  delegate_->MaybeEndPineOverviewSession();
+  delegate_->MaybeEndInformedRestoreOverviewSession();
 }
 
-void FullRestoreService::CancelForForest() {
+void FullRestoreService::OnDialogCancel() {
   ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
-  delegate_->MaybeEndPineOverviewSession();
+  delegate_->MaybeEndInformedRestoreOverviewSession();
 }
 
 void FullRestoreService::OnGotSessionAsh(
@@ -740,16 +740,16 @@ void FullRestoreService::OnSessionInformationReceived(
     ::app_restore::RestoreData* restore_data,
     const SessionWindowsMap& session_windows_map,
     bool last_session_crashed) {
-  auto pine_contents_data = std::make_unique<PineContentsData>();
-  pine_contents_data->last_session_crashed = last_session_crashed;
+  auto contents_data = std::make_unique<PineContentsData>();
+  contents_data->last_session_crashed = last_session_crashed;
 
-  pine_contents_data->restore_callback = base::BindOnce(
-      &FullRestoreService::RestoreForForest, weak_ptr_factory_.GetWeakPtr());
-  pine_contents_data->cancel_callback = base::BindOnce(
-      &FullRestoreService::CancelForForest, weak_ptr_factory_.GetWeakPtr());
+  contents_data->restore_callback = base::BindOnce(
+      &FullRestoreService::OnDialogRestore, weak_ptr_factory_.GetWeakPtr());
+  contents_data->cancel_callback = base::BindOnce(
+      &FullRestoreService::OnDialogCancel, weak_ptr_factory_.GetWeakPtr());
 
   // Contains per-window app data to be sorted and and added to
-  // `pine_contents_data`.
+  // `contents_data`.
   struct WindowAppData {
     int window_id;
     std::string app_id;
@@ -791,7 +791,7 @@ void FullRestoreService::OnSessionInformationReceived(
     // to display.
     if (app_id != app_constants::kChromeAppId &&
         app_id != app_constants::kLacrosAppId) {
-      pine_contents_data->apps_infos.emplace_back(app_id, stored_title);
+      contents_data->apps_infos.emplace_back(app_id, stored_title);
       continue;
     }
 
@@ -805,7 +805,7 @@ void FullRestoreService::OnSessionInformationReceived(
     // Default to using the app id if we cannot find the associated window for
     // whatever reason.
     if (!session_window) {
-      pine_contents_data->apps_infos.emplace_back(app_id, stored_title);
+      contents_data->apps_infos.emplace_back(app_id, stored_title);
       continue;
     }
 
@@ -816,20 +816,20 @@ void FullRestoreService::OnSessionInformationReceived(
     if (!app_name.empty()) {
       const std::string new_app_id =
           ::app_restore::GetAppIdFromAppName(app_name);
-      pine_contents_data->apps_infos.emplace_back(
+      contents_data->apps_infos.emplace_back(
           new_app_id.empty() ? app_id : new_app_id, stored_title);
       continue;
     }
 
-    pine_contents_data->apps_infos.emplace_back(
+    contents_data->apps_infos.emplace_back(
         app_id, session_window->active_tab_title, session_window->urls,
         session_window->tab_count, session_window->profile_id);
   }
 
-  delegate_->MaybeStartPineOverviewSession(std::move(pine_contents_data));
+  delegate_->MaybeStartInformedRestoreOverviewSession(std::move(contents_data));
 }
 
-void FullRestoreService::MaybeShowPineOnboarding() {
+void FullRestoreService::MaybeShowInformedRestoreOnboarding() {
   if (Shell::HasInstance()) {
     RestoreOption restore_pref = static_cast<RestoreOption>(
         profile_->GetPrefs()->GetInteger(prefs::kRestoreAppsAndPagesPrefName));

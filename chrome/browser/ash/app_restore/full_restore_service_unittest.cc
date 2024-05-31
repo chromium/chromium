@@ -110,10 +110,10 @@ class MockFullRestoreServiceDelegate : public FullRestoreService::Delegate {
   ~MockFullRestoreServiceDelegate() override = default;
 
   MOCK_METHOD(void,
-              MaybeStartPineOverviewSession,
-              (std::unique_ptr<ash::PineContentsData> restore_data),
+              MaybeStartInformedRestoreOverviewSession,
+              (std::unique_ptr<ash::PineContentsData> contents_data),
               (override));
-  MOCK_METHOD(void, MaybeEndPineOverviewSession, (), (override));
+  MOCK_METHOD(void, MaybeEndInformedRestoreOverviewSession, (), (override));
 };
 
 }  // namespace
@@ -1042,7 +1042,8 @@ TEST_F(ForestFullRestoreServiceTest, Crash) {
   ExitTypeService::GetInstanceForProfile(profile())
       ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
-  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
@@ -1053,7 +1054,8 @@ TEST_F(ForestFullRestoreServiceTest, Crash) {
 TEST_F(ForestFullRestoreServiceTest, AskEveryTime) {
   SetRestoreOption(RestoreOption::kAskEveryTime);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
-  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
@@ -1065,7 +1067,8 @@ TEST_F(ForestFullRestoreServiceTest, AskEveryTime) {
 TEST_F(ForestFullRestoreServiceTest, Always) {
   SetRestoreOption(RestoreOption::kAlways);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
-  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
   VerifyRestoreInitSettingHistogram(RestoreOption::kAlways, 1);
@@ -1078,7 +1081,8 @@ TEST_F(ForestFullRestoreServiceTest, Always) {
 TEST_F(ForestFullRestoreServiceTest, NotRestore) {
   SetRestoreOption(RestoreOption::kDoNotRestore);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
-  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
   VerifyRestoreInitSettingHistogram(RestoreOption::kDoNotRestore, 1);
@@ -1091,7 +1095,8 @@ TEST_F(ForestFullRestoreServiceTest, NotRestore) {
 TEST_F(ForestFullRestoreServiceTest, NewUserSyncOff) {
   fake_user_manager()->SetIsCurrentUserNew(true);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
-  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
 
@@ -1106,7 +1111,8 @@ TEST_F(ForestFullRestoreServiceTest, NewUserSyncOff) {
 TEST_F(ForestFullRestoreServiceTest, NewUserSyncChromeRestoreSetting) {
   fake_user_manager()->SetIsCurrentUserNew(true);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
-  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
 
@@ -1130,7 +1136,8 @@ TEST_F(ForestFullRestoreServiceTest, NewUserSyncChromeRestoreSetting) {
 TEST_F(ForestFullRestoreServiceTest, NewUserSyncChromeNotRestoreSetting) {
   fake_user_manager()->SetIsCurrentUserNew(true);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
-  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
 
@@ -1153,7 +1160,8 @@ TEST_F(ForestFullRestoreServiceTest, NewUserSyncChromeNotRestoreSetting) {
 TEST_F(ForestFullRestoreServiceTest, ReImage) {
   fake_user_manager()->SetIsCurrentUserNew(true);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
-  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
 
@@ -1180,7 +1188,8 @@ TEST_F(ForestFullRestoreServiceTest, Upgrading) {
       ::prefs::kRestoreOnStartup,
       static_cast<int>(SessionStartupPref::kPrefValueNewTab));
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
-  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
 
@@ -1228,7 +1237,8 @@ TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile, Crash) {
       ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
 
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
-  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .WillOnce([](std::unique_ptr<PineContentsData> data) {
         ASSERT_TRUE(data);
         EXPECT_TRUE(data->last_session_crashed);
@@ -1249,7 +1259,8 @@ TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile,
        AskEveryTimeAndRestore) {
   SetRestoreOption(RestoreOption::kAskEveryTime);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
-  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(1);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
 
@@ -1275,7 +1286,8 @@ TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile, ExistingUserReImage) {
       ::switches::kForceFirstRun);
 
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
-  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
 
@@ -1330,13 +1342,15 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest, TwoUsersLoginAtTheSameTime) {
 
   // The pine dialog is only shown for the first user.
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
-  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(1);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
 
   auto mock_delegate_2 = std::make_unique<MockFullRestoreServiceDelegate>();
   auto* mock_delegate_2_ptr = mock_delegate_2.get();
-  EXPECT_CALL(*mock_delegate_2, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate_2,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   CreateFullRestoreService2ForTesting(std::move(mock_delegate_2));
 
@@ -1348,7 +1362,8 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest, TwoUsersLoginAtTheSameTime) {
   // Simulate switch to the second user. The pine dialog should be shown for
   // them.
   auto* full_restore_service2 = FullRestoreService::GetForProfile(profile2());
-  EXPECT_CALL(*mock_delegate_2_ptr, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate_2_ptr,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(1);
   full_restore_service2->OnTransitionedToNewActiveUser(profile2());
 
@@ -1362,7 +1377,8 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest, TwoUsersLoginAtTheSameTime) {
 TEST_F(ForestFullRestoreServiceMultipleUsersTest, TwoUsersLoginOneByOne) {
   SetRestoreOption(RestoreOption::kAskEveryTime);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
-  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(1);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
 
@@ -1374,14 +1390,16 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest, TwoUsersLoginOneByOne) {
   SetRestoreOptionForProfile2(RestoreOption::kAskEveryTime);
   auto mock_delegate_2 = std::make_unique<MockFullRestoreServiceDelegate>();
   auto* mock_delegate_2_ptr = mock_delegate_2.get();
-  EXPECT_CALL(*mock_delegate_2, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate_2,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   CreateFullRestoreService2ForTesting(std::move(mock_delegate_2));
 
   // Simulate switch to the second user. The pine dialog should be shown for
   // them.
   auto* full_restore_service2 = FullRestoreService::GetForProfile(profile2());
-  EXPECT_CALL(*mock_delegate_2_ptr, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate_2_ptr,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(1);
   full_restore_service2->OnTransitionedToNewActiveUser(profile2());
 
@@ -1407,13 +1425,15 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest,
   // The pine dialog shouldn't be shown for neither user yet.
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   auto* mock_delegate_ptr = mock_delegate.get();
-  EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
 
   auto mock_delegate_2 = std::make_unique<MockFullRestoreServiceDelegate>();
   auto* mock_delegate_2_ptr = mock_delegate_2.get();
-  EXPECT_CALL(*mock_delegate_2, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate_2,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   CreateFullRestoreService2ForTesting(std::move(mock_delegate_2));
 
@@ -1422,7 +1442,8 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest,
   // Simulate switch to the second user. The pine dialog should be shown for
   // them.
   auto* full_restore_service2 = FullRestoreService::GetForProfile(profile2());
-  EXPECT_CALL(*mock_delegate_2_ptr, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate_2_ptr,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(1);
   full_restore_service2->OnTransitionedToNewActiveUser(profile2());
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
@@ -1431,20 +1452,23 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest,
   // Simulate switch to the first user. The pine dialog should be shown for
   // them.
   auto* full_restore_service = FullRestoreService::GetForProfile(profile());
-  EXPECT_CALL(*mock_delegate_ptr, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate_ptr,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(1);
   full_restore_service->OnTransitionedToNewActiveUser(profile());
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 2);
   EXPECT_TRUE(CanPerformRestore(account_id()));
 
   // Simulate switch to the second user, and verify no more init processes.
-  EXPECT_CALL(*mock_delegate_2_ptr, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate_2_ptr,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   full_restore_service2->OnTransitionedToNewActiveUser(profile2());
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 2);
 
   // Simulate switch to the first user, and verify no more init processes.
-  EXPECT_CALL(*mock_delegate_ptr, MaybeStartPineOverviewSession(testing::_))
+  EXPECT_CALL(*mock_delegate_ptr,
+              MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(0);
   full_restore_service->OnTransitionedToNewActiveUser(profile());
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 2);
