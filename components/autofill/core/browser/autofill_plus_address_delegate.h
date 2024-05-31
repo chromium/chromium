@@ -71,7 +71,7 @@ class AutofillPlusAddressDelegate {
 
   // An enum describing the context in which a plus address suggestion was
   // shown. These values are persisted to logs - do not modify or remove them.
-  enum SuggestionContext {
+  enum class SuggestionContext {
     // The plus address suggestion was shown alongside Autofill profile
     // suggestions because the user focused on a field classified as an email
     // field.
