@@ -2703,6 +2703,9 @@ cargo_crate("std") {
       ":object",
     ]
   }
+  if (is_win) {
+    deps += [ ":libc" ]
+  }
   features = [
     "addr2line",
     "backtrace",
