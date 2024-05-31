@@ -1272,6 +1272,7 @@ std::vector<ui::AXNodeID> ReadAnythingAppModel::GetCurrentText() {
   return processed_granularities_on_current_page_[processed_granularity_index_]
       .node_ids;
 }
+// TODO(b/40927698): Investigate splitting this method into helpers.
 // TODO(crbug.com/40927698): Update to use AXRange to better handle multiple
 // nodes. This may require updating GetText in ax_range.h to return AXNodeIds.
 // AXRangeType#ExpandToEnclosingTextBoundary may also be useful.
@@ -1334,8 +1335,11 @@ ReadAnythingAppModel::GetNextNodes() {
         return current_granularity;
       }
 
-      std::u16string base_text =
-          GetNodeFromCurrentPosition()->GetTextContentUTF16();
+      anchor_node = GetNodeFromCurrentPosition();
+
+      std::u16string base_text = anchor_node->GetTextContentUTF16();
+
+      bool is_superscript = IsSuperscript(anchor_node);
 
       // Look at the text of the items we've already added to the
       // current sentence (current_text) combined with the text of the next
@@ -1343,8 +1347,12 @@ ReadAnythingAppModel::GetNextNodes() {
       const std::u16string& combined_text =
           current_granularity.text + base_text;
       // Get the index of the next sentence if we're looking at the combined
-      // previous and current node text.
-      int combined_sentence_index = GetNextSentence(combined_text);
+      // previous and current node text. If we're currently in a superscript,
+      // no need to check for a combined sentence, as we want to add the
+      // entire superscript to the current text segment.
+      int combined_sentence_index = is_superscript
+                                        ? combined_text.length()
+                                        : GetNextSentence(combined_text);
 
       bool is_opening_punctuation = false;
       // The code that checks for accessible text boundaries sometimes
@@ -1361,11 +1369,14 @@ ReadAnythingAppModel::GetNextNodes() {
       // read out as part of the next segment. If the opening punctuation is
       // followed by text and closing punctuation, the punctuation will not be
       // read out directly- just the text content.
+      // This workaround is not needed for superscripts because with a
+      // superscript, the entire superscript is added to the utterance of the
+      // superscript's associated sentence.
       // TODO(crbug.com/40927698): See if it's possible to fix the code
       // in FindAccessibleTextBoundary instead so that this workaround isn't
       // needed.
-      if (combined_sentence_index ==
-          (int)current_granularity.text.length() + 1) {
+      if (!is_superscript && combined_sentence_index ==
+                                 (int)current_granularity.text.length() + 1) {
         char c = combined_text[combined_sentence_index - 1];
         is_opening_punctuation = IsOpeningPunctuation(c);
       }
@@ -1724,4 +1735,9 @@ void ReadAnythingAppModel::LogSpeechEventCounts() {
   for (const auto& [metric, count] : metric_to_count_map_) {
     base::UmaHistogramCounts1000(metric, count);
   }
+}
+
+bool ReadAnythingAppModel::IsSuperscript(ui::AXNode* node) {
+  return node->data().GetTextPosition() ==
+         ax::mojom::TextPosition::kSuperscript;
 }

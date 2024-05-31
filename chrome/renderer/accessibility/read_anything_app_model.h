@@ -493,6 +493,9 @@ class ReadAnythingAppModel {
   int GetNextGranularity(const std::u16string& text,
                          ax::mojom::TextBoundary boundary);
 
+  // We want to group superscripts with the utterance preceding it.
+  bool IsSuperscript(ui::AXNode* node);
+
   // State.
   std::map<ui::AXTreeID, std::unique_ptr<ReadAnythingAppModel::AXTreeInfo>>
       tree_infos_;
