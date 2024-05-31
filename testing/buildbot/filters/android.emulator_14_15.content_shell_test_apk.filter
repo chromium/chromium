@@ -1,6 +1,7 @@
-# TODO(rnanjappan) : Create separate bugs for failing tests
+# crbug.com/343821809
 -org.chromium.net.AndroidProxySelectorTest.*
 
+# crbug.com/343808767
 -org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBarInputCopy
 -org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBarInputCut
 -org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBarInputPaste
@@ -12,11 +13,13 @@
 -org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBarTextAreaCopy
 -org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBarTextAreaCut
 
+# crbug.com/343821701
 -org.chromium.content.browser.input.ImeTest.testImeCopy
 -org.chromium.content.browser.input.ImeTest.testImeCut
 -org.chromium.content.browser.input.ImeTest.testImePaste
 -org.chromium.content.browser.input.ImeTest.testKeyboardNotDismissedAfterCopySelection
 
+# crbug.com/343810189
 -org.chromium.content.browser.input.StylusGestureEndToEndTest.testDeleteGesture
 -org.chromium.content.browser.input.StylusGestureEndToEndTest.testDeleteRangeGesture
 -org.chromium.content.browser.input.StylusGestureEndToEndTest.testInsertGesture
@@ -25,8 +28,10 @@
 -org.chromium.content.browser.input.StylusGestureEndToEndTest.testSelectGesture
 -org.chromium.content.browser.input.StylusGestureEndToEndTest.testSelectRangeGesture
 
+# crbug.com/1294427
 -org.chromium.content.browser.accessibility.WebContentsAccessibilityTest.testPerformAction_copy
 -org.chromium.content.browser.accessibility.WebContentsAccessibilityTest.testPerformAction_cut
 -org.chromium.content.browser.accessibility.WebContentsAccessibilityTest.testPerformAction_paste
 
+# crbug.com/1189746
 -org.chromium.net.NetworkChangeNotifierTest.testNetworkChangeNotifierJavaObservers
