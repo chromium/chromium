@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {skColorToHexColor} from '//resources/js/color_utils.js';
+import {skColorToHexColor, skColorToRgba} from '//resources/js/color_utils.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
@@ -70,4 +70,23 @@ export function getShaderLayerColorHexes(theme: OverlayTheme): string[] {
     skColorToHexColor(theme.shaderLayer4),
     skColorToHexColor(theme.shaderLayer5),
   ];
+}
+
+// Returns an array of the Shader rgba colors from the given theme.
+export function getShaderLayerColorRgbas(theme: OverlayTheme): string[] {
+  return [
+    skColorToRgba(theme.shaderLayer1),
+    skColorToRgba(theme.shaderLayer2),
+    skColorToRgba(theme.shaderLayer3),
+    skColorToRgba(theme.shaderLayer4),
+    skColorToRgba(theme.shaderLayer5),
+  ];
+}
+
+// Returns a new rgba string using the rgb values from |rgba| and the alpha
+// value provided.
+export function modifyRgbaTransparency(rgba: string, alpha: number): string {
+  const colorsString: string = rgba.substring(5, rgba.length - 1);
+  const [red, green, blue] = colorsString.split(',');
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
 }

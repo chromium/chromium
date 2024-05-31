@@ -44,6 +44,7 @@ build_webui("build_overlay") {
     "lens_overlay_app.ts",
     "object_layer.ts",
     "overlay_shimmer.ts",
+    "overlay_shimmer_canvas.ts",
     "post_selection_renderer.ts",
     "region_selection.ts",
     "selection_overlay.ts",
@@ -55,6 +56,7 @@ build_webui("build_overlay") {
   non_web_component_files = [
     "browser_proxy.ts",
     "color_utils.ts",
+    "cubic_bezier.ts",
     "find_words_in_region.ts",
     "hit.ts",
     "metrics_utils.ts",

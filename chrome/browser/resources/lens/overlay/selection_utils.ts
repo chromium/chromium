@@ -36,6 +36,35 @@ export enum CursorType {
   TEXT = 3,
 }
 
+// Specifies which feature is requesting to control the Shimmer. Features are
+// ordered by priority, meaning requesters with higher enum values can take
+// control from lower value requesters, but not vice versa. For example, if
+// CURSOR is the requester, and a new focus region gets called for SEGMENTATION,
+// the focus region request will be executed. But if CURSOR sends a focus region
+// request while SEGMENTATION has control, the request will be ignored.
+export enum ShimmerControlRequester {
+  NONE = 0,
+  CURSOR = 1,
+  POST_SELECTION = 2,
+  SEGMENTATION = 3,
+  MANUAL_REGION = 4,
+}
+
+// Region sent to OverlayShimmerCanvasElement to focus the shimmer on.
+// The numbers should be normalized to the image dimensions, between 0 and 1.
+export interface OverlayShimmerFocusedRegion {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+  requester: ShimmerControlRequester;
+}
+
+// Request to unfocus a region and relinquish control from the given requester.
+export interface OverlayShimmerUnfocusRegion {
+  requester: ShimmerControlRequester;
+}
+
 export interface GestureEvent {
   // The state of this event.
   state: GestureState;
@@ -49,6 +78,12 @@ export interface GestureEvent {
   clientY: number;
 }
 
+/** A simple interface representing a point. */
+export interface Point {
+  x: number;
+  y: number;
+}
+
 // Returns an empty GestureEvent
 export function emptyGestureEvent(): GestureEvent {
   return {
@@ -58,4 +93,41 @@ export function emptyGestureEvent(): GestureEvent {
     clientX: 0,
     clientY: 0,
   };
+}
+
+/**
+ * Helper function to dispatch event to focus the shimmer on a region. This
+ * should be used instead of directly dispatching the event, so if
+ * implementation changes, it can be easily changed across the codebase.
+ */
+export function focusShimmerOnRegion(
+    dispatchEl: HTMLElement, top: number, left: number, width: number,
+    height: number, requester: ShimmerControlRequester) {
+  dispatchEl.dispatchEvent(
+      new CustomEvent<OverlayShimmerFocusedRegion>('focus-region', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          top,
+          left,
+          width,
+          height,
+          requester,
+        },
+      }));
+}
+
+/**
+ * Helper function to dispatch event to unfocus the shimmer. This should be used
+ * instead of directly dispatching the event, so if implementation changes, it
+ * can be easily changed across the codebase.
+ */
+export function unfocusShimmer(
+    dispatchEl: HTMLElement, requester: ShimmerControlRequester) {
+  dispatchEl.dispatchEvent(
+      new CustomEvent<OverlayShimmerUnfocusRegion>('unfocus-region', {
+        bubbles: true,
+        composed: true,
+        detail: {requester},
+      }));
 }

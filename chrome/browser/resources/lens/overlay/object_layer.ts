@@ -18,11 +18,10 @@ import type {LensPageCallbackRouter, OverlayTheme} from './lens.mojom-webui.js';
 import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
 import {getTemplate} from './object_layer.html.js';
 import type {OverlayObject} from './overlay_object.mojom-webui.js';
-import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './overlay_shimmer.js';
 import {Polygon_CoordinateType} from './polygon.mojom-webui.js';
 import type {PostSelectionBoundingBox} from './post_selection_renderer.js';
 import type {CursorData} from './selection_overlay.js';
-import {CursorType, type GestureEvent} from './selection_utils.js';
+import {CursorType, focusShimmerOnRegion, type GestureEvent, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import {toPercent} from './values_converter.js';
 
 // The percent of the selection layer width and height the object needs to take

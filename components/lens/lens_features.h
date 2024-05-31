@@ -348,6 +348,10 @@ extern double DynamicThemeMinChroma();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern double GetLensOverlaySelectTextOverRegionTriggerThreshold();
 
+// Returns whether the shimmer should be rendered using Canvas2D or CSS Paint
+// Api.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetLensOverlayUseShimmerCanvas();
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

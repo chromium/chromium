@@ -7,6 +7,7 @@ import './text_layer.js';
 import './region_selection.js';
 import './post_selection_renderer.js';
 import './overlay_shimmer.js';
+import './overlay_shimmer_canvas.js';
 import './strings.m.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
@@ -23,12 +24,12 @@ import {getFallbackTheme} from './color_utils.js';
 import {type CursorTooltipData, CursorTooltipType} from './cursor_tooltip.js';
 import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
 import type {ObjectLayerElement} from './object_layer.js';
-import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './overlay_shimmer.js';
 import type {OverlayShimmerElement} from './overlay_shimmer.js';
+import type {OverlayShimmerCanvasElement} from './overlay_shimmer_canvas.js';
 import type {PostSelectionRendererElement} from './post_selection_renderer.js';
 import type {RegionSelectionElement} from './region_selection.js';
 import {getTemplate} from './selection_overlay.html.js';
-import {CursorType, DRAG_THRESHOLD, DragFeature, emptyGestureEvent, type GestureEvent, GestureState} from './selection_utils.js';
+import {CursorType, DRAG_THRESHOLD, DragFeature, emptyGestureEvent, focusShimmerOnRegion, type GestureEvent, GestureState, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import type {TextLayerElement} from './text_layer.js';
 import {toPercent} from './values_converter.js';
 
@@ -85,6 +86,7 @@ export interface SelectionOverlayElement {
     cursor: HTMLElement,
     detectedTextContextMenu: HTMLElement,
     objectSelectionLayer: ObjectLayerElement,
+    overlayShimmerCanvas: OverlayShimmerCanvasElement,
     overlayShimmer: OverlayShimmerElement,
     postSelectionRenderer: PostSelectionRendererElement,
     regionSelectionLayer: RegionSelectionElement,
@@ -139,7 +141,12 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       currentGesture: emptyGestureEvent(),
       disableShimmer: {
         type: Boolean,
-        reflectToAttribute: true,
+        readOnly: true,
+      },
+      useShimmerCanvas: {
+        type: Boolean,
+        readOnly: true,
+        value: loadTimeData.getBoolean('useShimmerCanvas'),
       },
       isClosing: {
         type: Boolean,
@@ -178,6 +185,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // gesture has started.
   private currentGesture: GestureEvent = emptyGestureEvent();
   private disableShimmer: boolean = !loadTimeData.getBoolean('enableShimmer');
+  private useShimmerCanvas: boolean;
   // Whether the overlay is being shut down.
   private isClosing: boolean = false;
   // Whether the default background scrim is currently being darkened.
@@ -436,7 +444,11 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
     if (!this.disableShimmer) {
       // Don't start the shimmer animation until the image has been rendered.
-      this.$.overlayShimmer.startAnimation();
+      if (this.useShimmerCanvas) {
+        this.$.overlayShimmerCanvas.startInvocationAnimation();
+      } else {
+        this.$.overlayShimmer.startAnimation();
+      }
     }
   }
 
@@ -579,6 +591,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         selectionOverlayBounds.width, selectionOverlayBounds.height);
     this.$.objectSelectionLayer.setCanvasSizeTo(
         selectionOverlayBounds.width, selectionOverlayBounds.height);
+    if (this.useShimmerCanvas) {
+      this.$.overlayShimmerCanvas.setCanvasSizeTo(
+          selectionOverlayBounds.width, selectionOverlayBounds.height);
+    }
   }
 
   // Updates the currentGesture to correspond with the given PointerEvent.

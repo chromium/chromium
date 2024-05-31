@@ -12,10 +12,9 @@ import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import type {OverlayTheme} from './lens.mojom-webui.js';
 import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
-import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './overlay_shimmer.js';
 import type {PostSelectionBoundingBox} from './post_selection_renderer.js';
 import {getTemplate} from './region_selection.html.js';
-import {type GestureEvent, GestureState} from './selection_utils.js';
+import {focusShimmerOnRegion, type GestureEvent, GestureState, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 
 export interface RegionSelectionElement {
   $: {

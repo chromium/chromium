@@ -20,6 +20,7 @@ build_webui_tests("build") {
     "overlay/selection_overlay_test.ts",
     "overlay/test_overlay_browser_proxy.ts",
     "overlay/text_selection_test.ts",
+    "overlay/cubic_bezier_test.ts",
     "side_panel/results_frame_test.ts",
     "side_panel/searchbox_back_button_test.ts",
     "side_panel/side_panel_escape_key_test.ts",
