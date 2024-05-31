@@ -19,7 +19,6 @@
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_observer.h"
-#include "base/callback_list.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 
@@ -430,8 +429,12 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // is true, if the user selects to show the birch bar from the context menu.
   void MaybeInitBirchBarWidget(bool by_user = false);
 
-  // Destroys birch bar widget. `by_user` is true, if the user selects to hide
-  // the birch bar from the context menu.
+  // Shuts down birch bar widget, when the user selects to hide the birch bar
+  // from the context menu.
+  void ShutdownBirchBarWidgetByUser();
+
+  // Destroys the birch bar widget, clears pointers and refresh grids. `by_user`
+  // is true when the birch bar is disabled by user.
   void DestroyBirchBarWidget(bool by_user = false);
 
   // SplitViewObserver:
@@ -725,9 +728,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // A widget that contains save desk buttons which save desk as template or for
   // later when pressed.
   std::unique_ptr<views::Widget> save_desk_button_container_widget_;
-
-  // The subscription of birch bar relayout callback.
-  base::CallbackListSubscription birch_bar_relayout_callback_subscription_;
 
   // True if the overview grid should animate when exiting overview mode. Note
   // even if it's true, it doesn't mean all window items in the grid should

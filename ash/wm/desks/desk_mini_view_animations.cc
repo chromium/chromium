@@ -594,7 +594,7 @@ void PerformDeskBarSlideAnimation(std::unique_ptr<views::Widget> desks_widget,
   TRACE_EVENT0("ui", "PerformDeskBarSlideAnimation");
 
   // The desks widget should no longer process events at this point.
-  PrepareWidgetForOverviewShutdown(desks_widget.get());
+  PrepareWidgetForShutdownAnimation(desks_widget.get());
 
   gfx::Transform transform;
   transform.Translate(0, -desks_widget->GetWindowBoundsInScreen().height());

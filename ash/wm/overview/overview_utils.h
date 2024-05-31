@@ -47,9 +47,9 @@ void FadeInWidgetToOverview(views::Widget* widget,
                             bool observe);
 
 // Makes `widget` not be able to process events. This should only be used if
-// `widget`'s lifetime extends beyond an overview session's lifetime for
-// animation purposes, as `widget` will no longer be interactable.
-void PrepareWidgetForOverviewShutdown(views::Widget* widget);
+// `widget` is shutting down with animation, as `widget` will no longer be
+// interactable during the process.
+void PrepareWidgetForShutdownAnimation(views::Widget* widget);
 
 // Fades `widget` to opacity zero with animation settings depending on
 // `animation_type`. Used by several classes which need to be destroyed on

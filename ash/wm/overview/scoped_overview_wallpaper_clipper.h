@@ -5,6 +5,7 @@
 #ifndef ASH_WM_OVERVIEW_SCOPED_OVERVIEW_WALLPAPER_CLIPPER_H_
 #define ASH_WM_OVERVIEW_SCOPED_OVERVIEW_WALLPAPER_CLIPPER_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -16,20 +17,39 @@ class OverviewGrid;
 // exit.
 class ScopedOverviewWallpaperClipper {
  public:
-  explicit ScopedOverviewWallpaperClipper(OverviewGrid* overview_grid);
+  enum class AnimationType {
+    // Initial cropping animation when entering Pine session.
+    kEnterPine,
+    // Initial cropping animation when entering Overview.
+    kEnterOverview,
+    // Lift the bottom of clipping area to show birch bar in Overview.
+    kShowBirchBarInOverview,
+    // Lift the bottom of the clipping area when the birch bar is enabled by
+    // user.
+    kShowBirchBarByUser,
+    // Restore the clipping area when the birch bar is disabled by user.
+    kHideBirchBarByUser,
+    // Update the clipping area when the birch bar is relayout.
+    kRelayoutBirchBar,
+    // Restore animation when exiting Overview or Pine session.
+    kRestore,
+    // No animation needed.
+    kNone,
+  };
+
+  ScopedOverviewWallpaperClipper(OverviewGrid* overview_grid, bool in_pine);
   ScopedOverviewWallpaperClipper(const ScopedOverviewWallpaperClipper&) =
       delete;
   ScopedOverviewWallpaperClipper& operator=(
       const ScopedOverviewWallpaperClipper&) = delete;
   ~ScopedOverviewWallpaperClipper();
 
-  // Updates the bounds of wallpaper clip rect.
-  void RefreshWallpaperClipBounds();
+  // Updates the bounds of wallpaper clip rect with given animation type and end
+  // callback.
+  void RefreshWallpaperClipBounds(AnimationType animation_type,
+                                  base::OnceClosure animation_end_callback);
 
  private:
-  // Gets the clip bounds in the wallpaper layer's parent coordinates.
-  gfx::Rect GetTargetClipBounds() const;
-
   raw_ptr<OverviewGrid> overview_grid_;
 };
 

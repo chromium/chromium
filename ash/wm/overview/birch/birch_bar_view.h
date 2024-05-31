@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/overview/birch/birch_chip_button.h"
-#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
@@ -49,11 +48,29 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
  public:
   static constexpr int kMaxChipsNum = 4;
 
+  enum class State {
+    kLoading,        // The bar is waiting for data on creation.
+    kLoadingInPine,  // The bar is waiting for data on creation in pine.
+    kLoadingByUser,  // The bar is waiting for data when enabled by user.
+    kReloading,      // The bar is waiting for data when suggestion types are
+                     // modified.
+    kShuttingDown,   // The bar is shutting down when disabled.
+    kNormal,         // The bar is showing chips.
+  };
+
   enum class RelayoutReason {
+    // Relayout caused by filling in new suggestions after data fetched from
+    // model.
+    kSetup,
+    // Relayout caused by filling in new suggestions when the bar is enabled by
+    // user.
+    kSetupByUser,
     // Relayout caused by adding or removing chips.
     kAddRemoveChip,
     // Relayout caused by available space change.
     kAvailableSpaceChanged,
+    // Relayout caused by clearing chips when the bar is disabled by user.
+    kClearOnDisabled,
   };
 
   // The callback which is called when the birch bar view relayouts due to given
@@ -69,14 +86,10 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   static std::unique_ptr<views::Widget> CreateBirchBarWidget(
       aura::Window* root_window);
 
-  // Adds chip loaders to show loading animations.
-  void Loading();
+  void SetState(State state);
 
-  // Adds chip loaders to show reloading animations.
-  void Reloading();
-
-  // Shuts down the `BirchChipButtons`.
-  void Shutdown();
+  // Clears the items cached in the `BirchChipButtons`.
+  void ShutdownChips();
 
   // Updates the birch bar's available space and relayout the bar according to
   // the updated available space. Note that the function must be called before
@@ -84,7 +97,7 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   void UpdateAvailableSpace(int available_space);
 
   // Registers a relayout callback.
-  base::CallbackListSubscription AddRelayoutCallback(RelayoutCallback callback);
+  void SetRelayoutCallback(RelayoutCallback callback);
 
   // Gets current number of chips.
   int GetChipsNum() const;
@@ -128,6 +141,27 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   // Called after relayout.
   void OnRelayout(RelayoutReason reason);
 
+  // Adds loading chips to show loading animations.
+  void AddLoadingChips();
+
+  // Adds reloading chips to show reloading animations.
+  void AddReloadingChips();
+
+  // Performs the fade-in animation of chips.
+  void FadeInChips();
+
+  // Performs fade-out animation on current chips.
+  void FadeOutChips();
+
+  // Called when fade-out animation is aborted.
+  void OnFadeOutAborted();
+
+  // Called after chips fading-in animations are done during setting up.
+  void OnSetupEnded();
+
+  // Called after chips fading-out animations are done during shutting down.
+  void OnShutdownEnded();
+
   // The root window hosting the birch bar.
   const raw_ptr<aura::Window> root_window_;
 
@@ -143,11 +177,16 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   // always be child spacing between the rows.
   raw_ptr<BoxLayoutView> secondary_row_ = nullptr;
 
+  State state_ = State::kNormal;
+
   // The chips are owned by either primary or secondary row.
   std::vector<raw_ptr<BirchChipButtonBase>> chips_;
 
-  base::RepeatingCallbackList<RelayoutCallback::RunType>
-      relayout_callback_list_;
+  // Called after relayout.
+  RelayoutCallback relayout_callback_;
+
+  // Called after chips fade-out animation.
+  base::OnceClosure shutdown_callback_;
 };
 
 }  // namespace ash

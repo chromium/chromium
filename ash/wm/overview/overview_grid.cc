@@ -89,6 +89,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -678,7 +679,20 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
     desks_bar_view_ = nullptr;
   }
 
-  DestroyBirchBarWidget();
+  if (birch_bar_widget_) {
+    // Cache the widget since we may need to pass the ownership to animation
+    // observer.
+    auto birch_bar_widget = std::move(birch_bar_widget_);
+    // Destroy the birch bar widget to clear the related pointers before
+    // fade-out animation to avoid dangling ptrs.
+    DestroyBirchBarWidget();
+    if (exit_type != OverviewEnterExitType::kPine &&
+        exit_type != OverviewEnterExitType::kImmediateExit) {
+      FadeOutWidgetFromOverview(
+          std::move(birch_bar_widget),
+          OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_BIRCH_BAR_FADE_OUT);
+    }
+  }
 }
 
 void OverviewGrid::PrepareForOverview() {
@@ -688,9 +702,13 @@ void OverviewGrid::PrepareForOverview() {
 
   MaybeInitBirchBarWidget();
 
+  OverviewEnterExitType enter_exit_type =
+      overview_session_->enter_exit_overview_type();
+
   if (features::IsOakFeatureEnabled() || IsForestFeatureEnabled()) {
     scoped_overview_wallpaper_clipper_ =
-        std::make_unique<ScopedOverviewWallpaperClipper>(this);
+        std::make_unique<ScopedOverviewWallpaperClipper>(
+            this, enter_exit_type == OverviewEnterExitType::kPine);
   }
 
   // TODO(b/326434696): Currently this will return false if there is no restore
@@ -702,8 +720,7 @@ void OverviewGrid::PrepareForOverview() {
     // If the enter type is immediate, `ShowInactive()` is sufficient as
     // `pine_widget_` has no default animation. Otherwise, set the opacity to
     // 0.f and perform a fade in animation.
-    if (overview_session_->enter_exit_overview_type() !=
-        OverviewEnterExitType::kImmediateEnter) {
+    if (enter_exit_type != OverviewEnterExitType::kImmediateEnter) {
       pine_widget_->SetOpacity(0.f);
       FadeInWidgetToOverview(pine_widget_.get(),
                              OVERVIEW_ANIMATION_ENTER_OVERVIEW_MODE_FADE_IN,
@@ -1112,7 +1129,9 @@ void OverviewGrid::SetBoundsAndUpdatePositions(
   MaybeUpdateBirchBarWidgetBounds();
 
   if (scoped_overview_wallpaper_clipper_) {
-    scoped_overview_wallpaper_clipper_->RefreshWallpaperClipBounds();
+    scoped_overview_wallpaper_clipper_->RefreshWallpaperClipBounds(
+        ScopedOverviewWallpaperClipper::AnimationType::kNone,
+        base::DoNothing());
   }
 
   PositionWindows(animate, ignored_items);
@@ -1740,7 +1759,7 @@ gfx::Insets OverviewGrid::GetGridVerticalPaddings() const {
 
   // Calculate the bottom padding according to the existence of birch bar,
   // shelf, and home launcher.
-  if (birch_bar_view_ && birch_bar_view_->GetChipsNum()) {
+  if (birch_bar_view_) {
     // If birch bar exists, add compact padding with the maximum birch bar
     // height and birch bar bottom padding to the bottom.
     vertical_paddings.set_bottom(GetBirchBarBottomPadding(root_window_) +
@@ -2302,7 +2321,9 @@ void OverviewGrid::RefreshGridBounds(bool animate) {
   }
 
   if (scoped_overview_wallpaper_clipper_) {
-    scoped_overview_wallpaper_clipper_->RefreshWallpaperClipBounds();
+    scoped_overview_wallpaper_clipper_->RefreshWallpaperClipBounds(
+        ScopedOverviewWallpaperClipper::AnimationType::kNone,
+        base::DoNothing());
   }
 
   if (IsForestFeatureEnabled()) {
@@ -2543,11 +2564,21 @@ gfx::Rect OverviewGrid::GetWallpaperClipBounds() const {
   // The bottom of the clipping bounds should be above the birch bar.
   gfx::Rect clipping_bounds = GetGridEffectiveBounds();
 
-  if (birch_bar_widget_ && birch_bar_view_->GetChipsNum()) {
-    clipping_bounds.SetVerticalBounds(
-        clipping_bounds.y(), birch_bar_widget_->GetWindowBoundsInScreen().y() -
-                                 kCompactPaddingForEffectiveBounds);
+  if (!birch_bar_widget_) {
+    return clipping_bounds;
   }
+
+  const gfx::Rect birch_bar_bounds =
+      birch_bar_widget_->GetWindowBoundsInScreen();
+
+  // If there are chips in the bar, the bottom of clipping area should be above
+  // the top of birch bar. Otherwise, removing the birch bar height and top
+  // padding from the effect bounds to get clipping area.
+  const int clipping_bottom =
+      birch_bar_view_->GetChipsNum()
+          ? birch_bar_bounds.y() - kCompactPaddingForEffectiveBounds
+          : birch_bar_bounds.bottom();
+  clipping_bounds.SetVerticalBounds(clipping_bounds.y(), clipping_bottom);
   return clipping_bounds;
 }
 
@@ -2559,13 +2590,27 @@ void OverviewGrid::MaybeInitBirchBarWidget(bool by_user) {
   birch_bar_widget_ = BirchBarView::CreateBirchBarWidget(root_window_);
   birch_bar_view_ =
       views::AsViewClass<BirchBarView>(birch_bar_widget_->GetContentsView());
-  birch_bar_relayout_callback_subscription_ =
-      birch_bar_view_->AddRelayoutCallback(base::BindRepeating(
-          &OverviewGrid::OnBirchBarLayoutChanged, base::Unretained(this)));
+  birch_bar_view_->SetRelayoutCallback(base::BindRepeating(
+      &OverviewGrid::OnBirchBarLayoutChanged, weak_ptr_factory_.GetWeakPtr()));
 
   // Initialize the birch bar view with birch bar controller.
   auto* birch_bar_controller = BirchBarController::Get();
   CHECK(birch_bar_controller);
+
+  // Show loading state if the data is loading.
+  auto loading_state = BirchBarView::State::kLoading;
+  if (by_user) {
+    loading_state = BirchBarView::State::kLoadingByUser;
+  } else if (overview_session_->enter_exit_overview_type() ==
+             OverviewEnterExitType::kPine) {
+    loading_state = BirchBarView::State::kLoadingInPine;
+  }
+
+  // Note that we should set loading state before registering the bar to
+  // controller, since if there are cached items in controller, the bar would be
+  // set up without knowing the current loading state.
+  birch_bar_view_->SetState(loading_state);
+
   birch_bar_controller->RegisterBar(birch_bar_view_);
 
   // Stack birch bar at bottom to guarantee the dragged window is above it.
@@ -2574,24 +2619,26 @@ void OverviewGrid::MaybeInitBirchBarWidget(bool by_user) {
 
   // Initialize the birch bar bounds to get correct paddings for grid.
   MaybeUpdateBirchBarWidgetBounds();
+}
 
-  if (by_user) {
-    RefreshGridBounds(/*animate=*/true);
+void OverviewGrid::ShutdownBirchBarWidgetByUser() {
+  if (birch_bar_widget_) {
+    // Prevent the birch bar from receiving events while shutting down.
+    PrepareWidgetForShutdownAnimation(birch_bar_widget_.get());
+    birch_bar_view_->SetState(BirchBarView::State::kShuttingDown);
   }
 }
 
 void OverviewGrid::DestroyBirchBarWidget(bool by_user) {
-  if (birch_bar_widget_) {
-    // The birch bar controller may be destroyed when shutting down Overview.
-    if (auto* birch_bar_controller = BirchBarController::Get()) {
-      birch_bar_controller->OnBarDestroying(birch_bar_view_);
-    }
-    birch_bar_view_ = nullptr;
-    birch_bar_widget_.reset();
+  // The birch bar controller may be destroyed when shutting down Overview.
+  if (auto* birch_bar_controller = BirchBarController::Get()) {
+    birch_bar_controller->OnBarDestroying(birch_bar_view_);
+  }
+  birch_bar_view_ = nullptr;
+  birch_bar_widget_.reset();
 
-    if (by_user) {
-      RefreshGridBounds(/*animate=*/true);
-    }
+  if (by_user) {
+    RefreshGridBounds(/*animate=*/true);
   }
 }
 
@@ -3213,13 +3260,45 @@ void OverviewGrid::OnSaveDeskButtonContainerFadedOut() {
 
 void OverviewGrid::OnBirchBarLayoutChanged(
     BirchBarView::RelayoutReason reason) {
-  if (reason != BirchBarView::RelayoutReason::kAddRemoveChip) {
+  if (reason == BirchBarView::RelayoutReason::kAvailableSpaceChanged) {
     return;
   }
 
   MaybeUpdateBirchBarWidgetBounds();
   if (scoped_overview_wallpaper_clipper_) {
-    scoped_overview_wallpaper_clipper_->RefreshWallpaperClipBounds();
+    // Perform wallpaper clipping animations according to relayout reason.
+    using AnimationType = ScopedOverviewWallpaperClipper::AnimationType;
+    using RelayoutReason = BirchBarView::RelayoutReason;
+
+    auto animation_type = AnimationType::kNone;
+    base::OnceClosure animation_callback;
+    switch (reason) {
+      case RelayoutReason::kSetup:
+        animation_type = AnimationType::kShowBirchBarInOverview;
+        break;
+      case RelayoutReason::kSetupByUser:
+        animation_type = AnimationType::kShowBirchBarByUser;
+        break;
+      case RelayoutReason::kClearOnDisabled:
+        animation_type = AnimationType::kHideBirchBarByUser;
+        animation_callback =
+            base::BindOnce(&OverviewGrid::DestroyBirchBarWidget,
+                           weak_ptr_factory_.GetWeakPtr(), /*by_user=*/true);
+        break;
+      case RelayoutReason::kAddRemoveChip:
+      case RelayoutReason::kAvailableSpaceChanged:
+        break;
+    }
+    scoped_overview_wallpaper_clipper_->RefreshWallpaperClipBounds(
+        animation_type, std::move(animation_callback));
+
+    // If the relayout is due to showing birch bar by user, we need to refresh
+    // the grids with wallpaper clipping animation. This must be called after
+    // refreshing wallpaper clipping bounds, because refreshing grid bounds may
+    // also update wallpaper clipping bounds without animation.
+    if (reason == RelayoutReason::kSetupByUser) {
+      RefreshGridBounds(/*animate=*/true);
+    }
   }
   UpdateFeedbackButton();
 }

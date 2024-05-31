@@ -93,7 +93,7 @@ void FadeInWidgetToOverview(views::Widget* widget,
   }
 }
 
-void PrepareWidgetForOverviewShutdown(views::Widget* widget) {
+void PrepareWidgetForShutdownAnimation(views::Widget* widget) {
   // The widget should no longer process events at this point.
   widget->SetVisibilityChangedAnimationsEnabled(false);
   widget->widget_delegate()->SetCanActivate(false);
@@ -105,7 +105,7 @@ void PrepareWidgetForOverviewShutdown(views::Widget* widget) {
 
 void FadeOutWidgetFromOverview(std::unique_ptr<views::Widget> widget,
                                OverviewAnimationType animation_type) {
-  PrepareWidgetForOverviewShutdown(widget.get());
+  PrepareWidgetForShutdownAnimation(widget.get());
 
   // The overview controller may be nullptr on shutdown.
   OverviewController* controller = OverviewController::Get();

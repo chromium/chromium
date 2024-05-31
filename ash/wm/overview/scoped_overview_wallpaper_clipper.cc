@@ -4,6 +4,8 @@
 
 #include "ash/wm/overview/scoped_overview_wallpaper_clipper.h"
 
+#include <optional>
+
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/views/wallpaper_view.h"
@@ -11,8 +13,12 @@
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -20,18 +26,56 @@ namespace ash {
 
 namespace {
 
-// Duration of wallpaper clipping animation when entering overview.
-constexpr base::TimeDelta kWallpaperClippingAnimationDuration =
-    base::Milliseconds(350);
+struct AnimationSettings {
+  base::TimeDelta duration;
+  gfx::Tween::Type tween_type;
+};
 
-// Duration of wallpaper restoration animation when exiting overview.
-constexpr base::TimeDelta kWallpaperRestoreAnimationDuration =
-    base::Milliseconds(200);
+constexpr AnimationSettings kEnterPineAnimationSettings{
+    .duration = base::Milliseconds(800),
+    .tween_type = gfx::Tween::EASE_IN_OUT_EMPHASIZED};
+
+constexpr AnimationSettings kEnterOverviewAnimationSettings{
+    .duration = base::Milliseconds(500),
+    .tween_type = gfx::Tween::EASE_IN_OUT_EMPHASIZED};
+
+constexpr AnimationSettings kShowBirchBarInOverviewAnimationSettings{
+    .duration = base::Milliseconds(200),
+    .tween_type = gfx::Tween::FAST_OUT_LINEAR_IN};
+
+constexpr AnimationSettings kShowBirchBarByUserAnimationSettings{
+    .duration = base::Milliseconds(250),
+    .tween_type = gfx::Tween::ACCEL_LIN_DECEL_100_3};
+
+constexpr AnimationSettings kHideBirchBarByUserAnimationSettings{
+    .duration = base::Milliseconds(100),
+    .tween_type = gfx::Tween::LINEAR};
+
+constexpr AnimationSettings kRestoreAnimationSettings{
+    .duration = base::Milliseconds(200),
+    .tween_type = gfx::Tween::ACCEL_LIN_DECEL_100};
+
+constexpr AnimationSettings kRelayoutBirchBarAnimationSettings{
+    .duration = base::Milliseconds(100),
+    .tween_type = gfx::Tween::LINEAR};
+
+void RemoveWallpaperClipper(
+    WallpaperWidgetController* wallpaper_widget_controller) {
+  if (wallpaper_widget_controller->wallpaper_underlay_layer()) {
+    wallpaper_widget_controller->wallpaper_underlay_layer()->SetVisible(false);
+  }
+
+  if (auto* wallpaper_view_layer =
+          wallpaper_widget_controller->wallpaper_view()->layer()) {
+    wallpaper_view_layer->SetClipRect(gfx::Rect());
+  }
+}
 
 }  // namespace
 
 ScopedOverviewWallpaperClipper::ScopedOverviewWallpaperClipper(
-    OverviewGrid* overview_grid)
+    OverviewGrid* overview_grid,
+    bool in_pine)
     : overview_grid_(overview_grid) {
   aura::Window* root_window = overview_grid_->root_window();
   WallpaperWidgetController* wallpaper_widget_controller =
@@ -44,67 +88,28 @@ ScopedOverviewWallpaperClipper::ScopedOverviewWallpaperClipper(
   CHECK(wallpaper_underlay_layer);
   wallpaper_underlay_layer->SetVisible(true);
 
-  auto* wallpaper_view_layer =
-      wallpaper_widget_controller->wallpaper_view()->layer();
-
-  views::AnimationBuilder()
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .Once()
-      .SetDuration(kWallpaperClippingAnimationDuration)
-      .SetClipRect(wallpaper_view_layer, GetTargetClipBounds(),
-                   gfx::Tween::ACCEL_20_DECEL_100)
-      .SetRoundedCorners(wallpaper_view_layer, kWallpaperClipRoundedCornerRadii,
-                         gfx::Tween::ACCEL_20_DECEL_100);
+  RefreshWallpaperClipBounds(
+      in_pine ? AnimationType::kEnterPine : AnimationType::kEnterOverview,
+      base::DoNothing());
 }
 
 ScopedOverviewWallpaperClipper::~ScopedOverviewWallpaperClipper() {
-  aura::Window* root_window = overview_grid_->root_window();
-  auto* wallpaper_widget_controller =
-      RootWindowController::ForWindow(root_window)
-          ->wallpaper_widget_controller();
   // Switching to tablet mode will force mirroring displays which would destroy
-  // non primary root windows. THe wallpaper widget controller would already be
+  // non primary root windows. The wallpaper widget controller would already be
   // destroyed at this point.
-  if (!wallpaper_widget_controller) {
-    return;
+  if (auto* wallpaper_widget_controller =
+          RootWindowController::ForWindow(overview_grid_->root_window())
+              ->wallpaper_widget_controller()) {
+    RefreshWallpaperClipBounds(
+        AnimationType::kRestore,
+        base::BindOnce(&RemoveWallpaperClipper,
+                       base::Unretained(wallpaper_widget_controller)));
   }
-  auto* wallpaper_view_layer =
-      wallpaper_widget_controller->wallpaper_view()->layer();
-
-  // Convert display bounds to the parent's coordinates, as layer bounds are
-  // always relative to their parent.
-  gfx::Rect target_restore_rect = display::Screen::GetScreen()
-                                      ->GetDisplayNearestWindow(root_window)
-                                      .bounds();
-  wm::ConvertRectFromScreen(root_window, &target_restore_rect);
-
-  views::AnimationBuilder()
-      .OnEnded(base::BindOnce(
-          [](WallpaperWidgetController* wallpaper_widget_controller) {
-            // `WallpaperWidgetController` owns the wallpaper view layer and
-            // wallpaper underlay layer, so it's guaranteed to outlive it.
-            if (wallpaper_widget_controller->wallpaper_underlay_layer()) {
-              wallpaper_widget_controller->wallpaper_underlay_layer()
-                  ->SetVisible(false);
-            }
-            if (auto* wallpaper_view_layer =
-                    wallpaper_widget_controller->wallpaper_view()->layer()) {
-              wallpaper_view_layer->SetClipRect(gfx::Rect());
-            }
-          },
-          base::Unretained(wallpaper_widget_controller)))
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .Once()
-      .SetDuration(kWallpaperRestoreAnimationDuration)
-      .SetClipRect(wallpaper_view_layer, target_restore_rect,
-                   gfx::Tween::ACCEL_20_DECEL_100)
-      .SetRoundedCorners(wallpaper_view_layer, gfx::RoundedCornersF(),
-                         gfx::Tween::ACCEL_20_DECEL_100);
 }
 
-void ScopedOverviewWallpaperClipper::RefreshWallpaperClipBounds() {
+void ScopedOverviewWallpaperClipper::RefreshWallpaperClipBounds(
+    AnimationType animation_type,
+    base::OnceClosure animation_end_callback) {
   aura::Window* root_window = overview_grid_->root_window();
   WallpaperWidgetController* wallpaper_widget_controller =
       RootWindowController::ForWindow(root_window)
@@ -112,16 +117,80 @@ void ScopedOverviewWallpaperClipper::RefreshWallpaperClipBounds() {
   auto* wallpaper_view_layer =
       wallpaper_widget_controller->wallpaper_view()->layer();
 
-  wallpaper_view_layer->SetClipRect(GetTargetClipBounds());
-}
+  gfx::Rect target_clip_rect = animation_type == AnimationType::kRestore
+                                   ? display::Screen::GetScreen()
+                                         ->GetDisplayNearestWindow(root_window)
+                                         .bounds()
+                                   : overview_grid_->GetWallpaperClipBounds();
+  // Convert the clip bounds to the parent's coordinates, as layer bounds are
+  // always relative to their parent.
+  wm::ConvertRectFromScreen(root_window, &target_clip_rect);
 
-gfx::Rect ScopedOverviewWallpaperClipper::GetTargetClipBounds() const {
-  // `GetWallpaperClipBounds()` returns the bounds in screen coordinates.
-  // Convert these to the parent's coordinates, as layer bounds are always
-  // relative to their parent.
-  gfx::Rect target_clip_rect = overview_grid_->GetWallpaperClipBounds();
-  wm::ConvertRectFromScreen(overview_grid_->root_window(), &target_clip_rect);
-  return target_clip_rect;
+  // If the animation type is none, directly set the clip rect if the target
+  // clip area is changed and run the callback.
+  if (animation_type == AnimationType::kNone) {
+    if (target_clip_rect != wallpaper_view_layer->GetTargetClipRect()) {
+      wallpaper_view_layer->SetClipRect(target_clip_rect);
+    }
+
+    if (animation_end_callback) {
+      std::move(animation_end_callback).Run();
+    }
+    return;
+  }
+
+  // Otherwise, perform animation according to the given type.
+  AnimationSettings animation_settings;
+  std::optional<gfx::RoundedCornersF> rounded_corners;
+
+  // Set animation settings according to animation type.
+  switch (animation_type) {
+    case AnimationType::kEnterPine:
+      animation_settings = kEnterPineAnimationSettings;
+      rounded_corners = kWallpaperClipRoundedCornerRadii;
+      break;
+    case AnimationType::kEnterOverview:
+      animation_settings = kEnterOverviewAnimationSettings;
+      rounded_corners = kWallpaperClipRoundedCornerRadii;
+      break;
+    case AnimationType::kShowBirchBarInOverview:
+      animation_settings = kShowBirchBarInOverviewAnimationSettings;
+      break;
+    case AnimationType::kShowBirchBarByUser:
+      animation_settings = kShowBirchBarByUserAnimationSettings;
+      break;
+    case AnimationType::kHideBirchBarByUser:
+      animation_settings = kHideBirchBarByUserAnimationSettings;
+      break;
+    case AnimationType::kRelayoutBirchBar:
+      animation_settings = kRelayoutBirchBarAnimationSettings;
+      break;
+    case AnimationType::kRestore:
+      animation_settings = kRestoreAnimationSettings;
+      rounded_corners = gfx::RoundedCornersF();
+      break;
+    case AnimationType::kNone:
+      NOTREACHED_NORETURN();
+  }
+
+  views::AnimationBuilder animation_builder;
+  if (animation_end_callback) {
+    animation_builder.OnEnded(std::move(animation_end_callback));
+  }
+
+  views::AnimationSequenceBlock& animation_sequence =
+      animation_builder
+          .SetPreemptionStrategy(
+              ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+          .Once()
+          .SetDuration(animation_settings.duration)
+          .SetClipRect(wallpaper_view_layer, target_clip_rect,
+                       animation_settings.tween_type);
+
+  if (rounded_corners) {
+    animation_sequence.SetRoundedCorners(wallpaper_view_layer, *rounded_corners,
+                                         animation_settings.tween_type);
+  }
 }
 
 }  // namespace ash

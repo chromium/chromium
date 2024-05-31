@@ -46,6 +46,8 @@ enum OverviewAnimationType {
   OVERVIEW_ANIMATION_OPACITY_ON_WINDOW_DRAG,
   // Used to fade out the saved desk grid when exiting overview mode.
   OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_SAVED_DESK_GRID_FADE_OUT,
+  // Used to fade out the birch bar when existing overview mode.
+  OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_BIRCH_BAR_FADE_OUT,
 };
 
 enum class OverviewTransition {

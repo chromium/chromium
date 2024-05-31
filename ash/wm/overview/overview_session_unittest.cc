@@ -11402,8 +11402,6 @@ TEST_F(OakTest, WallpaperClipAnimation) {
 
   ToggleOverview();
   EXPECT_TRUE(wallpaper_view_layer_animator->is_animating());
-  EXPECT_TRUE(
-      wallpaper_view_layer->clip_rect().Contains(wallpaper_clip_bounds));
   EXPECT_TRUE(display_bounds.Contains(wallpaper_view_layer->clip_rect()));
 
   layer_animation_stopped_waiter.Wait(wallpaper_view_layer);
