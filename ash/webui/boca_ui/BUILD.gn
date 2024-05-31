@@ -17,6 +17,7 @@ static_library("boca_ui") {
   deps = [
     "resources:resources",
     "//ash/constants:constants",
+    "//ash/webui/boca_ui/proto",
     "//ash/webui/common:chrome_os_webui_config",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//content/public/browser",

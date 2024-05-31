@@ -1,0 +1,126 @@
+// Imported from
+// //depot/google3/google/internal/chrome/cros/edu/schooltools/v1/session.proto
+syntax = "proto3";
+
+package boca;
+
+import "ash/webui/boca_ui/proto/roster.proto";
+import "ash/webui/boca_ui/proto/bundle.proto";
+
+// Below copied proto are due to exist in `protobuf_full` source not
+// `protobuf_lite`. The former cannot be included into chrome due to its large
+// size. Copied from //third_party/protobuf/src/google/protobuf/duration.proto
+message Duration {
+  int64 seconds = 1;
+  int32 nanos = 2;
+}
+
+// Copied from //third_party/protobuf/src/google/protobuf/timestamp.proto
+message Timestamp {
+  int64 seconds = 1;
+  int32 nanos = 2;
+}
+
+message Session {
+  string session_id = 1;
+
+  UserIdentity teacher = 2;
+
+  Roster roster = 3;
+
+  AccessCode access_code = 4;
+
+  map<string, SessionConfig> student_group_configs = 5;
+
+  map<string, StudentStatus> student_statuses = 6;
+
+  Timestamp start_time = 7;
+
+  Duration duration = 11;
+
+  CaptionsConfig teacher_device_captions_config = 8;
+
+  bool save_transcript = 9;
+
+  enum SessionState {
+    SESSION_STATE_UNKNOWN = 0;
+
+    PLANNING = 1;
+
+    ACTIVE = 2;
+
+    PAST = 3;
+  }
+
+  SessionState session_state = 10;
+}
+
+message AccessCode {
+  bool enabled = 1;
+
+  string code = 2;
+}
+
+message SessionConfig {
+  OnTaskConfig on_task_config = 1;
+
+  CaptionsConfig captions_config = 2;
+}
+
+message OnTaskConfig {
+  Bundle active_bundle = 1;
+
+  bool close_previous_locked_bundle = 2;
+}
+
+message CaptionsConfig {
+  bool captions_enabled = 1;
+
+  bool translations_enabled = 2;
+
+  repeated string allowed_language_codes = 3;
+}
+
+message StudentStatus {
+  enum StudentState {
+    STUDENT_STATE_UNKNOWN = 0;
+
+    NOT_FOUND = 1;
+
+    ADDED = 2;
+
+    ACTIVE = 3;
+
+    STOLEN_BY_OTHER_TEACHER = 4;
+  }
+
+  StudentState state = 1;
+
+  StudentActivity activity = 2;
+}
+
+message StudentActivity {
+  ActiveTab active_tab = 1;
+
+  CaptionsActivity captions_activity = 2;
+
+  Timestamp raised_hand_time = 3;
+}
+
+message ActiveTab {
+  string url = 1;
+
+  string title = 2;
+
+  string favicon_url = 3;
+
+  Timestamp time_opened = 4;
+}
+
+message CaptionsActivity {
+  string language_code = 1;
+
+  Timestamp time_enabled = 2;
+
+  Timestamp time_disabled = 3;
+}
