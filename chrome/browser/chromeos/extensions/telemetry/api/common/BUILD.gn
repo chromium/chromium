@@ -133,6 +133,7 @@ source_set("test_support") {
     ":common",
     "//base",
     "//chrome/test:test_support",
+    "//chromeos/crosapi/cpp:test_support",
     "//content/public/browser",
     "//extensions:test_support",
     "//net",

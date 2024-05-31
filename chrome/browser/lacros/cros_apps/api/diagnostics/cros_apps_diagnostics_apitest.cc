@@ -9,10 +9,10 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_mutable_registry.h"
 #include "chrome/browser/chromeos/cros_apps/api/test/cros_apps_apitest.h"
-#include "chrome/browser/chromeos/telemetry/fake_probe_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/crosapi/cpp/telemetry/fake_probe_service.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
@@ -280,8 +280,7 @@ IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiTest,
           .error);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiTest,
-                       GetNetworkInterfaces) {
+IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiTest, GetNetworkInterfaces) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 

@@ -54,7 +54,6 @@ source_set("browser_tests") {
     "//base",
     "//build:chromeos_buildflags",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",
-    "//chrome/browser/chromeos/telemetry:test_support",
     "//chromeos/crosapi/mojom",
     "//content/test:test_support",
     "//extensions/common",

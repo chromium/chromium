@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_TELEMETRY_FAKE_PROBE_SERVICE_H_
-#define CHROME_BROWSER_CHROMEOS_TELEMETRY_FAKE_PROBE_SERVICE_H_
+#ifndef CHROMEOS_CROSAPI_CPP_TELEMETRY_FAKE_PROBE_SERVICE_H_
+#define CHROMEOS_CROSAPI_CPP_TELEMETRY_FAKE_PROBE_SERVICE_H_
 
 #include <memory>
 #include <vector>
@@ -67,4 +67,4 @@ class FakeProbeService : public crosapi::mojom::TelemetryProbeService {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_TELEMETRY_FAKE_PROBE_SERVICE_H_
+#endif  // CHROMEOS_CROSAPI_CPP_TELEMETRY_FAKE_PROBE_SERVICE_H_
