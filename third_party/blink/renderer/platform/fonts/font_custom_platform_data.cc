@@ -91,8 +91,7 @@ ConvertPaletteOverridesToSkiaOverrides(
 
 namespace blink {
 
-FontCustomPlatformData::FontCustomPlatformData(PassKey,
-                                               sk_sp<SkTypeface> typeface,
+FontCustomPlatformData::FontCustomPlatformData(sk_sp<SkTypeface> typeface,
                                                size_t data_size)
     : base_typeface_(std::move(typeface)), data_size_(data_size) {}
 
@@ -315,20 +314,15 @@ FontCustomPlatformData* FontCustomPlatformData::Create(
     ots_parse_message = decoder.GetErrorString();
     return nullptr;
   }
-  return Create(std::move(typeface), decoder.DecodedSize());
-}
-
-FontCustomPlatformData* FontCustomPlatformData::Create(
-    sk_sp<SkTypeface> typeface,
-    size_t data_size) {
-  // The new instance of SkData was created while decoding. It stores data
+  size_t data_size = decoder.DecodedSize();
+  // The new instance of SkData is created while decoding. It stores data
   // from decoded font resource. GC is not aware of this allocation, so we
   // need to inform it.
   if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
     isolate->AdjustAmountOfExternalAllocatedMemory(data_size);
   }
-  return MakeGarbageCollected<FontCustomPlatformData>(
-      PassKey(), std::move(typeface), data_size);
+  return MakeGarbageCollected<FontCustomPlatformData>(std::move(typeface),
+                                                      data_size);
 }
 
 bool FontCustomPlatformData::MayBeIconFont() const {

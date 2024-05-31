@@ -282,8 +282,6 @@ BASE_FEATURE(kBackForwardCacheWithKeepaliveRequest,
 BASE_FEATURE(kBackgroundResourceFetch,
              "BackgroundResourceFetch",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<bool> kBackgroundFontResponseProcessor{
-    &kBackgroundResourceFetch, "background-font-response-processor", true};
 const base::FeatureParam<bool> kBackgroundScriptResponseProcessor{
     &kBackgroundResourceFetch, "background-script-response-processor", true};
 

@@ -26,256 +26,28 @@
 
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
 
-#include <utility>
-
-#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/numerics/checked_math.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
-#include "base/types/expected.h"
-#include "build/build_config.h"
-#include "mojo/public/cpp/system/data_pipe_drainer.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
-#include "third_party/blink/renderer/platform/fonts/web_font_decoder.h"
-#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client_walker.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
-#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#endif  // IS_WIN
-
-using ResultOrError =
-    base::expected<blink::FontResource::DecodedResult, String>;
-
-namespace WTF {
-
-template <>
-struct CrossThreadCopier<ResultOrError> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = ResultOrError;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
-template <>
-struct CrossThreadCopier<Deque<Vector<char>>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = Deque<Vector<char>>;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
-}  // namespace WTF
-
 namespace blink {
 
-namespace {
 // Durations of font-display periods.
 // https://tabatkins.github.io/specs/css-font-display/#font-display-desc
 // TODO(toyoshim): Revisit short limit value once cache-aware font display is
 // launched. crbug.com/570205
 constexpr base::TimeDelta kFontLoadWaitShort = base::Milliseconds(100);
 constexpr base::TimeDelta kFontLoadWaitLong = base::Milliseconds(3000);
-
-base::expected<FontResource::DecodedResult, String> DecodeFont(
-    SharedBuffer* buffer) {
-  if (buffer->empty()) {
-    // We don't have any data to decode. Just return an empty error string.
-    return base::unexpected("");
-  }
-  WebFontDecoder decoder;
-  auto decode_start_time = base::TimeTicks::Now();
-  sk_sp<SkTypeface> typeface = decoder.Decode(buffer);
-  base::UmaHistogramMicrosecondsTimes(
-      "Blink.Fonts.BackgroundDecodeTime",
-      base::TimeTicks::Now() - decode_start_time);
-  if (typeface) {
-    return FontResource::DecodedResult(std::move(typeface),
-                                       decoder.DecodedSize());
-  }
-  return base::unexpected(decoder.GetErrorString());
-}
-
-scoped_refptr<base::SequencedTaskRunner> GetFontDecodingTaskRunner() {
-#if BUILDFLAG(IS_WIN)
-  // On Windows, the font decoding relies on FontManager, which requires
-  // creating garbage collected objects. This means the thread the decoding
-  // runs on must be GC enabled.
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      std::unique_ptr<NonMainThread>, font_decoding_thread,
-      (NonMainThread::CreateThread(
-          ThreadCreationParams(ThreadType::kFontThread).SetSupportsGC(true))));
-  return font_decoding_thread->GetTaskRunner();
-#else
-  return worker_pool::CreateSequencedTaskRunner(
-      {base::TaskPriority::USER_BLOCKING});
-#endif  // IS_WIN
-}
-
-}  // namespace
-
-class FontResource::BackgroundFontProcessor final
-    : public BackgroundResponseProcessor,
-      public mojo::DataPipeDrainer::Client {
- public:
-  explicit BackgroundFontProcessor(
-      CrossThreadWeakHandle<FontResource> resource_handle);
-  ~BackgroundFontProcessor() override;
-
-  BackgroundFontProcessor(const BackgroundFontProcessor&) = delete;
-  BackgroundFontProcessor& operator=(const BackgroundFontProcessor&) = delete;
-
-  // Implements BackgroundResponseProcessor interface.
-  bool MaybeStartProcessingResponse(
-      network::mojom::URLResponseHeadPtr& head,
-      mojo::ScopedDataPipeConsumerHandle& body,
-      std::optional<mojo_base::BigBuffer>& cached_metadata_buffer,
-      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      BackgroundResponseProcessor::Client* client) override;
-
-  // Implements mojo::DataPipeDrainer::Client interface.
-  void OnDataAvailable(const void* data, size_t num_bytes) override;
-  void OnDataComplete() override;
-
- private:
-  static void DecodeOnBackgroundThread(
-      Deque<Vector<char>> data,
-      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      base::WeakPtr<BackgroundFontProcessor> weak_this);
-
-  void OnDecodeComplete(ResultOrError result_or_error, Vector<char> data);
-
-  network::mojom::URLResponseHeadPtr head_;
-  std::optional<mojo_base::BigBuffer> cached_metadata_buffer_;
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-  BackgroundResponseProcessor::Client* client_;
-
-  std::unique_ptr<mojo::DataPipeDrainer> pipe_drainer_;
-  Deque<Vector<char>> data_;
-  CrossThreadWeakHandle<FontResource> resource_handle_;
-  base::WeakPtrFactory<BackgroundFontProcessor> weak_factory_{this};
-};
-
-class FontResource::BackgroundFontProcessorFactory
-    : public BackgroundResponseProcessorFactory {
- public:
-  explicit BackgroundFontProcessorFactory(
-      CrossThreadWeakHandle<FontResource> resource_handle);
-  ~BackgroundFontProcessorFactory() override;
-  BackgroundFontProcessorFactory(const BackgroundFontProcessorFactory&) =
-      delete;
-  BackgroundFontProcessorFactory& operator=(
-      const BackgroundFontProcessorFactory&) = delete;
-  std::unique_ptr<BackgroundResponseProcessor> Create() && override;
-
- private:
-  CrossThreadWeakHandle<FontResource> resource_handle_;
-};
-
-FontResource::BackgroundFontProcessor::BackgroundFontProcessor(
-    CrossThreadWeakHandle<FontResource> resource_handle)
-    : resource_handle_(std::move(resource_handle)) {}
-
-FontResource::BackgroundFontProcessor::~BackgroundFontProcessor() = default;
-
-bool FontResource::BackgroundFontProcessor::MaybeStartProcessingResponse(
-    network::mojom::URLResponseHeadPtr& head,
-    mojo::ScopedDataPipeConsumerHandle& body,
-    std::optional<mojo_base::BigBuffer>& cached_metadata_buffer,
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    BackgroundResponseProcessor::Client* client) {
-  head_ = std::move(head);
-  cached_metadata_buffer_ = std::move(cached_metadata_buffer);
-  background_task_runner_ = background_task_runner;
-  client_ = client;
-  pipe_drainer_ =
-      std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
-  return true;
-}
-
-void FontResource::BackgroundFontProcessor::OnDataAvailable(const void* data,
-                                                            size_t num_bytes) {
-  Vector<char> vec;
-  vec.Append(static_cast<const char*>(data),
-             base::checked_cast<wtf_size_t>(num_bytes));
-  data_.push_back(std::move(vec));
-}
-
-void FontResource::BackgroundFontProcessor::OnDataComplete() {
-  PostCrossThreadTask(
-      *GetFontDecodingTaskRunner(), FROM_HERE,
-      CrossThreadBindOnce(
-          &FontResource::BackgroundFontProcessor::DecodeOnBackgroundThread,
-          std::move(data_), background_task_runner_,
-          weak_factory_.GetWeakPtr()));
-}
-
-// static
-void FontResource::BackgroundFontProcessor::DecodeOnBackgroundThread(
-    Deque<Vector<char>> data,
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    base::WeakPtr<BackgroundFontProcessor> weak_this) {
-  scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create();
-  while (!data.empty()) {
-    buffer->Append(std::move(data.front()));
-    data.pop_front();
-  }
-  base::expected<DecodedResult, String> result_or_error =
-      DecodeFont(buffer.get());
-  // TODO(crbug.com/40244488): Consider moving the data in SharedBuffer to the
-  // background task runner instead of calling CopyAs() to reduce the memory
-  // copy.
-  PostCrossThreadTask(
-      *background_task_runner, FROM_HERE,
-      CrossThreadBindOnce(
-          &FontResource::BackgroundFontProcessor::OnDecodeComplete,
-          std::move(weak_this), std::move(result_or_error),
-          buffer->CopyAs<Vector<char>>()));
-}
-
-void FontResource::BackgroundFontProcessor::OnDecodeComplete(
-    base::expected<DecodedResult, String> result_or_error,
-    Vector<char> data) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  Deque<Vector<char>> body;
-  body.push_back(std::move(data));
-
-  client_->PostTaskToMainThread(CrossThreadBindOnce(
-      &FontResource::OnBackgroundDecodeFinished,
-      MakeUnwrappingCrossThreadWeakHandle(std::move(resource_handle_)),
-      std::move(result_or_error)));
-  client_->DidFinishBackgroundResponseProcessor(
-      std::move(head_), std::move(body), std::move(cached_metadata_buffer_));
-}
-
-FontResource::BackgroundFontProcessorFactory::BackgroundFontProcessorFactory(
-    CrossThreadWeakHandle<FontResource> resource_handle)
-    : resource_handle_(resource_handle) {}
-
-FontResource::BackgroundFontProcessorFactory::
-    ~BackgroundFontProcessorFactory() = default;
-
-std::unique_ptr<BackgroundResponseProcessor>
-FontResource::BackgroundFontProcessorFactory::Create() && {
-  return std::make_unique<BackgroundFontProcessor>(std::move(resource_handle_));
-}
 
 FontResource* FontResource::Fetch(FetchParameters& params,
                                   ResourceFetcher* fetcher,
@@ -341,36 +113,24 @@ void FontResource::StartLoadLimitTimersIfNecessary(
 }
 
 const FontCustomPlatformData* FontResource::GetCustomFontData() {
-  if (font_data_ || ErrorOccurred() || IsLoading()) {
-    return font_data_;
-  }
-  if (Data()) {
-    if (background_decode_result_or_error_) {
-      if (background_decode_result_or_error_->has_value()) {
-        font_data_ = FontCustomPlatformData::Create(
-            std::move((*background_decode_result_or_error_)->sk_typeface),
-            (*background_decode_result_or_error_)->decoded_size);
-      } else {
-        ots_parsing_message_ = background_decode_result_or_error_->error();
-      }
-    } else {
+  if (!font_data_ && !ErrorOccurred() && !IsLoading()) {
+    if (Data()) {
       auto decode_start_time = base::TimeTicks::Now();
       font_data_ = FontCustomPlatformData::Create(Data(), ots_parsing_message_);
       base::UmaHistogramMicrosecondsTimes(
           "Blink.Fonts.DecodeTime", base::TimeTicks::Now() - decode_start_time);
     }
-  }
 
-  if (!font_data_) {
-    SetStatus(ResourceStatus::kDecodeError);
-  } else {
-    // Call observers once and remove them.
-    HeapHashSet<WeakMember<FontResourceClearDataObserver>> observers;
-    observers.swap(clear_data_observers_);
-    for (const auto& observer : observers) {
-      observer->FontResourceDataWillBeCleared();
+    if (!font_data_) {
+      SetStatus(ResourceStatus::kDecodeError);
+    } else {
+      // Call observers once and remove them.
+      HeapHashSet<WeakMember<FontResourceClearDataObserver>> observers;
+      observers.swap(clear_data_observers_);
+      for (const auto& observer : observers)
+        observer->FontResourceDataWillBeCleared();
+      ClearData();
     }
-    ClearData();
   }
   return font_data_;
 }
@@ -462,20 +222,6 @@ void FontResource::OnMemoryDump(WebMemoryDumpLevelOfDetail level,
 void FontResource::AddClearDataObserver(
     FontResourceClearDataObserver* observer) const {
   clear_data_observers_.insert(observer);
-}
-
-std::unique_ptr<BackgroundResponseProcessorFactory>
-FontResource::MaybeCreateBackgroundResponseProcessorFactory() {
-  if (!features::kBackgroundFontResponseProcessor.Get()) {
-    return nullptr;
-  }
-  return std::make_unique<BackgroundFontProcessorFactory>(
-      MakeCrossThreadWeakHandle(this));
-}
-
-void FontResource::OnBackgroundDecodeFinished(
-    base::expected<DecodedResult, String> result_or_error) {
-  background_decode_result_or_error_ = std::move(result_or_error);
 }
 
 void FontResource::Trace(Visitor* visitor) const {
