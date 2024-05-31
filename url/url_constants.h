@@ -49,6 +49,7 @@ inline constexpr char kJavaScriptScheme[] = "javascript";
 inline constexpr char16_t kJavaScriptScheme16[] = u"javascript";
 inline constexpr char kMailToScheme[] = "mailto";
 inline constexpr char16_t kMailToScheme16[] = u"mailto";
+inline constexpr char kMaterializedViewScheme[] = "materialized-view";
 inline constexpr char kSteamScheme[] = "steam";
 inline constexpr char kTelScheme[] = "tel";
 inline constexpr char16_t kTelScheme16[] = u"tel";

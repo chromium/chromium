@@ -131,6 +131,8 @@ struct SchemeRegistry {
       // Temporarily opted-out. See https://crrev.com/c/5568919.
       kChromeosSteamScheme,
       kSteamScheme,
+      // Temporarily opted-out. See https://crrev.com/c/5578066.
+      kMaterializedViewScheme,
   };
 
   // Schemes with a predefined default custom handler.
