@@ -379,4 +379,37 @@ TEST_F(MediaItemUIUpdatedViewTest, DragProgressForPausedMedia) {
   EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kSeekBackward));
 }
 
+TEST_F(MediaItemUIUpdatedViewTest, TimestampLabelsCheck) {
+  // The timestamp labels should be hidden initially.
+  EXPECT_FALSE(view()->GetCurrentTimestampLabelForTesting()->GetVisible());
+  EXPECT_FALSE(view()->GetDurationTimestampLabelForTesting()->GetVisible());
+
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/0, /*duration=*/base::Seconds(10),
+      /*position=*/base::Seconds(5), /*end_of_media=*/false);
+  view()->UpdateWithMediaPosition(media_position);
+  auto* progress_view = view()->GetProgressViewForTesting();
+
+  // Starts dragging the progress view should show the timestamp labels.
+  gfx::Point point(progress_view->width() / 2, progress_view->height() / 2);
+  ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, point, point,
+                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_CALL(item(), SeekTo(testing::_));
+  progress_view->OnMousePressed(pressed_event);
+  EXPECT_TRUE(view()->GetCurrentTimestampLabelForTesting()->GetVisible());
+  EXPECT_TRUE(view()->GetDurationTimestampLabelForTesting()->GetVisible());
+  EXPECT_EQ(u"0:05", view()->GetCurrentTimestampLabelForTesting()->GetText());
+  EXPECT_EQ(u"0:10", view()->GetDurationTimestampLabelForTesting()->GetText());
+
+  // Ends dragging the progress view should hide the timestamp labels.
+  ui::MouseEvent released_event = ui::MouseEvent(
+      ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_CALL(item(), SeekTo(testing::_));
+  progress_view->OnMouseReleased(released_event);
+  EXPECT_FALSE(view()->GetCurrentTimestampLabelForTesting()->GetVisible());
+  EXPECT_FALSE(view()->GetDurationTimestampLabelForTesting()->GetVisible());
+}
+
 }  // namespace global_media_controls

@@ -173,9 +173,16 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
       media_color_theme_.play_button_container_color_id,
       kPlayPauseButtonSize.height() / 2));
 
-  // |progress_row| holds some media action buttons and the progress view.
+  // |progress_row| holds some media action buttons, the progress view and the
+  // progress timestamp views.
   auto* progress_row = AddChildView(std::make_unique<views::BoxLayoutView>());
   progress_row->SetBetweenChildSpacing(kProgressRowSeparator);
+
+  // Create the current timestamp label before the progress view.
+  current_timestamp_label_ =
+      progress_row->AddChildView(std::make_unique<views::Label>(
+          std::u16string(), views::style::CONTEXT_LABEL,
+          views::style::STYLE_CAPTION_MEDIUM));
 
   // Create the previous track button.
   CreateMediaActionButton(
@@ -206,7 +213,9 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
               base::Unretained(this)),
           base::BindRepeating(&MediaItemUIUpdatedView::SeekTo,
                               base::Unretained(this)),
-          /*on_update_progress_callback=*/base::DoNothing()));
+          base::BindRepeating(
+              &MediaItemUIUpdatedView::OnProgressViewUpdateProgress,
+              base::Unretained(this))));
   progress_row->SetFlexForView(progress_view_, 1);
 
   // Create the forward 10 button.
@@ -221,6 +230,12 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
       vector_icons::kSkipNextIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_NEXT_TRACK);
 
+  // Create the duration timestamp label after the progress view.
+  duration_timestamp_label_ =
+      progress_row->AddChildView(std::make_unique<views::Label>(
+          std::u16string(), views::style::CONTEXT_LABEL,
+          views::style::STYLE_CAPTION_MEDIUM));
+
   // Add the device selector view below the |progress_row| if there is one.
   UpdateDeviceSelectorView(std::move(device_selector_view));
 
@@ -228,6 +243,9 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   // It will only show up when this media item is being casted to another
   // device.
   UpdateFooterView(std::move(footer_view));
+
+  // Set the timestamp labels to be hidden initially.
+  UpdateTimestampLabelsVisibility();
 
   item_->SetView(this);
 }
@@ -356,6 +374,7 @@ void MediaItemUIUpdatedView::UpdateWithMediaPosition(
     const media_session::MediaPosition& position) {
   position_ = position;
   progress_view_->UpdateProgress(position);
+  duration_timestamp_label_->SetText(GetFormattedDuration(position.duration()));
 }
 
 void MediaItemUIUpdatedView::UpdateWithMediaArtwork(
@@ -499,9 +518,15 @@ void MediaItemUIUpdatedView::UpdateMediaActionButtonsVisibility() {
   }
 }
 
+void MediaItemUIUpdatedView::UpdateTimestampLabelsVisibility() {
+  current_timestamp_label_->SetVisible(drag_state_ == DragState::kDragStarted);
+  duration_timestamp_label_->SetVisible(drag_state_ == DragState::kDragStarted);
+}
+
 void MediaItemUIUpdatedView::OnProgressDragStateChange(DragState drag_state) {
   drag_state_ = drag_state;
   UpdateMediaActionButtonsVisibility();
+  UpdateTimestampLabelsVisibility();
 }
 
 void MediaItemUIUpdatedView::OnPlaybackStateChangeForProgressDrag(
@@ -515,6 +540,11 @@ void MediaItemUIUpdatedView::OnPlaybackStateChangeForProgressDrag(
 
 void MediaItemUIUpdatedView::SeekTo(double seek_progress) {
   item_->SeekTo(seek_progress * position_.duration());
+}
+
+void MediaItemUIUpdatedView::OnProgressViewUpdateProgress(
+    base::TimeDelta current_timestamp) {
+  current_timestamp_label_->SetText(GetFormattedDuration(current_timestamp));
 }
 
 void MediaItemUIUpdatedView::StartCastingButtonPressed() {
@@ -573,6 +603,14 @@ views::Label* MediaItemUIUpdatedView::GetTitleLabelForTesting() {
 
 views::Label* MediaItemUIUpdatedView::GetArtistLabelForTesting() {
   return artist_label_;
+}
+
+views::Label* MediaItemUIUpdatedView::GetCurrentTimestampLabelForTesting() {
+  return current_timestamp_label_;
+}
+
+views::Label* MediaItemUIUpdatedView::GetDurationTimestampLabelForTesting() {
+  return duration_timestamp_label_;
 }
 
 MediaActionButton* MediaItemUIUpdatedView::GetMediaActionButtonForTesting(

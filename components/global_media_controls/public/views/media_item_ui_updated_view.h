@@ -96,6 +96,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   views::Label* GetSourceLabelForTesting();
   views::Label* GetTitleLabelForTesting();
   views::Label* GetArtistLabelForTesting();
+  views::Label* GetCurrentTimestampLabelForTesting();
+  views::Label* GetDurationTimestampLabelForTesting();
   MediaActionButton* GetMediaActionButtonForTesting(
       media_session::mojom::MediaSessionAction action);
   MediaProgressView* GetProgressViewForTesting();
@@ -116,6 +118,10 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   // actions are enabled.
   void UpdateMediaActionButtonsVisibility();
 
+  // Update the visibility of timestamp labels. They are visible only when the
+  // user is dragging the progress view.
+  void UpdateTimestampLabelsVisibility();
+
   // Callback for when the user starts or ends dragging the progress view.
   void OnProgressDragStateChange(DragState drag_state);
 
@@ -129,6 +135,10 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   // Callback for when the media progress view wants to update the progress
   // position.
   void SeekTo(double seek_progress);
+
+  // Callback for when the media progress view wants to inform the current
+  // progress position.
+  void OnProgressViewUpdateProgress(base::TimeDelta current_timestamp);
 
   // Callback for when the start casting button is toggled by user.
   void StartCastingButtonPressed();
@@ -154,6 +164,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   raw_ptr<views::Label> source_label_ = nullptr;
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::Label> artist_label_ = nullptr;
+  raw_ptr<views::Label> current_timestamp_label_ = nullptr;
+  raw_ptr<views::Label> duration_timestamp_label_ = nullptr;
 
   raw_ptr<MediaProgressView> progress_view_ = nullptr;
   std::vector<MediaActionButton*> media_action_buttons_;
