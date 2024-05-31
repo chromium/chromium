@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      color: white;
+      background-color: black;
+    }
+  </style>
+</head>
+<body onload="main()">
+  <div id="buttons"></div>
+  <table>
+    <tr>
+      <td>Image</td>
+      <td id="video_header"></td>
+      <td>Absolute Diff</td>
+      <td>Different Pixels</td>
+    </tr>
+    <tr>
+      <td><img src="gbrp.png"></div>
+      <td><video autoplay></video></div>
+      <td><canvas id="diff"></canvas></td>
+      <td><canvas id="mask"></canvas></td>
+    </tr>
+    <p id="result"></p>
+    <script>
+      function log(str) {
+        document.getElementById('result').textContent = str;
+        console.log(str);
+      }
+
+      function loadVideo(name) {
+        const videoElem = document.querySelector('video');
+        document.getElementById('video_header').textContent = name;
+        videoElem.src = 'gbrp-' + name;
+      }
+
+      function onVideoFrame(e) {
+        document.title = verifyVideo() ? 'ENDED' : 'FAILED';
+      }
+
+      function onVideoError(e) {
+        document.title = 'ERROR';
+        document.getElementById('diff').style.visibility = 'hidden';
+        document.getElementById('mask').style.visibility = 'hidden';
+        log('Error playing video: ' + e.target.error.code + '.');
+      }
+
+      function main() {
+        // Programmatically create buttons for each clip for manual testing.
+        const buttonsElem = document.getElementById('buttons');
+
+        function createButton(name) {
+          const buttonElem = document.createElement('button');
+          buttonElem.textContent = name;
+          buttonElem.addEventListener('click', function () {
+            loadVideo(name);
+          });
+          buttonsElem.appendChild(buttonElem);
+        }
+
+        const VIDEOS = ['av1.mp4', 'vp9.mp4', 'h264.mp4'];
+
+        const videoElem = document.querySelector('video');
+        if (videoElem.canPlayType('video/mp4;codecs="hvc1.4.10.L60.9e.8"')) {
+          VIDEOS.push('h265.mp4');
+        }
+
+        for (let i = 0; i < VIDEOS.length; ++i) {
+          createButton(VIDEOS[i]);
+        }
+
+        // Check if a query parameter was provided for automated tests.
+        if (window.location.search.length > 1) {
+          videoElem.addEventListener('error', onVideoError);
+          videoElem.requestVideoFrameCallback(onVideoFrame);
+          loadVideo(window.location.search.substr(1));
+        } else {
+          // If we're not an automated test, compute some pretty diffs.
+          document.querySelector('video').addEventListener('ended', computeDiffs);
+        }
+      }
+
+      function getCanvasPixels(canvas) {
+        try {
+          return canvas
+            .getContext('2d')
+            .getImageData(0, 0, canvas.width, canvas.height).data;
+        } catch (e) {
+          let message = 'ERROR: ' + e;
+          if (e.name == 'SecurityError') {
+            message +=
+              ' Couldn\'t get image pixels, try running with ' +
+              '--allow-file-access-from-files.';
+          }
+          log(message);
+        }
+      }
+
+      function verifyVideo() {
+        const videoElem = document.querySelector('video');
+        const offscreen = document.createElement('canvas');
+        offscreen.width = videoElem.videoWidth;
+        offscreen.height = videoElem.videoHeight;
+        offscreen
+          .getContext('2d')
+          .drawImage(videoElem, 0, 0, offscreen.width, offscreen.height);
+        videoData = getCanvasPixels(offscreen);
+        if (!videoData) {
+          return false;
+        }
+        // Check the color of a given pixel |x,y| in |imgData| against an
+        // expected RGB value, |expectedR, expectedG, expectedB|, with up to |allowedError| difference.
+        function checkColor(
+          imgData,
+          x,
+          y,
+          stride,
+          expectedR,
+          expectedG,
+          expectedB,
+          allowedError,
+        ) {
+          const actualR = imgData[(x + y * stride) * 4];
+          const actualG = imgData[(x + y * stride) * 4 + 1];
+          const actualB = imgData[(x + y * stride) * 4 + 2];
+          if (
+            Math.abs(actualR - expectedR) > allowedError ||
+            Math.abs(actualG - expectedG) > allowedError ||
+            Math.abs(actualB - expectedB) > allowedError
+          ) {
+            log(
+              'Color didn\'t match at (' +
+              x +
+              ', ' +
+              y +
+              '). Expected: (' +
+              expectedR +
+              ', ' +
+              expectedG +
+              ', ' +
+              expectedB +
+              ')' +
+              ', actual: (' +
+              actualR +
+              ', ' +
+              actualG +
+              ', ' +
+              actualB +
+              ').',
+            );
+            return false;
+          }
+          return true;
+        }
+
+        // Check one pixel in each quadrant (in the upper left, away from
+        // boundaries and the text, to avoid compression artifacts).
+        // Also allow a small error, for the same reason.
+        const allowedError = 2;
+
+        return (
+          checkColor(
+            videoData,
+            20,
+            20,
+            videoElem.videoWidth,
+            0x00,
+            0x00,
+            0x00,
+            allowedError,
+          ) &&
+          checkColor(
+            videoData,
+            60,
+            20,
+            videoElem.videoWidth,
+            0xff,
+            0x00,
+            0x00,
+            allowedError,
+          ) &&
+          checkColor(
+            videoData,
+            100,
+            20,
+            videoElem.videoWidth,
+            0xff,
+            0x00,
+            0xff,
+            allowedError,
+          ) &&
+          checkColor(
+            videoData,
+            140,
+            20,
+            videoElem.videoWidth,
+            0x00,
+            0x00,
+            0xff,
+            allowedError,
+          ) &&
+          checkColor(
+            videoData,
+            180,
+            20,
+            videoElem.videoWidth,
+            0xff,
+            0xff,
+            0x00,
+            allowedError,
+          ) &&
+          checkColor(
+            videoData,
+            220,
+            20,
+            videoElem.videoWidth,
+            0x00,
+            0xff,
+            0x00,
+            allowedError,
+          ) &&
+          checkColor(
+            videoData,
+            260,
+            20,
+            videoElem.videoWidth,
+            0x00,
+            0xff,
+            0xff,
+            allowedError,
+          ) &&
+          checkColor(
+            videoData,
+            300,
+            20,
+            videoElem.videoWidth,
+            0xff,
+            0xff,
+            0xff,
+            allowedError,
+          )
+        );
+      }
+
+      // Compute a standard diff image, plus a high-contrast mask that shows
+      // each differing pixel more visibly.
+      function computeDiffs() {
+        const diffElem = document.getElementById('diff');
+        const maskElem = document.getElementById('mask');
+        const videoElem = document.querySelector('video');
+        const imgElem = document.querySelector('img');
+
+        const width = imgElem.width;
+        const height = imgElem.height;
+
+        if (videoElem.videoWidth != width || videoElem.videoHeight != height) {
+          log('ERROR: video dimensions don\'t match reference image ' + 'dimensions');
+          return;
+        }
+
+        // Make an offscreen canvas to dump reference image pixels into.
+        const offscreen = document.createElement('canvas');
+        offscreen.width = width;
+        offscreen.height = height;
+
+        offscreen.getContext('2d').drawImage(imgElem, 0, 0, width, height);
+        imgData = getCanvasPixels(offscreen);
+        if (!imgData) {
+          return;
+        }
+
+        // Scale and clear diff canvases.
+        diffElem.width = maskElem.width = width;
+        diffElem.height = maskElem.height = height;
+        const diffCtx = diffElem.getContext('2d');
+        const maskCtx = maskElem.getContext('2d');
+        maskCtx.clearRect(0, 0, width, height);
+        diffCtx.clearRect(0, 0, width, height);
+
+        // Copy video pixels into diff.
+        diffCtx.drawImage(videoElem, 0, 0, width, height);
+
+        const diffIData = diffCtx.getImageData(0, 0, width, height);
+        const diffData = diffIData.data;
+        const maskIData = maskCtx.getImageData(0, 0, width, height);
+        const maskData = maskIData.data;
+
+        // Make diffs and collect stats.
+        let meanSquaredError = 0;
+        for (let i = 0; i < imgData.length; i += 4) {
+          let difference = 0;
+          for (let j = 0; j < 3; ++j) {
+            diffData[i + j] = Math.abs(diffData[i + j] - imgData[i + j]);
+            meanSquaredError += diffData[i + j] * diffData[i + j];
+            if (diffData[i + j] != 0) {
+              difference += diffData[i + j];
+            }
+          }
+          if (difference > 0) {
+            if (difference <= 3) {
+              // If we're only off by a bit per channel or so, use darker red.
+              maskData[i] = 128;
+            } else {
+              // Bright red to indicate a different pixel.
+              maskData[i] = 255;
+            }
+            maskData[i + 3] = 255;
+          }
+        }
+
+        meanSquaredError /= width * height;
+        log('Mean squared error: ' + meanSquaredError);
+        diffCtx.putImageData(diffIData, 0, 0);
+        maskCtx.putImageData(maskIData, 0, 0);
+        document.getElementById('diff').style.visibility = 'visible';
+        document.getElementById('mask').style.visibility = 'visible';
+      }
+    </script>
+</body>
+</html>
