@@ -38,7 +38,6 @@
 #include "ash/wallpaper/wallpaper_blur_manager.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_daily_refresh_scheduler.h"
-#include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
 #include "ash/wallpaper/wallpaper_image_downloader.h"
 #include "ash/wallpaper/wallpaper_metrics_manager.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
@@ -630,15 +629,6 @@ void WallpaperControllerImpl::SetClient(WallpaperControllerClient* client) {
   pref_manager_->SetClient(client);
   variant_info_fetcher_.SetClient(client);
   google_photos_wallpaper_manager_.SetClient(client);
-}
-
-WallpaperDragDropDelegate* WallpaperControllerImpl::GetDragDropDelegate() {
-  return drag_drop_delegate_.get();
-}
-
-void WallpaperControllerImpl::SetDragDropDelegate(
-    std::unique_ptr<WallpaperDragDropDelegate> delegate) {
-  drag_drop_delegate_ = std::move(delegate);
 }
 
 void WallpaperControllerImpl::SetDriveFsDelegate(
