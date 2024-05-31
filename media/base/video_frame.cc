@@ -1402,6 +1402,27 @@ gfx::GpuMemoryBuffer* VideoFrame::GetGpuMemoryBuffer() const {
                         : gpu_memory_buffer_.get();
 }
 
+std::unique_ptr<VideoFrame::ScopedMapping> VideoFrame::MapGMBOrSharedImage()
+    const {
+  if (wrapped_frame_) {
+    return wrapped_frame_->MapGMBOrSharedImage();
+  }
+  if (is_mappable_si_enabled_) {
+    // When MappableSI is enabled, there can only be 1 shared image
+    // even for multiplanar formats.
+    CHECK_EQ(NumTextures(), 1U);
+    if (auto mapping = shared_images_[0]->Map()) {
+      return base::WrapUnique(
+          new VideoFrame::ScopedMapping(nullptr, std::move(mapping)));
+    }
+  }
+  if (gpu_memory_buffer_ && gpu_memory_buffer_->Map()) {
+    return base::WrapUnique(
+        new VideoFrame::ScopedMapping(gpu_memory_buffer_.get(), nullptr));
+  }
+  return nullptr;
+}
+
 gfx::GpuMemoryBufferHandle VideoFrame::GetGpuMemoryBufferHandle() const {
   return wrapped_frame_
              ? wrapped_frame_->GetGpuMemoryBufferHandle()
@@ -1956,6 +1977,37 @@ std::vector<size_t> VideoFrame::CalculatePlaneSize(
 
 std::vector<size_t> VideoFrame::CalculatePlaneSize() const {
   return CalculatePlaneSize(layout_);
+}
+
+VideoFrame::ScopedMapping::ScopedMapping(
+    gfx::GpuMemoryBuffer* gpu_memory_buffer,
+    std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping)
+    : gpu_memory_buffer_(gpu_memory_buffer),
+      scoped_mapping_(std::move(scoped_mapping)) {
+  // It should be backed by either one below.
+  CHECK_NE(!!gpu_memory_buffer, !!scoped_mapping_);
+}
+
+VideoFrame::ScopedMapping::~ScopedMapping() {
+  if (gpu_memory_buffer_) {
+    gpu_memory_buffer_->Unmap();
+  }
+}
+
+uint8_t* VideoFrame::ScopedMapping::Memory(uint32_t plane_index) {
+  return static_cast<uint8_t*>(gpu_memory_buffer_
+                                   ? gpu_memory_buffer_->memory(plane_index)
+                                   : scoped_mapping_->Memory(plane_index));
+}
+
+size_t VideoFrame::ScopedMapping::Stride(uint32_t plane_index) {
+  return gpu_memory_buffer_ ? gpu_memory_buffer_->stride(plane_index)
+                            : scoped_mapping_->Stride(plane_index);
+}
+
+gfx::Size VideoFrame::ScopedMapping::Size() {
+  return gpu_memory_buffer_ ? gpu_memory_buffer_->GetSize()
+                            : scoped_mapping_->Size();
 }
 
 }  // namespace media

@@ -144,6 +144,36 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     virtual ~SyncTokenClient() = default;
   };
 
+  // This class will allow VF clients to be able to get CPU mapped memory and
+  // other metadata either from GMB or MappableSI backing the VF. Note that this
+  // class will go away once GMB is removed. Clients can directly called a new
+  // method like VideoFrame::MapSharedImage() to get a
+  // ClientSharedImage::ScopedMapping object.
+  class ScopedMapping {
+   public:
+    ~ScopedMapping();
+
+    // Returns a pointer to the beginning of the plane.
+    uint8_t* Memory(uint32_t plane_index);
+
+    // Returns plane stride.
+    size_t Stride(uint32_t plane_index);
+
+    // Returns the size of the buffer.
+    gfx::Size Size();
+
+   private:
+    friend class VideoFrame;
+
+    ScopedMapping(
+        gfx::GpuMemoryBuffer* gpu_memory_buffer,
+        std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping);
+
+    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
+    RAW_PTR_EXCLUSION gfx::GpuMemoryBuffer* gpu_memory_buffer_ = nullptr;
+    std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping_;
+  };
+
   VideoFrame() = delete;
   VideoFrame(const VideoFrame&) = delete;
   VideoFrame& operator=(const VideoFrame&) = delete;
@@ -569,6 +599,14 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Gets the GpuMemoryBuffer backing the VideoFrame.
   gfx::GpuMemoryBuffer* GetGpuMemoryBuffer() const;
 
+  // Gets the ScopedMapping object which clients can use to access the CPU
+  // visible memory and other metadata for the gpu buffer backing this
+  // VideoFrame(via GpuMemoryBuffer or MappableSI).
+  // TODO(crbug.com/40263579): Note that once MappableSI is fully launched and
+  // enabled for VideoFrame, rename this method to MapSharedImage(). It can
+  // then directly return ClientSharedImage::ScopedMapping object instead.
+  std::unique_ptr<VideoFrame::ScopedMapping> MapGMBOrSharedImage() const;
+
   // Gets the GpuMemoryBufferHandle backing the VideoFrame. Note that most of
   // VideoFrame clients currently use ::GetGpuMemoryBuffer() above only to clone
   // a handle from it. Those clients will be switched to using this new api.
@@ -922,6 +960,11 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // GPU memory buffer, if this frame is STORAGE_GPU_MEMORY_BUFFER.
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
+
+  // This field will be set by clients when using MappableSI instead of
+  // GpuMemoryBuffers. Clients will set this flag while creating a VideoFrame.
+  // For now it's set to false always until clients starts using it.
+  const bool is_mappable_si_enabled_ = false;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
