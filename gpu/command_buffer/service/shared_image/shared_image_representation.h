@@ -787,12 +787,24 @@ class GPU_GLES2_EXPORT DawnImageRepresentation
       wgpu::TextureUsage usage,
       AllowUnclearedAccess allow_uncleared);
 
+  // Allawos passing internal usages to the created Dawn texture.
+  std::unique_ptr<ScopedAccess> BeginScopedAccess(
+      wgpu::TextureUsage usage,
+      wgpu::TextureUsage internal_usage,
+      AllowUnclearedAccess allow_uncleared);
+
   // For write usage, the update_rect is a hint to the backend about the portion
   // of the image that will be drawn to. Callers shouldn't draw outside of this
   // area, but aren't required to overwrite every pixel inside it.
   // For non-write usage, the update_rect can be ignored.
   std::unique_ptr<ScopedAccess> BeginScopedAccess(
       wgpu::TextureUsage usage,
+      AllowUnclearedAccess allow_uncleared,
+      const gfx::Rect& update_rect);
+
+  std::unique_ptr<ScopedAccess> BeginScopedAccess(
+      wgpu::TextureUsage usage,
+      wgpu::TextureUsage internal_usage,
       AllowUnclearedAccess allow_uncleared,
       const gfx::Rect& update_rect);
 

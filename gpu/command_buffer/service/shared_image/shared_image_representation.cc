@@ -807,11 +807,30 @@ std::unique_ptr<DawnImageRepresentation::ScopedAccess>
 DawnImageRepresentation::BeginScopedAccess(
     wgpu::TextureUsage usage,
     AllowUnclearedAccess allow_uncleared) {
-  return BeginScopedAccess(usage, allow_uncleared, gfx::Rect(size()));
+  return BeginScopedAccess(usage, wgpu::TextureUsage::None, allow_uncleared,
+                           gfx::Rect(size()));
+}
+
+std::unique_ptr<DawnImageRepresentation::ScopedAccess>
+DawnImageRepresentation::BeginScopedAccess(
+    wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage,
+    AllowUnclearedAccess allow_uncleared) {
+  return BeginScopedAccess(usage, internal_usage, allow_uncleared,
+                           gfx::Rect(size()));
 }
 
 std::unique_ptr<DawnImageRepresentation::ScopedAccess>
 DawnImageRepresentation::BeginScopedAccess(wgpu::TextureUsage usage,
+                                           AllowUnclearedAccess allow_uncleared,
+                                           const gfx::Rect& update_rect) {
+  return BeginScopedAccess(usage, wgpu::TextureUsage::None, allow_uncleared,
+                           update_rect);
+}
+
+std::unique_ptr<DawnImageRepresentation::ScopedAccess>
+DawnImageRepresentation::BeginScopedAccess(wgpu::TextureUsage usage,
+                                           wgpu::TextureUsage internal_usage,
                                            AllowUnclearedAccess allow_uncleared,
                                            const gfx::Rect& update_rect) {
   if (allow_uncleared != AllowUnclearedAccess::kYes && !IsCleared()) {
@@ -819,6 +838,7 @@ DawnImageRepresentation::BeginScopedAccess(wgpu::TextureUsage usage,
     return nullptr;
   }
 
+  // TODO(crbug.com/339171225): Pass `internal_usage` through to BeginAccess().
   wgpu::Texture texture = BeginAccess(usage, update_rect);
   if (!texture) {
     LOG(ERROR) << "Error creating wgpu::Texture";
