@@ -4,6 +4,7 @@
 
 #include "components/viz/service/display/overlay_processor_win.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -135,7 +136,7 @@ bool OverlayProcessorWin::IsOverlaySupported() const {
 
 gfx::Rect OverlayProcessorWin::GetPreviousFrameOverlaysBoundingRect() const {
   if (features::IsDelegatedCompositingEnabled()) {
-    return gfx::Rect();
+    return previous_frame_overlay_rect_;
   }
 
   // TODO(dcastagna): Implement me.
@@ -225,18 +226,54 @@ DelegationStatus OverlayProcessorWin::ProcessOverlaysForDelegation(
     PromotedRenderPassesInfo promoted_render_passes_info =
         std::move(delegation_result.value().promoted_render_passes_info);
 
-    UpdatePromotedRenderPassProperties(*render_passes,
-                                       promoted_render_passes_info);
+    DCLayerOverlayProcessor::RenderPassOverlayDataMap
+        surface_content_render_passes =
+            UpdatePromotedRenderPassPropertiesAndGetSurfaceContentPasses(
+                is_full_delegated_compositing, *render_passes,
+                promoted_render_passes_info);
 
-    // We are not promoting videos from any render pass so this map should be
-    // empty.
-    frames_since_using_dc_layers_map_.clear();
+    dc_layer_overlay_processor_->Process(
+        resource_provider, render_pass_filters, render_pass_backdrop_filters,
+        surface_damage_rect_list_in_root_space, is_page_fullscreen_mode_,
+        surface_content_render_passes);
 
-    // Set the z-order of the candidates, noting that |delegated_candidates|
-    // was pushed in front-to-back order.
-    for (size_t i = 0u; i < delegated_candidates.size(); i++) {
-      delegated_candidates[i].plane_z_order = delegated_candidates.size() - i;
+    // Remove entries that were not seen this frame. These counters are used
+    // to avoid thrashing between swap chain and DComp surface allocations,
+    // but are not useful when the render pass backing itself doesn't exist.
+    base::EraseIf(
+        frames_since_using_dc_layers_map_,
+        [&surface_content_render_passes](const auto& frames_since_kv) {
+          const auto& [pass_id, _num_frames] = frames_since_kv;
+          return base::ranges::none_of(surface_content_render_passes,
+                                       [&pass_id](const auto& overlay_data_kv) {
+                                         const auto& [pass, _data] =
+                                             overlay_data_kv;
+                                         return pass_id == pass->id;
+                                       });
+        });
+
+    for (auto& [render_pass, overlay_data] : surface_content_render_passes) {
+      render_pass->damage_rect = UpdateRenderPassFromOverlayData(
+          overlay_data, render_pass, frames_since_using_dc_layers_map_);
+
+      DBG_LOG_OPT("delegated.overlay.log", DBG_OPT_BLUE,
+                  "Partially delegated pass{id: %llu, damage: %s}, "
+                  "overlay_data{overlays: %zu, damage: %s}",
+                  render_pass->id.value(),
+                  render_pass->damage_rect.ToString().c_str(),
+                  overlay_data.promoted_overlays.size(),
+                  overlay_data.damage_rect.ToString().c_str());
+
+      if (debug_settings_->show_dc_layer_debug_borders) {
+        InsertDebugBorderDrawQuadsForOverlayCandidates(
+            overlay_data.promoted_overlays, render_pass,
+            render_pass->damage_rect);
+      }
     }
+
+    previous_frame_overlay_rect_ =
+        InsertSurfaceContentOverlaysAndSetPlaneZOrder(
+            std::move(surface_content_render_passes), delegated_candidates);
 
     // Set this to the full output rect unconditionally on success. This is
     // unioned with the next frame's damage (via |GetAndResetOverlayDamage|)
@@ -288,10 +325,12 @@ void OverlayProcessorWin::ProcessOverlaysFromOutputSurfacePlane(
       resource_provider, render_pass_filters, render_pass_backdrop_filters,
       surface_damage_rect_list_in_root_space, is_page_fullscreen_mode_,
       render_pass_overlay_data_map);
-  if (!frames_since_using_dc_layers_map_.contains(root_render_pass->id)) {
-    // The root render pass ID has changed and we only expect
-    // |UpdateRenderPassFromOverlayData| to insert a single entry for the root
-    // pass, so we can remove all other entries.
+  if (frames_since_using_dc_layers_map_.size() > 1 ||
+      !frames_since_using_dc_layers_map_.contains(root_render_pass->id)) {
+    // We're switching off of delegated compositing or the root render pass ID
+    // has changed and we only expect |UpdateRenderPassFromOverlayData| to
+    // insert a single entry for the root pass, so we can remove all other
+    // entries.
     frames_since_using_dc_layers_map_.clear();
   }
   *root_damage_rect = UpdateRenderPassFromOverlayData(
@@ -315,12 +354,6 @@ void OverlayProcessorWin::ProcessOverlaysFromOutputSurfacePlane(
   if (debug_settings_->show_dc_layer_debug_borders) {
     InsertDebugBorderDrawQuadsForOverlayCandidates(
         *candidates, root_render_pass, *root_damage_rect);
-
-    // Mark the entire output as damaged because the border quads might not be
-    // inside the current damage rect.  It's far simpler to mark the entire
-    // output as damaged instead of accounting for individual border quads which
-    // can change positions across frames.
-    *root_damage_rect = root_render_pass->output_rect;
   }
 }
 
@@ -337,10 +370,10 @@ void OverlayProcessorWin::SetUsingDCLayersForTesting(
 
 void OverlayProcessorWin::InsertDebugBorderDrawQuadsForOverlayCandidates(
     const OverlayCandidateList& dc_layer_overlays,
-    AggregatedRenderPass* root_render_pass,
-    const gfx::Rect& damage_rect) {
-  auto* shared_quad_state = root_render_pass->CreateAndAppendSharedQuadState();
-  auto& quad_list = root_render_pass->quad_list;
+    AggregatedRenderPass* render_pass,
+    gfx::Rect& damage_rect) {
+  auto* shared_quad_state = render_pass->CreateAndAppendSharedQuadState();
+  auto& quad_list = render_pass->quad_list;
 
   // Add debug borders for the root damage rect after overlay promotion.
   {
@@ -356,6 +389,11 @@ void OverlayProcessorWin::InsertDebugBorderDrawQuadsForOverlayCandidates(
                        kDCLayerDebugBorderWidth);
   }
 
+  // We assume the render pass transform is invertible, otherwise we could not
+  // have promoted overlays from it.
+  const gfx::Transform root_target_to_pass =
+      render_pass->transform_to_root_target.GetCheckedInverse();
+
   // Add debug borders for overlays/underlays
   for (const auto& dc_layer : dc_layer_overlays) {
     gfx::Rect overlay_rect = gfx::ToEnclosingRect(
@@ -363,6 +401,7 @@ void OverlayProcessorWin::InsertDebugBorderDrawQuadsForOverlayCandidates(
     if (dc_layer.clip_rect) {
       overlay_rect.Intersect(*dc_layer.clip_rect);
     }
+    overlay_rect = root_target_to_pass.MapRect(overlay_rect);
 
     // Overlay:red, Underlay:blue.
     SkColor4f border_color =
@@ -376,6 +415,12 @@ void OverlayProcessorWin::InsertDebugBorderDrawQuadsForOverlayCandidates(
     debug_quad->SetNew(shared_quad_state, overlay_rect, overlay_rect,
                        border_color, kDCLayerDebugBorderWidth);
   }
+
+  // Mark the entire output as damaged because the border quads might not be
+  // inside the current damage rect.  It's far simpler to mark the entire
+  // output as damaged instead of accounting for individual border quads which
+  // can change positions across frames.
+  damage_rect = render_pass->output_rect;
 }
 
 bool OverlayProcessorWin::NeedsSurfaceDamageRectList() const {
@@ -426,7 +471,7 @@ OverlayProcessorWin::DelegatedCompositingResult::operator=(
 base::expected<OverlayProcessorWin::DelegatedCompositingResult,
                DelegationStatus>
 OverlayProcessorWin::TryDelegatedCompositing(
-    const bool is_full_delegated_compositing,
+    bool is_full_delegated_compositing,
     const AggregatedRenderPassList& render_passes,
     const OverlayCandidateFactory& factory,
     const OverlayProcessorInterface::FilterOperationsMap&
@@ -515,9 +560,11 @@ OverlayProcessorWin::TryDelegatedCompositing(
 }
 
 // static
-void OverlayProcessorWin::UpdatePromotedRenderPassProperties(
-    const AggregatedRenderPassList& render_passes,
-    const PromotedRenderPassesInfo& promoted_render_passes_info) {
+DCLayerOverlayProcessor::RenderPassOverlayDataMap OverlayProcessorWin::
+    UpdatePromotedRenderPassPropertiesAndGetSurfaceContentPasses(
+        bool is_full_delegated_compositing,
+        const AggregatedRenderPassList& render_passes,
+        const PromotedRenderPassesInfo& promoted_render_passes_info) {
   struct Embedder {
     raw_ptr<const AggregatedRenderPassDrawQuad> rpdq = nullptr;
     bool is_overlay = false;
@@ -570,7 +617,7 @@ void OverlayProcessorWin::UpdatePromotedRenderPassProperties(
       BackingWillBeReadInViz(*render_passes.back().get(), {});
 
   if (promoted_render_passes_info.promoted_render_passes.empty()) {
-    return;
+    return {};
   }
 
   // A map that give us backwards pointers from a render pass overlay to its
@@ -605,10 +652,181 @@ void OverlayProcessorWin::UpdatePromotedRenderPassProperties(
     }
   }
 
+  DCLayerOverlayProcessor::RenderPassOverlayDataMap
+      surface_content_render_passes;
+
   for (auto render_pass : promoted_render_passes_info.promoted_render_passes) {
     render_pass->will_backing_be_read_by_viz =
         BackingWillBeReadInViz(render_pass.get(), embedders[render_pass->id]);
+
+    // If we're in partial delegation, we want to promote video quads out of
+    // e.g. web contents surfaces as if they were the root surface.
+    if (!is_full_delegated_compositing &&
+        render_pass->is_from_surface_root_pass) {
+      DCLayerOverlayProcessor::RenderPassOverlayData overlay_data;
+      overlay_data.damage_rect = render_pass->damage_rect;
+      surface_content_render_passes.insert(
+          {&render_pass.get(), std::move(overlay_data)});
+    } else {
+      render_pass->needs_synchronous_dcomp_commit = true;
+    }
   }
+
+  // If we are not doing partial delegation, we don't expect any surface content
+  // render passes.
+  CHECK(!is_full_delegated_compositing ||
+        surface_content_render_passes.empty());
+
+  return surface_content_render_passes;
+}
+
+// static
+gfx::Rect OverlayProcessorWin::InsertSurfaceContentOverlaysAndSetPlaneZOrder(
+    DCLayerOverlayProcessor::RenderPassOverlayDataMap
+        surface_content_render_passes,
+    OverlayCandidateList& candidates) {
+  gfx::Rect overlay_union_rect;
+
+  // Returns the entry in |surface_content_render_passes| corresponding to
+  // |candidate| if it is a RPDQ candidate that had child overlays promoted from
+  // it. Returns nullptr otherwise.
+  const auto TryGetSurfaceContentOverlayData =
+      [](DCLayerOverlayProcessor::RenderPassOverlayDataMap&
+             surface_content_render_passes,
+         const OverlayCandidate& candidate)
+      -> DCLayerOverlayProcessor::RenderPassOverlayDataMap::value_type* {
+    if (candidate.rpdq) {
+      if (auto it = base::ranges::find(
+              surface_content_render_passes, candidate.rpdq->render_pass_id,
+              [](const auto& kv) { return kv.first->id; });
+          it != surface_content_render_passes.end()) {
+        if (!it->second.promoted_overlays.empty()) {
+          return &*it;
+        } else {
+          // If the surface had no promoted overlays, we don't need to process
+          // them.
+        }
+      } else {
+        // RPDQ was not from a surface quad and therefore not a candidate for
+        // overlay promotion.
+      }
+    }
+
+    return nullptr;
+  };
+
+  // Assign properties on |child| that can be inherited from |rpdq_parent|, such
+  // as clip rect(s).
+  const auto InheritOverlayPropertiesFromParent =
+      [](const gfx::Rect& surface_bounds_in_root,
+         const OverlayCandidate& rpdq_parent, OverlayCandidate& child) {
+        // Ensure that the candidate is contained by the surface it was promoted
+        // from.
+        gfx::Rect candidate_clip = surface_bounds_in_root;
+
+        if (rpdq_parent.clip_rect.has_value()) {
+          // If the parent has a clip rect, let this candidate inherit that clip
+          // rect.
+          candidate_clip.Intersect(rpdq_parent.clip_rect.value());
+        }
+
+        if (child.clip_rect) {
+          child.clip_rect->Intersect(candidate_clip);
+        } else {
+          child.clip_rect = candidate_clip;
+        }
+
+        // If the parent has rounded corners, let this candidate inherit that
+        // rounded corner clip so it will be correctly clipped if it's
+        // positioned at one of the corners.
+        if (!rpdq_parent.rounded_corners.IsEmpty()) {
+          // We don't expect |DCLayerOverlayProcessor| to set the rounded
+          // corners of its candidates.
+          CHECK(child.rounded_corners.IsEmpty());
+
+          // The rounded corners from the original quad are painted into its
+          // parent surface, making it safe for us to use the candidates'
+          // rounded corners to store its parent's rounded corners.
+          child.rounded_corners = rpdq_parent.rounded_corners;
+        }
+      };
+
+  // We inserted into candidates in front-to-back order, but |plane_z_order|s
+  // increment back-to-front, so we want to invert the iteration so we can
+  // insert in ascending z-order.
+  int current_z_index = 1;
+  // We don't use an iterator since we're pushing to the end of |candidates|
+  // during our iteration, which may invalidate iterators.
+  for (int rpdq_index = candidates.size() - 1; rpdq_index >= 0; rpdq_index--) {
+    auto* surface_content_overlay_data = TryGetSurfaceContentOverlayData(
+        surface_content_render_passes, candidates[rpdq_index]);
+    if (!surface_content_overlay_data) {
+      // This is a regular delegated overlay candidate, assign it the next
+      // z-index and move on.
+      candidates[rpdq_index].plane_z_order = current_z_index++;
+      continue;
+    }
+
+    // |candidates[rpdq_index]| is a RPDQ candidate with child overlays (e.g.
+    // videos, canvas, etc). We need to add the child overlays to |candidates|
+    // and assign them z-indexes relative to their parent RPDQ candidate. In
+    // back-to-front order, we will assign:
+    //   1. z-indexes for the underlays
+    //   2. a z-index for the RPDQ candidate itself
+    //   3. and z-indexes for the overlays.
+
+    auto& [render_pass, overlay_data] = *surface_content_overlay_data;
+
+    // Sort the child overlays so we can iterate them back-to-front.
+    base::ranges::sort(overlay_data.promoted_overlays, base::ranges::less(),
+                       &OverlayCandidate::plane_z_order);
+
+    const gfx::Rect surface_bounds_in_root = gfx::ToRoundedRect(
+        OverlayCandidate::DisplayRectInTargetSpace(candidates[rpdq_index]));
+
+    bool rpdq_handled = false;
+    candidates.reserve(candidates.size() +
+                       overlay_data.promoted_overlays.size());
+    for (auto& overlay : overlay_data.promoted_overlays) {
+      CHECK_NE(overlay.plane_z_order, 0);
+      if (!rpdq_handled && overlay.plane_z_order > 0) {
+        // Assign the current z-index to the RPDQ candidate to place it between
+        // its underlays and overlays.
+        candidates[rpdq_index].plane_z_order = current_z_index++;
+        rpdq_handled = true;
+      }
+
+      candidates.push_back(std::move(overlay));
+      // Overwrite the previous |plane_z_order| that was relative to the RPDQ
+      // candidate with a z-index relative to the full candidates list.
+      candidates.back().plane_z_order = current_z_index++;
+
+      InheritOverlayPropertiesFromParent(surface_bounds_in_root,
+                                         /*rpdq_parent=*/candidates[rpdq_index],
+                                         /*child=*/candidates.back());
+
+      overlay_union_rect.Union(gfx::ToEnclosingRect(
+          OverlayCandidate::DisplayRectInTargetSpace(overlay)));
+    }
+    if (!rpdq_handled) {
+      // Handle fencepost problem: insert the RPDQ candidate in the case that
+      // there were only child underlays.
+      candidates[rpdq_index].plane_z_order = current_z_index++;
+    }
+  }
+
+  return overlay_union_rect;
+}
+
+// static
+gfx::Rect
+OverlayProcessorWin::InsertSurfaceContentOverlaysAndSetPlaneZOrderForTesting(
+    DCLayerOverlayProcessor::RenderPassOverlayDataMap
+        surface_content_render_passes,
+    OverlayCandidateList& candidates) {
+  CHECK_IS_TEST();
+  return InsertSurfaceContentOverlaysAndSetPlaneZOrder(
+      std::move(surface_content_render_passes), candidates);
 }
 
 }  // namespace viz

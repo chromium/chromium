@@ -121,6 +121,11 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
       DCLayerOverlayProcessor::RenderPassOverlayDataMap&
           render_pass_overlay_data_map);
 
+  static gfx::Rect InsertSurfaceContentOverlaysAndSetPlaneZOrderForTesting(
+      DCLayerOverlayProcessor::RenderPassOverlayDataMap
+          surface_content_render_passes,
+      OverlayCandidateList& candidates);
+
  protected:
   // For testing.
   DCLayerOverlayProcessor* GetOverlayProcessor() {
@@ -130,8 +135,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
  private:
   void InsertDebugBorderDrawQuadsForOverlayCandidates(
       const OverlayCandidateList& dc_layer_overlays,
-      AggregatedRenderPass* root_render_pass,
-      const gfx::Rect& damage_rect);
+      AggregatedRenderPass* render_pass,
+      gfx::Rect& damage_rect);
 
   // Promote a subset of quads from the root render pass using
   // |DCLayerOverlayProcessor| while still intending to schedule the primary
@@ -198,7 +203,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   // quads were successfully promoted.
   base::expected<DelegatedCompositingResult, DelegationStatus>
   TryDelegatedCompositing(
-      const bool is_full_delegated_compositing,
+      bool is_full_delegated_compositing,
       const AggregatedRenderPassList& render_passes,
       const OverlayCandidateFactory& factory,
       const OverlayProcessorInterface::FilterOperationsMap&
@@ -208,11 +213,26 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   // Modifies the properties of |promoted_render_passes| for passes that are
   // referenced by RPDQ overlays. This gives |SkiaRenderer| enough information
   // to decide whether or not a RPDQ overlay can skip the copy in
-  // |PrepareRenderPassOverlay|.
+  // |PrepareRenderPassOverlay| and, if so, whether to allocate a swap chain or
+  // DComp surface backing. Returns the set of surfaces we should use
+  // |DCLayerOverlayProcessor| to promote overlays from.
   // TODO(crbug.com/324460866): Used for partially delegated compositing.
-  static void UpdatePromotedRenderPassProperties(
+  static DCLayerOverlayProcessor::RenderPassOverlayDataMap
+  UpdatePromotedRenderPassPropertiesAndGetSurfaceContentPasses(
+      bool is_full_delegated_compositing,
       const AggregatedRenderPassList& render_passes,
       const PromotedRenderPassesInfo& promoted_render_passes_info);
+
+  // Insert overlay candidates from |surface_content_render_passes| into
+  // |candidates|, assigning correct plane z-order in the process. |candidates|
+  // is assumed to be in front-to-back. The resulting candidates list is not
+  // sorted. Returns the union rect of overlays in
+  // |surface_content_render_passes|.
+  // TODO(crbug.com/324460866): Used for partially delegated compositing.
+  static gfx::Rect InsertSurfaceContentOverlaysAndSetPlaneZOrder(
+      DCLayerOverlayProcessor::RenderPassOverlayDataMap
+          surface_content_render_passes,
+      OverlayCandidateList& candidates);
 
   const raw_ptr<OutputSurface> output_surface_;
 
@@ -236,6 +256,12 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   // a binary of "full damage needed" or "no full damage needed" for the primary
   // plane.
   gfx::Rect overlay_damage_rect_;
+
+  // The union of the current frame's overlays that were promoted from surface
+  // content passes to be read on the subsequent frame. This is used to
+  // correctly damage surface content backings if we had previously removed
+  // damage due to overlay occlusion.
+  gfx::Rect previous_frame_overlay_rect_;
 };
 
 }  // namespace viz

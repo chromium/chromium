@@ -63,6 +63,8 @@ viz_static_library("test_support") {
     "mock_display_client.cc",
     "mock_display_client.h",
     "mock_helper.h",
+    "overlay_candidate_matchers.cc",
+    "overlay_candidate_matchers.h",
     "paths.cc",
     "paths.h",
     "stub_surface_client.cc",

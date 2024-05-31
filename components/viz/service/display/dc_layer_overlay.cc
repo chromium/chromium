@@ -1211,6 +1211,7 @@ void DCLayerOverlayProcessor::Process(
         surface_damage_rect_list_in_root_space;
     for (auto& rect : current_frame_state.surface_damage_rect_list) {
       rect = render_pass->transform_to_root_target.InverseMapRect(rect).value();
+      rect.Intersect(render_pass->output_rect);
     }
 
     CollectCandidates(resource_provider, render_pass,
