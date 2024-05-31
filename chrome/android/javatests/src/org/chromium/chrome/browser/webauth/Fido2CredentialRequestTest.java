@@ -11,6 +11,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.ConditionVariable;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -73,6 +74,7 @@ import org.chromium.components.webauthn.Fido2ApiTestHelper;
 import org.chromium.components.webauthn.Fido2CredentialRequest;
 import org.chromium.components.webauthn.FidoIntentSender;
 import org.chromium.components.webauthn.GmsCoreUtils;
+import org.chromium.components.webauthn.GpmBrowserOptionsHelper;
 import org.chromium.components.webauthn.InternalAuthenticator;
 import org.chromium.components.webauthn.InternalAuthenticatorJni;
 import org.chromium.components.webauthn.WebauthnBrowserBridge;
@@ -131,6 +133,7 @@ public class Fido2CredentialRequestTest {
     private MockFido2ApiCallHelper mFido2ApiCallHelper;
     private AuthenticationContextProvider mAuthenticationContextProvider;
     private Origin mOrigin;
+    private Bundle mBrowserOptions;
     private InternalAuthenticator.Natives mTestAuthenticatorImplJni;
     private Fido2CredentialRequest mRequest;
     private PublicKeyCredentialCreationOptions mCreationOptions;
@@ -464,6 +467,8 @@ public class Fido2CredentialRequestTest {
                         "subdomain.example.test", "/content/test/data/android/authenticator.html");
         GURL gurl = new GURL(url);
         mOrigin = Origin.create(gurl);
+        mBrowserOptions = GpmBrowserOptionsHelper.createDefaultBrowserOptions();
+        GpmBrowserOptionsHelper.setIsIncognitoExtraUntilTearDown(false);
         sActivityTestRule.loadUrl(url);
         mFrameHost = new MockAuthenticatorRenderFrameHost();
         mFrameHost.setLastCommittedURL(gurl);
@@ -530,6 +535,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -548,6 +554,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -573,6 +580,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -591,6 +599,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -609,6 +618,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -626,6 +636,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -645,6 +656,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -666,6 +678,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 customOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -693,6 +706,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 customOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -713,6 +727,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 customOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -903,6 +918,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -933,6 +949,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 creationOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -963,6 +980,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 creationOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -991,6 +1009,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 creationOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -1367,6 +1386,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 customOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -1388,6 +1408,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 customOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -1408,6 +1429,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 customOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -1429,6 +1451,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 customOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -1449,6 +1472,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -1471,6 +1495,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -1549,6 +1574,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -1591,6 +1617,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -1629,6 +1656,7 @@ public class Fido2CredentialRequestTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);

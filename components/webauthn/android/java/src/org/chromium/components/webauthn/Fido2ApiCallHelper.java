@@ -6,6 +6,7 @@ package org.chromium.components.webauthn;
 
 import android.app.PendingIntent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.ResultReceiver;
 
@@ -78,6 +79,7 @@ public class Fido2ApiCallHelper {
             PublicKeyCredentialCreationOptions options,
             Uri uri,
             byte[] clientDataHash,
+            Bundle browserOptions,
             ResultReceiver resultReceiver,
             OnSuccessListener<PendingIntent> successCallback,
             OnFailureListener failureCallback)
@@ -92,7 +94,8 @@ public class Fido2ApiCallHelper {
         args.writeStrongBinder(result);
         args.writeInt(1); // This indicates that the following options are present.
 
-        params.mMethodInterfaces.makeCredential(options, uri, clientDataHash, resultReceiver, args);
+        params.mMethodInterfaces.makeCredential(
+                options, uri, clientDataHash, browserOptions, resultReceiver, args);
 
         Task<PendingIntent> task =
                 call.run(params.mRegisterMethodId, Fido2ApiCall.TRANSACTION_REGISTER, args, result);

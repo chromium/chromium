@@ -29,6 +29,7 @@ import org.chromium.components.webauthn.AuthenticationContextProvider;
 import org.chromium.components.webauthn.Fido2Api;
 import org.chromium.components.webauthn.Fido2CredentialRequest;
 import org.chromium.components.webauthn.FidoIntentSender;
+import org.chromium.components.webauthn.GpmBrowserOptionsHelper;
 import org.chromium.components.webauthn.WebauthnMode;
 import org.chromium.components.webauthn.WebauthnModeProvider;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -149,6 +150,7 @@ class CableAuthenticator implements AuthenticationContextProvider {
         request.handleMakeCredentialRequest(
                 params,
                 params.challenge,
+                GpmBrowserOptionsHelper.createDefaultBrowserOptions(),
                 origin,
                 (status, response) -> {
                     mTaskRunner.postTask(

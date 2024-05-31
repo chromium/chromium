@@ -11,6 +11,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Pair;
 
 import androidx.annotation.Nullable;
@@ -172,9 +173,19 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         mPendingFido2CredentialRequest.handleMakeCredentialRequest(
                 options,
                 /* maybeClientDataHash= */ null,
+                maybeCreateBrowserOptions(),
                 mOrigin,
                 this::onRegisterResponse,
                 this::onError);
+    }
+
+    private @Nullable Bundle maybeCreateBrowserOptions() {
+        if (!isChrome(mWebContents)) {
+            return null;
+        }
+        Bundle browserOptions = GpmBrowserOptionsHelper.createDefaultBrowserOptions();
+        GpmBrowserOptionsHelper.addIncognitoExtraToOptions(browserOptions, mRenderFrameHost);
+        return browserOptions;
     }
 
     @Override

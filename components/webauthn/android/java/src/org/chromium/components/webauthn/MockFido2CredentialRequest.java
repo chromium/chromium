@@ -5,6 +5,7 @@
 package org.chromium.components.webauthn;
 
 import android.content.Context;
+import android.os.Bundle;
 
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.PaymentOptions;
@@ -48,6 +49,7 @@ public class MockFido2CredentialRequest extends Fido2CredentialRequest {
     public void handleMakeCredentialRequest(
             PublicKeyCredentialCreationOptions options,
             byte[] maybeClientDataHash,
+            Bundle browserOptions,
             Origin origin,
             MakeCredentialResponseCallback callback,
             FidoErrorResponseCallback errorCallback) {

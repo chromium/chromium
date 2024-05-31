@@ -163,6 +163,7 @@ public class Fido2CredentialRequest
      * @param options The arguments to create()
      * @param maybeClientDataHash The SHA-256 of the ClientDataJSON. Must be non-null iff frameHost
      *     from mAuthenticationContextProvider.frameHost is null.
+     * @param maybeBrowserOptions Optional set of browser-specific data, like channel or incognito.
      * @param origin The origin that made the WebAuthn call.
      * @param callback Success callback.
      * @param errorCallback Failure callback.
@@ -171,6 +172,7 @@ public class Fido2CredentialRequest
     public void handleMakeCredentialRequest(
             PublicKeyCredentialCreationOptions options,
             byte[] maybeClientDataHash,
+            Bundle maybeBrowserOptions,
             Origin origin,
             MakeCredentialResponseCallback callback,
             FidoErrorResponseCallback errorCallback) {
@@ -191,16 +193,20 @@ public class Fido2CredentialRequest
                             return;
                         }
                         continueMakeCredentialRequestAfterRpIdValidation(
-                                options, maybeClientDataHash, origin);
+                                options, maybeClientDataHash, maybeBrowserOptions, origin);
                     });
         } else {
-            continueMakeCredentialRequestAfterRpIdValidation(options, maybeClientDataHash, origin);
+            continueMakeCredentialRequestAfterRpIdValidation(
+                    options, maybeClientDataHash, maybeBrowserOptions, origin);
         }
     }
 
     @SuppressWarnings("NewApi")
     private void continueMakeCredentialRequestAfterRpIdValidation(
-            PublicKeyCredentialCreationOptions options, byte[] maybeClientDataHash, Origin origin) {
+            PublicKeyCredentialCreationOptions options,
+            byte[] maybeClientDataHash,
+            Bundle maybeBrowserOptions,
+            Origin origin) {
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         final boolean rkDiscouraged =
                 options.authenticatorSelection == null
@@ -222,6 +228,7 @@ public class Fido2CredentialRequest
                                     options,
                                     Uri.parse(convertOriginToString(origin)),
                                     maybeClientDataHash,
+                                    maybeBrowserOptions,
                                     getMaybeResultReceiver(),
                                     this::onGotPendingIntent,
                                     this::onBinderCallException);
@@ -293,6 +300,7 @@ public class Fido2CredentialRequest
                             options,
                             Uri.parse(convertOriginToString(origin)),
                             maybeClientDataHash,
+                            maybeBrowserOptions,
                             getMaybeResultReceiver(),
                             this::onGotPendingIntent,
                             this::onBinderCallException);

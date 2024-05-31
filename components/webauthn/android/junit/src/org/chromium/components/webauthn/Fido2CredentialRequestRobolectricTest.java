@@ -20,6 +20,7 @@ import android.content.Context;
 import android.credentials.CredentialManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.ResultReceiver;
 
 import androidx.test.filters.SmallTest;
@@ -73,11 +74,15 @@ import java.util.List;
             ShadowCredentialManager.class,
         })
 public class Fido2CredentialRequestRobolectricTest {
+    private static final String TEST_CHANNEL_EXTRA = "stable";
+    private static final Boolean TEST_INCOGNITO_EXTRA = true;
+
     private Fido2CredentialRequest mRequest;
     private PublicKeyCredentialCreationOptions mCreationOptions;
     private PublicKeyCredentialRequestOptions mRequestOptions;
     private Fido2ApiTestHelper.AuthenticatorCallback mCallback;
     private Origin mOrigin;
+    private Bundle mBrowserOptions;
     private FakeFido2ApiCallHelper mFido2ApiCallHelper;
 
     @Mock private RenderFrameHost mFrameHost;
@@ -109,6 +114,10 @@ public class Fido2CredentialRequestRobolectricTest {
                 new GURL(
                         "https://subdomain.example.test:443/content/test/data/android/authenticator.html");
         mOrigin = Origin.create(gurl);
+
+        mBrowserOptions = new Bundle();
+        mBrowserOptions.putString("com.android.chrome.CHANNEL", TEST_CHANNEL_EXTRA);
+        mBrowserOptions.putBoolean("com.android.chrome.INCOGNITO", TEST_INCOGNITO_EXTRA);
 
         mMocker.mock(GURLUtilsJni.TEST_HOOKS, mGURLUtilsJniMock);
         Mockito.when(mGURLUtilsJniMock.getOrigin(any(String.class)))
@@ -181,6 +190,7 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
+                /* maybeBrowserOptions= */ null,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -203,6 +213,7 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 clientDataHash,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -226,6 +237,7 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 clientDataHash,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -246,6 +258,7 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 clientDataHash,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -264,11 +277,14 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
 
         assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isTrue();
+        assertThat(mFido2ApiCallHelper.getChannelExtraOrNull()).isEqualTo(TEST_CHANNEL_EXTRA);
+        assertThat(mFido2ApiCallHelper.getIncognitoExtraOrNull()).isTrue();
         verify(mCredManHelperMock, times(0)).startMakeRequest(any(), any(), any(), any(), any());
     }
 
@@ -283,6 +299,7 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -302,6 +319,7 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -321,6 +339,7 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -341,6 +360,7 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequest.handleMakeCredentialRequest(
                 mCreationOptions,
                 /* maybeClientDataHash= */ new byte[] {0},
+                mBrowserOptions,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -950,6 +970,7 @@ public class Fido2CredentialRequestRobolectricTest {
         public List<WebauthnCredentialDetails> mCredentials;
         public Exception mCredentialsError;
         public byte[] mClientDataHash;
+        public Bundle mBrowserOptions;
 
         private boolean mArePlayServicesAvailable = true;
 
@@ -960,6 +981,18 @@ public class Fido2CredentialRequestRobolectricTest {
 
         public void setArePlayServicesAvailable(boolean arePlayServicesAvailable) {
             mArePlayServicesAvailable = arePlayServicesAvailable;
+        }
+
+        String getChannelExtraOrNull() {
+            return mBrowserOptions == null
+                    ? null
+                    : mBrowserOptions.getString("com.android.chrome.CHANNEL");
+        }
+
+        Boolean getIncognitoExtraOrNull() {
+            return mBrowserOptions == null
+                    ? null
+                    : mBrowserOptions.getBoolean("com.android.chrome.INCOGNITO");
         }
 
         @Override
@@ -990,12 +1023,14 @@ public class Fido2CredentialRequestRobolectricTest {
                 PublicKeyCredentialCreationOptions options,
                 Uri uri,
                 byte[] clientDataHash,
+                Bundle browserOptions,
                 ResultReceiver resultReceiver,
                 OnSuccessListener<PendingIntent> successCallback,
                 OnFailureListener failureCallback)
                 throws NoSuchAlgorithmException {
             mMakeCredentialCalled = true;
             mClientDataHash = clientDataHash;
+            mBrowserOptions = browserOptions;
 
             if (mCredentialsError != null) {
                 failureCallback.onFailure(mCredentialsError);

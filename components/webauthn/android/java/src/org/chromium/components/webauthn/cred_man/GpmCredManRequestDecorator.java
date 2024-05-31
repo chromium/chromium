@@ -16,10 +16,7 @@ import android.util.Base64;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.version_info.VersionInfo;
-import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.WebContentsStatics;
+import org.chromium.components.webauthn.GpmBrowserOptionsHelper;
 
 import java.util.Set;
 
@@ -33,8 +30,6 @@ public class GpmCredManRequestDecorator implements CredManRequestDecorator {
             ComponentName.createRelative(
                     "com.google.android.gms",
                     ".auth.api.credentials.credman.service.PasswordAndPasskeyService");
-    private static final String CHANNEL_KEY = "com.android.chrome.CHANNEL";
-    private static final String INCOGNITO_KEY = "com.android.chrome.INCOGNITO";
     private static final String IGNORE_GPM_KEY = "com.android.chrome.GPM_IGNORE";
 
     private static final String PASSWORDS_ONLY_FOR_THE_CHANNEL =
@@ -68,7 +63,7 @@ public class GpmCredManRequestDecorator implements CredManRequestDecorator {
         // Google Password Manager only: Specify the channel to save credential to the correct
         // account. When multiple Google accounts are present on the device, this will prioritize
         // the current account in Chrome.
-        input.putString(CHANNEL_KEY, getChannel());
+        GpmBrowserOptionsHelper.addChannelExtraToOptions(input);
     }
 
     @Override
@@ -108,10 +103,10 @@ public class GpmCredManRequestDecorator implements CredManRequestDecorator {
             Bundle publicKeyCredentialOptionBundle, CredManGetCredentialRequestHelper helper) {
         // The values below are specific to Google Password Manager.
         // Use the channel info to prioritize the credentials for the current account in Chrome.
-        publicKeyCredentialOptionBundle.putString(CHANNEL_KEY, getChannel());
+        GpmBrowserOptionsHelper.addChannelExtraToOptions(publicKeyCredentialOptionBundle);
         // Specify if the tab is in incognito mode for user privacy.
-        publicKeyCredentialOptionBundle.putBoolean(
-                INCOGNITO_KEY, isIncognito(helper.getRenderFrameHost()));
+        GpmBrowserOptionsHelper.addIncognitoExtraToOptions(
+                publicKeyCredentialOptionBundle, helper.getRenderFrameHost());
         // Do not include any passkeys from GPM if `helper.getIgnoreGpm()` is true.
         publicKeyCredentialOptionBundle.putBoolean(IGNORE_GPM_KEY, helper.getIgnoreGpm());
     }
@@ -125,10 +120,10 @@ public class GpmCredManRequestDecorator implements CredManRequestDecorator {
             Bundle passwordCredentialOptionBundle, CredManGetCredentialRequestHelper helper) {
         // The values below are specific to Google Password Manager.
         // Specify the channel so that GPM can return passwords only for that channel.
-        passwordCredentialOptionBundle.putString(CHANNEL_KEY, getChannel());
+        GpmBrowserOptionsHelper.addChannelExtraToOptions(passwordCredentialOptionBundle);
         // Specify if the tab is in incognito mode for user privacy.
-        passwordCredentialOptionBundle.putBoolean(
-                INCOGNITO_KEY, isIncognito(helper.getRenderFrameHost()));
+        GpmBrowserOptionsHelper.addIncognitoExtraToOptions(
+                passwordCredentialOptionBundle, helper.getRenderFrameHost());
         // Requests passwords only for the current Chrome channel.
         passwordCredentialOptionBundle.putBoolean(PASSWORDS_ONLY_FOR_THE_CHANNEL, true);
         // If there are passwords with empty usernames, also return them in the response.
@@ -142,32 +137,6 @@ public class GpmCredManRequestDecorator implements CredManRequestDecorator {
     public void updatePasswordCredentialOptionBuilder(
             CredentialOption.Builder builder, CredManGetCredentialRequestHelper helper) {
         builder.setAllowedProviders(Set.of(GPM_COMPONENT_NAME));
-    }
-
-    protected static final String getChannel() {
-        if (VersionInfo.isCanaryBuild()) {
-            return "canary";
-        }
-        if (VersionInfo.isDevBuild()) {
-            return "dev";
-        }
-        if (VersionInfo.isBetaBuild()) {
-            return "beta";
-        }
-        if (VersionInfo.isStableBuild()) {
-            return "stable";
-        }
-        if (VersionInfo.isLocalBuild()) {
-            return "built_locally";
-        }
-        assert false : "Channel must be canary, dev, beta, stable or chrome must be built locally.";
-        return null;
-    }
-
-    private static final boolean isIncognito(RenderFrameHost frameHost) {
-        if (frameHost == null) return false;
-        WebContents webContents = WebContentsStatics.fromRenderFrameHost(frameHost);
-        return webContents == null ? false : webContents.isIncognito();
     }
 
     private GpmCredManRequestDecorator() {}

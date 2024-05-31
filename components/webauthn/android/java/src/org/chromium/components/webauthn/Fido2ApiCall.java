@@ -136,6 +136,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
                         PublicKeyCredentialCreationOptions options,
                         @Nullable Uri uri,
                         @Nullable byte[] clientDataHash,
+                        @Nullable Bundle browserOptions,
                         ResultReceiver resultReceiver,
                         Parcel parcel)
                         throws NoSuchAlgorithmException {
@@ -170,11 +171,12 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
                         PublicKeyCredentialCreationOptions options,
                         Uri uri,
                         byte[] clientDataHash,
+                        Bundle browserOptions,
                         ResultReceiver resultReceiver,
                         Parcel parcel)
                         throws NoSuchAlgorithmException {
                     Fido2Api.appendBrowserMakeCredentialOptionsToParcel(
-                            options, uri, clientDataHash, resultReceiver, parcel);
+                            options, uri, clientDataHash, browserOptions, resultReceiver, parcel);
                 }
 
                 @Override
