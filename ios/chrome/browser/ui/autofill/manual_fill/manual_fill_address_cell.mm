@@ -181,255 +181,8 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
     self.accessibilityLabel = cellIndexAccessibilityLabel;
   }
 
-  // Holds the views whose leading anchor is constrained relative to the cell's
-  // leading anchor.
-  std::vector<ManualFillCellView> verticalLeadViews;
-
-  if (!IsKeyboardAccessoryUpgradeEnabled()) {
-    NSString* blackText = nil;
-    NSString* grayText = nil;
-
-    // Top label is the address summary and fallbacks on city and email.
-    if (address.line1.length) {
-      blackText = address.line1;
-      grayText = address.line2.length ? address.line2 : nil;
-    } else if (address.line2.length) {
-      blackText = address.line2;
-    } else if (address.city.length) {
-      blackText = address.city;
-    } else if (address.emailAddress.length) {
-      blackText = address.emailAddress;
-    }
-
-    NSMutableAttributedString* attributedString = nil;
-    if (blackText.length) {
-      attributedString = [[NSMutableAttributedString alloc]
-          initWithString:blackText
-              attributes:@{
-                NSForegroundColorAttributeName :
-                    [UIColor colorNamed:kTextPrimaryColor],
-                NSFontAttributeName :
-                    [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
-              }];
-      if (grayText.length) {
-        NSString* formattedGrayText =
-            [NSString stringWithFormat:@" –– %@", grayText];
-        NSDictionary* attributes = @{
-          NSForegroundColorAttributeName :
-              [UIColor colorNamed:kTextSecondaryColor],
-          NSFontAttributeName :
-              [UIFont preferredFontForTextStyle:UIFontTextStyleBody]
-        };
-        NSAttributedString* grayAttributedString =
-            [[NSAttributedString alloc] initWithString:formattedGrayText
-                                            attributes:attributes];
-        [attributedString appendAttributedString:grayAttributedString];
-      }
-    }
-
-    if (attributedString) {
-      self.addressLabel.attributedText = attributedString;
-      AddViewToVerticalLeadViews(self.addressLabel,
-                                 ManualFillCellView::ElementType::kOther,
-                                 verticalLeadViews);
-    }
-  }
-
-  self.dynamicConstraints = [[NSMutableArray alloc] init];
-
-  // First, middle and last names are presented on the same line when possible.
-  NSMutableArray<UIView*>* nameLineViews = [[NSMutableArray alloc] init];
-
-  bool showFirstName = address.firstName.length;
-  bool showMiddleName = address.middleNameOrInitial.length;
-  bool showLastName = address.lastName.length;
-
-  // Holds the chip buttons related to the name that are vertical leads.
-  NSMutableArray<UIView*>* nameGroupVerticalLeadChips =
-      [[NSMutableArray alloc] init];
-
-  // First name chip button.
-  if (showFirstName) {
-    [self.firstNameButton setTitle:address.firstName
-                          forState:UIControlStateNormal];
-    [nameLineViews addObject:self.firstNameButton];
-    self.firstNameButton.hidden = NO;
-  } else {
-    self.firstNameButton.hidden = YES;
-  }
-
-  // Middle name chip button.
-  if (showMiddleName) {
-    [self.middleNameButton setTitle:address.middleNameOrInitial
-                           forState:UIControlStateNormal];
-    [nameLineViews addObject:self.middleNameButton];
-    self.middleNameButton.hidden = NO;
-  } else {
-    self.middleNameButton.hidden = YES;
-  }
-
-  // Last name chip button.
-  if (showLastName) {
-    [self.lastNameButton setTitle:address.lastName
-                         forState:UIControlStateNormal];
-    [nameLineViews addObject:self.lastNameButton];
-    self.lastNameButton.hidden = NO;
-  } else {
-    self.lastNameButton.hidden = YES;
-  }
-
-  UIView* trailingView =
-      IsKeyboardAccessoryUpgradeEnabled() ? self.overflowMenuButton : nil;
-  LayViewsHorizontallyWhenPossible(nameLineViews, self.layoutGuide,
-                                   self.dynamicConstraints,
-                                   nameGroupVerticalLeadChips, trailingView);
-
-  // Holds the chip buttons related to the company name that are vertical leads.
-  NSMutableArray<UIView*>* companyGroupVerticalLeadChips =
-      [[NSMutableArray alloc] init];
-
-  // Company line chip button.
-  if (address.company.length) {
-    [self.companyButton setTitle:address.company forState:UIControlStateNormal];
-    [companyGroupVerticalLeadChips addObject:self.companyButton];
-    self.companyButton.hidden = NO;
-  } else {
-    self.companyButton.hidden = YES;
-  }
-
-  // Holds the chip buttons related to the address that are vertical leads.
-  NSMutableArray<UIView*>* addressGroupVerticalLeadChips =
-      [[NSMutableArray alloc] init];
-
-  // Address line 1 chip button.
-  if (address.line1.length) {
-    [self.line1Button setTitle:address.line1 forState:UIControlStateNormal];
-    [addressGroupVerticalLeadChips addObject:self.line1Button];
-    self.line1Button.hidden = NO;
-  } else {
-    self.line1Button.hidden = YES;
-  }
-
-  // Address line 2 chip button.
-  if (address.line2.length) {
-    [self.line2Button setTitle:address.line2 forState:UIControlStateNormal];
-    [addressGroupVerticalLeadChips addObject:self.line2Button];
-    self.line2Button.hidden = NO;
-  } else {
-    self.line2Button.hidden = YES;
-  }
-
-  // City, state, ZIP code and country are presented on the same line when
-  // possible. Used when the Keyboard Accessory Upgrade feature is enabled.
-  NSMutableArray<UIView*>* cityStateZipCountryLineViews =
-      [[NSMutableArray alloc] init];
-
-  // ZIP code and city are presented on the same line when possible. Used when
-  // the Keyboard Accessory Upgrade feature is disabled.
-  NSMutableArray<UIView*>* zipCityLineViews = [[NSMutableArray alloc] init];
-  // State and country are presented on the same line when possible. Used when
-  // the Keyboard Accessory Upgrade feature is disabled.
-  NSMutableArray<UIView*>* stateCountryLineViews =
-      [[NSMutableArray alloc] init];
-
-  // City chip button.
-  if (address.city.length) {
-    [self.cityButton setTitle:address.city forState:UIControlStateNormal];
-    [IsKeyboardAccessoryUpgradeEnabled()
-            ? cityStateZipCountryLineViews
-            : zipCityLineViews addObject:self.cityButton];
-    self.cityButton.hidden = NO;
-  } else {
-    self.cityButton.hidden = YES;
-  }
-
-  // State chip button.
-  if (address.state.length) {
-    [self.stateButton setTitle:address.state forState:UIControlStateNormal];
-    [IsKeyboardAccessoryUpgradeEnabled()
-            ? cityStateZipCountryLineViews
-            : stateCountryLineViews addObject:self.stateButton];
-    self.stateButton.hidden = NO;
-  } else {
-    self.stateButton.hidden = YES;
-  }
-
-  // ZIP code chip button.
-  if (address.zip.length) {
-    [self.zipButton setTitle:address.zip forState:UIControlStateNormal];
-    IsKeyboardAccessoryUpgradeEnabled()
-        ? [cityStateZipCountryLineViews addObject:self.zipButton]
-        : [zipCityLineViews insertObject:self.zipButton atIndex:0];
-    self.zipButton.hidden = NO;
-  } else {
-    self.zipButton.hidden = YES;
-  }
-
-  // Country chip button.
-  if (address.country.length) {
-    [self.countryButton setTitle:address.country forState:UIControlStateNormal];
-    [IsKeyboardAccessoryUpgradeEnabled()
-            ? cityStateZipCountryLineViews
-            : stateCountryLineViews addObject:self.countryButton];
-    self.countryButton.hidden = NO;
-  } else {
-    self.countryButton.hidden = YES;
-  }
-
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    LayViewsHorizontallyWhenPossible(cityStateZipCountryLineViews,
-                                     self.layoutGuide, self.dynamicConstraints,
-                                     addressGroupVerticalLeadChips);
-  } else {
-    LayViewsHorizontallyWhenPossible(zipCityLineViews, self.layoutGuide,
-                                     self.dynamicConstraints,
-                                     addressGroupVerticalLeadChips);
-    LayViewsHorizontallyWhenPossible(stateCountryLineViews, self.layoutGuide,
-                                     self.dynamicConstraints,
-                                     addressGroupVerticalLeadChips);
-  }
-
-  // Holds the chip buttons related to the contact info that are vertical leads.
-  NSMutableArray<UIView*>* contactInfoGroupVerticalLeadChips =
-      [[NSMutableArray alloc] init];
-
-  // Phone number chip button.
-  if (address.phoneNumber.length) {
-    [self.phoneNumberButton setTitle:address.phoneNumber
-                            forState:UIControlStateNormal];
-    [contactInfoGroupVerticalLeadChips addObject:self.phoneNumberButton];
-    self.phoneNumberButton.hidden = NO;
-  } else {
-    self.phoneNumberButton.hidden = YES;
-  }
-
-  // Email address chip button.
-  if (address.emailAddress.length) {
-    [self.emailAddressButton setTitle:address.emailAddress
-                             forState:UIControlStateNormal];
-    [contactInfoGroupVerticalLeadChips addObject:self.emailAddressButton];
-    self.emailAddressButton.hidden = NO;
-  } else {
-    self.emailAddressButton.hidden = YES;
-  }
-
-  AddChipGroupsToVerticalLeadViews(
-      @[
-        nameGroupVerticalLeadChips, companyGroupVerticalLeadChips,
-        addressGroupVerticalLeadChips, contactInfoGroupVerticalLeadChips
-      ],
-      verticalLeadViews);
-
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    AddViewToVerticalLeadViews(self.autofillFormButton,
-                               ManualFillCellView::ElementType::kOther,
-                               verticalLeadViews);
-  }
-
-  // Set and activate constraints.
-  AppendVerticalConstraintsSpacingForViews(self.dynamicConstraints,
-                                           verticalLeadViews, self.layoutGuide);
-  [NSLayoutConstraint activateConstraints:self.dynamicConstraints];
+  [self populateViewsWithAddress:address];
+  [self arrangeViewsWithAddress:address];
 }
 
 #pragma mark - Private
@@ -546,6 +299,318 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   self.contentView.shouldGroupAccessibilityChildren = YES;
 
   [NSLayoutConstraint activateConstraints:staticConstraints];
+}
+
+// Adds each data item from the ManualFillAddress to its corresponding view when
+// valid (when the data item is not empty). Otherwise, hides the corresponding
+// view. Once populated, the views need to be layed out with the
+// `arrangeViewsWithAddress` method.
+- (void)populateViewsWithAddress:(ManualFillAddress*)address {
+  if (!IsKeyboardAccessoryUpgradeEnabled()) {
+    NSString* blackText = nil;
+    NSString* grayText = nil;
+
+    // Top label is the address summary and fallbacks on city and email.
+    if (address.line1.length) {
+      blackText = address.line1;
+      grayText = address.line2.length ? address.line2 : nil;
+    } else if (address.line2.length) {
+      blackText = address.line2;
+    } else if (address.city.length) {
+      blackText = address.city;
+    } else if (address.emailAddress.length) {
+      blackText = address.emailAddress;
+    }
+
+    NSMutableAttributedString* attributedString = nil;
+    if (blackText.length) {
+      attributedString = [[NSMutableAttributedString alloc]
+          initWithString:blackText
+              attributes:@{
+                NSForegroundColorAttributeName :
+                    [UIColor colorNamed:kTextPrimaryColor],
+                NSFontAttributeName :
+                    [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
+              }];
+      if (grayText.length) {
+        NSString* formattedGrayText =
+            [NSString stringWithFormat:@" –– %@", grayText];
+        NSDictionary* attributes = @{
+          NSForegroundColorAttributeName :
+              [UIColor colorNamed:kTextSecondaryColor],
+          NSFontAttributeName :
+              [UIFont preferredFontForTextStyle:UIFontTextStyleBody]
+        };
+        NSAttributedString* grayAttributedString =
+            [[NSAttributedString alloc] initWithString:formattedGrayText
+                                            attributes:attributes];
+        [attributedString appendAttributedString:grayAttributedString];
+      }
+    }
+
+    if (attributedString) {
+      self.addressLabel.attributedText = attributedString;
+    }
+  }
+
+  bool showFirstName = address.firstName.length;
+  bool showMiddleName = address.middleNameOrInitial.length;
+  bool showLastName = address.lastName.length;
+
+  // First name chip button.
+  if (showFirstName) {
+    [self.firstNameButton setTitle:address.firstName
+                          forState:UIControlStateNormal];
+    self.firstNameButton.hidden = NO;
+  } else {
+    self.firstNameButton.hidden = YES;
+  }
+
+  // Middle name chip button.
+  if (showMiddleName) {
+    [self.middleNameButton setTitle:address.middleNameOrInitial
+                           forState:UIControlStateNormal];
+    self.middleNameButton.hidden = NO;
+  } else {
+    self.middleNameButton.hidden = YES;
+  }
+
+  // Last name chip button.
+  if (showLastName) {
+    [self.lastNameButton setTitle:address.lastName
+                         forState:UIControlStateNormal];
+    self.lastNameButton.hidden = NO;
+  } else {
+    self.lastNameButton.hidden = YES;
+  }
+
+  // Company line chip button.
+  if (address.company.length) {
+    [self.companyButton setTitle:address.company forState:UIControlStateNormal];
+    self.companyButton.hidden = NO;
+  } else {
+    self.companyButton.hidden = YES;
+  }
+
+  // Address line 1 chip button.
+  if (address.line1.length) {
+    [self.line1Button setTitle:address.line1 forState:UIControlStateNormal];
+    self.line1Button.hidden = NO;
+  } else {
+    self.line1Button.hidden = YES;
+  }
+
+  // Address line 2 chip button.
+  if (address.line2.length) {
+    [self.line2Button setTitle:address.line2 forState:UIControlStateNormal];
+    self.line2Button.hidden = NO;
+  } else {
+    self.line2Button.hidden = YES;
+  }
+
+  // City chip button.
+  if (address.city.length) {
+    [self.cityButton setTitle:address.city forState:UIControlStateNormal];
+    self.cityButton.hidden = NO;
+  } else {
+    self.cityButton.hidden = YES;
+  }
+
+  // State chip button.
+  if (address.state.length) {
+    [self.stateButton setTitle:address.state forState:UIControlStateNormal];
+    self.stateButton.hidden = NO;
+  } else {
+    self.stateButton.hidden = YES;
+  }
+
+  // ZIP code chip button.
+  if (address.zip.length) {
+    [self.zipButton setTitle:address.zip forState:UIControlStateNormal];
+    self.zipButton.hidden = NO;
+  } else {
+    self.zipButton.hidden = YES;
+  }
+
+  // Country chip button.
+  if (address.country.length) {
+    [self.countryButton setTitle:address.country forState:UIControlStateNormal];
+    self.countryButton.hidden = NO;
+  } else {
+    self.countryButton.hidden = YES;
+  }
+
+  // Phone number chip button.
+  if (address.phoneNumber.length) {
+    [self.phoneNumberButton setTitle:address.phoneNumber
+                            forState:UIControlStateNormal];
+    self.phoneNumberButton.hidden = NO;
+  } else {
+    self.phoneNumberButton.hidden = YES;
+  }
+
+  // Email address chip button.
+  if (address.emailAddress.length) {
+    [self.emailAddressButton setTitle:address.emailAddress
+                             forState:UIControlStateNormal];
+    self.emailAddressButton.hidden = NO;
+  } else {
+    self.emailAddressButton.hidden = YES;
+  }
+}
+
+// Creates and activates the dynamic constraints that are depending on the
+// address data.
+- (void)arrangeViewsWithAddress:(ManualFillAddress*)address {
+  // Holds the views whose leading anchor is constrained relative to the cell's
+  // leading anchor.
+  std::vector<ManualFillCellView> verticalLeadViews;
+
+  if (!IsKeyboardAccessoryUpgradeEnabled() &&
+      self.addressLabel.attributedText.length) {
+    AddViewToVerticalLeadViews(self.addressLabel,
+                               ManualFillCellView::ElementType::kOther,
+                               verticalLeadViews);
+  }
+
+  self.dynamicConstraints = [[NSMutableArray alloc] init];
+
+  // First, middle and last names are presented on the same line when possible.
+  NSMutableArray<UIView*>* nameLineViews = [[NSMutableArray alloc] init];
+
+  // Holds the chip buttons related to the name that are vertical leads.
+  NSMutableArray<UIView*>* nameGroupVerticalLeadChips =
+      [[NSMutableArray alloc] init];
+
+  // First name chip button.
+  if (address.firstName.length) {
+    [nameLineViews addObject:self.firstNameButton];
+  }
+
+  // Middle name chip button.
+  if (address.middleNameOrInitial.length) {
+    [nameLineViews addObject:self.middleNameButton];
+  }
+
+  // Last name chip button.
+  if (address.lastName.length) {
+    [nameLineViews addObject:self.lastNameButton];
+  }
+
+  UIView* trailingView =
+      IsKeyboardAccessoryUpgradeEnabled() ? self.overflowMenuButton : nil;
+  LayViewsHorizontallyWhenPossible(nameLineViews, self.layoutGuide,
+                                   self.dynamicConstraints,
+                                   nameGroupVerticalLeadChips, trailingView);
+
+  // Holds the chip buttons related to the company name that are vertical leads.
+  NSMutableArray<UIView*>* companyGroupVerticalLeadChips =
+      [[NSMutableArray alloc] init];
+
+  // Company line chip button.
+  if (address.company.length) {
+    [companyGroupVerticalLeadChips addObject:self.companyButton];
+  }
+
+  // Holds the chip buttons related to the address that are vertical leads.
+  NSMutableArray<UIView*>* addressGroupVerticalLeadChips =
+      [[NSMutableArray alloc] init];
+
+  // Address line 1 chip button.
+  if (address.line1.length) {
+    [addressGroupVerticalLeadChips addObject:self.line1Button];
+  }
+
+  // Address line 2 chip button.
+  if (address.line2.length) {
+    [addressGroupVerticalLeadChips addObject:self.line2Button];
+  }
+
+  // City, state, ZIP code and country are presented on the same line when
+  // possible. Used when the Keyboard Accessory Upgrade feature is enabled.
+  NSMutableArray<UIView*>* cityStateZipCountryLineViews =
+      [[NSMutableArray alloc] init];
+
+  // ZIP code and city are presented on the same line when possible. Used when
+  // the Keyboard Accessory Upgrade feature is disabled.
+  NSMutableArray<UIView*>* zipCityLineViews = [[NSMutableArray alloc] init];
+  // State and country are presented on the same line when possible. Used when
+  // the Keyboard Accessory Upgrade feature is disabled.
+  NSMutableArray<UIView*>* stateCountryLineViews =
+      [[NSMutableArray alloc] init];
+
+  // City chip button.
+  if (address.city.length) {
+    [IsKeyboardAccessoryUpgradeEnabled()
+            ? cityStateZipCountryLineViews
+            : zipCityLineViews addObject:self.cityButton];
+  }
+
+  // State chip button.
+  if (address.state.length) {
+    [IsKeyboardAccessoryUpgradeEnabled()
+            ? cityStateZipCountryLineViews
+            : stateCountryLineViews addObject:self.stateButton];
+  }
+
+  // ZIP code chip button.
+  if (address.zip.length) {
+    IsKeyboardAccessoryUpgradeEnabled()
+        ? [cityStateZipCountryLineViews addObject:self.zipButton]
+        : [zipCityLineViews insertObject:self.zipButton atIndex:0];
+  }
+
+  // Country chip button.
+  if (address.country.length) {
+    [IsKeyboardAccessoryUpgradeEnabled()
+            ? cityStateZipCountryLineViews
+            : stateCountryLineViews addObject:self.countryButton];
+  }
+
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    LayViewsHorizontallyWhenPossible(cityStateZipCountryLineViews,
+                                     self.layoutGuide, self.dynamicConstraints,
+                                     addressGroupVerticalLeadChips);
+  } else {
+    LayViewsHorizontallyWhenPossible(zipCityLineViews, self.layoutGuide,
+                                     self.dynamicConstraints,
+                                     addressGroupVerticalLeadChips);
+    LayViewsHorizontallyWhenPossible(stateCountryLineViews, self.layoutGuide,
+                                     self.dynamicConstraints,
+                                     addressGroupVerticalLeadChips);
+  }
+
+  // Holds the chip buttons related to the contact info that are vertical leads.
+  NSMutableArray<UIView*>* contactInfoGroupVerticalLeadChips =
+      [[NSMutableArray alloc] init];
+
+  // Phone number chip button.
+  if (address.phoneNumber.length) {
+    [contactInfoGroupVerticalLeadChips addObject:self.phoneNumberButton];
+  }
+
+  // Email address chip button.
+  if (address.emailAddress.length) {
+    [contactInfoGroupVerticalLeadChips addObject:self.emailAddressButton];
+  }
+
+  AddChipGroupsToVerticalLeadViews(
+      @[
+        nameGroupVerticalLeadChips, companyGroupVerticalLeadChips,
+        addressGroupVerticalLeadChips, contactInfoGroupVerticalLeadChips
+      ],
+      verticalLeadViews);
+
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    AddViewToVerticalLeadViews(self.autofillFormButton,
+                               ManualFillCellView::ElementType::kOther,
+                               verticalLeadViews);
+  }
+
+  // Set and activate constraints.
+  AppendVerticalConstraintsSpacingForViews(self.dynamicConstraints,
+                                           verticalLeadViews, self.layoutGuide);
+  [NSLayoutConstraint activateConstraints:self.dynamicConstraints];
 }
 
 - (void)userDidTapAddressInfo:(UIButton*)sender {
