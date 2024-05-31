@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/fileapi/file_list.h"
 #include "third_party/blink/renderer/core/html/forms/button_input_type.h"
@@ -1136,6 +1137,14 @@ void InputType::ApplyStep(const Decimal& current,
   // a number to a string, as defined for the input element's type attribute's
   // current state, on value.
   // 12. Set the value of the element to value as string.
+  if (RuntimeEnabledFeatures::
+          DispatchBeforeInputForSpinButtonInteractionsEnabled() &&
+      event_behavior == TextFieldEventBehavior::kDispatchChangeEvent &&
+      DispatchBeforeInputInsertText(
+          EventTargetNodeForDocument(&GetElement().GetDocument()),
+          new_value.ToString()) != DispatchEventResult::kNotCanceled) {
+    return;
+  }
   SetValueAsDecimal(new_value, event_behavior, exception_state);
 
   if (AXObjectCache* cache = GetElement().GetDocument().ExistingAXObjectCache())
