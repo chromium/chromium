@@ -22,6 +22,7 @@
     background-color: var(--cros-sys-base_elevated);
     border-radius: 16px;
     margin: 24px 0px;
+    overflow: hidden;
   }
 
   #essential-details {
@@ -81,12 +82,16 @@
   }
 
   #screenshot-container {
-    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-radius: 16px;
+    /* TODO(b/343106164): Show animation instead of solid color. */
+    background-color: var(--cros-sys-inverse_on_surface);
   }
 
   #screenshot {
     border-radius: 16px;
-    display: block;
+    /* Hide until screenshot has loaded. */
+    display: none;
   }
 
   #error-message {

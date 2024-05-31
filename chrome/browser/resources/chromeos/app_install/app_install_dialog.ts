@@ -244,7 +244,14 @@ class AppInstallDialogElement extends HTMLElement {
       if (appInfo.screenshots[0]) {
         this.$<HTMLSpanElement>('#description-and-screenshots').hidden = false;
         this.$<HTMLHRElement>('#divider').hidden = false;
-        this.$<HTMLSpanElement>('#screenshot-container').hidden = false;
+        this.$<HTMLDivElement>('#screenshot-container').hidden = false;
+        const height = appInfo.screenshots[0].size.height /
+            (appInfo.screenshots[0].size.width / 408);
+        this.$<HTMLDivElement>('#screenshot-container').style.height =
+            height.toString() + 'px';
+        this.$<HTMLImageElement>('#screenshot').onload = () => {
+          this.onScreenshotLoad();
+        };
         this.$<HTMLImageElement>('#screenshot')
             .setAttribute('auto-src', appInfo.screenshots[0].url.url);
       }
@@ -267,6 +274,10 @@ class AppInstallDialogElement extends HTMLElement {
 
   async connectedCallback(): Promise<void> {
     this.changeDialogState(await this.initialStatePromise);
+  }
+
+  private onScreenshotLoad(): void {
+    this.$<HTMLImageElement>('#screenshot')!.style.display = 'block';
   }
 
   private onCancelButtonClick(): void {
