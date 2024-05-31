@@ -1266,6 +1266,7 @@ policies:
   1265: DynamicCodeSettings
   1266: LensOverlaySettings
   1267: ThirdPartyPasswordManagersAllowed
+  1268: DeviceAllowEnterpriseRemoteAccessConnections
 atomic_groups:
   1: Homepage
   2: RemoteAccess

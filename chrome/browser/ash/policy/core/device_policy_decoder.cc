@@ -2273,6 +2273,17 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                     nullptr);
     }
   }
+
+  if (policy.has_deviceallowenterpriseremoteaccessconnections()) {
+    const em::BooleanPolicyProto& container(
+        policy.deviceallowenterpriseremoteaccessconnections());
+    if (container.has_value()) {
+      policies->Set(key::kDeviceAllowEnterpriseRemoteAccessConnections,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
+                    nullptr);
+    }
+  }
 }
 
 // TODO(b/324221325): Move other Kiosk-related policies to this function.

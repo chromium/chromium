@@ -845,4 +845,19 @@ TEST_F(DevicePolicyDecoderTest, DeviceExtensionsSystemLogEnabled) {
                                std::move(deviceextensionssystemlogenabled));
 }
 
+TEST_F(DevicePolicyDecoderTest, DeviceAllowEnterpriseRemoteAccessConnections) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDeviceAllowEnterpriseRemoteAccessConnections);
+
+  base::Value value(true);
+  device_policy.mutable_deviceallowenterpriseremoteaccessconnections()
+      ->set_value(value.GetBool());
+
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceAllowEnterpriseRemoteAccessConnections,
+      std::move(value));
+}
+
 }  // namespace policy
