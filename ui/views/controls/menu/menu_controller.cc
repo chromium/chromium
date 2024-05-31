@@ -1354,11 +1354,14 @@ ui::PostDispatchAction MenuController::OnWillDispatchKeyEvent(
 
     // Key events can lead to this being deleted.
     if (!this_ref) {
-      if (ShouldStopEventPropagation(*event)) {
+      // Don't stop event propagation for Shift-Esc because it is
+      // supposed to open the Task Manager on Windows and Linux.
+      if (event->IsShiftDown() && event->key_code() == ui::VKEY_ESCAPE) {
+        return ui::POST_DISPATCH_PERFORM_DEFAULT;
+      } else {
         event->StopPropagation();
         return ui::POST_DISPATCH_NONE;
       }
-      return ui::POST_DISPATCH_PERFORM_DEFAULT;
     }
 
     if (!IsEditableCombobox() && !event->stopped_propagation()) {
@@ -1797,42 +1800,10 @@ bool MenuController::OnKeyPressed(const ui::KeyEvent& event) {
       break;
 #endif
 
-    case ui::VKEY_J:
-      // Fully exit the menu when Ctrl+J is pressed because it is supposed
-      // to open the downloads page on Windows and Linux.
-      if (event.IsControlDown()) {
-        Cancel(ExitType::kAll);
-        break;
-      }
-      break;
     default:
       break;
   }
   return handled_key_code;
-}
-
-bool MenuController::ShouldStopEventPropagation(const ui::KeyEvent& event) {
-  DCHECK_EQ(event.type(), ui::ET_KEY_PRESSED);
-  const ui::KeyboardCode key_code = event.key_code();
-  switch (key_code) {
-    case ui::VKEY_ESCAPE:
-      // Don't stop event propagation for Shift-Esc because it is
-      // supposed to open the Task Manager on Windows and Linux.
-      if (event.IsShiftDown()) {
-        return false;
-      }
-      break;
-    case ui::VKEY_J:
-      // Don't stop event propagation for Ctrl-J because it is
-      // supposed to open downloads page.
-      if (event.IsControlDown()) {
-        return false;
-      }
-      break;
-    default:
-      break;
-  }
-  return true;
 }
 
 MenuController::MenuController(bool for_drop,

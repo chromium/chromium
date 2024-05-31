@@ -391,9 +391,6 @@ class VIEWS_EXPORT MenuController
   // Returns true if OnKeyPressed handled the key |event|.
   bool OnKeyPressed(const ui::KeyEvent& event);
 
-  // Returns false if we don't want to stop event propagation here.
-  bool ShouldStopEventPropagation(const ui::KeyEvent& event);
-
   // Creates a MenuController. See |for_drop_| member for details on |for_drop|.
   MenuController(bool for_drop, internal::MenuControllerDelegate* delegate);
 
