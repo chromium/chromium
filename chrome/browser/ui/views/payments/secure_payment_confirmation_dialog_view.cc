@@ -47,6 +47,15 @@ class BorderedRowView : public views::View {
 BEGIN_METADATA(BorderedRowView)
 END_METADATA
 
+std::unique_ptr<views::View> CreateSpacer(
+    views::DistanceMetric vertical_distance) {
+  return views::Builder<views::View>()
+      .SetPreferredSize(gfx::Size(
+          /*width=*/1,
+          views::LayoutProvider::Get()->GetDistanceMetric(vertical_distance)))
+      .Build();
+}
+
 }  // namespace
 
 // static
@@ -297,6 +306,9 @@ SecurePaymentConfirmationDialogView::CreateBodyView() {
       CreateSecurePaymentConfirmationTitleLabel(model_->title());
   title_text->SetID(static_cast<int>(DialogViewID::TITLE));
   body_view->AddChildView(std::move(title_text));
+
+  body_view->AddChildView(
+      CreateSpacer(views::DISTANCE_RELATED_CONTROL_VERTICAL));
 
   body_view->AddChildView(CreateRowView(
       model_->merchant_label(), DialogViewID::MERCHANT_LABEL,

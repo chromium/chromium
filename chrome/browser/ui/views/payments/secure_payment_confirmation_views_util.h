@@ -41,9 +41,6 @@ constexpr int kTitleLineHeight = 24;
 // Line height of the description text.
 constexpr int kDescriptionLineHeight = 20;
 
-// Insets of the body content.
-constexpr int kBodyInsets = 8;
-
 // Insets of the secondary small text, e.g., the opt-out footer.
 constexpr int kSecondarySmallTextInsets = 16;
 
