@@ -567,6 +567,7 @@ class DownloadAppVerificationRequest : public download::DownloadItem::Observer {
  private:
   // DownloadItem::Observer
   void OnDownloadDestroyed(download::DownloadItem* item) override {
+    item_->RemoveObserver(this);
     item_ = nullptr;
     std::move(callback_).Run(this, false, nullptr);
     // Do not add code after this. Callback may delete `this`.
