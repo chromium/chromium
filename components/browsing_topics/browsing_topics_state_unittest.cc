@@ -41,6 +41,7 @@ constexpr int kConfigVersion = 1;
 constexpr int kTaxonomyVersion = 1;
 constexpr int64_t kModelVersion = 2;
 constexpr size_t kPaddedTopTopicsStartIndex = 3;
+constexpr base::TimeDelta kNextScheduledCalculationDelay = base::Days(7);
 
 EpochTopics CreateTestEpochTopics(base::Time calculation_time,
                                   bool from_manually_triggered_calculation,
@@ -174,11 +175,11 @@ TEST_F(BrowsingTopicsStateTest,
   task_environment_->FastForwardBy(base::Milliseconds(3000));
   EXPECT_FALSE(state.HasScheduledSaveForTesting());
 
-  state.UpdateNextScheduledCalculationTime();
+  state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
   EXPECT_TRUE(state.epochs().empty());
   EXPECT_EQ(state.next_scheduled_calculation_time(),
-            base::Time::Now() + base::Days(7));
+            base::Time::Now() + kNextScheduledCalculationDelay);
   EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey));
 
   EXPECT_TRUE(state.HasScheduledSaveForTesting());
@@ -286,7 +287,7 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_SwitchTimeNotArrived) {
 
   state.AddEpoch(CreateTestEpochTopics(
       kTime1, /*from_manually_triggered_calculation=*/false));
-  state.UpdateNextScheduledCalculationTime();
+  state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
   // The random per-site delay happens to be between (one hour, one day).
   ASSERT_GT(state.CalculateSiteStickyTimeDelta("foo.com"), base::Hours(1));
@@ -302,7 +303,7 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_SwitchTimeArrived) {
 
   state.AddEpoch(CreateTestEpochTopics(
       kTime1, /*from_manually_triggered_calculation=*/false));
-  state.UpdateNextScheduledCalculationTime();
+  state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
   // The random per-site delay happens to be between (one hour, one day).
   ASSERT_GT(state.CalculateSiteStickyTimeDelta("foo.com"), base::Hours(1));
@@ -322,7 +323,7 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_ManuallyTriggered) {
 
   state.AddEpoch(CreateTestEpochTopics(
       kTime1, /*from_manually_triggered_calculation=*/true));
-  state.UpdateNextScheduledCalculationTime();
+  state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
   // There shouldn't be a delay when the latest epoch is manually triggered.
   ASSERT_EQ(state.CalculateSiteStickyTimeDelta("foo.com"),
@@ -346,7 +347,7 @@ TEST_F(BrowsingTopicsStateTest,
       kTime2, /*from_manually_triggered_calculation=*/false));
   state.AddEpoch(CreateTestEpochTopics(
       kTime3, /*from_manually_triggered_calculation=*/false));
-  state.UpdateNextScheduledCalculationTime();
+  state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
   task_environment_->FastForwardBy(base::Hours(1));
 
@@ -367,7 +368,7 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_ThreeEpochs_SwitchTimeArrived) {
       kTime2, /*from_manually_triggered_calculation=*/false));
   state.AddEpoch(CreateTestEpochTopics(
       kTime3, /*from_manually_triggered_calculation=*/false));
-  state.UpdateNextScheduledCalculationTime();
+  state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
   task_environment_->FastForwardBy(base::Days(1));
 
@@ -390,7 +391,7 @@ TEST_F(BrowsingTopicsStateTest,
       kTime2, /*from_manually_triggered_calculation=*/false));
   state.AddEpoch(CreateTestEpochTopics(
       kTime3, /*from_manually_triggered_calculation=*/true));
-  state.UpdateNextScheduledCalculationTime();
+  state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
   task_environment_->FastForwardBy(base::Microseconds(10));
 
@@ -413,7 +414,7 @@ TEST_F(BrowsingTopicsStateTest,
       kTime2, /*from_manually_triggered_calculation=*/true));
   state.AddEpoch(CreateTestEpochTopics(
       kTime3, /*from_manually_triggered_calculation=*/false));
-  state.UpdateNextScheduledCalculationTime();
+  state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
   task_environment_->FastForwardBy(base::Microseconds(10));
 
@@ -438,7 +439,7 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_FourEpochs_SwitchTimeNotArrived) {
       kTime3, /*from_manually_triggered_calculation=*/false));
   state.AddEpoch(CreateTestEpochTopics(
       kTime4, /*from_manually_triggered_calculation=*/false));
-  state.UpdateNextScheduledCalculationTime();
+  state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
   task_environment_->FastForwardBy(base::Hours(1));
 
@@ -462,7 +463,7 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_FourEpochs_SwitchTimeArrived) {
       kTime3, /*from_manually_triggered_calculation=*/false));
   state.AddEpoch(CreateTestEpochTopics(
       kTime4, /*from_manually_triggered_calculation=*/false));
-  state.UpdateNextScheduledCalculationTime();
+  state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
   task_environment_->FastForwardBy(base::Days(1));
 
@@ -488,7 +489,7 @@ TEST_F(BrowsingTopicsStateTest,
   state.AddEpoch(CreateTestEpochTopics(
       kTime4, /*from_manually_triggered_calculation=*/true));
 
-  state.UpdateNextScheduledCalculationTime();
+  state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
   task_environment_->FastForwardBy(base::Microseconds(10));
 
@@ -513,7 +514,7 @@ TEST_F(BrowsingTopicsStateTest,
       kTime3, /*from_manually_triggered_calculation=*/false));
   state.AddEpoch(CreateTestEpochTopics(
       kTime4, /*from_manually_triggered_calculation=*/false));
-  state.UpdateNextScheduledCalculationTime();
+  state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
   task_environment_->FastForwardBy(base::Microseconds(10));
 
@@ -691,10 +692,10 @@ TEST_F(BrowsingTopicsStateTest, ClearOneEpoch) {
   EXPECT_FALSE(state.epochs()[1].empty());
   EXPECT_EQ(state.epochs()[1].calculation_time(), kTime2);
 
-  state.UpdateNextScheduledCalculationTime();
+  state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
   EXPECT_EQ(state.next_scheduled_calculation_time(),
-            base::Time::Now() + base::Days(7));
+            base::Time::Now() + kNextScheduledCalculationDelay);
   EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey));
 }
 
@@ -717,13 +718,13 @@ TEST_F(BrowsingTopicsStateTest, ClearAllTopics) {
   EXPECT_FALSE(state.epochs()[1].empty());
   EXPECT_EQ(state.epochs()[1].calculation_time(), kTime2);
 
-  state.UpdateNextScheduledCalculationTime();
+  state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
   state.ClearAllTopics();
   EXPECT_EQ(state.epochs().size(), 0u);
 
   EXPECT_EQ(state.next_scheduled_calculation_time(),
-            base::Time::Now() + base::Days(7));
+            base::Time::Now() + kNextScheduledCalculationDelay);
   EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey));
 }
 
@@ -735,7 +736,7 @@ TEST_F(BrowsingTopicsStateTest, ClearTopic) {
       kTime1, /*from_manually_triggered_calculation=*/false));
   state.AddEpoch(CreateTestEpochTopics(
       kTime2, /*from_manually_triggered_calculation=*/false));
-  state.UpdateNextScheduledCalculationTime();
+  state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
   state.ClearTopic(Topic(3));
 
@@ -771,7 +772,7 @@ TEST_F(BrowsingTopicsStateTest, ClearContextDomain) {
       kTime1, /*from_manually_triggered_calculation=*/false));
   state.AddEpoch(CreateTestEpochTopics(
       kTime2, /*from_manually_triggered_calculation=*/false));
-  state.UpdateNextScheduledCalculationTime();
+  state.UpdateNextScheduledCalculationTime(kNextScheduledCalculationDelay);
 
   state.ClearContextDomain(HashedDomain(1));
 

@@ -81,9 +81,10 @@ class BrowsingTopicsState
   // epoch calculation. If an old EpochTopics is removed as a result, return it.
   std::optional<EpochTopics> AddEpoch(EpochTopics epoch_topics);
 
-  // Set `next_scheduled_calculation_time_` to one epoch later from
-  // base::Time::Now(). This is invoked at the end of each epoch calculation.
-  void UpdateNextScheduledCalculationTime();
+  // Calculates the new scheduled time by adding the provided `delay`
+  // to the current time (`base::Time::Now()`), and stores the result to
+  // `next_scheduled_calculation_time_`.
+  void UpdateNextScheduledCalculationTime(base::TimeDelta delay);
 
   // Calculate the candidate epochs to derive the topics from on `top_domain`.
   // The caller (i.e. BrowsingTopicsServiceImpl, which also holds `this`) is

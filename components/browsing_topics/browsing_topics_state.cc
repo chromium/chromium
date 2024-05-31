@@ -163,12 +163,12 @@ std::optional<EpochTopics> BrowsingTopicsState::AddEpoch(
   return removed_epoch_topics;
 }
 
-void BrowsingTopicsState::UpdateNextScheduledCalculationTime() {
+void BrowsingTopicsState::UpdateNextScheduledCalculationTime(
+    base::TimeDelta delay) {
   DCHECK(loaded_);
+  DCHECK(!delay.is_negative());
 
-  next_scheduled_calculation_time_ =
-      base::Time::Now() +
-      blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get();
+  next_scheduled_calculation_time_ = base::Time::Now() + delay;
 
   ScheduleSave();
 }
