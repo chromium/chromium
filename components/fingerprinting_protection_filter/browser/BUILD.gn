@@ -29,6 +29,7 @@ if (use_blink) {
       "//components/subresource_filter/content/shared/browser",
       "//components/subresource_filter/content/shared/common",
       "//content/public/browser",
+      "//services/metrics/public/cpp:ukm_builders",
     ]
     deps = [
       "//components/content_settings/browser",
@@ -60,11 +61,14 @@ if (use_blink) {
     deps = [
       ":browser",
       "//base",
+      "//components/content_settings/core/browser:browser",
       "//components/privacy_sandbox:features",
       "//components/subresource_filter/content/shared/browser:test_support",
       "//components/subresource_filter/core/common",
       "//components/subresource_filter/core/mojom",
       "//components/sync_preferences:test_support",
+      "//components/ukm:test_support",
+      "//components/ukm/content:content",
       "//content/public/browser",
       "//content/test:test_support",
       "//testing/gtest",

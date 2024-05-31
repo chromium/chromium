@@ -76,4 +76,11 @@ ActivationLevel ProfileInteractionManager::OnPageActivationComputed(
   return initial_activation_level;
 }
 
+content_settings::SettingSource
+ProfileInteractionManager::GetTrackingProtectionSettingSource(const GURL& url) {
+  content_settings::SettingInfo info;
+  tracking_protection_settings_->GetTrackingProtectionSetting(url, &info);
+  return info.source;
+}
+
 }  // namespace fingerprinting_protection_filter

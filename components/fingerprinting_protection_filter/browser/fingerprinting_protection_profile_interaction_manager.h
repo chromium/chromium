@@ -42,6 +42,8 @@ class ProfileInteractionManager {
       content::NavigationHandle* navigation_handle,
       subresource_filter::mojom::ActivationLevel initial_activation_level,
       subresource_filter::ActivationDecision* decision);
+  virtual content_settings::SettingSource GetTrackingProtectionSettingSource(
+      const GURL& url);
 
  private:
   raw_ptr<privacy_sandbox::TrackingProtectionSettings>
