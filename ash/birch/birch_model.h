@@ -218,6 +218,9 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   void StartDataFetchIfNeeded(DataTypeInfo<T>& data_info,
                               BirchDataProvider* data_provider);
 
+  // Returns true if last active items should be included in the results.
+  bool ShouldShowLastActive();
+
   // Returns true if most visited items should be included in the results.
   bool ShouldShowMostVisited();
 
@@ -277,6 +280,10 @@ class ASH_EXPORT BirchModel : public SessionObserver,
 
   // Invoked when a data fetch completes.
   base::OnceClosure data_fetch_callback_for_test_;
+
+  // When we last returned a last active item. Used to suppress showing the
+  // last active items too often.
+  base::Time last_active_last_shown_;
 
   // When we last returned a most visited item. Used to suppress showing the
   // most visited items too often.

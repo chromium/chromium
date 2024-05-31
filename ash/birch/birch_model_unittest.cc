@@ -1090,18 +1090,28 @@ TEST_F(BirchModelTest, GetAllItems) {
                              base::Time(), GURL("favicon"), "session",
                              BirchTabItem::DeviceFormFactor::kDesktop);
   model->SetRecentTabItems(std::move(tab_item_list));
+  std::vector<BirchLastActiveItem> last_active_list;
+  last_active_list.emplace_back(u"active", GURL("https://yahoo.com/"),
+                                ui::ImageModel());
+  model->SetLastActiveItems(std::move(last_active_list));
+  std::vector<BirchMostVisitedItem> most_visited_list;
+  most_visited_list.emplace_back(u"visited", GURL("https://google.com/"),
+                                 ui::ImageModel());
+  model->SetMostVisitedItems(std::move(most_visited_list));
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
 
   // Verify that GetAllItems() returns the correct number of items and the
   // code didn't skip a type.
   std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
-  ASSERT_EQ(all_items.size(), 6u);
+  ASSERT_EQ(all_items.size(), 8u);
   EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kWeather);
   EXPECT_EQ(all_items[1]->GetType(), BirchItemType::kReleaseNotes);
   EXPECT_EQ(all_items[2]->GetType(), BirchItemType::kCalendar);
   EXPECT_EQ(all_items[3]->GetType(), BirchItemType::kAttachment);
   EXPECT_EQ(all_items[4]->GetType(), BirchItemType::kTab);
-  EXPECT_EQ(all_items[5]->GetType(), BirchItemType::kFile);
+  EXPECT_EQ(all_items[5]->GetType(), BirchItemType::kLastActive);
+  EXPECT_EQ(all_items[6]->GetType(), BirchItemType::kMostVisited);
+  EXPECT_EQ(all_items[7]->GetType(), BirchItemType::kFile);
 }
 
 TEST_F(BirchModelTest, SetItemListRecordsHistogram) {
@@ -1682,6 +1692,40 @@ TEST_F(BirchModelTest, RecordProviderHiddenHistograms) {
   histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.Weather", true, 1);
   histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.ReleaseNotes", true,
                                1);
+}
+
+TEST_F(BirchModelTest, LastActiveItemShownByTime) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  // Set the time to morning so that last active items will be ranked.
+  test_clock_.SetNow(TimeFromString("22 Feb 2024 7:00 UTC"));
+
+  // Create a last active item.
+  std::vector<BirchLastActiveItem> last_active_item_list;
+  last_active_item_list.emplace_back(
+      u"last active", GURL("https://www.example.com/"), ui::ImageModel());
+  model->SetLastActiveItems(std::move(last_active_item_list));
+
+  // The first time we query for items, it is shown.
+  std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
+  ASSERT_EQ(all_items.size(), 1u);
+  EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kLastActive);
+
+  // Advance the time by 1 minute.
+  test_clock_.Advance(base::Minutes(1));
+
+  // The item is still shown.
+  all_items = model->GetAllItems();
+  ASSERT_EQ(all_items.size(), 1u);
+  EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kLastActive);
+
+  // Advance the time by 2 minutes (for a total of 3, past the threshold for
+  // showing most visited items).
+  test_clock_.Advance(base::Minutes(2));
+
+  // The item is not shown.
+  all_items = model->GetAllItems();
+  EXPECT_TRUE(all_items.empty());
 }
 
 TEST_F(BirchModelTest, MostVisitedItemShownByTime) {

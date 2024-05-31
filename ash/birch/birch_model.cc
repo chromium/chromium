@@ -408,8 +408,11 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   for (auto& tab : recent_tab_data_.items) {
     all_items.push_back(std::make_unique<BirchTabItem>(tab));
   }
-  for (auto& item : url_to_last_active_item) {
-    all_items.push_back(std::make_unique<BirchLastActiveItem>(item.second));
+  if (ShouldShowLastActive()) {
+    for (auto& item : url_to_last_active_item) {
+      all_items.push_back(std::make_unique<BirchLastActiveItem>(item.second));
+    }
+    last_active_last_shown_ = GetNow();
   }
   if (ShouldShowMostVisited()) {
     for (auto& item : url_to_most_visited_item) {
@@ -720,6 +723,14 @@ void BirchModel::RecordProviderHiddenHistograms() {
 
 bool BirchModel::IsItemRemoverInitialized() {
   return item_remover_ && item_remover_->Initialized();
+}
+
+bool BirchModel::ShouldShowLastActive() {
+  if (last_active_last_shown_.is_null()) {
+    return true;  // Never been shown.
+  }
+  // Re-show for up to 2 minutes.
+  return GetNow() - last_active_last_shown_ < base::Minutes(2);
 }
 
 bool BirchModel::ShouldShowMostVisited() {
