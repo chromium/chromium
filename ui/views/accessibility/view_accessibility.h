@@ -284,17 +284,6 @@ class VIEWS_EXPORT ViewAccessibility {
   void OverrideNativeWindowTitle(const std::u16string& title);
   virtual void OverrideNativeWindowTitle(const std::string& title);
 
-  // Sets whether this View hides all its descendants from the accessibility
-  // tree that is exposed to platform APIs. This is similar, but not exactly
-  // identical to aria-hidden="true".
-  //
-  // Note that this attribute does not cross widget boundaries, i.e. if a sub
-  // widget is a descendant of this View, it will not be marked hidden. This
-  // should not happen in practice as widgets are not children of Views.
-  // Deprecated. Use ViewAccessibility::SetIsLeaf instead.
-  // See https://crbug.com/324485311.
-  void OverrideIsLeaf(bool value);
-
   // Override the next or previous focused widget. Some assistive technologies,
   // such as screen readers, may utilize this information to transition focus
   // from the beginning or end of one widget to another when navigating by its
@@ -464,12 +453,6 @@ class VIEWS_EXPORT ViewAccessibility {
 
   bool initialized_cache_ = false;
   bool initializing_cache_ = false;
-
-  // If set to true, anything that is a descendant of this view will be
-  // hidden from accessibility. DEPRECATED: This is being replaced by
-  // is_leaf_.
-  // TODO(crbug.com/325137417): Remove this once OverrideIsLeaf is removed.
-  bool overridden_is_leaf_ = false;
 
   // If set to true, anything that is a descendant of this view will be hidden
   // from accessibility by 'pruning' it from the tree, and setting `pruned_` to

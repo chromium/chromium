@@ -363,9 +363,7 @@ void ViewAccessibility::SetIsLeaf(bool value) {
 }
 
 bool ViewAccessibility::IsLeaf() const {
-  // TODO(crbug.com/325137417): The overridden check is temporary until all of
-  // ash/ has been migrated to use the new setters.
-  return is_leaf_ || overridden_is_leaf_;
+  return is_leaf_;
 }
 
 bool ViewAccessibility::IsChildOfLeaf() const {
@@ -683,10 +681,6 @@ void ViewAccessibility::OverrideNativeWindowTitle(const std::string& title) {
 
 void ViewAccessibility::OverrideNativeWindowTitle(const std::u16string& title) {
   OverrideNativeWindowTitle(base::UTF16ToUTF8(title));
-}
-
-void ViewAccessibility::OverrideIsLeaf(bool value) {
-  overridden_is_leaf_ = value;
 }
 
 void ViewAccessibility::SetNextFocus(Widget* widget) {
