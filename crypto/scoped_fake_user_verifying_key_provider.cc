@@ -103,7 +103,7 @@ class FakeUserVerifyingKeyProvider : public UserVerifyingKeyProvider {
 
 class FailingUserVerifyingSigningKey : public UserVerifyingSigningKey {
  public:
-  FailingUserVerifyingSigningKey() : label_("") {}
+  FailingUserVerifyingSigningKey() : label_("test") {}
   ~FailingUserVerifyingSigningKey() override = default;
 
   void Sign(base::span<const uint8_t> data,

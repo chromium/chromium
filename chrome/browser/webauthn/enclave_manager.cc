@@ -114,6 +114,9 @@ struct EnclaveManager::PendingAction {
 
 namespace {
 
+// Used so the EnclaveManager can be forced into invalid states for testing.
+static bool g_invariant_override_ = false;
+
 #if BUILDFLAG(IS_MAC)
 constexpr char kUserVerifyingKeyKeychainAccessGroup[] =
     MAC_TEAM_IDENTIFIER_STRING "." MAC_BUNDLE_IDENTIFIER_STRING ".webauthn-uvk";
@@ -253,6 +256,9 @@ std::optional<int> CheckPINInvariants(
 // CheckInvariants checks all the invariants of `user`, returning either a
 // line-number for the failing check, or else `nullopt` to indicate success.
 std::optional<int> CheckInvariants(const EnclaveLocalState::User& user) {
+  if (g_invariant_override_) {
+    return std::nullopt;
+  }
   if (user.wrapped_hardware_private_key().empty() !=
       user.hardware_public_key().empty()) {
     return __LINE__;
@@ -3193,6 +3199,11 @@ void EnclaveManager::ClearRegistrationForTesting() {
 }
 
 // static
+void EnclaveManager::EnableInvariantChecksForTesting(bool enabled) {
+  g_invariant_override_ = !enabled;
+}
+
+// static
 std::string EnclaveManager::MakeWrappedPINForTesting(
     base::span<const uint8_t> security_domain_secret,
     std::string_view pin) {
@@ -3554,4 +3565,8 @@ void EnclaveManager::SetSecret(int32_t key_version,
                                base::span<const uint8_t> secret) {
   secret_version_ = key_version;
   secret_ = std::vector<uint8_t>(secret.begin(), secret.end());
+}
+
+base::WeakPtr<EnclaveManager> EnclaveManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
