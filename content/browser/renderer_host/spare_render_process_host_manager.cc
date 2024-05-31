@@ -92,10 +92,6 @@ void SpareRenderProcessHostManager::WarmupSpareRenderProcessHost(
 void SpareRenderProcessHostManager::DeferredWarmupSpareRenderProcessHost(
     BrowserContext* browser_context,
     base::TimeDelta delay) {
-  if (delay == base::TimeDelta::Max()) {
-    return;
-  }
-
   deferred_warmup_timer_.Start(
       FROM_HERE, delay,
       base::BindOnce(
@@ -233,9 +229,6 @@ void SpareRenderProcessHostManager::PrepareForFutureRequests(
     // Always keep around a spare process for the most recently requested
     // |browser_context|.
     if (delay.has_value()) {
-      // The actual delay time is not necessarily `delay` because the
-      // process can be delayed until the page stops loading, in which case
-      // `delay` is TimeDelta::Max().
       delay_timer_ = std::make_unique<base::ElapsedTimer>();
       DeferredWarmupSpareRenderProcessHost(browser_context, *delay);
     } else {

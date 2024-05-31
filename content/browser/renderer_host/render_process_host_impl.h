@@ -515,14 +515,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // by shutting down the spare process to conserve resources, or alternatively
   // by making sure that the spare process belongs to the same BrowserContext as
   // the most recent navigation).
-  //
-  // If `ignore_delay` is false, delays new spare renderer creation as per
-  // embedder's setting. Otherwise, the spare renderer creation might have been
-  // deferred previously, and this is a signal that it should now be started
-  // immediately.
   static void NotifySpareManagerAboutRecentlyUsedSiteInstance(
-      SiteInstance* site_instance,
-      bool ignore_delay = false);
+      SiteInstance* site_instance);
 
   // This enum backs a histogram, so do not change the order of entries or
   // remove entries and update enums.xml if adding new entries.

@@ -3152,14 +3152,11 @@ void RenderProcessHostImpl::RemoveExpectedNavigationToSite(
 
 // static
 void RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedSiteInstance(
-    SiteInstance* site_instance,
-    bool ignore_delay) {
+    SiteInstance* site_instance) {
   SpareRenderProcessHostManager::GetInstance().PrepareForFutureRequests(
       site_instance->GetBrowserContext(),
-      ignore_delay
-          ? std::nullopt
-          : GetContentClient()->browser()->GetSpareRendererDelayForSiteURL(
-                site_instance->GetSiteURL()));
+      GetContentClient()->browser()->GetSpareRendererDelayForSiteURL(
+          site_instance->GetSiteURL()));
 }
 
 // static

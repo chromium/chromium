@@ -69,10 +69,7 @@ class CONTENT_EXPORT SpareRenderProcessHostManager
   // or 2) mismatched and ignored or 3) matched and ignored.
   //
   // The creation of new spare renderer will be delayed by `delay` if present.
-  // If `delay` is base::TimeDelta::Max(), the creation is delayed until the
-  // page finishes loading. In this case, there will be a separate call to this
-  // function with `delay` set to nullopt from WebContents::DidStopLoading().
-  // This is used to avoid potential resource contention.
+  // This is used to mitigate resource contention.
   void PrepareForFutureRequests(
       BrowserContext* browser_context,
       std::optional<base::TimeDelta> delay = std::nullopt);

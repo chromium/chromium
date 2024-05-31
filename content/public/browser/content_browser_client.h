@@ -1393,8 +1393,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // renderer is taken by `site_url`. This is used to avoid potential resource
   // contention.
   // If `delay` is nullopt, the spare renderer will be created immediately.
-  // Otherwise if `delay` is base::TimeDelta::Max(), the creation is delayed
-  // until the page finishes loading.
   virtual std::optional<base::TimeDelta> GetSpareRendererDelayForSiteURL(
       const GURL& site_url);
 

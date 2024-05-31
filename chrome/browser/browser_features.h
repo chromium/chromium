@@ -26,10 +26,6 @@ BASE_DECLARE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff);
 BASE_DECLARE_FEATURE(kBookmarkTriggerForPrerender2);
 BASE_DECLARE_FEATURE(kCertificateTransparencyAskBeforeEnabling);
 BASE_DECLARE_FEATURE(kClosedTabCache);
-BASE_DECLARE_FEATURE(kDeferredSpareRendererForTopChromeWebUI);
-extern const base::FeatureParam<base::TimeDelta> kSpareRendererWarmupDelay;
-extern const base::FeatureParam<bool>
-    kSpareRendererWarmupDelayUntilPageStopsLoading;
 
 BASE_DECLARE_FEATURE(kDestroyProfileOnBrowserClose);
 BASE_DECLARE_FEATURE(kDestroySystemProfiles);

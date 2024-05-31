@@ -8557,19 +8557,6 @@ void WebContentsImpl::DidStopLoading() {
           manager->DidStopLoading();
         }
       });
-
-  // The spare renderer creation might have been delayed until the page stops
-  // loading. Notify the spare renderer manager about the page loading
-  // completion. This is a no-op if a spare rendere already exists.
-  //
-  // TODO(crbug.com/41490050): replace the implicit treatment of
-  // TimeDelta::Max() with an enum and optional TimeDelta if we decide to launch
-  // deferred spare renderer.
-  bool immediately_warmup_spare_renderer =
-      GetContentClient()->browser()->GetSpareRendererDelayForSiteURL(
-          GetURL()) == base::TimeDelta::Max();
-  RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedSiteInstance(
-      GetSiteInstance(), /* ignore_delay */ immediately_warmup_spare_renderer);
 }
 
 void WebContentsImpl::DidChangeLoadProgressForPrimaryMainFrame() {
