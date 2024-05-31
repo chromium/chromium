@@ -246,8 +246,10 @@ void PageSchedulerImpl::SetPageFrozen(bool frozen) {
   SetPageFrozenImpl(frozen, policy_updater);
 }
 
-void PageSchedulerImpl::SetPageFrozenImpl(bool frozen,
-                                          PolicyUpdater& policy_updater) {
+void PageSchedulerImpl::SetPageFrozenImpl(
+    bool frozen,
+    PolicyUpdater& policy_updater,
+    base::MemoryReductionTaskContext called_from) {
   // Only pages owned by web views can be frozen.
   DCHECK(!frozen || IsOrdinary());
 
@@ -261,7 +263,7 @@ void PageSchedulerImpl::SetPageFrozenImpl(bool frozen,
   }
   policy_updater.UpdatePagePolicy(this);
   if (frozen) {
-    main_thread_scheduler_->OnPageFrozen();
+    main_thread_scheduler_->OnPageFrozen(called_from);
     if (audio_state_ == AudioState::kRecentlyAudible) {
       // A recently audible page is being frozen before the audio silent timer
       // fired, which can happen if freezing from outside the scheduler (e.g.
@@ -858,7 +860,7 @@ void PageSchedulerImpl::UpdateFrozenState(
   }
 
   if (freeze_time > now) {
-    SetPageFrozenImpl(/* frozen=*/false, policy_updater);
+    SetPageFrozenImpl(/* frozen=*/false, policy_updater, called_from);
     if (!freeze_time.is_max()) {
       update_frozen_state_timer_.SetTaskRunner(
           main_thread_scheduler_->ControlTaskRunner());
@@ -873,7 +875,7 @@ void PageSchedulerImpl::UpdateFrozenState(
               base::Unretained(this)));
     }
   } else {
-    SetPageFrozenImpl(/* frozen=*/true, policy_updater);
+    SetPageFrozenImpl(/* frozen=*/true, policy_updater, called_from);
   }
 }
 

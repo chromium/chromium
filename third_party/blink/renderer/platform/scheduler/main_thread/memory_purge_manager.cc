@@ -68,12 +68,17 @@ void MemoryPurgeManager::OnPageDestroyed(bool frozen) {
   DCHECK_LE(frozen_page_count_, total_page_count_);
 }
 
-void MemoryPurgeManager::OnPageFrozen() {
+void MemoryPurgeManager::OnPageFrozen(
+    base::MemoryReductionTaskContext called_from) {
   DCHECK_LT(frozen_page_count_, total_page_count_);
   frozen_page_count_++;
 
   if (CanPurge()) {
-    RequestMemoryPurgeWithDelay(kFreezePurgeDelay);
+    if (called_from == base::MemoryReductionTaskContext::kProactive) {
+      PerformMemoryPurge();
+    } else {
+      RequestMemoryPurgeWithDelay(kFreezePurgeDelay);
+    }
   }
 }
 

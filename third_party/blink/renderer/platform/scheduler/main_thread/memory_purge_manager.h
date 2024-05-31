@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MEMORY_PURGE_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MEMORY_PURGE_MANAGER_H_
 
+#include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -32,7 +33,8 @@ class PLATFORM_EXPORT MemoryPurgeManager {
   // |kFreezePurgeMemoryAllPagesFrozen| is disabled, and the renderer is
   // backgrounded, ensures that a delayed memory purge is scheduled. If the
   // timer is already running, uses the smallest requested delay.
-  void OnPageFrozen();
+  void OnPageFrozen(base::MemoryReductionTaskContext called_from =
+                        base::MemoryReductionTaskContext::kDelayExpired);
 
   // Called when a page is resumed (unfrozen). Has the effect of unsuppressing
   // memory pressure notifications.

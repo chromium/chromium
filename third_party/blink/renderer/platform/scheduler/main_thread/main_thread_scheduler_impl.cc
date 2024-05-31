@@ -2248,8 +2248,9 @@ void MainThreadSchedulerImpl::RemovePageScheduler(
   UpdatePolicyLocked(UpdateType::kMayEarlyOutIfPolicyUnchanged);
 }
 
-void MainThreadSchedulerImpl::OnPageFrozen() {
-  memory_purge_manager_.OnPageFrozen();
+void MainThreadSchedulerImpl::OnPageFrozen(
+    base::MemoryReductionTaskContext called_from) {
+  memory_purge_manager_.OnPageFrozen(called_from);
   UpdatePolicy();
 }
 

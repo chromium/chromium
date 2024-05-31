@@ -271,7 +271,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void RemovePageScheduler(PageSchedulerImpl*);
 
   // Called by an associated PageScheduler when frozen or resumed.
-  void OnPageFrozen();
+  void OnPageFrozen(base::MemoryReductionTaskContext called_from);
   void OnPageResumed();
 
   void AddTaskTimeObserver(base::sequence_manager::TaskTimeObserver*);
