@@ -26,6 +26,7 @@
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_logging.h"
 #include "ash/system/input_device_settings/input_device_settings_metadata.h"
+#include "ash/system/input_device_settings/input_device_settings_metadata_manager.h"
 #include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
 #include "ash/system/input_device_settings/input_device_settings_policy_handler.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
@@ -710,6 +711,10 @@ void InputDeviceSettingsControllerImpl::Init() {
     notification_controller_ =
         std::make_unique<InputDeviceSettingsNotificationController>(
             message_center::MessageCenter::Get());
+  }
+
+  if (features::IsWelcomeExperienceEnabled()) {
+    metadata_manager_ = std::make_unique<InputDeviceSettingsMetadataManager>();
   }
 
   keyboard_notifier_ = std::make_unique<
@@ -1823,9 +1828,8 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
           keyboard, bluetooth_devices_observer_.get())] = mojom_keyboard->id;
     }
     InitializeKeyboardSettings(mojom_keyboard.get());
-    if (features::IsWelcomeExperienceEnabled()) {
-      notification_controller_->NotifyKeyboardFirstTimeConnected(
-          *mojom_keyboard);
+    if (ShouldFetchDeviceImage()) {
+      GetDeviceImage(mojom_keyboard->device_key, mojom_keyboard->id);
     }
     keyboards_.insert_or_assign(keyboard.id, std::move(mojom_keyboard));
     DispatchKeyboardConnected(keyboard.id);
@@ -1845,7 +1849,6 @@ void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
     PruneBluetoothDeviceMap(bluetooth_address_to_device_id_map_,
                             touchpad_ids_to_remove);
   }
-
   for (const auto& touchpad : touchpads_to_add) {
     auto mojom_touchpad =
         BuildMojomTouchpad(touchpad, bluetooth_devices_observer_.get());
@@ -1854,9 +1857,8 @@ void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
           touchpad, bluetooth_devices_observer_.get())] = mojom_touchpad->id;
     }
     InitializeTouchpadSettings(mojom_touchpad.get());
-    if (features::IsWelcomeExperienceEnabled()) {
-      notification_controller_->NotifyTouchpadFirstTimeConnected(
-          *mojom_touchpad);
+    if (ShouldFetchDeviceImage()) {
+      GetDeviceImage(mojom_touchpad->device_key, mojom_touchpad->id);
     }
     touchpads_.insert_or_assign(touchpad.id, std::move(mojom_touchpad));
     DispatchTouchpadConnected(touchpad.id);
@@ -1876,7 +1878,6 @@ void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
     PruneBluetoothDeviceMap(bluetooth_address_to_device_id_map_,
                             mouse_ids_to_remove);
   }
-
   for (const auto& mouse : mice_to_add) {
     auto mojom_mouse = BuildMojomMouse(
         mouse, GetMouseCustomizationRestriction(mouse),
@@ -1886,8 +1887,8 @@ void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
           mouse, bluetooth_devices_observer_.get())] = mojom_mouse->id;
     }
     InitializeMouseSettings(mojom_mouse.get());
-    if (features::IsPeripheralNotificationEnabled()) {
-      notification_controller_->NotifyMouseFirstTimeConnected(*mojom_mouse);
+    if (ShouldFetchDeviceImage()) {
+      GetDeviceImage(mojom_mouse->device_key, mojom_mouse->id);
     }
 
     mice_.insert_or_assign(mouse.id, std::move(mojom_mouse));
@@ -1926,7 +1927,6 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
     PruneBluetoothDeviceMap(bluetooth_address_to_device_id_map_,
                             graphics_tablet_ids_to_remove);
   }
-
   for (const auto& graphics_tablet : graphics_tablets_to_add) {
     auto mojom_graphics_tablet = BuildMojomGraphicsTablet(
         graphics_tablet,
@@ -1939,9 +1939,9 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
           mojom_graphics_tablet->id;
     }
     InitializeGraphicsTabletSettings(mojom_graphics_tablet.get());
-    if (features::IsPeripheralNotificationEnabled()) {
-      notification_controller_->NotifyGraphicsTabletFirstTimeConnected(
-          *mojom_graphics_tablet);
+    if (ShouldFetchDeviceImage()) {
+      GetDeviceImage(mojom_graphics_tablet->device_key,
+                     mojom_graphics_tablet->id);
     }
 
     graphics_tablets_.insert_or_assign(graphics_tablet.id,
@@ -2536,6 +2536,50 @@ void InputDeviceSettingsControllerImpl::InputMethodChanged(
       FROM_HERE,
       base::BindOnce(&InputDeviceSettingsControllerImpl::RefreshKeyDisplay,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+bool InputDeviceSettingsControllerImpl::ShouldFetchDeviceImage() {
+  return features::IsWelcomeExperienceEnabled() && active_account_id_ &&
+         active_pref_service_;
+}
+
+void InputDeviceSettingsControllerImpl::GetDeviceImage(
+    const std::string& device_key,
+    DeviceId id) {
+  CHECK(features::IsWelcomeExperienceEnabled());
+  CHECK(active_account_id_.has_value());
+  metadata_manager_->GetDeviceImage(
+      device_key, active_account_id_.value(),
+      base::BindOnce(
+          &InputDeviceSettingsControllerImpl::OnDeviceImageDownloaded,
+          weak_ptr_factory_.GetWeakPtr(), id));
+}
+
+// TODO(b/329686601): Handle case where a device is both a mouse and keyboard.
+void InputDeviceSettingsControllerImpl::OnDeviceImageDownloaded(
+    DeviceId id,
+    const DeviceImage& device_image) {
+  if (auto* kb = FindKeyboard(id); kb != nullptr) {
+    notification_controller_->NotifyKeyboardFirstTimeConnected(*kb);
+    return;
+  }
+
+  if (auto* mouse = FindMouse(id); mouse != nullptr) {
+    notification_controller_->NotifyMouseFirstTimeConnected(*mouse);
+    return;
+  }
+
+  if (auto* touchpad = FindTouchpad(id); touchpad != nullptr) {
+    notification_controller_->NotifyTouchpadFirstTimeConnected(*touchpad);
+    return;
+  }
+
+  if (auto* graphics_tablet = FindGraphicsTablet(id);
+      graphics_tablet != nullptr) {
+    notification_controller_->NotifyGraphicsTabletFirstTimeConnected(
+        *graphics_tablet);
+    return;
+  }
 }
 
 // Do nothing as OnBluetoothAdapterOrDeviceChanged is very noisy and causes

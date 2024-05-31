@@ -58,6 +58,9 @@ GURL GetResourceUrlFromDeviceKey(const std::string& device_key) {
 
 }  // namespace
 
+DeviceImageDownloader::DeviceImageDownloader() = default;
+DeviceImageDownloader::~DeviceImageDownloader() = default;
+
 void DeviceImageDownloader::DownloadImage(
     const std::string& device_key,
     const AccountId& account_id,
@@ -66,7 +69,8 @@ void DeviceImageDownloader::DownloadImage(
   ImageDownloader::Get()->Download(
       url, kTrafficAnnotation, account_id,
       base::BindOnce(&DeviceImageDownloader::OnImageDownloaded,
-                     base::Unretained(this), device_key, std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), device_key,
+                     std::move(callback)));
 }
 
 // TODO(b/329686601): Store image as data URL in local state.

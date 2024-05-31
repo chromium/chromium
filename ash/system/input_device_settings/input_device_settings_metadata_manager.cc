@@ -45,8 +45,11 @@ void InputDeviceSettingsMetadataManager::OnDeviceImageFetched(
   const auto device_key = device_image.device_key();
   device_image_storage_->PersistDeviceImage(device_key,
                                             device_image.data_url());
-  std::move(device_callback_map_[device_key]).Run(device_image);
-  device_callback_map_.erase(device_key);
+  auto it = device_callback_map_.find(device_key);
+  if (it != device_callback_map_.end()) {
+    std::move(it->second).Run(device_image);
+    device_callback_map_.erase(it);
+  }
 }
 
 std::optional<std::string>

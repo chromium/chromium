@@ -13,6 +13,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/events/event_rewriter_controller_impl.h"
 #include "ash/public/cpp/ash_prefs.h"
+#include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -531,7 +532,7 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
     ON_CALL(*mock_adapter_, IsPowered).WillByDefault(testing::Return(true));
     ON_CALL(*mock_adapter_, IsPresent).WillByDefault(testing::Return(true));
     task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
-
+    image_downloader_ = std::make_unique<TestImageDownloader>();
     scoped_feature_list_.InitWithFeatures(
         {features::kPeripheralCustomization,
          features::kInputDeviceSettingsSplit,
@@ -607,7 +608,7 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
     // Scoped Resetter must be deleted before the test base is teared down.
     scoped_resetter_.reset();
     NoSessionAshTestBase::TearDown();
-
+    image_downloader_.reset();
     task_runner_.reset();
   }
 
@@ -658,6 +659,7 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   base::AutoReset<bool> modifier_split_reset_ =
       ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
+  std::unique_ptr<TestImageDownloader> image_downloader_;
 };
 
 TEST_F(InputDeviceSettingsControllerTest, KeyboardAddingOne) {

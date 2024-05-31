@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/gfx/image/image_skia.h"
 
 class AccountId;
@@ -17,6 +18,11 @@ class DeviceImage;
 
 class ASH_EXPORT DeviceImageDownloader {
  public:
+  DeviceImageDownloader();
+  ~DeviceImageDownloader();
+  DeviceImageDownloader(const DeviceImageDownloader&) = delete;
+  DeviceImageDownloader& operator=(const DeviceImageDownloader&) = delete;
+
   void DownloadImage(
       const std::string& device_key,
       const AccountId& account_id,
@@ -27,6 +33,8 @@ class ASH_EXPORT DeviceImageDownloader {
       const std::string& device_key,
       base::OnceCallback<void(const DeviceImage& image)> callback,
       const gfx::ImageSkia& image);
+
+  base::WeakPtrFactory<DeviceImageDownloader> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
