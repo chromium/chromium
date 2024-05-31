@@ -1,8 +1,11 @@
 <style include="common wallpaper">
-  wallpaper-grid-item[aria-disabled='true'][data-online]::part(image),
-  wallpaper-grid-item[aria-disabled='true'][data-sea-pen]::part(image)  {
+  wallpaper-grid-item[aria-disabled='true'][data-online]::part(image) {
     filter: grayscale(100%);
     opacity: 0.3;
+  }
+
+  wallpaper-grid-item[aria-disabled='true'][data-sea-pen]::part(image) {
+    opacity: 0.38;
   }
 
   wallpaper-grid-item[data-google-photos]::part(image) {
@@ -24,8 +27,7 @@
     width: 54px;
   }
 
-  wallpaper-grid-item[data-google-photos][aria-disabled='true']::part(textShadow)
-  wallpaper-grid-item[data-sea-pen][aria-disabled='true']::part(textShadow) {
+  wallpaper-grid-item[data-google-photos][aria-disabled='true']::part(textShadow) {
     display: none;
   }
 
@@ -37,7 +39,7 @@
     justify-content: center;
   }
 
-  wallpaper-grid-item[data-sea-pen] .primary-text {
+  wallpaper-grid-item[data-sea-pen] .secondary-text {
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -54,16 +56,16 @@
     margin-inline-end: 8px;
   }
 
+  wallpaper-grid-item[data-sea-pen][aria-disabled='true'] iron-icon[icon^='personalization:managed'] {
+    --iron-icon-fill-color: white;
+    display: block;
+  }
+
   wallpaper-grid-item[data-google-photos][aria-disabled='true'] iron-icon[icon^='personalization:managed'] {
     /* Icon color should stay light even in dark mode.
      * All of the google photos tile is always light.
      */
     --iron-icon-fill-color: var(--cros-icon-color-secondary-light);
-    display: block;
-  }
-
-  wallpaper-grid-item[data-sea-pen][aria-disabled='true'] iron-icon[icon^='personalization:managed'] {
-    --iron-icon-fill-color: var(--cros-icon-color-secondary);
     display: block;
   }
 
@@ -76,13 +78,8 @@
   }
 
   wallpaper-grid-item[data-sea-pen][aria-disabled='true'] p {
+    color: white;
     margin: 0;
-  }
-
-  wallpaper-grid-item[data-sea-pen][aria-disabled='true'] p,
-  wallpaper-grid-item[data-sea-pen][aria-disabled='true'] + #experimentTag {
-    color: var(--cros-text-color-secondary);
-    text-shadow: none;
   }
 
   .outer-container {
@@ -192,7 +189,7 @@
             <wallpaper-grid-item
                 data-sea-pen
                 data-is-promoted-tile
-                aria-label$="[[getSeaPenTileAriaLabel_()]]"
+                aria-describedby="experimentTag"
                 aria-posinset$="[[getAriaIndex_(index)]]"
                 disabled="[[!isSelectableTile_(item)]]"
                 index="[[index]]"
@@ -203,15 +200,13 @@
                 src="[[item.preview]]"
                 tabindex$="[[tabIndex]]">
               <template is="dom-if" if="[[!isSelectableTile_(item)]]" restamp>
-                <div slot="text" class="primary-text">
-                  <iron-icon icon="personalization:managed"
-                      title$="$i18n{managedSetting}">
-                  </iron-icon>
-                  <p title$="$i18n{seaPenLabel}">$i18n{seaPenLabel}</p>
+                <div slot="secondaryText" class="secondary-text">
+                  <iron-icon icon="personalization:managed" title$="$i18n{managedSetting}"></iron-icon>
+                  <p title$="$i18n{seaPenManagedLabel}">$i18n{seaPenManagedLabel}</p>
                 </div>
               </template>
             </wallpaper-grid-item>
-            <div id="experimentTag">$i18n{seaPenExperimentLabel}</div>
+            <div id="experimentTag">[[getSeaPenTileTagLabel_(item)]]</div>
           </template>
           <template is="dom-if" if="[[isOnlineTile_(item)]]">
             <wallpaper-grid-item aria-posinset$="[[getAriaIndex_(index)]]"

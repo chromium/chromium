@@ -41,6 +41,7 @@ void AddSeaPenStrings(content::WebUIDataSource* source) {
       {"seaPenErrorResourceExhausted", IDS_SEA_PEN_ERROR_RESOURCE_EXHAUSTED},
       {"seaPenErrorGeneric", IDS_SEA_PEN_ERROR_GENERIC},
       {"seaPenExperimentLabel", IDS_SEA_PEN_EXPERIMENT_LABEL},
+      {"seaPenUnavailableLabel", IDS_SEA_PEN_UNAVAILABLE_LABEL},
       {"seaPenThumbnailsLoading", IDS_SEA_PEN_THUMBNAILS_LOADING},
       {"seaPenCreatingHighResImage", IDS_SEA_PEN_CREATING_HIGH_RES_IMAGE},
       {"seaPenExpandOptionsButton", IDS_SEA_PEN_EXPAND_OPTIONS_BUTTON},
@@ -61,6 +62,7 @@ void AddSeaPenStrings(content::WebUIDataSource* source) {
 
       {"seaPenDismissError", IDS_PERSONALIZATION_APP_DISMISS},
       {"ariaLabelLoading", IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING},
+      {"seaPenManagedLabel", IDS_ASH_ENTERPRISE_DEVICE_MANAGED_SHORT},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 }

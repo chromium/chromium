@@ -3177,6 +3177,9 @@
         <message name="IDS_SEA_PEN_EXPERIMENT_LABEL" desc="Label for experiment item indicating the feature is experimental.">
           Experiment
         </message>
+        <message name="IDS_SEA_PEN_UNAVAILABLE_LABEL" desc="Label for the tile tag indicating the feature is unavailable.">
+          Unavailable
+        </message>
         <message name="IDS_SEA_PEN_ERROR_NO_INTERNET" desc="Error message displayed when there is no internet connection.">
           No internet. Connect to the internet and try again.
         </message>

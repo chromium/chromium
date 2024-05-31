@@ -258,17 +258,19 @@
     <div id="textShadow" part="textShadow"></div>
     <div part="text" id="text">
       <slot name="text">
-          <template is="dom-if" if="[[isPrimaryTextVisible_(primaryText)]]" restamp>
-            <p class="primary-text" title$="[[primaryText]]">[[primaryText]]</p>
-          </template>
+        <template is="dom-if" if="[[isPrimaryTextVisible_(primaryText)]]" restamp>
+          <p class="primary-text" title$="[[primaryText]]">[[primaryText]]</p>
+        </template>
       </slot>
-      <template is="dom-if"
-          if="[[isSecondaryTextVisible_(secondaryText)]]"
-          restamp>
+      <slot name="secondaryText">
+        <template is="dom-if"
+            if="[[isSecondaryTextVisible_(secondaryText)]]"
+            restamp>
         <p class="secondary-text" title$="[[secondaryText]]">
-          [[secondaryText]]
+            [[secondaryText]]
         </p>
-      </template>
+        </template>
+      </slot>
     </div>
   </template>
   <template is="dom-if" if="[[shouldShowInfoText_(imageStatus_, infoText)]]"
