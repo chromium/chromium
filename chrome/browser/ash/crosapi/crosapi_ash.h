@@ -629,6 +629,8 @@ class CrosapiAsh : public mojom::Crosapi {
   }
 #endif  // BUILDFLAG(USE_CUPS)
 
+  ash::ProbeServiceAsh* probe_service_ash() { return probe_service_ash_.get(); }
+
   ScreenAIDownloaderAsh* screen_ai_downloader_ash() {
     return screen_ai_downloader_ash_.get();
   }

@@ -11,9 +11,11 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/api_guard_delegate.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/fake_api_guard_delegate.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/common/fake_hardware_info_delegate.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/common/remote_probe_service_strategy.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/crosapi/cpp/telemetry/fake_probe_service.h"
+#include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_features.h"
 #include "net/base/net_errors.h"
@@ -40,6 +42,8 @@
 namespace chromeos {
 
 namespace {
+
+namespace crosapi = ::crosapi::mojom;
 
 // The tests cases must be kept sorted for the test to pass. Tests should be
 // grouped by the API type, then sorted alphabetically within the same type.
@@ -749,12 +753,8 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
     : public BaseTelemetryExtensionBrowserTest {
  public:
   TelemetryExtensionApiGuardRealDelegateBrowserTest()
-      : fake_hardware_info_delegate_factory_("HP"),
-        https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-    // Make sure device manufacturer is allowlisted.
-    HardwareInfoDelegate::Factory::SetForTesting(
-        &fake_hardware_info_delegate_factory_);
   }
   ~TelemetryExtensionApiGuardRealDelegateBrowserTest() override = default;
 
@@ -799,6 +799,17 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
+  void SetUpProbeService() {
+    fake_probe_service_ = std::make_unique<FakeProbeService>();
+    auto telemetry_info = crosapi::ProbeTelemetryInfo::New();
+    telemetry_info->system_result = crosapi::ProbeSystemResult::NewSystemInfo(
+        crosapi::ProbeSystemInfo::New(crosapi::ProbeOsInfo::New("HP")));
+    fake_probe_service_->SetProbeTelemetryInfoResponse(
+        std::move(telemetry_info));
+    RemoteProbeServiceStrategy::Get()->SetServiceForTesting(
+        fake_probe_service_->BindNewPipeAndPassRemote());
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void TearDownOnMainThread() override {
     // Explicitly removing the user is required; otherwise ProfileHelper keeps
@@ -825,7 +836,7 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
   bool IsServiceAvailable() const {
     chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
     return lacros_service &&
-           lacros_service->IsAvailable<crosapi::mojom::DiagnosticsService>();
+           lacros_service->IsAvailable<crosapi::DiagnosticsService>();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -835,8 +846,9 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
   std::string pwa_page_url() const override { return GetPwaGURL().spec(); }
   std::string matches_origin() const override { return GetPwaGURL().spec(); }
 
-  FakeHardwareInfoDelegate::Factory fake_hardware_info_delegate_factory_;
   net::EmbeddedTestServer https_server_;
+
+  std::unique_ptr<FakeProbeService> fake_probe_service_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
@@ -844,10 +856,11 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
 };
 
 // Smoke test to verify that real ApiGuardDelegate works in prod.
-// TODO(b/219514064): Make an equivalent test for Lacros.
 // TODO(b/338199240): Test is flaky.
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
                        DISABLED_CanAccessRunBatteryCapacityRoutine) {
+  SetUpProbeService();
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // We can't run this test if Ash doesn't support the crosapi
   // interface.

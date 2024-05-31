@@ -149,28 +149,19 @@ bool IsExtensionForceInstalled(content::BrowserContext* context,
   return force_install_list.Find(extension_id) != nullptr;
 }
 
-void OnGetManufacturer(
-    std::unique_ptr<HardwareInfoDelegate> hardware_info_delegate,
-    const std::string& extension_id,
-    CheckCallback callback,
-    std::string actual_manufacturer) {
+void OnGetManufacturer(const std::string& extension_id,
+                       CheckCallback callback,
+                       const std::string& actual_manufacturer) {
   const auto& extension_info = GetChromeOSExtensionInfoById(extension_id);
   const auto& expected_manufacturers = extension_info.manufacturers;
   std::move(callback).Run(expected_manufacturers.contains(actual_manufacturer));
-
-  // It is safe to destruct `hardware_info_delegate` here (the callback of
-  // `GetManufacturer`) because it will only return after calling the
-  // callback.
-  hardware_info_delegate.reset();
 }
 
 void IsExpectedManufacturerForExtensionId(const std::string& extension_id,
                                           CheckCallback callback) {
-  auto hardware_info_delegate = HardwareInfoDelegate::Factory::Create();
-  auto* ptr = hardware_info_delegate.get();
-  ptr->GetManufacturer(base::BindOnce(&OnGetManufacturer,
-                                      std::move(hardware_info_delegate),
-                                      extension_id, std::move(callback)));
+  auto& hardware_info_delegate = HardwareInfoDelegate::Get();
+  hardware_info_delegate.GetManufacturer(
+      base::BindOnce(&OnGetManufacturer, extension_id, std::move(callback)));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

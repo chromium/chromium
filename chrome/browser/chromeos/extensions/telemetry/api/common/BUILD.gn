@@ -86,7 +86,10 @@ source_set("remote_probe_strategy") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/telemetry_extension/telemetry" ]
+    deps += [
+      "//chrome/browser/ash/crosapi:crosapi",
+      "//chromeos/ash/components/telemetry_extension/telemetry",
+    ]
   }
 
   if (is_chromeos_lacros) {
@@ -107,19 +110,6 @@ source_set("hardware_info_delegate") {
   ]
 }
 
-source_set("fake_hardware_info_delegate") {
-  testonly = true
-  sources = [
-    "fake_hardware_info_delegate.cc",
-    "fake_hardware_info_delegate.h",
-  ]
-
-  deps = [
-    ":hardware_info_delegate",
-    "//base",
-  ]
-}
-
 source_set("test_support") {
   testonly = true
   sources = [
@@ -131,9 +121,10 @@ source_set("test_support") {
 
   deps = [
     ":common",
+    ":remote_probe_strategy",
     "//base",
     "//chrome/test:test_support",
-    "//chromeos/crosapi/cpp:test_support",
+    "//chromeos/crosapi/cpp/telemetry:test_support",
     "//content/public/browser",
     "//extensions:test_support",
     "//net",
@@ -152,13 +143,15 @@ source_set("browser_tests") {
 
   deps = [
     ":common",
-    ":fake_hardware_info_delegate",
+    ":hardware_info_delegate",
+    ":remote_probe_strategy",
     ":test_support",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//chrome/common/chromeos/extensions",
     "//chrome/test:test_support_ui",
+    "//chromeos/crosapi/cpp/telemetry:test_support",
     "//content/public/browser",
     "//content/test:test_support",
     "//extensions:test_support",
@@ -193,12 +186,15 @@ source_set("unit_tests") {
   sources = [ "api_guard_delegate_unittest.cc" ]
   deps = [
     ":common",
-    ":fake_hardware_info_delegate",
+    ":hardware_info_delegate",
+    ":remote_probe_strategy",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//chrome/browser/extensions:test_support",
     "//chrome/test:test_support",
+    "//chromeos/crosapi/cpp/telemetry:test_support",
     "//components/sync_preferences:test_support",
     "//content/public/browser",
     "//extensions/common",

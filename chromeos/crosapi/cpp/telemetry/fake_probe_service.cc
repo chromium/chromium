@@ -4,7 +4,6 @@
 
 #include "chromeos/crosapi/cpp/telemetry/fake_probe_service.h"
 
-#include <memory>
 #include <utility>
 #include <vector>
 
@@ -14,7 +13,6 @@
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 
@@ -26,10 +24,7 @@ namespace crosapi = ::crosapi::mojom;
 
 FakeProbeService::FakeProbeService() : receiver_(this) {}
 
-FakeProbeService::~FakeProbeService() {
-  // Assert on the expectations.
-  EXPECT_EQ(actual_requested_categories_, expected_requested_categories_);
-}
+FakeProbeService::~FakeProbeService() = default;
 
 void FakeProbeService::BindPendingReceiver(
     mojo::PendingReceiver<crosapi::TelemetryProbeService> receiver) {
@@ -44,9 +39,11 @@ FakeProbeService::BindNewPipeAndPassRemote() {
 void FakeProbeService::ProbeTelemetryInfo(
     const std::vector<crosapi::ProbeCategoryEnum>& categories,
     ProbeTelemetryInfoCallback callback) {
-  actual_requested_categories_.clear();
-  actual_requested_categories_.insert(actual_requested_categories_.end(),
-                                      categories.begin(), categories.end());
+  probe_telemetry_info_call_count_ += 1;
+  probe_telemetry_info_requested_categories_.clear();
+  probe_telemetry_info_requested_categories_.insert(
+      probe_telemetry_info_requested_categories_.end(), categories.begin(),
+      categories.end());
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), telem_info_.Clone()));
@@ -57,9 +54,9 @@ void FakeProbeService::GetOemData(GetOemDataCallback callback) {
       FROM_HERE, base::BindOnce(std::move(callback), oem_data_.Clone()));
 }
 
-void FakeProbeService::SetExpectedLastRequestedCategories(
-    std::vector<crosapi::ProbeCategoryEnum> expected_requested_categories) {
-  expected_requested_categories_ = std::move(expected_requested_categories);
+const std::vector<crosapi::ProbeCategoryEnum>&
+FakeProbeService::GetLastRequestedCategories() {
+  return probe_telemetry_info_requested_categories_;
 }
 
 void FakeProbeService::SetProbeTelemetryInfoResponse(
@@ -69,6 +66,10 @@ void FakeProbeService::SetProbeTelemetryInfoResponse(
 
 void FakeProbeService::SetOemDataResponse(crosapi::ProbeOemDataPtr oem_data) {
   oem_data_ = std::move(oem_data);
+}
+
+int FakeProbeService::GetProbeTelemetryInfoCallCount() {
+  return probe_telemetry_info_call_count_;
 }
 
 }  // namespace chromeos

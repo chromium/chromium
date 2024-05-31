@@ -18,22 +18,9 @@ namespace chromeos {
 // manufacturer.
 class HardwareInfoDelegate {
  public:
-  class Factory {
-   public:
-    static std::unique_ptr<HardwareInfoDelegate> Create();
+  static HardwareInfoDelegate& Get();
 
-    static void SetForTesting(Factory* test_factory);
-
-    virtual ~Factory();
-
-   protected:
-    virtual std::unique_ptr<HardwareInfoDelegate> CreateInstance() = 0;
-
-   private:
-    static Factory* test_factory_;
-  };
-
-  using ManufacturerCallback = base::OnceCallback<void(std::string)>;
+  using ManufacturerCallback = base::OnceCallback<void(const std::string&)>;
 
   HardwareInfoDelegate(const HardwareInfoDelegate&) = delete;
   HardwareInfoDelegate& operator=(const HardwareInfoDelegate&) = delete;
@@ -43,9 +30,6 @@ class HardwareInfoDelegate {
 
  protected:
   HardwareInfoDelegate();
-
- private:
-  std::unique_ptr<RemoteProbeServiceStrategy> remote_probe_service_strategy_;
 };
 
 }  // namespace chromeos

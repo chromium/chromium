@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_COMMON_REMOTE_PROBE_SERVICE_STRATEGY_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_COMMON_REMOTE_PROBE_SERVICE_STRATEGY_H_
 
-#include <memory>
-
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
@@ -17,16 +16,27 @@ namespace chromeos {
 // Ash or LaCros.
 class RemoteProbeServiceStrategy {
  public:
-  static std::unique_ptr<RemoteProbeServiceStrategy> Create();
-
-  RemoteProbeServiceStrategy();
+  static RemoteProbeServiceStrategy* Get();
   RemoteProbeServiceStrategy(const RemoteProbeServiceStrategy&) = delete;
   RemoteProbeServiceStrategy& operator=(const RemoteProbeServiceStrategy&) =
       delete;
   virtual ~RemoteProbeServiceStrategy();
 
-  virtual mojo::Remote<crosapi::mojom::TelemetryProbeService>&
-  GetRemoteService() = 0;
+  // Returns the probe service currently enabled in this platform.
+  crosapi::mojom::TelemetryProbeService* GetRemoteProbeService();
+
+  // Override platform service to use a fake service, should only be called in
+  // test.
+  void SetServiceForTesting(
+      mojo::PendingRemote<crosapi::mojom::TelemetryProbeService> test_service);
+
+ private:
+  RemoteProbeServiceStrategy();
+
+  // Store the test service remote for Ash.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  mojo::Remote<crosapi::mojom::TelemetryProbeService> test_service_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 }  // namespace chromeos

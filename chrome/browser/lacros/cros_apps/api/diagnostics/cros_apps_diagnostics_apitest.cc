@@ -19,6 +19,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class CrosAppsDiagnosticsApiTest : public CrosAppsApiTest {
@@ -54,10 +55,10 @@ class CrosAppsDiagnosticsApiTest : public CrosAppsApiTest {
     chromeos::LacrosService::Get()->InjectRemoteForTesting(
         fake_probe_service_->BindNewPipeAndPassRemote());
   }
+  std::unique_ptr<chromeos::FakeProbeService> fake_probe_service_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<chromeos::FakeProbeService> fake_probe_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiTest, DiagnosticsExists) {
@@ -178,9 +179,6 @@ IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiTest, GetCpuInfo_Success) {
     }
     auto service = std::make_unique<chromeos::FakeProbeService>();
     service->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
-    service->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kCpu});
-
     SetProbeServiceForTesting(std::move(service));
   }
 
@@ -234,6 +232,9 @@ IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiTest, GetCpuInfo_Success) {
         content::EvalJs(web_contents,
                         kDefineToStringFunctionScript +
                             "toString(window.cpuInfoResult.logicalCpus);"));
+    EXPECT_THAT(fake_probe_service_->GetLastRequestedCategories(),
+                testing::UnorderedElementsAreArray(
+                    {crosapi::mojom::ProbeCategoryEnum::kCpu}));
   }
 }
 
@@ -267,9 +268,6 @@ IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiTest,
 
     auto service = std::make_unique<chromeos::FakeProbeService>();
     service->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
-    service->SetExpectedLastRequestedCategories(
-        {crosapi::mojom::ProbeCategoryEnum::kCpu});
-
     SetProbeServiceForTesting(std::move(service));
   }
 
@@ -278,6 +276,9 @@ IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiTest,
       "retrieving CPU telemetry info.\"\n",
       content::EvalJs(web_contents, "window.chromeos.diagnostics.getCpuInfo();")
           .error);
+  EXPECT_THAT(fake_probe_service_->GetLastRequestedCategories(),
+              testing::UnorderedElementsAreArray(
+                  {crosapi::mojom::ProbeCategoryEnum::kCpu}));
 }
 
 IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiTest, GetNetworkInterfaces) {

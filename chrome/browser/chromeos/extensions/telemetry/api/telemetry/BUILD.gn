@@ -42,6 +42,7 @@ source_set("browser_tests") {
     ":telemetry",
     "//base",
     "//build:chromeos_buildflags",
+    "//chrome/browser/chromeos/extensions/telemetry/api/common:remote_probe_strategy",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",
     "//chromeos/crosapi/cpp/telemetry:test_support",
     "//chromeos/crosapi/mojom",

@@ -18,6 +18,8 @@ namespace chromeos {
 
 namespace {
 
+HardwareInfoDelegate* g_instance = nullptr;
+
 // Callback from ProbeServiceAsh::ProbeTelemetryInfo().
 std::string OnGetSystemInfo(crosapi::mojom::ProbeTelemetryInfoPtr ptr) {
   if (!ptr || !ptr->system_result || !ptr->system_result->is_system_info()) {
@@ -35,35 +37,25 @@ std::string OnGetSystemInfo(crosapi::mojom::ProbeTelemetryInfoPtr ptr) {
 }  // namespace
 
 // static
-HardwareInfoDelegate::Factory* HardwareInfoDelegate::Factory::test_factory_ =
-    nullptr;
-
-// static
-std::unique_ptr<HardwareInfoDelegate> HardwareInfoDelegate::Factory::Create() {
-  if (test_factory_) {
-    return test_factory_->CreateInstance();
+HardwareInfoDelegate& HardwareInfoDelegate::Get() {
+  if (!g_instance) {
+    g_instance = new HardwareInfoDelegate();
   }
-  return base::WrapUnique<HardwareInfoDelegate>(new HardwareInfoDelegate());
+  return *g_instance;
 }
 
-// static
-void HardwareInfoDelegate::Factory::SetForTesting(Factory* test_factory) {
-  test_factory_ = test_factory;
-}
-
-HardwareInfoDelegate::Factory::~Factory() = default;
-
-HardwareInfoDelegate::HardwareInfoDelegate()
-    : remote_probe_service_strategy_(RemoteProbeServiceStrategy::Create()) {}
+HardwareInfoDelegate::HardwareInfoDelegate() = default;
 HardwareInfoDelegate::~HardwareInfoDelegate() = default;
 
 // GetManufacturer tries to get the manufacturer (or OEM name) from
 // ProbeServiceAsh, which fetches the OEM name from cros_config.
 void HardwareInfoDelegate::GetManufacturer(ManufacturerCallback done_cb) {
-  if (remote_probe_service_strategy_) {
-    remote_probe_service_strategy_->GetRemoteService()->ProbeTelemetryInfo(
-        {crosapi::mojom::ProbeCategoryEnum::kSystem},
-        base::BindOnce(&OnGetSystemInfo).Then(std::move(done_cb)));
+  auto* probe_service =
+      RemoteProbeServiceStrategy::Get()->GetRemoteProbeService();
+  if (probe_service) {
+    auto cb = base::BindOnce(&OnGetSystemInfo).Then(std::move(done_cb));
+    probe_service->ProbeTelemetryInfo(
+        {crosapi::mojom::ProbeCategoryEnum::kSystem}, std::move(cb));
   } else {
     std::move(done_cb).Run("");
   }

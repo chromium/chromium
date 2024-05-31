@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_CROSAPI_CPP_TELEMETRY_FAKE_PROBE_SERVICE_H_
 #define CHROMEOS_CROSAPI_CPP_TELEMETRY_FAKE_PROBE_SERVICE_H_
 
-#include <memory>
 #include <vector>
 
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
@@ -42,10 +41,10 @@ class FakeProbeService : public crosapi::mojom::TelemetryProbeService {
   // Sets the return value for |GetOemData|.
   void SetOemDataResponse(crosapi::mojom::ProbeOemDataPtr oem_data);
 
-  // Set expectation about the parameter that is passed to |ProbeTelemetryInfo|.
-  void SetExpectedLastRequestedCategories(
-      std::vector<crosapi::mojom::ProbeCategoryEnum>
-          expected_requested_categories);
+  const std::vector<crosapi::mojom::ProbeCategoryEnum>&
+  GetLastRequestedCategories();
+
+  int GetProbeTelemetryInfoCallCount();
 
  private:
   mojo::Receiver<crosapi::mojom::TelemetryProbeService> receiver_;
@@ -58,11 +57,9 @@ class FakeProbeService : public crosapi::mojom::TelemetryProbeService {
   crosapi::mojom::ProbeOemDataPtr oem_data_{
       crosapi::mojom::ProbeOemData::New()};
 
-  // Expectation about the parameter that is passed to |ProbeTelemetryInfo|.
-  std::vector<crosapi::mojom::ProbeCategoryEnum> actual_requested_categories_;
-
-  // Actual passed parameter.
-  std::vector<crosapi::mojom::ProbeCategoryEnum> expected_requested_categories_;
+  std::vector<crosapi::mojom::ProbeCategoryEnum>
+      probe_telemetry_info_requested_categories_;
+  int probe_telemetry_info_call_count_ = 0;
 };
 
 }  // namespace chromeos
