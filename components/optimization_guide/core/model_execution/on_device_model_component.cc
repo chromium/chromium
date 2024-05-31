@@ -202,6 +202,9 @@ void OnDeviceModelComponentStateManager::InstallerRegistered() {
 }
 
 void OnDeviceModelComponentStateManager::BeginUpdateRegistration() {
+  if (switches::GetOnDeviceModelExecutionOverride()) {
+    return;
+  }
   delegate_->GetFreeDiskSpace(
       delegate_->GetInstallDirectory(),
       base::BindOnce(
