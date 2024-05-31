@@ -983,7 +983,7 @@ void WebContentsInteractionTestUtil::
   // Even if the page is still "loading" it should be ready for interaction at
   // this point. Note that in some cases we won't receive this event, which is
   // why we also check at DidStopLoading() and DidFinishLoad().
-  MaybeCreateElement(/*force =*/true);
+  MaybeCreateElement();
 }
 
 void WebContentsInteractionTestUtil::PrimaryPageChanged(content::Page& page) {
@@ -1024,7 +1024,7 @@ void WebContentsInteractionTestUtil::OnTabStripModelChanged(
     if (web_contents() == replace->old_contents) {
       DiscardCurrentElement();
       Observe(replace->new_contents);
-      MaybeCreateElement(false);
+      MaybeCreateElement();
     }
   }
 }
@@ -1054,12 +1054,14 @@ WebContentsInteractionTestUtil::WebContentsInteractionTestUtil(
   }
 }
 
-void WebContentsInteractionTestUtil::MaybeCreateElement(bool force) {
+void WebContentsInteractionTestUtil::MaybeCreateElement() {
   if (current_element_ || !web_contents())
     return;
 
-  if (!force && !web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame())
+  if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame() ||
+      web_contents()->HasUncommittedNavigationInPrimaryMainFrame()) {
     return;
+  }
 
   ui::ElementContext context = ui::ElementContext();
   if (web_view_data_) {

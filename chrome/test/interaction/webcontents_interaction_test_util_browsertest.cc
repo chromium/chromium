@@ -387,6 +387,46 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
 }
 
+IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
+                       ElementCreatedInFreshBrowser) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithTitle1URL);
+
+  // Open a new browser, and immediately navigate to a new page. Even though the
+  // original chrome://new-tab-page might not have finished loading, the
+  // element should not be created until the new URL is loaded.
+  Browser* browser2 = chrome::OpenEmptyWindow(
+      browser()->profile(), /*should_trigger_session_restore=*/false);
+  auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
+      browser2, kWebContentsElementId);
+  util->LoadPage(url);
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser2->window()->GetElementContext())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kWebContentsElementId)
+                       .SetContext(ui::InteractionSequence::ContextMode::kAny)
+                       .SetTransitionOnlyOnEvent(true)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             EXPECT_EQ(util->web_contents()->GetURL(), url);
+                             EXPECT_EQ(
+                                 util->web_contents()->GetLastCommittedURL(),
+                                 url);
+                           }))
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
 IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest, EvaluateInt) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);

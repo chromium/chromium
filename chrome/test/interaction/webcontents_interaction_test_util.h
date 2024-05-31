@@ -438,7 +438,7 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
                                  std::optional<Browser*> browser,
                                  views::WebView* web_view);
 
-  void MaybeCreateElement(bool force = false);
+  void MaybeCreateElement();
   void MaybeSendPaintEvent();
   void DiscardCurrentElement();
 
