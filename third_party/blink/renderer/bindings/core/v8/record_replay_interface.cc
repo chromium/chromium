@@ -226,6 +226,10 @@ const char* gSourceMapScript = R""""(
 //js
 (() => {
 
+// Avoid monkey patching.
+const fetch = window.fetch;
+const DateNow = Date.now;
+
 const {
   log,
   warning,
@@ -318,7 +322,7 @@ addNewScriptHandler(async (scriptId, sourceURL, relativeSourceMapURL) => {
     targetContentHash: `sha256:${scriptHash}`,
     targetURLHash: sourceURL ? makeAPIHash(sourceURL) : undefined,
     targetMapURLHash: makeAPIHash(sourceMapURL),
-    timestamp: Date.now(),
+    timestamp: DateNow(),
   }));
 
   for (const { offset, url } of sources) {
@@ -341,7 +345,7 @@ addNewScriptHandler(async (scriptId, sourceURL, relativeSourceMapURL) => {
       recordingId,
       parentId: id,
       parentOffset: offset,
-      timestamp: Date.now(),
+      timestamp: DateNow(),
     }));
   }
   } catch (err) {
