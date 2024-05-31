@@ -32,6 +32,7 @@ using autofill::FieldSignature;
 using autofill::FormData;
 using autofill::FormFieldData;
 using autofill::FormSignature;
+using autofill::password_generation::PasswordGenerationType;
 
 namespace password_manager {
 
@@ -150,6 +151,7 @@ bool PasswordGenerationFrameHelper::IsGenerationEnabled(
 
 std::u16string PasswordGenerationFrameHelper::GeneratePassword(
     const GURL& last_committed_url,
+    PasswordGenerationType generation_type,
     autofill::FormSignature form_signature,
     autofill::FieldSignature field_signature,
     uint64_t max_length) {
@@ -170,10 +172,14 @@ std::u16string PasswordGenerationFrameHelper::GeneratePassword(
   if (max_length && max_length < target_length) {
     target_length = max_length;
   }
-  if (spec.has_max_length() && spec.max_length() < target_length) {
+  // Ignore crowdsourced password length when generation is triggered on the
+  // manual fallback.
+  if ((generation_type != PasswordGenerationType::kManual) &&
+      spec.has_max_length() && spec.max_length() < target_length) {
     target_length = spec.max_length();
   }
   spec.set_max_length(target_length);
+
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
     logger.LogPasswordRequirements(

@@ -61,7 +61,7 @@ bool TouchToFillPasswordGenerationController::ShowTouchToFill(
 
   std::u16string generated_password =
       frame_driver_->GetPasswordGenerationHelper()->GeneratePassword(
-          web_contents_->GetLastCommittedURL().DeprecatedGetOriginAsURL(),
+          web_contents_->GetLastCommittedURL().DeprecatedGetOriginAsURL(), type,
           generation_element_data_.form_signature,
           generation_element_data_.field_signature,
           generation_element_data_.max_password_length);

@@ -15,6 +15,7 @@
 #import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/password_form_generation_data.h"
+#import "components/autofill/core/common/password_generation_util.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider_query.h"
@@ -61,6 +62,7 @@ using autofill::FormData;
 using autofill::PasswordFormFillData;
 using autofill::TestAutofillManagerInjector;
 using autofill::TestBrowserAutofillManager;
+using autofill::password_generation::PasswordGenerationType;
 using base::SysNSStringToUTF8;
 using base::SysUTF16ToNSString;
 using password_manager::IsCrossOriginIframe;
@@ -78,6 +80,7 @@ class MockPasswordGenerationFrameHelper : public PasswordGenerationFrameHelper {
   MOCK_METHOD(std::u16string,
               GeneratePassword,
               (const GURL&,
+               autofill::password_generation::PasswordGenerationType,
                autofill::FormSignature,
                autofill::FieldSignature,
                uint64_t),
@@ -605,8 +608,9 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
 
   OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
   EXPECT_CALL(password_generation_helper_,
-              GeneratePassword(web_state_.GetLastCommittedURL(), form_signature,
-                               field_signature, max_length));
+              GeneratePassword(web_state_.GetLastCommittedURL(),
+                               PasswordGenerationType::kAutomatic,
+                               form_signature, field_signature, max_length));
 
   [controller_ didSelectSuggestion:suggestion
                               form:@"test-form-name"

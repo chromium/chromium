@@ -53,6 +53,7 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 using autofill::SuggestionHidingReason;
+using autofill::password_generation::PasswordGenerationType;
 #if !BUILDFLAG(IS_ANDROID)
 using password_manager::features::kPasswordGenerationExperimentVariationParam;
 using password_manager::features::PasswordGenerationVariation;
@@ -292,15 +293,20 @@ void PasswordGenerationPopupControllerImpl::PasswordAccepted() {
   }
 }
 
-void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
-  // When switching from editing to generation state, regenerate the password.
-  if (state == kOfferGeneration &&
-      (state_ != state || current_generated_password_.empty())) {
+void PasswordGenerationPopupControllerImpl::GeneratePasswordValue(
+    PasswordGenerationType generation_type) {
+  // New password value should be generated if none currently exists, or if the
+  // popup was previously in the editing state.
+  if (current_generated_password_.empty() || state_ != kOfferGeneration) {
     current_generated_password_ =
         driver_->GetPasswordGenerationHelper()->GeneratePassword(
             web_contents()->GetLastCommittedURL().DeprecatedGetOriginAsURL(),
-            form_signature_, field_signature_, max_length_);
+            generation_type, form_signature_, field_signature_, max_length_);
   }
+}
+
+void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
+  CHECK(!current_generated_password_.empty());
   state_ = state;
 
   if (!view_) {

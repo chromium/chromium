@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -74,6 +75,7 @@ class PasswordGenerationFrameHelper {
   // TODO(crbug.com/41396292): Add a stub for this class to facilitate testing.
   virtual std::u16string GeneratePassword(
       const GURL& last_committed_url,
+      autofill::password_generation::PasswordGenerationType generation_type,
       autofill::FormSignature form_signature,
       autofill::FieldSignature field_signature,
       uint64_t max_length);

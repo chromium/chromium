@@ -35,6 +35,7 @@
 namespace password_manager {
 namespace {
 
+using autofill::password_generation::PasswordGenerationType;
 using autofill::password_generation::PasswordGenerationUIData;
 using ::testing::_;
 using ::testing::Return;
@@ -275,6 +276,7 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
   controller->SetViewForTesting(popup_view());
 
   // In the offer generation state, suggestions are previewed on selection.
+  controller->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
   controller->Show(
       PasswordGenerationPopupController::GenerationUIState::kOfferGeneration);
   EXPECT_CALL(driver(), PreviewGenerationSuggestion);
@@ -292,6 +294,7 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
   controller->SetViewForTesting(popup_view());
 
   // In the edit generated password state, no preview calls happen.
+  controller->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
   controller->Show(PasswordGenerationPopupController::GenerationUIState::
                        kEditGeneratedPassword);
   EXPECT_CALL(driver(), PreviewGenerationSuggestion).Times(0);
@@ -348,6 +351,8 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
   // to use the mock.
   static_cast<PasswordGenerationPopupControllerImpl*>(controller.get())
       ->SetViewForTesting(popup_view());
+  static_cast<PasswordGenerationPopupControllerImpl*>(controller.get())
+      ->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
 
   EXPECT_CALL(driver(),
               GeneratedPasswordAccepted(_, autofill::FieldRendererId(100), _));
@@ -377,6 +382,7 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
       .WillByDefault(Return(true));
 
   // In the nudge password experiment suggestion is previewed on show.
+  controller->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
   EXPECT_CALL(driver(), PreviewGenerationSuggestion);
   controller->Show(
       PasswordGenerationPopupController::GenerationUIState::kOfferGeneration);

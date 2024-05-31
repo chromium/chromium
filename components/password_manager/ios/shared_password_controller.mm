@@ -864,7 +864,10 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
     std::u16string generatedPassword =
         [self->_driverHelper PasswordGenerationHelper:frame]->GeneratePassword(
-            [self lastCommittedURL], formSignature, fieldSignature, maxLength);
+            [self lastCommittedURL],
+            isManuallyTriggered ? PasswordGenerationType::kManual
+                                : PasswordGenerationType::kAutomatic,
+            formSignature, fieldSignature, maxLength);
 
     self.generatedPotentialPassword = SysUTF16ToNSString(generatedPassword);
 

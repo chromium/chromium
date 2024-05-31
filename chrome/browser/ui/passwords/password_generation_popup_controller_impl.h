@@ -46,6 +46,7 @@ class PasswordManagerDriver;
 namespace autofill {
 struct FormData;
 namespace password_generation {
+enum class PasswordGenerationType;
 struct PasswordGenerationUIData;
 }  // namespace password_generation
 }  // namespace autofill
@@ -93,6 +94,10 @@ class PasswordGenerationPopupControllerImpl
       const PasswordGenerationPopupControllerImpl&) = delete;
 
   ~PasswordGenerationPopupControllerImpl() override;
+
+  // Generate the password string and store it in `current_generated_password_`.
+  void GeneratePasswordValue(
+      autofill::password_generation::PasswordGenerationType generation_type);
 
   // Create a PasswordGenerationPopupView if one doesn't already exist.
   void Show(GenerationUIState state);

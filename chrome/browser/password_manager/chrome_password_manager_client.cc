@@ -1792,6 +1792,7 @@ void ChromePasswordManagerClient::ShowPasswordGenerationPopup(
       driver->AsWeakPtr(), observer_, web_contents(),
       driver->render_frame_host(), GetPrefs());
 
+  popup_controller_->GeneratePasswordValue(type);
   popup_controller_->Show(PasswordGenerationPopupController::kOfferGeneration);
 
   driver->SetSuggestionAvailability(
