@@ -1135,6 +1135,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Permissions.Query.QueryResponseTime" units="ms"
+    expires_after="2025-05-31">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Measure the response time of permissions.query as seen by Blink. This
+    histogram is introduced to get a baseline for the performance in Clank and
+    will be used to measure a future implementation of the API in WebView to
+    compare the performance.
+
+    The histogram is emitted when Blink receives a callback from the browser
+    process for the HasService call made as part of permissions.query.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.QuietChip.TimeToInteraction" units="ms"
     expires_after="2025-02-04">
   <owner>elklm@chromium.org</owner>

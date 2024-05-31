@@ -63,6 +63,11 @@ class Permissions final : public ScriptWrappable,
   mojom::blink::PermissionService* GetService(ExecutionContext*);
   void ServiceConnectionError();
 
+  void QueryTaskComplete(ScriptPromiseResolver<PermissionStatus>* resolver,
+                         mojom::blink::PermissionDescriptorPtr descriptor,
+                         base::TimeTicks query_start_time,
+                         mojom::blink::PermissionStatus result);
+
   void TaskComplete(ScriptPromiseResolver<PermissionStatus>* resolver,
                     mojom::blink::PermissionDescriptorPtr descriptor,
                     mojom::blink::PermissionStatus result);
