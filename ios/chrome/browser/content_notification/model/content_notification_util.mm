@@ -174,10 +174,6 @@ bool IsContentNotificationEnabled(ChromeBrowserState* browser_state) {
   BOOL is_signed_in = auth_service && auth_service->HasPrimaryIdentity(
                                           signin::ConsentLevel::kSignin);
 
-  if (is_signed_in && IsContentPushNotificationsProvisionalBypass()) {
-    return true;
-  }
-
   const TemplateURL* default_search_url_template =
       ios::TemplateURLServiceFactory::GetForBrowserState(browser_state)
           ->GetDefaultSearchProvider();
