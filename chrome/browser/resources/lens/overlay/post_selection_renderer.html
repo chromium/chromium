@@ -6,6 +6,9 @@
     --post-selection-corner-radius: 12px;
     --post-selection-corner-width: 4px;
     --post-selection-corner-hitbox-max-size: 40px;
+    /** For the selected area cutout to prevent tiny image corners from
+        sticking out past the rounded draggable corners */
+    --post-selection-cutout-corner-radius: 5px;
     --color-scrim: #181C22;
     position: relative;
   }
@@ -24,7 +27,8 @@
     clip-path: rect(var(--selection-top)
                     calc(var(--selection-left) + var(--selection-width))
                     calc(var(--selection-top) + var(--selection-height))
-                    var(--selection-left));
+                    var(--selection-left)
+                    round var(--post-selection-cutout-corner-radius));
     height: 100%;
     inset: 0;
     object-fit: contain;
@@ -36,6 +40,7 @@
     /* Scrim is rendered here too, so that the rendered screenshot is dark
      * as if it were under the scrim as well. */
     background-color: var(--color-scrim);
+    border-radius: var(--post-selection-cutout-corner-radius);
     height: var(--selection-height);
     left: var(--selection-left);
     margin: auto;
