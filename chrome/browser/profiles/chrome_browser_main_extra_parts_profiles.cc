@@ -439,6 +439,10 @@
 #include "chrome/browser/policy/cloud/profile_token_policy_web_signin_service_factory.h"
 #endif
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
+#endif
+
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/bookmarks/bookmark_expanded_state_tracker_factory.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper_service_factory.h"
@@ -789,6 +793,9 @@ void ChromeBrowserMainExtraPartsProfiles::
     BUILDFLAG(IS_CHROMEOS_ASH)
   enterprise_connectors::DeviceTrustConnectorServiceFactory::GetInstance();
   enterprise_connectors::DeviceTrustServiceFactory::GetInstance();
+#endif
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  enterprise_connectors::ExtensionInstallEventRouterFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   enterprise_connectors::LocalBinaryUploadServiceFactory::GetInstance();

@@ -17,6 +17,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_waiter.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/dependency_graph.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"
@@ -256,6 +257,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #if BUILDFLAG(IS_WIN)
     "BoundSessionCookieRefreshService",
 #endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+    "ExtensionInstallEventRouter",
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     "ExtensionSystem",
     "ExtensionURLLoaderFactory::BrowserContextShutdownNotifierFactory",
     "FederatedIdentityPermissionContext",
@@ -401,6 +405,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "ChildAccountService",
     "ChromeSigninClient",
     "CommandService",
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+    "ConnectorsService",
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     "ContentIndexProvider",
     "ContentSettingsService",
     "CookieSettings",
@@ -419,6 +426,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "ExtensionGCMAppHandler",
     "ExtensionGarbageCollector",
     "ExtensionHostRegistry",
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+    "ExtensionInstallEventRouter",
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     "ExtensionManagement",
     "ExtensionPrefValueMap",
     "ExtensionPrefs",

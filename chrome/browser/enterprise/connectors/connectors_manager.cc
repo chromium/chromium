@@ -44,7 +44,6 @@ static constexpr enterprise_connectors::AnalysisConnector
 
 ConnectorsManager::ConnectorsManager(
     std::unique_ptr<BrowserCrashEventRouter> browser_crash_event_router,
-    std::unique_ptr<ExtensionInstallEventRouter> extension_install_event_router,
     std::unique_ptr<ExtensionTelemetryEventRouter>
         extension_telemetry_event_router,
     PrefService* pref_service,
@@ -52,12 +51,9 @@ ConnectorsManager::ConnectorsManager(
     bool observe_prefs)
     : service_provider_config_(config),
       browser_crash_event_router_(std::move(browser_crash_event_router)),
-      extension_install_event_router_(
-          std::move(extension_install_event_router)),
       extension_telemetry_event_router_(
           std::move(extension_telemetry_event_router)) {
   DCHECK(browser_crash_event_router_) << "Crash event router is null";
-  DCHECK(extension_install_event_router_) << "Extension event router is null";
   DCHECK(extension_telemetry_event_router_)
       << "Extension telemetry event router is null";
 
@@ -76,7 +72,6 @@ ConnectorsManager::ConnectorsManager(
     MaybeCloseLocalContentAnalysisAgentConnection();
 #endif
   }
-  extension_install_event_router_->StartObserving();
 }
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
