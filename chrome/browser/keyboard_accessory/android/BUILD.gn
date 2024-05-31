@@ -52,6 +52,7 @@ source_set("unit_test") {
     "//chrome/test:test_support",
     "//components/autofill/content/browser:test_support",
     "//components/autofill/core/browser",
+    "//components/autofill/core/common:credit_card_number_validation",
     "//components/device_reauth",
     "//components/password_manager/content/browser",
     "//components/password_manager/core/browser",
