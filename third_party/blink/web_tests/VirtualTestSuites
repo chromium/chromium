@@ -1874,14 +1874,6 @@
     "expires": "Jul 1, 2025"
   },
   {
-    "prefix": "force-defer-script",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/html/semantics/scripting-1/the-script-element/defer-script/"],
-    "args": ["--enable-features=ForceDeferScriptIntervention",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "force-in-order-script",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/in-order-script-scheduling/force-in-order"],

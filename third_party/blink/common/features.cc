@@ -1027,10 +1027,6 @@ const base::FeatureParam<int> kFledgeRealTimeReportingNumBuckets{
 const base::FeatureParam<double> kFledgeRealTimeReportingEpsilon{
     &kFledgeRealTimeReporting, "FledgeRealTimeReportingEpsilon", 1};
 
-BASE_FEATURE(kForceDeferScriptIntervention,
-             "ForceDeferScriptIntervention",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kForceHighPerformanceGPUForWebGL,
              "ForceHighPerformanceGPUForWebGL",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -283,13 +283,6 @@ bool IsEligibleCommon(const Document& element_document) {
   return true;
 }
 
-// [Intervention, ForceDefer, https://crbug.com/1339112]
-bool IsEligibleForForceDefer(const Document& element_document) {
-  return base::FeatureList::IsEnabled(
-             features::kForceDeferScriptIntervention) &&
-         IsEligibleCommon(element_document);
-}
-
 // [Intervention, ForceInOrderScript, crbug.com/1344772]
 bool IsEligibleForForceInOrder(const Document& element_document) {
   return base::FeatureList::IsEnabled(features::kForceInOrderScript) &&
@@ -467,12 +460,6 @@ ScriptRunner::DelayReasons DetermineDelayReasonsToWait(
   if (is_eligible_for_delay &&
       script_runner->IsActive(DelayReason::kMilestone)) {
     reasons |= static_cast<DelayReasons>(DelayReason::kMilestone);
-  }
-
-  if (base::FeatureList::IsEnabled(features::kForceDeferScriptIntervention)) {
-    if (script_runner->IsActive(DelayReason::kForceDefer)) {
-      reasons |= static_cast<DelayReasons>(DelayReason::kForceDefer);
-    }
   }
 
   return reasons;
@@ -1141,20 +1128,6 @@ PendingScript* ScriptLoader::PrepareScript(
   ScriptSchedulingType script_scheduling_type = GetScriptSchedulingTypePerSpec(
       element_document, parser_blocking_inline_option);
 
-  // [Intervention, ForceDefer, https://crbug.com/1339112]
-  // Force-defer parser-blocking and inline scripts.
-  if (IsEligibleForForceDefer(element_document) && parser_inserted_) {
-    switch (script_scheduling_type) {
-      case ScriptSchedulingType::kParserBlocking:
-      case ScriptSchedulingType::kImmediate:
-      case ScriptSchedulingType::kParserBlockingInline:
-        script_scheduling_type = ScriptSchedulingType::kForceDefer;
-        break;
-      default:
-        break;
-    }
-  }
-
   // [Intervention, SelectiveInOrderScript, crbug.com/1356396]
   // Check for external script that
   // should be in-order. This simply marks the parser blocking scripts as
@@ -1270,7 +1243,6 @@ PendingScript* ScriptLoader::PrepareScript(
       return nullptr;
 
     case ScriptSchedulingType::kDefer:
-    case ScriptSchedulingType::kForceDefer:
     case ScriptSchedulingType::kParserBlocking:
     case ScriptSchedulingType::kParserBlockingInline:
       // The remaining part is implemented by the caller-side of
@@ -1292,6 +1264,7 @@ PendingScript* ScriptLoader::PrepareScript(
     }
 
     case ScriptSchedulingType::kNotSet:
+    case ScriptSchedulingType::kDeprecatedForceDefer:
       NOTREACHED_IN_MIGRATION();
       return nullptr;
   }

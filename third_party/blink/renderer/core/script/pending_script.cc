@@ -337,16 +337,17 @@ bool PendingScript::IsControlledByScriptRunner() const {
     case ScriptSchedulingType::kParserBlocking:
     case ScriptSchedulingType::kParserBlockingInline:
     case ScriptSchedulingType::kImmediate:
-    case ScriptSchedulingType::kForceDefer:
       return false;
+
+    case ScriptSchedulingType::kDeprecatedForceDefer:
+      NOTREACHED_NORETURN()
+          << "kDeprecatedForceDefer is deprecated and should not be in use";
 
     case ScriptSchedulingType::kInOrder:
     case ScriptSchedulingType::kAsync:
     case ScriptSchedulingType::kForceInOrder:
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
 }
 
 }  // namespace blink

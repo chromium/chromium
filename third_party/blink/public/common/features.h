@@ -582,10 +582,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<ForceDarkImageClassifier>
     kForceDarkImageClassifierParam;
 
-// If enabled, parser-blocking scripts are force-deferred.
-// https://crbug.com/1339112
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceDeferScriptIntervention);
-
 // Forces the attribute powerPreference to be set to "high-performance" for
 // WebGL contexts.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceHighPerformanceGPUForWebGL);

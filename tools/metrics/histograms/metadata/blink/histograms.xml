@@ -3976,56 +3976,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Script.ForceDeferredScripts.Mainframe" units="count"
-    expires_after="2023-12-01">
-  <owner>chikamune@chromium.org</owner>
-  <owner>hiroshige@chromium.org</owner>
-  <owner>sisidovski@chromium.org</owner>
-  <summary>
-    Number of synchronous scripts that were deferred for a mainframe by the
-    ForceDeferScriptIntervention. This includes both inline scripts and external
-    scripts that had their execution deferred until after parsing completes.
-    Recorded at the end of parsing when ForceDeferScriptIntervention is enabled.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Script.ForceDeferredScripts.Mainframe.External"
-    units="count" expires_after="2023-12-01">
-  <owner>chikamune@chromium.org</owner>
-  <owner>hiroshige@chromium.org</owner>
-  <owner>sisidovski@chromium.org</owner>
-  <summary>
-    Number of external synchronous scripts that were deferred for a mainframe by
-    the ForceDeferScriptIntervention. Recorded at the end of parsing when
-    ForceDeferScriptIntervention is enabled.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Script.ForceDeferredScripts.Subframe" units="count"
-    expires_after="2023-12-01">
-  <owner>chikamune@chromium.org</owner>
-  <owner>hiroshige@chromium.org</owner>
-  <owner>sisidovski@chromium.org</owner>
-  <summary>
-    Number of synchronous scripts that were deferred for a subframe by the
-    ForceDeferScriptIntervention. This includes both inline scripts and external
-    scripts that had their execution deferred until after parsing completes.
-    Recorded at the end of parsing when ForceDeferScriptIntervention is enabled.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Script.ForceDeferredScripts.Subframe.External"
-    units="count" expires_after="2023-12-01">
-  <owner>chikamune@chromium.org</owner>
-  <owner>hiroshige@chromium.org</owner>
-  <owner>sisidovski@chromium.org</owner>
-  <summary>
-    Number of external synchronous scripts that were deferred for a subframe by
-    the ForceDeferScriptIntervention. Recorded at the end of parsing when
-    ForceDeferScriptIntervention is enabled.
-  </summary>
-</histogram>
-
 <histogram
     name="Blink.Script.PostTaskWithLowPriorityUntilTimeout.RaceTaskPriority"
     enum="RaceTaskPriority" expires_after="2024-10-06">

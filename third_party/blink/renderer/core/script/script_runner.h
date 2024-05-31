@@ -70,9 +70,6 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
     kLoad = 1 << 0,
     // Milestone is reached as defined by https://crbug.com/1340837.
     kMilestone = 1 << 1,
-    // Delay async scripts until force-deferred scripts are evaluated
-    // https://crbug.com/1339112.
-    kForceDefer = 1 << 2,
 
     kTest1 = 1 << 6,
     kTest2 = 1 << 7,

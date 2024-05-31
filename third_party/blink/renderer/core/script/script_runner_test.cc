@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/script/script_runner.h"
 
 #include "base/test/null_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -394,34 +393,6 @@ TEST_F(ScriptRunnerTest, ResumeAndSuspend_Async) {
 
   // Make sure elements are correct.
   EXPECT_THAT(order_, WhenSorted(ElementsAre(1, 2, 3)));
-}
-
-TEST_F(ScriptRunnerTest, SetForceDeferredWithAddedAsyncScript) {
-  base::test::ScopedFeatureList feature_list(
-      features::kForceDeferScriptIntervention);
-
-  auto* pending_script1 = MockPendingScript::CreateAsync(document_);
-
-  QueueScriptForExecution(pending_script1);
-  NotifyScriptReady(pending_script1);
-  EXPECT_CALL(*pending_script1, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([this] { order_.push_back(1); }));
-  auto* delayer = MakeGarbageCollected<ScriptRunnerDelayer>(
-      script_runner_, ScriptRunner::DelayReason::kForceDefer);
-  delayer->Activate();
-
-  // Adding new async script while deferred will cause another task to be
-  // posted for it when execution is unblocked.
-  auto* pending_script2 = MockPendingScript::CreateAsync(document_);
-  QueueScriptForExecution(pending_script2);
-  NotifyScriptReady(pending_script2);
-  EXPECT_CALL(*pending_script2, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([this] { order_.push_back(2); }));
-  // Unblock async scripts before the tasks posted in NotifyScriptReady() is
-  // executed, i.e. no RunUntilIdle() etc. in between.
-  delayer->Deactivate();
-  platform_->RunUntilIdle();
-  ASSERT_EQ(2u, order_.size());
 }
 
 TEST_F(ScriptRunnerTest, LateNotifications) {
