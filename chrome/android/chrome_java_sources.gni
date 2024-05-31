@@ -749,7 +749,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/init/NativeInitializationController.java",
   "java/src/org/chromium/chrome/browser/init/NativeStartupBridge.java",
   "java/src/org/chromium/chrome/browser/init/ProcessInitializationHandler.java",
-  "java/src/org/chromium/chrome/browser/init/SingleWindowKeyboardVisibilityDelegate.java",
   "java/src/org/chromium/chrome/browser/installedapp/InstalledAppProviderFactory.java",
   "java/src/org/chromium/chrome/browser/instantapps/InstantAppsHandler.java",
   "java/src/org/chromium/chrome/browser/invalidation/ResumableDelayedTaskRunner.java",

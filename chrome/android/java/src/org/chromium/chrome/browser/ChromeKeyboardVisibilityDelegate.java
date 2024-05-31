@@ -13,16 +13,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.init.SingleWindowKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
+import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 
 import java.lang.ref.WeakReference;
 
 /**
- * A {@link SingleWindowKeyboardVisibilityDelegate} that considers UI elements of an
- * {@link Activity} which amend or replace the keyboard.
+ * A {@link ActivityKeyboardVisibilityDelegate} that considers UI elements of an {@link Activity}
+ * which amend or replace the keyboard.
  */
-public class ChromeKeyboardVisibilityDelegate extends SingleWindowKeyboardVisibilityDelegate
+public class ChromeKeyboardVisibilityDelegate extends ActivityKeyboardVisibilityDelegate
         implements ManualFillingComponent.SoftKeyboardDelegate {
     private final Supplier<ManualFillingComponent> mManualFillingComponentSupplier;
 

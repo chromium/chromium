@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
-import org.chromium.chrome.browser.init.SingleWindowKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
@@ -83,6 +82,7 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -263,7 +263,7 @@ public class SearchActivity extends AsyncInitializationActivity
         return new ActivityWindowAndroid(
                 this,
                 /* listenToActivityState= */ true,
-                new SingleWindowKeyboardVisibilityDelegate(new WeakReference(this)),
+                new ActivityKeyboardVisibilityDelegate(new WeakReference(this)),
                 getIntentRequestTracker()) {
             @Override
             public ModalDialogManager getModalDialogManager() {

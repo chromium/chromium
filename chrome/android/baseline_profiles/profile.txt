@@ -4064,9 +4064,6 @@ HSPLorg/chromium/chrome/browser/init/ProcessInitializationHandler$11;->onPostExe
 Lorg/chromium/chrome/browser/init/ProcessInitializationHandler$2;
 HSPLorg/chromium/chrome/browser/init/ProcessInitializationHandler$2;-><init>(ILjava/lang/Object;)V
 HSPLorg/chromium/chrome/browser/init/ProcessInitializationHandler$2;->run()V
-Lorg/chromium/chrome/browser/init/SingleWindowKeyboardVisibilityDelegate;
-HSPLorg/chromium/chrome/browser/init/SingleWindowKeyboardVisibilityDelegate;-><init>(Ljava/lang/ref/WeakReference;)V
-HSPLorg/chromium/chrome/browser/init/SingleWindowKeyboardVisibilityDelegate;->isKeyboardShowing(Landroid/content/Context;Landroid/view/View;)Z
 Lorg/chromium/chrome/browser/keyboard_accessory/ManualFillingComponent$SoftKeyboardDelegate;
 Lorg/chromium/chrome/browser/keyboard_accessory/ManualFillingComponentSupplier;
 HSPLorg/chromium/chrome/browser/keyboard_accessory/ManualFillingComponentSupplier;-><init>()V
@@ -9343,7 +9340,6 @@ HSPLorg/chromium/ui/base/ActivityKeyboardVisibilityDelegate;->onLayoutChange(Lan
 HSPLorg/chromium/ui/base/ActivityKeyboardVisibilityDelegate;->registerKeyboardVisibilityCallbacks()V
 HSPLorg/chromium/ui/base/ActivityKeyboardVisibilityDelegate;->unregisterKeyboardVisibilityCallbacks()V
 Lorg/chromium/ui/base/ActivityWindowAndroid;
-HSPLorg/chromium/ui/base/ActivityWindowAndroid;-><init>(Landroid/content/Context;Lorg/chromium/chrome/browser/init/SingleWindowKeyboardVisibilityDelegate;Lorg/chromium/ui/base/IntentRequestTrackerImpl;)V
 HSPLorg/chromium/ui/base/ActivityWindowAndroid;-><init>(Landroid/content/Context;ZLorg/chromium/ui/permissions/ActivityAndroidPermissionDelegate;Lorg/chromium/ui/base/ActivityKeyboardVisibilityDelegate;Lorg/chromium/ui/base/IntentRequestTrackerImpl;)V
 HSPLorg/chromium/ui/base/ActivityWindowAndroid;->getActivity()Lorg/chromium/ui/base/ImmutableWeakReference;
 HSPLorg/chromium/ui/base/ActivityWindowAndroid;->getActivityState()I
