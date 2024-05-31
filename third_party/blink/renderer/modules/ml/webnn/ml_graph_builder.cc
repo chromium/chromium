@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_mojo.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
@@ -59,8 +58,6 @@ namespace {
     exception_state.ThrowTypeError(error);                 \
     return return_value;                                   \
   });
-
-MLGraphBuilder::BackendForTesting* g_backend_for_testing = nullptr;
 
 blink::V8MLOperandDataType::Enum ComponentOperandTypeToBlink(
     webnn::Operand::DataType data_type) {
@@ -2257,27 +2254,16 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
-  if (g_backend_for_testing) {
-    g_backend_for_testing->BuildGraphImpl(ml_context_, named_outputs, resolver);
-    return promise;
-  }
-
   if (base::FeatureList::IsEnabled(
           webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
-    MLGraphMojo::ValidateAndBuild(std::move(scoped_trace), ml_context_,
-                                  named_outputs, resolver);
+    MLGraph::CreateAndBuild(std::move(scoped_trace), ml_context_, named_outputs,
+                            resolver);
     return promise;
   }
 
   resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
                                    "Not implemented");
   return promise;
-}
-
-// static
-void MLGraphBuilder::SetBackendForTesting(
-    MLGraphBuilder::BackendForTesting* backend_for_testing) {
-  g_backend_for_testing = backend_for_testing;
 }
 
 // As specified in https://www.w3.org/TR/webnn/#mlgraphbuilder-validate-operand.

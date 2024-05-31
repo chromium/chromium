@@ -6,6 +6,7 @@
 
 #include <numeric>
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context.h"
@@ -21,7 +22,7 @@ MLGraphBuilder* CreateMLGraphBuilder(ExecutionContext* execution_context,
                                      MLContextOptions* options) {
   ML* ml = MakeGarbageCollected<ML>(execution_context);
 
-  ScriptPromiseUntyped promise =
+  ScriptPromise<MLContext> promise =
       ml->createContext(script_state, options, exception_state);
   ScriptPromiseTester tester(script_state, promise);
   tester.WaitUntilSettled();

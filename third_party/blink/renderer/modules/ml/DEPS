@@ -15,7 +15,7 @@ specific_include_rules = {
     "+base/memory/ref_counted_memory.h",
     "+base/strings/stringprintf.h",
   ],
-  "ml_graph_builder_test.cc" : [
+  "ml_graph_test.cc" : [
     "+base/containers/fixed_flat_set.h",
   ],
 }

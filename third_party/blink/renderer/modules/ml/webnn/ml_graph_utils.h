@@ -31,29 +31,6 @@ class MLOperator;
 MODULES_EXPORT HeapVector<Member<const MLOperator>>*
 GetOperatorsInTopologicalOrder(const MLNamedOperands& named_outputs);
 
-// Stores information about a transferred `ArrayBufferView`. This struct doesn't
-// include Blink GC objects, and can be accessed by any threads.
-//
-// The information is used to recreate `ArrayBufferView` when computation
-// completes.
-struct ArrayBufferViewInfo {
-  ArrayBufferViewInfo() = default;
-  ~ArrayBufferViewInfo() = default;
-
-  ArrayBufferViewInfo(ArrayBufferViewInfo&& other) = default;
-  ArrayBufferViewInfo& operator=(ArrayBufferViewInfo&& other) = default;
-
-  ArrayBufferViewInfo(const ArrayBufferViewInfo&) = delete;
-  ArrayBufferViewInfo& operator=(const ArrayBufferViewInfo&) = delete;
-
-  DOMArrayBufferView::ViewType type;
-  size_t offset;
-  size_t length;
-  ArrayBufferContents contents;
-};
-
-// TODO: update this comment
-//
 // `TransferNamedArrayBufferViews()` and `CreateNamedArrayBufferViews()`
 // implement the MLNamedArrayBufferViews transfer algorithm of WebNN spec:
 // https://www.w3.org/TR/webnn/#mlnamedarraybufferviews-transfer

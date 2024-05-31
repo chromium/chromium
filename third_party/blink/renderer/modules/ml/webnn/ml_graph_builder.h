@@ -382,17 +382,6 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                                const MLNamedOperands& outputs,
                                ExceptionState& exception_state);
 
-  // The test cases can override the graph building behavior by implementing
-  // this class and setting its instance by SetBackendForTesting().
-  class BackendForTesting {
-   public:
-    virtual void BuildGraphImpl(MLContext* context,
-                                const MLNamedOperands& named_outputs,
-                                ScriptPromiseResolver<MLGraph>* resolver) = 0;
-  };
-
-  static void SetBackendForTesting(BackendForTesting* backend_for_testing);
-
  private:
   // Performs platform-agnostic and operand-agnostic validation checks which
   // must be run for each built operand. Returns an error message which may be

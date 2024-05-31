@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_H_
 
+#include "services/webnn/public/mojom/webnn_context_provider.mojom-blink-forward.h"
+#include "services/webnn/public/mojom/webnn_graph.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
@@ -14,12 +16,36 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
 namespace blink {
+
 class MLBuffer;
 class MLComputeResult;
 class MLContext;
+class ExecutionContext;
+
+// Stores information about a transferred `ArrayBufferView`. This struct doesn't
+// include Blink GC objects, and can be accessed by any threads.
+//
+// The information is used to recreate `ArrayBufferView` when computation
+// completes.
+struct ArrayBufferViewInfo {
+  ArrayBufferViewInfo() = default;
+  ~ArrayBufferViewInfo() = default;
+
+  ArrayBufferViewInfo(ArrayBufferViewInfo&& other) = default;
+  ArrayBufferViewInfo& operator=(ArrayBufferViewInfo&& other) = default;
+
+  ArrayBufferViewInfo(const ArrayBufferViewInfo&) = delete;
+  ArrayBufferViewInfo& operator=(const ArrayBufferViewInfo&) = delete;
+
+  DOMArrayBufferView::ViewType type;
+  size_t offset;
+  size_t length;
+  ArrayBufferContents contents;
+};
 
 // Implement the MLNamedArrayBufferViews type definition of WebNN spec:
 // https://www.w3.org/TR/webnn/#typedefdef-mlnamedarraybufferviews
@@ -32,6 +58,20 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  // Build and compile a platform specific graph corresponding to the operands
+  // connected to `named_outputs`. If this succeeds, resolve `resolver` with an
+  // `MLGraph` object corresponding to this compiled graph.
+  //
+  // The caller must call `Promise()` on `resolver` before calling this method.
+  static void CreateAndBuild(ScopedMLTrace scoped_trace,
+                             MLContext* context,
+                             const MLNamedOperands& named_outputs,
+                             ScriptPromiseResolver<MLGraph>* resolver);
+
+  // The constructor shouldn't be called directly. The callers should use the
+  // `CreateAndBuild()` method instead.
+  MLGraph(ExecutionContext* execution_context, MLContext* context);
+
   MLGraph(const MLGraph&) = delete;
   MLGraph& operator=(const MLGraph&) = delete;
 
@@ -53,24 +93,24 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   const HashMap<String, ResourceInfo>& GetInputResourcesInfo() const;
   const HashMap<String, ResourceInfo>& GetOutputResourcesInfo() const;
 
+  // Execute the compiled platform graph asynchronously.
+  //
   // This method validates the input and output MLNamedArrayBufferViews against
-  // the graph's input and output resources info. If there are no errors, it
-  // transfers the input and output ArrayBufferViews to new ones and passes them
-  // ones to ComputeImpl() implemented by an MLGraph backend that binds the
-  // array buffer views and executes the compiled platform graph. This method is
-  // called by MLContext to implement MLContext.compute() method.
+  // the graph's input and output resources info, transfers the input and output
+  // ArrayBufferViews, and then executes the compiled platform graph.
+  //
+  // TODO(crbug.com/331351967): Remove this method in favor of `Dispatch()`.
   ScriptPromise<MLComputeResult> Compute(ScopedMLTrace scoped_trace,
                                          const MLNamedArrayBufferViews& inputs,
                                          const MLNamedArrayBufferViews& outputs,
                                          ScriptState* script_state,
                                          ExceptionState& exception_state);
 
-  // This method validates the input and output MLNamedBuffers against
-  // the graph's input and output resources info. If there are no errors, it
-  // passes the buffers to DispatchImpl() implemented by an MLGraph backend that
-  // binds the buffers and executes the compiled platform graph.
-  // This method is called by MLContext to implement MLContext.dispatch()
-  // method.
+  // Execute the compiled platform graph asynchronously.
+  //
+  // This method validates the input and output MLNamedBuffers against the
+  // graph's input and output resources info and then executes the compiled
+  // platform graph.
   void Dispatch(ScopedMLTrace scoped_trace,
                 const MLNamedBuffers& inputs,
                 const MLNamedBuffers& outputs,
@@ -78,61 +118,34 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
 
   const MLContext* Context() const;
 
- protected:
-  explicit MLGraph(MLContext* context);
+ private:
+  // Validates named outputs and initializes the input and output resources info
+  // by graph traversal.
+  base::expected<void, String> ValidateAndInitializeResourcesInfo(
+      const MLNamedOperands& named_outputs);
 
-  // Build() should be called right after constructing a concrete
-  // MLGraph object. Build() validates the named outputs and initializes
-  // the input and output resources info. If there are no errors, it calls
-  // BuildImpl() implemented by an MLGraph backend that builds the platform
-  // specific graph.
-  void Build(ScopedMLTrace scoped_trace,
-             const MLNamedOperands& named_outputs,
-             ScriptPromiseResolver<MLGraph>* resolver);
+  void DidCompute(
+      ScopedMLTrace scoped_trace,
+      ScriptPromiseResolver<MLComputeResult>* resolver,
+      std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
+          inputs_info,
+      std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
+          outputs_info,
+      webnn::mojom::blink::ComputeResultPtr mojo_result);
 
-  // An MLGraph backend should implement this method to build and compile a
-  // platform specific graph asynchronously. The actual graph construction and
-  // compilation work should be handled by a worker thread without blocking the
-  // main thread. Once the platform graph is compiled, the resolver should be
-  // resolved with a concrete MLGraph object. Otherwise, the resolver should be
-  // rejected with a DOMException accordingly.
-  virtual void BuildImpl(ScopedMLTrace scoped_trace,
-                         const MLNamedOperands& outputs,
-                         ScriptPromiseResolver<MLGraph>* resolver) = 0;
-
-  // An MLGraph backend should implement this method to execute the compiled
-  // platform graph asynchronously. The actual graph execution work should be
-  // handled by a worker thread without blocking the main thread.
-  //
-  // The implementation should transfer the input and output
-  // `MLNamedArrayBufferViews` to new views that share the same backing memory
-  // allocations.
-  //
-  // If compute is successful, the results will be stored in output buffers and
-  // the resolver will be resolved with an MLComputeResult that contains the
-  // input and output buffers. Otherwise, the resolver will be rejected with a
-  // DOMException accordingly.
-  virtual void ComputeImpl(ScopedMLTrace scoped_trace,
-                           const MLNamedArrayBufferViews& inputs,
-                           const MLNamedArrayBufferViews& outputs,
-                           ScriptPromiseResolver<MLComputeResult>* resolver,
-                           ExceptionState& exception_state) = 0;
-
-  virtual void DispatchImpl(ScopedMLTrace scoped_trace,
-                            const MLNamedBuffers& inputs,
-                            const MLNamedBuffers& outputs,
-                            ExceptionState& exception_state) = 0;
+  void DidCreateWebNNGraph(ScopedMLTrace scoped_trace,
+                           ScriptPromiseResolver<MLGraph>* resolver,
+                           webnn::mojom::blink::CreateGraphResultPtr result);
 
   Member<MLContext> ml_context_;
+
+  // The `WebNNGraph` is a compiled graph that can be executed by the hardware
+  // accelerated OS machine learning API.
+  HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNGraph> remote_graph_;
+
   bool resources_info_initialized_{false};
   HashMap<String, ResourceInfo> input_resources_info_;
   HashMap<String, ResourceInfo> output_resources_info_;
-
- private:
-  // This helper method is called by Build(). It validates named outputs
-  // and initializes the input and output resources info by graph traversal.
-  base::expected<void, String> ValidateAndInitializeResourcesInfo(
-      const MLNamedOperands& named_outputs);
 };
 
 }  // namespace blink

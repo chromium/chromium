@@ -32,8 +32,6 @@ blink_modules_sources("ml") {
     "webnn/ml_graph.h",
     "webnn/ml_graph_builder.cc",
     "webnn/ml_graph_builder.h",
-    "webnn/ml_graph_mojo.cc",
-    "webnn/ml_graph_mojo.h",
     "webnn/ml_graph_type_converter.cc",
     "webnn/ml_graph_type_converter.h",
     "webnn/ml_graph_utils.cc",
@@ -63,7 +61,7 @@ source_set("unit_tests") {
     "webnn/ml_graph_builder_test.h",
     "webnn/ml_graph_builder_utils.cc",
     "webnn/ml_graph_builder_utils.h",
-    "webnn/ml_graph_mojo_test.cc",
+    "webnn/ml_graph_test.cc",
     "webnn/ml_graph_test_base.cc",
     "webnn/ml_graph_test_base.h",
   ]

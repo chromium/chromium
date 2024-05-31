@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_mojo.h"
-
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
@@ -34,11 +33,13 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_linear_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_buffer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_base.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 
 namespace blink {
@@ -52,9 +53,9 @@ struct ComputeResult {
 
 class FakeWebNNBuffer;
 
-class MLGraphTestMojo : public MLGraphTestBase {
+class MLGraphTest : public MLGraphTestBase {
  public:
-  MLGraphTestMojo()
+  MLGraphTest()
       : scoped_feature_list_(webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
 
   void SetGraphInfo(blink_mojom::GraphInfoPtr graph_info) {
@@ -109,7 +110,7 @@ class WebNNContextHelper {
 
 class FakeWebNNGraph : public blink_mojom::WebNNGraph {
  public:
-  explicit FakeWebNNGraph(MLGraphTestMojo& helper) : helper_(helper) {}
+  explicit FakeWebNNGraph(MLGraphTest& helper) : helper_(helper) {}
   FakeWebNNGraph(const FakeWebNNGraph&) = delete;
   FakeWebNNGraph(FakeWebNNGraph&&) = delete;
   ~FakeWebNNGraph() override = default;
@@ -136,7 +137,7 @@ class FakeWebNNGraph : public blink_mojom::WebNNGraph {
       const HashMap<WTF::String, base::UnguessableToken>& named_outputs)
       override {}
 
-  const raw_ref<MLGraphTestMojo, DanglingUntriaged> helper_;
+  const raw_ref<MLGraphTest, DanglingUntriaged> helper_;
 };
 
 class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
@@ -189,7 +190,7 @@ class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
 
 class FakeWebNNContext : public blink_mojom::WebNNContext {
  public:
-  explicit FakeWebNNContext(MLGraphTestMojo& helper) : helper_(helper) {}
+  explicit FakeWebNNContext(MLGraphTest& helper) : helper_(helper) {}
   FakeWebNNContext(const FakeWebNNContext&) = delete;
   FakeWebNNContext(FakeWebNNContext&&) = delete;
   ~FakeWebNNContext() override = default;
@@ -222,12 +223,12 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
 
   WebNNContextHelper context_helper_;
 
-  const raw_ref<MLGraphTestMojo, DanglingUntriaged> helper_;
+  const raw_ref<MLGraphTest, DanglingUntriaged> helper_;
 };
 
 class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
  public:
-  explicit FakeWebNNContextProvider(MLGraphTestMojo& helper)
+  explicit FakeWebNNContextProvider(MLGraphTest& helper)
       : helper_(helper), receiver_(this) {}
   FakeWebNNContextProvider(const FakeWebNNContextProvider&) = delete;
   FakeWebNNContextProvider(FakeWebNNContextProvider&&) = delete;
@@ -261,13 +262,13 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
         blink_mojom::CreateContextResult::NewSuccess(std::move(success)));
   }
 
-  const raw_ref<MLGraphTestMojo> helper_;
+  const raw_ref<MLGraphTest> helper_;
   mojo::Receiver<blink_mojom::WebNNContextProvider> receiver_;
 };
 
 class ScopedWebNNServiceBinder {
  public:
-  explicit ScopedWebNNServiceBinder(MLGraphTestMojo& helper,
+  explicit ScopedWebNNServiceBinder(MLGraphTest& helper,
                                     V8TestingScope& scope)
       : fake_webnn_context_provider_(
             std::make_unique<FakeWebNNContextProvider>(helper)),
@@ -298,10 +299,6 @@ template <typename T>
 T* V8ToObject(V8TestingScope* scope, ScriptValue value) {
   return NativeValueTraits<T>::NativeValue(scope->GetIsolate(), value.V8Value(),
                                            scope->GetExceptionState());
-}
-
-MLGraphMojo* ToMLGraphMojo(V8TestingScope* scope, ScriptValue value) {
-  return V8ToObject<MLGraphMojo>(scope, value);
 }
 
 // Build a simple MLGraph asynchronously with only one relu operator.
@@ -396,7 +393,471 @@ Vector<uint8_t> GetMLBufferValues(V8TestingScope& scope,
           array_buffer, /*byte_offset=*/0, ml_buffer->size())));
 }
 
-TEST_P(MLGraphTestMojo, CreateWebNNBufferTest) {
+TEST_F(MLGraphTest, BuildTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
+  {
+    // Test throwing exception if the named outputs is empty.
+    MLNamedOperands named_outputs;
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, named_outputs);
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message, "At least one output needs to be provided.");
+  }
+  {
+    // Test throwing exception if the named output is an input operand.
+    auto* input = BuildInput(builder, "input", {3, 4, 5},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, {{"output", input}});
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
+              "The operand with name \"output\" is not an output operand.");
+  }
+  {
+    // Test throwing exception if the named output is a constant operand.
+    auto* constant =
+        BuildConstant(builder, {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
+                      scope.GetExceptionState());
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, {{"output", constant}});
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
+              "The operand with name \"output\" is not an output operand.");
+  }
+  {
+    // Test throwing exception if the named outputs is a mix of input and
+    // constant operands.
+    auto* input = BuildInput(builder, "input", {3, 4, 5},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* constant =
+        BuildConstant(builder, {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
+                      scope.GetExceptionState());
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, {{"output1", input}, {"output2", constant}});
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
+              "The operand with name \"output1\" is not an output operand.");
+  }
+  {
+    // Test throwing exception if two inputs have the same name.
+    auto* a =
+        BuildInput(builder, "a", {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* b =
+        BuildInput(builder, "a", {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* c = builder->add(a, b, scope.GetExceptionState());
+    ASSERT_THAT(c, testing::NotNull());
+
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, {{"c", c}});
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message, "The input name \"a\" is duplicated.");
+  }
+  {
+    // Test building a graph with an elementwise add operator that uses the same
+    // input for both lhs and rhs:
+    //   [a]
+    //   / \
+    //   \ /
+    //   add
+    //    |
+    //   [b]
+    auto* a =
+        BuildInput(builder, "a", {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* output = builder->add(a, a, scope.GetExceptionState());
+    ASSERT_THAT(output, testing::NotNull());
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, {{"b", output}});
+    ASSERT_THAT(graph, testing::NotNull());
+    const auto& inputs = graph->GetInputResourcesInfo();
+    EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
+    EXPECT_EQ(inputs.at("a").data_type, a->DataType());
+    EXPECT_EQ(inputs.at("a").byte_length, a->ByteLength());
+    const auto& outputs = graph->GetOutputResourcesInfo();
+    EXPECT_EQ(outputs.size(), static_cast<uint32_t>(1));
+    EXPECT_EQ(outputs.at("b").data_type, output->DataType());
+    EXPECT_EQ(outputs.at("b").byte_length, output->ByteLength());
+  }
+  {
+    // Test building a graph with two operators sharing a same input:
+    //      [a]
+    //     /   \
+    //  relu   sigmoid
+    //    |      |
+    //   [b]    [c]
+    auto* a =
+        BuildInput(builder, "a", {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* b = builder->relu(a, scope.GetExceptionState());
+    ASSERT_THAT(b, testing::NotNull());
+    auto* c = builder->sigmoid(a, scope.GetExceptionState());
+    ASSERT_THAT(c, testing::NotNull());
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, {{"b", b}, {"c", c}});
+    ASSERT_THAT(graph, testing::NotNull());
+    const auto& inputs = graph->GetInputResourcesInfo();
+    EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
+    EXPECT_EQ(inputs.at("a").data_type, a->DataType());
+    EXPECT_EQ(inputs.at("a").byte_length, a->ByteLength());
+    const auto& outputs = graph->GetOutputResourcesInfo();
+    EXPECT_EQ(outputs.size(), static_cast<uint32_t>(2));
+    EXPECT_EQ(outputs.at("b").data_type, b->DataType());
+    EXPECT_EQ(outputs.at("b").byte_length, b->ByteLength());
+    EXPECT_EQ(outputs.at("c").data_type, b->DataType());
+    EXPECT_EQ(outputs.at("c").byte_length, b->ByteLength());
+  }
+  {
+    // Test building a fake graph with two inputs, one gemm operation and one
+    // output.
+    auto* a =
+        BuildInput(builder, "a", {3, 4}, V8MLOperandDataType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* b =
+        BuildInput(builder, "b", {4, 3}, V8MLOperandDataType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* c = BuildGemm(scope, builder, a, b);
+
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, {{"c", c}});
+    ASSERT_THAT(graph, testing::NotNull());
+    const auto& inputs = graph->GetInputResourcesInfo();
+    EXPECT_EQ(inputs.size(), static_cast<uint32_t>(2));
+    EXPECT_EQ(inputs.at("a").data_type, a->DataType());
+    EXPECT_EQ(inputs.at("a").byte_length, a->ByteLength());
+    EXPECT_EQ(inputs.at("b").data_type, b->DataType());
+    EXPECT_EQ(inputs.at("b").byte_length, b->ByteLength());
+    const auto& outputs = graph->GetOutputResourcesInfo();
+    EXPECT_EQ(outputs.size(), static_cast<uint32_t>(1));
+    EXPECT_EQ(outputs.at("c").data_type, c->DataType());
+    EXPECT_EQ(outputs.at("c").byte_length, c->ByteLength());
+  }
+  {
+    // Test building a fake graph with conv2d, add and relu operations.
+    auto* input = BuildInput(builder, "input", {1, 1, 5, 5},
+                             V8MLOperandDataType::Enum::kFloat32,
+                             scope.GetExceptionState());
+    auto* filter = BuildConstant(builder, {1, 1, 3, 3},
+                                 V8MLOperandDataType::Enum::kFloat32,
+                                 scope.GetExceptionState());
+    auto* conv2d = BuildConv2d(scope, builder, input, filter);
+    auto* bias =
+        BuildConstant(builder, {1}, V8MLOperandDataType::Enum::kFloat32,
+                      scope.GetExceptionState());
+    auto* add = builder->add(conv2d, bias, scope.GetExceptionState());
+    ASSERT_THAT(add, testing::NotNull());
+    auto* output = builder->relu(add, scope.GetExceptionState());
+    ASSERT_THAT(output, testing::NotNull());
+
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, {{"output", output}});
+    ASSERT_THAT(graph, testing::NotNull());
+    const auto& inputs = graph->GetInputResourcesInfo();
+    EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
+    EXPECT_EQ(inputs.at("input").data_type, input->DataType());
+    EXPECT_EQ(inputs.at("input").byte_length, input->ByteLength());
+    const auto& outputs = graph->GetOutputResourcesInfo();
+    EXPECT_EQ(outputs.size(), static_cast<uint32_t>(1));
+    EXPECT_EQ(outputs.at("output").data_type, output->DataType());
+    EXPECT_EQ(outputs.at("output").byte_length, output->ByteLength());
+  }
+  {
+    // Testing throwing exception if the ArrayBufferView of a constant operand
+    // is detached.
+    auto* a =
+        BuildInput(builder, "a", {3, 4}, V8MLOperandDataType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* desc = MLOperandDescriptor::Create();
+    desc->setDimensions({4, 3});
+    desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
+    NotShared<DOMArrayBufferView> buffer_view =
+        CreateDOMArrayBufferView(12, V8MLOperandDataType::Enum::kFloat32);
+    auto* b = builder->constant(desc, buffer_view, scope.GetExceptionState());
+    auto* c = BuildGemm(scope, builder, a, b);
+
+    // Detach the ArrayBufferView of constant b for testing.
+    buffer_view->DetachForTesting();
+
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, {{"c", c}});
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
+              "The array buffer view of the constant operand is detached.");
+  }
+}
+
+// Helper struct to create an ArrayBufferView for MLNamedArrayBufferViews test.
+struct ArrayBufferViewHelper {
+  size_t number_of_elements;
+  V8MLOperandDataType::Enum data_type;
+
+  NotShared<DOMArrayBufferView> ToArrayBufferView() {
+    return CreateDOMArrayBufferView(number_of_elements, data_type);
+  }
+};
+
+// Helper function to create an ArrayBufferView given an operand.
+NotShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
+    const MLOperand* operand) {
+  return CreateDOMArrayBufferView(operand->NumberOfElements(),
+                                  operand->DataType());
+}
+
+TEST_P(MLGraphTest, CreateNamedArrayBufferViewsTest) {
+  constexpr auto kOperandDataTypes =
+      base::MakeFixedFlatSet<V8MLOperandDataType::Enum>(
+          {V8MLOperandDataType::Enum::kFloat32,
+           V8MLOperandDataType::Enum::kFloat16,
+           V8MLOperandDataType::Enum::kInt32,
+           V8MLOperandDataType::Enum::kUint32,
+           V8MLOperandDataType::Enum::kInt64,
+           V8MLOperandDataType::Enum::kUint64, V8MLOperandDataType::Enum::kInt8,
+           V8MLOperandDataType::Enum::kUint8});
+  static_assert(kOperandDataTypes.size() == V8MLOperandDataType::kEnumSize,
+                "The number of operand data types declared here needs to match "
+                "all possible enumeration values defined in the IDL.");
+
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
+  {
+    for (auto operand_data_type : kOperandDataTypes) {
+      SCOPED_TRACE(testing::Message()
+                   << "Testing for MLOperandDataType: "
+                   << V8MLOperandDataType(operand_data_type).AsString());
+      auto* input = BuildInput(builder, "input", {3, 4}, operand_data_type,
+                               scope.GetExceptionState());
+      MLNamedArrayBufferViews inputs;
+      inputs.emplace_back("input", CreateArrayBufferViewForOperand(input));
+      auto inputs_info = TransferNamedArrayBufferViews(
+          scope.GetIsolate(), inputs, scope.GetExceptionState());
+      ASSERT_THAT(inputs_info, testing::NotNull());
+      auto* input_views = CreateNamedArrayBufferViews(std::move(inputs_info));
+      ASSERT_THAT(input_views, testing::NotNull());
+      EXPECT_EQ((*input_views)[0].first, "input");
+      auto input_data_type = (*input_views)[0].second->GetType();
+      switch (operand_data_type) {
+        case V8MLOperandDataType::Enum::kFloat32:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeFloat32);
+          break;
+        case V8MLOperandDataType::Enum::kFloat16:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeUint16);
+          break;
+        case V8MLOperandDataType::Enum::kInt32:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeInt32);
+          break;
+        case V8MLOperandDataType::Enum::kUint32:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeUint32);
+          break;
+        case V8MLOperandDataType::Enum::kInt64:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeBigInt64);
+          break;
+        case V8MLOperandDataType::Enum::kUint64:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeBigUint64);
+          break;
+        case V8MLOperandDataType::Enum::kInt8:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeInt8);
+          break;
+        case V8MLOperandDataType::Enum::kUint8:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeUint8);
+          break;
+      }
+    }
+  }
+}
+
+TEST_P(MLGraphTest, ComputeTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
+  // Build a fake graph represents computation 'c = a * b';
+  auto* a =
+      BuildInput(builder, "a", {3, 4}, V8MLOperandDataType::Enum::kFloat32,
+                 scope.GetExceptionState());
+  auto* b =
+      BuildInput(builder, "b", {4, 3}, V8MLOperandDataType::Enum::kFloat32,
+                 scope.GetExceptionState());
+  auto* c = BuildGemm(scope, builder, a, b);
+  auto [graph, error_name, error_message] =
+      BuildGraph(scope, builder, {{"c", c}});
+  ASSERT_THAT(graph, testing::NotNull());
+  {
+    // Test throwing exception if the inputs is empty.
+    MLNamedArrayBufferViews inputs;
+    MLNamedArrayBufferViews outputs;
+    outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
+              "Invalid inputs: The number (0) of the array buffer views "
+              "doesn't match the expectation (2).");
+  }
+  {
+    // Test throwing exception if the number of inputs doesn't match.
+    MLNamedArrayBufferViews inputs;
+    inputs.emplace_back("a", CreateArrayBufferViewForOperand(a));
+    MLNamedArrayBufferViews outputs;
+    outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
+              "Invalid inputs: The number (1) of the array buffer views "
+              "doesn't match the expectation (2).");
+  }
+  {
+    // Test throwing exception if the outputs is empty.
+    MLNamedArrayBufferViews inputs;
+    inputs.emplace_back("a", CreateArrayBufferViewForOperand(a));
+    inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
+    MLNamedArrayBufferViews outputs;
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
+              "Invalid outputs: The number (0) of the array buffer views "
+              "doesn't match the expectation (1).");
+  }
+  {
+    // Test throwing exception if the number of outputs doesn't match.
+    MLNamedArrayBufferViews inputs;
+    inputs.emplace_back("a", CreateArrayBufferViewForOperand(a));
+    inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
+    MLNamedArrayBufferViews outputs;
+    outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
+    outputs.emplace_back("d", CreateArrayBufferViewForOperand(c));
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
+              "Invalid outputs: The number (2) of the array buffer views "
+              "doesn't match the expectation (1).");
+  }
+  {
+    // Test throwing exception if the input name is unknown.
+    MLNamedArrayBufferViews inputs;
+    inputs.emplace_back("a", CreateArrayBufferViewForOperand(a));
+    inputs.emplace_back("invalid-input-name",
+                        CreateArrayBufferViewForOperand(b));
+    MLNamedArrayBufferViews outputs;
+    outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
+              "Invalid inputs: The name \"invalid-input-name\" isn't part of "
+              "the graph.");
+  }
+  {
+    // Test throwing exception if the output name is unknown.
+    MLNamedArrayBufferViews inputs;
+    inputs.emplace_back("a", CreateArrayBufferViewForOperand(a));
+    inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
+    MLNamedArrayBufferViews outputs;
+    outputs.emplace_back("invalid-output-name",
+                         CreateArrayBufferViewForOperand(c));
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
+              "Invalid outputs: The name \"invalid-output-name\" isn't part of "
+              "the graph.");
+  }
+  {
+    // Test throwing exception if the input array buffer view type is wrong.
+    MLNamedArrayBufferViews inputs;
+    inputs.emplace_back(
+        "a",
+        ArrayBufferViewHelper{.number_of_elements = 12,
+                              .data_type = V8MLOperandDataType::Enum::kInt32}
+            .ToArrayBufferView());
+    inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
+    MLNamedArrayBufferViews outputs;
+    outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(
+        error_message,
+        "Invalid inputs: The type (Int32) of the array buffer view with "
+        "name \"a\" doesn't match the expected operand data type (float32).");
+  }
+  {
+    // Test throwing exception if the input array buffer view size is wrong.
+    MLNamedArrayBufferViews inputs;
+    inputs.emplace_back(
+        "a",
+        ArrayBufferViewHelper{.number_of_elements = 10,
+                              .data_type = V8MLOperandDataType::Enum::kFloat32}
+            .ToArrayBufferView());
+    inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
+    MLNamedArrayBufferViews outputs;
+    outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
+              "Invalid inputs: The byte length (40) of the array buffer view "
+              "with name \"a\" doesn't match the expected byte length (48).");
+  }
+  {
+    // Test throwing exception if the output array buffer view type is wrong.
+    MLNamedArrayBufferViews inputs;
+    inputs.emplace_back("a", CreateArrayBufferViewForOperand(a));
+    inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
+    MLNamedArrayBufferViews outputs;
+    outputs.emplace_back(
+        "c",
+        ArrayBufferViewHelper{.number_of_elements = 9,
+                              .data_type = V8MLOperandDataType::Enum::kInt32}
+            .ToArrayBufferView());
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(
+        error_message,
+        "Invalid outputs: The type (Int32) of the array buffer view with "
+        "name \"c\" doesn't match the expected operand data type (float32).");
+  }
+  {
+    // Test throwing exception if the output array buffer view size is wrong.
+    MLNamedArrayBufferViews inputs;
+    inputs.emplace_back("a", CreateArrayBufferViewForOperand(a));
+    inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
+    MLNamedArrayBufferViews outputs;
+    outputs.emplace_back(
+        "c",
+        ArrayBufferViewHelper{.number_of_elements = 8,
+                              .data_type = V8MLOperandDataType::Enum::kFloat32}
+            .ToArrayBufferView());
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
+              "Invalid outputs: The byte length (32) of the array buffer view "
+              "with name \"c\" doesn't match the expected byte length (36).");
+  }
+}
+
+TEST_P(MLGraphTest, CreateWebNNBufferTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -427,7 +888,7 @@ TEST_P(MLGraphTestMojo, CreateWebNNBufferTest) {
   EXPECT_EQ(ml_buffer->size(), desc->size());
 }
 
-TEST_P(MLGraphTestMojo, WriteWebNNBufferTest) {
+TEST_P(MLGraphTest, WriteWebNNBufferTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -520,7 +981,7 @@ TEST_P(MLGraphTestMojo, WriteWebNNBufferTest) {
 }
 
 // Writing data from an array buffer to a destroyed MLBuffer should not crash.
-TEST_P(MLGraphTestMojo, WriteWebNNBufferThenDestroyTest) {
+TEST_P(MLGraphTest, WriteWebNNBufferThenDestroyTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -559,7 +1020,7 @@ TEST_P(MLGraphTestMojo, WriteWebNNBufferThenDestroyTest) {
 }
 
 // Reading data from an array buffer to a destroyed MLBuffer should not crash.
-TEST_P(MLGraphTestMojo, ReadWebNNBufferThenDestroyTest) {
+TEST_P(MLGraphTest, ReadWebNNBufferThenDestroyTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -597,7 +1058,7 @@ TEST_P(MLGraphTestMojo, ReadWebNNBufferThenDestroyTest) {
   EXPECT_TRUE(buffer_tester.IsRejected());
 }
 
-TEST_P(MLGraphTestMojo, WebNNGraphDispatchTest) {
+TEST_P(MLGraphTest, WebNNGraphDispatchTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -674,7 +1135,7 @@ struct OperandInfoMojo {
 
 using OperandInfoBlink = OperandInfo<float>;
 
-TEST_P(MLGraphTestMojo, CreateWebNNGraphTest) {
+TEST_P(MLGraphTest, CreateWebNNGraphTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -688,8 +1149,8 @@ TEST_P(MLGraphTestMojo, CreateWebNNGraphTest) {
     ScriptPromiseTester tester(script_state, BuildSimpleGraph(scope, options));
     tester.WaitUntilSettled();
     EXPECT_TRUE(tester.IsFulfilled());
-    auto* mojo_graph = ToMLGraphMojo(&scope, tester.Value());
-    ASSERT_THAT(mojo_graph, testing::NotNull());
+    MLGraph* ml_graph = V8ToObject<MLGraph>(&scope, tester.Value());
+    ASSERT_THAT(ml_graph, testing::NotNull());
     EXPECT_TRUE(scoped_setup_binder.IsWebNNContextBound());
   }
 }
@@ -860,7 +1321,7 @@ struct SoftmaxTester {
   OperandInfoBlink input;
   OperandInfoMojo expected;
 
-  void Test(MLGraphTestMojo& helper,
+  void Test(MLGraphTest& helper,
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
     // Build the graph.
@@ -888,7 +1349,7 @@ struct SoftmaxTester {
   }
 };
 
-TEST_P(MLGraphTestMojo, SoftmaxTest) {
+TEST_P(MLGraphTest, SoftmaxTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -924,7 +1385,7 @@ struct ConstantTester {
   OperandInfoMojo expected;
   Vector<T> expected_constant_data;
 
-  void Test(MLGraphTestMojo& helper,
+  void Test(MLGraphTest& helper,
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
     // Build the graph.
@@ -963,7 +1424,7 @@ struct ConstantTester {
   }
 };
 
-TEST_P(MLGraphTestMojo, ConstantTest) {
+TEST_P(MLGraphTest, ConstantTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -1035,7 +1496,7 @@ struct CastTester {
   V8MLOperandDataType::Enum output_data_type;
   OperandInfoMojo expected_operand;
 
-  void Test(MLGraphTestMojo& helper,
+  void Test(MLGraphTest& helper,
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
     // Build the graph.
@@ -1070,7 +1531,7 @@ struct CastTester {
   }
 };
 
-TEST_P(MLGraphTestMojo, CastTester) {
+TEST_P(MLGraphTest, CastTester) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -1303,7 +1764,7 @@ TEST_P(MLGraphTestMojo, CastTester) {
   }
 }
 
-TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
+TEST_P(MLGraphTest, WebNNGraphComputeTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -1409,7 +1870,7 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         MLGraphTestMojo,
+                         MLGraphTest,
                          testing::Values(BackendType::kWebNNService),
                          TestParamInfoToString);
 

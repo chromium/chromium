@@ -10,7 +10,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
+#include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "v8-exception.h"
 
@@ -24,8 +26,6 @@ MLGraph* ToMLGraph(V8TestingScope* scope, ScriptValue value) {
 std::string TestParamInfoToString(
     const ::testing::TestParamInfo<BackendType>& info) {
   switch (info.param) {
-    case BackendType::kFake:
-      return "FakeBackend";
     case BackendType::kWebNNService:
       return "WebNNService";
   }
@@ -112,8 +112,9 @@ std::pair<String, String> MLGraphTestBase::ComputeGraph(
   }
 }
 
-ScriptPromiseUntyped MLGraphTestBase::CreateContext(V8TestingScope& scope,
-                                                    MLContextOptions* options) {
+ScriptPromise<MLContext> MLGraphTestBase::CreateContext(
+    V8TestingScope& scope,
+    MLContextOptions* options) {
   auto* ml = MakeGarbageCollected<ML>(scope.GetExecutionContext());
   return ml->createContext(scope.GetScriptState(), options,
                            scope.GetExceptionState());

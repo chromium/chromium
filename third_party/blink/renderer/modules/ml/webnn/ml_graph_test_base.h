@@ -20,12 +20,15 @@
 
 namespace blink {
 
+class MLContext;
 class MLGraphBuilder;
 class V8TestingScope;
 
 // The utility methods for graph test.
 // The backends share the unit tests in the MLGraphTest.
-enum class BackendType { kFake, kWebNNService };
+//
+// TODO(crbug.com/325612086): Remove this, since there's only one backend.
+enum class BackendType { kWebNNService };
 
 std::string TestParamInfoToString(
     const ::testing::TestParamInfo<BackendType>& backend_type);
@@ -33,6 +36,8 @@ std::string TestParamInfoToString(
 std::pair<String, String> GetErrorNameAndMessage(V8TestingScope* scope,
                                                  ScriptValue value);
 
+// TODO(crbug.com/325612086): Consolidate this with `MLGraphTest`, since there's
+// only one backend.
 class MLGraphTestBase : public ::testing::Test,
                         public ::testing::WithParamInterface<BackendType> {
  public:
@@ -69,7 +74,7 @@ class MLGraphTestBase : public ::testing::Test,
                                             MLContextOptions* options);
 
   // Helper method for testing only context creation.
-  static ScriptPromiseUntyped CreateContext(
+  static ScriptPromise<MLContext> CreateContext(
       V8TestingScope& scope,
       MLContextOptions* options = MLContextOptions::Create());
 
