@@ -3,22 +3,21 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/mwb_shared_style.css.js';
 import './strings.m.js';
 import './tab_organization_group.js';
 import './tab_organization_results_actions.js';
-import './tab_organization_shared_style.css.js';
 
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import type {CrFeedbackButtonsElement} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {TabOrganizationGroupElement} from './tab_organization_group.js';
-import {getTemplate} from './tab_organization_results.html.js';
+import {getCss} from './tab_organization_results.css.js';
+import {getHtml} from './tab_organization_results.html.js';
 import type {TabOrganization, TabOrganizationSession} from './tab_search.mojom-webui.js';
 
 const MINIMUM_SCROLLABLE_MAX_HEIGHT: number = 204;
@@ -34,50 +33,61 @@ export interface TabOrganizationResultsElement {
   };
 }
 
-export class TabOrganizationResultsElement extends PolymerElement {
+export class TabOrganizationResultsElement extends CrLitElement {
   static get is() {
     return 'tab-organization-results';
   }
 
-  static get properties() {
+  static override get properties() {
     return {
-      session: {
-        type: Object,
-        observer: 'onSessionChange_',
-      },
-
-      availableHeight: {
-        type: Number,
-        observer: 'onAvailableHeightChange_',
-        value: 0,
-      },
+      session: {type: Object},
+      availableHeight: {type: Number},
 
       multiTabOrganization: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
-      feedbackSelectedOption_: {
-        type: String,
-        value: CrFeedbackOption.UNSPECIFIED,
-      },
+      feedbackSelectedOption_: {type: Number},
     };
   }
 
-  session: TabOrganizationSession;
-  availableHeight: number;
-  multiTabOrganization: boolean;
+  session?: TabOrganizationSession;
+  availableHeight: number = 0;
+  multiTabOrganization: boolean = false;
 
-  private feedbackSelectedOption_: CrFeedbackOption;
+  protected feedbackSelectedOption_: CrFeedbackOption =
+      CrFeedbackOption.UNSPECIFIED;
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  override ready() {
-    super.ready();
+  override render() {
+    return getHtml.bind(this)();
+  }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('session')) {
+      this.feedbackSelectedOption_ = CrFeedbackOption.UNSPECIFIED;
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('session')) {
+      this.updateScroll_();
+    }
+
+    if (changedProperties.has('availableHeight')) {
+      this.onAvailableHeightChange_();
+    }
+  }
+
+  override firstUpdated() {
     this.$.scrollable.addEventListener('scroll', this.updateScroll_.bind(this));
   }
 
@@ -100,7 +110,11 @@ export class TabOrganizationResultsElement extends PolymerElement {
             scrollable.scrollHeight);
   }
 
-  private getErrorTitle_(): string {
+  protected getErrorTitle_(): string {
+    if (!this.session) {
+      return '';
+    }
+
     const id = this.session.activeTabId;
     if (id === -1) {
       return '';
@@ -119,7 +133,7 @@ export class TabOrganizationResultsElement extends PolymerElement {
     return loadTimeData.getString('successMissingActiveTabTitle');
   }
 
-  private getTitle_(): string {
+  protected getTitle_(): string {
     if (this.multiTabOrganization) {
       if (this.hasMultipleOrganizations_()) {
         return loadTimeData.getStringF(
@@ -130,7 +144,7 @@ export class TabOrganizationResultsElement extends PolymerElement {
     return loadTimeData.getString('successTitle');
   }
 
-  private getOrganizations_(): TabOrganization[] {
+  protected getOrganizations_(): TabOrganization[] {
     if (!this.session) {
       return [];
     }
@@ -141,11 +155,11 @@ export class TabOrganizationResultsElement extends PolymerElement {
     }
   }
 
-  private hasMultipleOrganizations_() {
+  protected hasMultipleOrganizations_(): boolean {
     return this.getOrganizations_().length > 1;
   }
 
-  private getName_(organization: TabOrganization) {
+  protected getName_(organization: TabOrganization): string {
     return mojoString16ToString(organization.name);
   }
 
@@ -154,15 +168,10 @@ export class TabOrganizationResultsElement extends PolymerElement {
         MINIMUM_SCROLLABLE_MAX_HEIGHT,
         (this.availableHeight - NON_SCROLLABLE_VERTICAL_SPACING));
     this.$.scrollable.style.maxHeight = maxHeight + 'px';
-    afterNextRender(this, () => this.updateScroll_());
+    this.updateScroll_();
   }
 
-  private onSessionChange_() {
-    this.feedbackSelectedOption_ = CrFeedbackOption.UNSPECIFIED;
-    afterNextRender(this, () => this.updateScroll_());
-  }
-
-  private onCreateAllGroupsClick_(event: CustomEvent) {
+  protected onCreateAllGroupsClick_(event: CustomEvent) {
     event.stopPropagation();
     event.preventDefault();
 
@@ -176,27 +185,20 @@ export class TabOrganizationResultsElement extends PolymerElement {
       };
     });
 
-    this.dispatchEvent(new CustomEvent('create-all-groups-click', {
-      bubbles: true,
-      composed: true,
-      detail: {organizations},
-    }));
+    this.fire('create-all-groups-click', {organizations});
   }
 
-  private onLearnMoreClick_() {
-    this.dispatchEvent(new CustomEvent('learn-more-click', {
-      bubbles: true,
-      composed: true,
-    }));
+  protected onLearnMoreClick_() {
+    this.fire('learn-more-click');
   }
 
-  private onLearnMoreKeyDown_(event: KeyboardEvent) {
+  protected onLearnMoreKeyDown_(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       this.onLearnMoreClick_();
     }
   }
 
-  private onFeedbackKeyDown_(event: KeyboardEvent) {
+  protected onFeedbackKeyDown_(event: KeyboardEvent) {
     if ((event.key !== 'ArrowLeft' && event.key !== 'ArrowRight')) {
       return;
     }
@@ -223,14 +225,10 @@ export class TabOrganizationResultsElement extends PolymerElement {
     focusableElements[nextFocusedIndex]!.focus();
   }
 
-  private onFeedbackSelectedOptionChanged_(
+  protected onFeedbackSelectedOptionChanged_(
       event: CustomEvent<{value: CrFeedbackOption}>) {
     this.feedbackSelectedOption_ = event.detail.value;
-    this.dispatchEvent(new CustomEvent('feedback', {
-      bubbles: true,
-      composed: true,
-      detail: {value: event.detail.value},
-    }));
+    this.fire('feedback', {value: this.feedbackSelectedOption_});
   }
 }
 

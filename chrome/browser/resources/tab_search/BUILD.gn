@@ -56,10 +56,13 @@ build_webui("build") {
   css_files = [
     "app.css",
     "tab_group_shared_vars.css",
+    "tab_organization_failure.css",
     "tab_organization_in_progress.css",
+    "tab_organization_new_badge.css",
     "tab_organization_not_started.css",
     "tab_organization_not_started_image.css",
     "tab_organization_results_actions.css",
+    "tab_organization_results.css",
     "tab_organization_shared_style.css",
     "tab_organization_shared_style_lit.css",
     "tab_search_group_item.css",
