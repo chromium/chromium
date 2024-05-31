@@ -2308,13 +2308,13 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 
   handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
       key::kGenAILocalFoundationalModelSettings,
-      optimization_guide::prefs::localstate::
+      optimization_guide::model_execution::prefs::localstate::
           kGenAILocalFoundationalModelEnterprisePolicySettings,
       static_cast<int>(
-          optimization_guide::prefs::
+          optimization_guide::model_execution::prefs::
               GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed),
       static_cast<int>(
-          optimization_guide::prefs::
+          optimization_guide::model_execution::prefs::
               GenAILocalFoundationalModelEnterprisePolicySettings::kMaxValue),
       false));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||

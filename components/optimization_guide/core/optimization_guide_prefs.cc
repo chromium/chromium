@@ -103,47 +103,10 @@ const char kModelStoreMetadata[] = "optimization_guide.model_store_metadata";
 const char kModelCacheKeyMapping[] =
     "optimization_guide.model_cache_key_mapping";
 
-// Preference of the last version checked. Used to determine when the
-// disconnect count is reset.
-const char kOnDeviceModelChromeVersion[] =
-    "optimization_guide.on_device.last_version";
-
-// Preference where number of disconnects (crashes) of on device model is
-// stored.
-const char kOnDeviceModelCrashCount[] =
-    "optimization_guide.on_device.model_crash_count";
-
-// Preference where number of timeouts of on device model is stored.
-const char kOnDeviceModelTimeoutCount[] =
-    "optimization_guide.on_device.timeout_count";
-
-// Stores the last computed `OnDeviceModelPerformanceClass` of the device.
-const char kOnDevicePerformanceClass[] =
-    "optimization_guide.on_device.performance_class";
-
 // A dictionary pref that stores the file paths that need to be deleted as keys.
 // The value will not be used.
 const char kStoreFilePathsToDelete[] =
     "optimization_guide.store_file_paths_to_delete";
-
-// A timestamp for the last time a feature was used which could have benefited
-// from the on-device model. We will use this to help decide whether to acquire
-// the on device model.
-const char kLastTimeOnDeviceEligibleFeatureWasUsed[] =
-    "optimization_guide.last_time_on_device_eligible_feature_used";
-
-// A timestamp for the last time the on-device model was eligible for download.
-const char kLastTimeEligibleForOnDeviceModelDownload[] =
-    "optimization_guide.on_device.last_time_eligible_for_download";
-
-// An integer pref that contains the user's client id.
-const char kModelQualityLogggingClientId[] =
-    "optimization_guide.model_quality_logging_client_id";
-
-// An integer pref for the on-device GenAI foundational model enterprise policy
-// settings.
-const char kGenAILocalFoundationalModelEnterprisePolicySettings[] =
-    "optimization_guide.gen_ai_local_foundational_model_settings";
 
 }  // namespace localstate
 
@@ -174,22 +137,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(localstate::kOnDeviceModelChromeVersion,
-                               std::string());
   registry->RegisterDictionaryPref(localstate::kModelStoreMetadata);
   registry->RegisterDictionaryPref(localstate::kModelCacheKeyMapping);
-  registry->RegisterIntegerPref(localstate::kOnDeviceModelCrashCount, 0);
-  registry->RegisterIntegerPref(localstate::kOnDeviceModelTimeoutCount, 0);
-  registry->RegisterIntegerPref(localstate::kOnDevicePerformanceClass, 0);
   registry->RegisterDictionaryPref(localstate::kStoreFilePathsToDelete);
-  registry->RegisterTimePref(
-      localstate::kLastTimeOnDeviceEligibleFeatureWasUsed, base::Time::Min());
-  registry->RegisterTimePref(
-      localstate::kLastTimeEligibleForOnDeviceModelDownload, base::Time::Min());
-  registry->RegisterInt64Pref(localstate::kModelQualityLogggingClientId, 0,
-                              PrefRegistry::LOSSY_PREF);
-  registry->RegisterIntegerPref(
-      localstate::kGenAILocalFoundationalModelEnterprisePolicySettings, 0);
 }
 
 }  // namespace prefs

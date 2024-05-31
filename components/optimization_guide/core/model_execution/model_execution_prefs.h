@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_PREFS_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_PREFS_H_
 
+#include "base/component_export.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 
@@ -19,15 +20,55 @@ enum class ModelExecutionEnterprisePolicyValue {
   kDisable = 2,
 };
 
+enum class GenAILocalFoundationalModelEnterprisePolicySettings {
+  kAllowed = 0,
+  kDisallowed = 1,
+
+  // Insert new values before this line.
+  kMaxValue = kDisallowed,
+};
+
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kTabOrganizationEnterprisePolicyAllowed[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kComposeEnterprisePolicyAllowed[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kWallpaperSearchEnterprisePolicyAllowed[];
 
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // Returns the name of the pref to check for enterprise policy for `feature`.
 // Null is returned when no enterprise policy is defined for the `feature`.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 const char* GetEnterprisePolicyPrefName(UserVisibleFeatureKey feature);
+
+namespace localstate {
+
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kOnDeviceModelChromeVersion[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kOnDeviceModelCrashCount[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kOnDeviceModelTimeoutCount[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kOnDevicePerformanceClass[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kLastTimeOnDeviceEligibleFeatureWasUsed[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kLastTimeEligibleForOnDeviceModelDownload[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kModelQualityLogggingClientId[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kGenAILocalFoundationalModelEnterprisePolicySettings[];
+
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool IsLocalFoundationalModelEnterprisePolicyAllowed();
+
+}  // namespace localstate
+
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 }  // namespace optimization_guide::model_execution::prefs
 

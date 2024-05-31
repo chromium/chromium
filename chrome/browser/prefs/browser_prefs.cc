@@ -1654,6 +1654,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   metrics::RegisterDemographicsLocalStatePrefs(registry);
   network_time::NetworkTimeTracker::RegisterPrefs(registry);
   optimization_guide::prefs::RegisterLocalStatePrefs(registry);
+  optimization_guide::model_execution::prefs::RegisterLocalStatePrefs(registry);
   password_manager::PasswordManager::RegisterLocalPrefs(registry);
   policy::BrowserPolicyConnector::RegisterPrefs(registry);
   policy::LocalTestPolicyProvider::RegisterLocalStatePrefs(registry);

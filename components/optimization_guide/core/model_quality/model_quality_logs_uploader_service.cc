@@ -10,6 +10,8 @@
 #include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/access_token_helper.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
@@ -17,7 +19,6 @@
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/prefs/pref_service.h"
@@ -151,8 +152,8 @@ void OnURLLoadComplete(
 }
 
 proto::PerformanceClass GetPerformanceClass(PrefService* local_state) {
-  int value =
-      local_state->GetInteger(prefs::localstate::kOnDevicePerformanceClass);
+  int value = local_state->GetInteger(
+      model_execution::prefs::localstate::kOnDevicePerformanceClass);
   OnDeviceModelPerformanceClass performance_class =
       static_cast<OnDeviceModelPerformanceClass>(value);
   switch (performance_class) {

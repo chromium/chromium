@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 
 #include "base/files/file_util.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -67,13 +68,13 @@ void SetExecutionResponse(ModelBasedCapabilityKey feature,
   }
 }
 
-prefs::GenAILocalFoundationalModelEnterprisePolicySettings
+model_execution::prefs::GenAILocalFoundationalModelEnterprisePolicySettings
 GetGenAILocalFoundationalModelEnterprisePolicySettings(
     PrefService* local_state) {
-  return static_cast<
-      prefs::GenAILocalFoundationalModelEnterprisePolicySettings>(
+  return static_cast<model_execution::prefs::
+                         GenAILocalFoundationalModelEnterprisePolicySettings>(
       local_state->GetInteger(
-          prefs::localstate::
+          model_execution::prefs::localstate::
               kGenAILocalFoundationalModelEnterprisePolicySettings));
 }
 

@@ -9,7 +9,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
@@ -68,7 +68,7 @@ void SetExecutionResponse(ModelBasedCapabilityKey feature,
 
 // Returns the GenAILocalFoundationalModelEnterprisePolicySettings from the
 // `local_state`.
-prefs::GenAILocalFoundationalModelEnterprisePolicySettings
+model_execution::prefs::GenAILocalFoundationalModelEnterprisePolicySettings
 GetGenAILocalFoundationalModelEnterprisePolicySettings(
     PrefService* local_state);
 

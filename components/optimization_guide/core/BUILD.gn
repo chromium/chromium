@@ -123,6 +123,8 @@ component("features") {
   sources = [
     "insertion_ordered_set.h",
     "model_execution/feature_keys.h",
+    "model_execution/model_execution_prefs.cc",
+    "model_execution/model_execution_prefs.h",
     "optimization_guide_constants.cc",
     "optimization_guide_constants.h",
     "optimization_guide_enums.h",
@@ -227,8 +229,6 @@ static_library("core") {
       "model_execution/model_execution_fetcher.h",
       "model_execution/model_execution_manager.cc",
       "model_execution/model_execution_manager.h",
-      "model_execution/model_execution_prefs.cc",
-      "model_execution/model_execution_prefs.h",
       "model_execution/model_execution_util.cc",
       "model_execution/model_execution_util.h",
       "model_execution/on_device_model_access_controller.cc",

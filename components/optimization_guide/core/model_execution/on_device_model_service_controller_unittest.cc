@@ -21,6 +21,7 @@
 #include "base/uuid.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
@@ -32,7 +33,6 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
@@ -99,15 +99,15 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
            {"on_device_model_temperature", "0"}}},
          {features::kTextSafetyClassifier, {}}},
         {features::internal::kModelAdaptationCompose});
-    prefs::RegisterLocalStatePrefs(pref_service_.registry());
+    model_execution::prefs::RegisterLocalStatePrefs(pref_service_.registry());
 
     // Fake the requirements to install the model.
     pref_service_.SetInteger(
-        prefs::localstate::kOnDevicePerformanceClass,
+        model_execution::prefs::localstate::kOnDevicePerformanceClass,
         base::to_underlying(OnDeviceModelPerformanceClass::kLow));
-    pref_service_.SetTime(
-        prefs::localstate::kLastTimeOnDeviceEligibleFeatureWasUsed,
-        base::Time::Now());
+    pref_service_.SetTime(model_execution::prefs::localstate::
+                              kLastTimeOnDeviceEligibleFeatureWasUsed,
+                          base::Time::Now());
   }
 
   void TearDown() override {
@@ -2136,8 +2136,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
   // Change the pref to a different value and recreate the service.
   access_controller_ = nullptr;
   test_controller_.reset();
-  pref_service_.SetString(prefs::localstate::kOnDeviceModelChromeVersion,
-                          "BOGUS VERSION");
+  pref_service_.SetString(
+      model_execution::prefs::localstate::kOnDeviceModelChromeVersion,
+      "BOGUS VERSION");
   RecreateServiceController();
   // Wait until configuration is read.
   task_environment_.RunUntilIdle();

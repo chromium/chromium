@@ -17,11 +17,11 @@
 #include "base/test/test.pb.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -78,7 +78,7 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
         shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
-    prefs::RegisterLocalStatePrefs(pref_service_.registry());
+    model_execution::prefs::RegisterLocalStatePrefs(pref_service_.registry());
     model_quality_logs_uploader_service_ =
         std::make_unique<ModelQualityLogsUploaderService>(
             shared_url_loader_factory_, &pref_service_);
@@ -96,7 +96,7 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
 
   void WritePerformanceClassToPref(OnDeviceModelPerformanceClass perf_class) {
     pref_service_.SetInteger(
-        prefs::localstate::kOnDevicePerformanceClass,
+        model_execution::prefs::localstate::kOnDevicePerformanceClass,
         base::to_underlying(OnDeviceModelPerformanceClass::kVeryHigh));
   }
 

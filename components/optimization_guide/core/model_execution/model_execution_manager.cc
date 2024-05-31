@@ -178,7 +178,8 @@ ModelExecutionManager::ModelExecutionManager(
     return;
   }
   if (GetGenAILocalFoundationalModelEnterprisePolicySettings(local_state) !=
-      prefs::GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed) {
+      model_execution::prefs::
+          GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed) {
     return;
   }
 

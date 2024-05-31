@@ -7,8 +7,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -36,7 +36,7 @@ class TestModelQualityLogsUploaderService
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 url_loader_factory),
             &prefs_) {
-    prefs::RegisterLocalStatePrefs(prefs_.registry());
+    model_execution::prefs::RegisterLocalStatePrefs(prefs_.registry());
   }
 
   ~TestModelQualityLogsUploaderService() override = default;

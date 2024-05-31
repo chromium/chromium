@@ -54,16 +54,6 @@ std::string_view GetStringNameForModelExecutionFeature(
 // host that is not supported by the remote optimization guide.
 bool IsHostValidToFetchFromRemoteOptimizationGuide(const std::string& host);
 
-// Returns the hashed client id with the feature and day.
-int64_t GetHashedModelQualityClientId(UserVisibleFeatureKey feature,
-                                      base::Time day,
-                                      int64_t client_id);
-
-// Creates a new client id if not persisted to prefs. Returns a different ID for
-// different `feature` for each day.
-int64_t GetOrCreateModelQualityClientId(UserVisibleFeatureKey feature,
-                                        PrefService* pref_service);
-
 // Validates that the metadata stored in |any_metadata_| is of the same type
 // and is parseable as |T|. Will return metadata if all checks pass.
 template <class T,
@@ -75,22 +65,26 @@ std::optional<T> ParsedAnyMetadata(const proto::Any& any_metadata) {
   std::vector<std::string> any_type_parts =
       base::SplitString(any_metadata.type_url(), "./", base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_NONEMPTY);
-  if (any_type_parts.empty())
+  if (any_type_parts.empty()) {
     return std::nullopt;
+  }
   T metadata;
   std::vector<std::string> type_parts =
       base::SplitString(metadata.GetTypeName(), "./", base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_NONEMPTY);
-  if (type_parts.empty())
+  if (type_parts.empty()) {
     return std::nullopt;
+  }
   std::string any_type_name = any_type_parts.back();
   std::string type_name = type_parts.back();
-  if (type_name != any_type_name)
+  if (type_name != any_type_name) {
     return std::nullopt;
+  }
 
   // Return metadata if parseable.
-  if (metadata.ParseFromString(any_metadata.value()))
+  if (metadata.ParseFromString(any_metadata.value())) {
     return metadata;
+  }
   return std::nullopt;
 }
 

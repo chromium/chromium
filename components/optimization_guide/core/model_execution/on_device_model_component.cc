@@ -16,12 +16,12 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/prefs/pref_service.h"
 
 namespace optimization_guide {
@@ -47,8 +47,9 @@ base::WeakPtr<OnDeviceModelComponentStateManager>& GetInstance() {
 }
 
 bool WasAnOnDeviceFeatureRecentlyUsed(const PrefService& local_state) {
-  base::Time last_use = local_state.GetTime(
-      prefs::localstate::kLastTimeOnDeviceEligibleFeatureWasUsed);
+  base::Time last_use =
+      local_state.GetTime(model_execution::prefs::localstate::
+                              kLastTimeOnDeviceEligibleFeatureWasUsed);
   constexpr base::TimeDelta grace_period = base::Days(7);
   auto time_since_use = base::Time::Now() - last_use;
   // Note: Since we're storing a base::Time, we need to consider the possibility
@@ -57,8 +58,8 @@ bool WasAnOnDeviceFeatureRecentlyUsed(const PrefService& local_state) {
 }
 
 bool IsDeviceCapable(const PrefService& local_state) {
-  int value =
-      local_state.GetInteger(prefs::localstate::kOnDevicePerformanceClass);
+  int value = local_state.GetInteger(
+      model_execution::prefs::localstate::kOnDevicePerformanceClass);
   if (value < 0 ||
       value > static_cast<int>(OnDeviceModelPerformanceClass::kMaxValue)) {
     return false;
@@ -136,15 +137,15 @@ void LogInstallCriteria(
 }  // namespace
 
 void OnDeviceModelComponentStateManager::UninstallComplete() {
-  local_state_->ClearPref(
-      prefs::localstate::kLastTimeEligibleForOnDeviceModelDownload);
+  local_state_->ClearPref(model_execution::prefs::localstate::
+                              kLastTimeEligibleForOnDeviceModelDownload);
   component_installer_registered_ = false;
 }
 
 void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed() {
-  local_state_->SetTime(
-      prefs::localstate::kLastTimeOnDeviceEligibleFeatureWasUsed,
-      base::Time::Now());
+  local_state_->SetTime(model_execution::prefs::localstate::
+                            kLastTimeOnDeviceEligibleFeatureWasUsed,
+                        base::Time::Now());
 
   OnDeviceModelStatus status;
   if (GetState() != nullptr) {
@@ -174,8 +175,9 @@ void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed() {
 
 void OnDeviceModelComponentStateManager::DevicePerformanceClassChanged(
     OnDeviceModelPerformanceClass performance_class) {
-  local_state_->SetInteger(prefs::localstate::kOnDevicePerformanceClass,
-                           base::to_underlying(performance_class));
+  local_state_->SetInteger(
+      model_execution::prefs::localstate::kOnDevicePerformanceClass,
+      base::to_underlying(performance_class));
 
   BeginUpdateRegistration();
 }
@@ -215,9 +217,9 @@ void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(
   registration_criteria_ = std::make_unique<RegistrationCriteria>(criteria);
 
   if (criteria.should_install()) {
-    local_state_->SetTime(
-        prefs::localstate::kLastTimeEligibleForOnDeviceModelDownload,
-        base::Time::Now());
+    local_state_->SetTime(model_execution::prefs::localstate::
+                              kLastTimeEligibleForOnDeviceModelDownload,
+                          base::Time::Now());
   }
 
   bool was_allowed = is_model_allowed_;
@@ -261,10 +263,12 @@ OnDeviceModelComponentStateManager::GetRegistrationCriteria(
   result.enabled_by_feature = features::IsOnDeviceExecutionEnabled();
   result.enabled_by_enterprise_policy =
       GetGenAILocalFoundationalModelEnterprisePolicySettings(local_state_) ==
-      prefs::GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed;
+      model_execution::prefs::
+          GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed;
 
-  auto last_time_eligible = local_state_->GetTime(
-      prefs::localstate::kLastTimeEligibleForOnDeviceModelDownload);
+  auto last_time_eligible =
+      local_state_->GetTime(model_execution::prefs::localstate::
+                                kLastTimeEligibleForOnDeviceModelDownload);
 
   result.is_already_installing = last_time_eligible != base::Time::Min();
 

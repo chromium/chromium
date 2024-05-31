@@ -4,17 +4,17 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 
 namespace optimization_guide {
 
-using prefs::localstate::kOnDeviceModelChromeVersion;
-using prefs::localstate::kOnDeviceModelCrashCount;
-using prefs::localstate::kOnDeviceModelTimeoutCount;
+using model_execution::prefs::localstate::kOnDeviceModelChromeVersion;
+using model_execution::prefs::localstate::kOnDeviceModelCrashCount;
+using model_execution::prefs::localstate::kOnDeviceModelTimeoutCount;
 
 OnDeviceModelAccessController::OnDeviceModelAccessController(
     PrefService& pref_service)

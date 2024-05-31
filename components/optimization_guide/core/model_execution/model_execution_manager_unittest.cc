@@ -12,12 +12,12 @@
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
@@ -121,7 +121,7 @@ class ModelExecutionManagerTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
     local_state_ = std::make_unique<TestingPrefServiceSimple>();
-    prefs::RegisterLocalStatePrefs(local_state_->registry());
+    model_execution::prefs::RegisterLocalStatePrefs(local_state_->registry());
     service_controller_ = base::MakeRefCounted<FakeServiceController>();
     CreateModelExecutionManager();
   }
@@ -711,10 +711,11 @@ TEST_F(ModelExecutionManagerSafetyEnabledTest,
        NotRegisteredWhenDisabledByEnterprisePolicy) {
   model_provider()->Reset();
   local_state()->SetInteger(
-      prefs::localstate::kGenAILocalFoundationalModelEnterprisePolicySettings,
-      static_cast<int>(
-          prefs::GenAILocalFoundationalModelEnterprisePolicySettings::
-              kDisallowed));
+      model_execution::prefs::localstate::
+          kGenAILocalFoundationalModelEnterprisePolicySettings,
+      static_cast<int>(model_execution::prefs::
+                           GenAILocalFoundationalModelEnterprisePolicySettings::
+                               kDisallowed));
   CreateModelExecutionManager();
   EXPECT_FALSE(model_provider()->was_registered());
 
