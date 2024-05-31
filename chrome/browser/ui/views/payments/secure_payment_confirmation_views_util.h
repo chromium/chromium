@@ -26,29 +26,29 @@ class ImageSkia;
 namespace payments {
 
 // Height of the header icons.
-constexpr int kHeaderIconHeight = 148;
-constexpr int kShoppingCartHeaderIconHeight = 114;
+inline constexpr int kHeaderIconHeight = 148;
+inline constexpr int kShoppingCartHeaderIconHeight = 114;
 
 // Padding above the header icon.
-constexpr int kHeaderIconTopPadding = 12;
+inline constexpr int kHeaderIconTopPadding = 12;
 
 // Height of the progress bar at the top of the dialog.
-constexpr int kProgressBarHeight = 4;
+inline constexpr int kProgressBarHeight = 4;
 
 // Line height of the title text.
-constexpr int kTitleLineHeight = 24;
+inline constexpr int kTitleLineHeight = 24;
 
 // Line height of the description text.
-constexpr int kDescriptionLineHeight = 20;
+inline constexpr int kDescriptionLineHeight = 20;
 
 // Insets of the secondary small text, e.g., the opt-out footer.
-constexpr int kSecondarySmallTextInsets = 16;
+inline constexpr int kSecondarySmallTextInsets = 16;
 
 // Extra inset between the body content and the dialog buttons.
-constexpr int kBodyExtraInset = 16;
+inline constexpr int kBodyExtraInset = 16;
 
 // Height of each payment information row.
-constexpr int kPaymentInfoRowHeight = 48;
+inline constexpr int kPaymentInfoRowHeight = 48;
 
 // Creates the view for the SPC progress bar.
 std::unique_ptr<views::ProgressBar>
