@@ -2536,8 +2536,8 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/digital-credentials/non-fully-active.https.html [ Timeout ]
-external/wpt/webrtc/RTCPeerConnection-addTcpIceCandidate.html [ Skip Timeout ]
+crbug.com/343991289 external/wpt/digital-credentials/non-fully-active.https.html [ Timeout ]
+crbug.com/343886935 external/wpt/webrtc/RTCPeerConnection-addTcpIceCandidate.html [ Skip Timeout ]
 crbug.com/343515409 external/wpt/focus/focus-event-after-switching-iframes.sub.html [ Timeout ]
 crbug.com/343515409 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/reduction.https.any.worker.html?cpu [ Skip Timeout ]
 crbug.com/343338109 external/wpt/css/css-borders/tentative/border-radius-side-shorthands/border-radius-side-shorthands-001.html [ Failure ]
