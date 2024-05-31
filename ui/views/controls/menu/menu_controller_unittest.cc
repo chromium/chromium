@@ -501,6 +501,8 @@ class MenuControllerTest : public ViewsTestBase,
 
   void DestroyMenuController();
 
+  void DestroyMenuControllerDelegate();
+
   int owner_gesture_count() const { return owner_->gesture_count(); }
 
   static bool SelectionWraps();
@@ -811,6 +813,10 @@ void MenuControllerTest::DestroyMenuControllerOnMenuClosed(
   // we want to know.
   delegate->set_on_menu_closed_callback(base::BindRepeating(
       &MenuControllerTest::DestroyMenuController, base::Unretained(this)));
+}
+
+void MenuControllerTest::DestroyMenuControllerDelegate() {
+  menu_controller_delegate_.reset();
 }
 
 MenuItemView* MenuControllerTest::FindInitialSelectableMenuItemDown(
@@ -2710,6 +2716,45 @@ TEST_F(MenuControllerTest, RootAndChildMenusInitializeAuraWindowWhenShown) {
   EXPECT_EQ(CalculateExpectedMenuAnchorRect(child_item), anchor->anchor_rect);
   // New anchor mustn't be the same as the old one.
   EXPECT_NE(anchor->anchor_rect, anchor_rect);
+}
+
+// Test that if `SetTriggerActionWithNonIconChildViews` true that even with
+// child views the click will be registered. Detect that the click was
+// registered by checking if the TestMenuControllerDelegate received the signal
+// that the menu should be closed.
+TEST_F(MenuControllerTest, RegisterClickWithChildViews) {
+  DestroyMenuControllerOnMenuClosed(menu_controller_delegate());
+  ShowSubmenu();
+  SubmenuView* submenu = menu_item()->GetSubmenu();
+  MenuItemView* first_menu_item = submenu->GetMenuItemAt(0);
+  first_menu_item->AddChildView(std::make_unique<View>());
+  const gfx::Point press_location = first_menu_item->bounds().CenterPoint();
+  ProcessMousePressed(
+      submenu,
+      ui::MouseEvent(ui::ET_MOUSE_PRESSED, press_location, press_location,
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+  ProcessMouseReleased(
+      submenu,
+      ui::MouseEvent(ui::ET_MOUSE_RELEASED, press_location, press_location,
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+  // No signal when there's a child view and
+  // SetTriggerActionWithNonIconChildViews is false.
+  EXPECT_EQ(menu_controller_delegate()->on_menu_closed_called(), 0);
+  first_menu_item->SetTriggerActionWithNonIconChildViews(true);
+  ProcessMousePressed(
+      submenu,
+      ui::MouseEvent(ui::ET_MOUSE_PRESSED, press_location, press_location,
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+  ProcessMouseReleased(
+      submenu,
+      ui::MouseEvent(ui::ET_MOUSE_RELEASED, press_location, press_location,
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+  // We should receive a signal to close the menu when
+  // SetTriggerActionWithNonIconChildViews is true.
+  EXPECT_EQ(menu_controller_delegate()->on_menu_closed_called(), 1);
+  // Because the menu has been closed, destroy the menu controller delegate as
+  // well to avoid dangling pointers to the menu.
+  DestroyMenuControllerDelegate();
 }
 
 #endif  // defined(USE_AURA)

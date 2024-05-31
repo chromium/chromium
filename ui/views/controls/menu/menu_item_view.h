@@ -415,6 +415,16 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Returns the corresponding border padding from the `MenuConfig`.
   int GetItemHorizontalBorder() const;
 
+  void SetTriggerActionWithNonIconChildViews(
+      bool trigger_action_with_non_icon_child_views) {
+    trigger_action_with_non_icon_child_views_ =
+        trigger_action_with_non_icon_child_views;
+  }
+
+  bool GetTriggerActionWithNonIconChildViews() const {
+    return trigger_action_with_non_icon_child_views_;
+  }
+
   bool last_paint_as_selected_for_testing() const {
     return last_paint_as_selected_;
   }
@@ -665,6 +675,12 @@ class VIEWS_EXPORT MenuItemView : public View {
   // out taking the full width of the menu, instead of stopping at any arrow
   // column.
   bool children_use_full_width_ = false;
+
+  // Default implementation will not trigger a MenuItemAction if there are child
+  // views other than the icon view. `trigger_action_with_non_icon_child_views_`
+  // specifies that we should still trigger the action even if we have non icon
+  // child views if other conditions are met as well.
+  bool trigger_action_with_non_icon_child_views_ = false;
 
   // Contains an image for the checkbox or radio icon.
   raw_ptr<ImageView> radio_check_image_view_ = nullptr;

@@ -1443,6 +1443,7 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
                              MenuItemView::kChildHorizontalPadding)))
                   .Build());
           item->SetHighlightWhenSelectedWithChildViews(true);
+          item->SetTriggerActionWithNonIconChildViews(true);
         }
         break;
       }
