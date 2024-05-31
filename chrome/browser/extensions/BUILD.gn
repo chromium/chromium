@@ -864,6 +864,7 @@ source_set("extensions") {
     "//components/affiliations/core/browser:affiliations",
     "//components/app_constants",
     "//components/autofill/content/browser",
+    "//components/autofill/core/common:credit_card_number_validation",
     "//components/back_forward_cache",
     "//components/bookmarks/browser",
     "//components/bookmarks/managed",
