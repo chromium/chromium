@@ -247,6 +247,21 @@ class VideoAcceleratorUtil {
                 Range<Integer> supportedWidths = videoCapabilities.getSupportedWidths();
                 Range<Integer> supportedHeights =
                         videoCapabilities.getSupportedHeightsFor(supportedWidths.getUpper());
+
+                // Some devices don't have their max supported level configured correctly, so they
+                // can return max resolutions like 7680x1714 which prevents both 4K and 8K content
+                // from being hardware decoded.
+                //
+                // In cases where supported area is > 4k, but width, height are less than standard
+                // and the standard resolution is supported, use the standard one instead so that at
+                // least 4k support works. See https://crbug.com/41481822.
+                if ((supportedWidths.getUpper() < 3840 || supportedHeights.getUpper() < 2160)
+                        && supportedWidths.getUpper() * supportedHeights.getUpper() >= 3840 * 2160
+                        && videoCapabilities.isSizeSupported(3840, 2160)) {
+                    supportedWidths = new Range<Integer>(supportedWidths.getLower(), 3840);
+                    supportedHeights = new Range<Integer>(supportedHeights.getLower(), 2160);
+                }
+
                 boolean needsPortraitEntry =
                         !supportedHeights.getUpper().equals(supportedWidths.getUpper())
                                 && videoCapabilities.isSizeSupported(
@@ -372,6 +387,21 @@ class VideoAcceleratorUtil {
                 Range<Integer> supportedWidths = videoCapabilities.getSupportedWidths();
                 Range<Integer> supportedHeights =
                         videoCapabilities.getSupportedHeightsFor(supportedWidths.getUpper());
+
+                // Some devices don't have their max supported level configured correctly, so they
+                // can return max resolutions like 7680x1714 which prevents both 4K and 8K content
+                // from being hardware decoded.
+                //
+                // In cases where supported area is > 4k, but width, height are less than standard
+                // and the standard resolution is supported, use the standard one instead so that at
+                // least 4k support works. See https://crbug.com/41481822.
+                if ((supportedWidths.getUpper() < 3840 || supportedHeights.getUpper() < 2160)
+                        && supportedWidths.getUpper() * supportedHeights.getUpper() >= 3840 * 2160
+                        && videoCapabilities.isSizeSupported(3840, 2160)) {
+                    supportedWidths = new Range<Integer>(supportedWidths.getLower(), 3840);
+                    supportedHeights = new Range<Integer>(supportedHeights.getLower(), 2160);
+                }
+
                 boolean needsPortraitEntry =
                         !supportedHeights.getUpper().equals(supportedWidths.getUpper())
                                 && videoCapabilities.isSizeSupported(
