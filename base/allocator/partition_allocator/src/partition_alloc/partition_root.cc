@@ -395,9 +395,17 @@ namespace {
 // more work and larger |slot_usage| array. Lower value would probably decrease
 // chances of purging. Not empirically tested.
 constexpr size_t kMaxPurgeableSlotsPerSystemPage = 64;
+// See above, this will lead to less work getting done, so lower cost, lower
+// savings.
+constexpr size_t kConservativeMaxPurgeableSlotsPerSystemPage = 2;
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 MinPurgeableSlotSize() {
   return SystemPageSize() / kMaxPurgeableSlotsPerSystemPage;
+}
+
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
+MinConservativePurgeableSlotSize() {
+  return SystemPageSize() / kConservativeMaxPurgeableSlotsPerSystemPage;
 }
 }  // namespace
 
@@ -1536,7 +1544,13 @@ void PartitionRoot::PurgeMemory(int flags) {
           continue;
         }
 
-        if (bucket.slot_size >= internal::MinPurgeableSlotSize()) {
+        // Don't do the most expensive operation except for the largest buckets,
+        // where the cost of doing so is lower, and gains are likely higher.
+        size_t min_bucket_size_to_purge =
+            (flags & PurgeFlags::kLimitDuration)
+                ? internal::MinConservativePurgeableSlotSize()
+                : internal::MinPurgeableSlotSize();
+        if (bucket.slot_size >= min_bucket_size_to_purge) {
           internal::PartitionPurgeBucket(this, &bucket);
         } else {
           if (sort_smaller_slot_span_free_lists_) {
