@@ -17,10 +17,7 @@
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
@@ -612,7 +609,7 @@ NotShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
                                   operand->DataType());
 }
 
-TEST_P(MLGraphTest, CreateNamedArrayBufferViewsTest) {
+TEST_F(MLGraphTest, CreateNamedArrayBufferViewsTest) {
   constexpr auto kOperandDataTypes =
       base::MakeFixedFlatSet<V8MLOperandDataType::Enum>(
           {V8MLOperandDataType::Enum::kFloat32,
@@ -679,7 +676,7 @@ TEST_P(MLGraphTest, CreateNamedArrayBufferViewsTest) {
   }
 }
 
-TEST_P(MLGraphTest, ComputeTest) {
+TEST_F(MLGraphTest, ComputeTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -857,7 +854,7 @@ TEST_P(MLGraphTest, ComputeTest) {
   }
 }
 
-TEST_P(MLGraphTest, CreateWebNNBufferTest) {
+TEST_F(MLGraphTest, CreateWebNNBufferTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -888,7 +885,7 @@ TEST_P(MLGraphTest, CreateWebNNBufferTest) {
   EXPECT_EQ(ml_buffer->size(), desc->size());
 }
 
-TEST_P(MLGraphTest, WriteWebNNBufferTest) {
+TEST_F(MLGraphTest, WriteWebNNBufferTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -981,7 +978,7 @@ TEST_P(MLGraphTest, WriteWebNNBufferTest) {
 }
 
 // Writing data from an array buffer to a destroyed MLBuffer should not crash.
-TEST_P(MLGraphTest, WriteWebNNBufferThenDestroyTest) {
+TEST_F(MLGraphTest, WriteWebNNBufferThenDestroyTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -1020,7 +1017,7 @@ TEST_P(MLGraphTest, WriteWebNNBufferThenDestroyTest) {
 }
 
 // Reading data from an array buffer to a destroyed MLBuffer should not crash.
-TEST_P(MLGraphTest, ReadWebNNBufferThenDestroyTest) {
+TEST_F(MLGraphTest, ReadWebNNBufferThenDestroyTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -1058,7 +1055,7 @@ TEST_P(MLGraphTest, ReadWebNNBufferThenDestroyTest) {
   EXPECT_TRUE(buffer_tester.IsRejected());
 }
 
-TEST_P(MLGraphTest, WebNNGraphDispatchTest) {
+TEST_F(MLGraphTest, WebNNGraphDispatchTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -1135,7 +1132,7 @@ struct OperandInfoMojo {
 
 using OperandInfoBlink = OperandInfo<float>;
 
-TEST_P(MLGraphTest, CreateWebNNGraphTest) {
+TEST_F(MLGraphTest, CreateWebNNGraphTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -1349,7 +1346,7 @@ struct SoftmaxTester {
   }
 };
 
-TEST_P(MLGraphTest, SoftmaxTest) {
+TEST_F(MLGraphTest, SoftmaxTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -1424,7 +1421,7 @@ struct ConstantTester {
   }
 };
 
-TEST_P(MLGraphTest, ConstantTest) {
+TEST_F(MLGraphTest, ConstantTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -1531,7 +1528,7 @@ struct CastTester {
   }
 };
 
-TEST_P(MLGraphTest, CastTester) {
+TEST_F(MLGraphTest, CastTester) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -1764,7 +1761,7 @@ TEST_P(MLGraphTest, CastTester) {
   }
 }
 
-TEST_P(MLGraphTest, WebNNGraphComputeTest) {
+TEST_F(MLGraphTest, WebNNGraphComputeTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
   ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
@@ -1868,10 +1865,5 @@ TEST_P(MLGraphTest, WebNNGraphComputeTest) {
               "output");
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         MLGraphTest,
-                         testing::Values(BackendType::kWebNNService),
-                         TestParamInfoToString);
 
 }  // namespace blink

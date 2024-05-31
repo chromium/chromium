@@ -24,22 +24,12 @@ class MLContext;
 class MLGraphBuilder;
 class V8TestingScope;
 
-// The utility methods for graph test.
-// The backends share the unit tests in the MLGraphTest.
-//
-// TODO(crbug.com/325612086): Remove this, since there's only one backend.
-enum class BackendType { kWebNNService };
-
-std::string TestParamInfoToString(
-    const ::testing::TestParamInfo<BackendType>& backend_type);
-
 std::pair<String, String> GetErrorNameAndMessage(V8TestingScope* scope,
                                                  ScriptValue value);
 
 // TODO(crbug.com/325612086): Consolidate this with `MLGraphTest`, since there's
 // only one backend.
-class MLGraphTestBase : public ::testing::Test,
-                        public ::testing::WithParamInterface<BackendType> {
+class MLGraphTestBase : public ::testing::Test {
  public:
   // BuildResult is returned by Build() method. If the graph building is
   // successful, `graph` points to the MLGraph and `error_name` and

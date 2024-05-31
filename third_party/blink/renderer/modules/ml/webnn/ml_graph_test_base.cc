@@ -23,14 +23,6 @@ MLGraph* ToMLGraph(V8TestingScope* scope, ScriptValue value) {
       scope->GetIsolate(), value.V8Value(), scope->GetExceptionState());
 }
 
-std::string TestParamInfoToString(
-    const ::testing::TestParamInfo<BackendType>& info) {
-  switch (info.param) {
-    case BackendType::kWebNNService:
-      return "WebNNService";
-  }
-}
-
 std::pair<String, String> GetErrorNameAndMessage(V8TestingScope* scope,
                                                  ScriptValue value) {
   v8::Local<v8::Object> object;
