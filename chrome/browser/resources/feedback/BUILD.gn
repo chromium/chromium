@@ -23,18 +23,18 @@ build_webui("build") {
     "images/button_butter_bar_close_pressed.png",
   ]
 
-  web_component_files = [
-    "app.ts",
-    "autofill_metadata_app.ts",
-    "system_info_app.ts",
-  ]
-
   non_web_component_files = [
+    "app.html.ts",
+    "app.ts",
+    "autofill_metadata_app.html.ts",
+    "autofill_metadata_app.ts",
     "js/feedback_browser_proxy.ts",
     "js/feedback_regexes.ts",
     "js/feedback_util.ts",
     "js/questionnaire.ts",
     "js/take_screenshot.ts",
+    "system_info_app.html.ts",
+    "system_info_app.ts",
   ]
 
   css_files = [
@@ -47,8 +47,6 @@ build_webui("build") {
   if (is_chromeos_ash) {
     non_web_component_files += [ "js/jelly_colors.ts" ]
   }
-
-  html_to_wrapper_template = "detect"
 
   ts_composite = true
   ts_definitions = [
