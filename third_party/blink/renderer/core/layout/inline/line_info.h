@@ -194,6 +194,7 @@ class CORE_EXPORT LineInfo {
   unsigned InflowEndOffset() const {
     return InflowEndOffsetInternal(/* skip_forced_break */ false);
   }
+  // In addition to the above, forced breaks and collapsed spaces are excluded.
   unsigned InflowEndOffsetWithoutForcedBreak() const {
     return InflowEndOffsetInternal(/* skip_forced_break */ true);
   }

@@ -197,9 +197,13 @@ unsigned LineInfo::InflowEndOffsetInternal(bool skip_forced_break) const {
   for (const auto& item_result : base::Reversed(Results())) {
     DCHECK(item_result.item);
     const InlineItem& item = *item_result.item;
-    if (skip_forced_break && item.Type() == InlineItem::kControl &&
-        ItemsData().text_content[item.StartOffset()] == kNewlineCharacter) {
-      continue;
+    if (skip_forced_break) {
+      if (item.Type() == InlineItem::kControl &&
+          ItemsData().text_content[item.StartOffset()] == kNewlineCharacter) {
+        continue;
+      } else if (item.Type() == InlineItem::kText && item.Length() == 0) {
+        continue;
+      }
     }
     if (item.Type() == InlineItem::kText ||
         item.Type() == InlineItem::kControl ||
