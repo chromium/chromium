@@ -21,7 +21,8 @@ chrome.test.runTests([
     // manifest, to ensure that the ruelsets are ready before running the tests
     // and avoid race condition. This works since the tests run sequentially.
     chrome.declarativeNetRequest.updateEnabledRulesets(
-        {enableRulesetIds: ['rules1', 'rules2']}, chrome.test.succeed)
+        {enableRulesetIds: ['rules1', 'rules2', 'modifyheaders']},
+        chrome.test.succeed);
   },
 
   function testInvalidUrl() {
@@ -169,7 +170,7 @@ chrome.test.runTests([
       method: 'get'
     });
     chrome.test.assertEq(
-        {matchedRules: [{ruleId: 2, rulesetId: 'rules2'}]}, result);
+        {matchedRules: [{ruleId: 1, rulesetId: 'modifyheaders'}]}, result);
 
     result = await testMatchOutcome({
       url: 'https://modify-headers.example/path',
@@ -179,10 +180,32 @@ chrome.test.runTests([
     chrome.test.assertEq(
         {
           matchedRules: [
-            {ruleId: 2, rulesetId: 'rules2'}, {ruleId: 3, rulesetId: 'rules2'}
+            {ruleId: 1, rulesetId: 'modifyheaders'},
+            {ruleId: 2, rulesetId: 'modifyheaders'}
           ]
         },
         result);
+
+    // Only rule 1 should match since:
+    // - rule 2 is outprioritized by rule 3 (allow)
+    // - rule 3 does not match since there rule 1 (modifyHeaders) matches and
+    //   has a higher priority.
+    result = await testMatchOutcome({
+      url: 'https://modify-headers.example2/path',
+      type: 'main_frame',
+      method: 'get'
+    });
+    chrome.test.assertEq(
+        {matchedRules: [{ruleId: 1, rulesetId: 'modifyheaders'}]}, result);
+
+    // Only rule 4 should match since it outprioritizes both rules 1 and 2.
+    result = await testMatchOutcome({
+      url: 'https://modify-headers.example3/path',
+      type: 'main_frame',
+      method: 'get'
+    });
+    chrome.test.assertEq(
+        {matchedRules: [{ruleId: 4, rulesetId: 'modifyheaders'}]}, result);
 
     chrome.test.succeed();
   },
@@ -240,11 +263,11 @@ chrome.test.runTests([
       type: 'script'
     });
     chrome.test.assertEq(
-        {matchedRules: [{ruleId: 4, rulesetId: 'rules2'}]}, result);
+        {matchedRules: [{ruleId: 2, rulesetId: 'rules2'}]}, result);
     result = await testMatchOutcome(
         {url: 'https://allowed-redirect.example/ad.js', type: 'script'});
     chrome.test.assertEq(
-        {matchedRules: [{ruleId: 4, rulesetId: 'rules2'}]}, result);
+        {matchedRules: [{ruleId: 2, rulesetId: 'rules2'}]}, result);
 
     // No host permission for request URL.
     result = await testMatchOutcome(

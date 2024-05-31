@@ -9,6 +9,10 @@
       "id": "rules2",
       "path": "rules2.json",
       "enabled": false
+    }, {
+      "id": "modifyheaders",
+      "path": "modifyheaders.json",
+      "enabled": false
     }]
   },
   "manifest_version": 2,

@@ -8,11 +8,15 @@
 #include <string>
 
 #include "extensions/browser/extension_function.h"
+#include "extensions/common/permissions/permissions_data.h"
 
 namespace extensions {
 
 namespace declarative_net_request {
+class CompositeMatcher;
 struct ReadJSONRulesResult;
+struct RequestAction;
+struct RequestParams;
 }  // namespace declarative_net_request
 
 namespace api::declarative_net_request::GetDynamicRules {
@@ -225,6 +229,14 @@ class DeclarativeNetRequestTestMatchOutcomeFunction : public ExtensionFunction {
 
   // ExtensionFunction override:
   ExtensionFunction::ResponseAction Run() override;
+
+ private:
+  // Returns a list of matching actions for the given request `params` against
+  // this extension's `matcher`.
+  std::vector<declarative_net_request::RequestAction> GetActions(
+      const declarative_net_request::CompositeMatcher& matcher,
+      const declarative_net_request::RequestParams& params,
+      PermissionsData::PageAccess page_access) const;
 };
 
 }  // namespace extensions

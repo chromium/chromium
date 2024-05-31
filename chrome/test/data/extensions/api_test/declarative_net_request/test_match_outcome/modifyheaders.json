@@ -1,0 +1,62 @@
+[{
+  "id": 1,
+  "priority": 4,
+  "condition": {
+    "requestDomains": [
+      "modify-headers.example",
+      "modify-headers.example2",
+      "modify-headers.example3"
+    ],
+    "resourceTypes": ["sub_frame", "main_frame"]
+  },
+  "action": {
+    "type": "modifyHeaders",
+    "responseHeaders": [{
+      "header": "Content-Security-Policy",
+      "operation": "append",
+      "value": "script-src 'self' '*' 'unsafe-inline'"
+    }]
+  }
+},
+{
+  "id": 2,
+  "priority": 2,
+  "condition": {
+    "requestDomains": [
+      "modify-headers.example",
+      "modify-headers.example2",
+      "modify-headers.example3"
+    ],
+    "resourceTypes": ["main_frame"]
+  },
+  "action": {
+    "type": "modifyHeaders",
+    "responseHeaders": [{
+      "header": "Content-Security-Policy",
+      "operation": "append",
+      "value": "worker-src 'none'"
+    }]
+  }
+},
+{
+  "id": 3,
+  "priority": 3,
+  "condition": {
+    "requestDomains": ["modify-headers.example2"],
+    "resourceTypes": ["sub_frame", "main_frame"]
+  },
+  "action": {
+    "type": "allow"
+  }
+},
+{
+  "id": 4,
+  "priority": 5,
+  "condition": {
+    "requestDomains": ["modify-headers.example3"],
+    "resourceTypes": ["sub_frame", "main_frame"]
+  },
+  "action": {
+    "type": "allow"
+  }
+}]
