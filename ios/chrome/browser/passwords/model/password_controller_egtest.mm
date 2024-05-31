@@ -202,6 +202,8 @@ void LoginOnUff() {
                    (DISABLED_testUpdateTypedCredentialInUff)]) {
     config.features_enabled.push_back(
         password_manager::features::kIosDetectUsernameInUff);
+    config.features_enabled.push_back(
+        password_manager::features::kIOSPasswordBottomSheet);
   }
   return config;
 }
