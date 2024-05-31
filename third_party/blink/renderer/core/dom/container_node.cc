@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/events/mutation_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -67,6 +68,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_tag_collection.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
@@ -1757,6 +1759,18 @@ void ContainerNode::CheckSoftNavigationHeuristicsTracking(
 String ContainerNode::getInnerHTML(const GetInnerHTMLOptions* options) const {
   CHECK(RuntimeEnabledFeatures::ElementGetInnerHTMLEnabled());
   DCHECK(IsShadowRoot() || IsElementNode());
+
+  auto* context = GetExecutionContext();
+  context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kDeprecation,
+      mojom::blink::ConsoleMessageLevel::kWarning,
+      "The getInnerHTML() function is non-standard, deprecated, and will "
+      "be removed from this browser very soon. At that point, this console "
+      "warning will become a JavaScript exception. Please use getHTML() "
+      "instead. See https://chromestatus.com/feature/5081733588582400 for "
+      "more information."));
+  Deprecation::CountDeprecation(context, WebFeature::kElementGetInnerHTML);
+
   // This is the deprecated behavior: if includeShadowRoots is true, then
   // include *all* open shadow roots (even if they aren't marked serializable).
   // If includeShadowRoots is true and closedRoots is provided, also serialize
