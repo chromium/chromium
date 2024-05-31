@@ -204,17 +204,17 @@ void LetterboxPlane(VideoFrame* frame,
 // Helper for `LetterboxVideoFrame()`, assumes that if |frame| is GMB-backed,
 // the GpuMemoryBuffer is already mapped (via a call to `Map()`).
 void LetterboxPlane(VideoFrame* frame,
+                    VideoFrame::ScopedMapping* scoped_mapping,
                     int plane,
                     const gfx::Rect& view_area_in_pixels,
                     uint8_t fill_byte) {
   uint8_t* ptr = nullptr;
   if (frame->IsMappable()) {
     ptr = frame->writable_data(plane);
-  } else if (frame->HasGpuMemoryBuffer()) {
-    ptr = static_cast<uint8_t*>(frame->GetGpuMemoryBuffer()->memory(plane));
+  } else if (scoped_mapping) {
+    ptr = scoped_mapping->Memory(plane);
   }
-
-  DCHECK(ptr);
+  CHECK(ptr);
 
   LetterboxPlane(frame, plane, ptr, view_area_in_pixels, fill_byte);
 }
@@ -244,15 +244,17 @@ void FillYUVA(VideoFrame* frame, uint8_t y, uint8_t u, uint8_t v, uint8_t a) {
 }
 
 void LetterboxVideoFrame(VideoFrame* frame, const gfx::Rect& view_area) {
-  bool gmb_mapped = false;
-  if (!frame->IsMappable() && frame->HasGpuMemoryBuffer()) {
-    gmb_mapped = frame->GetGpuMemoryBuffer()->Map();
-    DCHECK(gmb_mapped);
+  std::unique_ptr<VideoFrame::ScopedMapping> scoped_mapping;
+  if (!frame->IsMappable() &&
+      frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+    scoped_mapping = frame->MapGMBOrSharedImage();
+    CHECK(scoped_mapping);
   }
 
   switch (frame->format()) {
     case PIXEL_FORMAT_ARGB:
-      LetterboxPlane(frame, VideoFrame::Plane::kARGB, view_area, 0x00);
+      LetterboxPlane(frame, scoped_mapping.get(), VideoFrame::Plane::kARGB,
+                     view_area, 0x00);
       break;
     case PIXEL_FORMAT_YV12:
     case PIXEL_FORMAT_I420: {
@@ -261,11 +263,14 @@ void LetterboxVideoFrame(VideoFrame* frame, const gfx::Rect& view_area) {
       DCHECK(!(view_area.width() & 1));
       DCHECK(!(view_area.height() & 1));
 
-      LetterboxPlane(frame, VideoFrame::Plane::kY, view_area, 0x00);
+      LetterboxPlane(frame, scoped_mapping.get(), VideoFrame::Plane::kY,
+                     view_area, 0x00);
       gfx::Rect half_view_area(view_area.x() / 2, view_area.y() / 2,
                                view_area.width() / 2, view_area.height() / 2);
-      LetterboxPlane(frame, VideoFrame::Plane::kU, half_view_area, 0x80);
-      LetterboxPlane(frame, VideoFrame::Plane::kV, half_view_area, 0x80);
+      LetterboxPlane(frame, scoped_mapping.get(), VideoFrame::Plane::kU,
+                     half_view_area, 0x80);
+      LetterboxPlane(frame, scoped_mapping.get(), VideoFrame::Plane::kV,
+                     half_view_area, 0x80);
       break;
     }
     case PIXEL_FORMAT_NV12: {
@@ -274,11 +279,13 @@ void LetterboxVideoFrame(VideoFrame* frame, const gfx::Rect& view_area) {
       DCHECK(!(view_area.width() & 1));
       DCHECK(!(view_area.height() & 1));
 
-      LetterboxPlane(frame, VideoFrame::Plane::kY, view_area, 0x00);
+      LetterboxPlane(frame, scoped_mapping.get(), VideoFrame::Plane::kY,
+                     view_area, 0x00);
       gfx::Rect half_view_area(view_area.x() / 2, view_area.y() / 2,
                                view_area.width() / 2, view_area.height() / 2);
 
-      LetterboxPlane(frame, VideoFrame::Plane::kUV, half_view_area, 0x80);
+      LetterboxPlane(frame, scoped_mapping.get(), VideoFrame::Plane::kUV,
+                     half_view_area, 0x80);
       break;
     }
     case PIXEL_FORMAT_NV12A: {
@@ -287,19 +294,18 @@ void LetterboxVideoFrame(VideoFrame* frame, const gfx::Rect& view_area) {
       DCHECK(!(view_area.width() & 1));
       DCHECK(!(view_area.height() & 1));
 
-      LetterboxPlane(frame, VideoFrame::Plane::kY, view_area, 0x00);
+      LetterboxPlane(frame, scoped_mapping.get(), VideoFrame::Plane::kY,
+                     view_area, 0x00);
       gfx::Rect half_view_area(view_area.x() / 2, view_area.y() / 2,
                                view_area.width() / 2, view_area.height() / 2);
-      LetterboxPlane(frame, VideoFrame::Plane::kUV, half_view_area, 0x80);
-      LetterboxPlane(frame, VideoFrame::Plane::kATriPlanar, view_area, 0x00);
+      LetterboxPlane(frame, scoped_mapping.get(), VideoFrame::Plane::kUV,
+                     half_view_area, 0x80);
+      LetterboxPlane(frame, scoped_mapping.get(),
+                     VideoFrame::Plane::kATriPlanar, view_area, 0x00);
       break;
     }
     default:
       NOTREACHED_IN_MIGRATION();
-  }
-
-  if (gmb_mapped) {
-    frame->GetGpuMemoryBuffer()->Unmap();
   }
 }
 
