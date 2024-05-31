@@ -1739,14 +1739,13 @@ TEST_F(TabletModeWindowManagerTest, ClamshellTabletTransitionTest) {
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_TRUE(overview_controller->InOverviewSession());
   DestroyTabletModeWindowManager();
-  const bool is_snap_group_disabled = !IsSnapGroupEnabledInClamshellMode();
-  EXPECT_EQ(is_snap_group_disabled, split_view_controller()->InSplitViewMode());
-  EXPECT_EQ(is_snap_group_disabled, overview_controller->InOverviewSession());
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  EXPECT_TRUE(overview_controller->InOverviewSession());
 
   // 11. Clamshell -> Tablet. The same as 10.
   CreateTabletModeWindowManager();
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
-  EXPECT_EQ(is_snap_group_disabled, overview_controller->InOverviewSession());
+  EXPECT_TRUE(overview_controller->InOverviewSession());
 }
 
 // Test the divider position value during tablet <-> clamshell transition.
