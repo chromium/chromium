@@ -4161,10 +4161,17 @@ gfx::Size SkiaRenderer::GetRenderPassBackingPixelSize(
 }
 
 gfx::Rect SkiaRenderer::GetRenderPassBackingDrawnRect(
-    const AggregatedRenderPassId& render_pass_id) {
-  auto it = render_pass_backings_.find(render_pass_id);
-  CHECK(it != render_pass_backings_.end());
-  return it->second.drawn_rect;
+    const AggregatedRenderPassId& render_pass_id) const {
+  if (auto it = render_pass_backings_.find(render_pass_id);
+      it != render_pass_backings_.end()) {
+    return it->second.drawn_rect;
+  } else {
+    // DirectRenderer can call this before it has allocated a render pass
+    // backing if this is the first contiguous frame we're seeing
+    // |render_pass_id|. This can happen because it calculates the render pass
+    // scissor rect before it actually allocates the backing.
+    return gfx::Rect();
+  }
 }
 
 void SkiaRenderer::SetRenderPassBackingDrawnRect(

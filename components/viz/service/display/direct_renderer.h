@@ -254,7 +254,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   bool CanSkipRenderPass(const AggregatedRenderPass* render_pass) const;
   void UseRenderPass(const AggregatedRenderPass* render_pass);
   gfx::Rect ComputeScissorRectForRenderPass(
-      const AggregatedRenderPass* render_pass);
+      const AggregatedRenderPass* render_pass) const;
 
   void DoDrawPolygon(const DrawPolygon& poly,
                      const gfx::Rect& render_pass_scissor,
@@ -272,7 +272,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
       const gfx::Rect& drawn_rect) {}
 
   virtual gfx::Rect GetRenderPassBackingDrawnRect(
-      const AggregatedRenderPassId& render_pass_id);
+      const AggregatedRenderPassId& render_pass_id) const;
 
   // Private interface implemented by subclasses for use by DirectRenderer.
   virtual bool CanPartialSwap() = 0;

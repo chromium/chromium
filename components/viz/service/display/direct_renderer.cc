@@ -52,6 +52,17 @@
 
 namespace viz {
 
+namespace {
+
+// Allow skipping Begin/EndDraw on the shared image backing for non-root render
+// passes if the computed update rect would mean nothing would be drawn.
+// This is a kill switch in case something depends on an empty update.
+BASE_FEATURE(kAllowSkipEmptyNonrootRenderPassDraws,
+             "AllowSkipEmptyNonrootRenderPassDraws",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
+
 DirectRenderer::DrawingFrame::DrawingFrame() = default;
 DirectRenderer::DrawingFrame::~DrawingFrame() = default;
 
@@ -573,6 +584,9 @@ void DirectRenderer::FlushPolygons(
 
 void DirectRenderer::DrawRenderPassAndExecuteCopyRequests(
     AggregatedRenderPass* render_pass) {
+  base::AutoReset<const AggregatedRenderPass*> current_render_pass(
+      &current_frame()->current_render_pass, render_pass);
+
   if (render_pass_bypass_quads_.find(render_pass->id) !=
       render_pass_bypass_quads_.end()) {
     return;
@@ -638,19 +652,10 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
     return;
   }
 
-  UseRenderPass(render_pass);
-
-  // TODO(crbug.com/40454563): This change applies only when Vulkan is enabled
-  // and it will be removed once SkiaRenderer has complete support for Vulkan.
-  if (current_frame()->current_render_pass !=
-          current_frame()->root_render_pass &&
-      !IsRenderPassResourceAllocated(render_pass->id))
-    return;
-
   const gfx::Rect surface_rect_in_draw_space = OutputSurfaceRectInDrawSpace();
   gfx::Rect render_pass_scissor_in_draw_space = surface_rect_in_draw_space;
 
-  bool is_root_render_pass =
+  const bool is_root_render_pass =
       current_frame()->current_render_pass == current_frame()->root_render_pass;
 
   if (use_partial_swap_) {
@@ -660,6 +665,21 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
 
   if (is_root_render_pass && output_surface_clip_rect_) {
     render_pass_scissor_in_draw_space.Intersect(*output_surface_clip_rect_);
+  }
+
+  if (!is_root_render_pass && render_pass_scissor_in_draw_space.IsEmpty() &&
+      base::FeatureList::IsEnabled(kAllowSkipEmptyNonrootRenderPassDraws)) {
+    // If the scissor rect is empty, we will end up skipping all the draw quads,
+    // so there is no work to do.
+    return;
+  }
+
+  UseRenderPass(render_pass);
+
+  // TODO(crbug.com/40454563): This change applies only when Vulkan is enabled
+  // and it will be removed once SkiaRenderer has complete support for Vulkan.
+  if (!is_root_render_pass && !IsRenderPassResourceAllocated(render_pass->id)) {
+    return;
   }
 
   const bool render_pass_is_clipped =
@@ -719,6 +739,14 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
   FlushPolygons(&poly_list, render_pass_scissor_in_draw_space,
                 render_pass_is_clipped);
   FinishDrawingRenderPass();
+
+  if (use_render_pass_drawn_rect_ && !is_root_render_pass) {
+    const gfx::Rect drawn_rect = GetRenderPassBackingDrawnRect(render_pass->id);
+    if (drawn_rect.IsEmpty()) {
+      CHECK_EQ(render_pass->output_rect, render_pass_scissor_in_draw_space);
+      SetRenderPassBackingDrawnRect(render_pass->id, render_pass->output_rect);
+    }
+  }
 }
 
 bool DirectRenderer::CanSkipRenderPass(
@@ -807,7 +835,6 @@ DirectRenderer::CalculateRenderPassRequirements(
 
 void DirectRenderer::UseRenderPass(const AggregatedRenderPass* render_pass) {
   const bool is_root = render_pass == current_frame()->root_render_pass;
-  current_frame()->current_render_pass = render_pass;
   if (is_root && !output_surface_->capabilities().renderer_allocates_images) {
     InitializeViewport(current_frame(), current_frame()->device_viewport_size);
     return;
@@ -831,7 +858,7 @@ void DirectRenderer::UseRenderPass(const AggregatedRenderPass* render_pass) {
 }
 
 gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
-    const AggregatedRenderPass* render_pass) {
+    const AggregatedRenderPass* render_pass) const {
   const AggregatedRenderPass* root_render_pass =
       current_frame()->root_render_pass;
   gfx::Rect root_damage_rect = current_frame()->root_damage_rect;
@@ -945,7 +972,6 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
       // the drawn area by only fully drawing the visible portion of this render
       // pass and not the entire output rect. This information is available in
       // surface aggregator as root parent clip for render passes.
-      SetRenderPassBackingDrawnRect(render_pass->id, render_pass->output_rect);
       return render_pass->output_rect;
     }
   }
@@ -1169,7 +1195,7 @@ gpu::Mailbox DirectRenderer::GetPrimaryPlaneOverlayTestingMailbox() {
 }
 
 gfx::Rect DirectRenderer::GetRenderPassBackingDrawnRect(
-    const AggregatedRenderPassId& render_pass_id) {
+    const AggregatedRenderPassId& render_pass_id) const {
   return gfx::Rect();
 }
 
