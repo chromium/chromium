@@ -6036,15 +6036,17 @@ void NavigationRequest::CommitNavigation() {
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         reporter_remote;
     coep_reporter()->Clone(reporter_remote.InitWithNewPipeAndPassReceiver());
-    service_worker_container_info = service_worker_handle_->TakeContainerInfo();
 
     // Notify the service worker navigation handle that navigation commit is
     // about to go.
     if (service_worker_handle_->service_worker_client()) {
-      service_worker_handle_->service_worker_client()->CommitResponse(
-          GetRenderFrameHost()->GetGlobalId(),
-          policy_container_builder_->FinalPolicies(),
-          std::move(reporter_remote), commit_params_->document_ukm_source_id);
+      service_worker_container_info =
+          service_worker_handle_->scoped_service_worker_client()
+              ->CommitResponseAndRelease(
+                  GetRenderFrameHost()->GetGlobalId(),
+                  policy_container_builder_->FinalPolicies(),
+                  std::move(reporter_remote),
+                  commit_params_->document_ukm_source_id);
 
       if (service_worker_handle_->service_worker_client()->controller()) {
         controller = service_worker_handle_->service_worker_client()

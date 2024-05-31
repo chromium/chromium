@@ -55,6 +55,64 @@ class ServiceWorkerHidDelegateObserver;
 class ServiceWorkerUsbDelegateObserver;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// A smart pointer of `ServiceWorkerClient`.
+//
+// - If `CommitResponseAndRelease()` is not called, this works as a
+//   semi-strong reference:
+//   - Keeps the underlying `ServiceWorkerClient` alive unless its
+//     `ServiceWorkerContextCore` is destroyed.
+//   - Destroys the `ServiceWorkerClient` asynchronously from the
+//     `ScopedServiceWorkerClient` destructor.
+// - After `CommitResponseAndRelease()` is called, this works as a weak
+//   reference:
+//   - No longer keeps alive nor destroys the `ServiceWorkerClient`. Instead,
+//     the returned object from `CommitResponseAndRelease()` keeps it alive.
+//   - `service_worker_client_` is NOT cleared and still can be used.
+class CONTENT_EXPORT ScopedServiceWorkerClient final {
+ public:
+  explicit ScopedServiceWorkerClient(
+      base::WeakPtr<ServiceWorkerClient> service_worker_client);
+  ~ScopedServiceWorkerClient();
+
+  ScopedServiceWorkerClient(const ScopedServiceWorkerClient& other) = delete;
+  ScopedServiceWorkerClient& operator=(const ScopedServiceWorkerClient& other) =
+      delete;
+
+  ScopedServiceWorkerClient(ScopedServiceWorkerClient&& other);
+  ScopedServiceWorkerClient& operator=(ScopedServiceWorkerClient&& other) =
+      delete;
+
+  // Calls `ServiceWorkerClient::CommitResponse()` and performs related
+  // initialization/transitions, and Releases the keep-aliveness from `this`.
+  // The caller should keep alive `ServiceWorkerClient` by keeping the returned
+  // `ServiceWorkerContainerInfoForClientPtr`'s `host_remote`.
+  [[nodiscard]] blink::mojom::ServiceWorkerContainerInfoForClientPtr
+  CommitResponseAndRelease(
+      std::optional<GlobalRenderFrameHostId> rfh_id,
+      const PolicyContainerPolicies& policy_container_policies,
+      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+          coep_reporter,
+      ukm::SourceId ukm_source_id);
+
+  const base::WeakPtr<ServiceWorkerClient>& AsWeakPtr() const {
+    return service_worker_client_;
+  }
+  ServiceWorkerClient* get() const { return service_worker_client_.get(); }
+  ServiceWorkerClient* operator->() const {
+    return service_worker_client_.get();
+  }
+
+ private:
+  base::WeakPtr<ServiceWorkerClient> service_worker_client_;
+
+  // The `ServiceWorkerClient` is owned and kept alive by its
+  // `ServiceWorkerContextCore` until its mojo pipe is closed (i.e. until
+  // `ServiceWorkerContextCore::OnContainerHostReceiverDisconnected()` is
+  // called). So `container_info_` here keeps alive `ServiceWorkerClient` by
+  // keeping the mojo pipe.
+  blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info_;
+};
+
 // This class manages data associated with service workers.
 // The class is single threaded and should only be used on the UI thread.
 // In chromium, there is one instance per storagepartition. This class
@@ -240,17 +298,15 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // navigation. |are_ancestors_secure| should be true for main frames.
   // Otherwise it is true iff all ancestor frames of this frame have a secure
   // origin. |frame_tree_node_id| is FrameTreeNode id.
-  std::tuple<base::WeakPtr<ServiceWorkerClient>,
-             blink::mojom::ServiceWorkerContainerInfoForClientPtr>
-  CreateServiceWorkerClientForWindow(bool are_ancestors_secure,
-                                     int frame_tree_node_id);
+  ScopedServiceWorkerClient CreateServiceWorkerClientForWindow(
+      bool are_ancestors_secure,
+      int frame_tree_node_id);
 
   // Used for starting a web worker (dedicated worker or shared worker). Returns
   // a service worker client for the worker.
-  std::tuple<base::WeakPtr<ServiceWorkerClient>,
-             blink::mojom::ServiceWorkerContainerInfoForClientPtr>
-  CreateServiceWorkerClientForWorker(int process_id,
-                                     ServiceWorkerClientInfo client_info);
+  ScopedServiceWorkerClient CreateServiceWorkerClientForWorker(
+      int process_id,
+      ServiceWorkerClientInfo client_info);
 
   // Binds the ServiceWorkerContainerHost mojo receiver for `container_host`.
   // After this point, `container_host` and its `ServiceWorkerClient` will be

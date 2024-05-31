@@ -192,11 +192,10 @@ class ServiceWorkerVersionTest
 
   // Make the client in a different process from the service worker when
   // |in_different_process| is true.
-  ServiceWorkerRemoteContainerEndpoint ActivateWithControllee(
+  ScopedServiceWorkerClient ActivateWithControllee(
       bool in_different_process = false) {
     version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
     registration_->SetActiveVersion(version_);
-    ServiceWorkerRemoteContainerEndpoint remote_endpoint;
     int controllee_process_id = ChildProcessHost::kInvalidUniqueID;
 
     if (in_different_process) {
@@ -209,20 +208,26 @@ class ServiceWorkerVersionTest
       controllee_process_id = version_->embedded_worker()->process_id();
     }
 
-    base::WeakPtr<ServiceWorkerClient> service_worker_client =
-        CreateServiceWorkerClientForWindow(
-            GlobalRenderFrameHostId(controllee_process_id,
-                                    /*mock frame_routing_id=*/1),
-            /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
-            &remote_endpoint);
+    ScopedServiceWorkerClient service_worker_client =
+        CreateServiceWorkerClient(helper_->context());
     service_worker_client->UpdateUrls(registration_->scope(),
                                       registration_->key().origin(),
                                       registration_->key());
+
+    // Just to set `controllee_process_id`.
+    mojo::PendingReceiver<network::mojom::CrossOriginEmbedderPolicyReporter>
+        reporter;
+    service_worker_client->CommitResponse(
+        GlobalRenderFrameHostId(controllee_process_id,
+                                /*mock frame_routing_id=*/1),
+        PolicyContainerPolicies(), reporter.InitWithNewPipeAndPassRemote(),
+        ukm::kInvalidSourceId);
+
     service_worker_client->SetControllerRegistration(
         registration_, false /* notify_controllerchange */);
     EXPECT_TRUE(version_->HasControllee());
     EXPECT_TRUE(service_worker_client->controller());
-    return remote_endpoint;
+    return service_worker_client;
   }
 
   bool UseFirstPartyStorageKey() {
@@ -532,13 +537,8 @@ TEST_P(ServiceWorkerVersionTest, Doom) {
   // Add a controllee.
   version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
   registration_->SetActiveVersion(version_);
-  ServiceWorkerRemoteContainerEndpoint remote_endpoint;
-  base::WeakPtr<ServiceWorkerClient> service_worker_client =
-      CreateServiceWorkerClientForWindow(
-          GlobalRenderFrameHostId(/*mock process_id=*/33,
-                                  /*mock frame_routing_id=*/1),
-          /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
-          &remote_endpoint);
+  ScopedServiceWorkerClient service_worker_client =
+      CreateServiceWorkerClient(helper_->context());
   service_worker_client->UpdateUrls(registration_->scope(),
                                     registration_->key().origin(),
                                     registration_->key());
@@ -1389,17 +1389,19 @@ TEST_P(ServiceWorkerVersionTest,
       0,
       helper_->mock_render_process_host()->foreground_service_worker_count());
 
-  // Add a controllee in a different process from the service worker.
-  auto remote_endpoint = ActivateWithControllee(/*in_different_process=*/true);
+  {
+    // Add a controllee in a different process from the service worker.
+    auto service_worker_client =
+        ActivateWithControllee(/*in_different_process=*/true);
 
-  // RenderProcessHost should be notified of foreground worker.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(
-      1,
-      helper_->mock_render_process_host()->foreground_service_worker_count());
+    // RenderProcessHost should be notified of foreground worker.
+    base::RunLoop().RunUntilIdle();
+    EXPECT_EQ(
+        1,
+        helper_->mock_render_process_host()->foreground_service_worker_count());
 
-  // Remove the controllee.
-  remote_endpoint.host_remote()->reset();
+    // Remove the controllee by scoping out `service_worker_client`.
+  }
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(version_->HasControllee());
 
@@ -1420,7 +1422,7 @@ TEST_P(ServiceWorkerVersionTest,
       helper_->mock_render_process_host()->foreground_service_worker_count());
 
   // Add a controllee in the same process as the service worker.
-  auto remote_endpoint = ActivateWithControllee();
+  auto service_worker_client = ActivateWithControllee();
 
   // RenderProcessHost should be notified of foreground worker.
   base::RunLoop().RunUntilIdle();
@@ -1444,13 +1446,8 @@ TEST_P(ServiceWorkerVersionTest,
   // Add a controllee, but don't begin the navigation commit yet.  This will
   // cause the client to have an invalid process id like we see in real
   // navigations.
-  ServiceWorkerRemoteContainerEndpoint remote_endpoint;
-  std::unique_ptr<ServiceWorkerClientAndInfo> client_and_info =
-      CreateServiceWorkerClientAndInfoForWindow(helper_->context()->AsWeakPtr(),
-                                                /*are_ancestors_secure=*/true);
-  base::WeakPtr<ServiceWorkerClient> service_worker_client =
-      std::move(client_and_info->service_worker_client);
-  remote_endpoint.BindForWindow(std::move(client_and_info->info));
+  ScopedServiceWorkerClient service_worker_client =
+      CreateServiceWorkerClient(helper_->context());
   service_worker_client->UpdateUrls(registration_->scope(),
                                     registration_->key().origin(),
                                     registration_->key());
@@ -1489,7 +1486,8 @@ TEST_P(ServiceWorkerVersionTest,
 TEST_P(ServiceWorkerVersionTest,
        ForegroundServiceWorkerCountUpdatedByWorkerStatus) {
   // Add a controllee in a different process from the service worker.
-  auto remote_endpoint = ActivateWithControllee(/*in_different_process=*/true);
+  auto service_worker_client =
+      ActivateWithControllee(/*in_different_process=*/true);
 
   // RenderProcessHost should not be notified of foreground worker yet since
   // there is no worker running.
@@ -1525,7 +1523,8 @@ TEST_P(ServiceWorkerVersionTest,
       helper_->mock_render_process_host()->foreground_service_worker_count());
 
   // Add a controllee in a different process from the service worker.
-  auto remote_endpoint = ActivateWithControllee(/*in_different_process=*/true);
+  auto service_worker_client =
+      ActivateWithControllee(/*in_different_process=*/true);
 
   // RenderProcessHost should be notified of foreground worker.
   base::RunLoop().RunUntilIdle();
@@ -1608,7 +1607,8 @@ TEST_P(ServiceWorkerVersionNoFetchHandlerTest,
       helper_->mock_render_process_host()->foreground_service_worker_count());
 
   // Add a controllee in a different process from the service worker.
-  auto remote_endpoint = ActivateWithControllee(/*in_different_process=*/true);
+  auto service_worker_client =
+      ActivateWithControllee(/*in_different_process=*/true);
 
   // RenderProcessHost should not be notified if the service worker does not
   // have a FetchEvent handler.

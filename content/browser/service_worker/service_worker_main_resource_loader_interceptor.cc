@@ -146,12 +146,9 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
     return;
   }
 
-  // If this is the first request before redirects, a container info and
-  // container host has not yet been created.
-  if (!handle_->has_container_info()) {
-    // Create the ServiceWorkerContainerHost. Its lifetime is bound to
-    // `container_info`.
-    DCHECK(!handle_->service_worker_client());
+  // If this is the first request before redirects, the
+  // ScopedServiceWorkerClient has not yet been created.
+  if (!handle_->scoped_service_worker_client()) {
     if (blink::IsRequestDestinationFrame(request_destination_)) {
       handle_->set_service_worker_client(
           context_core->CreateServiceWorkerClientForWindow(

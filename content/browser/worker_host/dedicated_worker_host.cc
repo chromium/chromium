@@ -469,14 +469,17 @@ void DedicatedWorkerHost::DidStartScriptLoad(
 
   SubresourceLoaderParams::CheckWithMainResourceHandle(
       service_worker_handle_.get(), result->service_worker_client.get());
+  blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info;
   blink::mojom::ControllerServiceWorkerInfoPtr controller;
   if (service_worker_handle_->service_worker_client()) {
     // TODO(crbug.com/41478971): Plumb the COEP reporter.
     // TODO(crbug.com/40153087): Propagate dedicated worker ukm::SourceId
     // here.
-    service_worker_handle_->service_worker_client()->CommitResponse(
-        /*rfh_id=*/std::nullopt, std::move(result->policy_container_policies),
-        /*coep_reporter=*/{}, ukm::kInvalidSourceId);
+    container_info = service_worker_handle_->scoped_service_worker_client()
+                         ->CommitResponseAndRelease(
+                             /*rfh_id=*/std::nullopt,
+                             std::move(result->policy_container_policies),
+                             /*coep_reporter=*/{}, ukm::kInvalidSourceId);
 
     // Prepare the controller service worker info to pass to the renderer.
     // `controller()` can be nullptr when the client isn't controlled in the
@@ -489,8 +492,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   }
 
   client_->OnScriptLoadStarted(
-      service_worker_handle_->TakeContainerInfo(),
-      std::move(result->main_script_load_params),
+      std::move(container_info), std::move(result->main_script_load_params),
       std::move(result->subresource_loader_factories),
       subresource_loader_updater_.BindNewPipeAndPassReceiver(),
       std::move(controller),

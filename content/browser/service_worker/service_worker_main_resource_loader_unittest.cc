@@ -520,17 +520,10 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     // Create a ServiceWorkerClient and simulate what
     // ServiceWorkerControlleeRequestHandler does to assign it a controller.
     if (!service_worker_client_) {
-      service_worker_client_ = CreateServiceWorkerClientForWindow(
-          GlobalRenderFrameHostId(helper_->mock_render_process_id(),
-                                  /*mock frame_routing_id=*/1),
-          /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
-          &container_endpoints_);
-      service_worker_client_->UpdateUrls(
-          request->url, url::Origin::Create(request->url),
-          blink::StorageKey::CreateFirstParty(
-              url::Origin::Create(request->url)));
-      service_worker_client_->AddMatchingRegistration(registration_.get());
-      service_worker_client_->SetControllerRegistration(
+      service_worker_client_ = std::make_unique<ScopedServiceWorkerClient>(
+          CreateServiceWorkerClient(helper_->context(), request->url));
+      service_worker_client()->AddMatchingRegistration(registration_.get());
+      service_worker_client()->SetControllerRegistration(
           registration_, /*notify_controllerchange=*/false);
     }
 
@@ -538,7 +531,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     loader_ = std::make_unique<ServiceWorkerMainResourceLoader>(
         base::BindOnce(&ServiceWorkerMainResourceLoaderTest::Fallback,
                        base::Unretained(this)),
-        service_worker_client_,
+        service_worker_client()->AsWeakPtr(),
         /*frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
         /*find_registration_start_time=*/base::TimeTicks::Now());
 
@@ -613,6 +606,10 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
   }
 
  protected:
+  ServiceWorkerClient* service_worker_client() const {
+    return service_worker_client_->get();
+  }
+
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
   scoped_refptr<ServiceWorkerRegistration> registration_;
@@ -622,8 +619,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
   network::TestURLLoaderClient client_;
   std::unique_ptr<ServiceWorkerMainResourceLoader> loader_;
   mojo::Remote<network::mojom::URLLoader> loader_remote_;
-  base::WeakPtr<ServiceWorkerClient> service_worker_client_;
-  ServiceWorkerRemoteContainerEndpoint container_endpoints_;
+  std::unique_ptr<ScopedServiceWorkerClient> service_worker_client_;
 
   bool did_call_fallback_callback_ = false;
   base::OnceClosure quit_closure_for_fallback_callback_;
@@ -663,15 +659,9 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, NoActiveWorker) {
   base::HistogramTester histogram_tester;
 
   // Make a container host without a controller.
-  service_worker_client_ = CreateServiceWorkerClientForWindow(
-      GlobalRenderFrameHostId(helper_->mock_render_process_id(),
-                              /*mock frame_routing_id=*/1),
-      /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
-      &container_endpoints_);
-  service_worker_client_->UpdateUrls(
-      GURL("https://example.com/"),
-      url::Origin::Create(GURL("https://example.com/")),
-      blink::StorageKey::CreateFromStringForTesting("https://example.com/"));
+  service_worker_client_ =
+      std::make_unique<ScopedServiceWorkerClient>(CreateServiceWorkerClient(
+          helper_->context(), GURL("https://example.com/")));
 
   // Perform the request.
   StartRequest(CreateRequest());
@@ -984,7 +974,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, FallbackResponse) {
 
   // The request should not be handled by the loader, but it shouldn't be a
   // failure.
-  EXPECT_TRUE(service_worker_client_->controller());
+  EXPECT_TRUE(service_worker_client()->controller());
   histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk, 1);
   if (LoaderRecordsTimingMetrics()) {
@@ -1037,7 +1027,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, FailFetchDispatch) {
 
   // The fallback callback should be called.
   RunUntilFallbackCallback();
-  EXPECT_FALSE(service_worker_client_->controller());
+  EXPECT_FALSE(service_worker_client()->controller());
 
   histogram_tester.ExpectUniqueSample(
       kHistogramMainResourceFetchEvent,
@@ -1140,7 +1130,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, ConnectionErrorDuringFetchEvent) {
 TEST_F(ServiceWorkerMainResourceLoaderTest, CancelNavigationDuringFetchEvent) {
   // This test simulates failure by resetting ServiceWorkerClient.  But without
   // disabling HighPriorityFetchResponseCallback,
-  // `container_endpoints_.host_remote()->reset()` comes later than
+  // `Release()` comes later than
   // request processing, and doesn't cancel navigation during the fetch
   // event.  This test is still valid after introducing
   // HighPriorityFetchResponseCallback.
@@ -1151,9 +1141,8 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, CancelNavigationDuringFetchEvent) {
 
   // Delete the container host during the request. The load should abort without
   // crashing.
-  container_endpoints_.host_remote()->reset();
+  service_worker_client_.reset();
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(service_worker_client_);
 
   client_.RunUntilComplete();
   EXPECT_EQ(net::ERR_ABORTED, client_.completion_status().error_code);

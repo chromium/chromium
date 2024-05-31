@@ -254,18 +254,13 @@ TEST_F(ServiceWorkerObjectHostTest, OnVersionStateChanged) {
   SetUpRegistration(scope, script_url, key);
   registration_->SetInstallingVersion(version_);
 
-  ServiceWorkerRemoteContainerEndpoint remote_endpoint;
-  base::WeakPtr<ServiceWorkerClient> service_worker_client =
-      CreateServiceWorkerClientForWindow(
-          GlobalRenderFrameHostId(helper_->mock_render_process_id(),
-                                  /*mock frame_routing_id=*/1),
-          /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
-          &remote_endpoint);
-  service_worker_client->UpdateUrls(
-      scope, url::Origin::Create(scope),
-      blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)));
+  CommittedServiceWorkerClient service_worker_client(
+      CreateServiceWorkerClient(helper_->context(), scope),
+      GlobalRenderFrameHostId(helper_->mock_render_process_id(),
+                              /*mock frame_routing_id=*/1));
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration_info =
-      GetRegistrationFromRemote(remote_endpoint.host_remote()->get(), scope);
+      GetRegistrationFromRemote(service_worker_client.host_remote().get(),
+                                scope);
   // |version_| is the installing version of |registration_| now.
   EXPECT_TRUE(registration_info->installing);
   EXPECT_EQ(version_->version_id(), registration_info->installing->version_id);
@@ -419,21 +414,18 @@ TEST_F(ServiceWorkerObjectHostTest, DispatchExtendableMessageEvent_FromClient) {
       WebContentsTester::CreateTestWebContents(helper_->browser_context(),
                                                nullptr));
   RenderFrameHost* frame_host = web_contents->GetPrimaryMainFrame();
-  ServiceWorkerRemoteContainerEndpoint remote_endpoint;
-  base::WeakPtr<ServiceWorkerClient> service_worker_client =
-      CreateServiceWorkerClientForWindow(
-          frame_host->GetGlobalId(), /*is_parent_frame_secure=*/true,
-          helper_->context()->AsWeakPtr(), &remote_endpoint);
-  service_worker_client->UpdateUrls(scope, url::Origin::Create(scope), key);
+  CommittedServiceWorkerClient service_worker_client(
+      CreateServiceWorkerClient(helper_->context(), scope),
+      frame_host->GetGlobalId());
 
   // Prepare a ServiceWorkerObjectHost for the worker.
   blink::mojom::ServiceWorkerObjectInfoPtr info =
-      service_worker_client->container_host()
+      service_worker_client.container_host()
           .version_object_manager()
           .GetOrCreateHost(version_)
           ->CreateCompleteObjectInfoToSend();
   ServiceWorkerObjectHost* object_host = GetServiceWorkerObjectHost(
-      &service_worker_client->container_host(), version_->version_id());
+      &service_worker_client.container_host(), version_->version_id());
 
   // Simulate postMessage() from the window client to the worker.
   blink::TransferableMessage message;

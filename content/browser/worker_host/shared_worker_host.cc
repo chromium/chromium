@@ -335,12 +335,15 @@ void SharedWorkerHost::Start(
 
   SubresourceLoaderParams::CheckWithMainResourceHandle(
       service_worker_handle_.get(), result.service_worker_client.get());
+  blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info;
   blink::mojom::ControllerServiceWorkerInfoPtr controller;
   if (service_worker_handle_->service_worker_client()) {
     // TODO(crbug.com/41478971): Plumb the COEP reporter.
-    service_worker_handle_->service_worker_client()->CommitResponse(
-        /*rfh_id=*/std::nullopt, std::move(result.policy_container_policies),
-        /*coep_reporter=*/{}, ukm_source_id());
+    container_info = service_worker_handle_->scoped_service_worker_client()
+                         ->CommitResponseAndRelease(
+                             /*rfh_id=*/std::nullopt,
+                             std::move(result.policy_container_policies),
+                             /*coep_reporter=*/{}, ukm_source_id());
 
     // Prepare the controller service worker info to pass to the renderer.
     if (service_worker_handle_->service_worker_client()->controller()) {
@@ -360,7 +363,7 @@ void SharedWorkerHost::Start(
       GetContentClient()->browser()->GetUserAgentMetadata(),
       devtools_handle_->pause_on_start(), devtools_handle_->dev_tools_token(),
       std::move(renderer_preferences), std::move(preference_watcher_receiver),
-      std::move(content_settings), service_worker_handle_->TakeContainerInfo(),
+      std::move(content_settings), std::move(container_info),
       std::move(result.main_script_load_params),
       std::move(result.subresource_loader_factories), std::move(controller),
       policy_container_host->CreatePolicyContainerForBlink(),

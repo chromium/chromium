@@ -27,18 +27,22 @@ ServiceWorkerMainResourceHandle::ServiceWorkerMainResourceHandle(
 ServiceWorkerMainResourceHandle::~ServiceWorkerMainResourceHandle() = default;
 
 void ServiceWorkerMainResourceHandle::set_service_worker_client(
-    std::tuple<base::WeakPtr<ServiceWorkerClient>,
-               blink::mojom::ServiceWorkerContainerInfoForClientPtr>
-        service_worker_client_and_container_info) {
+    ScopedServiceWorkerClient scoped_service_worker_client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(!service_worker_client_);
+  CHECK(!scoped_service_worker_client_);
 
-  std::tie(service_worker_client_, container_info_) =
-      std::move(service_worker_client_and_container_info);
+  scoped_service_worker_client_ = std::make_unique<ScopedServiceWorkerClient>(
+      std::move(scoped_service_worker_client));
 
-  CHECK(container_info_->host_remote.is_valid() &&
-        container_info_->client_receiver.is_valid());
-  CHECK(service_worker_client_);
+  CHECK(service_worker_client());
+}
+
+base::WeakPtr<ServiceWorkerClient>
+ServiceWorkerMainResourceHandle::service_worker_client() {
+  if (!scoped_service_worker_client_) {
+    return nullptr;
+  }
+  return scoped_service_worker_client_->AsWeakPtr();
 }
 
 }  // namespace content

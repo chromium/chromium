@@ -37,7 +37,6 @@ namespace content {
 
 class EmbeddedWorkerTestHelper;
 class ServiceWorkerContext;
-class ServiceWorkerContextCore;
 class ServiceWorkerHost;
 class ServiceWorkerRegistry;
 class ServiceWorkerVersion;
@@ -57,31 +56,53 @@ blink::ServiceWorkerStatusCode StartServiceWorker(
 
 void StopServiceWorker(ServiceWorkerVersion* version);
 
-// Container for keeping the Mojo connection to the service worker container on
-// the renderer alive.
-class ServiceWorkerRemoteContainerEndpoint {
+// A smart pointer of a committed `ServiceWorkerClient`, used for tests
+// involving `ServiceWorkerContainerHost`. The underlying `ServiceWorkerClient`
+// is kept alive until `this` is destroyed or `host_remote()` is closed.
+class CommittedServiceWorkerClient final {
  public:
-  ServiceWorkerRemoteContainerEndpoint();
-  ServiceWorkerRemoteContainerEndpoint(
-      ServiceWorkerRemoteContainerEndpoint&& other);
+  // For Window client: emulate the navigation commit for the service worker
+  // client and takes the keep-aliveness of `ServiceWorkerClient`.
+  CommittedServiceWorkerClient(
+      ScopedServiceWorkerClient service_worker_client,
+      const GlobalRenderFrameHostId& render_frame_host_id);
 
-  ServiceWorkerRemoteContainerEndpoint(
-      const ServiceWorkerRemoteContainerEndpoint&) = delete;
-  ServiceWorkerRemoteContainerEndpoint& operator=(
-      const ServiceWorkerRemoteContainerEndpoint&) = delete;
+  // For Worker client.
+  explicit CommittedServiceWorkerClient(
+      ScopedServiceWorkerClient service_worker_client);
 
-  ~ServiceWorkerRemoteContainerEndpoint();
+  CommittedServiceWorkerClient(CommittedServiceWorkerClient&& other);
+  CommittedServiceWorkerClient& operator=(
+      CommittedServiceWorkerClient&& other) = delete;
 
-  void BindForWindow(blink::mojom::ServiceWorkerContainerInfoForClientPtr info);
+  CommittedServiceWorkerClient(const CommittedServiceWorkerClient&) = delete;
+  CommittedServiceWorkerClient& operator=(const CommittedServiceWorkerClient&) =
+      delete;
 
-  mojo::AssociatedRemote<blink::mojom::ServiceWorkerContainerHost>*
-  host_remote() {
-    return &host_remote_;
+  ~CommittedServiceWorkerClient();
+
+  const base::WeakPtr<ServiceWorkerClient>& AsWeakPtr() const {
+    return service_worker_client_;
+  }
+  ServiceWorkerClient* get() const { return service_worker_client_.get(); }
+  ServiceWorkerClient* operator->() const {
+    return service_worker_client_.get();
   }
 
-  mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainer>*
-  client_receiver() {
-    return &client_receiver_;
+  ServiceWorkerContainerHost& container_host() const {
+    return service_worker_client_->container_host();
+  }
+
+  // NOTE: These pipes are usable only for Window clients, because for workers
+  // the mojo call is not emulated and thus the associated mojo pipes here don't
+  // have associated connections.
+  mojo::AssociatedRemote<blink::mojom::ServiceWorkerContainerHost>&
+  host_remote() {
+    return host_remote_;
+  }
+  mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainer>
+  TakeClientReceiver() {
+    return std::move(client_receiver_);
   }
 
  private:
@@ -100,37 +121,28 @@ class ServiceWorkerRemoteContainerEndpoint {
   // content::ServiceWorkerContainerHost.
   mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainer>
       client_receiver_;
+
+  base::WeakPtr<ServiceWorkerClient> service_worker_client_;
 };
 
-struct ServiceWorkerClientAndInfo {
-  ServiceWorkerClientAndInfo(
-      base::WeakPtr<ServiceWorkerClient> service_worker_client,
-      blink::mojom::ServiceWorkerContainerInfoForClientPtr);
-
-  ServiceWorkerClientAndInfo(const ServiceWorkerClientAndInfo&) = delete;
-  ServiceWorkerClientAndInfo& operator=(const ServiceWorkerClientAndInfo&) =
-      delete;
-
-  ~ServiceWorkerClientAndInfo();
-
-  base::WeakPtr<ServiceWorkerClient> service_worker_client;
-  blink::mojom::ServiceWorkerContainerInfoForClientPtr info;
-};
-
-// Creates a container host that finished navigation. Test code can typically
-// use this function, but if more control is required
-// CreateServiceWorkerClientAndInfoForWindow() can be used instead.
-base::WeakPtr<ServiceWorkerClient> CreateServiceWorkerClientForWindow(
-    const GlobalRenderFrameHostId& render_frame_host_id,
-    bool is_parent_frame_secure,
-    base::WeakPtr<ServiceWorkerContextCore> context,
-    ServiceWorkerRemoteContainerEndpoint* output_endpoint);
-
-// Creates a container host that can be used for a navigation.
-std::unique_ptr<ServiceWorkerClientAndInfo>
-CreateServiceWorkerClientAndInfoForWindow(
-    base::WeakPtr<ServiceWorkerContextCore> context,
-    bool are_ancestors_secure);
+// Creates an uncommitted service worker client.
+// For clients/ServiceWorkerContainerHost that finished navigation, use
+// `CommittedServiceWorkerClient`.
+ScopedServiceWorkerClient CreateServiceWorkerClient(
+    ServiceWorkerContextCore* context,
+    const GURL& document_url,
+    const url::Origin& top_frame_origin,
+    bool are_ancestors_secure = true,
+    int frame_tree_node_id = 1);
+ScopedServiceWorkerClient CreateServiceWorkerClient(
+    ServiceWorkerContextCore* context,
+    const GURL& document_url,
+    bool are_ancestors_secure = true,
+    int frame_tree_node_id = 1);
+ScopedServiceWorkerClient CreateServiceWorkerClient(
+    ServiceWorkerContextCore* context,
+    bool are_ancestors_secure = true,
+    int frame_tree_node_id = 1);
 
 std::unique_ptr<ServiceWorkerHost> CreateServiceWorkerHost(
     int process_id,

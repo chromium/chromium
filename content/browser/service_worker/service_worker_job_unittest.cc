@@ -254,7 +254,7 @@ class ServiceWorkerJobTest
 
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
-  std::vector<ServiceWorkerRemoteContainerEndpoint> remote_endpoints_;
+  std::vector<ScopedServiceWorkerClient> service_worker_clients_keep_alive_;
 };
 
 scoped_refptr<ServiceWorkerRegistration> ServiceWorkerJobTest::RunRegisterJob(
@@ -317,14 +317,12 @@ ServiceWorkerJobTest::FindRegistrationForScope(
 }
 
 ServiceWorkerClient* ServiceWorkerJobTest::CreateControllee() {
-  remote_endpoints_.emplace_back();
-  base::WeakPtr<ServiceWorkerClient> service_worker_client =
-      CreateServiceWorkerClientForWindow(
-          GlobalRenderFrameHostId(/*mock process_id=*/33,
-                                  /*mock frame_routing_id=*/1),
-          /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
-          &remote_endpoints_.back());
-  return service_worker_client.get();
+  ScopedServiceWorkerClient service_worker_client =
+      CreateServiceWorkerClient(helper_->context());
+  ServiceWorkerClient* service_worker_client_ptr = service_worker_client.get();
+  service_worker_clients_keep_alive_.push_back(
+      std::move(service_worker_client));
+  return service_worker_client_ptr;
 }
 
 scoped_refptr<ServiceWorkerRegistration>
@@ -1437,11 +1435,8 @@ TEST_P(ServiceWorkerJobTest, AddRegistrationToMatchingerHosts) {
                      GetTestStorageKey(in_scope));
 
   // Make an in-scope reserved client.
-  std::unique_ptr<ServiceWorkerClientAndInfo> client_and_info =
-      CreateServiceWorkerClientAndInfoForWindow(helper_->context()->AsWeakPtr(),
-                                                /*are_ancestors_secure=*/true);
-  base::WeakPtr<ServiceWorkerClient> reserved_client =
-      client_and_info->service_worker_client;
+  ScopedServiceWorkerClient reserved_client =
+      CreateServiceWorkerClient(helper_->context());
   reserved_client->UpdateUrls(in_scope, url::Origin::Create(in_scope),
                               GetTestStorageKey(in_scope));
 

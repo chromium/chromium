@@ -477,12 +477,12 @@ TEST_F(ServiceWorkerContextTest, Observer_ControlleeEvents) {
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version->SetStatus(ServiceWorkerVersion::ACTIVATED);
 
-  ServiceWorkerRemoteContainerEndpoint endpoint;
-  base::WeakPtr<ServiceWorkerClient> service_worker_client =
-      CreateServiceWorkerClientForWindow(
-          GlobalRenderFrameHostId(helper_->mock_render_process_id(),
-                                  /*mock frame_routing_id=*/1),
-          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(), &endpoint);
+  // Flush tasks related to `SetStatus(ACTIVATED)` above before creating
+  // `observer`.
+  base::RunLoop().RunUntilIdle();
+
+  ScopedServiceWorkerClient service_worker_client =
+      CreateServiceWorkerClient(context());
 
   TestServiceWorkerContextObserver observer(context_wrapper());
 
@@ -493,9 +493,13 @@ TEST_F(ServiceWorkerContextTest, Observer_ControlleeEvents) {
   EXPECT_EQ(TestServiceWorkerContextObserver::EventType::ControlleeAdded,
             observer.events()[0].type);
 
+  CommittedServiceWorkerClient committed_service_worker_client(
+      std::move(service_worker_client),
+      GlobalRenderFrameHostId(helper_->mock_render_process_id(),
+                              /*mock frame_routing_id=*/1));
   version->OnControlleeNavigationCommitted(
-      service_worker_client->client_uuid(),
-      service_worker_client->GetRenderFrameHostId());
+      committed_service_worker_client->client_uuid(),
+      committed_service_worker_client->GetRenderFrameHostId());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(2u, observer.events().size());
@@ -503,7 +507,7 @@ TEST_F(ServiceWorkerContextTest, Observer_ControlleeEvents) {
                 ControlleeNavigationCommitted,
             observer.events()[1].type);
 
-  version->RemoveControllee(service_worker_client->client_uuid());
+  version->RemoveControllee(committed_service_worker_client->client_uuid());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(4u, observer.events().size());
@@ -1110,7 +1114,6 @@ TEST_F(ServiceWorkerContextTest, RegisterDuplicateScript) {
 }
 
 TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
-  const int kRenderProcessId1 = 1;
   const int kRenderProcessId2 = 2;
   const GURL kOrigin1 = GURL("https://www.example.com/");
   const GURL kOrigin2 = GURL("https://another-origin.example.net/");
@@ -1118,40 +1121,14 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kOrigin1));
   const blink::StorageKey kKey2 =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kOrigin2));
-  std::vector<ServiceWorkerRemoteContainerEndpoint> remote_endpoints;
 
-  // Host1 : process_id=1, origin1.
-  remote_endpoints.emplace_back();
-  base::WeakPtr<ServiceWorkerClient> service_worker_client1 =
-      CreateServiceWorkerClientForWindow(
-          GlobalRenderFrameHostId(kRenderProcessId1,
-                                  /*mock frame_routing_id=*/1),
-          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
-          &remote_endpoints.back());
-  service_worker_client1->UpdateUrls(kOrigin1, url::Origin::Create(kOrigin1),
-                                     kKey1);
-
-  // Host2 : process_id=2, origin2.
-  remote_endpoints.emplace_back();
-  base::WeakPtr<ServiceWorkerClient> service_worker_client2 =
-      CreateServiceWorkerClientForWindow(
-          GlobalRenderFrameHostId(kRenderProcessId2,
-                                  /*mock frame_routing_id=*/1),
-          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
-          &remote_endpoints.back());
-  service_worker_client2->UpdateUrls(kOrigin2, url::Origin::Create(kOrigin2),
-                                     kKey2);
-
-  // Host3 : process_id=2, origin1.
-  remote_endpoints.emplace_back();
-  base::WeakPtr<ServiceWorkerClient> service_worker_client3 =
-      CreateServiceWorkerClientForWindow(
-          GlobalRenderFrameHostId(kRenderProcessId2,
-                                  /*mock frame_routing_id=*/1),
-          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
-          &remote_endpoints.back());
-  service_worker_client3->UpdateUrls(kOrigin1, url::Origin::Create(kOrigin1),
-                                     kKey1);
+  // Clients with kOrigin1, kOrigin2, and kOrigin1.
+  ScopedServiceWorkerClient service_worker_client1 =
+      CreateServiceWorkerClient(context(), kOrigin1);
+  ScopedServiceWorkerClient service_worker_client2 =
+      CreateServiceWorkerClient(context(), kOrigin2);
+  ScopedServiceWorkerClient service_worker_client3 =
+      CreateServiceWorkerClient(context(), kOrigin1);
 
   // Host4 : process_id=2, origin2, for ServiceWorker.
   blink::mojom::ServiceWorkerRegistrationOptions registration_opt;
@@ -1176,9 +1153,9 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
       kRenderProcessId2, true /* is_parent_frame_secure */, *version,
       context()->AsWeakPtr());
 
-  ASSERT_TRUE(service_worker_client1);
-  ASSERT_TRUE(service_worker_client2);
-  ASSERT_TRUE(service_worker_client3);
+  ASSERT_TRUE(service_worker_client1.get());
+  ASSERT_TRUE(service_worker_client2.get());
+  ASSERT_TRUE(service_worker_client3.get());
   ASSERT_TRUE(worker_host4->container_host());
 
   // Iterate over the client container hosts that belong to kOrigin1.
