@@ -958,6 +958,11 @@ if (is_win) {
     if (is_chrome_branded) {
       deps += [ "//remoting/host:remoting_host_installation" ]
     }
+    if (enable_platform_experience) {
+      deps += [
+        "//chrome/browser/platform_experience/win:platform_experience_helper",
+      ]
+    }
   }
 
   group("chrome_official_builder") {
