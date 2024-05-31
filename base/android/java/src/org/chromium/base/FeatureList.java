@@ -137,8 +137,9 @@ public class FeatureList {
      */
     @VisibleForTesting
     public static void setTestValues(TestValues testFeatures) {
+        TestValues prevValues = sTestFeatures;
         sTestFeatures = testFeatures;
-        ResettersForTesting.register(() -> sTestFeatures = null);
+        ResettersForTesting.register(() -> sTestFeatures = prevValues);
     }
 
     /**
