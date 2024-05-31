@@ -250,7 +250,7 @@ bool FeaturedSearchProvider::ShouldShowIPHMatch(
   PrefService* prefs = client_->GetPrefs();
   size_t iph_shown_limit =
       OmniboxFieldTrial::kStarterPackIPHPerSessionLimit.Get();
-  if (!prefs->GetBoolean(omnibox::kShowGeminiIPH) ||
+  if ((prefs && !prefs->GetBoolean(omnibox::kShowGeminiIPH)) ||
       ((iph_shown_limit != INT_MAX) && (iph_shown_count_ >= iph_shown_limit))) {
     return false;
   }

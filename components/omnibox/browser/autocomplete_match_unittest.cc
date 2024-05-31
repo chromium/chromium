@@ -1313,9 +1313,10 @@ TEST_F(AutocompleteMatchTest, ValidateGetVectorIcons) {
             match.GetVectorIcon(/*is_bookmark=*/false, &turl).is_empty());
       }
     } else if (match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL ||
-               match.type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
-      // SEARCH_SUGGEST_TAIL and NULL_RESULT_MESSAGE suggestions use an empty
-      // vector icon.
+               (match.type == AutocompleteMatchType::NULL_RESULT_MESSAGE &&
+                !match.IsIPHSuggestion())) {
+      // SEARCH_SUGGEST_TAIL and non-IPH NULL_RESULT_MESSAGE suggestions use an
+      // empty vector icon.
       EXPECT_TRUE(match.GetVectorIcon(/*is_bookmark=*/false).is_empty());
     } else {
       // All other suggestion types should result in non-empty vector icons.

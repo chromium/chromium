@@ -1468,7 +1468,8 @@ bool AutocompleteMatch::IsIPHSuggestion() const {
   }
 
   return type == AutocompleteMatchType::NULL_RESULT_MESSAGE &&
-         provider->type() == AutocompleteProvider::TYPE_FEATURED_SEARCH;
+         (provider &&
+          provider->type() == AutocompleteProvider::TYPE_FEATURED_SEARCH);
 }
 
 void AutocompleteMatch::FilterOmniboxActions(
