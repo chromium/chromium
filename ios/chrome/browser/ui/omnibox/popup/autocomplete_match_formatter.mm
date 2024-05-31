@@ -155,14 +155,31 @@ UIColor* DimColorIncognito() {
         [result appendAttributedString:spacer];
       }
     } else {
-      auto headLinefragments =
+      auto headLineFragments =
           _match.answer_template->answers(0).headline().fragments();
 
-      for (auto fragment : headLinefragments) {
-        NSAttributedString* fragmentText =
-            [self attributedStringForFragment:fragment
-                                        color:SuggestionDetailTextColor()
-                       useDeemphasizedStyling:YES];
+      for (NSInteger i = 0; i < headLineFragments.size(); i++) {
+        NSAttributedString* fragmentText;
+        // The first fragment has a html bold tag so we skip it and use the
+        // match contents instead. The match contents has the first fragment
+        // text without the bold tag (eg. match contents : abc , first fragment
+        // : ab<b>c</b>).
+        // TODO(crbug.com/343706167): Follow up on removing the bold tag from
+        // the first fragment.
+        if (i == 0) {
+          fragmentText =
+              [self attributedStringWithString:base::SysUTF16ToNSString(
+                                                   _match.contents)
+                               classifications:&_match.contents_class
+                                     smallFont:NO
+                                         color:SuggestionDetailTextColor()
+                                      dimColor:DimColor()];
+        } else {
+          fragmentText =
+              [self attributedStringForFragment:headLineFragments[i]
+                                          color:SuggestionDetailTextColor()
+                         useDeemphasizedStyling:YES];
+        }
 
         [result appendAttributedString:fragmentText];
         [result appendAttributedString:spacer];
@@ -295,11 +312,29 @@ UIColor* DimColorIncognito() {
       auto headlineFragments =
           _match.answer_template->answers(0).headline().fragments();
 
-      for (auto fragment : headlineFragments) {
-        NSAttributedString* fragmentText =
-            [self attributedStringForFragment:fragment
-                                        color:SuggestionDetailTextColor()
-                       useDeemphasizedStyling:NO];
+      for (NSInteger i = 0; i < headlineFragments.size(); i++) {
+        NSAttributedString* fragmentText;
+        // The first fragment has a html bold tag so we skip it and use the
+        // match contents instead. The match contents has the first fragment
+        // text without the bold tag (eg. match contents : abc , first fragment
+        // : ab<b>c</b>).
+        // TODO(crbug.com/343706167): Follow up on removing the bold tag from
+        // the first fragment.
+        if (i == 0) {
+          fragmentText =
+              [self attributedStringWithString:base::SysUTF16ToNSString(
+                                                   _match.contents)
+                               classifications:&_match.contents_class
+                                     smallFont:NO
+                                         color:suggestionTextColor
+                                      dimColor:dimColor];
+        } else {
+          fragmentText =
+              [self attributedStringForFragment:headlineFragments[i]
+                                          color:SuggestionDetailTextColor()
+                         useDeemphasizedStyling:NO];
+        }
+
         [result appendAttributedString:fragmentText];
         [result appendAttributedString:spacer];
       }
