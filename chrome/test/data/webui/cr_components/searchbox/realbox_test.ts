@@ -2492,6 +2492,10 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(realbox.$.input, getDeepActiveElement());
     await testProxy.handler.whenCalled('onThumbnailRemoved');
     assertEquals(1, testProxy.handler.getCallCount('onThumbnailRemoved'));
+    // When thumbnail is removed, autocomplete should be requeried
+    const args = await testProxy.handler.whenCalled('stopAutocomplete');
+    assertTrue(args.clearResult);
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
   });
 
   test('thumbnail keyboard deletion', async () => {
@@ -2527,6 +2531,10 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(realbox.$.input, getDeepActiveElement());
     await testProxy.handler.whenCalled('onThumbnailRemoved');
     assertEquals(1, testProxy.handler.getCallCount('onThumbnailRemoved'));
+    // When thumbnail is removed, autocomplete should be requeried
+    const args = await testProxy.handler.whenCalled('stopAutocomplete');
+    assertTrue(args.clearResult);
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
   });
 
   test('keyboard deletion with non-empty input', async () => {

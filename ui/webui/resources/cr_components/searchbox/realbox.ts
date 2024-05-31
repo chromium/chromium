@@ -568,6 +568,12 @@ export class RealboxElement extends RealboxElementBase {
           this.$.input.focus();
           this.clearAutocompleteMatches_();
           this.pageHandler_.onThumbnailRemoved();
+          const inputValue = this.$.input.value;
+          // Clearing the autocomplete matches above doesn't allow for
+          // navigation directly after removing the thumbnail. Must manually
+          // query autocomplete after removing the thumbnail since the
+          // thumbnail isn't part of the text input.
+          this.queryAutocomplete_(inputValue);
           e.preventDefault();
         } else if (e.key === 'Tab') {
           this.$.input.focus();
@@ -733,6 +739,12 @@ export class RealboxElement extends RealboxElementBase {
     this.$.input.focus();
     this.clearAutocompleteMatches_();
     this.pageHandler_.onThumbnailRemoved();
+    // Clearing the autocomplete matches above doesn't allow for
+    // navigation directly after removing the thumbnail. Must manually
+    // query autocomplete after removing the thumbnail since the
+    // thumbnail isn't part of the text input.
+    const inputValue = this.$.input.value;
+    this.queryAutocomplete_(inputValue);
   }
 
   //============================================================================
