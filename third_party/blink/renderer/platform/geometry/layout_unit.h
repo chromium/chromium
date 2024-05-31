@@ -34,6 +34,7 @@
 #include <climits>
 #include <iosfwd>
 #include <limits>
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
