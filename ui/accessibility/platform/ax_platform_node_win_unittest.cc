@@ -5811,7 +5811,19 @@ TEST_F(AXPlatformNodeWinTest, ComputeUIAControlType) {
   child7.role = ax::mojom::Role::kGraphicsObject;
   root.child_ids.push_back(child7.id);
 
-  Init(root, child1, child2, child3, child4, child5, child6, child7);
+  AXNodeData child8;
+  child8.id = 9;
+  child8.role = ax::mojom::Role::kSplitter;
+  root.child_ids.push_back(child8.id);
+
+  AXNodeData child9;
+  child9.id = 10;
+  child9.role = ax::mojom::Role::kSplitter;
+  child9.AddState(ax::mojom::State::kFocusable);
+  root.child_ids.push_back(child9.id);
+
+  Init(root, child1, child2, child3, child4, child5, child6, child7, child8,
+       child9);
 
   EXPECT_UIA_INT_EQ(
       QueryInterfaceFromNodeId<IRawElementProviderSimple>(child1.id),
@@ -5834,6 +5846,12 @@ TEST_F(AXPlatformNodeWinTest, ComputeUIAControlType) {
   EXPECT_UIA_INT_EQ(
       QueryInterfaceFromNodeId<IRawElementProviderSimple>(child7.id),
       UIA_ControlTypePropertyId, int{UIA_GroupControlTypeId});
+  EXPECT_UIA_INT_EQ(
+      QueryInterfaceFromNodeId<IRawElementProviderSimple>(child8.id),
+      UIA_ControlTypePropertyId, int{UIA_SeparatorControlTypeId});
+  EXPECT_UIA_INT_EQ(
+      QueryInterfaceFromNodeId<IRawElementProviderSimple>(child9.id),
+      UIA_ControlTypePropertyId, int{UIA_ThumbControlTypeId});
 }
 
 TEST_F(AXPlatformNodeWinTest, IsUIAControlForStatusRole) {

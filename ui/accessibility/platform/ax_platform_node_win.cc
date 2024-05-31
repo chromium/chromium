@@ -1336,8 +1336,10 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
               UIA_StatusBarControlTypeId, L"status"};
 
     case ax::mojom::Role::kSplitter:
-      return {UIALocalizationStrategy::kDeferToControlType,
-              UIA_SeparatorControlTypeId, L"separator"};
+      return {
+          UIALocalizationStrategy::kDeferToControlType,
+          IsFocusable() ? UIA_ThumbControlTypeId : UIA_SeparatorControlTypeId,
+          L"separator"};
 
     case ax::mojom::Role::kSubscript:
     case ax::mojom::Role::kSuperscript:
