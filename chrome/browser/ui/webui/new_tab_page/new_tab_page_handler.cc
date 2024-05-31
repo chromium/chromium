@@ -163,21 +163,13 @@ new_tab_page::mojom::ThemePtr MakeTheme(
     text_color = color_provider.GetColor(kColorNewTabPageTextUnthemed);
     theme->logo_color =
         color_provider.GetColor(kColorNewTabPageLogoUnthemedLight);
-
-    // TODO(crbug.com/40061384): Post GM3 launch, we can remove the
-    // kColorNewTabPageMostVisitedTileBackgroundUnthemed color and related
-    // logic.
     most_visited->background_color =
-        features::IsChromeWebuiRefresh2023()
-            ? color_provider.GetColor(kColorNewTabPageMostVisitedTileBackground)
-            : color_provider.GetColor(
-                  kColorNewTabPageMostVisitedTileBackgroundUnthemed);
+        color_provider.GetColor(kColorNewTabPageMostVisitedTileBackground);
   } else {
     text_color = color_provider.GetColor(kColorNewTabPageText);
     if (theme_provider->GetDisplayProperty(
             ThemeProperties::NTP_LOGO_ALTERNATE) == 1 ||
-        (features::IsChromeWebuiRefresh2023() &&
-         !theme_service->GetIsGrayscale() &&
+        (!theme_service->GetIsGrayscale() &&
          theme_service->GetUserColor().has_value())) {
       theme->logo_color = color_provider.GetColor(kColorNewTabPageLogo);
     }
@@ -950,7 +942,7 @@ void NewTabPageHandler::SetCustomizeChromeSidePanelVisible(
     feature_promo_helper_->RecordFeatureUsage(
         feature_engagement::events::kCustomizeChromeOpened, tab);
     feature_promo_helper_->CloseFeaturePromo(
-        features::IsChromeRefresh2023() && features::IsChromeWebuiRefresh2023()
+        features::IsChromeRefresh2023()
             ? feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature
             : feature_engagement::kIPHDesktopCustomizeChromeFeature,
         tab);
@@ -983,8 +975,7 @@ void NewTabPageHandler::MaybeShowFeaturePromo(
 
   switch (iph_feature) {
     case new_tab_page::mojom::IphFeature::kCustomizeChrome: {
-      if (features::IsChromeRefresh2023() &&
-          features::IsChromeWebuiRefresh2023()) {
+      if (features::IsChromeRefresh2023()) {
         feature_promo_helper_->MaybeShowFeaturePromo(
             feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
             web_contents_.get());

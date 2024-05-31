@@ -25,7 +25,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "ui/base/ui_base_features.h"
 
 namespace {
 
@@ -151,9 +150,7 @@ void NtpBackgroundService::FetchCollectionInfo() {
       {kFilteringLabel, ".M", version_info::GetMajorVersionNumber()}));
   // Add filtering for Panorama feature.
   request.add_filtering_label(base::StrCat({kFilteringLabel, ".panorama"}));
-  if (features::IsChromeWebuiRefresh2023()) {
-    request.add_filtering_label(base::StrCat({kFilteringLabel, ".gm3"}));
-  }
+  request.add_filtering_label(base::StrCat({kFilteringLabel, ".gm3"}));
   if (base::FeatureList::IsEnabled(
           ntp_features::kNtpBackgroundImageErrorDetection)) {
     request.add_filtering_label(

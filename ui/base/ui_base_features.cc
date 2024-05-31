@@ -495,10 +495,6 @@ bool IsChromeRefresh2023() {
   return true;
 }
 
-bool IsChromeWebuiRefresh2023() {
-  return true;
-}
-
 BASE_FEATURE(kBubbleMetricsApi,
              "BubbleMetricsApi",
              base::FEATURE_DISABLED_BY_DEFAULT);

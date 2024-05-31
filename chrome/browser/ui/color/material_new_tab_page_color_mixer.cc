@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "components/search/ntp_features.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -18,8 +17,7 @@
 
 void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
                                      const ui::ColorProviderKey& key) {
-  if (!ShouldApplyChromeMaterialOverrides(key) ||
-      !features::IsChromeWebuiRefresh2023()) {
+  if (!ShouldApplyChromeMaterialOverrides(key)) {
     return;
   }
   const bool dark_mode =

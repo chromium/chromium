@@ -10,7 +10,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/search/ntp_features.h"
-#include "ui/base/ui_base_features.h"
 
 namespace customize_chrome {
 
@@ -21,7 +20,6 @@ bool IsWallpaperSearchEnabledForProfile(Profile* profile) {
              ntp_features::kCustomizeChromeWallpaperSearch) &&
          base::FeatureList::IsEnabled(
              optimization_guide::features::kOptimizationGuideModelExecution) &&
-         features::IsChromeWebuiRefresh2023() &&
          (optimization_guide_keyed_service &&
           optimization_guide_keyed_service
               ->ShouldFeatureBeCurrentlyEnabledForUser(
