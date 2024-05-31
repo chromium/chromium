@@ -268,9 +268,18 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // for that RenderFrameHost no longer exists.
   void OnEndNavigationCommit();
 
+  // Must be called before `CommitResponse()`.
   void UpdateUrls(const GURL& url,
                   const std::optional<url::Origin>& top_frame_origin,
                   const blink::StorageKey& storage_key);
+
+  // TODO(crbug.com/336154571): For some tests that want UpdateUrls() after
+  // response commit. Investigate whether this can be removed and related
+  // condition checks can be turned to CHECK()s.
+  void UpdateUrlsAfterCommitResponseForTesting(
+      const GURL& url,
+      const std::optional<url::Origin>& top_frame_origin,
+      const blink::StorageKey& storage_key);
 
   // For service worker clients. Makes this client be controlled by
   // |registration|'s active worker, or makes this client be not
@@ -499,6 +508,10 @@ class CONTENT_EXPORT ServiceWorkerClient final
   class ServiceWorkerRunningStatusObserver;
 
   friend class ServiceWorkerContainerHostTest;
+
+  void UpdateUrlsInternal(const GURL& url,
+                          const std::optional<url::Origin>& top_frame_origin,
+                          const blink::StorageKey& storage_key);
 
   // Syncs matching registrations with live registrations.
   void SyncMatchingRegistrations();

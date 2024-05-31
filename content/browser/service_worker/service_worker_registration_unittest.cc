@@ -1052,7 +1052,7 @@ TEST_P(ServiceWorkerRegistrationObjectHostUpdateTest,
 
   ASSERT_TRUE(bad_messages_.empty());
   GURL url("https://does.not.exist/");
-  service_worker_client->UpdateUrls(
+  service_worker_client->UpdateUrlsAfterCommitResponseForTesting(
       url, url::Origin::Create(url),
       blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
   CallUpdate(registration_host.get(), /*out_error_msg=*/nullptr);
@@ -1223,7 +1223,7 @@ TEST_F(ServiceWorkerRegistrationObjectHostTest,
   registration_host.Bind(std::move(info->host_remote));
 
   ASSERT_TRUE(bad_messages_.empty());
-  service_worker_client->UpdateUrls(
+  service_worker_client->UpdateUrlsAfterCommitResponseForTesting(
       GURL("https://does.not.exist/"),
       url::Origin::Create(GURL("https://does.not.exist/")),
       blink::StorageKey::CreateFromStringForTesting("https://does.not.exist/"));

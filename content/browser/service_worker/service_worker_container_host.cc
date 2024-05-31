@@ -1115,7 +1115,7 @@ void ServiceWorkerClient::OnEndNavigationCommit() {
   }
 }
 
-void ServiceWorkerClient::UpdateUrls(
+void ServiceWorkerClient::UpdateUrlsInternal(
     const GURL& url,
     const std::optional<url::Origin>& top_frame_origin,
     const blink::StorageKey& storage_key) {
@@ -1160,6 +1160,22 @@ void ServiceWorkerClient::UpdateUrls(
   }
 
   SyncMatchingRegistrations();
+}
+
+void ServiceWorkerClient::UpdateUrls(
+    const GURL& url,
+    const std::optional<url::Origin>& top_frame_origin,
+    const blink::StorageKey& storage_key) {
+  CHECK(!is_response_committed());
+  UpdateUrlsInternal(url, top_frame_origin, storage_key);
+}
+
+void ServiceWorkerClient::UpdateUrlsAfterCommitResponseForTesting(
+    const GURL& url,
+    const std::optional<url::Origin>& top_frame_origin,
+    const blink::StorageKey& storage_key) {
+  CHECK(is_response_committed());
+  UpdateUrlsInternal(url, top_frame_origin, storage_key);
 }
 
 void ServiceWorkerClient::SetControllerRegistration(
