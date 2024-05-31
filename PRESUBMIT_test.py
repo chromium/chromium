@@ -231,12 +231,12 @@ class CheckEachPerfettoTestDataFileHasDepsEntry(unittest.TestCase):
   def testNewSha256FileNoDEPS(self):
     input_api = MockInputApi()
     input_api.files = [
-      MockFile('base/tracing/test/data/new.pftrace.sha256', []),
+      MockFile('base/tracing/test/data_sha256/new.pftrace.sha256', []),
     ]
     results = PRESUBMIT.CheckEachPerfettoTestDataFileHasDepsEntry(input_api, MockOutputApi())
     self.assertEqual(
       ('You must update the DEPS file when you update a .sha256 file '
-       'in base/tracing/test/data'), results[0].message)
+       'in base/tracing/test/data_sha256'), results[0].message)
 
   def testNewSha256FileSuccess(self):
     input_api = MockInputApi()
@@ -256,7 +256,7 @@ class CheckEachPerfettoTestDataFileHasDepsEntry(unittest.TestCase):
                     },
                   }""".splitlines()
     input_api.files = [
-      MockFile('base/tracing/test/data/new.pftrace.sha256', ['a1b2c3f4']),
+      MockFile('base/tracing/test/data_sha256/new.pftrace.sha256', ['a1b2c3f4']),
       MockFile('DEPS', new_deps),
     ]
     results = PRESUBMIT.CheckEachPerfettoTestDataFileHasDepsEntry(input_api, MockOutputApi())
@@ -279,7 +279,7 @@ class CheckEachPerfettoTestDataFileHasDepsEntry(unittest.TestCase):
                       'dep_type': 'gcs'
                     },
                   }""".splitlines()
-    f = MockFile('base/tracing/test/data/new.pftrace.sha256', ['a1b2c3f4'])
+    f = MockFile('base/tracing/test/data_sha256/new.pftrace.sha256', ['a1b2c3f4'])
     input_api.files = [
       f,
       MockFile('DEPS', new_deps),
@@ -308,7 +308,7 @@ class CheckEachPerfettoTestDataFileHasDepsEntry(unittest.TestCase):
                       'dep_type': 'gcs'
                     },
                   }""".splitlines()
-    f = MockFile('base/tracing/test/data/new.pftrace.sha256', [], ['a1b2c3f4'], action='D')
+    f = MockFile('base/tracing/test/data_sha256/new.pftrace.sha256', [], ['a1b2c3f4'], action='D')
     input_api.files = [
       f,
       MockFile('DEPS', old_deps),
@@ -342,7 +342,7 @@ class CheckEachPerfettoTestDataFileHasDepsEntry(unittest.TestCase):
                       'dep_type': 'gcs'
                     },
                   }""".splitlines()
-    f = MockFile('base/tracing/test/data/new.pftrace.sha256', [], ['a1b2c3f4'], action='D')
+    f = MockFile('base/tracing/test/data_sha256/new.pftrace.sha256', [], ['a1b2c3f4'], action='D')
     input_api.files = [
       f,
       MockFile('DEPS', new_deps, old_deps),

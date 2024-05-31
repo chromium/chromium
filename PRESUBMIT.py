@@ -3386,7 +3386,7 @@ def CheckForNewDEPSDownloadFromGoogleStorageHooks(input_api, output_api):
 
 def CheckEachPerfettoTestDataFileHasDepsEntry(input_api, output_api):
     test_data_filter = lambda f: input_api.FilterSourceFile(
-        f, files_to_check=[r'^base/tracing/test/data/.*\.sha256'])
+        f, files_to_check=[r'^base/tracing/test/data_sha256/.*\.sha256'])
     if not any(input_api.AffectedFiles(file_filter=test_data_filter)):
         return []
 
@@ -3397,9 +3397,10 @@ def CheckEachPerfettoTestDataFileHasDepsEntry(input_api, output_api):
             new_deps = _ParseDeps('\n'.join(f.NewContents()))['deps']
             deps_entry = new_deps['src/base/tracing/test/data']
     if not deps_entry:
-        return [output_api.PresubmitError(
+        # TODO(312895063):Add back error when .sha256 files have been moved.
+        return [output_api.PresubmitNotifyResult(
             'You must update the DEPS file when you update a '
-            '.sha256 file in base/tracing/test/data'
+            '.sha256 file in base/tracing/test/data_sha256'
         )]
 
     output = []

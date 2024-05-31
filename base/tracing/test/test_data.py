@@ -45,10 +45,15 @@ from upload_to_google_storage_first_class import get_sha256sum
 from download_from_google_storage import Gsutil, GSUTIL_DEFAULT_PATH
 
 
-# Write .sha256 file to be rolled into Perfetto.
+# Write .sha256 file to test/data_sha256 to be rolled into Perfetto.
 def write_sha256_file(filepath: str):
   sha256sum = get_sha256sum(filepath)
-  with open(filepath + '.sha256', 'w') as sha_file:
+  sha256_filepath = os.path.abspath(os.path.join(
+    os.path.dirname(filepath),
+    '..',
+    'data_sha256',
+    os.path.basename(filepath) + '.sha256'))
+  with open(sha256_filepath, 'w') as sha_file:
     sha_file.write(sha256sum)
   return sha256sum
 
@@ -107,11 +112,12 @@ def generate_deps_entry(filepath: str):
 
 # Generate the full deps entry for Perfetto test data
 def generate_all_deps():
-  path = os.path.join(SRC_PATH, 'base/tracing/test/data')
+  sha256_path = os.path.join(SRC_PATH, 'base/tracing/test/data_sha256')
+  data_path = os.path.join(SRC_PATH, 'base/tracing/test/data')
   objects = []
-  for file in os.listdir(path):
+  for file in os.listdir(sha256_path):
     if file.endswith('.sha256'):
-      filepath = os.path.join(path, file)[:-7]
+      filepath = os.path.join(data_path, file)[:-7]
       assert os.path.isfile(filepath), 'File does not exist'
       object_entry = generate_deps_entry(filepath)
       objects.append(object_entry)
