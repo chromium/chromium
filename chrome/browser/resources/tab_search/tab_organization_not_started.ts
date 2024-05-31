@@ -5,13 +5,13 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './strings.m.js';
 import './tab_organization_not_started_image.js';
-import './tab_organization_shared_style.css.js';
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './tab_organization_not_started.html.js';
+import {getCss} from './tab_organization_not_started.css.js';
+import {getHtml} from './tab_organization_not_started.html.js';
 import type {AccountInfo, SyncInfo, TabSearchSyncBrowserProxy} from './tab_search_sync_browser_proxy.js';
 import {TabSearchSyncBrowserProxyImpl} from './tab_search_sync_browser_proxy.js';
 
@@ -23,7 +23,8 @@ enum SyncState {
   SYNCED,
 }
 
-const TabOrganizationNotStartedElementBase = WebUiListenerMixin(PolymerElement);
+const TabOrganizationNotStartedElementBase =
+    WebUiListenerMixinLit(CrLitElement);
 
 export interface TabOrganizationNotStartedElement {
   $: {
@@ -38,27 +39,27 @@ export class TabOrganizationNotStartedElement extends
     return 'tab-organization-not-started';
   }
 
-  static get properties() {
+  static override get properties() {
     return {
-      showFre: {
-        type: Boolean,
-        value: false,
-      },
-
-      account_: Object,
-      sync_: Object,
+      showFre: {type: Boolean},
+      account_: {type: Object},
+      sync_: {type: Object},
     };
   }
 
-  showFre: boolean;
+  showFre: boolean = false;
 
-  private account_?: AccountInfo;
+  protected account_?: AccountInfo;
   private sync_?: SyncInfo;
   private syncBrowserProxy_: TabSearchSyncBrowserProxy =
       TabSearchSyncBrowserProxyImpl.getInstance();
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   override connectedCallback() {
@@ -93,15 +94,12 @@ export class TabOrganizationNotStartedElement extends
     }
   }
 
-  private getTitle_(): string {
-    if (this.showFre) {
-      return loadTimeData.getString('notStartedTitleFRE');
-    } else {
-      return loadTimeData.getString('notStartedTitle');
-    }
+  protected getTitle_(): string {
+    return loadTimeData.getString(
+        this.showFre ? 'notStartedTitleFRE' : 'notStartedTitle');
   }
 
-  private getBody_(): string {
+  protected getBody_(): string {
     switch (this.getSyncState_()) {
       case SyncState.SIGNED_OUT:
         return loadTimeData.getString('notStartedBodySignedOut');
@@ -112,31 +110,29 @@ export class TabOrganizationNotStartedElement extends
       case SyncState.UNSYNCED_HISTORY:
         return loadTimeData.getString('notStartedBodyUnsyncedHistory');
       case SyncState.SYNCED: {
-        if (this.showFre) {
-          return loadTimeData.getString('notStartedBodyFRE');
-        } else {
-          return loadTimeData.getString('notStartedBody');
-        }
+        return loadTimeData.getString(
+            this.showFre ? 'notStartedBodyFRE' : 'notStartedBody');
       }
     }
   }
 
-  private shouldShowBodyLink_(): boolean {
+  protected shouldShowBodyLink_(): boolean {
     return this.getSyncState_() === SyncState.SYNCED && this.showFre;
   }
 
-  private shouldShowAccountInfo_(): boolean {
+  protected shouldShowAccountInfo_(): boolean {
     return !!this.account_ &&
         (!this.sync_ || !this.sync_.syncing || this.sync_.paused ||
          !this.sync_.syncingHistory);
   }
 
-  private getAccountImageSrc_(image: string|null): string {
+  protected getAccountImageSrc_(): string {
     // image can be undefined if the account has not set an avatar photo.
-    return image || 'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE';
+    return this.account_!.avatarImage ||
+        'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE';
   }
 
-  private getButtonAriaLabel_(): string {
+  protected getButtonAriaLabel_(): string {
     switch (this.getSyncState_()) {
       case SyncState.SIGNED_OUT:
       case SyncState.UNSYNCED:
@@ -147,15 +143,13 @@ export class TabOrganizationNotStartedElement extends
         return loadTimeData.getString(
             'notStartedButtonUnsyncedHistoryAriaLabel');
       case SyncState.SYNCED:
-        if (this.showFre) {
-          return loadTimeData.getString('notStartedButtonFREAriaLabel');
-        } else {
-          return loadTimeData.getString('notStartedButtonAriaLabel');
-        }
+        return loadTimeData.getString(
+            this.showFre ? 'notStartedButtonFREAriaLabel' :
+                           'notStartedButtonAriaLabel');
     }
   }
 
-  private getButtonText_(): string {
+  protected getButtonText_(): string {
     switch (this.getSyncState_()) {
       case SyncState.SIGNED_OUT:
       case SyncState.UNSYNCED:
@@ -165,33 +159,26 @@ export class TabOrganizationNotStartedElement extends
       case SyncState.UNSYNCED_HISTORY:
         return loadTimeData.getString('notStartedButtonUnsyncedHistory');
       case SyncState.SYNCED:
-        if (this.showFre) {
-          return loadTimeData.getString('notStartedButtonFRE');
-        } else {
-          return loadTimeData.getString('notStartedButton');
-        }
+        return loadTimeData.getString(
+            this.showFre ? 'notStartedButtonFRE' : 'notStartedButton');
     }
   }
 
-  private onButtonClick_() {
+  protected onButtonClick_() {
     switch (this.getSyncState_()) {
       case SyncState.SIGNED_OUT:
       case SyncState.UNSYNCED:
-        this.dispatchEvent(
-            new CustomEvent('sync-click', {bubbles: true, composed: true}));
+        this.fire('sync-click');
         break;
       case SyncState.SYNC_PAUSED:
-        this.dispatchEvent(
-            new CustomEvent('sign-in-click', {bubbles: true, composed: true}));
+        this.fire('sign-in-click');
         break;
       case SyncState.UNSYNCED_HISTORY:
-        this.dispatchEvent(
-            new CustomEvent('settings-click', {bubbles: true, composed: true}));
+        this.fire('settings-click');
         break;
       case SyncState.SYNCED:
         // Start a tab organization
-        this.dispatchEvent(new CustomEvent(
-            'organize-tabs-click', {bubbles: true, composed: true}));
+        this.fire('organize-tabs-click');
         chrome.metricsPrivate.recordBoolean(
             'Tab.Organization.AllEntrypoints.Clicked', true);
         chrome.metricsPrivate.recordBoolean(
@@ -200,14 +187,11 @@ export class TabOrganizationNotStartedElement extends
     }
   }
 
-  private onLinkClick_() {
-    this.dispatchEvent(new CustomEvent('learn-more-click', {
-      bubbles: true,
-      composed: true,
-    }));
+  protected onLinkClick_() {
+    this.fire('learn-more-click');
   }
 
-  private onLinkKeyDown_(event: KeyboardEvent) {
+  protected onLinkKeyDown_(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       this.onLinkClick_();
     }

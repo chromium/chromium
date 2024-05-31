@@ -12,53 +12,45 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './tab_organization_results_actions.html.js';
+import {getCss} from './tab_organization_results_actions.css.js';
+import {getHtml} from './tab_organization_results_actions.html.js';
 
-export class TabOrganizationResultsActionsElement extends PolymerElement {
+export class TabOrganizationResultsActionsElement extends CrLitElement {
   static get is() {
     return 'tab-organization-results-actions';
   }
 
-  static get properties() {
+  static override get properties() {
     return {
-      multipleOrganizations: {
-        type: Boolean,
-        value: false,
-      },
-
-      showClear: {
-        type: Boolean,
-        value: false,
-      },
+      multipleOrganizations: {type: Boolean},
+      showClear: {type: Boolean},
     };
   }
 
-  multipleOrganizations: boolean;
-  showClear: boolean;
+  multipleOrganizations: boolean = false;
+  showClear: boolean = false;
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  private getCreateButtonText_(): string {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  protected getCreateButtonText_(): string {
     return this.multipleOrganizations ? loadTimeData.getString('createGroups') :
                                         loadTimeData.getString('createGroup');
   }
 
-  private onClearClick_() {
-    this.dispatchEvent(new CustomEvent('reject-all-groups-click', {
-      bubbles: true,
-      composed: true,
-    }));
+  protected onClearClick_() {
+    this.fire('reject-all-groups-click');
   }
 
-  private onCreateGroupClick_() {
-    this.dispatchEvent(new CustomEvent('create-group-click', {
-      bubbles: true,
-      composed: true,
-    }));
+  protected onCreateGroupClick_() {
+    this.fire('create-group-click');
   }
 }
 

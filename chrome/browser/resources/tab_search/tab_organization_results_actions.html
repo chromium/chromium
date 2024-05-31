@@ -1,25 +1,13 @@
-<style>
-  cr-button {
-    width: fit-content;
-  }
-
-  .button-row {
-    display: flex;
-    gap: 16px;
-    justify-content: flex-end;
-  }
-</style>
-
 <div class="button-row">
-  <template is="dom-if" if="[[showClear]]">
+  ${this.showClear ? html`
     <cr-button id="clearButton" class="tonal-button"
         aria-label="$i18n{clearAriaLabel}"
-        on-click="onClearClick_">
+        @click="${this.onClearClick_}">
       $i18n{clearSuggestions}
     </cr-button>
-  </template>
+  ` : ''}
   <cr-button id="createButton" class="action-button"
-      on-click="onCreateGroupClick_">
-    [[getCreateButtonText_(multipleOrganizations)]]
+      @click="${this.onCreateGroupClick_}">
+    ${this.getCreateButtonText_()}
   </cr-button>
 </div>

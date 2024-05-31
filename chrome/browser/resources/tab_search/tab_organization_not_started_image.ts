@@ -2,18 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './tab_organization_not_started_image.html.js';
+import {getCss} from './tab_organization_not_started_image.css.js';
+import {getHtml} from './tab_organization_not_started_image.html.js';
 
 // Themed image for the tab organization not started state.
-export class TabOrganizationNotStartedImageElement extends PolymerElement {
+export class TabOrganizationNotStartedImageElement extends CrLitElement {
   static get is() {
     return 'tab-organization-not-started-image';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 }
 

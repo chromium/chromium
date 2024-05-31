@@ -1,0 +1,73 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --image-background-color-1: var(--color-loading-gradient-middle);
+  --image-background_color-2: var(--color-loading-gradient-end);
+  --window_frame_color: var(--color-tab-search-image-window-frame);
+  --tab-group-1-color: var(--color-tab-group-tab-strip-frame-active-blue);
+  --tab-group-2-color: var(--color-tab-group-tab-strip-frame-active-green);
+  --tab-content-color-top: var(--color-tab-search-image-tab-content-top);
+  --tab-content-color-bottom:
+      var(--color-tab-search-image-tab-content-bottom);
+  --active-tab-text-color: var(--color-tab-search-image-tab-text);
+  --inactive-tab-text-color: var(--color-tab-search-image-tab-text);
+}
+
+.image-background-color-1 {
+  stop-color: var(--image-background-color-1);
+}
+
+.image-background-color-2 {
+  stop-color: var(--image-background_color-2);
+}
+
+.window-frame-stroke {
+  stroke: var(--window_frame_color);
+}
+
+.window-frame-fill {
+  fill: var(--window_frame_color);
+}
+
+.tab-group-1-stroke {
+  stroke: var(--tab-group-1-color);
+}
+
+.tab-group-1-fill {
+  fill: var(--tab-group-1-color);
+}
+
+.tab-group-2-stroke {
+  stroke: var(--tab-group-2-color);
+}
+
+.tab-group-2-fill {
+  fill: var(--tab-group-2-color);
+}
+
+.tab-content-fill {
+  fill: var(--tab-content-color-top);
+}
+
+.tab-content-stop-color-start {
+  stop-color: var(--tab-content-color-top);
+}
+
+.tab-content-stop-color-end {
+  stop-color: var(--tab-content-color-bottom);
+}
+
+.active-tab-text-color {
+  fill: var(--active-tab-text-color);
+}
+
+.inactive-tab-text-color {
+  fill: var(--inactive-tab-text-color);
+}
