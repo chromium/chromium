@@ -153,7 +153,8 @@ bool GetSettingManagedByUser(const GURL& url,
     // somehow determine real CookieSettingOverrides rather than default to
     // none.
     setting = CookieSettingsFactory::GetForProfile(profile)->GetCookieSetting(
-        url, url, net::CookieSettingOverrides(), &info);
+        url, net::SiteForCookies::FromUrl(url), url,
+        net::CookieSettingOverrides(), &info);
   } else {
     setting = map->GetContentSetting(url, url, type, &info);
   }

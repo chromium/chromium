@@ -37,6 +37,7 @@
 #include "extensions/common/api/extension_types.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
+#include "net/cookies/site_for_cookies.h"
 
 using content::BrowserThread;
 
@@ -169,11 +170,15 @@ ContentSettingsContentSettingGetFunction::Run() {
 
   // TODO(crbug.com/40247160): Consider whether the following check should
   // somehow determine real CookieSettingOverrides rather than default to none.
+  net::SiteForCookies site_for_cookies =
+      net::SiteForCookies::FromUrl(secondary_url);
+  site_for_cookies.CompareWithFrameTreeSiteAndRevise(
+      net::SchemefulSite(primary_url));
   ContentSetting setting =
       content_type == ContentSettingsType::COOKIES
-          ? cookie_settings->GetCookieSetting(primary_url, secondary_url,
-                                              net::CookieSettingOverrides(),
-                                              nullptr)
+          ? cookie_settings->GetCookieSetting(
+                primary_url, site_for_cookies, secondary_url,
+                net::CookieSettingOverrides(), nullptr)
           : map->GetContentSetting(primary_url, secondary_url, content_type);
 
   base::Value::Dict result;

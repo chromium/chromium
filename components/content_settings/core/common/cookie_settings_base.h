@@ -236,8 +236,19 @@ class CookieSettingsBase {
   // This may be called on any thread.
   bool IsCookieSessionOnly(const GURL& url) const;
 
-  // A helper for applying third party cookie blocking rules.
+  // A helper for applying third party cookie blocking rules. Assumes a
+  // cross-site context.
+  //
+  // TODO(https://crbug.com/343827271): this override is deprecated and should
+  // be removed.
   ContentSetting GetCookieSetting(const GURL& url,
+                                  const GURL& first_party_url,
+                                  net::CookieSettingOverrides overrides,
+                                  SettingInfo* info = nullptr) const;
+  // A helper for applying third party cookie blocking rules. Uses
+  // `site_for_cookies` to determine whether the context is cross-site or not.
+  ContentSetting GetCookieSetting(const GURL& url,
+                                  const net::SiteForCookies& site_for_cookies,
                                   const GURL& first_party_url,
                                   net::CookieSettingOverrides overrides,
                                   SettingInfo* info = nullptr) const;

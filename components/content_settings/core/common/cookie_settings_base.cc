@@ -334,11 +334,19 @@ ContentSetting CookieSettingsBase::GetCookieSetting(
     const GURL& first_party_url,
     net::CookieSettingOverrides overrides,
     content_settings::SettingInfo* info) const {
-  return GetCookieSettingInternal(
-             url, first_party_url,
-             IsThirdPartyRequest(url,
-                                 net::SiteForCookies::FromUrl(first_party_url)),
-             overrides, info)
+  return GetCookieSetting(url, net::SiteForCookies(), first_party_url,
+                          overrides, info);
+}
+
+ContentSetting CookieSettingsBase::GetCookieSetting(
+    const GURL& url,
+    const net::SiteForCookies& site_for_cookies,
+    const GURL& first_party_url,
+    net::CookieSettingOverrides overrides,
+    content_settings::SettingInfo* info) const {
+  return GetCookieSettingInternal(url, first_party_url,
+                                  IsThirdPartyRequest(url, site_for_cookies),
+                                  overrides, info)
       .cookie_setting();
 }
 

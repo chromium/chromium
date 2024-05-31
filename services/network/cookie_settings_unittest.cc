@@ -363,8 +363,9 @@ TEST_P(CookieSettingsTestP, GetCookieSettingMustMatchBothPatterns) {
   settings.set_content_settings(
       ContentSettingsType::COOKIES,
       {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_BLOCK)});
-  EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kURL),
-                                      GetCookieSettingOverrides(), nullptr),
+  EXPECT_EQ(settings.GetCookieSetting(
+                GURL(kURL), net::SiteForCookies::FromUrl(GURL(kURL)),
+                GURL(kURL), GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_ALLOW);
   EXPECT_EQ(settings.GetCookieSetting(GURL(kOtherURL), GURL(kURL),
                                       GetCookieSettingOverrides(), nullptr),
