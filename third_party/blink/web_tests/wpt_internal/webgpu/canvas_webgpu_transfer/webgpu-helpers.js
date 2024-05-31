@@ -100,37 +100,23 @@ function checkCanvasColor(ctx, expectedRGBA) {
  * Returns true if the texture causes validation errors when it is read-from or
  * written-to. This is indicative of a destroyed texture.
  */
-function checkForDestroyedTextures(device, expectations) {
-  // Create a base-case promise that just resolves immediately.
-  let promise = new Promise((resolve, reject) => { resolve(true); });
-
+async function isTextureDestroyed(device, texture) {
   // Unfortunately, there isn't a simple way to test if a texture has been
   // destroyed or not in WebGPU. The best we can do is try to use the texture in
   // various ways and check for GPUValidationErrors. So we verify whether or not
   // we are able to read-from or write-to the texture. If we get GPU validation
   // errors for both, we consider it to be destroyed.
-  for (const expectation of expectations) {
-    promise = promise.then(() => {
-      const tex = expectation[0];
-      const expectDestroyed = expectation[1];
+  device.pushErrorScope('validation');
+  copyOnePixelFromTextureAndSubmit(device, texture);
 
-      device.pushErrorScope('validation');
-      copyOnePixelFromTextureAndSubmit(device, tex);
+  device.pushErrorScope('validation');
+  copyOnePixelToTextureAndSubmit(device, texture);
 
-      device.pushErrorScope('validation');
-      copyOnePixelToTextureAndSubmit(device, tex);
+  writeError = await device.popErrorScope();
+  readError = await device.popErrorScope();
 
-      return device.popErrorScope().then((writeError) => {
-        return device.popErrorScope().then((readError) => {
-          const isDestroyed = readError instanceof GPUValidationError &&
-                              writeError instanceof GPUValidationError;
-          assert_equals(expectDestroyed, isDestroyed);
-        });
-      });
-    });
-  }
-
-  return promise;
+  return readError instanceof GPUValidationError &&
+         writeError instanceof GPUValidationError;
 }
 
 /**
@@ -261,8 +247,8 @@ function test_transferBackFromGPUTexture_first_throws(device, canvas) {
  * Unbalanced calls to transferToGPUTexture() will destroy the old WebGPU access
  * texture.
  */
-function test_transferToGPUTexture_unbalanced_access(adapterInfo, device,
-                                                     canvas) {
+async function test_transferToGPUTexture_unbalanced_access(
+      adapterInfo, device, canvas) {
   // Skip this test on Mac Swiftshader.
   if (isMacSwiftShader(adapterInfo)) {
     return;
@@ -280,7 +266,8 @@ function test_transferToGPUTexture_unbalanced_access(adapterInfo, device,
                                              GPUTextureUsage.COPY_SRC});
 
   // Only the second texture should remain in an undestroyed state.
-  return checkForDestroyedTextures(device, [[tex1, true], [tex2, false]]);
+  assert_true(await isTextureDestroyed(device, tex1));
+  assert_false(await isTextureDestroyed(device, tex2));
 }
 
 /**
@@ -348,7 +335,8 @@ function test_transferBackFromGPUTexture_context_lost(device, canvas) {
  * transferBackFromGPUTexture() should cause the GPUTexture returned by
  * transferToGPUTexture() to enter a destroyed state.
  */
-function test_transferBackFromGPUTexture_destroys_texture(device, canvas) {
+async function test_transferBackFromGPUTexture_destroys_texture(
+    device, canvas) {
   // Briefly begin a WebGPU access session.
   const ctx = canvas.getContext('2d');
   const tex = ctx.transferToGPUTexture({device: device,
@@ -357,12 +345,12 @@ function test_transferBackFromGPUTexture_destroys_texture(device, canvas) {
   ctx.transferBackFromGPUTexture();
 
   // `tex` should be in a destroyed state.
-  return checkForDestroyedTextures(device, [[tex, true]]);
+  assert_true(await isTextureDestroyed(device, tex));
 }
 
 /** Resizing a canvas during WebGPU access should destroy the texture. */
-function test_canvas_reset_destroys_texture(adapterInfo, device, canvas,
-                                           resetType) {
+async function test_canvas_reset_destroys_texture(adapterInfo, device, canvas,
+                                                  resetType) {
   // Skip this test on Mac Swiftshader due to "Invalid Texture" errors.
   if (isMacSwiftShader(adapterInfo)) {
     return;
@@ -382,7 +370,7 @@ function test_canvas_reset_destroys_texture(adapterInfo, device, canvas,
   }
 
   // The canvas' GPUTexture should appear to be destroyed.
-  return checkForDestroyedTextures(device, [[tex, true]]);
+  assert_true(await isTextureDestroyed(device, tex));
 }
 
 /**
