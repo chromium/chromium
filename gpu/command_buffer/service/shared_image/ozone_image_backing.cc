@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -542,7 +543,14 @@ std::unique_ptr<VulkanImageRepresentation> OzoneImageBacking::ProduceVulkan(
     image_size =
         gfx::Size(image_size.width(), image_size.height() * kMT2TBppNumerator /
                                           kMT2TBppDenominator);
-    gmb_handle.native_pixmap_handle.planes[0].stride /= 2;
+    base::CheckedNumeric<uint32_t> stride =
+        gmb_handle.native_pixmap_handle.planes[0].stride;
+    stride *= kMT2TBppDenominator;
+    stride /= kMT2TBppNumerator;
+    if (!stride.IsValid()) {
+      return nullptr;
+    }
+    gmb_handle.native_pixmap_handle.planes[0].stride = stride.ValueOrDie();
     gmb_handle.native_pixmap_handle.planes[1].stride =
         gmb_handle.native_pixmap_handle.planes[0].stride;
     gmb_handle.native_pixmap_handle.planes[0].size = image_size.GetArea();

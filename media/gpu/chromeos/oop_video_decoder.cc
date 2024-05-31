@@ -96,10 +96,39 @@ constexpr size_t kTimestampCacheSize = 128;
 // underlying buffer without creating a media::FrameResource.
 scoped_refptr<FrameResource> MojoVideoFrameToFrameResource(
     stable::mojom::VideoFramePtr mojo_frame) {
-  if (!VerifyGpuMemoryBufferHandle(mojo_frame->format, mojo_frame->coded_size,
-                                   mojo_frame->gpu_memory_buffer_handle)) {
-    VLOGF(2) << "Received an invalid GpuMemoryBufferHandle";
-    return nullptr;
+  if (mojo_frame->metadata.protected_video &&
+      mojo_frame->metadata.needs_detiling &&
+      mojo_frame->format == PIXEL_FORMAT_P016LE) {
+    // This is a tiled, protected MTK format that is true 10bpp so it will
+    // not pass the tests in VerifyGpuMemoryBufferHandle for P016. Instead just
+    // do the basic tests that would be done in that call here. This is safe to
+    // do because the buffers for this will only go into the secure video
+    // decoder which will fail on invalid buffer parameters.
+    if (mojo_frame->gpu_memory_buffer_handle.type != gfx::NATIVE_PIXMAP) {
+      VLOGF(1) << "Unexpected GpuMemoryBufferType: "
+               << mojo_frame->gpu_memory_buffer_handle.type;
+      return nullptr;
+    }
+    if (!media::VideoFrame::IsValidCodedSize(mojo_frame->coded_size)) {
+      VLOG(1) << "Coded size is beyond allowed dimensions: "
+              << mojo_frame->coded_size.ToString();
+      return nullptr;
+    }
+    constexpr size_t kNumP016Planes = 2;
+    if (kNumP016Planes != mojo_frame->gpu_memory_buffer_handle
+                              .native_pixmap_handle.planes.size()) {
+      VLOGF(1) << "Invalid number of dmabuf planes passed: "
+               << mojo_frame->gpu_memory_buffer_handle.native_pixmap_handle
+                      .planes.size()
+               << ", expected: 2";
+      return nullptr;
+    }
+  } else {
+    if (!VerifyGpuMemoryBufferHandle(mojo_frame->format, mojo_frame->coded_size,
+                                     mojo_frame->gpu_memory_buffer_handle)) {
+      VLOGF(2) << "Received an invalid GpuMemoryBufferHandle";
+      return nullptr;
+    }
   }
 
   std::optional<gfx::BufferFormat> buffer_format =
