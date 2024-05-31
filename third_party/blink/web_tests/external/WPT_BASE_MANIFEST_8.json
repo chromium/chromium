@@ -292695,12 +292695,8 @@
       "be955258530b6634f6233f8c5b6670f6c83f54e5",
       []
      ],
-     "comp_name_from_content-expected.txt": [
-      "8d825970559b8440850da5ad45b8db495d22c9fd",
-      []
-     ],
      "comp_name_from_content.tentative-expected.txt": [
-      "819e2444914c3f88c433e4ec5cdf415ef84c3c47",
+      "9563d92b057433013f33c180ff276fe231e5c15b",
       []
      ]
     }
@@ -388767,7 +388763,7 @@
      []
     ],
     "testharness.js": [
-     "3f2c1fe3b18d5a12cccee434fec9c1c914a116dd",
+     "61cd18511151f3574a41aabcfdb0b3531244c534",
      []
     ],
     "testharness.js.headers": [
