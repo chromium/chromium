@@ -778,18 +778,26 @@ inline constexpr char kAccessibilityFaceGazeCursorSmoothing[] =
 // quickly.
 inline constexpr char kAccessibilityFaceGazeCursorUseAcceleration[] =
     "settings.a11y.face_gaze.cursor_use_acceleration";
-
 // A dictionary pref which maps facial gestures to action macros. Facial
 // gestures are strings like 'browDownLeft', and actions are enums from
 // macro_names.
 inline constexpr char kAccessibilityFaceGazeGesturesToMacros[] =
     "settings.a11y.face_gaze.gestures_to_macros";
-
 // A dictionary pref which maps facial gestures to confidence thresholds. Facial
 // gestures are strings like 'browDownLeft', and confidence thresholds are
 // integers between 0 and 100 representing percentages.
 inline constexpr char kAccessibilityFaceGazeGesturesToConfidence[] =
     "settings.a11y.face_gaze.gestures_to_confidence";
+// A boolean pref which controls whether FaceGaze controls the cursor position.
+inline constexpr char kAccessibilityFaceGazeCursorControlEnabled[] =
+    "settings.a11y.face_gaze.cursor_control_enabled";
+// A boolean pref which controls whether FaceGaze can execute actions.
+inline constexpr char kAccessibilityFaceGazeActionsEnabled[] =
+    "settings.a11y.face_gaze.actions_enabled";
+// A boolean pref which controls whether users can adjust the cursor speed
+// separately or whether speeds in all directions should be adjusted together.
+inline constexpr char kAccessibilityFaceGazeAdjustSpeedSeparately[] =
+    "settings.a11y.face_gaze.adjust_speed_separately";
 
 // A boolean pref which determines whether the accessibility menu shows
 // regardless of the state of a11y features.

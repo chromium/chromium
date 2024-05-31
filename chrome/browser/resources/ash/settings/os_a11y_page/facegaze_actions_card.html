@@ -24,6 +24,11 @@
     we can use cr-slider-value-changed. -->
 
 <settings-card header-text="Actions">
+  <settings-toggle-button
+      id="faceGazeActionsEnabledButton"
+      label="$i18n{faceGazeActionsEnabledLabel}"
+      pref="{{prefs.settings.a11y.face_gaze.actions_enabled}}">
+  </settings-toggle-button>
   <h2 class="sub-item">Left click</h2>
   <div class="settings-box first">
     <div class="start settings-box-text" aria-hidden="true">

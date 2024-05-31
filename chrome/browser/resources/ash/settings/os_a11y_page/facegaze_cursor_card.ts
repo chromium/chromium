@@ -13,6 +13,7 @@ import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '../controls/settings_slider.js';
 import '../controls/settings_toggle_button.js';
 
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -23,15 +24,14 @@ import {Route, routes} from '../router.js';
 
 import {getTemplate} from './facegaze_cursor_card.html.js';
 
-const FacegazeCursorCardBase = DeepLinkingMixin(
-    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
+const FaceGazeCursorCardElementBase = DeepLinkingMixin(RouteObserverMixin(
+    WebUiListenerMixin(PrefsMixin(I18nMixin(PolymerElement)))));
 
-export interface FacegazeCursorCard {
+export interface FaceGazeCursorCardElement {
   $: {};
 }
 
-export class FacegazeCursorCard extends
-    FacegazeCursorCardBase {
+export class FaceGazeCursorCardElement extends FaceGazeCursorCardElementBase {
   static get is() {
     return 'facegaze-cursor-card' as const;
   }
@@ -42,17 +42,8 @@ export class FacegazeCursorCard extends
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
     };
   }
-
-  prefs: {[key: string]: any};
 
   constructor() {
     super();
@@ -70,9 +61,8 @@ export class FacegazeCursorCard extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    [FacegazeCursorCard.is]: FacegazeCursorCard;
+    [FaceGazeCursorCardElement.is]: FaceGazeCursorCardElement;
   }
 }
 
-customElements.define(
-    FacegazeCursorCard.is, FacegazeCursorCard);
+customElements.define(FaceGazeCursorCardElement.is, FaceGazeCursorCardElement);

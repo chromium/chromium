@@ -27,18 +27,16 @@ import {Route, routes} from '../router.js';
 
 import {getTemplate} from './facegaze_actions_card.html.js';
 
-const SettingsFaceGazeActionsCardBase =
-    DeepLinkingMixin(RouteObserverMixin(
-        WebUiListenerMixin(PrefsMixin(I18nMixin(PolymerElement)))));
+const FaceGazeActionsCardElementBase = DeepLinkingMixin(RouteObserverMixin(
+    WebUiListenerMixin(PrefsMixin(I18nMixin(PolymerElement)))));
 
-export interface SettingsFaceGazeActionsCard {
+export interface FaceGazeActionsCardElement {
   $: {
     recognitionConfidenceRepeat: DomRepeat,
   };
 }
 
-export class SettingsFaceGazeActionsCard extends
-    SettingsFaceGazeActionsCardBase {
+export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   static get is() {
     return 'facegaze-actions-card' as const;
   }
@@ -858,9 +856,9 @@ export class SettingsFaceGazeActionsCard extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    [SettingsFaceGazeActionsCard.is]: SettingsFaceGazeActionsCard;
+    [FaceGazeActionsCardElement.is]: FaceGazeActionsCardElement;
   }
 }
 
 customElements.define(
-    SettingsFaceGazeActionsCard.is, SettingsFaceGazeActionsCard);
+    FaceGazeActionsCardElement.is, FaceGazeActionsCardElement);

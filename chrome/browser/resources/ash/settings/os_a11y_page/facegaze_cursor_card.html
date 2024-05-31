@@ -14,6 +14,11 @@
      refactored to a custom element. -->
 
 <settings-card header-text="Cursor movement">
+  <settings-toggle-button
+      id="faceGazeCursorControlEnabledButton"
+      label="$i18n{faceGazeCursorControlEnabledLabel}"
+      pref="{{prefs.settings.a11y.face_gaze.cursor_control_enabled}}">
+  </settings-toggle-button>
   <div class="settings-box first">
     <div class="start settings-box-text" aria-hidden="true">
         $i18n{faceGazeCursorUpSpeedLabel}

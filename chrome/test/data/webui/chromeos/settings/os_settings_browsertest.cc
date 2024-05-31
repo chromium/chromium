@@ -172,6 +172,19 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Bool(),
     OSSettingsRevampMochaTestMouseKeysEnabled::DescribeParams);
 
+class OSSettingsRevampMochaTestFaceGazeEnabled
+    : public OSSettingsRevampMochaTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ::features::kAccessibilityFaceGaze};
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampMochaTestFaceGazeEnabled,
+    testing::Bool(),
+    OSSettingsRevampMochaTestFaceGazeEnabled::DescribeParams);
+
 class OSSettingsRevampMochaTestCaretBlinkSettingEnabled
     : public OSSettingsRevampMochaTest {
  private:
@@ -1251,6 +1264,16 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestMouseKeysEnabled,
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestOverscrollFeatureEnabled,
                        OsA11yPageCursorAndTouchpadPage) {
   RunSettingsTest("os_a11y_page/cursor_and_touchpad_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestFaceGazeEnabled,
+                       OsA11yPageFaceGazeCursorCard) {
+  RunSettingsTest("os_a11y_page/facegaze_cursor_card_test.js");
+}
+
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestFaceGazeEnabled,
+                       OsA11yPageFaceGazeActionsCard) {
+  RunSettingsTest("os_a11y_page/facegaze_actions_card_test.js");
 }
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,

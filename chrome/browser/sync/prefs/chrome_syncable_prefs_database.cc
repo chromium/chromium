@@ -341,6 +341,9 @@ enum {
   kSyncableVersionedWallpaperInfo = 100282,
   kFocusModeSelectedTask = 100283,
   kFocusModeSoundSection = 100284,
+  kAccessibilityFaceGazeActionsEnabled = 100285,
+  kAccessibilityFaceGazeCursorControlEnabled = 100286,
+  kAccessibilityFaceGazeAdjustSpeedSeparately = 100287,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1132,6 +1135,18 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kAccessibilityFaceGazeGesturesToConfidence,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kMergeableDict}},
+    {ash::prefs::kAccessibilityFaceGazeActionsEnabled,
+     {syncable_prefs_ids::kAccessibilityFaceGazeActionsEnabled,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFaceGazeCursorControlEnabled,
+     {syncable_prefs_ids::kAccessibilityFaceGazeCursorControlEnabled,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFaceGazeAdjustSpeedSeparately,
+     {syncable_prefs_ids::kAccessibilityFaceGazeAdjustSpeedSeparately,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
     {prefs::kShelfContainerAppPinRolls,
      {syncable_prefs_ids::kShelfContainerAppPinRolls, syncer::OS_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
