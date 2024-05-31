@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path_watcher.h"
+#include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -43,10 +44,66 @@ class TrackedShortcut : public ui::TrackedElement {
 
   const base::FilePath& path() const { return path_; }
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  void MaybeTriggerShownEvent() {
+    if (did_trigger_shown_) {
+      return;
+    }
+    {
+      // Postpone dispatching the "shown" event for this shortcut until the
+      // file contains at least some data. Creating the file and writing its
+      // contents is not an atomic operation, so sometimes an empty file can be
+      // observed.
+      base::ScopedAllowBlockingForTesting allow_io;
+      int64_t file_size = 0;
+      if (!base::GetFileSize(path_, &file_size) || file_size == 0) {
+        // If the file isn't already being watched, start watching it. We can't
+        // just piggy-back of the FilePathWatcher in ShortcutTracker, as on
+        // macOS FilePathWatcher on a directory does not monitor changes to
+        // files in that directory.
+        if (!path_watcher_) {
+          path_watcher_.emplace(
+              base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+          path_watcher_.AsyncCall(&base::FilePathWatcher::Watch)
+              .WithArgs(path_, base::FilePathWatcher::Type::kNonRecursive,
+                        base::BindPostTaskToCurrentDefault(base::BindRepeating(
+                            &TrackedShortcut::ContentChanged,
+                            weak_ptr_factory_.GetWeakPtr())))
+              // Re-check if the shortcut has been written to once the
+              // FilePathWatcher has been set-up, to catch any cases where the
+              // file is written to after we originally check its contents but
+              // before the FilePathWatcher is in place.
+              .Then(base::BindOnce([](bool result) { EXPECT_TRUE(result); })
+                        .Then(base::BindOnce(
+                            &TrackedShortcut::MaybeTriggerShownEvent,
+                            weak_ptr_factory_.GetWeakPtr())));
+        }
+        return;
+      }
+    }
 
+    did_trigger_shown_ = true;
+    // No longer need to watch for file changes. Deletion of the shortcut is
+    // handled in ShortcutTracker.
+    path_watcher_.Reset();
+    ui::ElementTracker::GetFrameworkDelegate()->NotifyElementShown(this);
+  }
+
+  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
  private:
+  void ContentChanged(const base::FilePath& path, bool error) {
+    EXPECT_FALSE(error);
+    MaybeTriggerShownEvent();
+  }
+
   base::FilePath path_;
+
+  // Set to true when ui::ElementTracker has been notified that this shortcut
+  // has been shown. This is done to avoid notifying twice in cases where
+  // MaybeTriggerShownEvent gets called multiple times.
+  bool did_trigger_shown_ = false;
+  base::SequenceBound<base::FilePathWatcher> path_watcher_;
+
+  base::WeakPtrFactory<TrackedShortcut> weak_ptr_factory_{this};
 };
 
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(TrackedShortcut)
@@ -139,14 +196,11 @@ class ShortcutIntegrationBrowserTestPrivate::ShortcutTracker {
       }
       return should_erase;
     });
-    // Now notify `ElementTracker` of newly observed and tracked files. This is
-    // done last to avoid any re-entrency issues for actions that are triggered
-    // by this.
-    // TODO(https://crbug.com/343247628): Delay this until the shortcuts have
-    // been fully written to disk, not just created as possibly empty files.
+    // Now maybe notify `ElementTracker` of newly observed and tracked files.
+    // This is done last to avoid any re-entrency issues for actions that are
+    // triggered by this.
     for (TrackedShortcut* new_shortcut : new_shortcuts) {
-      ui::ElementTracker::GetFrameworkDelegate()->NotifyElementShown(
-          new_shortcut);
+      new_shortcut->MaybeTriggerShownEvent();
     }
   }
 

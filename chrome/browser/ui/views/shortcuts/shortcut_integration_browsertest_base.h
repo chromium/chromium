@@ -27,33 +27,37 @@ class ShortcutIntegrationBrowserTestApi : public InteractiveBrowserTestApi {
   ~ShortcutIntegrationBrowserTestApi() override;
 
   // Triggers the "create shortcut" dialog and waits for the dialog to show.
-  MultiStep ShowCreateShortcutDialog();
+  [[nodiscard]] MultiStep ShowCreateShortcutDialog();
 
   // Triggers and accepts the "create shortcut" dialog.
-  MultiStep ShowAndAcceptCreateShortcutDialog();
+  [[nodiscard]] MultiStep ShowAndAcceptCreateShortcutDialog();
 
   // Same as `ShowAndAcceptCreateShortcutDialog()`, but sets the title in the
   // dialog to `title` before accepting the dialog.
-  MultiStep ShowCreateShortcutDialogSetTitleAndAccept(
+  [[nodiscard]] MultiStep ShowCreateShortcutDialogSetTitleAndAccept(
       const std::u16string& title);
 
   // Gives the next shortcut to be created an identifier, to allow interacting
   // with it in subsequent steps. Make sure to not trigger a second copy of this
   // step until the shortcut for the first copy has been created.
-  StepBuilder InstrumentNextShortcut(ui::ElementIdentifier identifier);
-
-  // Waits for the create shortcut dialog to signal creation (or failure to
-  // create) of a shortcut.
-  // Waiting for a instrumented "next" shortcut to be shown has almost the same
-  // effect, except that writing shortcuts to disk is not an atomic operation,
-  // so sometimes that could result in working with a shortcut that isn't fully
-  // written yet.
-  // TODO(https://crbug.com/343247628): Make it so that a newly created shortcut
-  // is not "shown" until the shortcut is actually fully written to disk.
-  StepBuilder WaitForShortcutCreated();
+  [[nodiscard]] StepBuilder InstrumentNextShortcut(
+      ui::ElementIdentifier identifier);
 
   // Launches the given shortcut.
-  StepBuilder LaunchShortcut(ui::ElementIdentifier identifier);
+  [[nodiscard]] StepBuilder LaunchShortcut(ui::ElementIdentifier identifier);
+
+  // Check that `matcher` matches (the base::FilePath for) the shortcut
+  // identified by `identifier`.
+  //
+  // Note that like `CheckElement()`, unless you add
+  // .SetMustBeVisibleAtStart(true), this test step will wait for `identifier`
+  // to be shown (i.e. created) before proceeding.
+  template <typename M>
+  [[nodiscard]] static StepBuilder CheckShortcut(
+      ui::ElementIdentifier identifier,
+      M&& matcher) {
+    return InAnyContext(CheckElement(identifier, &GetShortcutPath, matcher));
+  }
 
   // Gets the path from a tracked element as identified by
   // `InstrumentNextShortcut`. Can for example be used with `CheckElement()` to

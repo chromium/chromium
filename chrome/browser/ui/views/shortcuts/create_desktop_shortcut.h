@@ -42,11 +42,6 @@ void CreateShortcutForWebContents(
     base::OnceCallback<void(bool shortcuts_created)>
         shortcut_creation_callback);
 
-// This event is sent for the BrowserView the create shortcut dialog was
-// created for upon completion of the created shortcut flow. When this event
-// fires creating the shortcut has either completed or failed.
-DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kShortcutCreatedEvent);
-
 }  // namespace shortcuts
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SHORTCUTS_CREATE_DESKTOP_SHORTCUT_H_

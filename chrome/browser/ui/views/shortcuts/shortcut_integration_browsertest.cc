@@ -31,11 +31,9 @@ IN_PROC_BROWSER_TEST_F(ShortcutIntegrationBrowserTest, CreateAndLaunch) {
       InstrumentTab(kInitialTabId),
       NavigateWebContents(kInitialTabId, kPageWithIconsUrl),
       InstrumentNextShortcut(kNewShortcutId),
-      ShowAndAcceptCreateShortcutDialog(), WaitForShortcutCreated(),
-      InAnyContext(CheckElement(kNewShortcutId, &GetShortcutPath,
-                                IsShortcutForUrl(kPageWithIconsUrl))),
-      InstrumentNextTab(kNewTabId),
-      InAnyContext(LaunchShortcut(kNewShortcutId)),
+      ShowAndAcceptCreateShortcutDialog(),
+      CheckShortcut(kNewShortcutId, IsShortcutForUrl(kPageWithIconsUrl)),
+      InstrumentNextTab(kNewTabId), LaunchShortcut(kNewShortcutId),
       WaitForWebContentsNavigation(kNewTabId, kPageWithIconsUrl));
 }
 
@@ -47,9 +45,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutIntegrationBrowserTest, CustomTitle) {
       NavigateWebContents(kInitialTabId, kPageWithIconsUrl),
       InstrumentNextShortcut(kNewShortcutId),
       ShowCreateShortcutDialogSetTitleAndAccept(u"Hello World!"),
-      WaitForShortcutCreated(),
-      InAnyContext(CheckElement(kNewShortcutId, &GetShortcutPath,
-                                IsShortcutWithTitle(u"Hello World!"))));
+      CheckShortcut(kNewShortcutId, IsShortcutWithTitle(u"Hello World!")));
 }
 
 }  // namespace shortcuts

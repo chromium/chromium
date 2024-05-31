@@ -81,14 +81,9 @@ ShortcutIntegrationBrowserTestApi::InstrumentNextShortcut(
 ui::test::InteractiveTestApi::StepBuilder
 ShortcutIntegrationBrowserTestApi::LaunchShortcut(
     ui::ElementIdentifier identifier) {
-  return WithElement(identifier, [](ui::TrackedElement* element) {
+  return InAnyContext(WithElement(identifier, [](ui::TrackedElement* element) {
     ShortcutCreationTestSupport::LaunchShortcut(GetShortcutPath(element));
-  });
-}
-
-ui::InteractionSequence::StepBuilder
-ShortcutIntegrationBrowserTestApi::WaitForShortcutCreated() {
-  return WaitForEvent(kBrowserViewElementId, kShortcutCreatedEvent);
+  }));
 }
 
 // static

@@ -138,25 +138,8 @@ void CreateShortcutForWebContents(
   CreateShortcutForCurrentWebContentsTask::CreateAndStart(
       *web_contents,
       base::BindOnce(&ShowCreateDesktopShortcutDialog, web_contents),
-      std::move(shortcut_creation_callback)
-          .Then(base::BindOnce(
-              [](base::WeakPtr<content::WebContents> web_contents) {
-                if (!web_contents) {
-                  return;
-                }
-                Browser* browser =
-                    chrome::FindBrowserWithTab(web_contents.get());
-                if (!browser) {
-                  return;
-                }
-                views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-                    shortcuts::kShortcutCreatedEvent,
-                    BrowserView::GetBrowserViewForBrowser(browser));
-              },
-              web_contents->GetWeakPtr())));
+      std::move(shortcut_creation_callback));
 }
-
-DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kShortcutCreatedEvent);
 
 }  // namespace shortcuts
 
