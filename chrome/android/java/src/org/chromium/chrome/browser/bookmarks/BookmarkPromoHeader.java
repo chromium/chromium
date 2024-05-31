@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -169,7 +170,12 @@ public class BookmarkPromoHeader
             return SyncPromoState.NO_PROMO;
         }
 
-        if (!mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC)) {
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            return shouldShowBookmarkSigninPromo()
+                    ? SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE
+                    : SyncPromoState.NO_PROMO;
+        } else if (!mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC)) {
             if (!shouldShowBookmarkSigninPromo()) {
                 return SyncPromoState.NO_PROMO;
             }
