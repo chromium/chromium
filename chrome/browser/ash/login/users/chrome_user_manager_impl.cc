@@ -333,20 +333,6 @@ void ChromeUserManagerImpl::RemoveUserInternal(
   RemoveNonOwnerUserInternal(account_id, reason);
 }
 
-void ChromeUserManagerImpl::SaveUserOAuthStatus(
-    const AccountId& account_id,
-    user_manager::User::OAuthTokenStatus oauth_token_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  UserManagerBase::SaveUserOAuthStatus(account_id, oauth_token_status);
-}
-
-void ChromeUserManagerImpl::SaveUserDisplayName(
-    const AccountId& account_id,
-    const std::u16string& display_name) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  UserManagerBase::SaveUserDisplayName(account_id, display_name);
-}
-
 void ChromeUserManagerImpl::StopPolicyObserverForTesting() {
   cloud_external_data_policy_handlers_.clear();
 }
@@ -478,12 +464,6 @@ bool ChromeUserManagerImpl::IsEphemeralAccountIdByPolicy(
 
   return device_is_owned &&
          GetEphemeralModeConfig().IsAccountIdIncluded(account_id);
-}
-
-void ChromeUserManagerImpl::NotifyOnLogin() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  UserManagerBase::NotifyOnLogin();
 }
 
 void ChromeUserManagerImpl::RemoveNonCryptohomeData(

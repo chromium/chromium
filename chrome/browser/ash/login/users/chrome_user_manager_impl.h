@@ -55,11 +55,6 @@ class ChromeUserManagerImpl
 
   // UserManager implementation:
   void Shutdown() override;
-  void SaveUserOAuthStatus(
-      const AccountId& account_id,
-      user_manager::User::OAuthTokenStatus oauth_token_status) override;
-  void SaveUserDisplayName(const AccountId& account_id,
-                           const std::u16string& display_name) override;
   bool IsGuestSessionAllowed() const override;
   bool IsGaiaUserAllowed(const user_manager::User& user) const override;
   bool IsUserAllowed(const user_manager::User& user) const override;
@@ -91,7 +86,6 @@ class ChromeUserManagerImpl
 
  protected:
   void LoadDeviceLocalAccounts(std::set<AccountId>* users_set) override;
-  void NotifyOnLogin() override;
   void RemoveNonCryptohomeData(const AccountId& account_id) override;
   void RemoveUserInternal(const AccountId& account_id,
                           user_manager::UserRemovalReason reason) override;
