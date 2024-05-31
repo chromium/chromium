@@ -922,7 +922,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/cronet_android_mainline_clang/linux-amd64',
-              'version': 'cOWHyVbQYOA9ATyuUaYmOE6YLer1h1JFFa6KRS3_hjIC',
+              'version': '2HCVOxZv-I1F2tuUgLjeEnC36bV4h35uxQuyDExYxVMC',
           },
       ],
       'condition': 'checkout_android and host_os == "linux"',
