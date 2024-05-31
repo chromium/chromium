@@ -544,7 +544,7 @@ void ServiceWorkerClient::OnExecutionReady() {
   // to false is_execution_ready().
   // TODO(leonhsl): Create some layout tests covering the above case 1), in
   // which case we may also need to set |notify_controllerchange| correctly.
-  SendSetControllerServiceWorker(false /* notify_controllerchange */);
+  container_host().SendSetController(false /* notify_controllerchange */);
 
   SetExecutionReady();
 }
@@ -773,11 +773,11 @@ void ServiceWorkerContainerHostForClient::CountFeature(
 }
 
 blink::mojom::ControllerServiceWorkerInfoPtr
-ServiceWorkerClient::CreateControllerServiceWorkerInfo() {
+ServiceWorkerContainerHostForClient::CreateControllerServiceWorkerInfo() {
   CHECK(controller());
 
   auto controller_info = blink::mojom::ControllerServiceWorkerInfo::New();
-  controller_info->client_id = client_uuid();
+  controller_info->client_id = service_worker_client().client_uuid();
   controller_info->mode = controller()->GetControllerMode();
   controller_info->fetch_handler_type = controller()->fetch_handler_type();
   controller_info->fetch_handler_bypass_option =
@@ -799,7 +799,7 @@ ServiceWorkerClient::CreateControllerServiceWorkerInfo() {
     }
     if (controller()->router_evaluator()->need_running_status()) {
       controller_info->router_data->running_status_receiver =
-          GetRunningStatusCallbackReceiver();
+          service_worker_client().GetRunningStatusCallbackReceiver();
       controller_info->router_data->initial_running_status =
           controller()->running_status();
     }
@@ -816,9 +816,9 @@ ServiceWorkerClient::CreateControllerServiceWorkerInfo() {
     controller_info->remote_controller = remote.Unbind();
   }
 
-  if (fetch_request_window_id()) {
+  if (service_worker_client().fetch_request_window_id()) {
     controller_info->fetch_request_window_id =
-        std::make_optional(fetch_request_window_id());
+        std::make_optional(service_worker_client().fetch_request_window_id());
   }
   // Populate used features for UseCounter purposes.
   for (const auto feature : controller()->used_features()) {
@@ -827,8 +827,7 @@ ServiceWorkerClient::CreateControllerServiceWorkerInfo() {
 
   // Set the info for the JavaScript ServiceWorkerContainer#controller object.
   if (base::WeakPtr<ServiceWorkerObjectHost> object_host =
-          container_host().version_object_manager().GetOrCreateHost(
-              controller())) {
+          version_object_manager().GetOrCreateHost(controller())) {
     controller_info->object_info =
         object_host->CreateCompleteObjectInfoToSend();
   }
@@ -836,12 +835,12 @@ ServiceWorkerClient::CreateControllerServiceWorkerInfo() {
   return controller_info;
 }
 
-void ServiceWorkerClient::SendSetControllerServiceWorker(
+void ServiceWorkerContainerHostForClient::SendSetController(
     bool notify_controllerchange) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(is_container_ready());
+  CHECK(service_worker_client().is_container_ready());
 
-  if (!controller_ || !context_) {
+  if (!context() || !controller()) {
     // Do not set |fetch_request_window_id| when |controller_| is not available.
     // Setting |fetch_request_window_id| should not affect correctness, however,
     // we have the extensions bug, https://crbug.com/963748, which we don't yet
@@ -856,38 +855,29 @@ void ServiceWorkerClient::SendSetControllerServiceWorker(
     // |context_| does not exist. To avoid the potential inconsistency with the
     // renderer side, setController as no-controller.
     auto controller_info = blink::mojom::ControllerServiceWorkerInfo::New();
-    controller_info->client_id = client_uuid();
-    container_host().SendSetController(std::move(controller_info),
-                                       notify_controllerchange);
+    controller_info->client_id = service_worker_client().client_uuid();
+    container_->SetController(std::move(controller_info),
+                              notify_controllerchange);
     return;
   }
 
-  DCHECK(controller_registration());
-  DCHECK_EQ(controller_registration_->active_version(), controller_.get());
-
-  auto controller_info = CreateControllerServiceWorkerInfo();
+  DCHECK(service_worker_client().controller_registration());
+  DCHECK_EQ(service_worker_client().controller_registration()->active_version(),
+            controller());
 
   // TODO(crbug.com/331279951): Remove these crash keys after investigation.
-  SCOPED_CRASH_KEY_NUMBER("SWCH_SC", "client_type",
-                          static_cast<int32_t>(GetClientType()));
-  SCOPED_CRASH_KEY_BOOL("SWCH_SC", "is_execution_ready", is_execution_ready());
-  SCOPED_CRASH_KEY_BOOL("SWCH_SC", "is_container_ready", is_container_ready());
-
-  container_host().SendSetController(std::move(controller_info),
-                                     notify_controllerchange);
-}
-
-void ServiceWorkerContainerHostForClient::SendSetController(
-    blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
-    bool notify_controllerchange) {
-  // TODO(crbug.com/331279951): Remove these crash keys after investigation.
+  SCOPED_CRASH_KEY_NUMBER(
+      "SWCH_SC", "client_type",
+      static_cast<int32_t>(service_worker_client().GetClientType()));
+  SCOPED_CRASH_KEY_BOOL("SWCH_SC", "is_execution_ready",
+                        service_worker_client().is_execution_ready());
   SCOPED_CRASH_KEY_BOOL("SWCH_SC", "is_bound", container_.is_bound());
   SCOPED_CRASH_KEY_BOOL("SWCH_SC", "is_connected",
                         container_.is_bound() && container_.is_connected());
   SCOPED_CRASH_KEY_BOOL("SWCH_SC", "notify_controllerchange",
                         notify_controllerchange);
 
-  container_->SetController(std::move(controller_info),
+  container_->SetController(CreateControllerServiceWorkerInfo(),
                             notify_controllerchange);
 }
 
@@ -1202,19 +1192,18 @@ void ServiceWorkerClient::SetControllerRegistration(
 }
 
 mojo::Remote<blink::mojom::ControllerServiceWorker>
-ServiceWorkerClient::GetRemoteControllerServiceWorker() {
+ServiceWorkerContainerHostForClient::GetRemoteControllerServiceWorker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(controller_);
-  CHECK(is_response_committed());
-  if (controller_->fetch_handler_existence() ==
+  DCHECK(controller());
+  CHECK(service_worker_client().is_response_committed());
+  if (controller()->fetch_handler_existence() ==
       ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST) {
     return mojo::Remote<blink::mojom::ControllerServiceWorker>();
   }
 
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote_controller;
-  container_host().CloneControllerServiceWorker(
-      remote_controller.BindNewPipeAndPassReceiver());
+  CloneControllerServiceWorker(remote_controller.BindNewPipeAndPassReceiver());
   return remote_controller;
 }
 
@@ -1684,7 +1673,7 @@ void ServiceWorkerClient::UpdateController(bool notify_controllerchange) {
     return;
   }
 
-  SendSetControllerServiceWorker(notify_controllerchange);
+  container_host().SendSetController(notify_controllerchange);
 }
 
 #if DCHECK_IS_ON()

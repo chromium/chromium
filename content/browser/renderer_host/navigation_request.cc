@@ -6050,7 +6050,8 @@ void NavigationRequest::CommitNavigation() {
 
       if (service_worker_handle_->service_worker_client()->controller()) {
         controller = service_worker_handle_->service_worker_client()
-                         ->CreateControllerServiceWorkerInfo();
+                         ->container_host()
+                         .CreateControllerServiceWorkerInfo();
       }
     }
   }

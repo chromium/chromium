@@ -232,11 +232,6 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // purposes. This can only be called if IsContainerForClient() is true.
   void CountFeature(blink::mojom::WebFeature feature);
 
-  // Sends information about the controller to the container of the service
-  // worker clients in the renderer. If |notify_controllerchange| is true,
-  // instructs the renderer to dispatch a 'controllerchange' event.
-  void SendSetControllerServiceWorker(bool notify_controllerchange);
-
   // Called when this container host's controller has been terminated and doomed
   // due to an exceptional condition like it could no longer be read from the
   // script cache.
@@ -291,45 +286,6 @@ class CONTENT_EXPORT ServiceWorkerClient final
   void SetControllerRegistration(
       scoped_refptr<ServiceWorkerRegistration> controller_registration,
       bool notify_controllerchange);
-
-  // For service worker clients. Similar to EnsureControllerServiceWorker, but
-  // this returns a bound Mojo ptr which is supposed to be sent to clients. The
-  // controller ptr passed to the clients will be used to intercept requests
-  // from them.
-  // It is invalid to call this when controller_ is null.
-  //
-  // This method can be called in one of the following cases:
-  //
-  // - During navigation, right after a request handler for the main resource
-  //   has found the matching registration and has started the worker.
-  // - When a controller is updated by UpdateController() (e.g.
-  //   by OnSkippedWaiting() or SetControllerRegistration()).
-  //   In some cases the controller worker may not be started yet.
-  //
-  // This may return nullptr if the controller service worker does not have a
-  // fetch handler, i.e. when the renderer does not need the controller ptr.
-  //
-  // WARNING:
-  // Unlike EnsureControllerServiceWorker, this method doesn't guarantee that
-  // the controller worker is running because this method can be called in some
-  // situations where the worker isn't running yet. When the returned ptr is
-  // stored somewhere and intended to use later, clients need to make sure
-  // that the worker is eventually started to use the ptr.
-  // Currently all the callsites do this, i.e. they start the worker before
-  // or after calling this, but there's no mechanism to prevent future breakage.
-  // TODO(crbug.com/40569659): Figure out a way to prevent misuse of this
-  // method.
-  // TODO(crbug.com/40569659): Make sure the connection error handler fires in
-  // ControllerServiceWorkerConnector (so that it can correctly call
-  // EnsureControllerServiceWorker later) if the worker gets killed before
-  // events are dispatched.
-  //
-  // TODO(kinuko): revisit this if we start to use the ControllerServiceWorker
-  // for posting messages.
-  // TODO(hayato): Return PendingRemote, instead of Remote. Binding to Remote
-  // as late as possible is more idiomatic for new Mojo types.
-  mojo::Remote<blink::mojom::ControllerServiceWorker>
-  GetRemoteControllerServiceWorker();
 
   // Create a receiver to notice on ServiceWorker running status change.
   mojo::PendingReceiver<blink::mojom::ServiceWorkerRunningStatusCallback>
@@ -393,6 +349,8 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // committed.
   // https://html.spec.whatwg.org/multipage/webappapis.html#concept-environment-execution-ready-flag
   bool is_execution_ready() const;
+
+  bool is_container_ready() const;
 
   const base::UnguessableToken& fetch_request_window_id() const {
     return fetch_request_window_id_;
@@ -496,10 +454,6 @@ class CONTENT_EXPORT ServiceWorkerClient final
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  // Should be called only when `controller()` is non-null.
-  blink::mojom::ControllerServiceWorkerInfoPtr
-  CreateControllerServiceWorkerInfo();
-
  private:
   class ServiceWorkerRunningStatusObserver;
 
@@ -560,8 +514,6 @@ class CONTENT_EXPORT ServiceWorkerClient final
     kResponseNotCommitted
   };
   void TransitionToClientPhase(ClientPhase new_phase);
-
-  bool is_container_ready() const;
 
   // Sets the controller to |controller_registration_->active_version()| or null
   // if there is no associated registration.
@@ -826,15 +778,21 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
           coep_reporter,
       ukm::SourceId ukm_source_id);
 
+  // Should be called only when `controller()` is non-null.
+  blink::mojom::ControllerServiceWorkerInfoPtr
+  CreateControllerServiceWorkerInfo();
+
   // Dispatches message event to the client (document, dedicated worker when
   // PlzDedicatedWorker is enabled, or shared worker).
   void PostMessageToClient(ServiceWorkerVersion& version,
                            blink::TransferableMessage message);
 
+  // Sends information about the controller to the container of the service
+  // worker clients in the renderer. If |notify_controllerchange| is true,
+  // instructs the renderer to dispatch a 'controllerchange' event.
+  void SendSetController(bool notify_controllerchange);
+
   // Called from ServiceWorkerClient.
-  void SendSetController(
-      blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
-      bool notify_controllerchange);
   void CountFeature(blink::mojom::WebFeature feature);
   void OnVersionAttributesChanged(
       ServiceWorkerRegistration* registration,
@@ -928,6 +886,45 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
                                     const GURL& script_url,
                                     const char* error_prefix,
                                     Args... args);
+
+  // For service worker clients. Similar to EnsureControllerServiceWorker, but
+  // this returns a bound Mojo ptr which is supposed to be sent to clients. The
+  // controller ptr passed to the clients will be used to intercept requests
+  // from them.
+  // It is invalid to call this when controller_ is null.
+  //
+  // This method can be called in one of the following cases:
+  //
+  // - During navigation, right after a request handler for the main resource
+  //   has found the matching registration and has started the worker.
+  // - When a controller is updated by UpdateController() (e.g.
+  //   by OnSkippedWaiting() or SetControllerRegistration()).
+  //   In some cases the controller worker may not be started yet.
+  //
+  // This may return nullptr if the controller service worker does not have a
+  // fetch handler, i.e. when the renderer does not need the controller ptr.
+  //
+  // WARNING:
+  // Unlike EnsureControllerServiceWorker, this method doesn't guarantee that
+  // the controller worker is running because this method can be called in some
+  // situations where the worker isn't running yet. When the returned ptr is
+  // stored somewhere and intended to use later, clients need to make sure
+  // that the worker is eventually started to use the ptr.
+  // Currently all the callsites do this, i.e. they start the worker before
+  // or after calling this, but there's no mechanism to prevent future breakage.
+  // TODO(crbug.com/40569659): Figure out a way to prevent misuse of this
+  // method.
+  // TODO(crbug.com/40569659): Make sure the connection error handler fires in
+  // ControllerServiceWorkerConnector (so that it can correctly call
+  // EnsureControllerServiceWorker later) if the worker gets killed before
+  // events are dispatched.
+  //
+  // TODO(kinuko): revisit this if we start to use the ControllerServiceWorker
+  // for posting messages.
+  // TODO(hayato): Return PendingRemote, instead of Remote. Binding to Remote
+  // as late as possible is more idiomatic for new Mojo types.
+  mojo::Remote<blink::mojom::ControllerServiceWorker>
+  GetRemoteControllerServiceWorker();
 
   // The corresponding service worker client that owns `this`.
   // Always valid and non-null except for initialization/destruction.
