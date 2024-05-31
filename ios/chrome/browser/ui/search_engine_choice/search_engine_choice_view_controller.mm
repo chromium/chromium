@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/i18n/rtl.h"
 #import "base/strings/sys_string_conversions.h"
@@ -156,6 +157,17 @@ UIButton* CreateMorePillButton() {
   morePillButton.accessibilityContainerType =
       UIAccessibilityContainerTypeSemanticGroup;
   return morePillButton;
+}
+
+// Returns the `y` value from the `localReference` in the coordinator of
+// `mainView`.
+CGFloat ConvertVerticalCoordonateWithMainViewReference(UIView* mainView,
+                                                       UIView* referenceView,
+                                                       CGFloat y) {
+  CGPoint point = CGPointMake(0, y);
+  CGPoint pointWithMainViewReference = [mainView convertPoint:point
+                                                     fromView:referenceView];
+  return pointWithMainViewReference.y;
 }
 
 }  // namespace
@@ -527,6 +539,11 @@ UIButton* CreateMorePillButton() {
   // No need to update the more and SetAsDefault buttons. They will be updated
   // when the view will be appearing.
   [self loadSearchEngineButtons];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(accessibilityElementFocusedNotification:)
+             name:UIAccessibilityElementFocusedNotification
+           object:nil];
 }
 
 - (void)viewIsAppearing:(BOOL)animated {
@@ -874,6 +891,55 @@ UIButton* CreateMorePillButton() {
       completion:^(BOOL finished) {
         [button removeFromSuperview];
       }];
+}
+
+// Scrolls automatically `_scrollView` to make sure the search engine button
+// is always fully visible and not hidden by
+// `_floatingSetAsDefaultButtonContainer`.
+- (void)accessibilityElementFocusedNotification:(NSNotification*)notification {
+  CHECK([notification.name
+      isEqualToString:UIAccessibilityElementFocusedNotification])
+      << base::SysNSStringToUTF8(notification.name);
+  id focusedElement = notification.userInfo[UIAccessibilityFocusedElementKey];
+  if (!focusedElement ||
+      ![focusedElement isKindOfClass:SnippetSearchEngineButton.class] ||
+      _floatingSetAsDefaultButtonContainer.hidden) {
+    return;
+  }
+  SnippetSearchEngineButton* searchEngineButton =
+      base::apple::ObjCCast<SnippetSearchEngineButton>(focusedElement);
+  // Get the bottom of `searchEngineButton` in the reference of `self.view`.
+  CGFloat searchEngineButtonBottom =
+      ConvertVerticalCoordonateWithMainViewReference(
+          self.view, searchEngineButton,
+          CGRectGetMaxY(searchEngineButton.bounds));
+  // Get the top of `floatingSetAsDefaultContainerTop` in the reference of
+  // `self.view`.
+  CGFloat floatingSetAsDefaultContainerTop =
+      ConvertVerticalCoordonateWithMainViewReference(
+          self.view, _floatingSetAsDefaultButtonContainer,
+          CGRectGetMinY(_floatingSetAsDefaultButtonContainer.bounds));
+  if (searchEngineButtonBottom <= floatingSetAsDefaultContainerTop) {
+    // The bottom of `searchEngineButton` is visible, no need to scroll.
+    return;
+  }
+  // `_scrollView` should go down to reveal the bottom of `searchEngineButton`.
+  CGFloat distanceToScrollDown =
+      searchEngineButtonBottom - floatingSetAsDefaultContainerTop;
+  // Get the top of `searchEngineButton` in the reference of `self.view`.
+  CGFloat searchEngineButtonTop =
+      ConvertVerticalCoordonateWithMainViewReference(
+          self.view, searchEngineButton,
+          CGRectGetMinY(searchEngineButton.bounds));
+  if (searchEngineButtonTop - distanceToScrollDown < 0) {
+    // If the distance to scroll will hide the top of `searchEngineButton`,
+    // the scroll distance should be reduced to make sure at the top is visible.
+    distanceToScrollDown += searchEngineButtonTop - distanceToScrollDown;
+  }
+  // Update the scroll position.
+  CGPoint contentOffset = _scrollView.contentOffset;
+  contentOffset.y += distanceToScrollDown;
+  _scrollView.contentOffset = contentOffset;
 }
 
 #pragma mark - UITextViewDelegate
