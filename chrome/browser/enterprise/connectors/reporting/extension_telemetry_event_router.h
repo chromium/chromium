@@ -7,14 +7,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
-#include "extensions/browser/extension_registry_observer.h"
-#include "extensions/common/manifest.h"
+#include "extensions/common/extension.h"
 
 namespace enterprise_connectors {
 // An event router that collects extension telemetry reports and then sends
 // events to reporting server.
-class ExtensionTelemetryEventRouter
-    : public extensions::ExtensionRegistryObserver {
+class ExtensionTelemetryEventRouter {
  public:
   explicit ExtensionTelemetryEventRouter(content::BrowserContext* context);
   ExtensionTelemetryEventRouter(const ExtensionTelemetryEventRouter&) = delete;
@@ -24,17 +22,11 @@ class ExtensionTelemetryEventRouter
   ExtensionTelemetryEventRouter& operator=(ExtensionTelemetryEventRouter&&) =
       delete;
 
-  ~ExtensionTelemetryEventRouter() override;
+  ~ExtensionTelemetryEventRouter();
 
   std::string GetLocationString(extensions::mojom::ManifestLocation location);
-  void StartObserving();
-  // extensions::ExtensionRegistryObserver:
-  bool IsPolicyEnabled();
   void UploadTelemetryReport(content::BrowserContext* browser_context,
                              const extensions::Extension* extension);
-
- private:
-  raw_ptr<extensions::ExtensionRegistry> extension_registry_ = nullptr;
 };
 
 }  // namespace enterprise_connectors

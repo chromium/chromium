@@ -7,7 +7,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
-#include "extensions/browser/extension_registry.h"
 
 namespace enterprise_connectors {
 
@@ -38,16 +37,9 @@ constexpr char kExternalComponentInstallLocation[] = "EXTERNAL_COMPONENT";
 }  // namespace
 
 ExtensionTelemetryEventRouter::ExtensionTelemetryEventRouter(
-    content::BrowserContext* context) {
-  extension_registry_ = extensions::ExtensionRegistry::Get(context);
-}
+    content::BrowserContext* context) {}
 
-ExtensionTelemetryEventRouter::~ExtensionTelemetryEventRouter() {
-  if (extension_registry_ && IsPolicyEnabled()) {
-    extension_registry_->RemoveObserver(this);
-  }
-  extension_registry_ = nullptr;
-}
+ExtensionTelemetryEventRouter::~ExtensionTelemetryEventRouter() = default;
 
 std::string ExtensionTelemetryEventRouter::GetLocationString(
     extensions::mojom::ManifestLocation location) {
@@ -77,22 +69,13 @@ std::string ExtensionTelemetryEventRouter::GetLocationString(
   }
 }
 
-void ExtensionTelemetryEventRouter::StartObserving() {
-  DLOG_IF(ERROR, !extension_registry_)
-      << "extension_registry_ is null. Observer not added.";
-  if (!IsPolicyEnabled()) {
-    return;
-  }
-  extension_registry_->AddObserver(this);
-}
-
-bool ExtensionTelemetryEventRouter::IsPolicyEnabled() {
-  return base::FeatureList::IsEnabled(kExtensionTelemetryEventsEnabled);
-}
-
 void ExtensionTelemetryEventRouter::UploadTelemetryReport(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension) {
+  if (!base::FeatureList::IsEnabled(kExtensionTelemetryEventsEnabled)) {
+    return;
+  }
+
   auto* reporting_client =
       RealtimeReportingClientFactory::GetForProfile(browser_context);
   if (!reporting_client) {

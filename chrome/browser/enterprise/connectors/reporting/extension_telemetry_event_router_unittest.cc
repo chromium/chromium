@@ -95,10 +95,10 @@ class ExtensionTelemetryEventRouterTest : public testing::Test {
 
     RealtimeReportingClientFactory::GetInstance()->SetTestingFactory(
         profile_, base::BindRepeating(&MakeMockRealtimeReportingClient));
-    extensionTelemetryEventRouter_ =
+    extension_telemetry_event_router_ =
         std::make_unique<ExtensionTelemetryEventRouter>(profile_);
 
-    mockRealtimeReportingClient_ = static_cast<MockRealtimeReportingClient*>(
+    mock_realtime_reporting_client_ = static_cast<MockRealtimeReportingClient*>(
         RealtimeReportingClientFactory::GetForProfile(profile_));
 
     test::SetOnSecurityEventReporting(
@@ -109,11 +109,8 @@ class ExtensionTelemetryEventRouterTest : public testing::Test {
     // Set a mock cloud policy client in the router.
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
     client_->SetDMToken("fake-token");
-    mockRealtimeReportingClient_->SetBrowserCloudPolicyClientForTesting(
+    mock_realtime_reporting_client_->SetBrowserCloudPolicyClientForTesting(
         client_.get());
-
-    settings.enabled_event_names.insert(
-        ReportingServiceSettings::kExtensionTelemetryEvent);
 
     // Set up extension info
     base::Value::Dict manifest;
@@ -127,7 +124,7 @@ class ExtensionTelemetryEventRouterTest : public testing::Test {
         manifest, extensions::Extension::NO_FLAGS, kFakeExtensionId, &error);
   }
   void TearDown() override {
-    mockRealtimeReportingClient_->SetBrowserCloudPolicyClientForTesting(
+    mock_realtime_reporting_client_->SetBrowserCloudPolicyClientForTesting(
         nullptr);
   }
 
@@ -137,14 +134,20 @@ class ExtensionTelemetryEventRouterTest : public testing::Test {
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
   scoped_refptr<extensions::Extension> extension_chrome_;
-  ReportingSettings settings;
-  raw_ptr<MockRealtimeReportingClient> mockRealtimeReportingClient_;
-  std::unique_ptr<ExtensionTelemetryEventRouter> extensionTelemetryEventRouter_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  raw_ptr<MockRealtimeReportingClient> mock_realtime_reporting_client_;
+  std::unique_ptr<ExtensionTelemetryEventRouter>
+      extension_telemetry_event_router_;
 };
 
 class ExtensionTelemetryEventExtensionSourceTest
     : public ExtensionTelemetryEventRouterTest,
       public testing::WithParamInterface<const char*> {
+ public:
+  ExtensionTelemetryEventExtensionSourceTest() {
+    scoped_feature_list_.InitAndEnableFeature(kExtensionTelemetryEventsEnabled);
+  }
+
  protected:
   const char* extension_source_ = GetParam();
   std::map<const char*, extensions::mojom::ManifestLocation> location_map_ = {
@@ -191,13 +194,13 @@ TEST_P(ExtensionTelemetryEventExtensionSourceTest,
   expectedEvent.Set("extension_source", extension_source_);
   expectedEvent.Set("profileUserName", kFakeProfileUsername);
 
-  EXPECT_CALL(*mockRealtimeReportingClient_, GetProfileUserName())
+  EXPECT_CALL(*mock_realtime_reporting_client_, GetProfileUserName())
       .WillOnce(Return(kFakeProfileUsername));
-  EXPECT_CALL(*mockRealtimeReportingClient_,
+  EXPECT_CALL(*mock_realtime_reporting_client_,
               ReportRealtimeEvent("extensionTelemetryEvent", _,
                                   Eq(ByRef(expectedEvent))))
       .Times(1);
-  extensionTelemetryEventRouter_->UploadTelemetryReport(
+  extension_telemetry_event_router_->UploadTelemetryReport(
       profile_, extension_chrome_.get());
 }
 
@@ -211,9 +214,12 @@ TEST_F(ExtensionTelemetryEventRouterTest, CheckTelemetryEventNotReported) {
       /*enabled_event_names=*/{"browserExtensionInstallEvent"},
       /*enabled_opt_in_events=*/
       std::map<std::string, std::vector<std::string>>());
-  settings.enabled_event_names.erase(
-      ReportingServiceSettings::kExtensionTelemetryEvent);
-  EXPECT_FALSE(extensionTelemetryEventRouter_->IsPolicyEnabled());
+  EXPECT_CALL(*mock_realtime_reporting_client_, GetProfileUserName()).Times(0);
+  EXPECT_CALL(*mock_realtime_reporting_client_,
+              ReportRealtimeEvent("extensionTelemetryEvent", _, _))
+      .Times(0);
+  extension_telemetry_event_router_->UploadTelemetryReport(
+      profile_, extension_chrome_.get());
 }
 
 }  // namespace enterprise_connectors

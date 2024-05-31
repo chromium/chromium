@@ -77,7 +77,6 @@ ConnectorsManager::ConnectorsManager(
 #endif
   }
   extension_install_event_router_->StartObserving();
-  extension_telemetry_event_router_->StartObserving();
 }
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
