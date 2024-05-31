@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/services/secure_channel/session_keys.h"
 
-#include "base/strings/string_piece.h"
 #include "crypto/hkdf.h"
 
 namespace ash::secure_channel {

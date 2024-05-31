@@ -13,7 +13,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_chromeos_version_info.h"

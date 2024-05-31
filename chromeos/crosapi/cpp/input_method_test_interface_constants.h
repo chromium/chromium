@@ -6,7 +6,6 @@
 #define CHROMEOS_CROSAPI_CPP_INPUT_METHOD_TEST_INTERFACE_CONSTANTS_H_
 
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 
 namespace crosapi {
 
