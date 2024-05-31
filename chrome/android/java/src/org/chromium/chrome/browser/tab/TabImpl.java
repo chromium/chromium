@@ -682,7 +682,10 @@ class TabImpl implements Tab {
 
     @Override
     public void freezeAndAppendPendingNavigation(LoadUrlParams params, @Nullable String title) {
-        assert isHidden();
+        assert isHidden() : "Should only freeze and apprend a navigation to a tab that is hidden.";
+        // If the native page is not already torn down make sure we remove it so it isn't visible if
+        // this tab is foregrounded again in the current session.
+        hideNativePage(/* notify= */ false, /* postHideTask= */ null);
         WebContentsState oldWebContentsState = TabStateExtractor.getWebContentsState(this);
         WebContents oldWebContents = mWebContents;
         destroyWebContents(false);

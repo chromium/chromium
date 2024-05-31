@@ -268,13 +268,22 @@ public class TabTest {
     @SmallTest
     @Feature({"Tab"})
     public void testFreezeAndAppendPendingNavigation_AlreadyFrozen() {
-        checkFreezingAndAppendingPendingNavigation(this::createSecondFrozenTab, "MyFrozenTitle");
+        String firstUrl =
+                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
+        String secondUrl =
+                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
+        checkFreezingAndAppendingPendingNavigation(
+                this::createSecondFrozenTab, firstUrl, secondUrl, "MyFrozenTitle");
     }
 
     @Test
     @SmallTest
     @Feature({"Tab"})
     public void testFreezeAndAppendPendingNavigation_LiveBackground() {
+        String firstUrl =
+                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
+        String secondUrl =
+                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
         checkFreezingAndAppendingPendingNavigation(
                 url -> {
                     Tab tab = sActivityTestRule.loadUrlInNewTab(url, /* incognito= */ false);
@@ -287,31 +296,64 @@ public class TabTest {
                             });
                     return tab;
                 },
+                firstUrl,
+                secondUrl,
                 "MyTitle");
     }
 
     @Test
     @SmallTest
     @Feature({"Tab"})
+    public void testFreezeAndAppendPendingNavigation_LiveBackground_NativePage() {
+        String firstUrl = UrlConstants.NTP_URL;
+        String secondUrl =
+                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
+        checkFreezingAndAppendingPendingNavigation(
+                url -> {
+                    Tab tab = sActivityTestRule.loadUrlInNewTab(url, /* incognito= */ false);
+                    TestThreadUtils.runOnUiThreadBlocking(
+                            () -> {
+                                TabModel model =
+                                        sActivityTestRule.getActivity().getCurrentTabModel();
+                                TabModelUtils.setIndex(
+                                        model, /* index= */ 0, /* skipLoadingTab= */ false);
+                            });
+                    assertTrue(tab.isNativePage());
+                    return tab;
+                },
+                firstUrl,
+                secondUrl,
+                "Not NTP");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
     public void testFreezeAndAppendPendingNavigation_NullTitle() {
-        checkFreezingAndAppendingPendingNavigation(this::createSecondFrozenTab, null);
+        String firstUrl =
+                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
+        String secondUrl =
+                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
+        checkFreezingAndAppendingPendingNavigation(
+                this::createSecondFrozenTab, firstUrl, secondUrl, null);
     }
 
     private void checkFreezingAndAppendingPendingNavigation(
-            TabCreator tabCreator, @Nullable String title) {
-        String firstUrl =
-                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
+            TabCreator tabCreator,
+            String firstUrl,
+            String secondUrl,
+            @Nullable String secondTitle) {
         TabObserver observer = Mockito.mock(TabObserver.class);
         Tab bgTab = tabCreator.createTab(firstUrl);
         boolean wasFrozen = bgTab.isFrozen();
 
-        String secondUrl =
-                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     bgTab.addObserver(observer);
-                    bgTab.freezeAndAppendPendingNavigation(new LoadUrlParams(secondUrl), title);
+                    bgTab.freezeAndAppendPendingNavigation(
+                            new LoadUrlParams(secondUrl), secondTitle);
                     assertTrue(bgTab.isFrozen());
+                    assertFalse(bgTab.isNativePage());
                 });
         verify(observer).onUrlUpdated(eq(bgTab));
         if (wasFrozen) {
@@ -322,8 +364,11 @@ public class TabTest {
         verify(observer).onFaviconUpdated(bgTab, null, null);
         verify(observer).onTitleUpdated(bgTab);
         verify(observer).onNavigationEntriesAppended(bgTab);
-        assertEquals(title, ChromeTabUtils.getTitleOnUiThread(bgTab));
+        assertEquals(secondTitle, ChromeTabUtils.getTitleOnUiThread(bgTab));
         assertEquals(secondUrl, ChromeTabUtils.getUrlStringOnUiThread(bgTab));
+
+        assertFalse(bgTab.isLoading());
+        assertNull(bgTab.getWebContents());
 
         Runnable loadPage =
                 () -> {
