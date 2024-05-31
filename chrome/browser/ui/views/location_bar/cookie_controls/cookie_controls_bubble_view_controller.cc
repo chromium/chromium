@@ -55,13 +55,7 @@ constexpr UrlIdentity::FormatOptions kUrlIdentityOptions{
                             kOmitSchemePathAndTrivialSubdomains}};
 
 const gfx::VectorIcon& GetToggleIcon(bool enabled) {
-  if (enabled) {
-    return features::IsChromeRefresh2023() ? views::kEyeRefreshIcon
-                                           : views::kEyeIcon;
-  } else {
-    return features::IsChromeRefresh2023() ? views::kEyeCrossedRefreshIcon
-                                           : views::kEyeCrossedIcon;
-  }
+  return enabled ? views::kEyeRefreshIcon : views::kEyeCrossedRefreshIcon;
 }
 
 }  // namespace

@@ -109,12 +109,8 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveFeaturePromoTest {
     return {content_settings::features::kTrackingProtection3pcd};
   }
 
-  auto CheckIcon(ElementSpecifier view,
-                 const gfx::VectorIcon& icon_pre_2023_refresh,
-                 const gfx::VectorIcon& icon_post_2023_refresh) {
-    std::string expected_name = features::IsChromeRefresh2023()
-                                    ? icon_post_2023_refresh.name
-                                    : icon_pre_2023_refresh.name;
+  auto CheckIcon(ElementSpecifier view, const gfx::VectorIcon& icon) {
+    std::string expected_name = icon.name;
     StepBuilder builder;
     builder.SetDescription("CheckIcon()");
     ui::test::internal::SpecifyElement(builder, view);
@@ -146,8 +142,7 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveFeaturePromoTest {
                 IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_DESCRIPTION)),
         CheckViewProperty(CookieControlsContentView::kToggleButton,
                           &views::ToggleButton::GetIsOn, true),
-        CheckIcon(RichControlsContainerView::kIcon, views::kEyeIcon,
-                  views::kEyeRefreshIcon));
+        CheckIcon(RichControlsContainerView::kIcon, views::kEyeRefreshIcon));
   }
 
   auto CheckStateForNoException() {
@@ -162,7 +157,7 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveFeaturePromoTest {
             CookieControlsContentView::kDescription, &views::Label::GetText,
             l10n_util::GetStringUTF16(
                 IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION)),
-        CheckIcon(RichControlsContainerView::kIcon, views::kEyeCrossedIcon,
+        CheckIcon(RichControlsContainerView::kIcon,
                   views::kEyeCrossedRefreshIcon));
   }
 
@@ -186,8 +181,7 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveFeaturePromoTest {
             CookieControlsContentView::kToggleLabel, &views::Label::GetText,
             l10n_util::GetStringUTF16(
                 IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_ALLOWED_LABEL)),
-        CheckIcon(RichControlsContainerView::kIcon, views::kEyeIcon,
-                  views::kEyeRefreshIcon));
+        CheckIcon(RichControlsContainerView::kIcon, views::kEyeRefreshIcon));
   }
 
   auto CheckTrackingProtectionBlockedState() {
@@ -209,7 +203,7 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveFeaturePromoTest {
                     prefs::kBlockAll3pcToggleEnabled)
                     ? IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_BLOCKED_LABEL
                     : IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_LIMITED_LABEL)),
-        CheckIcon(RichControlsContainerView::kIcon, views::kEyeCrossedIcon,
+        CheckIcon(RichControlsContainerView::kIcon,
                   views::kEyeCrossedRefreshIcon));
   }
 
