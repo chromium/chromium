@@ -41,15 +41,14 @@
   }
 
   #realbox {
-    margin: 12px 8px;
+    margin: 16px 14px 8px 14px;
   }
 
   :host([is-back-arrow-visible]) #realbox {
-    margin: 12px 8px 12px 0px;
+    margin: 16px 14px 8px 0px;
   }
 
   #realboxContainer {
-    align-items: center;
     display: flex;
     font-family: Roboto, Arial, sans-serif;
     position: fixed;
@@ -76,8 +75,8 @@
     --color-realbox-results-url-selected: #1967d2ff;
     --color-realbox-search-icon-background: #5f6368ff;
     /* Colors specific to the cr-searchbox input */
-    --color-realbox-background-hovered: #ffffffff;
-    --color-realbox-background: #ffffffff;
+    --color-realbox-background-hovered: #F1F3F4;
+    --color-realbox-background: #F1F3F4;
     --color-realbox-border: #dadce0ff;
     --color-realbox-foreground: #202124ff;
     --color-realbox-placeholder: #5f6368ff;
@@ -87,6 +86,7 @@
     --cr-realbox-icon-left-position: 10px;
     --cr-realbox-icon-top-position: 1px;
     --cr-realbox-min-width: min(calc(100vw - 16px), 768px);
+    --cr-realbox-icon-size-in-searchbox: 24px;
   }
 
   :host([is-back-arrow-visible]) #realboxContainer {
@@ -126,7 +126,8 @@
 
   cr-icon-button.icon-arrow-back {
     margin-inline-start: 8px;
-    margin-inline-end: 12px;
+    margin-inline-end: 10px;
+    margin-top: 26px;
   }
 
   :host([dark-mode]) cr-icon-button.icon-arrow-back {

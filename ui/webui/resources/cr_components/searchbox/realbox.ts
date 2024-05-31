@@ -135,6 +135,12 @@ export class RealboxElement extends RealboxElementBase {
       // Private properties
       //========================================================================
 
+      inSidePanel_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('searchboxInSidePanel'),
+        reflectToAttribute: true,
+      },
+
       /**
        * Whether user is deleting text in the input. Used to prevent the default
        * match from offering inline autocompletion.
