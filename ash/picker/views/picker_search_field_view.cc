@@ -42,9 +42,11 @@
 namespace ash {
 namespace {
 
-constexpr auto kSearchFieldBorderInsets = gfx::Insets::VH(0, 16);
 constexpr auto kSearchFieldVerticalPadding = gfx::Insets::VH(6, 0);
 constexpr auto kClearButtonHorizontalMargin = gfx::Insets::VH(0, 8);
+// The default horizontal margin for the textfield when surrounding icon buttons
+// are not visible.
+constexpr int kDefaultTextfieldHorizontalMargin = 16;
 
 // TODO: b/331285414 - Finalize the search field placeholder text.
 std::u16string GetSearchFieldPlaceholderText() {
@@ -75,7 +77,6 @@ PickerSearchFieldView::PickerSearchFieldView(
               .SetProperty(views::kElementIdentifierKey,
                            kPickerSearchFieldTextfieldElementId)
               .SetController(this)
-              .SetBorder(views::CreateEmptyBorder(kSearchFieldBorderInsets))
               .SetBackgroundColor(SK_ColorTRANSPARENT)
               .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
                   TypographyToken::kCrosBody2))
@@ -102,6 +103,8 @@ PickerSearchFieldView::PickerSearchFieldView(
               // TODO(b/309706053): Replace this once the strings are finalized.
               .SetAccessibleName(u"placeholder"))
       .BuildChildren();
+
+  UpdateTextfieldBorder();
 }
 
 PickerSearchFieldView::~PickerSearchFieldView() = default;
@@ -125,6 +128,7 @@ void PickerSearchFieldView::ContentsChanged(
 
   // Show the clear button only when the query is not empty.
   clear_button_->SetVisible(!new_contents.empty());
+  UpdateTextfieldBorder();
 
   search_callback_.Run(new_contents);
 }
@@ -171,6 +175,12 @@ void PickerSearchFieldView::SetQueryText(std::u16string text) {
 void PickerSearchFieldView::ClearButtonPressed() {
   textfield_->SetText(u"");
   ContentsChanged(textfield_, u"");
+}
+
+void PickerSearchFieldView::UpdateTextfieldBorder() {
+  textfield_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      0, kDefaultTextfieldHorizontalMargin, 0,
+      clear_button_->GetVisible() ? 0 : kDefaultTextfieldHorizontalMargin)));
 }
 
 BEGIN_METADATA(PickerSearchFieldView)

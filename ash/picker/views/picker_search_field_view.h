@@ -82,6 +82,9 @@ class ASH_EXPORT PickerSearchFieldView : public views::FlexLayoutView,
  private:
   void ClearButtonPressed();
 
+  // Updates the textfield border when the clear button visibility changes.
+  void UpdateTextfieldBorder();
+
   SearchCallback search_callback_;
   raw_ptr<PickerKeyEventHandler> key_event_handler_ = nullptr;
   raw_ptr<PickerPerformanceMetrics> performance_metrics_ = nullptr;
