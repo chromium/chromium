@@ -298,7 +298,13 @@ class PreinstalledWebAppManagerBrowserTest
     : public PreinstalledWebAppManagerBrowserTestBase {
  public:
   PreinstalledWebAppManagerBrowserTest() {
+#if BUILDFLAG(IS_CHROMEOS)
+    feature_list_.InitWithFeatures(
+        {features::kRecordWebAppDebugInfo},
+        {chromeos::features::kPreinstalledWebAppsCoreOnly});
+#else
     feature_list_.InitWithFeatures({features::kRecordWebAppDebugInfo}, {});
+#endif
   }
 
  private:
