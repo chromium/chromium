@@ -810,11 +810,7 @@ ServiceWorkerContainerHostForClient::CreateControllerServiceWorkerInfo() {
   // controller pointer upon the navigation commit, and subresource loading will
   // not be intercepted. (It might get intercepted later if the controller
   // changes due to skipWaiting() so SetController is sent.)
-  mojo::Remote<blink::mojom::ControllerServiceWorker> remote =
-      GetRemoteControllerServiceWorker();
-  if (remote.is_bound()) {
-    controller_info->remote_controller = remote.Unbind();
-  }
+  controller_info->remote_controller = GetRemoteControllerServiceWorker();
 
   if (service_worker_client().fetch_request_window_id()) {
     controller_info->fetch_request_window_id =
@@ -1191,7 +1187,7 @@ void ServiceWorkerClient::SetControllerRegistration(
   UpdateController(notify_controllerchange);
 }
 
-mojo::Remote<blink::mojom::ControllerServiceWorker>
+mojo::PendingRemote<blink::mojom::ControllerServiceWorker>
 ServiceWorkerContainerHostForClient::GetRemoteControllerServiceWorker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1199,11 +1195,12 @@ ServiceWorkerContainerHostForClient::GetRemoteControllerServiceWorker() {
   CHECK(service_worker_client().is_response_committed());
   if (controller()->fetch_handler_existence() ==
       ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST) {
-    return mojo::Remote<blink::mojom::ControllerServiceWorker>();
+    return mojo::PendingRemote<blink::mojom::ControllerServiceWorker>();
   }
 
-  mojo::Remote<blink::mojom::ControllerServiceWorker> remote_controller;
-  CloneControllerServiceWorker(remote_controller.BindNewPipeAndPassReceiver());
+  mojo::PendingRemote<blink::mojom::ControllerServiceWorker> remote_controller;
+  CloneControllerServiceWorker(
+      remote_controller.InitWithNewPipeAndPassReceiver());
   return remote_controller;
 }
 

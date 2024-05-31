@@ -895,8 +895,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
   //
   // This method can be called in one of the following cases:
   //
-  // - During navigation, right after a request handler for the main resource
-  //   has found the matching registration and has started the worker.
+  // - During navigation, right after CommitResponse().
   // - When a controller is updated by UpdateController() (e.g.
   //   by OnSkippedWaiting() or SetControllerRegistration()).
   //   In some cases the controller worker may not be started yet.
@@ -921,9 +920,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
   //
   // TODO(kinuko): revisit this if we start to use the ControllerServiceWorker
   // for posting messages.
-  // TODO(hayato): Return PendingRemote, instead of Remote. Binding to Remote
-  // as late as possible is more idiomatic for new Mojo types.
-  mojo::Remote<blink::mojom::ControllerServiceWorker>
+  mojo::PendingRemote<blink::mojom::ControllerServiceWorker>
   GetRemoteControllerServiceWorker();
 
   // The corresponding service worker client that owns `this`.
