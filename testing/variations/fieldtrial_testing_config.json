@@ -4072,21 +4072,177 @@
             ],
             "experiments": [
                 {
-                    "name": "Counterfactual_CANARY_DEV_10",
+                    "name": "Counterfactual_CANARY_DEV_10_20240601",
                     "params": {
                         "is-counterfactual": "true"
                     },
                     "enable_features": [
                         "WelcomeTour"
+                    ],
+                    "disable_features": [
+                        "WelcomeTourV2"
                     ]
                 },
                 {
-                    "name": "Enabled_CANARY_DEV_10",
+                    "name": "Enabled_CANARY_DEV_10_20240601",
                     "params": {
                         "is-counterfactual": "false"
                     },
                     "enable_features": [
                         "WelcomeTour"
+                    ],
+                    "disable_features": [
+                        "WelcomeTourV2"
+                    ]
+                },
+                {
+                    "name": "Counterfactual_BETA_10_20240601",
+                    "params": {
+                        "is-counterfactual": "true"
+                    },
+                    "enable_features": [
+                        "WelcomeTour"
+                    ],
+                    "disable_features": [
+                        "WelcomeTourV2"
+                    ]
+                },
+                {
+                    "name": "Enabled_BETA_10_20240601",
+                    "params": {
+                        "is-counterfactual": "false"
+                    },
+                    "enable_features": [
+                        "WelcomeTour"
+                    ],
+                    "disable_features": [
+                        "WelcomeTourV2"
+                    ]
+                },
+                {
+                    "name": "Counterfactual_STABLE_10_20240601",
+                    "params": {
+                        "is-counterfactual": "true"
+                    },
+                    "enable_features": [
+                        "WelcomeTour"
+                    ],
+                    "disable_features": [
+                        "WelcomeTourV2"
+                    ]
+                },
+                {
+                    "name": "Enabled_STABLE_10_20240601",
+                    "params": {
+                        "is-counterfactual": "false"
+                    },
+                    "enable_features": [
+                        "WelcomeTour"
+                    ],
+                    "disable_features": [
+                        "WelcomeTourV2"
+                    ]
+                },
+                {
+                    "name": "Counterfactual_CANARY_DEV_10_20240601_m127",
+                    "params": {
+                        "is-counterfactual": "true"
+                    },
+                    "enable_features": [
+                        "WelcomeTour"
+                    ],
+                    "disable_features": [
+                        "WelcomeTourV2"
+                    ]
+                },
+                {
+                    "name": "Enabled_CANARY_DEV_10_20240601_m127",
+                    "params": {
+                        "is-counterfactual": "false"
+                    },
+                    "enable_features": [
+                        "WelcomeTour"
+                    ],
+                    "disable_features": [
+                        "WelcomeTourV2"
+                    ]
+                },
+                {
+                    "name": "EnabledV2_CANARY_DEV_10_20240601_m127",
+                    "params": {
+                        "is-counterfactual": "false"
+                    },
+                    "enable_features": [
+                        "WelcomeTour",
+                        "WelcomeTourV2"
+                    ]
+                },
+                {
+                    "name": "Counterfactual_BETA_10_20240601_m127",
+                    "params": {
+                        "is-counterfactual": "true"
+                    },
+                    "enable_features": [
+                        "WelcomeTour"
+                    ],
+                    "disable_features": [
+                        "WelcomeTourV2"
+                    ]
+                },
+                {
+                    "name": "Enabled_BETA_10_20240601_m127",
+                    "params": {
+                        "is-counterfactual": "false"
+                    },
+                    "enable_features": [
+                        "WelcomeTour"
+                    ],
+                    "disable_features": [
+                        "WelcomeTourV2"
+                    ]
+                },
+                {
+                    "name": "EnabledV2_BETA_10_20240601_m127",
+                    "params": {
+                        "is-counterfactual": "false"
+                    },
+                    "enable_features": [
+                        "WelcomeTour",
+                        "WelcomeTourV2"
+                    ]
+                },
+                {
+                    "name": "Counterfactual_STABLE_10_20240601_m127",
+                    "params": {
+                        "is-counterfactual": "true"
+                    },
+                    "enable_features": [
+                        "WelcomeTour"
+                    ],
+                    "disable_features": [
+                        "WelcomeTourV2"
+                    ]
+                },
+                {
+                    "name": "Enabled_STABLE_10_20240601_m127",
+                    "params": {
+                        "is-counterfactual": "false"
+                    },
+                    "enable_features": [
+                        "WelcomeTour"
+                    ],
+                    "disable_features": [
+                        "WelcomeTourV2"
+                    ]
+                },
+                {
+                    "name": "EnabledV2_STABLE_10_20240601_m127",
+                    "params": {
+                        "is-counterfactual": "false"
+                    },
+                    "enable_features": [
+                        "WelcomeTour",
+                        "WelcomeTourV2"
                     ]
                 }
             ]
