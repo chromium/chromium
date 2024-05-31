@@ -849,9 +849,7 @@ BASE_FEATURE(kEnablePerDeskZOrder,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables RFC8925 (prefer IPv6-only on an IPv6-only-capable network).
-BASE_FEATURE(kEnableRFC8925,
-             "EnableRFC8925",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableRFC8925, "EnableRFC8925", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, touchpad cards will be shown in the diagnostics app's input
 // section.
@@ -2910,6 +2908,10 @@ BASE_FEATURE(kUseMlServiceForNonLongformHandwritingOnAllBoards,
              "UseMlServiceForNonLongformHandwritingOnAllBoards",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLiveCaptionUserMicrophone,
+             "LiveCaptionUserMicrophone",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Remap search+click to right click instead of the legacy alt+click on
 // ChromeOS.
 BASE_FEATURE(kUseSearchClickForRightClick,
@@ -4561,6 +4563,10 @@ bool ShouldUseStorkSmds() {
 
 bool IsUserEducationEnabled() {
   return IsHoldingSpaceWallpaperNudgeEnabled() || IsWelcomeTourEnabled();
+}
+
+bool IsLiveCaptionUserMicrophoneEnabled() {
+  return base::FeatureList::IsEnabled(kLiveCaptionUserMicrophone);
 }
 
 bool IsUpstreamTrustedReportsFirmwareEnabled() {
