@@ -162,6 +162,10 @@ const base::FeatureParam<int> kMinorModeRestrictionsFetchDeadlineMs{
 #endif
 
 #if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kEnableClearCut,
+             "EnableClearcut",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUseSystemCapabilitiesForMinorModeRestrictions,
              "UseSystemCapabilitiesForMinorModeRestrictions",
              base::FEATURE_DISABLED_BY_DEFAULT);

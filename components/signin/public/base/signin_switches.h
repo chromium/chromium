@@ -121,6 +121,10 @@ extern const base::FeatureParam<int> kMinorModeRestrictionsFetchDeadlineMs;
 #endif
 
 #if BUILDFLAG(IS_IOS)
+// The feature that authorizes clear-cut to send log when UMA is enabled.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableClearCut);
+
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kUseSystemCapabilitiesForMinorModeRestrictions);
 
