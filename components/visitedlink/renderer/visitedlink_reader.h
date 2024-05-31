@@ -42,6 +42,14 @@ class VisitedLinkReader : public VisitedLinkCommon,
  private:
   void FreeTable();
 
+  // These helper functions for UpdateVisitedLinks() allow us to use the correct
+  // header (SharedHeader or PartitionedSharedHeader) when reading the new
+  // shared memory region into our copy of the hashtable.
+  void UpdateUnpartitionedVisitedLinks(
+      base::ReadOnlySharedMemoryRegion table_region);
+  void UpdatePartitionedVisitedLinks(
+      base::ReadOnlySharedMemoryRegion table_region);
+
   void Bind(mojo::PendingReceiver<mojom::VisitedLinkNotificationSink> receiver);
 
   base::ReadOnlySharedMemoryMapping table_mapping_;

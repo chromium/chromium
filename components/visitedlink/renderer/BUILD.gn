@@ -18,5 +18,6 @@ static_library("renderer") {
     "//content/public/common",
     "//content/public/renderer",
     "//third_party/blink/public:blink",
+    "//third_party/blink/public/common",
   ]
 }

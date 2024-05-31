@@ -130,6 +130,11 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
   PartitionedVisitedLinkWriter::Listener* GetListener() const {
     return listener_.get();
   }
+
+  // Returns the hashtable stored in memory.
+  const base::MappedReadOnlyRegion& GetMappedTableMemoryForTesting() {
+    return mapped_table_memory_;
+  }
 #endif
 
  private:

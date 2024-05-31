@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_view.h"
 
 using blink::WebView;
@@ -37,7 +38,15 @@ void VisitedLinkReader::UpdateVisitedLinks(
   // to free old objects.
   FreeTable();
   DCHECK(hash_table_ == nullptr);
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPartitionVisitedLinkDatabase)) {
+    return UpdatePartitionedVisitedLinks(std::move(table_region));
+  }
+  return UpdateUnpartitionedVisitedLinks(std::move(table_region));
+}
 
+void VisitedLinkReader::UpdateUnpartitionedVisitedLinks(
+    base::ReadOnlySharedMemoryRegion table_region) {
   int32_t table_len = 0;
   {
     // Map the header into our process so we can see how long the rest is,
@@ -64,6 +73,36 @@ void VisitedLinkReader::UpdateVisitedLinks(
   table_length_ = table_len;
   UMA_HISTOGRAM_COUNTS_10M("History.VisitedLinks.HashTableLengthOnReaderInit",
                            table_length_);
+}
+
+void VisitedLinkReader::UpdatePartitionedVisitedLinks(
+    base::ReadOnlySharedMemoryRegion table_region) {
+  int32_t table_len = 0;
+  {
+    // Map the header into our process so we can see how long the rest is,
+    // and set the salt.
+    base::ReadOnlySharedMemoryMapping header_mapping =
+        table_region.MapAt(0, sizeof(PartitionedSharedHeader));
+    if (!header_mapping.IsValid()) {
+      return;
+    }
+
+    const PartitionedSharedHeader* header =
+        static_cast<const PartitionedSharedHeader*>(header_mapping.memory());
+    table_len = header->length;
+  }
+
+  // Now we know the length, so map the table contents.
+  table_mapping_ = table_region.Map();
+  if (!table_mapping_.IsValid()) {
+    return;
+  }
+
+  // Commit the data.
+  hash_table_ = const_cast<Fingerprint*>(reinterpret_cast<const Fingerprint*>(
+      static_cast<const PartitionedSharedHeader*>(table_mapping_.memory()) +
+      1));
+  table_length_ = table_len;
 }
 
 void VisitedLinkReader::AddVisitedLinks(

@@ -15,5 +15,6 @@ source_set("unit_tests") {
     "//components/visitedlink/renderer",
     "//content/test:test_support",
     "//testing/gtest",
+    "//third_party/blink/public/common",
   ]
 }

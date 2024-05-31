@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "components/visitedlink/browser/partitioned_visitedlink_writer.h"
@@ -38,6 +39,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -782,11 +784,22 @@ TEST_F(PartitionedVisitedLinkTest, DeleteWithCollisions) {
 }
 
 TEST_F(PartitionedVisitedLinkTest, Resizing) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kPartitionVisitedLinkDatabase);
+
   // Create a very small database.
   const int32_t initial_size = 17;
   ASSERT_TRUE(InitVisited(true, initial_size));
   ASSERT_EQ(partitioned_writer_->GetUsedCount(), 0);
 
+  // Create a reader to notify of the resizing.
+  VisitedLinkReader reader;
+  reader.UpdateVisitedLinks(
+      partitioned_writer_->GetMappedTableMemoryForTesting().region.Duplicate());
+  g_readers.push_back(&reader);
+
+  // Populate the very small database.
   for (int i = 0; i < kTestCount; i++) {
     VisitedLink link = {TestURL(i), net::SchemefulSite(TestURL(i)),
                         url::Origin::Create(TestURL(i))};
@@ -803,7 +816,15 @@ TEST_F(PartitionedVisitedLinkTest, Resizing) {
   ASSERT_EQ(used_count, kTestCount)
       << "table count doesn't match the # of things we added";
 
-  // TODO(crbug.com/332364003): Ensure that the reader also resizes its table.
+  // Verify that the reader got the resize message and has the same
+  // table information.
+  int32_t reader_table_size;
+  VisitedLinkCommon::Fingerprint* reader_table;
+  reader.GetUsageStatistics(&reader_table_size, &reader_table);
+  ASSERT_EQ(table_size, reader_table_size);
+  for (int32_t i = 0; i < table_size; i++) {
+    ASSERT_EQ(table[i], reader_table[i]);
+  }
 }
 
 TEST_F(PartitionedVisitedLinkTest, HashRangeWraparound) {
