@@ -25,7 +25,7 @@
 <script>
 promise_test(async t => {
   const label = await test_driver.get_computed_label(document.getElementById('container0'));
-  assert_equals(label, "Flash the screen Flash the screen times times");
+  assert_equals(label, "Flash the screen Flash the screen times");
 }, "Don't overflow the stack when computing the label of a combobox that references a container containing the combobox");
 
 promise_test(async t => {

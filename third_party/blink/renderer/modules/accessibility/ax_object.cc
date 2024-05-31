@@ -4660,12 +4660,8 @@ String AXObject::AriaTextAlternative(
         if (name_sources)
           name_sources->back().attribute_value = aria_labelledby;
 
-        // Operate on a copy of |visited| so that if |name_sources| is not
-        // null, the set of visited objects is preserved unmodified for future
-        // calculations.
-        AXObjectSet visited_copy = visited;
         text_alternative = TextFromElements(
-            true, visited_copy, elements_from_attribute, related_objects);
+            true, visited, elements_from_attribute, related_objects);
         if (!text_alternative.ContainsOnlyWhitespaceOrEmpty()) {
           if (name_sources) {
             NameSource& source = name_sources->back();

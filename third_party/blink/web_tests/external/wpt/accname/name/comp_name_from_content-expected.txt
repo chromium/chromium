@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] heading name from content for each child including two nested links using aria-labelledby with nested image
-  assert_equals: <h3 data-expectedlabel="image link2 link3" data-testname="heading name from content for each child including two nested links using aria-labelledby with nested image" class="ex">\n  <a href="#" aria-labelledby="nested_image_label2">\n    link1<!-- this text is skipped because of aria-labelledby -->\n  </a>\n  <a href="#" data-expectedlabel="link2 image link3" data-testname="link name from content for each child including nested image (referenced elsewhere via labelledby)" class="ex">\n    link2\n    <img id="nested_image_label2" alt="image" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==">\n    <!-- image skipped in this link (when computing heading text) because it was already referenced by the first link within this heading label recursion cycle. -->\n    <!-- but image not skipped when computing the text of the link itself since it has not been referenced in that context -->\n    link3\n  </a>\n</h3> expected "image link2 link3" but got "image link2 image link3"
-Harness: the test ran to completion.
-
