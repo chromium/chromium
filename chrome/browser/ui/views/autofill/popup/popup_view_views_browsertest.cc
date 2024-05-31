@@ -174,7 +174,7 @@ class PopupViewViewsBrowsertestBase
       EXPECT_CALL(controller(), ViewDestroyed);
     }
 
-    search_bar_config_ = {};
+    search_bar_config_ = std::nullopt;
     popup_has_parent_ = false;
     popup_parent_.reset();
     PopupPixelTest::TearDownOnMainThread();
@@ -200,9 +200,10 @@ class PopupViewViewsBrowsertestBase
   }
 
   void ShowAndVerifyUi(bool popup_has_parent = false,
-                       PopupViewSearchBarConfig search_bar_config = {}) {
+                       std::optional<AutofillPopupView::SearchBarConfig>
+                           search_bar_config = std::nullopt) {
     popup_has_parent_ = popup_has_parent;
-    search_bar_config_ = search_bar_config;
+    search_bar_config_ = std::move(search_bar_config);
     PopupPixelTest::ShowAndVerifyUi();
   }
 
@@ -223,7 +224,7 @@ class PopupViewViewsBrowsertestBase
 
   // Controls whether the view is created as a sub-popup (i.e. having a parent).
   bool popup_has_parent_ = false;
-  PopupViewSearchBarConfig search_bar_config_;
+  std::optional<AutofillPopupView::SearchBarConfig> search_bar_config_;
   std::unique_ptr<PopupViewViews> popup_parent_;
 };
 
@@ -428,7 +429,8 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, SearchBarViewProvided) {
   controller().set_suggestions({SuggestionType::kAddressEntry});
   ShowAndVerifyUi(
       /*popup_has_parent=*/false,
-      PopupViewSearchBarConfig{.enabled = true, .placeholder = u"Search"});
+      AutofillPopupView::SearchBarConfig{.placeholder = u"Search",
+                                         .no_results_message = u""});
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
@@ -439,9 +441,8 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   ON_CALL(controller(), HasFilteredOutSuggestions).WillByDefault(Return(true));
   ShowAndVerifyUi(
       /*popup_has_parent=*/false,
-      PopupViewSearchBarConfig{.enabled = true,
-                               .placeholder = u"Search",
-                               .no_results_message = u"No suggestions"});
+      AutofillPopupView::SearchBarConfig{
+          .placeholder = u"Search", .no_results_message = u"No suggestions"});
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

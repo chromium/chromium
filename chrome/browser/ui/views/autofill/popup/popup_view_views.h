@@ -54,14 +54,6 @@ class ExpandablePopupParentView {
   virtual void OnMouseExitedInChildren() = 0;
 };
 
-struct PopupViewSearchBarConfig {
-  // This setting controls the search bar's visibility. If set to 'false',
-  // the search bar won't be displayed, and other settings become irrelevant.
-  bool enabled = false;
-  std::u16string placeholder;
-  std::u16string no_results_message;
-};
-
 // Views implementation for the autofill and password suggestion.
 class PopupViewViews : public PopupBaseView,
                        public AutofillPopupView,
@@ -92,9 +84,12 @@ class PopupViewViews : public PopupBaseView,
                  base::WeakPtr<ExpandablePopupParentView> parent,
                  views::Widget* parent_widget);
 
-  // Constructor for creating root level popups.
-  explicit PopupViewViews(base::WeakPtr<AutofillPopupController> controller,
-                          PopupViewSearchBarConfig search_bar_config = {});
+  // Constructor for creating root level popups. Providing `std::nullopt` to
+  // the `search_bar_config` results in creating a popup without a search bar.
+  explicit PopupViewViews(
+      base::WeakPtr<AutofillPopupController> controller,
+      std::optional<const AutofillPopupView::SearchBarConfig>
+          search_bar_config = std::nullopt);
   PopupViewViews(const PopupViewViews&) = delete;
   PopupViewViews& operator=(const PopupViewViews&) = delete;
   ~PopupViewViews() override;
@@ -260,7 +255,8 @@ class PopupViewViews : public PopupBaseView,
   std::optional<size_t> row_with_open_sub_popup_;
 
   std::vector<RowPointer> rows_;
-  const PopupViewSearchBarConfig search_bar_config_;
+  const std::optional<const AutofillPopupView::SearchBarConfig>
+      search_bar_config_;
   raw_ptr<PopupSearchBarView> search_bar_ = nullptr;
   raw_ptr<views::BoxLayoutView> suggestions_container_ = nullptr;
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;

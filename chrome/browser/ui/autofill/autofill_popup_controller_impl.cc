@@ -199,9 +199,19 @@ void AutofillPopupControllerImpl::Show(
     OnSuggestionsChanged();
   } else {
     bool has_parent = parent_controller_ && parent_controller_->get();
+    auto search_bar_config =
+        trigger_source_ ==
+                AutofillSuggestionTriggerSource::kManualFallbackPasswords
+            ? std::optional<AutofillPopupView::SearchBarConfig>(
+                  // TODO(b/325246516): Set translated strings from the
+                  // greenlines when they get finalized.
+                  {.placeholder = u"Search",
+                   .no_results_message = u"No passwords found"})
+            : std::nullopt;
     view_ = has_parent
                 ? parent_controller_->get()->CreateSubPopupView(GetWeakPtr())
-                : AutofillPopupView::Create(GetWeakPtr());
+                : AutofillPopupView::Create(GetWeakPtr(),
+                                            std::move(search_bar_config));
 
     // It is possible to fail to create the popup, in this case
     // treat the popup as hiding right away.

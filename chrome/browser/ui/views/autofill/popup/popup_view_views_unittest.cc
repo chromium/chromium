@@ -169,7 +169,8 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
 
   void CreateAndShowView(
       std::optional<views::Widget::InitParams> widget_params = std::nullopt,
-      PopupViewSearchBarConfig search_bar_config = {}) {
+      std::optional<AutofillPopupView::SearchBarConfig> search_bar_config =
+          std::nullopt) {
     view_ = nullptr;
     generator_.reset();
 
@@ -187,7 +188,8 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
   void CreateAndShowView(
       const std::vector<SuggestionType>& ids,
       std::optional<views::Widget::InitParams> widget_params = std::nullopt,
-      PopupViewSearchBarConfig search_bar_config = {}) {
+      std::optional<AutofillPopupView::SearchBarConfig> search_bar_config =
+          std::nullopt) {
     controller().set_suggestions(ids);
     CreateAndShowView(std::move(widget_params), std::move(search_bar_config));
   }
@@ -1687,7 +1689,9 @@ TEST_F(PopupViewViewsTest, SearchBar_InputGetsFocusOnShow) {
       CreateParamsForTestWidget(views::Widget::InitParams::Type::TYPE_POPUP);
   widget_params.activatable = views::Widget::InitParams::Activatable::kYes;
   CreateAndShowView({SuggestionType::kAddressEntry}, std::move(widget_params),
-                    /*search_bar_config=*/{.enabled = true});
+                    AutofillPopupView::SearchBarConfig{
+                        .placeholder = u"Placeholder",
+                        .no_results_message = u"No suggestions found"});
 
   views::View* focused_field = widget().GetFocusManager()->GetFocusedView();
   ASSERT_NE(focused_field, nullptr);
@@ -1700,7 +1704,9 @@ TEST_F(PopupViewViewsTest, SearchBar_HidesPopupOnFocusLost) {
       CreateParamsForTestWidget(views::Widget::InitParams::Type::TYPE_POPUP);
   widget_params.activatable = views::Widget::InitParams::Activatable::kYes;
   CreateAndShowView({SuggestionType::kAddressEntry}, std::move(widget_params),
-                    /*search_bar_config=*/{.enabled = true});
+                    AutofillPopupView::SearchBarConfig{
+                        .placeholder = u"Placeholder",
+                        .no_results_message = u"No suggestions found"});
 
   views::View* focused_field = widget().GetFocusManager()->GetFocusedView();
   ASSERT_NE(focused_field, nullptr);
@@ -1715,7 +1721,9 @@ TEST_F(PopupViewViewsTest, SearchBar_HidesPopupOnFocusLost) {
 TEST_F(PopupViewViewsTest, SearchBar_QueryIsSetAsFilterToController) {
   CreateAndShowView({SuggestionType::kAddressEntry},
                     CreateParamsForTestWidget(),
-                    /*search_bar_config=*/{.enabled = true});
+                    AutofillPopupView::SearchBarConfig{
+                        .placeholder = u"Placeholder",
+                        .no_results_message = u"No suggestions found"});
 
   MockFunction<void()> check;
   {
@@ -1742,7 +1750,9 @@ TEST_F(PopupViewViewsTest, SearchBar_QueryIsSetAsFilterToController) {
 TEST_F(PopupViewViewsTest, SearchBar_PressedKeysPassedToController) {
   CreateAndShowView({SuggestionType::kAddressEntry},
                     CreateParamsForTestWidget(),
-                    /*search_bar_config=*/{.enabled = true});
+                    AutofillPopupView::SearchBarConfig{
+                        .placeholder = u"Placeholder",
+                        .no_results_message = u"No suggestions found"});
 
   EXPECT_CALL(controller(),
               HandleKeyPressEvent(Field(&input::NativeWebKeyboardEvent::dom_key,

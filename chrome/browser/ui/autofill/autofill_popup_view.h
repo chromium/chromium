@@ -23,9 +23,16 @@ class AutofillSuggestionController;
 // AutofillPopupView.
 class AutofillPopupView {
  public:
-  // Factory function for creating the view.
+  struct SearchBarConfig {
+    std::u16string placeholder;
+    std::u16string no_results_message;
+  };
+
+  // Factory function for creating the view. Providing `std::nullopt` to
+  // the `search_bar_config` results in creating a popup without a search bar.
   static base::WeakPtr<AutofillPopupView> Create(
-      base::WeakPtr<AutofillSuggestionController> controller);
+      base::WeakPtr<AutofillSuggestionController> controller,
+      std::optional<const SearchBarConfig> search_bar_config = std::nullopt);
 
   // Attempts to display the Autofill popup and fills it with data from the
   // controller. Returns whether the popup was shown.

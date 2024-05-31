@@ -143,18 +143,17 @@ PopupViewViews::PopupViewViews(
                                         : kDefaultSubPopupSides,
                     /*show_arrow_pointer=*/false),
       controller_(controller),
-      parent_(parent),
-      search_bar_config_({}) {
+      parent_(parent) {
   InitViews();
 }
 
 PopupViewViews::PopupViewViews(
     base::WeakPtr<AutofillPopupController> controller,
-    PopupViewSearchBarConfig search_bar_config)
+    std::optional<const AutofillPopupView::SearchBarConfig> search_bar_config)
     : PopupBaseView(controller,
                     views::Widget::GetTopLevelWidgetForNativeView(
                         controller->container_view()),
-                    search_bar_config.enabled
+                    search_bar_config
                         ? views::Widget::InitParams::Activatable::kYes
                         : views::Widget::InitParams::Activatable::kDefault),
       controller_(controller),
@@ -829,9 +828,9 @@ void PopupViewViews::InitViews() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  if (search_bar_config_.enabled) {
+  if (search_bar_config_) {
     search_bar_ = AddChildView(std::make_unique<PopupSearchBarView>(
-        search_bar_config_.placeholder, *this));
+        search_bar_config_->placeholder, *this));
     search_bar_->SetProperty(views::kMarginsKey,
                              gfx::Insets::VH(GetContentsVerticalPadding(), 0));
     AddChildView(std::make_unique<PopupSeparatorView>(/*vertical_padding=*/0));
@@ -872,7 +871,7 @@ void PopupViewViews::CreateSuggestionViews() {
       controller_->HasFilteredOutSuggestions()) {
     suggestions_container_->AddChildView(
         std::make_unique<PopupNoSuggestionsView>(
-            search_bar_config_.no_results_message));
+            search_bar_config_->no_results_message));
   }
 
   // Add the body rows, if there are any.
@@ -1289,14 +1288,16 @@ END_METADATA
 
 // static
 base::WeakPtr<AutofillPopupView> AutofillPopupView::Create(
-    base::WeakPtr<AutofillSuggestionController> controller) {
+    base::WeakPtr<AutofillSuggestionController> controller,
+    std::optional<const AutofillPopupView::SearchBarConfig> search_bar_config) {
   if (!controller || !CanShowRootPopup(*controller)) {
     return nullptr;
   }
 
   // On Desktop, all controllers are `AutofillPopupController`s.
   return (new PopupViewViews(
-              static_cast<AutofillPopupController&>(*controller).GetWeakPtr()))
+              static_cast<AutofillPopupController&>(*controller).GetWeakPtr(),
+              std::move(search_bar_config)))
       ->GetWeakPtr();
 }
 
