@@ -372,18 +372,6 @@ class SkiaOutputSurfaceImplOnGpu
                gpu::GrContextType::kGraphiteMetal;
   }
 
-  // Helper for `FlushSurface()` & `FlushContext()` methods, flushes writes
-  // to either the surface if it is non-null or to the context otherwise, using
-  // |end_semaphores| and |end_state|.
-  bool FlushInternal(
-      SkSurface* surface,
-      std::vector<GrBackendSemaphore>& end_semaphores,
-      gpu::SkiaImageRepresentation::ScopedWriteAccess* scoped_write_access,
-      GrGpuFinishedProc ganesh_finished_proc = nullptr,
-      GrGpuFinishedContext ganesh_finished_context = nullptr,
-      skgpu::graphite::GpuFinishedProc graphite_finished_proc = nullptr,
-      skgpu::graphite::GpuFinishedContext graphite_finished_context = nullptr);
-
   // Helper for `CopyOutput()` method, handles the RGBA format.
   void CopyOutputRGBA(SkSurface* surface,
                       copy_output::RenderPassGeometry geometry,
@@ -442,9 +430,8 @@ class SkiaOutputSurfaceImplOnGpu
       std::vector<GrBackendSemaphore>& end_semaphores,
       gpu::SkiaImageRepresentation::ScopedWriteAccess* scoped_write_access,
       GrGpuFinishedProc ganesh_finished_proc = nullptr,
-      GrGpuFinishedContext ganesh_finished_context = nullptr,
       skgpu::graphite::GpuFinishedProc graphite_finished_proc = nullptr,
-      skgpu::graphite::GpuFinishedContext graphite_finished_context = nullptr);
+      void* finished_context = nullptr);
 
   // Creates surfaces needed to store the data in NV12 format.
   // |mailbox_access_datas| will be populated with information needed to access

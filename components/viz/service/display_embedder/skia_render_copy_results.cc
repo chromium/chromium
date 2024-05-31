@@ -156,7 +156,7 @@ void CopyOutputResultSkiaRGBA::UnlockSkBitmap() const {
   result_.lock().Release();
 }
 
-ReadbackContextRGBA::ReadbackContextRGBA(
+ReadbackContextTexture::ReadbackContextTexture(
     base::WeakPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu,
     std::unique_ptr<CopyOutputRequest> request,
     const gfx::Rect& result_rect,
@@ -168,24 +168,23 @@ ReadbackContextRGBA::ReadbackContextRGBA(
       mailbox_(mailbox),
       color_space_(color_space) {}
 
-ReadbackContextRGBA::~ReadbackContextRGBA() = default;
+ReadbackContextTexture::~ReadbackContextTexture() = default;
 
-void ReadbackContextRGBA::OnMailboxReady(GrGpuFinishedContext c) {
-  auto context = base::WrapUnique(static_cast<ReadbackContextRGBA*>(c));
+void ReadbackContextTexture::OnMailboxReady(GrGpuFinishedContext c) {
+  auto context = base::WrapUnique(static_cast<ReadbackContextTexture*>(c));
 
   context->OnMailboxReadyInternal();
 }
 
-void ReadbackContextRGBA::OnMailboxReadyInternal() {
+void ReadbackContextTexture::OnMailboxReadyInternal() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (impl_on_gpu_) {
     impl_on_gpu_->ReadbackDone();
   }
 
-  auto format = CopyOutputResult::Format::RGBA;
   request_->SendResult(std::make_unique<CopyOutputTextureResult>(
-      format, result_rect_,
+      request_->result_format(), result_rect_,
       CopyOutputResult::TextureResult(mailbox_, gpu::SyncToken(), color_space_),
       CopyOutputResult::ReleaseCallbacks()));
 }

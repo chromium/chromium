@@ -1067,7 +1067,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
       request->has_blit_request() &&
       request->blit_request().populates_gpu_memory_buffer();
 
-  std::unique_ptr<ReadbackContextRGBA> readback_context;
+  std::unique_ptr<ReadbackContextTexture> readback_context;
 
   if (should_wait_for_gpu_work) {
     // Treat the fact that we're waiting for GPU work to finish the same way
@@ -1076,7 +1076,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
     // `SkiaOutputSurfaceImplOnGpu::CheckReadbackCompletion()`.
     ++num_readbacks_pending_;
 
-    readback_context = std::make_unique<ReadbackContextRGBA>(
+    readback_context = std::make_unique<ReadbackContextTexture>(
         weak_ptr_, std::move(request), geometry.result_selection,
         request->blit_request().mailbox(0).mailbox, color_space);
   }
@@ -1085,18 +1085,18 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
   if (gr_context()) {
     flush_succeeded = FlushSurface(
         scoped_write->surface(), end_semaphores, scoped_write.get(),
-        should_wait_for_gpu_work ? &ReadbackContextRGBA::OnMailboxReady
+        should_wait_for_gpu_work ? &ReadbackContextTexture::OnMailboxReady
                                  : nullptr,
-        readback_context.release());
+        /*graphite_finished_proc=*/nullptr, readback_context.release());
   } else {
     CHECK(graphite_context());
     skgpu::graphite::GpuFinishedProc graphite_proc =
         [](void* context, skgpu::CallbackResult result) {
-          NV12SingleMailboxReadyContext::OnMailboxReady(context);
+          ReadbackContextTexture::OnMailboxReady(context);
         };
     flush_succeeded = FlushSurface(
         scoped_write->surface(), end_semaphores, scoped_write.get(),
-        /*ganesh_finished_proc=*/nullptr, /*ganesh_finished_context=*/nullptr,
+        /*ganesh_finished_proc=*/nullptr,
         should_wait_for_gpu_work ? graphite_proc : nullptr,
         readback_context.release());
   }
@@ -1121,7 +1121,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
 
   if (should_wait_for_gpu_work) {
     // Flow will continue after GPU work is done - see
-    // `ReadbackContextRGBA::OnMailboxReady()` that eventually gets
+    // `ReadbackContextTexture::OnMailboxReady()` that eventually gets
     // called.
     return;
   }
@@ -1184,22 +1184,8 @@ bool SkiaOutputSurfaceImplOnGpu::FlushSurface(
     std::vector<GrBackendSemaphore>& end_semaphores,
     gpu::SkiaImageRepresentation::ScopedWriteAccess* scoped_write_access,
     GrGpuFinishedProc ganesh_finished_proc,
-    GrGpuFinishedContext ganesh_finished_context,
     skgpu::graphite::GpuFinishedProc graphite_finished_proc,
-    skgpu::graphite::GpuFinishedContext graphite_finished_context) {
-  return FlushInternal(surface, end_semaphores, scoped_write_access,
-                       ganesh_finished_proc, ganesh_finished_context,
-                       graphite_finished_proc, graphite_finished_context);
-}
-
-bool SkiaOutputSurfaceImplOnGpu::FlushInternal(
-    SkSurface* surface,
-    std::vector<GrBackendSemaphore>& end_semaphores,
-    gpu::SkiaImageRepresentation::ScopedWriteAccess* scoped_write_access,
-    GrGpuFinishedProc ganesh_finished_proc,
-    GrGpuFinishedContext ganesh_finished_context,
-    skgpu::graphite::GpuFinishedProc graphite_finished_proc,
-    skgpu::graphite::GpuFinishedContext graphite_finished_context) {
+    void* finished_context) {
   gl::ScopedProgressReporter scoped_process_reporter(
       context_state_->progress_reporter());
   if (gr_context()) {
@@ -1207,7 +1193,7 @@ bool SkiaOutputSurfaceImplOnGpu::FlushInternal(
     flush_info.fNumSemaphores = end_semaphores.size();
     flush_info.fSignalSemaphores = end_semaphores.data();
     flush_info.fFinishedProc = ganesh_finished_proc;
-    flush_info.fFinishedContext = ganesh_finished_context;
+    flush_info.fFinishedContext = finished_context;
     gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_,
                                           &flush_info);
     GrSemaphoresSubmitted flush_result =
@@ -1226,7 +1212,7 @@ bool SkiaOutputSurfaceImplOnGpu::FlushInternal(
     skgpu::graphite::InsertRecordingInfo info = {};
     info.fRecording = recording.get();
     info.fTargetSurface = surface;
-    info.fFinishedContext = graphite_finished_context;
+    info.fFinishedContext = finished_context;
     info.fFinishedProc = graphite_finished_proc;
     return graphite_context()->insertRecording(info);
   }
@@ -1645,7 +1631,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
                        should_wait_for_gpu_work
                            ? &NV12SingleMailboxReadyContext::OnMailboxReady
                            : nullptr,
-                       finished_context);
+                       /*graphite_finished_proc=*/nullptr, finished_context);
     } else {
       CHECK(graphite_context());
       skgpu::graphite::GpuFinishedProc graphite_proc =
@@ -1655,7 +1641,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
       flush_succeeded = FlushSurface(
           plane_surface, mailbox_access_datas[i].end_semaphores,
           mailbox_access_datas[i].scoped_write.get(),
-          /*ganesh_finished_proc=*/nullptr, /*ganesh_finished_context=*/nullptr,
+          /*ganesh_finished_proc=*/nullptr,
           should_wait_for_gpu_work ? graphite_proc : nullptr, finished_context);
     }
     if (!flush_succeeded) {

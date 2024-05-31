@@ -102,20 +102,19 @@ class CopyOutputResultSkiaRGBA : public CopyOutputResult {
   mutable bool bitmap_created_ = false;
 };
 
-// Context that is responsible for sending a CopyOutputResult once the GPU work
-// that populates the GpuMemoryBuffer has completed.
-class ReadbackContextRGBA {
+// Context that is responsible for sending a CopyOutputTextureResult once the
+// GPU work that populates the GpuMemoryBuffer has completed.
+class ReadbackContextTexture {
  public:
-  ReadbackContextRGBA(base::WeakPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu,
-                      std::unique_ptr<CopyOutputRequest> request,
-                      const gfx::Rect& result_rect,
-                      const gpu::Mailbox& mailbox,
-                      const gfx::ColorSpace& color_space);
-
-  // Will be called with `ReadbackContextRGBA*`:
+  // Will be called with `ReadbackContextTexture*`:
   static void OnMailboxReady(GrGpuFinishedContext context);
 
-  ~ReadbackContextRGBA();
+  ReadbackContextTexture(base::WeakPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu,
+                         std::unique_ptr<CopyOutputRequest> request,
+                         const gfx::Rect& result_rect,
+                         const gpu::Mailbox& mailbox,
+                         const gfx::ColorSpace& color_space);
+  ~ReadbackContextTexture();
 
  private:
   void OnMailboxReadyInternal();
