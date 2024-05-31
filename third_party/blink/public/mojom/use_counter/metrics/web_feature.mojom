@@ -4285,17 +4285,12 @@ enum WebFeature {
   // The items above roughly this point are available in the M124 branch.
 
   kHTMLPermissionElement = 4921,
-
-  // Model Execution API:
   kOBSOLETE_V8ModelGenericSession_Execute_Method = 4922,
   kOBSOLETE_V8ModelGenericSession_ExecuteStreaming_Method = 4923,
   kOBSOLETE_V8ModelManager_CanCreateGenericSession_Method = 4924,
   kOBSOLETE_V8ModelManager_CreateGenericSession_Method = 4925,
-
   kV8Animation_Progress_AttributeGetter = 4926,
-
   kOBSOLETE_V8ModelManager_DefaultGenericSessionOptions_Method = 4927,
-
   kQuirksModeCursorHandApplied = 4928,
   kSkippedPreloadScanning = 4929,
   kCSSColor_SpaceRGB = 4930,
