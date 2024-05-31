@@ -460,6 +460,9 @@ void SetUsesSplitStoresAndUPMForLocal(
   base::UmaHistogramBoolean(
       "PasswordManager.LocalUpmActivated",
       password_manager::UsesSplitStoresAndUPMForLocal(pref_service));
+  base::UmaHistogramEnumeration(
+      "PasswordManager.LocalUpmActivationStatus",
+      GetSplitStoresAndLocalUpmPrefValue(pref_service));
 }
 
 }  // namespace password_manager_android_util

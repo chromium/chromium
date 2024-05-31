@@ -1860,13 +1860,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.LocalUpmActivated" enum="Boolean"
-    expires_after="2025-02-15">
+    expires_after="2024-07-15">
   <owner>victorvianna@google.com</owner>
   <owner>src/components/password_manager/OWNERS</owner>
   <summary>
     Records on startup whether the user was activated for local UPM. Records
     false for users who have a migration of local passwords scheduled but didn't
     get activated yet.
+
+    Can be obsoleted once PasswosrdManager.LocalUpmActivationStatus saturates.
   </summary>
 </histogram>
 
@@ -1896,6 +1898,20 @@ chromium-metrics-reviews@google.com.
                  local passwords or password manager settings"/>
     <variant name=".Syncing" summary="users who are syncing passwords"/>
   </token>
+</histogram>
+
+<histogram name="PasswordManager.LocalUpmActivationStatus"
+    enum="UseUpmLocalAndSeparateStoresState" expires_after="2024-09-15">
+  <owner>ioanap@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records on startup the exact state stored in the UPM local state pref,
+    immediately after the pref value is set. The main difference to
+    PasswordManager.LocalUpmActivated is that this histogram records the
+    &quot;migration pending&quot; state separately. This can be used to identify
+    whether thre are any issue that could cause clients to be stuck in migration
+    pending.
+  </summary>
 </histogram>
 
 <histogram name="PasswordManager.LoginDatabase.DeleteFromKeychain"

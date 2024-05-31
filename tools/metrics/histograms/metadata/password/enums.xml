@@ -1429,6 +1429,12 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Server-side prediction"/>
 </enum>
 
+<enum name="UseUpmLocalAndSeparateStoresState">
+  <int value="0" label="Off"/>
+  <int value="1" label="OffAndMigrationPending"/>
+  <int value="2" label="On"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>
