@@ -877,6 +877,9 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
                   callback) override;
 
   ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
+  ServiceWorkerVersion* controller() const {
+    return service_worker_client().controller();
+  }
 
  private:
   // Callback for ServiceWorkerContextCore::RegisterServiceWorker().

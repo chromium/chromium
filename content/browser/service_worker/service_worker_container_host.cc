@@ -457,11 +457,11 @@ void ServiceWorkerContainerHostForClient::EnsureControllerServiceWorker(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(kinuko): Log the reasons we drop the request.
-  if (!context() || !service_worker_client().controller()) {
+  if (!context() || !controller()) {
     return;
   }
 
-  service_worker_client().controller()->RunAfterStartWorker(
+  controller()->RunAfterStartWorker(
       PurposeToEventType(purpose),
       base::BindOnce(
           &ServiceWorkerContainerHostForClient::StartControllerComplete,
@@ -1232,7 +1232,7 @@ void ServiceWorkerContainerHostForClient::CloneControllerServiceWorker(
     DCHECK(service_worker_client().IsContainerForWorkerClient());
   }
 
-  service_worker_client().controller()->controller()->Clone(
+  controller()->controller()->Clone(
       std::move(receiver),
       policy_container_policies_->cross_origin_embedder_policy,
       std::move(coep_reporter_to_be_passed));
