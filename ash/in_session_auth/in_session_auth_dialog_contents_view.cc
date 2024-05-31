@@ -71,11 +71,23 @@ UserAvatar GetActiveUserAvatar() {
 
 }  // namespace
 
+InSessionAuthDialogContentsView::TestApi::TestApi(
+    InSessionAuthDialogContentsView* contents_view)
+    : contents_view_(contents_view) {}
+
+InSessionAuthDialogContentsView::TestApi::~TestApi() = default;
+
+views::Button* InSessionAuthDialogContentsView::TestApi::GetCloseButton() {
+  return contents_view_->close_button_;
+}
+
 InSessionAuthDialogContentsView::InSessionAuthDialogContentsView(
     const std::optional<std::string>& prompt,
     base::OnceClosure on_end_authentication,
     base::RepeatingClosure on_ui_initialized,
-    AuthHubConnector* connector) {
+    AuthHubConnector* connector,
+    AuthHub* auth_hub)
+    : auth_hub_(auth_hub) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
@@ -221,7 +233,7 @@ AuthPanel* InSessionAuthDialogContentsView::GetAuthPanel() {
 }
 
 void InSessionAuthDialogContentsView::OnCloseButtonPressed() {
-  AuthHub::Get()->CancelCurrentAttempt(connector_);
+  auth_hub_->CancelCurrentAttempt(connector_);
 }
 
 BEGIN_METADATA(InSessionAuthDialogContentsView)

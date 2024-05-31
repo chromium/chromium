@@ -16,6 +16,7 @@ static_library("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/osauth/impl",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -28,5 +29,9 @@ static_library("test_support") {
     "mock_auth_factor_engine_factory.h",
     "mock_auth_factor_status_consumer.cc",
     "mock_auth_factor_status_consumer.h",
+    "mock_auth_hub.cc",
+    "mock_auth_hub.h",
+    "mock_auth_hub_connector.cc",
+    "mock_auth_hub_connector.h",
   ]
 }

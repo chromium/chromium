@@ -80,7 +80,7 @@ include_rules = [
   "+chromeos/ash/components/login/auth",
   "+chromeos/ash/components/mojo_service_manager",
   "+chromeos/ash/components/multidevice",
-  "+chromeos/ash/components/osauth/public",
+  "+chromeos/ash/components/osauth",
   "+chromeos/ash/components/peripheral_notification",
   "+chromeos/ash/components/phonehub",
   "+chromeos/ash/components/proximity_auth",

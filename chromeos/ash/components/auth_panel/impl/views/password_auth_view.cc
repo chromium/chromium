@@ -54,6 +54,18 @@ ui::ColorId GetDisabledIconColorId() {
 
 namespace ash {
 
+views::Textfield* PasswordAuthView::TestApi::GetPasswordTextfield() {
+  auto* password_auth_view =
+      static_cast<PasswordAuthView*>(password_auth_view_);
+  return static_cast<LoginTextfield*>(password_auth_view->login_textfield_);
+}
+
+views::View* PasswordAuthView::TestApi::GetSubmitPasswordButton() {
+  auto* password_auth_view =
+      static_cast<PasswordAuthView*>(password_auth_view_);
+  return password_auth_view->submit_button_;
+}
+
 // The login password row contains the password textfield and different buttons
 // and indicators (easy unlock, display password, caps lock enabled).
 class PasswordAuthView::LoginPasswordRow : public views::View {
