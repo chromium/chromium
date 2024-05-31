@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_address_mediator.h"
 
+#import "base/i18n/message_formatter.h"
 #import "base/metrics/user_metrics.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -19,6 +21,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using autofill::AutofillProfile;
@@ -70,21 +73,29 @@ NSString* const ManageAddressAccessibilityIdentifier =
     return;
   }
 
+  int addressCount = self.addresses.size();
   NSMutableArray* items =
-      [[NSMutableArray alloc] initWithCapacity:self.addresses.size()];
-  for (const AutofillProfile* address : self.addresses) {
+      [[NSMutableArray alloc] initWithCapacity:addressCount];
+  for (int i = 0; i < addressCount; i++) {
     ManualFillAddress* manualFillAddress =
-        [[ManualFillAddress alloc] initWithProfile:*address];
+        [[ManualFillAddress alloc] initWithProfile:*self.addresses[i]];
 
     NSArray<UIAction*>* menuActions =
         IsKeyboardAccessoryUpgradeEnabled()
-            ? @[ [self createMenuEditActionForAddress:address] ]
+            ? @[ [self createMenuEditActionForAddress:self.addresses[i]] ]
             : @[];
 
-    auto item =
-        [[ManualFillAddressItem alloc] initWithAddress:manualFillAddress
-                                       contentInjector:self.contentInjector
-                                           menuActions:menuActions];
+    NSString* cellIndexAccessibilityLabel = base::SysUTF16ToNSString(
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            l10n_util::GetStringUTF16(
+                IDS_IOS_MANUAL_FALLBACK_ADDRESS_CELL_INDEX),
+            "count", addressCount, "position", i + 1));
+
+    auto item = [[ManualFillAddressItem alloc]
+                    initWithAddress:manualFillAddress
+                    contentInjector:self.contentInjector
+                        menuActions:menuActions
+        cellIndexAccessibilityLabel:cellIndexAccessibilityLabel];
     [items addObject:item];
   }
 

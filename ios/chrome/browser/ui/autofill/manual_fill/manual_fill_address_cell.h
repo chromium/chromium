@@ -18,10 +18,13 @@
 @interface ManualFillAddressItem : TableViewItem
 
 // Inits an address with an `address`, a `contentInjector` and `menuActions` for
-// user selection.
+// user selection. `cellIndexAccessibilityLabel` is the cell's accessibility
+// label and is used to indicate the index at which the address represented by
+// this item is positioned in the list of addresses to show.
 - (instancetype)initWithAddress:(ManualFillAddress*)address
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
+    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithType:(NSInteger)type NS_UNAVAILABLE;
@@ -33,10 +36,14 @@
 @interface ManualFillAddressCell : TableViewCell
 
 // Updates the cell with an `address`, a `contentInjector` to be notified and
-// `menuActions` to set up an overflow menu.
+// `menuActions` to set up an overflow menu. `cellIndexAccessibilityLabel` is
+// this cell's accessibility label and is used to indicate the index at which
+// the address represented by this cell is positioned in the list of addresses
+// to show.
 - (void)setUpWithAddress:(ManualFillAddress*)address
-         contentInjector:(id<ManualFillContentInjector>)contentInjector
-             menuActions:(NSArray<UIAction*>*)menuActions;
+                contentInjector:(id<ManualFillContentInjector>)contentInjector
+                    menuActions:(NSArray<UIAction*>*)menuActions
+    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel;
 
 @end
 

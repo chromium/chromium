@@ -28,18 +28,24 @@
 // The UIActions that should be available from the cell's overflow menu button.
 @property(nonatomic, strong) NSArray<UIAction*>* menuActions;
 
+// The cell's accessibility label. Indicates the index at which the address
+// represented by this item is positioned in the list of addresses to show.
+@property(nonatomic, strong) NSString* cellIndexAccessibilityLabel;
+
 @end
 
 @implementation ManualFillAddressItem
 
 - (instancetype)initWithAddress:(ManualFillAddress*)address
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
-                    menuActions:(NSArray<UIAction*>*)menuActions {
+                    menuActions:(NSArray<UIAction*>*)menuActions
+    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel {
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
     _contentInjector = contentInjector;
     _address = address;
     _menuActions = menuActions;
+    _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
     self.cellClass = [ManualFillAddressCell class];
   }
   return self;
@@ -49,8 +55,9 @@
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
   [cell setUpWithAddress:self.address
-         contentInjector:self.contentInjector
-             menuActions:self.menuActions];
+                  contentInjector:self.contentInjector
+                      menuActions:self.menuActions
+      cellIndexAccessibilityLabel:self.cellIndexAccessibilityLabel];
 }
 
 @end
@@ -154,8 +161,9 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 }
 
 - (void)setUpWithAddress:(ManualFillAddress*)address
-         contentInjector:(id<ManualFillContentInjector>)contentInjector
-             menuActions:(NSArray<UIAction*>*)menuActions {
+                contentInjector:(id<ManualFillContentInjector>)contentInjector
+                    menuActions:(NSArray<UIAction*>*)menuActions
+    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel {
   if (self.contentView.subviews.count == 0) {
     [self createViewHierarchy];
   }
@@ -167,6 +175,10 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
     self.overflowMenuButton.hidden = NO;
   } else {
     self.overflowMenuButton.hidden = YES;
+  }
+
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    self.accessibilityLabel = cellIndexAccessibilityLabel;
   }
 
   // Holds the views whose leading anchor is constrained relative to the cell's
