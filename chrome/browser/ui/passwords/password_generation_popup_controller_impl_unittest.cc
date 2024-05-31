@@ -92,14 +92,48 @@ class MockPasswordGenerationPopupView : public PasswordGenerationPopupView {
 class PasswordGenerationPopupControllerImplTest
     : public ChromeRenderViewHostTestHarness {
  public:
+  void SetUp() override;
+  void TearDown() override;
+
   std::unique_ptr<MockPasswordManagerDriver> CreateDriver();
 
  protected:
   MockPasswordGenerationPopupView* popup_view() { return &view_; }
+  MockPasswordManagerDriver& driver() { return *driver_; }
+  base::WeakPtr<PasswordManagerDriver> weak_driver() {
+    return driver_->AsWeakPtr();
+  }
+  content::WebContents* web_contents() { return web_contents_.get(); }
+  PasswordGenerationUIData& ui_data() { return ui_data_; }
 
  private:
+  StubPasswordManagerClient client_;
+  std::unique_ptr<MockPasswordManagerDriver> driver_;
+  std::unique_ptr<PasswordGenerationFrameHelper> pw_generation_helper_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  PasswordGenerationUIData ui_data_;
   MockPasswordGenerationPopupView view_;
 };
+
+void PasswordGenerationPopupControllerImplTest::SetUp() {
+  ChromeRenderViewHostTestHarness::SetUp();
+
+  driver_ = CreateDriver();
+  web_contents_ = CreateTestWebContents();
+  ui_data_ = CreatePasswordGenerationUIData();
+
+  // The password generation helper is needed in the offer generation state and
+  // since the driver mock returns a raw pointer to it, we construct it first.
+  pw_generation_helper_ =
+      std::make_unique<PasswordGenerationFrameHelper>(&client_, driver_.get());
+  ON_CALL(driver(), GetPasswordGenerationHelper)
+      .WillByDefault(Return(pw_generation_helper_.get()));
+}
+
+void PasswordGenerationPopupControllerImplTest::TearDown() {
+  web_contents_.reset();
+  ChromeRenderViewHostTestHarness::TearDown();
+}
 
 std::unique_ptr<MockPasswordManagerDriver>
 PasswordGenerationPopupControllerImplTest::CreateDriver() {
@@ -109,19 +143,16 @@ PasswordGenerationPopupControllerImplTest::CreateDriver() {
 }  // namespace
 
 TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateTheSame) {
-  PasswordGenerationUIData ui_data = CreatePasswordGenerationUIData();
-  auto driver = CreateDriver();
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller1 =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data.bounds, ui_data, driver->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents.get(), main_rfh(),
+          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh(),
           /*pref_service=*/nullptr);
 
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller2 =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
-          controller1, ui_data.bounds, ui_data, driver->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents.get(), main_rfh(),
+          controller1, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh(),
           /*pref_service=*/nullptr);
 
   EXPECT_EQ(controller1.get(), controller2.get());
@@ -129,40 +160,36 @@ TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateTheSame) {
 
 TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateDifferentBounds) {
   gfx::RectF rect(100, 20);
-  PasswordGenerationUIData ui_data = CreatePasswordGenerationUIData();
-  auto driver = CreateDriver();
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller1 =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, rect, ui_data, driver->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents.get(), main_rfh(),
+          /*previous=*/nullptr, rect, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh(),
           /*pref_service=*/nullptr);
 
   rect = gfx::RectF(200, 30);
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller2 =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
-          controller1, rect, ui_data, driver->AsWeakPtr(), /*observer=*/nullptr,
-          web_contents.get(), main_rfh(), /*pref_service=*/nullptr);
+          controller1, rect, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh(),
+          /*pref_service=*/nullptr);
 
   EXPECT_FALSE(controller1);
   EXPECT_TRUE(controller2);
 }
 
 TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateDifferentTabs) {
-  PasswordGenerationUIData ui_data = CreatePasswordGenerationUIData();
-  auto driver = CreateDriver();
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
+  auto web_contents1 = CreateTestWebContents();
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller1 =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data.bounds, ui_data, driver->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents.get(), main_rfh(),
+          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents1.get(), main_rfh(),
           /*pref_service=*/nullptr);
 
-  web_contents = CreateTestWebContents();
+  auto web_contents2 = CreateTestWebContents();
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller2 =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
-          controller1, ui_data.bounds, ui_data, driver->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents.get(), main_rfh(),
+          controller1, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents2.get(), main_rfh(),
           /*pref_service=*/nullptr);
 
   EXPECT_FALSE(controller1);
@@ -170,20 +197,19 @@ TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateDifferentTabs) {
 }
 
 TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateDifferentDrivers) {
-  PasswordGenerationUIData ui_data = CreatePasswordGenerationUIData();
-  auto driver = CreateDriver();
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
+  auto driver1 = CreateDriver();
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller1 =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data.bounds, ui_data, driver->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents.get(), main_rfh(),
+          /*previous=*/nullptr, ui_data().bounds, ui_data(),
+          driver1->AsWeakPtr(),
+          /*observer=*/nullptr, web_contents(), main_rfh(),
           /*pref_service=*/nullptr);
 
-  driver = CreateDriver();
+  auto driver2 = CreateDriver();
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller2 =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
-          controller1, ui_data.bounds, ui_data, driver->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents.get(), main_rfh(),
+          controller1, ui_data().bounds, ui_data(), driver2->AsWeakPtr(),
+          /*observer=*/nullptr, web_contents(), main_rfh(),
           /*pref_service=*/nullptr);
 
   EXPECT_FALSE(controller1);
@@ -192,20 +218,17 @@ TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateDifferentDrivers) {
 
 TEST_F(PasswordGenerationPopupControllerImplTest,
        GetOrCreateDifferentElements) {
-  PasswordGenerationUIData ui_data = CreatePasswordGenerationUIData();
-  auto driver = CreateDriver();
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller1 =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data.bounds, ui_data, driver->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents.get(), main_rfh(),
+          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh(),
           /*pref_service=*/nullptr);
 
-  ui_data.generation_element_id = autofill::FieldRendererId(200);
+  ui_data().generation_element_id = autofill::FieldRendererId(200);
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller2 =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
-          controller1, ui_data.bounds, ui_data, driver->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents.get(), main_rfh(),
+          controller1, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh(),
           /*pref_service=*/nullptr);
 
   EXPECT_FALSE(controller1);
@@ -213,18 +236,15 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
 }
 
 TEST_F(PasswordGenerationPopupControllerImplTest, DestroyInPasswordAccepted) {
-  PasswordGenerationUIData ui_data = CreatePasswordGenerationUIData();
-  auto driver = CreateDriver();
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
   base::WeakPtr<PasswordGenerationPopupController> controller =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data.bounds, ui_data, driver->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents.get(), main_rfh(),
+          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh(),
           /*pref_service=*/nullptr);
 
   // Destroying the controller in GeneratedPasswordAccepted() should not cause a
   // crash.
-  EXPECT_CALL(*driver,
+  EXPECT_CALL(driver(),
               GeneratedPasswordAccepted(_, autofill::FieldRendererId(100), _))
       .WillOnce([controller](auto, auto, auto) {
         controller->Hide(autofill::SuggestionHidingReason::kViewDestroyed);
@@ -233,14 +253,11 @@ TEST_F(PasswordGenerationPopupControllerImplTest, DestroyInPasswordAccepted) {
 }
 
 TEST_F(PasswordGenerationPopupControllerImplTest, GetElementTextDirection) {
-  PasswordGenerationUIData ui_data = CreatePasswordGenerationUIData();
-  ui_data.text_direction = base::i18n::TextDirection::RIGHT_TO_LEFT;
-  auto driver = CreateDriver();
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
+  ui_data().text_direction = base::i18n::TextDirection::RIGHT_TO_LEFT;
   base::WeakPtr<PasswordGenerationPopupController> controller =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data.bounds, ui_data, driver->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents.get(), main_rfh(),
+          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh(),
           /*pref_service=*/nullptr);
 
   ASSERT_TRUE(controller);
@@ -250,63 +267,46 @@ TEST_F(PasswordGenerationPopupControllerImplTest, GetElementTextDirection) {
 
 TEST_F(PasswordGenerationPopupControllerImplTest,
        PreviewIsTriggeredDuringGeneration) {
-  // The password generation helper is needed in the offer generation state and
-  // since the driver mock returns a raw pointer to it, we construct it first.
-  StubPasswordManagerClient client;
-  PasswordGenerationFrameHelper pw_generation_helper{&client,
-                                                     /*driver=*/nullptr};
-
-  PasswordGenerationUIData ui_data = CreatePasswordGenerationUIData();
-  auto driver = CreateDriver();
-  ON_CALL(*driver, GetPasswordGenerationHelper)
-      .WillByDefault(Return(&pw_generation_helper));
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data.bounds, ui_data, driver->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents.get(), main_rfh(),
+          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh(),
           /*pref_service=*/nullptr);
   controller->SetViewForTesting(popup_view());
 
   // In the offer generation state, suggestions are previewed on selection.
   controller->Show(
       PasswordGenerationPopupController::GenerationUIState::kOfferGeneration);
-  EXPECT_CALL(*driver, PreviewGenerationSuggestion);
+  EXPECT_CALL(driver(), PreviewGenerationSuggestion);
   static_cast<PasswordGenerationPopupController*>(controller.get())
       ->SetSelected();
 }
 
 TEST_F(PasswordGenerationPopupControllerImplTest,
        PreviewIsTriggeredOnlyDuringOfferGeneration) {
-  PasswordGenerationUIData ui_data = CreatePasswordGenerationUIData();
-  auto driver = CreateDriver();
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data.bounds, ui_data, driver->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents.get(), main_rfh(),
+          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh(),
           /*pref_service=*/nullptr);
   controller->SetViewForTesting(popup_view());
 
   // In the edit generated password state, no preview calls happen.
   controller->Show(PasswordGenerationPopupController::GenerationUIState::
                        kEditGeneratedPassword);
-  EXPECT_CALL(*driver, PreviewGenerationSuggestion).Times(0);
+  EXPECT_CALL(driver(), PreviewGenerationSuggestion).Times(0);
   static_cast<PasswordGenerationPopupController*>(controller.get())
       ->SetSelected();
 }
 
 TEST_F(PasswordGenerationPopupControllerImplTest, ClearsFormPreviewOnHide) {
-  PasswordGenerationUIData ui_data = CreatePasswordGenerationUIData();
-  auto driver = CreateDriver();
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
   base::WeakPtr<PasswordGenerationPopupController> controller =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data.bounds, ui_data, driver->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents.get(), main_rfh(),
+          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh(),
           /*pref_service=*/nullptr);
 
-  EXPECT_CALL(*driver, ClearPreviewedForm());
+  EXPECT_CALL(driver(), ClearPreviewedForm());
   controller->Hide(autofill::SuggestionHidingReason::kViewDestroyed);
 }
 
@@ -319,18 +319,15 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
         {{"password_generation_variation", "edit_password"}}}},
       {});
 
-  PasswordGenerationUIData ui_data{CreatePasswordGenerationUIData()};
-  auto driver = CreateDriver();
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
   base::WeakPtr<PasswordGenerationPopupController> controller =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data.bounds, ui_data, driver->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents.get(), main_rfh(),
+          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh(),
           /*pref_service=*/nullptr);
 
-  EXPECT_CALL(*driver,
+  EXPECT_CALL(driver(),
               GeneratedPasswordAccepted(_, autofill::FieldRendererId(100), _));
-  EXPECT_CALL(*driver, FocusNextFieldAfterPasswords);
+  EXPECT_CALL(driver(), FocusNextFieldAfterPasswords);
   controller->PasswordAccepted();
 }
 
@@ -342,22 +339,19 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
         {{"password_generation_variation", "edit_password"}}}},
       {});
 
-  PasswordGenerationUIData ui_data{CreatePasswordGenerationUIData()};
-  auto driver = CreateDriver();
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
   base::WeakPtr<PasswordGenerationPopupController> controller =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data.bounds, ui_data, driver->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents.get(), main_rfh(),
+          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh(),
           /*pref_service=*/nullptr);
   // EditPasswordClicked() below results in calling view->Show(), hence the need
   // to use the mock.
   static_cast<PasswordGenerationPopupControllerImpl*>(controller.get())
       ->SetViewForTesting(popup_view());
 
-  EXPECT_CALL(*driver,
+  EXPECT_CALL(driver(),
               GeneratedPasswordAccepted(_, autofill::FieldRendererId(100), _));
-  EXPECT_CALL(*driver, FocusNextFieldAfterPasswords).Times(0);
+  EXPECT_CALL(driver(), FocusNextFieldAfterPasswords).Times(0);
   controller->EditPasswordClicked();
 }
 
@@ -369,21 +363,10 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
         {{"password_generation_variation", "nudge_password"}}}},
       {});
 
-  // The password generation helper is needed in the offer generation state and
-  // since the driver mock returns a raw pointer to it, we construct it first.
-  StubPasswordManagerClient client;
-  PasswordGenerationFrameHelper pw_generation_helper{&client,
-                                                     /*driver=*/nullptr};
-
-  PasswordGenerationUIData ui_data = CreatePasswordGenerationUIData();
-  auto driver = CreateDriver();
-  ON_CALL(*driver, GetPasswordGenerationHelper)
-      .WillByDefault(Return(&pw_generation_helper));
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data.bounds, ui_data, driver->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents.get(), main_rfh(),
+          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh(),
           /*pref_service=*/nullptr);
 
   controller->SetViewForTesting(popup_view());
@@ -394,7 +377,7 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
       .WillByDefault(Return(true));
 
   // In the nudge password experiment suggestion is previewed on show.
-  EXPECT_CALL(*driver, PreviewGenerationSuggestion);
+  EXPECT_CALL(driver(), PreviewGenerationSuggestion);
   controller->Show(
       PasswordGenerationPopupController::GenerationUIState::kOfferGeneration);
 }
@@ -411,13 +394,10 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
   pref_service.registry()->RegisterIntegerPref(
       kPasswordGenerationNudgePasswordDismissCount, 0);
 
-  PasswordGenerationUIData ui_data = CreatePasswordGenerationUIData();
-  auto driver = CreateDriver();
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
   base::WeakPtr<PasswordGenerationPopupController> controller =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data.bounds, ui_data, driver->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents.get(), main_rfh(), &pref_service);
+          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh(), &pref_service);
 
   EXPECT_EQ(
       pref_service.GetInteger(kPasswordGenerationNudgePasswordDismissCount), 0);
@@ -438,13 +418,10 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
   pref_service.registry()->RegisterIntegerPref(
       kPasswordGenerationNudgePasswordDismissCount, 4);
 
-  PasswordGenerationUIData ui_data = CreatePasswordGenerationUIData();
-  auto driver = CreateDriver();
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
   base::WeakPtr<PasswordGenerationPopupController> controller =
       PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data.bounds, ui_data, driver->AsWeakPtr(),
-          /*observer=*/nullptr, web_contents.get(), main_rfh(), &pref_service);
+          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh(), &pref_service);
 
   EXPECT_EQ(
       pref_service.GetInteger(kPasswordGenerationNudgePasswordDismissCount), 4);
