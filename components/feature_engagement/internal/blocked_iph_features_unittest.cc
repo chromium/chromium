@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
-#include "components/feature_engagement/public/switches.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,7 +49,7 @@ class BlockedIphFeaturesTest : public testing::Test {
   void ExpectRefCountOnTeardown() { expect_refcount_on_teardown_ = true; }
 
   static const char* GetCommandLineSwitch() {
-    return ::switches::kPropagateIPHForTesting;
+    return BlockedIphFeatures::kPropagateIPHForTestingSwitch;
   }
 
  private:

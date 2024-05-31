@@ -84,6 +84,8 @@ class BlockedIphFeatures {
 
   void MaybeReadFromCommandLine() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
+  static const char kPropagateIPHForTestingSwitch[];
+
   size_t global_block_count_ = 0;
   std::map<std::string, size_t> allow_feature_counts_;
   bool read_from_command_line_ = false;

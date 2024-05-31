@@ -13,9 +13,11 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "components/feature_engagement/public/switches.h"
 
 namespace feature_engagement {
+
+const char BlockedIphFeatures::kPropagateIPHForTestingSwitch[] =
+    "propagate-iph-for-testing";
 
 BlockedIphFeatures::BlockedIphFeatures() = default;
 BlockedIphFeatures::~BlockedIphFeatures() = default;
@@ -67,8 +69,7 @@ void BlockedIphFeatures::MaybeWriteToCommandLine(
   }
 
   std::string value_string = base::JoinString(features, ",");
-  command_line.AppendSwitchASCII(switches::kPropagateIPHForTesting,
-                                 value_string);
+  command_line.AppendSwitchASCII(kPropagateIPHForTestingSwitch, value_string);
   if (!features.empty()) {
     if (command_line.HasSwitch(switches::kEnableFeatures)) {
       const std::string old_value =
@@ -90,10 +91,10 @@ void BlockedIphFeatures::MaybeReadFromCommandLine() {
 
   const base::CommandLine* const command_line =
       base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kPropagateIPHForTesting)) {
+  if (command_line->HasSwitch(kPropagateIPHForTestingSwitch)) {
     IncrementGlobalBlockCount();
     const std::string value =
-        command_line->GetSwitchValueASCII(switches::kPropagateIPHForTesting);
+        command_line->GetSwitchValueASCII(kPropagateIPHForTestingSwitch);
     if (!value.empty()) {
       auto features = base::FeatureList::SplitFeatureListString(value);
       for (auto& feature_name : features) {

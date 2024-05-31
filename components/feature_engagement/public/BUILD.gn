@@ -47,10 +47,7 @@ source_set("public") {
     "tracker.h",
   ]
 
-  public_deps = [
-    ":switches",
-    "//base",
-  ]
+  public_deps = [ "//base" ]
   deps = [
     "//build:branding_buildflags",
     "//components/feed:feature_list",
@@ -86,10 +83,6 @@ source_set("public") {
       "//chromeos/ash/components/scalable_iph:constants",
     ]
   }
-}
-
-source_set("switches") {
-  sources = [ "switches.h" ]
 }
 
 source_set("unit_tests") {
