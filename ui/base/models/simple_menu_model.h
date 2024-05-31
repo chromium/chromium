@@ -22,6 +22,8 @@ namespace user_education {
 class NewBadgeController;
 }
 
+class ChromeLabsViewController;
+
 namespace ui {
 
 class ButtonMenuItemModel;
@@ -33,11 +35,17 @@ class ButtonMenuItemModel;
 // marked as "new" for an extended/indefinite period of time.
 class COMPONENT_EXPORT(UI_BASE) IsNewFeatureAtValue {
  public:
-  // For other platforms, add appropriate PassKey.
+  IsNewFeatureAtValue() = default;
+
+  // Allowed factory classes:
   IsNewFeatureAtValue(base::PassKey<user_education::NewBadgeController>,
                       bool value)
-      : value_(value) {}
-  IsNewFeatureAtValue() = default;
+      : ui::IsNewFeatureAtValue(value) {}
+  IsNewFeatureAtValue(base::PassKey<ChromeLabsViewController>, bool value)
+      : ui::IsNewFeatureAtValue(value) {}
+
+  // For other platforms/factories, add appropriate PassKey.
+
   IsNewFeatureAtValue(const IsNewFeatureAtValue&) = default;
   IsNewFeatureAtValue& operator=(const IsNewFeatureAtValue&) = default;
 
@@ -52,6 +60,8 @@ class COMPONENT_EXPORT(UI_BASE) IsNewFeatureAtValue {
   }
 
  private:
+  explicit IsNewFeatureAtValue(bool value) : value_(value) {}
+
   bool value_ = false;
 };
 

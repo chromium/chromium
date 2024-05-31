@@ -40,6 +40,7 @@ class NewBadgeLabelTest : public views::ViewsTestBase {
         std::make_unique<views::Label>(u"test", views::style::CONTEXT_LABEL));
     new_badge_label_ = contents_->AddChildView(
         std::make_unique<NewBadgeLabel>(u"test", views::style::CONTEXT_LABEL));
+    new_badge_label_->SetDisplayNewBadgeForTesting(true);
   }
 
   void TearDown() override {
@@ -62,7 +63,7 @@ class NewBadgeLabelTest : public views::ViewsTestBase {
 };
 
 TEST_F(NewBadgeLabelTest, NoBadgeReportsSameSizes) {
-  new_badge_label()->SetDisplayNewBadge(false);
+  new_badge_label()->SetDisplayNewBadgeForTesting(false);
   const gfx::Size preferred_size = control_label()->GetPreferredSize(
       views::SizeBounds(control_label()->width(), {}));
   EXPECT_EQ(preferred_size,
@@ -77,7 +78,7 @@ TEST_F(NewBadgeLabelTest, NoBadgeReportsSameSizes) {
 }
 
 TEST_F(NewBadgeLabelTest, NoBadgeLayoutsAreTheSame) {
-  new_badge_label()->SetDisplayNewBadge(false);
+  new_badge_label()->SetDisplayNewBadgeForTesting(false);
   widget()->Show();
   widget()->LayoutRootViewIfNecessary();
   EXPECT_EQ(control_label()->size(), new_badge_label()->size());
@@ -129,7 +130,7 @@ TEST_F(NewBadgeLabelTest, SetDisplayNewBadgeCorrectlyAffectsCalculations) {
   EXPECT_TRUE(new_badge_label()->GetDisplayNewBadge());
 
   // Default is true. Setting it again should have no effect.
-  new_badge_label()->SetDisplayNewBadge(true);
+  new_badge_label()->SetDisplayNewBadgeForTesting(true);
   EXPECT_TRUE(new_badge_label()->GetDisplayNewBadge());
   EXPECT_LT(
       control_label()
@@ -140,7 +141,7 @@ TEST_F(NewBadgeLabelTest, SetDisplayNewBadgeCorrectlyAffectsCalculations) {
           .width());
 
   // Toggle to false, observe correct behavior.
-  new_badge_label()->SetDisplayNewBadge(false);
+  new_badge_label()->SetDisplayNewBadgeForTesting(false);
   EXPECT_FALSE(new_badge_label()->GetDisplayNewBadge());
   EXPECT_EQ(
       control_label()
@@ -151,7 +152,7 @@ TEST_F(NewBadgeLabelTest, SetDisplayNewBadgeCorrectlyAffectsCalculations) {
           .width());
 
   // Set to false again, no change.
-  new_badge_label()->SetDisplayNewBadge(false);
+  new_badge_label()->SetDisplayNewBadgeForTesting(false);
   EXPECT_FALSE(new_badge_label()->GetDisplayNewBadge());
   EXPECT_EQ(
       control_label()
@@ -162,7 +163,7 @@ TEST_F(NewBadgeLabelTest, SetDisplayNewBadgeCorrectlyAffectsCalculations) {
           .width());
 
   // Set back to true and verify default behavior.
-  new_badge_label()->SetDisplayNewBadge(true);
+  new_badge_label()->SetDisplayNewBadgeForTesting(true);
   EXPECT_TRUE(new_badge_label()->GetDisplayNewBadge());
   EXPECT_LT(
       control_label()

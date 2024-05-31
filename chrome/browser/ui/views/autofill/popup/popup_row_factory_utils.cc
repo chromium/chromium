@@ -354,7 +354,7 @@ std::unique_ptr<PopupRowContentView> CreatePasswordPopupRowContentView(
 
 std::unique_ptr<PopupRowContentView> CreateComposePopupRowContentView(
     const Suggestion& suggestion,
-    bool show_new_badge) {
+    user_education::DisplayNewBadge show_new_badge) {
   auto view = std::make_unique<PopupRowContentView>();
   auto main_text_label = std::make_unique<user_education::NewBadgeLabel>(
       suggestion.main_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
@@ -501,7 +501,7 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kComposeProactiveNudge: {
       // Todo (http://b/340147177): Confirm that both Compose popups should use
       // the same feature for a new badge and update feature name.
-      const bool show_new_badge = UserEducationService::MaybeShowNewBadge(
+      const auto show_new_badge = UserEducationService::MaybeShowNewBadge(
           controller->GetWebContents()->GetBrowserContext(),
           compose::features::kEnableComposeSavedStateNudge);
       return std::make_unique<PopupRowView>(

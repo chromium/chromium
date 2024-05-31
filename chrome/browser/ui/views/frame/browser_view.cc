@@ -244,7 +244,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/base/theme_provider.h"
@@ -5230,12 +5229,12 @@ void BrowserView::NotifyPromoFeatureUsed(const base::Feature& feature) {
   }
 }
 
-ui::IsNewFeatureAtValue BrowserView::MaybeShowNewBadgeFor(
+user_education::DisplayNewBadge BrowserView::MaybeShowNewBadgeFor(
     const base::Feature& feature) {
   auto* const service =
       UserEducationServiceFactory::GetForBrowserContext(GetProfile());
   if (!service || !service->new_badge_controller()) {
-    return ui::IsNewFeatureAtValue();
+    return user_education::DisplayNewBadge();
   }
   return service->new_badge_controller()->MaybeShowNewBadge(feature);
 }

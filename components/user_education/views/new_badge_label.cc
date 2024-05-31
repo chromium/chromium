@@ -33,7 +33,15 @@ NewBadgeLabel::NewBadgeLabel(const std::u16string& text, const CustomFont& font)
 
 NewBadgeLabel::~NewBadgeLabel() = default;
 
-void NewBadgeLabel::SetDisplayNewBadge(bool display_new_badge) {
+void NewBadgeLabel::SetDisplayNewBadge(DisplayNewBadge display_new_badge) {
+  SetDisplayNewBadgeImpl(display_new_badge);
+}
+
+void NewBadgeLabel::SetDisplayNewBadgeForTesting(bool display_new_badge) {
+  SetDisplayNewBadgeImpl(display_new_badge);
+}
+
+void NewBadgeLabel::SetDisplayNewBadgeImpl(bool display_new_badge) {
   DCHECK(!GetWidget() || !GetVisible() || !GetWidget()->IsVisible())
       << "New badge display should not be toggled while this element is "
          "visible.";
@@ -178,7 +186,6 @@ void NewBadgeLabel::SetBorder(std::unique_ptr<views::Border> b) {
 }
 
 BEGIN_METADATA(NewBadgeLabel)
-ADD_PROPERTY_METADATA(bool, DisplayNewBadge)
 ADD_PROPERTY_METADATA(NewBadgeLabel::BadgePlacement, BadgePlacement)
 ADD_PROPERTY_METADATA(bool, PadAfterNewBadge)
 END_METADATA

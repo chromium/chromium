@@ -18,6 +18,8 @@
 
 namespace user_education {
 
+using DisplayNewBadge = ui::IsNewFeatureAtValue;
+
 // Controls display of "New" Badge based on approved parameters.
 class NewBadgeController {
  public:
@@ -36,7 +38,7 @@ class NewBadgeController {
   // user. Returns true if the badge should be shown. Note that successfully
   // calling this method a number of times will permanently disable the badge,
   // so do not call this method unless the badge will actually be displayed.
-  ui::IsNewFeatureAtValue MaybeShowNewBadge(const base::Feature& feature);
+  DisplayNewBadge MaybeShowNewBadge(const base::Feature& feature);
 
   // Notifies that the `feature` associated with the badge has been shown. After
   // a certain (but low) number of uses, the badge will disappear. Fails if

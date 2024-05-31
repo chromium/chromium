@@ -54,7 +54,6 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/button/button.h"
@@ -654,7 +653,7 @@ class BrowserView : public BrowserWindow,
       const base::Feature& iph_feature) override;
   void NotifyFeatureEngagementEvent(const char* event_name) override;
   void NotifyPromoFeatureUsed(const base::Feature& feature) override;
-  ui::IsNewFeatureAtValue MaybeShowNewBadgeFor(
+  user_education::DisplayNewBadge MaybeShowNewBadgeFor(
       const base::Feature& feature) override;
 
   void ShowIncognitoClearBrowsingDataDialog() override;

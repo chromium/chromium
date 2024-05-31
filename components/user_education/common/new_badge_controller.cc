@@ -37,14 +37,14 @@ void NewBadgeController::InitData() {
 
 NewBadgeController::~NewBadgeController() = default;
 
-ui::IsNewFeatureAtValue NewBadgeController::MaybeShowNewBadge(
+DisplayNewBadge NewBadgeController::MaybeShowNewBadge(
     const base::Feature& feature) {
   if (disable_new_badges_) {
-    return ui::IsNewFeatureAtValue();
+    return DisplayNewBadge();
   }
 
   if (!CheckPrerequisites(feature, /*allow_not_registered=*/false)) {
-    return ui::IsNewFeatureAtValue();
+    return DisplayNewBadge();
   }
 
   NewBadgeData data = storage_service_->ReadNewBadgeData(feature);
@@ -55,13 +55,13 @@ ui::IsNewFeatureAtValue NewBadgeController::MaybeShowNewBadge(
   if (!policy_->ShouldShowNewBadge(
           feature, data.show_count, data.used_count,
           storage_service_->GetCurrentTime() - data.feature_enabled_time)) {
-    return ui::IsNewFeatureAtValue();
+    return DisplayNewBadge();
   }
 
   ++data.show_count;
   storage_service_->SaveNewBadgeData(feature, data);
   policy_->RecordNewBadgeShown(feature, data.show_count);
-  return ui::IsNewFeatureAtValue(base::PassKey<NewBadgeController>(), true);
+  return DisplayNewBadge(base::PassKey<NewBadgeController>(), true);
 }
 
 void NewBadgeController::NotifyFeatureUsed(const base::Feature& feature) {

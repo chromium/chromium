@@ -7,8 +7,10 @@
 
 #include <memory>
 
+#include "components/user_education/common/new_badge_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/badge_painter.h"
 #include "ui/views/controls/label.h"
@@ -54,7 +56,7 @@ class NewBadgeLabel : public views::Label {
 
   // Sets whether the New badge is shown on this label.
   // Should only be called before the label is shown.
-  void SetDisplayNewBadge(bool display_new_badge);
+  void SetDisplayNewBadge(DisplayNewBadge display_new_badge);
   bool GetDisplayNewBadge() const { return display_new_badge_; }
 
   void SetPadAfterNewBadge(bool pad_after_new_badge);
@@ -77,15 +79,19 @@ class NewBadgeLabel : public views::Label {
                                   float new_device_scale_factor) override;
   void OnPaint(gfx::Canvas* canvas) override;
 
+  void SetDisplayNewBadgeForTesting(bool display_new_badge);
+
  private:
+  // Does the actual work of turning the "New" Badge on or off.
+  void SetDisplayNewBadgeImpl(bool display_new_badge);
+
   // Hide the SetBorder() method so that external callers can't use it since we
   // rely on it to add padding. This won't prevent access via downcast, however.
   void SetBorder(std::unique_ptr<views::Border> b) override;
 
-  // Specifies whether the badge should be displayed. Defaults to true, but we
-  // allow the badge to be selectively disabled during experiments/feature
-  // rollouts without having to swap this object with a vanilla Label.
-  bool display_new_badge_ = true;
+  // Specifies whether the badge should be displayed. Defaults to false, which
+  // behaves like a normal label.
+  bool display_new_badge_ = false;
 
   // Add the required internal padding to the label so that there is room to
   // display the new badge.
