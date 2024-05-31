@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.20](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.19...chromium-bidi-v0.5.20) (2024-05-31)
+
+
+### Features
+
+* send `browsingContext.contextCreated` event while subscribing ([#2255](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2255)) ([592c839](https://github.com/GoogleChromeLabs/chromium-bidi/commit/592c839b4cc9b1661f0b00c4a1a467d519255e7c))
+* support document as `startNodes` in `browsingContext.locateNodes` ([#2218](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2218)) ([ad7318f](https://github.com/GoogleChromeLabs/chromium-bidi/commit/ad7318f29ff91831583ee67173ea3322672f1640))
+* support for graphemes in key input ([#2207](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2207)) ([8e3a6c0](https://github.com/GoogleChromeLabs/chromium-bidi/commit/8e3a6c03ddfdc58c73d542d0bf960b890a1ba46b))
+
+
+### Bug Fixes
+
+* added missing input transformations ([#2186](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2186)) ([ea48dc2](https://github.com/GoogleChromeLabs/chromium-bidi/commit/ea48dc2d238d884d5d25a4fa623fed1ad591343b))
+* css locator should allow nodes to be start nodes ([#2195](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2195)) ([4a361a5](https://github.com/GoogleChromeLabs/chromium-bidi/commit/4a361a541dc134656cb0b2207d20c4f47ba3c8ce))
+* errors for `input.setFile` ([#2232](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2232)) ([49e3712](https://github.com/GoogleChromeLabs/chromium-bidi/commit/49e3712930770917ecc40e4e57a37bbc6c5f89df))
+* expose the override data to the request events ([#2241](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2241)) ([947bb8e](https://github.com/GoogleChromeLabs/chromium-bidi/commit/947bb8e1265e4bc86cd17592e59b48dcd35d9950))
+* report correct value for DefaultValue in UserPrompt ([#2228](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2228)) ([df5ebf6](https://github.com/GoogleChromeLabs/chromium-bidi/commit/df5ebf68189cebe22fb559e141c0bc08b379932e))
+* screenshot taken in scrolled viewport origin ([#2161](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2161)) ([b3c57c8](https://github.com/GoogleChromeLabs/chromium-bidi/commit/b3c57c83fdef42dc96d017d7fba02faae36b0595))
+* throw invalid argument for header ([#2246](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2246)) ([664d043](https://github.com/GoogleChromeLabs/chromium-bidi/commit/664d04302ec76bccb1a9d8838c9b34de20eb8cd2))
+
 ## [0.5.19](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.18...chromium-bidi-v0.5.19) (2024-04-24)
 
 
