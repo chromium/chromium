@@ -81,6 +81,11 @@ void TabModel::WillEnterBackground(base::PassKey<TabStripModel>) {
   will_enter_background_callback_list_.Notify(this);
 }
 
+void TabModel::WillDetach(base::PassKey<TabStripModel>,
+                          tabs::TabInterface::DetachReason reason) {
+  will_detach_callback_list_.Notify(this, reason);
+}
+
 content::WebContents* TabModel::GetContents() const {
   return contents();
 }
@@ -102,6 +107,11 @@ base::CallbackListSubscription TabModel::RegisterDidEnterForeground(
 base::CallbackListSubscription TabModel::RegisterWillEnterBackground(
     TabInterface::WillEnterBackgroundCallback callback) {
   return will_enter_background_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription TabModel::RegisterWillDetach(
+    TabInterface::WillDetach callback) {
+  return will_detach_callback_list_.Add(std::move(callback));
 }
 
 bool TabModel::CanShowModalUI() const {

@@ -127,9 +127,17 @@ class LensOverlayController : public LensSearchboxClient,
   void ShowUI(lens::LensOverlayInvocationSource invocation_source);
 
   // Starts the closing process of the overlay. This is an asynchronous process
-  // because we first must unblur the background, before closing the overlay
-  // whether. Eventually Calls CloseUI() asynchronously.
+  // with the following sequence:
+  //   (1) Close the side panel
+  //   (2) Unblur the background
+  //   (3) Wait for the next frame to present
+  //   (4) Close the overlay.
+  // Steps (1) through (3) are asynchronous.
   void CloseUIAsync(lens::LensOverlayDismissalSource dismissal_source);
+
+  // Instantly closes the overlay. This may not look nice if the overlay is
+  // visible when this is called.
+  void CloseUISync(lens::LensOverlayDismissalSource dismissal_source);
 
   // Given an instance of `web_ui` created by the LensOverlayController, returns
   // the LensOverlayController. This method is necessary because WebUIController
@@ -289,9 +297,8 @@ class LensOverlayController : public LensSearchboxClient,
   // Sets whether the results frame should show its loading state.
   virtual void SetSidePanelIsLoadingResults(bool is_loading);
 
-  // Handles when the side panel has been deregistered to do any required
-  // cleanup.
-  void OnSidePanelEntryDeregistered();
+  // Called when the lens side panel has been hidden.
+  void OnSidePanelHidden();
 
   // Testing function to issue a Lens (region selection) request.
   void IssueLensRequestForTesting(lens::mojom::CenterRotatedBoxPtr region);
@@ -475,9 +482,11 @@ class LensOverlayController : public LensSearchboxClient,
   void UpdateCornerRadiusForSidePanel();
 
   // Closes the overlay UI and sets state to kOff. This method is the final
-  // cleanup of closing the overlay UI and should only be called by
-  // CloseUIAsync. Anyone called trying to close the UI should go through
-  // CloseUIAsync.
+  // cleanup of closing the overlay UI. This resets all state internal to the
+  // LensOverlayController.
+  // Anyone called trying to close the UI should go through CloseUIAsync or
+  // CloseUISync. Those methods also reset state external to
+  // LensOverlayController.
   void CloseUIPart2(lens::LensOverlayDismissalSource dismissal_source);
 
   // Unblurs the background and gives a callback to the UI compositor layer to
@@ -540,6 +549,10 @@ class LensOverlayController : public LensSearchboxClient,
   void WillDiscardContents(tabs::TabInterface* tab,
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
+
+  // Called when the tab will be removed from the window.
+  void WillDetach(tabs::TabInterface* tab,
+                  tabs::TabInterface::DetachReason reason);
 
   // Removes the blur on the live page.
   void RemoveBackgroundBlur();
@@ -625,13 +638,6 @@ class LensOverlayController : public LensSearchboxClient,
   std::unique_ptr<lens::LensPermissionBubbleController>
       permission_bubble_controller_;
 
-  // Pointer to the overlay widget.
-  views::UniqueWidgetPtr overlay_widget_;
-  // Pointer to the web view within the overlay widget if it exists.
-  raw_ptr<views::WebView> overlay_web_view_;
-  // Stores the session ID for the window of the widget on creation.
-  std::optional<const SessionID> overlay_widget_window_session_id_;
-
   // Pointer to the WebViews that are being glued by this class. Only used to
   // clean up stale pointers. Only valid while `overlay_widget_` is showing.
   std::vector<views::WebView*> glued_webviews_;
@@ -677,35 +683,9 @@ class LensOverlayController : public LensSearchboxClient,
       this};
   mojo::Remote<lens::mojom::LensSidePanelPage> side_panel_page_;
 
-  // Side panel coordinator for showing results in the panel.
-  std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
-      results_side_panel_coordinator_;
-
-  // General side panel coordinator responsible for all side panel interactions.
-  // Separate from the results_side_panel_coordinator because this controls
-  // interactions to other side panels as well, not just our results. The
-  // side_panel_coordinator leaves with the browser view, so it should outlive
-  // this class. Therefore, if the controller is not in the kOff state, this can
-  // be assumed to be non-null.
-  raw_ptr<SidePanelCoordinator> side_panel_coordinator_ = nullptr;
-
-  // Searchbox handler for passing in image and text selections. The handler is
-  // null if the WebUI containing the searchbox has not been initialized yet,
-  // like in the case of side panel opening. In addition, the handler may be
-  // initialized, but the remote not yet set because the WebUI calls SetPage()
-  // once it is ready to receive data from C++. Therefore, we must always check
-  // that:
-  //      1) searchbox_handler_ exists and
-  //      2) searchbox_handler_->IsRemoteBound() is true.
-  std::unique_ptr<RealboxHandler> searchbox_handler_;
-
   // Observer for the WebContents of the associated tab. Only valid while the
   // overlay widget is showing.
   std::unique_ptr<UnderlyingWebContentsObserver> tab_contents_observer_;
-
-  // Observer to check for browser entering fullscreen.
-  base::ScopedObservation<FullscreenController, FullscreenObserver>
-      fullscreen_observation_{this};
 
   // Query controller.
   std::unique_ptr<lens::LensOverlayQueryController>
@@ -736,8 +716,48 @@ class LensOverlayController : public LensSearchboxClient,
   // Class for handling key events from the renderer that were not handled.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
+  // ---------------Browser window scoped state: START---------------------
+  // State that is scoped to the browser window must be reset when the tab is
+  // backgrounded, since the tab may move between browser windows.
+
+  // Observes the side panel of the browser window.
   base::ScopedObservation<SidePanelCoordinator, SidePanelViewStateObserver>
       side_panel_state_observer_{this};
+
+  // Observer to check for browser window entering fullscreen.
+  base::ScopedObservation<FullscreenController, FullscreenObserver>
+      fullscreen_observation_{this};
+
+  // Searchbox handler for passing in image and text selections. The handler is
+  // null if the WebUI containing the searchbox has not been initialized yet,
+  // like in the case of side panel opening. In addition, the handler may be
+  // initialized, but the remote not yet set because the WebUI calls SetPage()
+  // once it is ready to receive data from C++. Therefore, we must always check
+  // that:
+  //      1) searchbox_handler_ exists and
+  //      2) searchbox_handler_->IsRemoteBound() is true.
+  std::unique_ptr<RealboxHandler> searchbox_handler_;
+
+  // General side panel coordinator responsible for all side panel interactions.
+  // Separate from the results_side_panel_coordinator because this controls
+  // interactions to other side panels as well, not just our results. The
+  // side_panel_coordinator lives with the browser view, so it should outlive
+  // this class. Therefore, if the controller is not in the kOff state, this can
+  // be assumed to be non-null.
+  raw_ptr<SidePanelCoordinator> side_panel_coordinator_ = nullptr;
+
+  // Side panel coordinator for showing results in the panel.
+  std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
+      results_side_panel_coordinator_;
+
+  // Pointer to the overlay widget.
+  views::UniqueWidgetPtr overlay_widget_;
+  // Pointer to the web view within the overlay widget if it exists.
+  raw_ptr<views::WebView> overlay_web_view_;
+  // Stores the session ID for the window of the widget on creation.
+  std::optional<const SessionID> overlay_widget_window_session_id_;
+
+  // --------------------Browser window scoped state: END---------------------
 
   // Must be the last member.
   base::WeakPtrFactory<LensOverlayController> weak_factory_{this};

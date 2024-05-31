@@ -67,6 +67,19 @@ class TabInterface {
   virtual base::CallbackListSubscription RegisterWillEnterBackground(
       WillEnterBackgroundCallback callback) = 0;
 
+  // Register for this callback to detect when a tab will be detached from a
+  // window.
+  enum class DetachReason {
+    // The tab is about to be deleted.
+    kDelete,
+    // The tab is going to be removed, in order to be inserted into another
+    // window.
+    kInsertIntoOtherWindow
+  };
+  using WillDetach = base::RepeatingCallback<void(TabInterface*, DetachReason)>;
+  virtual base::CallbackListSubscription RegisterWillDetach(
+      WillDetach callback) = 0;
+
   // Features that want to show tab-modal UI are mutually exclusive. Before
   // showing a modal UI first check `CanShowModal`. Then call ShowModal() and
   // keep `ScopedTabModal` alive to prevent other features from showing

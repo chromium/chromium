@@ -192,6 +192,16 @@ class RenderWidgetHostVisibilityTracker final
   base::ElapsedTimer timer_;
 };
 
+tabs::TabInterface::DetachReason RemoveReasonToDetachReason(
+    TabStripModelChange::RemoveReason reason) {
+  switch (reason) {
+    case TabStripModelChange::RemoveReason::kDeleted:
+      return tabs::TabInterface::DetachReason::kDelete;
+    case TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip:
+      return tabs::TabInterface::DetachReason::kInsertIntoOtherWindow;
+  }
+}
+
 }  // namespace
 
 TabGroupModelFactory::TabGroupModelFactory() {
@@ -488,6 +498,8 @@ TabStripModel::DetachWebContentsWithReasonAt(
     GetTabAtIndex(active_index())
         ->WillEnterBackground(base::PassKey<TabStripModel>());
   }
+  GetTabAtIndex(index)->WillDetach(base::PassKey<TabStripModel>(),
+                                   RemoveReasonToDetachReason(reason));
 
   DetachNotifications notifications(initially_active_web_contents,
                                     selection_model_);
@@ -2254,6 +2266,8 @@ bool TabStripModel::CloseWebContentses(
       GetTabAtIndex(active_index())
           ->WillEnterBackground(base::PassKey<TabStripModel>());
     }
+    GetTabAtIndex(index)->WillDetach(base::PassKey<TabStripModel>(),
+                                     tabs::TabInterface::DetachReason::kDelete);
   }
 
   // We only try the fast shutdown path if the whole browser process is *not*

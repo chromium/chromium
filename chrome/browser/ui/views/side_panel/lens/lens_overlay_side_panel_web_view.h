@@ -15,6 +15,10 @@
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 
+namespace lens {
+class LensOverlaySidePanelCoordinator;
+}  // namespace lens
+
 class Profile;
 
 // LensOverlaySidePanelWebView holds custom behavior needed for the lens overlay
@@ -28,11 +32,15 @@ class LensOverlaySidePanelWebView
                   SidePanelWebUIViewT_LensUntrustedUI)
 
  public:
-  explicit LensOverlaySidePanelWebView(Profile* profile);
+  LensOverlaySidePanelWebView(
+      Profile* profile,
+      lens::LensOverlaySidePanelCoordinator* coordinator);
   LensOverlaySidePanelWebView(const LensOverlaySidePanelWebView&) = delete;
   LensOverlaySidePanelWebView& operator=(const LensOverlaySidePanelWebView&) =
       delete;
   ~LensOverlaySidePanelWebView() override;
+
+  void ClearCoordinator();
 
   // SidePanelWebUIViewT:
   content::WebContents* OpenURLFromTab(
@@ -51,6 +59,8 @@ class LensOverlaySidePanelWebView
   // renderer process.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
+  // Indirectly owns this.
+  raw_ptr<lens::LensOverlaySidePanelCoordinator> coordinator_;
   base::WeakPtrFactory<LensOverlaySidePanelWebView> weak_factory_{this};
 };
 
