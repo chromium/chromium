@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/content/browser/url_checker_on_sb.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -29,11 +31,23 @@ class BaseUIManager;
 // If the check is completed after DidFinishNavigation,
 // BaseUIManager::DisplayBlockingPage will trigger the warning.
 // * Track and provide the status of navigation that is associated with
-// UnsafeResource. This class should only be called on the UI thread.
+// UnsafeResource. Other classes can add themselves as an observer and get
+// notified when certain events happen.
+// This class should only be called on the UI thread.
 class AsyncCheckTracker
     : public content::WebContentsUserData<AsyncCheckTracker>,
       public content::WebContentsObserver {
  public:
+  // Interface for observing events on AsyncCheckTracker.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when a SB check is completed by AsyncCheckTracker. This is not
+    // called if the check was not handled by AsyncCheckTracker (i.e. the check
+    // is completed before the response body is processed, which is the majority
+    // of cases).
+    virtual void OnAsyncSafeBrowsingCheckCompleted() {}
+  };
+
   static AsyncCheckTracker* GetOrCreateForWebContents(
       content::WebContents* web_contents,
       scoped_refptr<BaseUIManager> ui_manager);
@@ -79,6 +93,9 @@ class AsyncCheckTracker
 
   // content::WebContentsObserver methods:
   void DidFinishNavigation(content::NavigationHandle* handle) override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   size_t PendingCheckersSizeForTesting();
 
@@ -143,6 +160,9 @@ class AsyncCheckTracker
   // The threshold that will trigger a cleanup on
   // `committed_navigation_timestamps_`. Overridden in tests.
   size_t navigation_timestamps_size_threshold_;
+
+  // A list of observers that are interested in events from this class.
+  base::ObserverList<Observer> observers_;
 
   // Callback that is called once all checkers are completed. Used only for
   // tests.

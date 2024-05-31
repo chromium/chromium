@@ -134,6 +134,11 @@ void AsyncCheckTracker::PendingCheckerCompleted(
     // times during server redirects.
     MaybeDeleteChecker(navigation_id);
   }
+  if (result.all_checks_completed) {
+    for (auto& observer : observers_) {
+      observer.OnAsyncSafeBrowsingCheckCompleted();
+    }
+  }
 }
 
 bool AsyncCheckTracker::IsNavigationPending(int64_t navigation_id) {
@@ -257,6 +262,14 @@ void AsyncCheckTracker::DeleteExpiredNavigationTimestamps() {
                   return base::TimeTicks::Now() - id_timestamp_pair.second >
                          kNavigationTimestampExpiration;
                 });
+}
+
+void AsyncCheckTracker::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AsyncCheckTracker::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 size_t AsyncCheckTracker::PendingCheckersSizeForTesting() {
