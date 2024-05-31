@@ -653,9 +653,6 @@ em::ActiveTimePeriod::SessionType GetSessionType(
     case DeviceLocalAccountType::kKioskApp:
       return em::ActiveTimePeriod::SESSION_KIOSK;
 
-    case DeviceLocalAccountType::kArcKioskApp:
-      return em::ActiveTimePeriod::SESSION_ARC_KIOSK;
-
     case DeviceLocalAccountType::kWebKioskApp:
       return em::ActiveTimePeriod::SESSION_WEB_KIOSK;
 
@@ -2707,10 +2704,6 @@ bool DeviceStatusCollector::GetRunningKioskApp(
       }
       break;
     }
-    case DeviceLocalAccountType::kArcKioskApp:
-      // Use package name as app ID for ARC Kiosks.
-      running_kiosk_app->set_app_id(account->arc_kiosk_app_info.package_name());
-      break;
     case DeviceLocalAccountType::kWebKioskApp:
       running_kiosk_app->set_app_id(account->web_kiosk_app_info.url());
       break;
@@ -3000,10 +2993,6 @@ bool DeviceStatusCollector::GetKioskSessionStatus(
       }
       break;
     }
-    case DeviceLocalAccountType::kArcKioskApp:
-      // Use package name as app ID for ARC Kiosks.
-      app_status->set_app_id(account->arc_kiosk_app_info.package_name());
-      break;
     case DeviceLocalAccountType::kWebKioskApp:
       app_status->set_app_id(account->web_kiosk_app_info.url());
       break;

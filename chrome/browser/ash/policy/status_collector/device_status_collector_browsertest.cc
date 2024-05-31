@@ -1082,8 +1082,6 @@ class DeviceStatusCollectorTest : public testing::Test {
       case DeviceLocalAccountType::kKioskApp:
         user = user_manager->AddKioskAppUser(account_id);
         break;
-      case DeviceLocalAccountType::kArcKioskApp:
-        NOTREACHED_NORETURN();
       case DeviceLocalAccountType::kWebKioskApp:
         user = user_manager->AddWebKioskAppUser(account_id);
         break;

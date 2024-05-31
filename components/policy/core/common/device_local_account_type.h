@@ -17,20 +17,20 @@ namespace policy {
 // chrome_device_policy.proto
 enum class DeviceLocalAccountType {
   // A login-less, policy-configured browsing session.
-  kPublicSession,
+  kPublicSession = 0,
 
-  // An account that serves as a container for a single full-screen app.
-  kKioskApp,
+  // An account that serves as a container for a single full-screen ChromeApp.
+  kKioskApp = 1,
 
-  // An account that serves as a container for a single full-screen
-  // Android app.
-  kArcKioskApp,
+  // An account that serves as a container for a single full-screen Android
+  // app.
+  // kArcKioskApp = 2, deprecated
 
   // SAML public session account
-  kSamlPublicSession,
+  kSamlPublicSession = 3,
 
   // An account that serves as a container for a single full-screen web app.
-  kWebKioskApp,
+  kWebKioskApp = 4,
 };
 
 // Returns whether the given value is valid DeviceLocalAccountType.

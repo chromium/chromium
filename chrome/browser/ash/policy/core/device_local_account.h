@@ -17,29 +17,6 @@ class OwnerSettingsServiceAsh;
 
 namespace policy {
 
-struct ArcKioskAppBasicInfo {
-  ArcKioskAppBasicInfo(const std::string& package_name,
-                       const std::string& class_name,
-                       const std::string& action,
-                       const std::string& display_name);
-  ArcKioskAppBasicInfo(const ArcKioskAppBasicInfo& other);
-  ArcKioskAppBasicInfo();
-  ~ArcKioskAppBasicInfo();
-
-  bool operator==(const ArcKioskAppBasicInfo& other) const;
-
-  const std::string& package_name() const { return package_name_; }
-  const std::string& class_name() const { return class_name_; }
-  const std::string& action() const { return action_; }
-  const std::string& display_name() const { return display_name_; }
-
- private:
-  std::string package_name_;
-  std::string class_name_;
-  std::string action_;
-  std::string display_name_;
-};
-
 struct WebKioskAppBasicInfo {
   WebKioskAppBasicInfo(const std::string& url,
                        const std::string& title,
@@ -80,9 +57,6 @@ struct DeviceLocalAccount {
                      const std::string& kiosk_app_id,
                      const std::string& kiosk_app_update_url);
   DeviceLocalAccount(EphemeralMode ephemeral_mode,
-                     const ArcKioskAppBasicInfo& arc_kiosk_app_info,
-                     const std::string& account_id);
-  DeviceLocalAccount(EphemeralMode ephemeral_mode,
                      const WebKioskAppBasicInfo& app_info,
                      const std::string& account_id);
   DeviceLocalAccount(const DeviceLocalAccount& other);
@@ -112,7 +86,6 @@ struct DeviceLocalAccount {
   std::string kiosk_app_id;
   std::string kiosk_app_update_url;
 
-  ArcKioskAppBasicInfo arc_kiosk_app_info;
   WebKioskAppBasicInfo web_kiosk_app_info;
 };
 

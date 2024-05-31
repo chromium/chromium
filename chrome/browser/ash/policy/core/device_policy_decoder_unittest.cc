@@ -611,7 +611,7 @@ TEST_F(DevicePolicyDecoderTest,
       device_policy.mutable_device_local_accounts()->add_account();
   account->set_account_id(kDeviceLocalAccountKioskAccountId);
   account->set_type(
-      em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_KIOSK_ANDROID_APP);
+      em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_WEB_KIOSK_APP);
 
   DecodeDevicePolicyTestHelper(
       device_policy, key::kDeviceLocalAccounts,
@@ -620,7 +620,7 @@ TEST_F(DevicePolicyDecoderTest,
               .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId,
                    kDeviceLocalAccountKioskAccountId)
               .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
-                   static_cast<int>(DeviceLocalAccountType::kArcKioskApp))
+                   static_cast<int>(DeviceLocalAccountType::kWebKioskApp))
               .Set(ash::kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
                    static_cast<int>(
                        DeviceLocalAccount::EphemeralMode::kUnset)))));

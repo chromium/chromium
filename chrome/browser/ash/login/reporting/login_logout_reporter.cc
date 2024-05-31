@@ -52,7 +52,6 @@ LoginLogoutSessionType GetSessionType(const AccountId& account_id) {
     case policy::DeviceLocalAccountType::kSamlPublicSession:
       return LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION;
     case policy::DeviceLocalAccountType::kKioskApp:
-    case policy::DeviceLocalAccountType::kArcKioskApp:
     case policy::DeviceLocalAccountType::kWebKioskApp:
       return LoginLogoutSessionType::KIOSK_SESSION;
     default:

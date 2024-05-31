@@ -39,34 +39,10 @@ bool GetString(const base::Value::Dict& dict,
 
 bool IsKioskType(DeviceLocalAccountType type) {
   return type == DeviceLocalAccountType::kKioskApp ||
-         type == DeviceLocalAccountType::kArcKioskApp ||
          type == DeviceLocalAccountType::kWebKioskApp;
 }
 
 }  // namespace
-
-ArcKioskAppBasicInfo::ArcKioskAppBasicInfo(const std::string& package_name,
-                                           const std::string& class_name,
-                                           const std::string& action,
-                                           const std::string& display_name)
-    : package_name_(package_name),
-      class_name_(class_name),
-      action_(action),
-      display_name_(display_name) {}
-
-ArcKioskAppBasicInfo::ArcKioskAppBasicInfo(const ArcKioskAppBasicInfo& other) =
-    default;
-
-ArcKioskAppBasicInfo::ArcKioskAppBasicInfo() {}
-
-ArcKioskAppBasicInfo::~ArcKioskAppBasicInfo() {}
-
-bool ArcKioskAppBasicInfo::operator==(const ArcKioskAppBasicInfo& other) const {
-  return this->package_name_ == other.package_name_ &&
-         this->action_ == other.action_ &&
-         this->class_name_ == other.class_name_ &&
-         this->display_name_ == other.display_name_;
-}
 
 WebKioskAppBasicInfo::WebKioskAppBasicInfo(const std::string& url,
                                            const std::string& title,
@@ -88,16 +64,6 @@ DeviceLocalAccount::DeviceLocalAccount(DeviceLocalAccountType type,
       user_id(GenerateDeviceLocalAccountUserId(account_id, type)),
       kiosk_app_id(kiosk_app_id),
       kiosk_app_update_url(kiosk_app_update_url) {}
-
-DeviceLocalAccount::DeviceLocalAccount(
-    EphemeralMode ephemeral_mode,
-    const ArcKioskAppBasicInfo& arc_kiosk_app_info,
-    const std::string& account_id)
-    : type(DeviceLocalAccountType::kArcKioskApp),
-      ephemeral_mode(ephemeral_mode),
-      account_id(account_id),
-      user_id(GenerateDeviceLocalAccountUserId(account_id, type)),
-      arc_kiosk_app_info(arc_kiosk_app_info) {}
 
 DeviceLocalAccount::DeviceLocalAccount(
     EphemeralMode ephemeral_mode,
@@ -138,22 +104,6 @@ void SetDeviceLocalAccounts(ash::OwnerSettingsServiceAsh* service,
         if (!it->kiosk_app_update_url.empty()) {
           entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
                     it->kiosk_app_update_url);
-        }
-        break;
-      case DeviceLocalAccountType::kArcKioskApp:
-        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
-                  it->arc_kiosk_app_info.package_name());
-        if (!it->arc_kiosk_app_info.class_name().empty()) {
-          entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
-                    it->arc_kiosk_app_info.class_name());
-        }
-        if (!it->arc_kiosk_app_info.action().empty()) {
-          entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
-                    it->arc_kiosk_app_info.action());
-        }
-        if (!it->arc_kiosk_app_info.display_name().empty()) {
-          entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
-                    it->arc_kiosk_app_info.display_name());
         }
         break;
       case DeviceLocalAccountType::kWebKioskApp:
@@ -264,34 +214,6 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
         accounts.emplace_back(DeviceLocalAccountType::kKioskApp,
                               ephemeral_mode_value, account_id, kiosk_app_id,
                               kiosk_app_update_url);
-        break;
-      }
-      case DeviceLocalAccountType::kArcKioskApp: {
-        std::string package_name;
-        std::string class_name;
-        std::string action;
-        std::string display_name;
-        if (!GetString(entry_dict,
-                       ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
-                       &package_name)) {
-          LOG(ERROR) << "Missing package name in ARC kiosk type device-local "
-                        "account at index "
-                     << i << ".";
-          continue;
-        }
-        GetString(entry_dict,
-                  ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
-                  &class_name);
-        GetString(entry_dict,
-                  ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
-                  &action);
-        GetString(entry_dict,
-                  ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
-                  &display_name);
-        const ArcKioskAppBasicInfo arc_kiosk_app(package_name, class_name,
-                                                 action, display_name);
-
-        accounts.emplace_back(ephemeral_mode_value, arc_kiosk_app, account_id);
         break;
       }
       case DeviceLocalAccountType::kWebKioskApp: {

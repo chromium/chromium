@@ -170,7 +170,6 @@ void DeviceLocalAccountPolicyProvider::UpdateFromBroker() {
       break;
     case DeviceLocalAccountType::kSamlPublicSession:
     case DeviceLocalAccountType::kKioskApp:
-    case DeviceLocalAccountType::kArcKioskApp:
       // Do nothing.
       break;
   }

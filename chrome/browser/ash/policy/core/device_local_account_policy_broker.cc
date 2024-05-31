@@ -145,8 +145,7 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
             base::BindRepeating(&content::GetNetworkConnectionTracker)),
       policy_update_callback_(policy_update_callback),
       resource_cache_task_runner_(resource_cache_task_runner) {
-  if (account.type != DeviceLocalAccountType::kArcKioskApp &&
-      account.type != DeviceLocalAccountType::kWebKioskApp) {
+  if (account.type != DeviceLocalAccountType::kWebKioskApp) {
     extension_tracker_ = std::make_unique<DeviceLocalAccountExtensionTracker>(
         account, store_.get(), &schema_registry_);
   }

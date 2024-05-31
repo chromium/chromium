@@ -65,9 +65,6 @@ bool DeviceLocalAccountManagementPolicyProvider::UserMayLoad(
         return true;
       }
       break;
-    case policy::DeviceLocalAccountType::kArcKioskApp:
-      // Unexpected case.
-      break;
   }
 
   // Disallow all other extensions.
