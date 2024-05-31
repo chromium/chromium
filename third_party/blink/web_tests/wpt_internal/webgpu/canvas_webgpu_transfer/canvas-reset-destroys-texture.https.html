@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Canvas2D WebGPU Transfer: canvas-reset-destroys-texture</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./webgpu-helpers.js"></script>
+</head>
+
+<h1>Canvas2D WebGPU Transfer: canvas-reset-destroys-texture</h1>
+
+<p>Resetting a canvas during WebGPU access should destroy the GPUTexture.</p>
+
+<canvas id="c" width="50" height="50"></canvas>
+
+<script>
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_canvas_reset_destroys_texture(adapterInfo,
+                                                device,
+                                                document.getElementById('c'),
+                                                'resize');
+    });
+  }, 'Resizing a canvas during WebGPU access destroys the GPUTexture.'
+);
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_canvas_reset_destroys_texture(adapterInfo,
+                                                device,
+                                                new OffscreenCanvas(50, 50),
+                                                'resize');
+    });
+  },
+  'Resizing an offscreen canvas during WebGPU access destroys the GPUTexture.'
+);
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_canvas_reset_destroys_texture(adapterInfo,
+                                                device,
+                                                document.getElementById('c'),
+                                                'api');
+    });
+  }, 'Calling context.reset() during WebGPU access destroys the GPUTexture.'
+);
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_canvas_reset_destroys_texture(adapterInfo,
+                                                device,
+                                                new OffscreenCanvas(50, 50),
+                                                'api');
+    });
+  },
+  'Calling context.reset() for an offscreen canvas during WebGPU access ' +
+  'destroys the GPUTexture.'
+);
+
+</script>

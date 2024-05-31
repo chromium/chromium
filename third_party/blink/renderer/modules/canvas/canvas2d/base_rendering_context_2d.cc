@@ -705,12 +705,16 @@ void BaseRenderingContext2D::ResetInternal() {
     recorder->RestartRecording();
   }
 
-  // If we are in WebGPU access, orphan the texture. The canvas no longer needs
-  // it, but the Javascript program can continue using the texture indefinitely.
-  // The texture will eventually be garbage collected when there are no more
-  // Javascript references. From the canvas' perspective, nulling out this
-  // texture effectively ends the WebGPU access session.
-  webgpu_access_texture_ = nullptr;
+  // If a WebGPU transfer texture exists, we must destroy it immediately. We
+  // can't allow it to continue to exist, as it would be subject to Javascript
+  // garbage-collection and could vanish any time Oilpan runs a sweep. Normally
+  // it's okay for Oilpan to delete GPUTextures, since Dawn maintains its own
+  // ownership graph of GPU resources, but in our case, destruction of the
+  // GPUTexture will also result in destruction of the associated SharedImage.
+  if (webgpu_access_texture_) {
+    webgpu_access_texture_->destroy();
+    webgpu_access_texture_ = nullptr;
+  }
 
   // Clear the frame in case a flush previously drew to the canvas surface.
   if (cc::PaintCanvas* c = GetPaintCanvas()) {

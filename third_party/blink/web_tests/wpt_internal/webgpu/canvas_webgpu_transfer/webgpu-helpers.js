@@ -344,8 +344,8 @@ function test_transferBackFromGPUTexture_destroys_texture(device, canvas) {
   return checkForDestroyedTextures(device, [[tex, true]]);
 }
 
-/** Resizing a canvas during WebGPU access should orphan the texture. */
-function test_canvas_reset_orphans_texture(adapterInfo, device, canvas,
+/** Resizing a canvas during WebGPU access should destroy the texture. */
+function test_canvas_reset_destroys_texture(adapterInfo, device, canvas,
                                            resetType) {
   // Skip this test on Mac Swiftshader due to "Invalid Texture" errors.
   if (isMacSwiftShader(adapterInfo)) {
@@ -357,8 +357,7 @@ function test_canvas_reset_orphans_texture(adapterInfo, device, canvas,
   const tex = ctx.transferToGPUTexture({device: device,
                                      usage: GPUTextureUsage.COPY_SRC});
 
-  // Reset the canvas. This should abort the WebGPU access session. The canvas'
-  // GPUTexture is still accessible from Javascript.
+  // Reset the canvas. This should abort the WebGPU access session.
   if (resetType == 'resize') {
     canvas.width = canvas.width;
   } else {
@@ -366,21 +365,8 @@ function test_canvas_reset_orphans_texture(adapterInfo, device, canvas,
     ctx.reset();
   }
 
-  // Verify that the WebGPU access was terminated by starting a new WebGPU
-  // access session. This would throw if the initial transferToWebGPU session
-  // were still active.
-  const anotherTex = ctx.transferToWebGPU({device: device});
-  ctx.transferBackFromWebGPU();
-
-  // Verify that the texture from the initial WebGPU access session is still
-  // usable by accessing its contents. This would cause a GPUValidationError if
-  // the texture had been destroyed, invalidated, or reabsorbed into the canvas.
-  device.pushErrorScope('validation');
-  copyOnePixelFromTextureAndSubmit(device, tex);
-
-  return device.popErrorScope().then((errors) => {
-    assert_equals(errors, null);
-  });
+  // The canvas' GPUTexture should appear to be destroyed.
+  return checkForDestroyedTextures(device, [[tex, true]]);
 }
 
 /**
