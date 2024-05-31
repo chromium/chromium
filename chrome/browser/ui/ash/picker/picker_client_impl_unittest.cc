@@ -216,8 +216,7 @@ class PickerClientImplTest : public BrowserWithTestWindowTest {
                              std::ref(fake_drivefs_helper_))},
         {ash::input_method::EditorMediatorFactory::GetInstance(),
          base::BindRepeating(
-             &ash::input_method::EditorMediatorFactory::BuildInstanceFor,
-             /*country_code=*/"us")}};
+             &ash::input_method::EditorMediatorFactory::BuildInstanceFor)}};
   }
 
   void LogIn(const std::string& email) override {

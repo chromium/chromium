@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/input_method/editor_consent_store.h"
 #include "chrome/browser/ash/input_method/editor_event_proxy.h"
 #include "chrome/browser/ash/input_method/editor_event_sink.h"
+#include "chrome/browser/ash/input_method/editor_geolocation_provider.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
 #include "chrome/browser/ash/input_method/editor_service_connector.h"
@@ -45,9 +46,9 @@ class EditorMediator : public EditorContext::Observer,
                        public display::DisplayObserver,
                        public KeyedService {
  public:
-  // country_code that determines the country/territory in which the device is
-  // situated.
-  EditorMediator(Profile* profile, std::string_view country_code);
+  EditorMediator(
+      Profile* profile,
+      std::unique_ptr<EditorGeolocationProvider> editor_geolocation_provider);
   ~EditorMediator() override;
 
   // Binds a new editor instance request from a client.
@@ -137,6 +138,7 @@ class EditorMediator : public EditorContext::Observer,
   raw_ptr<Profile> profile_;
 
   EditorPanelManager panel_manager_;
+  std::unique_ptr<EditorGeolocationProvider> editor_geolocation_provider_;
   MakoBubbleCoordinator mako_bubble_coordinator_;
   EditorContext editor_context_;
 

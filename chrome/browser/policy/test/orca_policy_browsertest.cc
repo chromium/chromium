@@ -4,6 +4,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "chrome/browser/ash/input_method/editor_geolocation_mock_provider.h"
+#include "chrome/browser/ash/input_method/editor_geolocation_provider.h"
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 #include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -38,7 +40,10 @@ class OrcaPolicyTest : public PolicyTest {
 IN_PROC_BROWSER_TEST_F(OrcaPolicyTest,
                        DisableOrcaOnManagedProfilesIfOrcaPolicyUnset) {
   Profile* profile = browser()->profile();
-  ash::input_method::EditorMediator editor_mediator(profile, "au");
+  auto geolocation_provider =
+      std::make_unique<ash::input_method::EditorGeolocationMockProvider>("au");
+  ash::input_method::EditorMediator editor_mediator(
+      profile, std::move(geolocation_provider));
 
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
 
@@ -50,7 +55,10 @@ IN_PROC_BROWSER_TEST_F(OrcaPolicyTest,
 IN_PROC_BROWSER_TEST_F(OrcaPolicyTest,
                        EnableOrcaOnManagedProfilesIfOrcaPolicyEnabled) {
   Profile* profile = browser()->profile();
-  ash::input_method::EditorMediator editor_mediator(profile, "au");
+  auto geolocation_provider =
+      std::make_unique<ash::input_method::EditorGeolocationMockProvider>("au");
+  ash::input_method::EditorMediator editor_mediator(
+      profile, std::move(geolocation_provider));
   PolicyMap policies;
 
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
@@ -67,7 +75,10 @@ IN_PROC_BROWSER_TEST_F(OrcaPolicyTest,
 IN_PROC_BROWSER_TEST_F(OrcaPolicyTest,
                        DisableOrcaOnManagedProfilesIfOrcaPolicyDisabled) {
   Profile* profile = browser()->profile();
-  ash::input_method::EditorMediator editor_mediator(profile, "au");
+  auto geolocation_provider =
+      std::make_unique<ash::input_method::EditorGeolocationMockProvider>("au");
+  ash::input_method::EditorMediator editor_mediator(
+      profile, std::move(geolocation_provider));
   PolicyMap policies;
 
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);

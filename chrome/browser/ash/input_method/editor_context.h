@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "chrome/browser/ash/input_method/editor_geolocation_provider.h"
 #include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
 #include "chromeos/ui/base/app_types.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -35,7 +36,7 @@ class EditorContext {
 
   EditorContext(Observer* observer,
                 System* system,
-                std::string_view country_code);
+                EditorGeolocationProvider* geolocation_provider);
   ~EditorContext();
 
   bool InTabletMode();
@@ -51,7 +52,7 @@ class EditorContext {
   void OnTextSelectionLengthChanged(size_t new_length);
 
   // Getters
-  std::string_view active_country_code();
+  std::string active_country_code();
   std::string_view active_engine_id();
   ui::TextInputType input_type();
   chromeos::AppType app_type();
@@ -63,6 +64,7 @@ class EditorContext {
   // Not owned by this class
   raw_ptr<Observer> observer_;
   raw_ptr<System> system_;
+  raw_ptr<EditorGeolocationProvider> geolocation_provider_;
 
   std::string active_country_code_;
   std::string active_engine_id_;

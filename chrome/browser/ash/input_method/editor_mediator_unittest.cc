@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/input_method/editor_geolocation_mock_provider.h"
+#include "chrome/browser/ash/input_method/editor_geolocation_provider.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -28,7 +30,10 @@ class EditorMediatorTest : public ChromeAshTestBase {
 
 TEST_F(EditorMediatorTest,
        SurroundingTextChangedDoesNotChangeSelectedTextLength) {
-  EditorMediator mediator(&profile(), "us");
+  std::unique_ptr<EditorGeolocationProvider> geolocation_provider =
+      std::make_unique<EditorGeolocationMockProvider>("us");
+  EditorMediator mediator(&profile(), std::move(geolocation_provider));
+
   IMEBridge::Get()->SetCurrentInputContext(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
   mediator.FetchAndUpdateInputContext();
@@ -39,7 +44,10 @@ TEST_F(EditorMediatorTest,
 }
 
 TEST_F(EditorMediatorTest, CacheContextChangesSelectedTextLength) {
-  EditorMediator mediator(&profile(), "us");
+  std::unique_ptr<EditorGeolocationProvider> geolocation_provider =
+      std::make_unique<EditorGeolocationMockProvider>("us");
+  EditorMediator mediator(&profile(), std::move(geolocation_provider));
+
   IMEBridge::Get()->SetCurrentInputContext(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
   mediator.FetchAndUpdateInputContext();

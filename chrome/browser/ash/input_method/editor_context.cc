@@ -15,10 +15,10 @@ namespace ash::input_method {
 
 EditorContext::EditorContext(Observer* observer,
                              System* system,
-                             std::string_view country_code)
+                             EditorGeolocationProvider* geolocation_provider)
     : observer_(observer),
       system_(system),
-      active_country_code_(country_code) {}
+      geolocation_provider_(geolocation_provider) {}
 
 EditorContext::~EditorContext() = default;
 
@@ -55,8 +55,10 @@ void EditorContext::OnTextSelectionLengthChanged(size_t text_length) {
   observer_->OnContextUpdated();
 }
 
-std::string_view EditorContext::active_country_code() {
-  return active_country_code_;
+std::string EditorContext::active_country_code() {
+  return geolocation_provider_ != nullptr
+             ? geolocation_provider_->GetCountryCode()
+             : "";
 }
 
 std::string_view EditorContext::active_engine_id() {

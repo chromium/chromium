@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
+#include "chrome/browser/ash/input_method/editor_geolocation_provider.h"
 #include "chrome/browser/ash/input_method/editor_helpers.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
@@ -27,10 +28,13 @@
 
 namespace ash::input_method {
 
-EditorMediator::EditorMediator(Profile* profile, std::string_view country_code)
+EditorMediator::EditorMediator(
+    Profile* profile,
+    std::unique_ptr<EditorGeolocationProvider> editor_geolocation_provider)
     : profile_(profile),
       panel_manager_(this),
-      editor_context_(this, this, country_code),
+      editor_geolocation_provider_(std::move(editor_geolocation_provider)),
+      editor_context_(this, this, editor_geolocation_provider_.get()),
       editor_switch_(
           std::make_unique<EditorSwitch>(this, profile, &editor_context_)),
       metrics_recorder_(

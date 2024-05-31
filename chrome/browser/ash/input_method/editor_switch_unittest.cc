@@ -12,6 +12,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_context.h"
+#include "chrome/browser/ash/input_method/editor_geolocation_mock_provider.h"
 #include "chrome/browser/ash/input_method/editor_identity_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -193,7 +194,8 @@ TEST_P(EditorSwitchAvailabilityTest, TestEditorAvailability) {
   FakeSystem system;
   FakeEditorContextObserver context_observer;
   FakeEditorSwitchObserver switch_observer;
-  EditorContext context(&context_observer, &system, test_case.country_code);
+  EditorGeolocationMockProvider geolocation_provider(test_case.country_code);
+  EditorContext context(&context_observer, &system, &geolocation_provider);
   EditorSwitch editor_switch(/*observer=*/&switch_observer,
                              /*profile=*/&profile,
                              /*context=*/&context);
@@ -538,7 +540,8 @@ TEST_P(EditorSwitchTriggerTest, TestEditorMode) {
   FakeSystem system;
   FakeEditorContextObserver context_observer;
   FakeEditorSwitchObserver switch_observer;
-  EditorContext context(&context_observer, &system, kAllowedTestCountry);
+  EditorGeolocationMockProvider geolocation_provider(kAllowedTestCountry);
+  EditorContext context(&context_observer, &system, &geolocation_provider);
   EditorSwitch editor_switch(/*observer=*/&switch_observer,
                              /*profile=*/profile.get(),
                              /*context=*/&context);
@@ -622,7 +625,8 @@ TEST_P(EditorSwitchDenylistTest, IsBlockedWhenVisitingUrlInDenylist) {
   FakeSystem system;
   FakeEditorContextObserver context_observer;
   FakeEditorSwitchObserver switch_observer;
-  EditorContext context(&context_observer, &system, kAllowedTestCountry);
+  EditorGeolocationMockProvider geolocation_provider(kAllowedTestCountry);
+  EditorContext context(&context_observer, &system, &geolocation_provider);
   EditorSwitch editor_switch(/*observer=*/&switch_observer,
                              /*profile=*/profile.get(),
                              /*context=*/&context);
@@ -709,7 +713,8 @@ TEST_P(EditorSwitchEnglishOnlyTest, EditorIsEnabledForEnglishInputMethodsOnly) {
   FakeSystem system;
   FakeEditorContextObserver context_observer;
   FakeEditorSwitchObserver switch_observer;
-  EditorContext context(&context_observer, &system, kAllowedTestCountry);
+  EditorGeolocationMockProvider geolocation_provider(kAllowedTestCountry);
+  EditorContext context(&context_observer, &system, &geolocation_provider);
   EditorSwitch editor_switch(/*observer=*/&switch_observer,
                              /*profile=*/profile.get(),
                              /*context=*/&context);
@@ -796,7 +801,8 @@ TEST_P(EditorSwitchInternationalizeTest,
   FakeSystem system;
   FakeEditorContextObserver context_observer;
   FakeEditorSwitchObserver switch_observer;
-  EditorContext context(&context_observer, &system, kAllowedTestCountry);
+  EditorGeolocationMockProvider geolocation_provider(kAllowedTestCountry);
+  EditorContext context(&context_observer, &system, &geolocation_provider);
   EditorSwitch editor_switch(/*observer=*/&switch_observer,
                              /*profile=*/profile.get(),
                              /*context=*/&context);

@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_context.h"
+#include "chrome/browser/ash/input_method/editor_geolocation_mock_provider.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -49,7 +50,8 @@ class EditorPanelManagerDelegateForTesting
       const std::vector<EditorBlockedReason>& blocked_reasons)
       : opportunity_mode_(opportunity_mode),
         blocked_reasons_(blocked_reasons),
-        context_(&context_observer_, &system_, kAllowedCountryCode),
+        geolocation_provider_(kAllowedCountryCode),
+        context_(&context_observer_, &system_, &geolocation_provider_),
         metrics_recorder_(&context_, opportunity_mode) {}
   void BindEditorClient(mojo::PendingReceiver<orca::mojom::EditorClient>
                             pending_receiver) override {}
@@ -75,6 +77,7 @@ class EditorPanelManagerDelegateForTesting
   std::vector<EditorBlockedReason> blocked_reasons_;
   FakeSystem system_;
   FakeContextObserver context_observer_;
+  EditorGeolocationMockProvider geolocation_provider_;
   EditorContext context_;
   EditorMetricsRecorder metrics_recorder_;
 };
