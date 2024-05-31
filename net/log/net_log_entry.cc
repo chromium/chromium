@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/log/net_log.h"

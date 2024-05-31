@@ -15,7 +15,6 @@
 
 #include "base/check_op.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/base/load_flags.h"

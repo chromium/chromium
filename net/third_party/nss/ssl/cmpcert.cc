@@ -10,7 +10,6 @@
 #include <secder.h>
 #include <secitem.h>
 
-#include "base/strings/string_piece.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"

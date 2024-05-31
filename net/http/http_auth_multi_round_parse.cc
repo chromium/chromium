@@ -5,7 +5,6 @@
 #include "net/http/http_auth_multi_round_parse.h"
 
 #include "base/base64.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/http/http_auth_challenge_tokenizer.h"
 

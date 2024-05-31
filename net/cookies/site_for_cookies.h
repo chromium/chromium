@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
 #include "url/gurl.h"

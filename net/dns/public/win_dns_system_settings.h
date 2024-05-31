@@ -6,7 +6,6 @@
 #define NET_DNS_PUBLIC_WIN_DNS_SYSTEM_SETTINGS_H_
 
 #include <winsock2.h>
-
 #include <iphlpapi.h>
 #include <iptypes.h>
 
@@ -16,7 +15,6 @@
 #include <vector>
 
 #include "base/memory/free_deleter.h"
-#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"

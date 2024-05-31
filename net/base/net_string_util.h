@@ -6,8 +6,8 @@
 #define NET_BASE_NET_STRING_UTIL_H__
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
 // String conversion functions.  By default, they're implemented with ICU, but

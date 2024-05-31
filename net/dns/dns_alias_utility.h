@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 
-#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
 namespace net::dns_alias_utility {

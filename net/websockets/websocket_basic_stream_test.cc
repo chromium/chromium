@@ -19,13 +19,11 @@
 
 #include <iterator>
 #include <optional>
-#include <string_view>
 #include <utility>
 
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
