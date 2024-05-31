@@ -8,7 +8,7 @@
 #include "chrome/browser/apps/platform_apps/shortcut_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 
 // static
@@ -32,7 +32,7 @@ AppShortcutManagerFactory::AppShortcutManagerFactory()
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {
-  web_app::WebAppShortcutManager::SetUpdateShortcutsForAllAppsCallback(
+  web_app::OsIntegrationManager::SetUpdateShortcutsForAllAppsCallback(
       base::BindRepeating(&web_app::UpdateShortcutsForAllApps));
 }
 

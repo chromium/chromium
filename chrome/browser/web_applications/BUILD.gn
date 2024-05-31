@@ -226,8 +226,6 @@ source_set("web_applications") {
     "os_integration/web_app_run_on_os_login.h",
     "os_integration/web_app_shortcut.cc",
     "os_integration/web_app_shortcut.h",
-    "os_integration/web_app_shortcut_manager.cc",
-    "os_integration/web_app_shortcut_manager.h",
     "os_integration/web_app_shortcuts_menu.cc",
     "os_integration/web_app_shortcuts_menu.h",
     "os_integration/web_app_uninstallation_via_os_settings_registration.cc",
@@ -876,9 +874,9 @@ source_set("web_applications_unit_tests") {
     sources += [
       "app_shim_registry_mac_unittest.cc",
       "os_integration/icns_encoder_unittest.cc",
+      "os_integration/shortcuts_versioning_mac_unittest.cc",
       "os_integration/web_app_run_on_os_login_mac_unittest.mm",
       "os_integration/web_app_shortcut_mac_unittest.mm",
-      "os_integration/web_app_shortcut_manager_mac_unittest.cc",
     ]
   }
 

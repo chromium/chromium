@@ -110,18 +110,10 @@ class InstallPlaceholderJobTest : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
-    auto shortcut_manager = std::make_unique<TestShortcutManager>(profile());
-    shortcut_manager_ = shortcut_manager.get();
-    FakeWebAppProvider::Get(profile())
-        ->GetOsIntegrationManager()
-        .AsTestOsIntegrationManager()
-        ->SetShortcutManager(std::move(shortcut_manager));
-
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
   void TearDown() override {
-    shortcut_manager_ = nullptr;
     WebAppTest::TearDown();
   }
 
@@ -131,11 +123,6 @@ class InstallPlaceholderJobTest : public WebAppTest {
     return static_cast<FakeOsIntegrationManager&>(
         provider()->os_integration_manager());
   }
-
-  TestShortcutManager* shortcut_manager() { return shortcut_manager_; }
-
- private:
-  raw_ptr<TestShortcutManager> shortcut_manager_;
 };
 
 TEST_F(InstallPlaceholderJobTest, InstallPlaceholder) {

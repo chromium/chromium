@@ -104,11 +104,9 @@ void FakeWebAppProvider::UseRealOsIntegrationManager() {
       std::make_unique<WebAppFileHandlerManager>(profile_);
   auto protocol_handler_manager =
       std::make_unique<WebAppProtocolHandlerManager>(profile_);
-  auto shortcut_manager = std::make_unique<WebAppShortcutManager>(
-      profile_, file_handler_manager.get(), protocol_handler_manager.get());
 
   SetOsIntegrationManager(std::make_unique<OsIntegrationManager>(
-      profile_, std::move(shortcut_manager), std::move(file_handler_manager),
+      profile_, std::move(file_handler_manager),
       std::move(protocol_handler_manager)));
 }
 
@@ -299,7 +297,7 @@ void FakeWebAppProvider::CreateFakeSubsystems() {
   SetWebContentsManager(std::make_unique<FakeWebContentsManager>());
 
   SetOsIntegrationManager(std::make_unique<FakeOsIntegrationManager>(
-      profile_, /*app_shortcut_manager=*/nullptr,
+      profile_,
       /*file_handler_manager=*/nullptr,
       /*protocol_handler_manager=*/nullptr));
 

@@ -72,9 +72,6 @@ class WebAppUninstallAndReplaceJobTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
     test::AwaitStartWebAppProviderAndSubsystems(profile());
-    auto shortcut_manager = std::make_unique<TestShortcutManager>(profile());
-    shortcut_manager_ = shortcut_manager.get();
-    os_integration_manager()->SetShortcutManager(std::move(shortcut_manager));
   }
 
   void ScheduleUninstallAndReplaceJob(
@@ -93,11 +90,6 @@ class WebAppUninstallAndReplaceJobTest : public WebAppTest {
         ->os_integration_manager()
         .AsTestOsIntegrationManager();
   }
-
-  TestShortcutManager* shortcut_manager() { return shortcut_manager_; }
-
- private:
-  raw_ptr<TestShortcutManager, DanglingUntriaged> shortcut_manager_ = nullptr;
 };
 
 // `WebAppUninstallAndReplaceJob` uses `AppServiceProxy` to do uninstall, app
@@ -124,12 +116,12 @@ TEST_F(WebAppUninstallAndReplaceJobTest,
   // Set up the existing shortcuts.
   auto shortcut_info = std::make_unique<ShortcutInfo>();
   shortcut_info->url = kOldAppUrl;
-  shortcut_manager()->SetShortcutInfoForApp(old_app_id,
-                                            std::move(shortcut_info));
+  os_integration_manager()->SetShortcutInfoForApp(old_app_id,
+                                                  std::move(shortcut_info));
   ShortcutLocations locations;
   locations.on_desktop = true;
   locations.in_startup = true;
-  shortcut_manager()->SetAppExistingShortcuts(kOldAppUrl, locations);
+  os_integration_manager()->SetAppExistingShortcuts(kOldAppUrl, locations);
 
   base::test::TestFuture<bool> future;
   ScheduleUninstallAndReplaceJob({old_app_id}, new_app_id,

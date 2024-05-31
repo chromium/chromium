@@ -71,7 +71,6 @@ class InstallWebAppActionPerformerTest : public testing::Test {
     provider->SetOsIntegrationManager(
         std::make_unique<web_app::FakeOsIntegrationManager>(
             profile_,
-            /*app_shortcut_manager=*/nullptr,
             /*file_handler_manager=*/nullptr,
             /*protocol_handler_manager=*/nullptr));
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile_);

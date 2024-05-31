@@ -97,7 +97,6 @@ class WebAppShimManagerDelegateTest : public WebAppTest {
     provider->SetOsIntegrationManager(
         std::make_unique<FakeOsIntegrationManager>(
             profile(),
-            /*app_shortcut_manager=*/nullptr,
             /*file_handler_manager=*/nullptr,
             /*protocol_handler_manager=*/nullptr));
 

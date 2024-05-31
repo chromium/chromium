@@ -34,7 +34,6 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -354,11 +353,9 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
       std::make_unique<WebAppFileHandlerManager>(profile);
   auto protocol_handler_manager =
       std::make_unique<WebAppProtocolHandlerManager>(profile);
-  auto shortcut_manager = std::make_unique<WebAppShortcutManager>(
-      profile, file_handler_manager.get(), protocol_handler_manager.get());
 
   os_integration_manager_ = std::make_unique<OsIntegrationManager>(
-      profile, std::move(shortcut_manager), std::move(file_handler_manager),
+      profile, std::move(file_handler_manager),
       std::move(protocol_handler_manager));
 
   command_manager_ = std::make_unique<WebAppCommandManager>(profile);

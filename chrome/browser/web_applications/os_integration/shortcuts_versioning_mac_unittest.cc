@@ -10,7 +10,6 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -35,9 +34,9 @@ namespace {
 const char kFakeChromeBundleId[] = "fake.cfbundleidentifier";
 }
 
-class WebAppShortcutManagerMacTest : public WebAppTest {
+class ShortcutsVersioningMacTest : public WebAppTest {
  public:
-  WebAppShortcutManagerMacTest()
+  ShortcutsVersioningMacTest()
       : WebAppTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
@@ -57,10 +56,8 @@ class WebAppShortcutManagerMacTest : public WebAppTest {
         std::make_unique<WebAppFileHandlerManager>(profile());
     auto protocol_handler_manager =
         std::make_unique<WebAppProtocolHandlerManager>(profile());
-    auto shortcut_manager = std::make_unique<WebAppShortcutManager>(
-        profile(), file_handler_manager.get(), protocol_handler_manager.get());
     provider_->SetOsIntegrationManager(std::make_unique<OsIntegrationManager>(
-        profile(), std::move(shortcut_manager), std::move(file_handler_manager),
+        profile(), std::move(file_handler_manager),
         std::move(protocol_handler_manager)));
 
     // Do not yet start WebAppProvider here in SetUp, as tests verify behavior
@@ -69,7 +66,7 @@ class WebAppShortcutManagerMacTest : public WebAppTest {
   }
 
   void TearDown() override {
-    WebAppShortcutManager::SetUpdateShortcutsForAllAppsCallback(
+    OsIntegrationManager::SetUpdateShortcutsForAllAppsCallback(
         base::NullCallback());
 
     // To prevent OS hooks from sticking around on bots, destroying the shortcut
@@ -105,8 +102,8 @@ class WebAppShortcutManagerMacTest : public WebAppTest {
   raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
 };
 
-TEST_F(WebAppShortcutManagerMacTest, InitialVersionIsStored) {
-  // Starting the WebAppProvider, and more importantly its WebAppShortcutManager
+TEST_F(ShortcutsVersioningMacTest, InitialVersionIsStored) {
+  // Starting the WebAppProvider, and more importantly its OsIntegrationManager
   // subsystem should cause the current shortcuts version to be written to
   // prefs.
   EXPECT_FALSE(profile()->GetPrefs()->HasPrefPath(prefs::kAppShortcutsVersion));
@@ -115,20 +112,20 @@ TEST_F(WebAppShortcutManagerMacTest, InitialVersionIsStored) {
   EXPECT_TRUE(profile()->GetPrefs()->HasPrefPath(prefs::kAppShortcutsArch));
 }
 
-TEST_F(WebAppShortcutManagerMacTest, RebuildShortcutsOnVersionChange) {
+TEST_F(ShortcutsVersioningMacTest, RebuildShortcutsOnVersionChange) {
   profile()->GetPrefs()->SetInteger(prefs::kAppShortcutsVersion, 0);
 
-  base::OnceClosure done_update_callback_;
-  WebAppShortcutManager::SetUpdateShortcutsForAllAppsCallback(
+  base::OnceClosure done_update_callback;
+  OsIntegrationManager::SetUpdateShortcutsForAllAppsCallback(
       base::BindLambdaForTesting([&](Profile* p, base::OnceClosure callback) {
         EXPECT_EQ(p, profile());
-        done_update_callback_ = std::move(callback);
+        done_update_callback = std::move(callback);
       }));
 
   web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
   // Starting the WebAppProvider should not synchronously trigger shortcut
   // updating.
-  EXPECT_TRUE(done_update_callback_.is_null());
+  EXPECT_TRUE(done_update_callback.is_null());
 
   // Install two apps, but don't create shortcuts for one.
   webapps::AppId app_id1 =
@@ -138,8 +135,17 @@ TEST_F(WebAppShortcutManagerMacTest, RebuildShortcutsOnVersionChange) {
   auto web_app_info =
       WebAppInstallInfo::CreateWithStartUrlForTesting(kTestApp2Url);
   web_app_info->title = base::UTF8ToUTF16(kTestApp2Name);
+
+  // Ensure the second app is not locally installed, to prevent OS integration
+  // from ever triggering on it.
+  // TODO(crbug.com/343754406): Investigate why all the fields need to be
+  // explicitly set to false.
   WebAppInstallParams params;
   params.bypass_os_hooks = true;
+  params.locally_installed = false;
+  params.add_to_applications_menu = false;
+  params.add_to_desktop = false;
+  params.add_to_quick_launch_bar = false;
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       future;
   fake_provider().scheduler().InstallFromInfoWithParams(
@@ -161,20 +167,20 @@ TEST_F(WebAppShortcutManagerMacTest, RebuildShortcutsOnVersionChange) {
 
   // A couple of seconds later shortcut updating should still not have happened.
   FastForwardBy(base::Seconds(5));
-  EXPECT_TRUE(done_update_callback_.is_null());
+  EXPECT_TRUE(done_update_callback.is_null());
 
   // However eventually shortcut updating should trigger.
   FastForwardBy(base::Seconds(15));
-  ASSERT_FALSE(done_update_callback_.is_null());
+  ASSERT_FALSE(done_update_callback.is_null());
 
   // Make sure the updated shortcuts version is not persisted to prefs until
   // after we signal completion of updating.
   EXPECT_EQ(0, profile()->GetPrefs()->GetInteger(prefs::kAppShortcutsVersion));
   {
     base::RunLoop run_loop;
-    WebAppShortcutManager::OnSetCurrentAppShortcutsVersionCallbackForTesting() =
+    OsIntegrationManager::OnSetCurrentAppShortcutsVersionCallbackForTesting() =
         run_loop.QuitClosure();
-    std::move(done_update_callback_).Run();
+    std::move(done_update_callback).Run();
     run_loop.Run();
   }
   EXPECT_NE(0, profile()->GetPrefs()->GetInteger(prefs::kAppShortcutsVersion));
@@ -183,6 +189,50 @@ TEST_F(WebAppShortcutManagerMacTest, RebuildShortcutsOnVersionChange) {
   // app.
   EXPECT_TRUE(base::PathExists(app_binary_path));
   EXPECT_FALSE(base::PathExists(app2_path));
+}
+
+TEST_F(ShortcutsVersioningMacTest, UserDeletedShortcutsNotUpdated) {
+  profile()->GetPrefs()->SetInteger(prefs::kAppShortcutsVersion, 0);
+
+  base::OnceClosure done_update_callback;
+  OsIntegrationManager::SetUpdateShortcutsForAllAppsCallback(
+      base::BindLambdaForTesting([&](Profile* p, base::OnceClosure callback) {
+        EXPECT_EQ(p, profile());
+        done_update_callback = std::move(callback);
+      }));
+
+  web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+  // Starting the WebAppProvider should not synchronously trigger shortcut
+  // updating.
+  EXPECT_TRUE(done_update_callback.is_null());
+
+  // Install app with shortcuts created.
+  webapps::AppId app_id1 =
+      test::InstallDummyWebApp(profile(), kTestApp1Name, kTestApp1Url);
+  base::FilePath app1_path = GetShortcutPath(kTestApp1Name);
+  EXPECT_TRUE(base::PathExists(app1_path));
+
+  // Mimic shortcut deletion by end user.
+  EXPECT_TRUE(base::DeletePathRecursively(app1_path));
+
+  // Shortcut updating should be automatically triggered after 10 seconds.
+  FastForwardBy(base::Seconds(15));
+  ASSERT_FALSE(done_update_callback.is_null());
+
+  // Make sure the updated shortcuts version is not persisted to prefs until
+  // after we signal completion of updating.
+  EXPECT_EQ(0, profile()->GetPrefs()->GetInteger(prefs::kAppShortcutsVersion));
+  {
+    base::RunLoop run_loop;
+    OsIntegrationManager::OnSetCurrentAppShortcutsVersionCallbackForTesting() =
+        run_loop.QuitClosure();
+    std::move(done_update_callback).Run();
+    run_loop.Run();
+  }
+  EXPECT_NE(0, profile()->GetPrefs()->GetInteger(prefs::kAppShortcutsVersion));
+
+  // Verify that shortcut isn't re-created.
+  EXPECT_FALSE(base::PathExists(app1_path));
 }
 
 }  // namespace web_app

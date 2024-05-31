@@ -12,7 +12,6 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 
@@ -20,18 +19,13 @@ namespace web_app {
 
 FakeOsIntegrationManager::FakeOsIntegrationManager(
     Profile* profile,
-    std::unique_ptr<WebAppShortcutManager> shortcut_manager,
     std::unique_ptr<WebAppFileHandlerManager> file_handler_manager,
     std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager)
     : OsIntegrationManager(profile,
-                           std::move(shortcut_manager),
                            std::move(file_handler_manager),
                            std::move(protocol_handler_manager)),
       scoped_suppress_(
           std::make_unique<OsIntegrationManager::ScopedSuppressForTesting>()) {
-  if (!this->shortcut_manager()) {
-    set_shortcut_manager(std::make_unique<TestShortcutManager>(profile));
-  }
   if (!has_file_handler_manager()) {
     set_file_handler_manager(
         std::make_unique<FakeWebAppFileHandlerManager>(profile));
@@ -45,33 +39,24 @@ void FakeOsIntegrationManager::SetFileHandlerManager(
   set_file_handler_manager(std::move(file_handler_manager));
 }
 
-void FakeOsIntegrationManager::SetShortcutManager(
-    std::unique_ptr<WebAppShortcutManager> shortcut_manager) {
-  set_shortcut_manager(std::move(shortcut_manager));
-}
-
 FakeOsIntegrationManager*
 FakeOsIntegrationManager::AsTestOsIntegrationManager() {
   return this;
 }
 
-TestShortcutManager::TestShortcutManager(Profile* profile)
-    : WebAppShortcutManager(profile, nullptr, nullptr) {}
-
-TestShortcutManager::~TestShortcutManager() = default;
-
-std::unique_ptr<ShortcutInfo> TestShortcutManager::BuildShortcutInfo(
-    const webapps::AppId& app_id) {
-  return nullptr;
+void FakeOsIntegrationManager::SetAppExistingShortcuts(
+    const GURL& app_url,
+    ShortcutLocations locations) {
+  existing_shortcut_locations_[app_url] = locations;
 }
 
-void TestShortcutManager::SetShortcutInfoForApp(
+void FakeOsIntegrationManager::SetShortcutInfoForApp(
     const webapps::AppId& app_id,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
   shortcut_info_map_[app_id] = std::move(shortcut_info);
 }
 
-void TestShortcutManager::GetShortcutInfoForApp(
+void FakeOsIntegrationManager::GetShortcutInfoForApp(
     const webapps::AppId& app_id,
     GetShortcutInfoCallback callback) {
   if (shortcut_info_map_.find(app_id) != shortcut_info_map_.end()) {
@@ -82,7 +67,7 @@ void TestShortcutManager::GetShortcutInfoForApp(
   }
 }
 
-void TestShortcutManager::GetAppExistingShortCutLocation(
+void FakeOsIntegrationManager::GetAppExistingShortCutLocation(
     ShortcutLocationCallback callback,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
   ShortcutLocations locations;

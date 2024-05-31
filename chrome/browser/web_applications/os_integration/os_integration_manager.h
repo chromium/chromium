@@ -20,7 +20,6 @@
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_run_on_os_login.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/custom_handlers/protocol_handler.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -39,12 +39,22 @@ namespace web_app {
 class FakeOsIntegrationManager;
 class WebAppProvider;
 
+using ShortcutLocationCallback =
+    base::OnceCallback<void(ShortcutLocations shortcut_locations)>;
+
+// Returns the ShortcutInfo for an app.
+using GetShortcutInfoCallback =
+    base::OnceCallback<void(std::unique_ptr<ShortcutInfo>)>;
+
 // OsIntegrationManager is responsible of creating/updating/deleting
 // all OS hooks during Web App lifecycle.
 // It contains individual OS integration managers and takes
 // care of inter-dependencies among them.
 class OsIntegrationManager : public WebAppRegistrarObserver {
  public:
+  using UpdateShortcutsForAllAppsCallback =
+      base::RepeatingCallback<void(Profile*, base::OnceClosure)>;
+
   // Used to suppress OS hooks during this object's lifetime.
   class ScopedSuppressForTesting {
    public:
@@ -53,9 +63,22 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
   };
   static bool AreOsHooksSuppressedForTesting();
 
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+  // Sets a callback to be called when this class determines that all shortcuts
+  // for a particular profile need to be rebuild, for example because the app
+  // shortcut version has changed since the last time these were created.
+  // This is used by the legacy extensions based app code in
+  // chrome/browser/web_applications/extensions to ensure those app shortcuts
+  // also get updated. Calling out to that code directly would violate
+  // dependency layering.
+  static void SetUpdateShortcutsForAllAppsCallback(
+      UpdateShortcutsForAllAppsCallback callback);
+
+  static base::OnceClosure& OnSetCurrentAppShortcutsVersionCallbackForTesting();
+
   explicit OsIntegrationManager(
       Profile* profile,
-      std::unique_ptr<WebAppShortcutManager> shortcut_manager,
       std::unique_ptr<WebAppFileHandlerManager> file_handler_manager,
       std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager);
   ~OsIntegrationManager() override;
@@ -78,16 +101,19 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
       base::OnceClosure callback,
       std::optional<SynchronizeOsOptions> options = std::nullopt);
 
-  // Proxy calls for WebAppShortcutManager.
-  // virtual for testing
+  // Asynchronously gathers existing shortcut locations according to
+  // `shortcut_info`, the results of which will be passed into `callback`.
+  // Virtual for testing.
   virtual void GetAppExistingShortCutLocation(
       ShortcutLocationCallback callback,
       std::unique_ptr<ShortcutInfo> shortcut_info);
 
-  // Proxy calls for WebAppShortcutManager.
-  void GetShortcutInfoForApp(
-      const webapps::AppId& app_id,
-      WebAppShortcutManager::GetShortcutInfoCallback callback);
+  // Asynchronously gets the information required to create a shortcut for
+  // |app_id| including all the icon bitmaps. Returns nullptr if app_id is
+  // uninstalled or becomes uninstalled during the asynchronous read of icons.
+  // virtual for testing.
+  virtual void GetShortcutInfoForApp(const webapps::AppId& app_id,
+                                     GetShortcutInfoCallback callback);
 
   // Proxy calls for WebAppFileHandlerManager.
   bool IsFileHandlingAPIAvailable(const webapps::AppId& app_id);
@@ -120,13 +146,8 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
       base::RepeatingCallback<void(const webapps::AppId&)> on_force_unregister);
 
  protected:
-  WebAppShortcutManager* shortcut_manager() { return shortcut_manager_.get(); }
   WebAppProtocolHandlerManager* protocol_handler_manager() {
     return protocol_handler_manager_.get();
-  }
-  void set_shortcut_manager(
-      std::unique_ptr<WebAppShortcutManager> shortcut_manager) {
-    shortcut_manager_ = std::move(shortcut_manager);
   }
   bool has_file_handler_manager() { return !!file_handler_manager_; }
   void set_file_handler_manager(
@@ -178,10 +199,21 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
       size_t index,
       base::OnceClosure final_callback);
 
+  // Schedules a call to UpdateShortcutsForAllAppsNow() if kAppShortcutsVersion
+  // in prefs is less than kCurrentAppShortcutsVersion.
+  void UpdateShortcutsForAllAppsIfNeeded();
+  void UpdateShortcutsForAllAppsNow();
+  void SetCurrentAppShortcutsVersion();
+
+  void OnIconsRead(const webapps::AppId& app_id,
+                   GetShortcutInfoCallback callback,
+                   std::map<SquareSizePx, SkBitmap> icon_bitmaps);
+
+  std::unique_ptr<ShortcutInfo> BuildShortcutInfoForWebApp(const WebApp* app);
+
   const raw_ptr<Profile> profile_;
   raw_ptr<WebAppProvider> provider_ = nullptr;
 
-  std::unique_ptr<WebAppShortcutManager> shortcut_manager_;
   std::unique_ptr<WebAppFileHandlerManager> file_handler_manager_;
   std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager_;
 

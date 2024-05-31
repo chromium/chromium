@@ -126,13 +126,6 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
-    auto shortcut_manager = std::make_unique<TestShortcutManager>(profile());
-    shortcut_manager_ = shortcut_manager.get();
-    FakeWebAppProvider::Get(profile())
-        ->GetOsIntegrationManager()
-        .AsTestOsIntegrationManager()
-        ->SetShortcutManager(std::move(shortcut_manager));
-
     auto ui_manager = std::make_unique<MockWebAppUiManager>();
     ui_manager_ = ui_manager.get();
     web_app::FakeWebAppProvider::Get(profile())->SetWebAppUiManager(
@@ -142,7 +135,6 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
   }
 
   void TearDown() override {
-    shortcut_manager_ = nullptr;
     ui_manager_ = nullptr;
     WebAppTest::TearDown();
   }
@@ -247,8 +239,6 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
         .AsTestOsIntegrationManager();
   }
 
-  TestShortcutManager* shortcut_manager() { return shortcut_manager_; }
-
   FakeWebContentsManager& fake_web_contents_manager() {
     return static_cast<FakeWebContentsManager&>(
         fake_provider().web_contents_manager());
@@ -264,7 +254,6 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
 
  private:
   base::flat_map<webapps::AppId, BitmapData> app_to_icons_data_;
-  raw_ptr<TestShortcutManager> shortcut_manager_ = nullptr;
   raw_ptr<MockWebAppUiManager> ui_manager_ = nullptr;
 };
 
@@ -1185,13 +1174,15 @@ TEST_F(ExternalAppResolutionCommandTest, SuccessWithUninstallAndReplace) {
       test::InstallDummyWebApp(profile(), "old_app", old_app_url);
   auto shortcut_info = std::make_unique<ShortcutInfo>();
   shortcut_info->url = old_app_url;
-  shortcut_manager()->SetShortcutInfoForApp(old_app, std::move(shortcut_info));
+  os_integration_manager()->SetShortcutInfoForApp(old_app,
+                                                  std::move(shortcut_info));
 
   ShortcutLocations shortcut_locations;
   shortcut_locations.on_desktop = false;
   shortcut_locations.in_quick_launch_bar = true;
   shortcut_locations.in_startup = true;
-  shortcut_manager()->SetAppExistingShortcuts(old_app_url, shortcut_locations);
+  os_integration_manager()->SetAppExistingShortcuts(old_app_url,
+                                                    shortcut_locations);
 
   ExternalInstallOptions install_options(
       kWebAppUrl, mojom::UserDisplayMode::kStandalone,
