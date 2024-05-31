@@ -402,9 +402,8 @@ void UpdatePositionVisibilityAfterLayout(
   bool has_anchors_visible_visibility =
       node.Style().HasPositionVisibility(PositionVisibility::kAnchorsVisible);
   Element* anchored = DynamicTo<Element>(node.GetDOMNode());
-  // TODO(https://github.com/w3c/csswg-drafts/issues/7758#issuecomment-2026137829):
-  // The spec is still in-flux about whether we should use multiple anchors
-  // (from `anchor()` and `anchor-size()`), or just the default anchor.
+  // https://drafts.csswg.org/css-anchor-position-1/#valdef-position-visibility-anchors-visible
+  // We only need to track the default anchor for anchors-visible.
   const Element* anchor =
       anchored ? GetPositionAnchorElement(node, node.Style(), anchor_query)
                : nullptr;
