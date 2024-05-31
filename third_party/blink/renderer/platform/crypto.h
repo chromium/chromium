@@ -25,8 +25,7 @@ enum HashAlgorithm {
 };
 
 PLATFORM_EXPORT bool ComputeDigest(HashAlgorithm,
-                                   const char* digestable,
-                                   size_t length,
+                                   base::span<const uint8_t> digestable,
                                    DigestValue& digest_result);
 
 class PLATFORM_EXPORT Digestor {

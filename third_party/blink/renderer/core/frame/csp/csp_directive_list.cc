@@ -52,8 +52,8 @@ String GetRawDirectiveForMessage(
 String GetSha256String(const String& content) {
   DigestValue digest;
   StringUTF8Adaptor utf8_content(content);
-  bool digest_success = ComputeDigest(kHashAlgorithmSha256, utf8_content.data(),
-                                      utf8_content.size(), digest);
+  bool digest_success = ComputeDigest(kHashAlgorithmSha256,
+                                      base::as_byte_span(utf8_content), digest);
   if (!digest_success) {
     return "sha256-...";
   }

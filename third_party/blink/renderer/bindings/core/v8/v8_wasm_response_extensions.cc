@@ -115,10 +115,9 @@ class WasmCodeCachingCallback {
     {
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                    "v8.wasm.compileDigestForCreate");
-      if (!ComputeDigest(kHashAlgorithmSha256,
-                         reinterpret_cast<const char*>(wire_bytes.data()),
-                         wire_bytes.size(), wire_bytes_digest))
+      if (!ComputeDigest(kHashAlgorithmSha256, wire_bytes, wire_bytes_digest)) {
         return;
+      }
       if (wire_bytes_digest.size() != kWireBytesDigestSize)
         return;
     }

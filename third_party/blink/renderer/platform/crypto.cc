@@ -68,11 +68,10 @@ bool Digestor::Finish(DigestValue& digest_result) {
 }
 
 bool ComputeDigest(HashAlgorithm algorithm,
-                   const char* digestable,
-                   size_t length,
+                   base::span<const uint8_t> digestable,
                    DigestValue& digest_result) {
   Digestor digestor(algorithm);
-  digestor.Update(base::as_bytes(base::make_span(digestable, length)));
+  digestor.Update(digestable);
   digestor.Finish(digest_result);
   return !digestor.has_failed();
 }

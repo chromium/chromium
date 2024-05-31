@@ -413,7 +413,7 @@ class FetchManager::Loader final
               integrity_metadata_,
               SubresourceIntegrityHelper::GetFeatures(
                   loader_->GetExecutionContext()),
-              buffer_.data(), buffer_.size(), url_, report_info);
+              base::as_byte_span(buffer_), url_, report_info);
         }
         SubresourceIntegrityHelper::DoReport(*loader_->GetExecutionContext(),
                                              report_info);

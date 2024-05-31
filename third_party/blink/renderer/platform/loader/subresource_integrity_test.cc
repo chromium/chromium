@@ -201,12 +201,15 @@ class SubresourceIntegrityTest : public testing::Test {
                                                   metadata_set);
 
     SubresourceIntegrity::ReportInfo report_info;
-    EXPECT_EQ(expectation == kIntegritySuccess,
-              SubresourceIntegrity::CheckSubresourceIntegrity(
-                  metadata_set, kBasicScript, strlen(kBasicScript), test.url,
-                  *CreateTestResource(test.url, test.request_mode,
-                                      test.response_type),
-                  report_info));
+    EXPECT_EQ(
+        expectation == kIntegritySuccess,
+        SubresourceIntegrity::CheckSubresourceIntegrity(
+            metadata_set,
+            base::as_bytes(base::span(kBasicScript, strlen(kBasicScript))),
+            test.url,
+            *CreateTestResource(test.url, test.request_mode,
+                                test.response_type),
+            report_info));
   }
 
   Resource* CreateTestResource(

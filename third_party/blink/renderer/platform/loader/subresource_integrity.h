@@ -58,15 +58,13 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
   // assumes that the integrity attribute has already been parsed, and the
   // IntegrityMetadataSet represents the result of that parsing.
   static bool CheckSubresourceIntegrity(const IntegrityMetadataSet&,
-                                        const char* content,
-                                        size_t content_size,
+                                        base::span<const uint8_t> content,
                                         const KURL& resource_url,
                                         const Resource&,
                                         ReportInfo&);
   static bool CheckSubresourceIntegrity(const String&,
                                         IntegrityFeatures,
-                                        const char* content,
-                                        size_t content_size,
+                                        base::span<const uint8_t> content,
                                         const KURL& resource_url,
                                         ReportInfo&);
 
@@ -89,8 +87,7 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
 
   // The core implementation for all CheckSubresoureIntegrity functions.
   static bool CheckSubresourceIntegrityImpl(const IntegrityMetadataSet&,
-                                            const char*,
-                                            size_t,
+                                            base::span<const uint8_t> content,
                                             const KURL& resource_url,
                                             ReportInfo&);
 
@@ -108,8 +105,7 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
                                 const String&);
 
   static bool CheckSubresourceIntegrityDigest(const IntegrityMetadata&,
-                                              const char*,
-                                              size_t);
+                                              base::span<const uint8_t>);
   static bool CheckSubresourceIntegritySignature(const IntegrityMetadata&,
                                                  const char*,
                                                  size_t);
