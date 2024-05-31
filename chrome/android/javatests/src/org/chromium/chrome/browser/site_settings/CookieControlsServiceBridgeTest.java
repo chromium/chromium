@@ -110,7 +110,7 @@ public class CookieControlsServiceBridgeTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCookieControlsServiceBridge =
-                            new CookieControlsServiceBridge(mCallbackHandler);
+                            new CookieControlsServiceBridge(tab.getProfile(), mCallbackHandler);
                     mCookieControlsServiceBridge.updateServiceIfNecessary();
                 });
         // Initial callback after the bridge is created.
@@ -160,7 +160,7 @@ public class CookieControlsServiceBridgeTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCookieControlsServiceBridge =
-                            new CookieControlsServiceBridge(mCallbackHandler);
+                            new CookieControlsServiceBridge(tab.getProfile(), mCallbackHandler);
                     mCookieControlsServiceBridge.updateServiceIfNecessary();
 
                     mCookieControlsServiceBridge.handleCookieControlsToggleChanged(true);

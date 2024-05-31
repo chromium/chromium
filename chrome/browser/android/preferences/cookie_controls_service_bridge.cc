@@ -6,7 +6,6 @@
 
 #include <memory>
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service_factory.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
@@ -18,16 +17,13 @@ using base::android::JavaParamRef;
 
 CookieControlsServiceBridge::CookieControlsServiceBridge(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj)
-    : jobject_(obj) {}
+    const JavaParamRef<jobject>& obj,
+    Profile* profile)
+    : jobject_(obj), profile_(profile) {}
 
 void CookieControlsServiceBridge::UpdateServiceIfNecessary() {
-  // This class is only for the incognito NTP, so it is safe to always use the
-  // primary OTR profile.
-  Profile* profile = ProfileManager::GetLastUsedProfile()->GetPrimaryOTRProfile(
-      /*create_if_needed=*/true);
   CookieControlsService* new_service =
-      CookieControlsServiceFactory::GetForProfile(profile);
+      CookieControlsServiceFactory::GetForProfile(profile_);
   // Update the service only if it is for a new profile
   if (new_service != service_) {
     service_ = new_service;
@@ -73,6 +69,8 @@ void CookieControlsServiceBridge::Destroy(JNIEnv* env,
 
 static jlong JNI_CookieControlsServiceBridge_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  return reinterpret_cast<intptr_t>(new CookieControlsServiceBridge(env, obj));
+    const JavaParamRef<jobject>& obj,
+    Profile* profile) {
+  return reinterpret_cast<intptr_t>(
+      new CookieControlsServiceBridge(env, obj, profile));
 }

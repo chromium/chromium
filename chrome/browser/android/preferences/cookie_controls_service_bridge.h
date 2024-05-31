@@ -10,12 +10,15 @@
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 
+class Profile;
+
 // Communicates between CookieControlsService (C++ backend) and observers
 // in the Incognito NTP Java UI.
 class CookieControlsServiceBridge : public CookieControlsService::Observer {
  public:
   CookieControlsServiceBridge(JNIEnv* env,
-                              const base::android::JavaParamRef<jobject>& obj);
+                              const base::android::JavaParamRef<jobject>& obj,
+                              Profile* profile);
 
   CookieControlsServiceBridge(const CookieControlsServiceBridge&) = delete;
   CookieControlsServiceBridge& operator=(const CookieControlsServiceBridge&) =
@@ -44,6 +47,7 @@ class CookieControlsServiceBridge : public CookieControlsService::Observer {
 
   raw_ptr<CookieControlsService> service_;
   base::android::ScopedJavaGlobalRef<jobject> jobject_;
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_PREFERENCES_COOKIE_CONTROLS_SERVICE_BRIDGE_H_

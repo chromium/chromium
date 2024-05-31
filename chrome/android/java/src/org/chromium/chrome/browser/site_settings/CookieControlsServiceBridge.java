@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.site_settings;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 
 /**
@@ -37,12 +39,15 @@ public class CookieControlsServiceBridge {
 
     /**
      * Initializes a CookieControlsServiceBridge instance.
+     *
+     * @param profile The {@link Profile} associated with the cookie controls.
      * @param observer An observer to call with updates from the cookie controls service.
      */
-    public CookieControlsServiceBridge(CookieControlsServiceObserver observer) {
+    public CookieControlsServiceBridge(Profile profile, CookieControlsServiceObserver observer) {
         mObserver = observer;
         mNativeCookieControlsServiceBridge =
-                CookieControlsServiceBridgeJni.get().init(CookieControlsServiceBridge.this);
+                CookieControlsServiceBridgeJni.get()
+                        .init(CookieControlsServiceBridge.this, profile);
     }
 
     /** Destroys the native counterpart of this class. */
@@ -79,7 +84,7 @@ public class CookieControlsServiceBridge {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
-        long init(CookieControlsServiceBridge caller);
+        long init(CookieControlsServiceBridge caller, @JniType("Profile*") Profile profile);
 
         void destroy(long nativeCookieControlsServiceBridge, CookieControlsServiceBridge caller);
 

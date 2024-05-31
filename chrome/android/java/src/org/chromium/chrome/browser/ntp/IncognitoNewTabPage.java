@@ -76,7 +76,7 @@ public class IncognitoNewTabPage extends BasicNativePage
                     @Override
                     public void initCookieControlsManager() {
                         mCookieControlsManager = new IncognitoCookieControlsManager();
-                        mCookieControlsManager.initialize();
+                        mCookieControlsManager.initialize(mProfile);
                         mCookieControlsObserver =
                                 new IncognitoCookieControlsManager.Observer() {
                                     @Override
@@ -115,6 +115,7 @@ public class IncognitoNewTabPage extends BasicNativePage
                     public void destroy() {
                         if (mCookieControlsManager != null) {
                             mCookieControlsManager.removeObserver(mCookieControlsObserver);
+                            mCookieControlsManager.destroy();
                         }
                     }
 
