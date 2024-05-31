@@ -13,6 +13,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
+import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.SigninManager.DataWipeOption;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
@@ -102,7 +103,11 @@ public class SigninChecker
                 mAccountManagerFacade.getCoreAccountInfos();
         assert coreAccountInfosPromise.isFulfilled();
         List<CoreAccountInfo> coreAccountInfos = coreAccountInfosPromise.getResult();
-        checkChildAccount(coreAccountInfos);
+        // In the FRE, supervised accounts are signed in by the SigninManager
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                || !FirstRunStatus.isFirstRunTriggered()) {
+            checkChildAccount(coreAccountInfos);
+        }
     }
 
     /** This method is invoked every time the accounts on device are seeded. */

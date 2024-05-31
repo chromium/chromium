@@ -31,6 +31,7 @@ android_library("java") {
     "//base:base_java",
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
+    "//chrome/browser/first_run/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
