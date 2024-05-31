@@ -362,9 +362,7 @@ iron-list,
 
 /* Error message that appears in a toast to indicate the success or
  * failure of an operation. An example is when adding a printer. */
-.error-message {
-  color: white;
-  font: 13px;
+cr-toast .error-message {
   padding-bottom: 15px;
   padding-top: 15px;
   text-align: center;
