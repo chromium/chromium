@@ -19,6 +19,7 @@
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "build/chromeos_buildflags.h"
+#include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -133,6 +134,7 @@ void BluetoothDetailedViewController::OnToggleClicked(bool new_state) {
 
 void BluetoothDetailedViewController::OnPairNewDeviceRequested() {
   tray_controller_->CloseBubble();  // Deletes |this|.
+  NET_LOG(EVENT) << "Attempting to show the bluetooth pairing dialog";
   Shell::Get()->system_tray_model()->client()->ShowBluetoothPairingDialog(
       /*device_address=*/std::nullopt);
 
