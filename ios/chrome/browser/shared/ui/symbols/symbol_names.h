@@ -237,6 +237,8 @@ extern NSString* const kUngroupTabGroupSymbol;
 extern NSString* const kPlusInSquareSymbol;
 extern NSString* const kMinusInCircleSymbol;
 extern NSString* const kMultiIdentitySymbol;
+extern NSString* const kStarBubbleFillSymbol;
+extern NSString* const kTurnUpRightDiamondFillSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.
