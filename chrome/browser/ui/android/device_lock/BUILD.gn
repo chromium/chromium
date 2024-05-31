@@ -7,7 +7,6 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockCoordinator.java",
-    "java/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockDialogController.java",
     "java/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockMediator.java",
     "java/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockProperties.java",
     "java/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockUtils.java",
@@ -47,7 +46,6 @@ android_library("javatests") {
   resources_package = "org.chromium.chrome.browser.ui.device_lock"
   sources = [
     "javatests/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockCoordinatorTest.java",
-    "javatests/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockDialogControllerTest.java",
     "javatests/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockViewBinderTest.java",
     "javatests/src/org/chromium/chrome/browser/ui/device_lock/MissingDeviceLockCoordinatorTest.java",
     "javatests/src/org/chromium/chrome/browser/ui/device_lock/MissingDeviceLockLauncherTest.java",
