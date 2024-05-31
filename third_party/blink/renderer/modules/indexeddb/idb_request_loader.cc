@@ -120,7 +120,7 @@ void IDBRequestLoader::DidFinishLoading() {
   file_reader_loading_ = false;
 #endif  // DCHECK_IS_ON()
 
-  IDBValueUnwrapper::Unwrap(SharedBuffer::AdoptVector(wrapped_data_),
+  IDBValueUnwrapper::Unwrap(SharedBuffer::Create(std::move(wrapped_data_)),
                             current_value_->get());
   ++current_value_;
 

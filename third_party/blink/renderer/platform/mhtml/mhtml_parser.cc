@@ -452,7 +452,8 @@ ArchiveResource* MHTMLParser::ParseNextPart(
       DVLOG(1) << "Invalid encoding for MHTML part.";
       return nullptr;
   }
-  scoped_refptr<SharedBuffer> content_buffer = SharedBuffer::AdoptVector(data);
+  scoped_refptr<SharedBuffer> content_buffer =
+      SharedBuffer::Create(std::move(data));
   // FIXME: the URL in the MIME header could be relative, we should resolve it
   // if it is.  The specs mentions 5 ways to resolve a URL:
   // http://tools.ietf.org/html/rfc2557#section-5

@@ -141,7 +141,7 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
         UNSAFE_BUFFERS(base::span(data, size)));
   }
 
-  static scoped_refptr<SharedBuffer> AdoptVector(Vector<char>&);
+  static scoped_refptr<SharedBuffer> Create(Vector<char>&&);
 
   // DEPRECATED: use a segment iterator, FlatData or explicit Copy() instead.
   //

@@ -110,7 +110,7 @@ Binary Binary::fromBase64(const String& base64, bool* success) {
   Vector<char> out;
   *success = WTF::Base64Decode(base64, out);
   return Binary(base::AdoptRef(
-      new BinaryBasedOnSharedBuffer(SharedBuffer::AdoptVector(out))));
+      new BinaryBasedOnSharedBuffer(SharedBuffer::Create(std::move(out)))));
 }
 
 // static

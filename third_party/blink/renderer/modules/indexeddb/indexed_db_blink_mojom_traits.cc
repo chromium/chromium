@@ -225,7 +225,7 @@ bool StructTraits<blink::mojom::IDBValueDataView,
   }
 
   scoped_refptr<SharedBuffer> value_buffer =
-      SharedBuffer::AdoptVector(value_bits);
+      SharedBuffer::Create(std::move(value_bits));
 
   Vector<blink::mojom::blink::IDBExternalObjectPtr> external_objects;
   if (!data.ReadExternalObjects(&external_objects))

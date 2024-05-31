@@ -305,9 +305,8 @@ class ImagePaintTimingDetectorTest : public testing::Test,
     // a small amount of memory for the image (0.1bpp should exceed the LCP
     // entropy threshold).
     int bytes = (width * height / 80) + 1;
-    Vector<char> img_data(bytes);
     scoped_refptr<SharedBuffer> shared_buffer =
-        SharedBuffer::AdoptVector(img_data);
+        SharedBuffer::Create(Vector<char>(bytes));
     original_image_data->SetData(shared_buffer, /*all_data_received=*/true);
     ImageResourceContent* original_image_content =
         ImageResourceContent::CreateLoaded(original_image_data.get());

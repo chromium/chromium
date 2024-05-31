@@ -262,7 +262,7 @@ scoped_refptr<SharedBuffer> IDBValueWrapper::TakeWireBytes() {
   DCHECK_EQ(wire_data_buffer_.data(),
             reinterpret_cast<const char*>(wire_data_.data()));
   DCHECK_EQ(wire_data_buffer_.size(), wire_data_.size());
-  return SharedBuffer::AdoptVector(wire_data_buffer_);
+  return SharedBuffer::Create(std::move(wire_data_buffer_));
 }
 
 IDBValueUnwrapper::IDBValueUnwrapper() {
@@ -334,7 +334,7 @@ bool IDBValueUnwrapper::Decompress(SharedBuffer& buffer,
   decompressed_data.resize(static_cast<wtf_size_t>(decompressed_length));
   snappy::RawUncompress(compressed.data(), compressed.size(),
                         decompressed_data.data());
-  *out_buffer = SharedBuffer::AdoptVector(decompressed_data);
+  *out_buffer = SharedBuffer::Create(std::move(decompressed_data));
   return true;
 }
 

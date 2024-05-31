@@ -212,10 +212,10 @@ void SerializeV8Value(v8::Local<v8::Value> value,
 }
 
 std::unique_ptr<IDBValue> CreateIDBValue(v8::Isolate* isolate,
-                                         Vector<char>& wire_bytes,
+                                         Vector<char>&& wire_bytes,
                                          double primary_key,
                                          const String& key_path) {
-  WebData web_data(SharedBuffer::AdoptVector(wire_bytes));
+  WebData web_data(SharedBuffer::Create(std::move(wire_bytes)));
   scoped_refptr<SharedBuffer> data(web_data);
   auto value = std::make_unique<IDBValue>(data, Vector<WebBlobInfo>());
   value->SetInjectedPrimaryKey(IDBKey::CreateNumber(primary_key),
@@ -666,7 +666,7 @@ TEST(DeserializeIDBValueTest, CurrentVersions) {
   v8::Local<v8::Object> empty_object = v8::Object::New(isolate);
   SerializeV8Value(empty_object, isolate, &object_bytes);
   std::unique_ptr<IDBValue> idb_value =
-      CreateIDBValue(isolate, object_bytes, 42.0, "foo");
+      CreateIDBValue(isolate, std::move(object_bytes), 42.0, "foo");
 
   v8::Local<v8::Value> v8_value =
       DeserializeIDBValue(scope.GetScriptState(), idb_value.get());
@@ -699,7 +699,7 @@ TEST(DeserializeIDBValueTest, FutureV8Version) {
   //
   // http://crbug.com/703704 has a reproduction for this test's circumstances.
   std::unique_ptr<IDBValue> idb_value =
-      CreateIDBValue(isolate, object_bytes, 42.0, "foo");
+      CreateIDBValue(isolate, std::move(object_bytes), 42.0, "foo");
 
   v8::Local<v8::Value> v8_value =
       DeserializeIDBValue(scope.GetScriptState(), idb_value.get());
@@ -718,7 +718,7 @@ TEST(DeserializeIDBValueTest, InjectionIntoNonObject) {
   v8::Local<v8::Number> number = v8::Number::New(isolate, 42.0);
   SerializeV8Value(number, isolate, &object_bytes);
   std::unique_ptr<IDBValue> idb_value =
-      CreateIDBValue(isolate, object_bytes, 42.0, "foo");
+      CreateIDBValue(isolate, std::move(object_bytes), 42.0, "foo");
 
   v8::Local<v8::Value> v8_value =
       DeserializeIDBValue(scope.GetScriptState(), idb_value.get());
@@ -739,7 +739,7 @@ TEST(DeserializeIDBValueTest, NestedInjectionIntoNonObject) {
   v8::Local<v8::Number> number = v8::Number::New(isolate, 42.0);
   SerializeV8Value(number, isolate, &object_bytes);
   std::unique_ptr<IDBValue> idb_value =
-      CreateIDBValue(isolate, object_bytes, 42.0, "foo.bar");
+      CreateIDBValue(isolate, std::move(object_bytes), 42.0, "foo.bar");
 
   v8::Local<v8::Value> v8_value =
       DeserializeIDBValue(scope.GetScriptState(), idb_value.get());

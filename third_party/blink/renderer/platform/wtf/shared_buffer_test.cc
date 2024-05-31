@@ -94,7 +94,7 @@ TEST(SharedBufferTest, getAsBytesLargeSegments) {
     vector2[i] = 'c';
 
   scoped_refptr<SharedBuffer> shared_buffer =
-      SharedBuffer::AdoptVector(vector0);
+      SharedBuffer::Create(std::move(vector0));
   shared_buffer->Append(vector1);
   shared_buffer->Append(vector2);
 

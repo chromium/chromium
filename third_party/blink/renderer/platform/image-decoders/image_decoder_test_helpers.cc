@@ -218,7 +218,7 @@ static void TestDecodeAfterReallocatingData(DecoderCreator create_decoder,
   // ... and then decode frames from 'reallocated_data'.
   Vector<char> copy = data->CopyAs<Vector<char>>();
   scoped_refptr<SharedBuffer> reallocated_data =
-      SharedBuffer::AdoptVector(copy);
+      SharedBuffer::Create(std::move(copy));
   ASSERT_TRUE(reallocated_data.get());
   data->Clear();
   decoder->SetData(reallocated_data.get(), true);

@@ -76,7 +76,7 @@ SharedBuffer::SharedBuffer(base::span<const unsigned char> data)
 
 SharedBuffer::~SharedBuffer() = default;
 
-scoped_refptr<SharedBuffer> SharedBuffer::AdoptVector(Vector<char>& vector) {
+scoped_refptr<SharedBuffer> SharedBuffer::Create(Vector<char>&& vector) {
   scoped_refptr<SharedBuffer> buffer = Create();
   buffer->Append(std::move(vector));
   return buffer;
