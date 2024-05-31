@@ -32,9 +32,9 @@ import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayContentDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
+import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContentDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelStateProvider;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.RelatedSearchesControl;
@@ -1150,20 +1150,20 @@ public class ContextualSearchManager
     }
 
     // ============================================================================================
-    // OverlayContentDelegate
+    // OverlayPanelContentDelegate
     // ============================================================================================
 
     @Override
-    public OverlayContentDelegate getOverlayContentDelegate() {
-        return new SearchOverlayContentDelegate();
+    public OverlayPanelContentDelegate getOverlayPanelContentDelegate() {
+        return new SearchOverlayPanelContentDelegate();
     }
 
-    /** Implementation of OverlayContentDelegate. Made public for testing purposes. */
-    public class SearchOverlayContentDelegate extends OverlayContentDelegate {
+    /** Implementation of OverlayPanelContentDelegate. Made public for testing purposes. */
+    public class SearchOverlayPanelContentDelegate extends OverlayPanelContentDelegate {
         // Note: New navigation or changes to the WebContents are not advised in this class since
         // the WebContents is being observed and navigation is already being performed.
 
-        public SearchOverlayContentDelegate() {}
+        public SearchOverlayPanelContentDelegate() {}
 
         @Override
         public void onMainFrameLoadStarted(String url, boolean isExternalUrl) {

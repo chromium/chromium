@@ -182,7 +182,7 @@ public class ContextualSearchPanel extends OverlayPanel {
     @Override
     public OverlayPanelContent createNewOverlayPanelContent() {
         return new OverlayPanelContent(
-                mManagementDelegate.getOverlayContentDelegate(),
+                mManagementDelegate.getOverlayPanelContentDelegate(),
                 new PanelProgressObserver(),
                 mActivity,
                 getProfile(),

@@ -106,10 +106,10 @@ public class OverlayPanelContent {
     private boolean mIsContentViewShowing;
 
     /** The observer used by this object to inform implementers of different events. */
-    private OverlayContentDelegate mContentDelegate;
+    private OverlayPanelContentDelegate mContentDelegate;
 
     /** Used to observe progress bar events. */
-    private OverlayContentProgressObserver mProgressObserver;
+    private OverlayPanelContentProgressObserver mProgressObserver;
 
     /** If a URL is set to delayed load (load on user interaction), it will be stored here. */
     private String mPendingUrl;
@@ -228,8 +228,8 @@ public class OverlayPanelContent {
      * @param currentTabSupplier Supplies the current activity {@link Tab}.
      */
     public OverlayPanelContent(
-            @NonNull OverlayContentDelegate contentDelegate,
-            @NonNull OverlayContentProgressObserver progressObserver,
+            @NonNull OverlayPanelContentDelegate contentDelegate,
+            @NonNull OverlayPanelContentProgressObserver progressObserver,
             @NonNull Activity activity,
             @NonNull Profile profile,
             float barHeight,

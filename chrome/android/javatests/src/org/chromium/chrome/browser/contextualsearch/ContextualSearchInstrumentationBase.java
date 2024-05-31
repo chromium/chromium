@@ -37,9 +37,9 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayContentProgressObserver;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
+import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContentProgressObserver;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManagerWrapper;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
@@ -397,8 +397,8 @@ public class ContextualSearchInstrumentationBase {
                         mPolicy,
                         mTestHost,
                         mManager,
-                        mManager.getOverlayContentDelegate(),
-                        new OverlayContentProgressObserver(),
+                        mManager.getOverlayPanelContentDelegate(),
+                        new OverlayPanelContentProgressObserver(),
                         sActivityTestRule.getActivity());
 
         mPanel.setOverlayPanelContentFactory(mFakeServer);
@@ -882,7 +882,8 @@ public class ContextualSearchInstrumentationBase {
      */
     protected void fakeContentViewDidNavigate(boolean isFailure) {
         String url = mFakeServer.getLoadedUrl();
-        mManager.getOverlayContentDelegate().onMainFrameNavigation(url, false, isFailure, false);
+        mManager.getOverlayPanelContentDelegate()
+                .onMainFrameNavigation(url, false, isFailure, false);
     }
 
     /**

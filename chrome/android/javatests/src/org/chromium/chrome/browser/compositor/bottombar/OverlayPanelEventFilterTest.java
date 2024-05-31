@@ -67,8 +67,8 @@ public class OverlayPanelEventFilterTest {
     @Mock private ViewGroup mCompositorViewHolder;
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
-    @Mock private OverlayContentDelegate mOverlayContentDelegate;
-    @Mock private OverlayContentProgressObserver mOverlayContentProgressObserver;
+    @Mock private OverlayPanelContentDelegate mOverlayPanelContentDelegate;
+    @Mock private OverlayPanelContentProgressObserver mOverlayPanelContentProgressObserver;
 
     private float mTouchSlopDp;
     private float mDpToPx;
@@ -168,8 +168,8 @@ public class OverlayPanelEventFilterTest {
         private class MockOverlayPanelContent extends OverlayPanelContent {
             public MockOverlayPanelContent() {
                 super(
-                        mOverlayContentDelegate,
-                        mOverlayContentProgressObserver,
+                        mOverlayPanelContentDelegate,
+                        mOverlayPanelContentProgressObserver,
                         mActivity,
                         mProfile,
                         MOCK_TOOLBAR_HEIGHT,

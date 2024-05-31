@@ -534,7 +534,7 @@ public class OverlayPanel extends OverlayPanelAnimation
     }
 
     /** Progress observer progress indicator animation for a panel. */
-    public class PanelProgressObserver extends OverlayContentProgressObserver {
+    public class PanelProgressObserver extends OverlayPanelContentProgressObserver {
         @Override
         public void onProgressBarStarted() {
             setProgressBarCompletion(0);
@@ -567,13 +567,14 @@ public class OverlayPanel extends OverlayPanelAnimation
 
     /**
      * Create a new OverlayPanelContent object. This can be overridden for tests.
+     *
      * @return A new OverlayPanelContent object.
      */
     @Override
     public OverlayPanelContent createNewOverlayPanelContent() {
         return new OverlayPanelContent(
-                new OverlayContentDelegate(),
-                new OverlayContentProgressObserver(),
+                new OverlayPanelContentDelegate(),
+                new OverlayPanelContentProgressObserver(),
                 mActivity,
                 mProfile,
                 getBarHeight(),

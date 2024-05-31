@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import android.app.Activity;
 
-import org.chromium.chrome.browser.compositor.bottombar.OverlayContentDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
+import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContentDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 
@@ -69,9 +69,9 @@ public interface ContextualSearchManagementDelegate {
     void onPanelCollapsing();
 
     /**
-     * @return An OverlayContentDelegate to watch events on the panel's content.
+     * @return An OverlayPanelContentDelegate to watch events on the panel's content.
      */
-    OverlayContentDelegate getOverlayContentDelegate();
+    OverlayPanelContentDelegate getOverlayPanelContentDelegate();
 
     /** Log the current state of Contextual Search. */
     void logCurrentState();

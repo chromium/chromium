@@ -10,9 +10,8 @@ import org.chromium.url.GURL;
 
 /**
  * An base class for tracking events on the overlay panel.
- * TODO(mdjones): Rename to OverlayPanelContentDelegate.
  */
-public class OverlayContentDelegate {
+public class OverlayPanelContentDelegate {
     /**
      * Called when the panel's WebContents navigates in the main frame.
      * @param url The URL being navigated to.
