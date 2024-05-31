@@ -32,14 +32,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Geolocation.AuthorizationActionExistingUser"
-    enum="GeolocationAuthorizationAction" expires_after="2022-10-16">
-  <owner>mattreynolds@chromium.org</owner>
-  <owner>device-dev@chromium.org</owner>
+<histogram name="Geolocation.IOS.ChangedAuthorizationState"
+    enum="GeolocationIOSAuthorizationStatus" expires_after="2025-05-27">
+  <owner>ajuma@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
-    Records the action performed by an existing user when prompted to authorize
-    the use of location by Chrome.
+    iOS location permission state, recorded when geolocation permission state
+    changes while the app is running.
   </summary>
+</histogram>
+
+<histogram name="Geolocation.IOS.InitialAuthorizationState"
+    enum="GeolocationIOSAuthorizationStatus" expires_after="2025-05-27">
+  <owner>ajuma@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>iOS location permission state, recorded at startup.</summary>
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationRequest.Event"

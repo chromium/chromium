@@ -98,6 +98,14 @@ chromium-metrics-reviews@google.com.
   <int value="44" label="Not using HTTPS"/>
 </enum>
 
+<enum name="GeolocationIOSAuthorizationStatus">
+  <int value="0" label="Not determined"/>
+  <int value="1" label="Restricted (user cannot grant permission)"/>
+  <int value="2" label="Denied"/>
+  <int value="3" label="Authorized always"/>
+  <int value="4" label="Authorized when in-use"/>
+</enum>
+
 <enum name="NetworkLocationRequestEvent">
   <int value="0" label="REQUEST_START"/>
   <int value="1" label="REQUEST_CANCEL"/>
