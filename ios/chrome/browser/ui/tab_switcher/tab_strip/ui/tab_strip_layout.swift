@@ -229,6 +229,8 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
     guard let cell = cell else { return layoutAttributes }
 
+    layoutAttributes.zIndex = 0
+
     let contentOffset = collectionView.contentOffset
     var frame = layoutAttributes.frame
     let collectionViewWidth = collectionView.bounds.size.width
@@ -241,11 +243,13 @@ class TabStripLayout: UICollectionViewFlowLayout {
     let isNextCellSelected = (indexPath.item + 1) == selectedIndexPath?.item
     cell.trailingSeparatorHidden = isNextCellSelected
 
-    /// Hide the `leadingSeparator` if the previous cell is selected or the
-    /// collection view is not scrollable, or the previous cell is a group.
+    /// Hide the `leadingSeparator` if the previous cell is selected or this is the first cell and collection
+    /// view is not scrollable, or the previous cell is a group.
     let indexPathOfPreviousItem = IndexPath(item: indexPath.item - 1, section: indexPath.section)
+    let isFirstCellAndNotScrollable = !isScrollable && (indexPath.item == 0)
     let isPreviousCellSelected = indexPathOfPreviousItem == selectedIndexPath
-    cell.leadingSeparatorHidden = isPreviousCellSelected || !isScrollable || cell.isFirstTabInGroup
+    cell.leadingSeparatorHidden =
+      isPreviousCellSelected || isFirstCellAndNotScrollable || cell.isFirstTabInGroup
 
     if UIAccessibility.isVoiceOverRunning {
       // Prevent frame resizing while VoiceOver is active.
@@ -615,6 +619,9 @@ class TabStripLayout: UICollectionViewFlowLayout {
     {
       attributes = selectedAttributes
     }
+
+    tabCell?.leadingSeparatorHidden = true
+    tabCell?.trailingSeparatorHidden = true
 
     if indexPathsOfDeletingItems.contains(itemIndexPath) {
       // Animate the disappearing item by fading it out and translating it down
