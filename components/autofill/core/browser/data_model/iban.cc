@@ -145,6 +145,12 @@ bool Iban::IsValid(const std::u16string& value) {
 }
 
 // static
+std::string Iban::GetCountryCode(const std::u16string& iban_value) {
+  CHECK(iban_value.length() >= 2);
+  return base::UTF16ToUTF8(base::i18n::ToUpper(iban_value.substr(0, 2)));
+}
+
+// static
 bool Iban::IsIbanApplicableInCountry(const std::string& country_code) {
   return GetIbanSupportedCountry(country_code) !=
          IbanSupportedCountry::kUnsupported;
@@ -626,7 +632,7 @@ bool Iban::IsValid() {
 
 std::string Iban::GetCountryCode() const {
   CHECK(prefix_.length() >= 2);
-  return base::UTF16ToUTF8(base::i18n::ToUpper(prefix_.substr(0, 2)));
+  return GetCountryCode(prefix_);
 }
 
 void Iban::RecordAndLogUse() {

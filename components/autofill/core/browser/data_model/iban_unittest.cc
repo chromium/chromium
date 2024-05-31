@@ -329,6 +329,7 @@ TEST(IbanTest, GetCountryCode) {
   Iban iban;
   iban.set_value(u"ch5604835012345678009");
 
+  EXPECT_EQ(iban.GetCountryCode(iban.value()), "CH");
   EXPECT_EQ(iban.GetCountryCode(), "CH");
 }
 

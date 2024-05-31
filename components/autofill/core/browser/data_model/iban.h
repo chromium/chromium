@@ -157,6 +157,9 @@ class Iban : public AutofillDataModel {
   // https://en.wikipedia.org/wiki/International_Bank_Account_Number#Algorithms
   static bool IsValid(const std::u16string& value);
 
+  // Returns the capitalized country code of the given `iban_value`.
+  static std::string GetCountryCode(const std::u16string& iban_value);
+
   // Returns true if `country_code` is in the IBAN-supported country list.
   static bool IsIbanApplicableInCountry(const std::string& country_code);
 
@@ -218,7 +221,7 @@ class Iban : public AutofillDataModel {
   // server-based IBANs because server-based IBANs don't store the full `value`.
   bool IsValid();
 
-  // The capitalized country code of this IBAN.
+  // Returns the capitalized country code of this IBAN.
   std::string GetCountryCode() const;
 
   // Logs the number of days since this IBAN was last used, increments its use
