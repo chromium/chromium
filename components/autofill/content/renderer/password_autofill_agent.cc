@@ -1779,11 +1779,15 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
                                 trigger_source);
 
   username_query_prefix_ = typed_username;
-  auto [form, field] =
-      form_util::FindFormAndFieldForFormControlElement(
-          user_input, field_data_manager(), /*extract_options=*/{})
-          .value_or(std::make_pair(FormData(), FormFieldData()));
 
+  FormData form;
+  FormFieldData field;
+  if (std::optional<std::pair<FormData, raw_ref<FormFieldData>>>
+          form_and_field = form_util::FindFormAndFieldForFormControlElement(
+              user_input, field_data_manager(), /*extract_options=*/{})) {
+    form = std::move(form_and_field->first);
+    field = *form_and_field->second;
+  }
 
   WebInputElement username_element;
   WebInputElement password_element;

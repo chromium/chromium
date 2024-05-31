@@ -93,7 +93,7 @@ constexpr char kSubmissionSourceHistogram[] =
 // will be acted upon, instead of multiple in close succession (debounce time).
 constexpr base::TimeDelta kWaitTimeForOptionsChanges = base::Milliseconds(50);
 
-using FormAndField = std::pair<FormData, FormFieldData>;
+using FormAndField = std::pair<FormData, raw_ref<FormFieldData>>;
 
 // Compare the values before and after JavaScript value changes after:
 // - Converting to lower case.
@@ -411,7 +411,7 @@ void AutofillAgent::DidChangeScrollOffsetImpl(FieldRendererId element_id) {
               MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->TextFieldDidScroll(form, field);
+      autofill_driver->TextFieldDidScroll(form, *field);
     }
   }
 
@@ -494,7 +494,7 @@ void AutofillAgent::FocusedElementChangedDeprecated(const WebElement& element) {
               MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->FocusOnFormField(form, field);
+      autofill_driver->FocusOnFormField(form, *field);
     }
   }
 }
@@ -540,7 +540,7 @@ void AutofillAgent::FocusedElementChanged(
       auto& [form, field] = *form_and_field;
       if (auto* autofill_driver = unsafe_autofill_driver()) {
         last_queried_element_ = FieldRef(control);
-        autofill_driver->FocusOnFormField(form, field);
+        autofill_driver->FocusOnFormField(form, *field);
         handle_focus_change();
         return;
       }
@@ -603,7 +603,7 @@ void AutofillAgent::HandleCaretMovedInFormField(WebElement element,
                       {form_util::ExtractOption::kBounds}))) {
         auto& [form, field] = *form_and_field;
         if (auto* autofill_driver = self.unsafe_autofill_driver()) {
-          autofill_driver->CaretMovedInFormField(form, field, caret_bounds);
+          autofill_driver->CaretMovedInFormField(form, *field, caret_bounds);
           return;
         }
       }
@@ -742,7 +742,7 @@ void AutofillAgent::OnTextFieldDidChange(const WebFormControlElement& element) {
               MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->TextFieldDidChange(form, field, base::TimeTicks::Now());
+      autofill_driver->TextFieldDidChange(form, *field, base::TimeTicks::Now());
     }
   }
 }
@@ -1283,21 +1283,26 @@ void AutofillAgent::QueryAutofillSuggestions(
   DCHECK(element.DynamicTo<WebInputElement>() ||
          form_util::IsTextAreaElement(element));
 
+  // TODO crbug.com/1007974 - Can we bake this into
+  // FindFormAndFieldForFormControlElement()?
   std::optional<FormAndField> form_and_field =
       FindFormAndFieldForFormControlElement(
           element, field_data_manager(),
           MaybeExtractDatalist({form_util::ExtractOption::kBounds}));
-  auto [form, field] =
-      form_and_field.value_or(std::make_pair(FormData(), FormFieldData()));
   if (!form_and_field) {
-    // If we didn't find the cached form, at least let autocomplete have a shot
-    // at providing suggestions.
+    // If we couldn't extract the form, at least let autocomplete have a shot at
+    // providing suggestions.
+    FormData form_for_single_field;
+    form_for_single_field.fields.emplace_back();
     WebFormControlElementToFormField(
         form_util::GetOwningForm(element), element, nullptr,
         MaybeExtractDatalist({form_util::ExtractOption::kValue,
                               form_util::ExtractOption::kBounds}),
-        &field);
+        &form_for_single_field.fields.back());
+    form_and_field.emplace(std::move(form_for_single_field),
+                           raw_ref(form_for_single_field.fields.back()));
   }
+  auto& [form, field] = *form_and_field;
 
   if (config_.secure_context_required &&
       !element.GetDocument().IsSecureContext()) {
@@ -1312,7 +1317,7 @@ void AutofillAgent::QueryAutofillSuggestions(
       // Find the datalist values and send them to the browser process.
       std::vector<SelectOption> datalist_options;
       form_util::GetDataListSuggestions(input_element, &datalist_options);
-      field.set_datalist_options(std::move(datalist_options));
+      field->set_datalist_options(std::move(datalist_options));
     }
   }
 
@@ -1320,7 +1325,7 @@ void AutofillAgent::QueryAutofillSuggestions(
   if (auto* autofill_driver = unsafe_autofill_driver()) {
     if (auto* render_frame = unsafe_render_frame()) {
       autofill_driver->AskForValuesToFill(
-          form, field, GetCaretBounds(*render_frame), trigger_source);
+          form, *field, GetCaretBounds(*render_frame), trigger_source);
     }
   }
 }
@@ -1568,7 +1573,7 @@ void AutofillAgent::BatchSelectOrSelectListOptionChange(
               /*extract_options=*/{})) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver();
-        autofill_driver && !field.options().empty()) {
+        autofill_driver && !field->options().empty()) {
       autofill_driver->SelectOrSelectListFieldOptionsDidChange(form);
     }
   }
@@ -1715,7 +1720,7 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->JavaScriptChangedAutofilledValue(
-          form, field, old_value.Utf16(), formatting_only);
+          form, *field, old_value.Utf16(), formatting_only);
     }
   }
 }
@@ -1797,7 +1802,7 @@ void AutofillAgent::OnProvisionallySaveForm(
                   MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
         auto& [form, field] = *form_and_field;
         if (auto* autofill_driver = unsafe_autofill_driver()) {
-          autofill_driver->SelectControlDidChange(form, field);
+          autofill_driver->SelectControlDidChange(form, *field);
         }
       }
       break;

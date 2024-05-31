@@ -2145,7 +2145,7 @@ WebFormElement GetOwningForm(const WebFormControlElement& form_control) {
   return WebFormElement();
 }
 
-std::optional<std::pair<FormData, FormFieldData>>
+std::optional<std::pair<FormData, raw_ref<FormFieldData>>>
 FindFormAndFieldForFormControlElement(
     const WebFormControlElement& element,
     const FieldDataManager& field_data_manager,
@@ -2165,7 +2165,7 @@ FindFormAndFieldForFormControlElement(
     if (auto it = base::ranges::find(form->fields, GetFieldRendererId(element),
                                      &FormFieldData::renderer_id);
         it != form->fields.end()) {
-      return std::pair<FormData, FormFieldData>(std::move(*form), *it);
+      return std::make_optional(std::make_pair(std::move(*form), raw_ref(*it)));
     }
   }
   return std::nullopt;

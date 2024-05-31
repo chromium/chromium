@@ -845,7 +845,7 @@ TEST_F(FormAutofillUtilsTest, ExtractBounds) {
   LoadHTML("<body><form id='form1'><input id='i1'></form></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetFormControlElementById(doc, "i1");
-  std::optional<std::pair<FormData, FormFieldData>> form_and_field =
+  std::optional<std::pair<FormData, raw_ref<FormFieldData>>> form_and_field =
       FindFormAndFieldForFormControlElement(web_control, field_data_manager(),
                                             {ExtractOption::kBounds});
 
@@ -858,7 +858,7 @@ TEST_F(FormAutofillUtilsTest, NotExtractBounds) {
   LoadHTML("<body><form id='form1'><input id='i1'></form></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetFormControlElementById(doc, "i1");
-  std::optional<std::pair<FormData, FormFieldData>> form_and_field =
+  std::optional<std::pair<FormData, raw_ref<FormFieldData>>> form_and_field =
       FindFormAndFieldForFormControlElement(web_control, field_data_manager(),
                                             /*extract_options=*/{});
 
@@ -871,7 +871,7 @@ TEST_F(FormAutofillUtilsTest, ExtractUnownedBounds) {
   LoadHTML("<body><input id='i1'></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetFormControlElementById(doc, "i1");
-  std::optional<std::pair<FormData, FormFieldData>> form_and_field =
+  std::optional<std::pair<FormData, raw_ref<FormFieldData>>> form_and_field =
       FindFormAndFieldForFormControlElement(web_control, field_data_manager(),
                                             {ExtractOption::kBounds});
 
@@ -919,7 +919,7 @@ TEST_F(FormAutofillUtilsTest, ExtractDataList) {
       "value='2'>two</option></datalist></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
-  std::optional<std::pair<FormData, FormFieldData>> form_and_field =
+  std::optional<std::pair<FormData, raw_ref<FormFieldData>>> form_and_field =
       FindFormAndFieldForFormControlElement(web_control, field_data_manager(),
                                             {ExtractOption::kDatalist});
 
@@ -931,7 +931,7 @@ TEST_F(FormAutofillUtilsTest, ExtractDataList) {
   EXPECT_EQ(options[1].value, u"2");
   EXPECT_EQ(options[0].content, u"one");
   EXPECT_EQ(options[1].content, u"two");
-  EXPECT_EQ(field.datalist_options().size(), options.size());
+  EXPECT_EQ(field->datalist_options().size(), options.size());
 }
 
 TEST_F(FormAutofillUtilsTest, NotExtractDataList) {
@@ -941,7 +941,7 @@ TEST_F(FormAutofillUtilsTest, NotExtractDataList) {
       "value='2'>two</option></datalist></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
-  std::optional<std::pair<FormData, FormFieldData>> form_and_field =
+  std::optional<std::pair<FormData, raw_ref<FormFieldData>>> form_and_field =
       FindFormAndFieldForFormControlElement(web_control, field_data_manager(),
                                             {ExtractOption::kBounds});
 

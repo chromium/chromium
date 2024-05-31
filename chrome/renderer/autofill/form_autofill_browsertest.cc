@@ -297,13 +297,14 @@ void ApplyFieldsAction(
                                *base::MakeRefCounted<FieldDataManager>());
 }
 
-std::pair<FormData, FormFieldData> FindFormAndField(
-    const blink::WebFormControlElement& element,
-    const FieldDataManager& field_data_manager,
-    DenseSet<ExtractOption> extract_options) {
-  return FindFormAndFieldForFormControlElement(element, field_data_manager,
-                                               extract_options)
-      .value_or(std::make_pair(FormData(), FormFieldData()));
+FormData FindForm(const blink::WebFormControlElement& element,
+                  const FieldDataManager& field_data_manager,
+                  DenseSet<ExtractOption> extract_options) {
+  if (auto p = FindFormAndFieldForFormControlElement(
+          element, field_data_manager, extract_options)) {
+    return p->first;
+  }
+  return FormData();
 }
 
 class FormAutofillTest : public ChromeRenderViewTest {
@@ -454,9 +455,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     WebInputElement input_element = GetInputElementById("firstname");
 
     // Find the form that contains the input element.
-    auto [form, field] = FindFormAndField(
-        input_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form =
+        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name());
       EXPECT_EQ(GURL("http://abc.com"), form.action());
@@ -695,9 +696,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     WebInputElement input_element = GetInputElementById("firstname");
 
     // Find the form and verify it's the correct form.
-    auto [form, field] = FindFormAndField(
-        input_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form =
+        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name());
       EXPECT_EQ(GURL("http://abc.com"), form.action());
@@ -715,7 +716,6 @@ class FormAutofillTest : public ChromeRenderViewTest {
     expected.set_value(u"John");
     expected.set_label(u"John");
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[0]);
-    EXPECT_FORM_FIELD_DATA_EQUALS(expected, field);
 
     expected.set_id_attribute(u"lastname");
     expected.set_name(expected.id_attribute());
@@ -754,9 +754,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
         element.To<WebFormControlElement>();
 
     // Find the form and verify it's the correct form.
-    auto [form, field] = FindFormAndField(
-        textarea_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form =
+        FindForm(textarea_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name());
       EXPECT_EQ(GURL("http://abc.com"), form.action());
@@ -800,7 +800,6 @@ class FormAutofillTest : public ChromeRenderViewTest {
     expected.set_form_control_type(FormControlType::kTextArea);
     expected.set_max_length(FormFieldData::kDefaultMaxLength);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[3]);
-    EXPECT_FORM_FIELD_DATA_EQUALS(expected, field);
   }
 
   void TestFillFormMaxLength(const char* html, bool unowned) {
@@ -816,9 +815,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     WebInputElement input_element = GetInputElementById("firstname");
 
     // Find the form that contains the input element.
-    auto [form, field] = FindFormAndField(
-        input_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form =
+        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name());
       EXPECT_EQ(GURL("http://abc.com"), form.action());
@@ -860,9 +859,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
                       mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
-    auto [form2, field2] = FindFormAndField(
-        input_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form2 =
+        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form2.name());
       EXPECT_EQ(GURL("http://abc.com"), form2.action());
@@ -908,9 +907,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     WebInputElement input_element = GetInputElementById("firstname");
 
     // Find the form that contains the input element.
-    auto [form, field] = FindFormAndField(
-        input_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form =
+        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name());
       EXPECT_EQ(GURL("http://abc.com"), form.action());
@@ -944,9 +943,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
                       mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
-    auto [form2, field2] = FindFormAndField(
-        input_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form2 =
+        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form2.name());
       EXPECT_EQ(GURL("http://abc.com"), form2.action());
@@ -984,9 +983,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     WebInputElement input_element = GetInputElementById("firstname");
 
     // Find the form that contains the input element.
-    auto [form, field] = FindFormAndField(
-        input_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form =
+        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name());
       EXPECT_EQ(GURL("http://abc.com"), form.action());
@@ -1020,9 +1019,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
                       mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
-    auto [form2, field2] = FindFormAndField(
-        input_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form2 =
+        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form2.name());
       EXPECT_EQ(GURL("http://abc.com"), form2.action());
@@ -1064,9 +1063,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     WebInputElement input_element = GetInputElementById("apple");
 
     // Find the form that contains the input element.
-    auto [form, field] = FindFormAndField(
-        input_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form =
+        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     if (!unowned) {
       EXPECT_TRUE(form.name().empty());
       EXPECT_EQ(GURL("http://abc.com"), form.action());
@@ -1107,9 +1106,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
                       mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
-    auto [form2, field2] = FindFormAndField(
-        input_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form2 =
+        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     if (!unowned) {
       EXPECT_TRUE(form2.name().empty());
       EXPECT_EQ(GURL("http://abc.com"), form2.action());
@@ -1159,9 +1158,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     input_element.SetValue(WebString::FromASCII("Wy"));
 
     // Find the form that contains the input element.
-    auto [form, field] = FindFormAndField(
-        input_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form =
+        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name());
       EXPECT_EQ(GURL("http://abc.com"), form.action());
@@ -1235,9 +1234,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
                       mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
-    auto [form2, field2] = FindFormAndField(
-        input_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form2 =
+        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form2.name());
       EXPECT_EQ(GURL("http://abc.com"), form2.action());
@@ -1349,9 +1348,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     control_elements[5].SetValue(WebString::FromUTF16(u"AK"));
 
     // Find the form that contains the input element.
-    auto [form, field] = FindFormAndField(
-        input_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form =
+        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     EXPECT_EQ(u"TestForm", form.name());
     EXPECT_EQ(GURL("http://abc.com"), form.action());
 
@@ -1380,9 +1379,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
                       mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
-    auto [form2, field2] = FindFormAndField(
-        input_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form2 =
+        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     EXPECT_EQ(u"TestForm", form2.name());
     EXPECT_EQ(GURL("http://abc.com"), form2.action());
 
@@ -1514,9 +1513,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // This will be considered.
     control_elements[2].SetValue(WebString::FromUTF16(u"john@smith.com"));
     // Find the form that contains the input element.
-    auto [form, field] = FindFormAndField(
-        input_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form =
+        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     EXPECT_EQ(u"TestForm", form.name());
     EXPECT_EQ(GURL("http://abc.com"), form.action());
 
@@ -1539,9 +1538,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
                       mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
-    auto [form2, field2] = FindFormAndField(
-        input_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form2 =
+        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     EXPECT_EQ(u"TestForm", form2.name());
     EXPECT_EQ(GURL("http://abc.com"), form2.action());
 
@@ -1625,9 +1624,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     control_elements[2].SetUserHasEditedTheField(true);
 
     // Find the form that contains the input element.
-    auto [form, field] = FindFormAndField(
-        input_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form =
+        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     EXPECT_EQ(u"TestForm", form.name());
     EXPECT_EQ(GURL("http://abc.com"), form.action());
 
@@ -1653,9 +1652,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
                       mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
-    auto [form2, field2] = FindFormAndField(
-        input_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form2 =
+        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     EXPECT_EQ(u"TestForm", form2.name());
     EXPECT_EQ(GURL("http://abc.com"), form2.action());
 
@@ -1747,9 +1746,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
         "document.getElementById('name').value = 'John Smith';");
 
     // Find the form that contains the input element.
-    auto [form, field] = FindFormAndField(
-        input_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form =
+        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     EXPECT_EQ(u"TestForm", form.name());
     EXPECT_EQ(GURL("http://abc.com"), form.action());
 
@@ -1775,9 +1774,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
                       mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
-    auto [form2, field2] = FindFormAndField(
-        input_element, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+    FormData form2 =
+        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+                 /*extract_options=*/{});
     EXPECT_EQ(u"TestForm", form2.name());
     EXPECT_EQ(GURL("http://abc.com"), form2.action());
 
@@ -2637,11 +2636,9 @@ TEST_F(FormAutofillTest, WebFormElementToFormData) {
 
   WebInputElement input_element = GetInputElementById("firstname");
 
-  std::optional<std::pair<FormData, FormFieldData>> form_and_field =
-      FindFormAndField(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                       {ExtractOption::kValue});
-  ASSERT_TRUE(form_and_field);
-  auto& [form, field] = *form_and_field;
+  FormData form =
+      FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
+               {ExtractOption::kValue});
 
   EXPECT_EQ(u"TestForm", form.name());
   EXPECT_EQ(GetFormRendererId(forms[0]), form.renderer_id());
@@ -5175,12 +5172,9 @@ TEST_F(FormAutofillTest, AriaLabelAndDescription) {
   WebFormControlElement control_element =
       frame->GetDocument().GetElementById("field0").To<WebFormControlElement>();
   ASSERT_FALSE(control_element.IsNull());
-  std::optional<std::pair<FormData, FormFieldData>> form_and_field =
-      FindFormAndField(control_element,
-                       *base::MakeRefCounted<FieldDataManager>(),
-                       {ExtractOption::kValue});
-  ASSERT_TRUE(form_and_field);
-  auto& [form, field] = *form_and_field;
+  FormData form =
+      FindForm(control_element, *base::MakeRefCounted<FieldDataManager>(),
+               {ExtractOption::kValue});
 
   const std::vector<FormFieldData>& fields = form.fields;
   ASSERT_EQ(3U, fields.size());
@@ -5218,12 +5212,9 @@ TEST_F(FormAutofillTest, AriaLabelAndDescription2) {
   WebFormControlElement control_element =
       frame->GetDocument().GetElementById("field0").To<WebFormControlElement>();
   ASSERT_FALSE(control_element.IsNull());
-  std::optional<std::pair<FormData, FormFieldData>> form_and_field =
-      FindFormAndField(control_element,
-                       *base::MakeRefCounted<FieldDataManager>(),
-                       {ExtractOption::kValue});
-  ASSERT_TRUE(form_and_field);
-  auto& [form, field] = *form_and_field;
+  FormData form =
+      FindForm(control_element, *base::MakeRefCounted<FieldDataManager>(),
+               {ExtractOption::kValue});
 
   const std::vector<FormFieldData>& fields = form.fields;
   ASSERT_EQ(3U, fields.size());
