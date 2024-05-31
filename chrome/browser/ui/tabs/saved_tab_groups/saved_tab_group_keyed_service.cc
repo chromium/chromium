@@ -225,9 +225,9 @@ base::Uuid SavedTabGroupKeyedService::SaveGroup(
   TabGroup* tab_group = tab_strip_model->group_model()->GetTabGroup(group_id);
   CHECK(tab_group);
 
-  SavedTabGroup saved_tab_group(tab_group->visual_data()->title(),
-                                tab_group->visual_data()->color(), {},
-                                std::nullopt, std::nullopt, tab_group->id());
+  SavedTabGroup saved_tab_group(
+      tab_group->visual_data()->title(), tab_group->visual_data()->color(), {},
+      std::nullopt, std::nullopt, tab_group->id(), bridge_.GetLocalCacheGuid());
   if (is_pinned) {
     saved_tab_group.SetPinned(true);
   }
