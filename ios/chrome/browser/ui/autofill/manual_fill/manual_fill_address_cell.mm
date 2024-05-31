@@ -319,56 +319,75 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
     self.line2Button.hidden = YES;
   }
 
-  // ZIP code and city are presented on the same line when possible.
-  NSMutableArray<UIView*>* zipCityLineViews = [[NSMutableArray alloc] init];
+  // City, state, ZIP code and country are presented on the same line when
+  // possible. Used when the Keyboard Accessory Upgrade feature is enabled.
+  NSMutableArray<UIView*>* cityStateZipCountryLineViews =
+      [[NSMutableArray alloc] init];
 
-  // ZIP code chip button.
-  if (address.zip.length) {
-    [self.zipButton setTitle:address.zip forState:UIControlStateNormal];
-    [zipCityLineViews addObject:self.zipButton];
-    self.zipButton.hidden = NO;
-  } else {
-    self.zipButton.hidden = YES;
-  }
+  // ZIP code and city are presented on the same line when possible. Used when
+  // the Keyboard Accessory Upgrade feature is disabled.
+  NSMutableArray<UIView*>* zipCityLineViews = [[NSMutableArray alloc] init];
+  // State and country are presented on the same line when possible. Used when
+  // the Keyboard Accessory Upgrade feature is disabled.
+  NSMutableArray<UIView*>* stateCountryLineViews =
+      [[NSMutableArray alloc] init];
 
   // City chip button.
   if (address.city.length) {
     [self.cityButton setTitle:address.city forState:UIControlStateNormal];
-    [zipCityLineViews addObject:self.cityButton];
+    [IsKeyboardAccessoryUpgradeEnabled()
+            ? cityStateZipCountryLineViews
+            : zipCityLineViews addObject:self.cityButton];
     self.cityButton.hidden = NO;
   } else {
     self.cityButton.hidden = YES;
   }
 
-  LayViewsHorizontallyWhenPossible(zipCityLineViews, self.layoutGuide,
-                                   self.dynamicConstraints,
-                                   addressGroupVerticalLeadChips);
-
-  // State and country are presented on the same line when possible.
-  NSMutableArray<UIView*>* stateCountryLineViews =
-      [[NSMutableArray alloc] init];
-
   // State chip button.
   if (address.state.length) {
     [self.stateButton setTitle:address.state forState:UIControlStateNormal];
-    [stateCountryLineViews addObject:self.stateButton];
+    [IsKeyboardAccessoryUpgradeEnabled()
+            ? cityStateZipCountryLineViews
+            : stateCountryLineViews addObject:self.stateButton];
     self.stateButton.hidden = NO;
   } else {
     self.stateButton.hidden = YES;
   }
 
+  // ZIP code chip button.
+  if (address.zip.length) {
+    [self.zipButton setTitle:address.zip forState:UIControlStateNormal];
+    IsKeyboardAccessoryUpgradeEnabled()
+        ? [cityStateZipCountryLineViews addObject:self.zipButton]
+        : [zipCityLineViews insertObject:self.zipButton atIndex:0];
+    self.zipButton.hidden = NO;
+  } else {
+    self.zipButton.hidden = YES;
+  }
+
   // Country chip button.
   if (address.country.length) {
     [self.countryButton setTitle:address.country forState:UIControlStateNormal];
-    [stateCountryLineViews addObject:self.countryButton];
+    [IsKeyboardAccessoryUpgradeEnabled()
+            ? cityStateZipCountryLineViews
+            : stateCountryLineViews addObject:self.countryButton];
     self.countryButton.hidden = NO;
   } else {
     self.countryButton.hidden = YES;
   }
 
-  LayViewsHorizontallyWhenPossible(stateCountryLineViews, self.layoutGuide,
-                                   self.dynamicConstraints,
-                                   addressGroupVerticalLeadChips);
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    LayViewsHorizontallyWhenPossible(cityStateZipCountryLineViews,
+                                     self.layoutGuide, self.dynamicConstraints,
+                                     addressGroupVerticalLeadChips);
+  } else {
+    LayViewsHorizontallyWhenPossible(zipCityLineViews, self.layoutGuide,
+                                     self.dynamicConstraints,
+                                     addressGroupVerticalLeadChips);
+    LayViewsHorizontallyWhenPossible(stateCountryLineViews, self.layoutGuide,
+                                     self.dynamicConstraints,
+                                     addressGroupVerticalLeadChips);
+  }
 
   // Holds the chip buttons related to the contact info that are vertical leads.
   NSMutableArray<UIView*>* contactInfoGroupVerticalLeadChips =
