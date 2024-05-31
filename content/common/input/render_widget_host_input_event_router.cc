@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/render_widget_host_input_event_router.h"
+#include "content/common/input/render_widget_host_input_event_router.h"
 
 #include <algorithm>
 #include <deque>
@@ -18,12 +18,11 @@
 #include "components/viz/common/hit_test/hit_test_data_provider.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
-#include "content/browser/renderer_host/cursor_manager.h"
+#include "content/common/input/cursor_manager.h"
 #include "content/common/input/render_input_router.h"
 #include "content/common/input/touch_emulator.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/compositor/compositor.h"
 #include "ui/gfx/geometry/dip_util.h"
 
 namespace {

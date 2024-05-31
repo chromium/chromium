@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_TARGETER_H_
-#define CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_TARGETER_H_
+#ifndef CONTENT_COMMON_INPUT_RENDER_WIDGET_TARGETER_H_
+#define CONTENT_COMMON_INPUT_RENDER_WIDGET_TARGETER_H_
 
 #include <optional>
 #include <queue>
@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
-#include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/common/input/render_widget_host_view_input.h"
 #include "content/common/content_export.h"
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/latency/latency_info.h"
@@ -256,4 +256,4 @@ class RenderWidgetTargeter {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_TARGETER_H_
+#endif  // CONTENT_COMMON_INPUT_RENDER_WIDGET_TARGETER_H_

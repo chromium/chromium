@@ -9,9 +9,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
-#include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
+#include "content/common/input/render_widget_host_input_event_router.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/test/stub_render_view_host_delegate_view.h"
 

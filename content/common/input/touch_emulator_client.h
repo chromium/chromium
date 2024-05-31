@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_EMULATOR_CLIENT_H_
-#define CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_EMULATOR_CLIENT_H_
+#ifndef CONTENT_COMMON_INPUT_TOUCH_EMULATOR_CLIENT_H_
+#define CONTENT_COMMON_INPUT_TOUCH_EMULATOR_CLIENT_H_
 
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
@@ -35,4 +35,4 @@ class TouchEmulatorClient {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_EMULATOR_CLIENT_H_
+#endif  // CONTENT_COMMON_INPUT_TOUCH_EMULATOR_CLIENT_H_

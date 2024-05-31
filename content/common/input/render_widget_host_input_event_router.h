@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_HOST_INPUT_EVENT_ROUTER_H_
-#define CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_HOST_INPUT_EVENT_ROUTER_H_
+#ifndef CONTENT_COMMON_INPUT_RENDER_WIDGET_HOST_INPUT_EVENT_ROUTER_H_
+#define CONTENT_COMMON_INPUT_RENDER_WIDGET_HOST_INPUT_EVENT_ROUTER_H_
 
 #include <stdint.h>
 
@@ -18,8 +18,8 @@
 #include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/common/hit_test/hit_test_region_observer.h"
 #include "components/viz/common/surfaces/surface_id.h"
-#include "content/browser/renderer_host/input/touch_emulator_client.h"
-#include "content/browser/renderer_host/render_widget_targeter.h"
+#include "content/common/input/touch_emulator_client.h"
+#include "content/common/input/render_widget_targeter.h"
 #include "content/common/content_export.h"
 #include "content/common/input/event_with_latency_info.h"
 #include "content/common/input/render_widget_host_view_input_observer.h"
@@ -508,4 +508,4 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_HOST_INPUT_EVENT_ROUTER_H_
+#endif  // CONTENT_COMMON_INPUT_RENDER_WIDGET_HOST_INPUT_EVENT_ROUTER_H_

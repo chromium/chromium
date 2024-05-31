@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/render_widget_targeter.h"
+#include "content/common/input/render_widget_targeter.h"
 
 #include <memory>
 
@@ -11,7 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/common/input/render_widget_host_view_input.h"
 #include "content/common/input/render_input_router.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/blink/blink_event_util.h"

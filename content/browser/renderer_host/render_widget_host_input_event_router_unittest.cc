@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/render_widget_host_input_event_router.h"
+#include "content/common/input/render_widget_host_input_event_router.h"
 
 #include <memory>
 
@@ -20,8 +20,8 @@
 #include "content/browser/renderer_host/render_widget_host_factory.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
-#include "content/browser/renderer_host/render_widget_targeter.h"
 #include "content/browser/site_instance_group.h"
+#include "content/common/input/render_widget_targeter.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"

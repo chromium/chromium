@@ -8,8 +8,8 @@
 
 #include "base/functional/bind.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
-#include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
+#include "content/common/input/render_widget_host_input_event_router.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
