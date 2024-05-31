@@ -399,15 +399,6 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
     return;
   }
 
-  if (display_state.list_is_modified_by_current_default) {
-    // This typically indicates that we have an extra search engine added to the
-    // usual ones. This should be very rare (see histogram data from
-    // `RecordIsDefaultProviderAddedToChoices()`) and might point to some corner
-    // case we might have not handled correctly. To avoid messing up the main
-    // metrics, we don't record positions here.
-    return;
-  }
-
   // TODO(b/337114717): This could crash if for some reason this is called
   // multiple times in a row for the same profile. This would clearly be a bug
   // that needs to be fixed, but this is not the most obvious way to detect

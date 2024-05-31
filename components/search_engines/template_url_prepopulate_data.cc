@@ -8,11 +8,9 @@
 #include <random>
 #include <vector>
 
-#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
@@ -28,7 +26,6 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
-#include "components/search_engines/template_url_service.h"
 #include "components/version_info/version_info.h"
 
 namespace TemplateURLPrepopulateData {
@@ -197,10 +194,7 @@ int GetDataVersion(PrefService* prefs) {
 std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
     PrefService* prefs,
     search_engines::SearchEngineChoiceService* search_engine_choice_service,
-    size_t* default_search_provider_index,
-    bool include_current_default,
-    TemplateURLService* template_url_service,
-    bool* was_current_default_inserted) {
+    size_t* default_search_provider_index) {
   // If there is a set of search engines in the preferences file, it overrides
   // the built-in set.
   std::vector<std::unique_ptr<TemplateURLData>> t_urls =
@@ -213,31 +207,6 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
                          ? search_engine_choice_service->GetCountryId()
                          : country_codes::GetCurrentCountryID();
     t_urls = GetPrepopulatedTemplateURLData(country_id, prefs);
-
-    if (include_current_default && template_url_service) {
-      CHECK(search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny));
-      // This would add the current default search engine to the top of the
-      // returned list if it's not already there.
-      const TemplateURL* default_search_engine =
-          template_url_service->GetDefaultSearchProvider();
-      bool inserted_default = false;
-      if (default_search_engine &&
-          !base::Contains(t_urls, default_search_engine->prepopulate_id(),
-                          [](const std::unique_ptr<TemplateURLData>& engine) {
-                            return engine->prepopulate_id;
-                          })) {
-        t_urls.insert(t_urls.begin(), std::make_unique<TemplateURLData>(
-                                          default_search_engine->data()));
-        inserted_default = true;
-      }
-      if (was_current_default_inserted != nullptr) {
-        *was_current_default_inserted = inserted_default;
-      }
-      // TODO(b/325015554): Pull this higher in the stack, where recording some
-      // histograms would be more expected.
-      search_engines::RecordIsDefaultProviderAddedToChoices(inserted_default);
-    }
   }
   if (default_search_provider_index) {
     const auto itr =

@@ -120,18 +120,6 @@ chromium-metrics-reviews@google.com.
   <token key="AuxiliarySearchDataType" variants="AuxiliarySearchDataType"/>
 </histogram>
 
-<histogram name="Search.ChoiceDebug.IsDefaultProviderAddedToChoices"
-    enum="Boolean" expires_after="2025-02-11">
-  <owner>dgn@chromium.org</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
-  <summary>
-    Records whether the current default search provided was inserted in the
-    choice screen in addition to the normal, country-based prepopulated set.
-    This histogram is recorded when the list of search engines is fetched for
-    the dialog, on Desktop.
-  </summary>
-</histogram>
-
 <histogram name="Search.ChoiceDebug.UnexpectedSearchEngineId" units="id"
     expires_after="2025-02-11">
   <owner>dgn@chromium.org</owner>

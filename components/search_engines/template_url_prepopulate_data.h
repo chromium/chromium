@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 
 class PrefService;
-class TemplateURLService;
 struct TemplateURLData;
 
 namespace search_engines {
@@ -55,18 +54,10 @@ int GetDataVersion(PrefService* prefs);
 // shouldn't be null outside of tests.
 // If |default_search_provider_index| is non-null, it is set to the index of the
 // default search provider within the returned vector.
-// `include_current_default` should be true and `template_url_service` should be
-// non-null if we want the current default search engine to be present at the
-// top of the returned list if it's not already there.
-// If `was_current_default_inserted` is provided, it will be updated to reflect
-// whether `include_current_default` had an effect on the output.
 std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
     PrefService* prefs,
     search_engines::SearchEngineChoiceService* search_engine_choice_service,
-    size_t* default_search_provider_index,
-    bool include_current_default = false,
-    TemplateURLService* template_url_service = nullptr,
-    bool* was_current_default_inserted = nullptr);
+    size_t* default_search_provider_index);
 
 // Returns the prepopulated search engine with the given |prepopulated_id|
 // from the profile country's known prepopulated search engines, or `nullptr`

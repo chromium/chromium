@@ -1066,8 +1066,7 @@ TEST_F(SearchEngineChoiceServiceTest, MaybeRecordChoiceScreenDisplayState) {
           {&TemplateURLPrepopulateData::google,
            &TemplateURLPrepopulateData::bing,
            &TemplateURLPrepopulateData::yahoo}),
-      kBelgiumCountryId,
-      /*list_is_modified_by_current_default=*/false, SearchTermsData());
+      kBelgiumCountryId, SearchTermsData());
   ChoiceScreenDisplayState display_state = choice_screen_data.display_state();
   display_state.selected_engine_index = 2;
 
@@ -1105,49 +1104,6 @@ TEST_F(SearchEngineChoiceServiceTest, MaybeRecordChoiceScreenDisplayState) {
 }
 
 TEST_F(SearchEngineChoiceServiceTest,
-       MaybeRecordChoiceScreenDisplayState_NoopWithCurrentDefault) {
-  ChoiceScreenData choice_screen_data(
-      OwnedTemplateURLVectorFromPrepopulatedEngines(
-          {&TemplateURLPrepopulateData::google,
-           &TemplateURLPrepopulateData::bing,
-           &TemplateURLPrepopulateData::yahoo}),
-      kBelgiumCountryId,
-      /*list_is_modified_by_current_default=*/true, SearchTermsData());
-  ChoiceScreenDisplayState display_state = choice_screen_data.display_state();
-  display_state.selected_engine_index = 0;
-
-  base::HistogramTester histogram_tester;
-  search_engine_choice_service().MaybeRecordChoiceScreenDisplayState(
-      display_state);
-
-  histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 0),
-      0);
-  histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 1),
-      0);
-  histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 2),
-      0);
-  histogram_tester.ExpectTotalCount(
-      base::StringPrintf(
-          kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 3),
-      0);
-  histogram_tester.ExpectTotalCount(
-      kSearchEngineChoiceScreenSelectedEngineIndexHistogram, 0);
-  histogram_tester.ExpectTotalCount(
-      kSearchEngineChoiceScreenShowedEngineAtCountryMismatchHistogram, 0);
-
-  // Adding the current default messes up the metrics, so no need to cache it
-  // since we'll never log it.
-  EXPECT_FALSE(pref_service()->HasPrefPath(
-      prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState));
-}
-
-TEST_F(SearchEngineChoiceServiceTest,
        MaybeRecordChoiceScreenDisplayState_NoopUnsupportedCountry) {
   auto engines = {&TemplateURLPrepopulateData::google,
                   &TemplateURLPrepopulateData::bing,
@@ -1159,8 +1115,7 @@ TEST_F(SearchEngineChoiceServiceTest,
     InitService(country_codes::kCountryIDUnknown, /*force_reset=*/true);
     ChoiceScreenData choice_screen_data(
         OwnedTemplateURLVectorFromPrepopulatedEngines(engines),
-        country_codes::kCountryIDUnknown,
-        /*list_is_modified_by_current_default=*/false, SearchTermsData());
+        country_codes::kCountryIDUnknown, SearchTermsData());
     ChoiceScreenDisplayState display_state = choice_screen_data.display_state();
     display_state.selected_engine_index = 0;
 
@@ -1184,7 +1139,7 @@ TEST_F(SearchEngineChoiceServiceTest,
     InitService(kUsaCountryId, /*force_reset=*/true);
     ChoiceScreenData choice_screen_data(
         OwnedTemplateURLVectorFromPrepopulatedEngines(engines), kUsaCountryId,
-        /*list_is_modified_by_current_default=*/false, SearchTermsData());
+        SearchTermsData());
     ChoiceScreenDisplayState display_state = choice_screen_data.display_state();
     display_state.selected_engine_index = 0;
     search_engine_choice_service().MaybeRecordChoiceScreenDisplayState(
@@ -1214,7 +1169,7 @@ TEST_F(SearchEngineChoiceServiceTest,
               /*force_reset=*/true);
   ChoiceScreenData choice_screen_data(
       OwnedTemplateURLVectorFromPrepopulatedEngines(engines), kBelgiumCountryId,
-      /*list_is_modified_by_current_default=*/false, SearchTermsData());
+      SearchTermsData());
   ChoiceScreenDisplayState display_state = choice_screen_data.display_state();
   display_state.selected_engine_index = 0;
   search_engine_choice_service().MaybeRecordChoiceScreenDisplayState(
@@ -1252,8 +1207,6 @@ TEST_F(SearchEngineChoiceServiceTest,
           prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState));
   EXPECT_EQ(stored_display_state->search_engines, display_state.search_engines);
   EXPECT_EQ(stored_display_state->country_id, display_state.country_id);
-  EXPECT_EQ(stored_display_state->list_is_modified_by_current_default,
-            display_state.list_is_modified_by_current_default);
   EXPECT_EQ(stored_display_state->selected_engine_index,
             display_state.selected_engine_index);
 }
@@ -1264,7 +1217,6 @@ TEST_F(SearchEngineChoiceServiceTest,
       /*search_engines=*/{SEARCH_ENGINE_GOOGLE, SEARCH_ENGINE_BING,
                           SEARCH_ENGINE_YAHOO},
       /*country_id=*/kBelgiumCountryId,
-      /*list_is_modified_by_current_default=*/false,
       /*selected_engine_index=*/0);
   pref_service()->SetDict(
       prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState,
@@ -1305,7 +1257,6 @@ TEST_F(SearchEngineChoiceServiceTest,
       /*search_engines=*/{SEARCH_ENGINE_GOOGLE, SEARCH_ENGINE_BING,
                           SEARCH_ENGINE_YAHOO},
       /*country_id=*/kBelgiumCountryId,
-      /*list_is_modified_by_current_default=*/false,
       /*selected_engine_index=*/0);
   pref_service()->SetDict(
       prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState,
@@ -1346,7 +1297,6 @@ TEST_F(SearchEngineChoiceServiceTest,
       /*search_engines=*/{SEARCH_ENGINE_GOOGLE, SEARCH_ENGINE_BING,
                           SEARCH_ENGINE_YAHOO},
       /*country_id=*/kBelgiumCountryId,
-      /*list_is_modified_by_current_default=*/false,
       /*selected_engine_index=*/0);
   pref_service()->SetDict(
       prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState,
@@ -1385,7 +1335,6 @@ TEST_F(SearchEngineChoiceServiceTest,
       /*search_engines=*/{SEARCH_ENGINE_GOOGLE, SEARCH_ENGINE_BING,
                           SEARCH_ENGINE_YAHOO},
       /*country_id=*/kBelgiumCountryId,
-      /*list_is_modified_by_current_default=*/false,
       /*selected_engine_index=*/0);
   pref_service()->SetDict(
       prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState,
