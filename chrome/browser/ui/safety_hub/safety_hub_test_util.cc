@@ -110,6 +110,15 @@ void UpdateSafetyHubServiceAsync(SafetyHubService* service) {
   service->RemoveObserver(test_observer.get());
 }
 
+void UpdateUnusedSitePermissionsServiceAsync(
+    UnusedSitePermissionsService* service) {
+  // Run until the checks complete for unused site permission revocation.
+  UpdateSafetyHubServiceAsync(service);
+
+  // Run until the checks complete for abusive notification revocation.
+  base::RunLoop().RunUntilIdle();
+}
+
 void UpdatePasswordCheckServiceAsync(
     PasswordStatusCheckService* password_service) {
   password_service->UpdateInsecureCredentialCountAsync();
@@ -259,6 +268,15 @@ password_manager::PasswordForm MakeForm(std::u16string_view username,
             password_manager::TriggerBackendNotification(false)));
   }
   return form;
+}
+
+bool IsUrlInSettingsList(ContentSettingsForOneType content_settings, GURL url) {
+  for (const auto& setting : content_settings) {
+    if (setting.primary_pattern.ToRepresentativeUrl() == url) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace safety_hub_test_util

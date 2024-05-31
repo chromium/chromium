@@ -23,6 +23,7 @@ base::TimeDelta GetCleanUpThreshold() {
 // TODO(crbug/342210522): Refactor this to be cleaner.
 bool IsUrlRevokedAbusiveNotification(HostContentSettingsMap* hcsm,
                                      const GURL& url) {
+  DCHECK(url.is_valid());
   content_settings::SettingInfo info;
   base::Value stored_value(hcsm->GetWebsiteSetting(
       url, url, ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS,
@@ -42,6 +43,7 @@ bool IsUrlRevokedAbusiveNotification(HostContentSettingsMap* hcsm,
 }
 
 bool IsUrlRevokedUnusedSite(HostContentSettingsMap* hcsm, const GURL& url) {
+  DCHECK(url.is_valid());
   content_settings::SettingInfo info;
   base::Value stored_value(hcsm->GetWebsiteSetting(
       url, url, ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, &info));
@@ -60,9 +62,10 @@ ContentSettingsForOneType GetRevokedAbusiveNotificationPermissions(
     // the threshold has passed.
     base::Value stored_value =
         GetRevokedAbusiveNotificationPermissionsSettingValue(
-            hcsm, revoked_permission);
+            hcsm, revoked_permission.primary_pattern.ToRepresentativeUrl());
     if (!stored_value.is_none() &&
-        !IsAbusiveNotificationRevocationIgnored(hcsm, revoked_permission)) {
+        !IsAbusiveNotificationRevocationIgnored(
+            hcsm, revoked_permission.primary_pattern.ToRepresentativeUrl())) {
       result.emplace_back(revoked_permission);
     }
   }
@@ -71,12 +74,9 @@ ContentSettingsForOneType GetRevokedAbusiveNotificationPermissions(
 
 base::Value GetRevokedAbusiveNotificationPermissionsSettingValue(
     HostContentSettingsMap* hcsm,
-    ContentSettingPatternSource source) {
+    GURL setting_url) {
+  DCHECK(setting_url.is_valid());
   content_settings::SettingInfo info;
-  // Since revoked abusive notification permissions are for specific origins,
-  // and there are no wildcard values in the pattern, it is safe to convert
-  // between ContentSettingsPattern, string, and URL types.
-  GURL setting_url(source.primary_pattern.ToString());
   base::Value stored_value(hcsm->GetWebsiteSetting(
       setting_url, setting_url,
       ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS, &info));
@@ -84,13 +84,17 @@ base::Value GetRevokedAbusiveNotificationPermissionsSettingValue(
 }
 
 // TODO(crbug/342210522): Refactor this to be cleaner.
-bool IsAbusiveNotificationRevocationIgnored(
-    HostContentSettingsMap* hcsm,
-    ContentSettingPatternSource source) {
+bool IsAbusiveNotificationRevocationIgnored(HostContentSettingsMap* hcsm,
+                                            GURL setting_url) {
+  DCHECK(setting_url.is_valid());
   base::Value stored_value =
-      GetRevokedAbusiveNotificationPermissionsSettingValue(hcsm, source);
-  // If the REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS dictionary value is not
-  // set, then the user has not chosen to ignore revocations for the origin.
+      GetRevokedAbusiveNotificationPermissionsSettingValue(hcsm, setting_url);
+  if (stored_value.is_none()) {
+    return false;
+  }
+  // If the REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS dictionary value is
+  // set to `safety_hub::kIgnoreStr`, then the user has chosen to ignore
+  // revocations for the origin.
   DCHECK(stored_value.GetDict().contains(safety_hub::kRevokedStatusDictKeyStr));
   std::string setting_val = stored_value.GetDict()
                                 .Find(safety_hub::kRevokedStatusDictKeyStr)
@@ -107,6 +111,7 @@ void SetRevokedAbusiveNotificationPermission(
     GURL url,
     bool is_ignored,
     const content_settings::ContentSettingConstraints& constraints) {
+  DCHECK(url.is_valid());
   // If the `url` should be ignore during future auto revocation, then the
   // constraint should not expire. If the lifetime is zero, then the setting
   // does not expire.

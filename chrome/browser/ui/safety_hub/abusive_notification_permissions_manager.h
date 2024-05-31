@@ -76,13 +76,17 @@ class AbusiveNotificationPermissionsManager {
   // of a default clock.
   const base::Clock* GetClock();
 
+  // Returns true if settings are being changed due to auto revocation of
+  // abusive notifications.
+  bool IsRevocationRunning();
+
   // Test support:
-  void SetClockForTesting(std::unique_ptr<base::Clock> clock) {
-    clock_for_testing_ = std::move(clock);
-  }
+  // TODO(crbug/342210522): Use a unique_ptr here if possible.
+  void SetClockForTesting(base::Clock* clock) { clock_for_testing_ = clock; }
 
  private:
   friend class AbusiveNotificationPermissionsManagerTest;
+  friend class AbusiveNotificationPermissionsRevocationTest;
   FRIEND_TEST_ALL_PREFIXES(
       AbusiveNotificationPermissionsManagerTest,
       AddAllowedAbusiveNotificationSitesToRevokedOriginSet);
@@ -205,7 +209,12 @@ class AbusiveNotificationPermissionsManager {
   // To enable automatic cleanup after the threshold has passed, this is used to
   // set the lifetime of the `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` value.
   // Pass this into each instance of the SafeBrowsingCheckClient class.
-  std::unique_ptr<base::Clock> clock_for_testing_;
+  raw_ptr<base::Clock> clock_for_testing_;
+
+  // Returns true if automatic check and revocation of abusive notification
+  // permissions is occurring. This value is used to help decide whether to
+  // clean up revoked permission data.
+  bool is_abusive_site_revocation_running_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_ABUSIVE_NOTIFICATION_PERMISSIONS_MANAGER_H_

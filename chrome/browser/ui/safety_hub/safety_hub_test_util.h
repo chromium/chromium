@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "extensions/common/extension_urls.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -33,6 +34,13 @@ class MockCWSInfoService : public extensions::CWSInfoService {
 // temporary add an observer to the service, which will be removed again before
 // the function returns.
 void UpdateSafetyHubServiceAsync(SafetyHubService* service);
+
+// This will run the UpdateAsync function on the UnusedSitePermissionsService
+// and return when both the background task and UI task are completed. This
+// separate helper is needed because abusive notification revocation is
+// asynchronous, so this method should run until idle.
+void UpdateUnusedSitePermissionsServiceAsync(
+    UnusedSitePermissionsService* service);
 
 // This will run UpdateInsecureCredentialCountAsync on
 // PasswordStatusCheckService and return when the check is completed.
@@ -88,6 +96,10 @@ password_manager::PasswordForm MakeForm(std::u16string_view username,
                                         std::u16string_view password,
                                         std::string origin,
                                         bool is_leaked = false);
+
+// Returns true if the provided list of content settings has a setting with the
+// provided url.
+bool IsUrlInSettingsList(ContentSettingsForOneType content_settings, GURL url);
 
 }  // namespace safety_hub_test_util
 

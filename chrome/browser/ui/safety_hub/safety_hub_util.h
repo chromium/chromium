@@ -34,15 +34,13 @@ ContentSettingsForOneType GetRevokedAbusiveNotificationPermissions(
 // there is no `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` setting value.
 base::Value GetRevokedAbusiveNotificationPermissionsSettingValue(
     HostContentSettingsMap* hcsm,
-    ContentSettingPatternSource source);
+    GURL setting_url);
 
 // Returns true if there is a `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS`
 // setting value for the setting URL with the
 // `safety_hub::kRevokedStatusDictKeyStr` key set to `safety_hub::kIgnoreStr`.
-// Note that the method expects a non-empty
-// `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` setting as input.
 bool IsAbusiveNotificationRevocationIgnored(HostContentSettingsMap* hcsm,
-                                            ContentSettingPatternSource source);
+                                            GURL setting_url);
 
 // Sets the `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` value for a url, given
 // the constraints and whether the user wants to ignore future

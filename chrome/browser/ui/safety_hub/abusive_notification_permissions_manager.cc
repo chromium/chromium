@@ -66,10 +66,15 @@ void AbusiveNotificationPermissionsManager::
   if (!safety_hub_util::IsUrlRevokedAbusiveNotification(hcsm_.get(), url)) {
     return;
   }
+  // Set this to true to prevent removal of revoked setting values.
+  is_abusive_site_revocation_running_ = true;
   UpdateNotificationPermission(hcsm_.get(), url,
                                ContentSetting::CONTENT_SETTING_ALLOW);
   safety_hub_util::SetRevokedAbusiveNotificationPermission(hcsm_.get(), url,
                                                            /*is_ignored=*/true);
+  // Set this back to false, so that revoked settings can be cleaned up if
+  // necessary.
+  is_abusive_site_revocation_running_ = false;
 }
 
 void AbusiveNotificationPermissionsManager::
@@ -84,10 +89,15 @@ void AbusiveNotificationPermissionsManager::
   if (!permission_types.contains(ContentSettingsType::NOTIFICATIONS)) {
     return;
   }
+  // Set this to true to prevent removal of revoked setting values.
+  is_abusive_site_revocation_running_ = true;
   UpdateNotificationPermission(hcsm_.get(), url,
                                ContentSetting::CONTENT_SETTING_ASK);
   safety_hub_util::SetRevokedAbusiveNotificationPermission(
       hcsm_.get(), url, /*is_ignored=*/false, constraints);
+  // Set this back to false, so that revoked settings can be cleaned up if
+  // necessary.
+  is_abusive_site_revocation_running_ = false;
 }
 
 void AbusiveNotificationPermissionsManager::ClearRevokedPermissionsList() {
@@ -111,9 +121,14 @@ void AbusiveNotificationPermissionsManager::
 
 const base::Clock* AbusiveNotificationPermissionsManager::GetClock() {
   if (clock_for_testing_) {
-    return clock_for_testing_.get();
+    return clock_for_testing_;
   }
   return base::DefaultClock::GetInstance();
+}
+
+bool AbusiveNotificationPermissionsManager::IsRevocationRunning() {
+  return is_abusive_site_revocation_running_ ||
+         !safe_browsing_request_clients_.empty();
 }
 
 AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
@@ -136,6 +151,7 @@ AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
 AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
     ~SafeBrowsingCheckClient() {
   if (timer_.IsRunning()) {
+    DCHECK(database_manager_);
     database_manager_->CancelCheck(this);
     timer_.Stop();
   }
@@ -157,6 +173,7 @@ void AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
 
   // Check the phishing blocklist, since this is where we'll find blocklisted
   // abusive notification sites.
+  DCHECK(database_manager_);
   bool is_safe_synchronously = database_manager_->CheckBrowseUrl(
       url_,
       safe_browsing::CreateSBThreatTypeSet(
@@ -198,6 +215,7 @@ void AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
 void AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
     OnCheckBlocklistTimeout() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(database_manager_);
   database_manager_->CancelCheck(this);
   safe_browsing_request_clients_->erase(this);
   // The previous line results in deleting this object.
@@ -207,6 +225,7 @@ void AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
 void AbusiveNotificationPermissionsManager::PerformSafeBrowsingChecks(
     GURL url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(database_manager_);
   auto new_sb_check = std::make_unique<SafeBrowsingCheckClient>(
       database_manager_.get(), &safe_browsing_request_clients_, hcsm_.get(),
       url, safe_browsing_check_delay_, GetClock());
@@ -224,11 +243,16 @@ bool AbusiveNotificationPermissionsManager::ShouldCheckOrigin(
     if (setting.secondary_pattern != ContentSettingsPattern::Wildcard()) {
       return false;
     }
+    // If the url is not valid, do not check the origin.
+    GURL setting_url = setting.primary_pattern.ToRepresentativeUrl();
+    if (!setting_url.is_valid()) {
+      return false;
+    }
     // If the url does not have a REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS
     // setting value, we should check the origin.
     base::Value stored_value =
         safety_hub_util::GetRevokedAbusiveNotificationPermissionsSettingValue(
-            hcsm_.get(), setting);
+            hcsm_.get(), setting_url);
     if (stored_value.is_none()) {
       return true;
     }
@@ -236,8 +260,8 @@ bool AbusiveNotificationPermissionsManager::ShouldCheckOrigin(
     // and the NOTIFICATIONS permission is set to CONTENT_SETTING_ALLOW, then
     // the user chose to ignore the origin for future revocations so the setting
     // value should specify ignore.
-    DCHECK(safety_hub_util::IsAbusiveNotificationRevocationIgnored(hcsm_.get(),
-                                                                   setting));
+    DCHECK(safety_hub_util::IsAbusiveNotificationRevocationIgnored(
+        hcsm_.get(), setting.primary_pattern.ToRepresentativeUrl()));
     return false;
   }
   return false;

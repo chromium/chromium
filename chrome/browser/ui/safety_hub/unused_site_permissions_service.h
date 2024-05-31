@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -56,6 +57,7 @@ struct PermissionsData {
   std::set<ContentSettingsType> permission_types;
   base::Value::Dict chooser_permissions_data;
   content_settings::ContentSettingConstraints constraints;
+  content_settings::ContentSettingConstraints abusive_revocation_constraints;
 };
 
 // This class keeps track of unused permissions, updates their last_visit date
@@ -257,7 +259,17 @@ class UnusedSitePermissionsService final : public SafetyHubService,
       std::unique_ptr<Result> result) override;
 
   // Returns if the permissions auto-revocation is enabled for unused sites.
-  bool IsAutoRevocationEnabled();
+  bool IsUnusedSiteAutoRevocationEnabled();
+
+  // Returns true if all features are enabled to automatically revoke abusive
+  // notification permissions.
+  bool IsAbusiveNotificationAutoRevocationEnabled();
+
+  // Since the permissions are a const set, reconstruct a const set
+  // of unused site content setting types by removing `NOTIFICATIONS`
+  // from the set if it is in there.
+  const std::set<ContentSettingsType> GetRevokedUnusedSitePermissionTypes(
+      const std::set<ContentSettingsType> permissions);
 
   // Set of permissions that haven't been used for at least a week.
   UnusedPermissionMap recently_unused_permissions_;
@@ -272,6 +284,16 @@ class UnusedSitePermissionsService final : public SafetyHubService,
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   raw_ptr<base::Clock> clock_;
+
+  // Object for managing Safe Browsing blocklist checks and notification
+  // revocation for abusive sites.
+  std::unique_ptr<AbusiveNotificationPermissionsManager>
+      abusive_notification_manager_;
+
+  // Returns true if automatic check and revocation of unused site permissions
+  // is occurring. This value is used in `OnContentSettingChanged` to help
+  // decide whether to clean up revoked permission data.
+  bool is_unused_site_revocation_running = false;
 
   base::WeakPtrFactory<UnusedSitePermissionsService> weak_factory_{this};
 };

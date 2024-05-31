@@ -25,6 +25,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/common/chrome_features.h"
@@ -47,6 +49,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -134,7 +137,8 @@ PermissionsData::~PermissionsData() = default;
 PermissionsData::PermissionsData(const PermissionsData& other)
     : origin(other.origin),
       permission_types(other.permission_types),
-      constraints(other.constraints) {
+      constraints(other.constraints),
+      abusive_revocation_constraints(other.abusive_revocation_constraints) {
   chooser_permissions_data = other.chooser_permissions_data.Clone();
 }
 
@@ -204,7 +208,7 @@ bool UnusedSitePermissionsService::UnusedSitePermissionsResult::
     //    "expiration": TimeValue
     // }
     // After this CL, the list was updated to a list of strings representing
-    // the origins. To maintain backwards compatibility, we should support these
+    // the origins. To maintain backwards compatibility, support these
     // old values for now. This check can be deleted in the future.
     const std::string* origin_str{};
     if (origin_val.is_dict()) {
@@ -276,11 +280,25 @@ UnusedSitePermissionsService::UnusedSitePermissionsService(
         base::BindRepeating(&UnusedSitePermissionsService::
                                 OnPermissionsAutorevocationControlChanged,
                             base::Unretained(this)));
+    pref_change_registrar_->Add(
+        prefs::kSafeBrowsingEnabled,
+        base::BindRepeating(&UnusedSitePermissionsService::
+                                OnPermissionsAutorevocationControlChanged,
+                            base::Unretained(this)));
+  }
+
+  if (IsAbusiveNotificationAutoRevocationEnabled()) {
+    abusive_notification_manager_ =
+        std::make_unique<AbusiveNotificationPermissionsManager>(
+            g_browser_process->safe_browsing_service()
+                ? g_browser_process->safe_browsing_service()->database_manager()
+                : nullptr,
+            hcsm());
   }
 
   InitializeLatestResult();
 
-  if (!IsAutoRevocationEnabled()) {
+  if (!IsUnusedSiteAutoRevocationEnabled()) {
     return;
   }
 
@@ -298,25 +316,50 @@ void UnusedSitePermissionsService::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsTypeSet content_type_set) {
-  if (content_type_set.Contains(
-          ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS)) {
-    return;
-  }
-
   // When permissions change for a pattern it is either (1) through resetting
   // permissions, e.g. in page info or site settings, (2) user modifying
-  // permissions manually, or (3) through the auto-revocation that this module
-  // performs. In (1) and (2) the pattern should no longer be shown to the user.
-  // 1: After resetting permissions the browser state should be in a
-  //    state as if the permission had never been granted.
-  // 2: The user is actively engaging with the permissions of the site, so it is
-  //    no longer considered an unused site for the purposes of this module.
-  //    This includes the case where unrelated permissions to the revoked ones
-  //    are changed.
-  // 3: Current logic ensures this does not happen for sites that already have
-  //    revoked permissions. This module revokes permissions in an all-or-none
-  //    fashion.
-  DeletePatternFromRevokedPermissionList(primary_pattern, secondary_pattern);
+  // permissions manually, (3) through auto-revocation of unused site
+  // permissions that this module performs, or (4) through auto-revocation of
+  // abusive notifications that this module performs. In (1) and (2) the
+  // pattern should no longer be shown to the user.
+  bool should_clean_revoked_permission_data = true;
+
+  // If `content_type_set` contains all types, all permissions are changed at
+  // once and all revoked permissions should be cleaned up. Since `GetType()`
+  // can only be called when `ContainsAllTypes()` is false, skip the switch in
+  // this case.
+  if (!content_type_set.ContainsAllTypes()) {
+    switch (content_type_set.GetType()) {
+      case ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS:
+      case ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS:
+        // If content setting is changed because of auto revocation, the revoked
+        // permission data should not be deleted.
+        should_clean_revoked_permission_data = false;
+        break;
+      default:
+        // If the permission is changed by users, then clean up the revoked
+        // permissions data. However if the permission is changed because of
+        // Safety Hub revocation, then the revoked permission data should not be
+        // revoked.
+        bool is_abusive_revocation_running =
+            IsAbusiveNotificationAutoRevocationEnabled()
+                ? abusive_notification_manager_->IsRevocationRunning()
+                : false;
+        should_clean_revoked_permission_data =
+            !is_unused_site_revocation_running &&
+            !is_abusive_revocation_running;
+        break;
+    }
+  }
+
+  if (should_clean_revoked_permission_data) {
+    DeletePatternFromRevokedPermissionList(primary_pattern, secondary_pattern);
+    if (IsAbusiveNotificationAutoRevocationEnabled()) {
+      abusive_notification_manager_
+          ->DeletePatternFromRevokedAbusiveNotificationList(primary_pattern,
+                                                            secondary_pattern);
+    }
+  }
 }
 
 void UnusedSitePermissionsService::Shutdown() {
@@ -325,6 +368,11 @@ void UnusedSitePermissionsService::Shutdown() {
 
 void UnusedSitePermissionsService::RegrantPermissionsForOrigin(
     const url::Origin& origin) {
+  if (IsAbusiveNotificationAutoRevocationEnabled()) {
+    abusive_notification_manager_->RegrantPermissionForOriginIfNecessary(
+        origin.GetURL());
+  }
+
   content_settings::SettingInfo info;
   base::Value stored_value(hcsm()->GetWebsiteSetting(
       origin.GetURL(), origin.GetURL(),
@@ -337,6 +385,9 @@ void UnusedSitePermissionsService::RegrantPermissionsForOrigin(
   base::Value::List* permission_type_list =
       stored_value.GetDict().FindList(permissions::kRevokedKey);
   CHECK(permission_type_list);
+  // Set this to true to prevent `OnContentSettingChanged` from removing
+  // revoked setting values, since this is set with specific values below.
+  is_unused_site_revocation_running = true;
   for (auto& permission_type : *permission_type_list) {
     // Check if stored permission type is valid.
     auto type_int = permission_type.GetIfInt();
@@ -372,6 +423,9 @@ void UnusedSitePermissionsService::RegrantPermissionsForOrigin(
           << ConvertContentSettingsTypeToKey(type);
     }
   }
+  // Set this back to false, so that `OnContentSettingChanged` can cleanup
+  // revoked settings if necessary.
+  is_unused_site_revocation_running = false;
 
   // Ignore origin from future auto-revocations.
   IgnoreOriginForAutoRevocation(origin);
@@ -393,7 +447,27 @@ void UnusedSitePermissionsService::RegrantPermissionsForOrigin(
 
 void UnusedSitePermissionsService::UndoRegrantPermissionsForOrigin(
     const PermissionsData& permissions_data) {
-  for (const auto& permission : permissions_data.permission_types) {
+  if (IsAbusiveNotificationAutoRevocationEnabled()) {
+    abusive_notification_manager_->UndoRegrantPermissionForOriginIfNecessary(
+        GURL(permissions_data.origin.ToString()),
+        permissions_data.permission_types,
+        permissions_data.abusive_revocation_constraints);
+  }
+
+  // If `permissions_data` had abusive notifications revoked, remove the
+  // `NOTIFICATIONS` setting from the list of permission types to handle below,
+  // since these were already handled. If there are no unused site permissions
+  // to handle below, then return. Otherwise, handle them below.
+  const std::set<ContentSettingsType> unused_site_permission_types =
+      GetRevokedUnusedSitePermissionTypes(permissions_data.permission_types);
+  if (unused_site_permission_types.empty()) {
+    return;
+  }
+
+  // Set this to true to prevent `OnContentSettingChanged` from removing
+  // revoked setting values, since this is set with specific values below.
+  is_unused_site_revocation_running = true;
+  for (const auto& permission : unused_site_permission_types) {
     if (IsContentSetting(permission)) {
       hcsm()->SetContentSettingCustomScope(
           permissions_data.origin, ContentSettingsPattern::Wildcard(),
@@ -409,14 +483,21 @@ void UnusedSitePermissionsService::UndoRegrantPermissionsForOrigin(
           << ConvertContentSettingsTypeToKey(permission);
     }
   }
+  // Set this back to false, so that `OnContentSettingChanged` can cleanup
+  // revoked settings if necessary.
+  is_unused_site_revocation_running = false;
 
   StorePermissionInRevokedPermissionSetting(
-      permissions_data.permission_types,
-      permissions_data.chooser_permissions_data, permissions_data.constraints,
-      permissions_data.origin, ContentSettingsPattern::Wildcard());
+      unused_site_permission_types, permissions_data.chooser_permissions_data,
+      permissions_data.constraints, permissions_data.origin,
+      ContentSettingsPattern::Wildcard());
 }
 
 void UnusedSitePermissionsService::ClearRevokedPermissionsList() {
+  if (IsAbusiveNotificationAutoRevocationEnabled()) {
+    abusive_notification_manager_->ClearRevokedPermissionsList();
+  }
+
   for (const auto& revoked_permissions : hcsm()->GetSettingsForOneType(
            ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS)) {
     DeletePatternFromRevokedPermissionList(
@@ -538,6 +619,11 @@ UnusedSitePermissionsService::UpdateOnUIThread(
           result.get());
   recently_unused_permissions_ = interim_result->GetRecentlyUnusedPermissions();
   RevokeUnusedPermissions();
+  // TODO(crbug.com/40250875): Clean up these checks.
+  if (IsAbusiveNotificationAutoRevocationEnabled() &&
+      safe_browsing::IsSafeBrowsingEnabled(*pref_change_registrar_->prefs())) {
+    abusive_notification_manager_->CheckNotificationPermissionOrigins();
+  }
   return GetRevokedPermissions();
 }
 
@@ -575,15 +661,65 @@ UnusedSitePermissionsService::GetRevokedPermissions() {
           chooser_permissions_data_dict->Clone();
     }
 
+    // If the origin has a revoked abusive notification, add `NOTIFICATIONS` to
+    // the list of revoked permissions.
+    if (safety_hub_util::IsUrlRevokedAbusiveNotification(
+            hcsm(), GURL(revoked_permissions.primary_pattern.ToString()))) {
+      DCHECK(IsAbusiveNotificationAutoRevocationEnabled());
+      permissions_data.permission_types.insert(
+          static_cast<ContentSettingsType>(ContentSettingsType::NOTIFICATIONS));
+
+      // Add a new constraint for abusive notification revocations to expire.
+      permissions_data.abusive_revocation_constraints =
+          content_settings::ContentSettingConstraints(
+              revoked_permissions.metadata.expiration() -
+              revoked_permissions.metadata.lifetime());
+      permissions_data.abusive_revocation_constraints.set_lifetime(
+          revoked_permissions.metadata.lifetime());
+    }
+
     result->AddRevokedPermission(permissions_data);
   }
+
+  ContentSettingsForOneType revoked_abusive_notification_settings =
+      safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm());
+  for (const auto& revoked_abusive_notification_permission :
+       revoked_abusive_notification_settings) {
+    // Skip origins with revoked unused site permissions, since these were
+    // handled above.
+    if (safety_hub_util::IsUrlRevokedUnusedSite(
+            hcsm(), GURL(revoked_abusive_notification_permission.primary_pattern
+                             .ToString()))) {
+      continue;
+    }
+    PermissionsData permissions_data;
+    permissions_data.origin =
+        revoked_abusive_notification_permission.primary_pattern;
+    permissions_data.permission_types.insert(
+        static_cast<ContentSettingsType>(ContentSettingsType::NOTIFICATIONS));
+
+    // Add `abusive_revocation_constraints`.
+    permissions_data.abusive_revocation_constraints =
+        content_settings::ContentSettingConstraints(
+            revoked_abusive_notification_permission.metadata.expiration() -
+            revoked_abusive_notification_permission.metadata.lifetime());
+    permissions_data.abusive_revocation_constraints.set_lifetime(
+        revoked_abusive_notification_permission.metadata.lifetime());
+
+    result->AddRevokedPermission(permissions_data);
+  }
+
   return result;
 }
 
 void UnusedSitePermissionsService::RevokeUnusedPermissions() {
-  if (!IsAutoRevocationEnabled()) {
+  if (!IsUnusedSiteAutoRevocationEnabled()) {
     return;
   }
+
+  // Set this to true to prevent `OnContentSettingChanged` from removing
+  // revoked setting values during auto-revocation.
+  is_unused_site_revocation_running = true;
 
   base::Time threshold = clock_->Now() - GetRevocationThreshold();
 
@@ -679,6 +815,9 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
       itr++;
     }
   }
+  // Set this back to false, so that `OnContentSettingChanged` can cleanup
+  // revoked settings if necessary.
+  is_unused_site_revocation_running = false;
 }
 
 void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
@@ -697,6 +836,7 @@ void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
     const std::optional<content_settings::ContentSettingConstraints> constraint,
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern) {
+  DCHECK(!permissions.contains(ContentSettingsType::NOTIFICATIONS));
   GURL url = GURL(primary_pattern.ToString());
   // The url should be valid as it is checked that the pattern represents a
   // single origin.
@@ -754,7 +894,11 @@ void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
 }
 
 void UnusedSitePermissionsService::OnPermissionsAutorevocationControlChanged() {
-  if (IsAutoRevocationEnabled()) {
+  // TODO(crbug.com/40250875): Clean up these checks.
+  if (IsUnusedSiteAutoRevocationEnabled() ||
+      (IsAbusiveNotificationAutoRevocationEnabled() &&
+       safe_browsing::IsSafeBrowsingEnabled(
+           *pref_change_registrar_->prefs()))) {
     StartRepeatedUpdates();
   } else {
     StopTimer();
@@ -774,13 +918,16 @@ UnusedSitePermissionsService::GetTrackedUnusedPermissionsForTesting() {
 
 void UnusedSitePermissionsService::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
+  if (IsAbusiveNotificationAutoRevocationEnabled()) {
+    abusive_notification_manager_->SetClockForTesting(clock);  // IN-TEST
+  }
 }
 
 base::WeakPtr<SafetyHubService> UnusedSitePermissionsService::GetAsWeakRef() {
   return weak_factory_.GetWeakPtr();
 }
 
-bool UnusedSitePermissionsService::IsAutoRevocationEnabled() {
+bool UnusedSitePermissionsService::IsUnusedSiteAutoRevocationEnabled() {
   // If kSafetyHub is disabled, then the auto-revocation directly depends on
   // kSafetyCheckUnusedSitePermissions.
   if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
@@ -789,4 +936,27 @@ bool UnusedSitePermissionsService::IsAutoRevocationEnabled() {
   }
   return pref_change_registrar_->prefs()->GetBoolean(
       permissions::prefs::kUnusedSitePermissionsRevocationEnabled);
+}
+
+bool UnusedSitePermissionsService::
+    IsAbusiveNotificationAutoRevocationEnabled() {
+  if (base::FeatureList::IsEnabled(features::kSafetyHub) &&
+      base::FeatureList::IsEnabled(
+          safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
+    return true;
+  }
+  return false;
+}
+
+const std::set<ContentSettingsType>
+UnusedSitePermissionsService::GetRevokedUnusedSitePermissionTypes(
+    const std::set<ContentSettingsType> permissions) {
+  std::set<ContentSettingsType>
+      permissions_without_revoked_abusive_notification_manager = permissions;
+  if (permissions_without_revoked_abusive_notification_manager.contains(
+          ContentSettingsType::NOTIFICATIONS)) {
+    permissions_without_revoked_abusive_notification_manager.erase(
+        ContentSettingsType::NOTIFICATIONS);
+  }
+  return permissions_without_revoked_abusive_notification_manager;
 }
