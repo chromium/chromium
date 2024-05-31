@@ -687,8 +687,6 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
           std::make_unique<WebAuthNDialogControllerImpl>()),
       in_session_auth_dialog_controller_(
           std::make_unique<InSessionAuthDialogControllerImpl>()),
-      keyboard_brightness_control_delegate_(
-          std::make_unique<KeyboardBrightnessController>()),
       locale_update_controller_(std::make_unique<LocaleUpdateControllerImpl>()),
       parent_access_controller_(std::make_unique<ParentAccessControllerImpl>()),
       local_authentication_request_controller_(
@@ -1173,6 +1171,7 @@ Shell::~Shell() {
   // Observes `SessionController` and must be destroyed before it.
   federated_service_controller_.reset();
   brightness_control_delegate_.reset();
+  keyboard_brightness_control_delegate_.reset();
 
   UsbguardClient::Shutdown();
 
@@ -1238,6 +1237,11 @@ void Shell::Init(
   brightness_control_delegate_ =
       std::make_unique<system::BrightnessControllerChromeos>(
           local_state_, session_controller_.get());
+
+  // This needs to be initialized after SessionController.
+  keyboard_brightness_control_delegate_ =
+      std::make_unique<KeyboardBrightnessController>(local_state_,
+                                                     session_controller_.get());
 
   // These controllers call Shell::Get() in their constructors, so they cannot
   // be in the member initialization list.

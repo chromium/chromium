@@ -4,24 +4,92 @@
 
 #include "ash/system/keyboard_brightness/keyboard_brightness_controller.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/login/login_screen_controller.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
+#include "components/user_manager/known_user.h"
 
 namespace ash {
 
-KeyboardBrightnessController::KeyboardBrightnessController() {
+KeyboardBrightnessController::KeyboardBrightnessController(
+    PrefService* local_state,
+    SessionControllerImpl* session_controller)
+    : local_state_(local_state), session_controller_(session_controller) {
+  // Add SessionController observer.
+  DCHECK(session_controller_);
+  session_controller_->AddObserver(this);
+
+  // Add PowerManagerClient observer
   chromeos::PowerManagerClient* power_manager_client =
       chromeos::PowerManagerClient::Get();
   DCHECK(power_manager_client);
+  power_manager_client->AddObserver(this);
   // Record whether the keyboard has a backlight for metric collection.
   power_manager_client->HasKeyboardBacklight(base::BindOnce(
       &KeyboardBrightnessController::OnReceiveHasKeyboardBacklight,
       weak_ptr_factory_.GetWeakPtr()));
+
+  // Add LoginScreenController observer.
+  Shell::Get()->login_screen_controller()->data_dispatcher()->AddObserver(this);
 }
 
-KeyboardBrightnessController::~KeyboardBrightnessController() = default;
+KeyboardBrightnessController::~KeyboardBrightnessController() {
+  // Remove SessionController observer.
+  DCHECK(session_controller_);
+  session_controller_->RemoveObserver(this);
+
+  // Remove PowerManagerClient observer
+  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
+
+  // Remove LoginScreenController observer if exists.
+  LoginScreenController* login_screen_controller =
+      Shell::Get()->login_screen_controller();
+  LoginDataDispatcher* data_dispatcher =
+      login_screen_controller ? login_screen_controller->data_dispatcher()
+                              : nullptr;
+  if (data_dispatcher) {
+    // Remove this observer to prevent dangling pointer errors that can occur
+    // in scenarios where accelerator_controller_unittest.cc reassigns Shell's
+    // brightness_control_delegate_.
+    data_dispatcher->RemoveObserver(this);
+  }
+}
+
+// SessionObserver:
+void KeyboardBrightnessController::OnActiveUserSessionChanged(
+    const AccountId& account_id) {
+  active_account_id_ = account_id;
+}
+
+// PowerManagerClient::Observer:
+void KeyboardBrightnessController::KeyboardAmbientLightSensorEnabledChanged(
+    const power_manager::AmbientLightSensorChange& change) {
+  // In tests and during OOBE, these may not be present.
+  if (!active_account_id_.has_value() || !local_state_) {
+    return;
+  }
+
+  user_manager::KnownUser known_user(local_state_);
+  // Save the current ambient light sensor enabled status into local state.
+  known_user.SetPath(active_account_id_.value(),
+                     prefs::kKeyboardAmbientLightSensorEnabled,
+                     std::make_optional<base::Value>(change.sensor_enabled()));
+}
+
+// LoginDataDispatcher::Observer:
+void KeyboardBrightnessController::OnFocusPod(const AccountId& account_id) {
+  active_account_id_ = account_id;
+
+  if (features::IsKeyboardBacklightControlInSettingsEnabled()) {
+    RestoreKeyboardBrightnessSettings(account_id);
+  }
+}
 
 void KeyboardBrightnessController::HandleKeyboardBrightnessDown() {
   chromeos::PowerManagerClient::Get()->DecreaseKeyboardBrightness();
@@ -64,6 +132,21 @@ void KeyboardBrightnessController::HandleSetKeyboardAmbientLightSensorEnabled(
     bool enabled) {
   chromeos::PowerManagerClient::Get()->SetKeyboardAmbientLightSensorEnabled(
       enabled);
+}
+
+// TODO(longbowei): Handle restoring the keyboard brightness percent.
+void KeyboardBrightnessController::RestoreKeyboardBrightnessSettings(
+    const AccountId& account_id) {
+  // Get the user's stored preference for whether the keyboard ambient light
+  // sensor should be enabled. Defaulting to enabled if no preference is found.
+  user_manager::KnownUser known_user(local_state_);
+  const bool keyboard_ambient_light_sensor_enabled_for_account =
+      known_user
+          .FindBoolPath(account_id, prefs::kKeyboardAmbientLightSensorEnabled)
+          .value_or(true);
+
+  HandleSetKeyboardAmbientLightSensorEnabled(
+      keyboard_ambient_light_sensor_enabled_for_account);
 }
 
 void KeyboardBrightnessController::OnReceiveHasKeyboardBacklight(

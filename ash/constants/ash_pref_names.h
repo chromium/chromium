@@ -962,6 +962,11 @@ inline constexpr char kDisplayAmbientLightSensorLastEnabled[] =
 inline constexpr char kAmbientLightSensorDisabledReason[] =
     "settings.display.ambient_light_sensor_disabled_reason";
 
+// A boolean pref which stores whether the keyboard ambient light sensor is
+// enabled.
+inline constexpr char kKeyboardAmbientLightSensorEnabled[] =
+    "settings.keyboard_ambient_light_sensor_enabled";
+
 // A boolean pref that enable fullscreen alert bubble.
 // TODO(zxdan): Change to an allowlist in M89.
 inline constexpr char kFullscreenAlertEnabled[] =

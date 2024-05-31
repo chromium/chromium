@@ -8,17 +8,30 @@
 #include <optional>
 
 #include "ash/ash_export.h"
+#include "ash/login/ui/login_data_dispatcher.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/dbus/power/power_manager_client.h"
+
+class AccountId;
+class PrefService;
 
 namespace ash {
+
+class SessionControllerImpl;
 
 // A class which controls keyboard brightness when Alt+F6, Alt+F7 or a
 // multimedia key for keyboard brightness is pressed.
 class ASH_EXPORT KeyboardBrightnessController
-    : public KeyboardBrightnessControlDelegate {
+    : public KeyboardBrightnessControlDelegate,
+      public SessionObserver,
+      public LoginDataDispatcher::Observer,
+      public chromeos::PowerManagerClient::Observer {
  public:
-  KeyboardBrightnessController();
+  explicit KeyboardBrightnessController(
+      PrefService* local_state,
+      SessionControllerImpl* session_controller);
 
   // Disallow copy and move.
   KeyboardBrightnessController(const KeyboardBrightnessController&) = delete;
@@ -26,6 +39,16 @@ class ASH_EXPORT KeyboardBrightnessController
       delete;
 
   ~KeyboardBrightnessController() override;
+
+  // SessionObserver:
+  void OnActiveUserSessionChanged(const AccountId& account_id) override;
+
+  // PowerManagerClient::Observer:
+  void KeyboardAmbientLightSensorEnabledChanged(
+      const power_manager::AmbientLightSensorChange& change) override;
+
+  // LoginDataDispatcher::Observer:
+  void OnFocusPod(const AccountId& account_id) override;
 
  private:
   // Overridden from KeyboardBrightnessControlDelegate:
@@ -39,7 +62,17 @@ class ASH_EXPORT KeyboardBrightnessController
   void HandleGetKeyboardAmbientLightSensorEnabled(
       base::OnceCallback<void(std::optional<bool>)> callback) override;
 
+  // Restore keyboard brightness settings during reboot.
+  void RestoreKeyboardBrightnessSettings(const AccountId& account_id);
+
   void OnReceiveHasKeyboardBacklight(std::optional<bool> has_backlight);
+
+  // The current AccountId, used to set and retrieve prefs. Expected to be
+  // nullopt on the login screen, but will be set on login.
+  std::optional<AccountId> active_account_id_;
+
+  raw_ptr<PrefService> local_state_;                   // unowned.
+  raw_ptr<SessionControllerImpl> session_controller_;  // unowned.
 
   base::WeakPtrFactory<KeyboardBrightnessController> weak_ptr_factory_{this};
 };
