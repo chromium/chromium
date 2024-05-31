@@ -145,25 +145,27 @@ class MediaCodecBridgeBuilder {
         try {
             Log.i(TAG, "create MediaCodec audio decoder, mime %s", mime);
             info = MediaCodecUtil.createDecoder(mime, CodecType.ANY, mediaCrypto);
+
+            if (info.mediaCodec == null) return null;
+
+            MediaCodecBridge bridge =
+                    new MediaCodecBridge(info.mediaCodec, info.bitrateAdjuster, useAsyncApi);
+            byte[][] csds = {csd0, csd1, csd2};
+            MediaFormat format =
+                    MediaFormatBuilder.createAudioFormat(
+                            mime, sampleRate, channelCount, csds, frameHasAdtsHeader);
+
+            if (!bridge.configureAudio(format, mediaCrypto, 0)) return null;
+
+            if (!bridge.start()) {
+                bridge.release();
+                return null;
+            }
+            return bridge;
+
         } catch (Exception e) {
             Log.e(TAG, "Failed to create MediaCodec audio decoder: %s", mime, e);
         }
-
-        if (info.mediaCodec == null) return null;
-
-        MediaCodecBridge bridge =
-                new MediaCodecBridge(info.mediaCodec, info.bitrateAdjuster, useAsyncApi);
-        byte[][] csds = {csd0, csd1, csd2};
-        MediaFormat format =
-                MediaFormatBuilder.createAudioFormat(
-                        mime, sampleRate, channelCount, csds, frameHasAdtsHeader);
-
-        if (!bridge.configureAudio(format, mediaCrypto, 0)) return null;
-
-        if (!bridge.start()) {
-            bridge.release();
-            return null;
-        }
-        return bridge;
+        return null;
     }
 }
