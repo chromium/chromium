@@ -9,7 +9,9 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/browsing_data/core/pref_names.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/search_engines/template_url_data_util.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
@@ -111,6 +113,9 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
 
     time_range_pref_.Init(browsing_data::prefs::kDeleteTimePeriod,
                           browser_state_->GetPrefs());
+    scoped_feature_list_.InitWithFeatures(
+        {feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature},
+        {});
   }
 
   ~ClearBrowsingDataManagerTest() override { [manager_ disconnect]; }
@@ -172,6 +177,7 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
   IntegerPrefMember time_range_pref_;
   raw_ptr<TemplateURLService> template_url_service_;  // weak
   raw_ptr<ChromeAccountManagerService> account_manager_service_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests model is set up with all appropriate items and sections.

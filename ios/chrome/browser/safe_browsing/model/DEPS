@@ -7,4 +7,5 @@ include_rules = [
   "+ios/chrome/browser/prerender/model",
   "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/content_settings/model",
+  "+ios/chrome/browser/feature_engagement/model",
 ]

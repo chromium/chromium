@@ -14,6 +14,8 @@
 #import "components/browsing_data/core/history_notice_utils.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/feature_list.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/google/core/common/google_util.h"
 #import "components/history/core/browser/web_history_service.h"
@@ -385,6 +387,7 @@ BOOL UIIsBlocking(Browser* browser) {
   [actionCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_CLEAR_BUTTON)
                 action:^{
+                  [weakSelf enhancedSafeBrowsingInlinePromoTriggerCriteriaMet];
                   if (!UIIsBlocking(browser)) {
                     // Race condition caused the flow to get here, cancel this
                     // one.
@@ -717,6 +720,17 @@ BOOL UIIsBlocking(Browser* browser) {
         noticeShownTimes + 1);
     [self.consumer showBrowsingHistoryRemovedDialog];
   }
+}
+
+- (void)enhancedSafeBrowsingInlinePromoTriggerCriteriaMet {
+  if (!base::FeatureList::IsEnabled(
+          feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature)) {
+    return;
+  }
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(_browserState);
+  tracker->NotifyEvent(
+      feature_engagement::events::kEnhancedSafeBrowsingPromoCriterionMet);
 }
 
 #pragma mark Properties

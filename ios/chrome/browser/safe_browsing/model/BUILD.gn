@@ -65,6 +65,7 @@ source_set("model") {
     "//components/sync_user_events",
     "//components/variations/service",
     "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/net/model",
     "//ios/chrome/browser/passwords/model:store_factory",
