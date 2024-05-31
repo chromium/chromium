@@ -18936,6 +18936,7 @@ from previous Chrome versions.
   <int value="-985964106" label="PriceTrackingIconColors:disabled"/>
   <int value="-985845117" label="Cardboard:enabled"/>
   <int value="-985445963" label="TabSearchFuzzySearch:disabled"/>
+  <int value="-984340827" label="OidcAuthProfileManagement:enabled"/>
   <int value="-984052166" label="DoodlesOnLocalNtp:enabled"/>
   <int value="-983342281" label="TabSwitcherLongpressMenu:disabled"/>
   <int value="-983335806" label="DelegatedCompositing:disabled"/>
@@ -19018,6 +19019,7 @@ from previous Chrome versions.
   <int value="-951891352" label="HistoryEmbeddings:enabled"/>
   <int value="-951394314" label="top-chrome-md"/>
   <int value="-950793721" label="TranslateUI2016Q2:disabled"/>
+  <int value="-950544843" label="OidcAuthProfileManagement:disabled"/>
   <int value="-950411190"
       label="WebViewCpuAffinityRestrictToLittleCores:enabled"/>
   <int value="-950384924" label="OmniboxDisableInstantExtendedLimit:enabled"/>

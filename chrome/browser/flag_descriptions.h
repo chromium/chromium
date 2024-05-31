@@ -4779,6 +4779,9 @@ extern const char kComposeNudgeAtCursorDescription[];
 extern const char kThirdPartyProfileManagementName[];
 extern const char kThirdPartyProfileManagementDescription[];
 
+extern const char kOidcAuthProfileManagementName[];
+extern const char kOidcAuthProfileManagementDescription[];
+
 extern const char kUnoDesktopName[];
 extern const char kUnoDesktopDescription[];
 

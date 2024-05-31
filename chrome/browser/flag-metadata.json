@@ -6186,6 +6186,11 @@
     "expiry_milestone": 86
   },
   {
+    "name": "oidc-auth-profile-management",
+    "owners": [ "xzonghan@chromium.org", "ydago@chromium.org", "zmin@chromium.org" ],
+    "expiry_milestone": 137
+  },
+  {
     "name": "omaha-min-sdk-version-android",
     "owners": [ "nyquist@chromium.org", "waffles@chromium.org" ],
     // Provides a way for changing how Chrome behaves on old and new Android SDK

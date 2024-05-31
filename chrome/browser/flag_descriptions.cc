@@ -8181,6 +8181,10 @@ const char kThirdPartyProfileManagementName[] =
 const char kThirdPartyProfileManagementDescription[] =
     "Enables profile management triggered by third-party sign-ins.";
 
+const char kOidcAuthProfileManagementName[] = "OIDC profile management";
+const char kOidcAuthProfileManagementDescription[] =
+    "Enables profile management triggered by OIDC authentications.";
+
 const char kUnoDesktopName[] = "UNO Desktop";
 const char kUnoDesktopDescription[] =
     "Enables the UNO model on Desktop. This is currently an experiment in a "
