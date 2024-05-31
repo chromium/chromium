@@ -68,14 +68,9 @@ void SkiaOutputDeviceVulkanSecondaryCB::Submit(bool sync_cpu,
   context_provider_->EnqueueSecondaryCBPostSubmitTask(std::move(callback));
 }
 
-bool SkiaOutputDeviceVulkanSecondaryCB::Reshape(
-    const SkImageInfo& image_info,
-    const gfx::ColorSpace& color_space,
-    int sample_count,
-    float device_scale_factor,
-    gfx::OverlayTransform transform) {
+bool SkiaOutputDeviceVulkanSecondaryCB::Reshape(const ReshapeParams& params) {
   // No-op
-  size_ = gfx::SkISizeToSize(image_info.dimensions());
+  size_ = params.GfxSize();
   return true;
 }
 

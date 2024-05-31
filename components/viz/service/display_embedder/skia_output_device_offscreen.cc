@@ -57,17 +57,13 @@ SkiaOutputDeviceOffscreen::~SkiaOutputDeviceOffscreen() {
   DiscardBackbuffer();
 }
 
-bool SkiaOutputDeviceOffscreen::Reshape(const SkImageInfo& image_info,
-                                        const gfx::ColorSpace& color_space,
-                                        int sample_count,
-                                        float device_scale_factor,
-                                        gfx::OverlayTransform transform) {
-  DCHECK_EQ(transform, gfx::OVERLAY_TRANSFORM_NONE);
+bool SkiaOutputDeviceOffscreen::Reshape(const ReshapeParams& params) {
+  DCHECK_EQ(params.transform, gfx::OVERLAY_TRANSFORM_NONE);
   DiscardBackbuffer();
-  size_ = gfx::SkISizeToSize(image_info.dimensions());
-  sk_color_type_ = image_info.colorType();
-  sk_color_space_ = image_info.refColorSpace();
-  sample_count_ = sample_count;
+  size_ = params.GfxSize();
+  sk_color_type_ = params.image_info.colorType();
+  sk_color_space_ = params.image_info.refColorSpace();
+  sample_count_ = params.sample_count;
   EnsureBackbuffer();
   return true;
 }

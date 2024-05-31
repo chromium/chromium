@@ -494,9 +494,9 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
       output_device_->EnsureMinNumberOfBuffers(
           output_device_->capabilities().number_of_buffers);
     }
-    output_device_->Reshape(CreateSkImageInfo(), gfx::ColorSpace(),
-                            /*sample_count=*/1, /*device_scale_factor=*/1.0f,
-                            gfx::OVERLAY_TRANSFORM_NONE);
+    SkiaOutputDevice::ReshapeParams reshape_params = {.image_info =
+                                                          CreateSkImageInfo()};
+    output_device_->Reshape(reshape_params);
   }
 
   std::unique_ptr<gpu::OverlayImageRepresentation> MakeOverlay() {
@@ -799,11 +799,10 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, ReshapeWithInFlightSurfaces) {
 
   Present();
 
-  output_device_->Reshape(
-      CreateSkImageInfo(
-          gfx::Size(kScreenSize.width() - 1, kScreenSize.height() - 1)),
-      gfx::ColorSpace(), /*sample_count=*/1, /*device_scale_factor=*/1.0f,
-      gfx::OVERLAY_TRANSFORM_NONE);
+  SkiaOutputDevice::ReshapeParams reshape_params = {
+      .image_info = CreateSkImageInfo(
+          gfx::Size(kScreenSize.width() - 1, kScreenSize.height() - 1))};
+  output_device_->Reshape(reshape_params);
 
   // swap completion callbacks should not be cleared.
   EXPECT_EQ(1u, swap_completion_callbacks().size());

@@ -487,20 +487,16 @@ void SkiaOutputDeviceDComp::ForceFailureOnNextSwap() {
   force_failure_on_next_swap_ = true;
 }
 
-bool SkiaOutputDeviceDComp::Reshape(const SkImageInfo& image_info,
-                                    const gfx::ColorSpace& color_space,
-                                    int sample_count,
-                                    float device_scale_factor,
-                                    gfx::OverlayTransform transform) {
-  DCHECK_EQ(transform, gfx::OVERLAY_TRANSFORM_NONE);
+bool SkiaOutputDeviceDComp::Reshape(const ReshapeParams& params) {
+  DCHECK_EQ(params.transform, gfx::OVERLAY_TRANSFORM_NONE);
 
-  auto size = gfx::SkISizeToSize(image_info.dimensions());
+  auto size = params.GfxSize();
 
   // DCompPresenter calls SetWindowPos on resize, so we call it to reflect the
   // newly allocated root surface.
   // Note, we could inline SetWindowPos here, but we need access to the HWND.
-  if (!presenter_->Resize(size, device_scale_factor, color_space,
-                          /*has_alpha=*/!image_info.isOpaque())) {
+  if (!presenter_->Resize(size, params.device_scale_factor, params.color_space,
+                          /*has_alpha=*/!params.image_info.isOpaque())) {
     CheckForLoopFailures();
     // To prevent tail call, so we can see the stack.
     base::debug::Alias(nullptr);

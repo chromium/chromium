@@ -94,17 +94,14 @@ gpu::SurfaceHandle SkiaOutputDeviceVulkan::GetChildSurfaceHandle() {
 }
 #endif
 
-bool SkiaOutputDeviceVulkan::Reshape(const SkImageInfo& image_info,
-                                     const gfx::ColorSpace& color_space,
-                                     int sample_count,
-                                     float device_scale_factor,
-                                     gfx::OverlayTransform transform) {
+bool SkiaOutputDeviceVulkan::Reshape(const ReshapeParams& params) {
   DCHECK(!scoped_write_);
 
   if (UNLIKELY(!vulkan_surface_))
     return false;
 
-  return RecreateSwapChain(image_info, sample_count, transform);
+  return RecreateSwapChain(params.image_info, params.sample_count,
+                           params.transform);
 }
 
 void SkiaOutputDeviceVulkan::Submit(bool sync_cpu, base::OnceClosure callback) {

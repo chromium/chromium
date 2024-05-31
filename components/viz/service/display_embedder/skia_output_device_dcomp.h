@@ -62,11 +62,7 @@ class SkiaOutputDeviceDComp : public SkiaOutputDevice {
                BufferPresentedCallback feedback,
                OutputSurfaceFrame frame) override;
   void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays) override;
-  bool Reshape(const SkImageInfo& image_info,
-               const gfx::ColorSpace& color_space,
-               int sample_count,
-               float device_scale_factor,
-               gfx::OverlayTransform transform) override;
+  bool Reshape(const ReshapeParams& params) override;
   SkSurface* BeginPaint(
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;

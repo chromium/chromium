@@ -13,6 +13,7 @@
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/display/skia_output_surface.h"
+#include "components/viz/service/display_embedder/skia_output_device.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "ui/gfx/frame_data.h"
@@ -102,11 +103,9 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
 
   virtual void InitializeCapabilities(
       OutputSurface::Capabilities* capabilities) = 0;
-  virtual bool Reshape(const SkImageInfo& image_info,
-                       const gfx::ColorSpace& color_space,
-                       int sample_count,
-                       float device_scale_factor,
-                       gfx::OverlayTransform transform) = 0;
+
+  using ReshapeParams = SkiaOutputDevice::ReshapeParams;
+  virtual bool Reshape(const ReshapeParams& params) = 0;
   virtual std::vector<std::unique_ptr<Image>> AllocateImages(
       gfx::ColorSpace color_space,
       gfx::Size image_size,

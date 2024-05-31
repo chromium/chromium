@@ -64,11 +64,7 @@ void OutputPresenterFuchsia::InitializeCapabilities(
       kRGBA_8888_SkColorType;
 }
 
-bool OutputPresenterFuchsia::Reshape(const SkImageInfo& image_info,
-                                     const gfx::ColorSpace& color_space,
-                                     int sample_count,
-                                     float device_scale_factor,
-                                     gfx::OverlayTransform transform) {
+bool OutputPresenterFuchsia::Reshape(const ReshapeParams& params) {
   return true;
 }
 

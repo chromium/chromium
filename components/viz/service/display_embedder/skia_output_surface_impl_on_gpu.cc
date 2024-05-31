@@ -423,11 +423,8 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
   ReleaseAsyncReadResultHelpers();
 }
 
-void SkiaOutputSurfaceImplOnGpu::Reshape(const SkImageInfo& image_info,
-                                         const gfx::ColorSpace& color_space,
-                                         int sample_count,
-                                         float device_scale_factor,
-                                         gfx::OverlayTransform transform) {
+void SkiaOutputSurfaceImplOnGpu::Reshape(
+    const SkiaOutputDevice::ReshapeParams& params) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::Reshape");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(gr_context() || graphite_context());
@@ -436,9 +433,8 @@ void SkiaOutputSurfaceImplOnGpu::Reshape(const SkImageInfo& image_info,
     return;
   }
 
-  size_ = gfx::SkISizeToSize(image_info.dimensions());
-  if (!output_device_->Reshape(image_info, color_space, sample_count,
-                               device_scale_factor, transform)) {
+  size_ = params.GfxSize();
+  if (!output_device_->Reshape(params)) {
     MarkContextLost(CONTEXT_LOST_RESHAPE_FAILED);
   }
 }

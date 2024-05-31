@@ -420,14 +420,21 @@ void SkiaOutputSurfaceImpl::Reshape(const ReshapeParams& params) {
     sample_count_ = 1;
   }
 
-  SkImageInfo image_info = SkImageInfo::Make(
-      size_.width(), size_.height(), color_type_, alpha_type_, sk_color_space_);
+  const SkiaOutputDevice::ReshapeParams device_reshape_params = {
+      .image_info =
+          SkImageInfo::Make(size_.width(), size_.height(), color_type_,
+                            alpha_type_, sk_color_space_),
+      .color_space = params.color_space,
+      .sample_count = sample_count_,
+      .device_scale_factor = params.device_scale_factor,
+      .transform = GetDisplayTransform(),
+  };
   // impl_on_gpu_ is released on the GPU thread by a posted task from
   // SkiaOutputSurfaceImpl::dtor. So it is safe to use base::Unretained.
+
   auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::Reshape,
-                             base::Unretained(impl_on_gpu_.get()), image_info,
-                             params.color_space, sample_count_,
-                             params.device_scale_factor, GetDisplayTransform());
+                             base::Unretained(impl_on_gpu_.get()),
+                             device_reshape_params);
   EnqueueGpuTask(std::move(task), {}, /*make_current=*/true,
                  /*need_framebuffer=*/!dependency_->IsOffscreen());
   FlushGpuTasks(SyncMode::kNoWait);

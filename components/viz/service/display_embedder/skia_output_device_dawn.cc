@@ -127,16 +127,12 @@ SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
 
 SkiaOutputDeviceDawn::~SkiaOutputDeviceDawn() = default;
 
-bool SkiaOutputDeviceDawn::Reshape(const SkImageInfo& image_info,
-                                   const gfx::ColorSpace& color_space,
-                                   int sample_count,
-                                   float device_scale_factor,
-                                   gfx::OverlayTransform transform) {
-  DCHECK_EQ(transform, gfx::OVERLAY_TRANSFORM_NONE);
+bool SkiaOutputDeviceDawn::Reshape(const ReshapeParams& params) {
+  DCHECK_EQ(params.transform, gfx::OVERLAY_TRANSFORM_NONE);
 
-  size_ = gfx::SkISizeToSize(image_info.dimensions());
-  sk_color_space_ = image_info.refColorSpace();
-  sample_count_ = sample_count;
+  size_ = params.GfxSize();
+  sk_color_space_ = params.image_info.refColorSpace();
+  sample_count_ = params.sample_count;
 
 #if BUILDFLAG(IS_WIN)
   if (child_window_.window() && !child_window_.Resize(size_)) {

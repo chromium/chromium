@@ -203,20 +203,17 @@ SkiaOutputDeviceGL::~SkiaOutputDeviceGL() {
   memory_type_tracker_->TrackMemFree(backbuffer_estimated_size_);
 }
 
-bool SkiaOutputDeviceGL::Reshape(const SkImageInfo& image_info,
-                                 const gfx::ColorSpace& color_space,
-                                 int sample_count,
-                                 float device_scale_factor,
-                                 gfx::OverlayTransform transform) {
+bool SkiaOutputDeviceGL::Reshape(const ReshapeParams& params) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  DCHECK_EQ(transform, gfx::OVERLAY_TRANSFORM_NONE);
+  DCHECK_EQ(params.transform, gfx::OVERLAY_TRANSFORM_NONE);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-  const gfx::Size size = gfx::SkISizeToSize(image_info.dimensions());
-  const SkColorType color_type = image_info.colorType();
-  const bool has_alpha = !image_info.isOpaque();
+  const gfx::Size size = params.GfxSize();
+  const SkColorType color_type = params.image_info.colorType();
+  const bool has_alpha = !params.image_info.isOpaque();
 
-  if (!gl_surface_->Resize(size, device_scale_factor, color_space, has_alpha)) {
+  if (!gl_surface_->Resize(size, params.device_scale_factor, params.color_space,
+                           has_alpha)) {
     CheckForLoopFailures();
     // To prevent tail call, so we can see the stack.
     base::debug::Alias(nullptr);
@@ -234,22 +231,21 @@ bool SkiaOutputDeviceGL::Reshape(const SkImageInfo& image_info,
   DCHECK(backend_format.isValid()) << "color_type: " << color_type;
   framebuffer_info.fFormat = GrBackendFormats::AsGLFormatEnum(backend_format);
 
-  auto render_target =
-      GrBackendRenderTargets::MakeGL(size.width(), size.height(), sample_count,
-                                     /*stencilBits=*/0, framebuffer_info);
+  auto render_target = GrBackendRenderTargets::MakeGL(
+      size.width(), size.height(), params.sample_count,
+      /*stencilBits=*/0, framebuffer_info);
   auto origin = (gl_surface_->GetOrigin() == gfx::SurfaceOrigin::kTopLeft)
                     ? kTopLeft_GrSurfaceOrigin
                     : kBottomLeft_GrSurfaceOrigin;
   sk_surface_ = SkSurfaces::WrapBackendRenderTarget(
-      gr_context, render_target, origin, color_type, image_info.refColorSpace(),
-      &surface_props);
+      gr_context, render_target, origin, color_type,
+      params.image_info.refColorSpace(), &surface_props);
   if (!sk_surface_) {
-    LOG(ERROR) << "Couldn't create surface:"
-               << "\n  abandoned()=" << gr_context->abandoned()
-               << "\n  color_type=" << color_type
+    LOG(ERROR) << "Couldn't create surface:" << "\n  abandoned()="
+               << gr_context->abandoned() << "\n  color_type=" << color_type
                << "\n  framebuffer_info.fFBOID=" << framebuffer_info.fFBOID
                << "\n  framebuffer_info.fFormat=" << framebuffer_info.fFormat
-               << "\n  color_space=" << color_space.ToString()
+               << "\n  color_space=" << params.color_space.ToString()
                << "\n  size=" << size.ToString();
     CheckForLoopFailures();
     // To prevent tail call, so we can see the stack.
