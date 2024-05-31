@@ -1774,6 +1774,9 @@ extern const char kQuickDeleteForAndroidDescription[];
 extern const char kQuickDeleteAndroidFollowupName[];
 extern const char kQuickDeleteAndroidFollowupDescription[];
 
+extern const char kSendTabToSelfIOSPushNotificationsName[];
+extern const char kSendTabToSelfIOSPushNotificationsDescription[];
+
 extern const char kSettingsAppNotificationSettingsName[];
 extern const char kSettingsAppNotificationSettingsDescription[];
 

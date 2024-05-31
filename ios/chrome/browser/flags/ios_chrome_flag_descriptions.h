@@ -883,6 +883,11 @@ extern const char kSegmentationPlatformIosModuleRankerSplitBySurfaceName[];
 extern const char
     kSegmentationPlatformIosModuleRankerSplitBySurfaceDescription[];
 
+// Title and description for the flag to enable iOS push notifications option
+// for Send Tab To Self feature.
+extern const char kSendTabToSelfIOSPushNotificationsName[];
+extern const char kSendTabToSelfIOSPushNotificationsDescription[];
+
 // Title and description for the flag to send UMA data over any network.
 extern const char kSendUmaOverAnyNetwork[];
 extern const char kSendUmaOverAnyNetworkDescription[];

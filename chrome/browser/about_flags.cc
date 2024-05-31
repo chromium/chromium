@@ -11152,6 +11152,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(switches::kEnterprisePolicyOnSignin)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"send-tab-ios-push-notifications",
+     flag_descriptions::kSendTabToSelfIOSPushNotificationsName,
+     flag_descriptions::kSendTabToSelfIOSPushNotificationsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfIOSPushNotifications)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"bookmarks-and-reading-list-behind-opt-in",
      flag_descriptions::kAccountBookmarksAndReadingListBehindOptInName,

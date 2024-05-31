@@ -1670,6 +1670,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"tab-resumption1-5", flag_descriptions::kTabResumption1_5Name,
      flag_descriptions::kTabResumption1_5Description, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabResumption1_5)},
+    {"send-tab-ios-push-notifications",
+     flag_descriptions::kSendTabToSelfIOSPushNotificationsName,
+     flag_descriptions::kSendTabToSelfIOSPushNotificationsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfIOSPushNotifications)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

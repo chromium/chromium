@@ -1002,6 +1002,12 @@ const char kSegmentationPlatformIosModuleRankerSplitBySurfaceDescription[] =
     "Enables the Magic Stack module ranking to be split by surface for "
     "engagement";
 
+const char kSendTabToSelfIOSPushNotificationsName[] =
+    "Send tab to self iOS push notifications";
+const char kSendTabToSelfIOSPushNotificationsDescription[] =
+    "Feature to allow users to send tabs to their iOS device through a system "
+    "push notitification.";
+
 const char kSendUmaOverAnyNetwork[] =
     "Send UMA data over any network available.";
 const char kSendUmaOverAnyNetworkDescription[] =

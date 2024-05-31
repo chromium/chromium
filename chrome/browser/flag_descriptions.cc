@@ -3044,6 +3044,13 @@ const char kQuickDeleteAndroidFollowupName[] =
 const char kQuickDeleteAndroidFollowupDescription[] =
     "Enables some follow up work on Clear Browsing Data for Quick Delete, "
     "including an improved post delete experience and animations.";
+
+const char kSendTabToSelfIOSPushNotificationsName[] =
+    "Send tab to self iOS push notifications";
+const char kSendTabToSelfIOSPushNotificationsDescription[] =
+    "Feature to allow users to send tabs to their iOS device through a system "
+    "push notitification.";
+
 const char kSettingsAppNotificationSettingsName[] =
     "Split notification permission settings";
 const char kSettingsAppNotificationSettingsDescription[] =
