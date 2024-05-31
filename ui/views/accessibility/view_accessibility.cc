@@ -23,6 +23,7 @@
 #include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/widget_ax_tree_id_map.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 
@@ -319,6 +320,10 @@ void ViewAccessibility::SetProperties(
     }
   }
 
+  // TODO(crbug.com/325137417): Remove once we only initialize the cache when a
+  // platform accessibility API is used.
+  InitializeCacheIfNeeded();
+
   // Defining the NameFrom value without specifying the name doesn't make much
   // sense. The only exception might be if the NameFrom is setting the name to
   // explicitly empty. In order to prevent surprising/confusing behavior, we
@@ -417,6 +422,10 @@ void ViewAccessibility::SetRole(const ax::mojom::Role role) {
   data_.role = role;
   UpdateIgnoredState();
   UpdateInvisibleState();
+
+  // TODO(crbug.com/325137417): Remove once we only initialize the cache when a
+  // platform accessibility API is used.
+  InitializeCacheIfNeeded();
 }
 
 void ViewAccessibility::SetRole(const ax::mojom::Role role,
@@ -440,6 +449,9 @@ void ViewAccessibility::SetRole(const ax::mojom::Role role,
 
 void ViewAccessibility::SetName(std::u16string name,
                                 ax::mojom::NameFrom name_from) {
+  // TODO(crbug.com/325137417): Remove once we only initialize the cache when a
+  // platform accessibility API is used.
+  InitializeCacheIfNeeded();
   // Allow subclasses to adjust the name.
   view_->AdjustAccessibleName(name, name_from);
 
@@ -490,6 +502,9 @@ void ViewAccessibility::SetName(const std::u16string& name) {
 
 void ViewAccessibility::SetName(View& naming_view) {
   DCHECK_NE(view_, &naming_view);
+  // TODO(crbug.com/325137417): Remove once we only initialize the cache when a
+  // platform accessibility API is used.
+  InitializeCacheIfNeeded();
 
   // TODO(javiercon): This is a temporary workaround to avoid the DCHECK below
   // in the scenario where the View's accessible name is being set through
@@ -589,6 +604,9 @@ bool ViewAccessibility::GetIsEnabled() const {
 void ViewAccessibility::SetDescription(
     const std::string& description,
     const ax::mojom::DescriptionFrom description_from) {
+  // TODO(crbug.com/325137417): Remove once we only initialize the cache when a
+  // platform accessibility API is used.
+  InitializeCacheIfNeeded();
   if (description.empty() &&
       description_from !=
           ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty) {
@@ -609,6 +627,9 @@ void ViewAccessibility::SetDescription(
 
 void ViewAccessibility::SetDescription(View& describing_view) {
   DCHECK_NE(view_, &describing_view);
+  // TODO(crbug.com/325137417): Remove once we only initialize the cache when a
+  // platform accessibility API is used.
+  InitializeCacheIfNeeded();
 
   std::u16string name = describing_view.GetViewAccessibility().GetCachedName();
   DCHECK(!name.empty())
@@ -795,6 +816,31 @@ ViewAccessibility::accessibility_events_callback() const {
 void ViewAccessibility::set_accessibility_events_callback(
     ViewAccessibility::AccessibilityEventsCallback callback) {
   accessibility_events_callback_ = std::move(callback);
+}
+
+void ViewAccessibility::InitializeCacheIfNeeded() {
+  if (initialized_cache_ || initializing_cache_) {
+    return;
+  }
+  base::AutoReset<bool> initializing(&initializing_cache_, true);
+
+  // There will always be a role set before we can initialize the cache.
+  ax::mojom::Role role = data_.role;
+
+  // TODO(crbug.com/325137417): We should initialize the id and class name
+  // attributes right here, but cannot do it at the moment because there are
+  // setters called from views' constructors. Once all constructors are cleared
+  // from accessibility setters (the initial state should be set from
+  // `View::GetAccessibleNodeData`), add those missing attributes.
+  view_->GetAccessibleNodeData(&data_);
+
+  data_.role = role;
+
+  UpdateIgnoredState();
+  UpdateInvisibleState();
+  UpdateFocusableState();
+
+  initialized_cache_ = true;
 }
 
 void ViewAccessibility::PruneSubtree() {

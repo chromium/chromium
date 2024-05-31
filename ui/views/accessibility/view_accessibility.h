@@ -417,6 +417,14 @@ class VIEWS_EXPORT ViewAccessibility {
  private:
   FRIEND_TEST_ALL_PREFIXES(ViewTest, PauseAccessibilityEvents);
 
+  // Initializes the `data_` object with the values returned from
+  // `View::GetAccessibleNodeData` called on the owning view.
+  //
+  // TODO(crbug.com/325137417): This is currently called by the setters before
+  // they perform their operations, but it will eventually be called only when a
+  // platform accessibility API is trying to query the data.
+  void InitializeCacheIfNeeded();
+
   // Prune/Unprune all descendant views from the accessibility tree. We prune
   // for two reasons: 1) The view has been explicitly marked as a leaf node, 2)
   // The view is focusable and lacks focusable descendants (e.g. a button with a
@@ -454,9 +462,12 @@ class VIEWS_EXPORT ViewAccessibility {
   // GetAccessibleNodeData().
   ui::AXNodeData data_;
 
-  // If set to true, anything that is a descendant of this view will be hidden
-  // from accessibility.
-  // DEPRECATED: This is being replaced by is_leaf_.
+  bool initialized_cache_ = false;
+  bool initializing_cache_ = false;
+
+  // If set to true, anything that is a descendant of this view will be
+  // hidden from accessibility. DEPRECATED: This is being replaced by
+  // is_leaf_.
   // TODO(javiercon): Remove this once OverrideIsLeaf is removed.
   bool overridden_is_leaf_ = false;
 
