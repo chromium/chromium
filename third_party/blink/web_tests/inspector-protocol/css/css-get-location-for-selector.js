@@ -10,6 +10,7 @@
   const selectorDivClass1Class2 = 'div.class1 .class2';
   const selectorDivClass6 =
       'div.class6';  // selector defined in the middle of a long line
+  const selectorSecondInList = '.second-in-selector-list';
   // style sheet #2
   // style defined in file css-get-location-for-selector.html
   const selectorDivItem3 = 'div#item3';
@@ -66,6 +67,9 @@
   // long line
   await logSelectorRanges(selectorDivClass6, styleSheetId1);
 
+  // get line ranges for `.second-in-selector-list`
+  await logSelectorRanges(selectorSecondInList, styleSheetId1);
+
   // get line ranges for 'div#item3'
   await logSelectorRanges(selectorDivItem3, styleSheetId2);
 
@@ -75,15 +79,18 @@
   // selector defined in constructed stylesheet
   await logSelectorRanges(selectorClass7, styleSheetId3);
 
+  // Not present in the stylesheet
+  await logSelectorRanges('.not-in-stylesheet', styleSheetId3);
+
   testRunner.completeTest();
 
   async function logSelectorRanges(selector, styleSheetId) {
     const response = await dp.CSS.getLocationForSelector(
         {styleSheetId, selectorText: selector});
     if (response.error) {
-      testRunner.log(`failed to get line range for selector ${
-          selector} from stylesheet ${styleSheetId}`);
-      testRunner.log(response.error);
+      // Remove the machine-specific filepath of the offending stylesheet
+      const nonFlakyError = response.error.message.replace(/( in style sheet).*/, '$1');
+      testRunner.log(nonFlakyError);
       return;
     }
 

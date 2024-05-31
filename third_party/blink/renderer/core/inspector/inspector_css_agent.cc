@@ -1034,33 +1034,36 @@ protocol::Response InspectorCSSAgent::getLocationForSelector(
     if (css_style_rule == nullptr) {
       continue;
     }
+    CHECK(css_style_rule->GetStyleRule());
 
-    const String curr_selector_text = css_style_rule->selectorText();
-    if (selector_text != curr_selector_text) {
-      continue;
-    }
+    // Iterate over selector list. (eg. `.box, .alert` => ['.box', '.alert'])
+    for (const CSSSelector* selector =
+             css_style_rule->GetStyleRule()->FirstSelector();
+         selector; selector = CSSSelectorList::Next(*selector)) {
+      if (selector->SelectorText() == selector_text) {
+        const CSSRuleSourceData* source_data =
+            style_sheet->SourceDataForRule(css_style_rule);
+        std::unique_ptr<protocol::CSS::SourceRange> range =
+            style_sheet->BuildSourceRangeObject(source_data->rule_header_range);
 
-    const CSSRuleSourceData* source_data =
-        style_sheet->SourceDataForRule(css_style_rule);
-    std::unique_ptr<protocol::CSS::SourceRange> range =
-        style_sheet->BuildSourceRangeObject(source_data->rule_header_range);
-
-    const CSSStyleSheet* page_style_sheet = style_sheet->PageStyleSheet();
-    const TextPosition start_position =
-        page_style_sheet->StartPositionInSource();
-    if (range->getStartLine() == 0) {
-      range->setStartColumn(range->getStartColumn() +
-                            start_position.column_.ZeroBasedInt());
+        const CSSStyleSheet* page_style_sheet = style_sheet->PageStyleSheet();
+        const TextPosition start_position =
+            page_style_sheet->StartPositionInSource();
+        if (range->getStartLine() == 0) {
+          range->setStartColumn(range->getStartColumn() +
+                                start_position.column_.ZeroBasedInt());
+        }
+        if (range->getEndLine() == 0) {
+          range->setEndColumn(range->getEndColumn() +
+                              start_position.column_.ZeroBasedInt());
+        }
+        range->setStartLine(range->getStartLine() +
+                            start_position.line_.ZeroBasedInt());
+        range->setEndLine(range->getEndLine() +
+                          start_position.line_.ZeroBasedInt());
+        (*ranges)->emplace_back(std::move(range));
+      }
     }
-    if (range->getEndLine() == 0) {
-      range->setEndColumn(range->getEndColumn() +
-                          start_position.column_.ZeroBasedInt());
-    }
-    range->setStartLine(range->getStartLine() +
-                        start_position.line_.ZeroBasedInt());
-    range->setEndLine(range->getEndLine() +
-                      start_position.line_.ZeroBasedInt());
-    (*ranges)->emplace_back(std::move(range));
   }
 
   if ((*ranges)->empty()) {

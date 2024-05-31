@@ -17,3 +17,12 @@ div.class1 .class2 {
 }
 
 /* this is a comment to create a single line selector */div.class6{color:brown;}/* this is a comment to create a single line selector */
+
+/* two selectors in this selector list */
+#notreal, .second-in-selector-list {
+    color: papayawhip;
+}
+
+#again, .second-in-selector-list {
+    color: aliceblue;
+}
