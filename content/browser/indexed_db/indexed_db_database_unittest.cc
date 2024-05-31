@@ -485,8 +485,11 @@ class IndexedDBDatabaseOperationTest : public IndexedDBDatabaseTest {
 
  protected:
   MockIndexedDBFactoryClient request_;
-  raw_ptr<IndexedDBTransaction, AcrossTasksDanglingUntriaged> transaction_ =
-      nullptr;
+
+  // As this is owned by `IndexedDBConnection`, tests that cause the transaction
+  // to be committed must manually reset this to null to avoid triggering
+  // dangling pointer warnings.
+  raw_ptr<IndexedDBTransaction> transaction_ = nullptr;
   leveldb::Status commit_success_;
 };
 
@@ -498,6 +501,7 @@ TEST_F(IndexedDBDatabaseOperationTest, CreateObjectStore) {
                                       /*auto_increment=*/false, transaction_);
   EXPECT_TRUE(s.ok());
   transaction_->SetCommitFlag();
+  transaction_ = nullptr;
   RunPostedTasks();
   EXPECT_TRUE(bucket_context_);
   EXPECT_EQ(1ULL, db_->metadata().object_stores.size());
@@ -520,6 +524,7 @@ TEST_F(IndexedDBDatabaseOperationTest, CreateIndex) {
       1ULL,
       db_->metadata().object_stores.find(store_id)->second.indexes.size());
   transaction_->SetCommitFlag();
+  transaction_ = nullptr;
   RunPostedTasks();
   EXPECT_TRUE(bucket_context_);
   EXPECT_EQ(1ULL, db_->metadata().object_stores.size());
@@ -614,6 +619,7 @@ TEST_F(IndexedDBDatabaseOperationTest, CreatePutDelete) {
   EXPECT_EQ(0ULL, db_->metadata().object_stores.size());
 
   transaction_->SetCommitFlag();
+  transaction_ = nullptr;
   RunPostedTasks();
   // A transaction error would have resulted in a deleted db.
   EXPECT_FALSE(bucket_context_->GetDatabasesForTesting().empty());
