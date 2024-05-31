@@ -6,6 +6,7 @@ module crosapi.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/url.mojom";
 
@@ -55,6 +56,11 @@ struct MahiContextMenuRequest {
   // The input question from the user.
   // Only present if the context menu action is `kQA`.
   mojo_base.mojom.String16? question@2;
+
+  // The bounds for the mahi context menu view.
+  // Used to place the mahi panel in the same position.
+  [MinVersion=1]
+  gfx.mojom.Rect? mahi_menu_bounds@3;
 };
 
 // Interface between the Ash system and browser (lacros, ash) for Mahi.

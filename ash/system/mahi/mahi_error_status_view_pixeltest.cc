@@ -40,7 +40,8 @@ class MahiErrorStatusViewPixelTestBase : public AshTestBase {
  protected:
   void ShowMahiPanel() {
     mahi_panel_widget_ = MahiPanelWidget::CreatePanelWidget(
-        GetPrimaryDisplay().id(), ui_controller());
+        GetPrimaryDisplay().id(), /*mahi_menu_bounds=*/gfx::Rect(),
+        ui_controller());
     mahi_panel_widget_->Show();
   }
 

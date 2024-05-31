@@ -255,10 +255,18 @@ void MahiManagerImpl::OnContextMenuClicked(
     case MahiContextMenuActionType::kSummary:
     case MahiContextMenuActionType::kOutline:
       // TODO(b/318565610): Update the behaviour of kOutline.
-      ui_controller_.OpenMahiPanel(context_menu_request->display_id);
+      ui_controller_.OpenMahiPanel(
+          context_menu_request->display_id,
+          context_menu_request->mahi_menu_bounds.has_value()
+              ? context_menu_request->mahi_menu_bounds.value()
+              : gfx::Rect());
       return;
     case MahiContextMenuActionType::kQA:
-      ui_controller_.OpenMahiPanel(context_menu_request->display_id);
+      ui_controller_.OpenMahiPanel(
+          context_menu_request->display_id,
+          context_menu_request->mahi_menu_bounds.has_value()
+              ? context_menu_request->mahi_menu_bounds.value()
+              : gfx::Rect());
 
       // Ask question.
       // TODO(b/331837721): `MahiManagerImpl` should own an instance of

@@ -73,7 +73,8 @@ void MahiMediaAppContentManagerImpl::GetContent(
 void MahiMediaAppContentManagerImpl::OnMahiContextMenuClicked(
     int64_t display_id,
     chromeos::mahi::ButtonType button_type,
-    const std::u16string& question) {
+    const std::u16string& question,
+    const gfx::Rect& mahi_menu_bounds) {
   auto it = client_id_to_client_.find(active_client_id_);
   if (it == client_id_to_client_.end()) {
     // This should not happen because the mahi context menu widget should hide
@@ -91,7 +92,7 @@ void MahiMediaAppContentManagerImpl::OnMahiContextMenuClicked(
       crosapi::mojom::MahiContextMenuRequest::New(
           /*display_id=*/display_id,
           /*action_type=*/MatchButtonTypeToActionType(button_type),
-          /*question=*/std::nullopt);
+          /*question=*/std::nullopt, mahi_menu_bounds);
   if (button_type == chromeos::mahi::ButtonType::kQA) {
     context_menu_request->question = question;
   }

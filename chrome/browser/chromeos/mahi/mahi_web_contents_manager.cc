@@ -233,9 +233,11 @@ void MahiWebContentsManager::WebContentsDestroyed(
 void MahiWebContentsManager::OnContextMenuClicked(
     int64_t display_id,
     ButtonType button_type,
-    const std::u16string& question) {
+    const std::u16string& question,
+    const gfx::Rect& mahi_menu_bounds) {
   // Forwards the UI request to `MahiBrowserDelegate`.
-  client_->OnContextMenuClicked(display_id, button_type, question);
+  client_->OnContextMenuClicked(display_id, button_type, question,
+                                mahi_menu_bounds);
 
   // Records the `button_type` has been clicked.
   base::UmaHistogramEnumeration(chromeos::mahi::kMahiContextMenuActivated,

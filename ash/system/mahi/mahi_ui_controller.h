@@ -77,7 +77,8 @@ class ASH_EXPORT MahiUiController {
   void RemoveDelegate(Delegate* delegate);
 
   // Opens/closes the mahi panel on the display associated with `display_id`.
-  void OpenMahiPanel(int64_t display_id);
+  // The panel is positioned on top of the provided `mahi_menu_bounds`.
+  void OpenMahiPanel(int64_t display_id, gfx::Rect mahi_menu_bounds);
   void CloseMahiPanel();
 
   bool IsMahiPanelOpen();

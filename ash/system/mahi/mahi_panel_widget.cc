@@ -79,6 +79,7 @@ MahiPanelWidget::~MahiPanelWidget() = default;
 // static
 views::UniqueWidgetPtr MahiPanelWidget::CreatePanelWidget(
     int64_t display_id,
+    const gfx::Rect& mahi_menu_bounds,
     MahiUiController* ui_controller) {
   auto* root_window = Shell::GetRootWindowForDisplayId(display_id);
 

@@ -34,7 +34,8 @@ class MahiPanelDragControllerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    ui_controller_.OpenMahiPanel(GetPrimaryDisplay().id());
+    ui_controller_.OpenMahiPanel(GetPrimaryDisplay().id(),
+                                 /*mahi_menu_bounds=*/gfx::Rect());
   }
 
   void TearDown() override {

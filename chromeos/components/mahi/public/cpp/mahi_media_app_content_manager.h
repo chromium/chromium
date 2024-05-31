@@ -51,7 +51,8 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiMediaAppContentManager {
   // manager, to show the pop up UI and request manta service accordingly.
   virtual void OnMahiContextMenuClicked(int64_t display_id,
                                         chromeos::mahi::ButtonType button_type,
-                                        const std::u16string& question) = 0;
+                                        const std::u16string& question,
+                                        const gfx::Rect& mahi_menu_bounds) = 0;
 
   // Client registration/removal.
   virtual void AddClient(base::UnguessableToken client_id,

@@ -132,14 +132,16 @@ void MahiBrowserClientImpl::OnFocusedPageChanged(
 void MahiBrowserClientImpl::OnContextMenuClicked(
     int64_t display_id,
     chromeos::mahi::ButtonType button_type,
-    const std::u16string& question) {
+    const std::u16string& question,
+    const gfx::Rect& mahi_menu_bounds) {
   // Generates the context menu request.
   crosapi::mojom::MahiContextMenuRequestPtr context_menu_request =
       crosapi::mojom::MahiContextMenuRequest::New(
           /*display_id=*/display_id,
           /*action_type=*/
           chromeos::mahi::MatchButtonTypeToActionType(button_type),
-          /*question=*/std::nullopt);
+          /*question=*/std::nullopt,
+          /*mahi_menu_bounds=*/mahi_menu_bounds);
   if (button_type == chromeos::mahi::ButtonType::kQA) {
     context_menu_request->question = question;
   }

@@ -32,7 +32,10 @@ class MockMahiMediaAppContentManager
               (override));
   MOCK_METHOD(void,
               OnMahiContextMenuClicked,
-              (int64_t, chromeos::mahi::ButtonType, const std::u16string&),
+              (int64_t,
+               chromeos::mahi::ButtonType,
+               const std::u16string&,
+               const gfx::Rect&),
               (override));
   MOCK_METHOD(void,
               AddClient,

@@ -30,6 +30,7 @@ class ASH_EXPORT MahiPanelWidget : public views::Widget, views::ViewObserver {
   // Creates the Mahi panel widget within the display with `display_id`.
   static views::UniqueWidgetPtr CreatePanelWidget(
       int64_t display_id,
+      const gfx::Rect& mahi_menu_bounds,
       MahiUiController* ui_controller);
 
   static const char* GetName();

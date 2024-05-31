@@ -41,7 +41,8 @@ class MockMahiWebContentsManager : public ::mahi::FakeMahiWebContentsManager {
               OnContextMenuClicked,
               (int64_t display_id,
                ::chromeos::mahi::ButtonType button_type,
-               const std::u16string& question),
+               const std::u16string& question,
+               const gfx::Rect& mahi_menu_bounds),
               (override));
 };
 
@@ -67,7 +68,8 @@ TEST_F(MahiCondensedMenuViewTest, NotifiesWebContentsManagerOnClick) {
           Eq(display::Screen::GetScreen()
                  ->GetDisplayNearestWindow(menu_widget->GetNativeWindow())
                  .id()),
-          Eq(::chromeos::mahi::ButtonType::kSummary), /*question=*/Eq(u"")))
+          Eq(::chromeos::mahi::ButtonType::kSummary), /*question=*/Eq(u""),
+          /*mahi_menu_bounds=*/Eq(condensed_menu_view->GetBoundsInScreen())))
       .Times(1);
 
   ui::test::EventGenerator event_generator(GetContext(),

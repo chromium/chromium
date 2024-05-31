@@ -97,7 +97,9 @@ class MahiCondensedMenuButton : public views::LabelButton {
             ->GetDisplayNearestWindow(GetWidget()->GetNativeWindow())
             .id(),
         /*button_type=*/::chromeos::mahi::ButtonType::kSummary,
-        /*question=*/std::u16string());
+        /*question=*/std::u16string(),
+        /*mahi_menu_bounds=*/
+        parent() ? parent()->GetBoundsInScreen() : gfx::Rect());
 
     base::UmaHistogramEnumeration(kMahiContextMenuButtonClickHistogram,
                                   MahiMenuButton::kCondensedMenuButton);

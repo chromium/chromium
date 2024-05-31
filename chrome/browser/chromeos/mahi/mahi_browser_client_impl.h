@@ -43,7 +43,8 @@ class MahiBrowserClientImpl : public crosapi::mojom::MahiBrowserClient {
   // browser.
   void OnContextMenuClicked(int64_t display_id,
                             chromeos::mahi::ButtonType button_type,
-                            const std::u16string& question);
+                            const std::u16string& question,
+                            const gfx::Rect& mahi_menu_bounds);
 
   // `crosapi::mojom::MahiBrowserClient` overrides:
   void GetContent(const base::UnguessableToken& page_id,

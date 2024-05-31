@@ -45,7 +45,8 @@ class MockMahiWebContentsManager : public ::mahi::FakeMahiWebContentsManager {
               OnContextMenuClicked,
               (int64_t display_id,
                ::chromeos::mahi::ButtonType button_type,
-               const std::u16string& question),
+               const std::u16string& question,
+               const gfx::Rect& mahi_menu_bounds),
               (override));
 };
 
@@ -101,7 +102,8 @@ TEST_F(MahiMenuViewTest, SettingsButtonClicked) {
           Eq(display::Screen::GetScreen()
                  ->GetDisplayNearestWindow(menu_widget->GetNativeWindow())
                  .id()),
-          Eq(::chromeos::mahi::ButtonType::kSettings), /*question=*/Eq(u"")))
+          Eq(::chromeos::mahi::ButtonType::kSettings),
+          /*question=*/Eq(u""), Eq(menu_view->GetBoundsInScreen())))
       .Times(1);
 
   ui::test::EventGenerator event_generator(
@@ -142,7 +144,8 @@ TEST_F(MahiMenuViewTest, SummaryButtonClicked) {
       .WillOnce([&run_loop, &menu_widget](
                     int64_t display_id,
                     ::chromeos::mahi::ButtonType button_type,
-                    const std::u16string& question) {
+                    const std::u16string& question,
+                    gfx::Rect mahi_menu_bounds) {
         EXPECT_EQ(display::Screen::GetScreen()
                       ->GetDisplayNearestWindow(menu_widget->GetNativeWindow())
                       .id(),
@@ -199,7 +202,8 @@ TEST_F(MahiMenuViewTest, OutlineButtonClicked) {
       .WillOnce([&run_loop, &menu_widget](
                     int64_t display_id,
                     ::chromeos::mahi::ButtonType button_type,
-                    const std::u16string& question) {
+                    const std::u16string& question,
+                    gfx::Rect mahi_menu_bounds) {
         EXPECT_EQ(display::Screen::GetScreen()
                       ->GetDisplayNearestWindow(menu_widget->GetNativeWindow())
                       .id(),
@@ -275,7 +279,8 @@ TEST_F(MahiMenuViewTest, QuestionSubmitted) {
       .WillOnce([&run_loop, &menu_widget](
                     int64_t display_id,
                     ::chromeos::mahi::ButtonType button_type,
-                    const std::u16string& question) {
+                    const std::u16string& question,
+                    const gfx::Rect& mahi_menu_bounds) {
         EXPECT_EQ(display::Screen::GetScreen()
                       ->GetDisplayNearestWindow(menu_widget->GetNativeWindow())
                       .id(),

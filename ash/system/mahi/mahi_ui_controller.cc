@@ -69,15 +69,16 @@ void MahiUiController::RemoveDelegate(Delegate* delegate) {
   delegates_.RemoveObserver(delegate);
 }
 
-void MahiUiController::OpenMahiPanel(int64_t display_id) {
+void MahiUiController::OpenMahiPanel(int64_t display_id,
+                                     gfx::Rect mahi_menu_bounds) {
   // TODO(http://b/339250208): Use DCHECK instead of return early when
   // `IsEnabled()` is false.
   if (!chromeos::MahiManager::Get()->IsEnabled()) {
     return;
   }
 
-  mahi_panel_widget_ =
-      MahiPanelWidget::CreatePanelWidget(display_id, /*ui_controller=*/this);
+  mahi_panel_widget_ = MahiPanelWidget::CreatePanelWidget(
+      display_id, mahi_menu_bounds, /*ui_controller=*/this);
   mahi_panel_widget_->Show();
 }
 

@@ -174,7 +174,7 @@ class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       fake_mahi_web_contents_manager_->OnContextMenuClicked(
           kDisplayID, button_type,
-          /*question=*/kQuestion);
+          /*question=*/kQuestion, /*mahi_menu_bounds=*/gfx::Rect());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       run_loop_for_remote.RunUntilIdle();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -220,8 +220,8 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
         run_loop.Quit();
       });
 
-  fake_mahi_web_contents_manager_->OnContextMenuClicked(kDisplayID, kButtonType,
-                                                        kQuestion);
+  fake_mahi_web_contents_manager_->OnContextMenuClicked(
+      kDisplayID, kButtonType, kQuestion, /*mahi_menu_bounds=*/gfx::Rect());
   run_loop.Run();
 
   EXPECT_EQ(GURL(),

@@ -299,14 +299,14 @@ void MahiMenuView::OnButtonPressed(::chromeos::mahi::ButtonType button_type) {
   if (surface_ == Surface::kBrowser) {
     ::mahi::MahiWebContentsManager::Get()->OnContextMenuClicked(
         display.id(), button_type,
-        /*question=*/std::u16string());
+        /*question=*/std::u16string(), GetBoundsInScreen());
   } else if (surface_ == Surface::kMediaApp) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Only ash chrome has `surface_` = kMediaApp
     CHECK(chromeos::MahiMediaAppContentManager::Get());
     chromeos::MahiMediaAppContentManager::Get()->OnMahiContextMenuClicked(
         display.id(), button_type,
-        /*question=*/std::u16string());
+        /*question=*/std::u16string(), GetBoundsInScreen());
 #endif
   }
 
@@ -340,13 +340,14 @@ void MahiMenuView::OnQuestionSubmitted() {
   if (surface_ == Surface::kBrowser) {
     ::mahi::MahiWebContentsManager::Get()->OnContextMenuClicked(
         display.id(), /*button_type=*/::chromeos::mahi::ButtonType::kQA,
-        textfield_->GetText());
+        textfield_->GetText(), GetBoundsInScreen());
   } else if (surface_ == Surface::kMediaApp) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Only ash chrome has `surface_` = kMediaApp
     CHECK(chromeos::MahiMediaAppContentManager::Get());
     chromeos::MahiMediaAppContentManager::Get()->OnMahiContextMenuClicked(
-        display.id(), ::chromeos::mahi::ButtonType::kQA, textfield_->GetText());
+        display.id(), ::chromeos::mahi::ButtonType::kQA, textfield_->GetText(),
+        GetBoundsInScreen());
 #endif
   }
 

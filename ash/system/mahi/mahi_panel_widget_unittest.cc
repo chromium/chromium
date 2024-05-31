@@ -61,8 +61,9 @@ class MahiPanelWidgetTest : public AshTestBase {
 
 TEST_F(MahiPanelWidgetTest, DefaultWidgetBounds) {
   auto* root_window = GetContext();
-  auto widget = MahiPanelWidget::CreatePanelWidget(GetPrimaryDisplay().id(),
-                                                   &ui_controller_);
+  auto widget = MahiPanelWidget::CreatePanelWidget(
+      GetPrimaryDisplay().id(), /*mahi_menu_bounds=*/gfx::Rect(),
+      &ui_controller_);
 
   auto bottom_right = root_window->bounds().bottom_right();
   EXPECT_EQ(
@@ -76,7 +77,8 @@ TEST_F(MahiPanelWidgetTest, DefaultWidgetBounds) {
 
 TEST_F(MahiPanelWidgetTest, WidgetBoundsAfterRefreshBannerUpdate) {
   views::UniqueWidgetPtr panel_widget = MahiPanelWidget::CreatePanelWidget(
-      GetPrimaryDisplay().id(), &ui_controller_);
+      GetPrimaryDisplay().id(), /*mahi_menu_bounds=*/gfx::Rect(),
+      &ui_controller_);
   // Set the widget bounds to be different to the default bounds, so that we can
   // test that the panel location is preserved.
   panel_widget->SetBounds(gfx::Rect(100, 200, 300, 200));

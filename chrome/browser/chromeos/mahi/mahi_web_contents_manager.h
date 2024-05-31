@@ -101,7 +101,8 @@ class MahiWebContentsManager {
   // Virtual so we can override in tests.
   virtual void OnContextMenuClicked(int64_t display_id,
                                     chromeos::mahi::ButtonType button_type,
-                                    const std::u16string& question);
+                                    const std::u16string& question,
+                                    const gfx::Rect& mahi_menu_bounds);
 
   // Returns boolean to indicate if the current focused page is distillable. The
   // default return is false, for the cases when the focused page's
