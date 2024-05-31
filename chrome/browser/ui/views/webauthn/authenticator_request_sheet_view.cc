@@ -200,7 +200,7 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
     image_view->SetPreferredSize(
         gfx::Size(kIconSize, kIconSize + kIconSize / 8));
     image_view->SetImage(ui::ImageModel::FromVectorIcon(
-        GooglePasswordManagerIcon(), gfx::kPlaceholderColor, kIconSize));
+        GooglePasswordManagerIcon(), ui::kColorIcon, kIconSize));
     container->AddChildView(image_view.release());
 
     auto gpm_label = std::make_unique<views::Label>(
