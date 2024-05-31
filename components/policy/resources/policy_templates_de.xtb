@@ -689,6 +689,7 @@ Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cl
 <translation id="1557113199339446336">Wenn die Richtlinie auf „True“ gesetzt ist, melden registrierte Geräte Informationen zu Ereignissen vom Typ „Extended Detection and Response“ (XDR).
 
       Wenn die Richtlinie auf „False“ gesetzt oder nicht konfiguriert ist, melden registrierte Geräte Informationen zu Ereignissen vom Typ „Extended Detection and Response“ (XDR) nicht.</translation>
+<translation id="1559343998807576489">Einstellungen für die Funktion „Lens Overlay“</translation>
 <translation id="1560279917909364275">Auf dem <ph name="PRODUCT_OS_NAME" />-Sperrbildschirm zulässige Notizen-Apps auf die Zulassungsliste setzen</translation>
 <translation id="1561424797596341174">Überschreiben von Richtlinien für Fehlerbehebungs-Builds des Hosts für den Remotezugriff</translation>
 <translation id="1561967320164410511">U2F plus Erweiterungen zur individuellen Bestätigung</translation>
@@ -9631,6 +9632,12 @@ Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</tran
 
       Weitere Informationen zu den Medientypen JavaScript/ECMAScript findest du unter https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage.
       </translation>
+<translation id="8668202868357089313">Mit „Lens Overlay“ können Nutzer Google-Suchanfragen ausführen, indem sie mit einem Screenshot der aktuellen Seite interagieren, der über den tatsächlichen Webinhalten eingeblendet wird.
+
+Es gibt keine Nutzereinstellung, mit der diese Funktion gesteuert werden kann. Sie ist für alle Nutzer, die Google als Standardsuchmaschine verwenden, standardmäßig verfügbar, sofern sie nicht durch diese Richtlinie deaktiviert wurde.
+
+Wenn die Richtlinie auf „0 – Aktiviert“ festgelegt oder nicht konfiguriert ist, ist die Funktion für Nutzer verfügbar.
+Ist die Richtlinie auf „1 – Deaktiviert“ festgelegt, ist die Funktion nicht verfügbar.</translation>
 <translation id="8671119576957984818">Desktop-Freigabe-Hub aktivieren</translation>
 <translation id="8671193325113134911">Strikte MIME-Typprüfung für Worker-Skripts aktivieren</translation>
 <translation id="8671303329680827168">Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie „<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />“.</translation>
