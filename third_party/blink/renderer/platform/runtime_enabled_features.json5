@@ -835,7 +835,6 @@
       // CSSCustomStateNewSyntax flag.
       // TODO(crbug.com/1514397): Remove this when the feature is fully launched.
       name: "CSSCustomStateDeprecatedSyntax",
-      status: "stable",
       public: true,
     },
     {
