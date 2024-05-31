@@ -297,8 +297,15 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   ShowAndVerifyUi(/*popup_has_parent=*/true);
 }
 
+// The test is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ScrollingInRootPopupStickyFooter \
+  DISABLED_ScrollingInRootPopupStickyFooter
+#else
+#define MAYBE_ScrollingInRootPopupStickyFooter ScrollingInRootPopupStickyFooter
+#endif
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       ScrollingInRootPopupStickyFooter) {
+                       MAYBE_ScrollingInRootPopupStickyFooter) {
   // Create many suggestions that don't fit the height and activate scrolling.
   std::vector<PopupItemId> suggestions(20, PopupItemId::kAddressEntry);
   suggestions.push_back(PopupItemId::kSeparator);
@@ -307,8 +314,16 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   ShowAndVerifyUi();
 }
 
+// The test is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ScrollingInNonRootPopupNonStickyFooter \
+  DISABLED_ScrollingInNonRootPopupNonStickyFooter
+#else
+#define MAYBE_ScrollingInNonRootPopupNonStickyFooter \
+  ScrollingInNonRootPopupNonStickyFooter
+#endif
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       ScrollingInNonRootPopupNonStickyFooter) {
+                       MAYBE_ScrollingInNonRootPopupNonStickyFooter) {
   // Create many suggestions that don't fit the height and activate scrolling.
   std::vector<PopupItemId> suggestions(20, PopupItemId::kAddressEntry);
   suggestions.push_back(PopupItemId::kSeparator);
