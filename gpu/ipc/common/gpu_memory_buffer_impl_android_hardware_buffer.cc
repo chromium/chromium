@@ -6,10 +6,12 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/android/android_hardware_buffer_utils.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "ui/gfx/geometry/size.h"
@@ -36,6 +38,10 @@ GpuMemoryBufferImplAndroidHardwareBuffer::Create(gfx::GpuMemoryBufferId id,
                                                  gfx::BufferFormat format,
                                                  gfx::BufferUsage usage,
                                                  DestructionCallback callback) {
+  if (!base::FeatureList::IsEnabled(features::kEnableGpuMemoryBufferImplAHB)) {
+    return nullptr;
+  }
+
   auto scoped_buffer_handle =
       CreateScopedHardwareBufferHandle(size, format, usage);
   if (!scoped_buffer_handle.is_valid()) {
@@ -53,6 +59,10 @@ GpuMemoryBufferImplAndroidHardwareBuffer::CreateFromHandle(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     DestructionCallback callback) {
+  if (!base::FeatureList::IsEnabled(features::kEnableGpuMemoryBufferImplAHB)) {
+    return nullptr;
+  }
+
   DCHECK(handle.android_hardware_buffer.is_valid());
   return base::WrapUnique(new GpuMemoryBufferImplAndroidHardwareBuffer(
       handle.id, size, format, std::move(callback),
