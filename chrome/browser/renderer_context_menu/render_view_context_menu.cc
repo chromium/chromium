@@ -2059,10 +2059,22 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
   }
 
   const int search_for_image_idc = GetSearchForImageIdc();
-  menu_model_.AddItem(
-      search_for_image_idc,
-      l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE,
-                                 provider->short_name()));
+  if (LensOverlayController::IsEnabled(GetProfile())) {
+    const gfx::VectorIcon& icon =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        vector_icons::kGoogleLensMonochromeLogoIcon;
+#else
+        vector_icons::kSearchIcon;
+#endif
+    menu_model_.AddItemWithStringIdAndIcon(
+        search_for_image_idc, IDS_CONTENT_CONTEXT_LENS_OVERLAY,
+        ui::ImageModel::FromVectorIcon(icon));
+  } else {
+    menu_model_.AddItem(
+        search_for_image_idc,
+        l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE,
+                                   provider->short_name()));
+  }
   const int command_index =
       menu_model_.GetIndexOfCommandId(search_for_image_idc).value();
   menu_model_.SetElementIdentifierAt(command_index, kSearchForImageItem);
