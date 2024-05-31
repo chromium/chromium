@@ -53,6 +53,7 @@
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_lookup.h"
 #include "chrome/browser/sessions/session_service_utils.h"
+#include "chrome/browser/sessions/sessions_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -793,6 +794,16 @@ class SessionRestoreImpl : public BrowserListObserver {
     profile_->GetDefaultStoragePartition()
         ->GetDOMStorageContext()
         ->StartScavengingUnusedSessionStorage();
+
+    // Cookies needed for session restore have been loaded and their last
+    // accessed time has been updated. Now it's safe for the CookieManager to
+    // delete stale session cookies not used in the past 7 days.
+    // See crbug.com/40285083 for more info.
+    if (base::FeatureList::IsEnabled(kDeleteStaleSessionCookiesOnStartup)) {
+      profile_->GetDefaultStoragePartition()
+          ->DeleteStaleSessionOnlyCookiesAfterDelay();
+    }
+
     return last_normal_browser ? last_normal_browser : last_app_browser;
   }
 

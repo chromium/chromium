@@ -1094,6 +1094,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.StaleSessionCookiesDeletedOnStartup" units="cookies"
+    expires_after="2024-12-01">
+  <owner>arichiv@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    Records the amount of stale (7 days since last access or update) session
+    cookies deleted by SessionRestore after tabs have been restored on browser
+    startup.
+
+    See crbug.com/40285083 for more info.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.TimeBlockedOnLoad" units="ms"
     expires_after="2024-09-22">
   <owner>wfh@chromium.org</owner>

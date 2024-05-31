@@ -161,6 +161,8 @@ class TestStoragePartition : public StoragePartition {
   CdmStorageDataModel* GetCdmStorageDataModel() override;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
+  void DeleteStaleSessionOnlyCookiesAfterDelay() override {}
+
   void set_browsing_topics_site_data_manager(
       BrowsingTopicsSiteDataManager* manager) {
     browsing_topics_site_data_manager_ = manager;
@@ -245,6 +247,8 @@ class TestStoragePartition : public StoragePartition {
   void SetNetworkContextForTesting(
       mojo::PendingRemote<network::mojom::NetworkContext>
           network_context_remote) override;
+  void OverrideDeleteStaleSessionOnlyCookiesDelayForTesting(
+      const base::TimeDelta& delay) override {}
 
   base::WeakPtr<StoragePartition> GetWeakPtr();
   void InvalidateWeakPtrs();

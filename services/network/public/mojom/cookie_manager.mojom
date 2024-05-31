@@ -424,6 +424,16 @@ interface CookieManager {
   // Returns the number of cookies deleted.
   DeleteSessionOnlyCookies() => (uint32 num_deleted);
 
+  // Delete cookies marked as session-only in cookie settings that are stale
+  // (haven't been accessed or updated in 7 days).
+  // Returns the number of cookies deleted.
+  // See crbug.com/40285083 for more info.
+  //
+  // If there is a more general use case for filtering cookie deletion on
+  // the last access time, consider replacing this with a call to DeleteCookies
+  // by adding a last_accessed time range to CookieDeletionFilter.
+  DeleteStaleSessionOnlyCookies() => (uint32 num_deleted);
+
   // Subscribes the given listener to changes to a cookie.
   //
   // The subscription is canceled by closing the CookieChangeListener's pipe.

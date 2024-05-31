@@ -209,6 +209,12 @@ class SynchronousCookieManager {
     return future.Get();
   }
 
+  uint32_t DeleteStaleSessionOnlyCookies() {
+    base::test::TestFuture<uint32_t> future;
+    cookie_service_->DeleteStaleSessionOnlyCookies(future.GetCallback());
+    return future.Get();
+  }
+
   void FlushCookieStore() {
     base::RunLoop run_loop;
     cookie_service_->FlushCookieStore(base::BindLambdaForTesting([&]() {
@@ -2586,6 +2592,25 @@ class SessionCleanupCookieManagerTest : public CookieManagerTest {
         net::COOKIE_PRIORITY_MEDIUM);
   }
 
+  bool CreateAndTryToClearStaleCookie(base::Time expiration,
+                                      base::Time last_access,
+                                      base::Time last_update) {
+    EXPECT_TRUE(SetCanonicalCookie(
+        *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+            "A", "B", kCookieDomain, "/",
+            /*creation=*/base::Time::Now() - base::Days(100), expiration,
+            last_access, last_update,
+            /*secure=*/true, /*httponly=*/false,
+            net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_MEDIUM,
+            std::nullopt, net::CookieSourceScheme::kSecure),
+        "https", false));
+    EXPECT_EQ(1u, service_wrapper()->GetAllCookies().size());
+    uint32_t cleared = service_wrapper()->DeleteStaleSessionOnlyCookies();
+    uint32_t remaining = service_wrapper()->GetAllCookies().size();
+    EXPECT_EQ(1u, cleared + remaining);
+    return cleared == 1u;
+  }
+
  private:
   const scoped_refptr<base::SequencedTaskRunner> background_task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
@@ -2656,6 +2681,22 @@ TEST_F(SessionCleanupCookieManagerTest, SettingMustMatchDomain) {
 
   EXPECT_EQ(1u, service_wrapper()->DeleteSessionOnlyCookies());
   EXPECT_EQ(0u, service_wrapper()->GetAllCookies().size());
+}
+
+TEST_F(SessionCleanupCookieManagerTest, DeleteStaleSessionOnlyCookies) {
+  base::Time now = base::Time::Now();
+  base::Time eight_days_ago = now - base::Days(8);
+  for (base::Time expiration : {base::Time(), now + base::Days(8)}) {
+    for (base::Time last_access : {base::Time(), eight_days_ago, now}) {
+      for (base::Time last_update : {base::Time(), eight_days_ago, now}) {
+        EXPECT_EQ(CreateAndTryToClearStaleCookie(expiration, last_access,
+                                                 last_update),
+                  expiration.is_null() && last_access < now &&
+                      last_update < now &&
+                      !(last_access.is_null() && last_update.is_null()));
+      }
+    }
+  }
 }
 
 TEST_F(SessionCleanupCookieManagerTest, MorePreciseSettingTakesPrecedence) {

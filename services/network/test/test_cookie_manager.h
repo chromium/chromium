@@ -41,6 +41,8 @@ class TestCookieManager : public network::mojom::CookieManager {
                      DeleteCookiesCallback callback) override {}
   void DeleteSessionOnlyCookies(
       DeleteSessionOnlyCookiesCallback callback) override {}
+  void DeleteStaleSessionOnlyCookies(
+      DeleteStaleSessionOnlyCookiesCallback callback) override {}
   void AddCookieChangeListener(
       const GURL& url,
       const std::optional<std::string>& name,

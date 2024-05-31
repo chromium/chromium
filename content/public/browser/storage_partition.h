@@ -176,6 +176,7 @@ class CONTENT_EXPORT StoragePartition {
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   virtual CdmStorageDataModel* GetCdmStorageDataModel() = 0;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+  virtual void DeleteStaleSessionOnlyCookiesAfterDelay() = 0;
 
   virtual leveldb_proto::ProtoDatabaseProvider* GetProtoDatabaseProvider() = 0;
   // Must be set before the first call to GetProtoDatabaseProvider(), or a new
@@ -374,6 +375,9 @@ class CONTENT_EXPORT StoragePartition {
   // the function is called again with a new value or a nullptr.
   static void SetDefaultQuotaSettingsForTesting(
       const storage::QuotaSettings* settings);
+
+  virtual void OverrideDeleteStaleSessionOnlyCookiesDelayForTesting(
+      const base::TimeDelta& delay) = 0;
 
  protected:
   virtual ~StoragePartition() {}

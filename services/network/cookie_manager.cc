@@ -204,6 +204,33 @@ void CookieManager::DeleteSessionOnlyCookies(
       std::move(callback));
 }
 
+void CookieManager::DeleteStaleSessionOnlyCookies(
+    DeleteStaleSessionOnlyCookiesCallback callback) {
+  cookie_store_->DeleteMatchingCookiesAsync(
+      base::BindRepeating([](const net::CanonicalCookie& cookie) {
+        // We do not delete persistent cookies.
+        if (cookie.IsPersistent()) {
+          return false;
+        }
+
+        // We only examine the newer date between the last read/write time.
+        const base::Time last_accessed_or_updated =
+            cookie.LastAccessDate() > cookie.LastUpdateDate()
+                ? cookie.LastAccessDate()
+                : cookie.LastUpdateDate();
+
+        // Without timing data we cannot delete the cookie.
+        if (last_accessed_or_updated.is_null()) {
+          return false;
+        }
+
+        // Delete cookies that haven't been accessed or updated in 7 days.
+        // See crbug.com/40285083 for more info.
+        return (base::Time::Now() - last_accessed_or_updated) > base::Days(7);
+      }),
+      std::move(callback));
+}
+
 void CookieManager::AddCookieChangeListener(
     const GURL& url,
     const std::optional<std::string>& name,

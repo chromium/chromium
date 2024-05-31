@@ -22,6 +22,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -48,6 +49,7 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
+#include "chrome/browser/sessions/sessions_features.h"
 #include "chrome/browser/sessions/tab_loader_delegate.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
@@ -101,6 +103,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_features.h"
@@ -111,9 +114,11 @@
 #include "content/public/test/slow_http_response.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "ui/base/page_transition_types.h"
@@ -278,6 +283,11 @@ class SessionRestoreTest : public InProcessBrowserTest {
     // shut down.
     SessionServiceTestHelper helper(profile);
     helper.SetForceBrowserNotAliveWithNoWindows(true);
+
+    // Ensure stale cookies are cleared immediately on startup for testing.
+    profile->GetDefaultStoragePartition()
+        ->OverrideDeleteStaleSessionOnlyCookiesDelayForTesting(
+            base::Minutes(0));
 
     // Create a new window, which should trigger session restore.
     if (url.is_empty()) {
@@ -4376,4 +4386,132 @@ IN_PROC_BROWSER_TEST_F(TabbedAppSessionRestoreTest, RestorePinnedAppTab) {
     }
   }
   EXPECT_TRUE(app_checked);
+}
+
+class SessionRestoreStaleSessionCookieDeletionTest
+    : public SessionRestoreTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SessionRestoreStaleSessionCookieDeletionTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    feature_list_.InitWithFeatureState(
+        kDeleteStaleSessionCookiesOnStartup,
+        ShouldDeleteStaleSessionCookiesOnStartup());
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.Start());
+    SessionRestoreTest::SetUpOnMainThread();
+  }
+
+  bool ShouldDeleteStaleSessionCookiesOnStartup() { return GetParam(); }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  bool SetCookie(const std::string& name,
+                 const GURL& url,
+                 base::Time expiration,
+                 base::Time last_access_and_update) {
+    network::mojom::CookieManager* cookie_manager =
+        browser()
+            ->profile()
+            ->GetDefaultStoragePartition()
+            ->GetCookieManagerForBrowserProcess();
+    std::unique_ptr<net::CanonicalCookie> cookie =
+        net::CanonicalCookie::CreateUnsafeCookieForTesting(
+            name, "test", url.host(), "/",
+            /*creation=*/base::Time::Now(), expiration,
+            /*last_access=*/last_access_and_update,
+            /*last_update=*/last_access_and_update, /*secure=*/true,
+            /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+            net::COOKIE_PRIORITY_MEDIUM, /*partition_key=*/std::nullopt,
+            net::CookieSourceScheme::kSecure);
+    EXPECT_TRUE(cookie->IsCanonicalForFromStorage());
+    base::test::TestFuture<net::CookieAccessResult> future;
+    cookie_manager->SetCanonicalCookie(*cookie, url,
+                                       net::CookieOptions::MakeAllInclusive(),
+                                       future.GetCallback());
+    return future.Take().status.IsInclude();
+  }
+
+  bool HasCookie(Browser* browser, const std::string& name) {
+    network::mojom::CookieManager* cookie_manager =
+        browser->profile()
+            ->GetDefaultStoragePartition()
+            ->GetCookieManagerForBrowserProcess();
+    base::test::TestFuture<const std::vector<net::CanonicalCookie>&> future;
+    cookie_manager->GetAllCookies(future.GetCallback());
+    for (const net::CanonicalCookie& cookie : future.Take()) {
+      if (cookie.Name() == name) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    SessionRestoreStaleSessionCookieDeletionTest,
+    testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SessionRestoreStaleSessionCookieDeletionTest,
+                       CookieStorage) {
+  GURL open_page = https_server()->GetURL("a.test", "/empty.html");
+  GURL other_page = https_server()->GetURL("b.test", "/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), open_page));
+  // We write every combination of:
+  // (open page, other page) x (persistent, session) x (stale cookie, cookie)
+  // We define stale cookies to be those not accessed or updated in the past 7
+  // days.
+  ASSERT_TRUE(SetCookie("open_page_persistent_cookie", open_page,
+                        /*expiration=*/base::Time::Now() + base::Days(1000),
+                        /*last_access_and_update=*/base::Time::Now()));
+  ASSERT_TRUE(
+      SetCookie("open_page_persistent_stale_cookie", open_page,
+                /*expiration=*/base::Time::Now() + base::Days(1000),
+                /*last_access_and_update=*/base::Time::Now() - base::Days(8)));
+  ASSERT_TRUE(SetCookie("open_page_session_cookie", open_page,
+                        /*expiration=*/base::Time(),
+                        /*last_access_and_update=*/base::Time::Now()));
+  ASSERT_TRUE(
+      SetCookie("open_page_session_stale_cookie", open_page,
+                /*expiration=*/base::Time(),
+                /*last_access_and_update=*/base::Time::Now() - base::Days(8)));
+  ASSERT_TRUE(SetCookie("other_page_persistent_cookie", other_page,
+                        /*expiration=*/base::Time::Now() + base::Days(1000),
+                        /*last_access_and_update=*/base::Time::Now()));
+  ASSERT_TRUE(
+      SetCookie("other_page_persistent_stale_cookie", other_page,
+                /*expiration=*/base::Time::Now() + base::Days(1000),
+                /*last_access_and_update=*/base::Time::Now() - base::Days(8)));
+  ASSERT_TRUE(SetCookie("other_page_session_cookie", other_page,
+                        /*expiration=*/base::Time(),
+                        /*last_access_and_update=*/base::Time::Now()));
+  ASSERT_TRUE(
+      SetCookie("other_page_session_stale_cookie", other_page,
+                /*expiration=*/base::Time(),
+                /*last_access_and_update=*/base::Time::Now() - base::Days(8)));
+  Browser* new_browser = QuitBrowserAndRestore(browser());
+  ASSERT_EQ(1u, active_browser_list_->size());
+  ASSERT_EQ(open_page,
+            new_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+  // No cookies should have been cleared except for the stale session cookie on
+  // a page that wasn't restored when kDeleteStaleSessionCookiesOnStartup is on.
+  EXPECT_TRUE(HasCookie(new_browser, "open_page_persistent_cookie"));
+  EXPECT_TRUE(HasCookie(new_browser, "open_page_persistent_stale_cookie"));
+  EXPECT_TRUE(HasCookie(new_browser, "open_page_session_cookie"));
+  EXPECT_TRUE(HasCookie(new_browser, "open_page_session_stale_cookie"));
+  EXPECT_TRUE(HasCookie(new_browser, "other_page_persistent_cookie"));
+  EXPECT_TRUE(HasCookie(new_browser, "other_page_persistent_stale_cookie"));
+  EXPECT_TRUE(HasCookie(new_browser, "other_page_session_cookie"));
+  EXPECT_EQ(HasCookie(new_browser, "other_page_session_stale_cookie"),
+            !ShouldDeleteStaleSessionCookiesOnStartup());
 }

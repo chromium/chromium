@@ -1972,6 +1972,27 @@ StoragePartitionImpl::GetCookieDeprecationLabelManager() {
   return cookie_deprecation_label_manager_.get();
 }
 
+void StoragePartitionImpl::DeleteStaleSessionOnlyCookiesAfterDelay() {
+  // We need to delay deleting stale session cookies until after the cookie db
+  // has initialized, otherwise we will bypass lazy loading and block.
+  // See crbug.com/40285083 for more info.
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &StoragePartitionImpl::DeleteStaleSessionOnlyCookiesAfterDelayCallback,
+          weak_factory_.GetWeakPtr()),
+      delete_stale_session_only_cookies_delay_);
+}
+
+void StoragePartitionImpl::DeleteStaleSessionOnlyCookiesAfterDelayCallback() {
+  GetCookieManagerForBrowserProcess()->DeleteStaleSessionOnlyCookies(
+      base::BindOnce([](const uint32_t num_deleted) {
+        base::UmaHistogramCounts10M(
+            "Cookie.StaleSessionCookiesDeletedOnStartup", num_deleted);
+      }));
+}
+
 void StoragePartitionImpl::OpenLocalStorage(
     const blink::StorageKey& storage_key,
     const blink::LocalFrameToken& local_frame_token,
@@ -3189,6 +3210,11 @@ void StoragePartitionImpl::SetNetworkContextForTesting(
   network_context_owner_->network_context.reset();
   network_context_owner_->network_context.Bind(
       std::move(network_context_remote));
+}
+
+void StoragePartitionImpl::OverrideDeleteStaleSessionOnlyCookiesDelayForTesting(
+    const base::TimeDelta& delay) {
+  delete_stale_session_only_cookies_delay_ = delay;
 }
 
 base::WeakPtr<StoragePartitionImpl> StoragePartitionImpl::GetWeakPtr() {

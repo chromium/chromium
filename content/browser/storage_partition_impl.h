@@ -215,6 +215,7 @@ class CONTENT_EXPORT StoragePartitionImpl
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   CdmStorageDataModel* GetCdmStorageDataModel() override;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+  void DeleteStaleSessionOnlyCookiesAfterDelay() override;
 
   void SetProtoDatabaseProvider(
       std::unique_ptr<leveldb_proto::ProtoDatabaseProvider> proto_db_provider)
@@ -260,6 +261,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   void SetNetworkContextForTesting(
       mojo::PendingRemote<network::mojom::NetworkContext>
           network_context_remote) override;
+  void OverrideDeleteStaleSessionOnlyCookiesDelayForTesting(
+      const base::TimeDelta& delay) override;
 
   base::WeakPtr<StoragePartitionImpl> GetWeakPtr();
   BackgroundFetchContext* GetBackgroundFetchContext();
@@ -694,6 +697,8 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   GlobalRenderFrameHostId GetRenderFrameHostIdFromNetworkContext();
 
+  void DeleteStaleSessionOnlyCookiesAfterDelayCallback();
+
   // Raw pointer that should always be valid. The BrowserContext owns the
   // StoragePartitionImplMap which then owns StoragePartitionImpl. When the
   // BrowserContext is destroyed, `this` will be destroyed too.
@@ -891,6 +896,11 @@ class CONTENT_EXPORT StoragePartitionImpl
   // restoring the network revocation states of fenced frames when there is a
   // `NetworkService` crash.
   std::set<base::UnguessableToken> network_revocation_nonces_;
+
+  // We need to delay deleting stale session cookies until after the cookie db
+  // has initialized, otherwise we will bypass lazy loading and block.
+  // See crbug.com/40285083 for more info.
+  base::TimeDelta delete_stale_session_only_cookies_delay_{base::Minutes(1)};
 
   base::WeakPtrFactory<StoragePartitionImpl> weak_factory_{this};
 };
