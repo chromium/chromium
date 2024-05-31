@@ -26,6 +26,8 @@ const char kSafetyHubTriggeringExtensionIdsKey[] = "triggeringExtensions";
 const char kExpirationKey[] = "expiration";
 const char kLifetimeKey[] = "lifetime";
 const char kSafetyHubChooserPermissionsData[] = "chooserPermissionsData";
+const char kAbusiveRevocationExpirationKey[] = "abusiveRevocationExpiration";
+const char kAbusiveRevocationLifetimeKey[] = "abusiveRevocationLifetime";
 
 const base::TimeDelta kMinTimeBetweenPasswordChecks = base::Hours(1);
 

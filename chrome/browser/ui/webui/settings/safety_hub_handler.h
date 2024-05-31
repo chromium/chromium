@@ -75,6 +75,15 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler,
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
                            HandleAcknowledgeRevokedUnusedSitePermissionsList);
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
+                           PopulateAbusiveAndUnusedSitePermissionsData);
+  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
+                           HandleAllowPermissionsAgainForAbusiveSite);
+  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
+                           HandleAllowPermissionsAgainForAbusiveAndUnusedSite);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafetyHubHandlerTest,
+      HandleAcknowledgeRevokedAbusiveAndUnusedSitePermissionsList);
+  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
                            HandleIgnoreOriginsForNotificationPermissionReview);
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
                            HandleBlockNotificationPermissionForOrigins);

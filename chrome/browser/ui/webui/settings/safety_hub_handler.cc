@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
@@ -46,6 +47,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/permissions/constants.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -95,23 +97,36 @@ PermissionsData GetUnusedSitePermissionsFromDict(
       chooser_permissions_data ? chooser_permissions_data->Clone()
                                : base::Value::Dict();
 
-  const base::Value* js_expiration =
-      unused_site_permissions.Find(safety_hub::kExpirationKey);
-  CHECK(js_expiration);
-  base::Time expiration = base::ValueToTime(js_expiration).value();
+  // Handle expiration and lifetime for both revoked unused permissions and
+  // revoked abusive notifications.
+  std::vector<std::tuple<std::string, std::string,
+                         content_settings::ContentSettingConstraints*>>
+      keys = {{safety_hub::kExpirationKey, safety_hub::kLifetimeKey,
+               &permissions_data.constraints},
+              {safety_hub::kAbusiveRevocationExpirationKey,
+               safety_hub::kAbusiveRevocationLifetimeKey,
+               &permissions_data.abusive_revocation_constraints}};
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
+    keys.push_back({safety_hub::kAbusiveRevocationExpirationKey,
+                    safety_hub::kAbusiveRevocationLifetimeKey,
+                    &permissions_data.abusive_revocation_constraints});
+  }
+  for (const auto& [expiration_key, lifetime_key, constraints] : keys) {
+    const base::Value* js_expiration =
+        unused_site_permissions.Find(expiration_key);
+    CHECK(js_expiration);
+    base::Time expiration = base::ValueToTime(js_expiration).value();
 
-  const base::Value* js_lifetime =
-      unused_site_permissions.Find(safety_hub::kLifetimeKey);
-  // Users may edit the stored fields directly, so we cannot assume their
-  // presence and validity.
-  base::TimeDelta lifetime = content_settings::RuleMetaData::ComputeLifetime(
-      /*lifetime=*/
-      base::ValueToTimeDelta(js_lifetime).value_or(base::TimeDelta()),
-      /*expiration=*/expiration);
-
-  permissions_data.constraints =
-      content_settings::ContentSettingConstraints(expiration - lifetime);
-  permissions_data.constraints.set_lifetime(lifetime);
+    const base::Value* js_lifetime = unused_site_permissions.Find(lifetime_key);
+    base::TimeDelta lifetime = content_settings::RuleMetaData::ComputeLifetime(
+        /*lifetime=*/
+        base::ValueToTimeDelta(js_lifetime).value_or(base::TimeDelta()),
+        /*expiration=*/expiration);
+    *constraints =
+        content_settings::ContentSettingConstraints(expiration - lifetime);
+    constraints->set_lifetime(lifetime);
+  }
 
   return permissions_data;
 }
@@ -241,7 +256,36 @@ void SafetyHubHandler::HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(
     CHECK(unused_site_permissions_js.is_dict());
     PermissionsData permissions_data =
         GetUnusedSitePermissionsFromDict(unused_site_permissions_js.GetDict());
-    service->StorePermissionInRevokedPermissionSetting(permissions_data);
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
+      HostContentSettingsMap* map =
+          HostContentSettingsMapFactory::GetForProfile(profile_);
+      // This pattern is origin-scoped, so this conversion is safe.
+      GURL permission_url = permissions_data.origin.ToRepresentativeUrl();
+      DCHECK(permission_url.is_valid());
+      // If the permission_types includes `NOTIFICATIONS`, then the revocation
+      // is for a site that should have a
+      // `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` setting.
+      if (permissions_data.permission_types.contains(
+              ContentSettingsType::NOTIFICATIONS)) {
+        safety_hub_util::SetRevokedAbusiveNotificationPermission(
+            map, permission_url, /*is_ignored=*/false,
+            permissions_data.abusive_revocation_constraints);
+        // Remove `NOTIFICATIONS` from permission type list for handling unused
+        // permission revocation below.
+        permissions_data.permission_types.erase(
+            ContentSettingsType::NOTIFICATIONS);
+      }
+
+      // If the permission_types include any permission type that is not
+      // `NOTIFICATIONS`, then the revocation is for an unused site that should
+      // have a `REVOKED_UNUSED_SITE_PERMISSIONS` setting.
+      if (!permissions_data.permission_types.empty()) {
+        service->StorePermissionInRevokedPermissionSetting(permissions_data);
+      }
+    } else {
+      service->StorePermissionInRevokedPermissionSetting(permissions_data);
+    }
   }
 
   SendUnusedSitePermissionsReviewList();
@@ -297,6 +341,19 @@ base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
     revoked_permission_value.Set(
         safety_hub::kSafetyHubChooserPermissionsData,
         base::Value(permissions_data.chooser_permissions_data.Clone()));
+
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
+      revoked_permission_value.Set(
+          safety_hub::kAbusiveRevocationExpirationKey,
+          base::TimeToValue(
+              permissions_data.abusive_revocation_constraints.expiration()));
+
+      revoked_permission_value.Set(
+          safety_hub::kAbusiveRevocationLifetimeKey,
+          base::TimeDeltaToValue(
+              permissions_data.abusive_revocation_constraints.lifetime()));
+    }
 
     result.Append(std::move(revoked_permission_value));
   }

@@ -37,6 +37,12 @@ extern const char kExpirationKey[];
 extern const char kLifetimeKey[];
 // Key of the revoked chooser permissions in the |UnusedSitePermissions| object.
 extern const char kSafetyHubChooserPermissionsData[];
+// Key of the expiration time for an abusive notification permission object.
+// Indicates the time after which the associated origin and permissions are no
+// longer shown in the UI.
+extern const char kAbusiveRevocationExpirationKey[];
+// Key of the lifetime for an abusive notification permission object.
+extern const char kAbusiveRevocationLifetimeKey[];
 
 // State that a top card in the Safety Hub page can be in. This enum should
 // remain sorted from the "worst" state (warning) to the "best" state (safe).

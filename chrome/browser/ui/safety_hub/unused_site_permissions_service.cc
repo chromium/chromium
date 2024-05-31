@@ -836,7 +836,10 @@ void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
     const std::optional<content_settings::ContentSettingConstraints> constraint,
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern) {
-  DCHECK(!permissions.contains(ContentSettingsType::NOTIFICATIONS));
+  // This method only pertains to permissions other than `NOTIFICATIONS`, since
+  // these permissions are not revoked for unused sites.
+  const std::set<ContentSettingsType>& unused_site_permission_types =
+      GetRevokedUnusedSitePermissionTypes(permissions);
   GURL url = GURL(primary_pattern.ToString());
   // The url should be valid as it is checked that the pattern represents a
   // single origin.
@@ -853,7 +856,7 @@ void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
           ? std::move(*dict.FindList(permissions::kRevokedKey))
           : base::Value::List();
 
-  for (const auto& permission : permissions) {
+  for (const auto& permission : unused_site_permission_types) {
     // Chooser permissions (not ContentSettingsRegistry-based) should have
     // corresponding data to be restored in `chooser_permissions_data`.
     DCHECK(IsContentSetting(permission) || !IsChooserPermissionSupported() ||
