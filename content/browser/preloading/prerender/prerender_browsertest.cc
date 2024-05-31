@@ -1529,7 +1529,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesPrerender) {
   // Collect metrics we recorded the renderer processes.
   FetchHistogramsFromChildProcesses();
   histogram_tester().ExpectTotalCount(
-      "Prerender.Experimental.ActivationIPCDelay", 1u);
+      "Prerender.Experimental.ActivationIPCDelay.SpeculationRule", 1u);
 }
 
 // Used for running tests that should commonly pass regardless of target hints.

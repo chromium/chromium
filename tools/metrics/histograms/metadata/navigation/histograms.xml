@@ -1929,8 +1929,9 @@ chromium-metrics-reviews@google.com.
   <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
 </histogram>
 
-<histogram name="Prerender.Experimental.ActivationIPCDelay" units="ms"
-    expires_after="2024-10-06">
+<histogram
+    name="Prerender.Experimental.ActivationIPCDelay{PreloadingTriggerType}"
+    units="ms" expires_after="2024-10-06">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -1940,6 +1941,7 @@ chromium-metrics-reviews@google.com.
     measure the delay of when renderer process receives the signal and when it
     can process this signal. Recorded on the main document only.
   </summary>
+  <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
 </histogram>
 
 <histogram

@@ -379,6 +379,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
     prerender_metric_suffix_ = suffix;
   }
   bool IsPrerendering() const { return is_prerendering_; }
+  const String& PrerenderMetricSuffix() const {
+    return prerender_metric_suffix_;
+  }
 
   void SetTextAutosizerPageInfo(
       const mojom::blink::TextAutosizerPageInfo& page_info) {
