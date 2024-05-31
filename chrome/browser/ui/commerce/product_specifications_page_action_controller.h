@@ -35,6 +35,9 @@ class ProductSpecificationsPageActionController
   bool WantsExpandedUi() override;
   void ResetForNewNavigation(const GURL& url) override;
 
+  void OnIconClicked();
+  bool IsInRecommendedSet();
+
  private:
   void HandleProductInfoResponse(const GURL& url,
                                  const std::optional<const ProductInfo>& info);
@@ -51,6 +54,12 @@ class ProductSpecificationsPageActionController
 
   // The product group that current page can be added to if available.
   std::optional<ProductGroup> product_group_for_page_;
+
+  // A bool to indicate whether the product has been added to the recommended
+  // product specifications set. Please note that this will be false for pages
+  // that are already in product specifications set on navigation, as there is
+  // no recommendation for those pages.
+  bool is_in_recommended_set_{false};
 
   // The shopping service is tied to the lifetime of the browser context
   // which will always outlive this tab helper.

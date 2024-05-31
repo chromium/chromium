@@ -60,8 +60,13 @@ views::BubbleDialogDelegate* ProductSpecificationsIconView::GetBubble() const {
 
 void ProductSpecificationsIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {
-  NOTIMPLEMENTED();
-  // TODO(b/325660810): Add implementation for execution.
+  auto* web_contents = GetWebContents();
+  CHECK(web_contents);
+  auto* tab_helper =
+      commerce::CommerceUiTabHelper::FromWebContents(web_contents);
+  CHECK(tab_helper);
+
+  tab_helper->OnProductSpecificationsIconClicked();
 }
 
 void ProductSpecificationsIconView::ForceVisibleForTesting(bool is_added) {
@@ -77,9 +82,7 @@ void ProductSpecificationsIconView::UpdateImpl() {
   bool should_show = ShouldShow();
   if (should_show) {
     // TODO(b/325660810): Add logics to flip button visual state.
-    SetVisualState(false);
-    SetLabel(l10n_util::GetStringUTF16(
-        IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT));
+    SetVisualState(IsInProductSpecificationsSet());
     MaybeShowPageActionLabel();
   } else {
     HidePageActionLabel();
@@ -121,7 +124,13 @@ bool ProductSpecificationsIconView::ShouldShow() {
 void ProductSpecificationsIconView::SetVisualState(bool is_added) {
   icon_ = is_added ? &omnibox::kProductSpecificationsAddedIcon
                    : &omnibox::kProductSpecificationsAddIcon;
-
+  if (is_added) {
+    SetLabel(l10n_util::GetStringUTF16(
+        IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADDED_DEFAULT));
+  } else {
+    SetLabel(l10n_util::GetStringUTF16(
+        IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT));
+  }
   SetPaintLabelOverSolidBackground(true);
   UpdateIconImage();
 }
@@ -143,6 +152,18 @@ void ProductSpecificationsIconView::MaybeShowPageActionLabel() {
 void ProductSpecificationsIconView::HidePageActionLabel() {
   UnpauseAnimation();
   ResetSlideAnimation(false);
+}
+
+bool ProductSpecificationsIconView::IsInProductSpecificationsSet() const {
+  if (!GetWebContents()) {
+    return false;
+  }
+
+  auto* tab_helper =
+      commerce::CommerceUiTabHelper::FromWebContents(GetWebContents());
+  CHECK(tab_helper);
+
+  return tab_helper->IsInRecommendedSet();
 }
 
 BEGIN_METADATA(ProductSpecificationsIconView)

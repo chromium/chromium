@@ -18,6 +18,7 @@
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/test_utils.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -105,7 +106,7 @@ class ProductSpecificationsIconViewIntegrationTest
   std::unique_ptr<commerce::MockAccountChecker> account_checker_;
 };
 
-TEST_F(ProductSpecificationsIconViewIntegrationTest, TestIconVisibility) {
+TEST_F(ProductSpecificationsIconViewIntegrationTest, IconVisibility) {
   ON_CALL(*GetTabHelper(), ShouldShowProductSpecificationsIconView)
       .WillByDefault(testing::Return(true));
 
@@ -117,4 +118,42 @@ TEST_F(ProductSpecificationsIconViewIntegrationTest, TestIconVisibility) {
       .WillByDefault(testing::Return(false));
   NavigateAndCommitActiveTab(GURL(kUrlB));
   EXPECT_FALSE(icon_view->GetVisible());
+}
+
+TEST_F(ProductSpecificationsIconViewIntegrationTest, IconExecution) {
+  ON_CALL(*GetTabHelper(), ShouldShowProductSpecificationsIconView)
+      .WillByDefault(testing::Return(true));
+
+  NavigateAndCommitActiveTab(GURL(kUrlB));
+  auto* icon_view = GetChip();
+  EXPECT_TRUE(icon_view->GetVisible());
+
+  EXPECT_CALL(*GetTabHelper(), OnProductSpecificationsIconClicked).Times(1);
+  icon_view->ExecuteForTesting();
+}
+
+TEST_F(ProductSpecificationsIconViewIntegrationTest, TestVisualState) {
+  ON_CALL(*GetTabHelper(), ShouldShowProductSpecificationsIconView)
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*GetTabHelper(), IsInRecommendedSet)
+      .WillByDefault(testing::Return(true));
+
+  NavigateAndCommitActiveTab(GURL(kUrlB));
+  auto* icon_view = GetChip();
+  EXPECT_TRUE(icon_view->GetVisible());
+  EXPECT_EQ(icon_view->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADDED_DEFAULT));
+
+  ON_CALL(*GetTabHelper(), ShouldShowProductSpecificationsIconView)
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*GetTabHelper(), IsInRecommendedSet)
+      .WillByDefault(testing::Return(false));
+
+  NavigateAndCommitActiveTab(GURL(kUrlA));
+  icon_view = GetChip();
+  EXPECT_TRUE(icon_view->GetVisible());
+  EXPECT_EQ(icon_view->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT));
 }

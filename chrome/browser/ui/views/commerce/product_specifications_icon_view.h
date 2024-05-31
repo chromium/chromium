@@ -42,6 +42,7 @@ class ProductSpecificationsIconView : public PageActionIconView {
   void SetVisualState(bool is_added);
   void MaybeShowPageActionLabel();
   void HidePageActionLabel();
+  bool IsInProductSpecificationsSet() const;
 
   const raw_ptr<Browser> browser_;
 

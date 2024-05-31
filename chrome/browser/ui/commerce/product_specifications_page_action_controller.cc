@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/commerce/product_specifications_page_action_controller.h"
 
 #include "components/commerce/core/feature_utils.h"
+#include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/shopping_service.h"
 
 namespace commerce {
@@ -66,6 +67,42 @@ void ProductSpecificationsPageActionController::ResetForNewNavigation(
       base::BindOnce(
           &ProductSpecificationsPageActionController::HandleProductInfoResponse,
           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ProductSpecificationsPageActionController::OnIconClicked() {
+  CHECK(product_group_for_page_.has_value());
+  if (!shopping_service_ ||
+      !shopping_service_->GetProductSpecificationsService() ||
+      !product_group_for_page_.has_value()) {
+    return;
+  }
+  auto* product_specifications_service =
+      shopping_service_->GetProductSpecificationsService();
+  std::optional<ProductSpecificationsSet> product_specifications_set =
+      product_specifications_service->GetSetByUuid(
+          product_group_for_page_->uuid);
+  if (!product_specifications_set.has_value()) {
+    return;
+  }
+  std::vector<GURL> existing_urls = product_specifications_set->urls();
+  if (!is_in_recommended_set_) {
+    existing_urls.push_back(current_url_);
+    is_in_recommended_set_ = true;
+  } else {
+    auto it =
+        std::find(existing_urls.begin(), existing_urls.end(), current_url_);
+    if (it != existing_urls.end()) {
+      existing_urls.erase(it);
+    }
+    is_in_recommended_set_ = false;
+  }
+  product_specifications_service->SetUrls(product_group_for_page_->uuid,
+                                          std::move(existing_urls));
+  NotifyHost();
+}
+
+bool ProductSpecificationsPageActionController::IsInRecommendedSet() {
+  return is_in_recommended_set_;
 }
 
 void ProductSpecificationsPageActionController::HandleProductInfoResponse(

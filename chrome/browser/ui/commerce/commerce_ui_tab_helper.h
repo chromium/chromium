@@ -76,6 +76,10 @@ class CommerceUiTabHelper
   // Returns whether the current page has a product that is being price tracked.
   virtual bool IsPriceTracking();
 
+  // Returns whether the product in the current page is in the recommended
+  // product specifications set.
+  virtual bool IsInRecommendedSet();
+
   // content::WebContentsObserver implementation
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -89,6 +93,7 @@ class CommerceUiTabHelper
                                      bool is_new_bookmark,
                                      base::OnceCallback<void(bool)> callback);
   void OnPriceInsightsIconClicked();
+  virtual void OnProductSpecificationsIconClicked();
 
   // Return the PriceInsightsInfo for the last fetched product URL. A reference
   // to this object should not be kept directly, if one is needed, a copy should

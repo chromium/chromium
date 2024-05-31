@@ -446,6 +446,10 @@ bool CommerceUiTabHelper::IsPriceTracking() {
       price_tracking_controller_->IsPriceTrackingCurrentProduct());
 }
 
+bool CommerceUiTabHelper::IsInRecommendedSet() {
+  return product_specifications_controller_->IsInRecommendedSet();
+}
+
 void CommerceUiTabHelper::UpdatePriceTrackingIconView() {
   UpdatePageActionIconView(web_contents(), PageActionIconType::kPriceTracking);
 }
@@ -638,6 +642,10 @@ bool CommerceUiTabHelper::ShouldExpandPageActionIcon(
 
 void CommerceUiTabHelper::OnPriceTrackingIconClicked() {
   price_tracking_controller_->OnIconClicked();
+}
+
+void CommerceUiTabHelper::OnProductSpecificationsIconClicked() {
+  product_specifications_controller_->OnIconClicked();
 }
 
 void CommerceUiTabHelper::RecordIconMetrics(PageActionIconType page_action,

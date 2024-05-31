@@ -17,15 +17,18 @@
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_cluster_manager.h"
 #include "components/commerce/core/mock_shopping_service.h"
+#include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
 namespace commerce {
 
 namespace {
-const char kTestUrl[] = "https://www.example.com";
+const char kTestUrl1[] = "https://www.example.com";
+const char kTestUrl2[] = "https://www.foo.com";
 const int64_t kClusterId = 12345L;
 
 // Build a basic ProductInfo object.
@@ -37,7 +40,7 @@ std::optional<ProductInfo> CreateProductInfo(uint64_t cluster_id) {
 }
 
 std::optional<ProductGroup> CreateProductGroup() {
-  return ProductGroup(base::Uuid::GenerateRandomV4(), "test", {GURL()},
+  return ProductGroup(base::Uuid::GenerateRandomV4(), "test", {GURL(kTestUrl2)},
                       base::Time());
 }
 }  // namespace
@@ -54,6 +57,9 @@ class ProductSpecificationsPageActionControllerUnittest : public testing::Test {
     shopping_service_->SetAccountChecker(account_checker_.get());
     mock_cluster_manager_ = static_cast<commerce::MockClusterManager*>(
         shopping_service_->GetClusterManager());
+    mock_product_specifications_service_ =
+        static_cast<commerce::MockProductSpecificationsService*>(
+            shopping_service_->GetProductSpecificationsService());
     controller_ = std::make_unique<ProductSpecificationsPageActionController>(
         std::move(callback), shopping_service_.get());
   }
@@ -70,6 +76,8 @@ class ProductSpecificationsPageActionControllerUnittest : public testing::Test {
   base::MockRepeatingCallback<void()> notify_host_callback_;
   std::unique_ptr<MockShoppingService> shopping_service_;
   raw_ptr<commerce::MockClusterManager> mock_cluster_manager_;
+  raw_ptr<commerce::MockProductSpecificationsService>
+      mock_product_specifications_service_;
   std::unique_ptr<ProductSpecificationsPageActionController> controller_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -90,7 +98,7 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest, IconShow) {
   shopping_service_->SetResponseForGetProductInfoForUrl(
       CreateProductInfo(kClusterId));
 
-  controller_->ResetForNewNavigation(GURL(kTestUrl));
+  controller_->ResetForNewNavigation(GURL(kTestUrl1));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
@@ -115,7 +123,7 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest,
   shopping_service_->SetResponseForGetProductInfoForUrl(
       CreateProductInfo(kClusterId));
 
-  controller_->ResetForNewNavigation(GURL(kTestUrl));
+  controller_->ResetForNewNavigation(GURL(kTestUrl1));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
@@ -137,7 +145,7 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest,
   // Mock no product info for current URL.
   shopping_service_->SetResponseForGetProductInfoForUrl(std::nullopt);
 
-  controller_->ResetForNewNavigation(GURL(kTestUrl));
+  controller_->ResetForNewNavigation(GURL(kTestUrl1));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
@@ -160,12 +168,51 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest,
   ASSERT_FALSE(controller_->ShouldShowForNavigation().value());
   ASSERT_FALSE(controller_->WantsExpandedUi());
 
-  controller_->ResetForNewNavigation(GURL(kTestUrl));
+  controller_->ResetForNewNavigation(GURL(kTestUrl1));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
   ASSERT_FALSE(controller_->ShouldShowForNavigation().value());
   ASSERT_FALSE(controller_->WantsExpandedUi());
+}
+
+TEST_F(ProductSpecificationsPageActionControllerUnittest, IconExecute) {
+  // Set up ClusterManager to trigger page action.
+  auto product_group = CreateProductGroup();
+  mock_cluster_manager_->SetResponseForGetProductGroupForCandidateProduct(
+      product_group);
+  shopping_service_->SetResponseForGetProductInfoForUrl(
+      CreateProductInfo(kClusterId));
+
+  // Set up the similar product specifications set.
+  const base::Uuid& uuid = base::Uuid::GenerateRandomV4();
+  ProductSpecificationsSet set = ProductSpecificationsSet(
+      product_group->uuid.AsLowercaseString(), 0, 0, {GURL(kTestUrl2)}, "set1");
+  ON_CALL(*mock_product_specifications_service_, GetSetByUuid)
+      .WillByDefault(testing::Return(std::move(set)));
+
+  // Trigger page action.
+  controller_->ResetForNewNavigation(GURL(kTestUrl1));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().value());
+  ASSERT_FALSE(controller_->IsInRecommendedSet());
+
+  // First click would add the product to the product specifications set.
+  std::vector<GURL> expected_urls = {GURL(kTestUrl2), GURL(kTestUrl1)};
+  EXPECT_CALL(*mock_product_specifications_service_,
+              SetUrls(product_group->uuid, expected_urls))
+      .Times(1);
+  controller_->OnIconClicked();
+  ASSERT_TRUE(controller_->IsInRecommendedSet());
+
+  // Second click would remove the product from the product specifications set.
+  expected_urls = {GURL(kTestUrl2)};
+  EXPECT_CALL(*mock_product_specifications_service_,
+              SetUrls(product_group->uuid, expected_urls))
+      .Times(1);
+  controller_->OnIconClicked();
+  ASSERT_FALSE(controller_->IsInRecommendedSet());
 }
 
 }  // namespace commerce
