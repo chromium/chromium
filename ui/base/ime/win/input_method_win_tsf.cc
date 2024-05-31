@@ -56,13 +56,14 @@ InputMethodWinTSF::~InputMethodWinTSF() {
   // trying to use it. Note that everything happens on the same thread here.
   //
   // See crbug.com/41488962
-  if (ui::TSFBridge::GetInstance()) {
+  if (is_focused_ && ui::TSFBridge::GetInstance()) {
     ui::TSFBridge::GetInstance()->RemoveImeKeyEventDispatcher();
   }
 }
 
 void InputMethodWinTSF::OnFocus() {
   InputMethodBase::OnFocus();
+  is_focused_ = true;
   if (!ui::TSFBridge::GetInstance()) {
     // TSFBridge can be null for tests.
     return;
@@ -75,6 +76,7 @@ void InputMethodWinTSF::OnFocus() {
 
 void InputMethodWinTSF::OnBlur() {
   InputMethodBase::OnBlur();
+  is_focused_ = false;
   if (!ui::TSFBridge::GetInstance()) {
     // TSFBridge can be null for tests.
     return;
