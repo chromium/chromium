@@ -491,14 +491,6 @@ bool IsLacrosColorManagementEnabled() {
   return base::FeatureList::IsEnabled(kLacrosColorManagement);
 }
 
-BASE_FEATURE(kChromeRefresh2023,
-             "ChromeRefresh2023",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kChromeRefreshSecondary2023,
-             "ChromeRefreshSecondary2023",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsChromeRefresh2023() {
   return true;
 }
