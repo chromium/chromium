@@ -121,8 +121,9 @@ class ThumbnailTabHelperInteractiveTest : public InProcessBrowserTest {
   void EnsureTabLoaded(content::WebContents* tab) {
     content::NavigationController* controller = &tab->GetController();
     if (!controller->NeedsReload() && !controller->GetPendingEntry() &&
-        !tab->IsLoading())
+        !tab->IsLoading()) {
       return;
+    }
 
     content::LoadStopObserver(tab).Wait();
   }
@@ -178,20 +179,25 @@ class ThumbnailTabHelperUpdatedInteractiveTest : public InteractiveBrowserTest {
               ->thumbnail()
               ->has_data();
         },
-        has_data);
+        has_data,
+        base::StrCat({"Checking that tab ", base::NumberToString(tab_index),
+                      (has_data ? " has" : " doesn't have"), " data"}));
   }
 
   auto WaitForAndVerifyThumbnail(int tab_index) {
-    return Check([=]() {
-      auto* const thumbnail_tab_helper = ThumbnailTabHelper::FromWebContents(
-          browser()->tab_strip_model()->GetWebContentsAt(tab_index));
-      auto thumbnail = thumbnail_tab_helper->thumbnail();
+    return Check(
+        [=]() {
+          auto* const thumbnail_tab_helper =
+              ThumbnailTabHelper::FromWebContents(
+                  browser()->tab_strip_model()->GetWebContentsAt(tab_index));
+          auto thumbnail = thumbnail_tab_helper->thumbnail();
 
-      ThumbnailWaiter waiter;
-      const std::optional<gfx::ImageSkia> data =
-          waiter.WaitForThumbnail(thumbnail.get());
-      return data && !data->isNull();
-    });
+          ThumbnailWaiter waiter;
+          const std::optional<gfx::ImageSkia> data =
+              waiter.WaitForThumbnail(thumbnail.get());
+          return data && !data->isNull();
+        },
+        "Wait for thumbail and verify it is present");
   }
 
  private:
@@ -213,14 +219,15 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
             WindowOpenDisposition::NEW_BACKGROUND_TAB,
             ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
       }),
-      CheckResult([this]() { return GetTabCount(); }, 2),
+      CheckResult([this]() { return GetTabCount(); }, 2,
+                  "Checking that there are two tabs"),
       CheckTabHasThumbnailData(0, false), CheckTabHasThumbnailData(1, false),
       WaitForAndVerifyThumbnail(0), CheckTabHasThumbnailData(0, true));
 }
 
 // TODO(crbug.com/40883117) flakes on ChromeOS and MSAN/TSAN/ASAN builders.
 // TODO(crbug.com/335997050) timeout on ARM64 debug builder.
-#if BUILDFLAG(IS_CHROMEOS) || defined(THREAD_SANITIZER) || \
+#if BUILDFLAG(IS_CHROMEOS) || defined(THREAD_SANITIZER) ||     \
     defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
     (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64) && !defined(NDEBUG))
 #define MAYBE_TabDiscardPreservesScreenshot \
