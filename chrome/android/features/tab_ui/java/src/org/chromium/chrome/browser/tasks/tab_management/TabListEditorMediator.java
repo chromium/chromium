@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorNavigationProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -55,7 +54,7 @@ class TabListEditorMediator
     private final SelectionDelegate<Integer> mSelectionDelegate;
     private final boolean mActionOnRelatedTabs;
     private final TabModelObserver mTabModelObserver;
-    private TabListEditorCoordinator.TabListEditorNavigationProvider mNavigationProvider;
+    private final TabListEditorCoordinator.TabListEditorNavigationProvider mNavigationProvider;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
     private final List<Tab> mVisibleTabs = new ArrayList<>();
@@ -234,9 +233,7 @@ class TabListEditorMediator
     }
 
     @Override
-    public void configureToolbarWithMenuItems(
-            List<TabListEditorAction> actions,
-            @Nullable TabListEditorNavigationProvider navigationProvider) {
+    public void configureToolbarWithMenuItems(List<TabListEditorAction> actions) {
         // Deferred initialization.
         if (mActionListModel == null) {
             mActionListModel = new PropertyListModel<>();
@@ -259,11 +256,6 @@ class TabListEditorMediator
             mActionListModel.add(action.getPropertyModel());
         }
 
-        // The caller may pass through a different navigation provider. Otherwise use the one
-        // passed through the constructor.
-        if (navigationProvider != null) {
-            mNavigationProvider = navigationProvider;
-        }
         updateColors(mCurrentTabModelFilterSupplier.get().isIncognito());
     }
 

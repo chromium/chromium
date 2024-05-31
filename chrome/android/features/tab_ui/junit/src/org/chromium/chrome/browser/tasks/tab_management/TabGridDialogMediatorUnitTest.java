@@ -235,7 +235,7 @@ public class TabGridDialogMediatorUnitTest {
         ArgumentCaptor<List<TabListEditorAction>> captor =
                 ArgumentCaptor.forClass((Class) List.class);
         mMediator.getToolbarMenuCallbackForTesting().onResult(R.id.select_tabs);
-        verify(mTabListEditorController).configureToolbarWithMenuItems(captor.capture(), eq(null));
+        verify(mTabListEditorController).configureToolbarWithMenuItems(captor.capture());
         verify(mRecyclerViewPositionSupplier, times(1)).get();
         verify(mTabListEditorController).show(any(), eq(0), eq(null));
         List<TabListEditorAction> actions = captor.getValue();

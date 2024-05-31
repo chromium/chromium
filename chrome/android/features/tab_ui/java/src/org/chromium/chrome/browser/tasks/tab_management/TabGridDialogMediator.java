@@ -731,7 +731,7 @@ public class TabGridDialogMediator
                         ShowMode.MENU_ONLY,
                         ButtonType.ICON_AND_TEXT,
                         IconPosition.START));
-        mTabListEditorControllerSupplier.get().configureToolbarWithMenuItems(actions, null);
+        mTabListEditorControllerSupplier.get().configureToolbarWithMenuItems(actions);
     }
 
     private void setupToolbarEditText() {

@@ -95,13 +95,10 @@ class TabListEditorCoordinator {
 
         /**
          * Configure the Toolbar for TabListEditor with multiple actions.
+         *
          * @param actions The {@link TabListEditorAction} to make available.
-         * @param navigationProvider The {@link TabListEditorNavigationProvider} that specifies
-         *         the back action.
          */
-        void configureToolbarWithMenuItems(
-                List<TabListEditorAction> actions,
-                @Nullable TabListEditorNavigationProvider navigationProvider);
+        void configureToolbarWithMenuItems(List<TabListEditorAction> actions);
 
         /**
          * @return Whether the TabListEditor is visible.
@@ -150,13 +147,10 @@ class TabListEditorCoordinator {
                 }
 
                 @Override
-                public void configureToolbarWithMenuItems(
-                        List<TabListEditorAction> actions,
-                        @Nullable TabListEditorNavigationProvider navigationProvider) {
+                public void configureToolbarWithMenuItems(List<TabListEditorAction> actions) {
                     assert mTabListCoordinator != null
                             : "Must call #show before #configureToolbarWithMenuItems";
-                    mTabListEditorMediator.configureToolbarWithMenuItems(
-                            actions, navigationProvider);
+                    mTabListEditorMediator.configureToolbarWithMenuItems(actions);
                 }
 
                 @Override

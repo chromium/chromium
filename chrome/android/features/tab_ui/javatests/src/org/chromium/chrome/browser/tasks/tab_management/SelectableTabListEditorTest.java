@@ -1205,7 +1205,7 @@ public class SelectableTabListEditorTest {
                                     IconPosition.START));
                     mTabListEditorController.show(
                             tabs, preSelectedTabCount, /* recyclerViewPosition= */ null);
-                    mTabListEditorController.configureToolbarWithMenuItems(actions, null);
+                    mTabListEditorController.configureToolbarWithMenuItems(actions);
                 });
         mRobot.resultRobot
                 .verifyTabListEditorIsVisible()
@@ -1245,7 +1245,7 @@ public class SelectableTabListEditorTest {
 
                     mTabListEditorController.show(
                             tabs, preSelectedTabCount, /* recyclerViewPosition= */ null);
-                    mTabListEditorController.configureToolbarWithMenuItems(actions, null);
+                    mTabListEditorController.configureToolbarWithMenuItems(actions);
                 });
 
         mRobot.resultRobot
@@ -1376,7 +1376,7 @@ public class SelectableTabListEditorTest {
 
                     mTabListEditorController.show(
                             tabs, preSelectedTabCount, /* recyclerViewPosition= */ null);
-                    mTabListEditorController.configureToolbarWithMenuItems(actions, null);
+                    mTabListEditorController.configureToolbarWithMenuItems(actions);
                 });
 
         mRobot.resultRobot.verifyTabListEditorIsVisible();
@@ -1418,7 +1418,7 @@ public class SelectableTabListEditorTest {
 
                     mTabListEditorController.show(
                             tabs, preSelectedTabCount, /* recyclerViewPosition= */ null);
-                    mTabListEditorController.configureToolbarWithMenuItems(actions, null);
+                    mTabListEditorController.configureToolbarWithMenuItems(actions);
                 });
 
         mRobot.resultRobot.verifyTabListEditorIsVisible();
@@ -1460,7 +1460,7 @@ public class SelectableTabListEditorTest {
 
                     mTabListEditorController.show(
                             tabs, preSelectedTabCount, /* recyclerViewPosition= */ null);
-                    mTabListEditorController.configureToolbarWithMenuItems(actions, null);
+                    mTabListEditorController.configureToolbarWithMenuItems(actions);
                 });
 
         mRobot.resultRobot.verifyTabListEditorIsVisible();
@@ -1898,7 +1898,7 @@ public class SelectableTabListEditorTest {
                     mTabListEditorController.show(
                             tabs, /* preSelectedTabCount= */ 0, /* recyclerViewPosition= */ null);
                     if (actions != null) {
-                        mTabListEditorController.configureToolbarWithMenuItems(actions, null);
+                        mTabListEditorController.configureToolbarWithMenuItems(actions);
                     }
                 });
     }

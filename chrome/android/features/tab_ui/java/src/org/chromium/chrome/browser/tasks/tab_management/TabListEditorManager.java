@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.Butt
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
-import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorNavigationProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorOpenMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
@@ -160,8 +159,7 @@ public class TabListEditorManager {
                 TabModelUtils.convertTabListToListOfTabs(mCurrentTabModelFilterSupplier.get()),
                 /* preSelectedTabCount= */ 0,
                 mTabListCoordinator.getRecyclerViewPosition());
-        controller.configureToolbarWithMenuItems(
-                mTabListEditorActions, new TabListEditorNavigationProvider(mActivity, controller));
+        controller.configureToolbarWithMenuItems(mTabListEditorActions);
 
         TabUiMetricsHelper.recordSelectionEditorOpenMetrics(
                 TabListEditorOpenMetricGroups.OPEN_FROM_GRID, mActivity);
