@@ -1114,11 +1114,19 @@ component("net") {
     sources += [
       "device_bound_sessions/cookie_craving.cc",
       "device_bound_sessions/cookie_craving.h",
+      "device_bound_sessions/device_bound_session_params.h",
       "device_bound_sessions/device_bound_session_registration_fetcher_param.cc",
       "device_bound_sessions/device_bound_session_registration_fetcher_param.h",
       "device_bound_sessions/device_bound_session_service.cc",
       "device_bound_sessions/device_bound_session_service.h",
+      "device_bound_sessions/registration_fetcher.cc",
+      "device_bound_sessions/registration_fetcher.h",
+      "device_bound_sessions/session_binding_utils.cc",
+      "device_bound_sessions/session_binding_utils.h",
+      "device_bound_sessions/unexportable_key_service_factory.cc",
+      "device_bound_sessions/unexportable_key_service_factory.h",
     ]
+    deps += [ "//components/unexportable_keys:unexportable_keys" ]
   }
 
   if (is_android) {
@@ -3241,9 +3249,12 @@ test("net_unittests") {
     sources += [
       "device_bound_sessions/cookie_craving_unittest.cc",
       "device_bound_sessions/device_bound_session_registration_fetcher_param_unittest.cc",
+      "device_bound_sessions/registration_fetcher_unittest.cc",
+      "device_bound_sessions/session_binding_utils_unittest.cc",
       "device_bound_sessions/test_util.cc",
       "device_bound_sessions/test_util.h",
     ]
+    deps += [ "//components/unexportable_keys:unexportable_keys" ]
   }
 }
 

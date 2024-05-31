@@ -333,6 +333,7 @@ after discussions on the right group.
       <annotation id="data_sharing_service_delete_groups"/>
       <annotation id="data_sharing_service_update_group"/>
       <annotation id="glanceables_icon_downloader"/>
+      <annotation id="dbsc_registration"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

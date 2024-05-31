@@ -159,4 +159,15 @@ DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
   return params;
 }
 
+// static
+DeviceBoundSessionRegistrationFetcherParam
+DeviceBoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
+    GURL registration_endpoint,
+    std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
+    std::string challenge) {
+  return DeviceBoundSessionRegistrationFetcherParam(
+      std::move(registration_endpoint), std::move(supported_algos),
+      std::move(challenge));
+}
+
 }  // namespace net

@@ -40,6 +40,13 @@ class NET_EXPORT DeviceBoundSessionRegistrationFetcherParam {
       const GURL& request_url,
       const HttpResponseHeaders* headers);
 
+  // Convenience constructor for testing.
+  static DeviceBoundSessionRegistrationFetcherParam CreateInstanceForTesting(
+      GURL registration_endpoint,
+      std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
+          supported_algos,
+      std::string challenge);
+
   const GURL& registration_endpoint() const { return registration_endpoint_; }
 
   base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
