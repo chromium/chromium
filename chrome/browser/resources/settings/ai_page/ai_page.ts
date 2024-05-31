@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '../controls/settings_toggle_button.js';
-import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

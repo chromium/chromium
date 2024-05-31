@@ -65,7 +65,7 @@
         on-settings-boolean-control-change="onSpellCheckToggleChange_">
     </settings-toggle-button>
 <if expr="_google_chrome or not is_macosx">
-    <iron-collapse id="spellCheckCollapse"
+    <cr-collapse id="spellCheckCollapse"
         opened="[[prefs.browser.enable_spellchecking.value]]">
 <if expr="_google_chrome">
       <div class="cr-row continuation spell-check-radio-group">
@@ -149,7 +149,7 @@
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
 </if> <!-- not is_macosx -->
-    </iron-collapse>
+    </cr-collapse>
 </if> <!-- _google_chrome or not is_macosx -->
   </div>
 <if expr="not is_macosx">

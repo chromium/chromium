@@ -54,7 +54,7 @@
         sub-label="$i18n{captionsEnableLiveCaptionSubtitle}">
     </settings-toggle-button>
   </div>
-  <iron-collapse
+  <cr-collapse
       opened="[[prefs.accessibility.captions.live_caption_enabled.value]]">
     <div class="cr-row continuation">
       <div class="start cr-padded-text" aria-hidden="true">
@@ -106,7 +106,7 @@
           language-helper="[[languageHelper]]">
       </settings-live-translate>
     </template>
-  </iron-collapse>
+  </cr-collapse>
 </template>
 <template is="dom-if" if="[[showAddLanguagesDialog_]]" restamp>
   <settings-add-languages-dialog

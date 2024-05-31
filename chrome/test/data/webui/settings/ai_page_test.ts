@@ -8,7 +8,7 @@ import type {SettingsToggleButtonElement, SettingsAiPageElement, SettingsPrefsEl
 import {SettingsAiPageFeaturePrefName as PrefName, CrSettingsPrefs, loadTimeData, FeatureOptInState} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {microtasksFinished, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('ExperimentalAdvancedPage', function() {
   let page: SettingsAiPageElement;
@@ -28,14 +28,14 @@ suite('ExperimentalAdvancedPage', function() {
 
   // Test that interacting with the main toggle
   //  - updates the corresponding pref
-  //  - updates the iron-collapse opened status
+  //  - updates the cr-collapse opened status
   test('MainToggle', () => {
     createPage();
     page.setPrefValue(PrefName.MAIN, FeatureOptInState.NOT_INITIALIZED);
 
     const mainToggle = page.shadowRoot!.querySelector('settings-toggle-button');
     assertTrue(!!mainToggle);
-    const collapse = page.shadowRoot!.querySelector('iron-collapse');
+    const collapse = page.shadowRoot!.querySelector('cr-collapse');
     assertTrue(!!collapse);
 
     // Check NOT_INITIALIZED case.
@@ -55,7 +55,7 @@ suite('ExperimentalAdvancedPage', function() {
     assertFalse(collapse.opened);
   });
 
-  test('FeatureTogglesVisibility', () => {
+  test('FeatureTogglesVisibility', async () => {
     // Case 1, a subset of the controls should be visible.
     loadTimeData.overrideValues({
       showComposeControl: true,
@@ -64,12 +64,13 @@ suite('ExperimentalAdvancedPage', function() {
     });
     createPage();
 
-    // Turn the main pref to ENABLED so that the iron-collapse holding the
+    // Turn the main pref to ENABLED so that the cr-collapse holding the
     // feature specific toggles is expanded.
     page.setPrefValue(PrefName.MAIN, FeatureOptInState.ENABLED);
+    await microtasksFinished();
 
-    let toggles = page.shadowRoot!.querySelectorAll(
-        'iron-collapse settings-toggle-button');
+    let toggles =
+        page.shadowRoot!.querySelectorAll('cr-collapse settings-toggle-button');
     assertEquals(3, toggles.length);
     assertTrue(isVisible(toggles[0]!));
     assertFalse(isVisible(toggles[1]!));
@@ -83,8 +84,8 @@ suite('ExperimentalAdvancedPage', function() {
     });
     createPage();
 
-    toggles = page.shadowRoot!.querySelectorAll(
-        'iron-collapse settings-toggle-button');
+    toggles =
+        page.shadowRoot!.querySelectorAll('cr-collapse settings-toggle-button');
     assertEquals(3, toggles.length);
     assertFalse(isVisible(toggles[0]!));
     assertTrue(isVisible(toggles[1]!));
@@ -100,7 +101,7 @@ suite('ExperimentalAdvancedPage', function() {
     createPage();
     const toggles =
         page.shadowRoot!.querySelectorAll<SettingsToggleButtonElement>(
-            'iron-collapse settings-toggle-button');
+            'cr-collapse settings-toggle-button');
     assertEquals(3, toggles.length);
 
     for (const toggle of toggles) {
@@ -155,7 +156,7 @@ suite('ExperimentalAdvancedPage', function() {
     function assertSeparatorsVisible(expected: boolean[]) {
       const toggles =
           page.shadowRoot!.querySelectorAll<SettingsToggleButtonElement>(
-              'iron-collapse settings-toggle-button:not([hidden])');
+              'cr-collapse settings-toggle-button:not([hidden])');
 
       assertEquals(expected.length, toggles.length);
       expected.forEach((visible, i) => {

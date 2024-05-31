@@ -64,7 +64,7 @@
         padding-inline-start: 0;
       }
 
-      iron-collapse > cr-link-row {
+      cr-collapse > cr-link-row {
         padding-inline-start: var(--cr-section-indent-padding);
       }
     </style>
@@ -170,7 +170,7 @@
                   $i18n{personalizeGoogleServicesDescWithLinkedServices}
                 </div>
               </cr-expand-button>
-              <iron-collapse id="personalizationCollapse"
+              <cr-collapse id="personalizationCollapse"
                   opened="[[personalizationCollapseExpanded_]]">
                 <cr-link-row external on-click="onActivityControlsClick_"
                     label="$i18n{personalizeGoogleServicesWaaTitle}">
@@ -181,7 +181,7 @@
                     sub-label=
                         "$i18n{personalizeGoogleServicesLinkedServicesDesc}">
                 </cr-link-row>
-              </iron-collapse>
+              </cr-collapse>
             </template>
           </template>
 
@@ -210,14 +210,14 @@
             </div>
           </cr-expand-button>
 
-          <iron-collapse id="encryptionCollapse"
+          <cr-collapse id="encryptionCollapse"
               opened="[[encryptionExpanded_]]">
             <settings-sync-encryption-options
                 sync-status="[[syncStatus]]" sync-prefs="{{syncPrefs}}"
                 existing-passphrase-label="[[existingPassphraseLabel_]]"
                 on-passphrase-changed="onPassphraseChanged_">
             </settings-sync-encryption-options>
-          </iron-collapse>
+          </cr-collapse>
 
         </div>
       </div>
