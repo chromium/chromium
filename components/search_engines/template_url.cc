@@ -765,6 +765,13 @@ bool TemplateURLRef::ParseParameter(size_t start,
         Replacement(TemplateURLRef::GOOGLE_OMNIBOX_FOCUS_TYPE, start));
   } else if (parameter == "google:language") {
     replacements->push_back(Replacement(GOOGLE_LANGUAGE, start));
+  } else if (parameter == "google:iOSSearchLanguage") {
+    // TODO(b/343792225): Do not remove this.
+    // The google:iOSSearchLanguage parameter does not appear in any template
+    // URL in components/search_engines/prepopulated_engines.json. However,
+    // template URLs may be served from other sources so even though the value
+    // is no longer required, the parameter still needs to be handled. Doing
+    // nothing here will result in simply removing the parameter from the URL.
   } else if (parameter == "google:contextualSearchVersion") {
     replacements->push_back(
         Replacement(GOOGLE_CONTEXTUAL_SEARCH_VERSION, start));
