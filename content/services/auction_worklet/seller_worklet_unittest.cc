@@ -7395,5 +7395,91 @@ realTimeReporting.contributeOnWorkletLatency(
       /*expected_pa_requests=*/{}, std::move(expected_real_time_contributions));
 }
 
+// A platform contribution is added when trusted scoring signals server returned
+// a non-2xx HTTP response code.
+TEST_F(SellerWorkletRealTimeReportingEnabledTest,
+       TrustedScoringSignalNetworkError) {
+  trusted_scoring_signals_url_ =
+      GURL("https://url.test/trusted_scoring_signals");
+  // Trusted scoring signals URL without any component ads.
+  const GURL kNoComponentSignalsUrl = GURL(
+      "https://url.test/trusted_scoring_signals?hostname=window.test"
+      "&renderUrls=https%3A%2F%2Frender.url.test%2F");
+
+  // A network error when fetching the scoring signals results in null
+  // `trustedScoringSignals`.
+  url_loader_factory_.AddResponse(kNoComponentSignalsUrl.spec(),
+                                  /*content=*/std::string(),
+                                  net::HTTP_NOT_FOUND);
+
+  auction_worklet::mojom::RealTimeReportingContribution expected_histogram(
+      /*bucket=*/100, /*priority_weight=*/0.5,
+      /*latency_threshold=*/std::nullopt);
+  mojom::RealTimeReportingContribution expected_trusted_signal_histogram(
+      /*bucket=*/3, /*priority_weight=*/1,
+      /*latency_threshold=*/std::nullopt);
+
+  RealTimeReportingContributions expected_real_time_contributions;
+  expected_real_time_contributions.push_back(expected_histogram.Clone());
+  expected_real_time_contributions.push_back(
+      expected_trusted_signal_histogram.Clone());
+
+  RunScoreAdWithJavascriptExpectingResult(
+      CreateScoreAdScript("trustedScoringSignals === null ? 1 : 0",
+                          R"(realTimeReporting.contributeToRealTimeHistogram(
+                100, {priorityWeight: 0.5});
+        )"),
+      1, /*expected_errors=*/
+      {base::StringPrintf("Failed to load %s HTTP status = 404 Not Found.",
+                          kNoComponentSignalsUrl.spec().c_str())},
+      mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
+      /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{}, std::move(expected_real_time_contributions));
+}
+
+// A platform contribution is added when trusted scoring signals server returned
+// a non-2xx HTTP response code, even though scoreAd() failed.
+TEST_F(SellerWorkletRealTimeReportingEnabledTest,
+       TrustedScoringSignalNetworkErrorScoreAdFailed) {
+  trusted_scoring_signals_url_ =
+      GURL("https://url.test/trusted_scoring_signals");
+  // Trusted scoring signals URL without any component ads.
+  const GURL kNoComponentSignalsUrl = GURL(
+      "https://url.test/trusted_scoring_signals?hostname=window.test"
+      "&renderUrls=https%3A%2F%2Frender.url.test%2F");
+
+  // A network error when fetching the scoring signals results in null
+  // `trustedScoringSignals`.
+  url_loader_factory_.AddResponse(kNoComponentSignalsUrl.spec(),
+                                  /*content=*/std::string(),
+                                  net::HTTP_NOT_FOUND);
+
+  mojom::RealTimeReportingContribution expected_trusted_signal_histogram(
+      /*bucket=*/3, /*priority_weight=*/1,
+      /*latency_threshold=*/std::nullopt);
+
+  RealTimeReportingContributions expected_real_time_contributions;
+  expected_real_time_contributions.push_back(
+      expected_trusted_signal_histogram.Clone());
+
+  // scoreAd() failed due to no return value.
+  RunScoreAdWithJavascriptExpectingResult(
+      CreateScoreAdScript(""),
+      /*expected_score=*/0, /*expected_errors=*/
+      {base::StringPrintf("Failed to load %s HTTP status = 404 Not Found.",
+                          kNoComponentSignalsUrl.spec().c_str()),
+       "https://url.test/ scoreAd() return: Required field 'desirability' "
+       "is undefined."},
+      mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
+      /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{}, std::move(expected_real_time_contributions));
+}
+
 }  // namespace
 }  // namespace auction_worklet

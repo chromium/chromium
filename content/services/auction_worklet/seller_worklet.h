@@ -218,6 +218,9 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         trusted_scoring_signals_request;
     scoped_refptr<TrustedSignals::Result> trusted_scoring_signals_result;
 
+    // True if failed loading valid trusted scoring signals.
+    bool trusted_bidding_signals_fetch_failed = false;
+
     // Error message from downloading trusted scoring signals, if any. Prepended
     // to errors passed to the ScoreAdCallback.
     std::optional<std::string> trusted_scoring_signals_error_msg;
@@ -357,6 +360,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         const std::optional<std::string>&
             direct_from_seller_auction_signals_header_ad_slot,
         scoped_refptr<TrustedSignals::Result> trusted_scoring_signals,
+        bool trusted_scoring_signals_fetch_failed,
         mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
         const std::optional<blink::AdCurrency>& component_expect_bid_currency,
         const url::Origin& browser_signal_interest_group_owner,

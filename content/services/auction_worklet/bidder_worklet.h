@@ -259,6 +259,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         trusted_bidding_signals_request;
     // Results of loading trusted bidding signals.
     scoped_refptr<TrustedSignals::Result> trusted_bidding_signals_result;
+    // True if failed loading valid trusted bidding signals.
+    bool trusted_bidding_signals_fetch_failed = false;
     // Error message returned by attempt to load
     // `trusted_bidding_signals_result`. Errors loading it are not fatal, so
     // such errors are cached here and only reported on bid completion.
@@ -508,6 +510,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         const std::optional<blink::AdSize>& requested_ad_size,
         uint16_t multi_bid_limit,
         scoped_refptr<TrustedSignals::Result> trusted_bidding_signals_result,
+        bool trusted_bidding_signals_fetch_failed,
         uint64_t trace_id,
         base::ScopedClosureRunner cleanup_generate_bid_task,
         GenerateBidCallbackInternal callback);

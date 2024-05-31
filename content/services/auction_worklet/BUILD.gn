@@ -92,6 +92,8 @@ source_set("auction_worklet") {
     "webidl_compat.h",
     "worklet_loader.cc",
     "worklet_loader.h",
+    "worklet_util.cc",
+    "worklet_util.h",
   ]
 
   sources += get_target_outputs(":protocol_sources")

@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -46,6 +47,7 @@
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "content/services/auction_worklet/worklet_loader.h"
+#include "content/services/auction_worklet/worklet_util.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -788,6 +790,7 @@ void SellerWorklet::V8State::ScoreAd(
     const std::optional<std::string>&
         direct_from_seller_auction_signals_header_ad_slot,
     scoped_refptr<TrustedSignals::Result> trusted_scoring_signals,
+    bool trusted_scoring_signals_fetch_failed,
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
     const std::optional<blink::AdCurrency>& component_expect_bid_currency,
     const url::Origin& browser_signal_interest_group_owner,
@@ -827,7 +830,10 @@ void SellerWorklet::V8State::ScoreAd(
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/base::TimeDelta(),
-        /*errors=*/{"scoreAd() aborted due to zero timeout."});
+        /*errors=*/{"scoreAd() aborted due to zero timeout."},
+        /*pa_requests=*/{},
+        GetRealTimeReportingContributionsOnError(
+            trusted_scoring_signals_fetch_failed, /*is_bidding_signal=*/false));
     return;
   }
 
@@ -856,7 +862,10 @@ void SellerWorklet::V8State::ScoreAd(
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed_timer.Elapsed(),
-        /*errors=*/std::vector<std::string>());
+        /*errors=*/std::vector<std::string>(),
+        /*pa_requests=*/{},
+        GetRealTimeReportingContributionsOnError(
+            trusted_scoring_signals_fetch_failed, /*is_bidding_signal=*/false));
     return;
   }
 
@@ -874,7 +883,10 @@ void SellerWorklet::V8State::ScoreAd(
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed_timer.Elapsed(),
-        /*errors=*/std::vector<std::string>());
+        /*errors=*/std::vector<std::string>(),
+        /*pa_requests=*/{},
+        GetRealTimeReportingContributionsOnError(
+            trusted_scoring_signals_fetch_failed, /*is_bidding_signal=*/false));
     return;
   }
 
@@ -946,7 +958,10 @@ void SellerWorklet::V8State::ScoreAd(
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed_timer.Elapsed(),
-        /*errors=*/std::vector<std::string>());
+        /*errors=*/std::vector<std::string>(),
+        /*pa_requests=*/{},
+        GetRealTimeReportingContributionsOnError(
+            trusted_scoring_signals_fetch_failed, /*is_bidding_signal=*/false));
     return;
   }
   if (!browser_signal_ad_components.empty()) {
@@ -955,7 +970,11 @@ void SellerWorklet::V8State::ScoreAd(
       PostScoreAdCallbackToUserThreadOnError(
           std::move(callback),
           /*scoring_latency=*/elapsed_timer.Elapsed(),
-          /*errors=*/std::vector<std::string>());
+          /*errors=*/std::vector<std::string>(),
+          /*pa_requests=*/{},
+          GetRealTimeReportingContributionsOnError(
+              trusted_scoring_signals_fetch_failed,
+              /*is_bidding_signal=*/false));
       return;
     }
   }
@@ -977,7 +996,10 @@ void SellerWorklet::V8State::ScoreAd(
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed_timer.Elapsed(),
-        /*errors=*/std::move(errors_out));
+        /*errors=*/std::move(errors_out),
+        /*pa_requests=*/{},
+        GetRealTimeReportingContributionsOnError(
+            trusted_scoring_signals_fetch_failed, /*is_bidding_signal=*/false));
     return;
   }
   args.push_back(direct_from_seller_signals);
@@ -1014,17 +1036,14 @@ void SellerWorklet::V8State::ScoreAd(
                               total_timeout.get(), errors_out);
     TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "sellerScript", trace_id);
     if (!success) {
-      PostScoreAdCallbackToUserThread(
-          std::move(callback), /*score=*/0,
-          /*reject_reason=*/mojom::RejectReason::kNotAvailable,
-          /*component_auction_modified_bid_params=*/nullptr,
-          /*bid_in_seller_currency=*/std::nullopt,
-          /*scoring_signals_data_version=*/std::nullopt,
-          /*debug_loss_report_url=*/std::nullopt,
-          /*debug_win_report_url=*/std::nullopt,
+      PostScoreAdCallbackToUserThreadOnError(
+          std::move(callback),
+          /*scoring_latency=*/elapsed_timer.Elapsed(),
+          /*errors=*/std::move(errors_out),
           /*pa_requests=*/{},
-          /*real_time_contributions=*/{},
-          /*scoring_latency=*/elapsed_timer.Elapsed(), std::move(errors_out));
+          GetRealTimeReportingContributionsOnError(
+              trusted_scoring_signals_fetch_failed,
+              /*is_bidding_signal=*/false));
       return;
     }
     context_recycler->AddForDebuggingOnlyBindings();
@@ -1066,6 +1085,11 @@ void SellerWorklet::V8State::ScoreAd(
                elapsed.InMilliseconds() <=
                    contribution->latency_threshold.value();
       });
+
+  // Add platform contributions if there are any.
+  MaybeAddRealTimeReportingPlatformContributions(
+      trusted_scoring_signals_fetch_failed, /*is_bidding_signal=*/false,
+      real_time_contributions);
 
   if (!success) {
     // Keep debug loss reports, Private Aggregation API requests, and real time
@@ -1879,8 +1903,9 @@ void SellerWorklet::OnTrustedScoringSignalsDownloaded(
     std::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
-  task->trusted_scoring_signals_error_msg = std::move(error_msg);
   task->trusted_scoring_signals_result = std::move(result);
+  task->trusted_bidding_signals_fetch_failed = !result ? true : false;
+  task->trusted_scoring_signals_error_msg = std::move(error_msg);
   // Clean up single-use object, now that it has done its job.
   task->trusted_scoring_signals_request.reset();
 
@@ -2008,6 +2033,7 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
           std::move(task->direct_from_seller_result_auction_signals),
           std::move(task->direct_from_seller_auction_signals_header_ad_slot),
           std::move(task->trusted_scoring_signals_result),
+          task->trusted_bidding_signals_fetch_failed,
           std::move(task->browser_signals_other_seller),
           std::move(task->component_expect_bid_currency),
           std::move(task->browser_signal_interest_group_owner),

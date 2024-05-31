@@ -55,6 +55,7 @@
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
 #include "content/services/auction_worklet/worklet_loader.h"
+#include "content/services/auction_worklet/worklet_util.h"
 #include "context_recycler.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
@@ -1097,6 +1098,7 @@ void BidderWorklet::V8State::GenerateBid(
     const std::optional<blink::AdSize>& requested_ad_size,
     uint16_t multi_bid_limit,
     scoped_refptr<TrustedSignals::Result> trusted_bidding_signals_result,
+    bool trusted_bidding_signals_fetch_failed,
     uint64_t trace_id,
     base::ScopedClosureRunner cleanup_generate_bid_task,
     GenerateBidCallbackInternal callback) {
@@ -1123,11 +1125,14 @@ void BidderWorklet::V8State::GenerateBid(
       trace_id,
       /*context_recycler_for_rerun=*/nullptr,
       /*restrict_to_kanon_ads=*/false);
+
   if (!result.has_value()) {
     PostErrorBidCallbackToUserThread(
         std::move(callback),
         /*bidding_latency=*/base::TimeTicks::Now() - bidding_start,
-        PrivateAggregationRequests(), RealTimeReportingContributions());
+        PrivateAggregationRequests(),
+        GetRealTimeReportingContributionsOnError(
+            trusted_bidding_signals_fetch_failed, /*is_bidding_signal=*/true));
     return;
   }
 
@@ -1222,7 +1227,9 @@ void BidderWorklet::V8State::GenerateBid(
               std::move(callback),
               /*bidding_latency=*/base::TimeTicks::Now() - bidding_start,
               std::move(non_kanon_pa_requests),
-              std::move(result->real_time_contributions));
+              GetRealTimeReportingContributionsOnError(
+                  trusted_bidding_signals_fetch_failed,
+                  /*is_bidding_signal=*/true));
           return;
         }
         result = std::move(restricted_result);
@@ -1234,6 +1241,11 @@ void BidderWorklet::V8State::GenerateBid(
       }
     }
   }
+
+  // Add platform contributions if there needs to be one.
+  MaybeAddRealTimeReportingPlatformContributions(
+      trusted_bidding_signals_fetch_failed, /*is_bidding_signal=*/true,
+      result->real_time_contributions);
 
   user_thread_->PostTask(
       FROM_HERE,
@@ -1631,9 +1643,9 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.GenerateBidTime",
                           time_duration);
 
-  std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>
-      real_time_contributions = context_recycler->real_time_reporting_bindings()
-                                    ->TakeRealTimeReportingContributions();
+  RealTimeReportingContributions real_time_contributions =
+      context_recycler->real_time_reporting_bindings()
+          ->TakeRealTimeReportingContributions();
 
   // Remove worklet latency contributions if the worklet execution time is
   // within the threshold.
@@ -2001,8 +2013,9 @@ void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
         result->GetPerGroupData(task->bidder_worklet_non_shared_params->name);
   }
 
-  task->trusted_bidding_signals_error_msg = std::move(error_msg);
   task->trusted_bidding_signals_result = std::move(result);
+  task->trusted_bidding_signals_fetch_failed = !result ? true : false;
+  task->trusted_bidding_signals_error_msg = std::move(error_msg);
   task->trusted_bidding_signals_request.reset();
 
   // Deleting `generate_bid_task` will destroy `generate_bid_client` and thus
@@ -2206,7 +2219,8 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
           std::move(task->browser_signal_recency),
           std::move(task->bidding_browser_signals), task->auction_start_time,
           std::move(task->requested_ad_size), task->multi_bid_limit,
-          std::move(task->trusted_bidding_signals_result), task->trace_id,
+          std::move(task->trusted_bidding_signals_result),
+          task->trusted_bidding_signals_fetch_failed, task->trace_id,
           base::ScopedClosureRunner(std::move(cleanup_generate_bid_task)),
           base::BindOnce(&BidderWorklet::DeliverBidCallbackOnUserThread,
                          weak_ptr_factory_.GetWeakPtr(), task)));

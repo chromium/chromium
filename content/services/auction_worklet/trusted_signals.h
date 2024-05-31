@@ -253,7 +253,7 @@ class CONTENT_EXPORT TrustedSignals {
       std::optional<std::string> error_msg);
 
   // Called on user thread.
-  void DeliverCallbackOnUserThread(scoped_refptr<Result>,
+  void DeliverCallbackOnUserThread(scoped_refptr<Result> result,
                                    std::optional<std::string> error_msg);
 
   // Keys being fetched. For bidding signals, only `bidding_signals_keys_` and

@@ -12238,5 +12238,122 @@ realTimeReporting.contributeOnWorkletLatency(
       std::move(expected_real_time_contributions));
 }
 
+// A platform contribution is added when trusted bidding signals server returned
+// a non-2xx HTTP response code.
+TEST_F(BidderWorkletRealTimeReportingEnabledTest,
+       TrustedBiddingSignalNetworkError) {
+  const GURL kBaseSignalsUrl("https://signals.test/");
+  interest_group_bidding_url_ = kBaseSignalsUrl;
+  const GURL kFullSignalsUrl(
+      "https://signals.test/"
+      "?hostname=top.window.test&keys=key1,key2&interestGroupNames=Fred");
+
+  const char kJson[] = R"(
+    {
+      "keys": {
+        "key1": 1,
+        "key2": [2]
+      }
+    }
+  )";
+
+  // Request with valid TrustedBiddingSignals URL and non-empty keys. Request
+  // should be made. The request fails.
+  interest_group_trusted_bidding_signals_url_ = kBaseSignalsUrl;
+  interest_group_trusted_bidding_signals_keys_ =
+      std::vector<std::string>({"key1", "key2"});
+  url_loader_factory_.AddResponse(kFullSignalsUrl.spec(), kJson,
+                                  net::HTTP_NOT_FOUND);
+
+  auction_worklet::mojom::RealTimeReportingContribution expected_histogram(
+      /*bucket=*/100, /*priority_weight=*/0.5,
+      /*latency_threshold=*/std::nullopt);
+  mojom::RealTimeReportingContribution expected_trusted_signal_histogram(
+      /*bucket=*/2, /*priority_weight=*/1,
+      /*latency_threshold=*/std::nullopt);
+
+  RealTimeReportingContributions expected_real_time_contributions;
+  expected_real_time_contributions.push_back(expected_histogram.Clone());
+  expected_real_time_contributions.push_back(
+      expected_trusted_signal_histogram.Clone());
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          /*raw_return_value=*/
+          R"({ad: trustedBiddingSignals, bid: 1, render:"https://response.test/"})",
+          /*extra_code=*/R"(
+            realTimeReporting.contributeToRealTimeHistogram(
+                100, {priorityWeight: 0.5});
+          )"),
+      mojom::BidderWorkletBid::New(
+          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
+          /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/std::nullopt,
+          /*modeling_signals=*/std::nullopt, base::TimeDelta()),
+      /*expected_data_version=*/std::nullopt,
+      {"Failed to load https://signals.test/"
+       "?hostname=top.window.test&keys=key1,key2&interestGroupNames=Fred HTTP "
+       "status = 404 Not Found."},
+      std::nullopt, std::nullopt,
+      /*expected_set_priority=*/std::nullopt,
+      /*expected_update_priority_signals_overrides=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_non_kanon_pa_requests=*/{},
+      std::move(expected_real_time_contributions));
+}
+
+// A platform contribution is added when trusted scoring signals server returned
+// a non-2xx HTTP response code, even though generateBid() failed.
+TEST_F(BidderWorkletRealTimeReportingEnabledTest,
+       TrustedBiddingSignalNetworkErrorGenerateBidFailed) {
+  const GURL kBaseSignalsUrl("https://signals.test/");
+  interest_group_bidding_url_ = kBaseSignalsUrl;
+  const GURL kFullSignalsUrl(
+      "https://signals.test/"
+      "?hostname=top.window.test&keys=key1,key2&interestGroupNames=Fred");
+
+  const char kJson[] = R"(
+    {
+      "keys": {
+        "key1": 1,
+        "key2": [2]
+      }
+    }
+  )";
+
+  // Request with valid TrustedBiddingSignals URL and non-empty keys. Request
+  // should be made. The request fails.
+  interest_group_trusted_bidding_signals_url_ = kBaseSignalsUrl;
+  interest_group_trusted_bidding_signals_keys_ =
+      std::vector<std::string>({"key1", "key2"});
+  url_loader_factory_.AddResponse(kFullSignalsUrl.spec(), kJson,
+                                  net::HTTP_NOT_FOUND);
+
+  mojom::RealTimeReportingContribution expected_trusted_signal_histogram(
+      /*bucket=*/2, /*priority_weight=*/1,
+      /*latency_threshold=*/std::nullopt);
+
+  RealTimeReportingContributions expected_real_time_contributions;
+  expected_real_time_contributions.push_back(
+      expected_trusted_signal_histogram.Clone());
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      "shrimp",
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      {"https://signals.test/:1 Uncaught ReferenceError: "
+       "shrimp is not defined.",
+       "Failed to load https://signals.test/"
+       "?hostname=top.window.test&keys=key1,key2&interestGroupNames=Fred HTTP "
+       "status = 404 Not Found."},
+      std::nullopt, std::nullopt,
+      /*expected_set_priority=*/std::nullopt,
+      /*expected_update_priority_signals_overrides=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_non_kanon_pa_requests=*/{},
+      std::move(expected_real_time_contributions));
+}
+
 }  // namespace
 }  // namespace auction_worklet
