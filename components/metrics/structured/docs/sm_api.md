@@ -24,11 +24,12 @@ Projects and Events are declared in [//tools/metrics/structured/sync/structured.
 * A `key-rotation` element. The key rotation describes how often the key used to generate the id is rotated to a new value. E.G. If the key rotations value is 90 then every 90 days the key will be changed resulting in new id's.
 * The project, each event, and metric must have a `summary` element. This will be used to describe the purpose of the project and when an event is recorded.
 * A series of events are defined. Please see [Event Definition](#event-definition) for more details.
+* _(Optional)_ A project has a comma separated list of targets to build for. If not defined, defaults to `chromium`. If the target `webui` is added, the project will also generate code to be used in WebUI's Renderer process (i.e. Typescript).
 
 
 ### Project Example
 ```xml
-<project name="Navigation">
+<project name="Navigation" targets="chromium,webui">
   <owner>navigator1@chromium.com</owner>
   <owner>navigation-team@google.com</owner>
   <id>project</id>
@@ -102,12 +103,13 @@ To declare events to be used in CrOS Events they must be declared in the [CrOSEv
 
 We are working on an alternative method for declaring CrOS Events projects that is more scalable and easier to maintain.
 
-## Client API
+## Client API (C++)
+By default, all projects in `structured.xml` will be built for the `chromium` target, meaning each event in the project will have an Event API generated in C++.
 
-### Event API
+### Event API (C++)
 At build time, a C++ API is generated from the xml. The project name will become the namespace (`navigation`) and the event name is the event's class name (`PageTransition`). Each metric has a setter method in the format `Set<MetricName>` (`SetPageId`). There are l-value and r-value versions for each metric method.
 
-### Recording
+### Recording (C++)
 In order to record an event the `StructuredMetricsClient` singleton is needed, defined in [//components/metrics/structured/structured_metrics_client.h](https://source.chromium.org/chromium/chromium/src/+/main:components/metrics/structured/structured_metrics_client.h).
 
 Recording can be done by:
@@ -123,6 +125,52 @@ ms::StructuredMetricsClient::Record(
   nav::PageTransition()
     .SetPageId(page_id)
     .SetTransitionDirection(nav::Direction::Forward));
+```
+
+## Client API (Typescript)
+When a project is given a `target` of `webui`, they will have an Event API for each event, generated in Typescript, meant to be used for WebUI. The events are sent from the Renderer process to the Browser process using Mojo. Additionally, there is a recording API that can be used to record the event.
+
+### Event API (Typescript)
+At build time, a Typescript API is generated from the xml for each event. Each event will generate a builder class in Typescript. Using the same example for the C++ Event API, we will get the following:
+* Builder class name is `<ProjectName>_<EventName>`, e.g. `Navigation_PageTransition`
+* Two setter methods generated, `setPageId()` and `setTransitionDirection()`
+* One `build()` method
+
+#### Enums in Typescript
+Enums are declared at the top level in the generated `structured_events.ts` file. In the above example, we will then get an enum declared like:
+```ts
+export enum Navigation_Direction {
+None = 0,
+Forward = 1,
+Back = 3
+};
+```
+
+#### CrOS Events `recorded_time_since_boot`
+Since it is not possible to obtain the system uptime when recording the event in Typescript, the system uptime is inferred using the event timestamp, used in the following equation:
+
+```
+event_system_uptime = browser_system_uptime - (browser_timestamp - event_timestamp)
+```
+
+
+### Recording (Typescript)
+In order to record an event, the `recordStructuredEvent()` function exported by `chrome://resources/ash/common/metrics/structured_metrics_service.js` can be used. It will create the required instance of the `StructuredMetricsServiceInterface`, which is the Mojo interface.
+
+Creating an event and recording it would then look like:
+```ts
+import {recordStructuredEvent} from 'chrome://resources/ash/common/metrics/structured_metrics_service.js';
+import * as StructuredEvents from 'chrome://resources/ash/common/metrics/structured_events.js';
+
+// Construct the event.
+let structured_event: any = new StructuredEvents.Navigation_PageTransition()
+      .setPageId(page_id)
+      .setTransitionDirection(
+        StructuredEvents.Navigation_Direction.Forward)
+      .build();
+
+// Record the event.
+recordStructuredEvent(structured_event);
 ```
 
 ## Local Verification
