@@ -161,6 +161,8 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   SplitViewDividerView* divider_view_for_testing() { return divider_view_; }
 
  private:
+  class SplitViewDividerWidget;
+
   // Refreshes the divider's state by creating or closing the divider widget if
   // needed, and updating its visibility, bounds, and stacking order as needed.
   // If `observed_windows_changed` is true, this will refresh the divider

@@ -235,10 +235,9 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   // Called when windows are being activated/deactivated during
   // overview mode.
-  void OnWindowActivating(
-      ::wm::ActivationChangeObserver::ActivationReason reason,
-      aura::Window* gained_active,
-      aura::Window* lost_active);
+  void OnWindowActivating(wm::ActivationChangeObserver::ActivationReason reason,
+                          aura::Window* gained_active,
+                          aura::Window* lost_active);
 
   // Returns true when either the `SavedDeskLibraryView` or
   // `SavedDeskDialog` is the window that is losing activation.

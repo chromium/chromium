@@ -165,6 +165,7 @@ MruWindowTracker::WindowList BuildWindowListInternal(
         if (!can_include_window_predicate(window))
           continue;
 
+        DCHECK(!window->GetProperty(kExcludeInMruKey));
         windows.emplace_back(window);
       }
     }

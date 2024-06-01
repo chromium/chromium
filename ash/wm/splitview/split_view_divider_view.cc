@@ -14,6 +14,7 @@
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "base/functional/callback_helpers.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -21,7 +22,10 @@
 #include "ui/display/screen.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/view.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -87,6 +91,17 @@ SplitViewDividerView::SplitViewDividerView(SplitViewDivider* divider)
   SetBackground(
       views::CreateThemedSolidBackground(cros_tokens::kCrosSysSecondary));
   RefreshFeedbackButton(/*visible=*/false);
+
+  SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  set_allow_deactivate_on_esc(true);
+  SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_ASH_SNAP_GROUP_DIVIDER_A11Y_NAME));
+  GetViewAccessibility().SetDescription(
+      l10n_util::GetStringUTF16(IDS_ASH_SNAP_GROUP_DIVIDER_A11Y_DESCRIPTION));
+  TooltipTextChanged();
+  SetAccessibleRole(ax::mojom::Role::kToolbar);
+
+  views::FocusRing::Install(this);
 }
 
 SplitViewDividerView::~SplitViewDividerView() = default;
@@ -247,6 +262,22 @@ bool SplitViewDividerView::DoesIntersectRect(const views::View* target,
                                              const gfx::Rect& rect) const {
   DCHECK_EQ(target, this);
   return true;
+}
+
+views::View* SplitViewDividerView::GetDefaultFocusableChild() {
+  return this;
+}
+
+void SplitViewDividerView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kToolbar;
+}
+
+void SplitViewDividerView::OnFocus() {
+  views::AccessiblePaneView::OnFocus();
+
+  // Explicitly set the bounds to repaint the focus ring.
+  const gfx::Rect focus_bounds = GetLocalBounds();
+  views::FocusRing::Get(this)->SetBoundsRect(focus_bounds);
 }
 
 gfx::Rect SplitViewDividerView::GetHandlerViewBoundsInScreenForTesting() const {

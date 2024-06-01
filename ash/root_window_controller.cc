@@ -698,13 +698,16 @@ ScreenRotationAnimator* RootWindowController::GetScreenRotationAnimator() {
 void RootWindowController::Shutdown(aura::Window* destination_root) {
   is_shutting_down_ = true;
 
+  // Moving root windows can cause an observer to be destroyed, i.e. if
+  // `SplitViewController::OnWindowRemovingFromRootWindow()` ends overview, the
+  // `screen_rotation_animator_` should be deleted first to avoid a dangling
+  // raw_ptr. Destroy the `screen_rotation_animator_` now to avoid this and any
+  // potential crashes if there's any ongoing animation. See http://b/293667233.
+  screen_rotation_animator_.reset();
+
   if (destination_root) {
     MoveWindowsTo(destination_root);
   }
-
-  // Destroy the `screen_rotation_animator_` now to avoid any potential crashes
-  // if there's any ongoing animation. See http://b/293667233.
-  screen_rotation_animator_.reset();
 
   aura::Window* root_window = GetRootWindow();
   auto targeter = root_window->SetEventTargeter(

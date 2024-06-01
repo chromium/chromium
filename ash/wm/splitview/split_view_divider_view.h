@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/views/view.h"
+#include "ui/views/accessible_pane_view.h"
 #include "ui/views/view_targeter_delegate.h"
 
 namespace gfx {
@@ -33,9 +33,9 @@ class SplitViewDivider;
 //         |   |<----feedback_button_
 //         +---+
 //          | |
-class SplitViewDividerView : public views::View,
+class SplitViewDividerView : public views::AccessiblePaneView,
                              public views::ViewTargeterDelegate {
-  METADATA_HEADER(SplitViewDividerView, views::View)
+  METADATA_HEADER(SplitViewDividerView, views::AccessiblePaneView)
 
  public:
   explicit SplitViewDividerView(SplitViewDivider* divider);
@@ -61,6 +61,11 @@ class SplitViewDividerView : public views::View,
   // views::ViewTargeterDelegate:
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
+
+  // AccessiblePaneView:
+  views::View* GetDefaultFocusableChild() override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnFocus() override;
 
   ASH_EXPORT gfx::Rect GetHandlerViewBoundsInScreenForTesting() const;
 

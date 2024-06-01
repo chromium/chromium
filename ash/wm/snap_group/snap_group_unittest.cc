@@ -7350,6 +7350,55 @@ TEST_F(SnapGroupMultiDisplayTest, NewDeskButtonStateUpdateOnMultiDisplay) {
 }
 
 // -----------------------------------------------------------------------------
+// SnapGroupA11yTest:
+
+using SnapGroupA11yTest = SnapGroupTest;
+
+// Tests that the divider receives system pane focus.
+TEST_F(SnapGroupA11yTest, DividerPaneFocus) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+
+  auto* snap_group =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w1.get());
+  ASSERT_TRUE(snap_group);
+  auto* snap_group_divider = snap_group->snap_group_divider();
+
+  // Test initially the divider is not active and focus ring is hidden.
+  auto* divider_widget = snap_group_divider->divider_widget();
+  EXPECT_FALSE(divider_widget->IsActive());
+
+  auto* focus_ring =
+      views::FocusRing::Get(snap_group_divider->divider_view_for_testing());
+  ASSERT_TRUE(focus_ring);
+  EXPECT_FALSE(focus_ring->GetVisible());
+
+  // Cycle Backward. Test the divider is active and focus ring is shown.
+  auto* generator = GetEventGenerator();
+  generator->PressKey(ui::VKEY_BROWSER_BACK, ui::EF_CONTROL_DOWN);
+  EXPECT_TRUE(divider_widget->IsActive());
+  EXPECT_TRUE(focus_ring->GetVisible());
+  constexpr int kFocusRingPaddingDp = 8;
+  EXPECT_TRUE(focus_ring->GetBoundsInScreen().ApproximatelyEqual(
+      snap_group_divider_bounds_in_screen(),
+      /*tolerance=*/kFocusRingPaddingDp));
+
+  // Cycle Backward. Test the divider loses active and focus ring is hidden.
+  generator->PressKey(ui::VKEY_BROWSER_BACK, ui::EF_CONTROL_DOWN);
+  EXPECT_FALSE(divider_widget->IsActive());
+  EXPECT_FALSE(focus_ring->GetVisible());
+
+  // Cycle Forward. Test the divider is active and focus ring is shown.
+  generator->PressKey(ui::VKEY_BROWSER_FORWARD, ui::EF_CONTROL_DOWN);
+  EXPECT_TRUE(divider_widget->IsActive());
+  EXPECT_TRUE(focus_ring->GetVisible());
+  EXPECT_TRUE(focus_ring->GetBoundsInScreen().ApproximatelyEqual(
+      snap_group_divider_bounds_in_screen(),
+      /*tolerance=*/kFocusRingPaddingDp));
+}
+
+// -----------------------------------------------------------------------------
 // SnapGroupHistogramTest:
 
 class SnapGroupHistogramTest : public SnapGroupTest {

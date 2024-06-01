@@ -85,6 +85,11 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kExcludeFromTransientTreeTransformKey;
 
+// A property key that ignores window activation changes on the window even if
+// it is activatable.
+ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
+    kIgnoreWindowActivationKey;
+
 // A property key to indicate whether we should hide this window in the shelf.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kHideInShelfKey;

@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "ash/display/screen_orientation_controller.h"
+#include "ash/focus_cycler.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
+#include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -25,6 +27,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/view_targeter_delegate.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -89,9 +92,12 @@ views::Widget::InitParams CreateWidgetInitParams(aura::Window* parent_window,
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
-  params.activatable = views::Widget::InitParams::Activatable::kNo;
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.parent = parent_window;
   params.bounds = bounds;
+  params.init_properties_container.SetProperty(kExcludeInMruKey, true);
+  params.init_properties_container.SetProperty(kIgnoreWindowActivationKey,
+                                               true);
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
   // Exclude the divider from getting transformed with its transient parent
   // window when we are resizing. The divider will set its own transforms.
@@ -102,6 +108,29 @@ views::Widget::InitParams CreateWidgetInitParams(aura::Window* parent_window,
 }
 
 }  // namespace
+
+// SplitViewDividerWidget observes its native widget activation change to set
+// pane focus on its contents view.
+class SplitViewDivider::SplitViewDividerWidget : public views::Widget {
+ public:
+  SplitViewDividerWidget() = default;
+  SplitViewDividerWidget(const SplitViewDividerWidget&) = delete;
+  SplitViewDividerWidget& operator=(const SplitViewDividerWidget&) = delete;
+  ~SplitViewDividerWidget() override = default;
+
+  // views::Widget:
+  bool OnNativeWidgetActivationChanged(bool active) override {
+    if (!Widget::OnNativeWidgetActivationChanged(active)) {
+      return false;
+    }
+    if (active) {
+      auto* divider_view =
+          views::AsViewClass<SplitViewDividerView>(GetContentsView());
+      divider_view->SetPaneFocusAndFocusDefault();
+    }
+    return true;
+  }
+};
 
 SplitViewDivider::SplitViewDivider(LayoutDividerController* controller)
     : controller_(controller) {}
@@ -532,7 +561,9 @@ void SplitViewDivider::RefreshDividerState(bool observed_windows_changed) {
   if (target_visibility_) {
     UpdateDividerBounds();
     if (update_visibility) {
-      divider_widget_->Show();
+      // Call `ShowInactive()` to avoid an unnecessary window activation change
+      // when the divider is shown or hidden.
+      divider_widget_->ShowInactive();
       // Since the divider may be hidden and re-shown during
       // `SnapGroupController::OnOverviewModeStarting|Ending()`,
       // we need to refresh the stacking order when it's shown again.
@@ -553,7 +584,7 @@ void SplitViewDivider::CreateDividerWidget(int divider_position) {
   DCHECK(!divider_widget_);
   CHECK_GE(observed_windows_.size(), 1u);
   // Native widget owns this widget.
-  divider_widget_ = new views::Widget;
+  divider_widget_ = new SplitViewDividerWidget;
   divider_widget_->set_focus_on_creation(false);
   aura::Window* parent_container = nullptr;
   aura::Window* top_window = window_util::GetTopMostWindow(observed_windows_);
@@ -588,6 +619,8 @@ void SplitViewDivider::CreateDividerWidget(int divider_position) {
   // destroying.
   wm::TransientWindowManager::GetOrCreate(divider_widget_native_window)
       ->set_parent_controls_lifetime(false);
+
+  Shell::Get()->focus_cycler()->AddWidget(divider_widget_);
 }
 
 void SplitViewDivider::CloseDividerWidget() {
@@ -602,6 +635,7 @@ void SplitViewDivider::CloseDividerWidget() {
   dragged_window_ = nullptr;
 
   if (divider_widget_) {
+    Shell::Get()->focus_cycler()->RemoveWidget(divider_widget_);
     auto* divider_window = divider_widget_->GetNativeWindow();
     if (auto* transient_parent = wm::GetTransientParent(divider_window)) {
       wm::RemoveTransientChild(transient_parent, divider_window);

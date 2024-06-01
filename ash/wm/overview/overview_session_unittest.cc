@@ -9239,6 +9239,26 @@ TEST_F(SplitViewOverviewSessionTest, WindowVisibleAfterMinimizeUnminimize) {
   EXPECT_EQ(1.f, window->layer()->GetTargetOpacity());
 }
 
+// Tests the divider gains and loses activation in tablet mode.
+TEST_F(SplitViewOverviewSessionTest, KeyboardFocus) {
+  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  split_view_controller()->SnapWindow(window.get(), SnapPosition::kPrimary);
+  ASSERT_TRUE(InOverviewSession());
+
+  auto* divider_widget =
+      split_view_controller()->split_view_divider()->divider_widget();
+  EXPECT_FALSE(divider_widget->IsActive());
+
+  // Test the divider gains activation.
+  while (!divider_widget->IsActive()) {
+    PressAndReleaseKey(ui::VKEY_BROWSER_FORWARD, ui::EF_CONTROL_DOWN);
+  }
+
+  // Test the divider loses activation.
+  PressAndReleaseKey(ui::VKEY_BROWSER_FORWARD, ui::EF_CONTROL_DOWN);
+  EXPECT_FALSE(divider_widget->IsActive());
+}
+
 // Test the split view and overview functionalities in clamshell mode. Split
 // view is only active when overview is active in clamshell mode.
 class SplitViewOverviewSessionInClamshellTest

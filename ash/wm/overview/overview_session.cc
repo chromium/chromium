@@ -411,8 +411,9 @@ void OverviewSession::Shutdown() {
   // Hide the focus widget on overview session end to prevent it from retaining
   // focus and handling key press events now that overview session is not
   // consuming them.
-  if (overview_focus_widget_)
+  if (overview_focus_widget_) {
     overview_focus_widget_->Hide();
+  }
 }
 
 void OverviewSession::OnGridEmpty() {
@@ -881,7 +882,7 @@ void OverviewSession::OnStartingAnimationComplete(bool canceled,
 }
 
 void OverviewSession::OnWindowActivating(
-    ::wm::ActivationChangeObserver::ActivationReason reason,
+    wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* gained_active,
     aura::Window* lost_active) {
   if (ignore_activations_ || gained_active == GetOverviewFocusWindow())
@@ -897,6 +898,12 @@ void OverviewSession::OnWindowActivating(
   if (lost_active && lost_active->GetProperty(kOverviewUiKey) &&
       lost_active->GetProperty(aura::client::kModalKey) ==
           ui::ModalType::MODAL_TYPE_SYSTEM) {
+    return;
+  }
+
+  // If the window should be ignored for activation changes, i.e.
+  // SplitViewDivider, do not end overview.
+  if (lost_active && lost_active->GetProperty(kIgnoreWindowActivationKey)) {
     return;
   }
 
