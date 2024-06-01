@@ -10,7 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
-#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_controller.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/views/mahi/mahi_condensed_menu_view.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
@@ -65,8 +65,10 @@ void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
   }
 
   if (features::IsMagicBoostEnabled() &&
-      MagicBoostController::Get()->ShouldQuickAnswersAndMahiShowOptIn()) {
-    MagicBoostController::Get()->ShowOptInUi(anchor_bounds);
+      MagicBoostCardController::Get()->ShouldQuickAnswersAndMahiShowOptIn()) {
+    // TODO(b/344037679): Remove this logic when we use
+    // `ReadWriteCardsManagerImpl` to fetch the controller.
+    MagicBoostCardController::Get()->ShowOptInUi(anchor_bounds);
     return;
   }
 
@@ -97,7 +99,9 @@ void MahiMenuController::OnDismiss(bool is_other_command_executed) {
   }
 
   if (features::IsMagicBoostEnabled()) {
-    MagicBoostController::Get()->CloseOptInUi();
+    // TODO(b/344037679): Remove this logic when we use
+    // `ReadWriteCardsManagerImpl` to fetch the controller.
+    MagicBoostCardController::Get()->CloseOptInUi();
   }
 
   read_write_cards_ui_controller_->RemoveMahiUi();

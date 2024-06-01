@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_controller.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 
 #include "base/no_destructor.h"
 #include "chrome/browser/chromeos/mahi/mahi_prefs_controller.h"
@@ -22,20 +22,20 @@ namespace chromeos {
 
 namespace {
 
-MagicBoostController* g_magic_boost_controller_for_testing = nullptr;
+MagicBoostCardController* g_magic_boost_opt_in_handler_for_testing = nullptr;
 
 }  // namespace
 
 // static
-MagicBoostController* MagicBoostController::Get() {
-  if (g_magic_boost_controller_for_testing) {
-    return g_magic_boost_controller_for_testing;
+MagicBoostCardController* MagicBoostCardController::Get() {
+  if (g_magic_boost_opt_in_handler_for_testing) {
+    return g_magic_boost_opt_in_handler_for_testing;
   }
-  static base::NoDestructor<MagicBoostController> instance;
+  static base::NoDestructor<MagicBoostCardController> instance;
   return instance.get();
 }
 
-MagicBoostController::MagicBoostController() {
+MagicBoostCardController::MagicBoostCardController() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   mahi_prefs_controller_ = std::make_unique<mahi::MahiPrefsControllerAsh>();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -43,9 +43,10 @@ MagicBoostController::MagicBoostController() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-MagicBoostController::~MagicBoostController() = default;
+MagicBoostCardController::~MagicBoostCardController() = default;
 
-void MagicBoostController::ShowOptInUi(const gfx::Rect& anchor_view_bounds) {
+void MagicBoostCardController::ShowOptInUi(
+    const gfx::Rect& anchor_view_bounds) {
   CHECK(!opt_in_widget_);
   CHECK(!disclaimer_widget_);
   opt_in_widget_ =
@@ -53,11 +54,11 @@ void MagicBoostController::ShowOptInUi(const gfx::Rect& anchor_view_bounds) {
   opt_in_widget_->ShowInactive();
 }
 
-void MagicBoostController::CloseOptInUi() {
+void MagicBoostCardController::CloseOptInUi() {
   opt_in_widget_.reset();
 }
 
-void MagicBoostController::ShowDisclaimerUi() {
+void MagicBoostCardController::ShowDisclaimerUi() {
   if (disclaimer_widget_) {
     return;
   }
@@ -65,37 +66,40 @@ void MagicBoostController::ShowDisclaimerUi() {
   disclaimer_widget_->Show();
 }
 
-void MagicBoostController::CloseDisclaimerUi() {
+void MagicBoostCardController::CloseDisclaimerUi() {
   disclaimer_widget_.reset();
 }
 
-bool MagicBoostController::ShouldQuickAnswersAndMahiShowOptIn() {
+bool MagicBoostCardController::ShouldQuickAnswersAndMahiShowOptIn() {
   // TODO(b/341485303): Check for Magic Boost consent status.
-  return true;
+  return false;
 }
 
-void MagicBoostController::SetAllFeaturesState(bool enabled) {
+void MagicBoostCardController::SetAllFeaturesState(bool enabled) {
   SetQuickAnswersAndMahiFeaturesState(enabled);
   SetOrcaFeatureState(enabled);
 }
 
-void MagicBoostController::SetQuickAnswersAndMahiFeaturesState(bool enabled) {
+void MagicBoostCardController::SetQuickAnswersAndMahiFeaturesState(
+    bool enabled) {
   mahi_prefs_controller_->SetMahiEnabled(enabled);
 
   // TODO(b/339043693): Enable/disable Quick Answers.
 }
 
-void MagicBoostController::SetIsOrcaIncludedForTest(bool include) {
+void MagicBoostCardController::SetIsOrcaIncludedForTest(bool include) {
   is_orca_included_ = include;
 }
 
-ScopedMagicBoostControllerForTesting::ScopedMagicBoostControllerForTesting(
-    MagicBoostController* controller_for_testing) {
-  g_magic_boost_controller_for_testing = controller_for_testing;
+ScopedMagicBoostCardControllerForTesting::
+    ScopedMagicBoostCardControllerForTesting(
+        MagicBoostCardController* controller_for_testing) {
+  g_magic_boost_opt_in_handler_for_testing = controller_for_testing;
 }
 
-ScopedMagicBoostControllerForTesting::~ScopedMagicBoostControllerForTesting() {
-  g_magic_boost_controller_for_testing = nullptr;
+ScopedMagicBoostCardControllerForTesting::
+    ~ScopedMagicBoostCardControllerForTesting() {
+  g_magic_boost_opt_in_handler_for_testing = nullptr;
 }
 
 }  // namespace chromeos

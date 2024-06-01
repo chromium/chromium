@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
-#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_controller.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_disclaimer_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "ui/events/test/event_generator.h"
@@ -56,7 +56,7 @@ class MagicBoostOptInCardTest : public ChromeViewsTestBase {
 };
 
 TEST_F(MagicBoostOptInCardTest, ButtonActions) {
-  auto* controller = MagicBoostController::Get();
+  auto* controller = MagicBoostCardController::Get();
 
   // Show the opt-in UI card.
   controller->ShowOptInUi(/*anchor_bounds=*/gfx::Rect());

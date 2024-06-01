@@ -10,8 +10,8 @@
 
 #include "base/functional/bind.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
-#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_controller.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -306,7 +306,7 @@ void MagicBoostDisclaimerView::RequestFocus() {
 }
 
 void MagicBoostDisclaimerView::OnAcceptButtonPressed() {
-  auto* controller = MagicBoostController::Get();
+  auto* controller = MagicBoostCardController::Get();
   if (controller->is_orca_included()) {
     controller->SetAllFeaturesState(true);
   } else {
@@ -318,7 +318,7 @@ void MagicBoostDisclaimerView::OnAcceptButtonPressed() {
 }
 
 void MagicBoostDisclaimerView::OnDeclineButtonPressed() {
-  auto* controller = MagicBoostController::Get();
+  auto* controller = MagicBoostCardController::Get();
   if (controller->is_orca_included()) {
     controller->SetAllFeaturesState(false);
   } else {

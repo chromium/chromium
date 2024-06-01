@@ -6,9 +6,9 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
-#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_controller.h"
-#include "chrome/browser/ui/chromeos/magic_boost/test/mock_magic_boost_controller.h"
+#include "chrome/browser/ui/chromeos/magic_boost/test/mock_magic_boost_card_controller.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,23 +55,24 @@ class MagicBoostDisclaimerViewTest : public ChromeViewsTestBase {
         &lottie::ParseLottieAsThemedStillImage);
 #endif
 
-    scoped_magic_boost_controller_ =
-        std::make_unique<ScopedMagicBoostControllerForTesting>(
-            &mock_magic_boost_controller_);
+    scoped_magic_boost_card_controller_ =
+        std::make_unique<ScopedMagicBoostCardControllerForTesting>(
+            &mock_magic_boost_card_controller_);
   }
 
-  MockMagicBoostController& mock_magic_boost_controller() {
-    return mock_magic_boost_controller_;
+  MockMagicBoostCardController& mock_magic_boost_card_controller() {
+    return mock_magic_boost_card_controller_;
   }
 
  private:
-  testing::NiceMock<MockMagicBoostController> mock_magic_boost_controller_;
-  std::unique_ptr<ScopedMagicBoostControllerForTesting>
-      scoped_magic_boost_controller_;
+  testing::NiceMock<MockMagicBoostCardController>
+      mock_magic_boost_card_controller_;
+  std::unique_ptr<ScopedMagicBoostCardControllerForTesting>
+      scoped_magic_boost_card_controller_;
 };
 
 TEST_F(MagicBoostDisclaimerViewTest, ButtonActions) {
-  auto* controller = &(mock_magic_boost_controller());
+  auto* controller = &(mock_magic_boost_card_controller());
 
   // Show the disclaimer view.
   controller->ShowDisclaimerUi();
@@ -81,7 +82,7 @@ TEST_F(MagicBoostDisclaimerViewTest, ButtonActions) {
   // Pressing the accept button without `is_orca_included` should call
   // `SetQuickAnswersAndMahiFeaturesState(true)`.
   EXPECT_FALSE(controller->is_orca_included());
-  EXPECT_CALL(mock_magic_boost_controller(),
+  EXPECT_CALL(mock_magic_boost_card_controller(),
               SetQuickAnswersAndMahiFeaturesState(true));
   auto* accept_button = GetAcceptButton(diclaimer_view_widget);
   ASSERT_TRUE(accept_button);
@@ -92,7 +93,7 @@ TEST_F(MagicBoostDisclaimerViewTest, ButtonActions) {
   controller->SetIsOrcaIncludedForTest(true);
   EXPECT_TRUE(controller->is_orca_included());
 
-  EXPECT_CALL(mock_magic_boost_controller(), SetAllFeaturesState(true));
+  EXPECT_CALL(mock_magic_boost_card_controller(), SetAllFeaturesState(true));
   controller->ShowDisclaimerUi();
   accept_button = GetAcceptButton(diclaimer_view_widget);
   ASSERT_TRUE(accept_button);
@@ -102,7 +103,7 @@ TEST_F(MagicBoostDisclaimerViewTest, ButtonActions) {
   // `SetQuickAnswersAndMahiFeaturesState(false)`.
   controller->SetIsOrcaIncludedForTest(false);
   EXPECT_FALSE(controller->is_orca_included());
-  EXPECT_CALL(mock_magic_boost_controller(),
+  EXPECT_CALL(mock_magic_boost_card_controller(),
               SetQuickAnswersAndMahiFeaturesState(false));
   controller->ShowDisclaimerUi();
   auto* decline_button = GetDeclineButton(diclaimer_view_widget);
@@ -113,7 +114,7 @@ TEST_F(MagicBoostDisclaimerViewTest, ButtonActions) {
   // `SetQuickAnswersAndMahiFeaturesState(false)`.
   controller->SetIsOrcaIncludedForTest(true);
   EXPECT_TRUE(controller->is_orca_included());
-  EXPECT_CALL(mock_magic_boost_controller(), SetAllFeaturesState(false));
+  EXPECT_CALL(mock_magic_boost_card_controller(), SetAllFeaturesState(false));
   controller->ShowDisclaimerUi();
   decline_button = GetDeclineButton(diclaimer_view_widget);
   ASSERT_TRUE(decline_button);

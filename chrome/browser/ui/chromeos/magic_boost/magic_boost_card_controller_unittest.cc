@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_controller.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 
 #include <memory>
 
@@ -14,9 +14,9 @@
 
 namespace chromeos {
 
-class MagicBoostControllerTest : public ChromeViewsTestBase {
+class MagicBoostCardControllerTest : public ChromeViewsTestBase {
  public:
-  MagicBoostControllerTest() {
+  MagicBoostCardControllerTest() {
 // Sets the default functions for the test to create image with the lottie
 // resource id. Otherwise there's no `g_parse_lottie_as_still_image_` set in the
 // `ResourceBundle`.
@@ -28,8 +28,8 @@ class MagicBoostControllerTest : public ChromeViewsTestBase {
   }
 };
 
-TEST_F(MagicBoostControllerTest, DisclaimerUi) {
-  auto* controller = MagicBoostController::Get();
+TEST_F(MagicBoostCardControllerTest, DisclaimerUi) {
+  auto* controller = MagicBoostCardController::Get();
   EXPECT_FALSE(controller->disclaimer_widget_for_test());
 
   controller->ShowDisclaimerUi();
@@ -44,8 +44,8 @@ TEST_F(MagicBoostControllerTest, DisclaimerUi) {
   EXPECT_FALSE(controller->disclaimer_widget_for_test());
 }
 
-TEST_F(MagicBoostControllerTest, OptInUi) {
-  auto* controller = MagicBoostController::Get();
+TEST_F(MagicBoostCardControllerTest, OptInUi) {
+  auto* controller = MagicBoostCardController::Get();
 
   // Initially the opt-in widget is not visible.
   EXPECT_FALSE(controller->opt_in_widget_for_test());

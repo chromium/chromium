@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_CONTROLLER_H_
-#define CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_CARD_CONTROLLER_H_
+#define CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_CARD_CONTROLLER_H_
 
+#include <cstdint>
 #include <memory>
 
 #include "base/no_destructor.h"
@@ -24,14 +25,14 @@ class MahiPrefsController;
 
 namespace chromeos {
 
-// The controller that manages the lifetime of opt-in and disclaimer widgets.
+// The controller that manages the lifetime of opt-in cards.
 // Some functions in this controller are virtual for testing.
-class MagicBoostController {
+class MagicBoostCardController {
  public:
-  MagicBoostController(const MagicBoostController&) = delete;
-  MagicBoostController& operator=(const MagicBoostController&) = delete;
+  MagicBoostCardController(const MagicBoostCardController&) = delete;
+  MagicBoostCardController& operator=(const MagicBoostCardController&) = delete;
 
-  static MagicBoostController* Get();
+  static MagicBoostCardController* Get();
 
   // Shows/closes Magic Boost opt-in widget.
   virtual void ShowOptInUi(const gfx::Rect& anchor_view_bounds);
@@ -64,10 +65,10 @@ class MagicBoostController {
   }
 
  protected:
-  friend class base::NoDestructor<MagicBoostController>;
+  friend class base::NoDestructor<MagicBoostCardController>;
 
-  MagicBoostController();
-  ~MagicBoostController();
+  MagicBoostCardController();
+  ~MagicBoostCardController();
 
  private:
   // If Orca feature is included.
@@ -79,15 +80,15 @@ class MagicBoostController {
   std::unique_ptr<::mahi::MahiPrefsController> mahi_prefs_controller_;
 };
 
-// Helper class to automatically set and reset the `MagicBoostController` global
-// instance for testing.
-class ScopedMagicBoostControllerForTesting {
+// Helper class to automatically set and reset the `MagicBoostCardController`
+// global instance for testing.
+class ScopedMagicBoostCardControllerForTesting {
  public:
-  explicit ScopedMagicBoostControllerForTesting(
-      MagicBoostController* controller_for_testing);
-  ~ScopedMagicBoostControllerForTesting();
+  explicit ScopedMagicBoostCardControllerForTesting(
+      MagicBoostCardController* controller_for_testing);
+  ~ScopedMagicBoostCardControllerForTesting();
 };
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_CARD_CONTROLLER_H_

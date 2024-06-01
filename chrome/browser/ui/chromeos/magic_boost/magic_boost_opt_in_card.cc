@@ -8,8 +8,8 @@
 
 #include "build/branding_buildflags.h"
 #include "chrome/browser/chromeos/mahi/mahi_prefs_controller.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
-#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_controller.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -264,13 +264,13 @@ void MagicBoostOptInCard::RequestFocus() {
 }
 
 void MagicBoostOptInCard::OnPrimaryButtonPressed() {
-  auto* controller = MagicBoostController::Get();
+  auto* controller = MagicBoostCardController::Get();
   controller->CloseOptInUi();
   controller->ShowDisclaimerUi();
 }
 
 void MagicBoostOptInCard::OnSecondaryButtonPressed() {
-  auto* controller = MagicBoostController::Get();
+  auto* controller = MagicBoostCardController::Get();
   controller->CloseOptInUi();
   // TODO(b/341158134): Disable opt-in card from showing again when "No thanks"
   // is pressed. We should also use `MagicBoostState::Get()` here instead when

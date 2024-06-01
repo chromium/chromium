@@ -8,9 +8,9 @@ assert(is_chromeos)
 
 source_set("magic_boost") {
   sources = [
+    "magic_boost_card_controller.cc",
+    "magic_boost_card_controller.h",
     "magic_boost_constants.h",
-    "magic_boost_controller.cc",
-    "magic_boost_controller.h",
     "magic_boost_disclaimer_view.cc",
     "magic_boost_disclaimer_view.h",
     "magic_boost_opt_in_card.cc",
@@ -37,8 +37,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
-    "test/mock_magic_boost_controller.cc",
-    "test/mock_magic_boost_controller.h",
+    "test/mock_magic_boost_card_controller.cc",
+    "test/mock_magic_boost_card_controller.h",
   ]
 
   deps = [
