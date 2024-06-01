@@ -64,25 +64,6 @@ std::string SetGammaAdjustmentAction(int64_t display_id,
                             gamma.curve.ToActionString("gamma").c_str());
 }
 
-std::string SetColorMatrixAction(int64_t display_id,
-                                 const std::vector<float>& color_matrix) {
-  std::string ctm;
-  for (size_t i = 0; i < color_matrix.size(); ++i)
-    ctm += base::StringPrintf(",ctm[%" PRIuS "]=%f", i, color_matrix[i]);
-
-  return base::StringPrintf("set_color_matrix(id=%" PRId64 "%s)", display_id,
-                            ctm.c_str());
-}
-
-std::string SetGammaCorrectionAction(int64_t display_id,
-                                     const display::GammaCurve& degamma,
-                                     const display::GammaCurve& gamma) {
-  return base::StringPrintf("set_gamma_correction(id=%" PRId64 "%s%s)",
-                            display_id,
-                            degamma.ToActionString("degamma").c_str(),
-                            gamma.ToActionString("gamma").c_str());
-}
-
 std::string SetPrivacyScreenAction(int64_t display_id, bool enabled) {
   return base::StringPrintf("set_privacy_screen(id=%" PRId64 ",state=%d)",
                             display_id, enabled);

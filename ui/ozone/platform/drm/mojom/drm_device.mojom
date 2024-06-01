@@ -95,16 +95,6 @@ interface DrmDevice {
   SetGammaAdjustment(int64 display_id,
                      display.mojom.GammaAdjustment adjustment);
 
-  // Sets a 3x3 color transform matrix on the display hardware.
-  // TODO: Consider using a different type for the color matrix.
-  // https://crbug.com/846975.
-  SetColorMatrix(int64 display_id, array<float, 9> color_matrix);
-
-  // Sets a color correction gamma lookup table.
-  SetGammaCorrection(int64 display_id,
-                     display.mojom.GammaCurve degamma,
-                     display.mojom.GammaCurve gamma);
-
   // Sets the state of the privacy screen feature, returns whether or not the
   // configuration was successful.
   SetPrivacyScreen(int64 display_id, bool enabled) => (bool success);

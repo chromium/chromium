@@ -202,22 +202,6 @@ std::unique_ptr<display::ColorCalibration> ParseVpdEntry(
       has_color_correction_matrix);
 }
 
-// Combines `srgb_to_device_matrix` and `color_matrix` and populates
-// `out_result_matrix_vector` with the result.
-void ColorMatrixVectorFromSrgbToDeviceAndColorMatrix(
-    const SkM44& srgb_to_device_matrix,
-    const SkM44& color_matrix,
-    std::vector<float>* out_result_matrix_vector) {
-  SkM44 matrix = color_matrix;
-  matrix.preConcat(srgb_to_device_matrix);
-
-  DCHECK(out_result_matrix_vector);
-  out_result_matrix_vector->assign(9, 0.0f);
-  (*out_result_matrix_vector)[0] = matrix.rc(0, 0);
-  (*out_result_matrix_vector)[4] = matrix.rc(1, 1);
-  (*out_result_matrix_vector)[8] = matrix.rc(2, 2);
-}
-
 bool HasColorCorrectionMatrix(display::DisplayConfigurator* configurator,
                               int64_t display_id) {
   for (const display::DisplaySnapshot* display_snapshot :
@@ -260,29 +244,7 @@ bool DisplayColorManager::SetDisplayColorTemperatureAdjustment(
   // Always overwrite any existing matrix for this display.
   SkM44 color_matrix = gfx::SkM44FromSkcmsMatrix3x3(cta.srgb_matrix);
   displays_color_matrix_map_[display_id] = color_matrix;
-
-  // Look up the calibration matrix, if one exists.
-  SkM44 srgb_to_device_matrix;
-  {
-    for (const display::DisplaySnapshot* display_snapshot :
-         configurator_->cached_displays()) {
-      if (display_snapshot->display_id() != display_id) {
-        continue;
-      }
-      const auto iter = calibration_map_.find(display_snapshot->product_code());
-      if (iter == calibration_map_.end()) {
-        continue;
-      }
-      DCHECK(iter->second);
-      srgb_to_device_matrix =
-          gfx::SkM44FromSkcmsMatrix3x3(iter->second->srgb_to_device_matrix);
-      break;
-    }
-  }
-
-  ColorMatrixVectorFromSrgbToDeviceAndColorMatrix(
-      srgb_to_device_matrix, color_matrix, &matrix_buffer_);
-  return configurator_->SetColorMatrix(display_id, matrix_buffer_);
+  return true;
 }
 
 void DisplayColorManager::OnDisplayConfigurationChanged(
@@ -324,31 +286,6 @@ void DisplayColorManager::ApplyDisplayColorCalibration(
     int64_t display_id,
     const display::ColorCalibration& calibration) {
   configurator_->SetColorCalibration(display_id, calibration);
-
-  if (HasColorCorrectionMatrix(configurator_, display_id)) {
-    SkM44 srgb_to_device_matrix =
-        gfx::SkM44FromSkcmsMatrix3x3(calibration.srgb_to_device_matrix);
-
-    SkM44 color_matrix;
-    {
-      const auto color_matrix_iter =
-          displays_color_matrix_map_.find(display_id);
-      if (color_matrix_iter != displays_color_matrix_map_.end()) {
-        color_matrix = color_matrix_iter->second;
-      }
-    }
-
-    ColorMatrixVectorFromSrgbToDeviceAndColorMatrix(
-        srgb_to_device_matrix, color_matrix, &matrix_buffer_);
-    if (!configurator_->SetColorMatrix(display_id, matrix_buffer_)) {
-      LOG(WARNING) << "Error applying the color matrix.";
-    }
-  }
-
-  if (!configurator_->SetGammaCorrection(display_id, calibration.srgb_to_linear,
-                                         calibration.linear_to_device)) {
-    LOG(WARNING) << "Error applying gamma correction data.";
-  }
 }
 
 bool DisplayColorManager::LoadCalibrationForDisplay(

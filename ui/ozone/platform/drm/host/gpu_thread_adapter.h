@@ -69,11 +69,6 @@ class GpuThreadAdapter {
   virtual void GpuSetGammaAdjustment(
       int64_t display_id,
       const display::GammaAdjustment& adjustment) = 0;
-  virtual bool GpuSetColorMatrix(int64_t display_id,
-                                 const std::vector<float>& color_matrix) = 0;
-  virtual bool GpuSetGammaCorrection(int64_t display_id,
-                                     const display::GammaCurve& degamma,
-                                     const display::GammaCurve& gamma) = 0;
   virtual void GpuSetPrivacyScreen(
       int64_t display_id,
       bool enabled,

@@ -46,9 +46,6 @@ class DrmDisplayHost : public GpuThreadObserver {
       const display::ColorTemperatureAdjustment& cta);
   void SetColorCalibration(const display::ColorCalibration& calibration);
   void SetGammaAdjustment(const display::GammaAdjustment& adjustment);
-  void SetColorMatrix(const std::vector<float>& color_matrix);
-  void SetGammaCorrection(const display::GammaCurve& degamma,
-                          const display::GammaCurve& gamma);
   void SetPrivacyScreen(bool enabled,
                         display::SetPrivacyScreenCallback callback);
   void GetSeamlessRefreshRates(

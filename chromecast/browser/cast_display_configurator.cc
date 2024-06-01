@@ -175,13 +175,6 @@ void CastDisplayConfigurator::SetColorTemperatureAdjustment(
     return;
   delegate_->SetColorTemperatureAdjustment(display_->display_id(), cta);
 
-  std::vector<float> color_matrix(9);
-  for (size_t i = 0; i < 3; ++i) {
-    for (size_t j = 0; j < 3; ++j) {
-      color_matrix[3 * i + j] = cta.srgb_matrix.vals[i][j];
-    }
-  }
-  delegate_->SetColorMatrix(display_->display_id(), color_matrix);
   NotifyObservers();
 }
 
@@ -190,8 +183,6 @@ void CastDisplayConfigurator::SetGammaAdjustment(
   if (!delegate_ || !display_)
     return;
   delegate_->SetGammaAdjustment(display_->display_id(), adjustment);
-
-  delegate_->SetGammaCorrection(display_->display_id(), {}, adjustment.curve);
   NotifyObservers();
 }
 

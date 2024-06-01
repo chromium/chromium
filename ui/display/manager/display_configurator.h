@@ -33,7 +33,6 @@ class ContentProtectionManager;
 class DisplayLayoutManager;
 class DisplayMode;
 class DisplaySnapshot;
-class GammaCurve;
 class ManagedDisplayMode;
 class NativeDisplayDelegate;
 class UpdateDisplayConfigurationTask;
@@ -300,18 +299,6 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // Sets the color calibration for the specified display;
   void SetColorCalibration(int64_t display_id,
                            const ColorCalibration& calibration);
-
-  // Sets the given 3x3 |color_matrix| on the display with |display_id|.
-  // This doesn't affect gamma or degamma. It returns true if the color matrix
-  // was sent to the GPU process successfully.
-  bool SetColorMatrix(int64_t display_id,
-                      const std::vector<float>& color_matrix);
-
-  // Sets the given |gamma_lut| and |degamma_lut| on the display with
-  // |display_id|.
-  bool SetGammaCorrection(int64_t display_id,
-                          const GammaCurve& degamma,
-                          const GammaCurve& gamma);
 
   // Enable/disable the privacy screen on display with |display_id|.
   // For this to succeed, privacy screen must be supported by the display.

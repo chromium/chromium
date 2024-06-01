@@ -21,7 +21,6 @@
 using drmModeModeInfo = struct _drmModeModeInfo;
 
 namespace display {
-class GammaCurve;
 struct ColorCalibration;
 struct ColorTemperatureAdjustment;
 struct GammaAdjustment;
@@ -77,12 +76,7 @@ class DrmGpuDisplayManager {
                            const display::ColorCalibration& calibration);
   void SetGammaAdjustment(int64_t display_id,
                           const display::GammaAdjustment& adjustment);
-  void SetColorMatrix(int64_t display_id,
-                      const std::vector<float>& color_matrix);
   void SetBackgroundColor(int64_t display_id, const uint64_t background_color);
-  void SetGammaCorrection(int64_t display_id,
-                          const display::GammaCurve& degamma,
-                          const display::GammaCurve& gamma);
   bool SetPrivacyScreen(int64_t display_id, bool enabled);
   std::optional<std::vector<float>> GetSeamlessRefreshRates(
       int64_t display_id) const;

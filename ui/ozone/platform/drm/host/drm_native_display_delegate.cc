@@ -103,23 +103,6 @@ void DrmNativeDisplayDelegate::SetGammaAdjustment(
   display->SetGammaAdjustment(adjustment);
 }
 
-bool DrmNativeDisplayDelegate::SetColorMatrix(
-    int64_t display_id,
-    const std::vector<float>& color_matrix) {
-  DrmDisplayHost* display = display_manager_->GetDisplay(display_id);
-  display->SetColorMatrix(color_matrix);
-  return true;
-}
-
-bool DrmNativeDisplayDelegate::SetGammaCorrection(
-    int64_t display_id,
-    const display::GammaCurve& degamma,
-    const display::GammaCurve& gamma) {
-  DrmDisplayHost* display = display_manager_->GetDisplay(display_id);
-  display->SetGammaCorrection(degamma, gamma);
-  return true;
-}
-
 void DrmNativeDisplayDelegate::SetPrivacyScreen(
     int64_t display_id,
     bool enabled,

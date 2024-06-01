@@ -116,15 +116,6 @@ void DrmDisplayHost::SetGammaAdjustment(
   sender_->GpuSetGammaAdjustment(snapshot_->display_id(), adjustment);
 }
 
-void DrmDisplayHost::SetColorMatrix(const std::vector<float>& color_matrix) {
-  sender_->GpuSetColorMatrix(snapshot_->display_id(), color_matrix);
-}
-
-void DrmDisplayHost::SetGammaCorrection(const display::GammaCurve& degamma,
-                                        const display::GammaCurve& gamma) {
-  sender_->GpuSetGammaCorrection(snapshot_->display_id(), degamma, gamma);
-}
-
 void DrmDisplayHost::SetPrivacyScreen(
     bool enabled,
     display::SetPrivacyScreenCallback callback) {

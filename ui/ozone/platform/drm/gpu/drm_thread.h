@@ -36,7 +36,6 @@ class FilePath;
 }  // namespace base
 
 namespace display {
-class GammaCurve;
 struct ColorCalibration;
 struct ColorTemperatureAdjustment;
 struct GammaAdjustment;
@@ -190,11 +189,6 @@ class DrmThread : public base::Thread,
       const display::ColorCalibration& calibration) override;
   void SetGammaAdjustment(int64_t display_id,
                           const display::GammaAdjustment& adjustment) override;
-  void SetColorMatrix(int64_t display_id,
-                      const std::vector<float>& color_matrix) override;
-  void SetGammaCorrection(int64_t display_id,
-                          const display::GammaCurve& degamma,
-                          const display::GammaCurve& gamma) override;
   void SetPrivacyScreen(int64_t display_id,
                         bool enabled,
                         base::OnceCallback<void(bool)> callback) override;

@@ -202,18 +202,6 @@ void FakeDisplayDelegate::SetColorCalibration(
 void FakeDisplayDelegate::SetGammaAdjustment(int64_t display_id,
                                              const GammaAdjustment& gamma) {}
 
-bool FakeDisplayDelegate::SetColorMatrix(
-    int64_t display_id,
-    const std::vector<float>& color_matrix) {
-  return false;
-}
-
-bool FakeDisplayDelegate::SetGammaCorrection(int64_t display_id,
-                                             const display::GammaCurve& degamma,
-                                             const display::GammaCurve& gamma) {
-  return false;
-}
-
 void FakeDisplayDelegate::SetPrivacyScreen(int64_t display_id,
                                            bool enabled,
                                            SetPrivacyScreenCallback callback) {

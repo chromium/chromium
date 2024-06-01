@@ -559,18 +559,6 @@ void DrmGpuDisplayManager::SetGammaAdjustment(
   display->SetGammaAdjustment(adjustment);
 }
 
-void DrmGpuDisplayManager::SetColorMatrix(
-    int64_t display_id,
-    const std::vector<float>& color_matrix) {
-  DrmDisplay* display = FindDisplay(display_id);
-  if (!display) {
-    LOG(WARNING) << __func__ << ": there is no display with ID " << display_id;
-    return;
-  }
-
-  display->SetColorMatrix(color_matrix);
-}
-
 void DrmGpuDisplayManager::SetBackgroundColor(int64_t display_id,
                                               const uint64_t background_color) {
   DrmDisplay* display = FindDisplay(display_id);
@@ -580,18 +568,6 @@ void DrmGpuDisplayManager::SetBackgroundColor(int64_t display_id,
   }
 
   display->SetBackgroundColor(background_color);
-}
-
-void DrmGpuDisplayManager::SetGammaCorrection(
-    int64_t display_id,
-    const display::GammaCurve& degamma,
-    const display::GammaCurve& gamma) {
-  DrmDisplay* display = FindDisplay(display_id);
-  if (!display) {
-    LOG(WARNING) << __func__ << ": there is no display with ID " << display_id;
-    return;
-  }
-  display->SetGammaCorrection(degamma, gamma);
 }
 
 bool DrmGpuDisplayManager::SetPrivacyScreen(int64_t display_id, bool enabled) {

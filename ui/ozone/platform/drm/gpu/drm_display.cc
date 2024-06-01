@@ -323,17 +323,8 @@ void DrmDisplay::SetGammaAdjustment(
   drm_->plane_manager()->SetGammaAdjustment(crtc_, adjustment);
 }
 
-void DrmDisplay::SetColorMatrix(const std::vector<float>& color_matrix) {
-  // TODO(crbug.com/40945652): Remove callers of this function.
-}
-
 void DrmDisplay::SetBackgroundColor(const uint64_t background_color) {
   drm_->plane_manager()->SetBackgroundColor(crtc_, background_color);
-}
-
-void DrmDisplay::SetGammaCorrection(const display::GammaCurve& degamma,
-                                    const display::GammaCurve& gamma) {
-  // TODO(crbug.com/40945652): Remove callers of this function.
 }
 
 bool DrmDisplay::SetPrivacyScreen(bool enabled) {

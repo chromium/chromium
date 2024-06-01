@@ -259,21 +259,6 @@ void TestNativeDisplayDelegate::SetGammaAdjustment(
   log_->AppendAction(SetGammaAdjustmentAction(display_id, gamma));
 }
 
-bool TestNativeDisplayDelegate::SetColorMatrix(
-    int64_t display_id,
-    const std::vector<float>& color_matrix) {
-  log_->AppendAction(SetColorMatrixAction(display_id, color_matrix));
-  return true;
-}
-
-bool TestNativeDisplayDelegate::SetGammaCorrection(
-    int64_t display_id,
-    const display::GammaCurve& degamma,
-    const display::GammaCurve& gamma) {
-  log_->AppendAction(SetGammaCorrectionAction(display_id, degamma, gamma));
-  return true;
-}
-
 void TestNativeDisplayDelegate::SetPrivacyScreen(
     int64_t display_id,
     bool enabled,

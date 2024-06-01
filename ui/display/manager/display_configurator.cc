@@ -790,23 +790,6 @@ void DisplayConfigurator::SetColorCalibration(
   native_display_delegate_->SetColorCalibration(display_id, calibration);
 }
 
-bool DisplayConfigurator::SetColorMatrix(
-    int64_t display_id,
-    const std::vector<float>& color_matrix) {
-  if (!IsDisplayIdInDisplayStateList(display_id, cached_displays_))
-    return false;
-  return native_display_delegate_->SetColorMatrix(display_id, color_matrix);
-}
-
-bool DisplayConfigurator::SetGammaCorrection(int64_t display_id,
-                                             const GammaCurve& degamma,
-                                             const GammaCurve& gamma) {
-  if (!IsDisplayIdInDisplayStateList(display_id, cached_displays_))
-    return false;
-  return native_display_delegate_->SetGammaCorrection(display_id, degamma,
-                                                      gamma);
-}
-
 void DisplayConfigurator::SetPrivacyScreen(int64_t display_id,
                                            bool enabled,
                                            ConfigurationCallback callback) {
