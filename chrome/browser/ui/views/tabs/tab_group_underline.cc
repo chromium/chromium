@@ -17,7 +17,6 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -121,8 +120,7 @@ void TabGroupUnderline::MaybeSetVisible(const bool visible) {
 // static
 int TabGroupUnderline::GetStrokeInset() {
   return TabStyle::Get()->GetTabOverlap() -
-         ChromeRefresh2023TabGroupStyle::GetTabGroupOverlapAdjustment() +
-         kStrokeThickness;
+         TabGroupStyle::GetTabGroupOverlapAdjustment() + kStrokeThickness;
 }
 
 BEGIN_METADATA(TabGroupUnderline)

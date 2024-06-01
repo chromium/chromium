@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/tabs/tab_group_highlight.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/views/widget/widget.h"
 
 class TabGroupViewsTest : public ChromeViewsTestBase {

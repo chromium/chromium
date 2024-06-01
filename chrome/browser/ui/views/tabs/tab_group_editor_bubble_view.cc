@@ -66,7 +66,6 @@
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/pointer/touch_ui_controller.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
@@ -123,9 +122,7 @@ std::unique_ptr<views::LabelButton> CreateMenuItem(
   auto button =
       CreateBubbleMenuItem(button_id, name, std::move(callback), icon);
   button->SetBorder(views::CreateEmptyBorder(control_insets));
-  if (features::IsChromeRefresh2023()) {
-    button->SetLabelStyle(views::style::STYLE_BODY_3_EMPHASIS);
-  }
+  button->SetLabelStyle(views::style::STYLE_BODY_3_EMPHASIS);
 
   return button;
 }
@@ -187,9 +184,7 @@ void TabGroupEditorBubbleView::AddedToWidget() {
     const SkColor text_color = menu_item->GetCurrentTextColor();
 
     const SkColor enabled_icon_color =
-        features::IsChromeRefresh2023()
-            ? color_provider->GetColor(kColorTabGroupDialogIconEnabled)
-            : color_utils::DeriveDefaultIconColor(text_color);
+        color_provider->GetColor(kColorTabGroupDialogIconEnabled);
     const SkColor icon_color = enabled ? enabled_icon_color : text_color;
 
     const std::optional<ui::ImageModel>& old_image_model =
@@ -210,9 +205,7 @@ void TabGroupEditorBubbleView::AddedToWidget() {
     const bool enabled = save_group_icon_->GetEnabled();
     const SkColor text_color = save_group_label_->GetEnabledColor();
     const SkColor enabled_icon_color =
-        features::IsChromeRefresh2023()
-            ? color_provider->GetColor(kColorTabGroupDialogIconEnabled)
-            : color_utils::DeriveDefaultIconColor(text_color);
+        color_provider->GetColor(kColorTabGroupDialogIconEnabled);
     const SkColor icon_color = enabled ? enabled_icon_color : text_color;
 
     const ui::ImageModel& old_image_model = save_group_icon_->GetImageModel();
@@ -654,9 +647,7 @@ views::View* TabGroupEditorBubbleView::CreateSavedTabGroupItem() {
       save_group_line_container->AddChildView(std::make_unique<views::Label>(
           l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_SAVE_GROUP)));
   save_group_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  if (features::IsChromeRefresh2023()) {
-    save_group_label_->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
-  }
+  save_group_label_->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
 
   save_group_toggle_ = save_group_line_container->AddChildView(
       std::make_unique<views::ToggleButton>(
