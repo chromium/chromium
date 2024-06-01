@@ -36,6 +36,8 @@ class DemoModeDimensionsTest : public testing::Test {
 TEST_F(DemoModeDimensionsTest, Country) {
   local_state_.Get()->SetString(prefs::kDemoModeCountry, "DE");
   ASSERT_EQ(ash::demo_mode::Country(), "DE");
+  local_state_.Get()->SetString(prefs::kDemoModeCountry, "ca");
+  ASSERT_EQ(ash::demo_mode::Country(), "CA");
 }
 
 TEST_F(DemoModeDimensionsTest, RetailerName) {

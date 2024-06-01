@@ -22,6 +22,16 @@ bool AreDemoDimensionsAccessible() {
 
 std::string Country() {
   DCHECK(AreDemoDimensionsAccessible());
+  // TODO(b/328305607): Remove this conversion part once all
+  // prefs::kDemoModeCountry are converted.
+  const std::string country =
+      g_browser_process->local_state()->GetString(prefs::kDemoModeCountry);
+  std::string country_uppercase = base::ToUpperASCII(country);
+  // if country is in lowercase, convert it to uppercase.
+  if (country_uppercase != country) {
+    g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
+                                                country_uppercase);
+  }
   return g_browser_process->local_state()->GetString(prefs::kDemoModeCountry);
 }
 
