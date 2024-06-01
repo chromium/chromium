@@ -130,6 +130,7 @@
 <translation id="1420408895951708260">Εναλλαγή νυχτερινού φωτισμού. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Ναι</translation>
 <translation id="1435537621343861112">Δεν είναι δυνατή η έναρξη της υπαγόρευσης. Το μικρόφωνό σας είναι απενεργοποιημένο.</translation>
+<translation id="1447907279406111651">Τώρα · Τελειώνει: <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Τα σημεία πρόσβασης Wi-Fi της συσκευής σας</translation>
 <translation id="1455242230282523554">Εμφάνιση ρυθμίσεων γλώσσας</translation>
 <translation id="1460620680449458626">Η ένταση ήχου είναι σε σίγαση.</translation>
@@ -480,6 +481,7 @@
 <translation id="2894949423239620203">Το καλώδιο μπορεί να επηρεάσει την απόδοση</translation>
 <translation id="2914580577416829331">Εγγραφές οθόνης</translation>
 <translation id="2924416280450782352">Δεν είναι δυνατή η εμφάνιση των στοιχείων. Δοκιμάστε να ανοίξετε ξανά αυτό το πλαίσιο.</translation>
+<translation id="292506373491190801">Από συμβάν που λαμβάνει χώρα αυτή τη στιγμή</translation>
 <translation id="2931572158271115754">Δεν υπάρχει τίποτα σε αυτήν τη λίστα εκκρεμοτήτων.</translation>
 <translation id="2932487126591186298">Προστέθηκαν 10 λεπτά. <ph name="REMAINING_TIME" /> ακόμη.</translation>
 <translation id="2935225303485967257">Διαχείριση προφίλ</translation>
@@ -764,6 +766,7 @@
 <translation id="3950272133184491871">Έξοδος τώρα;</translation>
 <translation id="3950820424414687140">Σύνδεση</translation>
 <translation id="3953130726459169782">Δεν έχουν ολοκληρωθεί ακόμη εργασίες.</translation>
+<translation id="3958714870339660776">Όλη την ημέρα</translation>
 <translation id="3962859241508114581">Προηγούμενο κομμάτι</translation>
 <translation id="3969043077941541451">Ανενεργό</translation>
 <translation id="3970324493235864154">Προβολή των ειδοποιήσεων του τηλεφώνου σας</translation>
@@ -1190,7 +1193,6 @@
 <translation id="553675580533261935">Έξοδος από περίοδο σύνδεσης</translation>
 <translation id="5537725057119320332">Μετάδοση</translation>
 <translation id="554017492391497564">Δεν ήταν δυνατό να επισημανθεί ως ολοκληρωμένη.</translation>
-<translation id="5543778275214926792">Ενεργοποίηση της λειτουργίας Επιλέξτε για αυτόματη ανάγνωση;</translation>
 <translation id="5546397813406633847">Ανάκτηση χρήστη</translation>
 <translation id="554893713779400387">Εναλλαγή υπαγόρευσης</translation>
 <translation id="5550417424894892620">Αποθέστε αρχεία στην επιφάνεια εργασίας για να τα προσθέσετε στο <ph name="HOLDING_SPACE_TITLE" />. Δεν είναι δυνατή η προσθήκη αρχείων στην επιφάνεια εργασίας.</translation>
@@ -1216,6 +1218,7 @@
 <translation id="5599242528220103262">Η συντόμευση πληκτρολογίου είναι απενεργοποιημένη</translation>
 <translation id="5600415762228455511">Η λειτουργία συγκέντρωσης είναι ενεργή, <ph name="REMAINING_TIME" /> ακόμη, συγκεντρώνεστε για την εργασία: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Πιέστε Ctrl + Alt + Z, για να απενεργοποιήσετε τα εκφωνημένα σχόλια.</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{Πριν από λιγότερο από 1 ώρα}=1{Πριν από 1 ώρα}other{Πριν από # ώρες}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Έγινε εναλλαγή της σύνδεσής σας σε ένα καλύτερο δίκτυο</translation>
 <translation id="5619862035903135339">Η πολιτική διαχειριστή απενεργοποιεί τη λήψη οθόνης.</translation>
@@ -1392,6 +1395,7 @@
 <translation id="6228457605945141550">Μείωση φωτεινότητας</translation>
 <translation id="623116199192908855">Μετάδοση της οθόνης από το Chromebook</translation>
 <translation id="6231419273573514727">Η απόδοση των περιφερειακών ενδέχεται να είναι περιορισμένη</translation>
+<translation id="6232416233079464213">Από <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217">Η εφαρμογή <ph name="APP_NAME" /> χρησιμοποιεί την κάμερα και το μικρόφωνό σας αυτήν τη στιγμή.</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Χαμηλή στάθμη μπαταρίας. Η Εξοικονόμηση μπαταρίας ενεργοποιήθηκε.</translation>
@@ -1638,7 +1642,6 @@
 <translation id="7188494361780961876">Το μενού μεταφέρθηκε στην επάνω αριστερή γωνία της οθόνης.</translation>
 <translation id="7189412385142492784">Πόσο απέχει η Αφροδίτη</translation>
 <translation id="7198435252016571249">Η προεπισκόπηση κάμερας τοποθετήθηκε στην κάτω δεξιά γωνία. Διένεξη με επιφάνεια συστήματος.</translation>
-<translation id="720981139652840573">Ακούστε την εκφώνηση συγκεκριμένου κειμένου. Αρχικά, επιλέξτε το εικονίδιο "Επιλέξτε για αυτόματη ανάγνωση" στο κάτω μέρος της οθόνης σας και, στη συνέχεια, επισημάνετε το κείμενο. Μπορείτε επίσης να χρησιμοποιήσετε μια συντόμευση πληκτρολογίου: Επισημάνετε το κείμενο και, στη συνέχεια, πατήστε Αναζήτηση/Λειτουργία εκκίνησης εφαρμογών + S.</translation>
 <translation id="7219573373513695352">Δεν υπάρχουν συνδεδεμένες συσκευές</translation>
 <translation id="7229029500464092426">Διαθέσιμη μνήμη <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> συνολική μνήμη</translation>
 <translation id="7244725679040769470">Απομένει περίπου <ph name="PERCENTAGE" />% μπαταρία. Συνδέστε τη συσκευή σας στο ρεύμα.</translation>
@@ -1792,6 +1795,7 @@
 <translation id="780301667611848630">Όχι, ευχαριστώ</translation>
 <translation id="7807067443225230855">Αναζήτηση και Βοηθός</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> και <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">Από προσεχές συμβάν ημερολογίου</translation>
 <translation id="7829386189513694949">Ισχυρό σήμα</translation>
 <translation id="7830453190047749513">Μπορείτε να εξατομικεύσετε τις ενέργειες κουμπιών, την ταχύτητα του δείκτη και πολλά άλλα για τη συσκευή <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Ο χρόνος τελείωσε</translation>
@@ -2105,6 +2109,7 @@
 <translation id="899350903320462459">Ξεκλειδώστε τη συσκευή ως <ph name="LOGIN_ID" /> για εκτέλεση της ενέργειας ειδοποίησης</translation>
 <translation id="8993733019280019776">Μήπως μιλάτε; Το μικρόφωνό σας είναι απενεργοποιημένο. Επιλέξτε το μικρόφωνο για να το ενεργοποιήσετε.</translation>
 <translation id="9000771174482730261">ΔΙΑΧΕΙΡΙΣΗ ΑΠΟΘΗΚΕΥΤΙΚΟΥ ΧΩΡΟΥ</translation>
+<translation id="9002204506712855687">Εξερευνήστε τις τελευταίες λειτουργίες</translation>
 <translation id="9005984960510803406">Άνοιγμα παραθύρου Crosh</translation>
 <translation id="9017320285115481645">Εισαγάγετε τον κωδικό πρόσβασης γονέα του Family Link.</translation>
 <translation id="9022774213089566801">Συχνά επισκεπτόμενοι ιστότοποι</translation>
@@ -2136,6 +2141,7 @@
 <translation id="9098969848082897657">Σίγαση τηλεφώνου</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ή <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Αναίρεση τελευταίας ενέργειας</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{Σε 1 λεπτό}other{Σε # λεπτά}}</translation>
 <translation id="9129245940793250979">Πίσω κουμπί</translation>
 <translation id="9133335900048457298">Δεν είναι δυνατή η εγγραφή προστατευμένου περιεχομένου</translation>
 <translation id="9139720510312328767">Διαγραφή επόμενου γράμματος</translation>
@@ -2148,6 +2154,7 @@
 <translation id="9183456764293710005">Μεγέθυνση πλήρους οθόνης</translation>
 <translation id="9193626018745640770">Μετάδοση σε άγνωστο δέκτη</translation>
 <translation id="9194617393863864469">Σύνδεση με άλλον χρήστη...</translation>
+<translation id="9195990613383871904">Αύριο</translation>
 <translation id="9198992156681343238">Η ανάλυση της οθόνης <ph name="DISPLAY_NAME" /> άλλαξε σε <ph name="RESOLUTION" />. Κάντε κλικ στην Επιβεβαίωση για να κρατήσετε τις αλλαγές. Θα γίνει επαναφορά των προηγούμενων ρυθμίσεων σε <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Σύνδεση <ph name="NAME" /> σε αυτό το Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, Διαχειριζόμενο από τον διαχειριστή σας</translation>

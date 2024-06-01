@@ -107,6 +107,7 @@
 <translation id="1333308631814936910">Падключаны дысплэй "<ph name="DISPLAY_NAME" />"</translation>
 <translation id="1340378040547539434">Паменшыць маштаб старонкі</translation>
 <translation id="1341651618736211726">Адкрыць меню</translation>
+<translation id="1341926407152459446">Выкарыстоўваць прыладу "<ph name="DEVICE_NAME" />" у якасці аўдыяўвахода і аўдыявыхаду</translation>
 <translation id="1344141078024003905">Вы трансліруеце свой экран. Вы можаце прыпыніць або спыніць трансляцыю экрана ў любы час.</translation>
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1351937230027495976">Згарнуць меню</translation>
@@ -130,6 +131,7 @@
 <translation id="1420408895951708260">Уключыць або выключыць Начную падсветку. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Так</translation>
 <translation id="1435537621343861112">Не ўдаецца пачаць галасавы ўвод. Мікрафон выключаны.</translation>
+<translation id="1447907279406111651">Цяпер · Скончыцца ў <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Хот-споты вашай прылады</translation>
 <translation id="1455242230282523554">Паказаць моўныя налады</translation>
 <translation id="1460620680449458626">Гук выключаны.</translation>
@@ -144,6 +146,7 @@
 <translation id="1486307154719069822">З дапамогай галасавога ўводу вы можаце ўводзіць тэкст голасам. Націсніце клавішу галасавога ўводу або, калі вы знаходзіцеся ў тэкставым полі, значок мікрафона ўнізе экрана. Для галасавога ўводу зададзена наступная мова: <ph name="LANGUAGE" />. Аўдыяматэрыял на гэтай мове адпраўляецца для апрацоўкі ў Google. Змяніць мову для галасавога ўводу можна ў любы час у раздзеле "Налады &gt; Спецыяльныя магчымасці".</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> і <ph name="SECOND_ITEM_TITLE" /> памяняліся месцамі</translation>
 <translation id="1500926532737552529">Паказаць усе прапановы</translation>
+<translation id="1501946871587957338">Пераключыць крыніцу аўдыя?</translation>
 <translation id="1510238584712386396">Панэль запуску</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны для адной праграмы}one{Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны для # праграмы}few{Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны для # праграм}many{Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны для # праграм}other{Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны для # праграмы}}</translation>
 <translation id="1523032696246003">Акумулятар зараджаны на <ph name="BATTERY_PERCENTAGE" />% | Да поўнай зарадкі застаецца <ph name="TIME" /></translation>
@@ -480,6 +483,7 @@
 <translation id="2894949423239620203">Падключэнне праз кабель можа ўплываць на прадукцыйнасць</translation>
 <translation id="2914580577416829331">Здымкі экрана</translation>
 <translation id="2924416280450782352">Не ўдаецца паказаць элементы. Паспрабуйце адкрыць гэту панэль паўторна.</translation>
+<translation id="292506373491190801">З падзеі, якая адбываецца цяпер</translation>
 <translation id="2931572158271115754">У гэтым спісе спраў нічога няма.</translation>
 <translation id="2932487126591186298">Дададзена 10 хвілін. Засталося часу: <ph name="REMAINING_TIME" />.</translation>
 <translation id="2935225303485967257">Кіраваць профілямі</translation>
@@ -764,12 +768,14 @@
 <translation id="3950272133184491871">Выйсці з уліковага запісу?</translation>
 <translation id="3950820424414687140">Увайсці</translation>
 <translation id="3953130726459169782">Яшчэ няма выкананых заданняў.</translation>
+<translation id="3958714870339660776">Увесь дзень</translation>
 <translation id="3962859241508114581">Папярэдні трэк</translation>
 <translation id="3969043077941541451">Выключана</translation>
 <translation id="3970324493235864154">Прагляд апавяшчэнняў з тэлефона</translation>
 <translation id="397105322502079400">Ідзе разлік...</translation>
 <translation id="397726367135689299">Пры зарадцы могуць узнікаць праблемы.</translation>
 <translation id="3977512764614765090">Акумулятар зараджаецца, узровень зараду – <ph name="PERCENTAGE" /> %.</translation>
+<translation id="3982013579989864579">Пераключыць аўдыявыхад?</translation>
 <translation id="3984536049089846927">Наступная старонка</translation>
 <translation id="3986082989454912832">Адказаць</translation>
 <translation id="3990002060657467458">Параметры, якія часта выкарыстоўваюцца (напрыклад, звязаныя з Wi-Fi, Bluetooth і кіраваннем гукам), знаходзяцца ў меню хуткіх налад. З яго таксама можна рабіць здымкі экрана.</translation>
@@ -813,6 +819,7 @@
 <translation id="4150201353443180367">Дысплэй</translation>
 <translation id="4156293514828496577">Засталося <ph name="PERCENTAGE" />% зараду акумулятара (прыкладна на <ph name="TIME_LEFT" />).
 Некаторыя функцыі абмежаваны, каб павялічыць час працы ад акумулятара.</translation>
+<translation id="4160919062868802509">Выяўлены некалькі крыніц аўдыя</translation>
 <translation id="4165275524535002941">Кабель можа быць несумяшчальным з дысплэямі</translation>
 <translation id="4177415338862979658">Націсніце, каб даведацца больш</translation>
 <translation id="4177913004758410636">{0,plural, =1{Абнавіце прыладу на працягу дня}one{Абнавіце прыладу на працягу # дня}few{Абнавіце прыладу на працягу # дзён}many{Абнавіце прыладу на працягу # дзён}other{Абнавіце прыладу на працягу # дня}}</translation>
@@ -1011,6 +1018,7 @@
 <translation id="4871905435473761992">Паказаць падрабязныя звесткі пра хот-спот. Ваша мабільная сетка не падтрымлівае хот-спот.</translation>
 <translation id="4872237917498892622">Alt + Search або Shift</translation>
 <translation id="4872852897273142380">Перайсці на панэль закладак або вылучыць яе (калі яна паказваецца)</translation>
+<translation id="4876935764454575645">Выбар аўдыя</translation>
 <translation id="4881323000405981760">Эфекты не падтрымліваюцца праграмамі для Linux</translation>
 <translation id="4881695831933465202">Адкрыць</translation>
 <translation id="4889868803215848840">Дайце водгук, які дапаможа палепшыць прапановы (рабіць гэта не абавязкова):</translation>
@@ -1087,6 +1095,7 @@
 <translation id="5121628974188116412">Перайсці ў ніз старонкі</translation>
 <translation id="5122517996953421795">Перадпрагляд працоўнага стала "<ph name="DESK_NAME" />". Неактыўны працоўны стол.</translation>
 <translation id="5136175204352732067">Падключана іншая клавіятура</translation>
+<translation id="5144005092084035179">Пераключыць аўдыяўваход?</translation>
 <translation id="5147567197700016471">Прылада разблакіравана</translation>
 <translation id="5150070631291639005">Налады прыватнасці</translation>
 <translation id="5155897006997040331">Хуткасць чытання</translation>
@@ -1190,7 +1199,6 @@
 <translation id="553675580533261935">Выконваецца выхад з сеанса</translation>
 <translation id="5537725057119320332">Трансліраваць</translation>
 <translation id="554017492391497564">Не ўдалося пазначыць задачу як выкананую.</translation>
-<translation id="5543778275214926792">Уключыць функцыю "Чытаць уголас"?</translation>
 <translation id="5546397813406633847">Аднавіць доступ для карыстальніка</translation>
 <translation id="554893713779400387">Уключыць або выключыць галасавы ўвод</translation>
 <translation id="5550417424894892620">Перацягніце файлы на працоўны стол, каб дадаць іх у вобласць "<ph name="HOLDING_SPACE_TITLE" />". Вы не можаце дадаць файлы на працоўны стол.</translation>
@@ -1216,6 +1224,7 @@
 <translation id="5599242528220103262">Спалучэнне клавіш выключана</translation>
 <translation id="5600415762228455511">Канцэнтрацыя ўвагі ўключана, засталося часу: <ph name="REMAINING_TIME" />. Канцэнтрацыя на задачы: <ph name="TASK_NAME" />.</translation>
 <translation id="5600837773213129531">Каб выключыць галасавую зваротную сувязь, націсніце Ctrl + Alt + Z.</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{Менш чым гадзіну таму}=1{1 гадзіну таму}one{# гадзіну таму}few{# гадзіны таму}many{# гадзін таму}other{# гадзіны таму}}</translation>
 <translation id="5601503069213153581">PIN-код</translation>
 <translation id="5618148318840095371">Мы пераключылі вас на лепшую сетку</translation>
 <translation id="5619862035903135339">Згодна з палітыкай, зададзенай адміністратарам, здыманне экрана адключана</translation>
@@ -1392,6 +1401,7 @@
 <translation id="6228457605945141550">Паменшыць яркасць</translation>
 <translation id="623116199192908855">Трансляцыя экрана з прылады Chromebook</translation>
 <translation id="6231419273573514727">Прадукцыйнасць перыферыйных прылад можа быць абмежаванай</translation>
+<translation id="6232416233079464213">З прылады "<ph name="SESSION_NAME" />"</translation>
 <translation id="6232891689835436217">Зараз <ph name="APP_NAME" /> выкарыстоўвае камеру і мікрафон</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Нізкі зарад акумулятара. Уключаны рэжым энергазберажэння.</translation>
@@ -1638,7 +1648,6 @@
 <translation id="7188494361780961876">Меню перамешчана ў левы верхні вугал экрана.</translation>
 <translation id="7189412385142492784">Якая адлегласць да Венеры</translation>
 <translation id="7198435252016571249">Акно перадпрагляду камеры прывязана да правага ніжняга вугла, бо яно перакрывала інтэрфейс сістэмы.</translation>
-<translation id="720981139652840573">Тэксты для вас могуць зачытвацца ўслых. Для гэтага трэба спачатку націснуць на значок "Чытаць уголас" унізе экрана, а затым вылучыць тэкст. Вы таксама можаце карыстацца спалучэннем клавіш: вылучыце тэкст і націсніце Пошук (Панэль запуску) + S.</translation>
 <translation id="7219573373513695352">Няма падключаных прылад</translation>
 <translation id="7229029500464092426">Даступны аб'ём памяці: <ph name="AVAILABLE_MEMORY" /> | Усяго: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Засталося <ph name="PERCENTAGE" />% зараду акумулятара. Падключыце прыладу да крыніцы сілкавання.</translation>
@@ -1786,12 +1795,14 @@
 <translation id="7780094051999721182">ярлыкі</translation>
 <translation id="7780159184141939021">Паварот экрана</translation>
 <translation id="7781829728241885113">Учора</translation>
+<translation id="7787212146956232129">Прылады ўводу і вываду ўжо наладжаны. Каб змяніць іх, перайдзіце ў налады.</translation>
 <translation id="7792590255364786396">Бачныя</translation>
 <translation id="7796735576426975947">Новае апавяшчэнне схавана</translation>
 <translation id="7798302898096527229">Каб скасаваць, націсніце "Пошук" або "Shift".</translation>
 <translation id="780301667611848630">Не, дзякуй</translation>
 <translation id="7807067443225230855">Пошук і Памочнік</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> і <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">З падзеі ў календары, якая павінна адбыцца</translation>
 <translation id="7829386189513694949">Моцны сігнал</translation>
 <translation id="7830453190047749513">Вы можаце персаналізаваць дзеянні, якія выконваюцца пры націсканні кнопак на прыладзе "<ph name="PERIPHERAL_NAME" />", а таксама хуткасць курсора</translation>
 <translation id="7837740436429729974">Час выйшаў</translation>
@@ -2091,6 +2102,7 @@
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}one{# файл}few{# файлы}many{# файлаў}other{# файла}}</translation>
 <translation id="8936501819958976551">выключыла</translation>
 <translation id="8938800817013097409">Прылада USB-C (задні порт справа)</translation>
+<translation id="8939855324412367560">Аўдыяўваход – "<ph name="INPUT_DEVICE_NAME" />", аўдыявыхад –<ph name="OUTPUT_DEVICE_NAME" />".Каб змяніць іх, перайдзіце ў налады.</translation>
 <translation id="8940956008527784070">Нізкі зарад акумулятара (<ph name="PERCENTAGE" /> %)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, птушка не пастаўлена.</translation>
 <translation id="8949925099261528566">Падключана, доступу да інтэрнэту няма</translation>
@@ -2105,6 +2117,7 @@
 <translation id="899350903320462459">Разблакіруйце прыладу як <ph name="LOGIN_ID" />, каб выканаць дзеянне па апавяшчэнні</translation>
 <translation id="8993733019280019776">Вы нешта гаворыце? Мікрафон выключаны. Каб уключыць мікрафон, выберыце яго.</translation>
 <translation id="9000771174482730261">КІРАВАЦЬ СХОВІШЧАМ</translation>
+<translation id="9002204506712855687">Азнаёмцеся з апошнімі функцыямі</translation>
 <translation id="9005984960510803406">Адкрыць старонку-кансоль</translation>
 <translation id="9017320285115481645">Увядзіце бацькоўскі код доступу Family Link.</translation>
 <translation id="9022774213089566801">Часта наведваюцца</translation>
@@ -2136,6 +2149,7 @@
 <translation id="9098969848082897657">Тэлефон без гуку</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> або <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Адрабіць апошняе дзеянне</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{Праз 1 хвіліну}one{Праз # хвіліну}few{Праз # хвіліны}many{Праз # хвілін}other{Праз # хвіліны}}</translation>
 <translation id="9129245940793250979">Задняя кнопка</translation>
 <translation id="9133335900048457298">Запіс немагчымы з-за наяўнасці на экране абароненага змесціва</translation>
 <translation id="9139720510312328767">Выдаліць наступную літару</translation>
@@ -2146,8 +2160,10 @@
 <translation id="9178475906033259337">Паказваецца 1 вынік па запыце "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">Гэта функцыя дазваляе хутка атрымліваць доступ да карыстальнікаў, якія выканалі ўваход, – без уводу пароля. Выкарыстоўвайце гэту функцыю толькі на ўліковых запісах, якім давяраеце.</translation>
 <translation id="9183456764293710005">Поўнаэкранная лупа</translation>
+<translation id="9192133205265227850">Выкарыстоўваць прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">Трансляцыя невядомаму атрымальніку</translation>
 <translation id="9194617393863864469">Выканаць уваход для іншага карыстальніка...</translation>
+<translation id="9195990613383871904">Заўтра</translation>
 <translation id="9198992156681343238">Раздзяляльнасць экрана "<ph name="DISPLAY_NAME" />" зменена на <ph name="RESOLUTION" />. Каб захаваць змяненні, націсніце "Пацвердзіць". Папярэднія налады будуць адноўлены праз <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Падключыце прыладу "<ph name="NAME" />" да Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, знаходзіцца пад кіраваннем адміністратара</translation>

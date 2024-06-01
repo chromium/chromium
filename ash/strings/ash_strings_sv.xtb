@@ -130,6 +130,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1420408895951708260">Aktivera och inaktivera nattljus. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1435537621343861112">Det går inte att starta dikteringen. Mikrofonen är avstängd.</translation>
+<translation id="1447907279406111651">Nu ⋅ Slutar kl. <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Enhetens surfzoner</translation>
 <translation id="1455242230282523554">Visa språkinställningar</translation>
 <translation id="1460620680449458626">Ljudet är av.</translation>
@@ -480,6 +481,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2894949423239620203">Prestandan kan påverkas av kabeln</translation>
 <translation id="2914580577416829331">Skärmbilder/skärminspelningar</translation>
 <translation id="2924416280450782352">Det går inte att visa objekt. Testa att öppna panelen igen.</translation>
+<translation id="292506373491190801">Från en händelse som pågår nu</translation>
 <translation id="2931572158271115754">Det finns inget på den här att göra-listan.</translation>
 <translation id="2932487126591186298">10 minuter har lagts till. <ph name="REMAINING_TIME" /> kvar.</translation>
 <translation id="2935225303485967257">Hantera profiler</translation>
@@ -764,6 +766,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3950272133184491871">Vill du logga ut nu?</translation>
 <translation id="3950820424414687140">Logga in</translation>
 <translation id="3953130726459169782">Inga hemuppgifter har slutförts ännu.</translation>
+<translation id="3958714870339660776">Heldag</translation>
 <translation id="3962859241508114581">Föregående spår</translation>
 <translation id="3969043077941541451">Av</translation>
 <translation id="3970324493235864154">Visa telefonens aviseringar</translation>
@@ -1190,7 +1193,6 @@ Inga enheter är anslutna.</translation>
 <translation id="553675580533261935">Sessionen avslutas</translation>
 <translation id="5537725057119320332">Casta</translation>
 <translation id="554017492391497564">Uppgiften gick inte att markera som slutförd.</translation>
-<translation id="5543778275214926792">Vill du aktivera Textuppläsning?</translation>
 <translation id="5546397813406633847">Återställ användare</translation>
 <translation id="554893713779400387">Aktivera och inaktivera diktamen</translation>
 <translation id="5550417424894892620">Släpp filer på skrivbordet för att lägga till dem i ditt <ph name="HOLDING_SPACE_TITLE" />. Du kan inte lägga till filer på skrivbordet.</translation>
@@ -1216,6 +1218,7 @@ Inga enheter är anslutna.</translation>
 <translation id="5599242528220103262">Kortkommandot har inaktiverats</translation>
 <translation id="5600415762228455511">Fokus är på, <ph name="REMAINING_TIME" /> kvar, med fokus på: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Inaktivera talad feedback genom att trycka på Ctrl + Alt + Z.</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{&lt; 1 timme sedan}=1{1 timme sedan}other{# timmar sedan}}</translation>
 <translation id="5601503069213153581">Pinkod</translation>
 <translation id="5618148318840095371">Vi har flyttat dig till ett bättre nätverk</translation>
 <translation id="5619862035903135339">Skärmbild inaktiveras av en administratörspolicy</translation>
@@ -1392,6 +1395,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6228457605945141550">Minska ljusstyrkan</translation>
 <translation id="623116199192908855">Casta skärmen på en Chromebook</translation>
 <translation id="6231419273573514727">Kringutrustningens prestanda kan vara begränsad</translation>
+<translation id="6232416233079464213">Från <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> använder just nu kameran och mikrofonen</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Låg batterinivå. Batterisparläget har aktiverats.</translation>
@@ -1638,7 +1642,6 @@ Nyligen installerad</translation>
 <translation id="7188494361780961876">Menyn har flyttats till skärmens övre vänstra hörn.</translation>
 <translation id="7189412385142492784">Hår långt är det till Venus</translation>
 <translation id="7198435252016571249">Kameran har fästs i det nedre högra hörnet. Konflikt med systemyta.</translation>
-<translation id="720981139652840573">Få utvald text uppläst. Välj först textuppläsningsikonen längst ned på skärmen och markera sedan texten. Du kan även använda ett kortkommando: Markera texten och tryck sedan på Sök/Appstartaren + S.</translation>
 <translation id="7219573373513695352">Inga enheter har anslutits</translation>
 <translation id="7229029500464092426">Minne <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> totalt</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" /> % av batteriet återstår. Anslut enheten till en strömkälla.</translation>
@@ -1792,6 +1795,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="780301667611848630">Nej tack</translation>
 <translation id="7807067443225230855">Sök och Assistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> och <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">Från en kommande kalenderhändelse</translation>
 <translation id="7829386189513694949">stark signal</translation>
 <translation id="7830453190047749513">Du kan anpassa knappåtgärder, markörhastighet med mera för <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Tiden är ute</translation>
@@ -2105,6 +2109,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="899350903320462459">Lås upp enheten som <ph name="LOGIN_ID" /> så att aviseringen kan göras</translation>
 <translation id="8993733019280019776">Pratar du? Mikrofonen är inaktiverad. Välj mikrofonen för att aktivera den.</translation>
 <translation id="9000771174482730261">HANTERA LAGRING</translation>
+<translation id="9002204506712855687">Utforska de senaste funktionerna</translation>
 <translation id="9005984960510803406">Öppna Crosh-fönstret</translation>
 <translation id="9017320285115481645">Ange föräldraåtkomstkoden för Family Link.</translation>
 <translation id="9022774213089566801">Mest besökta</translation>
@@ -2136,6 +2141,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="9098969848082897657">Inga telefonljud</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> eller <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Ångra den senaste åtgärden</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{Om 1 minut}other{Om # minuter}}</translation>
 <translation id="9129245940793250979">Bakre knapp</translation>
 <translation id="9133335900048457298">Det går inte att spela in skyddat innehåll</translation>
 <translation id="9139720510312328767">Radera nästa bokstav</translation>
@@ -2148,6 +2154,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="9183456764293710005">Helskärmsförstoring</translation>
 <translation id="9193626018745640770">Castar till en okänd mottagare</translation>
 <translation id="9194617393863864469">Logga in med en annan användare ...</translation>
+<translation id="9195990613383871904">I morgon</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" />-upplösningen ändrades till <ph name="RESOLUTION" />. Klicka på bekräfta om du vill behålla ändringarna. De gamla inställningarna återställs om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Anslut <ph name="NAME" /> till denna Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, hanteras av administratören</translation>

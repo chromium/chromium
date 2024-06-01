@@ -4180,6 +4180,7 @@
 <translation id="4050534976465737778">Екі құрылғының да құлпы ашық, бір-біріне жақын және Bluetooth функциялары қосулы екеніне көз жеткізіңіз. Егер контактілеріңізде жоқ Chromebook құрылғысымен бөлісетін болсаңыз, Nearby көрсетілу параметрінің қосулы екеніне көз жеткізіңіз. Ол үшін күй аумағын ашып, Nearby көрсетілу параметрін қосыңыз. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Соңғы пайдаланылған енгізу әдісіне ауысу үшін <ph name="KEY_CODES" /> пернелерін басыңыз.</translation>
 <translation id="4051177682900543628">іздеу + оң бағыт пернесі</translation>
+<translation id="405181879009056822">ChromeOS параметрлері</translation>
 <translation id="4052120076834320548">Кішкентай</translation>
 <translation id="4052913941260326985">&amp;QR кодын жасау</translation>
 <translation id="405365679581583349">Google Play Services қолданбасын жаңартыңыз</translation>
@@ -5714,6 +5715,7 @@
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> жергілікті контентті беру үшін орналасу орны мәліметін пайдаланады. Мұны <ph name="SETTINGS_LINK" /> бөлімінде өзгерте аласыз.</translation>
 <translation id="5252496130205799136">Құпия сөздерді сақтау және толтыру үшін Google аккаунтыңызды пайдалану керек пе?</translation>
 <translation id="5252653240322147470">PIN коды <ph name="MAXIMUM" /> таңбадан аз болуы керек</translation>
+<translation id="5253554634804500860"><ph name="DEVICE_NAME" /> пайдалану</translation>
 <translation id="5254233580564156835">Жадтың пайдаланылуы: <ph name="MEMORY_USAGE" /></translation>
 <translation id="52550593576409946">Киоск қолданбасын іске қосу мүмкін болмады.</translation>
 <translation id="5255726914791076208">Кіру кілтін өзгерткен кезде, <ph name="RP_ID" /> аккаунты өзгермейді.</translation>
@@ -5788,6 +5790,7 @@
 <translation id="5300719150368506519">Кірген беттердің URL мекенжайларын Google-ға жіберу</translation>
 <translation id="5301751748813680278">Қонақ ретінде кіруде.</translation>
 <translation id="5301954838959518834">Жарайды, түсінікті</translation>
+<translation id="5302032366299160685">Әрекетті қайталамай тұрып, файлдың ашылғанын күтіңіз.</translation>
 <translation id="5302048478445481009">Тіл</translation>
 <translation id="5302932258331363306">Ауыстыру таблосын көрсету</translation>
 <translation id="5305145881844743843">Бұл аккаунт <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> арқылы басқарылады.</translation>
@@ -6283,6 +6286,7 @@
 <translation id="5678955352098267522">Деректеріңізді  <ph name="WEBSITE_1" /> торабынан оқу</translation>
 <translation id="5679785611070310751"><ph name="MONTH_AND_YEAR" /> айында осы Chromebook үшін қауіпсіздік жаңартуларын алуды тоқтатасыз. Соңғы қауіпсіздік пен бағдарламалық құралға жаңарту уақыты. Ұсыныс шарттары қолданылады.</translation>
 <translation id="5680050361008726776">"<ph name="ESIM_PROFILE_NAME" />" өшірілсін бе?</translation>
+<translation id="5681586175480958839">Файл әлдеқашан ашылып жатыр</translation>
 <translation id="5684181005476681636">Wi-Fi мәліметтері</translation>
 <translation id="5684661240348539843">Актив идентификаторы</translation>
 <translation id="5684950556880280580">Құпия сөзіңіз жаңартылды</translation>
@@ -6447,6 +6451,7 @@
 <translation id="5806447147478173900">Көрсетілген сайттар пайдаланатын жалпы жад көлемі: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Әдепкі)</translation>
 <translation id="5809835394668218762"><ph name="WEBSITE" /> веб-сайтына арналған қосымша әрекеттер</translation>
+<translation id="5809840528400421362">PIN коды 6 цифрдан тұруы керек.</translation>
 <translation id="5810809306422959727">Бұл аккаунт ата-ана бақылауына жарамайды</translation>
 <translation id="5811614940486072060">Әдетте жүктеп алынбайтындықтан, бұл файл қауіпті болуы мүмкін.</translation>
 <translation id="5812674658566766066">Барлығын жаю</translation>
@@ -10567,7 +10572,6 @@
 <translation id="8894761918470382415">Сыртқы жабдықтардағы деректерді пайдалануды қорғау</translation>
 <translation id="8895454554629927345">Бетбелгілер тізімі</translation>
 <translation id="8896830132794747524">Тінтуірмен жылдамырақ қозғалыстар курсорды алыстатады.</translation>
-<translation id="8898140163781851592">Негізгі тінтуір түймесі</translation>
 <translation id="8898786835233784856">Келесі қойындыны таңдау</translation>
 <translation id="8898790559170352647">Microsoft аккаунтын қосыңыз</translation>
 <translation id="8898822736010347272">Жаңа қауіптерді анықтап, интернетте барлығын қорғауға көмектесу үшін кірген кейбір беттердің URL мекенжайларын, шектеулі жүйе ақпаратын және кейбір беттердің контентін Google-ға жібереді.</translation>

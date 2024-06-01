@@ -107,6 +107,7 @@
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> е поврзан</translation>
 <translation id="1340378040547539434">Одзумира на страницата</translation>
 <translation id="1341651618736211726">Прелевање</translation>
+<translation id="1341926407152459446">Користете „<ph name="DEVICE_NAME" />“ за влез и излез за аудио</translation>
 <translation id="1344141078024003905">Го емитувате вашиот екран. Емитувањето на вашиот екран може да го паузирате или сопрете во секое време.</translation>
 <translation id="1346748346194534595">Надесно</translation>
 <translation id="1351937230027495976">Собери го менито</translation>
@@ -130,6 +131,7 @@
 <translation id="1420408895951708260">Вклучи/исклучи „Ноќно светло“: <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1435537621343861112">Не може да започне „Диктирање“. Микрофонот е исклучен.</translation>
+<translation id="1447907279406111651">Сега · Завршува во <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Точки на пристап на вашиот уред</translation>
 <translation id="1455242230282523554">Прикажи ги поставките за јазикот</translation>
 <translation id="1460620680449458626">Звукот е исклучен.</translation>
@@ -144,6 +146,7 @@
 <translation id="1486307154719069822">Со функцијата „Диктирање“, може да пишувате со гласот. Притиснете го копчето за „Диктирање“ или изберете ја иконата за микрофонот најдолу на екранот кога ќе бидете во текстуално поле. Вашиот јазик за „Диктирање“ е поставен на <ph name="LANGUAGE" />. Говорот се испраќа во Google за обработка Јазикот за „Диктирање“ може да го промените во секое време во „Поставки &gt; Пристапност“.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> се замени со <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Прикажи ги сите предлози</translation>
+<translation id="1501946871587957338">Да се смени изворот на аудио?</translation>
 <translation id="1510238584712386396">Стартер</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Прикажи ги поставките за известувања. Известувањата се исклучени за една апликација}one{Прикажи ги поставките за известувања. Известувањата се исклучени за # апликација}other{Прикажи ги поставките за известувања. Известувањата се исклучени за # апликации}}</translation>
 <translation id="1523032696246003">Батерија: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> до полна батерија</translation>
@@ -480,6 +483,7 @@
 <translation id="2894949423239620203">Кабелот може да влијае врз изведбата</translation>
 <translation id="2914580577416829331">Слики од екранот</translation>
 <translation id="2924416280450782352">Не може да се прикажат ставките. Обидете се да ја отворите таблава повторно.</translation>
+<translation id="292506373491190801">Од настан што се одржува во моментов</translation>
 <translation id="2931572158271115754">Нема ништо на списоков со задачи.</translation>
 <translation id="2932487126591186298">Додадени се 10 минути. Преостанато време: <ph name="REMAINING_TIME" />.</translation>
 <translation id="2935225303485967257">Управувајте со профилите</translation>
@@ -765,12 +769,14 @@
 <translation id="3950272133184491871">Дали ќе се одјавите сега?</translation>
 <translation id="3950820424414687140">Најави се</translation>
 <translation id="3953130726459169782">Сѐ уште нема завршени задачи.</translation>
+<translation id="3958714870339660776">Цел ден</translation>
 <translation id="3962859241508114581">Претходна песна</translation>
 <translation id="3969043077941541451">Исклучи</translation>
 <translation id="3970324493235864154">Прегледајте ги известувањата на телефонот</translation>
 <translation id="397105322502079400">Се пресметува…</translation>
 <translation id="397726367135689299">Полнењето на батеријата може да е нестабилно.</translation>
 <translation id="3977512764614765090">Батеријата е на <ph name="PERCENTAGE" /> % и се полни.</translation>
+<translation id="3982013579989864579">Да се смени излезот за аудио?</translation>
 <translation id="3984536049089846927">Следна страница</translation>
 <translation id="3986082989454912832">Одговори</translation>
 <translation id="3990002060657467458">Често користените контроли како Wi-Fi, Bluetooth и јачина на звук се во „Брзи поставки“. Тука може да дојдете и за да направите слики од екранот.</translation>
@@ -814,6 +820,7 @@
 <translation id="4150201353443180367">Екран</translation>
 <translation id="4156293514828496577">Преостануваат уште <ph name="PERCENTAGE" /> % од батеријата (околу <ph name="TIME_LEFT" />).
 Некои од функциите се ограничени за да се продолжи траењето на батеријата.</translation>
+<translation id="4160919062868802509">Откриени се повеќе извори на аудио</translation>
 <translation id="4165275524535002941">Кабелот не поддржува екрани</translation>
 <translation id="4177415338862979658">Кликнете за да ги погледнете деталите</translation>
 <translation id="4177913004758410636">{0,plural, =1{Ажурирајте го уредот во рок од еден ден}one{Ажурирајте го уредот во рок од # ден}other{Ажурирајте го уредот во рок од # дена}}</translation>
@@ -1012,6 +1019,7 @@
 <translation id="4871905435473761992">Прикажи детали за точката на пристап. Вашата мобилна мрежа не поддржува точка на пристап.</translation>
 <translation id="4872237917498892622">Alt+Search или Shift</translation>
 <translation id="4872852897273142380">Ја фокусира или ја нагласува лентата со обележувачи (ако е прикажана)</translation>
+<translation id="4876935764454575645">Избор на аудио</translation>
 <translation id="4881323000405981760">Ефектите не се поддржани во апликациите за Linux</translation>
 <translation id="4881695831933465202">Отвори</translation>
 <translation id="4889868803215848840">Дајте незадолжителни повратни информации за да ги подобриме предлозите:</translation>
@@ -1088,6 +1096,7 @@
 <translation id="5121628974188116412">Одете најдолу на страницата</translation>
 <translation id="5122517996953421795">Преглед на <ph name="DESK_NAME" />. Неактивна работна површина.</translation>
 <translation id="5136175204352732067">Поврзана е друга тастатура</translation>
+<translation id="5144005092084035179">Да се смени влезот за аудио?</translation>
 <translation id="5147567197700016471">Отклучено</translation>
 <translation id="5150070631291639005">Поставки за приватност</translation>
 <translation id="5155897006997040331">Брзина на читање</translation>
@@ -1191,7 +1200,6 @@
 <translation id="553675580533261935">Излегува од сесијата</translation>
 <translation id="5537725057119320332">Емитувај</translation>
 <translation id="554017492391497564">Не можеше да се означи како завршено.</translation>
-<translation id="5543778275214926792">Да се вклучи „Изберете за говор“?</translation>
 <translation id="5546397813406633847">Врати го корисникот</translation>
 <translation id="554893713779400387">Вклучи/исклучи диктат</translation>
 <translation id="5550417424894892620">Пуштете датотеки на работната површина за да ги додадете во <ph name="HOLDING_SPACE_TITLE" />. Не може да додадете датотеки на работна површина.</translation>
@@ -1217,6 +1225,7 @@
 <translation id="5599242528220103262">Кратенката од тастатура е исклучена</translation>
 <translation id="5600415762228455511">„Режимот за концентрација“ е вклучен, преостанато време: <ph name="REMAINING_TIME" />, се концентрирате на: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Притиснете Ctrl + Alt + Z за да ги оневозможите говорните повратни информации.</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{Пред &lt; 1 час}=1{Пред 1 час}one{Пред # час}other{Пред # часа}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Ве префрливме на подобра мрежа</translation>
 <translation id="5619862035903135339">Администраторското правило оневозможува снимање на екранот</translation>
@@ -1393,6 +1402,7 @@
 <translation id="6228457605945141550">Намалете ја осветленоста</translation>
 <translation id="623116199192908855">Емитувајте го екранот од вашиот Chromebook</translation>
 <translation id="6231419273573514727">Перформансите на периферните уреди може да бидат ограничени</translation>
+<translation id="6232416233079464213">Од <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ги користи камерата и микрофонот во моментов</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Слаба батерија. „Штедачот на батерија“ е вклучен.</translation>
@@ -1639,7 +1649,6 @@
 <translation id="7188494361780961876">Менито е преместено во горниот лев агол на екранот.</translation>
 <translation id="7189412385142492784">Колку е оддалечена Венера</translation>
 <translation id="7198435252016571249">Камерата е поставена во долниот десен агол. Конфликт со површината на системот.</translation>
-<translation id="720981139652840573">Слушнете конкретен текст прочитан наглас. Прво изберете ја иконата „Изберете за говор“ најдолу на екранот, па нагласете го текстот. Може да користите и кратенка од тастатура: нагласете го текстот, па притиснете Search/Launcher + S.</translation>
 <translation id="7219573373513695352">Не се поврзани уреди</translation>
 <translation id="7229029500464092426">Меморија: <ph name="AVAILABLE_MEMORY" /> | вкупно: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Престануваат уште <ph name="PERCENTAGE" /> % од батеријата. Приклучете го уредот во струја.</translation>
@@ -1787,12 +1796,14 @@
 <translation id="7780094051999721182">кратенки</translation>
 <translation id="7780159184141939021">Ротација на екранот</translation>
 <translation id="7781829728241885113">Вчера</translation>
+<translation id="7787212146956232129">Уредите за влез и излез за аудио се поставени. Одете во „Поставки“ за да промените.</translation>
 <translation id="7792590255364786396">Видливо</translation>
 <translation id="7796735576426975947">Скриено е ново известување</translation>
 <translation id="7798302898096527229">Притиснете „Пребарување“ или Shift за да откажете.</translation>
 <translation id="780301667611848630">Не, фала</translation>
 <translation id="7807067443225230855">„Пребарување“ и „Помошник“</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> и <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">Од претстоен настан во календарот</translation>
 <translation id="7829386189513694949">Силен сигнал</translation>
 <translation id="7830453190047749513">Може да ги персонализирате дејствата за копчињата, брзината на курсорот и друго за вашиот уред <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Времето истече</translation>
@@ -2092,6 +2103,7 @@
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 датотека}one{# датотека}other{# датотеки}}</translation>
 <translation id="8936501819958976551">деактивирано</translation>
 <translation id="8938800817013097409">USB-Ц уред (десна порта од задната страна)</translation>
+<translation id="8939855324412367560">Влезот за аудио е „<ph name="INPUT_DEVICE_NAME" />“, а излезот за аудио е „<ph name="OUTPUT_DEVICE_NAME" />“. Одете во „Поставки“ за да промените.</translation>
 <translation id="8940956008527784070">Слаба батерија (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314">Полето за избор на <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> не е штиклирано.</translation>
 <translation id="8949925099261528566">Поврзан, нема интернет</translation>
@@ -2106,6 +2118,7 @@
 <translation id="899350903320462459">Отклучете го уредот како <ph name="LOGIN_ID" /> за да се изврши дејството од известувањето</translation>
 <translation id="8993733019280019776">Дали зборувате? Вашиот микрофон е исклучен. Изберете го микрофонот за да го вклучите.</translation>
 <translation id="9000771174482730261">УПРАВУВАЈТЕ СО КАПАЦИТЕТОТ</translation>
+<translation id="9002204506712855687">Истражете ги најновите функции</translation>
 <translation id="9005984960510803406">Отвора прозорец на Crosh</translation>
 <translation id="9017320285115481645">Внесете го кодот за пристап на родители на Family Link.</translation>
 <translation id="9022774213089566801">Често посетувани</translation>
@@ -2137,6 +2150,7 @@
 <translation id="9098969848082897657">Исклучи го звукот на телефонот</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> или <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Го враќа последното дејство</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{За 1 мин.}one{За # мин.}other{За # мин.}}</translation>
 <translation id="9129245940793250979">Странично копче</translation>
 <translation id="9133335900048457298">Не може да се снимаат заштитени содржини</translation>
 <translation id="9139720510312328767">Ја брише следната буква</translation>
@@ -2147,8 +2161,10 @@
 <translation id="9178475906033259337">Се прикажува 1 резултат за <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Функцијава ви овозможува брзо да пристапите до секој најавен корисник без да биде потребна лозинка. Користете ја само со сметки во кои имате доверба.</translation>
 <translation id="9183456764293710005">Лупа за цел екран</translation>
+<translation id="9192133205265227850">Користете „<ph name="DEVICE_NAME" />“</translation>
 <translation id="9193626018745640770">Се емитува на непознат приемник</translation>
 <translation id="9194617393863864469">Пријави друг корисник...</translation>
+<translation id="9195990613383871904">Утре</translation>
 <translation id="9198992156681343238">Резолуцијата на <ph name="DISPLAY_NAME" /> е сменета во <ph name="RESOLUTION" />. Кликнете „Потврди“ за да ги задржите промените. Претходната поставка ќе се врати за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Поврзи <ph name="NAME" /> со овој Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, управувана од администраторот</translation>

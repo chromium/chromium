@@ -75,6 +75,7 @@
 <translation id="2942241131342758843">‏כדאי להגדיר את Chromium כדפדפן ברירת המחדל כדי לפתוח קישורים, לחפש מווידג'טים ולבצע מילוי אוטומטי של סיסמאות באפליקציות אחרות</translation>
 <translation id="2977470724722393594">‏Chromium‏ מעודכן</translation>
 <translation id="3044857325852340337">‏הנתונים של Chromium נמחקו</translation>
+<translation id="3049211156275642309">‏לא סיימת להגדיר את Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{‏Chromium יכול לעזור לך לעקוב אחר החבילה הזו בדף 'כרטיסייה חדשה'.}one{‏Chromium יכול לעזור לך לעקוב אחר החבילות האלה בדף 'כרטיסייה חדשה'.}two{‏Chromium יכול לעזור לך לעקוב אחר החבילות האלה בדף 'כרטיסייה חדשה'.}other{‏Chromium יכול לעזור לך לעקוב אחר החבילות האלה בדף 'כרטיסייה חדשה'.}}</translation>
 <translation id="3102849287235003384">‏כדי לצאת מחשבון Google שלך בכל האתרים, עליך <ph name="BEGIN_LINK" />לצאת מ-Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">‏חיפוש באמצעות הקול ב-Chromium</translation>
@@ -273,6 +274,7 @@
 <translation id="8754966941001340678">‏ההמלצה של Chromium היא הגנה משופרת</translation>
 <translation id="8759037115129007407">‏בן המשפחה שלך לא יכול לקבל סיסמאות כרגע. צריך לבקש ממנו לעדכן את Chromium ולסנכרן את הסיסמאות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">‏החשבון הזה וכל הנתונים שלא נשמרו יוסרו מ-Chromium.</translation>
+<translation id="8826789549860004832">‏רוצה ליהנות מכל מה ש-Chromium מציע? כדאי להמשיך להגדיר את הדפדפן.</translation>
 <translation id="88376265765385899">‏פתיחת הסימניות ב-Chromium.</translation>
 <translation id="8860548555286245440">‏פתיחת כתובות URL ב-Chromium במצב אנונימי</translation>
 <translation id="8866191443434488382">‏Chromium יזהה מספרי מעקב באתרים שבהם ביקרת, ואפשר יהיה לראות עדכונים על חבילות בדף 'כרטיסייה חדשה'. מספר המעקב אחר החבילה ושם האתר יישלחו אל Chromium כדי לספק את התכונה הזו ולשפר את התכונות שקשורות לקניות לכולם. תמיד אפשר לעדכן את <ph name="BEGIN_LINK" />הגדרות המעקב אחר חבילה<ph name="END_LINK" />.</translation>

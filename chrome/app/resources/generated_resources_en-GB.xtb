@@ -5237,6 +5237,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4867433544163083783">Check now if tabs can be organised</translation>
 <translation id="4868281708609571334">Teach Google Assistant to recognise <ph name="SUPERVISED_USER_NAME" />’s voice</translation>
 <translation id="4868284252360267853">This dialogue is not currently focused. Press Command-Shift-Option A to focus this dialogue.</translation>
+<translation id="4868351661310357223">Install apps and games from Google Play on your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">Read ChromeOS network information</translation>
 <translation id="4870724079713069532">You can open and edit supported files with this app from File Explorer or other apps. To control which files open in this app by default, go to <ph name="BEGIN_LINK" />Windows settings<ph name="END_LINK" />.</translation>
 <translation id="4870995365819149457">Some supported links will still open in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> and 1 other app.</translation>
@@ -8057,6 +8058,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7007648447224463482">Open all in new window</translation>
 <translation id="7008815993384338777">Not currently roaming</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> is using your camera</translation>
+<translation id="701020165009334820">You can download Android apps and games through the Play Store.</translation>
 <translation id="701080569351381435">View Source</translation>
 <translation id="7011797924920577670">estimates your interests</translation>
 <translation id="7012430956470647760">Parental controls for apps</translation>
@@ -10597,7 +10599,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8894761918470382415">Data access protection for peripherals</translation>
 <translation id="8895454554629927345">Bookmark list</translation>
 <translation id="8896830132794747524">Faster movements with your mouse will move the cursor further</translation>
-<translation id="8898140163781851592">Primary mouse button</translation>
 <translation id="8898786835233784856">Select Next Tab</translation>
 <translation id="8898790559170352647">Add your Microsoft account</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>

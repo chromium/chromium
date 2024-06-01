@@ -4201,6 +4201,7 @@
 <translation id="4050534976465737778">Переконайтеся, що обидва пристрої розблоковані, розташовані поруч і на них увімкнено Bluetooth. Якщо ви хочете надіслати файли на комп'ютер Chromebook, якого немає у ваших контактах, відкрийте на ньому панель стану і ввімкніть "Видимість поблизу". <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Щоб вибрати останній використаний метод введення, натисніть клавіші <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">клавіша пошуку + стрілка вправо</translation>
+<translation id="405181879009056822">Налаштування ChromeOS</translation>
 <translation id="4052120076834320548">Дуже малий</translation>
 <translation id="4052913941260326985">Створити &amp;QR-код</translation>
 <translation id="405365679581583349">Оновіть сервіси Google Play</translation>
@@ -5735,6 +5736,7 @@
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> використовує ваші геодані, щоб надавати результати пошуку залежно від місцезнаходження. Змінити налаштування можна в меню "<ph name="SETTINGS_LINK" />".</translation>
 <translation id="5252496130205799136">Зберігати й заповнювати паролі за допомогою облікового запису Google?</translation>
 <translation id="5252653240322147470">Максимальна кількість цифр у PIN-коді: <ph name="MAXIMUM" /></translation>
+<translation id="5253554634804500860">Використовувати <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Використання пам’яті: <ph name="MEMORY_USAGE" /></translation>
 <translation id="52550593576409946">Не вдалося запустити додаток для терміналів.</translation>
 <translation id="5255726914791076208">Якщо ви редагуєте ключ доступу, ваше ім’я користувача в обліковому записі <ph name="RP_ID" /> не зміниться</translation>
@@ -5809,6 +5811,7 @@
 <translation id="5300719150368506519">Надсилати в Google URL-адреси відвіданих сторінок</translation>
 <translation id="5301751748813680278">Вхід у режимі гостя.</translation>
 <translation id="5301954838959518834">OK</translation>
+<translation id="5302032366299160685">Перш ніж спробувати знову, зачекайте, коли файл відкриється</translation>
 <translation id="5302048478445481009">Мова</translation>
 <translation id="5302932258331363306">Показувати заміни</translation>
 <translation id="5305145881844743843">Цим обліковим записом керують через домен <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
@@ -6304,6 +6307,7 @@
 <translation id="5678955352098267522">Переглядати ваші дані на веб-сайті <ph name="WEBSITE_1" /></translation>
 <translation id="5679785611070310751">Ви припините отримувати оновлення системи безпеки цього пристрою Chromebook із <ph name="MONTH_AND_YEAR" />. Придбайте пристрій з останньою версією системи безпеки й програмного забезпечення. Діють умови пропозиції.</translation>
 <translation id="5680050361008726776">Видалити "<ph name="ESIM_PROFILE_NAME" />"?</translation>
+<translation id="5681586175480958839">Файл уже відкривається</translation>
 <translation id="5684181005476681636">Дані про Wi-Fi</translation>
 <translation id="5684661240348539843">Ідентифікатор об’єкта</translation>
 <translation id="5684950556880280580">Ваш пароль оновлено</translation>
@@ -6468,6 +6472,7 @@
 <translation id="5806447147478173900">Загальний обсяг пам’яті, який використовують показані сайти: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (за умовчанням)</translation>
 <translation id="5809835394668218762">Інші дії для сайту <ph name="WEBSITE" /></translation>
+<translation id="5809840528400421362">PIN-код має містити 6 цифр</translation>
 <translation id="5810809306422959727">Для цього облікового запису не можна ввімкнути батьківський контроль</translation>
 <translation id="5811614940486072060">Цей файл рідко завантажують, він може бути небезпечним</translation>
 <translation id="5812674658566766066">Розгорнути всі</translation>
@@ -10599,7 +10604,6 @@
 <translation id="8894761918470382415">Обмежити доступ до даних для периферійних пристроїв</translation>
 <translation id="8895454554629927345">Список закладок</translation>
 <translation id="8896830132794747524">Якщо рухати мишу швидше, курсор переміщуватиметься далі</translation>
-<translation id="8898140163781851592">Основна кнопка миші</translation>
 <translation id="8898786835233784856">Вибрати наступну вкладку</translation>
 <translation id="8898790559170352647">Додайте свій обліковий запис Microsoft</translation>
 <translation id="8898822736010347272">Надсилає в Google URL-адреси відвіданих сторінок, обмежену системну інформацію та вміст деяких сторінок, щоб виявляти нові загрози та захищати всіх користувачів в Інтернеті.</translation>

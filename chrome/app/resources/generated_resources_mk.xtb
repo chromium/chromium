@@ -2898,6 +2898,7 @@
 <translation id="3090819949319990166">Не може да ја копира надворешната crx датотека на <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">„<ph name="DEVICE_NAME" />“ се спари</translation>
 <translation id="3093714882666365141">Не им дозволувај на сајтовите да инсталираат ракувачи со плаќања</translation>
+<translation id="3094080575472025333">Блокирајте апликации</translation>
 <translation id="3094141017404513551">Ова ќе го оддели вашето прелистување од <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Истекува денес}=1{Истекува утре}one{Истекува за # ден}other{Истекува за # дена}}</translation>
 <translation id="3094521107841754472">Цената се промени од <ph name="PREVIOUS_PRICE" /> на <ph name="CURRENT_PRICE" />.</translation>
@@ -3730,6 +3731,7 @@
 <translation id="372722114124766626">Само еднаш</translation>
 <translation id="3727332897090187514">Не е додадена белешка</translation>
 <translation id="3727473233247516571">Подрамка за кеш за движење наназад/нанапред: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727843212509629024">Неточен PIN. Обидете се повторно</translation>
 <translation id="3727850735097852673">За да користите Google Password Manager со macOS Keychain, рестартирајте го Chrome и дозволете пристап до Keychain. Вашите картички ќе се отворат повторно по рестартирањето.</translation>
 <translation id="3728188878314831180">да ги отсликува известувањата од вашиот телефон</translation>
 <translation id="3728681439294129328">Конфигурирање мрежна адреса</translation>
@@ -4199,6 +4201,7 @@
 <translation id="4050534976465737778">Проверете дали двата уреда се отклучени, блиску еден до друг и дали имаат вклучено Bluetooth. Ако споделувате со Chromebook што не е во вашите контакти, проверете дали има вклучено „Видливост во близина“ (отворете ја статусната област, а потоа вклучете „Видливост во близина“). <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">За да се префрлите на последно користениот метод за внесување, притиснете <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">search + стрелка надесно</translation>
+<translation id="405181879009056822">Поставки за ChromeOS</translation>
 <translation id="4052120076834320548">Ситен</translation>
 <translation id="4052913941260326985">Создајте QR-код</translation>
 <translation id="405365679581583349">Ажурирајте ги „Услугите на Google Play“</translation>
@@ -5733,6 +5736,7 @@
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> ја користи вашата локација за да ви даде локални содржини. Ова може да го промените во <ph name="SETTINGS_LINK" />.</translation>
 <translation id="5252496130205799136">Да се користи сметката на Google за зачувување и пополнување лозинки?</translation>
 <translation id="5252653240322147470">PIN-кодот мора да содржи помалку од <ph name="MAXIMUM" /> цифри</translation>
+<translation id="5253554634804500860">Користи <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Искористена меморија: <ph name="MEMORY_USAGE" /></translation>
 <translation id="52550593576409946">Киоск-апликацијата не може да се стартува.</translation>
 <translation id="5255726914791076208">Кога ќе го измените криптографскиот клуч, сметката на <ph name="RP_ID" /> нема да се промени</translation>
@@ -5808,6 +5812,7 @@
 <translation id="5300719150368506519">Испраќајте URL-адреси од страниците што ги посетувате до Google</translation>
 <translation id="5301751748813680278">Се влегува како гостин.</translation>
 <translation id="5301954838959518834">Добро, сфатив</translation>
+<translation id="5302032366299160685">Почекајте да се отвори датотеката пред да се обидете повторно</translation>
 <translation id="5302048478445481009">Јазик</translation>
 <translation id="5302932258331363306">Прикажи ги замените</translation>
 <translation id="5305145881844743843"><ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> управува со сметкава</translation>
@@ -6305,6 +6310,7 @@
 <translation id="5678955352098267522">Читајте ги вашите податоци на <ph name="WEBSITE_1" /></translation>
 <translation id="5679785611070310751">Од <ph name="MONTH_AND_YEAR" />, веќе нема да примате безбедносни ажурирања за овој Chromebook. Време е да надградите за да ги добиете најновите безбедносни и софтверски ажурирања. Важат „Условите на понудата“.</translation>
 <translation id="5680050361008726776">Да се отстрани „<ph name="ESIM_PROFILE_NAME" />“?</translation>
+<translation id="5681586175480958839">Датотеката веќе се отвора</translation>
 <translation id="5684181005476681636">Детали за Wi-Fi</translation>
 <translation id="5684661240348539843">Идентификатор на средства</translation>
 <translation id="5684950556880280580">Вашата лозинка е ажурирана</translation>
@@ -6469,6 +6475,7 @@
 <translation id="5806447147478173900">Вкупен капацитет искористен од прикажаните сајтови: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (стандардно)</translation>
 <translation id="5809835394668218762">Повеќе дејства за <ph name="WEBSITE" /></translation>
+<translation id="5809840528400421362">PIN-кодот мора да содржи 6 цифри</translation>
 <translation id="5810809306422959727">Сметкава не ги исполнува условите за родителски контроли</translation>
 <translation id="5811614940486072060">Датотекава обично не се презема и може да биде опасна</translation>
 <translation id="5812674658566766066">Прошири ги сите</translation>
@@ -10597,7 +10604,6 @@
 <translation id="8894761918470382415">Заштита за пристап до податоците од периферни уреди</translation>
 <translation id="8895454554629927345">Список со обележувачи</translation>
 <translation id="8896830132794747524">Побрзите движења со глувчето ќе го поместат курсорот подалеку</translation>
-<translation id="8898140163781851592">Примарно копче на глувче</translation>
 <translation id="8898786835233784856">Избери нова картичка</translation>
 <translation id="8898790559170352647">Додајте ја вашата сметка на Microsoft</translation>
 <translation id="8898822736010347272">Испраќа URL-адреси до Google од некои страници што ги посетувате, како и ограничени податоци за системот и некои содржини од страниците за да помогне да се откријат нови закани и да се заштитат сите на интернет.</translation>

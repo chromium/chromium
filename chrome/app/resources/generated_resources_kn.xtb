@@ -5801,6 +5801,7 @@
 <translation id="5300719150368506519">ನೀವು ಭೇಟಿ ನೀಡುವ ಪುಟಗಳ URL ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಿ</translation>
 <translation id="5301751748813680278">ಅತಿಥಿಯಾಗಿ ಪ್ರವೇಶಿಸಲಾಗಿದೆ.</translation>
 <translation id="5301954838959518834">ಸರಿ, ಅರ್ಥವಾಯಿತು</translation>
+<translation id="5302032366299160685">ಮತ್ತೆ ಪ್ರಯತ್ನಿಸುವ ಮೊದಲು ಫೈಲ್ ತೆರೆಯುವವರೆಗೆ ನಿರೀಕ್ಷಿಸಿ</translation>
 <translation id="5302048478445481009">ಭಾಷೆ</translation>
 <translation id="5302932258331363306">ಬದಲಿಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="5305145881844743843">ಈ ಖಾತೆಯನ್ನು <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
@@ -6299,6 +6300,7 @@
 <translation id="5678955352098267522">ನಿಮ್ಮ ಡೇಟಾವನ್ನು <ph name="WEBSITE_1" /> ನಲ್ಲಿ ಓದಿ</translation>
 <translation id="5679785611070310751">ನೀವು <ph name="MONTH_AND_YEAR" /> ರಿಂದ ಈ Chromebook ಗೆ ಭದ್ರತೆ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪಡೆಯುವುದನ್ನು ನಿಲ್ಲಿಸುತ್ತೀರಿ. ಇತ್ತೀಚಿನ ಭದ್ರತೆ ಮತ್ತು ಸಾಫ್ಟ್‌ವೇರ್‌ಗಾಗಿ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡುವ ಸಮಯ. ಆಫರ್ ನಿಯಮಗಳು ಅನ್ವಯಿಸುತ್ತವೆ.</translation>
 <translation id="5680050361008726776">"<ph name="ESIM_PROFILE_NAME" />" ಅನ್ನು ತೆಗೆದುಹಾಕಬೇಕೆ?</translation>
+<translation id="5681586175480958839">ಫೈಲ್ ಅನ್ನು ಈಗಾಗಲೇ ತೆರೆಯಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5684181005476681636">ವೈ-ಫೈ ವಿವರಗಳು</translation>
 <translation id="5684661240348539843">ಸ್ವತ್ತು ಗುರುತಿಸುವಿಕೆ</translation>
 <translation id="5684950556880280580">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
@@ -10587,7 +10589,6 @@
 <translation id="8894761918470382415">ಬಾಹ್ಯ ಸಾಧನಗಳ ಡೇಟಾ ಆ್ಯಕ್ಸೆಸ್ ರಕ್ಷಣೆ</translation>
 <translation id="8895454554629927345">ಬುಕ್‌ಮಾರ್ಕ್ ಪಟ್ಟಿ</translation>
 <translation id="8896830132794747524">ನಿಮ್ಮ ಮೌಸ್‌ನ ವೇಗವಾದ ಮೂವ್‌ಗಳು ಕರ್ಸರ್ ಅನ್ನು ದೂರಕ್ಕೆ ತಳ್ಳುತ್ತವೆ</translation>
-<translation id="8898140163781851592">ಪ್ರಾಥಮಿಕ ಮೌಸ್ ಬಟನ್</translation>
 <translation id="8898786835233784856">ಮುಂದೆ ಟ್ಯಾಬ್ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8898790559170352647">ನಿಮ್ಮ Microsoft ಖಾತೆಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="8898822736010347272">ಹೊಸ ಅಪಾಯಗಳನ್ನು ಕಂಡುಹಿಡಿಯಲು ಮತ್ತು ವೆಬ್‌ನಲ್ಲಿರುವ ಪ್ರತಿಯೊಬ್ಬರನ್ನು ರಕ್ಷಿಸುವುದಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು, ನೀವು ಭೇಟಿ ನೀಡುವ ಕೆಲವು ಪುಟಗಳ URL ಗಳು, ಸೀಮಿತ ಸಿಸ್ಟಂ ಮಾಹಿತಿ ಮತ್ತು ಪುಟಗಳಲ್ಲಿನ ಕೆಲವು ಕಂಟೆಂಟ್ ಅನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ.</translation>

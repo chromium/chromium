@@ -140,7 +140,6 @@
 <translation id="1687475363370981210">તમામને વાંચેલ તરીકે ચિહ્નિત કરો</translation>
 <translation id="1689333818294560261">ઉપનામ</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> પસંદ કર્યાં</translation>
-<translation id="1710698977900873766">વધારેલું સંરક્ષણ ચાલુ કરો</translation>
 <translation id="1713777106376424209">આમના દ્વારા ડિલિવર કરવામાં આવ્યું</translation>
 <translation id="1715515772563243997">જો <ph name="SITE" /> તમારા માટે વિશ્વસનીય હોય, તો તમે સાઇન ઇન કરવા માટે સાચવેલા પાસવર્ડનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="1740468249224277719">ઇન્સ્ટૉલ કરવા માટે બે વાર ટૅપ કરો.</translation>
@@ -954,7 +953,6 @@
 <translation id="5857770089550859117">સમન્વયનને પ્રારંભ કરવા માટે પાસફ્રેઝ આવશ્યક.</translation>
 <translation id="5859715514067755465">આગળ જાઓ</translation>
 <translation id="5860033963881614850">બંધ</translation>
-<translation id="5860491529813859533">ચાલુ કરો</translation>
 <translation id="5889333064153755823">બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>
 <translation id="5896576662943111387">iOS માટે બનાવવામાં આવેલું</translation>
 <translation id="5897749768294722429">તમે મુલાકાત લીધેલી સાઇટ પર ઝડપથી પાછા જવા માટે, તમારા ટૅબ અને ઇતિહાસ સિંક કરો.</translation>
@@ -1472,6 +1470,7 @@
 <translation id="8374977641764177587">નોટિફિકેશન ચાલુ કરીએ?</translation>
 <translation id="8378714024927312812">તમારી સંસ્થા દ્વારા મેનેજ કરેલ</translation>
 <translation id="8386068868580335421">રીસેટ કરો</translation>
+<translation id="8386882774665382072">{count,plural, =1{{count}માંથી {position} પાસવર્ડ}one{{count}માંથી {position} પાસવર્ડ}other{{count}માંથી {position} પાસવર્ડ}}</translation>
 <translation id="838867811594159347">પાસફ્રેઝ દાખલ કરો…</translation>
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> દિવસથી ઉપયોગમાં ન લેવાયેલી ટૅબ</translation>
 <translation id="8395339334550012808">ટૂંક સમયમાં, તમને 'ફૉલો કરી રહ્યાં છો'માં <ph name="CHANNEL_NAME" /> પરથી અને વિશેનું કન્ટેન્ટ જોવા મળશે.</translation>
@@ -1655,6 +1654,7 @@
 <translation id="96615566463761848">અન્ય ડિવાઇસમાંથી ટૅબ માટેના સૂચનો બતાવો</translation>
 <translation id="973493300226275298">તમામ ઑનલાઇન સ્ટોર પર કોઈ પ્રોડક્ટની કિંમત ટ્રૅક કરો. જ્યારે પણ કિંમતમાં ઘટાડો થાય, ત્યારે તમે અલર્ટ મેળવશો.</translation>
 <translation id="981498610235328462">તમારી સંસ્થા માત્ર અમુક ચોક્કસ એકાઉન્ટ વડે તમને સાઇન ઇન કરવાની મંજૂરી આપે છે. મંજૂરી ન હોય એવા એકાઉન્ટને છુપાવવામાં આવે છે.</translation>
+<translation id="983800820186631385">{count,plural, =1{{count}માંથી {position} ચુકવણી પદ્ધતિ}one{{count}માંથી {position} ચુકવણી પદ્ધતિ}other{{count}માંથી {position} ચુકવણી પદ્ધતિ}}</translation>
 <translation id="984275831282074731">ચુકવણી પદ્ધતિઓ</translation>
 <translation id="984509647832111802">સિંકની સુવિધા કામ કરી રહી નથી.</translation>
 <translation id="988141524645182168">અન્ય ઉપકરણો</translation>

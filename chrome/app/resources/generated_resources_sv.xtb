@@ -4198,6 +4198,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4050534976465737778">Se till att båda enheterna är upplåsta, att de är nära varandra och att Bluetooth är aktiverat. Om du delar med en Chromebook som inte finns i dina kontakter kontrollerar du att Synlighet i närheten har aktiverats på den (öppna statusfältet och aktivera Synlighet i närheten). <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Om du vill byta till den inmatningsmetod som användes senast trycker du på <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">sök + högerpil</translation>
+<translation id="405181879009056822">ChromeOS-inställningar</translation>
 <translation id="4052120076834320548">Mycket liten</translation>
 <translation id="4052913941260326985">Skapa &amp;QR-kod</translation>
 <translation id="405365679581583349">Uppdatera Google Play-tjänsterna</translation>
@@ -5732,6 +5733,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> använder din plats för att ge dig lokalt innehåll. Detta går att ändra i <ph name="SETTINGS_LINK" />.</translation>
 <translation id="5252496130205799136">Vill du spara och fylla i lösenord med Google-kontot?</translation>
 <translation id="5252653240322147470">Pinkoden får inte överskrida <ph name="MAXIMUM" /> siffror</translation>
+<translation id="5253554634804500860">Använd <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Minnesanvändning: <ph name="MEMORY_USAGE" /></translation>
 <translation id="52550593576409946">Det gick inte att starta kioskappen.</translation>
 <translation id="5255726914791076208">Ditt <ph name="RP_ID" />-konto ändras inte när du redigerar nyckeln</translation>
@@ -5807,6 +5809,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5300719150368506519">Skicka webbadresser till sidor du besöker till Google.</translation>
 <translation id="5301751748813680278">Loggar in som gäst.</translation>
 <translation id="5301954838959518834">Ok, jag förstår</translation>
+<translation id="5302032366299160685">Vänta på att filen ska öppnas innan du försöker igen</translation>
 <translation id="5302048478445481009">Språk</translation>
 <translation id="5302932258331363306">Visa ersättningar</translation>
 <translation id="5305145881844743843">Det här kontot hanteras av <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
@@ -6304,6 +6307,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5678955352098267522">Läsa din data på <ph name="WEBSITE_1" /></translation>
 <translation id="5679785611070310751">Du får inga fler säkerhetsuppdateringar för Chromebook i <ph name="MONTH_AND_YEAR" />. Det är dags att uppgradera för att få de senaste säkerhetsfunktionerna och den senaste mjukvaran. Villkor för erbjudandet gäller.</translation>
 <translation id="5680050361008726776">Vill du ta bort <ph name="ESIM_PROFILE_NAME" />?</translation>
+<translation id="5681586175480958839">Filen öppnas redan</translation>
 <translation id="5684181005476681636">Information om wifi</translation>
 <translation id="5684661240348539843">Tillgångsidentifierare</translation>
 <translation id="5684950556880280580">Ditt lösenord har uppdaterats</translation>
@@ -6468,6 +6472,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5806447147478173900">Totalt lagringsutrymme som används av visade webbplatser: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (standard)</translation>
 <translation id="5809835394668218762">Fler åtgärder för <ph name="WEBSITE" /></translation>
+<translation id="5809840528400421362">Pinkoden måste bestå av 6 siffror</translation>
 <translation id="5810809306422959727">Det här kontot uppfyller inte kraven för föräldrakontroller</translation>
 <translation id="5811614940486072060">Den här filen brukar inte laddas ned. Den kan vara skadlig</translation>
 <translation id="5812674658566766066">Utöka alla</translation>
@@ -10592,7 +10597,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8894761918470382415">Dataåtkomstskydd för kringutrustning</translation>
 <translation id="8895454554629927345">Lista med bokmärken</translation>
 <translation id="8896830132794747524">Snabbare rörelser med musen flyttar markören längre</translation>
-<translation id="8898140163781851592">Primär musknapp</translation>
 <translation id="8898786835233784856">Välj nästa flik</translation>
 <translation id="8898790559170352647">Lägg till ditt Microsoft-konto</translation>
 <translation id="8898822736010347272">Skickar webbadresser till vissa sidor som du besöker, vissa systemuppgifter och visst sidinnehåll till Google för att upptäcka och blockera nya hot och skydda alla användare på internet.</translation>

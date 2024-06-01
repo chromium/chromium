@@ -1199,7 +1199,6 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="553675580533261935">Išeinama iš sesijos</translation>
 <translation id="5537725057119320332">Perduoti</translation>
 <translation id="554017492391497564">Nepavyko pažymėti kaip baigtos.</translation>
-<translation id="5543778275214926792">Įjungti funkciją „Teksto ištarimas“?</translation>
 <translation id="5546397813406633847">Atkurti naudotoją</translation>
 <translation id="554893713779400387">Perjungti diktavimą</translation>
 <translation id="5550417424894892620">Nuvilkite failus darbalaukyje, kad pridėtumėte juos prie „<ph name="HOLDING_SPACE_TITLE" />“. Negalite pridėti failų prie darbalaukio.</translation>
@@ -1649,7 +1648,6 @@ Naujas įdiegimas</translation>
 <translation id="7188494361780961876">Meniu perkeltas į viršutinį kairįjį ekrano kampą.</translation>
 <translation id="7189412385142492784">Kaip toli yra Venera</translation>
 <translation id="7198435252016571249">Fotoaparato peržiūra pridėta apatiniame dešiniajame kampe. Nesuderinama su sistemos platforma.</translation>
-<translation id="720981139652840573">Klausykitės garsiai skaitomo konkretaus teksto. Pirmiausia ekrano apačioje pasirinkite piktogramą „Teksto ištarimas“, tada paryškinkite tekstą. Taip pat galite naudoti sparčiuosius klavišus: paryškinkite tekstą, tada paspauskite paieškos / paleidimo priemonės klavišą + S.</translation>
 <translation id="7219573373513695352">Nėra susietų įrenginių</translation>
 <translation id="7229029500464092426">Atminties: <ph name="AVAILABLE_MEMORY" /> | Iš viso: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Liko <ph name="PERCENTAGE" /> proc. akumuliatoriaus energijos. Prijunkite įrenginį prie maitinimo šaltinio.</translation>

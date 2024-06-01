@@ -951,6 +951,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4628757576491864469">Dispositivos</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, número de estrelas: <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Prima Ctrl + W para eliminar</translation>
+<translation id="4635501805800894201">{0,plural, =0{Atualize o dispositivo para a versão anterior agora}=1{Atualize o dispositivo para a versão anterior dentro de 1 segundo}other{Atualize o dispositivo para a versão anterior dentro de # segundos}}</translation>
 <translation id="4642092649622328492">Criar uma captura de ecrã parcial</translation>
 <translation id="4644727592819780893">A região é demasiado pequena para se ajustar à câmara</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recomendação de aplicação</translation>
@@ -980,6 +981,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4735944890391795473">Espaço de trabalho 12</translation>
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4740516757091333363">Eliminar espaço de trabalho guardado?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Atualize o dispositivo para a versão anterior dentro de 1 dia}other{Atualize o dispositivo para a versão anterior dentro de # dias}}</translation>
 <translation id="4747410141429390146">Desbloqueie para ver as notificações</translation>
 <translation id="4752784485658729358">Só é permitido guardar 6 espaços de trabalho. Remova um espaço de trabalho para guardar um novo.</translation>
 <translation id="4759238208242260848">Transferências</translation>
@@ -1199,7 +1201,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="553675580533261935">A sair da sessão…</translation>
 <translation id="5537725057119320332">Transmitir</translation>
 <translation id="554017492391497564">Não foi possível marcá-la como concluída.</translation>
-<translation id="5543778275214926792">Ativar a funcionalidade Selecionar para falar?</translation>
 <translation id="5546397813406633847">Recuperar utilizador</translation>
 <translation id="554893713779400387">Ativar/desativar o ditado</translation>
 <translation id="5550417424894892620">Largue os ficheiros no ambiente de trabalho para os adicionar a <ph name="HOLDING_SPACE_TITLE" />. Não pode adicionar ficheiros ao ambiente de trabalho.</translation>
@@ -1316,6 +1317,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5916646100036936191">Nova notificação, <ph name="NOTIFICATION_COUNT" /> no total</translation>
 <translation id="5916664084637901428">Ativado</translation>
 <translation id="5920710855273935292">O som do microfone está desativado.</translation>
+<translation id="5928083197428724029">Atualização exigida por <ph name="MANAGER" /></translation>
 <translation id="5946788582095584774">A funcionalidade <ph name="FEATURE_NAME" /> está ativada.</translation>
 <translation id="5947494881799873997">Reverter</translation>
 <translation id="595202126637698455">Rastreio do desempenho ativado</translation>
@@ -1434,6 +1436,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6376931439017688372">Bluetooth ativado</translation>
 <translation id="6378515133128829137">Fixar janela à direita</translation>
 <translation id="6381109794406942707">Para desbloquear este dispositivo, introduza o seu PIN.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Atualize o dispositivo para a versão anterior dentro de 1 hora}other{Atualize o dispositivo para a versão anterior dentro de # horas}}</translation>
 <translation id="638716340450135524">Ativar acesso à câmara</translation>
 <translation id="639644700271529076">CAPS LOCK está desativado</translation>
 <translation id="6406458002328242616">Edite o temporizador. <ph name="FOCUS_DURATION" />.</translation>
@@ -1456,6 +1459,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6459472438155181876">A prolongar ecrã para <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">imagens</translation>
 <translation id="6467290994038932560">Ativado para <ph name="GAME_APP_NAME" /></translation>
+<translation id="6468406072297048412">{0,plural, =1{Atualize o dispositivo para a versão anterior dentro de 1 minuto}other{Atualize o dispositivo para a versão anterior dentro de # minutos}}</translation>
 <translation id="6469104339369989396">Ativar/desativar zona Wi-Fi</translation>
 <translation id="6477681113376365978">Não é possível transferir o ficheiro</translation>
 <translation id="6482559668224714696">Lupa de ecrã inteiro</translation>
@@ -1579,6 +1583,7 @@ Nova instalação</translation>
 <translation id="6917259695595127329">Última atualização das tarefas: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Não foi possível reconhecer o seu cartão inteligente. Tente novamente.</translation>
 <translation id="692135145298539227">eliminar, delete</translation>
+<translation id="6921427376813842559">Atualize o dispositivo</translation>
 <translation id="6929081673585394903">Mostrar controlos</translation>
 <translation id="6931576957638141829">Guardar em</translation>
 <translation id="6942518653766415536">Menu de formato de gravação</translation>
@@ -1649,7 +1654,6 @@ Nova instalação</translation>
 <translation id="7188494361780961876">O menu foi movido para o canto superior esquerdo do ecrã.</translation>
 <translation id="7189412385142492784">Qual é a distância para Vénus?</translation>
 <translation id="7198435252016571249">Câmara ajustada ao canto inferior direito. Há um conflito com a superfície do sistema.</translation>
-<translation id="720981139652840573">Ouça um texto específico em voz alta. Primeiro, selecione o ícone Selecionar para falar na parte inferior do ecrã e, em seguida, realce o texto. Também pode usar um atalho de teclado: realce o texto e, em seguida, prima Pesquisa/Launcher + S.</translation>
 <translation id="7219573373513695352">Nenhum dispositivo ligado</translation>
 <translation id="7229029500464092426">Memória: <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> no total</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% de bateria restante. Ligue o dispositivo à alimentação.</translation>
@@ -1667,6 +1671,7 @@ Nova instalação</translation>
 <translation id="7303365578352795231">A responder noutro dispositivo…</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">O seu administrador está a repor o eSIM. Esta ação pode demorar alguns minutos.</translation>
+<translation id="7312761820869643657">Atualize o dispositivo para a versão anterior</translation>
 <translation id="7313193732017069507">Expanda a câmara</translation>
 <translation id="7330397557116570022">Aceda a um campo de texto para usar o ditado</translation>
 <translation id="7331646370422660166">alt + seta para baixo</translation>
@@ -2183,6 +2188,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="925832987464884575">Ocultar pré-visualizações</translation>
 <translation id="938407504481277932">Espaço de trabalho atual: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Espaço de trabalho <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">O que está no meu calendário?</translation>
+<translation id="94468042118567862">Dispositivo não atualizado</translation>
 <translation id="945383118875625837">Arrastar o link para a barra de marcadores</translation>
 <translation id="945522503751344254">Enviar feedback</translation>
 <translation id="951991426597076286">Recusar</translation>

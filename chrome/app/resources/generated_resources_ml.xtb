@@ -2881,6 +2881,7 @@
 <translation id="3090819949319990166"><ph name="TEMP_CRX_FILE" /> എന്നതിലേക്ക് ബാഹ്യ crx ഫയൽ പകർത്താനാവില്ല.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" ജോടിയാക്കി</translation>
 <translation id="3093714882666365141">പേയ്‌മെന്റ് കൈകാര്യം ചെയ്യുന്ന സംവിധാനങ്ങൾ ഇൻസ്റ്റാൾ ചെയ്യാൻ സൈറ്റുകളെ അനുവദിക്കരുത്</translation>
+<translation id="3094080575472025333">ആപ്പുകൾ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="3094141017404513551">ഇത് നിങ്ങളുടെ ബ്രൗസിംഗ് <ph name="EXISTING_USER" /> എന്നയാളുടേതിൽ നിന്ന് വേർതിരിക്കും</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{ഇന്ന് കാലഹരണപ്പെടും}=1{നാളെ കാലഹരണപ്പെടും}other{# ദിവസത്തിനുള്ളിൽ കാലഹരണപ്പെടും}}</translation>
 <translation id="3094521107841754472">വില <ph name="PREVIOUS_PRICE" /> എന്നതിൽ നിന്ന് <ph name="CURRENT_PRICE" /> ആയി മാറി.</translation>
@@ -3713,6 +3714,7 @@
 <translation id="372722114124766626">ഒരിക്കൽ മാത്രം</translation>
 <translation id="3727332897090187514">കുറിപ്പൊന്നും ചേർത്തിട്ടില്ല</translation>
 <translation id="3727473233247516571">ബാക്ക്-ഫോർവേഡ് കാഷെ സബ്ഫ്രെയിം: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727843212509629024">തെറ്റായ പിൻ. വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="3727850735097852673">macOS Keychain-ന് ഒപ്പം Google Password Manager ഉപയോഗിക്കുന്നതിന്, Chrome വീണ്ടും ആരംഭിച്ച് Keychain ആക്‌സസ് അനുവദിക്കുക. വീണ്ടും ആരംഭിച്ചുകഴിഞ്ഞാൽ നിങ്ങളുടെ ടാബുകൾ വീണ്ടും തുറക്കും.</translation>
 <translation id="3728188878314831180">നിങ്ങളുടെ ഫോണിൽ നിന്നുള്ള അറിയിപ്പുകൾ മിറർ ചെയ്യാൻ</translation>
 <translation id="3728681439294129328">നെറ്റ്‌വർക്ക് വിലാസം കോൺഫിഗർ ചെയ്യുക</translation>
@@ -5220,6 +5222,7 @@
 <translation id="4867433544163083783">ടാബുകൾ ഓർഗനൈസ് ചെയ്യാനാകുമോയെന്ന് ഇപ്പോൾ പരിശോധിക്കുക</translation>
 <translation id="4868281708609571334"><ph name="SUPERVISED_USER_NAME" /> എന്നയാളുടെ ശബ്‌ദം തിരിച്ചറിയാൻ Google Assistant-നെ പഠിപ്പിക്കുക</translation>
 <translation id="4868284252360267853">ഈ ഡയലോഗ് നിലവിൽ ഫോക്കസ് ചെയ്തിട്ടില്ല. ഈ ഡയലോഗ് ഫോക്കസ് ചെയ്യാൻ Command-Shift-Option A അമർത്തുക.</translation>
+<translation id="4868351661310357223">Google Play-യിൽ നിന്ന് നിങ്ങളുടെ <ph name="DEVICE_TYPE" />-ൽ ആപ്പുകളും ഗെയിമുകളും ഇൻസ്‌റ്റാൾ ചെയ്യുക.</translation>
 <translation id="4869170227080975044">ChromeOS നെറ്റ്‌വർക്ക് വിവരങ്ങൾ റീഡ് ചെയ്യുക</translation>
 <translation id="4870724079713069532">File Explorer-ൽ നിന്നോ മറ്റ് ആപ്പുകളിൽ നിന്നോ ഈ ആപ്പ് ഉപയോഗിച്ച് പിന്തുണയ്ക്കുന്ന ഫയലുകൾ നിങ്ങൾക്ക് തുറക്കാനും എഡിറ്റ് ചെയ്യാനുമാകും. ഡിഫോൾട്ടായി ഏതൊക്കെ ഫയലുകൾ തുറക്കാൻ ഈ ആപ്പിന് കഴിയുമെന്നത് നിയന്ത്രിക്കാൻ, <ph name="BEGIN_LINK" />Windows ക്രമീകരണത്തിലേക്ക് പോകുക<ph name="END_LINK" />.</translation>
 <translation id="4870995365819149457"><ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> എന്നിവയിലും മറ്റൊരു ആപ്പിലും ചില പിന്തുണാ ലിങ്കുകൾ തുടർന്നും തുറക്കാനാകും.</translation>
@@ -8041,6 +8044,7 @@
 <translation id="7007648447224463482">എല്ലാം പുതിയ വിൻഡോയിൽ തുറക്കുക</translation>
 <translation id="7008815993384338777">നിലവിൽ റോമിംഗിൽ അല്ല</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കുന്നു</translation>
+<translation id="701020165009334820">Play Store വഴി നിങ്ങൾക്ക് Android ആപ്പുകളും ഗെയിമുകളും ഡൗൺലോഡ് ചെയ്യാം.</translation>
 <translation id="701080569351381435">ഉറവിടം കാണുക</translation>
 <translation id="7011797924920577670">നിങ്ങളുടെ താൽപ്പര്യങ്ങൾ നിർണ്ണയിക്കുന്നു</translation>
 <translation id="7012430956470647760">ആപ്പുകൾക്കുള്ള രക്ഷാകർതൃ നിയന്ത്രണങ്ങൾ</translation>
@@ -10579,7 +10583,6 @@
 <translation id="8894761918470382415">പെരിഫറലുകൾക്കായുള്ള ഡാറ്റാ ആക്‌സസ് പരിരക്ഷ</translation>
 <translation id="8895454554629927345">ലിസ്‌റ്റ് ബുക്ക്‌മാർക്ക് ചെയ്യുക</translation>
 <translation id="8896830132794747524">നിങ്ങളുടെ മൗസിന്റെ വേഗത കൂട്ടിയാൽ കഴ്‌സർ ദൂരത്തേക്ക് നീങ്ങും</translation>
-<translation id="8898140163781851592">പ്രൈമറി മൗസ് ബട്ടൺ</translation>
 <translation id="8898786835233784856">അടുത്ത ടാബ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8898790559170352647">നിങ്ങളുടെ Microsoft അക്കൗണ്ട് ചേർക്കുക</translation>
 <translation id="8898822736010347272">വെബിലെ പുതിയ ഭീഷണികൾ കണ്ടെത്തി എല്ലാവരെയും പരിരക്ഷിക്കാൻ സഹായിക്കുന്നതിന് നിങ്ങൾ സന്ദർശിക്കുന്ന ചില പേജുകളുടെ URL-കൾ, പരിമിത സിസ്‌റ്റം വിവരങ്ങൾ, ചില പേജുകളുടെ ഉള്ളടക്കം എന്നിവ Google-ലേക്ക് അയയ്ക്കുന്നു.</translation>

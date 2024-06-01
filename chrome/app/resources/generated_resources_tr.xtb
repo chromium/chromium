@@ -4181,6 +4181,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4050534976465737778">Her iki cihazın da kilidinin açık ve birbirine yakın olduğundan, Bluetooth ayarlarının etkin olduğundan emin olun. Kişi listenizde yer almayan bir Chromebook ile paylaşımda bulunuyorsanız Yakındakiler görünürlüğünün açık olduğundan emin olun (durum alanını açtıktan sonra Yakındakiler görünürlüğünü etkinleştirin). <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Son kullanılan giriş yöntemine geçmek için <ph name="KEY_CODES" /> tuşuna basın.</translation>
 <translation id="4051177682900543628">arama + sağ ok</translation>
+<translation id="405181879009056822">ChromeOS Ayarları</translation>
 <translation id="4052120076834320548">Çok küçük</translation>
 <translation id="4052913941260326985">&amp;QR Kodu Oluştur</translation>
 <translation id="405365679581583349">Google Play hizmetlerini güncelleyin</translation>
@@ -5715,6 +5716,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" />, size yerel içerik sağlamak için konumunuzu kullanır. Bunu <ph name="SETTINGS_LINK" /> sayfasından değiştirebilirsiniz.</translation>
 <translation id="5252496130205799136">Şifreleri kaydetmek ve doldurmak için Google Hesabınız kullanılsın mı?</translation>
 <translation id="5252653240322147470">PIN en fazla <ph name="MAXIMUM" /> basamaklı olmalıdır</translation>
+<translation id="5253554634804500860"><ph name="DEVICE_NAME" /> cihazını kullan</translation>
 <translation id="5254233580564156835">Bellek kullanımı: <ph name="MEMORY_USAGE" /></translation>
 <translation id="52550593576409946">Kiosk uygulaması başlatılamadı.</translation>
 <translation id="5255726914791076208">Geçiş anahtarınızı düzenlediğinizde <ph name="RP_ID" /> hesabınız değişmez</translation>
@@ -5789,6 +5791,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5300719150368506519">Ziyaret ettiğim sayfaların URL'lerini Google'a gönder</translation>
 <translation id="5301751748813680278">Misafir olarak giriliyor.</translation>
 <translation id="5301954838959518834">Tamam, anladım</translation>
+<translation id="5302032366299160685">Tekrar denemeden önce dosyanın açılmasını bekleyin</translation>
 <translation id="5302048478445481009">Dil</translation>
 <translation id="5302932258331363306">Değişiklikleri Göster</translation>
 <translation id="5305145881844743843">Bu hesap <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> tarafından yönetilmektedir</translation>
@@ -6287,6 +6290,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" /> sitesindeki verilerinizi okuma</translation>
 <translation id="5679785611070310751"><ph name="MONTH_AND_YEAR" /> tarihinden sonra bu Chromebook'ta güvenlik güncellemeleri almayacaksınız. En son güvenlik ve yazılım özelliklerini kullanmak için cihazınızı yükseltme zamanı geldi. Teklif koşulları geçerlidir.</translation>
 <translation id="5680050361008726776">"<ph name="ESIM_PROFILE_NAME" />" kaldırılsın mı?</translation>
+<translation id="5681586175480958839">Dosya zaten açılıyor</translation>
 <translation id="5684181005476681636">Kablosuz bağlantı ayrıntıları</translation>
 <translation id="5684661240348539843">Öğe Tanımlayıcı</translation>
 <translation id="5684950556880280580">Şifreniz güncellendi</translation>
@@ -6451,6 +6455,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5806447147478173900">Görüntülenen siteler tarafından kullanılan toplam depolama alanı: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Varsayılan)</translation>
 <translation id="5809835394668218762"><ph name="WEBSITE" /> ile ilgili diğer işlemler</translation>
+<translation id="5809840528400421362">PIN, 6 basamaklı olmalıdır</translation>
 <translation id="5810809306422959727">Bu hesap, ebeveyn denetimleri için uygun değil</translation>
 <translation id="5811614940486072060">Bu dosya çok indirilen bir dosya değil ve tehlikeli olabilir.</translation>
 <translation id="5812674658566766066">Tümünü genişlet</translation>
@@ -10574,7 +10579,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8894761918470382415">Çevre birimleri için veri erişimi koruması</translation>
 <translation id="8895454554629927345">Yer işareti listesi</translation>
 <translation id="8896830132794747524">Farenizi daha hızlı hareket ettirmeniz, imleci daha uzağa taşır</translation>
-<translation id="8898140163781851592">Birincil fare düğmesi</translation>
 <translation id="8898786835233784856">Sonraki Sekmeyi Seç</translation>
 <translation id="8898790559170352647">Microsoft hesabınızı ekleyin</translation>
 <translation id="8898822736010347272">Yeni tehditleri keşfetmeye ve web'deki herkesi korumaya yardımcı olmak için, ziyaret ettiğiniz bazı sayfaların URL'lerini, sınırlı sistem bilgilerini ve bazı sayfa içeriklerini Google'a gönderir.</translation>

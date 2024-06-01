@@ -711,6 +711,7 @@ Para informações detalhadas sobre padrões de URL válidos, consulte https://c
 <translation id="1557113199339446336">Se a política for definida como verdadeira, os dispositivos registrados vão enviar relatórios com informações sobre eventos de detecção e resposta estendidas (XDR, na sigla em inglês).
 
       Se a política for definida como falsa ou for deixada sem definição, os dispositivos registrados não vão informar eventos XDR.</translation>
+<translation id="1559343998807576489">Configurações do recurso de sobreposição do Lens</translation>
 <translation id="1560279917909364275">Colocar na lista de permissões os apps de anotação permitidos na tela de bloqueio do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="1561424797596341174">A política modifica as versões de depuração do host de acesso remoto</translation>
 <translation id="1561967320164410511">U2F e extensões para declaração individual</translation>
@@ -1718,6 +1719,7 @@ Se for deixada sem definição ou desativada, a transferência de arquivos não 
 <translation id="2258126710006312594">Permitir que usuários de acesso remoto transfiram arquivos para/do host</translation>
 <translation id="225830954785359083">Impedir que as páginas mostrem pop-ups durante o descarregamento</translation>
 <translation id="2261648512244797294">Desativar a impressão com o protocolo Privet suspenso</translation>
+<translation id="2263881357524831360">Permitir o uso de gerenciadores de senhas de terceiros no <ph name="PRODUCT_NAME" /> no <ph name="ANDROID_NAME" /></translation>
 <translation id="2264286153777425328">Lista de ações a serem executadas quando o tempo limite da política <ph name="IDLE_TIMEOUT_POLICY_NAME" /> for atingido.
 
 Aviso: definir essa política pode afetar e remover permanentemente os dados pessoais locais. Recomendamos testar as configurações antes da implantação para evitar a exclusão acidental de dados pessoais.
@@ -2639,6 +2641,7 @@ A política <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> t
 <translation id="2960128438010718932">Cronograma de testes para aplicação de uma nova atualização</translation>
 <translation id="2960691910306063964">Ativar ou desativar autenticação sem PIN para hosts de acesso remoto</translation>
 <translation id="2960999045613902792">Permitir que os usuários adicionem, configurem e imprimam usando impressoras não corporativas</translation>
+<translation id="296100724744272922">Permitir o uso de um gerenciador de senhas de terceiros no Chrome</translation>
 <translation id="2962972237615992440">Desativar o proxy do <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2963292398266537394">Desativar ditado</translation>
 <translation id="2964373560810620158">Impedir que os usuários usem o navegador <ph name="LACROS_NAME" /></translation>
@@ -6893,6 +6896,11 @@ Confira mais detalhes em https://developer.chrome.com/blog/immutable-document-do
 <translation id="6282524907402492171">Exibir avisos de suspensão de uso de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6282799760374509080">Permitir ou negar captura de áudio</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
+<translation id="6286082501885452957">Se a política for definida, as origens listadas poderão acessar atributos do dispositivo, como o número de série ou o nome do host, usando a API Device Attributes.
+
+As origens precisam corresponder a aplicativos da Web de instalação forçada usando a política <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> ou <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (da versão 125 em diante) configurados como um aplicativo de quiosque. Para conferir a especificação da API Device Attributes, consulte https://wicg.github.io/WebApiDevice/device_attributes (link em inglês).
+
+Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos (da versão 127 em diante), consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="6287128640500683781">Permitir que qualquer usuário faça login</translation>
 <translation id="6287310684159482272">Configurações de cookies</translation>
 <translation id="6287742528823584153">Ativar o serviço <ph name="PRODUCT_NAME" /> e iniciar o espaço de trabalho remoto após o login</translation>
@@ -8107,6 +8115,22 @@ Se a política for definida, os usuários não poderão mudá-la ou substituí-l
 Se a política não for definida, lupa vai ficar inicialmente desativada na tela de login, mas poderá ser ativada pelo usuário a qualquer momento.</translation>
 <translation id="7109384070286741861">Desativar CECPQ2</translation>
 <translation id="7113439794629928551">Mostrar controles de mídia para sessões do <ph name="PRODUCT_NAME" /> iniciadas por outros dispositivos</translation>
+<translation id="7113803652772945829">Se a política for definida como verdadeira, os usuários poderão usar um gerenciador de senhas de terceiros.
+Esse gerenciador poderá salvar e preencher todas as senhas, formas de pagamento
+e dados de preenchimento automático.
+Se a política for definida como verdadeira ou deixada sem definição, uma configuração permitirá a troca entre o
+gerenciador de senhas integrado do <ph name="PRODUCT_NAME" /> e o
+gerenciador de senhas das configurações do Android.
+Como o <ph name="PRODUCT_NAME" /> usa os mesmos dados
+que o Preenchimento automático do Google, a configuração só poderá ser modificada para usar gerenciadores de senhas de terceiros se um gerenciador diferente do Preenchimento automático do Google estiver definido
+nas configurações do sistema do Android.
+
+Se a política for definida como falsa,
+o <ph name="PRODUCT_NAME" /> sempre usará o
+gerenciador de senhas integrado.
+
+Esta política não afeta os gerenciadores de senhas de terceiros que usam
+APIs de acessibilidade.</translation>
 <translation id="7114169791477667553">Desativar o provedor de pesquisa padrão</translation>
 <translation id="7121046543122812054">Esta política foi descontinuada. Use a <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
 
@@ -10097,6 +10121,12 @@ Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
 
       Consulte https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage (link em inglês) para ver detalhes sobre os tipos de mídia JavaScript / ECMAScript.
       </translation>
+<translation id="8668202868357089313">Com a sobreposição do Lens, os usuários podem fazer pesquisas no Google interagindo com uma captura de tela da página atual sobreposta ao conteúdo da Web.
+
+Não há uma configuração do usuário para controlar esse recurso. Ele geralmente fica disponível para todos os usuários que têm o Google como mecanismo de pesquisa padrão, a menos que seja desativado por esta política.
+
+Quando a política for ativada (definida como 1) ou deixada sem definição, o recurso ficará disponível para os usuários.
+Quando for desativada (definida como 0), o recurso não ficará disponível.</translation>
 <translation id="8671119576957984818">Ativar hub de compartilhamento da área de trabalho</translation>
 <translation id="8671193325113134911">Ativar a verificação rigorosa de tipo MIME para scripts de worker</translation>
 <translation id="8671303329680827168">Essa política foi descontinuada. Use a <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.</translation>
@@ -10855,6 +10885,7 @@ O valor padrão é 0, exceto quando indicado de outra forma abaixo.
 2 = desativa o recurso. "2" é o valor padrão para contas do Education gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
 
 Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
+<translation id="949192525372487705">Impedir a troca para um gerenciador de senhas de terceiros</translation>
 <translation id="957322141096206402">A resolução de DNS pode ser executada dentro ou fora do processo de rede, dependendo da configuração do sistema e das flags de recursos.</translation>
 <translation id="957778406002650056">O URL no qual o download da imagem do <ph name="PLUGIN_VM_NAME" /> pode ser feito.</translation>
 <translation id="957920984193041197">Permitir que as páginas mostrem pop-ups durante o descarregamento</translation>

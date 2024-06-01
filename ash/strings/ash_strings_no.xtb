@@ -130,6 +130,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1420408895951708260">Slå av/på nattlys. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1435537621343861112">Kan ikke starte diktering. Mikrofonen din er av.</translation>
+<translation id="1447907279406111651">Nå · Avsluttes <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Enhetens wifi-soner</translation>
 <translation id="1455242230282523554">Vis språkinnstillinger</translation>
 <translation id="1460620680449458626">Lyden er dempet.</translation>
@@ -480,6 +481,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2894949423239620203">Kabelen kan påvirke ytelsen</translation>
 <translation id="2914580577416829331">Skjermdumper</translation>
 <translation id="2924416280450782352">Kan ikke vise elementene. Prøv å åpne dette panelet på nytt.</translation>
+<translation id="292506373491190801">Fra en hendelse som pågår nå</translation>
 <translation id="2931572158271115754">Det er ingenting på denne huskelisten.</translation>
 <translation id="2932487126591186298">10 minutter er lagt til. <ph name="REMAINING_TIME" /> venstre</translation>
 <translation id="2935225303485967257">Administrer profiler</translation>
@@ -764,6 +766,7 @@ Koble enheten til strøm.</translation>
 <translation id="3950272133184491871">Vil du logge av nå?</translation>
 <translation id="3950820424414687140">Logg på</translation>
 <translation id="3953130726459169782">Ingen oppgaver er fullført ennå.</translation>
+<translation id="3958714870339660776">Hele dagen</translation>
 <translation id="3962859241508114581">Forrige spor</translation>
 <translation id="3969043077941541451">Av</translation>
 <translation id="3970324493235864154">Se varsler fra telefonen din</translation>
@@ -1190,7 +1193,6 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="553675580533261935">Avslutning av økten</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554017492391497564">Kunne ikke merke som fullført.</translation>
-<translation id="5543778275214926792">Vil du slå på tekstopplesing?</translation>
 <translation id="5546397813406633847">Gjenopprett bruker</translation>
 <translation id="554893713779400387">Slå av/på diktering</translation>
 <translation id="5550417424894892620">Slipp filene på skrivebordet for å legge dem til på <ph name="HOLDING_SPACE_TITLE" />. Du kan ikke legge til filer på skrivebordet.</translation>
@@ -1216,6 +1218,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5599242528220103262">Hurtigtasten er avslått</translation>
 <translation id="5600415762228455511">Fokus er på. <ph name="REMAINING_TIME" /> gjenstår. Fokuserer på <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Trykk på Ctrl + Alt + Z for å slå av taletilbakemelding.</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{For &lt; 1 time siden}=1{For 1 time siden}other{For # timer siden}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Vi har flyttet deg til et bedre nettverk</translation>
 <translation id="5619862035903135339">Skjermdumper er deaktivert på grunn av en administratorregel</translation>
@@ -1392,6 +1395,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6228457605945141550">Skru ned lysstyrken</translation>
 <translation id="623116199192908855">Cast skjermen fra Chromebooken</translation>
 <translation id="6231419273573514727">Ytelsen til eksterne enheter kan være begrenset</translation>
+<translation id="6232416233079464213">Fra <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> bruker kameraet ditt og mikrofonen din for øyeblikket</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Lavt batterinivå. Batterisparing er slått på.</translation>
@@ -1638,7 +1642,6 @@ Nylig installert</translation>
 <translation id="7188494361780961876">Menyen ble flyttet til øvre venstre hjørne av skjermen.</translation>
 <translation id="7189412385142492784">Hvor langt unna er Venus?</translation>
 <translation id="7198435252016571249">Kameraet er festet til nedre høyre hjørne. Konflikt med systemoverflaten.</translation>
-<translation id="720981139652840573">Få spesifikk tekst lest opp. Først velger du Tekstopplesing-ikonet nederst på skjermen, og deretter markerer du teksten. Du kan også bruke en hurtigtast: Marker tekst, og trykk deretter på Søk/Appoversikt + S.</translation>
 <translation id="7219573373513695352">Ingen enheter er koblet til</translation>
 <translation id="7229029500464092426">Minne <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> totalt</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" /> % batteri gjenstår. Koble enheten til strøm.</translation>
@@ -1792,6 +1795,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="780301667611848630">Nei takk</translation>
 <translation id="7807067443225230855">Søk og Assistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> og <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">Fra en kommende kalenderaktivitet</translation>
 <translation id="7829386189513694949">Sterkt signal</translation>
 <translation id="7830453190047749513">Du kan tilpasse knappehandlinger, markørhastigheten med mer for <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Tiden er ute</translation>
@@ -2105,6 +2109,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="899350903320462459">Lås opp enheten som <ph name="LOGIN_ID" /> for å utføre varselhandlingen</translation>
 <translation id="8993733019280019776">Snakker du? Mikrofonen din er av. Velg mikrofonen for å slå den på.</translation>
 <translation id="9000771174482730261">ADMINISTRER LAGRING</translation>
+<translation id="9002204506712855687">Utforsk de nyeste funksjonene</translation>
 <translation id="9005984960510803406">Åpne Crosh-vindu</translation>
 <translation id="9017320285115481645">Skriv inn koden for foreldretilgang til Family Link.</translation>
 <translation id="9022774213089566801">Ofte besøkte</translation>
@@ -2136,6 +2141,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="9098969848082897657">Demp telefonen</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> eller <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Angre siste handling</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{Om 1 min}other{Om # min}}</translation>
 <translation id="9129245940793250979">Bakre knapp</translation>
 <translation id="9133335900048457298">Kan ikke ta opp beskyttet innhold</translation>
 <translation id="9139720510312328767">Slett neste bokstav</translation>
@@ -2148,6 +2154,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="9183456764293710005">Lupe for hele skjermen</translation>
 <translation id="9193626018745640770">Caster på en ukjent mottaker</translation>
 <translation id="9194617393863864469">Logg på en annen bruker</translation>
+<translation id="9195990613383871904">I morgen</translation>
 <translation id="9198992156681343238">Oppløsningen for <ph name="DISPLAY_NAME" /> ble endret til <ph name="RESOLUTION" />. Klikk på bekreft for å beholde endringene. De forrige innstillingene blir gjenopprettet om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Koble <ph name="NAME" /> til denne Chromebooken</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" /> – administreres av administratoren din</translation>

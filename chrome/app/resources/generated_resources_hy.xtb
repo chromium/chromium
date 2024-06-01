@@ -4183,6 +4183,7 @@
 <translation id="4050534976465737778">Համոզվեք, որ երկու սարքերն ապակողպված են, միմյանց մոտ են, և սարքերում միացված է Bluetooth-ը։ Եթե դուք կիսվում եք ֆայլերով Chromebook սարքի հետ, որը ձեր կոնտակտներում ներառված չէ, համոզվեք, որ այնտեղ միացված է «Մոտակա սարքերի հասանելիություն» գործառույթը (բացեք վիճակի տարածքը, ապա ընտրեք «Մոտակա սարքերի հասանելիություն»)։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Ներածման նախորդ եղանակին անցնելու համար սեղմեք <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">որոնում + աջ սլաք</translation>
+<translation id="405181879009056822">ChromeOS-ի կարգավորումներ</translation>
 <translation id="4052120076834320548">Շատ փոքր</translation>
 <translation id="4052913941260326985">Ստեղծել &amp;QR կոդ</translation>
 <translation id="405365679581583349">Թարմացրեք Google Play ծառայությունները</translation>
@@ -5221,6 +5222,7 @@
 <translation id="4867433544163083783">Ստուգեք՝ արդյոք ներդիրները կարելի է դասավորել</translation>
 <translation id="4868281708609571334">Սովորեցրեք Google Օգնականին ճանաչել <ph name="SUPERVISED_USER_NAME" />-ի ձայնը</translation>
 <translation id="4868284252360267853">Երկխոսության այս պատուհանը ֆոկուսում չէ։ Սեղմեք Command + Shift + Option + A՝ ուղղելու համար։</translation>
+<translation id="4868351661310357223"><ph name="DEVICE_TYPE" /> սարքում տեղադրեք հավելվածներ ու խաղեր Google Play-ից։</translation>
 <translation id="4869170227080975044">Կարդալ ChromeOS ցանցի մասին տեղեկությունները</translation>
 <translation id="4870724079713069532">Դուք կարող եք բացել և փոփոխել աջակցվող ֆայլերն այս հավելվածի միջոցով File Explorer-ից կամ այլ հավելվածներից։ Անցեք <ph name="BEGIN_LINK" />Windows-ի կարգավորումներ<ph name="END_LINK" />՝ նշելու, թե որ ֆայլերը պետք է ըստ կանխադրման բացվեն տվյալ հավելվածով։</translation>
 <translation id="4870995365819149457">Որոշ աջակցվող հղումներ նախկինի պես կբացվեն <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> ու ևս 1 հավելվածում։</translation>
@@ -5718,6 +5720,7 @@
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" />-ն օգտագործում է ձեր գտնվելու վայրը՝ ձեզ տեղային բովանդակություն տրամադրելու համար: Սա կարող եք փոխել <ph name="SETTINGS_LINK" />-ում:</translation>
 <translation id="5252496130205799136">Օգտագործե՞լ ձեր Google հաշիվը՝ գաղտնաբառեր պահելու և ինքնալրացնելու համար</translation>
 <translation id="5252653240322147470">PIN կոդը պետք է <ph name="MAXIMUM" />-ից քիչ թիվ պարունակի</translation>
+<translation id="5253554634804500860">Օգտագործել <ph name="DEVICE_NAME" /> սարքը</translation>
 <translation id="5254233580564156835">Հիշողության օգտագործում՝ <ph name="MEMORY_USAGE" /></translation>
 <translation id="52550593576409946">Չհաջողվեց գործարկել kiosk ծրագիրը:</translation>
 <translation id="5255726914791076208">Այս մուտքի բանալին փոփոխելու դեպքում ձեր <ph name="RP_ID" /> հաշիվը չի փոփոխվի</translation>
@@ -5792,6 +5795,7 @@
 <translation id="5300719150368506519">Ուղարկել ձեր այցելած էջերի հասցեները Google-ին</translation>
 <translation id="5301751748813680278">Մտնում եք որպես հյուր:</translation>
 <translation id="5301954838959518834">Պարզ է</translation>
+<translation id="5302032366299160685">Սպասեք, մինչև այն բացվի</translation>
 <translation id="5302048478445481009">Լեզու</translation>
 <translation id="5302932258331363306">Ցուցադրել փոխարինողներին</translation>
 <translation id="5305145881844743843">Այս հաշիվը կառավարվում է <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> տիրույթի կողմից</translation>
@@ -6287,6 +6291,7 @@
 <translation id="5678955352098267522">Կարդալ ձեր տվյալները <ph name="WEBSITE_1" /> կայքում</translation>
 <translation id="5679785611070310751">Հետևյալ ամսաթվից դուք այլևս չեք ստանա անվտանգության թարմացումներ այս Chromebook-ի համար՝ <ph name="MONTH_AND_YEAR" />։ Ժամանակն է անցնել ծրագրային ապահովման և անվտանգության համակարգի վերջին տարբերակներին։ Առաջարկի համար գործում են հատուկ պայմաններ։</translation>
 <translation id="5680050361008726776">Հեռացնե՞լ «<ph name="ESIM_PROFILE_NAME" />» պրոֆիլը</translation>
+<translation id="5681586175480958839">Ֆայլն արդեն բացվում է</translation>
 <translation id="5684181005476681636">Wi-Fi-ի մանրամասներ</translation>
 <translation id="5684661240348539843">Ակտիվների նույնացուցիչ</translation>
 <translation id="5684950556880280580">Ձեր գաղտնաբառը փոխվեց</translation>
@@ -6451,6 +6456,7 @@
 <translation id="5806447147478173900">Ցուցադրվող կայքերի կողմից օգտագործվող ընդհանուր տարածքը՝ <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (կանխադրված)</translation>
 <translation id="5809835394668218762"><ph name="WEBSITE" /> սարքի հետ կապված այլ գործողություններ</translation>
+<translation id="5809840528400421362">PIN կոդը պետք է բաղկացած լինի 6 թվանշանից</translation>
 <translation id="5810809306422959727">Այս հաշվի միջոցով հնարավոր չէ օգտագործել ծնողական վերահսկողությունը</translation>
 <translation id="5811614940486072060">Այս ֆայլը հազվադեպ է ներբեռնվում և կարող է վտանգավոր լինել</translation>
 <translation id="5812674658566766066">Ծավալել բոլորը</translation>
@@ -8036,6 +8042,7 @@
 <translation id="7007648447224463482">Բացել բոլորը նոր պատուհանում</translation>
 <translation id="7008815993384338777">Այս պահին ռոումինգում չէ</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> հավելվածն օգտագործում է ձեր տեսախցիկը</translation>
+<translation id="701020165009334820">Դուք կարող եք Android հավելվածները և խաղերը ներբեռնել Play Խանութի միջոցով։</translation>
 <translation id="701080569351381435">View Source</translation>
 <translation id="7011797924920577670">գնահատում է ձեր հետաքրքրությունները</translation>
 <translation id="7012430956470647760">Հավելվածների ծնողական վերահսկողություն</translation>
@@ -10574,7 +10581,6 @@
 <translation id="8894761918470382415">Տվյալների հասանելիության պաշտպանություն արտաքին սարքերի համար</translation>
 <translation id="8895454554629927345">Էջանիշների ցանկ</translation>
 <translation id="8896830132794747524">Մկնիկի հետ ավելի արագ շարժումները կտեղափոխեն կուրսորն ավելի հեռու</translation>
-<translation id="8898140163781851592">Մկնիկի հիմնական կոճակ</translation>
 <translation id="8898786835233784856">Select Next Tab</translation>
 <translation id="8898790559170352647">Ավելացրեք ձեր Microsoft հաշիվը</translation>
 <translation id="8898822736010347272">Ուղարկում է Google-ին ձեր այցելած որոշ էջերի URL-ներն ու դրանց բովանդակությունը և համակարգի մասին որոշակի տեղեկություններ, որոնք օգնում են հայտնաբերել համացանցում օգտատերերին սպառնացող նոր վտանգներ։</translation>

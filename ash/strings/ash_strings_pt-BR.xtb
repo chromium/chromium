@@ -107,6 +107,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> conectado</translation>
 <translation id="1340378040547539434">Diminuir zoom na página</translation>
 <translation id="1341651618736211726">Botão flutuante</translation>
+<translation id="1341926407152459446">Usar "<ph name="DEVICE_NAME" />" para entrada e saída de áudio</translation>
 <translation id="1344141078024003905">Você está transmitindo a tela. É possível pausar ou interromper a transmissão a qualquer momento.</translation>
 <translation id="1346748346194534595">À direita</translation>
 <translation id="1351937230027495976">Recolher menu</translation>
@@ -130,6 +131,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1420408895951708260">Alternar Modo noturno. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1435537621343861112">Não foi possível iniciar o ditado. Seu microfone está desativado.</translation>
+<translation id="1447907279406111651">Agora ⋅ Termina às <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Pontos de acesso do dispositivo</translation>
 <translation id="1455242230282523554">Mostrar configurações de idioma</translation>
 <translation id="1460620680449458626">O som está desativado.</translation>
@@ -144,6 +146,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1486307154719069822">É possível digitar com a voz usando o Ditado. Pressione a tecla de Ditado ou selecione o ícone de microfone na parte de baixo da tela quando estiver em um campo de texto. O idioma do Ditado está definido como <ph name="LANGUAGE" />. A fala é enviada ao Google para processamento. É possível mudar o idioma a qualquer momento em "Configurações" &gt; "Acessibilidade".</translation>
 <translation id="1487931858675166540">Troca de <ph name="FIRST_ITEM_TITLE" /> por <ph name="SECOND_ITEM_TITLE" /> realizada</translation>
 <translation id="1500926532737552529">Mostrar todas as sugestões</translation>
+<translation id="1501946871587957338">Trocar a fonte de áudio?</translation>
 <translation id="1510238584712386396">Iniciador</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar configurações de notificação. As notificações estão desativadas para um app}one{Mostrar configurações de notificação. As notificações estão desativadas para # app}other{Mostrar configurações de notificação. As notificações estão desativadas para # apps}}</translation>
 <translation id="1523032696246003">Bateria em <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> até a carga completa</translation>
@@ -480,6 +483,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2894949423239620203">O cabo pode afetar o desempenho</translation>
 <translation id="2914580577416829331">Capturas de tela</translation>
 <translation id="2924416280450782352">Não é possível mostrar itens. Tente abrir o painel de novo.</translation>
+<translation id="292506373491190801">Do evento acontecendo agora</translation>
 <translation id="2931572158271115754">Nenhum item nesta lista de tarefas.</translation>
 <translation id="2932487126591186298">Você adicionou 10 minutos. Tempo restante: <ph name="REMAINING_TIME" />.</translation>
 <translation id="2935225303485967257">Gerenciar perfis</translation>
@@ -764,12 +768,14 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3950272133184491871">Sair agora?</translation>
 <translation id="3950820424414687140">Fazer login</translation>
 <translation id="3953130726459169782">Nenhuma atividade concluída.</translation>
+<translation id="3958714870339660776">O dia todo</translation>
 <translation id="3962859241508114581">Faixa anterior</translation>
 <translation id="3969043077941541451">Desativado</translation>
 <translation id="3970324493235864154">Visualize as notificações do smartphone</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="397726367135689299">O carregamento da bateria pode não ser confiável.</translation>
 <translation id="3977512764614765090">Bateria em <ph name="PERCENTAGE" />% e carregando.</translation>
+<translation id="3982013579989864579">Trocar a saída de áudio?</translation>
 <translation id="3984536049089846927">Próxima página</translation>
 <translation id="3986082989454912832">Atender</translation>
 <translation id="3990002060657467458">Os controles usados com frequência, como Wi-Fi, Bluetooth e volume, estão nas Configurações rápidas. Elas também permitem fazer capturas de tela.</translation>
@@ -813,6 +819,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4150201353443180367">Exibição</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% de bateria (cerca de <ph name="TIME_LEFT" />).
 Alguns recursos estão limitados para aumentar a duração da bateria.</translation>
+<translation id="4160919062868802509">Várias fontes de áudio detectadas</translation>
 <translation id="4165275524535002941">Talvez o cabo não transmita sinal de vídeo</translation>
 <translation id="4177415338862979658">Clique para verificar os detalhes</translation>
 <translation id="4177913004758410636">{0,plural, =1{Atualize o dispositivo em 1 dia}one{Atualize o dispositivo em # dia}other{Atualize o dispositivo em # dias}}</translation>
@@ -1011,6 +1018,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4871905435473761992">Consulte detalhes do ponto de acesso. Sua rede móvel não tem suporte a pontos de acesso.</translation>
 <translation id="4872237917498892622">Alt + Pesquisar ou Shift</translation>
 <translation id="4872852897273142380">Destacar ou colocar o foco na barra de favoritos (se mostrada)</translation>
+<translation id="4876935764454575645">Seleção de áudio</translation>
 <translation id="4881323000405981760">Os apps do Linux não têm suporte a efeitos</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4889868803215848840">Envie mais feedback para melhorar as sugestões:</translation>
@@ -1087,6 +1095,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="5121628974188116412">Ir para a parte inferior da página</translation>
 <translation id="5122517996953421795">Prévia do <ph name="DESK_NAME" />. Espaço de trabalho inativo.</translation>
 <translation id="5136175204352732067">Teclado diferente conectado</translation>
+<translation id="5144005092084035179">Trocar a entrada de áudio?</translation>
 <translation id="5147567197700016471">Desbloqueado</translation>
 <translation id="5150070631291639005">Config. de privacidade</translation>
 <translation id="5155897006997040331">Velocidade de leitura</translation>
@@ -1190,7 +1199,6 @@ Nenhum dispositivo conectado.</translation>
 <translation id="553675580533261935">Saindo da sessão</translation>
 <translation id="5537725057119320332">Transmitir</translation>
 <translation id="554017492391497564">Não foi possível marcar como concluída.</translation>
-<translation id="5543778275214926792">Ativar a opção "Selecionar para ouvir"?</translation>
 <translation id="5546397813406633847">Recuperar usuário</translation>
 <translation id="554893713779400387">Mudar para o ditado</translation>
 <translation id="5550417424894892620">Solte os arquivos na área de trabalho para adicioná-los ao espaço <ph name="HOLDING_SPACE_TITLE" />. Não é possível adicionar arquivos à área de trabalho.</translation>
@@ -1216,6 +1224,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5599242528220103262">O atalho do teclado está desativado</translation>
 <translation id="5600415762228455511">Foco ativado. Tempo restante: <ph name="REMAINING_TIME" />. Focando em: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Pressione Ctrl + Alt + Z para desativar a resposta falada.</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{Há menos de 1 hora}=1{Há 1 hora}one{Há # hora}other{Há # horas}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Trocamos sua rede por uma melhor</translation>
 <translation id="5619862035903135339">A captura de tela foi desativada pela política do administrador</translation>
@@ -1392,6 +1401,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="6228457605945141550">Diminuir o brilho</translation>
 <translation id="623116199192908855">Transmitir a tela do Chromebook</translation>
 <translation id="6231419273573514727">O desempenho dos periféricos pode ser limitado</translation>
+<translation id="6232416233079464213">De <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> está usando sua câmera e seu microfone</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Pouca bateria. Economia de bateria ativada.</translation>
@@ -1638,7 +1648,6 @@ Nova instalação</translation>
 <translation id="7188494361780961876">O menu foi movido para o canto superior esquerdo da tela.</translation>
 <translation id="7189412385142492784">Qual é a distância até Vênus?</translation>
 <translation id="7198435252016571249">Câmera alinhada ao canto direito de baixo. Conflito com a superfície do sistema.</translation>
-<translation id="720981139652840573">Ouça um texto específico lido em voz alta. Primeiro, selecione o ícone do recurso "Selecionar para ouvir" na parte de baixo da tela e depois destaque o texto. Você também pode usar um atalho do teclado, destacando texto e depois pressionando as teclas Pesquisa/Acesso rápido + S.</translation>
 <translation id="7219573373513695352">Nenhum dispositivo conectado</translation>
 <translation id="7229029500464092426">Memória usada: <ph name="AVAILABLE_MEMORY" /> | Total: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Tempo restante: cerca de <ph name="PERCENTAGE" /> (%). Conecte o dispositivo a uma fonte de energia.</translation>
@@ -1786,12 +1795,14 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7780094051999721182">atalhos</translation>
 <translation id="7780159184141939021">Girar tela</translation>
 <translation id="7781829728241885113">Ontem</translation>
+<translation id="7787212146956232129">Os dispositivos de entrada e saída foram definidos. Acesse as Configurações para editar.</translation>
 <translation id="7792590255364786396">Visível</translation>
 <translation id="7796735576426975947">Nova notificação oculta</translation>
 <translation id="7798302898096527229">Pressione Pesquisar ou Shift para cancelar.</translation>
 <translation id="780301667611848630">Agora não</translation>
 <translation id="7807067443225230855">Pesquisa e Assistente</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">Do próximo evento da agenda</translation>
 <translation id="7829386189513694949">Sinal forte</translation>
 <translation id="7830453190047749513">Você pode personalizar as ações dos botões, a velocidade do cursor e muito mais do seu <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Tempo esgotado</translation>
@@ -2091,6 +2102,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 arquivo}one{# arquivo}other{# arquivos}}</translation>
 <translation id="8936501819958976551">desativado</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (porta traseira da direita)</translation>
+<translation id="8939855324412367560">O áudio de entrada vem do dispositivo "<ph name="INPUT_DEVICE_NAME" />" e o de saída vem de "<ph name="OUTPUT_DEVICE_NAME" />". Acesse as Configurações para mudar.</translation>
 <translation id="8940956008527784070">Nível de bateria baixo (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314">Caixa de seleção <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> não marcada.</translation>
 <translation id="8949925099261528566">Conectada, sem Internet</translation>
@@ -2105,6 +2117,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="899350903320462459">Desbloqueie o dispositivo com a conta <ph name="LOGIN_ID" /> para executar a ação de notificação</translation>
 <translation id="8993733019280019776">Você está falando? Seu microfone está desativado. Selecione o ícone dele para ativar.</translation>
 <translation id="9000771174482730261">GERENCIE O ARMAZENAMENTO</translation>
+<translation id="9002204506712855687">Conheça os recursos mais recentes</translation>
 <translation id="9005984960510803406">Abrir janela Crosh</translation>
 <translation id="9017320285115481645">Insira o código de acesso do familiar responsável do Family Link.</translation>
 <translation id="9022774213089566801">Visitados com frequência</translation>
@@ -2136,6 +2149,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="9098969848082897657">Silenciar smartphone</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ou <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Desfazer a última ação</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{Em 1min}one{Em #min}other{Em #min}}</translation>
 <translation id="9129245940793250979">Botão traseiro</translation>
 <translation id="9133335900048457298">Não é possível gravar conteúdo protegido</translation>
 <translation id="9139720510312328767">Excluir a próxima letra</translation>
@@ -2146,8 +2160,10 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="9178475906033259337">Exibindo 1 resultado para <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Este recurso permite acessar rapidamente qualquer usuário conectado sem a necessidade de uma senha. Use esse recurso somente com contas em que você confia.</translation>
 <translation id="9183456764293710005">Lupa de tela cheia</translation>
+<translation id="9192133205265227850">Usar "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">Transmitindo para um destinatário desconhecido</translation>
 <translation id="9194617393863864469">Fazer login com outro usuário...</translation>
+<translation id="9195990613383871904">Amanhã</translation>
 <translation id="9198992156681343238">A resolução de <ph name="DISPLAY_NAME" /> foi modificada para <ph name="RESOLUTION" />. Clique em "Confirmar" para manter as mudanças. As configurações anteriores serão restauradas em <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Conecte <ph name="NAME" /> ao Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, gerenciada pelo seu administrador</translation>

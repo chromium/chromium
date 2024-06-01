@@ -4184,6 +4184,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4050534976465737778">Asegúrate de que los dos dispositivos estén desbloqueados, se encuentren cerca y tengan el Bluetooth activado. Si vas a compartir archivos con un Chromebook que no está en tus contactos, comprueba que esté activa la visibilidad Nearby (abre el área de estado y activa la visibilidad Nearby). <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">Para cambiar al último método de introducción de texto usado, pulsa <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">Tecla de búsqueda + flecha hacia la derecha</translation>
+<translation id="405181879009056822">Configuración de ChromeOS</translation>
 <translation id="4052120076834320548">Diminuto</translation>
 <translation id="4052913941260326985">Crear &amp;código &amp;QR</translation>
 <translation id="405365679581583349">Actualiza los Servicios de Google Play</translation>
@@ -5718,6 +5719,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> utiliza tu ubicación para ofrecerte contenido local. Puedes cambiar esta opción en <ph name="SETTINGS_LINK" />.</translation>
 <translation id="5252496130205799136">¿Quieres usar tu cuenta de Google para guardar y rellenar contraseñas?</translation>
 <translation id="5252653240322147470">El PIN debe tener menos de <ph name="MAXIMUM" /> dígitos</translation>
+<translation id="5253554634804500860">Usar <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Uso de memoria: <ph name="MEMORY_USAGE" /></translation>
 <translation id="52550593576409946">La aplicación de kiosco no se ha podido iniciar.</translation>
 <translation id="5255726914791076208">Si editas tu llave de acceso, tu cuenta de <ph name="RP_ID" /> no cambiará</translation>
@@ -5792,6 +5794,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5300719150368506519">Enviar las URL de las páginas que visitas a Google</translation>
 <translation id="5301751748813680278">Iniciando sesión de invitado</translation>
 <translation id="5301954838959518834">Entendido</translation>
+<translation id="5302032366299160685">Espera a que se abra el archivo antes de volver a intentarlo</translation>
 <translation id="5302048478445481009">Idioma</translation>
 <translation id="5302932258331363306">Mostrar sustituciones</translation>
 <translation id="5305145881844743843"><ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> gestiona esta cuenta</translation>
@@ -6289,6 +6292,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5678955352098267522">Leer tus datos en <ph name="WEBSITE_1" /></translation>
 <translation id="5679785611070310751">Dejarás de recibir actualizaciones de seguridad para este Chromebook en <ph name="MONTH_AND_YEAR" />. Ha llegado la hora de cambiar de Chromebook para disfrutar de las últimas novedades en seguridad y software. Oferta sujeta a condiciones.</translation>
 <translation id="5680050361008726776">¿Eliminar <ph name="ESIM_PROFILE_NAME" />?</translation>
+<translation id="5681586175480958839">El archivo ya se está abriendo</translation>
 <translation id="5684181005476681636">Detalles de la red Wi‑Fi</translation>
 <translation id="5684661240348539843">Identificador de recurso</translation>
 <translation id="5684950556880280580">Tu contraseña se ha actualizado</translation>
@@ -6453,6 +6457,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5806447147478173900">Almacenamiento total usado por sitios mostrados: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Predeterminado)</translation>
 <translation id="5809835394668218762">Más acciones de <ph name="WEBSITE" /></translation>
+<translation id="5809840528400421362">El PIN debe tener 6 dígitos</translation>
 <translation id="5810809306422959727">Esta cuenta no es apta para el control parental</translation>
 <translation id="5811614940486072060">Este archivo no se descarga habitualmente y puede ser peligroso.</translation>
 <translation id="5812674658566766066">Mostrar todo</translation>
@@ -10577,7 +10582,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8894761918470382415">Protección de acceso a datos desde periféricos</translation>
 <translation id="8895454554629927345">Lista de marcadores</translation>
 <translation id="8896830132794747524">Si haces movimientos más rápidos con el ratón, el cursor se moverá más lejos</translation>
-<translation id="8898140163781851592">Botón principal del ratón</translation>
 <translation id="8898786835233784856">Seleccionar siguiente pestaña</translation>
 <translation id="8898790559170352647">Añadir tu cuenta de Microsoft</translation>
 <translation id="8898822736010347272">Envía a Google las URL de las páginas que visitas, información limitada del sistema y contenido de las páginas para ayudar a descubrir nuevas amenazas y proteger a los usuarios de la Web.</translation>

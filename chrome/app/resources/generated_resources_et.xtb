@@ -5800,6 +5800,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5300719150368506519">Saadab Google'ile teie külastatud lehtede URL-id</translation>
 <translation id="5301751748813680278">Sisenemine külastajana.</translation>
 <translation id="5301954838959518834">Selge, sain aru</translation>
+<translation id="5302032366299160685">Enne uuesti proovimist oodake, et faili avamine lõpetataks</translation>
 <translation id="5302048478445481009">Keel</translation>
 <translation id="5302932258331363306">Kuva asendused</translation>
 <translation id="5305145881844743843">Seda kontot haldab <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
@@ -6297,6 +6298,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5678955352098267522">Lugege oma andmeid veebisaidil <ph name="WEBSITE_1" /></translation>
 <translation id="5679785611070310751">Te ei saa alates <ph name="MONTH_AND_YEAR" /> selle Chromebooki jaoks turvavärskendusi. Aeg minna üle uusimale turbe- ja tarkvarale. Kehtivad pakkumise tingimused.</translation>
 <translation id="5680050361008726776">Kas eemaldada „<ph name="ESIM_PROFILE_NAME" />”?</translation>
+<translation id="5681586175480958839">Faili avamine on juba pooleli</translation>
 <translation id="5684181005476681636">WiFi üksikasjad</translation>
 <translation id="5684661240348539843">Vara kood</translation>
 <translation id="5684950556880280580">Teie parooli värskendati</translation>
@@ -10586,7 +10588,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8894761918470382415">Andmetele juurdepääsu kaitse välisseadmete jaoks</translation>
 <translation id="8895454554629927345">Järjehoidjate loend</translation>
 <translation id="8896830132794747524">Hiire kiirem liigutamine viib kursori kaugemale</translation>
-<translation id="8898140163781851592">Peamine hiirenupp</translation>
 <translation id="8898786835233784856">Vali järgmine vaheleht</translation>
 <translation id="8898790559170352647">Lisage oma Microsofti konto</translation>
 <translation id="8898822736010347272">Saadab mõne teie külastatud lehe URL-i, piiratud süsteemiteabe ja mõne lehe sisu Google'ile, et aidata avastada uusi ohte ja veebis kõiki kaitsta.</translation>

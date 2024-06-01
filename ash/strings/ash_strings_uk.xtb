@@ -130,6 +130,7 @@
 <translation id="1420408895951708260">Увімкнути або вимкнути нічний екран. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Так</translation>
 <translation id="1435537621343861112">Не вдалося почати диктування. Мікрофон вимкнено.</translation>
+<translation id="1447907279406111651">Зараз ⋅ Закінчується: <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Точки доступу вашого пристрою</translation>
 <translation id="1455242230282523554">Показати налаштування мови</translation>
 <translation id="1460620680449458626">Гучність вимкнено.</translation>
@@ -480,6 +481,7 @@
 <translation id="2894949423239620203">Через кабель може знизитися продуктивність</translation>
 <translation id="2914580577416829331">Знімки екрана</translation>
 <translation id="2924416280450782352">Не вдається показати об’єкти. Відкрийте панель іще раз.</translation>
+<translation id="292506373491190801">З поточної події</translation>
 <translation id="2931572158271115754">У цьому списку немає завдань.</translation>
 <translation id="2932487126591186298">Додано 10 хвилин. Залишилося: <ph name="REMAINING_TIME" />.</translation>
 <translation id="2935225303485967257">Керувати профілями</translation>
@@ -764,6 +766,7 @@
 <translation id="3950272133184491871">Вийти?</translation>
 <translation id="3950820424414687140">Вхід</translation>
 <translation id="3953130726459169782">Немає виконаних завдань.</translation>
+<translation id="3958714870339660776">Увесь день</translation>
 <translation id="3962859241508114581">Попередня композиція</translation>
 <translation id="3969043077941541451">Вимкнено</translation>
 <translation id="3970324493235864154">Переглядайте сповіщення на телефоні</translation>
@@ -1190,7 +1193,6 @@
 <translation id="553675580533261935">Завершення сеансу</translation>
 <translation id="5537725057119320332">Трансляція</translation>
 <translation id="554017492391497564">Не вдалося позначити як виконане.</translation>
-<translation id="5543778275214926792">Увімкнути функцію "Читання з екрана"?</translation>
 <translation id="5546397813406633847">Відновити пароль</translation>
 <translation id="554893713779400387">Перемкнути диктування</translation>
 <translation id="5550417424894892620">Перетягніть файли на робочий стіл, щоб додати їх у сервіс <ph name="HOLDING_SPACE_TITLE" />. Ви не можете додавати файли на робочий стіл.</translation>
@@ -1216,6 +1218,7 @@
 <translation id="5599242528220103262">Комбінацію клавіш вимкнено</translation>
 <translation id="5600415762228455511">Режим концентрації уваги ввімкнено, залишилося: <ph name="REMAINING_TIME" />, завдання "<ph name="TASK_NAME" />"</translation>
 <translation id="5600837773213129531">Натисніть Ctrl + Alt + Z, щоб вимкнути голосові підказки.</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{Менше ніж годину тому}=1{1 годину тому}one{# годину тому}few{# години тому}many{# годин тому}other{# години тому}}</translation>
 <translation id="5601503069213153581">PIN-код</translation>
 <translation id="5618148318840095371">Установлено підключення до кращої мережі</translation>
 <translation id="5619862035903135339">Адміністратор заборонив запис екрана</translation>
@@ -1392,6 +1395,7 @@
 <translation id="6228457605945141550">Зменшити яскравість</translation>
 <translation id="623116199192908855">Транслюйте екран свого пристрою Chromebook</translation>
 <translation id="6231419273573514727">Ефективність периферійних пристроїв може бути обмежена</translation>
+<translation id="6232416233079464213">З <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217">Додаток <ph name="APP_NAME" /> використовує ваші камеру та мікрофон</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Низький заряд акумулятора. Режим енергозбереження ввімкнено.</translation>
@@ -1638,7 +1642,6 @@
 <translation id="7188494361780961876">Меню переміщено у верхній лівий кут екрана.</translation>
 <translation id="7189412385142492784">Яка відстань від Землі до Венери</translation>
 <translation id="7198435252016571249">Зображення з камери закріплено в нижньому правому куті, що конфліктує із системною платформою.</translation>
-<translation id="720981139652840573">Озвучуйте текст. Спершу натисніть значок функції "Читання з екрана" внизу, а потім виділіть потрібний текст. Також можна скористатися комбінацією клавіш: виділіть текст і натисніть клавішу пошуку або запуску + S.</translation>
 <translation id="7219573373513695352">Немає підключених пристроїв</translation>
 <translation id="7229029500464092426">Обсяг використаної пам’яті: <ph name="AVAILABLE_MEMORY" /> | Усього: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7244725679040769470">Залишилось <ph name="PERCENTAGE" />% заряду акумулятора. Підключіть пристрій до джерела живлення.</translation>
@@ -1792,6 +1795,7 @@
 <translation id="780301667611848630">Ні, дякую</translation>
 <translation id="7807067443225230855">Пошук і Асистент</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> і <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">З майбутньої події в календарі</translation>
 <translation id="7829386189513694949">потужний сигнал</translation>
 <translation id="7830453190047749513">Ви можете персоналізувати дії для кнопок, швидкість курсора тощо на пристрої <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7837740436429729974">Час минув</translation>
@@ -2105,6 +2109,7 @@
 <translation id="899350903320462459">Щоб виконати дію зі сповіщенням, розблокуйте пристрій як <ph name="LOGIN_ID" /></translation>
 <translation id="8993733019280019776">Ви щось говорите? Мікрофон вимкнено. Виберіть потрібний мікрофон і ввімкніть його.</translation>
 <translation id="9000771174482730261">КЕРУВАТИ СХОВИЩЕМ</translation>
+<translation id="9002204506712855687">Ознайомтеся з новими функціями</translation>
 <translation id="9005984960510803406">Відкрити вікно Crosh</translation>
 <translation id="9017320285115481645">Введіть батьківський код доступу Family Link.</translation>
 <translation id="9022774213089566801">Часто відвідувані</translation>
@@ -2136,6 +2141,7 @@
 <translation id="9098969848082897657">Вимкнути звук на телефоні</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> або <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Відмінити останню дію</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{Через 1 хв}one{Через # хв}few{Через # хв}many{Через # хв}other{Через # хв}}</translation>
 <translation id="9129245940793250979">Задня кнопка</translation>
 <translation id="9133335900048457298">Не вдається записати захищений контент</translation>
 <translation id="9139720510312328767">Видалити наступну літеру</translation>
@@ -2148,6 +2154,7 @@
 <translation id="9183456764293710005">Повноекранна лупа</translation>
 <translation id="9193626018745640770">Трансляція на невідомий пристрій</translation>
 <translation id="9194617393863864469">Увійти як інший користувач…</translation>
+<translation id="9195990613383871904">Завтра</translation>
 <translation id="9198992156681343238">Роздільну здатність екрана <ph name="DISPLAY_NAME" /> змінено на <ph name="RESOLUTION" />. Щоб зберегти зміни, натисніть "Підтвердити". Попередні налаштування відновляться через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Підключити пристрій <ph name="NAME" /> до цього комп’ютера Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />. Мережею керує адміністратор</translation>

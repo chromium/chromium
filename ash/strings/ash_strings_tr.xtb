@@ -130,6 +130,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1420408895951708260">Gece Işığı'nı aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Evet</translation>
 <translation id="1435537621343861112">Dikte başlatılamıyor. Mikrofonunuz kapalı.</translation>
+<translation id="1447907279406111651">Şimdi · Bitiş zamanı: <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Cihazınızın hotspot'ları</translation>
 <translation id="1455242230282523554">Dil ayarlarını gösterin</translation>
 <translation id="1460620680449458626">Ses kapalı.</translation>
@@ -480,6 +481,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2894949423239620203">Kullanılan kablo, performansı etkileyebilir</translation>
 <translation id="2914580577416829331">Yakalanan ekranlar</translation>
 <translation id="2924416280450782352">Öğeler gösterilemiyor. Bu paneli yeniden açmayı deneyin.</translation>
+<translation id="292506373491190801">Şu anda devam eden etkinlikten</translation>
 <translation id="2931572158271115754">Bu yapılacak işler listesinde hiçbir şey yok.</translation>
 <translation id="2932487126591186298">10 dakika eklendi. <ph name="REMAINING_TIME" /> kaldı.</translation>
 <translation id="2935225303485967257">Profilleri yönet</translation>
@@ -764,6 +766,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="3950272133184491871">Şimdi oturum kapatılsın mı?</translation>
 <translation id="3950820424414687140">Oturum açın</translation>
 <translation id="3953130726459169782">Henüz tamamlanmış ödev yok.</translation>
+<translation id="3958714870339660776">Tüm Gün</translation>
 <translation id="3962859241508114581">Önceki Parça</translation>
 <translation id="3969043077941541451">Kapalı</translation>
 <translation id="3970324493235864154">Telefonunuzdaki bildirimleri görün</translation>
@@ -1190,7 +1193,6 @@ Bağlı cihaz yok.</translation>
 <translation id="553675580533261935">Oturum kapatılıyor</translation>
 <translation id="5537725057119320332">Yayınla</translation>
 <translation id="554017492391497564">Tamamlandı olarak işaretlenemedi.</translation>
-<translation id="5543778275214926792">Seç ve Dinle etkinleştirilsin mi?</translation>
 <translation id="5546397813406633847">Kullanıcıyı kurtar</translation>
 <translation id="554893713779400387">Dikte özelliğini aç/kapat</translation>
 <translation id="5550417424894892620">Dosyaları <ph name="HOLDING_SPACE_TITLE" /> hedefine eklemek için masaüstüne bırakın. Masaüstüne dosya ekleyemezsiniz.</translation>
@@ -1216,6 +1218,7 @@ Bağlı cihaz yok.</translation>
 <translation id="5599242528220103262">Klavye kısayolu devre dışı</translation>
 <translation id="5600415762228455511">Odaklanma açık, <ph name="REMAINING_TIME" /> kaldı, odaklanılan görev: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Sesli geri bildirimi devre dışı bırakmak için Ctrl + Alt + Z tuşlarına basın.</translation>
+<translation id="5601491729809307732">{HOURS,plural, =0{1 saatten kısa süre önce}=1{1 saat önce}other{# saat önce}}</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Sizi daha iyi bir ağa geçirdik</translation>
 <translation id="5619862035903135339">Yönetici politikası ekran görüntüsü almaya izin vermiyor</translation>
@@ -1392,6 +1395,7 @@ Bağlı cihaz yok.</translation>
 <translation id="6228457605945141550">Parlaklığı azaltır</translation>
 <translation id="623116199192908855">Chromebook'unuzdan ekranınızı yayınlayın</translation>
 <translation id="6231419273573514727">Çevre birimlerinin performansı sınırlı olabilir</translation>
+<translation id="6232416233079464213"><ph name="SESSION_NAME" /> cihazından</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> şu anda kameranızı ve mikrofonunuzu kullanıyor</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Pil seviyesi düşük. Pil Tasarrufu açıldı.</translation>
@@ -1638,7 +1642,6 @@ Yeni yüklenmiş</translation>
 <translation id="7188494361780961876">Menü, ekranın sol üst köşesine taşındı.</translation>
 <translation id="7189412385142492784">Venüs ne kadar uzak</translation>
 <translation id="7198435252016571249">Kamera sağ alt köşeye tutturuldu. Sistem yüzeyi ile çakışıyor.</translation>
-<translation id="720981139652840573">Seçilen metni sesli dinleyin. Ekranın alt kısmındaki Seç ve Dinle simgesini seçtikten sonra metni vurgulayın. Klavye kısayolu da kullanabilirsiniz: Metni vurguladıktan sonra Arama/Başlatıcı + S tuşlarına basın.</translation>
 <translation id="7219573373513695352">Bağlı cihaz yok</translation>
 <translation id="7229029500464092426">Bellek <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> toplam</translation>
 <translation id="7244725679040769470">Yaklaşık %<ph name="PERCENTAGE" /> kaldı. Cihazınızı güç kaynağına bağlayın.</translation>
@@ -1792,6 +1795,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="780301667611848630">Hayır, teşekkürler</translation>
 <translation id="7807067443225230855">Arama ve Asistan</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ve <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">Yaklaşan takvim etkinliğinden</translation>
 <translation id="7829386189513694949">Güçlü sinyal</translation>
 <translation id="7830453190047749513"><ph name="PERIPHERAL_NAME" /> cihazınız için düğme işlemleri, imleç hızı ve diğer özellikleri kişiselleştirebilirsiniz</translation>
 <translation id="7837740436429729974">Süre doldu</translation>
@@ -2105,6 +2109,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="899350903320462459">Bildirim işlemi gerçekleştirmek için <ph name="LOGIN_ID" /> olarak cihazın kilidini açın</translation>
 <translation id="8993733019280019776">Konuşuyor musunuz? Mikrofonunuz kapalı. Mikrofonu seçerek açın.</translation>
 <translation id="9000771174482730261">DEPOLAMA ALANINI YÖNET</translation>
+<translation id="9002204506712855687">En yeni özellikleri keşfedin</translation>
 <translation id="9005984960510803406">Crosh penceresini açar</translation>
 <translation id="9017320285115481645">Family Link ebeveyn erişim kodunu girin.</translation>
 <translation id="9022774213089566801">Sık ziyaret edilenler</translation>
@@ -2136,6 +2141,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="9098969848082897657">Telefonu sessize al</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> veya <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Son işlemi geri al</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{1 dk. içinde}other{# dk. içinde}}</translation>
 <translation id="9129245940793250979">Arka Düğme</translation>
 <translation id="9133335900048457298">Korunan içerik kaydedilemez</translation>
 <translation id="9139720510312328767">Sonraki harfi sil</translation>
@@ -2148,6 +2154,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="9183456764293710005">Tam Ekran Büyüteci</translation>
 <translation id="9193626018745640770">Bilinmeyen bir alıcıya yayınlanıyor</translation>
 <translation id="9194617393863864469">Başka bir kullanıcı olarak oturum aç...</translation>
+<translation id="9195990613383871904">Yarın</translation>
 <translation id="9198992156681343238">Çözünürlük <ph name="DISPLAY_NAME" /> için <ph name="RESOLUTION" /> olarak değiştirildi. Değişiklikleri korumak için Onayla'yı tıklayın. Önceki ayarlar <ph name="TIMEOUT_SECONDS" /> saniye içinde geri yüklenecek.</translation>
 <translation id="9201044636667689546"><ph name="NAME" /> cihazını bu Chromebook'a bağlayın</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, Yöneticiniz tarafından yönetiliyor</translation>
