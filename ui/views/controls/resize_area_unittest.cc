@@ -215,13 +215,15 @@ TEST_F(ResizeAreaTest, AccessibleRole) {
   ui::AXNodeData data;
   resize_area->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kSplitter);
-  EXPECT_EQ(resize_area->GetAccessibleRole(), ax::mojom::Role::kSplitter);
+  EXPECT_EQ(resize_area->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kSplitter);
 
   data = ui::AXNodeData();
   resize_area->SetAccessibleRole(ax::mojom::Role::kButton);
   resize_area->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
-  EXPECT_EQ(resize_area->GetAccessibleRole(), ax::mojom::Role::kButton);
+  EXPECT_EQ(resize_area->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kButton);
 }
 
 #endif  // !BUILDFLAG(IS_MAC)

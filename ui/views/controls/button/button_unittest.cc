@@ -952,14 +952,16 @@ TEST_F(ButtonTest, AccessibleRole) {
   ui::AXNodeData data;
   button()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
-  EXPECT_EQ(button()->GetAccessibleRole(), ax::mojom::Role::kButton);
+  EXPECT_EQ(button()->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kButton);
 
   button()->SetAccessibleRole(ax::mojom::Role::kCheckBox);
 
   data = ui::AXNodeData();
   button()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kCheckBox);
-  EXPECT_EQ(button()->GetAccessibleRole(), ax::mojom::Role::kCheckBox);
+  EXPECT_EQ(button()->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kCheckBox);
 }
 
 TEST_F(ButtonTest, AnchorHighlightSetsHiglight) {

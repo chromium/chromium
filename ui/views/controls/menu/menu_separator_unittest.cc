@@ -44,7 +44,8 @@ TEST_F(MenuSeparatorTest, AccessibleRole) {
   ui::AXNodeData data;
   separator->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kSplitter);
-  EXPECT_EQ(separator->GetAccessibleRole(), ax::mojom::Role::kSplitter);
+  EXPECT_EQ(separator->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kSplitter);
 }
 
 }  // namespace views

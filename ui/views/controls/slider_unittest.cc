@@ -269,14 +269,16 @@ TEST_P(SliderTest, AccessibleRole) {
   ui::AXNodeData data;
   slider()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kSlider);
-  EXPECT_EQ(slider()->GetAccessibleRole(), ax::mojom::Role::kSlider);
+  EXPECT_EQ(slider()->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kSlider);
 
   slider()->SetAccessibleRole(ax::mojom::Role::kMeter);
 
   data = ui::AXNodeData();
   slider()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kMeter);
-  EXPECT_EQ(slider()->GetAccessibleRole(), ax::mojom::Role::kMeter);
+  EXPECT_EQ(slider()->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kMeter);
 }
 
 // No touch on desktop Mac. Tracked in http://crbug.com/445520.

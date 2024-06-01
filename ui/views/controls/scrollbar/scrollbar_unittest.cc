@@ -230,13 +230,15 @@ TEST_F(ScrollBarViewsTest, AccessibleRole) {
   ui::AXNodeData data;
   scrollbar()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kScrollBar);
-  EXPECT_EQ(scrollbar()->GetAccessibleRole(), ax::mojom::Role::kScrollBar);
+  EXPECT_EQ(scrollbar()->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kScrollBar);
 
   data = ui::AXNodeData();
   scrollbar()->SetAccessibleRole(ax::mojom::Role::kButton);
   scrollbar()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
-  EXPECT_EQ(scrollbar()->GetAccessibleRole(), ax::mojom::Role::kButton);
+  EXPECT_EQ(scrollbar()->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kButton);
 }
 
 #if !BUILDFLAG(IS_MAC)

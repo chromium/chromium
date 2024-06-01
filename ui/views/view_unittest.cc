@@ -548,7 +548,7 @@ TEST_F(ViewTest, SetAccessibilityPropertiesRoleNameDescription) {
   A11yTestView v(ax::mojom::Role::kButton, u"Name", u"Description");
   ui::AXNodeData data = ui::AXNodeData();
   v.GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(v.GetAccessibleRole(), ax::mojom::Role::kButton);
+  EXPECT_EQ(v.GetViewAccessibility().GetCachedRole(), ax::mojom::Role::kButton);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
   EXPECT_EQ(v.GetViewAccessibility().GetCachedName(), u"Name");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
@@ -581,7 +581,7 @@ TEST_F(ViewTest, SetAccessibilityPropertiesRoleNameDescriptionDetailed) {
                  ax::mojom::DescriptionFrom::kTitle);
   ui::AXNodeData data = ui::AXNodeData();
   v.GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(v.GetAccessibleRole(), ax::mojom::Role::kButton);
+  EXPECT_EQ(v.GetViewAccessibility().GetCachedRole(), ax::mojom::Role::kButton);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
   EXPECT_EQ(v.GetViewAccessibility().GetCachedName(), u"Name");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
@@ -613,7 +613,7 @@ TEST_F(ViewTest, SetAccessibilityPropertiesRoleRolenameNameDescription) {
                  u"Super Button");
   ui::AXNodeData data = ui::AXNodeData();
   v.GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(v.GetAccessibleRole(), ax::mojom::Role::kButton);
+  EXPECT_EQ(v.GetViewAccessibility().GetCachedRole(), ax::mojom::Role::kButton);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
   EXPECT_EQ(
       data.GetString16Attribute(ax::mojom::StringAttribute::kRoleDescription),
@@ -642,7 +642,7 @@ TEST_F(ViewTest, SetAccessibilityPropertiesRoleAndRoleDescription) {
                  /*description*/ std::nullopt, u"Super Button");
   ui::AXNodeData data = ui::AXNodeData();
   v.GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(v.GetAccessibleRole(), ax::mojom::Role::kButton);
+  EXPECT_EQ(v.GetViewAccessibility().GetCachedRole(), ax::mojom::Role::kButton);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
   EXPECT_EQ(
       data.GetString16Attribute(ax::mojom::StringAttribute::kRoleDescription),
@@ -657,7 +657,7 @@ TEST_F(ViewTest, SetAccessibilityPropertiesNameExplicitlyEmpty) {
                  ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   ui::AXNodeData data = ui::AXNodeData();
   v.GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(v.GetAccessibleRole(), ax::mojom::Role::kNone);
+  EXPECT_EQ(v.GetViewAccessibility().GetCachedRole(), ax::mojom::Role::kNone);
   EXPECT_EQ(data.role, ax::mojom::Role::kNone);
   EXPECT_EQ(v.GetViewAccessibility().GetCachedName(), u"");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
@@ -670,14 +670,15 @@ TEST_F(ViewTest, SetAccessibleRole) {
   TestView v;
   ui::AXNodeData data = ui::AXNodeData();
   v.GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(v.GetAccessibleRole(), ax::mojom::Role::kUnknown);
+  EXPECT_EQ(v.GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kUnknown);
   EXPECT_EQ(data.role, ax::mojom::Role::kUnknown);
 
   data = ui::AXNodeData();
   v.SetAccessibleRole(ax::mojom::Role::kButton);
   v.GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
-  EXPECT_EQ(v.GetAccessibleRole(), ax::mojom::Role::kButton);
+  EXPECT_EQ(v.GetViewAccessibility().GetCachedRole(), ax::mojom::Role::kButton);
 }
 
 TEST_F(ViewTest, SetAccessibleNameToStringWithRoleAlreadySet) {

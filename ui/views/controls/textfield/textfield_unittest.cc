@@ -4569,14 +4569,16 @@ TEST_F(TextfieldTest, AccessibleRole) {
   ui::AXNodeData data;
   textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kTextField);
-  EXPECT_EQ(textfield_->GetAccessibleRole(), ax::mojom::Role::kTextField);
+  EXPECT_EQ(textfield_->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kTextField);
 
   textfield_->SetAccessibleRole(ax::mojom::Role::kSearchBox);
 
   data = ui::AXNodeData();
   textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kSearchBox);
-  EXPECT_EQ(textfield_->GetAccessibleRole(), ax::mojom::Role::kSearchBox);
+  EXPECT_EQ(textfield_->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kSearchBox);
 }
 
 // Verify that cursor visibility is controlled by SetCursorEnabled.

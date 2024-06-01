@@ -886,7 +886,8 @@ TEST_F(StyledLabelTest, AccessibleNameAndRole) {
 
   EXPECT_EQ(styled->GetViewAccessibility().GetCachedName(),
             base::UTF8ToUTF16(text));
-  EXPECT_EQ(styled->GetAccessibleRole(), ax::mojom::Role::kStaticText);
+  EXPECT_EQ(styled->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kStaticText);
 
   ui::AXNodeData data;
   styled->GetViewAccessibility().GetAccessibleNodeData(&data);
@@ -894,9 +895,11 @@ TEST_F(StyledLabelTest, AccessibleNameAndRole) {
   EXPECT_EQ(data.role, ax::mojom::Role::kStaticText);
 
   styled->SetTextContext(style::CONTEXT_DIALOG_TITLE);
+
   EXPECT_EQ(styled->GetViewAccessibility().GetCachedName(),
             base::UTF8ToUTF16(text));
-  EXPECT_EQ(styled->GetAccessibleRole(), ax::mojom::Role::kTitleBar);
+  EXPECT_EQ(styled->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kTitleBar);
 
   data = ui::AXNodeData();
   styled->GetViewAccessibility().GetAccessibleNodeData(&data);
@@ -905,8 +908,10 @@ TEST_F(StyledLabelTest, AccessibleNameAndRole) {
 
   styled->SetText(u"New Text");
   styled->SetAccessibleRole(ax::mojom::Role::kLink);
+
   EXPECT_EQ(styled->GetViewAccessibility().GetCachedName(), u"New Text");
-  EXPECT_EQ(styled->GetAccessibleRole(), ax::mojom::Role::kLink);
+  EXPECT_EQ(styled->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kLink);
 
   data = ui::AXNodeData();
   styled->GetViewAccessibility().GetAccessibleNodeData(&data);
