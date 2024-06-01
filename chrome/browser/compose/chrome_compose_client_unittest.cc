@@ -758,7 +758,8 @@ TEST_F(ChromeComposeClientTest, TestComposeShowContextMenuAndDialog) {
   auto ukm_entries = ukm_recorder().GetEntries(
       ukm::builders::Compose_PageEvents::kEntryName,
       {ukm::builders::Compose_PageEvents::kMenuItemShownName,
-       ukm::builders::Compose_PageEvents::kComposeTextInsertedName});
+       ukm::builders::Compose_PageEvents::kComposeTextInsertedName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeShownName});
 
   EXPECT_EQ(ukm_entries.size(), 1UL);
 
@@ -768,7 +769,9 @@ TEST_F(ChromeComposeClientTest, TestComposeShowContextMenuAndDialog) {
           testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
                         1),
           testing::Pair(
-              ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0)));
+              ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kProactiveNudgeShownName, 0)));
 }
 
 TEST_F(ChromeComposeClientTest, TestProactiveNudgeEngagementIsRecorded) {
@@ -846,7 +849,8 @@ TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeDisabledUKM) {
       ukm::builders::Compose_PageEvents::kEntryName,
       {ukm::builders::Compose_PageEvents::kMenuItemShownName,
        ukm::builders::Compose_PageEvents::kComposeTextInsertedName,
-       ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName});
+       ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeShownName});
 
   ASSERT_EQ(ukm_entries.size(), 1UL);
 
@@ -860,10 +864,12 @@ TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeDisabledUKM) {
 
           testing::Pair(
               ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName,
-              1)));
+              1),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kProactiveNudgeShownName, 0)));
 }
 
-TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeEnabledUKM) {
+TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeEnabled) {
   // Enable proactive nudge.
   compose::Config& config = compose::GetMutableConfigForTesting();
   config.proactive_nudge_enabled = true;
@@ -892,7 +898,8 @@ TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeEnabledUKM) {
       ukm::builders::Compose_PageEvents::kEntryName,
       {ukm::builders::Compose_PageEvents::kMenuItemShownName,
        ukm::builders::Compose_PageEvents::kComposeTextInsertedName,
-       ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName});
+       ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeShownName});
 
   ASSERT_EQ(ukm_entries.size(), 1UL);
 
@@ -906,7 +913,9 @@ TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeEnabledUKM) {
 
           testing::Pair(
               ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName,
-              1)));
+              1),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kProactiveNudgeShownName, 1)));
 
   // Check Compose.ProactiveNudge.CTR metrics.
   histograms().ExpectBucketCount(
@@ -935,9 +944,7 @@ TEST_F(ChromeComposeClientTest,
   // Check that the proactive nudge UKM was not captured.
   auto ukm_entries = ukm_recorder().GetEntries(
       ukm::builders::Compose_PageEvents::kEntryName,
-      {ukm::builders::Compose_PageEvents::kMenuItemShownName,
-       ukm::builders::Compose_PageEvents::kComposeTextInsertedName,
-       ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName});
+      {ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName});
 
   ASSERT_EQ(ukm_entries.size(), 0UL);
 }
@@ -1760,6 +1767,26 @@ TEST_F(ChromeComposeClientTest,
   EXPECT_FALSE(
       quality_result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
           ->started_with_proactive_nudge());
+
+  // Force reporting of page events UKM.
+  NavigateAndCommitActiveTab(GURL("about:blank"));
+
+  // Check that page events UKM is recorded for opening from the nudge.
+  auto ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_PageEvents::kEntryName,
+      {ukm::builders::Compose_PageEvents::kComposeTextInsertedName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeOpenedName});
+
+  EXPECT_EQ(ukm_entries.size(), 1UL);
+
+  EXPECT_THAT(
+      ukm_entries[0].metrics,
+      testing::UnorderedElementsAre(
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 1),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kProactiveNudgeOpenedName,
+              0)));
 }
 
 TEST_F(ChromeComposeClientTest, TestProactiveNudgeRecordedInQualityLogs) {
@@ -1789,6 +1816,26 @@ TEST_F(ChromeComposeClientTest, TestProactiveNudgeRecordedInQualityLogs) {
   EXPECT_TRUE(
       quality_result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
           ->started_with_proactive_nudge());
+
+  // Force reporting of page events UKM.
+  NavigateAndCommitActiveTab(GURL("about:blank"));
+
+  // Check that page events UKM does not record opening the proactive nudge.
+  auto ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_PageEvents::kEntryName,
+      {ukm::builders::Compose_PageEvents::kComposeTextInsertedName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeOpenedName});
+
+  EXPECT_EQ(ukm_entries.size(), 1UL);
+
+  EXPECT_THAT(
+      ukm_entries[0].metrics,
+      testing::UnorderedElementsAre(
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 1),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kProactiveNudgeOpenedName,
+              1)));
 }
 
 // Checks proper propagation of Compose config params.

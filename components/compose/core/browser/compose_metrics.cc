@@ -210,7 +210,27 @@ void PageUkmTracker::ComposeTextInserted() {
 
 void PageUkmTracker::ComposeProactiveNudgeShouldShow() {
   event_was_recorded_ = true;
-  ++compose_proactive_nudge_should_show_;
+  ++proactive_nudge_should_show_count_;
+}
+
+void PageUkmTracker::ProactiveNudgeShown() {
+  event_was_recorded_ = true;
+  ++proactive_nudge_shown_count_;
+}
+
+void PageUkmTracker::ProactiveNudgeOpened() {
+  event_was_recorded_ = true;
+  ++proactive_nudge_opened_count_;
+}
+
+void PageUkmTracker::ProactiveNudgeDisabledGlobally() {
+  event_was_recorded_ = true;
+  proactive_nudge_disabled_globally_ = true;
+}
+
+void PageUkmTracker::ProactiveNudgeDisabledForSite() {
+  event_was_recorded_ = true;
+  proactive_nudge_disabled_for_site_ = true;
 }
 
 void PageUkmTracker::ShowDialogAbortedDueToMissingFormData() {
@@ -236,7 +256,13 @@ void PageUkmTracker::MaybeLogUkm() {
       .SetComposeTextInserted(ukm::GetExponentialBucketMinForCounts1000(
           compose_text_inserted_count_))
       .SetProactiveNudgeShouldShow(ukm::GetExponentialBucketMinForCounts1000(
-          compose_proactive_nudge_should_show_))
+          proactive_nudge_should_show_count_))
+      .SetProactiveNudgeShown(ukm::GetExponentialBucketMinForCounts1000(
+          proactive_nudge_shown_count_))
+      .SetProactiveNudgeOpened(ukm::GetExponentialBucketMinForCounts1000(
+          proactive_nudge_opened_count_))
+      .SetProactiveNudgeDisabledGlobally(proactive_nudge_disabled_globally_)
+      .SetProactiveNudgeDisabledForSite(proactive_nudge_disabled_for_site_)
       .SetMissingFormData(
           ukm::GetExponentialBucketMinForCounts1000(missing_form_data_count_))
       .SetMissingFormFieldData(ukm::GetExponentialBucketMinForCounts1000(
@@ -455,6 +481,7 @@ void LogComposeSessionCloseUkmMetrics(
           ukm::GetExponentialBucketMinForCounts1000(session_events.undo_count))
       .SetInsertedResults(session_events.inserted_results)
       .SetCanceled(session_events.close_clicked)
+      .SetStartedWithProactiveNudge(session_events.started_with_proactive_nudge)
       .Record(ukm::UkmRecorder::Get());
 }
 
