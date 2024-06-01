@@ -2054,9 +2054,24 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
 
 <enum name="SnapGroupExitPoint">
   <int value="0" label="Drag window out"/>
-  <int value="1" label="Window state change"/>
+  <int value="1" label="[Deprecated] Window state change"/>
   <int value="2" label="Window destruction"/>
   <int value="3" label="Tablet transition"/>
+  <int value="4" label="Window state changed to default state"/>
+  <int value="5" label="Window state changed to normal state"/>
+  <int value="6" label="Window state changed to minimized state"/>
+  <int value="7" label="Window state changed to maximized state"/>
+  <int value="8" label="Window state changed to inactive state"/>
+  <int value="9" label="Window state changed to fullscreen state"/>
+  <int value="10" label="Window state changed to primary snapped state"/>
+  <int value="11" label="Window state changed to secondary snapped state"/>
+  <int value="12" label="Window state changed to pinned state"/>
+  <int value="13" label="Window state changed to trusted pinned state"/>
+  <int value="14" label="Window state changed to pip state"/>
+  <int value="15" label="Window state changed to floated state"/>
+  <int value="16" label="Window bounds change"/>
+  <int value="17" label="Snapped bounds no longer fit work area"/>
+  <int value="18" label="Snap to replace"/>
 </enum>
 
 <enum name="SpeechRecognitionEndState">

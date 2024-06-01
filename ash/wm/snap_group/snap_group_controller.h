@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "ash/wm/snap_group/snap_group_metrics.h"
 #include "ash/wm/wm_metrics.h"
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
@@ -64,15 +65,16 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
       bool replace,
       std::optional<base::TimeTicks> carry_over_creation_time);
 
-  // Returns true if the corresponding `snap_group` has
-  // been successfully removed from the `snap_groups_` and
-  // `window_to_snap_group_map_`. False otherwise. If `replace` is true, the
-  // group was snapped to replace and we shouldn't record the count change.
-  bool RemoveSnapGroup(SnapGroup* snap_group, bool replace = false);
+  // Removes the specified `snap_group`, recording the `exit_point` metric.
+  // Returns true if the corresponding `snap_group` has been successfully
+  // removed from the `snap_groups_` and `window_to_snap_group_map_`. False
+  // otherwise.
+  bool RemoveSnapGroup(SnapGroup* snap_group, SnapGroupExitPoint exit_point);
 
   // Returns true if the corresponding snap group that contains the
   // given `window` has been removed successfully. Returns false otherwise.
-  bool RemoveSnapGroupContainingWindow(aura::Window* window);
+  bool RemoveSnapGroupContainingWindow(aura::Window* window,
+                                       SnapGroupExitPoint exit_point);
 
   // Returns the corresponding `SnapGroup` if the given `window` belongs to a
   // snap group or nullptr otherwise.

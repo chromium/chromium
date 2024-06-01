@@ -47,12 +47,29 @@ inline constexpr char kSnapGroupsCountRootWord[] = "SnapGroupsCount";
 // remain unchanged and new values should be added to the end. This should be
 // kept in sync with `SnapGroupExitPoint` enum in
 // tools/metrics/histograms/metadata/ash/enums.xml.
+// Please keep it in sync with `WindowStateType` in
+// chromeos/ui/base/window_state_type.h
 enum class SnapGroupExitPoint {
   kDragWindowOut,
-  kWindowStateChange,
+  kWindowStateChangeDeprecated,  // Deprecated
   kWindowDestruction,
   kTabletTransition,
-  kMaxValue = kTabletTransition,
+  kWindowStateChangedDefault,
+  kWindowStateChangedNormal,
+  kWindowStateChangedMinimized,
+  kWindowStateChangedMaximized,
+  kWindowStateChangedInactive,
+  kWindowStateChangedFullscreen,
+  kWindowStateChangedPrimarySnapped,
+  kWindowStateChangedSecondarySnapped,
+  kWindowStateChangedPinned,
+  kWindowStateChangedTrustedPinned,
+  kWindowStateChangedPip,
+  kWindowStateChangedFloated,
+  kWindowBoundsChange,
+  kCanNotFitInWorkArea,
+  kSnapToReplace,
+  kMaxValue = kSnapToReplace,
 };
 
 // Records the partial overview metrics for `item`. Should only be called while

@@ -119,7 +119,8 @@ SnapGroup* SnapGroupController::AddSnapGroup(
   return snap_group_ptr;
 }
 
-bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group, bool replace) {
+bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group,
+                                          SnapGroupExitPoint exit_point) {
   CHECK(snap_group);
   aura::Window* window1 = snap_group->window1();
   aura::Window* window2 = snap_group->window2();
@@ -136,9 +137,10 @@ bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group, bool replace) {
   base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, std::move(group_to_remove));
 
-  if (!replace) {
+  if (exit_point != SnapGroupExitPoint::kSnapToReplace) {
     // Records persistence duration and Snap Groups count when the removal of
-    // `group_to_remove` is not due to 'Snap to Replace'.
+    // `group_to_remove` is not due to 'Snap to Replace', as this is considered
+    // an extension of the snap group's lifespan.
     RecordSnapGroupPersistenceDuration(base::TimeTicks::Now() -
                                        snap_group->carry_over_creation_time_);
     ReportSnapGroupsCountHistogram(/*count=*/snap_groups_.size());
@@ -149,17 +151,19 @@ bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group, bool replace) {
   RecordSnapGroupActualDuration(base::TimeTicks::Now() -
                                 snap_group->actual_creation_time_);
 
+  RecordSnapGroupExitPoint(exit_point);
   return true;
 }
 
 bool SnapGroupController::RemoveSnapGroupContainingWindow(
-    aura::Window* window) {
+    aura::Window* window,
+    SnapGroupExitPoint exit_point) {
   SnapGroup* snap_group = GetSnapGroupForGivenWindow(window);
   if (snap_group == nullptr) {
     return false;
   }
 
-  return RemoveSnapGroup(snap_group);
+  return RemoveSnapGroup(snap_group, exit_point);
 }
 
 SnapGroup* SnapGroupController::GetSnapGroupForGivenWindow(
@@ -240,7 +244,7 @@ bool SnapGroupController::OnSnappingWindow(
   // within the `snap_group`.
   const auto carry_over_creation_time =
       group_to_replace->carry_over_creation_time_;
-  RemoveSnapGroup(group_to_replace, /*replace=*/true);
+  RemoveSnapGroup(group_to_replace, SnapGroupExitPoint::kSnapToReplace);
   SnapGroup* new_snap_group = AddSnapGroup(
       new_primary_window, new_secondary_window, /*replace=*/true,
       /*carry_over_creation_time=*/
@@ -406,8 +410,8 @@ void SnapGroupController::RestoreSnapState(SnapGroup* snap_group) {
 void SnapGroupController::OnTabletModeStarted() {
   // TODO(b/327269057): Define tablet <-> clamshell transition.
   while (!snap_groups_.empty()) {
-    RecordSnapGroupExitPoint(SnapGroupExitPoint::kTabletTransition);
-    RemoveSnapGroup(snap_groups_.back().get());
+    RemoveSnapGroup(snap_groups_.back().get(),
+                    SnapGroupExitPoint::kTabletTransition);
   }
 }
 

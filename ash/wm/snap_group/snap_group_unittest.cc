@@ -2229,7 +2229,8 @@ TEST_F(SnapGroupTest, AddAndRemoveSnapGroupTest) {
   EXPECT_EQ(iter1->second, snap_group);
   EXPECT_EQ(iter2->second, snap_group);
 
-  ASSERT_TRUE(snap_group_controller->RemoveSnapGroup(snap_group));
+  ASSERT_TRUE(snap_group_controller->RemoveSnapGroup(
+      snap_group, SnapGroupExitPoint::kDragWindowOut));
   ASSERT_TRUE(snap_groups.empty());
   ASSERT_TRUE(window_to_snap_group_map.empty());
 }
@@ -7501,7 +7502,8 @@ TEST_F(SnapGroupHistogramTest, SnapGroupDuration) {
   AdvanceClock(base::Seconds(10));
 
   snap_group_controller->RemoveSnapGroup(
-      snap_group_controller->GetSnapGroupForGivenWindow(w2.get()));
+      snap_group_controller->GetSnapGroupForGivenWindow(w2.get()),
+      SnapGroupExitPoint::kDragWindowOut);
   histogram_tester_.ExpectBucketCount(persistence_duration_histogram_name,
                                       /*sample=*/20, /*expected_count=*/1);
   histogram_tester_.ExpectBucketCount(actual_duration_histogram_name,
@@ -7545,7 +7547,8 @@ TEST_F(SnapGroupHistogramTest, SnapGroupExitPoint) {
   EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w2.get()));
   EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w3.get()));
   histogram_tester_.ExpectBucketCount(
-      snap_group_exit_point, SnapGroupExitPoint::kWindowStateChange, 1);
+      snap_group_exit_point, SnapGroupExitPoint::kWindowStateChangedMaximized,
+      1);
   MaximizeToClearTheSession(w2.get());
 
   SCOPED_TRACE("Test case 3: minimize window to exit");
@@ -7557,7 +7560,8 @@ TEST_F(SnapGroupHistogramTest, SnapGroupExitPoint) {
   EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w3.get()));
   EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w4.get()));
   histogram_tester_.ExpectBucketCount(
-      snap_group_exit_point, SnapGroupExitPoint::kWindowStateChange, 2);
+      snap_group_exit_point, SnapGroupExitPoint::kWindowStateChangedMinimized,
+      1);
   MaximizeToClearTheSession(w4.get());
 
   SCOPED_TRACE("Test case 4: float window to exit");
@@ -7571,7 +7575,7 @@ TEST_F(SnapGroupHistogramTest, SnapGroupExitPoint) {
   EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w4.get()));
   EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w5.get()));
   histogram_tester_.ExpectBucketCount(
-      snap_group_exit_point, SnapGroupExitPoint::kWindowStateChange, 3);
+      snap_group_exit_point, SnapGroupExitPoint::kWindowStateChangedFloated, 1);
   MaximizeToClearTheSession(w5.get());
 
   SCOPED_TRACE("Test case 5: window destruction to exit");

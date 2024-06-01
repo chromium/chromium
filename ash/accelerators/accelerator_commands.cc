@@ -66,6 +66,7 @@
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
+#include "ash/wm/snap_group/snap_group_metrics.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
@@ -539,7 +540,10 @@ void GroupOrUngroupWindowsInSnapGroup() {
         /*carry_over_creation_time=*/std::nullopt);
     CHECK(snap_group_controller->AreWindowsInSnapGroup(window1, window2));
   } else {
-    snap_group_controller->RemoveSnapGroupContainingWindow(window1);
+    // TODO(http://b/343808581): Temporarily put a `SnapGroupExit` point here
+    // since this shortcut will be removed soon.
+    snap_group_controller->RemoveSnapGroupContainingWindow(
+        window1, SnapGroupExitPoint::kCanNotFitInWorkArea);
     CHECK(!snap_group_controller->AreWindowsInSnapGroup(window1, window2));
   }
 }
