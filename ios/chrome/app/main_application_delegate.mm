@@ -488,10 +488,6 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
 // `YES` if Content notification is enabled or registered. Called before
 // register device With APNS.
 - (BOOL)isContentNotificationAvailable {
-  if (!IsContentNotificationExperimentEnabled()) {
-    return false;
-  }
-
   // TODO(crbug.com/341903881) Do not use
   // mainController.browserProviderInterfaceDoNotUse.
   Browser* browser = _mainController.browserProviderInterfaceDoNotUse
@@ -504,21 +500,9 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   }
 
   ChromeBrowserState* browserState = browser->GetBrowserState();
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(browserState);
-  bool isUserSignedIn = identityManager && identityManager->HasPrimaryAccount(
-                                               signin::ConsentLevel::kSignin);
-  const TemplateURL* defaultSearchURLTemplate =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browserState)
-          ->GetDefaultSearchProvider();
-  bool isDefaultSearchEngine =
-      defaultSearchURLTemplate && defaultSearchURLTemplate->prepopulate_id() ==
-                                      TemplateURLPrepopulateData::google.id;
-  PrefService* prefService = browserState->GetPrefs();
-  return IsContentNotificationEnabled(isUserSignedIn, isDefaultSearchEngine,
-                                      prefService) ||
-         IsContentNotificationRegistered(isUserSignedIn, isDefaultSearchEngine,
-                                         prefService);
+
+  return IsContentNotificationEnabled(browserState) ||
+         IsContentNotificationRegistered(browserState);
 }
 
 @end

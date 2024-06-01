@@ -305,31 +305,8 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
 }
 
 - (BOOL)isContentNotificationAvailable:(ChromeBrowserState*)browserState {
-  if (!IsContentNotificationExperimentEnabled()) {
-    return false;
-  }
-  if (!browserState) {
-    return false;
-  }
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
-  BOOL isSignedIn = authService && authService->HasPrimaryIdentity(
-                                       signin::ConsentLevel::kSignin);
-  const TemplateURL* defaultSearchURLTemplate =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browserState)
-          ->GetDefaultSearchProvider();
-  bool isDefaultSearchEngine =
-      defaultSearchURLTemplate && defaultSearchURLTemplate->prepopulate_id() ==
-                                      TemplateURLPrepopulateData::google.id;
-  PrefService* prefService = browserState->GetPrefs();
-  // Created the local variables to make sure all experimental types have been
-  // checked, because multiple experimental types can be enabled at the same
-  // time, and the UMA will be active after the feature check.
-  bool contentNotificationEnabled = IsContentNotificationEnabled(
-      isSignedIn, isDefaultSearchEngine, prefService);
-  bool contentNotificationRegistered = IsContentNotificationRegistered(
-      isSignedIn, isDefaultSearchEngine, prefService);
-  return contentNotificationEnabled || contentNotificationRegistered;
+  return IsContentNotificationEnabled(browserState) ||
+         IsContentNotificationRegistered(browserState);
 }
 
 @end

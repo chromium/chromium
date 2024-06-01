@@ -112,10 +112,6 @@ bool IsPromoEligible(bool user_signed_in,
 bool IsProvisionalEligible(bool user_signed_in,
                            bool default_search_engine,
                            PrefService* pref_service) {
-  if (user_signed_in && IsContentNotificationProvisionalIgnoreConditions()) {
-    return true;
-  }
-
   if (!pref_service) {
     return false;
   }
@@ -175,59 +171,53 @@ bool IsContentNotificationEnabled(ChromeBrowserState* browser_state) {
 
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
-  BOOL is_signed_in = auth_service && auth_service->HasPrimaryIdentity(
-                                          signin::ConsentLevel::kSignin);
-
-  if (is_signed_in && IsContentNotificationProvisionalIgnoreConditions()) {
-    return true;
-  }
+  BOOL user_signed_in = auth_service && auth_service->HasPrimaryIdentity(
+                                            signin::ConsentLevel::kSignin);
 
   const TemplateURL* default_search_url_template =
       ios::TemplateURLServiceFactory::GetForBrowserState(browser_state)
           ->GetDefaultSearchProvider();
-  bool is_default_search_engine =
-      default_search_url_template &&
-      default_search_url_template->prepopulate_id() ==
-          TemplateURLPrepopulateData::google.id;
+  bool default_search_engine = default_search_url_template &&
+                               default_search_url_template->prepopulate_id() ==
+                                   TemplateURLPrepopulateData::google.id;
   PrefService* pref_service = browser_state->GetPrefs();
 
-  return IsContentNotificationEnabled(is_signed_in, is_default_search_engine,
-                                      pref_service);
+  return IsContentNotificationPromoEnabled(
+             user_signed_in, default_search_engine, pref_service) ||
+         IsContentNotificationProvisionalEnabled(
+             user_signed_in, default_search_engine, pref_service) ||
+         IsContentNotificationSetUpListEnabled(
+             user_signed_in, default_search_engine, pref_service);
 }
 
-bool IsContentNotificationEnabled(bool user_signed_in,
-                                  bool default_search_engine,
-                                  PrefService* pref_service) {
-  if (user_signed_in && IsContentNotificationProvisionalIgnoreConditions()) {
-    return true;
+bool IsContentNotificationRegistered(ChromeBrowserState* browser_state) {
+  if (!browser_state) {
+    return false;
   }
 
-  // Make sure all enabled types are checked since more than one types can be
-  // enabled, and the UMA will only be active after checking the pref.
-  bool promo_enabled = IsContentNotificationPromoEnabled(
-      user_signed_in, default_search_engine, pref_service);
-  bool provisional_enabled = IsContentNotificationProvisionalEnabled(
-      user_signed_in, default_search_engine, pref_service);
-  bool set_up_list_enabled = IsContentNotificationSetUpListEnabled(
-      user_signed_in, default_search_engine, pref_service);
+  if (!IsContentNotificationExperimentEnabled()) {
+    return false;
+  }
 
-  return promo_enabled || provisional_enabled || set_up_list_enabled;
-}
+  AuthenticationService* auth_service =
+      AuthenticationServiceFactory::GetForBrowserState(browser_state);
+  BOOL user_signed_in = auth_service && auth_service->HasPrimaryIdentity(
+                                            signin::ConsentLevel::kSignin);
 
-bool IsContentNotificationRegistered(bool user_signed_in,
-                                     bool default_search_engine,
-                                     PrefService* pref_service) {
-  // Make sure all registration only types are checked since more than one types
-  // can be enabled, and the UMA will only be active after checking the pref.
-  bool promo_register_only = IsContentNotificationPromoRegistered(
-      user_signed_in, default_search_engine, pref_service);
-  bool provisional_register_only = IsContentNotificationProvisionalRegistered(
-      user_signed_in, default_search_engine, pref_service);
-  bool set_up_list_register_only = IsContentNotificationSetUpListRegistered(
-      user_signed_in, default_search_engine, pref_service);
+  const TemplateURL* default_search_url_template =
+      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state)
+          ->GetDefaultSearchProvider();
+  bool default_search_engine = default_search_url_template &&
+                               default_search_url_template->prepopulate_id() ==
+                                   TemplateURLPrepopulateData::google.id;
+  PrefService* pref_service = browser_state->GetPrefs();
 
-  return promo_register_only || provisional_register_only ||
-         set_up_list_register_only;
+  return IsContentNotificationPromoRegistered(
+             user_signed_in, default_search_engine, pref_service) ||
+         IsContentNotificationProvisionalRegistered(
+             user_signed_in, default_search_engine, pref_service) ||
+         IsContentNotificationSetUpListRegistered(
+             user_signed_in, default_search_engine, pref_service);
 }
 
 bool IsContentNotificationPromoEnabled(bool user_signed_in,
@@ -245,6 +235,10 @@ bool IsContentNotificationPromoEnabled(bool user_signed_in,
 bool IsContentNotificationProvisionalEnabled(bool user_signed_in,
                                              bool default_search_engine,
                                              PrefService* pref_service) {
+  if (user_signed_in && IsContentNotificationProvisionalIgnoreConditions()) {
+    return true;
+  }
+
   if (IsProvisionalEligible(user_signed_in, default_search_engine,
                             pref_service) &&
       IsContentPushNotificationsProvisionalEnabled()) {
