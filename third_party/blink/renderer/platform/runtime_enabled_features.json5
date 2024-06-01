@@ -3624,6 +3624,13 @@
       base_feature: "none",
     },
     {
+      // Makes select.showPicker() and input.showPicker() consume user
+      // activation in order to prevent abuse. Shipping in M127, should be safe
+      // to remove in M131.
+      name: "ShowPickerConsumeUserActivation",
+      status: "stable"
+    },
+    {
       name: "SignatureBasedIntegrity",
       origin_trial_feature_name: "SignatureBasedIntegrity",
       status: "experimental",

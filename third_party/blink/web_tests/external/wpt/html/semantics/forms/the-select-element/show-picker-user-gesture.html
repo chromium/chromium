@@ -5,31 +5,27 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-<body></body>
-<script type=module>
-    test(() => {
-        const select = document.createElement("select");
 
+<select>
+    <option>option</option>
+</select>
+
+<script type=module>
+    const select = document.querySelector('select');
+
+    test(() => {
         assert_throws_dom('NotAllowedError', () => { select.showPicker(); });
     }, `select showPicker() requires a user gesture`);
 
     promise_test(async t => {
-        const select = document.createElement("select");
-        document.body.append(select)
-
-        await test_driver.bless('show picker');
-        select.showPicker();
-        select.blur();
-    }, `select showPicker() does not throw when user activation is active`);
-
-    promise_test(async t => {
-        const select = document.createElement("select");
-        document.body.append(select)
-
         await test_driver.bless('show picker');
         select.showPicker();
         select.blur();
 
-        assert_false(navigator.userActivation.isActive);
-    }, `select showPicker() consumes user activation`);
+        assert_false(navigator.userActivation.isActive,
+            'User activation should be consumed after calling showPicker().');
+
+        assert_throws_dom('NotAllowedError', () => select.showPicker(),
+            'select.showPicker() should throw when there is no user activation.');
+    }, `select showPicker() does not throw when user activation is active.`);
 </script>
