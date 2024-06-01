@@ -13,6 +13,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 
 namespace blink {
 

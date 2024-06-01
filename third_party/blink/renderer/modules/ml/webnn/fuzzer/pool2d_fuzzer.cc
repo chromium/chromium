@@ -10,7 +10,9 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/fuzzer/utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/fuzzer/webnn.pb.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_utils.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 

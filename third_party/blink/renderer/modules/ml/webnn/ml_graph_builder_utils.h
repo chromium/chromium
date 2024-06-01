@@ -8,13 +8,17 @@
 #include <optional>
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 
 namespace blink {
+
+class MLGraphBuilder;
+class MLOperand;
 
 MLGraphBuilder* CreateMLGraphBuilder(
     ExecutionContext* execution_context,

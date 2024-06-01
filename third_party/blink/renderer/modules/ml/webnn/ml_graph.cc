@@ -7,6 +7,7 @@
 #include <cinttypes>
 
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/numerics/checked_math.h"
 #include "base/types/expected_macros.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -16,19 +17,13 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_compute_result.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_buffer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_error.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
 namespace blink {
@@ -146,144 +141,24 @@ base::expected<void, String> ValidateMLBufferUsage(
   return base::ok();
 }
 
-uint64_t NextOperandId(const webnn::mojom::blink::GraphInfo& graph_info) {
-  // This count must start at 1 because 0 is a reserved element in a
-  // WTF::HashMap (yes, really).
-  return graph_info.id_to_operand_map.size() + 1;
-}
-
-base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
-    const MLNamedOperands& named_outputs,
-    const webnn::mojom::blink::ContextProperties& context_properties) {
-  // The `GraphInfo` represents an entire information of WebNN graph.
-  auto graph_info = webnn::mojom::blink::GraphInfo::New();
-
-  HeapHashMap<Member<const MLOperand>, uint64_t> operand_to_id_map;
-  for (const auto& [name, operand] : named_outputs) {
-    // Create `mojo::Operand` for output operands of graph with the name.
-    auto output_operand =
-        mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(operand.Get());
-    output_operand->name = name;
-    uint64_t operand_id = NextOperandId(*graph_info);
-    graph_info->id_to_operand_map.insert(operand_id, std::move(output_operand));
-    graph_info->output_operands.push_back(operand_id);
-    operand_to_id_map.insert(operand, operand_id);
-  }
-
-  HeapVector<Member<const MLOperator>>* topologically_sorted_operators =
-      GetOperatorsInTopologicalOrder(named_outputs);
-  // Visit the operators in topological order. For each operator,
-  // 1, Create `mojo::Operand` for its input and output operands if needed.
-  // 2, Create `mojo::Operator` with the id of input and output operands.
-  for (const auto& current_operator : *topologically_sorted_operators) {
-    for (const auto& operand : current_operator->Inputs()) {
-      if (operand_to_id_map.Contains(operand.Get())) {
-        // The `mojo::Operand` is already converted with the MLOperand, skip it.
-        continue;
-      }
-      switch (operand->Kind()) {
-        case webnn::mojom::blink::Operand::Kind::kInput: {
-          // Create `mojo::Operand` for the input MLOperand.
-          uint64_t operand_id = NextOperandId(*graph_info);
-          graph_info->id_to_operand_map.insert(
-              operand_id,
-              mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(operand.Get()));
-          //  Build the array of input operands for this graph with the id.
-          graph_info->input_operands.push_back(operand_id);
-          operand_to_id_map.insert(operand, operand_id);
-          break;
-        }
-        case webnn::mojom::blink::Operand::Kind::kConstant: {
-          // Convert `mojo::Operand` for constant operand.
-          uint64_t operand_id = NextOperandId(*graph_info);
-          graph_info->id_to_operand_map.insert(
-              operand_id,
-              mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(operand.Get()));
-          //  Build the map of constant operands for this graph with the id.
-          const auto* array_buffer_view = operand->ArrayBufferView();
-          CHECK(array_buffer_view);
-          CHECK(!array_buffer_view->IsDetached());
-          graph_info->constant_id_to_buffer_map.insert(
-              operand_id, base::make_span(static_cast<const uint8_t*>(
-                                              array_buffer_view->BaseAddress()),
-                                          array_buffer_view->byteLength()));
-          operand_to_id_map.insert(operand, operand_id);
-          break;
-        }
-        case webnn::mojom::blink::Operand::Kind::kOutput:
-          // Because the operators are visited in topological order, if this
-          // operand is an intermediate operand, it should already be defined as
-          // an output operand of the dependent operator.
-          NOTREACHED_NORETURN();
-      }
-    }
-
-    for (const auto& operand : current_operator->Outputs()) {
-      if (operand_to_id_map.Contains(operand.Get())) {
-        // The `mojo::Operand` is already converted with the MLOperand, skip it.
-        continue;
-      }
-      // Because the graph's output operands are already converted before, this
-      // operand should be an intermediate operand that connects with two
-      // operators. Create `mojo::Operand` for this operand.
-      uint64_t operand_id = NextOperandId(*graph_info);
-      graph_info->id_to_operand_map.insert(
-          operand_id,
-          mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(operand.Get()));
-      operand_to_id_map.insert(operand, operand_id);
-    }
-
-    // Create `mojo::Operation` with the id of the input and output operands.
-    std::optional<String> error =
-        SerializeMojoOperation(operand_to_id_map, context_properties,
-                               current_operator.Get(), graph_info.get());
-    if (error.has_value()) {
-      // Return here if the operator is not implemented.
-      return base::unexpected(*error);
-    }
-  }
-
-  return graph_info;
-}
-
 }  // namespace
 
-// static
-void MLGraph::CreateAndBuild(ScopedMLTrace scoped_trace,
-                             MLContext* context,
-                             const MLNamedOperands& named_outputs,
-                             ScriptPromiseResolver<MLGraph>* resolver) {
-  CHECK(context);
-  CHECK(resolver);
-
-  auto* graph =
-      MakeGarbageCollected<MLGraph>(resolver->GetExecutionContext(), context);
-  scoped_trace.AddStep("MLGraph::CreateAndBuild");
-
-  // TODO(crbug.com/40278771): Replace with THROW_AND_RETURN_IF_ERROR.
-  RETURN_IF_ERROR(graph->ValidateAndInitializeResourcesInfo(named_outputs),
-                  [&resolver](const String& error) {
-                    resolver->RejectWithTypeError(error);
-                    return;
-                  });
-
-  auto graph_info =
-      BuildWebNNGraphInfo(named_outputs, context->GetProperties());
-  if (!graph_info.has_value()) {
-    resolver->RejectWithDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "Failed to build graph: " + graph_info.error());
-    return;
-  }
-
-  context->CreateWebNNGraph(
-      std::move(graph_info.value()),
-      WTF::BindOnce(&MLGraph::DidCreateWebNNGraph, WrapPersistent(graph),
-                    std::move(scoped_trace), WrapPersistent(resolver)));
+MLGraph::MLGraph(ExecutionContext* execution_context,
+                 MLContext* context,
+                 mojo::PendingAssociatedRemote<webnn::mojom::blink::WebNNGraph>
+                     pending_graph_remote,
+                 HashMap<String, ResourceInfo> input_resources_info,
+                 HashMap<String, ResourceInfo> output_resources_info,
+                 base::PassKey<MLGraphBuilder> /*pass_key*/)
+    : input_resources_info_(std::move(input_resources_info)),
+      output_resources_info_(std::move(output_resources_info)),
+      ml_context_(context),
+      remote_graph_(execution_context) {
+  // Bind the end point of `WebNNGraph` mojo interface in the blink side.
+  remote_graph_.Bind(
+      std::move(pending_graph_remote),
+      execution_context->GetTaskRunner(TaskType::kInternalDefault));
 }
-
-MLGraph::MLGraph(ExecutionContext* execution_context, MLContext* context)
-    : ml_context_(context), remote_graph_(execution_context) {}
 
 MLGraph::~MLGraph() = default;
 
@@ -295,13 +170,11 @@ void MLGraph::Trace(Visitor* visitor) const {
 
 const HashMap<String, MLGraph::ResourceInfo>& MLGraph::GetInputResourcesInfo()
     const {
-  DCHECK(resources_info_initialized_);
   return input_resources_info_;
 }
 
 const HashMap<String, MLGraph::ResourceInfo>& MLGraph::GetOutputResourcesInfo()
     const {
-  DCHECK(resources_info_initialized_);
   return output_resources_info_;
 }
 
@@ -311,9 +184,6 @@ ScriptPromise<MLComputeResult> MLGraph::Compute(
     const MLNamedArrayBufferViews& outputs,
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  // The MLGraph object should be initialized before computing.
-  DCHECK(resources_info_initialized_);
-
   // Validate the MLNamedArrayBufferViews.
   THROW_AND_RETURN_TYPE_IF_ERROR(
       ValidateNamedArrayBufferViews(inputs, input_resources_info_),
@@ -360,9 +230,6 @@ void MLGraph::Dispatch(ScopedMLTrace scoped_trace,
                        const MLNamedBuffers& inputs,
                        const MLNamedBuffers& outputs,
                        ExceptionState& exception_state) {
-  // The MLGraph object should be initialized before dispatching.
-  DCHECK(resources_info_initialized_);
-
   // Validate the MLNamedBuffers.
   THROW_AND_RETURN_IF_ERROR(
       ValidateNamedMLBuffers(Context(), inputs, input_resources_info_),
@@ -406,109 +273,6 @@ void MLGraph::Dispatch(ScopedMLTrace scoped_trace,
   }
 
   remote_graph_->Dispatch(std::move(mojo_inputs), std::move(mojo_outputs));
-}
-
-base::expected<void, String> MLGraph::ValidateAndInitializeResourcesInfo(
-    const MLNamedOperands& named_outputs) {
-  DCHECK(!resources_info_initialized_);
-
-  // The outputs should not be empty.
-  if (named_outputs.empty()) {
-    return base::unexpected("At least one output needs to be provided.");
-  }
-
-  // The queue and visited set of operators that help implement the
-  // breadth-first graph traversal:
-  // https://en.wikipedia.org/wiki/Breadth-first_search
-  HeapDeque<Member<const MLOperator>> operators_queue;
-  HeapHashSet<Member<const MLOperator>> visited_operators;
-
-  // Validate the named outputs, setup corresponding output resource info and
-  // initialize the queue and visited set with their dependent operators.
-  for (const auto& output : named_outputs) {
-    const auto& name = output.first;
-    const auto& operand = output.second;
-    // Validate whether it is an output operand.
-    if (operand->Kind() != webnn::mojom::blink::Operand::Kind::kOutput) {
-      return base::unexpected(String::Format(
-          "The operand with name \"%s\" is not an output operand.",
-          name.Utf8().c_str()));
-    }
-    // Setup resource info for this output operand.
-    output_resources_info_.insert(
-        name, ResourceInfo({.data_type = operand->DataType(),
-                            .byte_length = operand->ByteLength()}));
-    // Mark its dependent operator is visited.
-    visited_operators.insert(operand->Operator());
-    // Enqueue its dependent operator.
-    operators_queue.push_back(operand->Operator());
-  }
-
-  // An input MLOperand may be used by more than one MLOperators. This set
-  // ensures an input MLOperand won't be validated multiple times.
-  HeapHashSet<Member<const MLOperand>> visited_input_operands;
-  while (operators_queue.size() > 0) {
-    // If the queue is not empty, dequeue an operator from the queue.
-    const auto current_operator = operators_queue.TakeFirst();
-    // Enumerate the current operator's input operands.
-    for (const auto& operand : current_operator->Inputs()) {
-      switch (operand->Kind()) {
-        case webnn::mojom::blink::Operand::Kind::kOutput:
-          DCHECK(operand->Operator());
-          // If the operand is an output operand and its dependent operator is
-          // not visited, mark the dependent operator is visited and enqueue
-          // it.
-          if (!visited_operators.Contains(operand->Operator())) {
-            visited_operators.insert(operand->Operator());
-            operators_queue.push_back(operand->Operator());
-          }
-          break;
-        case webnn::mojom::blink::Operand::Kind::kInput:
-          // If the operand has been validated, it doesn't need to be verified
-          // multiple times.
-          if (visited_input_operands.Contains(operand)) {
-            continue;
-          }
-          visited_input_operands.insert(operand);
-          // If the operand is an input operand, validate whether its name is
-          // unique.
-          if (input_resources_info_.Contains(operand->Name())) {
-            return base::unexpected(
-                String::Format("The input name \"%s\" is duplicated.",
-                               operand->Name().Utf8().c_str()));
-          }
-          // Setup resource info for this input operand.
-          input_resources_info_.insert(
-              operand->Name(),
-              ResourceInfo({.data_type = operand->DataType(),
-                            .byte_length = operand->ByteLength()}));
-          break;
-        case webnn::mojom::blink::Operand::Kind::kConstant:
-          // If the operand has been validated, it doesn't need to be verified
-          // multiple times.
-          if (visited_input_operands.Contains(operand)) {
-            continue;
-          }
-          visited_input_operands.insert(operand);
-          // If the operand is a constant operand, validate its ArrayBufferView
-          // is not detached, because the backends may access its content in
-          // `CreateAndBuild()`. A constant operand may carry a detached
-          // ArrayBufferView if the JS code first calls
-          // `MLGraphBuilder.constant()` to build a constant operand with a
-          // valid ArrayBufferView, then detaches the ArrayBufferView and calls
-          // `MLGraphBuilder.build()` to build the graph with this constant
-          // operand.
-          CHECK(operand->ArrayBufferView());
-          if (operand->ArrayBufferView()->IsDetached()) {
-            return base::unexpected(
-                "The array buffer view of the constant operand is detached.");
-          }
-          break;
-      }
-    }
-  }
-  resources_info_initialized_ = true;
-  return base::ok();
 }
 
 const MLContext* MLGraph::Context() const {
@@ -563,35 +327,6 @@ void MLGraph::DidCompute(
   result->setInputs(*CreateNamedArrayBufferViews(std::move(inputs_info)));
   result->setOutputs(*outputs);
   resolver->Resolve(result);
-}
-
-// TODO(crbug.com/325612086): Once all backends use mojo, consider refactoring
-// MLGraph creation such that this logic can live in MLGraphBuilder.
-void MLGraph::DidCreateWebNNGraph(
-    ScopedMLTrace scoped_trace,
-    ScriptPromiseResolver<MLGraph>* resolver,
-    webnn::mojom::blink::CreateGraphResultPtr result) {
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state) {
-    return;
-  }
-
-  // Handle error message and throw exception.
-  if (result->is_error()) {
-    const auto& create_graph_error = result->get_error();
-    resolver->RejectWithDOMException(
-        WebNNErrorCodeToDOMExceptionCode(create_graph_error->code),
-        create_graph_error->message);
-    return;
-  }
-
-  auto* execution_context = ExecutionContext::From(script_state);
-  // Bind the end point of `WebNNGraph` mojo interface in the blink side.
-  remote_graph_.Bind(
-      std::move(result->get_graph_remote()),
-      execution_context->GetTaskRunner(TaskType::kInternalDefault));
-
-  resolver->Resolve(this);
 }
 
 }  // namespace blink
