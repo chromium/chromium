@@ -158,6 +158,9 @@ tast_disabled_tests_from_lacros_all = [
   "crostini.VerifyAppWayland.bookworm_stable_lacros",
   "crostini.VerifyAppWayland.bullseye_stable_lacros",
 
+  # b/341794182, until LKGM R127-15898.0.0 lands
+  "login.Chrome.lacros",
+
   # On branch day, Lacros is +3 newer than ash which break the test.
   "lacros.CompareVersionWithAsh",
 
