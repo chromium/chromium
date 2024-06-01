@@ -423,7 +423,6 @@ crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLCopyImage
 crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLSadCanvas [ Skip ]
 
 
-crbug.com/1469875 [ mac graphite-enabled intel release asan ] Pixel_CSSFilterEffects_NoOverlays [ Failure ]
 
 # Flaky, but if it fails, retries also always fail.
 crbug.com/1494227 [ mac graphite-enabled intel ] Pixel_CSSFilterEffects [ Failure ]
