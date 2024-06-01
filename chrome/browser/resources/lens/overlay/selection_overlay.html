@@ -1,10 +1,6 @@
 <link rel="stylesheet" href="//resources/css/text_defaults_md.css">
 <style>
   :host {
-    --color-primary: black;
-    --color-scrim: #181C22;
-    --color-scrim-rgb: 24, 28, 34;
-    --color-selection-element: #EEF0F9;
     --cursor-img-url: url("lens.svg");
     align-items: center;
     display: flex;
@@ -181,18 +177,28 @@
   }
 
   .context-menu-item:hover {
-    background-color: 
-        rgba(var(--color-scrim-rgb), 0.05);
+    background-color: rgba(var(--color-scrim-rgb), 0.05);
   }
 
   .context-menu-item:active {
-    background-color: 
-        rgba(var(--color-scrim-rgb), 0.10);
+    background-color: rgba(var(--color-scrim-rgb), 0.10);
   }
 
   .menu-item-icon {
+    background-color: var(--color-primary);
     height: 20px;
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: 100%;
     width: 20px;
+  }
+
+  .menu-item-icon.copy {
+    mask-image: url('copy.svg');
+  }
+
+  .menu-item-icon.translate {
+    mask-image: url('translate.svg');
   }
 
   .menu-item-label {
@@ -239,13 +245,13 @@
   <div id="selectionElements">
     <!-- Other elements that need to be bounded to the image go here -->
     <div id="extraScrim"></div>
-    <overlay-shimmer id="overlayShimmer"></overlay-shimmer>
+    <overlay-shimmer id="overlayShimmer" theme="[[theme]]"></overlay-shimmer>
     <post-selection-renderer id="postSelectionRenderer"
         screenshot-data-uri="[[screenshotDataUri]]">
     </post-selection-renderer>
     <lens-object-layer id="objectSelectionLayer"
         screenshot-data-uri="[[screenshotDataUri]]"></lens-object-layer>
-    <region-selection id="regionSelectionLayer"
+    <region-selection id="regionSelectionLayer" theme="[[theme]]"
         screenshot-data-uri="[[screenshotDataUri]]"></region-selection>
     <lens-text-layer id="textSelectionLayer"></lens-text-layer>
     <div id="initialFlashScrim"></div>
@@ -256,12 +262,12 @@
         on-pointerenter="handlePointerEnterContextMenu"
         on-pointerleave="handlePointerLeaveContextMenu">
       <div class="context-menu-item" role="menuitem" on-pointerup="handleCopy">
-        <img src="copy.svg" class="menu-item-icon">
+        <span class="menu-item-icon copy"></span>
         <span class="menu-item-label">$i18n{copy}</span>
       </div>
       <div class="context-menu-item" role="menuitem"
           on-pointerup="handleTranslate">
-        <img src="translate.svg" class="menu-item-icon">
+        <span class="menu-item-icon translate"></span>
         <span class="menu-item-label">$i18n{translate}</span>
       </div>
     </div>

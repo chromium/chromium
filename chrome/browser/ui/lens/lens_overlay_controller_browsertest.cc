@@ -750,19 +750,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, DynamicTheme) {
   // Verify expected color palette was identified.
   ASSERT_EQ(lens::PaletteId::kFallback, controller->color_palette());
   // Verify expected theme color were passed to WebUI.
-  auto expected_theme = lens::mojom::OverlayTheme::New();
-  expected_theme->primary = lens::kColorFallbackPrimary;
-  expected_theme->shader_layer_1 = lens::kColorFallbackShaderLayer1;
-  expected_theme->shader_layer_2 = lens::kColorFallbackShaderLayer2;
-  expected_theme->shader_layer_3 = lens::kColorFallbackShaderLayer3;
-  expected_theme->shader_layer_4 = lens::kColorFallbackShaderLayer4;
-  expected_theme->shader_layer_5 = lens::kColorFallbackShaderLayer5;
-  expected_theme->scrim = lens::kColorFallbackScrim;
-  expected_theme->surface_container_highest_light =
-      lens::kColorFallbackSurfaceContainerHighestLight;
-  expected_theme->surface_container_highest_dark =
-      lens::kColorFallbackSurfaceContainerHighestDark;
-  expected_theme->selection_element = lens::kColorFallbackSelectionElement;
+  auto expected_theme = controller->CreateTheme(lens::PaletteId::kFallback);
   EXPECT_TRUE(
       fake_controller->fake_overlay_page_.last_received_theme_.has_value());
   const auto& received_theme =

@@ -269,8 +269,8 @@ class LensOverlayController : public LensSearchboxClient,
   // Send text data to the WebUI.
   void SendText(lens::mojom::TextPtr text);
 
-  // Send theme data obtained from `palette_id` to the WebUI.
-  void SendTheme(lens::PaletteId palette_id);
+  // Creates theme with data obtained from `palette_id` to be sent to the WebUI.
+  lens::mojom::OverlayThemePtr CreateTheme(lens::PaletteId palette_id);
 
   // Send overlay object data to the WebUI.
   void SendObjects(std::vector<lens::mojom::OverlayObjectPtr> objects);

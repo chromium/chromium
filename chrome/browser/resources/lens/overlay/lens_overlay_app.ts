@@ -10,15 +10,19 @@ import '//resources/cr_elements/icons.html.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert} from '//resources/js/assert.js';
+import {skColorToHexColor} from '//resources/js/color_utils.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {BigString} from '//resources/mojo/mojo/public/mojom/base/big_string.mojom-webui.js';
+import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
+import {getFallbackTheme} from './color_utils.js';
 import type {CursorTooltipData, CursorTooltipElement} from './cursor_tooltip.js';
 import type {InitialToastElement} from './initial_toast.js';
+import type {OverlayTheme} from './lens.mojom-webui.js';
 import {getTemplate} from './lens_overlay_app.html.js';
 
 // Closes overlay if escape button is pressed.
@@ -64,6 +68,10 @@ export class LensOverlayAppElement extends PolymerElement {
         type: Boolean,
         reflectToAttribute: true,
       },
+      theme: {
+        type: Object,
+        value: getFallbackTheme,
+      },
     };
   }
 
@@ -77,7 +85,8 @@ export class LensOverlayAppElement extends PolymerElement {
   private isClosing: boolean = false;
   // Whether more options menu should be shown.
   private moreOptionsMenuVisible: boolean = false;
-
+  // The overlay theme.
+  private theme: OverlayTheme;
 
   private eventTracker_: EventTracker = new EventTracker();
 
@@ -91,6 +100,7 @@ export class LensOverlayAppElement extends PolymerElement {
     this.listenerIds = [
       callbackRouter.screenshotDataUriReceived.addListener(
           this.screenshotDataUriReceived.bind(this)),
+      callbackRouter.themeReceived.addListener(this.themeReceived.bind(this)),
       callbackRouter.notifyResultsPanelOpened.addListener(
           this.onNotifyResultsPanelOpened.bind(this)),
       callbackRouter.notifyOverlayClosing.addListener(() => {
@@ -177,6 +187,10 @@ export class LensOverlayAppElement extends PolymerElement {
     this.closeButtonHidden = true;
   }
 
+  private themeReceived(theme: OverlayTheme) {
+    this.theme = theme;
+  }
+
   private screenshotDataUriReceived(dataUri: BigString) {
     const data: BigBuffer = dataUri.data;
 
@@ -215,6 +229,7 @@ export class LensOverlayAppElement extends PolymerElement {
   private onScreenshotRendered() {
     this.isImageRendered = true;
   }
+
   private getSelectionOverlayClass(screenshotDataUri: string): string {
     if (!screenshotDataUri || !screenshotDataUri.length) {
       return 'hidden';
@@ -226,6 +241,19 @@ export class LensOverlayAppElement extends PolymerElement {
   private updateCursorPosition(event: PointerEvent) {
     this.$.cursorTooltip.style.transform =
         `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
+  }
+
+  private skColorToHex_(skColor: SkColor): string {
+    return skColorToHexColor(skColor);
+  }
+
+  private skColorToRgb_(skColor: SkColor): string {
+    const hex = skColorToHexColor(skColor);
+    assert(/^#[0-9a-fA-F]{6}$/.test(hex));
+    const r = parseInt(hex.substring(1, 3), 16);
+    const g = parseInt(hex.substring(3, 5), 16);
+    const b = parseInt(hex.substring(5, 7), 16);
+    return `${r}, ${g}, ${b}`;
   }
 }
 
