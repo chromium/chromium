@@ -560,11 +560,11 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicPastInteractionGrantBrowserTest,
   // heuristic, if the feature is enabled.
   auto cookie_settings = CookieSettingsFactory::GetForProfile(
       Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
-  EXPECT_EQ(
-      cookie_settings->GetCookieSetting(initial_url, opener_url,
-                                        net::CookieSettingOverrides(), nullptr),
-      GetParam().write_grant_enabled ? CONTENT_SETTING_ALLOW
-                                     : CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                initial_url, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
+            GetParam().write_grant_enabled ? CONTENT_SETTING_ALLOW
+                                           : CONTENT_SETTING_BLOCK);
   EXPECT_EQ(cookie_settings->GetThirdPartyCookieAllowMechanism(
                 initial_url, net::SiteForCookies::FromUrl(opener_url),
                 opener_url, net::CookieSettingOverrides(), nullptr),
@@ -576,7 +576,8 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicPastInteractionGrantBrowserTest,
 
   // Cookie access was NOT granted for the site that the popup redirected to.
   EXPECT_EQ(cookie_settings->GetCookieSetting(
-                final_url, opener_url, net::CookieSettingOverrides(), nullptr),
+                final_url, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
 }
 
@@ -605,7 +606,8 @@ IN_PROC_BROWSER_TEST_P(
   auto cookie_settings = CookieSettingsFactory::GetForProfile(
       Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
   EXPECT_EQ(cookie_settings->GetCookieSetting(
-                popup_url, opener_url, net::CookieSettingOverrides(), nullptr),
+                popup_url, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
             should_cookies_be_blocked ? CONTENT_SETTING_BLOCK
                                       : CONTENT_SETTING_ALLOW);
 }
@@ -857,14 +859,15 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicCurrentInteractionGrantBrowserTest,
       Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
   // Cookie access was NOT granted for the initial URL (that the user didn't
   // interact with).
-  EXPECT_EQ(
-      cookie_settings->GetCookieSetting(initial_url, opener_url,
-                                        net::CookieSettingOverrides(), nullptr),
-      CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                initial_url, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
   // Cookie access WAS granted for the interacted-with URL (if the feature was
   // enabled).
   EXPECT_EQ(cookie_settings->GetCookieSetting(
-                final_url, opener_url, net::CookieSettingOverrides(), nullptr),
+                final_url, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
             GetParam().write_grant_enabled ? CONTENT_SETTING_ALLOW
                                            : CONTENT_SETTING_BLOCK);
 }
@@ -887,7 +890,8 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicCurrentInteractionGrantBrowserTest,
   auto cookie_settings = CookieSettingsFactory::GetForProfile(
       Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
   EXPECT_EQ(cookie_settings->GetCookieSetting(
-                popup_url, opener_url, net::CookieSettingOverrides(), nullptr),
+                popup_url, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
             should_cookies_be_blocked ? CONTENT_SETTING_BLOCK
                                       : CONTENT_SETTING_ALLOW);
 }
@@ -1321,36 +1325,36 @@ IN_PROC_BROWSER_TEST_P(OpenerHeuristicBackfillGrantBrowserTest,
   // popup_url_2.
   auto cookie_settings = CookieSettingsFactory::GetForProfile(
       Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
-  EXPECT_EQ(
-      cookie_settings->GetCookieSetting(popup_url_1, opener_url,
-                                        net::CookieSettingOverrides(), nullptr),
-      CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(
-      cookie_settings->GetCookieSetting(popup_url_2, opener_url,
-                                        net::CookieSettingOverrides(), nullptr),
-      CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                popup_url_1, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                popup_url_2, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
 
   // Expect that a cookie access grant is backfilled for popup_url_3 when the
   // experiment is enabled.
-  EXPECT_EQ(
-      cookie_settings->GetCookieSetting(popup_url_3, opener_url,
-                                        net::CookieSettingOverrides(), nullptr),
-      GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                popup_url_3, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
+            GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
 
   // Expect that the cookie access grant applies to other URLs with the same
   // eTLD+1.
   GURL popup_url_3a =
       embedded_test_server()->GetURL("www.d.test", "/favicon.png");
-  EXPECT_EQ(
-      cookie_settings->GetCookieSetting(popup_url_3a, opener_url,
-                                        net::CookieSettingOverrides(), nullptr),
-      GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                popup_url_3a, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
+            GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
   GURL popup_url_3b =
       embedded_test_server()->GetURL("corp.d.test", "/title1.html");
-  EXPECT_EQ(
-      cookie_settings->GetCookieSetting(popup_url_3b, opener_url,
-                                        net::CookieSettingOverrides(), nullptr),
-      GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                popup_url_3b, net::SiteForCookies(), opener_url,
+                net::CookieSettingOverrides(), nullptr),
+            GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

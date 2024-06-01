@@ -190,7 +190,8 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest, EnabledAfterHttpResponse) {
   // Verify third-party cookie access isn't permitted under |kTrialEnabledSite|.
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(GetProfile()).get();
-  EXPECT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSite, {}, nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
+                                       kTrialEnabledSite, {}, nullptr),
             CONTENT_SETTING_BLOCK);
 
   // Navigate to a |kTrialEnabledSite| page that returns its origin trial token
@@ -204,7 +205,8 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest, EnabledAfterHttpResponse) {
 
   // Check that third-party cookie access is now permitted under
   // |kTrialEnabledSite|.
-  EXPECT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSite, {}, nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
+                                       kTrialEnabledSite, {}, nullptr),
             CONTENT_SETTING_ALLOW);
 
   // Verify that a subsequent load of a |kTrialEnabledSite| page
@@ -220,7 +222,8 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest, EnabledAfterHttpResponse) {
 
   // Verify third-party cookie access is no longer permitted under
   // |kTrialEnabledSite|.
-  EXPECT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSite, {}, nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
+                                       kTrialEnabledSite, {}, nullptr),
             CONTENT_SETTING_BLOCK);
 }
 
@@ -232,10 +235,11 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
   // or |kTrialEnabledSiteSubdomain|.
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(GetProfile()).get();
-  EXPECT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSite, {}, nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
+                                       kTrialEnabledSite, {}, nullptr),
             CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSiteSubdomain, {},
-                                       nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
+                                       kTrialEnabledSiteSubdomain, {}, nullptr),
             CONTENT_SETTING_BLOCK);
 
   // Navigate to a |kTrialEnabledSiteSubdomain| page that returns the subdomain
@@ -251,10 +255,11 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
 
   // Check that third-party cookie access is now permitted under
   // |kTrialEnabledSite| and |kTrialEnabledSiteSubdomain|.
-  EXPECT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSiteSubdomain, {},
-                                       nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
+                                       kTrialEnabledSiteSubdomain, {}, nullptr),
             CONTENT_SETTING_ALLOW);
-  EXPECT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSite, {}, nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
+                                       kTrialEnabledSite, {}, nullptr),
             CONTENT_SETTING_ALLOW);
 
   // Verify that a subsequent load of a page from |kTrialEnabledSiteSubdomain|'s
@@ -270,10 +275,11 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
 
   // Verify third-party cookie access is no longer permitted under
   // |kTrialEnabledSite| or |kTrialEnabledSiteSubdomain|.
-  EXPECT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSiteSubdomain, {},
-                                       nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
+                                       kTrialEnabledSiteSubdomain, {}, nullptr),
             CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSite, {}, nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
+                                       kTrialEnabledSite, {}, nullptr),
             CONTENT_SETTING_BLOCK);
 }
 
@@ -295,7 +301,8 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest, EnabledUsingMetaTag) {
   // |kTrialEnabledSite|.
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(GetProfile()).get();
-  EXPECT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSite, {}, nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
+                                       kTrialEnabledSite, {}, nullptr),
             CONTENT_SETTING_ALLOW);
   EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
                 GURL(), net::SiteForCookies(), kTrialEnabledSite, {}, nullptr),
@@ -324,10 +331,11 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(GetProfile()).get();
 
-  EXPECT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSiteSubdomain, {},
-                                       nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
+                                       kTrialEnabledSiteSubdomain, {}, nullptr),
             CONTENT_SETTING_ALLOW);
-  EXPECT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSite, {}, nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
+                                       kTrialEnabledSite, {}, nullptr),
             CONTENT_SETTING_ALLOW);
 
   EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
@@ -431,7 +439,8 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
   // Verify third-party cookie access isn't permitted under |kTrialEnabledSite|.
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(GetProfile()).get();
-  ASSERT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSite, {}, nullptr),
+  ASSERT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
+                                       kTrialEnabledSite, {}, nullptr),
             CONTENT_SETTING_BLOCK);
 
   // Navigate the top-level page to `embedding_site` and update it to have an
@@ -471,7 +480,8 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
 
   // Verify that third-party cookie access is still NOT permitted under
   // `kTrialEnabledSite`.
-  EXPECT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSite, {}, nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
+                                       kTrialEnabledSite, {}, nullptr),
             CONTENT_SETTING_BLOCK);
 }
 
@@ -489,7 +499,8 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
 
   // Verify third-party cookie access isn't already permitted under
   // `kTrialEnabledSite`.
-  ASSERT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSite, {}, nullptr),
+  ASSERT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
+                                       kTrialEnabledSite, {}, nullptr),
             CONTENT_SETTING_BLOCK);
 
   // Enable the trial by navigating to a `kTrialEnabledSite` page that returns
@@ -499,9 +510,9 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
         CreateTopLevelTrialSettingsObserver(kTrialEnabledSite);
     ASSERT_TRUE(content::NavigateToURL(web_contents, kTrialEnabledSite));
     setting_observer.Wait();
-    EXPECT_EQ(
-        settings->GetCookieSetting(GURL(), kTrialEnabledSite, {}, nullptr),
-        CONTENT_SETTING_ALLOW);
+    EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
+                                         kTrialEnabledSite, {}, nullptr),
+              CONTENT_SETTING_ALLOW);
   }
 
   GURL embedding_site = https_server_->GetURL("a.test", "/iframe_blank.html");
@@ -572,7 +583,8 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
 
   // Verify that third-party cookie access is still permitted under
   // `kTrialEnabledSite`.
-  EXPECT_EQ(settings->GetCookieSetting(GURL(), kTrialEnabledSite, {}, nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
+                                       kTrialEnabledSite, {}, nullptr),
             CONTENT_SETTING_ALLOW);
 }
 

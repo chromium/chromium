@@ -168,10 +168,11 @@ IN_PROC_BROWSER_TEST_F(TpcdTrialBrowserTest,
   // Verify `kTrialEnabledSite` does not have cookie access as a third-party.
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(GetProfile()).get();
-  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, GURL(), {}, nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, net::SiteForCookies(),
+                                       GURL(), {}, nullptr),
             CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, embedding_site, {},
-                                       nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, net::SiteForCookies(),
+                                       embedding_site, {}, nullptr),
             CONTENT_SETTING_BLOCK);
 
   // Navigate the top-level page to `embedding_site` and update it to have an
@@ -192,8 +193,8 @@ IN_PROC_BROWSER_TEST_F(TpcdTrialBrowserTest,
 
   // Check that `kTrialEnabledSite` now has access to cookies as a third-party
   // when embedded by `embedding_site`.
-  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, embedding_site, {},
-                                       nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, net::SiteForCookies(),
+                                       embedding_site, {}, nullptr),
             CONTENT_SETTING_ALLOW);
 
   // Write a third-party cookie from the |kTrialEnabledSite| iframe.
@@ -203,9 +204,10 @@ IN_PROC_BROWSER_TEST_F(TpcdTrialBrowserTest,
   GURL enabled_site_diff_path =
       GURL(kTrialEnabledSite.spec() + "iframe_blank.html");
 
-  EXPECT_EQ(settings->GetCookieSetting(enabled_site_diff_path, embedding_site,
-                                       {}, nullptr),
-            CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(
+      settings->GetCookieSetting(enabled_site_diff_path, net::SiteForCookies(),
+                                 embedding_site, {}, nullptr),
+      CONTENT_SETTING_ALLOW);
 
   // Verify that a subsequent load of a resource from `kTrialEnabledSite` on the
   // embedding site without the token (`enabled_site_diff_path`) removes the
@@ -220,12 +222,13 @@ IN_PROC_BROWSER_TEST_F(TpcdTrialBrowserTest,
   }
 
   // Verify `kTrialEnabledSite` no longer has cookie access.
-  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, embedding_site, {},
-                                       nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, net::SiteForCookies(),
+                                       embedding_site, {}, nullptr),
             CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(settings->GetCookieSetting(enabled_site_diff_path, embedding_site,
-                                       {}, nullptr),
-            CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(
+      settings->GetCookieSetting(enabled_site_diff_path, net::SiteForCookies(),
+                                 embedding_site, {}, nullptr),
+      CONTENT_SETTING_BLOCK);
 }
 
 IN_PROC_BROWSER_TEST_F(TpcdTrialBrowserTest,
@@ -238,16 +241,19 @@ IN_PROC_BROWSER_TEST_F(TpcdTrialBrowserTest,
   // cookie access as third-parties.
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(GetProfile()).get();
-  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, GURL(), {}, nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, net::SiteForCookies(),
+                                       GURL(), {}, nullptr),
             CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, embedding_site, {},
-                                       nullptr),
-            CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSiteSubdomain, GURL(), {},
-                                       nullptr),
-            CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSiteSubdomain,
+  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, net::SiteForCookies(),
                                        embedding_site, {}, nullptr),
+            CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(
+      settings->GetCookieSetting(kTrialEnabledSiteSubdomain,
+                                 net::SiteForCookies(), GURL(), {}, nullptr),
+      CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSiteSubdomain,
+                                       net::SiteForCookies(), embedding_site,
+                                       {}, nullptr),
             CONTENT_SETTING_BLOCK);
 
   // Navigate the top-level page to `embedding_site` and update it to have an
@@ -272,10 +278,11 @@ IN_PROC_BROWSER_TEST_F(TpcdTrialBrowserTest,
   // (`kTrialEnabledSite`) now has access to cookies as a third-party when
   // embedded by `embedding_site`.
   EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSiteSubdomain,
-                                       embedding_site, {}, nullptr),
+                                       net::SiteForCookies(), embedding_site,
+                                       {}, nullptr),
             CONTENT_SETTING_ALLOW);
-  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, embedding_site, {},
-                                       nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, net::SiteForCookies(),
+                                       embedding_site, {}, nullptr),
             CONTENT_SETTING_ALLOW);
 
   // Write a third-party cookie from the |kTrialEnabledSiteSubdomain| iframe.
@@ -284,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(TpcdTrialBrowserTest,
   // Check cookie access for `kTrialEnabledSiteSubdomain` with a different path.
   EXPECT_EQ(settings->GetCookieSetting(
                 GURL(kTrialEnabledSiteSubdomain.spec() + "iframe_blank.html"),
-                embedding_site, {}, nullptr),
+                net::SiteForCookies(), embedding_site, {}, nullptr),
             CONTENT_SETTING_ALLOW);
 
   GURL enabled_site_no_token =
@@ -305,10 +312,11 @@ IN_PROC_BROWSER_TEST_F(TpcdTrialBrowserTest,
   // Verify `kTrialEnabledSiteSubdomain` and it's eTLD+1 (`kTrialEnabledSite`)
   // no longer have cookie access.
   EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSiteSubdomain,
-                                       embedding_site, {}, nullptr),
+                                       net::SiteForCookies(), embedding_site,
+                                       {}, nullptr),
             CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, embedding_site, {},
-                                       nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, net::SiteForCookies(),
+                                       embedding_site, {}, nullptr),
             CONTENT_SETTING_BLOCK);
 }
 
@@ -334,8 +342,8 @@ IN_PROC_BROWSER_TEST_F(TpcdTrialBrowserTest, EnabledAfterMetaTagAppend) {
   // when embedded by `embedding_site`.
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(GetProfile()).get();
-  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, embedding_site, {},
-                                       nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, net::SiteForCookies(),
+                                       embedding_site, {}, nullptr),
             CONTENT_SETTING_ALLOW);
   EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(
                 kTrialEnabledSite, net::SiteForCookies::FromUrl(embedding_site),
@@ -367,11 +375,12 @@ IN_PROC_BROWSER_TEST_F(TpcdTrialBrowserTest,
   // access to cookies as a third-party when embedded by `embedding_site`.
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(GetProfile()).get();
-  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, embedding_site, {},
-                                       nullptr),
+  EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, net::SiteForCookies(),
+                                       embedding_site, {}, nullptr),
             CONTENT_SETTING_ALLOW);
   EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSiteSubdomain,
-                                       embedding_site, {}, nullptr),
+                                       net::SiteForCookies(), embedding_site,
+                                       {}, nullptr),
             CONTENT_SETTING_ALLOW);
 
   EXPECT_EQ(settings->GetThirdPartyCookieAllowMechanism(

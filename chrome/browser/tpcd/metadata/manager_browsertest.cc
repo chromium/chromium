@@ -564,7 +564,8 @@ IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
   GetCookieSettings()->SetCookieSetting(third_party_url,
                                         ContentSetting::CONTENT_SETTING_BLOCK);
   EXPECT_EQ(GetCookieSettings()->GetCookieSetting(
-                third_party_url, GURL(), net::CookieSettingOverrides()),
+                third_party_url, net::SiteForCookies(), GURL(),
+                net::CookieSettingOverrides()),
             ContentSetting::CONTENT_SETTING_BLOCK);
 
   // Simulates a user's preference: Blocks all third parties requests on
@@ -572,7 +573,8 @@ IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
   GetCookieSettings()->SetThirdPartyCookieSetting(
       first_party_url, ContentSetting::CONTENT_SETTING_BLOCK);
   EXPECT_EQ(GetCookieSettings()->GetCookieSetting(
-                GURL(), first_party_url, net::CookieSettingOverrides()),
+                GURL(), net::SiteForCookies(), first_party_url,
+                net::CookieSettingOverrides()),
             ContentSetting::CONTENT_SETTING_BLOCK);
 
   const std::string wildcard_spec = "*";
@@ -587,10 +589,10 @@ IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
 
   EXPECT_EQ(!BlockAll3pcToggleEnabled(),
             GetCookieSettings()->MitigationsEnabledFor3pcd());
-  EXPECT_EQ(
-      GetCookieSettings()->GetCookieSetting(third_party_url, first_party_url,
-                                            net::CookieSettingOverrides()),
-      ContentSetting::CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(GetCookieSettings()->GetCookieSetting(
+                third_party_url, net::SiteForCookies(), first_party_url,
+                net::CookieSettingOverrides()),
+            ContentSetting::CONTENT_SETTING_BLOCK);
 
   NavigateToPageWithFrame(kFirstPartyHost);
   NavigateFrameTo(kThirdPartyHost1, "/browsing_data/site_data.html");
@@ -626,11 +628,11 @@ IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest, NoSpecificBlockedCookieSpecs) {
 
     bool expected = !BlockAll3pcToggleEnabled();
     EXPECT_EQ(expected, GetCookieSettings()->MitigationsEnabledFor3pcd());
-    EXPECT_EQ(
-        GetCookieSettings()->GetCookieSetting(third_party_url, first_party_url,
-                                              net::CookieSettingOverrides()),
-        expected ? ContentSetting::CONTENT_SETTING_ALLOW
-                 : ContentSetting::CONTENT_SETTING_BLOCK);
+    EXPECT_EQ(GetCookieSettings()->GetCookieSetting(
+                  third_party_url, net::SiteForCookies(), first_party_url,
+                  net::CookieSettingOverrides()),
+              expected ? ContentSetting::CONTENT_SETTING_ALLOW
+                       : ContentSetting::CONTENT_SETTING_BLOCK);
 
     NavigateToPageWithFrame(kFirstPartyHost);
     NavigateFrameTo(kThirdPartyHost1, "/browsing_data/site_data.html");
@@ -663,11 +665,11 @@ IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest, NoSpecificBlockedCookieSpecs) {
                                 secondary_pattern_spec.c_str(), 1)}));
 
     bool expected = false;
-    EXPECT_EQ(
-        GetCookieSettings()->GetCookieSetting(third_party_url, first_party_url,
-                                              net::CookieSettingOverrides()),
-        expected ? ContentSetting::CONTENT_SETTING_ALLOW
-                 : ContentSetting::CONTENT_SETTING_BLOCK);
+    EXPECT_EQ(GetCookieSettings()->GetCookieSetting(
+                  third_party_url, net::SiteForCookies(), first_party_url,
+                  net::CookieSettingOverrides()),
+              expected ? ContentSetting::CONTENT_SETTING_ALLOW
+                       : ContentSetting::CONTENT_SETTING_BLOCK);
 
     NavigateToPageWithFrame(kFirstPartyHost);
     NavigateFrameTo(kThirdPartyHost2, "/browsing_data/site_data.html");
@@ -710,11 +712,11 @@ IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
 
     bool expected = !BlockAll3pcToggleEnabled();
     EXPECT_EQ(expected, GetCookieSettings()->MitigationsEnabledFor3pcd());
-    EXPECT_EQ(
-        GetCookieSettings()->GetCookieSetting(third_party_url, first_party_url,
-                                              net::CookieSettingOverrides()),
-        expected ? ContentSetting::CONTENT_SETTING_ALLOW
-                 : ContentSetting::CONTENT_SETTING_BLOCK);
+    EXPECT_EQ(GetCookieSettings()->GetCookieSetting(
+                  third_party_url, net::SiteForCookies(), first_party_url,
+                  net::CookieSettingOverrides()),
+              expected ? ContentSetting::CONTENT_SETTING_ALLOW
+                       : ContentSetting::CONTENT_SETTING_BLOCK);
   }
 
   // Regular profile 2:
@@ -738,11 +740,12 @@ IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
     bool expected = !BlockAll3pcToggleEnabled();
     EXPECT_EQ(expected,
               GetCookieSettings(alt_profile)->MitigationsEnabledFor3pcd());
-    EXPECT_EQ(GetCookieSettings(alt_profile)
-                  ->GetCookieSetting(third_party_url, first_party_url,
-                                     net::CookieSettingOverrides()),
-              expected ? ContentSetting::CONTENT_SETTING_ALLOW
-                       : ContentSetting::CONTENT_SETTING_BLOCK);
+    EXPECT_EQ(
+        GetCookieSettings(alt_profile)
+            ->GetCookieSetting(third_party_url, net::SiteForCookies(),
+                               first_party_url, net::CookieSettingOverrides()),
+        expected ? ContentSetting::CONTENT_SETTING_ALLOW
+                 : ContentSetting::CONTENT_SETTING_BLOCK);
 
     NavigateToPageWithFrame(kFirstPartyHost, browser);
     NavigateFrameTo(kThirdPartyHost1, "/browsing_data/site_data.html", browser);
@@ -782,11 +785,11 @@ IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
 
     bool expected = !BlockAll3pcToggleEnabled();
     EXPECT_EQ(expected, GetCookieSettings()->MitigationsEnabledFor3pcd());
-    EXPECT_EQ(
-        GetCookieSettings()->GetCookieSetting(third_party_url, first_party_url,
-                                              net::CookieSettingOverrides()),
-        expected ? ContentSetting::CONTENT_SETTING_ALLOW
-                 : ContentSetting::CONTENT_SETTING_BLOCK);
+    EXPECT_EQ(GetCookieSettings()->GetCookieSetting(
+                  third_party_url, net::SiteForCookies(), first_party_url,
+                  net::CookieSettingOverrides()),
+              expected ? ContentSetting::CONTENT_SETTING_ALLOW
+                       : ContentSetting::CONTENT_SETTING_BLOCK);
   }
 
   // Incognito profile:
@@ -811,11 +814,12 @@ IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
     EXPECT_FALSE(
         GetCookieSettings(incognito_profile)->MitigationsEnabledFor3pcd());
     bool expected = false;
-    EXPECT_EQ(GetCookieSettings(incognito_profile)
-                  ->GetCookieSetting(third_party_url, first_party_url,
-                                     net::CookieSettingOverrides()),
-              expected ? ContentSetting::CONTENT_SETTING_ALLOW
-                       : ContentSetting::CONTENT_SETTING_BLOCK);
+    EXPECT_EQ(
+        GetCookieSettings(incognito_profile)
+            ->GetCookieSetting(third_party_url, net::SiteForCookies(),
+                               first_party_url, net::CookieSettingOverrides()),
+        expected ? ContentSetting::CONTENT_SETTING_ALLOW
+                 : ContentSetting::CONTENT_SETTING_BLOCK);
 
     NavigateToPageWithFrame(kFirstPartyHost, browser);
     NavigateFrameTo(kThirdPartyHost1, "/browsing_data/site_data.html", browser);
@@ -856,11 +860,11 @@ IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
 
     bool expected = !BlockAll3pcToggleEnabled();
     EXPECT_EQ(expected, GetCookieSettings()->MitigationsEnabledFor3pcd());
-    EXPECT_EQ(
-        GetCookieSettings()->GetCookieSetting(third_party_url, first_party_url,
-                                              net::CookieSettingOverrides()),
-        expected ? ContentSetting::CONTENT_SETTING_ALLOW
-                 : ContentSetting::CONTENT_SETTING_BLOCK);
+    EXPECT_EQ(GetCookieSettings()->GetCookieSetting(
+                  third_party_url, net::SiteForCookies(), first_party_url,
+                  net::CookieSettingOverrides()),
+              expected ? ContentSetting::CONTENT_SETTING_ALLOW
+                       : ContentSetting::CONTENT_SETTING_BLOCK);
   }
 
   // Guest profile:
@@ -888,11 +892,12 @@ IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
     bool expected = !BlockAll3pcToggleEnabled();
     EXPECT_EQ(expected,
               GetCookieSettings(guest_profile)->MitigationsEnabledFor3pcd());
-    EXPECT_EQ(GetCookieSettings(guest_profile)
-                  ->GetCookieSetting(third_party_url, first_party_url,
-                                     net::CookieSettingOverrides()),
-              expected ? ContentSetting::CONTENT_SETTING_ALLOW
-                       : ContentSetting::CONTENT_SETTING_BLOCK);
+    EXPECT_EQ(
+        GetCookieSettings(guest_profile)
+            ->GetCookieSetting(third_party_url, net::SiteForCookies(),
+                               first_party_url, net::CookieSettingOverrides()),
+        expected ? ContentSetting::CONTENT_SETTING_ALLOW
+                 : ContentSetting::CONTENT_SETTING_BLOCK);
 
     NavigateToPageWithFrame(kFirstPartyHost, browser);
     NavigateFrameTo(kThirdPartyHost1, "/browsing_data/site_data.html", browser);
