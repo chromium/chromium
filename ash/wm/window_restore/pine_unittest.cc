@@ -856,6 +856,33 @@ TEST_F(PineTest, LayoutPortraitToLandscape) {
   EXPECT_EQ(contents_view->children().size(), 2u);
 }
 
+// Tests that the Pine feedback button only appears on the primary display,
+// matching the behavior of the Pine dialog.
+TEST_F(PineTest, FeedbackButtonOnlyOnPrimaryDisplay) {
+  // Add a secondary display so we can have two overview grids.
+  UpdateDisplay("800x700, 800x700");
+  auto root_windows = Shell::GetAllRootWindows();
+  auto* root_0 = root_windows[0].get();
+  ASSERT_TRUE(root_0);
+  auto* root_1 = root_windows[1].get();
+  ASSERT_TRUE(root_1);
+
+  StartPineOverviewSession(MakeTestAppIds(1));
+
+  // The primary display should have the pine dialog as well as the feedback
+  // button.
+  OverviewGrid* primary_overview_grid = GetOverviewGridForRoot(root_0);
+  ASSERT_TRUE(primary_overview_grid);
+  EXPECT_TRUE(OverviewGridTestApi(primary_overview_grid).pine_widget());
+  EXPECT_TRUE(primary_overview_grid->feedback_widget());
+
+  // The secondary display should not be showing either widget.
+  OverviewGrid* secondary_overview_grid = GetOverviewGridForRoot(root_1);
+  ASSERT_TRUE(secondary_overview_grid);
+  EXPECT_FALSE(OverviewGridTestApi(secondary_overview_grid).pine_widget());
+  EXPECT_FALSE(secondary_overview_grid->feedback_widget());
+}
+
 class PineAppIconTest : public PineTest {
  public:
   void SetUp() override {

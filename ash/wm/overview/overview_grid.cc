@@ -3502,7 +3502,9 @@ void OverviewGrid::UpdateFasterSplitViewWidget() {
 void OverviewGrid::UpdateFeedbackButton() {
   CHECK(IsForestFeatureEnabled());
 
-  if (SplitViewController::Get(root_window_)->InSplitViewMode()) {
+  // Only show the feedback button on the primary display.
+  if (SplitViewController::Get(root_window_)->InSplitViewMode() ||
+      root_window_ != Shell::GetPrimaryRootWindow()) {
     feedback_widget_.reset();
     return;
   }
