@@ -324,6 +324,10 @@ extern bool UseLensOverlayForImageSearch();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsFindInPageEntryPointEnabled();
 
+// Returns whether to enable the omnibox entry point.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsOmniboxEntryPointEnabled();
+
 // Returns whether or not to read the browser dark mode setting
 // for Lens Overlay. If false, it will fall back to light mode.
 COMPONENT_EXPORT(LENS_FEATURES)

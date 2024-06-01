@@ -72,6 +72,7 @@ class LocationBarView
     : public LocationBar,
       public LocationBarTesting,
       public views::View,
+      public views::FocusChangeListener,
       public views::DragController,
       public views::AnimationDelegateViews,
       public IconLabelBubbleView::Delegate,
@@ -194,6 +195,8 @@ class LocationBarView
   content::WebContents* GetWebContents() override;
 
   // views::View:
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
   bool HasFocus() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size GetMinimumSize() const override;
@@ -202,6 +205,10 @@ class LocationBarView
   void Layout(PassKey) override;
   void OnThemeChanged() override;
   void ChildPreferredSizeChanged(views::View* child) override;
+
+  // views::FocusChangeListener:
+  void OnWillChangeFocus(views::View* before, views::View* now) override;
+  void OnDidChangeFocus(views::View* before, views::View* now) override;
 
   // IconLabelBubbleView::Delegate:
   SkColor GetIconLabelBubbleSurroundingForegroundColor() const override;
@@ -480,6 +487,10 @@ class LocationBarView
 
   // Used for metrics collection.
   base::TimeTicks confirmation_chip_collapsed_time_ = base::TimeTicks();
+
+  // The focus manager associated with this view. The focus manager is expected
+  // to outlive this view.
+  raw_ptr<views::FocusManager> focus_manager_ = nullptr;
 
   base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(

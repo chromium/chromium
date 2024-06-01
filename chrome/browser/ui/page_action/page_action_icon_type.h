@@ -7,7 +7,7 @@
 
 // Used for histograms, do not reorder. When adding to this enum, please also
 // modify the corresponding references in
-// tools/metrics/histograms/page/enums.xml and
+// tools/metrics/histograms/metadata/page/enums.xml and
 // tools/metrics/histograms/metadata/page/histograms.xml and add a static assert
 // below.
 enum class PageActionIconType {
@@ -40,7 +40,8 @@ enum class PageActionIconType {
   kPriceInsights = 26,
   kReadAnything = 27,
   kProductSpecifications = 28,
-  kMaxValue = kProductSpecifications,
+  kLensOverlay = 29,
+  kMaxValue = kLensOverlay,
 };
 
 static_assert(static_cast<int>(PageActionIconType::kBookmarkStar) == 0);
@@ -72,4 +73,5 @@ static_assert(static_cast<int>(PageActionIconType::kPriceInsights) == 26);
 static_assert(static_cast<int>(PageActionIconType::kReadAnything) == 27);
 static_assert(static_cast<int>(PageActionIconType::kProductSpecifications) ==
               28);
+static_assert(static_cast<int>(PageActionIconType::kLensOverlay) == 29);
 #endif  // CHROME_BROWSER_UI_PAGE_ACTION_PAGE_ACTION_ICON_TYPE_H_

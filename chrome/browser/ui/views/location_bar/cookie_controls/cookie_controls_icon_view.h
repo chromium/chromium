@@ -48,6 +48,8 @@ class CookieControlsIconView : public PageActionIconView,
   void SetCoordinatorForTesting(
       std::unique_ptr<CookieControlsBubbleCoordinator> coordinator);
 
+  void DisableUpdatesForTesting();
+
  protected:
   void OnExecuting(PageActionIconView::ExecuteSource source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
@@ -78,6 +80,10 @@ class CookieControlsIconView : public PageActionIconView,
   // Whether we should have a visual indicator highlighting the icon.
   bool should_highlight_ = false;
   GURL last_visited_url_;
+
+  // True if calls to UpdateImpl should noop for testing purposes.
+  // TODO: 344042974 - Remove this once the issue has been resolved.
+  bool disable_updates_for_testing_ = false;
 
   CookieBlocking3pcdStatus blocking_status_ =
       CookieBlocking3pcdStatus::kNotIn3pcd;

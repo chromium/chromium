@@ -21,11 +21,9 @@ class SideSearchIconView : public PageActionIconView,
   METADATA_HEADER(SideSearchIconView, PageActionIconView)
 
  public:
-  explicit SideSearchIconView(
-      CommandUpdater* command_updater,
-      IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
-      PageActionIconView::Delegate* page_action_icon_delegate,
-      Browser* browser);
+  SideSearchIconView(IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
+                     PageActionIconView::Delegate* page_action_icon_delegate,
+                     Browser* browser);
   SideSearchIconView(const SideSearchIconView&) = delete;
   SideSearchIconView& operator=(const SideSearchIconView&) = delete;
   ~SideSearchIconView() override;
