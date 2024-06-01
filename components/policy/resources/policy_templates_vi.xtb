@@ -697,6 +697,7 @@ Các mẫu URL không được xung đột với <ph name="WEB_PRINTING_ALLOWED_
 <translation id="1557113199339446336">Nếu bạn đặt chính sách này thành Đúng thì các thiết bị đã đăng ký sẽ báo cáo thông tin liên quan đến các sự kiện phát hiện và phản hồi mở rộng (XDR).
 
       Nếu bạn đặt chính sách này thành Sai hoặc không đặt, các thiết bị đã đăng ký sẽ không báo cáo các sự kiện phát hiện và phản hồi mở rộng (XDR).</translation>
+<translation id="1559343998807576489">Chế độ cài đặt cho tính năng Lớp phủ Ống kính</translation>
 <translation id="1560279917909364275">Đưa các ứng dụng ghi chú được phép xuất hiện trên màn hình khoá của <ph name="PRODUCT_OS_NAME" /> vào danh sách cho phép</translation>
 <translation id="1561424797596341174">Chính sách ghi đè dành cho bản dựng Gỡ lỗi của máy chủ truy cập từ xa</translation>
 <translation id="1561967320164410511">Tiện ích U2F+ để chứng thực cá nhân</translation>
@@ -9845,6 +9846,12 @@ Chính sách này luôn có hiệu lực đối với <ph name="PRODUCT_OS_NAME"
 
       Xem https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage để biết chi tiết về các loại phương tiện JavaScript/ECMAScript.
       </translation>
+<translation id="8668202868357089313">Lớp phủ Ống kính cho phép người dùng tìm kiếm trên Google bằng cách tương tác với ảnh chụp màn hình trang hiện tại được phủ lên nội dung thực tế trên web.
+
+Tính năng này không bị kiểm soát bởi bất cứ chế độ cài đặt nào của người dùng và thường được cung cấp cho tất cả người dùng đặt Google làm công cụ tìm kiếm mặc định, trừ phi bị tắt theo chính sách này.
+
+Khi bạn đặt chính sách thành 0 – Bật hoặc không đặt, người dùng sẽ có thể sử dụng tính năng này.
+Khi bạn đặt chính sách này thành 1 – Tắt, người dùng sẽ không thể sử dụng tính năng này.</translation>
 <translation id="8671119576957984818">Bật trung tâm chia sẻ máy tính</translation>
 <translation id="8671193325113134911">Bật tính năng kiểm tra loại MIME nghiêm ngặt đối với tập lệnh trình chạy</translation>
 <translation id="8671303329680827168">Chính sách này không còn được dùng nữa, vui lòng sử dụng chính sách "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />".</translation>

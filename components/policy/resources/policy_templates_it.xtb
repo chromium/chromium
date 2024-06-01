@@ -699,6 +699,7 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cl
 <translation id="1557113199339446336">Se il criterio viene impostato su True, i dispositivi registrati segnalano informazioni relative a eventi di rilevamento e risposta estesi (XDR).
 
       Se il criterio viene impostato su False o se non viene configurato, i dispositivi registrati non segnalano eventi di rilevamento e risposta estesi (XDR).</translation>
+<translation id="1559343998807576489">Impostazioni per la funzionalità Overlay di Lens</translation>
 <translation id="1560279917909364275">App per scrivere note della lista consentita ammesse sulla schermata di blocco di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="1561424797596341174">La norma sostituisce le build di debug dell'host di accesso remoto</translation>
 <translation id="1561967320164410511">U2F più estensioni per singola attestazione</translation>
@@ -9757,6 +9758,12 @@ Questo criterio viene sempre applicato per <ph name="PRODUCT_OS_NAME" />.</trans
 
       Per informazioni dettagliate sui tipi di multimediali JavaScript/ECMAScript, consulta la pagina https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage.
       </translation>
+<translation id="8668202868357089313">Overlay di Lens consente agli utenti di eseguire ricerche su Google interagendo con uno screenshot della pagina corrente sovrapposto ai contenuti web effettivi.
+
+Non esiste un'impostazione utente per controllare questa funzionalità, che viene generalmente resa disponibile a tutti gli utenti che usano Google come motore di ricerca predefinito, a meno che non venga disattivata da questo criterio.
+
+Se il criterio viene impostato su 0 - Attivato o se non viene configurato, la funzionalità sarà disponibile per gli utenti.
+Se il criterio viene impostato su 1 - Disattivato, la funzionalità non sarà disponibile.</translation>
 <translation id="8671119576957984818">Attiva hub di condivisione desktop</translation>
 <translation id="8671193325113134911">Attiva il controllo rigoroso del tipo MIME per gli script worker</translation>
 <translation id="8671303329680827168">Questo criterio è deprecato. Utilizza il criterio "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />".</translation>
