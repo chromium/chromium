@@ -7249,7 +7249,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-03-01">
   <owner>cowmoo@google.com</owner>
   <owner>assistive-eng@google.com</owner>
-  <summary>Records if the request hit the enforced timeout.</summary>
+  <summary>Records if the request hits the enforced timeout.</summary>
   <token key="Type" variants="SeaPenApiType"/>
 </histogram>
 
@@ -7261,6 +7261,60 @@ chromium-metrics-reviews@google.com.
     Records the user's selected template when they create SeaPen thumbnails.
     Record for both SeaPen VC Background and Wallpaper.
   </summary>
+</histogram>
+
+<histogram name="Ash.SeaPen.Freeform.Api.Thumbnails.Count" units="count"
+    expires_after="2025-05-31">
+  <owner>thuongphan@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Records the number of thumbnails received for a freeform query. Only
+    recorded if API status code is kOk.
+  </summary>
+</histogram>
+
+<histogram name="Ash.SeaPen.Freeform.Api.Wallpaper.HasImage" enum="Boolean"
+    expires_after="2025-05-31">
+  <owner>thuongphan@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Records if an image is received for a freeform query. Only recorded if API
+    status code is kOk. Recorded for SeaPen Wallpaper.
+  </summary>
+</histogram>
+
+<histogram name="Ash.SeaPen.Freeform.Api.{Type}.Latency" units="ms"
+    expires_after="2025-05-31">
+  <owner>thuongphan@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    API latency after clicking Create or Inspire Me button in VC Background or
+    SeaPen Wallpaper for a freeform query. Only recorded if thumbnails were
+    successfully retrieved.
+  </summary>
+  <token key="Type" variants="SeaPenApiType"/>
+</histogram>
+
+<histogram name="Ash.SeaPen.Freeform.Api.{Type}.MantaStatusCode"
+    enum="MantaStatusCode" expires_after="2025-05-31">
+  <owner>thuongphan@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Records the returned Manta status code for thumbnails or wallpaper for a
+    freeform query. Only recorded if the request completed before the enforced
+    timeout.
+  </summary>
+  <token key="Type" variants="SeaPenApiType"/>
+</histogram>
+
+<histogram name="Ash.SeaPen.Freeform.Api.{Type}.Timeout" enum="Boolean"
+    expires_after="2025-05-31">
+  <owner>thuongphan@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Records if the request for a freeform query hits the enforced timeout.
+  </summary>
+  <token key="Type" variants="SeaPenApiType"/>
 </histogram>
 
 <histogram name="Ash.SeaPen.MigrationStatus"

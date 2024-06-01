@@ -78,41 +78,70 @@ void RecordGooglePhotosApiRefreshCount(GooglePhotosApi api, int refresh_count) {
       refresh_count, 11);
 }
 
-void RecordSeaPenLatency(const base::TimeDelta elapsed_time,
-                         const SeaPenApiType sea_pen_api_type) {
+void RecordSeaPenLatency(
+    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+    const base::TimeDelta elapsed_time,
+    const SeaPenApiType sea_pen_api_type) {
   base::UmaHistogramCustomTimes(
-      base::StringPrintf("Ash.SeaPen.Api.%s.Latency",
-                         ToHistogramString(sea_pen_api_type).c_str()),
+      base::StringPrintf(
+          query_tag ==
+                  ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery
+              ? "Ash.SeaPen.Freeform.Api.%s.Latency"
+              : "Ash.SeaPen.Api.%s.Latency",
+          ToHistogramString(sea_pen_api_type).c_str()),
       elapsed_time,
       /*min=*/base::Seconds(1),
       /*max=*/SeaPenFetcher::kRequestTimeout,
       /*buckets=*/50);
 }
 
-void RecordSeaPenMantaStatusCode(const manta::MantaStatusCode status_code,
-                                 const SeaPenApiType sea_pen_api_type) {
+void RecordSeaPenMantaStatusCode(
+    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+    const manta::MantaStatusCode status_code,
+    const SeaPenApiType sea_pen_api_type) {
   base::UmaHistogramEnumeration(
-      base::StringPrintf("Ash.SeaPen.Api.%s.MantaStatusCode",
-                         ToHistogramString(sea_pen_api_type).c_str()),
+      base::StringPrintf(
+          query_tag ==
+                  ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery
+              ? "Ash.SeaPen.Freeform.Api.%s.MantaStatusCode"
+              : "Ash.SeaPen.Api.%s.MantaStatusCode",
+          ToHistogramString(sea_pen_api_type).c_str()),
       status_code);
 }
 
-void RecordSeaPenTimeout(bool hit_timeout, SeaPenApiType sea_pen_api_type) {
+void RecordSeaPenTimeout(
+    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+    bool hit_timeout,
+    SeaPenApiType sea_pen_api_type) {
   base::UmaHistogramBoolean(
-      base::StringPrintf("Ash.SeaPen.Api.%s.Timeout",
-                         ToHistogramString(sea_pen_api_type).c_str()),
+      base::StringPrintf(
+          query_tag ==
+                  ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery
+              ? "Ash.SeaPen.Freeform.Api.%s.Timeout"
+              : "Ash.SeaPen.Api.%s.Timeout",
+          ToHistogramString(sea_pen_api_type).c_str()),
       hit_timeout);
 }
 
-void RecordSeaPenThumbnailsCount(const size_t thumbnails_count) {
+void RecordSeaPenThumbnailsCount(
+    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+    const size_t thumbnails_count) {
   base::UmaHistogramExactLinear(
-      "Ash.SeaPen.Api.Thumbnails.Count",
+      query_tag == ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery
+          ? "Ash.SeaPen.Freeform.Api.Thumbnails.Count"
+          : "Ash.SeaPen.Api.Thumbnails.Count",
       std::min(thumbnails_count, SeaPenFetcher::kNumThumbnailsRequested),
       SeaPenFetcher::kNumThumbnailsRequested + 1);
 }
 
-void RecordSeaPenWallpaperHasImage(bool has_image) {
-  base::UmaHistogramBoolean("Ash.SeaPen.Api.Wallpaper.HasImage", has_image);
+void RecordSeaPenWallpaperHasImage(
+    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+    bool has_image) {
+  base::UmaHistogramBoolean(
+      query_tag == ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery
+          ? "Ash.SeaPen.Freeform.Api.Wallpaper.HasImage"
+          : "Ash.SeaPen.Api.Wallpaper.HasImage",
+      has_image);
 }
 
 }  // namespace wallpaper_handlers
