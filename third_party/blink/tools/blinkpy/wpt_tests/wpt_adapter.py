@@ -256,12 +256,7 @@ class WPTAdapter:
             self._set_up_runner_ssl_options(runner_options)
         self._set_up_runner_debugging_options(runner_options)
         self._set_up_runner_tests(runner_options, tmp_dir)
-
-        for name, value in self.product.product_specific_options().items():
-            self._ensure_value(runner_options, name, value)
-
-        runner_options.webdriver_args.extend(
-            self.product.additional_webdriver_args())
+        self.product.update_runner_options(runner_options)
         return runner_options
 
     @classmethod
@@ -328,15 +323,6 @@ class WPTAdapter:
             'MAP *.test 127.0.0.1, MAP *.test. 127.0.0.1',
             *self.port.additional_driver_flags(),
         ])
-        if self.options.product == 'headless_shell':
-            runner_options.binary_args.extend([
-                '--headless=old',
-                '--enable-bfcache',
-                '--enable-field-trial-config',
-                # `headless_shell` doesn't send the `Accept-Language` header by
-                # default, so set an arbitrary one that some tests expect.
-                '--accept-lang=en-US,en',
-            ])
 
         # Implicitly pass `--enable-blink-features=MojoJS,MojoJSTest` to Chrome.
         runner_options.mojojs_path = self.port.generated_sources_directory()
