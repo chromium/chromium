@@ -22,6 +22,7 @@ class ImageSkia;
 namespace ash {
 
 class FocusModeSoundsDelegate;
+class FocusModeYouTubeMusicDelegate;
 
 // This class is used to download images and record the info of playlists after
 // getting the response data we need from Music API, which will be used to show
@@ -103,6 +104,11 @@ class ASH_EXPORT FocusModeSoundsController {
 
   void UpdateFromUserPrefs();
 
+  // Sets the failure callback for all YouTube Music API requests. This callback
+  // is used to update the specific UIs that are dependent on the account
+  // premium status.
+  void SetYouTubeMusicFailureCallback(base::RepeatingClosure callback);
+
  private:
   void SaveUserPref();
   void ResetSelectedPlaylist();
@@ -114,7 +120,7 @@ class ASH_EXPORT FocusModeSoundsController {
       std::vector<std::unique_ptr<Playlist>> playlists);
 
   std::unique_ptr<FocusModeSoundsDelegate> soundscape_delegate_;
-  std::unique_ptr<FocusModeSoundsDelegate> youtube_music_delegate_;
+  std::unique_ptr<FocusModeYouTubeMusicDelegate> youtube_music_delegate_;
 
   std::vector<std::unique_ptr<Playlist>> soundscape_playlists_;
   std::vector<std::unique_ptr<Playlist>> youtube_music_playlists_;

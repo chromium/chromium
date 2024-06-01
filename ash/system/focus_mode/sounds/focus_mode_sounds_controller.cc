@@ -16,6 +16,7 @@
 #include "ash/system/focus_mode/sounds/focus_mode_soundscape_delegate.h"
 #include "ash/system/focus_mode/sounds/focus_mode_youtube_music_delegate.h"
 #include "base/barrier_callback.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "components/prefs/pref_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -202,6 +203,12 @@ void FocusModeSoundsController::UpdateFromUserPrefs() {
           dict.FindInt(focus_mode_util::kSoundTypeKey).value());
     }
   }
+}
+
+void FocusModeSoundsController::SetYouTubeMusicFailureCallback(
+    base::RepeatingClosure callback) {
+  CHECK(callback);
+  youtube_music_delegate_->SetFailureCallback(std::move(callback));
 }
 
 void FocusModeSoundsController::SaveUserPref() {

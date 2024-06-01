@@ -44,6 +44,10 @@ class ASH_EXPORT FocusModeSoundsView
   // Creates `soundscape_container_` and `youtube_music_container_`.
   void CreatesSoundSectionViews();
 
+  // Toggles YouTube Music alternate view. It's used to update the UIs for
+  // non-premium account.
+  void ToggleYouTubeMusicAlternateView(bool show);
+
   // Called to show YouTube Music soundscape playlists.
   void OnSoundscapeButtonToggled();
 

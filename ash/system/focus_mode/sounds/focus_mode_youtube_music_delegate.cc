@@ -11,6 +11,7 @@
 
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/youtube_music/youtube_music_types.h"
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "google_apis/common/api_error_codes.h"
@@ -70,12 +71,30 @@ bool FocusModeYouTubeMusicDelegate::GetPlaylists(
   return false;
 }
 
+void FocusModeYouTubeMusicDelegate::SetFailureCallback(
+    base::RepeatingClosure callback) {
+  CHECK(callback);
+  failure_callback_ = std::move(callback);
+}
+
 void FocusModeYouTubeMusicDelegate::OnGetPlaylistsDone(
     google_apis::ApiErrorCode http_error_code,
     std::optional<const std::vector<youtube_music::Playlist>> playlists) {
+  if (http_error_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
+    if (http_error_code == google_apis::ApiErrorCode::HTTP_FORBIDDEN &&
+        failure_callback_) {
+      failure_callback_.Run();
+    }
+    return;
+  }
+
   if (!get_playlists_callback_ || !playlists.has_value()) {
     return;
   }
+
+  CHECK_EQ(http_error_code, google_apis::ApiErrorCode::HTTP_SUCCESS);
+  CHECK(get_playlists_callback_);
+  CHECK(playlists.has_value());
 
   std::vector<Playlist> result;
   CHECK_GE(playlists.value().size(), kPlaylistNum);
@@ -89,9 +108,21 @@ void FocusModeYouTubeMusicDelegate::OnGetPlaylistsDone(
 void FocusModeYouTubeMusicDelegate::OnNextTrackDone(
     google_apis::ApiErrorCode http_error_code,
     std::optional<const youtube_music::PlaybackContext> playback_context) {
+  if (http_error_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
+    if (http_error_code == google_apis::ApiErrorCode::HTTP_FORBIDDEN &&
+        failure_callback_) {
+      failure_callback_.Run();
+    }
+    return;
+  }
+
   if (!get_next_track_callback_ || !playback_context.has_value()) {
     return;
   }
+
+  CHECK_EQ(http_error_code, google_apis::ApiErrorCode::HTTP_SUCCESS);
+  CHECK(get_next_track_callback_);
+  CHECK(playback_context.has_value());
 
   last_queue_name_ = playback_context->queue_name;
 

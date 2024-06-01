@@ -147,10 +147,17 @@ FocusModeSoundsView::FocusModeSoundsView(bool is_network_connected) {
 
   if (is_network_connected) {
     CreatesSoundSectionViews();
+
+    // Start downloading playlists for Soundscape.
     sounds_controller->DownloadPlaylistsForType(
         /*is_soundscape_type=*/true,
         base::BindOnce(&FocusModeSoundsView::UpdateSoundsView,
                        weak_factory_.GetWeakPtr()));
+
+    // Set failure callback and start downloading playlists for YouTube Music.
+    sounds_controller->SetYouTubeMusicFailureCallback(base::BindRepeating(
+        &FocusModeSoundsView::ToggleYouTubeMusicAlternateView,
+        weak_factory_.GetWeakPtr(), /*show=*/true));
     sounds_controller->DownloadPlaylistsForType(
         /*is_soundscape_type=*/false,
         base::BindOnce(&FocusModeSoundsView::UpdateSoundsView,
@@ -232,13 +239,13 @@ void FocusModeSoundsView::CreatesSoundSectionViews() {
       focus_mode_util::SoundType::kSoundscape));
   youtube_music_container_ = AddChildView(std::make_unique<SoundSectionView>(
       focus_mode_util::SoundType::kYouTubeMusic));
+  youtube_music_container_->SetAlternateView(CreateNonPremiumView());
+  ToggleYouTubeMusicAlternateView(/*show=*/false);
+}
 
-  // TODO: Assume that the user has a premium account currently. Will add a
-  // condition here when we finish the API implementation.
-  if (/* DISABLES CODE */ (false)) {
-    youtube_music_container_->SetAlternateView(CreateNonPremiumView());
-    youtube_music_container_->ShowAlternateView(true);
-  }
+void FocusModeSoundsView::ToggleYouTubeMusicAlternateView(bool show) {
+  CHECK(youtube_music_container_);
+  youtube_music_container_->ShowAlternateView(show);
 }
 
 void FocusModeSoundsView::OnSoundscapeButtonToggled() {
