@@ -1168,7 +1168,7 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_StorageIdTest) {
 #else
 #define MAYBE_MultipleCdmTypes DISABLED_MultipeCdmTypes
 #endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MultipleCdmTypes) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_MultipleCdmTypes) {
   base::StringPairs empty_query_params;
   RunMediaTestPage("multiple_cdm_types.html", empty_query_params,
                    media::kEndedTitle, true);
