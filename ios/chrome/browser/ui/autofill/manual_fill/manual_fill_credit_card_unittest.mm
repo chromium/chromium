@@ -32,6 +32,7 @@ TEST_F(ManualFillCreditCardiOSTest, Creation) {
                                       cardHolder:cardHolder
                                           number:number
                                 obfuscatedNumber:obfuscatedNumber
+                        networkAndLastFourDigits:nil
                                   expirationYear:expirationYear
                                  expirationMonth:expirationMonth
                                       recordType:LOCAL_CARD_RECORD_TYPE
@@ -68,6 +69,7 @@ TEST_F(ManualFillCreditCardiOSTest, Equality) {
                                       cardHolder:cardHolder
                                           number:number
                                 obfuscatedNumber:obfuscatedNumber
+                        networkAndLastFourDigits:nil
                                   expirationYear:expirationYear
                                  expirationMonth:expirationMonth
                                       recordType:LOCAL_CARD_RECORD_TYPE
@@ -81,6 +83,7 @@ TEST_F(ManualFillCreditCardiOSTest, Equality) {
                                       cardHolder:cardHolder
                                           number:number
                                 obfuscatedNumber:obfuscatedNumber
+                        networkAndLastFourDigits:nil
                                   expirationYear:expirationYear
                                  expirationMonth:expirationMonth
                                       recordType:LOCAL_CARD_RECORD_TYPE
@@ -96,6 +99,7 @@ TEST_F(ManualFillCreditCardiOSTest, Equality) {
                                       cardHolder:cardHolder
                                           number:number
                                 obfuscatedNumber:obfuscatedNumber
+                        networkAndLastFourDigits:nil
                                   expirationYear:expirationYear
                                  expirationMonth:expirationMonth
                                       recordType:LOCAL_CARD_RECORD_TYPE

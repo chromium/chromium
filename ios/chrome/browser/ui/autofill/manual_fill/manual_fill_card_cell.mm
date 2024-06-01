@@ -7,15 +7,18 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #import "components/autofill/core/browser/payments/payments_service_url.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_list_delegate.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_utils.h"
@@ -93,6 +96,33 @@ namespace {
 // Width of the card icon.
 constexpr CGFloat kCardIconWidth = 40;
 
+// Width of the GPay icon.
+constexpr CGFloat kGPayIconWidth = 37;
+
+// Helper method to decide whether or not the GPay icon should be shown in the
+// cell.
+bool ShouldShowGPayIcon(autofill::CreditCard::RecordType card_record_type) {
+  switch (card_record_type) {
+    case autofill::CreditCard::RecordType::kLocalCard:
+      return false;
+    case autofill::CreditCard::RecordType::kMaskedServerCard:
+    case autofill::CreditCard::RecordType::kFullServerCard:
+    case autofill::CreditCard::RecordType::kVirtualCard:
+      return IsKeyboardAccessoryUpgradeEnabled();
+  }
+}
+
+// Returns the offset to apply when setting the top anchor constraint of the
+// GPay icon as there's some empty space above and under the icon on official
+// builds.
+CGFloat GPayIconTopAnchorOffset() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return -15;
+#else
+  return 0;
+#endif
+}
+
 }  // namespace
 
 @interface ManualFillCardCell () <UITextViewDelegate>
@@ -159,6 +189,9 @@ constexpr CGFloat kCardIconWidth = 40;
 
 // Button to autofill the current form with the card's data.
 @property(nonatomic, strong) UIButton* autofillFormButton;
+
+// Icon to indicate that the card is a server card.
+@property(nonatomic, strong) UIImageView* gPayIcon;
 
 @end
 
@@ -318,6 +351,8 @@ constexpr CGFloat kCardIconWidth = 40;
 
   // If Virtual Cards are enabled, position the labeled chips, else position the
   // regular buttons.
+  self.gPayIcon = [self createGPayIcon];
+  [self.contentView addSubview:self.gPayIcon];
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableVirtualCards)) {
     AppendHorizontalConstraintsForViews(
@@ -326,7 +361,7 @@ constexpr CGFloat kCardIconWidth = 40;
     AppendHorizontalConstraintsForViews(
         staticConstraints, @[ self.cardNumberLabeledChip ], self.layoutGuide,
         kChipsHorizontalMargin,
-        AppendConstraintsHorizontalEqualOrSmallerThanGuide);
+        AppendConstraintsHorizontalEqualOrSmallerThanGuide, self.gPayIcon);
     AppendHorizontalConstraintsForViews(
         staticConstraints, @[ self.expirationDateLabeledChip ],
         self.layoutGuide, kChipsHorizontalMargin,
@@ -335,13 +370,18 @@ constexpr CGFloat kCardIconWidth = 40;
         staticConstraints, @[ self.cardholderLabeledChip ], self.layoutGuide,
         kChipsHorizontalMargin,
         AppendConstraintsHorizontalEqualOrSmallerThanGuide);
+    [staticConstraints
+        addObject:[self.gPayIcon.topAnchor
+                      constraintEqualToAnchor:self.cardNumberLabeledChip
+                                                  .topAnchor
+                                     constant:GPayIconTopAnchorOffset()]];
   } else {
     // TODO(crbug.com/330329960): Deprecate button use once
     // kAutofillEnableVirtualCards is enabled.
     AppendHorizontalConstraintsForViews(
         staticConstraints, @[ self.cardNumberButton ], self.layoutGuide,
         kChipsHorizontalMargin,
-        AppendConstraintsHorizontalEqualOrSmallerThanGuide);
+        AppendConstraintsHorizontalEqualOrSmallerThanGuide, self.gPayIcon);
     AppendHorizontalConstraintsForViews(
         staticConstraints,
         @[
@@ -355,6 +395,10 @@ constexpr CGFloat kCardIconWidth = 40;
         staticConstraints, @[ self.cardholderButton ], self.layoutGuide,
         kChipsHorizontalMargin,
         AppendConstraintsHorizontalEqualOrSmallerThanGuide);
+    [staticConstraints
+        addObject:[self.gPayIcon.topAnchor
+                      constraintEqualToAnchor:self.cardNumberButton.topAnchor
+                                     constant:GPayIconTopAnchorOffset()]];
   }
 
   if (IsKeyboardAccessoryUpgradeEnabled()) {
@@ -380,6 +424,11 @@ constexpr CGFloat kCardIconWidth = 40;
   } else {
     self.overflowMenuButton.hidden = YES;
   }
+
+  self.gPayIcon.hidden = !ShouldShowGPayIcon(card.recordType);
+  self.gPayIcon.accessibilityIdentifier = [NSString
+      stringWithFormat:@"%@ %@", manual_fill::kPaymentManualFillGPayLogoID,
+                       card.networkAndLastFourDigits];
 
   // If Virtual Cards are enabled set text for labeled chips, else set text for
   // buttons.
@@ -772,6 +821,28 @@ constexpr CGFloat kCardIconWidth = 40;
         withTitle:[textView.text substringWithRange:characterRange]];
   }
   return NO;
+}
+
+// Creates and configures the GPay icon image view.
+- (UIImageView*)createGPayIcon {
+  UIImage* icon;
+  // `kGooglePaySymbol` only exists in official builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  icon = MakeSymbolMulticolor(
+      CustomSymbolWithPointSize(kGooglePaySymbol, kGPayIconWidth));
+#else
+  icon = NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
+#endif
+
+  UIImageView* imageView = [[UIImageView alloc] initWithImage:icon];
+  imageView.translatesAutoresizingMaskIntoConstraints = NO;
+  imageView.contentMode = UIViewContentModeScaleAspectFit;
+
+  [NSLayoutConstraint
+      activateConstraints:@[ [imageView.widthAnchor
+                              constraintEqualToConstant:kGPayIconWidth] ]];
+
+  return imageView;
 }
 
 @end

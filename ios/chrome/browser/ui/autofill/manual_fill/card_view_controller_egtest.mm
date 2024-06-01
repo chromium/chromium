@@ -99,6 +99,9 @@ void OpenPaymentMethodManualFillView() {
         l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA));
   } else {
     button_to_tap = ManualFallbackCreditCardIconMatcher();
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::ManualFallbackFormSuggestionViewMatcher()]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
   }
 
   // Tap the button that'll open the payment method manual fill view.
@@ -158,6 +161,13 @@ id<GREYMatcher> AutofillFormButton() {
                     grey_interactable(), nullptr);
 }
 
+// Matcher for the GPay icon shown in the server card cells.
+id<GREYMatcher> GPayIcon(NSString* network_and_last_four_digits) {
+  return grey_accessibilityID([NSString
+      stringWithFormat:@"%@ %@", manual_fill::kPaymentManualFillGPayLogoID,
+                       network_and_last_four_digits]);
+}
+
 // Opens the payment method manual fill view when there are no saved payment
 // methods and verifies that the card view controller is visible afterwards.
 // Only useful when the `kIOSKeyboardAccessoryUpgrade` feature is enabled.
@@ -176,6 +186,15 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Dismisses the payment bottom sheet by tapping the "Use Keyboard" button.
+void DismissPaymentBottomSheet() {
+  id<GREYMatcher> useKeyboardButton =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_IOS_PAYMENT_BOTTOM_SHEET_USE_KEYBOARD);
+  [[EarlGrey selectElementWithMatcher:useKeyboardButton]
+      performAction:grey_tap()];
+}
+
 }  // namespace
 
 // Integration Tests for Manual Fallback credit cards View Controller.
@@ -192,14 +211,15 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
   [super setUp];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL URL = self.testServer->GetURL(kFormHTMLFile);
-  [ChromeEarlGrey loadURL:URL];
-  [ChromeEarlGrey waitForWebStateContainingText:"Autofill Test"];
+  [self loadURL];
   [AutofillAppInterface clearCreditCardStore];
+  [AutofillAppInterface clearAllServerDataForTesting];
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
 }
 
 - (void)tearDown {
   [AutofillAppInterface clearCreditCardStore];
+  [AutofillAppInterface clearAllServerDataForTesting];
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   [super tearDown];
 }
@@ -504,9 +524,7 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
 - (void)testOTRAddPaymentMethodActionOpensAddPaymentMethodSettings {
   // Open a tab in incognito.
   [ChromeEarlGrey openNewIncognitoTab];
-  const GURL URL = self.testServer->GetURL(kFormHTMLFile);
-  [ChromeEarlGrey loadURL:URL];
-  [ChromeEarlGrey waitForWebStateContainingText:"Autofill Test"];
+  [self loadURL];
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
 
   [AutofillAppInterface saveLocalCreditCard];
@@ -943,7 +961,51 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
   [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
 }
 
+// Tests that the GPay icon is only visible when the Keyboard Accessory Upgrade
+// feature is enabled and the card is a server card.
+- (void)testGPayIconVisibility {
+  // Save a local and a masked card.
+  NSString* local_card_last_digits = [AutofillAppInterface saveLocalCreditCard];
+  NSString* masked_card_last_digits =
+      [AutofillAppInterface saveMaskedCreditCard];
+
+  [self loadURL];
+  [AutofillAppInterface considerCreditCardFormSecureForTesting];
+
+  // Bring up the keyboard
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementName)];
+  DismissPaymentBottomSheet();
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
+                 @"Keyboard Should be Shown");
+
+  // Open the payment method manual fill view.
+  OpenPaymentMethodManualFillView();
+
+  // Check that the GPay icon is not visible in the local card cell.
+  [[EarlGrey selectElementWithMatcher:GPayIcon(local_card_last_digits)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Scroll down to show the masked card.
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+      performAction:grey_scrollInDirection(kGREYDirectionDown, 200)];
+
+  // Check that the GPay icon is only visible in the masked card cell when the
+  // Keyboard Accessory Upgrade feature is enabled.
+  [[EarlGrey selectElementWithMatcher:GPayIcon(masked_card_last_digits)]
+      assertWithMatcher:[AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]
+                            ? grey_sufficientlyVisible()
+                            : grey_notVisible()];
+}
+
 #pragma mark - Private
+
+- (void)loadURL {
+  const GURL URL = self.testServer->GetURL(kFormHTMLFile);
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Autofill Test"];
+}
 
 - (void)verifyCreditCardButtonWithTitle:(NSString*)title
                         doesInjectValue:(NSString*)result {

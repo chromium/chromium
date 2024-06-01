@@ -49,6 +49,9 @@
                                autofill::CreditCard::GetMidlineEllipsisDots(4) +
                                std::u16string(separator) + digits);
 
+  NSString* networkAndLastFourDigits =
+      base::SysUTF16ToNSString(creditCard.NetworkAndLastFourDigits());
+
   // Use 2 digits year.
   NSString* expirationYear =
       [NSString stringWithFormat:@"%02d", creditCard.expiration_year() % 100];
@@ -56,16 +59,17 @@
       [NSString stringWithFormat:@"%02d", creditCard.expiration_month()];
 
   return [self initWithGUID:GUID
-                    network:network
-                       icon:icon
-                   bankName:bankName
-                 cardHolder:cardHolder
-                     number:number
-           obfuscatedNumber:obfuscatedNumber
-             expirationYear:expirationYear
-            expirationMonth:expirationMonth
-                 recordType:creditCard.record_type()
-            canFillDirectly:canFillDirectly];
+                       network:network
+                          icon:icon
+                      bankName:bankName
+                    cardHolder:cardHolder
+                        number:number
+              obfuscatedNumber:obfuscatedNumber
+      networkAndLastFourDigits:networkAndLastFourDigits
+                expirationYear:expirationYear
+               expirationMonth:expirationMonth
+                    recordType:creditCard.record_type()
+               canFillDirectly:canFillDirectly];
 }
 
 @end

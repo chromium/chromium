@@ -17,4 +17,6 @@ NSString* const kExpandedManualFillHeaderTopViewID =
 NSString* const kExpandedManualFillChromeLogoID =
     @"ExpandedManualFillChromeLogoID";
 
+NSString* const kPaymentManualFillGPayLogoID = @"PaymentManualFillGPayLogoID";
+
 }  // namespace manual_fill

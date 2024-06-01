@@ -24,6 +24,10 @@ extern NSString* const kExpandedManualFillHeaderTopViewID;
 // view.
 extern NSString* const kExpandedManualFillChromeLogoID;
 
+// Accessibility identifier for the GPay logo shown in the payment manual fill
+// cells when the corresponding card is a server card.
+extern NSString* const kPaymentManualFillGPayLogoID;
+
 // Possible data types when manually filling a form.
 enum class ManualFillDataType {
   kPassword = 0,

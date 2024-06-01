@@ -30,6 +30,10 @@
 // The credit card number obfuscated for display purpose.
 @property(nonatomic, readonly) NSString* obfuscatedNumber;
 
+// A label for this card formatted as 'IssuerNetwork ****2345'. Used to identify
+// this card in tests.
+@property(nonatomic, readonly) NSString* networkAndLastFourDigits;
+
 // The credit card expiration year.
 @property(nonatomic, readonly) NSString* expirationYear;
 
@@ -55,6 +59,7 @@
                   cardHolder:(NSString*)cardHolder
                       number:(NSString*)number
             obfuscatedNumber:(NSString*)obfuscatedNumber
+    networkAndLastFourDigits:(NSString*)networkAndLastFourDigits
               expirationYear:(NSString*)expirationYear
              expirationMonth:(NSString*)expirationMonth
                   recordType:(autofill::CreditCard::RecordType)recordType

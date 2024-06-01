@@ -13,6 +13,7 @@
                   cardHolder:(NSString*)cardHolder
                       number:(NSString*)number
             obfuscatedNumber:(NSString*)obfuscatedNumber
+    networkAndLastFourDigits:(NSString*)networkAndLastFourDigits
               expirationYear:(NSString*)expirationYear
              expirationMonth:(NSString*)expirationMonth
                   recordType:(autofill::CreditCard::RecordType)recordType
@@ -26,6 +27,7 @@
     _cardHolder = [cardHolder copy];
     _number = [number copy];
     _obfuscatedNumber = [obfuscatedNumber copy];
+    _networkAndLastFourDigits = [networkAndLastFourDigits copy];
     _expirationYear = [expirationYear copy];
     _expirationMonth = [expirationMonth copy];
     _recordType = recordType;
