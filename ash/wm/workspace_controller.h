@@ -30,7 +30,7 @@ class ASH_EXPORT WorkspaceController : public aura::WindowObserver {
 
   ~WorkspaceController() override;
 
-  WorkspaceLayoutManager* layout_manager() { return layout_manager_; }
+  WorkspaceLayoutManager* layout_manager();
 
   // Returns the current window state.
   WorkspaceWindowState GetWindowState() const;
@@ -46,9 +46,6 @@ class ASH_EXPORT WorkspaceController : public aura::WindowObserver {
 
   raw_ptr<aura::Window> viewport_;
   std::unique_ptr<WorkspaceEventHandler> event_handler_;
-
-  // Owned by `viewport_`.
-  raw_ptr<WorkspaceLayoutManager, DanglingUntriaged> layout_manager_;
 };
 
 // Sets the given |workspace_controller| as a property of |desk_container|. Only
