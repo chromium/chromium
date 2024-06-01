@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item_impl.h"
+#include "components/download/public/common/download_item_rename_handler.h"
 #include "components/download/public/common/download_target_info.h"
 
 #if BUILDFLAG(IS_ANDROID)

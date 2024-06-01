@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_item_rename_handler.h"
 #include "content/public/browser/web_contents_delegate.h"
 
 namespace content {
