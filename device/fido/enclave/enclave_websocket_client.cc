@@ -268,7 +268,7 @@ void EnclaveWebSocketClient::ReadFromDataPipe(MojoResult,
     DCHECK_LE(pending_read_data_index_, pending_read_data_.size());
 
     if (pending_read_data_index_ < pending_read_data_.size()) {
-      readable_watcher_.Arm();
+      readable_watcher_.ArmOrNotify();
     } else {
       client_receiver_.Resume();
       if (pending_read_finished_) {
@@ -276,7 +276,7 @@ void EnclaveWebSocketClient::ReadFromDataPipe(MojoResult,
       }
     }
   } else if (result == MOJO_RESULT_SHOULD_WAIT) {
-    readable_watcher_.Arm();
+    readable_watcher_.ArmOrNotify();
   } else {
     FIDO_LOG(ERROR) << "Reading WebSocket frame failed: "
                     << static_cast<int>(result);

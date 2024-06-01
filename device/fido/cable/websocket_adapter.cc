@@ -208,7 +208,7 @@ void WebSocketAdapter::OnDataPipeReady(MojoResult,
     DCHECK_LE(pending_message_i_, pending_message_.size());
 
     if (pending_message_i_ < pending_message_.size()) {
-      read_pipe_watcher_.Arm();
+      read_pipe_watcher_.ArmOrNotify();
     } else {
       client_receiver_.Resume();
       if (pending_message_finished_) {
@@ -216,7 +216,7 @@ void WebSocketAdapter::OnDataPipeReady(MojoResult,
       }
     }
   } else if (result == MOJO_RESULT_SHOULD_WAIT) {
-    read_pipe_watcher_.Arm();
+    read_pipe_watcher_.ArmOrNotify();
   } else {
     FIDO_LOG(ERROR) << "reading WebSocket frame failed: "
                     << static_cast<int>(result);
