@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "media/base/media_switches.h"
+#include "ui/events/event_constants.h"
 
 namespace ash {
 
@@ -250,6 +251,16 @@ const AcceleratorData kAcceleratorData[] = {
      AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore},
     {true, ui::VKEY_Z, ui::EF_COMMAND_DOWN,
      AcceleratorAction::kToggleMultitaskMenu},
+
+    // Tiling window resize shortcuts.
+    {true, ui::VKEY_OEM_COMMA, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
+     AcceleratorAction::kTilingWindowResizeLeft},
+    {true, ui::VKEY_OEM_PERIOD, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
+     AcceleratorAction::kTilingWindowResizeRight},
+    {true, ui::VKEY_OEM_1, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
+     AcceleratorAction::kTilingWindowResizeUp},
+    {true, ui::VKEY_OEM_2, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
+     AcceleratorAction::kTilingWindowResizeDown},
 
     // Moving active window between displays shortcut.
     {true, ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,

@@ -449,6 +449,11 @@ bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
       return crosapi::lacros_startup_state::IsLacrosEnabled();
     case kPrivacyScreenToggle:
       return accelerators::CanTogglePrivacyScreen();
+    case kTilingWindowResizeLeft:
+    case kTilingWindowResizeRight:
+    case kTilingWindowResizeUp:
+    case kTilingWindowResizeDown:
+      return !features::IsTilingWindowResizeEnabled();
   }
 
   return false;

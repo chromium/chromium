@@ -143,6 +143,10 @@ chromium-metrics-reviews@google.com.
   <variant name="TakePartialScreenshot"/>
   <variant name="TakeScreenshot"/>
   <variant name="TakeWindowScreenshot"/>
+  <variant name="TilingWindowResizeDown"/>
+  <variant name="TilingWindowResizeLeft"/>
+  <variant name="TilingWindowResizeRight"/>
+  <variant name="TilingWindowResizeUp"/>
   <variant name="ToggleAppList"/>
   <variant name="ToggleCalendar"/>
   <variant name="ToggleCapsLock"/>

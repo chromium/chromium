@@ -875,6 +875,11 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kSwitchToPreviousUser:
     case AcceleratorAction::kSwitchToNextUser:
       return accelerators::CanCycleUser();
+    case AcceleratorAction::kTilingWindowResizeLeft:
+    case AcceleratorAction::kTilingWindowResizeRight:
+    case AcceleratorAction::kTilingWindowResizeUp:
+    case AcceleratorAction::kTilingWindowResizeDown:
+      return accelerators::CanTilingWindowResize();
     case AcceleratorAction::kToggleAppList:
       return CanHandleToggleAppList(
           accelerator, previous_accelerator,
@@ -1432,6 +1437,12 @@ void AcceleratorControllerImpl::PerformAction(
     case AcceleratorAction::kTakeWindowScreenshot:
       // UMA metrics are recorded in the function.
       accelerators::MaybeTakeWindowScreenshot();
+      break;
+    case AcceleratorAction::kTilingWindowResizeLeft:
+    case AcceleratorAction::kTilingWindowResizeRight:
+    case AcceleratorAction::kTilingWindowResizeUp:
+    case AcceleratorAction::kTilingWindowResizeDown:
+      accelerators::PerformTilingWindowResize(action);
       break;
     case AcceleratorAction::kToggleAppList: {
       RecordToggleAppList(accelerator);

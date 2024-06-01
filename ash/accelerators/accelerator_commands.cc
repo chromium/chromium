@@ -69,6 +69,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
+#include "ash/wm/tile_group/window_tiling_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -579,6 +580,14 @@ bool CanSwapPrimaryDisplay() {
   return display::Screen::GetScreen()->GetNumDisplays() > 1;
 }
 
+bool CanTilingWindowResize() {
+  if (!features::IsTilingWindowResizeEnabled()) {
+    return false;
+  }
+  auto* controller = Shell::Get()->window_tiling_controller();
+  return controller && controller->CanTilingResize(GetTargetWindow());
+}
+
 bool CanEnableOrToggleDictation() {
   return true;
 }
@@ -993,6 +1002,29 @@ void OpenFileManager() {
 
 void OpenHelp() {
   NewWindowDelegate::GetInstance()->OpenGetHelp();
+}
+
+void PerformTilingWindowResize(AcceleratorAction action) {
+  if (!features::IsTilingWindowResizeEnabled()) {
+    return;
+  }
+  auto* controller = Shell::Get()->window_tiling_controller();
+  switch (action) {
+    case kTilingWindowResizeLeft:
+      controller->OnTilingResizeLeft(GetTargetWindow());
+      return;
+    case kTilingWindowResizeRight:
+      controller->OnTilingResizeRight(GetTargetWindow());
+      return;
+    case kTilingWindowResizeUp:
+      controller->OnTilingResizeUp(GetTargetWindow());
+      return;
+    case kTilingWindowResizeDown:
+      controller->OnTilingResizeDown(GetTargetWindow());
+      return;
+    default:
+      return;
+  }
 }
 
 void PowerPressed(bool pressed) {

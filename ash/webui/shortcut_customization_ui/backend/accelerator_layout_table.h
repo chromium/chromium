@@ -456,6 +456,11 @@ inline constexpr uint32_t kAcceleratorLayouts[] = {
     AcceleratorAction::kToggleSnapGroupWindowsGroupAndUngroup,
     AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore,
     AcceleratorAction::kToggleFloating,
+    // TODO(b/343559364): Temporary location pending UI review.
+    AcceleratorAction::kTilingWindowResizeLeft,
+    AcceleratorAction::kTilingWindowResizeRight,
+    AcceleratorAction::kTilingWindowResizeUp,
+    AcceleratorAction::kTilingWindowResizeDown,
 
     // Windows and desks > Desks
     AcceleratorAction::kDesksNewDesk,

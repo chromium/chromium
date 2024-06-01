@@ -208,6 +208,14 @@ EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::ToMojom(
       return mojom_accelerator_action::kTakeScreenshot;
     case ash::AcceleratorAction::kTakeWindowScreenshot:
       return mojom_accelerator_action::kTakeWindowScreenshot;
+    case ash::AcceleratorAction::kTilingWindowResizeDown:
+      return mojom_accelerator_action::kTilingWindowResizeDown;
+    case ash::AcceleratorAction::kTilingWindowResizeLeft:
+      return mojom_accelerator_action::kTilingWindowResizeLeft;
+    case ash::AcceleratorAction::kTilingWindowResizeRight:
+      return mojom_accelerator_action::kTilingWindowResizeRight;
+    case ash::AcceleratorAction::kTilingWindowResizeUp:
+      return mojom_accelerator_action::kTilingWindowResizeUp;
     case ash::AcceleratorAction::kToggleAppList:
       return mojom_accelerator_action::kToggleAppList;
     case ash::AcceleratorAction::kToggleCalendar:
@@ -634,6 +642,18 @@ bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
       return true;
     case mojom_accelerator_action::kTakeWindowScreenshot:
       *out = ash::AcceleratorAction::kTakeWindowScreenshot;
+      return true;
+    case mojom_accelerator_action::kTilingWindowResizeDown:
+      *out = ash::AcceleratorAction::kTilingWindowResizeDown;
+      return true;
+    case mojom_accelerator_action::kTilingWindowResizeLeft:
+      *out = ash::AcceleratorAction::kTilingWindowResizeLeft;
+      return true;
+    case mojom_accelerator_action::kTilingWindowResizeRight:
+      *out = ash::AcceleratorAction::kTilingWindowResizeRight;
+      return true;
+    case mojom_accelerator_action::kTilingWindowResizeUp:
+      *out = ash::AcceleratorAction::kTilingWindowResizeUp;
       return true;
     case mojom_accelerator_action::kToggleAppList:
       *out = ash::AcceleratorAction::kToggleAppList;

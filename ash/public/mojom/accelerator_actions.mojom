@@ -139,6 +139,10 @@ enum AcceleratorAction {
   kVolumeMuteToggle,
   kTogglePicker,
   kAccessibilityAction,
+  kTilingWindowResizeLeft,
+  kTilingWindowResizeRight,
+  kTilingWindowResizeUp,
+  kTilingWindowResizeDown,
   // The following are DEBUG actions with an offset. This is to keep the enum
   // in sync with `AcceleratorActions` in ash/public/cpp/accelerator_actions.h.
   kDebugClearUseKMeansPref = 9000,

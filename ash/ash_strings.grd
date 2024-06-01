@@ -4231,6 +4231,18 @@ No devices connected.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TAKE_WINDOW_SCREENSHOT" desc="Label for accelerator action - Take window screenshot or screen recording.">
         Take window screenshot or screen recording
       </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TILING_WINDOW_RESIZE_LEFT" desc="Label for accelerator action - Tiled resize window toward the left.">
+        Tiled resize window toward the left
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TILING_WINDOW_RESIZE_RIGHT" desc="Label for accelerator action - Tiled resize window toward the right.">
+        Tiled resize window toward the right
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TILING_WINDOW_RESIZE_UP" desc="Label for accelerator action - Tiled resize window upward.">
+        Tiled resize window upward
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TILING_WINDOW_RESIZE_DOWN" desc="Label for accelerator action - Tiled resize window downward.">
+        Tiled resize window downward
+      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_APP_LIST" desc="Label for accelerator action - Open/close Launcher.">
         Open/close Launcher
       </message>

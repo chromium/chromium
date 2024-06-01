@@ -87,6 +87,8 @@ ASH_EXPORT bool CanStopScreenRecording();
 
 ASH_EXPORT bool CanSwapPrimaryDisplay();
 
+ASH_EXPORT bool CanTilingWindowResize();
+
 ASH_EXPORT bool CanToggleCalendar();
 
 ASH_EXPORT bool CanEnableOrToggleDictation();
@@ -245,6 +247,9 @@ ASH_EXPORT void OpenFileManager();
 
 // Opens the help/explore app.
 ASH_EXPORT void OpenHelp();
+
+// Resizes window as a tile.
+ASH_EXPORT void PerformTilingWindowResize(AcceleratorAction action);
 
 // Presses power button.
 ASH_EXPORT void PowerPressed(bool pressed);
