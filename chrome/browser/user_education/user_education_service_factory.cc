@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -101,6 +102,10 @@ UserEducationServiceFactory::BuildServiceInstanceForBrowserContextImpl(
 
 // static
 bool UserEducationServiceFactory::ProfileAllowsUserEducation(Profile* profile) {
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  // IPH is always disabled in Chrome for Testing.
+  return false;
+#else
   // In order to do user education, the browser must have a UI and not be an
   // "off-the-record" or in a demo or guest mode.
   if (profile->IsIncognitoProfile() || profile->IsGuestSession() ||
@@ -121,6 +126,7 @@ bool UserEducationServiceFactory::ProfileAllowsUserEducation(Profile* profile) {
     return false;
   }
   return true;
+#endif  // BUILDFLAG(CHROME_FOR_TESTING)
 }
 
 std::unique_ptr<KeyedService>
