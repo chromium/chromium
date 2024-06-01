@@ -20,7 +20,7 @@
     --cr-realbox-shadow: none;
   }
 
-  :host([show-thumbnail_]) {
+  :host([show-thumbnail]) {
     --cr-realbox-thumbnail-icon-offset: 50px;
   }
 
@@ -319,7 +319,7 @@
   <cr-realbox-icon id="icon" match="[[selectedMatch_]]"
       default-icon="[[realboxIcon_]]" in-searchbox>
   </cr-realbox-icon>
-  <template is="dom-if" if="[[showThumbnail_]]">
+  <template is="dom-if" if="[[showThumbnail]]">
     <div id="thumbnailContainer">
       <cr-realbox-thumbnail id="thumbnail" thumbnail-url_="[[thumbnailUrl_]]"
           on-remove-thumbnail-click="onRemoveThumbnailClick_"
@@ -367,6 +367,7 @@
       on-match-focusin="onMatchFocusin_"
       on-header-focusin="onHeaderFocusin_"
       on-match-click="onMatchClick_"
-      hidden$="[[!dropdownIsVisible]]">
+      hidden$="[[!dropdownIsVisible]]"
+      show-thumbnail="[[showThumbnail]]">
   </cr-realbox-dropdown>
 </div>

@@ -185,7 +185,7 @@ export class RealboxElement extends RealboxElementBase {
 
       placeholderText_: {
         type: String,
-        computed: `computePlaceholderText_(showThumbnail_)`,
+        computed: `computePlaceholderText_(showThumbnail)`,
       },
 
       /** Realbox default icon (i.e., Google G icon or the search loupe). */
@@ -227,7 +227,7 @@ export class RealboxElement extends RealboxElementBase {
         value: -1,
       },
 
-      showThumbnail_: {
+      showThumbnail: {
         type: Boolean,
         computed: `computeShowThumbnail_(thumbnailUrl_)`,
         reflectToAttribute: true,
@@ -255,6 +255,7 @@ export class RealboxElement extends RealboxElementBase {
   realboxLensSearchEnabled: boolean;
   realboxChromeRefreshTheming: boolean;
   realboxSteadyStateShadow: boolean;
+  showThumbnail: boolean;
   private inputAriaLive_: string;
   private isDeletingInput_: boolean;
   private lastIgnoredEnterEvent_: KeyboardEvent|null;
@@ -268,7 +269,6 @@ export class RealboxElement extends RealboxElementBase {
   private result_: AutocompleteResult|null;
   private selectedMatch_: AutocompleteMatch|null;
   private selectedMatchIndex_: number;
-  private showThumbnail_: boolean;
   private thumbnailUrl_: string;
 
   private pageHandler_: PageHandlerInterface;
@@ -564,7 +564,7 @@ export class RealboxElement extends RealboxElementBase {
       return;
     }
 
-    if (this.showThumbnail_) {
+    if (this.showThumbnail) {
       const thumbnail =
           this.shadowRoot!.querySelector<HTMLElement>('cr-realbox-thumbnail');
       if (thumbnail === this.shadowRoot!.activeElement) {
@@ -769,7 +769,7 @@ export class RealboxElement extends RealboxElementBase {
   }
 
   private computePlaceholderText_(): string {
-    return this.showThumbnail_ ? '' : this.i18n('searchBoxHint');
+    return this.showThumbnail ? '' : this.i18n('searchBoxHint');
   }
 
   /**
