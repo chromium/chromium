@@ -274,8 +274,7 @@ class CreditCardAccessManagerTest : public testing::Test {
   bool GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult result,
                             const std::string& real_pan,
                             bool fido_opt_in = false,
-                            bool follow_with_fido_auth = false,
-                            bool is_virtual_card = false) {
+                            bool follow_with_fido_auth = false) {
     payments::FullCardRequest* full_card_request =
         GetCvcAuthenticator().full_card_request_.get();
 
@@ -291,9 +290,7 @@ class CreditCardAccessManagerTest : public testing::Test {
       response.fido_request_options = GetTestRequestOptions();
     }
 #endif
-    response.card_type = is_virtual_card
-                             ? AutofillClient::PaymentsRpcCardType::kVirtualCard
-                             : AutofillClient::PaymentsRpcCardType::kServerCard;
+    response.card_type = AutofillClient::PaymentsRpcCardType::kServerCard;
     full_card_request->OnDidGetRealPan(result,
                                        response.with_real_pan(real_pan));
     return true;
