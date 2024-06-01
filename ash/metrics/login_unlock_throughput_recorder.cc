@@ -847,6 +847,11 @@ void LoginUnlockThroughputRecorder::OnAllWindowsPresented() {
     AddLoginTimeMarker(kAshLoginSessionRestoreAllBrowserWindowsPresented);
   }
 
+  // TODO(b/343556103): Remove this block once the main issue is resolved.
+  if (window_restore_done_) {
+    return;
+  }
+
   DCHECK(!window_restore_done_);
   window_restore_done_ = true;
   ScheduleWaitForShelfAnimationEndIfNeeded();
