@@ -915,6 +915,12 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_ENABLED_LABEL},
       {"faceGazeCursorControlEnabledLabel",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_CONTROL_ENABLED_LABEL},
+      {"faceGazeCursorAdjustSeparatelyLabel",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ADJUST_SEPARATELY_LABEL},
+      {"faceGazeCursorSpeedLabel",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_LABEL},
+      {"faceGazeCursorSpeedSectionName",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_SECTION_NAME},
       {"keyboardAndTextInputHeading",
        IDS_SETTINGS_ACCESSIBILITY_KEYBOARD_AND_TEXT_INPUT_HEADING},
       {"keyboardAndTextInputLinkDescription",
@@ -1239,6 +1245,9 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddInteger("defaultCaretBlinkIntervalMs",
                           ash::kDefaultCaretBlinkIntervalMs);
+
+  html_source->AddInteger("defaultFaceGazeCursorSpeed",
+                          ash::kDefaultFaceGazeCursorSpeed);
 
   html_source->AddBoolean(
       "showExperimentalAccessibilitySwitchAccessImprovedTextInput",

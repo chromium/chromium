@@ -16,6 +16,7 @@ import '../controls/settings_toggle_button.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
@@ -42,11 +43,38 @@ export class FaceGazeCursorCardElement extends FaceGazeCursorCardElementBase {
 
   static get properties() {
     return {
+      syntheticCombinedCursorSpeedPref_: {
+        type: Object,
+        value(): chrome.settingsPrivate.PrefObject {
+          return {
+            value: '',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            key: 'synthetic_combined_cursor_speed_pref',
+          };
+        },
+      },
     };
   }
 
+  static get observers() {
+    return [
+      'updateCombinedCursorSpeed_(syntheticCombinedCursorSpeedPref_.*)',
+      'setCombinedCursorSpeed_(' +
+          'prefs.settings.a11y.face_gaze.adjust_speed_separately.value)',
+    ];
+  }
+
+  private syntheticCombinedCursorSpeedPref_:
+      chrome.settingsPrivate.PrefObject<number>;
+
   constructor() {
     super();
+  }
+
+  override ready(): void {
+    super.ready();
+
+    this.setCombinedCursorSpeed_();
   }
 
   override currentRouteChanged(route: Route): void {
@@ -56,6 +84,34 @@ export class FaceGazeCursorCardElement extends FaceGazeCursorCardElementBase {
     }
 
     this.attemptDeepLink();
+  }
+
+  private setCombinedCursorSpeed_(): void {
+    if (this.get(
+            'prefs.settings.a11y.face_gaze.adjust_speed_separately.value')) {
+      return;
+    }
+    // When combined cursor speed is turned off, set the synthetic pref to the
+    // default value.
+    const value = loadTimeData.getInteger('defaultFaceGazeCursorSpeed');
+    this.syntheticCombinedCursorSpeedPref_ = {
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      key: 'synthetic_combined_cursor_speed_pref',
+      value,
+    };
+  }
+
+  private updateCombinedCursorSpeed_(): void {
+    if (this.get(
+            'prefs.settings.a11y.face_gaze.adjust_speed_separately.value')) {
+      return;
+    }
+    // Set all 4 speeds to the same value.
+    const speed = this.syntheticCombinedCursorSpeedPref_.value;
+    this.setPrefValue('settings.a11y.face_gaze.cursor_speed_up', speed);
+    this.setPrefValue('settings.a11y.face_gaze.cursor_speed_down', speed);
+    this.setPrefValue('settings.a11y.face_gaze.cursor_speed_left', speed);
+    this.setPrefValue('settings.a11y.face_gaze.cursor_speed_right', speed);
   }
 }
 
