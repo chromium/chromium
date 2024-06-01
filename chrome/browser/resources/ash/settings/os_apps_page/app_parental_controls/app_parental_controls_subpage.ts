@@ -4,6 +4,7 @@
 
 import '../../settings_shared.css.js';
 
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -13,7 +14,10 @@ import {Router, routes} from '../../router.js';
 import {getTemplate} from './app_parental_controls_subpage.html.js';
 import {getAppParentalControlsProvider} from './mojo_interface_provider.js';
 
-export class SettingsAppParentalControlsSubpageElement extends PolymerElement {
+const SettingsAppParentalControlsSubpageElementBase = I18nMixin(PolymerElement);
+
+export class SettingsAppParentalControlsSubpageElement extends
+    SettingsAppParentalControlsSubpageElementBase {
   static get is() {
     return 'settings-app-parental-controls-subpage';
   }
@@ -97,6 +101,20 @@ export class SettingsAppParentalControlsSubpageElement extends PolymerElement {
 
   private isAppListEmpty_(apps: App[]): boolean {
     return apps.length === 0;
+  }
+
+  private getBlockedAppsCountString_(apps: App[]): string {
+    const blockedAppsCount = apps.filter(app => app.isBlocked).length;
+    const appListCount = apps.length;
+
+    return this.i18n(
+        'appParentalControlsBlockedAppsCountText', blockedAppsCount,
+        appListCount);
+  }
+
+  private shouldShowBlockedAppsCountString_(apps: App[], searchString: string):
+      boolean {
+    return apps.length > 0 && !searchString;
   }
 
   onReadinessChanged(updatedApp: App): void {

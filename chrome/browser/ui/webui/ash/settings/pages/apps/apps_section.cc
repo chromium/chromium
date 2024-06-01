@@ -423,6 +423,8 @@ void AddAppParentalControlsStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"appParentalControlsAccessDialogTitle",
        IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_ACCESS_DIALOG_TITLE},
+      {"appParentalControlsBlockedAppsCountText",
+       IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_BLOCKED_APPS_COUNT_TEXT},
       {"appParentalControlsChoosePinSubtitle",
        IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_CHOOSE_PIN_SUBTITLE},
       {"appParentalControlsChoosePinTitle",
@@ -431,6 +433,8 @@ void AddAppParentalControlsStrings(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_CONFIRM_PIN_TITLE},
       {"appParentalControlsForgotPinLinkName",
        IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_FORGOT_PIN_LINK_NAME},
+      {"appParentalControlsHeaderText",
+       IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_APPS_TITLE_TEXT},
       {"appParentalControlsNoAppsText",
        IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_NO_APPS_FOUND_TEXT},
       {"appParentalControlsPinIncorrectErrorText",

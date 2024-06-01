@@ -1,4 +1,4 @@
-<style include="settings-shared">
+<style include="cr-shared-style settings-shared">
   #noAppsLabel {
     text-align: center;
   }
@@ -6,15 +6,22 @@
 
 <template is="dom-if" if="[[isVerified]]">
   <div id="appParentalControlsList" class="hr">
+    <div class="cr-row first hr">
+      <h2>$i18n{appParentalControlsHeaderText}</h2>
+    </div>
+    <template is="dom-if" if="[[shouldShowBlockedAppsCountString_(appList_, searchTerm)]]">
+      <div id="blockedAppsCount" class="cr-row first hr">
+        [[getBlockedAppsCountString_(appList_)]]
+      </div>
+    </template>
     <template is="dom-repeat" items="[[filteredAppList_]]" as="app"
-        sort="alphabeticalSort_">
-        <block-app-item app="[[app]]"></block-app-item>
+      sort="alphabeticalSort_">
+      <block-app-item app="[[app]]"></block-app-item>
+    </template>
+    <template is="dom-if" if="[[isAppListEmpty_(filteredAppList_)]]">
+      <div id="noAppsLabel" class="cr-secondary-text">
+        $i18n{appParentalControlsNoAppsText}
+      </div>
     </template>
   </div>
-
-  <template is="dom-if" if="[[isAppListEmpty_(filteredAppList_)]]">
-    <div id="noAppsLabel" class="cr-secondary-text">
-      $i18n{appParentalControlsNoAppsText}
-    </div>
-  </template>
 </template>

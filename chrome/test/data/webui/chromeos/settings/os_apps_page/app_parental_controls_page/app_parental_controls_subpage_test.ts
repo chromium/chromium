@@ -46,7 +46,7 @@ suite('AppParentalControlsSubpage', () => {
   test('App list is in alphabetical order', async () => {
     const appTitle1 = 'Files';
     const appTitle2 = 'Chrome';
-    handler.addAppForTesting(createApp('file-id', appTitle1, false));
+    handler.addAppForTesting(createApp('file-id', appTitle1, true));
     handler.addAppForTesting(createApp('chrome-id', appTitle2, false));
 
     await createPage();
@@ -63,6 +63,13 @@ suite('AppParentalControlsSubpage', () => {
     const title2 = apps[1].shadowRoot!.querySelector<HTMLElement>('.app-title');
     assertTrue(!!title2);
     assertEquals(title2.innerText, appTitle1);
+
+    await flushTasks();
+
+    const blockedAppsCount =
+        page.shadowRoot!.querySelector<HTMLElement>('#blockedAppsCount');
+    assertTrue(!!blockedAppsCount);
+    assertEquals(blockedAppsCount.innerText, '1 of 2 apps blocked');
   });
 
   test('Click toggle updates app blocked state', async () => {
@@ -158,6 +165,13 @@ suite('AppParentalControlsSubpage', () => {
 
         assertTrue(appToggle.checked);
         assertFalse(app.isBlocked);
+
+        await flushTasks();
+
+        const blockedAppsCount =
+            page.shadowRoot!.querySelector<HTMLElement>('#blockedAppsCount');
+        assertTrue(!!blockedAppsCount);
+        assertEquals(blockedAppsCount.innerText, '0 of 1 apps blocked');
       });
 
   test('Unverified page redirects to Apps', async () => {
@@ -168,6 +182,15 @@ suite('AppParentalControlsSubpage', () => {
     await flushTasks();
 
     assertEquals(Router.getInstance().currentRoute, routes.APPS);
+  });
+
+  test('Blocked apps string is not shown when there are no apps', async () => {
+    await createPage();
+    await flushTasks();
+
+    const blockedAppsCount =
+        page.shadowRoot!.querySelector<HTMLElement>('#blockedAppsCount');
+    assertFalse(isVisible(blockedAppsCount));
   });
 });
 
@@ -267,5 +290,22 @@ suite('AppParentalControlsSubpage search', () => {
         page.shadowRoot!.querySelector<HTMLElement>('#noAppsLabel');
     assertTrue(!!emptyAppList);
     assertTrue(isVisible(emptyAppList));
+  });
+
+
+  test('Blocked apps string is not shown when search string is not empty', async () => {
+    handler.addAppForTesting(createApp('file-id', 'Files', false));
+    handler.addAppForTesting(createApp('chrome-id', 'Chrome', false));
+
+    await createPage();
+
+    assertEquals(2, getApps().length);
+
+    page.searchTerm = 'f';
+    await flushTasks();
+
+    const blockedAppsCount =
+    page.shadowRoot!.querySelector<HTMLElement>('#blockedAppsCount');
+    assertFalse(isVisible(blockedAppsCount));
   });
 });

@@ -6283,6 +6283,12 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   </message>
   <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_PIN_MISMATCH_ERROR_TEXT" desc="The text displayed under the PIN input section that notifies the user that the re-entered PIN does not match the first PIN entered.">
     PINs do not match
+    </message>
+  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_APPS_TITLE_TEXT" desc="The title text for the apps parental controls page listing the user's blockable apps.">
+    Apps
+  </message>
+  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_BLOCKED_APPS_COUNT_TEXT" desc="Text showing the number of blocked applications on the apps parental controls page.">
+    <ph name="BLOCKED_APPS_SIZE">$1<ex>5</ex></ph> of <ph name="APPS_LIST_SIZE">$2<ex>30</ex></ph> apps blocked
   </message>
   <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_PIN_WRONG_LENGTH_ERROR_TEXT" desc="The text displayed under the PIN input section that notifies the user that the PIN should not be shorter than 6 digits">
     PIN must be 6 digits
