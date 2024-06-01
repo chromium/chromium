@@ -1672,6 +1672,11 @@
     "expiry_milestone": 136
   },
   {
+    "name": "cros-labs-tiling-window-resize",
+    "owners": [ "aluh@chromium.org", "homi@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "cros-labs-window-cycle-shortcut",
     "owners": [ "andp@chromium.org", "benbecker@chromium.org", "nupurjain@chromium.org" ],
     "expiry_milestone": 135

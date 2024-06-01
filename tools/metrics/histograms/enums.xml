@@ -18596,6 +18596,7 @@ from previous Chrome versions.
   <int value="-1134307340" label="stop-loading-in-background:enabled"/>
   <int value="-1133285806" label="MacLoopbackAudioForScreenShare:disabled"/>
   <int value="-1132704128" label="AndroidPaymentAppsFilter:disabled"/>
+  <int value="-1131848860" label="TilingWindowResize:enabled"/>
   <int value="-1131726331" label="BackGestureRefactorAndroid:disabled"/>
   <int value="-1130835436" label="SuspendStateMachine:disabled"/>
   <int value="-1128981647" label="EnableOAuthIpp:enabled"/>
@@ -23401,6 +23402,7 @@ from previous Chrome versions.
       label="enable-experimental-accessibility-magnifier-new-focus-following"/>
   <int value="969340095" label="EnableDspHotword:disabled"/>
   <int value="970344161" label="CrosPrivacyHub:enabled"/>
+  <int value="970506827" label="TilingWindowResize:disabled"/>
   <int value="970901442" label="EnableAndroidGamepadVibration:enabled"/>
   <int value="972228058" label="SyncUSSSessions:disabled"/>
   <int value="973601997" label="SafeBrowsingUseLocalBlacklistsV2:disabled"/>

@@ -7362,6 +7362,10 @@ const char kTetherDescription[] =
     "Enables Instant Tethering. Instant Tethering allows your nearby Google "
     "phone to share its Internet connection with this device.";
 
+const char kTilingWindowResizeName[] = "CrOS Labs - Tiling Window Resize";
+const char kTilingWindowResizeDescription[] =
+    "Enables tile-like resizing of windows.";
+
 const char kTimeOfDayDlcName[] = "Time of Day Dlc";
 const char kTimeOfDayDlcDescription[] =
     "Enables downloading Time of Day Screen Saver assets from DLC rather than "

@@ -4271,6 +4271,9 @@ extern const char kTerminalDevDescription[];
 extern const char kTetherName[];
 extern const char kTetherDescription[];
 
+extern const char kTilingWindowResizeName[];
+extern const char kTilingWindowResizeDescription[];
+
 extern const char kTimeOfDayDlcName[];
 extern const char kTimeOfDayDlcDescription[];
 

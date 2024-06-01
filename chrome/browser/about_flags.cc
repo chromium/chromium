@@ -10522,6 +10522,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"cros-labs-window-splitting", flag_descriptions::kWindowSplittingName,
      flag_descriptions::kWindowSplittingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kWindowSplitting)},
+
+    {"cros-labs-tiling-window-resize",
+     flag_descriptions::kTilingWindowResizeName,
+     flag_descriptions::kTilingWindowResizeDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kTilingWindowResize)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"privacy-sandbox-enrollment-overrides",
