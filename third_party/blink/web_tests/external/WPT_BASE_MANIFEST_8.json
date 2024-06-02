@@ -144089,6 +144089,19 @@
         {}
        ]
       ],
+      "text-box-trim-atomic-inline-001.html": [
+       "5f2d01c7dc723981a832fb802992083ccbf96c6b",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-atomic-inline-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-box-trim-block-in-inline-start-001.html": [
        "9d14a08bc2ab509955cf5be11cc797ff9f59e48c",
        [
@@ -238729,6 +238742,19 @@
         ],
         {}
        ]
+      ],
+      "svg.html": [
+       "826ce5a80a3b9c06b3c14678704daffd3e2faf7b",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/svg-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      }
     },
@@ -285915,6 +285941,19 @@
         {}
        ]
       ],
+      "non-scaling-stroke-002.html": [
+       "b236ef3477372187e13a8441e59667c3ff304273",
+       [
+        null,
+        [
+         [
+          "/svg/painting/reftests/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "paint-context-001.svg": [
        "7be33cb20fb257496cb1357a5481edecf364bc59",
        [
@@ -325786,6 +325825,10 @@
         []
        ]
       },
+      "text-box-trim-atomic-inline-001-ref.html": [
+       "7614329e2e5bd97b0334541b760b0a10138dfef4",
+       []
+      ],
       "text-box-trim-block-in-inline-start-001-ref.html": [
        "dd288036917d9a4a4e85e968b4b7486b0f22a039",
        []
@@ -344661,7 +344704,11 @@
         "e7de64aafb769e106885ea2b4e01fb75331c3e68",
         []
        ]
-      }
+      },
+      "svg-ref.html": [
+       "10bf2decaa74ae0108c86d5b97ad0480f85bf307",
+       []
+      ]
      }
     },
     "css-will-change": {
@@ -373401,10 +373448,6 @@
         "0e7c77f8f3c80fd77f6677649022a9e2634da526",
         []
        ],
-       "click-user-gesture-expected.txt": [
-        "21a887ea54eabab415660ab3a478ec221fd953fd",
-        []
-       ],
        "hidden-charset-case-sensitive-child.html": [
         "92c9981a1123454af8462cea7840a099721109a0",
         []
@@ -373575,10 +373618,6 @@
        },
        "select-willvalidate-readonly-attribute-expected.txt": [
         "33210c7ac09736ca139ba7c0f8924bcb6d8c152a",
-        []
-       ],
-       "show-picker-user-gesture-expected.txt": [
-        "4e7b98547a29f161d8217b95c350ae64e6857b88",
         []
        ],
        "stylable-select": {
@@ -584764,7 +584803,7 @@
         ]
        ],
        "show-picker-user-gesture.html": [
-        "cab0104f1e28c04b1b3db5be9917463bb340c5c1",
+        "7a9d88cb1c33eea8410f5bfb33aef0c457bfeb88",
         [
          null,
          {
