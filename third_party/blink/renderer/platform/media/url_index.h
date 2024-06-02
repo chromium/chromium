@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -71,6 +72,11 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   enum CorsMode { CORS_UNSPECIFIED, CORS_ANONYMOUS, CORS_USE_CREDENTIALS };
   using KeyType = std::pair<GURL, CorsMode>;
 
+  UrlData(base::PassKey<UrlIndex>,
+          const GURL& url,
+          CorsMode cors_mode,
+          UrlIndex* url_index,
+          scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   UrlData(const UrlData&) = delete;
   UrlData& operator=(const UrlData&) = delete;
 
@@ -182,9 +188,8 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
 
  private:
   friend class ResourceMultiBuffer;
-  friend class UrlIndex;
-  friend class UrlIndexTest;
   friend class RefCounted<UrlData>;
+  friend class UrlIndex;
 
   void OnEmpty();
   void MergeFrom(const scoped_refptr<UrlData>& other);

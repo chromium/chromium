@@ -110,6 +110,7 @@ void WebContentDecryptionModuleImpl::Create(
 }
 
 WebContentDecryptionModuleImpl::WebContentDecryptionModuleImpl(
+    base::PassKey<CdmSessionAdapter>,
     scoped_refptr<CdmSessionAdapter> adapter,
     media::KeySystems* key_systems)
     : adapter_(adapter), key_systems_(key_systems) {}

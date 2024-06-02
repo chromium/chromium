@@ -48,6 +48,13 @@ void ResourceMultiBuffer::OnEmpty() {
   url_data_->OnEmpty();
 }
 
+UrlData::UrlData(base::PassKey<UrlIndex>,
+                 const GURL& url,
+                 CorsMode cors_mode,
+                 UrlIndex* url_index,
+                 scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : UrlData(url, cors_mode, url_index, std::move(task_runner)) {}
+
 UrlData::UrlData(const GURL& url,
                  CorsMode cors_mode,
                  UrlIndex* url_index,
@@ -272,7 +279,8 @@ scoped_refptr<UrlData> UrlIndex::GetByUrl(const GURL& gurl,
 
 scoped_refptr<UrlData> UrlIndex::NewUrlData(const GURL& url,
                                             UrlData::CorsMode cors_mode) {
-  return base::AdoptRef(new UrlData(url, cors_mode, this, task_runner_));
+  return base::MakeRefCounted<UrlData>(base::PassKey<UrlIndex>(), url,
+                                       cors_mode, this, task_runner_);
 }
 
 void UrlIndex::OnMemoryPressure(

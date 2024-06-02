@@ -10,10 +10,10 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/pass_key.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/cdm_key_information.h"
 #include "media/base/cdm_promise.h"
@@ -196,8 +196,8 @@ void CdmSessionAdapter::OnCdmCreated(
   cdm_ = cdm;
 
   std::move(web_cdm_created_cb_)
-      .Run(base::WrapUnique(
-               new WebContentDecryptionModuleImpl(this, key_systems_)),
+      .Run(std::make_unique<WebContentDecryptionModuleImpl>(
+               base::PassKey<CdmSessionAdapter>(), this, key_systems_),
            "");
 }
 

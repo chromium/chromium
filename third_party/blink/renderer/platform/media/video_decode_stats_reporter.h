@@ -9,7 +9,6 @@
 #include <optional>
 #include <string>
 
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
