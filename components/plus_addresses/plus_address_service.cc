@@ -229,6 +229,19 @@ void PlusAddressService::GetSuggestions(
                      std::move(callback)));
 }
 
+std::optional<Suggestion> PlusAddressService::GetManagePlusAddressSuggestion()
+    const {
+  if (!base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign)) {
+    return std::nullopt;
+  }
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT),
+      SuggestionType::kAutofillOptions);
+  // TODO(b/343414152): Use the Google G logo icon.
+  suggestion.icon = Suggestion::Icon::kPlusAddress;
+  return suggestion;
+}
+
 void PlusAddressService::OnGetAffiliatedPlusProfiles(
     PasswordFormType focused_form_type,
     std::u16string_view focused_field_value,

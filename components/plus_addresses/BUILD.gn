@@ -113,6 +113,7 @@ source_set("unit_tests") {
     "//components/plus_addresses/webdata",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
+    "//components/strings:components_strings_grit",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
   ]

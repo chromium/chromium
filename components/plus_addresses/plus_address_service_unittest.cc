@@ -37,6 +37,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_backend.h"
 #include "components/webdata/common/web_database_service.h"
@@ -47,6 +48,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace {
@@ -59,6 +61,7 @@ using autofill::Suggestion;
 using autofill::SuggestionType;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::Optional;
 
 constexpr char kPlusAddress[] = "plus+remote@plus.plus";
 
@@ -1314,6 +1317,27 @@ TEST_F(PlusAddressSuggestionsTest,
       IsSingleFillPlusAddressSuggestion(profile.plus_address)));
   EXPECT_TRUE(get_suggestions_for_form_type(
       kSignupForm, IsSingleFillPlusAddressSuggestion(profile.plus_address)));
+}
+
+// Tests that the "Manage plus addresses..." suggestion is not generated if the
+// `kPlusAddressUIRedesign` feature is disabled.
+TEST_F(PlusAddressSuggestionsTest,
+       GetManagePlusAddressSuggestion_UIRedesignDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kPlusAddressUIRedesign);
+  EXPECT_FALSE(service().GetManagePlusAddressSuggestion());
+}
+
+// Tests the content of the "Manage plus addresses..." suggestion.
+TEST_F(PlusAddressSuggestionsTest,
+       GetManagePlusAddressSuggestion_UIRedesignEnabled) {
+  base::test::ScopedFeatureList feature_list(features::kPlusAddressUIRedesign);
+  EXPECT_THAT(service().GetManagePlusAddressSuggestion(),
+              Optional(EqualsSuggestion(
+                  SuggestionType::kAutofillOptions,
+                  l10n_util::GetStringUTF16(
+                      IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT),
+                  Suggestion::Icon::kPlusAddress)));
 }
 
 }  // namespace plus_addresses

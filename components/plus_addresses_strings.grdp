@@ -74,5 +74,8 @@
     <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT" desc="The main text in the Autofill suggestion for create a new plus address." translateable="false">
       Lorem Ipsum
     </message>
+    <message name="IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT" desc="The main text in the Autofill suggestion for opening the settings page with creates plus addresses." translateable="false">
+      Lorem Ipsum dolor ...
+    </message>
 
 </grit-part>
