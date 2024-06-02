@@ -225,7 +225,8 @@ bool CookieSettings::IsThirdPartyAccessAllowed(
     content_settings::SettingInfo* info) const {
   // Use GURL() as an opaque primary url to check if any site
   // could access cookies in a 3p context on |first_party_url|.
-  return IsAllowed(GetCookieSetting(GURL(), first_party_url,
+  return IsAllowed(GetCookieSetting(GURL(), net::SiteForCookies(),
+                                    first_party_url,
                                     net::CookieSettingOverrides(), info));
 }
 
