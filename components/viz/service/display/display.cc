@@ -928,6 +928,8 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         current_surface_id_.local_surface_id().parent_sequence_number();
     swap_frame_data.choreographer_vsync_id = params.choreographer_vsync_id;
     swap_frame_data.swap_trace_id = swapped_trace_id_;
+    swap_frame_data.display_hdr_headroom =
+        display_color_spaces_.GetHDRMaxLuminanceRelative();
 
     TRACE_EVENT(
         "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",

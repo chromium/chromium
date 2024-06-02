@@ -1249,8 +1249,9 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
     output_frame.delegated_ink_metadata =
         delegated_ink_handler_->TakeMetadata();
   }
+  output_frame.data.display_hdr_headroom = swap_frame_data.display_hdr_headroom;
 #if BUILDFLAG(IS_APPLE)
-  output_frame.ca_layer_error_code = swap_frame_data.ca_layer_error_code;
+  output_frame.data.ca_layer_error_code = swap_frame_data.ca_layer_error_code;
 #endif
 
   if (buffer_queue_) {

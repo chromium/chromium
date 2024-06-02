@@ -72,6 +72,10 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     metal_device_ = metal_device;
   }
 
+  void SetDisplayHDRHeadroom(float display_hdr_headroom) {
+    display_hdr_headroom_ = display_hdr_headroom;
+  }
+
   // Create a CALayer tree for the scheduled layers, and set |superlayer| to
   // have only this tree as its sublayers. If |old_tree| is non-null, then try
   // to re-use the CALayers of |old_tree| as much as possible. |old_tree| will
@@ -317,6 +321,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
   bool has_committed_ = false;
   const bool allow_av_sample_buffer_display_layer_ = true;
   const bool allow_solid_color_layers_ = true;
+  float display_hdr_headroom_ = 1.f;
   id<MTLDevice> __strong metal_device_ = nil;
 
   // Map of content IOSurface.

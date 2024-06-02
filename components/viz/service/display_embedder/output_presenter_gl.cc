@@ -214,9 +214,6 @@ OutputPresenterGL::AllocateImages(gfx::ColorSpace color_space,
 void OutputPresenterGL::Present(SwapCompletionCallback completion_callback,
                                 BufferPresentedCallback presentation_callback,
                                 gfx::FrameData data) {
-#if BUILDFLAG(IS_APPLE)
-  presenter_->SetCALayerErrorCode(ca_layer_error_code_);
-#endif
   presenter_->Present(std::move(completion_callback),
                       std::move(presentation_callback), data);
 }
@@ -343,11 +340,6 @@ void OutputPresenterGL::SetVSyncDisplayID(int64_t display_id) {
 }
 
 #if BUILDFLAG(IS_APPLE)
-void OutputPresenterGL::SetCALayerErrorCode(
-    gfx::CALayerResult ca_layer_error_code) {
-  ca_layer_error_code_ = ca_layer_error_code;
-}
-
 void OutputPresenterGL::SetMaxPendingSwaps(int max_pending_swaps) {
   presenter_->SetMaxPendingSwaps(max_pending_swaps);
 }

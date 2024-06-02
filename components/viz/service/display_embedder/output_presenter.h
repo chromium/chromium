@@ -128,7 +128,6 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
   virtual void SetVSyncDisplayID(int64_t display_id) {}
 
 #if BUILDFLAG(IS_APPLE)
-  virtual void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) {}
   virtual void SetMaxPendingSwaps(int max_pending_swaps) {}
 #endif
 };

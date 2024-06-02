@@ -84,12 +84,18 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
     PresentationCallback presentation_callback,
     gfx::FrameData data) {
   TRACE_EVENT0("gpu", "ImageTransportSurfaceOverlayMac::Present");
+  ca_layer_tree_coordinator_->SetCALayerErrorCode(data.ca_layer_error_code);
 
   // Commit the first pending frame before adding one more in Present() if there
   // are more than supported .
   if (ca_layer_tree_coordinator_->NumPendingSwaps() >= cap_max_pending_swaps_) {
     CommitPresentedFrameToCA();
   }
+
+  // Set the display HDR headroom to be used for any tone mapping to be done
+  // at the CoreAnimation level.
+  ca_layer_tree_coordinator_->GetPendingCARendererLayerTree()
+      ->SetDisplayHDRHeadroom(data.display_hdr_headroom);
 
   // Query the underlying Metal device, if one exists. This is needed to ensure
   // synchronization between the display compositor and the HDRCopierLayer.
@@ -218,11 +224,6 @@ bool ImageTransportSurfaceOverlayMacEGL::Resize(
     bool has_alpha) {
   ca_layer_tree_coordinator_->Resize(pixel_size, scale_factor);
   return true;
-}
-
-void ImageTransportSurfaceOverlayMacEGL::SetCALayerErrorCode(
-    gfx::CALayerResult ca_layer_error_code) {
-  ca_layer_tree_coordinator_->SetCALayerErrorCode(ca_layer_error_code);
 }
 
 void ImageTransportSurfaceOverlayMacEGL::SetMaxPendingSwaps(

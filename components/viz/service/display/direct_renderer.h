@@ -109,7 +109,15 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
 
     std::vector<ui::LatencyInfo> latency_info;
     int64_t seq = -1;
+
+    // The HDR headroom of the display that this frame is being swapped to.
+    // Propagated to the gl::Presenter via gfx::FrameData.
+    float display_hdr_headroom = 1.f;
+
 #if BUILDFLAG(IS_APPLE)
+    // The result of CoreAnimation delegated compositing from the overlay
+    // processor. Propagated to the gl::Presenter via gfx::FrameData for
+    // integration testing.
     gfx::CALayerResult ca_layer_error_code = gfx::kCALayerSuccess;
 #endif
     std::optional<int64_t> choreographer_vsync_id;

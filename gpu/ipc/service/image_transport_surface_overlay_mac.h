@@ -54,8 +54,6 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
 
   bool ScheduleCALayer(const ui::CARendererLayerParams& params) override;
 
-  void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) override;
-
   void SetMaxPendingSwaps(int max_pending_swaps) override;
 
 #if BUILDFLAG(IS_MAC)
