@@ -2352,7 +2352,7 @@
 <translation id="2731971182069536520">Та дараагийн удаа төхөөрөмжөө дахин эхлүүлэхэд таны админ таны дотоод өгөгдлийг устгах нэг удаагийн шинэчлэлт хийнэ.</translation>
 <translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" />-с <ph name="CURRENT_ELEMENT" /> нэмэлт контент</translation>
 <translation id="2733248615007838252">Сайн тэмдэглэгээ нь танд эдгээр илэрц таалагдсан талаарх санал хүсэлтийг илгээнэ.</translation>
-<translation id="2733992589856193783">Та энэ сайтад нэвтрэх түлхүүр үүсгэсэн. Танд нэвтрэхэд мобайл төхөөрөмж тань шаардагатай.</translation>
+<translation id="2733992589856193783">Та энэ сайтад нэвтрэх түлхүүр үүсгэсэн. Танд нэвтрэхэд хөдөлгөөнт төхөөрөмж тань шаардагатай.</translation>
 <translation id="2734797989819862638">Бүү хуул</translation>
 <translation id="27349076983469322">Цайвар дэвсгэр</translation>
 <translation id="2735712963799620190">Хуваарь</translation>
@@ -4010,7 +4010,7 @@
 <translation id="4005817994523282006">Цагийн бүс илрүүлэх арга</translation>
 <translation id="4007856537951125667">Товчлолыг нуух</translation>
 <translation id="4010746393007464819">Debian 12 (Bookworm) луу сайжруулах боломжтой байна</translation>
-<translation id="4010917659463429001">Хавчуургаа мобайл төхөөрөмждөө авахын тулд, <ph name="GET_IOS_APP_LINK" />.</translation>
+<translation id="4010917659463429001">Хавчуургаа хөдөлгөөнт төхөөрөмждөө авахын тулд, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4010938758610910350">Табын бүлэг болгон цэгцэлж байна…</translation>
 <translation id="4014432863917027322">Та "<ph name="EXTENSION_NAME" />-г" засварлах уу?</translation>
 <translation id="4015163439792426608">Өргөтгөлтэй болсон уу? Хялбарчилсан нэг газраас <ph name="BEGIN_LINK" />өргөтгөлүүдээ удирдаарай<ph name="END_LINK" />.</translation>
