@@ -100,8 +100,8 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Only intended to be called during shutdown of the parent `KeyedService`.
   void Shutdown();
 
-  virtual void AddObserver(Observer* obs);
-  virtual void RemoveObserver(Observer* obs);
+  void AddObserver(Observer* obs);
+  void RemoveObserver(Observer* obs);
 
   // Adds a callback which will be triggered on the next address data change,
   // at the same time `Observer::OnAddressDataChanged()` of `observers_` is

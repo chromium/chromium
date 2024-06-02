@@ -149,11 +149,6 @@ class MockAddressDataManager : public TestAddressDataManager {
  public:
   using TestAddressDataManager::TestAddressDataManager;
   MOCK_METHOD(bool, IsAutofillProfileEnabled, (), (const override));
-  MOCK_METHOD(void, AddObserver, (AddressDataManager::Observer*), (override));
-  MOCK_METHOD(void,
-              RemoveObserver,
-              (AddressDataManager::Observer*),
-              (override));
   MOCK_METHOD(void, UpdateProfile, (const AutofillProfile&), (override));
   MOCK_METHOD(void, RemoveProfile, (const std::string&), (override));
 };
@@ -588,7 +583,6 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsEditing) {
                  profile);
       });
   // No changes should be saved when user cancels editing.
-  EXPECT_CALL(address_data_manager(), AddObserver).Times(0);
   EXPECT_CALL(address_data_manager(), UpdateProfile).Times(0);
   // The Autofill popup must be reopened when editor dialog is closed.
   EXPECT_CALL(driver(), RendererShouldTriggerSuggestions(
@@ -618,7 +612,6 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsEditing_ManualFallback) {
                  profile);
       });
   // No changes should be saved when user cancels editing.
-  EXPECT_CALL(address_data_manager(), AddObserver).Times(0);
   EXPECT_CALL(address_data_manager(), UpdateProfile).Times(0);
   // The Autofill popup must be reopened when editor dialog is closed.
   EXPECT_CALL(driver(),
@@ -648,7 +641,6 @@ TEST_F(AutofillExternalDelegateUnitTest, UserSavesEdits) {
       });
   // Updated Autofill profile must be persisted when user saves changes through
   // the address editor.
-  EXPECT_CALL(address_data_manager(), AddObserver(&external_delegate()));
   EXPECT_CALL(address_data_manager(), UpdateProfile(profile));
   // The Autofill popup must be reopened when editor dialog is closed.
   EXPECT_CALL(driver(), RendererShouldTriggerSuggestions(
@@ -680,8 +672,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
             .Run(AutofillClient::AddressPromptUserDecision::kEditAccepted,
                  profile);
       });
-  // PDM observer must be added only once.
-  EXPECT_CALL(address_data_manager(), AddObserver(&external_delegate()));
   // Changes to the Autofill profile must be persisted both times.
   EXPECT_CALL(address_data_manager(), UpdateProfile(profile)).Times(2);
 
@@ -709,20 +699,12 @@ TEST_F(AutofillExternalDelegateUnitTest,
                  profile);
       });
 
-  EXPECT_CALL(address_data_manager(), AddObserver(&external_delegate()));
   EXPECT_CALL(address_data_manager(), UpdateProfile(profile));
 
   auto suggestion = Suggestion(SuggestionType::kEditAddressProfile);
   suggestion.payload = Suggestion::Guid(profile.guid());
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});
-
-  // Destroying the driver destroys the `external_delegate()` and the `pdm()`.
-  // Since the PDM is also observing the `address_data_manager()`,
-  // `RemoveObserver()` is called twice.
-  EXPECT_CALL(address_data_manager(), RemoveObserver(&external_delegate()));
-  // TODO(b/322170538): Remove once the PDMObserver is gone.
-  EXPECT_CALL(address_data_manager(), RemoveObserver(&pdm()));
   DestroyAutofillDriver();
 }
 
@@ -769,7 +751,6 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsDeletion) {
         std::move(delete_dialog_callback).Run(/*user_accepted_delete=*/false);
       });
   // Address profile must remain intact if user cancels deletion process.
-  EXPECT_CALL(address_data_manager(), AddObserver).Times(0);
   EXPECT_CALL(address_data_manager(), RemoveProfile).Times(0);
   // The Autofill popup must be reopened when the delete dialog is closed.
   EXPECT_CALL(driver(), RendererShouldTriggerSuggestions(
@@ -798,7 +779,6 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsDeletion_ManualFallback) {
         std::move(delete_dialog_callback).Run(/*user_accepted_delete=*/false);
       });
   // Address profile must remain intact if user cancels deletion process.
-  EXPECT_CALL(address_data_manager(), AddObserver).Times(0);
   EXPECT_CALL(address_data_manager(), RemoveProfile).Times(0);
   // The Autofill popup must be reopened when the delete dialog is closed.
   EXPECT_CALL(driver(),
@@ -827,7 +807,6 @@ TEST_F(AutofillExternalDelegateUnitTest, UserAcceptsDeletion) {
         std::move(delete_dialog_callback).Run(/*user_accepted_delete=*/true);
       });
   // Autofill profile must be deleted when user confirms the dialog.
-  EXPECT_CALL(address_data_manager(), AddObserver(&external_delegate()));
   EXPECT_CALL(address_data_manager(), RemoveProfile(profile.guid()));
   // The Autofill popup must be reopened when the delete dialog is closed.
   EXPECT_CALL(driver(), RendererShouldTriggerSuggestions(
@@ -859,7 +838,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
         std::move(delete_dialog_callback).Run(/*user_accepted_delete=*/true);
       });
   // ADM observer must be added only once.
-  EXPECT_CALL(address_data_manager(), AddObserver);
   // Autofill profile can be deleted both times.
   EXPECT_CALL(address_data_manager(), RemoveProfile(profile.guid())).Times(2);
   auto suggestion = Suggestion(SuggestionType::kDeleteAddressProfile);

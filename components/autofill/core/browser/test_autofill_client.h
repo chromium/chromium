@@ -168,7 +168,8 @@ class TestAutofillClientTemplate : public T {
     if (!form_data_importer_) {
       set_test_form_data_importer(std::make_unique<FormDataImporter>(
           /*client=*/this,
-          /*personal_data_manager=*/nullptr, /*history_service=*/nullptr,
+          /*personal_data_manager=*/GetPersonalDataManager(),
+          /*history_service=*/nullptr,
           /*app_locale=*/"en-US"));
     }
     return form_data_importer_.get();
@@ -487,6 +488,9 @@ class TestAutofillClientTemplate : public T {
   }
 
   void set_personal_data_manager(std::unique_ptr<TestPersonalDataManager> pdm) {
+    // `FormDataImporter` has a reference to the PDM.
+    CHECK(!form_data_importer_)
+        << "Do not reset PDM after using FormDataImporter.";
     test_personal_data_manager_ = std::move(pdm);
   }
 
