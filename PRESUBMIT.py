@@ -6103,14 +6103,26 @@ def _CheckForInvalidIfDefinedMacrosInFile(input_api, f):
 
 def CheckForInvalidIfDefinedMacros(input_api, output_api):
     """Check all affected files for invalid "if defined" macros."""
+    SKIPPED_PATHS = [
+        'base/allocator/partition_allocator/src/partition_alloc/build_config.h',
+        'build/build_config.h',
+        'third_party/abseil-cpp/',
+        'third_party/sqlite/',
+    ]
+    def affected_files_filter(f):
+        # Normalize the local path to Linux-style path separators so that the
+        # path comparisons work on Windows as well.
+        path = f.LocalPath().replace('\\', '/')
+
+        for skipped_path in SKIPPED_PATHS:
+            if path.startswith(skipped_path):
+                return False
+
+        return path.endswith(('.h', '.c', '.cc', '.m', '.mm'))
+
     bad_macros = []
-    skipped_paths = ['third_party/sqlite/', 'third_party/abseil-cpp/']
-    for f in input_api.AffectedFiles():
-        if any([f.LocalPath().startswith(path) for path in skipped_paths]):
-            continue
-        if f.LocalPath().endswith(('.h', '.c', '.cc', '.m', '.mm')):
-            bad_macros.extend(
-                _CheckForInvalidIfDefinedMacrosInFile(input_api, f))
+    for f in input_api.AffectedSourceFiles(affected_files_filter):
+        bad_macros.extend(_CheckForInvalidIfDefinedMacrosInFile(input_api, f))
 
     if not bad_macros:
         return []
@@ -6121,7 +6133,6 @@ def CheckForInvalidIfDefinedMacros(input_api, output_api):
             'or check the list of ALWAYS_DEFINED_MACROS in src/PRESUBMIT.py.',
             bad_macros)
     ]
-
 
 def CheckForIPCRules(input_api, output_api):
     """Check for same IPC rules described in
