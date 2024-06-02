@@ -10,6 +10,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -150,16 +151,45 @@ void CloudFileSystem::OnContentCacheInitialized(
     content_cache_->AddObserver(this);
     for (const base::FilePath& file_path :
          content_cache_->GetCachedFilePaths()) {
-      // Notifications are received though Notify() so no notification_callback
-      // is needed.
-      AddWatcher(GetContentCacheURL(), file_path,
-                 /*recursive=*/false, /*persistent=*/false,
-                 base::BindOnce([](base::File::Error result) {
-                   VLOG(1) << "Re-added file watcher on file: " << result;
-                 }),
-                 base::DoNothing());
+      AddWatcherOnCachedFile(file_path);
     }
   }
+}
+
+void CloudFileSystem::AddWatcherOnCachedFile(const base::FilePath& file_path) {
+  AddWatcherOnCachedFileImpl(file_path, /*attempts=*/0,
+                             /*result=*/base::File::FILE_ERROR_SECURITY);
+}
+
+void CloudFileSystem::AddWatcherOnCachedFileImpl(
+    const base::FilePath& file_path,
+    int attempts,
+    base::File::Error result) {
+  if (result == base::File::FILE_OK) {
+    VLOG(1) << "Re-added file watcher on file '" << file_path << "'";
+    return;
+  }
+  if (result != base::File::FILE_ERROR_SECURITY || attempts > 6) {
+    VLOG(1) << "Failed to add file watcher on file '" << file_path
+            << "' with result: " << result << " after " << attempts
+            << " attempts";
+    return;
+  }
+  auto delay = base::Seconds(attempts == 0 ? 0 : 2);
+  // Notifications are received though Notify() so no notification_callback
+  // is needed. Call this function recursively to continuously retry upon
+  // FILE_ERROR_SECURITY errors until the max number of attempts have been made.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          IgnoreResult(&CloudFileSystem::AddWatcher),
+          weak_ptr_factory_.GetWeakPtr(), GetContentCacheURL(), file_path,
+          /*recursive=*/false, /*persistent=*/false,
+          base::BindOnce(&CloudFileSystem::AddWatcherOnCachedFileImpl,
+                         weak_ptr_factory_.GetWeakPtr(), file_path,
+                         attempts + 1),
+          base::DoNothing()),
+      delay);
 }
 
 AbortCallback CloudFileSystem::RequestUnmount(

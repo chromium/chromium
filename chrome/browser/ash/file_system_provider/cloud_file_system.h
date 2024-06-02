@@ -145,6 +145,14 @@ class CloudFileSystem : public ProvidedFileSystemInterface,
   void OnTimer();
   void OnContentCacheInitialized(
       base::FileErrorOr<std::unique_ptr<ContentCache>> error_or_cache);
+  // Attempts to add a watcher on the file with `file_path`. If the attempt
+  // fails with `FILE_ERROR_SECURITY`, this could be because the FSP (extension)
+  // is not ready yet to handle FSP calls. Try again every 2 seconds until the
+  // max number of attempts is reached.
+  void AddWatcherOnCachedFile(const base::FilePath& file_path);
+  void AddWatcherOnCachedFileImpl(const base::FilePath& file_path,
+                                  int attempts,
+                                  base::File::Error result);
   void OnItemEvictedFromCache(const base::FilePath& file_path);
   // Called when opening a file is completed with either a success or an error.
   void OnOpenFileCompleted(const base::FilePath& file_path,
