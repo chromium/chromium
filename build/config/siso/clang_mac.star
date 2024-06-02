@@ -56,6 +56,17 @@ def __filegroups(ctx):
         "type": "glob",
         "includes": sdk_includes,
     }
+
+    # https://chromium-review.googlesource.com/c/chromium/src/+/5568662
+    fg[ctx.fs.canonpath("./sdk/xcode_links/MacOSX14.5.sdk") + ":headers"] = {
+        "type": "glob",
+        "includes": sdk_includes,
+    }
+    fg[ctx.fs.canonpath("./sdk/xcode_links/iPhoneSimulator17.5.sdk") + ":headers"] = {
+        "type": "glob",
+        "includes": sdk_includes,
+    }
+
     fg[ctx.fs.canonpath("./sdk/xcode_links/iPhoneSimulator.platform/Developer/Library/Frameworks") + ":headers"] = {
         "type": "glob",
         "includes": sdk_includes,
