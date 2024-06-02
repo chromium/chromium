@@ -2537,7 +2537,7 @@ crbug.com/626703 external/wpt/mediacapture-insertable-streams/tentative/VideoTra
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac14 ] external/wpt/html/semantics/forms/the-input-element/show-picker-disabled-readonly.html [ Timeout ]
+crbug.com/343749102 [ Mac14 ] external/wpt/html/semantics/forms/the-input-element/show-picker-disabled-readonly.html [ Timeout ]
 crbug.com/343991292 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduction.https.any.html?gpu [ Skip Timeout ]
 crbug.com/343991289 external/wpt/digital-credentials/non-fully-active.https.html [ Timeout ]
 crbug.com/343886935 external/wpt/webrtc/RTCPeerConnection-addTcpIceCandidate.html [ Skip Timeout ]
