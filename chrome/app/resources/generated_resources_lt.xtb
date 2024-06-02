@@ -5572,6 +5572,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5121052518313988218">Operacinė sistema „Linux“ sudėtiniame faile nebepalaikoma. Nebebus teikiami saugos naujiniai ir riktų pataisymai bei gali atsirasti nenumatytų šiuo metu veikiančių funkcijų trikčių. Jei norite toliau naudoti „Linux“, naujovinkite į naujausią versiją.</translation>
 <translation id="5121130586824819730">Jūsų standusis diskas pilnas. Išsaugokite kitoje vietoje arba atlaisvinkite vietos standžiajame diske.</translation>
 <translation id="5123433949759960244">Krepšinis</translation>
+<translation id="5125714798187802869">Aktyvinti</translation>
 <translation id="5125751979347152379">Negaliojantis URL.</translation>
 <translation id="5125967981703109366">Apie šią kortelę</translation>
 <translation id="512642543295077915">paieškos klavišas + naikinimo klavišas</translation>
@@ -8402,6 +8403,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7289049772085228972">Turite patikimiausias „Chrome“ saugos priemones</translation>
 <translation id="7289303553784750393">Jei esate prisijungę, bet ši problema išlieka, galite išbandyti kitus būdus, kaip tęsti naudojant „<ph name="SITE_ETLD_PLUS_ONE" />“.</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – pateikta užklausa dėl leidimo; paspauskite F6, kad atsakytumėte</translation>
+<translation id="7290005709287747471">Išaktyvinti</translation>
 <translation id="7290242001003353852">Ši prisijungimo paslauga, priglobiama <ph name="SAML_DOMAIN" />, pasiekia jūsų fotoaparatą.</translation>
 <translation id="7292067737327289208">Jūsų <ph name="BEGIN_LINK" />naršyklę tvarko<ph name="END_LINK" /> jūsų organizacija, o <ph name="BEGIN_LINK" />profilį tvarko<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Paprašykite vieno iš tėvų suteikti prieigą skiltyje „Nustatymai“</translation>

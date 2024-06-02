@@ -5235,6 +5235,7 @@
 <translation id="4867433544163083783">တဘ်များကို အစီအစဉ်တကျထားနိုင်ခြင်းရှိ၊ မရှိ ယခုကြည့်ရန်</translation>
 <translation id="4868281708609571334"><ph name="SUPERVISED_USER_NAME" /> ၏ အသံကိုမှတ်မိရန် Google Assistant ကို သင်ပေးပါ</translation>
 <translation id="4868284252360267853">ဤဒိုင်ယာလော့ကို ယခု အထူးမပြသထားပါဘူး။ ဤဒိုင်ယာလော့ကို အထူးပြသရန် Command-Shift-Option A ကို နှိပ်ပါ။</translation>
+<translation id="4868351661310357223">သင်၏ <ph name="DEVICE_TYPE" /> တွင် Google Play မှ အက်ပ်နှင့် ဂိမ်းများ ထည့်သွင်းနိုင်သည်။</translation>
 <translation id="4869170227080975044">ChromeOS ကွန်ရက်အချက်အလက်ကို ဖတ်နိုင်သည်</translation>
 <translation id="4870724079713069532">ပံ့ပိုးထားသည့်ဖိုင်များကို File Explorer မှ ဤအက်ပ်ဖြင့်ဖြစ်စေ အခြားအက်ပ်များဖြင့်ဖြစ်စေ ဖွင့်ပြီး ပြင်ဆင်နိုင်သည်။ ဤအက်ပ်တွင် မည်သည့်ဖိုင်များအား မူရင်းသတ်မှတ်ချက်ဖြင့် ဖွင့်မည်ကို ထိန်းချုပ်ရန် <ph name="BEGIN_LINK" />Windows ဆက်တင်များ<ph name="END_LINK" /> သို့ သွားပါ။</translation>
 <translation id="4870995365819149457">ပံ့ပိုးထားသောလင့်ခ်အချို့ကို <ph name="APP_NAME" />၊ <ph name="APP_NAME_2" />၊<ph name="APP_NAME_3" /> နှင့် အခြားအက်ပ် 1 ခုတွင် ဖွင့်နိုင်ပါဦးမည်။</translation>
@@ -8053,6 +8054,7 @@
 <translation id="7007648447224463482">အားလုံးကို ဝင်းဒိုးအသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="7008815993384338777">လက်ရှိတွင် ပြင်ပကွန်ရက်မသုံးပါ</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> က သင့်ကင်မရာကို အသုံးပြုနေသည်</translation>
+<translation id="701020165009334820">Android အက်ပ်နှင့် ဂိမ်းများကို Play Store မှ ဒေါင်းလုဒ်လုပ်နိုင်သည်။</translation>
 <translation id="701080569351381435">ရင်းမြစ် ကြည့်ရှုရန်</translation>
 <translation id="7011797924920577670">သင့်စိတ်ဝင်စားမှုများကို ခန့်မှန်းတွက်ချက်ရန်</translation>
 <translation id="7012430956470647760">အက်ပ်များအတွက် မိဘအထိန်းအချုပ်များ</translation>

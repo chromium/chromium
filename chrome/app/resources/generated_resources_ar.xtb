@@ -2889,6 +2889,7 @@
 <translation id="3090819949319990166">‏لا يمكن نسخ ملف CRX الخارجي إلى <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">تم إقران "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3093714882666365141">عدم السماح للمواقع الإلكترونية بتثبيت معالِجات الدفع</translation>
+<translation id="3094080575472025333">حظر التطبيقات</translation>
 <translation id="3094141017404513551">سيؤدي هذا إلى فصل تجربة تصفّحك عن <ph name="EXISTING_USER" />.</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{تنتهي الصلاحية اليوم}=1{تنتهي الصلاحية غدًا}two{تنتهي الصلاحية بعد يومَين}few{تنتهي الصلاحية بعد # أيام}many{تنتهي الصلاحية بعد # يومًا}other{تنتهي الصلاحية بعد # يوم}}</translation>
 <translation id="3094521107841754472">‏تم تغيير السعر من ‎<ph name="PREVIOUS_PRICE" /> إلى ‎<ph name="CURRENT_PRICE" />.</translation>
@@ -3721,6 +3722,7 @@
 <translation id="372722114124766626">مرة واحدة فقط</translation>
 <translation id="3727332897090187514">لم تتم إضافة أي ملاحظة.</translation>
 <translation id="3727473233247516571">الإطار الفرعي المخزّن من خلال ميزة "التخزين المؤقت للصفحات": <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727843212509629024">رقم التعريف الشخصي غير صحيح. يُرجى إعادة المحاولة</translation>
 <translation id="3727850735097852673">‏لاستخدام "مدير كلمات المرور في Google" في تطبيق macOS Keychain، يجب إعادة تشغيل Chrome ومنحه إذن الوصول إلى التطبيق. وستتم إعادة فتح علامات التبويب بعد إعادة التشغيل.</translation>
 <translation id="3728188878314831180">عرض الإشعارات من هاتفك</translation>
 <translation id="3728681439294129328">ضبط عنوان الشبكة</translation>
@@ -5227,6 +5229,7 @@
 <translation id="4867433544163083783">يمكنك التحقُّق الآن من إمكانية تنظيم علامات التبويب.</translation>
 <translation id="4868281708609571334">‏تدريب "مساعد Google" للتعرّف على صوت <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">‏مربّع الحوار هذا ليس محل التركيز حاليًا. اضغط على Command+Shift+A لجعل مربّع الحوار هذا محل التركيز.</translation>
+<translation id="4868351661310357223">‏يمكنك تثبيت تطبيقات وألعاب من Google Play على جهاز <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">‏الاطّلاع على معلومات شبكة ChromeOS</translation>
 <translation id="4870724079713069532">‏يمكنك فتح الملفات المتوافقة وتعديلها باستخدام هذا التطبيق من "مستكشف الملفات" أو من تطبيقات أخرى. للتحكّم في الملفات التي تفتح هذا التطبيق تلقائيًا، انتقِل إلى <ph name="BEGIN_LINK" />إعدادات نظام التشغيل Windows<ph name="END_LINK" />.</translation>
 <translation id="4870995365819149457">ستظل بعض الروابط المتوافقة مفتوحة في تطبيقات <ph name="APP_NAME" /> و<ph name="APP_NAME_2" /> و<ph name="APP_NAME_3" /> وتطبيق واحد آخر.</translation>
@@ -8055,6 +8058,7 @@
 <translation id="7007648447224463482">فتح الكل في نافذة جديدة</translation>
 <translation id="7008815993384338777">لا يتم حاليًا استخدام خدمة التجوال.</translation>
 <translation id="7009709314043432820">يستخدم تطبيق <ph name="APP_NAME" /> الكاميرا.</translation>
+<translation id="701020165009334820">‏يمكنك تنزيل تطبيقات وألعاب Android من "متجر Play".</translation>
 <translation id="701080569351381435">عرض المصدر</translation>
 <translation id="7011797924920577670">تقديم تقديرات حول اهتماماتك</translation>
 <translation id="7012430956470647760">أدوات رقابة الأهل على التطبيقات</translation>

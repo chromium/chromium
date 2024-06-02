@@ -951,6 +951,7 @@
 <translation id="4628757576491864469">მოწყობილობები</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, შეფასებულია <ph name="RATING_SCORE" /> ვარსკვლავით</translation>
 <translation id="4633636853437260449">წასაშლელად დააჭირეთ კლავიშთა კომბინაციას Ctrl+W</translation>
+<translation id="4635501805800894201">{0,plural, =0{დააბრუნეთ მოწყობილობის წინა ვერსია ახლავე}=1{დააბრუნეთ მოწყობილობის წინა ვერსია 1 წამში}other{დააბრუნეთ მოწყობილობის წინა ვერსია # წამში}}</translation>
 <translation id="4642092649622328492">ეკრანის ნაწილობრივი ანაბეჭდის გადაღება</translation>
 <translation id="4644727592819780893">რეგიონი ზედმეტად პატარაა კამერის მოსათავსებლად</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, აპის რეკომენდაცია</translation>
@@ -980,6 +981,7 @@
 <translation id="4735944890391795473">სამუშაო მაგიდა 12</translation>
 <translation id="473775607612524610">განახლება</translation>
 <translation id="4740516757091333363">გსურთ, წაშალოთ შენახული სამუშაო მაგიდა?</translation>
+<translation id="4746798685375253449">{0,plural, =1{დააბრუნეთ მოწყობილობის წინა ვერსია ერთი დღის განმავლობაში}other{დააბრუნეთ მოწყობილობის წინა ვერსია # დღის განმავლობაში}}</translation>
 <translation id="4747410141429390146">შეტყობინებების სანახავად განბლოკეთ</translation>
 <translation id="4752784485658729358">დაშვებულია მხოლოდ 6 შენახული სამუშაო მაგიდა. ახლის შესანახად წაშალეთ ერთ-ერთი არსებული.</translation>
 <translation id="4759238208242260848">ჩამოტვირთვები</translation>
@@ -1315,6 +1317,7 @@
 <translation id="5916646100036936191">ახალი შეტყობინება, ჯამში <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">ჩართვა</translation>
 <translation id="5920710855273935292">მიკროფონი დადუმებულია.</translation>
+<translation id="5928083197428724029">განახლებას ითხოვს <ph name="MANAGER" /></translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ჩართულია.</translation>
 <translation id="5947494881799873997">დაბრუნება</translation>
 <translation id="595202126637698455">ეფექტურობის ტრასირება ჩართულია</translation>
@@ -1433,6 +1436,7 @@
 <translation id="6376931439017688372">Bluetooth ჩართულია</translation>
 <translation id="6378515133128829137">ფანჯრის ჩამაგრება მარჯვნივ</translation>
 <translation id="6381109794406942707">მოწყობილობის განსაბლოკად შეიყვანეთ PIN-კოდი.</translation>
+<translation id="6381305031890976705">{0,plural, =1{დააბრუნეთ მოწყობილობის წინა ვერსია ერთი საათის განმავლობაში}other{დააბრუნეთ მოწყობილობის წინა ვერსია # საათის განმავლობაში}}</translation>
 <translation id="638716340450135524">კამერაზე წვდომის ჩართვა</translation>
 <translation id="639644700271529076">CAPS LOCK გამორთულია</translation>
 <translation id="6406458002328242616">ტაიმერის რედაქტირება. <ph name="FOCUS_DURATION" />.</translation>
@@ -1455,6 +1459,7 @@
 <translation id="6459472438155181876">ეკრანის გაგრძელება <ph name="DISPLAY_NAME" />-მდე</translation>
 <translation id="6464094930452079790">სურათები</translation>
 <translation id="6467290994038932560">ჩართულია <ph name="GAME_APP_NAME" />-ისთვის</translation>
+<translation id="6468406072297048412">{0,plural, =1{დააბრუნეთ მოწყობილობის წინა ვერსია 1 წუთის განმავლობაში}other{დააბრუნეთ მოწყობილობის წინა ვერსია # წუთის განმავლობაში}}</translation>
 <translation id="6469104339369989396">უსადენო ქსელის გადართვა</translation>
 <translation id="6477681113376365978">ფაილი ვერ ჩამოიტვირთა</translation>
 <translation id="6482559668224714696">სრულეკრანიანი ლუპა</translation>
@@ -1578,6 +1583,7 @@
 <translation id="6917259695595127329">ამოცანების ბოლო განახლება <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">თქვენი სმარტ-ბარათის ამოცნობა ვერ მოხერხდა. ცადეთ ხელახლა.</translation>
 <translation id="692135145298539227">წაშლა</translation>
+<translation id="6921427376813842559">მოწყობილობის განახლება</translation>
 <translation id="6929081673585394903">მართვის საშუალებების ჩვენება</translation>
 <translation id="6931576957638141829">შენახვა აქ:</translation>
 <translation id="6942518653766415536">ჩანაწერის ფორმატის მენიუ</translation>
@@ -1665,6 +1671,7 @@
 <translation id="7303365578352795231">პასუხის გაცემა მიმდინარეობს სხვა მოწყობილობაზე.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">ადმინისტრატორი ახორციელებს თქვენი eSIM-ის გადაყენებას. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
+<translation id="7312761820869643657">მოწყობილობის წინა ვერსიაზე დაბრუნება</translation>
 <translation id="7313193732017069507">კამერის გაფართოება</translation>
 <translation id="7330397557116570022">კარნახის გამოსაყენებლად გადადით ტექსტურ ველზე</translation>
 <translation id="7331646370422660166">alt + ქვემოთ მიმართული ისარი</translation>
@@ -2181,6 +2188,7 @@
 <translation id="925832987464884575">გადახედვის გამორთვა</translation>
 <translation id="938407504481277932">ამჟამინდელი სამუშაო მაგიდა: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. სამუშაო მაგიდა <ph name="DESK_INDEX" /> / <ph name="DESK_COUNT" />-დან.</translation>
 <translation id="938963181863597773">რა მაქვს კალენდარში?</translation>
+<translation id="94468042118567862">მოწყობილობა არ არის განახლებული</translation>
 <translation id="945383118875625837">ჩავლებით გადაიტანეთ ბმული სანიშნეების ზოლზე</translation>
 <translation id="945522503751344254">შეფასების გაგზავნა</translation>
 <translation id="951991426597076286">უარყოფა</translation>

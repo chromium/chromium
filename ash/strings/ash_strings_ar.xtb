@@ -107,6 +107,7 @@
 <translation id="1333308631814936910">تم توصيل <ph name="DISPLAY_NAME" />.</translation>
 <translation id="1340378040547539434">تصغير الصفحة</translation>
 <translation id="1341651618736211726">القائمة الكاملة</translation>
+<translation id="1341926407152459446">استخدام "<ph name="DEVICE_NAME" />" كمصدر إدخال الصوت وإخراجه</translation>
 <translation id="1344141078024003905">يجري حاليًا بث المحتوى المعروض على شاشتك. يمكنك إيقاف البث مؤقتًا أو إيقافه متى شئت.</translation>
 <translation id="1346748346194534595">يمين</translation>
 <translation id="1351937230027495976">تصغير القائمة</translation>
@@ -146,6 +147,7 @@
 <translation id="1486307154719069822">‏من خلال ميزة "إملاء"، يمكنك الكتابة باستخدام صوتك. اضغط على مفتاح ميزة "إملاء" أو اختَر رمز الميكروفون في أسفل الشاشة عندما تكون في حقل نصي. تم ضبط لغة ميزة "إملاء" على <ph name="LANGUAGE" />. سيتم إرسال ملفات التعرّف على الكلام إلى Google لمعالجتها. يمكنك في أي وقت تغيير لغة ميزة "إملاء" من خلال الإعدادات &gt; تسهيل الاستخدام.</translation>
 <translation id="1487931858675166540">تم استبدال <ph name="FIRST_ITEM_TITLE" /> بالعنصر <ph name="SECOND_ITEM_TITLE" />.</translation>
 <translation id="1500926532737552529">عرض كل الاقتراحات</translation>
+<translation id="1501946871587957338">هل تريد تبديل مصدر الصوت؟</translation>
 <translation id="1510238584712386396">مشغِّل التطبيقات</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لتطبيق واحد}zero{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيق}two{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لتطبيقين (#)}few{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيقات}many{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيقًا}other{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيق}}</translation>
 <translation id="1523032696246003">مستوى شحن البطارية: %<ph name="BATTERY_PERCENTAGE" /> | الوقت المتبقي على اكتمال الشحن: <ph name="TIME" /></translation>
@@ -775,6 +777,7 @@
 <translation id="397105322502079400">جارٍ الحساب...</translation>
 <translation id="397726367135689299">قد لا يكون شحن البطارية مفيدًا.</translation>
 <translation id="3977512764614765090">مستوى البطارية عند <ph name="PERCENTAGE" />% ويجري شحنها.</translation>
+<translation id="3982013579989864579">هل تريد تبديل مصدر إخراج الصوت؟</translation>
 <translation id="3984536049089846927">الصفحة التالية</translation>
 <translation id="3986082989454912832">ردّ</translation>
 <translation id="3990002060657467458">‏في قائمة "الإعدادات السريعة"، ستظهر لك عناصر التحكّم الشائعة على جهازك، مثل Wi-Fi والبلوتوث ومستوى الصوت. يمكنك من خلال القائمة أيضًا أخذ لقطات شاشة.</translation>
@@ -818,6 +821,7 @@
 <translation id="4150201353443180367">عرض</translation>
 <translation id="4156293514828496577">‏يتبقّى ‎<ph name="PERCENTAGE" />% من شحن البطارية (حوالي <ph name="TIME_LEFT" />).
 لإطالة عمر البطارية، تم حصر وظائف بعض الميزات.</translation>
+<translation id="4160919062868802509">تم رصد مصادر صوتية متعددة</translation>
 <translation id="4165275524535002941">قد يكون الكابل غير متوافق مع الشاشات</translation>
 <translation id="4177415338862979658">انقر للاطّلاع على التفاصيل.</translation>
 <translation id="4177913004758410636">{0,plural, =1{تحديث الجهاز خلال يوم واحد}zero{تحديث الجهاز خلال # يوم}two{تحديث الجهاز خلال يومين}few{تحديث الجهاز خلال # أيام}many{تحديث الجهاز خلال # يومًا}other{تحديث الجهاز خلال # يوم}}</translation>
@@ -1016,6 +1020,7 @@
 <translation id="4871905435473761992">يمكنك عرض تفاصيل نقطة الاتصال. لا توفّر شبكة جوّالك ميزة نقطة الاتصال.</translation>
 <translation id="4872237917498892622">‏Alt+مفتاح البحث أو Shift</translation>
 <translation id="4872852897273142380">التركيز على شريط الإشارات أو تمييزه (إذا كان مرئيًا)</translation>
+<translation id="4876935764454575645">اختيار المحتوى الصوتي</translation>
 <translation id="4881323000405981760">‏التأثيرات غير متاحة على تطبيقات Linux.</translation>
 <translation id="4881695831933465202">فتح</translation>
 <translation id="4889868803215848840">يُرجى تقديم ملاحظات اختيارية لتحسين الاقتراحات:</translation>
@@ -1092,6 +1097,7 @@
 <translation id="5121628974188116412">الانتقال إلى أسفل الصفحة</translation>
 <translation id="5122517996953421795">معاينة "<ph name="DESK_NAME" />": جهاز سطح المكتب غير نشِط.</translation>
 <translation id="5136175204352732067">تم توصيل لوحة مفاتيح مختلفة</translation>
+<translation id="5144005092084035179">هل تريد تبديل مصدر إدخال الصوت؟</translation>
 <translation id="5147567197700016471">تم فتح القفل.</translation>
 <translation id="5150070631291639005">إعدادات الخصوصية</translation>
 <translation id="5155897006997040331">سرعة القراءة</translation>
@@ -1792,6 +1798,7 @@
 <translation id="7780094051999721182">الاختصارات</translation>
 <translation id="7780159184141939021">تدوير الشاشة</translation>
 <translation id="7781829728241885113">أمس</translation>
+<translation id="7787212146956232129">تم ضبط أجهزة الإدخال والإخراج. انتقِل إلى "الإعدادات" لتغيير ذلك.</translation>
 <translation id="7792590255364786396">مرئي</translation>
 <translation id="7796735576426975947">تم إخفاء إشعار جديد</translation>
 <translation id="7798302898096527229">‏اضغط على مفتاح البحث أو المفتاح Shift للإلغاء.</translation>
@@ -2098,6 +2105,7 @@
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{ملف واحد}zero{‫# ملف}two{ملفان}few{‫# ملفات}many{‫# ملفًا}other{‫# ملف}}</translation>
 <translation id="8936501819958976551">غير مفعّلة</translation>
 <translation id="8938800817013097409">‏جهاز USB-C (المنفذ الأيمن في الخلف)</translation>
+<translation id="8939855324412367560">إنّ مصدر إدخال الصوت هو "<ph name="INPUT_DEVICE_NAME" />" ومصدر إخراجه هو "<ph name="OUTPUT_DEVICE_NAME" />". انتقِل إلى "الإعدادات" لتغييرهما.</translation>
 <translation id="8940956008527784070">طاقة البطارية منخفضة (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314">لم يتم وضع علامة في مربّع اختيار الملف الشخصي "<ph name="PROFILE_NAME" />" وعنوان بريده الإلكتروني <ph name="EMAIL" />.</translation>
 <translation id="8949925099261528566">تم الاتصال بالشبكة ولكنها غير متصلة بالإنترنت.</translation>
@@ -2155,6 +2163,7 @@
 <translation id="9178475906033259337">عرض نتيجة واحدة عن <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">تسمح لك هذه الميزة بالوصول بسرعة إلى أي مستخدم سجّل دخوله بدون طلب كلمة مرور. لا تستخدم هذه الميزة إلا مع الحسابات التي تثق بها.</translation>
 <translation id="9183456764293710005">المكبِّر بملء الشاشة</translation>
+<translation id="9192133205265227850">استخدام "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">إرسال إلى مستلم غير معروف</translation>
 <translation id="9194617393863864469">تسجيل دخول مستخدم آخر...</translation>
 <translation id="9195990613383871904">غدًا</translation>

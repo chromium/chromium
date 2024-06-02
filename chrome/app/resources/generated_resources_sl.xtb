@@ -5240,6 +5240,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4867433544163083783">Preverjanje, ali je zavihke mogoče organizirati</translation>
 <translation id="4868281708609571334">Naučite Pomočnika Google prepoznati glas otroka <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">To pogovorno okno trenutno ni izbrano. Pritisnite Command + Shift + Option A, če ga želite izbrati.</translation>
+<translation id="4868351661310357223">Namestite aplikacije in igre iz Googla Play v napravi <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">Branje omrežnih podatkov za ChromeOS.</translation>
 <translation id="4870724079713069532">Podprte datoteke lahko s to aplikacijo odpirate in urejate v raziskovalcu datotek ali drugih aplikacijah. Če želite upravljati, katere datoteke se v tej aplikaciji privzeto odprejo, odprite <ph name="BEGIN_LINK" />nastavitve sistema Windows<ph name="END_LINK" />.</translation>
 <translation id="4870995365819149457">Nekatere podprte povezave se bodo še vedno odprle v aplikacijah <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> in še 1 aplikaciji.</translation>
@@ -8068,6 +8069,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7007648447224463482">Odpri vse v novem oknu</translation>
 <translation id="7008815993384338777">Trenutno ni gostovanja</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> uporablja vašo kamero.</translation>
+<translation id="701020165009334820">Aplikacije in igre za Android lahko prenesete iz Trgovine Play.</translation>
 <translation id="701080569351381435">Ogled izvorne kode</translation>
 <translation id="7011797924920577670">ocenjuje vaša zanimanja</translation>
 <translation id="7012430956470647760">Starševski nadzor za aplikacije</translation>

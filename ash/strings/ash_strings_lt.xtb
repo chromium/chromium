@@ -951,6 +951,7 @@ Prijungtas vienas įrenginys.</translation>
 <translation id="4628757576491864469">Įrenginiai</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, įvertinimas žvaigždutėmis <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Paspauskite „Ctrl“ + W, kad ištrintumėte</translation>
+<translation id="4635501805800894201">{0,plural, =0{Grąžinkite ankstesnę įrenginio versiją dabar}=1{Grąžinkite ankstesnę įrenginio versiją per sekundę}one{Grąžinkite ankstesnę įrenginio versiją per # sekundę}few{Grąžinkite ankstesnę įrenginio versiją per # sekundes}many{Grąžinkite ankstesnę įrenginio versiją per # sekundės}other{Grąžinkite ankstesnę įrenginio versiją per # sekundžių}}</translation>
 <translation id="4642092649622328492">Padaryti dalinę ekrano kopiją</translation>
 <translation id="4644727592819780893">Sritis per maža, kad būtų galima pateikti fotoaparato peržiūroje</translation>
 <translation id="4648249871170053485">„<ph name="APP_NAME" />“, programos rekomendacija</translation>
@@ -980,6 +981,7 @@ Prijungtas vienas įrenginys.</translation>
 <translation id="4735944890391795473">12 darbalaukis</translation>
 <translation id="473775607612524610">Atnaujinti</translation>
 <translation id="4740516757091333363">Ištrinti išsaugotą darbalaukį?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Grąžinkite ankstesnę įrenginio versiją per vieną dieną}one{Grąžinkite ankstesnę įrenginio versiją per # dieną}few{Grąžinkite ankstesnę įrenginio versiją per # dienas}many{Grąžinkite ankstesnę įrenginio versiją per # dienos}other{Grąžinkite ankstesnę įrenginio versiją per # dienų}}</translation>
 <translation id="4747410141429390146">Atrakinkite, kad galėtumėte peržiūrėti pranešimus</translation>
 <translation id="4752784485658729358">Leidžiami tik šeši išsaugoti darbalaukiai. Pašalinkite darbalaukį, kad išsaugotumėte naują.</translation>
 <translation id="4759238208242260848">Atsisiuntimai</translation>
@@ -1315,6 +1317,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="5916646100036936191">Naujas pranešimas, iš viso <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Įjungta</translation>
 <translation id="5920710855273935292">Mikrofonas nutildytas.</translation>
+<translation id="5928083197428724029">Atnaujinti reikalauja <ph name="MANAGER" /></translation>
 <translation id="5946788582095584774">„<ph name="FEATURE_NAME" />“ įjungta.</translation>
 <translation id="5947494881799873997">Grąžinti</translation>
 <translation id="595202126637698455">Įgalintas našumo stebėjimas</translation>
@@ -1433,6 +1436,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="6376931439017688372">„Bluetooth“ įjungtas</translation>
 <translation id="6378515133128829137">Prisegti langą dešinėje</translation>
 <translation id="6381109794406942707">Jei norite atrakinti įrenginį, įveskite PIN kodą.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Grąžinkite ankstesnę įrenginio versiją per valandą}one{Grąžinkite ankstesnę įrenginio versiją per # valandą}few{Grąžinkite ankstesnę įrenginio versiją per # valandas}many{Grąžinkite ankstesnę įrenginio versiją per # valandos}other{Grąžinkite ankstesnę įrenginio versiją per # valandų}}</translation>
 <translation id="638716340450135524">Įjungti prieigą prie vaizdo kameros</translation>
 <translation id="639644700271529076">DIDŽIŲJŲ RAIDŽIŲ RAŠYMAS išjungtas</translation>
 <translation id="6406458002328242616">Redaguoti laikmatį. <ph name="FOCUS_DURATION" />.</translation>
@@ -1455,6 +1459,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="6459472438155181876">Ekranas išplečiamas į <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">vaizdai</translation>
 <translation id="6467290994038932560">Įjungta naudojant „<ph name="GAME_APP_NAME" />“</translation>
+<translation id="6468406072297048412">{0,plural, =1{Grąžinkite ankstesnę įrenginio versiją per minutę}one{Grąžinkite ankstesnę įrenginio versiją per # minutę}few{Grąžinkite ankstesnę įrenginio versiją per # minutes}many{Grąžinkite ankstesnę įrenginio versiją per # minutės}other{Grąžinkite ankstesnę įrenginio versiją per # minučių}}</translation>
 <translation id="6469104339369989396">Perjungti viešosios interneto prieigos tašką</translation>
 <translation id="6477681113376365978">Neįmanoma atsiųsti failo</translation>
 <translation id="6482559668224714696">Viso ekrano didintuvas</translation>
@@ -1578,6 +1583,7 @@ Naujas įdiegimas</translation>
 <translation id="6917259695595127329">Užduotys paskutinį kartą atnaujintos: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Nepavyko atpažinti išmaniosios kortelės. Bandykite dar kartą.</translation>
 <translation id="692135145298539227">ištrinti</translation>
+<translation id="6921427376813842559">Įrenginio atnaujinimas</translation>
 <translation id="6929081673585394903">Rodyti valdiklius</translation>
 <translation id="6931576957638141829">Išsaugoti į</translation>
 <translation id="6942518653766415536">Įrašo formato meniu</translation>
@@ -1665,6 +1671,7 @@ Naujas įdiegimas</translation>
 <translation id="7303365578352795231">Atsakoma kitame įrenginyje.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administratorius iš naujo nustato jūsų „eSIM“ kortelę. Tai gali užtrukti kelias minutes.</translation>
+<translation id="7312761820869643657">Grąžinkite ankstesnę įrenginio versiją</translation>
 <translation id="7313193732017069507">Išskleisti fotoaparatą</translation>
 <translation id="7330397557116570022">Eikite į teksto lauką, kad galėtumėte naudoti diktavimo funkciją</translation>
 <translation id="7331646370422660166">„Alt“ + rodyklė žemyn</translation>
@@ -2181,6 +2188,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="925832987464884575">Peržiūrų slėpimas</translation>
 <translation id="938407504481277932">Dabartinis darbalaukis: „<ph name="DESK_NAME" />“. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_INDEX" /> darbalaukis iš <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">„What's on my calendar?“ (Kas mano kalendoriuje?)</translation>
+<translation id="94468042118567862">Įrenginys neatnaujintas</translation>
 <translation id="945383118875625837">Vilkite nuorodą į žymių juostą</translation>
 <translation id="945522503751344254">Siųsti atsiliepimą</translation>
 <translation id="951991426597076286">Atmesti</translation>
