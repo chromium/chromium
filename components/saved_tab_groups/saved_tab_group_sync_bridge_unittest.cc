@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
@@ -151,12 +152,10 @@ syncer::EntityChangeList CreateEntityChangeListFromGroup(
 class SavedTabGroupSyncBridgeTest : public ::testing::Test {
  public:
   SavedTabGroupSyncBridgeTest()
-      : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
-    InitializeBridge();
-  }
+      : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
   ~SavedTabGroupSyncBridgeTest() override = default;
 
-  void InitializeBridge() {
+  void SetUp() override {
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kSavedTabGroupSpecificsToDataMigration, false);
     ON_CALL(processor_, IsTrackingMetadata())
@@ -717,16 +716,16 @@ TEST_F(SavedTabGroupSyncBridgeTest, RemoveGroupLocally) {
   saved_tab_group_model_.Remove(group_guid);
 
   // Verify that the orphaned tabs are still stored locally in the sync bridge.
-  const std::vector<sync_pb::SavedTabGroupSpecifics>& tabs_missing_groups =
+  const std::vector<proto::SavedTabGroupData>& tabs_missing_groups =
       bridge_->GetTabsMissingGroupsForTesting();
 
   auto it_1 = base::ranges::find_if(
-      tabs_missing_groups, [&](sync_pb::SavedTabGroupSpecifics specifics) {
-        return specifics.guid() == tab_1_guid.AsLowercaseString();
+      tabs_missing_groups, [&](proto::SavedTabGroupData data) {
+        return data.specifics().guid() == tab_1_guid.AsLowercaseString();
       });
   auto it_2 = base::ranges::find_if(
-      tabs_missing_groups, [&](sync_pb::SavedTabGroupSpecifics specifics) {
-        return specifics.guid() == tab_2_guid.AsLowercaseString();
+      tabs_missing_groups, [&](proto::SavedTabGroupData data) {
+        return data.specifics().guid() == tab_2_guid.AsLowercaseString();
       });
 
   EXPECT_TRUE(it_1 != tabs_missing_groups.end());
@@ -945,6 +944,300 @@ TEST_F(SavedTabGroupSyncBridgeTest, Group) {
 
   std::optional<std::string> maybe_cache_guid = bridge_->GetLocalCacheGuid();
   EXPECT_EQ(maybe_cache_guid, expected_guid);
+}
+
+class SavedTabGroupSyncBridgeMigrationTest
+    : public SavedTabGroupSyncBridgeTest {
+ public:
+  void SetUp() override {
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kSavedTabGroupSpecificsToDataMigration, false);
+    ON_CALL(processor_, IsTrackingMetadata())
+        .WillByDefault(testing::Return(true));
+  }
+
+  void CreateBridge(bool has_migrated) {
+    pref_service_.SetBoolean(prefs::kSavedTabGroupSpecificsToDataMigration,
+                             has_migrated);
+    bridge_ = std::make_unique<SavedTabGroupSyncBridge>(
+        &saved_tab_group_model_,
+        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
+        processor_.CreateForwardingProcessor(), &pref_service_);
+    task_environment_.RunUntilIdle();
+  }
+};
+
+TEST_F(
+    SavedTabGroupSyncBridgeMigrationTest,
+    MigrateSpecificsToSavedTabGroupData_OldToNewFormat_Success_OneGroup_VerifyNewRecord) {
+  // Create a SavedTabGroup and serialize in the old format.
+  SavedTabGroup group(u"Test Group", tab_groups::TabGroupColorId::kBlue, {}, 0,
+                      base::Uuid::GenerateRandomV4());
+  sync_pb::SavedTabGroupSpecifics old_specifics =
+      SavedTabGroupSyncBridge::SavedTabGroupToSpecificsForTest(group);
+
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+  batch->WriteData(old_specifics.guid(), old_specifics.SerializeAsString());
+  store_->CommitWriteBatch(std::move(batch), base::DoNothing());
+
+  // Create the bridge. That should trigger migration.
+  CreateBridge(/*has_migrated=*/false);
+  task_environment_.RunUntilIdle();
+
+  // Read the migrated data from the store.
+  std::unique_ptr<syncer::ModelTypeStore::RecordList> entries;
+  store_->ReadAllData(base::BindLambdaForTesting(
+      [&](const std::optional<syncer::ModelError>& error,
+          std::unique_ptr<syncer::ModelTypeStore::RecordList> data) {
+        entries = std::move(data);
+      }));
+  task_environment_.RunUntilIdle();
+
+  // Verify the migrated data
+  ASSERT_TRUE(entries);
+  EXPECT_EQ(entries->size(), 1u);
+  const syncer::ModelTypeStore::Record& record = entries->at(0);
+  proto::SavedTabGroupData migrated_data;
+  ASSERT_TRUE(migrated_data.ParseFromString(record.value));
+
+  EXPECT_TRUE(AreGroupSpecificsEqual(migrated_data.specifics(), old_specifics));
+
+  // Verify that the migration pref is set to true.
+  EXPECT_TRUE(
+      pref_service_.GetBoolean(prefs::kSavedTabGroupSpecificsToDataMigration));
+}
+
+TEST_F(
+    SavedTabGroupSyncBridgeMigrationTest,
+    MigrateSpecificsToSavedTabGroupData_OldToNewFormat_Success_OneGroupWithOneTab) {
+  // Create a SavedTabGroup with one tab and serialize in the old format.
+  SavedTabGroup group(u"Test Group", tab_groups::TabGroupColorId::kBlue, {}, 0,
+                      base::Uuid::GenerateRandomV4());
+  SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
+                         group.saved_guid(), 0);
+  group.AddTabLocally(tab_1);
+
+  sync_pb::SavedTabGroupSpecifics old_specifics =
+      SavedTabGroupSyncBridge::SavedTabGroupToSpecificsForTest(group);
+  sync_pb::SavedTabGroupSpecifics old_tab_specifics =
+      SavedTabGroupSyncBridge::SavedTabGroupTabToSpecificsForTest(tab_1);
+
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+  batch->WriteData(old_specifics.guid(), old_specifics.SerializeAsString());
+  batch->WriteData(old_tab_specifics.guid(),
+                   old_tab_specifics.SerializeAsString());
+  store_->CommitWriteBatch(std::move(batch), base::DoNothing());
+
+  // Create the bridge. That should trigger migration.
+  CreateBridge(/*has_migrated=*/false);
+  task_environment_.RunUntilIdle();
+
+  // Read the migrated data from the store.
+  std::unique_ptr<syncer::ModelTypeStore::RecordList> entries;
+  store_->ReadAllData(base::BindLambdaForTesting(
+      [&](const std::optional<syncer::ModelError>& error,
+          std::unique_ptr<syncer::ModelTypeStore::RecordList> data) {
+        entries = std::move(data);
+      }));
+  task_environment_.RunUntilIdle();
+
+  // Verify the migrated data
+  ASSERT_TRUE(entries);
+  EXPECT_EQ(entries->size(), 2u);
+  EXPECT_EQ(1u, saved_tab_group_model_.saved_tab_groups().size());
+
+  // Verify the migrated data in the model.
+  const SavedTabGroup* migrated_group =
+      saved_tab_group_model_.Get(group.saved_guid());
+  EXPECT_TRUE(migrated_group);  // The group should exist in the model
+
+  // Compare the migrated group with the original group (excluding
+  // local_group_id).
+  EXPECT_EQ(migrated_group->title(), group.title());
+  EXPECT_EQ(migrated_group->color(), group.color());
+  EXPECT_EQ(migrated_group->position(), group.position());
+
+  EXPECT_FALSE(migrated_group->local_group_id().has_value());
+
+  // Verify the migrated tabs.
+  const SavedTabGroupTab* migrated_tab =
+      migrated_group->GetTab(tab_1.saved_tab_guid());
+  EXPECT_TRUE(migrated_tab);
+  EXPECT_EQ(migrated_tab->url(), tab_1.url());
+  EXPECT_EQ(migrated_tab->title(), tab_1.title());
+
+  // Verify that the migration pref is set to true.
+  EXPECT_TRUE(
+      pref_service_.GetBoolean(prefs::kSavedTabGroupSpecificsToDataMigration));
+}
+
+TEST_F(SavedTabGroupSyncBridgeMigrationTest,
+       MigrateSpecificsToSavedTabGroupData_CorruptedData) {
+  // 1. Create invalid data.
+  std::string invalid_data = "this is not a valid protobuf";
+
+  // 2. Write the invalid data to the ModelTypeStore.
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+  batch->WriteData(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                   invalid_data);
+  store_->CommitWriteBatch(std::move(batch), base::DoNothing());
+
+  // 3. Create the bridge (triggering migration).
+  CreateBridge(/*has_migrated=*/false);
+  task_environment_.RunUntilIdle();
+
+  // 4. Verify that the migration didn't crash and the model is empty.
+  EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
+}
+
+TEST_F(SavedTabGroupSyncBridgeMigrationTest,
+       SavedTabGroupSyncBridgeMigrationTest_AlreadyMigrated) {
+  // Create a SavedTabGroup and serialize in the new format.
+  SavedTabGroup group(u"Test Group", tab_groups::TabGroupColorId::kBlue, {}, 0,
+                      base::Uuid::GenerateRandomV4());
+
+  proto::SavedTabGroupData group_data =
+      SavedTabGroupSyncBridge::SavedTabGroupToDataForTest(group);
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+  batch->WriteData(group_data.specifics().guid(),
+                   group_data.SerializeAsString());
+  store_->CommitWriteBatch(std::move(batch), base::DoNothing());
+
+  // Create the bridge with pref set to true. That should not trigger migration.
+  CreateBridge(/*has_migrated=*/true);
+  task_environment_.RunUntilIdle();
+
+  // Read the migrated data from the store.
+  std::unique_ptr<syncer::ModelTypeStore::RecordList> entries;
+  store_->ReadAllData(base::BindLambdaForTesting(
+      [&](const std::optional<syncer::ModelError>& error,
+          std::unique_ptr<syncer::ModelTypeStore::RecordList> data) {
+        entries = std::move(data);
+      }));
+  task_environment_.RunUntilIdle();
+
+  // Verify the migrated data. It should match the original.
+  ASSERT_TRUE(entries);
+  EXPECT_EQ(entries->size(), 1u);
+  const syncer::ModelTypeStore::Record& record = entries->at(0);
+  proto::SavedTabGroupData migrated_data;
+  EXPECT_EQ(group_data.SerializeAsString(), record.value);
+  ASSERT_TRUE(migrated_data.ParseFromString(record.value));
+  EXPECT_TRUE(AreGroupSpecificsEqual(migrated_data.specifics(),
+                                     group_data.specifics()));
+
+  EXPECT_TRUE(
+      pref_service_.GetBoolean(prefs::kSavedTabGroupSpecificsToDataMigration));
+}
+
+TEST_F(SavedTabGroupSyncBridgeMigrationTest,
+       SavedTabGroupSyncBridgeMigrationTest_NewFormatBeforeMigration) {
+  // Create a SavedTabGroup and serialize in the new format.
+  SavedTabGroup group(u"Test Group", tab_groups::TabGroupColorId::kBlue, {}, 0,
+                      base::Uuid::GenerateRandomV4());
+
+  proto::SavedTabGroupData group_data =
+      SavedTabGroupSyncBridge::SavedTabGroupToDataForTest(group);
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+  batch->WriteData(group_data.specifics().guid(),
+                   group_data.SerializeAsString());
+  store_->CommitWriteBatch(std::move(batch), base::DoNothing());
+
+  // Create the bridge with pref set to true. That should not trigger migration.
+  CreateBridge(/*has_migrated=*/false);
+  task_environment_.RunUntilIdle();
+
+  // Read the migrated data from the store.
+  std::unique_ptr<syncer::ModelTypeStore::RecordList> entries;
+  store_->ReadAllData(base::BindLambdaForTesting(
+      [&](const std::optional<syncer::ModelError>& error,
+          std::unique_ptr<syncer::ModelTypeStore::RecordList> data) {
+        entries = std::move(data);
+      }));
+  task_environment_.RunUntilIdle();
+
+  // Verify the migrated data. It should match the original.
+  ASSERT_TRUE(entries);
+  EXPECT_EQ(entries->size(), 1u);
+  const syncer::ModelTypeStore::Record& record = entries->at(0);
+  proto::SavedTabGroupData migrated_data;
+  EXPECT_EQ(group_data.SerializeAsString(), record.value);
+  ASSERT_TRUE(migrated_data.ParseFromString(record.value));
+  EXPECT_TRUE(AreGroupSpecificsEqual(migrated_data.specifics(),
+                                     group_data.specifics()));
+
+  EXPECT_TRUE(
+      pref_service_.GetBoolean(prefs::kSavedTabGroupSpecificsToDataMigration));
+}
+
+TEST_F(
+    SavedTabGroupSyncBridgeMigrationTest,
+    MigrateSpecificsToSavedTabGroupData_AlreadyNewFormatBeforeMigration_Success_OneGroupWithOneTab) {
+  // Create a SavedTabGroup with one tab and serialize in the old format.
+  SavedTabGroup group(u"Test Group", tab_groups::TabGroupColorId::kBlue, {}, 0,
+                      base::Uuid::GenerateRandomV4());
+  SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
+                         group.saved_guid(), 0);
+  group.AddTabLocally(tab_1);
+
+  proto::SavedTabGroupData group_data =
+      SavedTabGroupSyncBridge::SavedTabGroupToDataForTest(group);
+  proto::SavedTabGroupData tab_data =
+      SavedTabGroupSyncBridge::SavedTabGroupTabToDataForTest(tab_1);
+
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+  batch->WriteData(group_data.specifics().guid(),
+                   group_data.SerializeAsString());
+  batch->WriteData(tab_data.specifics().guid(), tab_data.SerializeAsString());
+  store_->CommitWriteBatch(std::move(batch), base::DoNothing());
+
+  // Create the bridge. That should trigger migration.
+  CreateBridge(/*has_migrated=*/false);
+  task_environment_.RunUntilIdle();
+
+  // Read the migrated data from the store.
+  std::unique_ptr<syncer::ModelTypeStore::RecordList> entries;
+  store_->ReadAllData(base::BindLambdaForTesting(
+      [&](const std::optional<syncer::ModelError>& error,
+          std::unique_ptr<syncer::ModelTypeStore::RecordList> data) {
+        entries = std::move(data);
+      }));
+  task_environment_.RunUntilIdle();
+
+  // Verify the migrated data
+  ASSERT_TRUE(entries);
+  EXPECT_EQ(entries->size(), 2u);
+  EXPECT_EQ(1u, saved_tab_group_model_.saved_tab_groups().size());
+
+  // Verify the migrated data in the model.
+  const SavedTabGroup* migrated_group =
+      saved_tab_group_model_.Get(group.saved_guid());
+  EXPECT_TRUE(migrated_group);  // The group should exist in the model
+
+  // Compare the migrated group with the original group (excluding
+  // local_group_id).
+  EXPECT_EQ(migrated_group->title(), group.title());
+  EXPECT_EQ(migrated_group->color(), group.color());
+  EXPECT_EQ(migrated_group->position(), group.position());
+
+  EXPECT_FALSE(migrated_group->local_group_id().has_value());
+
+  // Verify the migrated tabs.
+  const SavedTabGroupTab* migrated_tab =
+      migrated_group->GetTab(tab_1.saved_tab_guid());
+  EXPECT_TRUE(migrated_tab);
+  EXPECT_EQ(migrated_tab->url(), tab_1.url());
+  EXPECT_EQ(migrated_tab->title(), tab_1.title());
+
+  // Verify that the migration pref is set to true.
+  EXPECT_TRUE(
+      pref_service_.GetBoolean(prefs::kSavedTabGroupSpecificsToDataMigration));
 }
 
 }  // namespace tab_groups

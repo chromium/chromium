@@ -131,5 +131,38 @@ void RecordTabCountMismatchOnConnect(size_t tabs_in_saved_group,
   }
 }
 
+void RecordMigrationResult(MigrationResult migration_result) {
+  base::UmaHistogramEnumeration(
+      "TabGroups.SavedTabGroupSyncBridge.MigrationResult", migration_result,
+      MigrationResult::kCount);
+}
+
+void RecordSpecificsParseFailureCount(int parse_failure_count,
+                                      int total_entries) {
+  int parse_failure_percentage = 0;
+  if (total_entries != 0) {
+    parse_failure_percentage = base::ClampRound(
+        100.f * (static_cast<float>(parse_failure_count) / total_entries));
+  }
+
+  base::UmaHistogramPercentage(
+      "TabGroups.SpecificsToDataMigration.ParseFailurePercentage",
+      parse_failure_percentage);
+}
+
+void RecordParsedSavedTabGroupDataCount(int parsed_entries_count,
+                                        int total_entries) {
+  int parse_failure_percentage = 0;
+  if (total_entries != 0) {
+    parse_failure_percentage = base::ClampRound(
+        100.f * (static_cast<float>(total_entries - parsed_entries_count) /
+                 total_entries));
+  }
+
+  base::UmaHistogramPercentage(
+      "TabGroups.ParseSavedTabGroupDataEntries.ParseFailurePercentage",
+      parse_failure_percentage);
+}
+
 }  // namespace stats
 }  // namespace tab_groups

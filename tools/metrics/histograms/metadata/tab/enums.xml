@@ -106,6 +106,30 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Learn more clicked"/>
 </enum>
 
+<!-- LINT.IfChange(SavedTabGroupSyncBridge.MigrationResult) -->
+
+<enum name="SavedTabGroupSyncBridge.MigrationResult">
+  <int value="0" label="Store creation failed"/>
+  <int value="1" label="Store load started"/>
+  <int value="2" label="Store load failed"/>
+  <int value="3" label="Store load completed"/>
+  <int value="4" label="Specifics to data migration started"/>
+  <int value="5"
+      label="Specifics to data migration parse failed at least once"/>
+  <int value="6" label="Specifics to data migration write failed"/>
+  <int value="7" label="Specifics to data migration success"/>
+  <int value="8" label="Specifics to data migration already complete"/>
+  <int value="9" label="Shared pref migration started"/>
+  <int value="10" label="Shared pref migration parse failed at least once"/>
+  <int value="11" label="Shared pref migration at least one entry migrated"/>
+  <int value="12" label="Shared pref migration write failed"/>
+  <int value="13" label="Shared pref migration success"/>
+  <int value="14" label="Read all metadata failed"/>
+  <int value="15" label="Read all metadata success"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/saved_tab_groups/stats.h:MigrationResult) -->
+
 <enum name="TabActivationTypes">
   <int value="0" label="Activate a tab"/>
   <int value="1" label="Activate the context menu of a tab"/>

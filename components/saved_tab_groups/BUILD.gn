@@ -12,8 +12,6 @@ source_set("core") {
   sources = [
     "empty_tab_group_store_delegate.cc",
     "empty_tab_group_store_delegate.h",
-    "stats.cc",
-    "stats.h",
     "tab_group_store.cc",
     "tab_group_store.h",
     "tab_group_store_delegate.h",
@@ -65,6 +63,8 @@ source_set("model") {
     "saved_tab_group_model_observer.h",
     "saved_tab_group_tab.cc",
     "saved_tab_group_tab.h",
+    "stats.cc",
+    "stats.h",
     "types.h",
   ]
   deps = [
@@ -230,7 +230,10 @@ source_set("saved_tab_group_bridge") {
     "saved_tab_group_sync_bridge.h",
   ]
 
-  deps = [ ":model" ]
+  deps = [
+    ":model",
+    "//components/saved_tab_groups/proto",
+  ]
 
   public_deps = [
     "//base",
@@ -253,6 +256,7 @@ source_set("saved_tab_group_bridge_unittests") {
     "//base/test:test_support",
     "//components/pref_registry:pref_registry",
     "//components/prefs:test_support",
+    "//components/saved_tab_groups/proto",
     "//components/sync",
     "//components/sync:test_support",
     "//components/tab_groups",

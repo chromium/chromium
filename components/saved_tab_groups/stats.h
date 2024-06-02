@@ -13,6 +13,33 @@ class SavedTabGroupModel;
 
 namespace stats {
 
+// Please keep in sync with "SavedTabGroupSyncBridge.MigrationResult" in
+// tools/metrics/histograms/metadata/tab/enums.xml. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+//
+// LINT.IfChange(MigrationResult)
+enum class MigrationResult {
+  kStoreCreateFailed = 0,
+  kStoreLoadStarted = 1,
+  kStoreLoadFailed = 2,
+  kStoreLoadCompleted = 3,
+  kSpecificsToDataMigrationStarted = 4,
+  kSpecificsToDataMigrationParseFailedAtLeastOnce = 5,
+  kSpecificsToDataMigrationWriteFailed = 6,
+  kSpecificsToDataMigrationSuccess = 7,
+  kSpecificsToDataMigrationAlreadyComplete = 8,
+  kSharedPrefMigrationStarted = 9,
+  kSharedPrefMigrationParseFailedAtLeastOnce = 10,
+  kSharedPrefMigrationAtLeastOneEntryMigrated = 11,
+  kSharedPrefMigrationWriteFailed = 12,
+  kSharedPrefMigrationSuccess = 13,
+  kReadAllMetadataFailed = 14,
+  kReadAllMetadataSuccess = 15,
+  kCount
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SavedTabGroupSyncBridge.MigrationResult)
+
 // Records metrics about the state of model such as the number of saved groups,
 // the number of tabs in each group, and more.
 void RecordSavedTabGroupMetrics(SavedTabGroupModel* model);
@@ -26,6 +53,19 @@ void RecordSyncedTabGroupMetrics(SavedTabGroupModel* model);
 // synced version when the local tab group is connected with the synced one.
 void RecordTabCountMismatchOnConnect(size_t tabs_in_saved_group,
                                      size_t tabs_in_group);
+
+// Records various migration step outcomes during initialization.
+void RecordMigrationResult(MigrationResult migration_result);
+
+// Records the number of entries in ModelTypeStore that failed to parse as a
+// specific during migration.
+void RecordSpecificsParseFailureCount(int parse_failure_count,
+                                      int total_entries);
+
+// Records the number of entries in ModelTypeStore that failed to parse as a
+// SavedTabGroupData in the final stage of startup.
+void RecordParsedSavedTabGroupDataCount(int parsed_entries_count,
+                                        int total_entries);
 
 }  // namespace stats
 }  // namespace tab_groups

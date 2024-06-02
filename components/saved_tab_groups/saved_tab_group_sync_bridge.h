@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
+#include "components/saved_tab_groups/proto/saved_tab_group_data.pb.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
@@ -76,7 +77,7 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
   void SavedTabGroupTabsReorderedLocally(const base::Uuid& group_guid) override;
   void SavedTabGroupReorderedLocally() override;
 
-  const std::vector<sync_pb::SavedTabGroupSpecifics>&
+  const std::vector<proto::SavedTabGroupData>&
   GetTabsMissingGroupsForTesting() {
     return tabs_missing_groups_;
   }
@@ -94,9 +95,18 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
   static sync_pb::SavedTabGroupSpecifics SavedTabGroupTabToSpecificsForTest(
       const SavedTabGroupTab& tab);
 
+  static SavedTabGroup DataToSavedTabGroupForTest(
+      const proto::SavedTabGroupData& data);
+  static proto::SavedTabGroupData SavedTabGroupToDataForTest(
+      const SavedTabGroup& group);
+  static SavedTabGroupTab DataToSavedTabGroupTabForTest(
+      const proto::SavedTabGroupData& data);
+  static proto::SavedTabGroupData SavedTabGroupTabToDataForTest(
+      const SavedTabGroupTab& tab);
+
  private:
   // Updates and/or adds the specifics into the ModelTypeStore.
-  void UpsertEntitySpecific(const sync_pb::SavedTabGroupSpecifics& specifics,
+  void UpsertEntitySpecific(const proto::SavedTabGroupData& data,
                             syncer::ModelTypeStore::WriteBatch* write_batch);
 
   // Removes the specifics pointed to by `guid` from the ModelTypeStore.
@@ -131,7 +141,7 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
 
   // Adds the entry into `batch`.
   void AddEntryToBatch(syncer::MutableDataBatch* batch,
-                       sync_pb::SavedTabGroupSpecifics specifics);
+                       proto::SavedTabGroupData specifics);
 
   // Inform the processor of a new or updated SavedTabGroupSpecifics and add the
   // necessary metadata changes into `metadata_change_list`.
@@ -158,6 +168,12 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
       const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
+  // Called to migrate the SavedTabGroupSpecfics to SavedTabGroupData.
+  void MigrateSpecificsToSavedTabGroupData(
+      std::unique_ptr<syncer::ModelTypeStore::RecordList> entries);
+  void OnSpecificsToDataMigrationComplete(
+      const std::optional<syncer::ModelError>& error);
+
   // The ModelTypeStore used for local storage.
   std::unique_ptr<syncer::ModelTypeStore> store_;
 
@@ -168,11 +184,15 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
   raw_ptr<PrefService> pref_service_;
 
   // Used to store tabs whose groups were not added locally yet.
-  std::vector<sync_pb::SavedTabGroupSpecifics> tabs_missing_groups_;
+  std::vector<proto::SavedTabGroupData> tabs_missing_groups_;
 
   // Observes the SavedTabGroupModel.
   base::ScopedObservation<SavedTabGroupModel, SavedTabGroupModelObserver>
       observation_{this};
+
+  // Only for metrics. Used to ensure that a certain metrics is recorded at max
+  // once per chrome session.
+  bool migration_already_complete_recorded_ = false;
 
   // Allows safe temporary use of the SavedTabGroupSyncBridge object if it
   // exists at the time of use.

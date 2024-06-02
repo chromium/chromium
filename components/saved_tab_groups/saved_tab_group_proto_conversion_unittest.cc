@@ -7,9 +7,11 @@
 
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/saved_tab_group_test_utils.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,6 +48,16 @@ class SavedTabGroupConversionTest : public testing::Test {
               sp2.update_time_windows_epoch_micros());
   }
 
+  void CompareProtoGroupLocalData(const proto::SavedTabGroupData& sp1,
+                                  const proto::SavedTabGroupData& sp2) {
+    EXPECT_EQ(sp1.local_tab_group_data().local_group_id(),
+              sp2.local_tab_group_data().local_group_id());
+    EXPECT_EQ(sp1.local_tab_group_data().created_before_syncing_tab_groups(),
+              sp2.local_tab_group_data().created_before_syncing_tab_groups());
+    EXPECT_EQ(sp1.local_tab_group_data().close_and_delete_on_next_restore(),
+              sp2.local_tab_group_data().close_and_delete_on_next_restore());
+  }
+
   // Compare SavedTabGroups
   void CompareGroups(const SavedTabGroup& group1, const SavedTabGroup& group2) {
     EXPECT_EQ(group1.title(), group2.title());
@@ -71,74 +83,114 @@ class SavedTabGroupConversionTest : public testing::Test {
   base::Time time_;
 };
 
-TEST_F(SavedTabGroupConversionTest, GroupToSpecificRetainsData) {
+TEST_F(SavedTabGroupConversionTest, GroupToDataRetainsData) {
   const std::u16string& title = u"Test title";
   const tab_groups::TabGroupColorId& color = tab_groups::TabGroupColorId::kBlue;
   std::optional<base::Uuid> saved_guid = base::Uuid::GenerateRandomV4();
   std::optional<base::Time> creation_time_windows_epoch_micros = time_;
   std::optional<base::Time> update_time_windows_epoch_micros = time_;
-  SavedTabGroup group(title, color, {}, 0, saved_guid,
-                      std::nullopt,               // local_group_id
-                      "originator_cache_guid_1",  // originator_cache_guid
-                      creation_time_windows_epoch_micros,
-                      update_time_windows_epoch_micros);
+  SavedTabGroup group(
+      title, color, {}, 0, saved_guid, test::GenerateRandomTabGroupID(),
+      "originator_cache_guid_1",  // originator_cache_guid
+      creation_time_windows_epoch_micros, update_time_windows_epoch_micros);
 
-  CompareGroups(
-      group,
-      SavedTabGroupSyncBridge::SpecificsToSavedTabGroupForTest(
-          SavedTabGroupSyncBridge::SavedTabGroupToSpecificsForTest(group)));
+  proto::SavedTabGroupData proto =
+      SavedTabGroupSyncBridge::SavedTabGroupToDataForTest(group);
+  EXPECT_EQ(1, proto.version());
+
+  CompareGroups(group,
+                SavedTabGroupSyncBridge::DataToSavedTabGroupForTest(proto));
 }
 
-TEST_F(SavedTabGroupConversionTest, TabToSpecificRetainsData) {
+TEST_F(SavedTabGroupConversionTest, TabToDataRetainsData) {
   SavedTabGroupTab tab(GURL("chrome://hidden_link"), u"Hidden Title",
                        base::Uuid::GenerateRandomV4(), /*position=*/0,
                        base::Uuid::GenerateRandomV4(), std::nullopt, time_,
                        time_);
 
-  CompareTabs(
-      tab,
-      SavedTabGroupSyncBridge::SpecificsToSavedTabGroupTabForTest(
-          SavedTabGroupSyncBridge::SavedTabGroupTabToSpecificsForTest(tab)));
+  proto::SavedTabGroupData proto =
+      SavedTabGroupSyncBridge::SavedTabGroupTabToDataForTest(tab);
+  EXPECT_EQ(1, proto.version());
+
+  CompareTabs(tab,
+              SavedTabGroupSyncBridge::DataToSavedTabGroupTabForTest(proto));
 }
 
-TEST_F(SavedTabGroupConversionTest, SpecificToGroupRetainsData) {
-  sync_pb::SavedTabGroupSpecifics pb_specific;
-  pb_specific.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+TEST_F(SavedTabGroupConversionTest, DataToGroupRetainsData) {
+  proto::SavedTabGroupData pb_data;
+  sync_pb::SavedTabGroupSpecifics* pb_specific = pb_data.mutable_specifics();
+  pb_specific->set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   int64_t time_in_micros = time_.ToDeltaSinceWindowsEpoch().InMicroseconds();
-  pb_specific.set_creation_time_windows_epoch_micros(time_in_micros);
-  pb_specific.set_update_time_windows_epoch_micros(time_in_micros);
+  pb_specific->set_creation_time_windows_epoch_micros(time_in_micros);
+  pb_specific->set_update_time_windows_epoch_micros(time_in_micros);
 
-  sync_pb::SavedTabGroup* pb_group = pb_specific.mutable_group();
+  sync_pb::SavedTabGroup* pb_group = pb_specific->mutable_group();
   pb_group->set_color(sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_BLUE);
   pb_group->set_title("Another test title");
 
-  // Turn a specific into a group and back into a specific.
+  // Turn a data into a group and back into data.
   CompareGroupSpecifics(
-      pb_specific, SavedTabGroupSyncBridge::SavedTabGroupToSpecificsForTest(
-                       SavedTabGroupSyncBridge::SpecificsToSavedTabGroupForTest(
-                           pb_specific)));
+      pb_data.specifics(),
+      SavedTabGroupSyncBridge::SavedTabGroupToDataForTest(
+          SavedTabGroupSyncBridge::DataToSavedTabGroupForTest(pb_data))
+          .specifics());
 }
 
-TEST_F(SavedTabGroupConversionTest, SpecificToTabRetainsData) {
-  sync_pb::SavedTabGroupSpecifics pb_specific;
-  pb_specific.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+TEST_F(SavedTabGroupConversionTest, DataToTabRetainsData) {
+  proto::SavedTabGroupData pb_data;
+  sync_pb::SavedTabGroupSpecifics* pb_specific = pb_data.mutable_specifics();
+  pb_specific->set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   int64_t time_in_micros = time_.ToDeltaSinceWindowsEpoch().InMicroseconds();
-  pb_specific.set_creation_time_windows_epoch_micros(time_in_micros);
-  pb_specific.set_update_time_windows_epoch_micros(time_in_micros);
+  pb_specific->set_creation_time_windows_epoch_micros(time_in_micros);
+  pb_specific->set_update_time_windows_epoch_micros(time_in_micros);
 
-  sync_pb::SavedTabGroupTab* pb_tab = pb_specific.mutable_tab();
+  sync_pb::SavedTabGroupTab* pb_tab = pb_specific->mutable_tab();
   pb_tab->set_url("chrome://newtab/");
   pb_tab->set_group_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   pb_tab->set_title("New Tab Title");
 
   // Verify the 2 specifics hold the same data.
   CompareTabSpecifics(
-      pb_specific,
-      SavedTabGroupSyncBridge::SavedTabGroupTabToSpecificsForTest(
-          SavedTabGroupSyncBridge::SpecificsToSavedTabGroupTabForTest(
-              pb_specific)));
+      pb_data.specifics(),
+      SavedTabGroupSyncBridge::SavedTabGroupTabToDataForTest(
+          SavedTabGroupSyncBridge::DataToSavedTabGroupTabForTest(pb_data))
+          .specifics());
+}
+
+TEST_F(SavedTabGroupConversionTest, VerifyLocalFieldsOnProtoToGroupConversion) {
+  proto::SavedTabGroupData pb_data;
+  sync_pb::SavedTabGroupSpecifics* pb_specific = pb_data.mutable_specifics();
+  pb_specific->set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+
+  int64_t time_in_micros = time_.ToDeltaSinceWindowsEpoch().InMicroseconds();
+  pb_specific->set_creation_time_windows_epoch_micros(time_in_micros);
+  pb_specific->set_update_time_windows_epoch_micros(time_in_micros);
+
+  sync_pb::SavedTabGroup* pb_group = pb_specific->mutable_group();
+  pb_group->set_color(sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_BLUE);
+  pb_group->set_title("Another test title");
+
+  proto::LocalTabGroupData* pb_local_group_data =
+      pb_data.mutable_local_tab_group_data();
+  DCHECK(pb_local_group_data);
+
+#if BUILDFLAG(IS_ANDROID)
+  std::string serialized_local_id = base::Token::CreateRandom().ToString();
+  pb_local_group_data->set_local_group_id(serialized_local_id);
+#endif
+
+  CompareProtoGroupLocalData(
+      pb_data,
+      SavedTabGroupSyncBridge::SavedTabGroupToDataForTest(
+          SavedTabGroupSyncBridge::DataToSavedTabGroupForTest(pb_data)));
+
+  CompareGroupSpecifics(
+      pb_data.specifics(),
+      SavedTabGroupSyncBridge::SavedTabGroupToDataForTest(
+          SavedTabGroupSyncBridge::DataToSavedTabGroupForTest(pb_data))
+          .specifics());
 }
 
 // Verifies that merging 2 group objects (1 Sync, 1 SavedTabGroup) merges the

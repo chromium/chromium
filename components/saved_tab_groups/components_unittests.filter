@@ -1,6 +1,7 @@
 *SavedTabGroupConversionTest.*
 *SavedTabGroupModelObserverTest.*
 *SavedTabGroupModelTest.*
+*SavedTabGroupSyncBridgeMigrationTest.*
 *SavedTabGroupSyncBridgeTest.*
 *SavedTabGroupTest.*
 *SharedTabGroupDataSyncBridgeTest.*

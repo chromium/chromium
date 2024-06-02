@@ -633,6 +633,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="TabGroups.ParseSavedTabGroupDataEntries.ParseFailurePercentage"
+    units="%" expires_after="2024-12-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-multiplayer-eng@google.com</owner>
+  <summary>
+    Records the percentage of stored entries in the saved tab group
+    ModelTypeStore that failed to parse as a SavedTabGroupData in the final
+    stage of startup. Recorded during SavedTabGroupSyncBridge initialization
+    after sucessfully passing through the migration stages.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.SavedTabGroupActiveCount" units="groups"
     expires_after="2024-09-15">
   <owner>dljames@chromium.org</owner>
@@ -713,6 +726,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.SavedTabGroupSyncBridge.MigrationResult"
+    enum="SavedTabGroupSyncBridge.MigrationResult" expires_after="2024-12-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-multiplayer-eng@google.com</owner>
+  <summary>
+    Histogram for recording various steps of the SavedTabGroupSyncBridge
+    initialization, such as the migration steps and their results. Care has been
+    taken to ensure that a certain step isn't recorded more than once during a
+    chrome session. Recorded on startup.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.SavedTabGroupTabCount" units="tabs"
     expires_after="2024-11-03">
   <owner>dljames@chromium.org</owner>
@@ -755,6 +780,18 @@ chromium-metrics-reviews@google.com.
     Records per hour once the SavedTabGroupKeyedService is instantiated upon
     profile open. Tracks the total number of unpinned groups saved in the
     profile. Nothing is recorded for sessions shorter than one hour.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.SpecificsToDataMigration.ParseFailurePercentage"
+    units="%" expires_after="2024-12-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-multiplayer-eng@google.com</owner>
+  <summary>
+    Records the percentage of stored entries in the saved tab group
+    ModelTypeStore that failed to parse as a SavedTabGroupSpecfics during
+    migration to SavedTabGroupData. Recorded during the one-time migration. If
+    the data is already migrated, this histogram is not recorded.
   </summary>
 </histogram>
 
