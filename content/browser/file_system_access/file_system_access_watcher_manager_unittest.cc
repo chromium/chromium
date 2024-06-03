@@ -924,20 +924,8 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectoryRecursively) {
   // `accumulator`.
   base::DeleteFile(file_path);
 
-  auto expected_url =
-      ReportsModifiedPathForLocalObservations()
-          ? manager_->CreateFileSystemURLFromPath(
-                FileSystemAccessEntryFactory::PathType::kLocal, file_path)
-          : dir_url;
-  auto mojo_change_ptr =
-      ReportsChangeInfoForLocalObservations()
-          ? ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kDeleted)
-          : ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnknown);
-  auto file_path_type = ReportsChangeInfoForLocalObservations()
-                            ? FilePathType::kFile
-                            : FilePathType::kUnknown;
-  std::list<Change> expected_changes = {
-      {expected_url, std::move(mojo_change_ptr), file_path_type}};
+  // TODO(crbug.com/40263777): Check values of expected changes, depending
+  // on platform availability for change types.
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return testing::Matches(testing::Not(testing::IsEmpty()))(
         accumulator.changes());

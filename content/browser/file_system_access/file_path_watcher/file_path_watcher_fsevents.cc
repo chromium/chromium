@@ -104,15 +104,8 @@ bool FilePathWatcherFSEvents::Watch(const base::FilePath& path,
   set_task_runner(base::SequencedTaskRunner::GetCurrentDefault());
   callback_ = callback;
 
-  FSEventStreamEventId start_event = FSEventsGetCurrentEventId();
-  // The block runtime would implicitly capture the reference, not the object
-  // it's referencing. Copy the path into a local, so that the value is
-  // captured by the block's scope.
-  const base::FilePath path_copy(path);
-
-  dispatch_async(queue_.get(), ^{
-    StartEventStream(start_event, path_copy);
-  });
+  FSEventStreamEventId start_event = kFSEventStreamEventIdSinceNow;
+  StartEventStream(start_event, path);
   return true;
 }
 
@@ -120,18 +113,11 @@ void FilePathWatcherFSEvents::Cancel() {
   set_cancelled();
   callback_.Reset();
 
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-  // Switch to the dispatch queue to tear down the event stream. As the queue is
-  // owned by |this|, and this method is called from the destructor, execute the
-  // block synchronously.
-  dispatch_sync(queue_.get(), ^{
-    if (fsevent_stream_) {
-      DestroyEventStream();
-      target_.clear();
-      resolved_target_.clear();
-    }
-  });
+  if (fsevent_stream_) {
+    DestroyEventStream();
+    target_.clear();
+    resolved_target_.clear();
+  }
 }
 
 // static
@@ -164,15 +150,6 @@ void FilePathWatcherFSEvents::FSEventsCallback(
   if (root_changed) {
     // Resetting the event stream from within the callback fails (FSEvents spews
     // bad file descriptor errors), so do the reset asynchronously.
-    //
-    // We can't dispatch_async a call to UpdateEventStream() directly because
-    // there would be no guarantee that |watcher| still exists when it runs.
-    //
-    // Instead, bounce on task_runner() and use a WeakPtr to verify that
-    // |watcher| still exists. If it does, dispatch_async a call to
-    // UpdateEventStream(). Because the destructor of |watcher| runs on
-    // task_runner() and calls dispatch_sync, it is guaranteed that |watcher|
-    // still exists when UpdateEventStream() runs.
     watcher->task_runner()->PostTask(
         FROM_HERE, base::BindOnce(
                        [](base::WeakPtr<FilePathWatcherFSEvents> weak_watcher,
@@ -181,9 +158,7 @@ void FilePathWatcherFSEvents::FSEventsCallback(
                            return;
                          }
                          FilePathWatcherFSEvents* watcher = weak_watcher.get();
-                         dispatch_async(watcher->queue_.get(), ^{
-                           watcher->UpdateEventStream(root_change_at);
-                         });
+                         watcher->UpdateEventStream(root_change_at);
                        },
                        watcher->weak_factory_.GetWeakPtr(), root_change_at));
   }
@@ -284,7 +259,7 @@ void FilePathWatcherFSEvents::DestroyEventStream() {
   FSEventStreamStop(fsevent_stream_);
   FSEventStreamInvalidate(fsevent_stream_);
   FSEventStreamRelease(fsevent_stream_);
-  fsevent_stream_ = NULL;
+  fsevent_stream_ = nullptr;
 }
 
 void FilePathWatcherFSEvents::StartEventStream(FSEventStreamEventId start_event,
