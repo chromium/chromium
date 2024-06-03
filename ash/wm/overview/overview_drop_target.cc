@@ -173,8 +173,6 @@ void OverviewDropTarget::SetShouldUseSpawnAnimation(bool value) {}
 
 void OverviewDropTarget::OnStartingAnimationComplete() {}
 
-void OverviewDropTarget::CloseWindows() {}
-
 void OverviewDropTarget::Restack() {}
 
 void OverviewDropTarget::StartDrag() {}

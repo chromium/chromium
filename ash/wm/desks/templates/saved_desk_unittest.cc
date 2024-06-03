@@ -960,7 +960,9 @@ TEST_F(SavedDeskTest, SaveDeskButtonContainerAligned) {
   // https://crbug.com/1289020.
 
   // Delete an overview item and verify.
-  GetOverviewItemForWindow(test_widget->GetNativeWindow())->CloseWindows();
+  OverviewItem* overview_item = static_cast<OverviewItem*>(
+      GetOverviewItemForWindow(test_widget->GetNativeWindow()));
+  overview_item->CloseWindow();
 
   // `NativeWidgetAura::Close()` fires a post task.
   base::RunLoop().RunUntilIdle();

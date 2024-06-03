@@ -20,6 +20,7 @@ class Window;
 namespace ash {
 
 class OverviewGroupContainerView;
+class OverviewItemView;
 class OverviewSession;
 
 // This class implements `OverviewItemBase` and represents a window group in
@@ -70,7 +71,6 @@ class OverviewGroupItem : public OverviewItemBase,
   void PrepareForOverview() override;
   void SetShouldUseSpawnAnimation(bool value) override;
   void OnStartingAnimationComplete() override;
-  void CloseWindows() override;
   void Restack() override;
   void StartDrag() override;
   void OnOverviewItemDragStarted() override;
@@ -105,6 +105,12 @@ class OverviewGroupItem : public OverviewItemBase,
   // Creates `item_widget_` with `OverviewGroupContainerView` as its contents
   // view.
   void CreateItemWidget();
+
+  // Notifies the overview focus cycler that the given `item_view` is being
+  // destroyed. This allows the cycler to updates its internal state such as
+  // `focused_view_` and `deleted_index_` to ensure smooth focus navigation
+  // after the item's removal.
+  void RefreshFocusedViewOnItemDestroying(OverviewItemView* item_view);
 
   // A list of `OverviewItem`s hosted and owned by `this`.
   std::vector<std::unique_ptr<OverviewItem>> overview_items_;

@@ -249,9 +249,6 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   // if there was no starting animation to do any necessary visual changes.
   virtual void OnStartingAnimationComplete() = 0;
 
-  // Closes window(s) hosted by `this`.
-  virtual void CloseWindows() = 0;
-
   // Inserts the item back to its original stacking order so that the order of
   // overview items is the same as when entering overview.
   virtual void Restack() = 0;

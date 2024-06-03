@@ -76,6 +76,9 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
     eligible_for_shadow_config_ = eligible_for_shadow_config;
   }
 
+  // Closes window hosted by `this`.
+  void CloseWindow();
+
   // Handles events forwarded from the contents view.
   void OnFocusedViewActivated();
   void OnFocusedViewClosed();
@@ -123,7 +126,6 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   void PrepareForOverview() override;
   void SetShouldUseSpawnAnimation(bool value) override;
   void OnStartingAnimationComplete() override;
-  void CloseWindows() override;
   void Restack() override;
   void StartDrag() override;
   void OnOverviewItemDragStarted() override;

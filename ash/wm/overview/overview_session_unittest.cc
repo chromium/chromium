@@ -2072,13 +2072,15 @@ TEST_P(OverviewSessionTest, ExitOverviewWhenAllGridsEmpty) {
   for (auto& grid : grids)
     EXPECT_FALSE(grid->no_windows_widget());
 
-  auto* item1 = GetOverviewItemForWindow(window1);
-  auto* item2 = GetOverviewItemForWindow(window2);
+  OverviewItem* item1 =
+      static_cast<OverviewItem*>(GetOverviewItemForWindow(window1));
+  OverviewItem* item2 =
+      static_cast<OverviewItem*>(GetOverviewItemForWindow(window2));
   ASSERT_TRUE(item1 && item2);
 
   // Close `item2`. Verify that we are still in overview mode because `window1`
   // is still open. All the grids should not have a no windows widget.
-  item2->CloseWindows();
+  item2->CloseWindow();
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(GetOverviewSession());
   ASSERT_EQ(3u, grids.size());
@@ -2090,7 +2092,7 @@ TEST_P(OverviewSessionTest, ExitOverviewWhenAllGridsEmpty) {
 
   // Close `item1`. Verify that since no windows are open, we exit overview
   // mode.
-  item1->CloseWindows();
+  item1->CloseWindow();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetOverviewSession());
 }
@@ -3413,9 +3415,10 @@ TEST_P(OverviewSessionTest, ClosingTransientTree) {
   controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
   RemoveDesk(controller->active_desk(), DeskCloseType::kCombineDesks);
 
-  auto* item = GetOverviewItemForWindow(window);
+  OverviewItem* item =
+      static_cast<OverviewItem*>(GetOverviewItemForWindow(window));
   ASSERT_TRUE(item);
-  item->CloseWindows();
+  item->CloseWindow();
 
   // `NativeWidgetAura::Close()` fires a post task.
   base::RunLoop().RunUntilIdle();

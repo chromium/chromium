@@ -60,7 +60,6 @@ class OverviewDropTarget : public OverviewItemBase {
   void PrepareForOverview() override;
   void SetShouldUseSpawnAnimation(bool value) override;
   void OnStartingAnimationComplete() override;
-  void CloseWindows() override;
   void Restack() override;
   void StartDrag() override;
   void OnOverviewItemDragStarted() override;

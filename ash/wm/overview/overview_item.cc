@@ -196,6 +196,27 @@ OverviewItem::~OverviewItem() {
   window->RemoveObserver(this);
 }
 
+void OverviewItem::CloseWindow() {
+  RefreshShadowVisuals(/*shadow_visible=*/false);
+
+  gfx::RectF inset_bounds(target_bounds_);
+  inset_bounds.Inset(gfx::InsetsF::VH(target_bounds_.height() * kPreCloseScale,
+                                      target_bounds_.width() * kPreCloseScale));
+  // Scale down both the window and label.
+  SetBounds(inset_bounds, OVERVIEW_ANIMATION_CLOSING_OVERVIEW_ITEM);
+
+  // First animate opacity to an intermediate value concurrently with the
+  // scaling animation.
+  AnimateOpacity(kClosingItemOpacity, OVERVIEW_ANIMATION_CLOSING_OVERVIEW_ITEM);
+
+  // Fade out the window and the label, effectively hiding them.
+  AnimateOpacity(/*opacity=*/0.0, OVERVIEW_ANIMATION_CLOSE_OVERVIEW_ITEM);
+
+  // `transform_window_` will delete `this` by deleting the widget associated
+  // with `this`.
+  transform_window_.Close();
+}
+
 void OverviewItem::OnFocusedViewActivated() {
   overview_session_->OnFocusedItemActivated(this);
 }
@@ -721,27 +742,6 @@ void OverviewItem::OnStartingAnimationComplete() {
       GetOverviewItemFillMode() != OverviewItemFillMode::kNormal;
   overview_item_view_->SetBackdropVisibility(show_backdrop);
   UpdateCannotSnapWarningVisibility(/*animate=*/true);
-}
-
-void OverviewItem::CloseWindows() {
-  RefreshShadowVisuals(/*shadow_visible=*/false);
-
-  gfx::RectF inset_bounds(target_bounds_);
-  inset_bounds.Inset(gfx::InsetsF::VH(target_bounds_.height() * kPreCloseScale,
-                                      target_bounds_.width() * kPreCloseScale));
-  // Scale down both the window and label.
-  SetBounds(inset_bounds, OVERVIEW_ANIMATION_CLOSING_OVERVIEW_ITEM);
-
-  // First animate opacity to an intermediate value concurrently with the
-  // scaling animation.
-  AnimateOpacity(kClosingItemOpacity, OVERVIEW_ANIMATION_CLOSING_OVERVIEW_ITEM);
-
-  // Fade out the window and the label, effectively hiding them.
-  AnimateOpacity(/*opacity=*/0.0, OVERVIEW_ANIMATION_CLOSE_OVERVIEW_ITEM);
-
-  // `transform_window_` will delete `this` by deleting the widget associated
-  // with `this`.
-  transform_window_.Close();
 }
 
 void OverviewItem::Restack() {
@@ -1443,7 +1443,8 @@ void OverviewItem::CloseButtonPressed() {
     base::RecordAction(
         base::UserMetricsAction("Tablet_WindowCloseFromOverviewButton"));
   }
-  CloseWindows();
+
+  CloseWindow();
 }
 
 }  // namespace ash

@@ -3910,15 +3910,15 @@ TEST_F(SnapGroupOverviewTest, CloseIndividualWindowByCloseButton) {
               /*abs_error=*/1);
 }
 
-// Tests that the overview group item will be closed when focused in overview
-// with `Ctrl + W`.
-// TODO(michelefan@): Re-purpose this test. Currently disabled due to product
-// decision change.
-TEST_F(SnapGroupOverviewTest, DISABLED_CtrlPlusWToCloseFocusedGroupInOverview) {
+// Within an overview group, verify that "Ctrl + W" closes only the focused
+// item's window, and that tabbing afterwards activates remaining items without
+// causing a crash. See http://b/344216297 for more details.
+TEST_F(SnapGroupOverviewTest, CtrlPlusWToCloseFocusedItemInGroupInOverview) {
   // Explicitly enable immediate close so that we can directly close the
   // window(s) without waiting the delayed task to be completed in
   // `ScopedOverviewTransformWindow::Close()`.
   ScopedOverviewTransformWindow::SetImmediateCloseForTests(/*immediate=*/true);
+
   std::unique_ptr<aura::Window> w0(CreateAppWindow());
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   SnapTwoTestWindows(w0.get(), w1.get());
@@ -3930,18 +3930,32 @@ TEST_F(SnapGroupOverviewTest, DISABLED_CtrlPlusWToCloseFocusedGroupInOverview) {
   OverviewSession* overview_session = overview_controller->overview_session();
   ASSERT_TRUE(GetOverviewItemForWindow(w0.get()));
 
-  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, GetEventGenerator());
+  auto* event_generator = GetEventGenerator();
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, event_generator);
   EXPECT_TRUE(overview_session->focus_cycler_old()->GetFocusedItem());
 
   // Since the window will be deleted in overview, release the ownership to
   // avoid double deletion.
   w0.release();
-  w1.release();
-  SendKey(ui::VKEY_TAB, GetEventGenerator(), ui::EF_CONTROL_DOWN);
 
-  // Verify that both windows in the snap group will be deleted.
+  // Press `Ctrl + w` to close `w0`.
+  SendKey(ui::VKEY_W, event_generator, ui::EF_CONTROL_DOWN);
+
+  // Verify that `w0` in the snap group will be deleted.
   EXPECT_FALSE(w0.get());
-  EXPECT_FALSE(w1.get());
+  EXPECT_TRUE(w1.get());
+
+  // Overview item widget close is not immediate. Run
+  // `base::RunLoop().RunUntilIdle()` to ensure close task to finish before
+  // proceeding.
+  base::RunLoop().RunUntilIdle();
+
+  // Tab again to focus on the remaining window `w1`.
+  SendKey(ui::VKEY_TAB, event_generator);
+
+  // Press enter key to active `w1`, verify that there will be no crash.
+  SendKey(ui::VKEY_RETURN, event_generator);
+  EXPECT_FALSE(overview_controller->InOverviewSession());
 }
 
 // Tests that the minimized windows in a snap group will be shown as a single
