@@ -2864,7 +2864,7 @@
       "wpt_internal/speech/scripted/speechrecognition-no-crash-detached.html"
      ],
     "args": ["--disable-features=DeprecateUnload"],
-    "expires": "Jun 1, 2024",
+    "expires": "Jun 1, 2025",
     "owners": ["fergal@chromium.org", "rakina@chromium.org"]
   },
   {
