@@ -703,7 +703,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
         @Override
         public String toString() {
-            return value + " in " + super.toString();
+            return value + " in " + getClass().getSimpleName();
         }
 
         @Override
@@ -719,7 +719,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
         @Override
         public String toString() {
-            return value + " in " + super.toString();
+            return value + " in " + getClass().getSimpleName();
         }
 
         @Override
@@ -735,7 +735,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
         @Override
         public String toString() {
-            return value + " in " + super.toString();
+            return value + " in " + getClass().getSimpleName();
         }
 
         @Override
@@ -751,7 +751,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
         @Override
         public String toString() {
-            return value + " in " + super.toString();
+            return value + " in " + getClass().getSimpleName();
         }
 
         @Override
@@ -767,7 +767,7 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
         @Override
         public String toString() {
-            return value + " in " + super.toString();
+            return value + " in " + getClass().getSimpleName();
         }
 
         @Override
