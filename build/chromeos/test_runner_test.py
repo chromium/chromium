@@ -289,7 +289,8 @@ class GTestTest(TestRunnerTest):
          mock.patch.object(os, 'fdopen', fd_mock),\
          mock.patch.object(os, 'remove') as mock_remove,\
          mock.patch.object(tempfile, 'mkstemp',
-            return_value=(3, 'out_eve/Release/device_script.sh')),\
+            side_effect=[(3, 'out_eve/Release/device_script.sh'),\
+                         (4, 'out_eve/Release/runtime_files.txt')]),\
          mock.patch.object(os, 'fchmod'):
       mock_popen.return_value.returncode = 0
 
@@ -298,8 +299,8 @@ class GTestTest(TestRunnerTest):
       expected_cmd = [
           'vpython3', test_runner.CROS_RUN_TEST_PATH, '--board', 'eve',
           '--cache-dir', test_runner.DEFAULT_CROS_CACHE, '--remote-cmd',
-          '--cwd', 'out_eve/Release', '--files',
-          'out_eve/Release/device_script.sh'
+          '--cwd', 'out_eve/Release', '--files-from',
+          'out_eve/Release/runtime_files.txt'
       ]
       if not stop_ui:
         expected_cmd.append('--as-chronos')
@@ -367,11 +368,21 @@ class GTestTest(TestRunnerTest):
       expected_device_script += dedent("""\
           exit $TEST_RETURN_CODE
         """)
-      self.assertEqual(1, fd_mock().write.call_count)
+
+      self.assertEqual(2, fd_mock().write.call_count)
+      write_calls = fd_mock().write.call_args_list
+
       # Split the strings to make failure messages easier to read.
+      # Verify the first write of device script.
       self.assertListEqual(
           expected_device_script.split('\n'),
-          fd_mock().write.call_args[0][0].split('\n'))
+          str(write_calls[0][0][0]).split('\n'))
+
+      # Verify the 2nd write of runtime files.
+      expected_runtime_files = ['out_eve/Release/device_script.sh']
+      self.assertListEqual(expected_runtime_files,
+                           str(write_calls[1][0][0]).strip().split('\n'))
+
       mock_remove.assert_called_once_with('out_eve/Release/device_script.sh')
 
   def test_gtest_with_vpython(self):

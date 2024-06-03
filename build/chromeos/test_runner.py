@@ -160,6 +160,14 @@ class RemoteTest:
       f.write('\n'.join(script_contents) + '\n')
     return tmp_path
 
+  def write_runtime_files_to_disk(self, runtime_files):
+    logging.info('Writing runtime files to disk.')
+    fd, tmp_path = tempfile.mkstemp(suffix='.txt', dir=self._path_to_outdir)
+    os.fchmod(fd, 0o755)
+    with os.fdopen(fd, 'w') as f:
+      f.write('\n'.join(runtime_files) + '\n')
+    return tmp_path
+
   def run_test(self):
     # Traps SIGTERM and kills all child processes of cros_run_test when it's
     # caught. This will allow us to capture logs from the device if a test hangs
@@ -683,7 +691,7 @@ class GTestTest(RemoteTest):
     runtime_files = [os.path.relpath(self._on_device_script)]
     runtime_files += self._read_runtime_files()
     if self._vpython_dir:
-      # --vpython-dir is relative to the out dir, but --files expects paths
+      # --vpython-dir is relative to the out dir, but --files-from expects paths
       # relative to src dir, so fix the path up a bit.
       runtime_files.append(
           os.path.relpath(
@@ -691,8 +699,9 @@ class GTestTest(RemoteTest):
                   os.path.join(self._path_to_outdir, self._vpython_dir)),
               CHROMIUM_SRC_PATH))
 
-    for f in runtime_files:
-      self._test_cmd.extend(['--files', f])
+    self._test_cmd.extend(
+        ['--files-from',
+         self.write_runtime_files_to_disk(runtime_files)])
 
     self._test_cmd += [
         '--',
