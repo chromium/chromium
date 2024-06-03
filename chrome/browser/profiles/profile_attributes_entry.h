@@ -239,8 +239,6 @@ class ProfileAttributesEntry {
   // Records aggregate metrics about all accounts used in this profile.
   void RecordAccountNamesMetric() const;
 
-  // TODO(crbug.com/40735554): Check it is not used anymore for deprecated
-  // supervised users and remove it.
   static const char kSupervisedUserId[];
   static const char kAvatarIconKey[];
   static const char kBackgroundAppsKey[];

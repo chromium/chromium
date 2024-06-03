@@ -49,6 +49,14 @@ bool IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled();
 // Only affects Desktop platforms.
 BASE_DECLARE_FEATURE(kCustomWebSignInInterceptForSupervisedUsers);
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// This hides the following guest mode entry points for supervised users:
+//
+// * In the Profile menu for supervised profiles
+// * In the Profile picker, if there are one or more supervised profiles
+BASE_DECLARE_FEATURE(kHideGuestModeForSupervisedUsers);
+#endif
+
 // Runs a shadow no-op safe-sites call alongside kids-api call, to compare
 // latencies.
 BASE_DECLARE_FEATURE(kShadowKidsApiWithSafeSites);

@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,7 +18,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_constants.h"
@@ -29,7 +30,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -224,15 +225,54 @@ bool IsProfileCreationAllowed() {
   return pref_service->GetBoolean(prefs::kBrowserAddPersonEnabled);
 }
 
-bool IsGuestModeEnabled() {
+// Whether guest mode is globally disabled (for all entry points and users).
+bool IsGuestModeGloballyDisabledInternal() {
 #if BUILDFLAG(IS_CHROMEOS)
-  if (!AreSecondaryProfilesAllowed())
-    return false;
+  if (!AreSecondaryProfilesAllowed()) {
+    return true;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   const PrefService* const pref_service = g_browser_process->local_state();
   DCHECK(pref_service);
-  return pref_service->GetBoolean(prefs::kBrowserGuestModeEnabled);
+  return !pref_service->GetBoolean(prefs::kBrowserGuestModeEnabled);
+}
+
+bool IsGuestModeEnabled() {
+  if (IsGuestModeGloballyDisabledInternal()) {
+    return false;
+  }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // If there are any supervised profiles, disable guest mode.
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kHideGuestModeForSupervisedUsers) &&
+      base::ranges::any_of(g_browser_process->profile_manager()
+                               ->GetProfileAttributesStorage()
+                               .GetAllProfilesAttributes(),
+                           &ProfileAttributesEntry::IsSupervised)) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+  return true;
+}
+
+bool IsGuestModeEnabled(const Profile& profile) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kHideGuestModeForSupervisedUsers)) {
+    ProfileAttributesEntry* profile_attributes =
+        g_browser_process->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(profile.GetPath());
+    if (profile_attributes && profile_attributes->IsSupervised()) {
+      return false;
+    }
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+  return !IsGuestModeGloballyDisabledInternal();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -86,8 +86,13 @@ bool IsGuestModeRequested(const base::CommandLine& command_line,
 // Returns true if profile creation is allowed by prefs.
 bool IsProfileCreationAllowed();
 
-// Returns true if guest mode is allowed by prefs.
+// Returns true if guest mode is allowed by prefs, for an entry point not
+// associated with a specific profile.
 bool IsGuestModeEnabled();
+
+// Returns true if guest mode is allowed by prefs, for an entry point that is
+// associated with |profile|.
+bool IsGuestModeEnabled(const Profile& profile);
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Returns true if secondary profiles are allowed by
