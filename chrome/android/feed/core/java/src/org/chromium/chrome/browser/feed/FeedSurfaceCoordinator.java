@@ -994,7 +994,12 @@ public class FeedSurfaceCoordinator
                 lateralPaddingsPx =
                         mActivity
                                 .getResources()
-                                .getDimensionPixelSize(R.dimen.signin_promo_lateral_paddings);
+                                .getDimensionPixelSize(
+                                        ChromeFeatureList.isEnabled(
+                                                        ChromeFeatureList.FEED_CONTAINMENT)
+                                                ? R.dimen
+                                                        .feed_containment_signin_promo_lateral_paddings
+                                                : R.dimen.signin_promo_lateral_paddings);
                 ((PersonalizedSigninPromoView) mSigninPromoView)
                         .setCardBackgroundResource(
                                 ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)
