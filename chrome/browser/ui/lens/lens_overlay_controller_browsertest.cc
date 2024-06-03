@@ -51,6 +51,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
@@ -62,6 +63,7 @@
 #include "net/base/url_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/compositor/compositor_switches.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/test/widget_test.h"
@@ -72,6 +74,7 @@
 namespace {
 
 constexpr char kDocumentWithNamedElement[] = "/select.html";
+constexpr char kDocumentWithDynamicColor[] = "/lens/dynamic_color.html";
 
 using State = LensOverlayController::State;
 using LensOverlayInvocationSource = lens::LensOverlayInvocationSource;
@@ -376,7 +379,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
             {"search-bubble", "true"},
             {"results-search-url", kResultsSearchBaseUrl},
             {"use-dynamic-theme", "true"},
-            {"use-dynamic-theme-min-population-pct", "0.1"},
+            {"use-dynamic-theme-min-population-pct", "0.002"},
             {"use-dynamic-theme-min-chroma", "3.0"},
         });
   }
@@ -448,9 +451,10 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   // the tab must not be about:blank and must be painted. By default opens in
   // the current tab.
   void WaitForPaint(
+      std::string_view relative_url = kDocumentWithNamedElement,
       WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB,
       int browser_test_flags = ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP) {
-    const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+    const GURL url = embedded_test_server()->GetURL(relative_url);
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, disposition, browser_test_flags));
     ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -715,47 +719,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CaptureScreenshot) {
   ASSERT_TRUE(fake_controller);
   EXPECT_FALSE(fake_controller->fake_overlay_page_
                    .last_received_screenshot_data_uri_.empty());
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, DynamicTheme) {
-  WaitForPaint();
-  // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  EXPECT_TRUE(fake_controller->fake_overlay_page_
-                  .last_received_screenshot_data_uri_.empty());
-  EXPECT_FALSE(
-      fake_controller->fake_overlay_page_.last_received_theme_.has_value());
-
-  // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_EQ(controller->state(), State::kScreenshot);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-
-  // Verify screenshot was captured and stored.
-  auto screenshot_bitmap = controller->current_screenshot();
-  EXPECT_FALSE(screenshot_bitmap.empty());
-  // Verify screenshot was encoded and passed to WebUI.
-  EXPECT_FALSE(fake_controller->fake_overlay_page_
-                   .last_received_screenshot_data_uri_.empty());
-
-  // Verify expected color palette was identified.
-  ASSERT_EQ(lens::PaletteId::kFallback, controller->color_palette());
-  // Verify expected theme color were passed to WebUI.
-  auto expected_theme = controller->CreateTheme(lens::PaletteId::kFallback);
-  EXPECT_TRUE(
-      fake_controller->fake_overlay_page_.last_received_theme_.has_value());
-  const auto& received_theme =
-      fake_controller->fake_overlay_page_.last_received_theme_.value();
-  EXPECT_EQ(received_theme->primary, expected_theme->primary);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CreateAndLoadWebUI) {
@@ -1274,7 +1237,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
             SidePanelEntry::Id::kLensOverlayResults);
 
   // Opening a new tab should background the overlay UI.
-  WaitForPaint(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+  WaitForPaint(kDocumentWithNamedElement,
+               WindowOpenDisposition::NEW_FOREGROUND_TAB,
                ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
                    ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_TRUE(base::test::RunUntil(
@@ -2271,6 +2235,125 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, EnterprisePolicy) {
       lens::prefs::kLensOverlaySettings,
       static_cast<int>(lens::prefs::LensOverlaySettingsPolicyValue::kEnabled));
   EXPECT_TRUE(LensOverlayController::IsEnabled(profile));
+}
+
+// Test with --enable-pixel-output-in-tests enabled, required to actually grab
+// screenshots for color extraction.
+class LensOverlayControllerBrowserWithPixelsTest
+    : public LensOverlayControllerBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(::switches::kEnablePixelOutputInTests);
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  bool IsNotEmptyAndNotTransparentBlack(SkBitmap bitmap) {
+    if (!bitmap.empty()) {
+      for (int x = 0; x < bitmap.width(); x++) {
+        for (int y = 0; y < bitmap.height(); y++) {
+          if (bitmap.getColor(x, y) != SK_ColorTRANSPARENT) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserWithPixelsTest,
+                       DynamicTheme_Fallback) {
+  WaitForPaint();
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Verify screenshot was captured and stored.
+  auto screenshot_bitmap = controller->current_screenshot();
+  EXPECT_TRUE(IsNotEmptyAndNotTransparentBlack(screenshot_bitmap));
+
+  // Verify screenshot was encoded and passed to WebUI.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_FALSE(fake_controller->fake_overlay_page_
+                   .last_received_screenshot_data_uri_.empty());
+
+  // Verify expected color palette was identified, fallback expected
+  // with the page being mostly colorless.
+  ASSERT_EQ(lens::PaletteId::kFallback, controller->color_palette());
+  // Verify expected theme color were passed to WebUI.
+  auto expected_theme = lens::mojom::OverlayTheme::New();
+  expected_theme->primary = lens::kColorFallbackPrimary;
+  expected_theme->shader_layer_1 = lens::kColorFallbackShaderLayer1;
+  expected_theme->shader_layer_2 = lens::kColorFallbackShaderLayer2;
+  expected_theme->shader_layer_3 = lens::kColorFallbackShaderLayer3;
+  expected_theme->shader_layer_4 = lens::kColorFallbackShaderLayer4;
+  expected_theme->shader_layer_5 = lens::kColorFallbackShaderLayer5;
+  expected_theme->scrim = lens::kColorFallbackScrim;
+  expected_theme->surface_container_highest_light =
+      lens::kColorFallbackSurfaceContainerHighestLight;
+  expected_theme->surface_container_highest_dark =
+      lens::kColorFallbackSurfaceContainerHighestDark;
+  expected_theme->selection_element = lens::kColorFallbackSelectionElement;
+  EXPECT_TRUE(
+      fake_controller->fake_overlay_page_.last_received_theme_.has_value());
+  const auto& received_theme =
+      fake_controller->fake_overlay_page_.last_received_theme_.value();
+  EXPECT_EQ(received_theme->primary, expected_theme->primary);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserWithPixelsTest,
+                       DynamicTheme_DynamicColorTangerine) {
+  WaitForPaint(kDocumentWithDynamicColor);
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_TRUE(fake_controller->fake_overlay_page_
+                  .last_received_screenshot_data_uri_.empty());
+  EXPECT_FALSE(
+      fake_controller->fake_overlay_page_.last_received_theme_.has_value());
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Verify screenshot was captured and stored.
+  auto screenshot_bitmap = controller->current_screenshot();
+  EXPECT_TRUE(IsNotEmptyAndNotTransparentBlack(screenshot_bitmap));
+
+  // Verify screenshot was encoded and passed to WebUI.
+  EXPECT_FALSE(fake_controller->fake_overlay_page_
+                   .last_received_screenshot_data_uri_.empty());
+
+  // Verify expected color palette was identified.
+  ASSERT_EQ(lens::PaletteId::kTangerine, controller->color_palette());
+  // Verify expected theme color were passed to WebUI.
+  auto expected_theme = controller->CreateTheme(lens::PaletteId::kTangerine);
+  EXPECT_TRUE(
+      fake_controller->fake_overlay_page_.last_received_theme_.has_value());
+  const auto& received_theme =
+      fake_controller->fake_overlay_page_.last_received_theme_.value();
+  EXPECT_EQ(received_theme->primary, expected_theme->primary);
 }
 
 }  // namespace
