@@ -264,12 +264,6 @@
   opacity: var(--cros-disabled-opacity);
 }
 
-/* Menu */
-:host-context(body.jelly-enabled) cr-action-menu {
-  --cr-menu-background-color: var(--cros-sys-base_elevated);
-  --cr-menu-background-focus-color: var(--cros-sys-hover_on_subtle);
-}
-
 /* Radio button */
 :host-context(body.jelly-enabled),
 :host-context(body.jelly-enabled) cr-radio-button {
