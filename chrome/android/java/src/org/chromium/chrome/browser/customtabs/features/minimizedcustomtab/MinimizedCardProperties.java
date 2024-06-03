@@ -12,14 +12,16 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 /** Properties of the minimized card. */
 public class MinimizedCardProperties {
     /** The title of the minimized webpage. */
-    public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> TITLE =
+            new WritableObjectPropertyKey<>("TITLE");
 
     /** The URL of the minimized webpage. */
-    public static final WritableObjectPropertyKey<String> URL = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> URL =
+            new WritableObjectPropertyKey<>("URL");
 
     /** The favicon of the minimized webpage. */
     public static final WritableObjectPropertyKey<Bitmap> FAVICON =
-            new WritableObjectPropertyKey<>();
+            new WritableObjectPropertyKey<>("FAVICON");
 
     public static final PropertyKey[] ALL_KEYS = {TITLE, URL, FAVICON};
 }
