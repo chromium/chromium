@@ -244,9 +244,13 @@ pa_buildflag_header("chromecast_buildflags") {
 pa_buildflag_header("chromeos_buildflags") {
   header = "chromeos_buildflags.h"
 
-  # TODO(https://crbug.com/41481467): Remove the "PA_" prefix, because it
-  # will already be part of the define and the `PA_BUILDFLAG` macro.
-  flags = [ "PA_IS_CHROMEOS_ASH=$is_chromeos_ash" ]
+  flags = [
+    "IS_CHROMEOS=$is_chromeos",
+
+    # TODO(https://crbug.com/41481467): Remove the "PA_" prefix, because it
+    # will already be part of the define and the `PA_BUILDFLAG` macro.
+    "PA_IS_CHROMEOS_ASH=$is_chromeos_ash",
+  ]
 }
 
 pa_buildflag_header("debugging_buildflags") {

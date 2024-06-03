@@ -547,7 +547,7 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   PA_DCHECK(bucket.count != 0);
   internal::PartitionFreelistEntry* entry = bucket.freelist_head;
   // TODO(lizeb): Consider removing once crbug.com/1382658 is fixed.
-#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64) && \
+#if PA_BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64) && \
     PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   // x86_64 architecture now supports 57 bits of address space, as of Ice Lake
   // for Intel. However Chrome OS systems do not ship with kernel support for
@@ -556,7 +556,7 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   // by the kernel).
   constexpr uintptr_t kCanonicalPointerMask = (1ULL << 48) - 1;
   PA_CHECK(!(reinterpret_cast<uintptr_t>(entry) & ~kCanonicalPointerMask));
-#endif  // BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64) &&
+#endif  // PA_BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64) &&
         // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
   // Passes the bucket size to |GetNext()|, so that in case of freelist

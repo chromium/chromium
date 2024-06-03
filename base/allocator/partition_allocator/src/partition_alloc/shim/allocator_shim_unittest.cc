@@ -649,7 +649,7 @@ static size_t GetUsableSize(void* ptr) {
 static size_t GetUsableSize(void* ptr) {
   return malloc_size(ptr);
 }
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+#elif BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 static size_t GetUsableSize(void* ptr) {
   return malloc_usable_size(ptr);
 }

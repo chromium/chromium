@@ -421,7 +421,7 @@ namespace {
 int CreateAnonymousFileForMapping([[maybe_unused]] const char* name,
                                   [[maybe_unused]] size_t size) {
   int fd = -1;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40238514): if memfd_secret() is available, try
   // memfd_secret() first.
   fd = memfd_create(name, MFD_CLOEXEC);
@@ -429,7 +429,7 @@ int CreateAnonymousFileForMapping([[maybe_unused]] const char* name,
 #else
   // Not implemented yet.
   PA_NOTREACHED();
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
   return fd;
 }
 

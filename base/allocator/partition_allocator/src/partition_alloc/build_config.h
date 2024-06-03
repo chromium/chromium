@@ -48,7 +48,10 @@
 #include "build/build_config.h"
 
 // Definition of PA_BUILDFLAG(...) macro.
-#include "partition_alloc/buildflag.h"
+#include "partition_alloc/buildflag.h"  // IWYU pragma: export
+
+// Definition of PA_BUILDFLAG(IS_CHROMEOS).
+#include "partition_alloc/chromeos_buildflags.h"  // IWYU pragma: export
 
 // Clangd does not detect PA_BUILDFLAG_INTERNAL_* indirect usage, so mark the
 // header as "always_keep" to avoid "unused include" warning.
@@ -72,11 +75,11 @@
 #define PA_IS_MAC
 #endif  // defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
 #elif defined(__linux__)
-#if !defined(PA_IS_CHROMEOS)
+#if !PA_BUILDFLAG(IS_CHROMEOS)
 // Do not define PA_IS_LINUX on Chrome OS build.
-// The PA_IS_CHROMEOS macro is defined in GN.
+// The IS_CHROMEOS PA_BUILDFLAG macro is defined in chromeos_buildflags.h.
 #define PA_IS_LINUX
-#endif  // !defined(PA_IS_CHROMEOS)
+#endif  // !PA_BUILDFLAG(IS_CHROMEOS)
 // Include a system header to pull in features.h for glibc/uclibc macros.
 #include <assert.h>
 #if defined(__GLIBC__) && !defined(__UCLIBC__)

@@ -15,8 +15,9 @@
 
 #include "partition_alloc/build_config.h"
 
-#if defined(ARCH_CPU_ARM_FAMILY) && \
-    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+#if defined(ARCH_CPU_ARM_FAMILY) &&                  \
+    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || \
+     PA_BUILDFLAG(IS_CHROMEOS))
 #include <asm/hwcap.h>
 #include <sys/auxv.h>
 
@@ -32,7 +33,7 @@
 #endif  // # defined(ARCH_CPU_ARM64)
 
 #endif  // defined(ARCH_CPU_ARM_FAMILY) && (BUILDFLAG(IS_ANDROID) ||
-        // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+        // BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS))
 
 #if defined(ARCH_CPU_X86_FAMILY)
 #if defined(COMPILER_MSVC)
@@ -183,7 +184,7 @@ void CPU::Initialize() {
     }
   }
 #elif defined(ARCH_CPU_ARM_FAMILY)
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
 
 #if defined(ARCH_CPU_ARM64)
   // Check for Armv8.5-A BTI/MTE support, exposed via HWCAP2
