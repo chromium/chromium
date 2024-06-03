@@ -16,9 +16,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
-import static org.junit.Assert.assertEquals;
 
-import androidx.test.filters.SmallTest;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
+import androidx.test.filters.LargeTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -61,6 +62,10 @@ public final class SafetyHubTest {
     public SettingsActivityTestRule<SafetyHubPermissionsFragment> mPermissionsFragmentTestRule =
             new SettingsActivityTestRule<>(SafetyHubPermissionsFragment.class);
 
+    @Rule
+    public SettingsActivityTestRule<SafetyHubFragment> mSafetyHubFragmentTestRule =
+            new SettingsActivityTestRule<>(SafetyHubFragment.class);
+
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     private FakeUnusedSitePermissionsBridge mUnusedPermissionsBridge =
@@ -72,7 +77,7 @@ public final class SafetyHubTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     public void testPermissionRegrant() {
         mUnusedPermissionsBridge.setPermissionsDataForReview(
                 new PermissionsData[] {PERMISSIONS_DATA_1});
@@ -83,17 +88,34 @@ public final class SafetyHubTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     public void testClearPermissionsReviewList() {
         mUnusedPermissionsBridge.setPermissionsDataForReview(
                 new PermissionsData[] {PERMISSIONS_DATA_1, PERMISSIONS_DATA_2});
-        mPermissionsFragmentTestRule.startSettingsActivity();
+        mSafetyHubFragmentTestRule.startSettingsActivity();
 
+        // Verify the permissions module is displaying the warning state.
+        String permissionsTitle =
+                mSafetyHubFragmentTestRule
+                        .getActivity()
+                        .getResources()
+                        .getQuantityString(R.plurals.safety_hub_permissions_warning_title, 2, 2);
+        onView(withText(permissionsTitle)).check(matches(isDisplayed()));
+
+        // Open the permissions subpage.
+        onView(withText(permissionsTitle)).perform(click());
+
+        // Verify that 2 sites are displayed.
         onView(withText(PERMISSIONS_DATA_1.getOrigin())).check(matches(isDisplayed()));
         onView(withText(PERMISSIONS_DATA_2.getOrigin())).check(matches(isDisplayed()));
 
+        // Click the button at the bottom of the page.
         onView(withText(R.string.safety_hub_permissions_button_text)).perform(click());
-        assertEquals(mUnusedPermissionsBridge.getRevokedPermissions(null).length, 0);
+
+        // Verify tha the permissions subpage has been dismissed and the state of the permissions
+        // module has changed.
+        onViewWaiting(withText(R.string.safety_hub_permissions_ok_title))
+                .check(matches(isDisplayed()));
     }
 
     private void clickOnButtonNextToText(String text) {

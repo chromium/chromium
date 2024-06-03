@@ -19,20 +19,20 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Fragment containing Safety hub. */
 public class SafetyHubFragment extends ChromeBaseSettingsFragment
-        implements FragmentSettingsLauncher {
+        implements FragmentSettingsLauncher, UnusedSitePermissionsBridge.Observer {
     private static final String PREF_PASSWORDS = "passwords_account";
     private static final String PREF_UPDATE = "update_check";
     private static final String PREF_UNUSED_PERMISSIONS = "permissions";
+
     private SafetyHubModuleDelegate mDelegate;
     private SettingsLauncher mSettingsLauncher;
     private UnusedSitePermissionsBridge mUnusedSitePermissionsBridge;
+    private PropertyModel mPermissionsModel;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.safety_hub_preferences);
         getActivity().setTitle(R.string.prefs_safety_check);
-
-        mUnusedSitePermissionsBridge = UnusedSitePermissionsBridge.getForProfile(getProfile());
 
         // Set up account-level password check preference.
         Preference passwordCheckPreference = findPreference(PREF_PASSWORDS);
@@ -75,15 +75,10 @@ public class SafetyHubFragment extends ChromeBaseSettingsFragment
 
         // Set up permissions preference.
         Preference permissionsPreference = findPreference(PREF_UNUSED_PERMISSIONS);
-        int sitesWithUnusedPermissionsCount =
-                mUnusedSitePermissionsBridge.getRevokedPermissions().length;
 
-        PropertyModel permissionsPropertyModel =
+        mPermissionsModel =
                 new PropertyModel.Builder(SafetyHubModuleProperties.PERMISSIONS_MODULE_KEYS)
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
-                        .with(
-                                SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
-                                sitesWithUnusedPermissionsCount)
                         .with(
                                 SafetyHubModuleProperties.ON_CLICK_LISTENER,
                                 () ->
@@ -92,17 +87,40 @@ public class SafetyHubFragment extends ChromeBaseSettingsFragment
                         .build();
 
         PropertyModelChangeProcessor.create(
-                permissionsPropertyModel,
+                mPermissionsModel,
                 permissionsPreference,
                 SafetyHubModuleViewBinder::bindPermissionsProperties);
+
+        mUnusedSitePermissionsBridge = UnusedSitePermissionsBridge.getForProfile(getProfile());
+        mUnusedSitePermissionsBridge.addObserver(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        updatePermissionsPreference();
+    }
+
+    @Override
+    public void revokedPermissionsChanged() {
+        updatePermissionsPreference();
+    }
+
+    @Override
+    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
+        mSettingsLauncher = settingsLauncher;
     }
 
     public void setDelegate(SafetyHubModuleDelegate safetyHubModuleDelegate) {
         mDelegate = safetyHubModuleDelegate;
     }
 
-    @Override
-    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
-        mSettingsLauncher = settingsLauncher;
+    private void updatePermissionsPreference() {
+        int sitesWithUnusedPermissionsCount =
+                mUnusedSitePermissionsBridge.getRevokedPermissions().length;
+        mPermissionsModel.set(
+                SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
+                sitesWithUnusedPermissionsCount);
     }
 }
