@@ -200,7 +200,9 @@ void HTMLDetailsElement::ParseAttribute(
 
     if (is_open_) {
       content->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
-      content->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+      if (!RuntimeEnabledFeatures::DetailsStylingEnabled()) {
+        content->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+      }
 
       // https://html.spec.whatwg.org/multipage/interactive-elements.html#ensure-details-exclusivity-by-closing-other-elements-if-needed
       //
@@ -228,8 +230,10 @@ void HTMLDetailsElement::ParseAttribute(
         }
       }
     } else {
-      content->SetInlineStyleProperty(CSSPropertyID::kDisplay,
-                                      CSSValueID::kBlock);
+      if (!RuntimeEnabledFeatures::DetailsStylingEnabled()) {
+        content->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                        CSSValueID::kBlock);
+      }
       content->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
                                       CSSValueID::kHidden);
       content->EnsureDisplayLockContext().SetIsDetailsSlotElement(true);

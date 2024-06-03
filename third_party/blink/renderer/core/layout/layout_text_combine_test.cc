@@ -831,7 +831,7 @@ LayoutNGBlockFlow DETAILS id="root"
   |  |  |  +--LayoutTextFragment (anonymous) ("\u25BE ")
   |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
-  +--LayoutNGBlockFlow (anonymous)
+  +--LayoutNGBlockFlow SLOT ::details-content id="details-content" style="display: block;"
   |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "ab"
   |  |  +--LayoutText #text "cd"
@@ -851,7 +851,7 @@ LayoutNGBlockFlow DETAILS id="root" style="color: red !important;"
   |  |  |  +--LayoutTextFragment (anonymous) ("\u25BE ")
   |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
-  +--LayoutNGBlockFlow (anonymous)
+  +--LayoutNGBlockFlow SLOT ::details-content id="details-content" style="display: block;"
   |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "ab"
   |  |  +--LayoutText #text "cd"
