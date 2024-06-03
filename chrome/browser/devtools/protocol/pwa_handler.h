@@ -53,6 +53,9 @@ class PWAHandler final : public protocol::PWA::Backend {
       std::unique_ptr<protocol::Array<std::string>> in_files,
       std::unique_ptr<LaunchFilesInAppCallback> callback) override;
 
+  protocol::Response OpenCurrentPageInApp(
+      const std::string& in_manifest_id) override;
+
   /// Implementation details ///
 
   // Installs from only the manifest id; requires a WebContents.

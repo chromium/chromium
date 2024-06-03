@@ -332,12 +332,13 @@ bool WebAppUiManagerImpl::CanReparentAppTabToWindow(
 #endif
 }
 
-void WebAppUiManagerImpl::ReparentAppTabToWindow(content::WebContents* contents,
-                                                 const webapps::AppId& app_id,
-                                                 bool shortcut_created) {
+Browser* WebAppUiManagerImpl::ReparentAppTabToWindow(
+    content::WebContents* contents,
+    const webapps::AppId& app_id,
+    bool shortcut_created) {
   DCHECK(CanReparentAppTabToWindow(app_id, shortcut_created));
   // Reparent the tab into an app window immediately.
-  ReparentWebContentsIntoAppBrowser(contents, app_id);
+  return ReparentWebContentsIntoAppBrowser(contents, app_id);
 }
 
 void WebAppUiManagerImpl::ShowWebAppFileLaunchDialog(

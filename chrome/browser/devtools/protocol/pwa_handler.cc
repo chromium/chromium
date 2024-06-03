@@ -520,3 +520,48 @@ void PWAHandler::LaunchFilesInApp(
           },
           std::move(callback)));
 }
+
+protocol::Response PWAHandler::OpenCurrentPageInApp(
+    const std::string& in_manifest_id) {
+  content::WebContents* contents = GetWebContents();
+  if (contents == nullptr) {
+    return protocol::Response::InvalidRequest(
+        base::StrCat({"The devtools session has no associated web page when "
+                      "opening ",
+                      in_manifest_id, " in its app."}));
+  }
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(GetProfile());
+  if (!provider) {
+    return errors::WebAppUnavailable();
+  }
+
+  const webapps::AppId app_id =
+      web_app::GenerateAppIdFromManifestId(GURL{in_manifest_id});
+  // Since this logic is only needed on MacOS, for the sake of simplicity the
+  // unsafe access of the registrar is fine at the moment instead of wrapping it
+  // in a command.
+  const bool shortcut_created = [provider, &app_id]() {
+    auto state =
+        provider->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+    if (!state.has_value()) {
+      return false;
+    }
+    return state->has_shortcut();
+  }();
+  if (!provider->ui_manager().CanReparentAppTabToWindow(app_id,
+                                                        shortcut_created)) {
+    return protocol::Response::InvalidParams(
+        base::StrCat({"The web app ", in_manifest_id,
+                      " cannot be opened in its app. Check if the app is "
+                      "correctly installed."}));
+  }
+  Browser* browser = provider->ui_manager().ReparentAppTabToWindow(
+      contents, app_id, shortcut_created);
+  if (browser == nullptr) {
+    return protocol::Response::InvalidRequest(base::StrCat(
+        {"The current page ", contents->GetLastCommittedURL().spec(),
+         " cannot be opened in the web app ", in_manifest_id}));
+  }
+  return protocol::Response::Success();
+}

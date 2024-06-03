@@ -110,10 +110,12 @@ bool FakeWebAppUiManager::CanReparentAppTabToWindow(
   return true;
 }
 
-void FakeWebAppUiManager::ReparentAppTabToWindow(content::WebContents* contents,
-                                                 const webapps::AppId& app_id,
-                                                 bool shortcut_created) {
+Browser* FakeWebAppUiManager::ReparentAppTabToWindow(
+    content::WebContents* contents,
+    const webapps::AppId& app_id,
+    bool shortcut_created) {
   ++num_reparent_tab_calls_;
+  return nullptr;
 }
 
 void FakeWebAppUiManager::ShowWebAppIdentityUpdateDialog(

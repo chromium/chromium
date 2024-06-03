@@ -17,6 +17,8 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/common/web_app_id.h"
 
+class Browser;
+
 namespace base {
 class FilePath;
 }  // namespace base
@@ -63,9 +65,9 @@ class FakeWebAppUiManager : public WebAppUiManager {
       const std::optional<webapps::AppId>& new_app_id) const override {}
   bool CanReparentAppTabToWindow(const webapps::AppId& app_id,
                                  bool shortcut_created) const override;
-  void ReparentAppTabToWindow(content::WebContents* contents,
-                              const webapps::AppId& app_id,
-                              bool shortcut_created) override;
+  Browser* ReparentAppTabToWindow(content::WebContents* contents,
+                                  const webapps::AppId& app_id,
+                                  bool shortcut_created) override;
   void ShowWebAppFileLaunchDialog(
       const std::vector<base::FilePath>& file_paths,
       const webapps::AppId& app_id,

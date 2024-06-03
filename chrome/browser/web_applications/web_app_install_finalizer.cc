@@ -419,8 +419,8 @@ void WebAppInstallFinalizer::ReparentTab(const webapps::AppId& app_id,
                                          bool shortcut_created,
                                          content::WebContents* web_contents) {
   DCHECK(web_contents);
-  return provider_->ui_manager().ReparentAppTabToWindow(web_contents, app_id,
-                                                        shortcut_created);
+  provider_->ui_manager().ReparentAppTabToWindow(web_contents, app_id,
+                                                 shortcut_created);
 }
 
 void WebAppInstallFinalizer::FinalizeUpdate(

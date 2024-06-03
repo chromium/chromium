@@ -15,11 +15,13 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/badging/badge_manager_factory.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -359,8 +361,8 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, GetProcessedManifest_WithManifestId) {
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, GetProcessedManifest_IconWithNoSizes) {
-  ReattachToWebContents(embedded_test_server()->GetURL(
-      "/web_apps/get_manifest.html?icon_with_no_sizes.json"));
+  ReattachToWebContents(
+      GetInstallableSiteWithManifest("icon_with_no_sizes.json"));
   const base::Value::Dict* result =
       SendCommandSync("Page.getAppManifest",
                       base::Value::Dict{}.Set(
@@ -949,7 +951,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_NoFileHandlers) {
 }
 
 // This scenario does not reach the handler itself, but it's worth ensuring that
-// running pWA.launchFilesInApp without "files" parameter would always fail.
+// running PWA.launchFilesInApp without "files" parameter would always fail.
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_NoFilesField) {
   GURL url{embedded_test_server()->GetURL(
       "/webapps_integration/file_handler/basic.html")};
@@ -984,5 +986,121 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_UnsupportedFile) {
   const std::string& message = *error()->FindString("message");
   ASSERT_NE(message.find(url.spec()), std::string::npos);
 }
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, OpenCurrentPageInApp) {
+  // The current browser will be taken over by the web app and the
+  // uninstallation will also close it.
+  set_agent_host_can_close();
+  InstallFromUrl();
+  ReattachToWebContents(InstallableWebAppUrl());
+  ASSERT_TRUE(
+      SendCommandSync("PWA.openCurrentPageInApp",
+                      base::Value::Dict{}.Set(
+                          "manifestId", InstallableWebAppManifestId().spec())));
+}
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, OpenCurrentPageInApp_NoWebContents) {
+  InstallFromUrl();
+  ASSERT_FALSE(
+      SendCommandSync("PWA.openCurrentPageInApp",
+                      base::Value::Dict{}.Set(
+                          "manifestId", InstallableWebAppManifestId().spec())));
+  ASSERT_TRUE(error());
+  const std::string& message = *error()->FindString("message");
+  ASSERT_NE(message.find(InstallableWebAppManifestId().spec()),
+            std::string::npos);
+}
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, OpenCurrentPageInApp_NotInstalled) {
+  ReattachToWebContents(InstallableWebAppUrl());
+  ASSERT_FALSE(
+      SendCommandSync("PWA.openCurrentPageInApp",
+                      base::Value::Dict{}.Set(
+                          "manifestId", InstallableWebAppManifestId().spec())));
+  ASSERT_TRUE(error());
+  const std::string& message = *error()->FindString("message");
+  ASSERT_NE(message.find(InstallableWebAppManifestId().spec()),
+            std::string::npos);
+}
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
+                       OpenCurrentPageInApp_DifferentManifestIdUrl) {
+  set_agent_host_can_close();
+  ManifestId manifest_id{embedded_test_server()->GetURL(
+      "/webapps_integration/standalone/basic.html")};
+  GURL url{embedded_test_server()->GetURL(
+      "/webapps_integration/standalone/basic.html?manifest=basic.json")};
+  InstallFromUrl(manifest_id, url);
+  ReattachToWebContents(url);
+  ASSERT_TRUE(SendCommandSync(
+      "PWA.openCurrentPageInApp",
+      base::Value::Dict{}.Set("manifestId", manifest_id.spec())));
+}
+
+// This test should fail since web apps with browser display mode shouldn't be
+// reparentable to match the behavior of post-installation reparenting. But now
+// the check only applies in WebAppInstallFinalizer::CanReparentTab.
+// TODO(crbug.com/339453521): Find a proper way to check the display mode.
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
+                       DISABLED_OpenCurrentPageInApp_NotReparentable) {
+  ManifestId manifest_id{embedded_test_server()->GetURL(
+      "/webapps_integration/standalone/basic.html")};
+  GURL url{embedded_test_server()->GetURL(
+      "/webapps_integration/standalone/"
+      "basic.html?manifest=manifest_browser.json")};
+  InstallFromUrl(manifest_id, url);
+  ReattachToWebContents(url);
+  ASSERT_FALSE(SendCommandSync(
+      "PWA.openCurrentPageInApp",
+      base::Value::Dict{}.Set("manifestId", manifest_id.spec())));
+  ASSERT_TRUE(error());
+  const std::string& message = *error()->FindString("message");
+  ASSERT_NE(message.find(manifest_id.spec()), std::string::npos);
+  ASSERT_NE(message.find(url.spec()), std::string::npos);
+}
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
+                       OpenCurrentPageInApp_StillAttachedInNewAppWindow) {
+  set_agent_host_can_close();
+  InstallFromUrl();
+  ReattachToWebContents(InstallableWebAppUrl());
+  auto* web_contents_before =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(
+      SendCommandSync("PWA.openCurrentPageInApp",
+                      base::Value::Dict{}.Set(
+                          "manifestId", InstallableWebAppManifestId().spec())));
+
+  const webapps::AppId app_id =
+      web_app::GenerateAppIdFromManifestId(InstallableWebAppManifestId());
+  Browser* app_browser = web_app::AppBrowserController::FindForWebApp(
+      *browser()->profile(), app_id);
+  auto* web_contents_after =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  EXPECT_NE(app_browser, browser());
+  EXPECT_EQ(web_contents_before, web_contents_after);
+  // Use a page target API to verify the WebContents is still attached.
+  ASSERT_TRUE(
+      SendCommandSync("Page.getAppManifest",
+                      base::Value::Dict{}.Set(
+                          "manifestId", InstallableWebAppManifestId().spec())));
+}
+
+#if BUILDFLAG(IS_MAC)
+// Only macos needs a shortcut to open the page in app.
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, OpenCurrentPageInApp_NoShortcut) {
+  // Unlike the PWA.install, web_app::test::InstallWebApp won't create
+  // shortcuts.
+  InstallWebApp();
+  ASSERT_FALSE(
+      SendCommandSync("PWA.openCurrentPageInApp",
+                      base::Value::Dict{}.Set(
+                          "manifestId", InstallableWebAppManifestId().spec())));
+  ASSERT_TRUE(error());
+  const std::string& message = *error()->FindString("message");
+  ASSERT_NE(message.find(InstallableWebAppManifestId().spec()),
+            std::string::npos);
+}
+#endif
 
 }  // namespace
