@@ -170,7 +170,7 @@
     "args": ["--disable-features=IntersectionOptimization",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["wangxianzhu@chromium.org"],
-    "expires": "May 30, 2024"
+    "expires": "Jul 30, 2024"
   },
   {
     "prefix": "raster-inducing-scroll",
