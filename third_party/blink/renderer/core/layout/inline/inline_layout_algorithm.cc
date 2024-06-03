@@ -600,6 +600,18 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
 
 void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info) {
   const ConstraintSpace& space = GetConstraintSpace();
+  if (const LayoutResult* block_in_inline =
+          line_info.BlockInInlineLayoutResult()) {
+    // If this is a wrapper line of a block-in-inline, the trimming is applied
+    // to the block. Propagate the result from the block, without trimming the
+    // wrapper line.
+    if (block_in_inline->IsBlockStartTrimmed() &&
+        space.ShouldTextBoxTrimStart()) {
+      container_builder_.SetIsBlockStartTrimmed();
+    }
+    return;
+  }
+
   const bool should_apply_start =
       space.ShouldTextBoxTrimStart() && line_info.IsFirstFormattedLine();
   const bool should_apply_end =
