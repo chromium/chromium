@@ -437,11 +437,11 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
-                       // TODO(crbug.com/343093063): Re-enable this test
-                       DISABLED_PressingEscRecordsHistogram) {
+                       PressingEscRecordsHistogram) {
   const ui::Accelerator kEsc(ui::VKEY_ESCAPE, ui::MODIFIER_NONE);
   views::Widget* bubble_widget = nullptr;
   RunTestSequence(
+      ObserveState(views::test::kCurrentWidgetFocus),
       ShowPromoRecordingTime(kFeaturePromoLifecycleTestPromo),
       // Ensure that the bubble is active before trying to send an accelerator;
       // widgets cannot accept accelerators before they become active.
@@ -451,11 +451,9 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
                  bubble_widget = view->GetWidget();
                }),
       If([&bubble_widget]() { return !bubble_widget->IsActive(); },
-         Steps(ObserveState(views::test::kCurrentWidgetFocus),
-               WaitForState(views::test::kCurrentWidgetFocus,
-                            [&bubble_widget]() {
-                              return bubble_widget->GetNativeView();
-                            }))),
+         WaitForState(
+             views::test::kCurrentWidgetFocus,
+             [&bubble_widget]() { return bubble_widget->GetNativeView(); })),
       SendAccelerator(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting, kEsc),
       WaitForHide(
