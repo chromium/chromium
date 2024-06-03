@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/apps/almanac_api_client/proto/client_context.pb.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -79,6 +81,10 @@ std::string BuildGetAppsForFirstLoginRequestBody(const apps::DeviceInfo& info) {
 bool IsFeatureEnabled(const std::string& name) {
   if (name == kAppPreloadServiceEnableTestApps.name) {
     return base::FeatureList::IsEnabled(kAppPreloadServiceEnableTestApps);
+  } else if (name == ash::features::kHelpAppWelcomeTips.name) {
+    return base::FeatureList::IsEnabled(ash::features::kHelpAppWelcomeTips);
+  } else if (name == chromeos::features::kCloudGamingDevice.name) {
+    return base::FeatureList::IsEnabled(chromeos::features::kCloudGamingDevice);
   } else if (!name.empty()) {
     LOG(ERROR) << "Unrecognised feature flag considered disabled: " << name;
     return false;

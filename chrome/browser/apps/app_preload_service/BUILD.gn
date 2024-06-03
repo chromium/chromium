@@ -19,6 +19,7 @@ source_set("app_preload_service") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/apps/almanac_api_client",
