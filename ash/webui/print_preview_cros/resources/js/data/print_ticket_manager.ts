@@ -7,7 +7,8 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import {createCustomEvent} from '../utils/event_utils.js';
 import {getPrintPreviewPageHandler} from '../utils/mojo_data_providers.js';
-import {PrinterStatusReason, type PrintPreviewPageHandler, PrintTicket, SessionContext} from '../utils/print_preview_cros_app_types.js';
+import {type Destination, PrinterStatusReason, type PrintPreviewPageHandler, PrintTicket, SessionContext} from '../utils/print_preview_cros_app_types.js';
+import {isValidDestination} from '../utils/validation_utils.js';
 
 import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DestinationManager} from './destination_manager.js';
 import {DEFAULT_PARTIAL_PRINT_TICKET} from './ticket_constants.js';
@@ -24,6 +25,8 @@ export const PRINT_REQUEST_FINISHED_EVENT =
     'print-ticket-manager.print-request-finished';
 export const PRINT_TICKET_MANAGER_SESSION_INITIALIZED =
     'print-ticket-manager.session-initialized';
+export const PRINT_TICKET_MANAGER_TICKET_CHANGED =
+    'print-ticket-manager.ticket-changed';
 
 export class PrintTicketManager extends EventTarget {
   private static instance: PrintTicketManager|null = null;
@@ -37,6 +40,7 @@ export class PrintTicketManager extends EventTarget {
   }
 
   static resetInstanceForTesting(): void {
+    PrintTicketManager.instance?.eventTracker.removeAll();
     PrintTicketManager.instance = null;
   }
 
@@ -45,8 +49,8 @@ export class PrintTicketManager extends EventTarget {
   private printRequestInProgress = false;
   private printTicket: PrintTicket|null = null;
   private sessionContext: SessionContext;
-  private destinationManager: DestinationManager =
-      DestinationManager.getInstance();
+  // Managers need to be set after construction to avoid circular dependencies.
+  private destinationManager: DestinationManager;
   private eventTracker = new EventTracker();
 
   // Prevent additional initialization.
@@ -71,8 +75,14 @@ export class PrintTicketManager extends EventTarget {
       printPreviewId: this.sessionContext.printPreviewId,
       previewModifiable: this.sessionContext.isModifiable,
       shouldPrintSelectionOnly: this.sessionContext.hasSelection,
+      // Active printer selected during initialization is selected by system.
+      printerManuallySelected: false,
     } as PrintTicket;
 
+    // TODO(b/323421684): Remove logic to lookup initial destination from
+    // DestinationManager as part of refactor to use setPrintTicketDestination
+    // directly.
+    this.destinationManager = DestinationManager.getInstance();
     const activeDest = this.destinationManager.getActiveDestination();
     if (activeDest === null) {
       this.printTicket.destination = '';
@@ -83,8 +93,6 @@ export class PrintTicketManager extends EventTarget {
     } else {
       this.printTicket.destination = activeDest.id;
       this.printTicket.printerType = activeDest.printerType;
-      this.printTicket.printerManuallySelected =
-          activeDest.printerManuallySelected;
       this.printTicket.printerStatusReason =
           activeDest.printerStatusReason || PrinterStatusReason.UNKNOWN_REASON;
     }
@@ -131,6 +139,11 @@ export class PrintTicketManager extends EventTarget {
     this.printPreviewPageHandler!.cancel();
   }
 
+  // Returns current print ticket.
+  getPrintTicket(): PrintTicket|null {
+    return this.printTicket;
+  }
+
   isPrintRequestInProgress(): boolean {
     return this.printRequestInProgress;
   }
@@ -139,10 +152,6 @@ export class PrintTicketManager extends EventTarget {
   // with a valid `SessionContext`.
   isSessionInitialized(): boolean {
     return !!this.sessionContext;
-  }
-
-  getPrintTicketForTesting(): PrintTicket|null {
-    return this.printTicket;
   }
 
   // Handles setting initial active destination in print ticket if not already
@@ -159,17 +168,49 @@ export class PrintTicketManager extends EventTarget {
     }
 
     if (this.printTicket!.destination === '') {
-      this.printTicket!.destination = activeDest.id;
-      this.printTicket!.printerType = activeDest.printerType;
-      this.printTicket!.printerManuallySelected =
-          activeDest.printerManuallySelected;
-      this.printTicket!.printerStatusReason =
-          activeDest.printerStatusReason || PrinterStatusReason.UNKNOWN_REASON;
+      this.updateDestinationFields(activeDest.id, /*manuallySelected=*/ false);
     }
 
     this.eventTracker.remove(
         this.destinationManager,
         DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED);
+  }
+
+  // Verifies the provided destination ID exists and not the current ID. If
+  // valid, updates destination print ticket values and triggers change event
+  // before returning true. Otherwise, no change is made and returns false.
+  setPrintTicketDestination(destinationId: string): boolean {
+    if (!this.isSessionInitialized()) {
+      return false;
+    }
+
+    if (this.isPrintRequestInProgress()) {
+      return false;
+    }
+
+    if (!isValidDestination(destinationId) ||
+        destinationId === this.printTicket!.destination) {
+      return false;
+    }
+
+    // Active printer selected during update is selected by user.
+    this.updateDestinationFields(destinationId, /*manuallySelected=*/ true);
+    this.dispatchEvent(createCustomEvent(PRINT_TICKET_MANAGER_TICKET_CHANGED));
+    return true;
+  }
+
+  // Sets all fields related to the active destination on active destination
+  // changed.
+  private updateDestinationFields(
+      destinationId: string, manuallySelected: boolean): void {
+    assert(this.printTicket);
+    const source: Destination =
+        this.destinationManager.getDestination(destinationId);
+    this.printTicket.destination = destinationId;
+    this.printTicket.printerType = source.printerType;
+    this.printTicket.printerStatusReason =
+        source.printerStatusReason || PrinterStatusReason.UNKNOWN_REASON;
+    this.printTicket!.printerManuallySelected = manuallySelected;
   }
 }
 

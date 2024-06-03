@@ -107,6 +107,12 @@ export class DestinationManager extends EventTarget implements
     return this.initialDestinationsLoaded;
   }
 
+  // Retrieve destination by ID.
+  getDestination(destinationId: string): Destination {
+    assert(this.destinationExists(destinationId));
+    return this.destinationCache.get(destinationId)!;
+  }
+
   // Retrieve a list of all known destinations.
   getDestinations(): Destination[] {
     return this.destinations;
@@ -187,6 +193,8 @@ export class DestinationManager extends EventTarget implements
         (destinations: Destination[]): void => {
           this.addOrUpdateDestinations(destinations);
           this.initialDestinationsLoaded = true;
+          // TODO(b/323421684): Refactor selectInitialDestination to call
+          // setPrintTicketDestination print ticket manager.
           this.selectInitialDestination();
           this.updateState(DestinationManagerState.LOADED);
         });
