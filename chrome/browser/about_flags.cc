@@ -8539,11 +8539,6 @@ const FeatureEntry kFeatureEntries[] = {
                             kCrosSystemLevelPermissionBlockedWarnings)},
 #endif
 
-    {"attribution-reporting-debug-mode",
-     flag_descriptions::kAttributionReportingDebugModeName,
-     flag_descriptions::kAttributionReportingDebugModeDescription, kOsAll,
-     SINGLE_VALUE_TYPE(switches::kAttributionReportingDebugMode)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"productivity-launcher", flag_descriptions::kProductivityLauncherName,
      flag_descriptions::kProductivityLauncherDescription, kOsCrOS,

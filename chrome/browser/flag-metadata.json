@@ -538,11 +538,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "attribution-reporting-debug-mode",
-    "owners": [ "//content/browser/attribution_reporting/OWNERS" ],
-    "expiry_milestone": 123
-  },
-  {
     "name": "audio-a2dp-advanced-codecs",
     "owners": ["jrwu@chromium.org", "chromeos-audio@google.com" ],
     "expiry_milestone": 130

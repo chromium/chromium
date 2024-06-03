@@ -86,13 +86,6 @@ const char kAriaElementReflectionDescription[] =
     "Enable setting ARIA relationship attributes that reference other elements "
     "directly without an IDREF";
 
-const char kAttributionReportingDebugModeName[] =
-    "Attribution Reporting Debug Mode";
-const char kAttributionReportingDebugModeDescription[] =
-    "Enables debug mode for the Attribution Reporting API. This removes all "
-    "reporting delays and noise. Only works if the Attribution Reporting API "
-    "is already enabled.";
-
 const char kAuxiliarySearchDonationName[] = "Auxiliary Search Donation";
 const char kAuxiliarySearchDonationDescription[] =
     "If enabled, override Auxiliary Search donation cap.";

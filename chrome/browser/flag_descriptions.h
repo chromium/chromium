@@ -78,9 +78,6 @@ extern const char kAnimatedImageResumeDescription[];
 extern const char kAriaElementReflectionName[];
 extern const char kAriaElementReflectionDescription[];
 
-extern const char kAttributionReportingDebugModeName[];
-extern const char kAttributionReportingDebugModeDescription[];
-
 extern const char kAppDeduplicationServiceFondueName[];
 extern const char kAppDeduplicationServiceFondueDescription[];
 
