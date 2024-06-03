@@ -42,7 +42,8 @@ void CredentialManagerPendingPreventSilentAccessTask::
         PasswordStoreInterface* store,
         std::vector<std::unique_ptr<PasswordForm>> results) {
   for (const auto& form : results) {
-    if (form->match_type == PasswordForm::MatchType::kGrouped) {
+    if (form->match_type == PasswordForm::MatchType::kGrouped ||
+        form->blocked_by_user) {
       continue;
     }
     if (!form->skip_zero_click) {

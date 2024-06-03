@@ -239,4 +239,32 @@ TEST_F(CredentialManagerPendingPreventSilentAccessTaskTest,
   ProcessPasswordStoreUpdates();
 }
 
+TEST_F(CredentialManagerPendingPreventSilentAccessTaskTest,
+       IngoresBlockedCredentials) {
+  ON_CALL(delegate_mock_, GetProfilePasswordStore)
+      .WillByDefault(testing::Return(profile_store_.get()));
+  ON_CALL(delegate_mock_, GetAccountPasswordStore)
+      .WillByDefault(testing::Return(nullptr));
+
+  PasswordForm form;
+  form.signon_realm = kUrl;
+  form.url = GURL(kUrl);
+  form.blocked_by_user = true;
+
+  profile_store_->AddLogin(form);
+  ProcessPasswordStoreUpdates();
+
+  const PasswordFormDigest kDigest(PasswordForm::Scheme::kHtml,
+                                   GetSignonRealm(GURL(kUrl)), GURL(kUrl));
+  // Register `kGroupedMatchUrl` domain as weakly affiliated with `kUrl`.
+  CredentialManagerPendingPreventSilentAccessTask task(&delegate_mock_);
+  task.AddOrigin(kDigest);
+  ProcessPasswordStoreUpdates();
+
+  PasswordStoreLoginsUpdateHelper helper(/*expected_logins_num=*/1,
+                                         /*silent_access_disabled=*/false);
+  profile_store_->GetLogins(PasswordFormDigest(form), helper.GetWeakPtr());
+  ProcessPasswordStoreUpdates();
+}
+
 }  // namespace password_manager
