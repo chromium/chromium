@@ -11,6 +11,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/service/variations_service.h"
+#include "components/variations/service/variations_service_utils.h"
 
 namespace privacy_sandbox {
 
@@ -65,13 +66,24 @@ bool IsConfirmationRequired(ConfirmationType confirmation_type,
         IsFeatureParamEnabled(confirmation_type);
     EmitHistogram(confirmation_type, is_confirmation_required !=
                                          is_confirmation_required_override);
-    return is_confirmation_required_override;
+    if (!base::FeatureList::IsEnabled(
+            privacy_sandbox::kPrivacySandboxLocalNoticeConfirmation)) {
+      return is_confirmation_required_override;
+    }
   }
   return is_confirmation_required;
 }
 
 std::string GetCountry(variations::VariationsService* variations_service) {
-  return variations_service->GetStoredPermanentCountry();
+  if (privacy_sandbox::kPrivacySandboxLocalNoticeConfirmationDefaultToOSCountry
+          .Get()) {
+    return GetCurrentCountryCode(variations_service);
+  } else {
+    if (!variations_service) {
+      return "";
+    }
+    return variations_service->GetStoredPermanentCountry();
+  }
 }
 
 }  // namespace
@@ -79,9 +91,8 @@ std::string GetCountry(variations::VariationsService* variations_service) {
 bool IsConsentRequired() {
   CHECK(g_browser_process);
   return IsConfirmationRequired(ConfirmationType::Consent, []() {
-    return g_browser_process->variations_service() &&
-           kConsentCountries.contains(
-               GetCountry(g_browser_process->variations_service()));
+    return kConsentCountries.contains(
+        GetCountry(g_browser_process->variations_service()));
   });
 }
 
@@ -91,9 +102,6 @@ bool IsNoticeRequired() {
     base::UmaHistogramBoolean(
         "PrivacySandbox.NoticeRequirement.IsVariationServiceReady",
         g_browser_process->variations_service() != nullptr);
-    if (!g_browser_process->variations_service()) {
-      return false;
-    }
     std::string country = GetCountry(g_browser_process->variations_service());
     base::UmaHistogramBoolean(
         "PrivacySandbox.NoticeRequirement.IsVariationCountryEmpty",

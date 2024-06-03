@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_confirmation.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_confirmation.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/variations/service/variations_service.h"
@@ -52,6 +53,11 @@ base::test::FeatureRefAndParams ConsentFeature() {
           {{kPrivacySandboxSettings4ConsentRequiredName, "true"}}};
 }
 
+base::test::FeatureRefAndParams DefaultToOSCountryFeature() {
+  return {kPrivacySandboxLocalNoticeConfirmation,
+          {{"default-to-os-country", "true"}}};
+}
+
 IN_PROC_BROWSER_TEST_P(PrivacySandboxConsentConfirmationTest, ConsentTest) {
   // Setup
   base::HistogramTester histogram_tester;
@@ -71,10 +77,12 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     PrivacySandboxConsentConfirmationTest,
     testing::Values(
+        // Tests with PrivacySandboxLocalNoticeConfirmation Feature disabled.
         // 1. GB
         // 1.1 GB - Feature Overridden, Consent param set to true.
         PrivacySandboxConfirmationTestData{
             .enabled_features = {ConsentFeature()},
+            .disabled_features = {kPrivacySandboxLocalNoticeConfirmation},
             .variation_country = "gb",
             // Expectations
             .expect_required = true,
@@ -83,6 +91,7 @@ INSTANTIATE_TEST_SUITE_P(
         // 1.2 GB - Feature Overridden. consent param not set.
         PrivacySandboxConfirmationTestData{
             .enabled_features = {{kPrivacySandboxSettings4, {{}}}},
+            .disabled_features = {kPrivacySandboxLocalNoticeConfirmation},
             .variation_country = "gb",
             // Expectations
             .expect_required = false,
@@ -90,7 +99,8 @@ INSTANTIATE_TEST_SUITE_P(
         },
         // 1.3 GB - Feature Explicitly Disabled.
         PrivacySandboxConfirmationTestData{
-            .disabled_features = {kPrivacySandboxSettings4},
+            .disabled_features = {kPrivacySandboxSettings4,
+                                  kPrivacySandboxLocalNoticeConfirmation},
             .variation_country = "gb",
             // Expectations
             .expect_required = false,
@@ -98,6 +108,7 @@ INSTANTIATE_TEST_SUITE_P(
         },
         // 1.4 GB - Feature Not Set.
         PrivacySandboxConfirmationTestData{
+            .disabled_features = {kPrivacySandboxLocalNoticeConfirmation},
             .variation_country = "gb",
             // Expectations
             .expect_required = true,
@@ -106,29 +117,102 @@ INSTANTIATE_TEST_SUITE_P(
         // 2.1 US - Feature Overridden, Consent param set to true.
         PrivacySandboxConfirmationTestData{
             .enabled_features = {ConsentFeature()},
+            .disabled_features = {kPrivacySandboxLocalNoticeConfirmation},
             .variation_country = "us",
             // Expectations
             .expect_required = true,
             .expect_mismatch_histogram_true = true,
         },
-        // 2.2 GB - Feature Overridden. consent param not set.
+        // 2.2 US - Feature Overridden. consent param not set.
         PrivacySandboxConfirmationTestData{
             .enabled_features = {{kPrivacySandboxSettings4, {{}}}},
+            .disabled_features = {kPrivacySandboxLocalNoticeConfirmation},
             .variation_country = "us",
             // Expectations
             .expect_required = false,
             .expect_mismatch_histogram_false = true,
         },
-        // 2.3 GB - Feature Explicitly Disabled.
+        // 2.3 US - Feature Explicitly Disabled.
         PrivacySandboxConfirmationTestData{
+            .disabled_features = {kPrivacySandboxSettings4,
+                                  kPrivacySandboxLocalNoticeConfirmation},
+            .variation_country = "us",
+            // Expectations
+            .expect_required = false,
+            .expect_mismatch_histogram_false = true,
+        },
+        // 2.4 US - Feature Not Set.
+        PrivacySandboxConfirmationTestData{
+            .disabled_features = {kPrivacySandboxLocalNoticeConfirmation},
+            .variation_country = "us",
+            // Expectations
+            .expect_required = false,
+        },
+        // Tests with PrivacySandboxLocalNoticeConfirmation Feature enabled.
+        // 1. GB
+        // 1.1 GB - Feature Overridden ignored.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features = {ConsentFeature(), DefaultToOSCountryFeature()},
+            .variation_country = "gb",
+            // Expectations
+            .expect_required = true,
+            .expect_mismatch_histogram_false = true,
+        },
+        // 1.2 GB - Feature Overridden. consent param not set.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features = {{kPrivacySandboxSettings4, {{}}},
+                                 DefaultToOSCountryFeature()},
+            .variation_country = "gb",
+            // Expectations
+            .expect_required = true,
+            .expect_mismatch_histogram_true = true,
+        },
+        // 1.3 GB - Feature Explicitly Disabled.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features = {DefaultToOSCountryFeature()},
+            .disabled_features = {kPrivacySandboxSettings4},
+            .variation_country = "gb",
+            // Expectations
+            .expect_required = true,
+            .expect_mismatch_histogram_true = true,
+        },
+        // 1.4 GB - Feature Not Set.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features = {DefaultToOSCountryFeature()},
+            .variation_country = "gb",
+            // Expectations
+            .expect_required = true,
+        },
+        // 2. US
+        // 2.1 US - Feature Overridden ignored.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features = {ConsentFeature(), DefaultToOSCountryFeature()},
+            .variation_country = "us",
+            // Expectations
+            .expect_required = false,
+            .expect_mismatch_histogram_true = true,
+        },
+        // 2.2 US - Feature Overridden. consent param not set.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features = {{kPrivacySandboxSettings4, {{}}},
+                                 DefaultToOSCountryFeature()},
+            .variation_country = "us",
+            // Expectations
+            .expect_required = false,
+            .expect_mismatch_histogram_false = true,
+        },
+        // 2.3 US - Feature Explicitly Disabled.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features = {DefaultToOSCountryFeature()},
             .disabled_features = {kPrivacySandboxSettings4},
             .variation_country = "us",
             // Expectations
             .expect_required = false,
             .expect_mismatch_histogram_false = true,
         },
-        // 2.4 GB - Feature Not Set.
+        // 2.4 US - Feature Not Set.
         PrivacySandboxConfirmationTestData{
+            .enabled_features = {DefaultToOSCountryFeature()},
             .variation_country = "us",
             // Expectations
             .expect_required = false,
@@ -147,7 +231,6 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxNoticeConfirmationTest, NoticeTest) {
   base::HistogramTester histogram_tester;
   g_browser_process->variations_service()->OverrideStoredPermanentCountry(
       GetParam().variation_country);
-
   EXPECT_EQ(IsNoticeRequired(), GetParam().expect_required);
   histogram_tester.ExpectBucketCount(
       "Settings.PrivacySandbox.NoticeCheckIsMismatched", true,
@@ -161,10 +244,12 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     PrivacySandboxNoticeConfirmationTest,
     testing::Values(
+        // Tests with PrivacySandboxLocalNoticeConfirmation Feature disabled.
         // 1. GB
         // 1.1 GB - Feature Overridden, Notice param set to true.
         PrivacySandboxConfirmationTestData{
             .enabled_features = {NoticeFeature()},
+            .disabled_features = {kPrivacySandboxLocalNoticeConfirmation},
             .variation_country = "gb",
             // Expectations
             .expect_required = true,
@@ -173,6 +258,7 @@ INSTANTIATE_TEST_SUITE_P(
         // 1.2 GB - Feature Overridden. notice param not set.
         PrivacySandboxConfirmationTestData{
             .enabled_features = {{kPrivacySandboxSettings4, {{}}}},
+            .disabled_features = {kPrivacySandboxLocalNoticeConfirmation},
             .variation_country = "gb",
             // Expectations
             .expect_required = false,
@@ -180,7 +266,8 @@ INSTANTIATE_TEST_SUITE_P(
         },
         // 1.3 GB - Feature Explicitly Disabled.
         PrivacySandboxConfirmationTestData{
-            .disabled_features = {kPrivacySandboxSettings4},
+            .disabled_features = {kPrivacySandboxSettings4,
+                                  kPrivacySandboxLocalNoticeConfirmation},
             .variation_country = "gb",
             // Expectations
             .expect_required = false,
@@ -188,6 +275,7 @@ INSTANTIATE_TEST_SUITE_P(
         },
         // 1.4 GB - Feature Not Set.
         PrivacySandboxConfirmationTestData{
+            .disabled_features = {kPrivacySandboxLocalNoticeConfirmation},
             .variation_country = "gb",
             // Expectations
             .expect_required = false,
@@ -196,6 +284,7 @@ INSTANTIATE_TEST_SUITE_P(
         // 2.1 US - Feature Overridden, notice param set to true.
         PrivacySandboxConfirmationTestData{
             .enabled_features = {NoticeFeature()},
+            .disabled_features = {kPrivacySandboxLocalNoticeConfirmation},
             .variation_country = "us",
             // Expectations
             .expect_required = true,
@@ -204,6 +293,7 @@ INSTANTIATE_TEST_SUITE_P(
         // 2.2 US - Feature Overridden. notice param not set.
         PrivacySandboxConfirmationTestData{
             .enabled_features = {{kPrivacySandboxSettings4, {{}}}},
+            .disabled_features = {kPrivacySandboxLocalNoticeConfirmation},
             .variation_country = "us",
             // Expectations
             .expect_required = false,
@@ -211,7 +301,8 @@ INSTANTIATE_TEST_SUITE_P(
         },
         // 2.3 US - Feature Explicitly Disabled.
         PrivacySandboxConfirmationTestData{
-            .disabled_features = {kPrivacySandboxSettings4},
+            .disabled_features = {kPrivacySandboxSettings4,
+                                  kPrivacySandboxLocalNoticeConfirmation},
             .variation_country = "us",
             // Expectations
             .expect_required = false,
@@ -219,6 +310,7 @@ INSTANTIATE_TEST_SUITE_P(
         },
         // 2.4 US - Feature Not Set.
         PrivacySandboxConfirmationTestData{
+            .disabled_features = {kPrivacySandboxLocalNoticeConfirmation},
             .variation_country = "us",
             // Expectations
             .expect_required = true,
@@ -227,6 +319,7 @@ INSTANTIATE_TEST_SUITE_P(
         // 3.1 Empty Country - Feature Overridden, Notice param set to true.
         PrivacySandboxConfirmationTestData{
             .enabled_features = {NoticeFeature()},
+            .disabled_features = {kPrivacySandboxLocalNoticeConfirmation},
             .variation_country = "",
             // Expectations
             .expect_required = true,
@@ -235,6 +328,7 @@ INSTANTIATE_TEST_SUITE_P(
         // 3.2 Empty Country - Feature Overridden. notice param not set.
         PrivacySandboxConfirmationTestData{
             .enabled_features = {{kPrivacySandboxSettings4, {{}}}},
+            .disabled_features = {kPrivacySandboxLocalNoticeConfirmation},
             .variation_country = "",
             // Expectations
             .expect_required = false,
@@ -242,7 +336,8 @@ INSTANTIATE_TEST_SUITE_P(
         },
         // 3.3 Empty Country - Feature Explicitly Disabled.
         PrivacySandboxConfirmationTestData{
-            .disabled_features = {kPrivacySandboxSettings4},
+            .disabled_features = {kPrivacySandboxSettings4,
+                                  kPrivacySandboxLocalNoticeConfirmation},
             .variation_country = "",
             // Expectations
             .expect_required = false,
@@ -250,9 +345,70 @@ INSTANTIATE_TEST_SUITE_P(
         },
         // 3.4 Empty Country - Feature Not Set.
         PrivacySandboxConfirmationTestData{
+            .disabled_features = {kPrivacySandboxLocalNoticeConfirmation},
             .variation_country = "",
             // Expectations
             .expect_required = false,
+        },
+        // Tests with PrivacySandboxLocalNoticeConfirmation Feature enabled.
+        // 1. GB
+        // 1.1 GB - Feature Overridden ignored.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features = {NoticeFeature(), DefaultToOSCountryFeature()},
+            .variation_country = "gb",
+            // Expectations
+            .expect_required = false,
+            .expect_mismatch_histogram_true = true,
+        },
+        // 1.3 GB - Feature Explicitly Disabled.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features = {DefaultToOSCountryFeature()},
+            .disabled_features = {kPrivacySandboxSettings4},
+            .variation_country = "gb",
+            // Expectations
+            .expect_required = false,
+            .expect_mismatch_histogram_false = true,
+        },
+        // 1.4 GB - Feature Not Set.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features = {DefaultToOSCountryFeature()},
+            .variation_country = "gb",
+            // Expectations
+            .expect_required = false,
+        },
+        // 2. US
+        // 2.1 US - Feature Overridden ignored.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features = {NoticeFeature(), DefaultToOSCountryFeature()},
+            .variation_country = "us",
+            // Expectations
+            .expect_required = true,
+            .expect_mismatch_histogram_false = true,
+        },
+        // 2.2 US - Feature Overridden. notice param not set.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features = {{kPrivacySandboxSettings4, {{}}},
+                                 DefaultToOSCountryFeature()},
+            .variation_country = "us",
+            // Expectations
+            .expect_required = true,
+            .expect_mismatch_histogram_true = true,
+        },
+        // 2.3 US - Feature Explicitly Disabled.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features = {DefaultToOSCountryFeature()},
+            .disabled_features = {kPrivacySandboxSettings4},
+            .variation_country = "us",
+            // Expectations
+            .expect_required = true,
+            .expect_mismatch_histogram_true = true,
+        },
+        // 2.4 US - Feature Not Set.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features = {DefaultToOSCountryFeature()},
+            .variation_country = "us",
+            // Expectations
+            .expect_required = true,
         }));
 
 class PrivacySandboxRestrictedNoticeConfirmationTest

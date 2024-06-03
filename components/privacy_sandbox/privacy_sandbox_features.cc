@@ -241,4 +241,14 @@ BASE_FEATURE(kPrivacySandboxAdsDialogDisabledOnAll3PCBlock,
 BASE_FEATURE(kPrivacySandboxPrivacyGuideAdTopics,
              "PrivacySandboxPrivacyGuideAdTopics",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrivacySandboxLocalNoticeConfirmation,
+             "PrivacySandboxLocalNoticeConfirmation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool>
+    kPrivacySandboxLocalNoticeConfirmationDefaultToOSCountry{
+        &kPrivacySandboxLocalNoticeConfirmation, "default-to-os-country",
+        false};
+
 }  // namespace privacy_sandbox

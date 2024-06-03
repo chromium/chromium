@@ -32,7 +32,8 @@ class PrivacySandboxDialogViewInteractiveUiTestM1
                                {}},
                               {privacy_sandbox::kPrivacySandboxSettings4,
                                {{"consent-required", "true"}}}},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{
+            privacy_sandbox::kPrivacySandboxLocalNoticeConfirmation});
   }
 
  private:
