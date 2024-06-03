@@ -27,7 +27,7 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'puppeteer')
     steps:
       - name: Checkout Chromium-BiDi
-        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
         with:
           path: 'bidi'
       - name: Set up FFmpeg
@@ -50,7 +50,7 @@ jobs:
         run: npm link
 
       - name: Checkout
-        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
         with:
           repository: 'puppeteer/puppeteer'
           path: 'puppeteer'
