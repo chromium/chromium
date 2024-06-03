@@ -150,7 +150,47 @@ void av1_convolve_2d_scale_neon(const uint8_t* src,
                                 const int subpel_y_qn,
                                 const int y_step_qn,
                                 ConvolveParams* conv_params);
-#define av1_convolve_2d_scale av1_convolve_2d_scale_neon
+void av1_convolve_2d_scale_neon_dotprod(
+    const uint8_t* src,
+    int src_stride,
+    uint8_t* dst,
+    int dst_stride,
+    int w,
+    int h,
+    const InterpFilterParams* filter_params_x,
+    const InterpFilterParams* filter_params_y,
+    const int subpel_x_qn,
+    const int x_step_qn,
+    const int subpel_y_qn,
+    const int y_step_qn,
+    ConvolveParams* conv_params);
+void av1_convolve_2d_scale_neon_i8mm(const uint8_t* src,
+                                     int src_stride,
+                                     uint8_t* dst,
+                                     int dst_stride,
+                                     int w,
+                                     int h,
+                                     const InterpFilterParams* filter_params_x,
+                                     const InterpFilterParams* filter_params_y,
+                                     const int subpel_x_qn,
+                                     const int x_step_qn,
+                                     const int subpel_y_qn,
+                                     const int y_step_qn,
+                                     ConvolveParams* conv_params);
+RTCD_EXTERN void (*av1_convolve_2d_scale)(
+    const uint8_t* src,
+    int src_stride,
+    uint8_t* dst,
+    int dst_stride,
+    int w,
+    int h,
+    const InterpFilterParams* filter_params_x,
+    const InterpFilterParams* filter_params_y,
+    const int subpel_x_qn,
+    const int x_step_qn,
+    const int subpel_y_qn,
+    const int y_step_qn,
+    ConvolveParams* conv_params);
 
 void av1_convolve_2d_sr_c(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int w, int h, const InterpFilterParams *filter_params_x, const InterpFilterParams *filter_params_y, const int subpel_x_qn, const int subpel_y_qn, ConvolveParams *conv_params);
 void av1_convolve_2d_sr_neon(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int w, int h, const InterpFilterParams *filter_params_x, const InterpFilterParams *filter_params_y, const int subpel_x_qn, const int subpel_y_qn, ConvolveParams *conv_params);
@@ -651,6 +691,13 @@ static void setup_rtcd_internal(void)
 
     (void)flags;
 
+    av1_convolve_2d_scale = av1_convolve_2d_scale_neon;
+    if (flags & HAS_NEON_DOTPROD) {
+      av1_convolve_2d_scale = av1_convolve_2d_scale_neon_dotprod;
+    }
+    if (flags & HAS_NEON_I8MM) {
+      av1_convolve_2d_scale = av1_convolve_2d_scale_neon_i8mm;
+    }
     av1_convolve_2d_sr = av1_convolve_2d_sr_neon;
     if (flags & HAS_NEON_DOTPROD) av1_convolve_2d_sr = av1_convolve_2d_sr_neon_dotprod;
     if (flags & HAS_NEON_I8MM) av1_convolve_2d_sr = av1_convolve_2d_sr_neon_i8mm;
