@@ -28,6 +28,7 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "components/autofill/content/browser/risk/proto/fingerprint.pb.h"
+#include "components/autofill/content/common/content_autofill_features.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
@@ -308,15 +309,18 @@ FingerprintDataLoader::FingerprintDataLoader(
   content::GetFontListAsync(base::BindOnce(&FingerprintDataLoader::OnGotFonts,
                                            weak_ptr_factory_.GetWeakPtr()));
 
-  // Load geolocation data.
-  content::GetDeviceService().BindGeolocationContext(
-      geolocation_context_.BindNewPipeAndPassReceiver());
-  geolocation_context_->BindGeolocation(
-      geolocation_.BindNewPipeAndPassReceiver(), GURL());
-  geolocation_->SetHighAccuracy(false);
-  geolocation_->QueryNextPosition(
-      base::BindOnce(&FingerprintDataLoader::OnGotGeoposition,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillDisableGeolocationInRiskFingerprint)) {
+    // Load geolocation data.
+    content::GetDeviceService().BindGeolocationContext(
+        geolocation_context_.BindNewPipeAndPassReceiver());
+    geolocation_context_->BindGeolocation(
+        geolocation_.BindNewPipeAndPassReceiver(), GURL());
+    geolocation_->SetHighAccuracy(false);
+    geolocation_->QueryNextPosition(
+        base::BindOnce(&FingerprintDataLoader::OnGotGeoposition,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void FingerprintDataLoader::OnGpuInfoUpdate() {
@@ -357,10 +361,13 @@ void FingerprintDataLoader::OnGotGeoposition(
 void FingerprintDataLoader::MaybeFillFingerprint() {
   // If all of the data has been loaded, or if the |timeout_timer_| has expired,
   // fill the fingerprint and clean up.
+  const bool requires_geoposition_result = !base::FeatureList::IsEnabled(
+      features::kAutofillDisableGeolocationInRiskFingerprint);
   if (!timeout_timer_.IsRunning() ||
       ((!gpu_data_manager_->GpuAccessAllowed(nullptr) ||
         gpu_data_manager_->IsEssentialGpuInfoAvailable()) &&
-       fonts_ && !waiting_on_plugins_ && geoposition_result_)) {
+       fonts_ && !waiting_on_plugins_ &&
+       (geoposition_result_ || !requires_geoposition_result))) {
     FillFingerprint();
     delete this;
   }

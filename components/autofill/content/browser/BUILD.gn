@@ -146,6 +146,7 @@ source_set("browser_tests") {
   deps = [
     ":test_support",
     "//base",
+    "//components/autofill/content/common:features",
     "//content/public/browser",
     "//content/test:browsertest_support",
     "//content/test:test_support",

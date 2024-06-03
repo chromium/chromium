@@ -10,8 +10,10 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/autofill/content/browser/risk/proto/fingerprint.pb.h"
+#include "components/autofill/content/common/content_autofill_features.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/test/browser_test.h"
@@ -65,14 +67,19 @@ const double kAltitude = 123.4;
 const double kAccuracy = 73.7;
 const int kGeolocationTime = 87;
 
-class AutofillRiskFingerprintTest : public content::ContentBrowserTest {
+class AutofillRiskFingerprintTest : public content::ContentBrowserTest,
+                                    public ::testing::WithParamInterface<bool> {
  public:
   AutofillRiskFingerprintTest()
       : window_bounds_(2, 3, 5, 7),
         content_bounds_(11, 13, 17, 37),
         screen_bounds_(0, 0, 101, 71),
         available_screen_bounds_(0, 11, 101, 60),
-        unavailable_screen_bounds_(0, 0, 101, 11) {}
+        unavailable_screen_bounds_(0, 0, 101, 11) {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kAutofillDisableGeolocationInRiskFingerprint,
+        IsGeolocationDisabled());
+  }
 
   void SetUpOnMainThread() override {
     auto position = device::mojom::Geoposition::New();
@@ -144,17 +151,27 @@ class AutofillRiskFingerprintTest : public content::ContentBrowserTest {
     EXPECT_TRUE(transient_state.outer_window_size().has_width());
     EXPECT_TRUE(transient_state.outer_window_size().has_height());
 
-    ASSERT_TRUE(fingerprint->has_user_characteristics());
-    const Fingerprint::UserCharacteristics& user_characteristics =
-        fingerprint->user_characteristics();
-    ASSERT_TRUE(user_characteristics.has_location());
-    const Fingerprint::UserCharacteristics::Location& location =
-        user_characteristics.location();
-    EXPECT_TRUE(location.has_altitude());
-    EXPECT_TRUE(location.has_latitude());
-    EXPECT_TRUE(location.has_longitude());
-    EXPECT_TRUE(location.has_accuracy());
-    EXPECT_TRUE(location.has_time_in_ms());
+    if (IsGeolocationDisabled()) {
+      ASSERT_FALSE(fingerprint->has_user_characteristics());
+    } else {
+      ASSERT_TRUE(fingerprint->has_user_characteristics());
+      const Fingerprint::UserCharacteristics& user_characteristics =
+          fingerprint->user_characteristics();
+      ASSERT_TRUE(user_characteristics.has_location());
+      const Fingerprint::UserCharacteristics::Location& location =
+          user_characteristics.location();
+      EXPECT_TRUE(location.has_altitude());
+      EXPECT_TRUE(location.has_latitude());
+      EXPECT_TRUE(location.has_longitude());
+      EXPECT_TRUE(location.has_accuracy());
+      EXPECT_TRUE(location.has_time_in_ms());
+
+      EXPECT_EQ(kAltitude, location.altitude());
+      EXPECT_EQ(kLatitude, location.latitude());
+      EXPECT_EQ(kLongitude, location.longitude());
+      EXPECT_EQ(kAccuracy, location.accuracy());
+      EXPECT_EQ(kGeolocationTime, location.time_in_ms());
+    }
 
     ASSERT_TRUE(fingerprint->has_metadata());
     EXPECT_TRUE(fingerprint->metadata().has_timestamp_ms());
@@ -182,14 +199,11 @@ class AutofillRiskFingerprintTest : public content::ContentBrowserTest {
     EXPECT_EQ(window_bounds_.height(),
               transient_state.outer_window_size().height());
     EXPECT_EQ(kObfuscatedGaiaId, fingerprint->metadata().obfuscated_gaia_id());
-    EXPECT_EQ(kAltitude, location.altitude());
-    EXPECT_EQ(kLatitude, location.latitude());
-    EXPECT_EQ(kLongitude, location.longitude());
-    EXPECT_EQ(kAccuracy, location.accuracy());
-    EXPECT_EQ(kGeolocationTime, location.time_in_ms());
 
     std::move(continuation_callback).Run();
   }
+
+  bool IsGeolocationDisabled() const { return GetParam(); }
 
  protected:
   // Constants defining bounds in the screen coordinate system that are passed
@@ -203,10 +217,12 @@ class AutofillRiskFingerprintTest : public content::ContentBrowserTest {
   const gfx::Rect unavailable_screen_bounds_;
 
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that getting a fingerprint works on some basic level.
-IN_PROC_BROWSER_TEST_F(AutofillRiskFingerprintTest, GetFingerprint) {
+IN_PROC_BROWSER_TEST_P(AutofillRiskFingerprintTest, GetFingerprint) {
   display::ScreenInfo screen_info;
   screen_info.depth = kScreenColorDepth;
   screen_info.rect = screen_bounds_;
@@ -224,6 +240,8 @@ IN_PROC_BROWSER_TEST_F(AutofillRiskFingerprintTest, GetFingerprint) {
   // Wait for the callback to be called.
   run_loop.Run();
 }
+
+INSTANTIATE_TEST_SUITE_P(All, AutofillRiskFingerprintTest, ::testing::Bool());
 
 }  // namespace risk
 }  // namespace autofill
