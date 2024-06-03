@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_paths.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
+#include "ash/webui/mall/app_id.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -175,6 +176,7 @@ void GetDefault(std::vector<std::string>* app_ids) {
     web_app::kHelpAppId,
 
     web_app::kMallAppId,
+    ash::kMallSystemAppId,
 
     web_app::kCalculatorAppId,
     extension_misc::kCalculatorAppId,

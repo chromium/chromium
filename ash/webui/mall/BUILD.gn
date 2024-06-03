@@ -38,3 +38,7 @@ mojom("mojo_bindings") {
 source_set("url_constants") {
   sources = [ "url_constants.h" ]
 }
+
+source_set("app_id") {
+  sources = [ "app_id.h" ]
+}

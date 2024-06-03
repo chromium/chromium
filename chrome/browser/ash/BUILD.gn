@@ -4165,6 +4165,7 @@ source_set("ash") {
     "//ash/webui/file_manager/resources:file_manager_swa_resources",
     "//ash/webui/firmware_update_ui",
     "//ash/webui/firmware_update_ui/resources:resources",
+    "//ash/webui/mall:app_id",
     "//ash/webui/mall:url_constants",
     "//ash/webui/mall/resources",
     "//ash/webui/media_app_ui:buildflags",
