@@ -130,12 +130,12 @@ class ClipboardDataWaiter : public ui::ClipboardObserver {
 
 // Helpers ---------------------------------------------------------------------
 
-std::unique_ptr<views::Widget> CreateTestWidget() {
+std::unique_ptr<views::Widget> CreateTestWidget(
+    views::Widget::InitParams::Ownership ownership) {
   auto widget = std::make_unique<views::Widget>();
 
   views::Widget::InitParams params(
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+      ownership, views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   widget->Init(std::move(params));
 
   return widget;
@@ -1127,7 +1127,8 @@ class ClipboardHistoryTextfieldBrowserTest
     CloseAllBrowsers();
 
     // Create a widget containing a single, focusable textfield.
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     textfield_ = widget_->SetContentsView(std::make_unique<views::Textfield>());
     textfield_->SetAccessibleName(u"Textfield");
     textfield_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);

@@ -39,15 +39,18 @@ class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
     ViewsTestBase::SetUp();
 
     // Create setting overlay widget.
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     widget_->Show();
 
     // Create parent Widget.
-    parent_widget_ = CreateTestWidget();
+    parent_widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     parent_widget_->Show();
 
     // Create the anchor Widget.
-    anchor_view_widget_ = CreateTestWidget();
+    anchor_view_widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     anchor_view_widget_->Show();
     auto* anchor_view =
         anchor_view_widget_->SetContentsView(std::make_unique<views::View>());

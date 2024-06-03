@@ -48,15 +48,18 @@ class AutoPipSettingHelperTest : public views::ViewsTestBase {
 
   void SetUp() override {
     ViewsTestBase::SetUp();
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     widget_->Show();
 
     // Create parent Widget for AutoPiP setting view.
-    parent_widget_ = CreateTestWidget();
+    parent_widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     parent_widget_->Show();
 
     // Create the anchor Widget for AutoPiP setting view.
-    anchor_view_widget_ = CreateTestWidget();
+    anchor_view_widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     anchor_view_widget_->Show();
 
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());

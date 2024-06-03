@@ -556,7 +556,8 @@ class InputDeviceSettingsProviderTest : public views::ViewsTestBase {
          features::kEnableKeyboardBacklightControlInSettings},
         {});
     views::ViewsTestBase::SetUp();
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     widget_->Show();
     scoped_resetter_ = std::make_unique<
         InputDeviceSettingsController::ScopedResetterForTest>();

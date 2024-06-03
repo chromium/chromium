@@ -30,7 +30,8 @@ TEST_F(NearbyShareOverlayViewTest, ShowAndClose) {
   for (auto& dialog_view : dialog_views) {
     const bool has_dialog_view = !!dialog_view;
 
-    auto widget = CreateTestWidget();
+    auto widget =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     widget->SetContentsView(CreateTestOverlayView(std::move(dialog_view)));
 
     const auto& view_ax = widget->GetRootView()->GetViewAccessibility();

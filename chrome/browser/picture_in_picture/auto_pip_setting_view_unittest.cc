@@ -148,7 +148,8 @@ TEST_F(AutoPipSettingViewTest, TestBubbleTitleElideBehaviorForNonFileURL) {
   const GURL origin{
       "https://example_very_long_url_for_testing_that_should_be_elided.com"};
 
-  auto anchor_view_widget = CreateTestWidget();
+  auto anchor_view_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   anchor_view_widget->Show();
   auto* anchor_view =
       anchor_view_widget->SetContentsView(std::make_unique<views::View>());
@@ -175,7 +176,8 @@ TEST_F(AutoPipSettingViewTest, TestBubbleTitleElideBehaviorForFileURL) {
   const GURL origin{
       "file://example_very_long_file_url_for_testing_that_should_be_elided"};
 
-  auto anchor_view_widget = CreateTestWidget();
+  auto anchor_view_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   anchor_view_widget->Show();
   auto* anchor_view =
       anchor_view_widget->SetContentsView(std::make_unique<views::View>());
@@ -201,7 +203,8 @@ TEST_F(AutoPipSettingViewTest, TestOriginLabelForGURLWithLocalHost) {
   const GURL origin{
       "file:///example_very_long_file_url_for_testing_that_should_be_elided"};
 
-  auto anchor_view_widget = CreateTestWidget();
+  auto anchor_view_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   anchor_view_widget->Show();
   auto* anchor_view =
       anchor_view_widget->SetContentsView(std::make_unique<views::View>());
