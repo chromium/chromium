@@ -46,8 +46,8 @@ interface UserEducationInternalsPageHandler {
   // since the browser-side list is static and does not change.
   GetTutorials() => (array<FeaturePromoDemoPageInfo> tutorial_infos);
 
-  // Start a tutorial listed in the `GetTutorials` result; the resulting string
-  // is an error message or empty string if no error occurred.
+  // Start a tutorial listed in the `GetTutorials` result.
+  // Returns an error message if the operation fails; empty string on success.
   StartTutorial(string tutorial_id) => (string error_message);
 
   // Returns a set of data about the current session state.
@@ -57,19 +57,22 @@ interface UserEducationInternalsPageHandler {
   GetFeaturePromos() => (array<FeaturePromoDemoPageInfo> feature_promos);
 
   // Start a feature promo from the list of available feature promos using the
-  // `feature_name`; the resulting string is an error message or empty string if
-  // no error occurred.
+  // `feature_name`.
+  // Returns an error message if the operation fails; empty string on success.
   ShowFeaturePromo(string feature_name) => (string error_message);
 
   // Clears the data (snooze, show count, etc.) associated with a promo.
+  // Returns an error message if the operation fails; empty string on success.
   ClearFeaturePromoData(string feature_name) => (string error_message);
 
   // Clears all session-related User Education data.
+  // Returns an error message if the operation fails; empty string on success.
   ClearSessionData() => (string error_message);
 
   // Retrieves "New" Badge data.
   GetNewBadges() => (array<FeaturePromoDemoPageInfo> new_badges);
 
   // Clears "New" Badge data associated with a particular feature.
+  // Returns an error message if the operation fails; empty string on success.
   ClearNewBadgeData(string feature_name) => (string error_message);
 };
