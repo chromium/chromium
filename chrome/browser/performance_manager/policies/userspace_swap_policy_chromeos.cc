@@ -161,11 +161,11 @@ void UserspaceSwapPolicy::OnMemoryPressure(
 }
 
 void UserspaceSwapPolicy::SwapNodesOnGraph() {
-  for (const PageNode* page_node : graph_->GetAllPageNodes()) {
+  graph_->VisitAllPageNodes([this](const PageNode* page_node) {
     // Check that we have a main frame.
     const FrameNode* main_frame_node = page_node->GetMainFrameNode();
     if (!main_frame_node)
-      continue;
+      return true;
 
     const ProcessNode* process_node = main_frame_node->GetProcessNode();
     if (IsEligibleToSwap(process_node, page_node)) {
@@ -176,17 +176,19 @@ void UserspaceSwapPolicy::SwapNodesOnGraph() {
           base::TimeTicks::Now();
       SwapProcessNode(process_node);
     }
-  }
+    return true;
+  });
 }
 
 void UserspaceSwapPolicy::PrintAllSwapMetrics() {
   uint64_t total_reclaimed = 0;
   uint64_t total_on_disk = 0;
   uint64_t total_renderers = 0;
-  for (const PageNode* page_node : graph_->GetAllPageNodes()) {
+  graph_->VisitAllPageNodes([&, this](const PageNode* page_node) {
     const FrameNode* main_frame_node = page_node->GetMainFrameNode();
-    if (!main_frame_node)
-      continue;
+    if (!main_frame_node) {
+      return true;
+    }
 
     const ProcessNode* process_node = main_frame_node->GetProcessNode();
 
@@ -209,7 +211,8 @@ void UserspaceSwapPolicy::PrintAllSwapMetrics() {
               << " reclaimed: " << (memory_reclaimed >> 10) << "Kb"
               << " on disk: " << (disk_space_used >> 10) << "Kb";
     }
-  }
+    return true;
+  });
 
   VLOG(1) << "Swap Summary, Renderers: " << total_renderers
           << " reclaimed: " << (total_reclaimed >> 10)

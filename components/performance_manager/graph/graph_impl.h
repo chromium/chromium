@@ -92,6 +92,10 @@ class GraphImpl : public Graph {
   void RegisterObject(GraphRegistered* object) override;
   void UnregisterObject(GraphRegistered* object) override;
   const SystemNode* GetSystemNode() const override;
+  size_t GetProcessNodeCount() const override;
+  size_t GetFrameNodeCount() const override;
+  size_t GetPageNodeCount() const override;
+  size_t GetWorkerNodeCount() const override;
   std::vector<const ProcessNode*> GetAllProcessNodes() const override;
   std::vector<const FrameNode*> GetAllFrameNodes() const override;
   std::vector<const PageNode*> GetAllPageNodes() const override;

@@ -85,12 +85,14 @@ void InitializeProcessNodeOnGraph(int render_process_host_id,
   DCHECK(uffd.is_valid());
 
   const ProcessNode* process_node = nullptr;
-  for (const ProcessNode* proc : graph->GetAllProcessNodes()) {
+  graph->VisitAllProcessNodes([&](const ProcessNode* proc) {
     if (proc->GetRenderProcessHostId().GetUnsafeValue() ==
         render_process_host_id) {
       process_node = proc;
+      return false;
     }
-  }
+    return true;
+  });
 
   if (!process_node) {
     LOG(ERROR) << "Couldn't find process node for rphid: "

@@ -338,16 +338,16 @@ NodeAttachedProcessData::NodeAttachedProcessData(
 void NodeAttachedProcessData::ApplyToAllRenderers(
     Graph* graph,
     base::FunctionRef<void(NodeAttachedProcessData*)> func) {
-  for (const ProcessNode* node : graph->GetAllProcessNodes()) {
-    NodeAttachedProcessData* process_data = NodeAttachedProcessData::Get(node);
-    if (!process_data) {
-      // NodeAttachedProcessData should have been created for all renderer
-      // processes in OnProcessNodeAdded.
-      DCHECK_NE(content::PROCESS_TYPE_RENDERER, node->GetProcessType());
-      continue;
+  graph->VisitAllProcessNodes([&](const ProcessNode* node) {
+    if (node->GetProcessType() != content::PROCESS_TYPE_RENDERER) {
+      return true;
     }
+
+    NodeAttachedProcessData* process_data = NodeAttachedProcessData::Get(node);
+    DCHECK(process_data);
     func(process_data);
-  }
+    return true;
+  });
 }
 
 void NodeAttachedProcessData::ScheduleNextMeasurement() {
@@ -672,8 +672,10 @@ void V8DetailedMemoryDecorator::OnPassedToGraph(Graph* graph) {
   graph->RegisterObject(this);
 
   // Iterate over the existing process nodes to put them under observation.
-  for (const ProcessNode* process_node : graph->GetAllProcessNodes())
+  graph->VisitAllProcessNodes([this](const ProcessNode* process_node) {
     OnProcessNodeAdded(process_node);
+    return true;
+  });
 
   graph->AddProcessNodeObserver(this);
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(

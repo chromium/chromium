@@ -118,6 +118,12 @@ class Graph {
   // Returns the single system node.
   virtual const SystemNode* GetSystemNode() const = 0;
 
+  // Returns the count of all known nodes of the given type.
+  virtual size_t GetProcessNodeCount() const = 0;
+  virtual size_t GetFrameNodeCount() const = 0;
+  virtual size_t GetPageNodeCount() const = 0;
+  virtual size_t GetWorkerNodeCount() const = 0;
+
   // Returns a collection of all known nodes of the given type. Note that this
   // incurs a full container copy of all returned nodes. Please use
   // VisitAll*Nodes() when that makes sense.

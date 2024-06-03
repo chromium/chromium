@@ -1623,13 +1623,12 @@ void ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
     GetProcessToPageInfoMapCallback callback,
     performance_manager::Graph* graph) {
   std::vector<ProcessInfo> process_infos;
-  std::vector<const performance_manager::ProcessNode*> process_nodes =
-      graph->GetAllProcessNodes();
   // Assign page nodes unique IDs within this lookup only.
   base::flat_map<const performance_manager::PageNode*, uint64_t> page_id_map;
-  for (auto* process_node : process_nodes) {
+  graph->VisitAllProcessNodes([&](const performance_manager::ProcessNode*
+                                      process_node) {
     if (process_node->GetProcessId() == base::kNullProcessId)
-      continue;
+      return true;
 
     // First add all processes and their basic information.
     ProcessInfo& process_info = process_infos.emplace_back();
@@ -1639,7 +1638,7 @@ void ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
     // Then add information about their associated page nodes. Only renderers
     // are associated with page nodes.
     if (process_node->GetProcessType() != content::PROCESS_TYPE_RENDERER) {
-      continue;
+      return true;
     }
 
     base::flat_set<const performance_manager::PageNode*> page_nodes =
@@ -1664,7 +1663,8 @@ void ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
       page_info.time_since_last_navigation =
           page_node->GetTimeSinceLastNavigation();
     }
-  }
+    return true;
+  });
   std::move(callback).Run(std::move(process_infos));
 }
 

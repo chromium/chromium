@@ -260,6 +260,22 @@ const SystemNode* GraphImpl::GetSystemNode() const {
   return system_node_.get();
 }
 
+size_t GraphImpl::GetProcessNodeCount() const {
+  return GetNodesOfType(NodeTypeEnum::kProcess).size();
+}
+
+size_t GraphImpl::GetFrameNodeCount() const {
+  return GetNodesOfType(NodeTypeEnum::kFrame).size();
+}
+
+size_t GraphImpl::GetPageNodeCount() const {
+  return GetNodesOfType(NodeTypeEnum::kPage).size();
+}
+
+size_t GraphImpl::GetWorkerNodeCount() const {
+  return GetNodesOfType(NodeTypeEnum::kWorker).size();
+}
+
 std::vector<const ProcessNode*> GraphImpl::GetAllProcessNodes() const {
   return GetAllNodesOfType<ProcessNodeImpl, const ProcessNode*>();
 }

@@ -117,8 +117,11 @@ void EnterpriseMemoryLimitEvaluator::GraphObserver::
     OnProcessMemoryMetricsAvailable(
         const performance_manager::SystemNode* system_node) {
   uint64_t total_rss_kb = 0U;
-  for (const auto* node : system_node->GetGraph()->GetAllProcessNodes())
-    total_rss_kb += node->GetResidentSetKb();
+  system_node->GetGraph()->VisitAllProcessNodes(
+      [&](const performance_manager::ProcessNode* node) {
+        total_rss_kb += node->GetResidentSetKb();
+        return true;
+      });
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(on_sample_callback_), total_rss_kb));
 }

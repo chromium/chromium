@@ -144,7 +144,7 @@ void WorkingSetTrimmerPolicyChromeOS::set_arcvm_delegate_for_testing(
 
 void WorkingSetTrimmerPolicyChromeOS::TrimNodesOnGraph() {
   const base::TimeTicks now_ticks = base::TimeTicks::Now();
-  for (const PageNode* page_node : graph_->GetAllPageNodes()) {
+  graph_->VisitAllPageNodes([&, this](const PageNode* page_node) {
     if (!page_node->IsVisible() &&
         page_node->GetTimeSinceLastVisibilityChange() >
             params_.node_invisible_time) {
@@ -155,7 +155,7 @@ void WorkingSetTrimmerPolicyChromeOS::TrimNodesOnGraph() {
       // Check that we have a main frame.
       const FrameNode* frame_node = page_node->GetMainFrameNode();
       if (!frame_node) {
-        continue;
+        return true;
       }
 
       const ProcessNode* process_node = frame_node->GetProcessNode();
@@ -166,7 +166,8 @@ void WorkingSetTrimmerPolicyChromeOS::TrimNodesOnGraph() {
         }
       }
     }
-  }
+    return true;
+  });
   last_graph_walk_ = now_ticks;
 }
 
