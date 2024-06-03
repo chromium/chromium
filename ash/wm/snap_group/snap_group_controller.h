@@ -13,6 +13,7 @@
 #include "ash/wm/snap_group/snap_group_metrics.h"
 #include "ash/wm/wm_metrics.h"
 #include "base/containers/flat_map.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/display/display_observer.h"
 
@@ -27,6 +28,7 @@ enum class TabletState;
 namespace ash {
 
 class SnapGroup;
+class SnapGroupObserver;
 
 // Works as the centralized place to manage the `SnapGroup`. A single instance
 // of this class will be created and owned by `Shell`. It controls the creation
@@ -104,6 +106,9 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   // and secondary snapped location.
   void RestoreTopmostSnapGroup();
 
+  void AddObserver(SnapGroupObserver* observer);
+  void RemoveObserver(SnapGroupObserver* observer);
+
   // OverviewObserver:
   void OnOverviewModeStarting() override;
   void OnOverviewModeEnding(OverviewSession* overview_session) override;
@@ -144,6 +149,8 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   // `SnapGroup` with the `aura::Window*` and can also be used to decide if a
   // window is in a `SnapGroup` or not.
   WindowToSnapGroupMap window_to_snap_group_map_;
+
+  base::ObserverList<SnapGroupObserver> observers_;
 
   display::ScopedDisplayObserver display_observer_{this};
 };

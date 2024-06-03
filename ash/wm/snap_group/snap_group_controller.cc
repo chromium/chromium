@@ -15,6 +15,7 @@
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_constants.h"
 #include "ash/wm/snap_group/snap_group_metrics.h"
+#include "ash/wm/snap_group/snap_group_observer.h"
 #include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -122,6 +123,20 @@ SnapGroup* SnapGroupController::AddSnapGroup(
 bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group,
                                           SnapGroupExitPoint exit_point) {
   CHECK(snap_group);
+
+  const bool snap_to_replace = exit_point == SnapGroupExitPoint::kSnapToReplace;
+  if (!snap_to_replace) {
+    // Records persistence duration and Snap Groups count when the removal of
+    // `group_to_remove` is not due to 'Snap to Replace', as this is considered
+    // an extension of the snap group's lifespan.
+    RecordSnapGroupPersistenceDuration(base::TimeTicks::Now() -
+                                       snap_group->carry_over_creation_time_);
+  }
+
+  // We should always record the actual duration of the Snap Group upon removal.
+  RecordSnapGroupActualDuration(base::TimeTicks::Now() -
+                                snap_group->actual_creation_time_);
+
   aura::Window* window1 = snap_group->window1();
   aura::Window* window2 = snap_group->window2();
 
@@ -131,27 +146,24 @@ bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group,
   auto iter =
       base::ranges::find_if(snap_groups_, base::MatchesUniquePtr(snap_group));
   DCHECK(iter != snap_groups_.end());
+
+  for (auto& observer : observers_) {
+    observer.OnSnapGroupRemoving(snap_group, exit_point);
+  }
+
   auto group_to_remove = std::move(*iter);
   snap_groups_.erase(iter);
   group_to_remove->Shutdown();
   base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, std::move(group_to_remove));
 
-  if (exit_point != SnapGroupExitPoint::kSnapToReplace) {
-    // Records persistence duration and Snap Groups count when the removal of
-    // `group_to_remove` is not due to 'Snap to Replace', as this is considered
-    // an extension of the snap group's lifespan.
-    RecordSnapGroupPersistenceDuration(base::TimeTicks::Now() -
-                                       snap_group->carry_over_creation_time_);
+  if (!snap_to_replace) {
     ReportSnapGroupsCountHistogram(/*count=*/snap_groups_.size());
     base::RecordAction(base::UserMetricsAction("SnapGroups_RemoveSnapGroup"));
   }
 
-  // We should always record the actual duration of the Snap Group upon removal.
-  RecordSnapGroupActualDuration(base::TimeTicks::Now() -
-                                snap_group->actual_creation_time_);
-
   RecordSnapGroupExitPoint(exit_point);
+
   return true;
 }
 
@@ -309,6 +321,14 @@ void SnapGroupController::RestoreTopmostSnapGroup() {
       return;
     }
   }
+}
+
+void SnapGroupController::AddObserver(SnapGroupObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void SnapGroupController::RemoveObserver(SnapGroupObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void SnapGroupController::OnOverviewModeStarting() {

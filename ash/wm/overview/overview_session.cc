@@ -40,6 +40,9 @@
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/overview/scoped_float_container_stacker.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
+#include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
+#include "ash/wm/snap_group/snap_group_metrics.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
@@ -304,6 +307,10 @@ void OverviewSession::Init(const aura::Window::Windows& windows,
 
   SplitViewController::Get(Shell::GetPrimaryRootWindow())->AddObserver(this);
 
+  if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
+    snap_group_controller->AddObserver(this);
+  }
+
   display_observer_.emplace(this);
   base::RecordAction(base::UserMetricsAction("WindowSelector_Overview"));
   // Send an a11y alert.
@@ -332,6 +339,10 @@ void OverviewSession::Shutdown() {
   // This should have been set already when the process of ending overview mode
   // began. See OverviewController::OnSelectionEnded().
   DCHECK(is_shutting_down_);
+
+  if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
+    snap_group_controller->RemoveObserver(this);
+  }
 
   desks_controller_observation_.Reset();
   if (observing_desk_) {
@@ -1669,6 +1680,37 @@ void OverviewSession::OnSplitViewStateChanged(
 void OverviewSession::OnSplitViewDividerPositionChanged() {
   UpdateNoWindowsWidgetOnEachGrid(/*animate=*/false,
                                   /*is_continuous_enter=*/false);
+}
+
+void OverviewSession::OnSnapGroupRemoving(SnapGroup* snap_group,
+                                          SnapGroupExitPoint exit_pint) {
+  if (is_shutting_down_) {
+    return;
+  }
+
+  // Return early if `snap_group` removal is due to window destruction, as
+  // `OverviewItem::window_destruction_delegate_` will handle it.
+  if (exit_pint == SnapGroupExitPoint::kWindowDestruction) {
+    return;
+  }
+
+  CHECK(snap_group);
+
+  aura::Window* root_window = snap_group->GetRootWindow();
+  OverviewGrid* overview_grid = GetGridWithRootWindow(root_window);
+  aura::Window* window1 = snap_group->window1();
+  aura::Window* window2 = snap_group->window2();
+
+  OverviewItemBase* overview_group_item = GetOverviewItemForWindow(window1);
+  overview_grid->RemoveItem(overview_group_item, /*item_destroying=*/false,
+                            /*reposition=*/false);
+
+  for (aura::Window* window : {window1, window2}) {
+    CHECK(window);
+    overview_grid->AddItemInMruOrder(window, /*reposition=*/false,
+                                     /*animate=*/true, /*restack=*/true,
+                                     /*use_spawn_animation=*/true);
+  }
 }
 
 void OverviewSession::OnDisplayTabletStateChanged(display::TabletState state) {

@@ -6152,6 +6152,66 @@ TEST_F(SnapGroupTabletConversionTest,
   }
 }
 
+// Verify that entering tablet mode with Snap Group in Overview results in the
+// Snap Group being represented by two separate items in Overview. This change
+// should be maintained when switching back to clamshell mode. See
+// http://b/343803517 for more details.
+TEST_F(SnapGroupTabletConversionTest, TransitionToTabletInOverview) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+  auto* snap_group_controller = SnapGroupController::Get();
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  const auto* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  // Verify that there is one `OverviewGroupItem` initially in clamshell mode.
+  EXPECT_EQ(1u, overview_grid->window_list().size());
+
+  // Upon switching to tablet mode, the `OverviewGroupItem` is removed and
+  // replaced with two separate items, there is no overlap in their bounds.
+  SwitchToTabletMode();
+  EXPECT_EQ(2u, overview_grid->window_list().size());
+
+  OverviewItemBase* overview_item1 = GetOverviewItemForWindow(w1.get());
+  OverviewItemBase* overview_item2 = GetOverviewItemForWindow(w2.get());
+  EXPECT_NE(overview_item1, overview_item2);
+  const gfx::RectF overview_item1_bounds_tablet =
+      overview_item1->target_bounds();
+  const gfx::RectF overview_item2_bounds_tablet =
+      overview_item2->target_bounds();
+  EXPECT_FALSE(
+      overview_item1_bounds_tablet.Intersects(overview_item2_bounds_tablet));
+  EXPECT_FALSE(
+      overview_item1_bounds_tablet.Contains(overview_item2_bounds_tablet));
+  EXPECT_FALSE(
+      overview_item2_bounds_tablet.Contains(overview_item1_bounds_tablet));
+
+  // After returning to clamshell mode, the two individual items should remain
+  // distinctly separate within the Overview grid, with no intersection of their
+  // bounds.
+  ExitTabletMode();
+  EXPECT_EQ(2u, overview_grid->window_list().size());
+
+  overview_item1 = GetOverviewItemForWindow(w1.get());
+  overview_item2 = GetOverviewItemForWindow(w2.get());
+  EXPECT_NE(overview_item1, overview_item2);
+  const gfx::RectF overview_item1_bounds_clamshell =
+      overview_item1->target_bounds();
+  const gfx::RectF overview_item2_bounds_clamshell =
+      overview_item2->target_bounds();
+  EXPECT_FALSE(overview_item1_bounds_clamshell.Intersects(
+      overview_item2_bounds_clamshell));
+  EXPECT_FALSE(overview_item1_bounds_clamshell.Contains(
+      overview_item2_bounds_clamshell));
+  EXPECT_FALSE(overview_item2_bounds_clamshell.Contains(
+      overview_item1_bounds_clamshell));
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupMultipleSnapGroupsTest:
 
@@ -6609,7 +6669,7 @@ TEST_F(SnapGroupDisplayMetricsTest, ScaleUpWorkArea) {
 
 // Tests that when scaling up work area in Overview to make snapped windows no
 // longer fit within the work area, the Snap Group will be broken upon Overview
-// exit. See http://b/339719019 for more details.
+// exit. See http://b/339719019 and http://b/343803517 for more details.
 TEST_F(SnapGroupDisplayMetricsTest, ScaleUpWorkAreaInOverview) {
   UpdateDisplay("800x600");
 
@@ -6626,6 +6686,13 @@ TEST_F(SnapGroupDisplayMetricsTest, ScaleUpWorkAreaInOverview) {
 
   ToggleOverview();
   ASSERT_TRUE(IsInOverviewSession());
+
+  const auto* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+
+  // Verify that there is one `OverviewGroupItem` in `OverviewGrid` initially.
+  EXPECT_EQ(1u, overview_grid->window_list().size());
 
   OverviewGroupItem* group_item =
       static_cast<OverviewGroupItem*>(GetOverviewItemForWindow(w1.get()));
@@ -6648,6 +6715,19 @@ TEST_F(SnapGroupDisplayMetricsTest, ScaleUpWorkAreaInOverview) {
       overview_item2->target_bounds()));
   ASSERT_TRUE(GetUnionScreenBoundsForWindow(w1.get()).Intersects(
       GetUnionScreenBoundsForWindow(w2.get())));
+
+  // Wait for zoom operation to complete, ensuring snap group removal is
+  // finalized.
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that snap group will be broken due to snapped bounds no longer fit
+  // within work area.
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // The `OverviewGroupItem` will be removed and two individual `OverviewItem`s
+  // will be added instead.
+  EXPECT_EQ(2u, overview_grid->window_list().size());
 
   ToggleOverview();
   ASSERT_FALSE(IsInOverviewSession());

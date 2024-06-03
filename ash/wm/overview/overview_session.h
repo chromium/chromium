@@ -17,6 +17,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
+#include "ash/wm/snap_group/snap_group_observer.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_observer.h"
@@ -67,7 +68,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
                                    public ui::EventHandler,
                                    public ShellObserver,
                                    public SplitViewObserver,
-                                   public DesksController::Observer {
+                                   public DesksController::Observer,
+                                   public SnapGroupObserver {
  public:
   explicit OverviewSession(OverviewDelegate* delegate);
 
@@ -357,6 +359,10 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void OnSplitViewStateChanged(SplitViewController::State previous_state,
                                SplitViewController::State state) override;
   void OnSplitViewDividerPositionChanged() override;
+
+  // SnapGroupObserver:
+  void OnSnapGroupRemoving(SnapGroup* snap_group,
+                           SnapGroupExitPoint exit_pint) override;
 
   OverviewDelegate* delegate() { return delegate_; }
 
