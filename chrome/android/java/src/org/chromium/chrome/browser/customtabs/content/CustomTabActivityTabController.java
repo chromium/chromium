@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import static org.chromium.chrome.browser.content.WebContentsFactory.DEFAULT_NETWORK_HANDLE;
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.SAVED_INSTANCE_SUPPLIER;
 
 import android.content.Intent;
@@ -437,19 +438,28 @@ public class CustomTabActivityTabController implements InflationObserver {
             return webContents;
         }
 
-        webContents =
-                mWarmupManager.takeSpareWebContents(
-                        mIntentDataProvider.isIncognito(), /* initiallyHidden= */ false);
-        if (webContents != null) {
-            recordWebContentsStateOnLaunch(WebContentsState.SPARE_WEBCONTENTS);
-            return webContents;
+        // Check if any available network handle specified via customTabsIntent before creating
+        // web contents, and we only use the spare web contents if the provided network is the
+        // default one.
+        // TODO: this check can be removed once the spare web contents can be created with a
+        // particular network handle as well, e.g. via {@link CustomTabsSession#mayLaunchUrl}.
+        long networkHandle = mIntentDataProvider.getNetworkHandle();
+        if (networkHandle == DEFAULT_NETWORK_HANDLE) {
+            webContents =
+                    mWarmupManager.takeSpareWebContents(
+                            mIntentDataProvider.isIncognito(), /* initiallyHidden= */ false);
+            if (webContents != null) {
+                recordWebContentsStateOnLaunch(WebContentsState.SPARE_WEBCONTENTS);
+                return webContents;
+            }
         }
 
         recordWebContentsStateOnLaunch(WebContentsState.NO_WEBCONTENTS);
         return mWebContentsFactory.createWebContentsWithWarmRenderer(
                 ProfileProvider.getOrCreateProfile(
                         mProfileProviderSupplier.get(), mIntentDataProvider.isIncognito()),
-                false);
+                /* initiallyHidden= */ false,
+                networkHandle);
     }
 
     private @Nullable WebContents takeAsyncWebContents() {

@@ -23,6 +23,12 @@ public class WebContentsFactory {
     @Inject
     public WebContentsFactory() {}
 
+    /**
+     * Network handle representing the default network. To be used when a network has not been
+     * explicitly set.
+     */
+    public static final long DEFAULT_NETWORK_HANDLE = -1;
+
     /** For capturing where WebContentsImpl is created. */
     private static class WebContentsCreationException extends RuntimeException {
         WebContentsCreationException() {
@@ -52,16 +58,35 @@ public class WebContentsFactory {
      * @param profile The profile with which the {@link WebContents} should be built.
      * @param initiallyHidden Whether or not the {@link WebContents} should be initially hidden.
      * @param initializeRenderer Whether or not the {@link WebContents} should initialize renderer.
+     * @param networkHandle bound network handle.
      * @return A newly created {@link WebContents} object.
      */
     public static WebContents createWebContents(
-            Profile profile, boolean initiallyHidden, boolean initializeRenderer) {
+            Profile profile,
+            boolean initiallyHidden,
+            boolean initializeRenderer,
+            long networkHandle) {
         return WebContentsFactoryJni.get()
                 .createWebContents(
                         profile,
                         initiallyHidden,
                         initializeRenderer,
+                        networkHandle,
                         new WebContentsCreationException());
+    }
+
+    /**
+     * A factory method to build a {@link WebContents} object.
+     *
+     * @param profile The profile with which the {@link WebContents} should be built.
+     * @param initiallyHidden Whether or not the {@link WebContents} should be initially hidden.
+     * @param initializeRenderer Whether or not the {@link WebContents} should initialize renderer.
+     * @return A newly created {@link WebContents} object.
+     */
+    public static WebContents createWebContents(
+            Profile profile, boolean initiallyHidden, boolean initializeRenderer) {
+        return createWebContents(
+                profile, initiallyHidden, initializeRenderer, DEFAULT_NETWORK_HANDLE);
     }
 
     /**
@@ -71,10 +96,12 @@ public class WebContentsFactory {
      *
      * @param profile The profile to be used by the WebContents.
      * @param initiallyHidden Whether or not the {@link WebContents} should be initially hidden.
+     * @param networkHandle bound network handle.
      * @return A newly created {@link WebContents} object.
      */
-    public WebContents createWebContentsWithWarmRenderer(Profile profile, boolean initiallyHidden) {
-        return createWebContents(profile, initiallyHidden, true);
+    public WebContents createWebContentsWithWarmRenderer(
+            Profile profile, boolean initiallyHidden, long networkHandle) {
+        return createWebContents(profile, initiallyHidden, true, networkHandle);
     }
 
     @NativeMethods
@@ -83,6 +110,7 @@ public class WebContentsFactory {
                 @JniType("Profile*") Profile profile,
                 boolean initiallyHidden,
                 boolean initializeRenderer,
+                long networkHandle,
                 Throwable javaCreator);
 
         WebContents createWebContentsWithSeparateStoragePartitionForExperiment(

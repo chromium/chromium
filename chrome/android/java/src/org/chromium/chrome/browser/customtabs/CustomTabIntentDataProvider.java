@@ -26,6 +26,8 @@ import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVIT
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_WIDTH_PX;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_TOOLBAR_CORNER_RADIUS_DP;
 
+import static org.chromium.chrome.browser.content.WebContentsFactory.DEFAULT_NETWORK_HANDLE;
+
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
@@ -34,6 +36,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Network;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -306,11 +309,17 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             "androidx.browser.customtabs.extra.SECONDARY_TOOLBAR_SWIPE_UP_ACTION";
 
     /**
-     * Allow user gestures on content area to be used not only for scrolling contents
-     * but also for resizing CCT. Used for Partial Custom Tab Bottom Sheet only.
+     * Allow user gestures on content area to be used not only for scrolling contents but also for
+     * resizing CCT. Used for Partial Custom Tab Bottom Sheet only.
      */
     public static final String EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE =
             "androidx.browser.customtabs.extra.ACTIVITY_SCROLL_CONTENT_RESIZE";
+
+    /**
+     * Extra that specifies the {@link Network} to be bound when launching a custom tab or tabs that
+     * have been pre-created.
+     */
+    public static final String EXTRA_NETWORK = "androidx.browser.customtabs.extra.NETWORK";
 
     private final Intent mIntent;
     private final CustomTabsSessionToken mSession;
@@ -369,6 +378,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     private final boolean mIsPartialCustomTabFixedHeight;
     private final boolean mContentScrollMayResizeTab;
+
+    /**
+     * {@link Network} to be bound when launching a custom tab or tabs that have been pre-created.
+     */
+    @Nullable private final Network mNetwork;
 
     /** Add extras to customize menu items for opening Reader Mode UI custom tab from Chrome. */
     public static void addReaderModeUIExtras(Intent intent) {
@@ -531,6 +545,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                         intent, CustomTabsIntent.EXTRA_EXIT_ANIMATION_BUNDLE);
 
         mKeepAliveServiceIntent = IntentUtils.safeGetParcelableExtra(intent, EXTRA_KEEP_ALIVE);
+
+        mNetwork = IntentUtils.safeGetParcelableExtra(intent, EXTRA_NETWORK);
 
         mIsOpenedByChrome = IntentHandler.wasIntentSenderChrome(intent);
 
@@ -1110,6 +1126,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (CustomTabsConnection.getInstance().hasExtraGoogleBottomBarButtons(this)) {
             featureUsage.log(CustomTabsFeature.EXTRA_GOOGLE_BOTTOM_BAR_BUTTONS);
         }
+        if (mNetwork != null) featureUsage.log(CustomTabsFeature.EXTRA_NETWORK);
     }
 
     @Override
@@ -1521,5 +1538,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
         return isPackageNameInList(
                 getClientPackageName(), OMNIBOX_ALLOWED_PACKAGE_NAMES.getValue());
+    }
+
+    @Override
+    public long getNetworkHandle() {
+        return mNetwork != null ? mNetwork.getNetworkHandle() : DEFAULT_NETWORK_HANDLE;
     }
 }

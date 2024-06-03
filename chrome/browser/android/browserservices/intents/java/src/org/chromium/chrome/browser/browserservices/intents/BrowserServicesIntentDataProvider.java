@@ -9,6 +9,8 @@ import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_P
 import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE;
 import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_DEFAULT;
 
+import static org.chromium.chrome.browser.content.WebContentsFactory.DEFAULT_NETWORK_HANDLE;
+
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -604,5 +606,13 @@ public abstract class BrowserServicesIntentDataProvider {
     /** Return whether calling package should be allowed to present an interactive Omnibox. */
     public boolean isInteractiveOmniboxAllowed() {
         return false;
+    }
+
+    /**
+     * Return the network handle that should be used from this intent, the default value to be used
+     * when a network has not been explicitly set via intent.
+     */
+    public long getNetworkHandle() {
+        return DEFAULT_NETWORK_HANDLE;
     }
 }

@@ -118,6 +118,7 @@ chromium-metrics-reviews@google.com.
       label="Enable google bottom bar EXTRA_ENABLE_GOOGLE_BOTTOM_BAR"/>
   <int value="57"
       label="Google bottom bar buttons EXTRA_GOOGLE_BOTTOM_BAR_BUTTONS"/>
+  <int value="58" label="Support multi-network EXTRA_NETWORK"/>
 </enum>
 
 <enum name="CustomTabsMinimizedEvents">

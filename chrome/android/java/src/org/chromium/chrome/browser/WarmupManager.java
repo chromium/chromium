@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser;
 
+import static org.chromium.chrome.browser.content.WebContentsFactory.DEFAULT_NETWORK_HANDLE;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -597,7 +599,9 @@ public class WarmupManager {
             mSpareWebContents =
                     new WebContentsFactory()
                             .createWebContentsWithWarmRenderer(
-                                    profile, /* initiallyHidden= */ true);
+                                    profile,
+                                    /* initiallyHidden= */ true,
+                                    /* networkHandle= */ DEFAULT_NETWORK_HANDLE);
             mObserver = new RenderProcessGoneObserver();
             mSpareWebContents.addObserver(mObserver);
         }

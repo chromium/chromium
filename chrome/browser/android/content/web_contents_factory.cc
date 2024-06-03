@@ -21,6 +21,7 @@ static ScopedJavaLocalRef<jobject> JNI_WebContentsFactory_CreateWebContents(
     Profile* profile,
     jboolean initially_hidden,
     jboolean initialize_renderer,
+    jlong j_network_handle,
     const JavaParamRef<jthrowable>& j_creator_location) {
   content::WebContents::CreateParams params(profile);
   params.initially_hidden = static_cast<bool>(initially_hidden);

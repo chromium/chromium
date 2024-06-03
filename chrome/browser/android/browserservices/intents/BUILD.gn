@@ -22,6 +22,7 @@ android_library("java") {
   deps = [
     "//base:base_java",
     "//chrome/android/webapk/libs/common:common_java",
+    "//chrome/browser/android/content:java",
     "//chrome/browser/android/intents:java",
     "//chrome/browser/flags:java",
     "//components/webapps/browser/android:java",
