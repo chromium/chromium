@@ -348,8 +348,6 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
 
 TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
        PslMatchInExtensionListButAffiliatedTest) {
-  base::test::ScopedFeatureList feature_list(
-      features::kUseExtensionListForPSLMatching);
   backend()->AddLoginAsync(CreateForm("https://a.slack.com/", u"test", u"test"),
                            base::DoNothing());
   backend()->AddLoginAsync(
@@ -392,38 +390,8 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
   RunUntilIdle();
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliatedMatchHelperNull) {
-  backend()->AddLoginAsync(CreateForm(kTestWebURL, u"username1", u"password"),
-                           base::DoNothing());
-  backend()->AddLoginAsync(CreateForm(kTestPSLURL, u"username2", u"password"),
-                           base::DoNothing());
-  RunUntilIdle();
-
-  EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding).Times(0);
-  EXPECT_CALL(affiliation_service(), GetPSLExtensions).Times(0);
-  base::MockCallback<LoginsOrErrorReply> result_callback;
-  PasswordFormDigest observed_form = CreateFormDigest(kTestWebURL);
-  GetLoginsWithAffiliationsRequestHandler(observed_form, backend(),
-                                          /*affiliated_match_helper=*/nullptr,
-                                          result_callback.Get());
-
-  std::vector<PasswordForm> expected_forms;
-  expected_forms.push_back(CreateForm(kTestWebURL, u"username1", u"password"));
-  expected_forms.back().match_type = PasswordForm::MatchType::kExact;
-  expected_forms.push_back(CreateForm(kTestPSLURL, u"username2", u"password"));
-  expected_forms.back().match_type = PasswordForm::MatchType::kPSL;
-
-  EXPECT_CALL(result_callback,
-              Run(VariantWith<LoginsResult>(ElementsAreArray(expected_forms))));
-  RunUntilIdle();
-}
-
 TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
        PslMatchesFilteredBecauseOfExtensionListTest) {
-  base::test::ScopedFeatureList feature_list(
-      features::kUseExtensionListForPSLMatching);
   backend()->AddLoginAsync(CreateForm("https://a.slack.com/", u"test", u"test"),
                            base::DoNothing());
   backend()->AddLoginAsync(CreateForm("https://b.slack.com/", u"test", u"test"),
@@ -450,6 +418,34 @@ TEST_F(GetLoginsWithAffiliationsRequestHandlerTest,
 
   EXPECT_CALL(result_callback,
               Run(VariantWith<LoginsResult>(ElementsAre(expected_form))));
+  RunUntilIdle();
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST_F(GetLoginsWithAffiliationsRequestHandlerTest, AffiliatedMatchHelperNull) {
+  backend()->AddLoginAsync(CreateForm(kTestWebURL, u"username1", u"password"),
+                           base::DoNothing());
+  backend()->AddLoginAsync(CreateForm(kTestPSLURL, u"username2", u"password"),
+                           base::DoNothing());
+  RunUntilIdle();
+
+  EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding).Times(0);
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions).Times(0);
+  base::MockCallback<LoginsOrErrorReply> result_callback;
+  PasswordFormDigest observed_form = CreateFormDigest(kTestWebURL);
+  GetLoginsWithAffiliationsRequestHandler(observed_form, backend(),
+                                          /*affiliated_match_helper=*/nullptr,
+                                          result_callback.Get());
+
+  std::vector<PasswordForm> expected_forms;
+  expected_forms.push_back(CreateForm(kTestWebURL, u"username1", u"password"));
+  expected_forms.back().match_type = PasswordForm::MatchType::kExact;
+  expected_forms.push_back(CreateForm(kTestPSLURL, u"username2", u"password"));
+  expected_forms.back().match_type = PasswordForm::MatchType::kPSL;
+
+  EXPECT_CALL(result_callback,
+              Run(VariantWith<LoginsResult>(ElementsAreArray(expected_forms))));
   RunUntilIdle();
 }
 

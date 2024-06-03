@@ -34,6 +34,18 @@ bool FormSupportsPSL(const PasswordFormDigest& digest) {
          !GetRegistryControlledDomain(GURL(digest.signon_realm)).empty();
 }
 
+bool IsExtendedPSLMatch(const PasswordForm& form,
+                        const PasswordFormDigest& digest,
+                        const base::flat_set<std::string>& psl_extensions) {
+  DCHECK_NE(GetMatchResult(form, digest), MatchResult::NO_MATCH);
+#if BUILDFLAG(IS_ANDROID)
+  return true;
+#else
+  return affiliations::IsExtendedPublicSuffixDomainMatch(
+      GURL(form.url), GURL(digest.url), psl_extensions);
+#endif
+}
+
 // Do post-processing on forms and mark PSL matches as such.
 LoginsResultOrError ProcessExactAndPSLForms(
     const PasswordFormDigest& digest,
@@ -52,23 +64,12 @@ LoginsResultOrError ProcessExactAndPSLForms(
         form.match_type = PasswordForm::MatchType::kExact;
         break;
       case MatchResult::PSL_MATCH:
-        // Always return true if the feature to use extension list is disabled
-        // since the normal PSL check had already passed inside GetMatchResult.
-        if (!base::FeatureList::IsEnabled(
-                features::kUseExtensionListForPSLMatching) ||
-            affiliations::IsExtendedPublicSuffixDomainMatch(
-                GURL(form.signon_realm), GURL(digest.signon_realm),
-                psl_extensions)) {
+        if (IsExtendedPSLMatch(form, digest, psl_extensions)) {
           form.match_type = PasswordForm::MatchType::kPSL;
         }
         break;
       case MatchResult::FEDERATED_PSL_MATCH:
-        // Always return true if the feature to use extension list is disabled
-        // since the normal PSL check had already passed inside GetMatchResult.
-        if (!base::FeatureList::IsEnabled(
-                features::kUseExtensionListForPSLMatching) ||
-            affiliations::IsExtendedPublicSuffixDomainMatch(
-                form.url, digest.url, psl_extensions)) {
+        if (IsExtendedPSLMatch(form, digest, psl_extensions)) {
           form.match_type = PasswordForm::MatchType::kPSL;
         }
         break;
