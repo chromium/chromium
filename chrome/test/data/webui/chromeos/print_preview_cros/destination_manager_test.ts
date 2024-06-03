@@ -394,8 +394,8 @@ suite('DestinationManager', () => {
         onPrintTicketChangedFn.verifyMock();
       });
 
-  // Verify active destination updates if updatePrintTicket changes the
-  // destination in the ticket.
+  // Verify active destination updates if setPrintTicketDestination changes
+  // the destination in the ticket.
   test(
       `active destination updated by ${PRINT_TICKET_MANAGER_TICKET_CHANGED}` +
           'handler',

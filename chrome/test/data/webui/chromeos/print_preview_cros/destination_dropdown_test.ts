@@ -5,7 +5,7 @@
 import 'chrome://os-print/js/destination_dropdown.js';
 
 import {PDF_DESTINATION} from 'chrome://os-print/js/data/destination_constants.js';
-import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DESTINATION_MANAGER_SESSION_INITIALIZED, DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
+import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DESTINATION_MANAGER_DESTINATIONS_CHANGED, DESTINATION_MANAGER_SESSION_INITIALIZED, DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
 import {DestinationDropdownElement} from 'chrome://os-print/js/destination_dropdown.js';
 import {DESTINATION_DROPDOWN_UPDATE_DESTINATIONS, DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION, DestinationDropdownController} from 'chrome://os-print/js/destination_dropdown_controller.js';
 import {DestinationRowElement} from 'chrome://os-print/js/destination_row.js';
@@ -21,7 +21,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {createTestDestination, resetDataManagersAndProviders} from './test_utils.js';
+import {createTestDestination, resetDataManagersAndProviders, waitForInitialDestinationSet} from './test_utils.js';
 
 suite('DestinationDropdown', () => {
   let element: DestinationDropdownElement;
@@ -89,6 +89,19 @@ suite('DestinationDropdown', () => {
     const rowLabel =
         strictQuery<HTMLElement>('#label', selected.shadowRoot, HTMLElement);
     return rowLabel.textContent!.trim();
+  }
+
+  async function clickDropdownRowFor(destinationId: string): Promise<void> {
+    assert(element.shadowRoot);
+    const content = strictQuery<HTMLDivElement>(
+        '#content', element.shadowRoot, HTMLDivElement);
+    assertTrue(isVisible(content), 'Dropdown needs to be open');
+    const destinationRow = strictQuery<DestinationRowElement>(
+        `#row-${destinationId}`, content, DestinationRowElement);
+    assert(destinationRow, 'Only attempt to click existing destination');
+    const clickEvent = eventToPromise('click', destinationRow);
+    destinationRow.click();
+    await clickEvent;
   }
 
   async function toggleDropdown(): Promise<void> {
@@ -237,5 +250,59 @@ suite('DestinationDropdown', () => {
           PDF_DESTINATION,
           addedDestination,
         ]);
+      });
+
+  // Verify clicking a DestinationRowElement in contents calls controller's
+  // updateActiveDestination handler with the destination id of the clicked
+  // DestinationRowElement, updates selectedDestination, and closes content.
+  test(
+      'DestinationRowElement immediately closes the dropdown and passes ID ' +
+          'of the clicked row to updateActiveDestination',
+      async () => {
+        mockController.reset();
+        const selectedChanged = eventToPromise(
+            DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION, controller);
+        await waitForInitialDestinationSet();
+        await selectedChanged;
+        const updateFn = mockController.createFunctionMock(
+            controller, 'updateActiveDestination');
+        updateFn.returnValue = true;
+        const testDestination = createTestDestination();
+        const destChangedEvent = eventToPromise(
+            DESTINATION_DROPDOWN_UPDATE_DESTINATIONS, controller);
+        destinationManager.setDestinationForTesting(testDestination);
+        destinationManager.dispatchEvent(
+            createCustomEvent(DESTINATION_MANAGER_DESTINATIONS_CHANGED));
+        await destChangedEvent;
+
+        // Simulate clicking a destination row.
+        await toggleDropdown();
+        updateFn.addExpectation(testDestination.id);
+        await clickDropdownRowFor(testDestination.id);
+
+        assertFalse(isVisible(getDropdownContent()), 'Dropdown closed');
+        assertEquals(
+            testDestination.displayName, getSelectedDestinationRowLabel());
+        updateFn.verifyMock();
+      });
+
+  // Verify clicking a DestinationRowElement closes content and does not
+  // update selectedDestination if provided ID is active destination.
+  test(
+      'selectedDestination not updated if updateActiveDestination returns ' +
+          'false',
+      async () => {
+        mockController.reset();
+        await waitForInitialDestinationSet();
+        assertEquals(
+            PDF_DESTINATION.displayName, getSelectedDestinationRowLabel());
+
+        // Simulate clicking a destination row.
+        await toggleDropdown();
+        await clickDropdownRowFor(PDF_DESTINATION.id);
+
+        assertFalse(isVisible(getDropdownContent()), 'Dropdown closed');
+        assertEquals(
+            PDF_DESTINATION.displayName, getSelectedDestinationRowLabel());
       });
 });

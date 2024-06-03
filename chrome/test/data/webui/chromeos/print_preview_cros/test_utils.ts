@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 import {CapabilitiesManager} from 'chrome://os-print/js/data/capabilities_manager.js';
-import {DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
+import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
 import {PreviewTicketManager} from 'chrome://os-print/js/data/preview_ticket_manager.js';
 import {PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
+import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {resetProvidersForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {type Destination, PrinterStatusReason, PrinterType} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
+import {MockTimer} from 'chrome://webui-test/mock_timer.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 // Counter for unique destination IDs.
 let destinationIdCounter = 0;
@@ -37,4 +40,25 @@ export function resetDataManagersAndProviders(): void {
   CapabilitiesManager.resetInstanceForTesting();
   PreviewTicketManager.resetInstanceForTesting();
   resetProvidersForTesting();
+}
+
+/**
+ * Initializes destination manager and returns a promise for the
+ * DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED event.
+ * If using mockTimer, the timer and appropriate delay need to be provided to
+ * resolve fetch.
+ */
+export function waitForInitialDestinationSet(
+    mockTimer: MockTimer|null = null, delay = 0): Promise<void> {
+  const destinationManager = DestinationManager.getInstance();
+  const activeDestEvent = eventToPromise(
+      DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, destinationManager);
+  destinationManager.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
+
+  // Resolve fetch in destination manager.
+  if (mockTimer) {
+    mockTimer.tick(delay);
+  }
+
+  return activeDestEvent;
 }

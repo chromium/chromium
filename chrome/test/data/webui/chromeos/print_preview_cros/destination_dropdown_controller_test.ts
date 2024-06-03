@@ -4,23 +4,26 @@
 
 import 'chrome://os-print/js/destination_dropdown_controller.js';
 
+import {PDF_DESTINATION} from 'chrome://os-print/js/data/destination_constants.js';
 import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DESTINATION_MANAGER_DESTINATIONS_CHANGED, DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
+import {PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
 import {DESTINATION_DROPDOWN_UPDATE_DESTINATIONS, DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION, DestinationDropdownController} from 'chrome://os-print/js/destination_dropdown_controller.js';
 import {FakeDestinationProvider} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
 import {createCustomEvent} from 'chrome://os-print/js/utils/event_utils.js';
 import {getDestinationProvider} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {createTestDestination, resetDataManagersAndProviders} from './test_utils.js';
+import {createTestDestination, resetDataManagersAndProviders, waitForInitialDestinationSet} from './test_utils.js';
 
 suite('DestinationDropdownController', () => {
   let controller: DestinationDropdownController;
   let destinationManager: DestinationManager;
   let fakeDestinationProvider: FakeDestinationProvider;
+  let printTicketManager: PrintTicketManager;
   let mockController: MockController;
   let eventTracker: EventTracker;
   let mockTimer: MockTimer;
@@ -38,6 +41,7 @@ suite('DestinationDropdownController', () => {
         getDestinationProvider() as FakeDestinationProvider;
     fakeDestinationProvider.setTestDelay(testDelay);
     destinationManager = DestinationManager.getInstance();
+    printTicketManager = PrintTicketManager.getInstance();
 
     controller = new DestinationDropdownController(eventTracker);
   });
@@ -161,4 +165,34 @@ suite('DestinationDropdownController', () => {
             expectedCallCount, callCount,
             `${DESTINATION_DROPDOWN_UPDATE_DESTINATIONS} emitted`);
       });
+
+  // Verify updateActiveDestination calls PrintTicketManager
+  // setPrintTicketDestination with provided destination ID.
+  test(
+      'updateActiveDestination calls setPrintTicketDestination with ' +
+          'destination ID',
+      async () => {
+        await waitForInitialDestinationSet(mockTimer, testDelay);
+        const testDestination = createTestDestination();
+        destinationManager.setDestinationForTesting(testDestination);
+        const updatePrintTicketFn = mockController.createFunctionMock(
+            printTicketManager, 'setPrintTicketDestination');
+        updatePrintTicketFn.returnValue = true;
+        updatePrintTicketFn.addExpectation(testDestination.id);
+        controller.updateActiveDestination(testDestination.id);
+        updatePrintTicketFn.verifyMock();
+      });
+
+  // Verify updateActiveDestination returns false if ID provided is already
+  // active or an invalid ID. Also does not call setPrintTicketDestination.
+  test(`updateActiveDestination returns false`, async () => {
+    await waitForInitialDestinationSet(mockTimer, testDelay);
+
+    assertFalse(
+        controller.updateActiveDestination('unknownDestinationId'),
+        'Update fails for unknown ID');
+    assertFalse(
+        controller.updateActiveDestination(PDF_DESTINATION.id),
+        'Update fails for current ID');
+  });
 });

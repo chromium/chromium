@@ -5,11 +5,13 @@
 import '../css/print_preview_cros_shared.css.js';
 import './destination_row.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './destination_dropdown.html.js';
 import {DESTINATION_DROPDOWN_UPDATE_DESTINATIONS, DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION, DestinationDropdownController} from './destination_dropdown_controller.js';
+import {type DestinationRowElement} from './destination_row.js';
 import {Destination} from './utils/print_preview_cros_app_types.js';
 
 
@@ -67,6 +69,29 @@ export class DestinationDropdownElement extends PolymerElement {
   // Handles toggling visibility of dropdown content.
   onSelectedClicked(): void {
     this.open = !this.open;
+  }
+
+  // Handles passing the ID of the destination row that was clicked to the
+  // controller for processing and closes the dropdown menu.
+  onDestinationClicked(event: Event): void {
+    assert(event.target);
+    const row: DestinationRowElement = event.target as DestinationRowElement;
+    assert(row.destination);
+
+    // Clicked on currently selected destination.
+    if (this.selectedDestination?.id === row.destination.id) {
+      this.open = false;
+      return;
+    }
+
+    const destinationUpdated =
+        this.controller.updateActiveDestination(row.destination!.id);
+    if (destinationUpdated) {
+      // Immediately update UI to display selected destination.
+      this.selectedDestination = row.destination;
+    }
+
+    this.open = false;
   }
 
   // Handles updating dropdown UI content when update content event occurs.
