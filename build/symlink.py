@@ -19,7 +19,7 @@ have the old contents.
 
 import errno
 import optparse
-import os.path
+import os
 import shutil
 import subprocess
 import sys
@@ -84,8 +84,8 @@ def Main(argv):
 
   if options.touch:
     os.makedirs(os.path.dirname(options.touch), exist_ok=True)
-    with open(options.touch, 'w'):
-      pass
+    with open(options.touch, 'a'):
+      os.utime(options.touch)
 
 
 if __name__ == '__main__':
