@@ -192,6 +192,13 @@ void ConfigurableStorageDelegate::set_destination_rate_limit(
   config_.destination_rate_limit = limit;
 }
 
+void ConfigurableStorageDelegate::set_aggregatable_debug_rate_limit(
+    AttributionConfig::AggregatableDebugRateLimit limit) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Intentionally allows `limit` to be invalid for testing.
+  config_.aggregatable_debug_rate_limit = std::move(limit);
+}
+
 void ConfigurableStorageDelegate::set_delete_expired_sources_frequency(
     base::TimeDelta frequency) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

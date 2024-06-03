@@ -886,6 +886,8 @@ TEST_F(AggregatableDebugReportTest, SourceDebugReport_Data) {
                    net::SchemefulSite(source_origin)),
           Property(&AggregatableDebugReport::reporting_origin,
                    reporting_origin),
+          Property(&AggregatableDebugReport::ReportingSite,
+                   net::SchemefulSite(reporting_origin)),
           Property(&AggregatableDebugReport::scheduled_report_time,
                    source_time),
           Property(
@@ -935,6 +937,8 @@ TEST_F(AggregatableDebugReportTest, TriggerDebugReport_Data) {
                    net::SchemefulSite(destination_origin)),
           Property(&AggregatableDebugReport::reporting_origin,
                    reporting_origin),
+          Property(&AggregatableDebugReport::ReportingSite,
+                   net::SchemefulSite(reporting_origin)),
           Property(&AggregatableDebugReport::scheduled_report_time,
                    trigger_time),
           Property(

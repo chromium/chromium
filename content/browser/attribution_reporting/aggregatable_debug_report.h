@@ -39,6 +39,15 @@ class CONTENT_EXPORT AggregatableDebugReport {
       base::FunctionRef<bool()> is_operation_allowed,
       const CreateReportResult&);
 
+  static AggregatableDebugReport CreateForTesting(
+      std::vector<blink::mojom::AggregatableReportHistogramContribution>,
+      net::SchemefulSite context_site,
+      attribution_reporting::SuitableOrigin reporting_origin,
+      net::SchemefulSite effective_destination,
+      std::optional<attribution_reporting::SuitableOrigin>
+          aggregation_coordinator_origin,
+      base::Time scheduled_report_time);
+
   AggregatableDebugReport(const AggregatableDebugReport&) = delete;
   AggregatableDebugReport& operator=(const AggregatableDebugReport&) = delete;
 
@@ -61,6 +70,8 @@ class CONTENT_EXPORT AggregatableDebugReport {
   base::Time scheduled_report_time() const { return scheduled_report_time_; }
 
   int BudgetRequired() const;
+
+  net::SchemefulSite ReportingSite() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AggregatableDebugReportTest, SourceDebugReport_Data);

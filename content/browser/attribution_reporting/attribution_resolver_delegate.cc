@@ -83,4 +83,10 @@ AttributionResolverDelegate::GetDestinationRateLimit() const {
   return config_.destination_rate_limit;
 }
 
+AttributionConfig::AggregatableDebugRateLimit
+AttributionResolverDelegate::GetAggregatableDebugRateLimit() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return config_.aggregatable_debug_rate_limit;
+}
+
 }  // namespace content

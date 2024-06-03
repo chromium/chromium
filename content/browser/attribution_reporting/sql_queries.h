@@ -259,6 +259,24 @@ inline constexpr const char kDeleteRateLimitsBySourceIdSql[] =
 
 #undef RATE_LIMIT_SOURCE_CONDITION
 
+inline constexpr const char kAggregatableDebugReportAllowedForRateLimitSql[] =
+    "SELECT reporting_site,consumed_budget "
+    "FROM aggregatable_debug_rate_limits "
+    "WHERE context_site=? AND time>?";
+
+inline constexpr const char kDeleteExpiredAggregatableDebugRateLimitsSql[] =
+    "DELETE FROM aggregatable_debug_rate_limits "
+    "WHERE time<=?";
+
+inline constexpr const char kSelectAggregatableDebugRateLimitsForDeletionSql[] =
+    "SELECT id,reporting_origin "
+    "FROM aggregatable_debug_rate_limits "
+    "WHERE time BETWEEN ?1 AND ?2";
+
+inline constexpr const char kDeleteAggregatableDebugRateLimitRangeSql[] =
+    "DELETE FROM aggregatable_debug_rate_limits "
+    "WHERE time BETWEEN ?1 AND ?2";
+
 }  // namespace content::attribution_queries
 
 #endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_SQL_QUERIES_H_

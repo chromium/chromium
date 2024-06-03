@@ -424,6 +424,8 @@ source_set("browser") {
     "ai/mock_ai_text_session.h",
     "attribution_reporting/aggregatable_attribution_utils.cc",
     "attribution_reporting/aggregatable_attribution_utils.h",
+    "attribution_reporting/aggregatable_debug_rate_limit_table.cc",
+    "attribution_reporting/aggregatable_debug_rate_limit_table.h",
     "attribution_reporting/aggregatable_debug_report.cc",
     "attribution_reporting/aggregatable_debug_report.h",
     "attribution_reporting/attribution_background_registrations_id.h",

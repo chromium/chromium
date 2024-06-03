@@ -251,6 +251,21 @@ std::optional<AggregatableDebugReport> AggregatableDebugReport::Create(
       config.aggregation_coordinator_origin, result.trigger_time());
 }
 
+// static
+AggregatableDebugReport AggregatableDebugReport::CreateForTesting(
+    std::vector<AggregatableReportHistogramContribution> contributions,
+    net::SchemefulSite context_site,
+    attribution_reporting::SuitableOrigin reporting_origin,
+    net::SchemefulSite effective_destination,
+    std::optional<attribution_reporting::SuitableOrigin>
+        aggregation_coordinator_origin,
+    base::Time scheduled_report_time) {
+  return AggregatableDebugReport(
+      std::move(contributions), std::move(context_site),
+      std::move(reporting_origin), std::move(effective_destination),
+      std::move(aggregation_coordinator_origin), scheduled_report_time);
+}
+
 AggregatableDebugReport::AggregatableDebugReport(
     std::vector<AggregatableReportHistogramContribution> contributions,
     net::SchemefulSite context_site,
@@ -288,6 +303,10 @@ int AggregatableDebugReport::BudgetRequired() const {
   int64_t budget_required_value = budget_required.ValueOrDie();
   CHECK(base::IsValueInRangeForNumericType<int>(budget_required_value));
   return budget_required_value;
+}
+
+net::SchemefulSite AggregatableDebugReport::ReportingSite() const {
+  return net::SchemefulSite(reporting_origin_);
 }
 
 }  // namespace content

@@ -162,6 +162,9 @@ class CONTENT_EXPORT AttributionResolverDelegate {
 
   AttributionConfig::DestinationRateLimit GetDestinationRateLimit() const;
 
+  AttributionConfig::AggregatableDebugRateLimit GetAggregatableDebugRateLimit()
+      const;
+
   virtual bool GenerateNullAggregatableReportForLookbackDay(
       int lookback_day,
       attribution_reporting::mojom::SourceRegistrationTimeConfig) const = 0;

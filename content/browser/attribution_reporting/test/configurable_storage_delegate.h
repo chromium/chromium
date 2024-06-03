@@ -61,6 +61,9 @@ class ConfigurableStorageDelegate : public AttributionResolverDelegate {
 
   void set_destination_rate_limit(AttributionConfig::DestinationRateLimit);
 
+  void set_aggregatable_debug_rate_limit(
+      AttributionConfig::AggregatableDebugRateLimit);
+
   void set_delete_expired_sources_frequency(base::TimeDelta frequency);
 
   void set_delete_expired_rate_limits_frequency(base::TimeDelta frequency);
