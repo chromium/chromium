@@ -65,6 +65,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -228,6 +229,7 @@ public class SelectableTabListEditorTest {
                     if (mSnackbarManager == null) return;
                     mSnackbarManager.dismissAllSnackbars();
                 });
+        BookmarkUtils.clearLastUsedPrefs();
     }
 
     private @TabListCoordinator.TabListMode int getMode() {

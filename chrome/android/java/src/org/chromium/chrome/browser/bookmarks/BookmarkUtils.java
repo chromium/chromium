@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -614,10 +615,12 @@ public class BookmarkUtils {
                         ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL, UrlConstants.BOOKMARKS_URL);
     }
 
-    static void clearLastUsedPrefs() {
-        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        prefsManager.removeKey(ChromePreferenceKeys.BOOKMARKS_LAST_USED_PARENT);
-        prefsManager.removeKey(ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL);
+    @VisibleForTesting
+    public static void clearLastUsedPrefs() {
+        Editor editor = ChromeSharedPreferences.getInstance().getEditor();
+        editor.remove(ChromePreferenceKeys.BOOKMARKS_LAST_USED_PARENT);
+        editor.remove(ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL);
+        editor.apply();
     }
 
     /** Save the last used {@link BookmarkId} as a folder to put new bookmarks to. */
