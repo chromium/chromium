@@ -234,7 +234,7 @@ TEST_F(ScrollBarViewsTest, AccessibleRole) {
             ax::mojom::Role::kScrollBar);
 
   data = ui::AXNodeData();
-  scrollbar()->SetAccessibleRole(ax::mojom::Role::kButton);
+  scrollbar()->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
   scrollbar()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
   EXPECT_EQ(scrollbar()->GetViewAccessibility().GetCachedRole(),

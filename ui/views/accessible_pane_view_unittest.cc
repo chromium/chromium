@@ -299,7 +299,7 @@ TEST_F(AccessiblePaneViewTest, AccessibleProperties) {
   EXPECT_EQ(data.role, ax::mojom::Role::kPane);
 
   data = ui::AXNodeData();
-  test_view->SetAccessibleRole(ax::mojom::Role::kToolbar);
+  test_view->GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
   test_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Name");

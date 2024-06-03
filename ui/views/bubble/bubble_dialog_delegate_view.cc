@@ -41,6 +41,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/bubble_histograms_variant.h"
 #include "ui/views/layout/layout_manager.h"
@@ -1129,7 +1130,8 @@ void BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged(bool visible) {
   // the bubble in its entirety rather than just its title and initially focused
   // view.  See http://crbug.com/474622 for details.
   if (visible && ui::IsAlert(GetAccessibleWindowRole())) {
-    GetWidget()->GetRootView()->SetAccessibleRole(GetAccessibleWindowRole());
+    GetWidget()->GetRootView()->GetViewAccessibility().SetRole(
+        GetAccessibleWindowRole());
     GetWidget()->GetRootView()->NotifyAccessibilityEvent(
         ax::mojom::Event::kAlert, true);
   }

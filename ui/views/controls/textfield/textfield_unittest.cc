@@ -4133,7 +4133,7 @@ TEST_F(TextfieldTest, AccessibleNameFromLabel) {
 
   const std::u16string label_text = u"Some label";
   View label;
-  label.SetAccessibleRole(ax::mojom::Role::kStaticText);
+  label.GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
   label.SetAccessibleName(label_text);
   textfield_->SetAccessibleName(&label);
 
@@ -4572,7 +4572,7 @@ TEST_F(TextfieldTest, AccessibleRole) {
   EXPECT_EQ(textfield_->GetViewAccessibility().GetCachedRole(),
             ax::mojom::Role::kTextField);
 
-  textfield_->SetAccessibleRole(ax::mojom::Role::kSearchBox);
+  textfield_->GetViewAccessibility().SetRole(ax::mojom::Role::kSearchBox);
 
   data = ui::AXNodeData();
   textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);

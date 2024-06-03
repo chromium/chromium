@@ -955,7 +955,7 @@ TEST_F(ButtonTest, AccessibleRole) {
   EXPECT_EQ(button()->GetViewAccessibility().GetCachedRole(),
             ax::mojom::Role::kButton);
 
-  button()->SetAccessibleRole(ax::mojom::Role::kCheckBox);
+  button()->GetViewAccessibility().SetRole(ax::mojom::Role::kCheckBox);
 
   data = ui::AXNodeData();
   button()->GetViewAccessibility().GetAccessibleNodeData(&data);

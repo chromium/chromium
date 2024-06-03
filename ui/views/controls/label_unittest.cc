@@ -788,8 +788,7 @@ TEST_F(LabelTest, AccessibleNameAndRole) {
   EXPECT_EQ(data.role, ax::mojom::Role::kTitleBar);
 
   label()->SetText(u"New Text");
-  label()->SetAccessibleRole(ax::mojom::Role::kLink);
-
+  label()->GetViewAccessibility().SetRole(ax::mojom::Role::kLink);
   EXPECT_EQ(label()->GetViewAccessibility().GetCachedName(), u"New Text");
   EXPECT_EQ(label()->GetViewAccessibility().GetCachedRole(),
             ax::mojom::Role::kLink);

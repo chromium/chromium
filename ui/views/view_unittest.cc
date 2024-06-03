@@ -517,7 +517,7 @@ TEST_F(ViewTest, CannotLayoutSuperclassOutsideLayout) {
 
 TEST_F(ViewTest, PauseAccessibilityEvents) {
   TestView v;
-  v.SetAccessibleRole(ax::mojom::Role::kStaticText);
+  v.GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
   EXPECT_EQ(v.GetViewAccessibility().pause_accessibility_events_, false);
 
   // Setting the accessible name when `pause_accessibility_events_` is false
@@ -675,7 +675,7 @@ TEST_F(ViewTest, SetAccessibleRole) {
   EXPECT_EQ(data.role, ax::mojom::Role::kUnknown);
 
   data = ui::AXNodeData();
-  v.SetAccessibleRole(ax::mojom::Role::kButton);
+  v.GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
   v.GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
   EXPECT_EQ(v.GetViewAccessibility().GetCachedRole(), ax::mojom::Role::kButton);
@@ -683,7 +683,7 @@ TEST_F(ViewTest, SetAccessibleRole) {
 
 TEST_F(ViewTest, SetAccessibleNameToStringWithRoleAlreadySet) {
   TestView v;
-  v.SetAccessibleRole(ax::mojom::Role::kButton);
+  v.GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 
   ui::AXNodeData data = ui::AXNodeData();
   v.GetViewAccessibility().GetAccessibleNodeData(&data);
@@ -723,11 +723,11 @@ TEST_F(ViewTest, AdjustAccessibleNameStringWithRoleAlreadySet) {
 
 TEST_F(ViewTest, SetAccessibleNameToLabelWithRoleAlreadySet) {
   TestView label;
-  label.SetAccessibleRole(ax::mojom::Role::kStaticText);
+  label.GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
   label.SetAccessibleName(u"Label's Name");
 
   TestView v;
-  v.SetAccessibleRole(ax::mojom::Role::kButton);
+  v.GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 
   ui::AXNodeData data = ui::AXNodeData();
   v.GetViewAccessibility().GetAccessibleNodeData(&data);
@@ -780,7 +780,7 @@ TEST_F(ViewTest, AdjustAccessibleNameFrom) {
 
 TEST_F(ViewTest, AdjustAccessibleNameFromLabelWithRoleAlreadySet) {
   TestView label;
-  label.SetAccessibleRole(ax::mojom::Role::kStaticText);
+  label.GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
   label.SetAccessibleName(u"Label's Name");
 
   A11yTestView v(ax::mojom::Role::kButton);
@@ -835,7 +835,7 @@ TEST_F(ViewTest, SetAccessibleNameExplicitlyEmpty) {
 TEST_F(ViewTest, SetAccessibleNameExplicitlyEmptyToRemoveName) {
   TestView v;
   ui::AXNodeData data = ui::AXNodeData();
-  v.SetAccessibleRole(ax::mojom::Role::kButton);
+  v.GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
   v.SetAccessibleName(u"Name");
   v.GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(v.GetViewAccessibility().GetCachedName(), u"Name");
@@ -870,11 +870,11 @@ TEST_F(ViewTest, SetAccessibleDescriptionToString) {
 
 TEST_F(ViewTest, SetAccessibleDescriptionToLabel) {
   TestView label;
-  label.SetAccessibleRole(ax::mojom::Role::kStaticText);
+  label.GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
   label.SetAccessibleName(u"Label's Name");
 
   TestView v;
-  v.SetAccessibleRole(ax::mojom::Role::kButton);
+  v.GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 
   ui::AXNodeData data = ui::AXNodeData();
   v.GetViewAccessibility().GetAccessibleNodeData(&data);
@@ -926,7 +926,7 @@ TEST_F(ViewTest, SetAccessibleDescriptionExplicitlyEmpty) {
 TEST_F(ViewTest, SetAccessibleDescriptionExplicitlyEmptyToRemoveDescription) {
   TestView v;
   ui::AXNodeData data = ui::AXNodeData();
-  v.SetAccessibleRole(ax::mojom::Role::kButton);
+  v.GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
   v.GetViewAccessibility().SetDescription(u"Description");
   v.GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(v.GetViewAccessibility().GetCachedDescription(), u"Description");

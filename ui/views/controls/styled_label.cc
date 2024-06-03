@@ -24,6 +24,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/link_fragment.h"
@@ -145,9 +146,9 @@ void StyledLabel::SetTextContext(int text_context) {
   }
 
   text_context_ = text_context;
-  SetAccessibleRole(text_context_ == style::CONTEXT_DIALOG_TITLE
-                        ? ax::mojom::Role::kTitleBar
-                        : ax::mojom::Role::kStaticText);
+  GetViewAccessibility().SetRole(text_context_ == style::CONTEXT_DIALOG_TITLE
+                                     ? ax::mojom::Role::kTitleBar
+                                     : ax::mojom::Role::kStaticText);
   OnPropertyChanged(&text_context_, kPropertyEffectsPreferredSizeChanged);
 }
 

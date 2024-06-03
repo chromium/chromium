@@ -151,9 +151,9 @@ void Label::SetTextContext(int text_context) {
   if (GetWidget())
     UpdateColorsFromTheme();
 
-  SetAccessibleRole(text_context_ == style::CONTEXT_DIALOG_TITLE
-                        ? ax::mojom::Role::kTitleBar
-                        : ax::mojom::Role::kStaticText);
+  GetViewAccessibility().SetRole(text_context_ == style::CONTEXT_DIALOG_TITLE
+                                     ? ax::mojom::Role::kTitleBar
+                                     : ax::mojom::Role::kStaticText);
 
   OnPropertyChanged(&text_context_, kPropertyEffectsPreferredSizeChanged);
 }

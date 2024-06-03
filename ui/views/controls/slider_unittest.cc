@@ -272,7 +272,7 @@ TEST_P(SliderTest, AccessibleRole) {
   EXPECT_EQ(slider()->GetViewAccessibility().GetCachedRole(),
             ax::mojom::Role::kSlider);
 
-  slider()->SetAccessibleRole(ax::mojom::Role::kMeter);
+  slider()->GetViewAccessibility().SetRole(ax::mojom::Role::kMeter);
 
   data = ui::AXNodeData();
   slider()->GetViewAccessibility().GetAccessibleNodeData(&data);

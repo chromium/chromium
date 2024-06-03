@@ -907,8 +907,7 @@ TEST_F(StyledLabelTest, AccessibleNameAndRole) {
   EXPECT_EQ(data.role, ax::mojom::Role::kTitleBar);
 
   styled->SetText(u"New Text");
-  styled->SetAccessibleRole(ax::mojom::Role::kLink);
-
+  styled->GetViewAccessibility().SetRole(ax::mojom::Role::kLink);
   EXPECT_EQ(styled->GetViewAccessibility().GetCachedName(), u"New Text");
   EXPECT_EQ(styled->GetViewAccessibility().GetCachedRole(),
             ax::mojom::Role::kLink);
