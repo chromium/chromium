@@ -53,6 +53,10 @@ ShortcutIntegrationBrowserTestApi::ShowAndAcceptCreateShortcutDialog() {
   return Steps(
       ShowCreateShortcutDialog(),
       PressButton(
+          CreateDesktopShortcutDelegate::kCreateShortcutDialogOkButtonId),
+      // Wait for the dialog to go away, to make sure showing the dialog again
+      // can correctly detect presence of the Ok button.
+      WaitForHide(
           CreateDesktopShortcutDelegate::kCreateShortcutDialogOkButtonId));
 }
 
@@ -67,6 +71,10 @@ ShortcutIntegrationBrowserTestApi::ShowCreateShortcutDialogSetTitleAndAccept(
           kTitleTextFieldName),
       EnterText(kTitleTextFieldName, title),
       PressButton(
+          CreateDesktopShortcutDelegate::kCreateShortcutDialogOkButtonId),
+      // Wait for the dialog to go away, to make sure showing the dialog again
+      // can correctly detect presence of the Ok button.
+      WaitForHide(
           CreateDesktopShortcutDelegate::kCreateShortcutDialogOkButtonId));
 }
 

@@ -53,6 +53,38 @@ IN_PROC_BROWSER_TEST_F(ShortcutIntegrationBrowserTest, CustomTitle) {
       CheckShortcut(kNewShortcutId, IsShortcutWithTitle(u"Hello World!")));
 }
 
+IN_PROC_BROWSER_TEST_F(ShortcutIntegrationBrowserTest, MultipleShortcuts) {
+  const GURL kPageWithIconsUrl =
+      embedded_https_test_server().GetURL("/shortcuts/page_icons.html");
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondShortcutId);
+
+  base::FilePath shortcut_path;
+  RunTestSequence(
+      InstrumentTab(kInitialTabId),
+      NavigateWebContents(kInitialTabId, kPageWithIconsUrl),
+
+      InstrumentNextShortcut(kNewShortcutId),
+      ShowAndAcceptCreateShortcutDialog(),
+      CheckShortcut(kNewShortcutId, IsShortcutForUrl(kPageWithIconsUrl)),
+
+      InstrumentNextShortcut(kSecondShortcutId),
+      ShowAndAcceptCreateShortcutDialog(),
+      CheckShortcut(kSecondShortcutId, IsShortcutForUrl(kPageWithIconsUrl)),
+
+      CheckShortcut(kNewShortcutId,
+                    IsShortcutWithTitle(u"Page with icon links")),
+      CheckShortcut(kSecondShortcutId,
+                    IsShortcutWithTitle(u"Page with icon links")),
+
+      // Sanity check that the two created shortcuts are in fact separate
+      // shortcuts, despite being for the same page and profile.
+      InAnyContext(WithElement(kNewShortcutId,
+                               [&](ui::TrackedElement* shortcut) {
+                                 shortcut_path = GetShortcutPath(shortcut);
+                               })),
+      CheckShortcut(kSecondShortcutId, testing::Ne(std::cref(shortcut_path))));
+}
+
 namespace {
 // Initial tab in profile 1.
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfile1TabId);
