@@ -53,14 +53,13 @@
 #include "third_party/skia/modules/skcms/skcms.h"
 
 class SkColorSpace;
+class SkData;
 
 namespace gfx {
 struct HDRMetadata;
 }  // namespace gfx
 
 namespace blink {
-
-struct DecodedImageMetaData;
 
 #if SK_B32_SHIFT
 inline skcms_PixelFormat XformColorFormat() {
@@ -375,9 +374,10 @@ class PLATFORM_EXPORT ImageDecoder {
   ImageOrientationEnum Orientation() const { return orientation_; }
   gfx::Size DensityCorrectedSize() const { return density_corrected_size_; }
 
-  // Updates orientation, pixel density etc based on |metadata|.
-  void ApplyMetadata(const DecodedImageMetaData& metadata,
-                     const gfx::Size& physical_size);
+  // Updates orientation, pixel density etc based on the Exif metadata stored in
+  // |exif_data|.
+  void ApplyExifMetadata(const SkData* exif_data,
+                         const gfx::Size& physical_size);
 
   bool IgnoresColorSpace() const {
     return color_behavior_ == ColorBehavior::kIgnore;

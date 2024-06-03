@@ -45,7 +45,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
-#include "third_party/blink/renderer/platform/image-decoders/exif_reader.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/private/SkJpegMetadataDecoder.h"
 
@@ -460,15 +459,9 @@ class JPEGImageReader final {
         jpeg_calc_output_dimensions(&info_);
         decoder_->SetDecodedSize(info_.output_width, info_.output_height);
 
-        DecodedImageMetaData metadata;
-        if (sk_sp<SkData> exif_data =
-                metadata_decoder_->getExifMetadata(/*copyData=*/false)) {
-          base::span<const uint8_t> exif_span(exif_data->bytes(),
-                                              exif_data->size());
-          ReadExif(exif_span, metadata);
-        }
-        decoder_->ApplyMetadata(
-            metadata, gfx::Size(info_.output_width, info_.output_height));
+        decoder_->ApplyExifMetadata(
+            metadata_decoder_->getExifMetadata(/*copyData=*/false).get(),
+            gfx::Size(info_.output_width, info_.output_height));
 
         // Allow color management of the decoded RGBA pixels if possible.
         if (!decoder_->IgnoresColorSpace()) {

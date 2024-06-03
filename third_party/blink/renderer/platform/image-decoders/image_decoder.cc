@@ -34,7 +34,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_decoder.h"
-#include "third_party/blink/renderer/platform/image-decoders/exif_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/gif/gif_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/ico/ico_image_decoder.h"
@@ -42,6 +41,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/webp/webp_image_decoder.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/private/SkExif.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
@@ -102,26 +102,28 @@ wtf_size_t CalculateMaxDecodedBytes(
 
 // Compute the density corrected size based on |metadata| and the physical size
 // of the associated image.
-gfx::Size ExtractDensityCorrectedSize(const DecodedImageMetaData& metadata,
+gfx::Size ExtractDensityCorrectedSize(const SkExif::Metadata& metadata,
                                       const gfx::Size& physical_size) {
   const unsigned kDefaultResolution = 72;
   const unsigned kResolutionUnitDpi = 2;
 
-  if (metadata.resolution_unit != kResolutionUnitDpi ||
-      metadata.resolution.IsEmpty() || metadata.size.IsEmpty()) {
+  gfx::SizeF resolution(metadata.fXResolution.value_or(0),
+                        metadata.fYResolution.value_or(0));
+  gfx::Size size(metadata.fPixelXDimension.value_or(0),
+                 metadata.fPixelYDimension.value_or(0));
+  if (metadata.fResolutionUnit != kResolutionUnitDpi || resolution.IsEmpty() ||
+      size.IsEmpty()) {
     return physical_size;
   }
-  CHECK(!metadata.resolution.IsEmpty());
 
   // Division by zero is not possible since we check for empty resolution
   // earlier.
   gfx::SizeF size_from_resolution(
-      physical_size.width() * kDefaultResolution / metadata.resolution.width(),
-      physical_size.height() * kDefaultResolution /
-          metadata.resolution.height());
+      physical_size.width() * kDefaultResolution / resolution.width(),
+      physical_size.height() * kDefaultResolution / resolution.height());
 
-  if (gfx::ToRoundedSize(size_from_resolution) == metadata.size) {
-    return metadata.size;
+  if (gfx::ToRoundedSize(size_from_resolution) == size) {
+    return size;
   }
 
   return physical_size;
@@ -972,10 +974,14 @@ wtf_size_t ImageDecoder::FindRequiredPreviousFrame(wtf_size_t frame_index,
   }
 }
 
-void ImageDecoder::ApplyMetadata(const DecodedImageMetaData& metadata,
-                                 const gfx::Size& physical_size) {
+void ImageDecoder::ApplyExifMetadata(const SkData* exif_data,
+                                     const gfx::Size& physical_size) {
   DCHECK(IsDecodedSizeAvailable());
-  orientation_ = metadata.orientation;
+  SkExif::Metadata metadata;
+  SkExif::Parse(metadata, exif_data);
+
+  orientation_ = static_cast<ImageOrientationEnum>(
+      metadata.fOrigin.value_or(kTopLeft_SkEncodedOrigin));
   density_corrected_size_ =
       ExtractDensityCorrectedSize(metadata, physical_size);
 }

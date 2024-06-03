@@ -18,8 +18,6 @@ component("image_decoders") {
     "bmp/bmp_image_decoder.h",
     "bmp/bmp_image_reader.cc",
     "bmp/bmp_image_reader.h",
-    "exif_reader.cc",
-    "exif_reader.h",
     "fast_shared_buffer_reader.cc",
     "fast_shared_buffer_reader.h",
     "gif/gif_image_decoder.cc",
