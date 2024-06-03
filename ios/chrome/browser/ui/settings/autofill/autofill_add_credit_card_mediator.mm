@@ -12,8 +12,8 @@
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/ui/autofill/autofill_credit_card_util.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_mediator_delegate.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_util.h"
 
 @implementation AutofillAddCreditCardMediator {
   // This property is for an interface which sends a response about saving the
