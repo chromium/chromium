@@ -39,7 +39,7 @@ These builders must pass before a CL may land that affects files outside of
 
 * [chromeos-amd64-generic-rel-gtest](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-rel-gtest) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-amd64-generic-rel-gtest""))
 
-    * Replaced with builder: [chromeos-amd64-generic-rel-gtest-and-tast](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-rel-gtest-and-tast) when CL owner is in group [chromeos-pa-with-chromium-accounts](https://chrome-infra-auth.appspot.com/auth/lookup?p=chromeos-pa-with-chromium-accounts)
+    * Replaced with builder: [chromeos-amd64-generic-rel-gtest-and-tast](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-rel-gtest-and-tast) when CL owner is in group [google/chromeos-pa@google.com](https://chrome-infra-auth.appspot.com/auth/lookup?p=google/chromeos-pa@google.com)
 
 * [chromeos-arm-generic-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-arm-generic-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-arm-generic-rel""))
 
@@ -53,7 +53,7 @@ These builders must pass before a CL may land that affects files outside of
 
 * [lacros-amd64-generic-rel-gtest](https://ci.chromium.org/p/chromium/builders/try/lacros-amd64-generic-rel-gtest) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""lacros-amd64-generic-rel-gtest""))
 
-    * Replaced with builder: [lacros-amd64-generic-rel-gtest-and-tast](https://ci.chromium.org/p/chromium/builders/try/lacros-amd64-generic-rel-gtest-and-tast) when CL owner is in group [chromeos-pa-with-chromium-accounts](https://chrome-infra-auth.appspot.com/auth/lookup?p=chromeos-pa-with-chromium-accounts)
+    * Replaced with builder: [lacros-amd64-generic-rel-gtest-and-tast](https://ci.chromium.org/p/chromium/builders/try/lacros-amd64-generic-rel-gtest-and-tast) when CL owner is in group [google/chromeos-pa@google.com](https://chrome-infra-auth.appspot.com/auth/lookup?p=google/chromeos-pa@google.com)
 
 * [lacros-arm-generic-rel](https://ci.chromium.org/p/chromium/builders/try/lacros-arm-generic-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""lacros-arm-generic-rel""))
 
