@@ -224,6 +224,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // `old_client` is used to guarantee that the callee is a correct owner of
   // this Display instance.
   void ResetDisplayClientForTesting(DisplayClient* old_client);
+  void MaybeLogQuadsProperties(AggregatedRenderPass& last_render_pass);
 
  protected:
   friend class DisplayTest;
@@ -349,6 +350,9 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // The historical drawing times of the most recent 100 frames. Recorded
   // without the delays caused by waiting for scheduling.
   cc::RollingTimeDeltaHistory draw_time_without_scheduling_waits_{100};
+
+  // A subsampler for potential quad information logging.
+  base::MetricsSubSampler metrics_subsampler_;
 };
 
 }  // namespace viz

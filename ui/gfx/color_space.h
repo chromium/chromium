@@ -62,6 +62,8 @@ class ColorSpaceDataView;
 class COLOR_SPACE_EXPORT ColorSpace {
  public:
   enum class PrimaryID : uint8_t {
+    // Used as an enum for metrics. DO NOT reorder or delete values. Rather,
+    // add them at the end and increment kMaxValue.
     INVALID,
     // BT709 is also the primaries for SRGB.
     BT709,
@@ -87,6 +89,8 @@ class COLOR_SPACE_EXPORT ColorSpace {
   };
 
   enum class TransferID : uint8_t {
+    // Used as an enum for metrics. DO NOT reorder or delete values. Rather,
+    // add them at the end and increment kMaxValue.
     INVALID,
     BT709,
     // On macOS, BT709 hardware decoded video frames, when displayed as

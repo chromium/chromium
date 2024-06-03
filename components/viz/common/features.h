@@ -143,6 +143,7 @@ VIZ_COMMON_EXPORT std::optional<double> SnapshotEvictedRootSurfaceScale();
 VIZ_COMMON_EXPORT bool IsCVDisplayLinkBeginFrameSourceEnabled();
 VIZ_COMMON_EXPORT bool IsVSyncAlignedPresentEnabled();
 VIZ_COMMON_EXPORT int NumPendingFrameSupported();
+VIZ_COMMON_EXPORT bool ShouldLogFrameQuadInfo();
 
 }  // namespace features
 

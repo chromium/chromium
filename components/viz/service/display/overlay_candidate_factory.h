@@ -117,6 +117,10 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
 
   gfx::Rect GetUnassignedDamage() { return unassigned_surface_damage_; }
 
+  // Adjusts candidate for subsampling and cliping for required overlay
+  // and logging purposes.
+  void HandleClipAndSubsampling(OverlayCandidate& candidate) const;
+
  private:
   CandidateStatus FromDrawQuadResource(const DrawQuad* quad,
                                        ResourceId resource_id,
@@ -137,8 +141,6 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
 
   CandidateStatus FromVideoHoleQuad(const VideoHoleDrawQuad* quad,
                                     OverlayCandidate& candidate) const;
-
-  void HandleClipAndSubsampling(OverlayCandidate& candidate) const;
 
   void AssignDamage(const DrawQuad* quad, OverlayCandidate& candidate) const;
 

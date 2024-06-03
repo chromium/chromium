@@ -386,6 +386,12 @@ BASE_FEATURE(kSnapshotEvictedRootSurface,
 #endif
 );
 
+// If enabled, info for quads from the last render pass will be reported as
+// UMAs.
+BASE_FEATURE(kShouldLogFrameQuadInfo,
+             "ShouldLogFrameQuadInfo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // The scale to use for root surface snapshots on eviction. See
 // `kSnapshotEvictedRootSurface`.
 const base::FeatureParam<double> kSnapshotEvictedRootSurfaceScale{
@@ -555,6 +561,10 @@ std::optional<double> SnapshotEvictedRootSurfaceScale() {
     return std::nullopt;
   }
   return kSnapshotEvictedRootSurfaceScale.Get();
+}
+
+bool ShouldLogFrameQuadInfo() {
+  return base::FeatureList::IsEnabled(features::kShouldLogFrameQuadInfo);
 }
 
 #if BUILDFLAG(IS_MAC)

@@ -33,6 +33,27 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="No, candidate uses an unsupported strategy"/>
 </enum>
 
+<enum name="BufferFormat">
+  <summary>The possible format of buffers. See ui/gfx/buffer_types.h.</summary>
+  <int value="0" label="R_8"/>
+  <int value="1" label="R_16"/>
+  <int value="2" label="RG_88"/>
+  <int value="3" label="RG_1616"/>
+  <int value="4" label="BGR_565"/>
+  <int value="5" label="RGBA_4444"/>
+  <int value="6" label="RGBX_8888"/>
+  <int value="7" label="RGBA_8888"/>
+  <int value="8" label="BGRX_8888"/>
+  <int value="9" label="BGRA_1010102"/>
+  <int value="10" label="RGBA_1010102"/>
+  <int value="11" label="BGRA_8888"/>
+  <int value="12" label="RGBA_F16"/>
+  <int value="13" label="YVU_420"/>
+  <int value="14" label="YUV_420_BIPLANAR"/>
+  <int value="15" label="YUVA_420_TRIPLANAR"/>
+  <int value="16" label="P010"/>
+</enum>
+
 <enum name="CALayerResult">
   <int value="0" label="Success"/>
   <int value="1" label="Unknown failure"/>
@@ -78,6 +99,60 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="sRGB"/>
   <int value="1" label="Wide Color Gamut"/>
   <int value="2" label="HDR"/>
+</enum>
+
+<enum name="ColorSpacePrimaryID">
+  <summary>
+    The possible color space primary ID. See ui/gfx/color_space.h.
+  </summary>
+  <int value="0" label="INVALID"/>
+  <int value="1" label="BT709"/>
+  <int value="2" label="BT470M"/>
+  <int value="3" label="BT470BG"/>
+  <int value="4" label="SMPTE170M"/>
+  <int value="5" label="SMPTE240M"/>
+  <int value="6" label="FILM"/>
+  <int value="7" label="BT2020"/>
+  <int value="8" label="SMPTEST428_1"/>
+  <int value="9" label="SMPTEST431_2"/>
+  <int value="10" label="P3"/>
+  <int value="11" label="XYZ_D50"/>
+  <int value="12" label="ADOBE_RGB"/>
+  <int value="13" label="APPLE_GENERIC_RGB"/>
+  <int value="14" label="WIDE_GAMUT_COLOR_SPIN"/>
+  <int value="15" label="CUSTOM"/>
+</enum>
+
+<enum name="ColorSpaceTransferID">
+  <summary>
+    The possible color space transfer ID. See ui/gfx/color_space.h.
+  </summary>
+  <int value="0" label="INVALID"/>
+  <int value="1" label="BT709"/>
+  <int value="2" label="BT709_APPLE"/>
+  <int value="3" label="GAMMA18"/>
+  <int value="4" label="GAMMA22"/>
+  <int value="5" label="GAMMA24"/>
+  <int value="6" label="GAMMA28"/>
+  <int value="7" label="SMPTE170M"/>
+  <int value="8" label="SMPTE240M"/>
+  <int value="9" label="LINEAR"/>
+  <int value="10" label="LOG"/>
+  <int value="11" label="LOG_SQRT"/>
+  <int value="12" label="IEC61966_2_4"/>
+  <int value="13" label="BT1361_ECG"/>
+  <int value="14" label="SRGB"/>
+  <int value="15" label="BT2020_10"/>
+  <int value="16" label="BT2020_12"/>
+  <int value="17" label="PQ"/>
+  <int value="18" label="SMPTEST428_1"/>
+  <int value="19" label="HLG"/>
+  <int value="20" label="SRGB_HDR"/>
+  <int value="21" label="LINEAR_HDR"/>
+  <int value="22" label="CUSTOM"/>
+  <int value="23" label="CUSTOM_HDR"/>
+  <int value="24" label="PIECEWISE_HDR"/>
+  <int value="25" label="SCRGB_LINEAR_80_NITS"/>
 </enum>
 
 <enum name="FrameReportType">

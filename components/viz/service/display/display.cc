@@ -51,6 +51,7 @@
 #include "components/viz/service/display/null_renderer.h"
 #include "components/viz/service/display/occlusion_culler.h"
 #include "components/viz/service/display/output_surface.h"
+#include "components/viz/service/display/overlay_candidate_factory.h"
 #include "components/viz/service/display/renderer_utils.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "components/viz/service/display/skia_renderer.h"
@@ -64,9 +65,11 @@
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence_handle.h"
+#include "ui/gfx/overlay_transform.h"
 #include "ui/gfx/overlay_transform_utils.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
@@ -666,6 +669,117 @@ void VisualDebuggerSync(gfx::OverlayTransform current_display_transform,
 
 }  // namespace
 
+void Display::MaybeLogQuadsProperties(AggregatedRenderPass& last_render_pass) {
+  // A restraint on how frequently we log quad infos in number of frames.
+  constexpr double kLogQuadInfoProbability = 1.0 / 20000;
+  if (!metrics_subsampler_.ShouldSample(kLogQuadInfoProbability)) {
+    return;
+  }
+  base::ElapsedTimer logging_timer;
+  int num_nonopaque_quads = 0;
+  int num_roundedcorners_quads = 0;
+  int num_transformation_quads = 0;
+  int num_nonaligned_quads = 0;
+  int num_nonpixelaligned_quads = 0;
+  int num_solid_quads = 0;
+  int num_scaled_quads = 0;
+  int num_failed_candidate = 0;
+
+  OverlayCandidateFactory::OverlayContext context;
+  context.is_delegated_context = true;
+  context.supports_clip_rect = true;
+  context.supports_out_of_window_clip_rect = true;
+  context.supports_arbitrary_transform = true;
+  context.supports_mask_filter = true;
+  context.transform_and_clip_rpdq = true;
+  context.supports_flip_rotate_transform = true;
+
+  SkM44 color_matrix;
+  // auto resource_provider = std::make_unique<DisplayResourceProviderSkia>();
+  base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>
+      render_pass_filters;
+  render_pass_filters[last_render_pass.id] = &(last_render_pass.filters);
+  SurfaceDamageRectList surface_damage_rect_list;
+  OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
+      &last_render_pass, resource_provider_.get(), &surface_damage_rect_list,
+      &color_matrix, gfx::RectF(), &render_pass_filters, context);
+
+  OverlayCandidate candidate;
+
+  for (auto* quad : last_render_pass.quad_list) {
+    auto result = candidate_factory.FromDrawQuad(quad, candidate);
+    if (result == OverlayCandidate::CandidateStatus::kFailNotAxisAligned ||
+        result ==
+            OverlayCandidate::CandidateStatus::kFailNotAxisAligned3dTransform ||
+        result ==
+            OverlayCandidate::CandidateStatus::kFailNotAxisAligned2dShear ||
+        result ==
+            OverlayCandidate::CandidateStatus::kFailNotAxisAligned2dRotation) {
+      num_nonaligned_quads++;
+    }
+
+    if (result != OverlayCandidate::CandidateStatus::kSuccess) {
+      num_failed_candidate++;
+    }
+
+    if (!candidate.rounded_corners.IsEmpty()) {
+      num_roundedcorners_quads++;
+    }
+    if (!candidate.is_opaque) {
+      num_nonopaque_quads++;
+    }
+    if (absl::get<gfx::OverlayTransform>(candidate.transform) !=
+        gfx::OVERLAY_TRANSFORM_NONE) {
+      num_transformation_quads++;
+    }
+    if (candidate.is_solid_color) {
+      num_solid_quads++;
+    }
+    auto rect = OverlayCandidate::DisplayRectInTargetSpace(candidate);
+    if (IsNearestRectWithinDistance(rect,
+                                    std::numeric_limits<float>::epsilon())) {
+      num_nonpixelaligned_quads++;
+    }
+    UMA_HISTOGRAM_ENUMERATION(
+        "Compositing.Display.Draw.LastPass.Quads.ColorSpacePrimaryID",
+        candidate.color_space.GetPrimaryID());
+    UMA_HISTOGRAM_ENUMERATION(
+        "Compositing.Display.Draw.LastPass.Quads.ColorSpaceTransferID",
+        candidate.color_space.GetTransferID());
+    UMA_HISTOGRAM_ENUMERATION(
+        "Compositing.Display.Draw.LastPass.Quads.BufferFormat",
+        candidate.format);
+    gfx::RectF uv_rect = candidate.uv_rect;
+    candidate_factory.HandleClipAndSubsampling(candidate);
+    if (uv_rect != candidate.uv_rect) {
+      num_scaled_quads++;
+    }
+  }
+
+  UMA_HISTOGRAM_COUNTS_100("Compositing.Display.Draw.LastPass.Quads",
+                           last_render_pass.quad_list.size());
+  UMA_HISTOGRAM_COUNTS_100("Compositing.Display.Draw.LastPass.Quads.NonOpaque",
+                           num_nonopaque_quads);
+  UMA_HISTOGRAM_COUNTS_100(
+      "Compositing.Display.Draw.LastPass.Quads.RoundedCorners",
+      num_roundedcorners_quads);
+  UMA_HISTOGRAM_COUNTS_100("Compositing.Display.Draw.Quads.Transformations",
+                           num_transformation_quads);
+  UMA_HISTOGRAM_COUNTS_100("Compositing.Display.Draw.Quads.NonAligned",
+                           num_nonaligned_quads);
+  UMA_HISTOGRAM_COUNTS_100("Compositing.Display.Draw.Quads.NonPixelAligned",
+                           num_nonpixelaligned_quads);
+  UMA_HISTOGRAM_COUNTS_100("Compositing.Display.Draw.Quads.SolidColor",
+                           num_solid_quads);
+  UMA_HISTOGRAM_COUNTS_100("Compositing.Display.Draw.Quads.Scaled",
+                           num_scaled_quads);
+  UMA_HISTOGRAM_COUNTS_100("Compositing.Display.Draw.Quads.FailedCandidate",
+                           num_failed_candidate);
+
+  UMA_HISTOGRAM_COUNTS_1M("Compositing.Display.Draw.Quads.LoggingTimeUs",
+                          logging_timer.Elapsed().InMicroseconds());
+}
+
 bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
   TRACE_EVENT0("viz", "Display::DrawAndSwap");
   if (debug_settings_->show_aggregated_damage !=
@@ -807,6 +921,11 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
   gfx::Size surface_size;
   bool have_damage = false;
   auto& last_render_pass = *frame.render_pass_list.back();
+
+  // log quad types every so often if experiment and n-th frame
+  if (features::ShouldLogFrameQuadInfo()) {
+    MaybeLogQuadsProperties(last_render_pass);
+  }
 
   // The CompositorFrame provided by the SurfaceAggregator includes the display
   // transform while |current_surface_size_| is the pre-transform size received
