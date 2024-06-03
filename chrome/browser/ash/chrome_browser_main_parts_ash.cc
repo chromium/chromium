@@ -124,6 +124,7 @@
 #include "chrome/browser/ash/net/network_pref_state_observer.h"
 #include "chrome/browser/ash/net/network_throttling_observer.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
+#include "chrome/browser/ash/net/secure_dns_manager.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/browser/ash/net/traffic_counters_handler.h"
 #include "chrome/browser/ash/network_change_manager_client.h"
@@ -1290,6 +1291,13 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     login_screen_extensions_storage_cleaner_ =
         std::make_unique<LoginScreenExtensionsStorageCleaner>();
 
+    // Initialize a local state observer for secure DNS (DNS-over-HTTPS).
+    // The lifetime of the class should match the browser's lifetime for its
+    // secure DNS settings UI. This is only modifiable when a user (including
+    // guest) is logged in, but is active for the entire browser session.
+    secure_dns_manager_ =
+        std::make_unique<SecureDnsManager>(g_browser_process->local_state());
+
     ash::ShillManagerClient::Get()->SetProperty(
         shill::kEnableRFC8925Property,
         base::Value(base::FeatureList::IsEnabled(features::kEnableRFC8925)),
@@ -1544,6 +1552,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   // We should remove observers attached to D-Bus clients before
   // DBusThreadManager is shut down.
+  secure_dns_manager_.reset();
   network_pref_state_observer_.reset();
   power_metrics_reporter_.reset();
   renderer_freezer_.reset();
