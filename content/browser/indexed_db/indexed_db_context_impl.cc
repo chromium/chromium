@@ -1026,6 +1026,10 @@ void IndexedDBContextImpl::ForEachBucketContext(
   for (auto& [bucket_id, bucket_context] : bucket_contexts_) {
     bucket_context->RunInstanceClosure(for_each_bucket_context_);
   }
+  for (auto& [bucket_id, bucket_context] : bucket_contexts_sharded_) {
+    bucket_context.AsyncCall(&IndexedDBBucketContext::RunInstanceClosure)
+        .WithArgs(for_each_bucket_context_);
+  }
 }
 
 void IndexedDBContextImpl::GetInMemorySize(
