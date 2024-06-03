@@ -28,7 +28,6 @@ struct GpuDevice {
   string device_string;
   string driver_vendor;
   string driver_version;
-  int32 cuda_compute_capability_major;
   [EnableIf=is_win]
   Luid luid;
   gl.mojom.GpuPreference gpu_preference;

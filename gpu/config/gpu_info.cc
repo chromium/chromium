@@ -35,8 +35,6 @@ void EnumerateGPUDevice(const gpu::GPUInfo::GPUDevice& device,
   enumerator->AddString("deviceString", device.device_string);
   enumerator->AddString("driverVendor", device.driver_vendor);
   enumerator->AddString("driverVersion", device.driver_version);
-  enumerator->AddInt("cudaComputeCapabilityMajor",
-                     device.cuda_compute_capability_major);
   enumerator->AddInt("gpuPreference", static_cast<int>(device.gpu_preference));
   enumerator->EndGPUDevice();
 }

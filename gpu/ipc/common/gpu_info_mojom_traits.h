@@ -74,11 +74,6 @@ struct GPU_EXPORT
     return input.driver_version;
   }
 
-  static int cuda_compute_capability_major(
-      const gpu::GPUInfo::GPUDevice& input) {
-    return input.cuda_compute_capability_major;
-  }
-
   static gl::GpuPreference gpu_preference(
       const gpu::GPUInfo::GPUDevice& input) {
     return input.gpu_preference;

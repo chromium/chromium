@@ -317,10 +317,6 @@ struct GPU_EXPORT GPUInfo {
     std::string driver_vendor;
     std::string driver_version;
 
-    // NVIDIA CUDA compute capability, major version. 0 if undetermined. Can be
-    // used to determine the hardware generation that the GPU belongs to.
-    int cuda_compute_capability_major = 0;
-
     // If this device is identified as high performance or low power GPU.
     gl::GpuPreference gpu_preference = gl::GpuPreference::kNone;
   };
