@@ -41,7 +41,11 @@ build_webui_tests("build") {
   }
 
   if (chrome_root_store_cert_management_ui) {
-    files += [ "certificate_manager_v2_test.ts" ]
+    files += [
+      "certificate_manager_v2_focus_test.ts",
+      "certificate_manager_v2_test.ts",
+      "certificate_manager_v2_test_support.ts",
+    ]
   }
 
   ts_definitions = [
