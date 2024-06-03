@@ -438,11 +438,12 @@ std::unique_ptr<View> ColorChooser::BuildView() {
   auto container = std::make_unique<View>();
   container->SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kHorizontal, gfx::Insets(), kMarginWidth));
-  saturation_value_ = container->AddChildView(
-      std::make_unique<SaturationValueView>(base::BindRepeating(
-          &ColorChooser::OnSaturationValueChosen, this->AsWeakPtr())));
-  hue_ = container->AddChildView(std::make_unique<HueView>(
-      base::BindRepeating(&ColorChooser::OnHueChosen, this->AsWeakPtr())));
+  saturation_value_ =
+      container->AddChildView(std::make_unique<SaturationValueView>(
+          base::BindRepeating(&ColorChooser::OnSaturationValueChosen,
+                              weak_ptr_factory_.GetWeakPtr())));
+  hue_ = container->AddChildView(std::make_unique<HueView>(base::BindRepeating(
+      &ColorChooser::OnHueChosen, weak_ptr_factory_.GetWeakPtr())));
   view->AddChildView(std::move(container));
 
   auto container2 = std::make_unique<View>();
@@ -547,8 +548,8 @@ std::unique_ptr<WidgetDelegate> ColorChooser::MakeWidgetDelegate() {
   delegate->SetContentsView(BuildView());
   delegate->SetInitiallyFocusedView(textfield_);
   delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
-  delegate->RegisterWindowClosingCallback(
-      base::BindOnce(&ColorChooser::OnViewClosing, this->AsWeakPtr()));
+  delegate->RegisterWindowClosingCallback(base::BindOnce(
+      &ColorChooser::OnViewClosing, weak_ptr_factory_.GetWeakPtr()));
 
   return delegate;
 }

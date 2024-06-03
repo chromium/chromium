@@ -30,13 +30,7 @@ class LayerAnimationObserver;
 //
 // TODO(vollick) Create a 'blended' sequence for transitioning between
 // sequences.
-// TODO(vollick) Eventually, the LayerAnimator will switch to a model where new
-// work is scheduled rather than calling methods directly. This should make it
-// impossible for temporary pointers to running animations to go stale. When
-// this happens, there will be no need for LayerAnimationSequences to support
-// weak pointers.
-class COMPOSITOR_EXPORT LayerAnimationSequence
-    : public base::SupportsWeakPtr<LayerAnimationSequence> {
+class COMPOSITOR_EXPORT LayerAnimationSequence {
  public:
   LayerAnimationSequence();
   // Takes ownership of the given element and adds it to the sequence.
@@ -145,6 +139,10 @@ class COMPOSITOR_EXPORT LayerAnimationSequence
 
   std::string ToString() const;
 
+  base::WeakPtr<LayerAnimationSequence> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   friend class LayerAnimatorTestController;
 
@@ -206,6 +204,13 @@ class COMPOSITOR_EXPORT LayerAnimationSequence
   // Tracks the last_progressed_fraction() of the most recently progressed
   // element.
   double last_progressed_fraction_;
+
+  // TODO(vollick) Eventually, the LayerAnimator will switch to a model where
+  // new work is scheduled rather than calling methods directly. This should
+  // make it impossible for temporary pointers to running animations to go
+  // stale. When this happens, there will be no need for LayerAnimationSequences
+  // to support weak pointers.
+  base::WeakPtrFactory<LayerAnimationSequence> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

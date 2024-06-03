@@ -74,10 +74,8 @@ class MenuControllerUITest;
 // MenuController is used internally by the various menu classes to manage
 // showing, selecting and drag/drop for menus. All relevant events are
 // forwarded to the MenuController from SubmenuView and MenuHost.
-class VIEWS_EXPORT MenuController
-    : public base::SupportsWeakPtr<MenuController>,
-      public gfx::AnimationDelegate,
-      public WidgetObserver {
+class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
+                                          public WidgetObserver {
  public:
   // Enumeration of how the menu should exit.
   enum class ExitType {
@@ -304,6 +302,10 @@ class VIEWS_EXPORT MenuController
         std::move(show_menu_host_duration_histogram_);
     show_menu_host_duration_histogram_.reset();
     return value;
+  }
+
+  base::WeakPtr<MenuController> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
@@ -841,6 +843,8 @@ class VIEWS_EXPORT MenuController
   // A histogram name for recording the time from menu host initialization to
   // its successful presentation
   std::optional<std::string> show_menu_host_duration_histogram_;
+
+  base::WeakPtrFactory<MenuController> weak_ptr_factory_{this};
 };
 
 }  // namespace views

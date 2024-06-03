@@ -120,9 +120,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenManager {
   // Implements a cancelable |OAuth2AccessTokenManager::Request|, which should
   // be operated on the UI thread.
   // TODO(davidroche): move this out of header file.
-  class COMPONENT_EXPORT(GOOGLE_APIS) RequestImpl
-      : public base::SupportsWeakPtr<RequestImpl>,
-        public Request {
+  class COMPONENT_EXPORT(GOOGLE_APIS) RequestImpl final : public Request {
    public:
     // |consumer| is required to outlive this.
     RequestImpl(const CoreAccountId& account_id, Consumer* consumer);
@@ -138,12 +136,18 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenManager {
         const GoogleServiceAuthError& error,
         const OAuth2AccessTokenConsumer::TokenResponse& token_response);
 
+    base::WeakPtr<RequestImpl> AsWeakPtr() {
+      return weak_ptr_factory_.GetWeakPtr();
+    }
+
    private:
     const CoreAccountId account_id_;
     // |consumer_| to call back when this request completes.
     const raw_ptr<Consumer, DanglingUntriaged> consumer_;
 
     SEQUENCE_CHECKER(sequence_checker_);
+
+    base::WeakPtrFactory<RequestImpl> weak_ptr_factory_{this};
   };
 
   // Classes that want to monitor status of access token and access token

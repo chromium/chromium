@@ -85,10 +85,10 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
     base::TimeTicks page_change_time;
   };
 
-  class State : public base::SupportsWeakPtr<State> {
+  class State final {
    public:
     State();
-    virtual ~State();
+    ~State();
 
     Signals signals;
     std::u16string initial_text_value;
@@ -99,6 +99,11 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
     bool timer_complete = false;
 
     ShowState show_state = ShowState::kWaitingForTimer;
+
+    base::WeakPtr<State> AsWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
+
+   private:
+    base::WeakPtrFactory<State> weak_ptr_factory_{this};
   };
 
   ProactiveNudgeTracker(
