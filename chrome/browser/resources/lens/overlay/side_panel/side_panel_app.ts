@@ -52,6 +52,11 @@ export class LensSidePanelAppElement extends PolymerElement {
         value: false,
         reflectToAttribute: true,
       },
+      /* Used to decide whether to show back arrow onFocusOut in searchbox. */
+      wasBackArrowAvailable: {
+        type: Boolean,
+        value: false,
+      },
       isLoadingResults: {
         type: Boolean,
         value: true,
@@ -85,11 +90,21 @@ export class LensSidePanelAppElement extends PolymerElement {
   private darkMode: boolean;
   private listenerIds: number[];
   private pageHandler: LensSidePanelPageHandlerInterface;
+  private wasBackArrowAvailable: boolean;
 
   constructor() {
     super();
     this.pageHandler = SidePanelBrowserProxyImpl.getInstance().handler;
     ColorChangeUpdater.forDocument().start();
+  }
+
+  override ready() {
+    super.ready();
+
+    this.shadowRoot!.querySelector<HTMLElement>('cr-realbox')
+        ?.addEventListener('focusin', () => this.onSearchboxFocusIn_());
+    this.shadowRoot!.querySelector<HTMLElement>('cr-realbox')
+        ?.addEventListener('focusout', () => this.onSearchboxFocusOut_());
   }
 
   override connectedCallback() {
@@ -147,6 +162,15 @@ export class LensSidePanelAppElement extends PolymerElement {
 
   private setBackArrowVisible(visible: boolean) {
     this.isBackArrowVisible = visible;
+    this.wasBackArrowAvailable = visible;
+  }
+
+  private onSearchboxFocusIn_() {
+    this.isBackArrowVisible = false;
+  }
+
+  private onSearchboxFocusOut_() {
+    this.isBackArrowVisible = this.wasBackArrowAvailable;
   }
 }
 

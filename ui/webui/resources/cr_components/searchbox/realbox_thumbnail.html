@@ -4,54 +4,57 @@
     display: flex;
     flex-shrink: 0;
     justify-content: center;
-    width: 32px;
     outline: none;
   }
 
   #container {
     align-items: center;
     aspect-ratio: 1 / 1;
-    border-radius: 12px;;
+    border-radius: 12px;
     display: flex;
     justify-content: center;
     overflow: hidden;
     position: relative;
-    width: 100%;
+    width: 48px;
+    height: 40px;
   }
 
   #image {
     display: initial;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     width: 100%;
   }
 
+  /* TODO(b/328294049): Switch all hard-coded colors to CSS color tokens. */
   .overlay {
     position: absolute;
     z-index: 101;
     justify-content: center;
     align-items: center;
-    background-color: #B3CEFB;
+    background-color: #0000000D;
     border-radius: 12px;
-    display: none;
-  }
-
-  /* TODO(b/328294049): Switch all hard-coded colors to CSS color tokens. */
-  :host-context([dark-mode]) .overlay {
-    background-color: #4B5C77;
+    display: flex;
+    width: 100%;
+    height: 100%;
   }
 
   :host(:hover) .overlay,
   :host(:focus-visible) .overlay {
+    background-color: #4285F466;
+  }
+
+  #remove {
+    display: none;
+  }
+
+  :host(:hover) #remove,
+  :host(:focus-visible) #remove {
     display: flex;
   }
 
   :host(:focus-visible) #container {
     box-shadow: 0 0 0 3px #4285F4;
-  }
-
-  :host-context([dark-mode]):host(:focus-visibile) #container {
-    box-shadow: 0 0 0 3px #8CB7FA;
   }
 
   #remove {
