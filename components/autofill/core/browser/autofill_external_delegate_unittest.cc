@@ -453,7 +453,7 @@ TEST_F(AutofillExternalDelegateUnitTest, GetMainFillingProduct) {
        test::CreateAutofillSuggestion(SuggestionType::kAutofillOptions,
                                       u"manage address methods")});
   EXPECT_EQ(external_delegate().GetMainFillingProduct(),
-            FillingProduct::kAddress);
+            FillingProduct::kPlusAddresses);
 
   // Show fill plus address suggestion in the popup.
   external_delegate().OnSuggestionsReturned(
@@ -463,7 +463,7 @@ TEST_F(AutofillExternalDelegateUnitTest, GetMainFillingProduct) {
        test::CreateAutofillSuggestion(SuggestionType::kAutofillOptions,
                                       u"manage address methods")});
   EXPECT_EQ(external_delegate().GetMainFillingProduct(),
-            FillingProduct::kAddress);
+            FillingProduct::kPlusAddresses);
 
   // Show credit card suggestion in the popup.
   external_delegate().OnSuggestionsReturned(

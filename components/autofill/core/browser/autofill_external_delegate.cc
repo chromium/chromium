@@ -594,6 +594,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       // User selected 'Autofill Options'.
       const FillingProduct main_filling_product = GetMainFillingProduct();
       CHECK(main_filling_product == FillingProduct::kAddress ||
+            main_filling_product == FillingProduct::kPlusAddresses ||
             main_filling_product == FillingProduct::kCreditCard ||
             main_filling_product == FillingProduct::kIban);
       autofill_metrics::LogAutofillSelectedManageEntry(main_filling_product);
@@ -802,19 +803,20 @@ void AutofillExternalDelegate::ClearPreviewedForm() {
 }
 
 FillingProduct AutofillExternalDelegate::GetMainFillingProduct() const {
+  bool has_plus_address_suggestion = false;
   for (SuggestionType type : shown_suggestion_types_) {
     if (FillingProduct product = GetFillingProductFromSuggestionType(type);
         product != FillingProduct::kNone) {
-      // Plus address filling product is not considered a stand-alone filling
-      // product.
-      // TODO(b/331364160): Consider removing separate filling product.
-      if (product == FillingProduct::kPlusAddresses) {
-        return FillingProduct::kAddress;
+      // Plus address is considered to be the main filling product of the popup
+      // only if it is the only fillable type in the suggestions list.
+      if (product != FillingProduct::kPlusAddresses) {
+        return product;
       }
-      return product;
+      has_plus_address_suggestion = true;
     }
   }
-  return FillingProduct::kNone;
+  return has_plus_address_suggestion ? FillingProduct::kPlusAddresses
+                                     : FillingProduct::kNone;
 }
 
 base::WeakPtr<AutofillExternalDelegate> AutofillExternalDelegate::GetWeakPtr() {

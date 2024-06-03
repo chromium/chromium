@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -61,6 +62,7 @@
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
+#include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
@@ -485,6 +487,15 @@ void ChromeAutofillClient::ShowAutofillSettings(
       case FillingProduct::kAddress:
         chrome::ShowSettingsSubPage(browser, chrome::kAddressesSubPage);
         return;
+      case FillingProduct::kPlusAddresses:
+        CHECK(base::FeatureList::IsEnabled(
+            plus_addresses::features::kPlusAddressesEnabled));
+        CHECK(base::FeatureList::IsEnabled(
+            plus_addresses::features::kPlusAddressUIRedesign));
+        ShowSingletonTab(
+            browser,
+            GURL(plus_addresses::features::kPlusAddressManagementUrl.Get()));
+        return;
       case FillingProduct::kCreditCard:
       case FillingProduct::kIban:
         chrome::ShowSettingsSubPage(browser, chrome::kPaymentsSubPage);
@@ -493,7 +504,6 @@ void ChromeAutofillClient::ShowAutofillSettings(
       case FillingProduct::kCompose:
       case FillingProduct::kMerchantPromoCode:
       case FillingProduct::kPassword:
-      case FillingProduct::kPlusAddresses:
       case FillingProduct::kNone:
         NOTREACHED_IN_MIGRATION();
     }

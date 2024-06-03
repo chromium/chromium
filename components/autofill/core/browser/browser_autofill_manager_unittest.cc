@@ -7949,9 +7949,12 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
        CreatePlusAddressSuggestionShown) {
   using enum AutofillPlusAddressDelegate::SuggestionContext;
   using enum AutofillClient::PasswordFormType;
+  personal_data().test_address_data_manager().ClearProfiles();
   EXPECT_CALL(plus_address_delegate(), GetSuggestions)
       .WillOnce(RunOnceCallback<5>(std::vector<Suggestion>{
           Suggestion(SuggestionType::kCreateNewPlusAddress)}));
+  EXPECT_CALL(plus_address_delegate(), GetManagePlusAddressSuggestion)
+      .WillOnce(Return(Suggestion(SuggestionType::kAutofillOptions)));
   EXPECT_CALL(
       plus_address_delegate(),
       OnPlusAddressSuggestionShown(
@@ -7972,8 +7975,9 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
   EXPECT_THAT(
       external_delegate()->suggestions(),
-      ElementsAre(EqualsSuggestion(SuggestionType::kCreateNewPlusAddress), _, _,
-                  _, _));
+      ElementsAre(EqualsSuggestion(SuggestionType::kCreateNewPlusAddress),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kAutofillOptions)));
 }
 
 // Tests that only Plus Address suggestions are shown when the trigger source is
