@@ -148,8 +148,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPrinterHandlerAdapterAshBrowserTest,
             std::move(callback).Run(error.Clone());
           },
           print_future.GetCallback()));
-
-  EXPECT_EQ(print_future.Get(), base::Value("OK"));
+  // A successful print job should return a none value.
+  EXPECT_TRUE(print_future.Get().is_none());
 }
 
 // Verifies StartGrantPrinterAccess returns print info.

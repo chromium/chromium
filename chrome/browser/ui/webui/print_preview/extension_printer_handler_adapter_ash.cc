@@ -64,8 +64,11 @@ void ExtensionPrinterHandlerAdapterAsh::StartPrint(
       job_title, std::move(settings), print_data,
       base::BindOnce(
           [](PrintCallback callback, StartPrintStatus status) {
+            // When the status is OK, print preview UI expects a none value.
             std::move(callback).Run(
-                base::Value(StartPrintStatusToString(status)));
+                status == StartPrintStatus::KOk
+                    ? base::Value()
+                    : base::Value(StartPrintStatusToString(status)));
           },
           std::move(callback)));
 }

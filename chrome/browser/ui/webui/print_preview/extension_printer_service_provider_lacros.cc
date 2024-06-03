@@ -32,6 +32,10 @@ StartPrintStatus ToStartPrintStatus(const base::Value& status) {
            {"INVALID_TICKET", StartPrintStatus::kInvalidTicket},
            {"INVALID_DATA", StartPrintStatus::kInvalidData}});
 
+  // Extension printer handler returns a none value when print status is "OK".
+  if (status.is_none()) {
+    return StartPrintStatus::KOk;
+  }
   const auto it = string_to_status_map->find(status.GetString());
   return it != string_to_status_map->end() ? it->second
                                            : StartPrintStatus::kUnknown;

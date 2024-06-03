@@ -263,8 +263,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPrinterServiceProviderLacrosBrowserTest,
         captured_job_title = job_title;
         captured_settings = std::move(settings);
         captured_print_data = print_data;
-        // Simulate a successful print job. "OK" means successful.
-        std::move(callback).Run(base::Value("OK"));
+        // Simulate a successful print job. An empty value means successful.
+        std::move(callback).Run(base::Value());
       });
 
   // Prepares test data.
