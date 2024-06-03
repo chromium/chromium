@@ -17,7 +17,6 @@
 #include "base/location.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/host/gpu_host_impl.h"
@@ -284,8 +283,6 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
 #endif
 
   std::unique_ptr<viz::GpuHostImpl> gpu_host_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<GpuProcessHost> weak_ptr_factory_{this};
 };
