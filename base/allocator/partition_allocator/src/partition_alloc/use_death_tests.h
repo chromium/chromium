@@ -7,10 +7,15 @@
 
 // Test-only header. This must be separated from the main body of
 // `partition_alloc_config.h` because the preprocessor evaluates it too
-// early leaving `GTEST_HAS_DEATH_TEST` undefined. This makes the
+// early, leaving `GTEST_HAS_DEATH_TEST` undefined. This makes the
 // corresponding `PA_CONFIG()` yield the wrong result.
 
 #include "partition_alloc/build_config.h"
+
+// `GTEST_HAS_DEATH_TEST` is `#define`d by Googletest headers.
+// Therefore, Googletest headers must be textually evaluated before this
+// one, or else `GTEST_HAS_DEATH_TEST` will probably remain undefined.
+#include "testing/gtest/include/gtest/gtest.h"
 
 // An informal CQ survey
 // (https://chromium-review.googlesource.com/c/chromium/src/+/5493422/1?tab=checks)

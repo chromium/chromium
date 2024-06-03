@@ -36,6 +36,9 @@ specific_include_rules = {
     "+testing/gmock/include/gmock/gmock.h",
     "+third_party/abseil-cpp/absl/types/optional.h",
   ],
+  "use_death_tests\.h$": [
+    "+testing/gtest/include/gtest/gtest.h",
+  ],
 
   # TODO(https://crbug.com/1508847): Remove //build dependency.
   "build_config.h$": [ "+build/build_config.h" ],
