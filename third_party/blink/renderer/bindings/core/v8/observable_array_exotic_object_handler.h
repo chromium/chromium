@@ -7,9 +7,9 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
-#include "third_party/blink/renderer/bindings/core/v8/observable_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/observable_array.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -466,8 +466,8 @@ class ObservableArrayExoticObjectHandler {
   static BackingListWrappable& ToWrappableOrDie(v8::Isolate* isolate,
                                                 v8::Local<v8::Array> target) {
     bindings::ObservableArrayBase* base =
-        bindings::ObservableArrayExoticObjectImpl::
-            ProxyTargetToObservableArrayBaseOrDie(isolate, target);
+        ObservableArrayExoticObject::ProxyTargetToObservableArrayBaseOrDie(
+            isolate, target);
     return *static_cast<BackingListWrappable*>(base);
   }
 
