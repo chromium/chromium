@@ -445,7 +445,6 @@ class ScopedResetCtm {
                  cc::PaintCanvas& canvas) : canvas_(canvas) {
     if (!state.GetTransform().IsIdentity()) {
       ctm_to_restore_ = canvas_.getLocalToDevice();
-      ctm_to_restore_->dump();
       canvas_.save();
       canvas_.setMatrix(SkM44());
     }
