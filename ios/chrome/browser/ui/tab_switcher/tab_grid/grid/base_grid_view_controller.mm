@@ -1093,7 +1093,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   [self.diffableDataSource applySnapshotUsingReloadData:snapshot];
 
-  [self updateSelectedCollectionViewItemRingAndBringIntoView:YES];
+  [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
 
   if ([self shouldShowEmptyState]) {
     [self animateEmptyStateIn];
