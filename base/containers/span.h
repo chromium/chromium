@@ -618,10 +618,10 @@ class GSL_POINTER span {
   // types are themselves comparable.
   //
   // For primitive types, this replaces the less safe `memcmp` function, where
-  // `memcmp(a.data(), b.data(), a.size())` can be written as `a == b` and can
-  // no longer go outside the bounds of `b`. Otherwise, it replaced std::equal
-  // or std::ranges::equal when working with spans, and when no projection is
-  // needed.
+  // `memcmp(a.data(), b.data(), a.size()) == 0` can be written as `a == b` and
+  // can no longer go outside the bounds of `b`. Otherwise, it replaced
+  // std::equal or std::ranges::equal when working with spans, and when no
+  // projection is needed.
   //
   // If the spans are of different sizes, they are not equal. If both spans are
   // empty, they are always equal (even though their data pointers may differ).
@@ -630,7 +630,7 @@ class GSL_POINTER span {
   // The non-template overloads allow implicit conversions to span for
   // comparison.
   friend constexpr bool operator==(span lhs, span rhs)
-    requires(std::equality_comparable<const T>)
+    requires(std::is_const_v<T> && std::equality_comparable<T>)
   {
     return internal::span_cmp(span<const T, N>(lhs), span<const T, N>(rhs));
   }
@@ -1003,10 +1003,10 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
   // types are themselves comparable.
   //
   // For primitive types, this replaces the less safe `memcmp` function, where
-  // `memcmp(a.data(), b.data(), a.size())` can be written as `a == b` and can
-  // no longer go outside the bounds of `b`. Otherwise, it replaced std::equal
-  // or std::ranges::equal when working with spans, and when no projection is
-  // needed.
+  // `memcmp(a.data(), b.data(), a.size()) == 0` can be written as `a == b` and
+  // can no longer go outside the bounds of `b`. Otherwise, it replaced
+  // std::equal or std::ranges::equal when working with spans, and when no
+  // projection is needed.
   //
   // If the spans are of different sizes, they are not equal. If both spans are
   // empty, they are always equal (even though their data pointers may differ).
@@ -1015,7 +1015,7 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
   // The non-template overloads allow implicit conversions to span for
   // comparison.
   friend constexpr bool operator==(span lhs, span rhs)
-    requires(std::equality_comparable<const T>)
+    requires(std::is_const_v<T> && std::equality_comparable<T>)
   {
     return internal::span_cmp(span<const T>(lhs), span<const T>(rhs));
   }

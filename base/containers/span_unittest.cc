@@ -2126,11 +2126,12 @@ TEST(SpanTest, SplitAt) {
   EXPECT_CHECK_DEATH({ dynamic_span.split_at<4u>(); });
 }
 
-TEST(SpanTest, Compare) {
+TEST(SpanTest, CompareEquality) {
   static_assert(std::equality_comparable<int>);
   int32_t arr2[] = {1, 2};
   int32_t arr3[] = {1, 2, 3};
   int32_t rra3[] = {3, 2, 1};
+  int32_t vec3[] = {1, 2, 3};
   constexpr const int32_t arr2_c[] = {1, 2};
   constexpr const int32_t arr3_c[] = {1, 2, 3};
   constexpr const int32_t rra3_c[] = {3, 2, 1};
@@ -2310,6 +2311,12 @@ TEST(SpanTest, Compare) {
   EXPECT_TRUE(arr2_c != span(arr3).first(3u));
   EXPECT_TRUE(arr2_c == span(arr3).first(2u));
   EXPECT_TRUE(arr2_c != span(rra3).first(2u));
+
+  // Comparing mutable to mutable, there's no ambiguity about which overload to
+  // call (mutable or implicit-const).
+  EXPECT_FALSE(span(arr3) == rra3);            // Fixed size.
+  EXPECT_FALSE(span(vec3).first(2u) == vec3);  // Dynamic size.
+  EXPECT_FALSE(span(arr3).first(2u) == rra3);  // Fixed with dynamic size.
 
   // Constexpr comparison.
   static_assert(span<int>() == span<int, 0u>());
