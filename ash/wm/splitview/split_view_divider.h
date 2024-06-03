@@ -200,7 +200,7 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
 
   // The distance between the origin of `divider_widget_` and the origin
   // of the current display's work area in screen coordinates, which essentially
-  // makes it relative to the divider widget's root window.
+  // makes it relative to the divider widget's root window's work area.
   //     |<---     divider_position_    --->|
   //     ---------------------------------------------------------------
   //     |                                  | |                        |

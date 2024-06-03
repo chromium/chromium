@@ -4,6 +4,7 @@
 
 #include "ash/wm/splitview/split_view_divider_view.h"
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -258,6 +259,30 @@ ui::Cursor SplitViewDividerView::GetCursor(const ui::MouseEvent& event) {
              : ui::mojom::CursorType::kRowResize;
 }
 
+void SplitViewDividerView::OnKeyEvent(ui::KeyEvent* event) {
+  if (event->type() != ui::ET_KEY_PRESSED) {
+    return;
+  }
+  const bool horizontal = IsLayoutHorizontal(divider_->GetRootWindow());
+  const auto key_code = event->key_code();
+  switch (key_code) {
+    case ui::VKEY_LEFT:
+    case ui::VKEY_RIGHT:
+      if (horizontal) {
+        ResizeOnKeyEvent(/*left_or_top=*/key_code == ui::VKEY_LEFT, horizontal);
+      }
+      break;
+    case ui::VKEY_UP:
+    case ui::VKEY_DOWN:
+      if (!horizontal) {
+        ResizeOnKeyEvent(/*left_or_top=*/key_code == ui::VKEY_UP, horizontal);
+      }
+      break;
+    default:
+      break;
+  }
+}
+
 bool SplitViewDividerView::DoesIntersectRect(const views::View* target,
                                              const gfx::Rect& rect) const {
   DCHECK_EQ(target, this);
@@ -292,6 +317,39 @@ void SplitViewDividerView::SwapWindows() {
 void SplitViewDividerView::StartResizing(gfx::Point location) {
   CHECK(divider_);
   divider_->StartResizeWithDivider(location);
+}
+
+void SplitViewDividerView::EndResizing(gfx::Point location, bool swap_windows) {
+  CHECK(divider_);
+  // `EndResizeWithDivider()` may cause this view to be destroyed.
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+  divider_->EndResizeWithDivider(location);
+  if (!weak_ptr) {
+    return;
+  }
+
+  if (swap_windows) {
+    SwapWindows();
+  }
+}
+
+void SplitViewDividerView::ResizeOnKeyEvent(bool left_or_top, bool horizontal) {
+  CHECK(divider_);
+  const gfx::Point start_location(GetBoundsInScreen().CenterPoint());
+  StartResizing(start_location);
+  const int distance = left_or_top ? -kSplitViewDividerResizeDistance
+                                   : kSplitViewDividerResizeDistance;
+  const gfx::Point location(
+      start_location +
+      gfx::Vector2d(horizontal ? distance : 0, horizontal ? 0 : distance));
+  divider_->ResizeWithDivider(location);
+  EndResizing(location, /*swap_windows=*/false);
+  const AccessibilityAlert alert =
+      horizontal ? (left_or_top ? AccessibilityAlert::SNAP_GROUP_RESIZE_LEFT
+                                : AccessibilityAlert::SNAP_GROUP_RESIZE_RIGHT)
+                 : (left_or_top ? AccessibilityAlert::SNAP_GROUP_RESIZE_UP
+                                : AccessibilityAlert::SNAP_GROUP_RESIZE_DOWN);
+  Shell::Get()->accessibility_controller()->TriggerAccessibilityAlert(alert);
 }
 
 void SplitViewDividerView::RefreshDividerHandler(bool should_enlarge) {
@@ -368,20 +426,6 @@ void SplitViewDividerView::RefreshFeedbackButtonBounds() {
           feedback_button_size.width(), feedback_button_size.height());
     }
     feedback_button_->SetBoundsRect(feedback_button_bounds);
-  }
-}
-
-void SplitViewDividerView::EndResizing(gfx::Point location, bool swap_windows) {
-  CHECK(divider_);
-  // `EndResizeWithDivider()` may cause this view to be destroyed.
-  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
-  divider_->EndResizeWithDivider(location);
-  if (!weak_ptr) {
-    return;
-  }
-
-  if (swap_windows) {
-    SwapWindows();
   }
 }
 

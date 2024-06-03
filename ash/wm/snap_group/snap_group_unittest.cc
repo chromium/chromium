@@ -2115,10 +2115,11 @@ class SnapGroupTest : public AshTestBase {
 
     // The snap group divider will show on two windows snapped.
     EXPECT_TRUE(snap_group_divider()->divider_widget());
-    EXPECT_EQ(chromeos::kDefaultSnapRatio,
-              *WindowState::Get(window1)->snap_ratio());
-    EXPECT_EQ(chromeos::kDefaultSnapRatio,
-              *WindowState::Get(window2)->snap_ratio());
+    // There can be a slight rounding error when ChromeVox is on.
+    EXPECT_NEAR(chromeos::kDefaultSnapRatio,
+                *WindowState::Get(window1)->snap_ratio(), .01);
+    EXPECT_NEAR(chromeos::kDefaultSnapRatio,
+                *WindowState::Get(window2)->snap_ratio(), .01);
 
     gfx::Rect divider_bounds(snap_group_divider_bounds_in_screen());
     EXPECT_EQ(work_area.CenterPoint().x(), divider_bounds.CenterPoint().x());
@@ -2818,6 +2819,29 @@ TEST_F(SnapGroupTest, AutoSnapBothWindowsWithMinimumSizes) {
     EXPECT_EQ(w1_bounds.width(), w1->GetBoundsInScreen().width());
     EXPECT_FALSE(
         SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  }
+}
+
+// Tests resize via the divider with a left aligned shelf.
+TEST_F(SnapGroupTest, ResizeWithLeftShelf) {
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+
+  auto* event_generator = GetEventGenerator();
+  const gfx::Point divider_center(
+      snap_group_divider_bounds_in_screen().CenterPoint());
+  event_generator->MoveMouseTo(divider_center);
+  event_generator->PressLeftButton();
+
+  for (const int resize_delta : {-10, 6, -15}) {
+    const gfx::Point resize_point(divider_center +
+                                  gfx::Vector2d(resize_delta, 0));
+    event_generator->MoveMouseTo(resize_point, /*count=*/2);
+    EXPECT_EQ(resize_point,
+              snap_group_divider_bounds_in_screen().CenterPoint());
+    UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
   }
 }
 
@@ -7604,6 +7628,142 @@ TEST_F(SnapGroupA11yTest, DividerPaneFocus) {
   EXPECT_TRUE(focus_ring->GetBoundsInScreen().ApproximatelyEqual(
       snap_group_divider_bounds_in_screen(),
       /*tolerance=*/kFocusRingPaddingDp));
+}
+
+// Tests that the divider can be resized via the keyboard.
+TEST_F(SnapGroupA11yTest, DividerResize) {
+  TestAccessibilityControllerClient client;
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+  auto* snap_group =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w1.get());
+  ASSERT_TRUE(snap_group);
+  auto* snap_group_divider = snap_group->snap_group_divider();
+
+  auto* divider_widget = snap_group_divider->divider_widget();
+
+  // Cycle focus to the divider.
+  PressAndReleaseKey(ui::VKEY_BROWSER_BACK, ui::EF_CONTROL_DOWN);
+  ASSERT_TRUE(divider_widget->IsActive());
+  gfx::Point divider_center =
+      snap_group_divider_bounds_in_screen().CenterPoint();
+
+  // Resize left.
+  PressAndReleaseKey(ui::VKEY_LEFT);
+  EXPECT_EQ(divider_center + gfx::Vector2d(-kSplitViewDividerResizeDistance, 0),
+            snap_group_divider_bounds_in_screen().CenterPoint());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
+  EXPECT_EQ(AccessibilityAlert::SNAP_GROUP_RESIZE_LEFT,
+            client.last_a11y_alert());
+
+  // Resize right.
+  PressAndReleaseKey(ui::VKEY_RIGHT);
+  EXPECT_EQ(divider_center,
+            snap_group_divider_bounds_in_screen().CenterPoint());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
+  EXPECT_EQ(AccessibilityAlert::SNAP_GROUP_RESIZE_RIGHT,
+            client.last_a11y_alert());
+
+  // 2. Test with horizontal secondary display.
+  UpdateDisplay("800x600/u");
+  divider_center = snap_group_divider_bounds_in_screen().CenterPoint();
+
+  // Resize left.
+  PressAndReleaseKey(ui::VKEY_LEFT);
+  EXPECT_EQ(divider_center + gfx::Vector2d(-kSplitViewDividerResizeDistance, 0),
+            snap_group_divider_bounds_in_screen().CenterPoint());
+  UnionBoundsEqualToWorkAreaBounds(w2.get(), w1.get(), snap_group_divider);
+  EXPECT_EQ(AccessibilityAlert::SNAP_GROUP_RESIZE_LEFT,
+            client.last_a11y_alert());
+
+  // Resize right.
+  PressAndReleaseKey(ui::VKEY_RIGHT);
+  EXPECT_EQ(divider_center,
+            snap_group_divider_bounds_in_screen().CenterPoint());
+  UnionBoundsEqualToWorkAreaBounds(w2.get(), w1.get(), snap_group_divider);
+  EXPECT_EQ(AccessibilityAlert::SNAP_GROUP_RESIZE_RIGHT,
+            client.last_a11y_alert());
+
+  // 3. Test with vertical display.
+  UpdateDisplay("600x800");
+  divider_center = snap_group_divider_bounds_in_screen().CenterPoint();
+
+  // Resize up.
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_EQ(divider_center + gfx::Vector2d(0, -kSplitViewDividerResizeDistance),
+            snap_group_divider_bounds_in_screen().CenterPoint());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
+  EXPECT_EQ(AccessibilityAlert::SNAP_GROUP_RESIZE_UP, client.last_a11y_alert());
+
+  // Resize down.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_EQ(divider_center,
+            snap_group_divider_bounds_in_screen().CenterPoint());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
+  EXPECT_EQ(AccessibilityAlert::SNAP_GROUP_RESIZE_DOWN,
+            client.last_a11y_alert());
+
+  // 4. Test with vertical secondary display.
+  UpdateDisplay("600x800/u");
+  divider_center = snap_group_divider_bounds_in_screen().CenterPoint();
+
+  // Resize up.
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_EQ(divider_center + gfx::Vector2d(0, -kSplitViewDividerResizeDistance),
+            snap_group_divider_bounds_in_screen().CenterPoint());
+  UnionBoundsEqualToWorkAreaBounds(w2.get(), w1.get(), snap_group_divider);
+  EXPECT_EQ(AccessibilityAlert::SNAP_GROUP_RESIZE_UP, client.last_a11y_alert());
+
+  // Resize down.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_EQ(divider_center,
+            snap_group_divider_bounds_in_screen().CenterPoint());
+  UnionBoundsEqualToWorkAreaBounds(w2.get(), w1.get(), snap_group_divider);
+  EXPECT_EQ(AccessibilityAlert::SNAP_GROUP_RESIZE_DOWN,
+            client.last_a11y_alert());
+}
+
+// Tests that resize vertically works with ChromeVox on.
+TEST_F(SnapGroupA11yTest, ResizeVertical) {
+  UpdateDisplay("600x800");
+  const gfx::Rect work_area_without_cvox(work_area_bounds());
+
+  // Simulate enabling ChromeVox.
+  const int kAccessibilityPanelHeight = 45;
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(nullptr, kShellWindowId_AccessibilityPanelContainer);
+  SetAccessibilityPanelHeight(kAccessibilityPanelHeight);
+  Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
+  const gfx::Rect work_area_with_cvox(work_area_bounds());
+  ASSERT_NE(work_area_without_cvox, work_area_with_cvox);
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/false);
+  auto* snap_group =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w1.get());
+  ASSERT_TRUE(snap_group);
+  auto* snap_group_divider = snap_group->snap_group_divider();
+  const gfx::Point divider_center =
+      snap_group_divider_bounds_in_screen().CenterPoint();
+
+  // Note that the divider widget bounds are in screen, but `divider_position`
+  // is relative to the work area.
+  ASSERT_EQ(work_area_with_cvox.CenterPoint(), divider_center);
+  ASSERT_EQ(snap_group_divider_bounds_in_screen().y() - work_area_with_cvox.y(),
+            snap_group_divider->divider_position());
+
+  // Cycle focus to the divider.
+  PressAndReleaseKey(ui::VKEY_BROWSER_BACK, ui::EF_CONTROL_DOWN);
+  ASSERT_TRUE(snap_group_divider->divider_widget()->IsActive());
+
+  // Resize up.
+  ASSERT_EQ(work_area_bounds().CenterPoint(), divider_center);
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_EQ(divider_center + gfx::Vector2d(0, -kSplitViewDividerResizeDistance),
+            snap_group_divider_bounds_in_screen().CenterPoint());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
 }
 
 // -----------------------------------------------------------------------------

@@ -6511,7 +6511,7 @@ Here are some things you can try to get started.
         Split view divider
       </message>
       <message name="IDS_ASH_SNAP_GROUP_DIVIDER_A11Y_DESCRIPTION" translateable="false" desc="Accessible description of the snap group divider">
-        Use left and right arrows to resize split screen
+        Use left and right or up and down arrows to resize split screen
       </message>
 
       <!-- Switch Between TABLET/LAPTOP MODE-->

@@ -210,10 +210,15 @@ void SplitViewDivider::UpdateDividerPosition(
     // will clamp the position between the windows' minimum sizes.
     gfx::Point location_in_root(location_in_screen);
     wm::ConvertPointFromScreen(root, &location_in_root);
+    // Note `divider_position` needs to be relative to the work area to get the
+    // correct bounds in `GetDividerBoundsInScreen()`.
+    gfx::Rect work_area = GetWorkAreaBoundsInScreen(root);
+    wm::ConvertRectFromScreen(root, &work_area);
     SetDividerPosition(
-        horizontal
-            ? location_in_root.x() - kSplitviewDividerShortSideLength / 2
-            : location_in_root.y() - kSplitviewDividerShortSideLength / 2);
+        horizontal ? location_in_root.x() -
+                         kSplitviewDividerShortSideLength / 2 - work_area.x()
+                   : location_in_root.y() -
+                         kSplitviewDividerShortSideLength / 2 - work_area.y());
     return;
   }
 
@@ -256,6 +261,7 @@ void SplitViewDivider::StartResizeWithDivider(
   EnlargeOrShrinkDivider(/*should_enlarge=*/true);
   previous_event_location_ = location_in_screen;
 
+  UpdateDividerPosition(location_in_screen);
   controller_->StartResizeWithDivider(location_in_screen);
 
   for (aura::Window* window : observed_windows_) {

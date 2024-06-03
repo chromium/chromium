@@ -57,6 +57,7 @@ class SplitViewDividerView : public views::AccessiblePaneView,
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   ui::Cursor GetCursor(const ui::MouseEvent& event) override;
+  void OnKeyEvent(ui::KeyEvent* event) override;
 
   // views::ViewTargeterDelegate:
   bool DoesIntersectRect(const views::View* target,
@@ -82,6 +83,9 @@ class SplitViewDividerView : public views::AccessiblePaneView,
   // Safely ends resizing, preventing use after destruction. If
   // `swap_windows` is true, swaps the windows after resizing.
   void EndResizing(gfx::Point location, bool swap_windows);
+
+  // Resizes the windows and divider on a key event.
+  void ResizeOnKeyEvent(bool left_or_top, bool horizontal);
 
   // Refreshes the divider handler's bounds and rounded corners  in response to
   // changes in the divider's dimensions or display properties.

@@ -74,6 +74,10 @@ inline constexpr float kMinDividerPositionRatio = 0.15f;
 // make it easier to handle located event.
 inline constexpr int kSplitViewDividerExtraInset = 8;
 
+// The distance that the divider and windows are resized by when the divider is
+// resized via the keyboard.
+inline constexpr int kSplitViewDividerResizeDistance = 10;
+
 }  // namespace ash
 
 #endif  // ASH_WM_SPLITVIEW_SPLIT_VIEW_CONSTANTS_H_

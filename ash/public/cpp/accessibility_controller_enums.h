@@ -45,7 +45,13 @@ enum class AccessibilityAlert {
   SAVED_DESKS_MODE_ENTERED,
 
   // When the user enters faster split screen setup session.
-  FASTER_SPLIT_SCREEN_SETUP
+  FASTER_SPLIT_SCREEN_SETUP,
+
+  // When the user resizes a snap group via arrow keys.
+  SNAP_GROUP_RESIZE_LEFT,
+  SNAP_GROUP_RESIZE_RIGHT,
+  SNAP_GROUP_RESIZE_UP,
+  SNAP_GROUP_RESIZE_DOWN,
 };
 
 enum class AccessibilityPanelState {
