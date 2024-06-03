@@ -49,6 +49,7 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
@@ -87,6 +88,9 @@ constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(200);
 enum class PickerFeatureKeyType { kNone, kDev, kTest };
 
 constexpr int kMaxRecentFiles = 10;
+constexpr int kMaxRecentEmoji = 20;
+
+constexpr std::string_view kEmojiHistoryValueFieldName = "text";
 
 PickerFeatureKeyType MatchPickerFeatureKeyHash() {
   // Command line looks like:
@@ -457,6 +461,22 @@ void PickerController::InsertResultOnNextFocus(
     return;
   }
 
+  // Update emoji history in prefs the result is an emoji/symbol/emoticon.
+  std::visit(
+      base::Overloaded{
+          [&](const PickerSearchResult::EmojiData& data) {
+            UpdateRecentEmoji(ui::EmojiPickerCategory::kEmojis, data.emoji);
+          },
+          [&](const PickerSearchResult::SymbolData& data) {
+            UpdateRecentEmoji(ui::EmojiPickerCategory::kSymbols, data.symbol);
+          },
+          [&](const PickerSearchResult::EmoticonData& data) {
+            UpdateRecentEmoji(ui::EmojiPickerCategory::kEmoticons,
+                              data.emoticon);
+          },
+          [](const auto& data) {}},
+      result.data());
+
   std::visit(
       base::Overloaded{
           [&](PickerRichMedia media) {
@@ -650,7 +670,8 @@ std::vector<std::string> PickerController::GetRecentEmoji(
     if (value_dict == nullptr) {
       continue;
     }
-    const std::string* text = value_dict->FindString("text");
+    const std::string* text =
+        value_dict->FindString(kEmojiHistoryValueFieldName);
     if (text != nullptr) {
       results.push_back(*text);
     }
@@ -673,6 +694,32 @@ void PickerController::FetchFileThumbnail(const base::FilePath& path,
                                           const gfx::Size& size,
                                           FetchFileThumbnailCallback callback) {
   client_->FetchFileThumbnail(path, size, std::move(callback));
+}
+
+void PickerController::UpdateRecentEmoji(ui::EmojiPickerCategory category,
+                                         std::u16string_view text) {
+  if (client_ == nullptr || client_->GetPrefs() == nullptr) {
+    return;
+  }
+  std::string utf8_text = base::UTF16ToUTF8(text);
+
+  std::vector<std::string> history = GetRecentEmoji(category);
+  base::Value::List history_value;
+  history_value.Append(
+      base::Value::Dict().Set(kEmojiHistoryValueFieldName, text));
+  for (const std::string& value : history) {
+    if (value == utf8_text) {
+      continue;
+    }
+    history_value.Append(
+        base::Value::Dict().Set(kEmojiHistoryValueFieldName, value));
+    if (history_value.size() == kMaxRecentEmoji) {
+      break;
+    }
+  }
+
+  ScopedDictPrefUpdate update(client_->GetPrefs(), prefs::kEmojiPickerHistory);
+  update->Set(ConvertToString(category), std::move(history_value));
 }
 
 }  // namespace ash
