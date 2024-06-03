@@ -609,6 +609,9 @@ void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info) {
         space.ShouldTextBoxTrimStart()) {
       container_builder_.SetIsBlockStartTrimmed();
     }
+    if (block_in_inline->IsBlockEndTrimmed() && space.ShouldTextBoxTrimEnd()) {
+      container_builder_.SetIsBlockEndTrimmed();
+    }
     return;
   }
 
@@ -668,8 +671,6 @@ void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info) {
     container_builder_.SetTrimBlockEndBy(block_end_to_be_trimmed);
     container_builder_.SetIsBlockEndTrimmed();
   }
-
-  // TODO(crbug.com/40254880): Block-in-inline case probably needs a logic.
 }
 
 void InlineLayoutAlgorithm::PlaceBlockInInline(const InlineItem& item,

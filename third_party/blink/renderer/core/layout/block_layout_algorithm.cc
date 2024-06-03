@@ -2415,22 +2415,21 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
   }
 
   if (UNLIKELY(should_text_box_trim_start_ || should_text_box_trim_end_)) {
-    if (layout_result->IsBlockStartTrimmed()) {
-      // Update `should_text_box_trim_{start,end}_` if the child `layout_result`
-      // has applied `text-box-trim`.
+    // Update `should_text_box_trim_{start,end}_` if the child `layout_result`
+    // has applied `text-box-trim`.
+    if (should_text_box_trim_start_ && layout_result->IsBlockStartTrimmed()) {
       should_text_box_trim_start_ = false;
       container_builder_.SetIsBlockStartTrimmed();
     }
-    if (layout_result->IsBlockEndTrimmed() && should_text_box_trim_end_ &&
-        child_space.ShouldTextBoxTrimEnd() &&
-        (child.IsInline() || child == override_text_box_trim_end_child_)) {
-      should_text_box_trim_end_ = false;
-      container_builder_.SetIsBlockEndTrimmed();
-    }
-    if (should_text_box_trim_end_ && !layout_result->IsSelfCollapsing()) {
-      // Keep the last non-empty child for `RelayoutForTextBoxTrimEnd`.
-      last_non_empty_inflow_child_ = child;
-      last_non_empty_break_token_ = child_break_token;
+    if (should_text_box_trim_end_) {
+      if (layout_result->IsBlockEndTrimmed()) {
+        should_text_box_trim_end_ = false;
+        container_builder_.SetIsBlockEndTrimmed();
+      } else if (!layout_result->IsSelfCollapsing()) {
+        // Keep the last non-empty child for `RelayoutForTextBoxTrimEnd`.
+        last_non_empty_inflow_child_ = child;
+        last_non_empty_break_token_ = child_break_token;
+      }
     }
   }
 

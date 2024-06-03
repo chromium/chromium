@@ -3156,10 +3156,13 @@ void LineBreaker::HandleBlockInInline(const InlineItem& item,
         *exclusion_space_);
 
     BlockNode block_node(To<LayoutBox>(item.GetLayoutObject()));
+    std::optional<ConstraintSpace> modified_space;
+    const ConstraintSpace& child_space =
+        constraint_space_.CloneForBlockInInlineIfNeeded(modified_space);
     const ColumnSpannerPath* spanner_path_for_child =
         FollowColumnSpannerPath(column_spanner_path_, block_node);
     const LayoutResult* layout_result =
-        block_node.Layout(constraint_space_, block_break_token,
+        block_node.Layout(child_space, block_break_token,
                           /* early_break */ nullptr, spanner_path_for_child);
     // Ensure `NeedsCollectInlines` isn't set, or it may cause security risks.
     CHECK(!node_.GetLayoutBox()->NeedsCollectInlines());

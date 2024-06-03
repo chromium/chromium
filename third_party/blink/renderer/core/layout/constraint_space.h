@@ -172,6 +172,11 @@ class CORE_EXPORT ConstraintSpace final {
     return copy;
   }
 
+  // If `this` needs to be modified for a block-in-inline child, creates a clone
+  // in `space`, modifies it, and returns it. Otherwise returns `*this`.
+  const ConstraintSpace& CloneForBlockInInlineIfNeeded(
+      std::optional<ConstraintSpace>& space) const;
+
   ~ConstraintSpace() {
     if (HasRareData())
       delete rare_data_;
@@ -1664,6 +1669,16 @@ class CORE_EXPORT ConstraintSpace final {
 
   void DisableMonolithicOverflowPropagation() {
     EnsureRareData()->is_monolithic_overflow_propagation_disabled = true;
+  }
+
+  void SetShouldTextBoxTrimStart() {
+    EnsureRareData()->should_text_box_trim_start = true;
+  }
+  void SetShouldTextBoxTrimEnd(bool value = true) {
+    EnsureRareData()->should_text_box_trim_end = value;
+  }
+  void SetShouldForceTextBoxTrimEnd(bool value = true) {
+    EnsureRareData()->should_force_text_box_trim_end = value;
   }
 
   LogicalSize available_size_;

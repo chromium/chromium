@@ -486,15 +486,9 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
     }
   }
 
-  void SetShouldTextBoxTrimStart() {
-    space_.EnsureRareData()->should_text_box_trim_start = true;
-  }
-  void SetShouldTextBoxTrimEnd() {
-    space_.EnsureRareData()->should_text_box_trim_end = true;
-  }
-  void SetShouldForceTextBoxTrimEnd() {
-    space_.EnsureRareData()->should_force_text_box_trim_end = true;
-  }
+  void SetShouldTextBoxTrimStart() { space_.SetShouldTextBoxTrimStart(); }
+  void SetShouldTextBoxTrimEnd() { space_.SetShouldTextBoxTrimEnd(); }
+  void SetShouldForceTextBoxTrimEnd() { space_.SetShouldForceTextBoxTrimEnd(); }
 
   void SetDecorationPercentageResolutionType(
       DecorationPercentageResolutionType type) {
