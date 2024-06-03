@@ -443,15 +443,13 @@ class ChromePrintContext : public PrintContext {
 
     const LayoutView* layout_view = frame_view->GetLayoutView();
 
-    auto property_tree_state =
-        layout_view->FirstFragment().LocalBorderBoxProperties();
-
     PaintRecordBuilder builder(context);
 
     frame_view->PrintPage(builder.Context(), page_number, CullRect(page_rect));
 
+    auto property_tree_state =
+        layout_view->FirstFragment().LocalBorderBoxProperties();
     OutputLinkedDestinations(builder.Context(), property_tree_state, page_rect);
-
     context.DrawRecord(builder.EndRecording(property_tree_state.Unalias()));
   }
 
@@ -560,8 +558,6 @@ class PaintPreviewContext : public PrintContext {
 
     LocalFrameView* frame_view = GetFrame()->View();
     DCHECK(frame_view);
-    auto property_tree_state =
-        frame_view->GetLayoutView()->FirstFragment().ContentsProperties();
 
     // This calls BeginRecording on |builder| with dimensions specified by the
     // CullRect.
@@ -571,6 +567,8 @@ class PaintPreviewContext : public PrintContext {
 
     frame_view->PaintOutsideOfLifecycle(builder.Context(), flags,
                                         CullRect(bounds));
+    PropertyTreeStateOrAlias property_tree_state =
+        frame_view->GetLayoutView()->FirstFragment().ContentsProperties();
     if (include_linked_destinations) {
       OutputLinkedDestinations(builder.Context(), property_tree_state, bounds);
     }
