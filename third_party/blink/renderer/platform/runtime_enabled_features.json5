@@ -750,6 +750,12 @@
       status: "stable"
     },
     {
+      // Allow WebAuthn relying parties to report information about existing
+      // credentials back to credential storage providers.
+      name: "CredentialManagerReport",
+      status: "experimental",
+    },
+    {
       name: "CrossFramePerformanceTimeline",
       status: "experimental",
     },
