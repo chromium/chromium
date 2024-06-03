@@ -313,6 +313,8 @@ GlanceablesTaskView::GlanceablesTaskView(
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace
+  SetLayoutManagerUseConstrainedSpace(false);
 
   check_button_ =
       AddChildView(std::make_unique<CheckButton>(base::BindRepeating(
@@ -325,8 +327,11 @@ GlanceablesTaskView::GlanceablesTaskView(
   contents_view_->SetOrientation(views::LayoutOrientation::kVertical);
   contents_view_->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace
+  contents_view_->SetLayoutManagerUseConstrainedSpace(false);
 
   tasks_title_view_ =
       contents_view_->AddChildView(std::make_unique<views::FlexLayoutView>());

@@ -192,7 +192,8 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
   header_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
   header_view_->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithWeight(1));
 

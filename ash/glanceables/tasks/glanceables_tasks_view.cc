@@ -208,7 +208,8 @@ GlanceablesTasksView::GlanceablesTasksView(
       base::to_underlying(GlanceablesViewId::kTasksBubbleHeaderView));
   tasks_header_view_->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithWeight(1));
 
