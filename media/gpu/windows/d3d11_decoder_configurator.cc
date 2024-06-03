@@ -59,7 +59,6 @@ GUID GetD3D11DecoderGUID(const VideoCodecProfile& profile,
     default:
       return {};
   }
-  NOTREACHED_NORETURN();
 }
 
 }  // namespace
