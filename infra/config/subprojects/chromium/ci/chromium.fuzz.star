@@ -1495,5 +1495,5 @@ ci.builder(
         "upload_bucket": "chromium-browser-libfuzzer",
         "upload_directory": "asan",
     },
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
