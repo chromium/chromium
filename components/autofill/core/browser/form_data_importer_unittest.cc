@@ -3095,7 +3095,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_TwoAddressesOneCreditCard) {
   EXPECT_THAT(*results[0], ComparesEqual(expected_card));
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
 TEST_F(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_NoIban) {
   // Simulate a form submission with no IBAN.
   FormData form;
@@ -3200,7 +3200,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_LocalIban) {
   EXPECT_TRUE(extracted_data.extracted_iban);
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 // Test that a form with both address and credit card sections imports only the
 // the credit card if addresses are disabled.
@@ -4045,7 +4045,7 @@ TEST_F(FormDataImporterTest, SkipAutocompleteUnrecognizedFields) {
                                              {expected_profile});
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
 TEST_F(FormDataImporterTest,
        ProcessIbanImportCandidate_ShouldOfferLocalSave_NewIban) {
   Iban extracted_iban = test::GetLocalIban();
@@ -4128,7 +4128,7 @@ TEST_F(FormDataImporterTest,
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true));
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_EmptyCreditCard) {
   std::optional<CreditCard> extracted_credit_card;

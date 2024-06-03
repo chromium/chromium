@@ -97,7 +97,7 @@ bool IbanSaveManager::IsIbanUploadEnabled(
 }
 
 bool IbanSaveManager::AttemptToOfferSave(Iban& import_candidate) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
   UpdateRecordType(import_candidate);
   switch (DetermineHowToSaveIban(import_candidate)) {
     case TypeOfOfferToSave::kDoNotOfferToSave:
@@ -108,7 +108,7 @@ bool IbanSaveManager::AttemptToOfferSave(Iban& import_candidate) {
       return AttemptToOfferLocalSave(import_candidate);
   }
 #else
-  // IBAN save prompts do not currently exist on mobile.
+  // IBAN save prompts do not currently exist on iOS.
   return false;
 #endif
 }

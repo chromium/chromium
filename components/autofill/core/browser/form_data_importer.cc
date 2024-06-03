@@ -174,10 +174,12 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
       address_profile_save_manager_(std::make_unique<AddressProfileSaveManager>(
           client,
           client_->GetPersonalDataManager())),
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
       iban_save_manager_(
           std::make_unique<IbanSaveManager>(client_->GetPersonalDataManager(),
                                             client)),
+#endif  // !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       local_card_migration_manager_(std::make_unique<LocalCardMigrationManager>(
           client,
           app_locale,
@@ -312,11 +314,11 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
         ExtractCreditCard(submitted_form);
   }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
   if (payment_methods_autofill_enabled) {
     extracted_form_data.extracted_iban = ExtractIban(submitted_form);
   }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
   size_t num_complete_address_profiles = 0;
   if (profile_autofill_enabled &&
