@@ -33,9 +33,6 @@ constexpr CGFloat kCellBottomMargin = 18;
 // Line spacing for the cell's header title.
 constexpr CGFloat kHeaderAttributedStringLineSpacing = 2;
 
-// Font size for the cell's header title.
-constexpr CGFloat kHeaderAttributedStringFontSize = 14;
-
 // Minimum height for the header view.
 constexpr CGFloat kHeaderViewMinHeight = 44;
 
@@ -382,20 +379,15 @@ UILabel* CreateLabel() {
 
 NSMutableAttributedString* CreateHeaderAttributedString(NSString* title,
                                                         NSString* subtitle) {
-  NSMutableAttributedString* attributed_title = [[NSMutableAttributedString
-      alloc]
-      initWithString:title
-          attributes:@{
-            NSForegroundColorAttributeName :
-                [UIColor colorNamed:kTextPrimaryColor],
-            NSFontAttributeName : IsKeyboardAccessoryUpgradeEnabled()
-                ? [[UIFontMetrics defaultMetrics]
-                      scaledFontForFont:
-                          [UIFont
-                              systemFontOfSize:kHeaderAttributedStringFontSize
-                                        weight:UIFontWeightMedium]]
-                : [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline],
-          }];
+  NSMutableAttributedString* attributed_title =
+      [[NSMutableAttributedString alloc]
+          initWithString:title
+              attributes:@{
+                NSForegroundColorAttributeName :
+                    [UIColor colorNamed:kTextPrimaryColor],
+                NSFontAttributeName :
+                    [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline],
+              }];
 
   if (IsKeyboardAccessoryUpgradeEnabled()) {
     NSMutableParagraphStyle* title_paragraph_style =
@@ -416,7 +408,7 @@ NSMutableAttributedString* CreateHeaderAttributedString(NSString* title,
                   [UIColor colorNamed:kTextSecondaryColor],
               NSFontAttributeName : [UIFont
                   preferredFontForTextStyle:IsKeyboardAccessoryUpgradeEnabled()
-                                                ? UIFontTextStyleCaption2
+                                                ? UIFontTextStyleCaption1
                                                 : UIFontTextStyleFootnote],
             }];
 
