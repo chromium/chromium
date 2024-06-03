@@ -482,11 +482,6 @@ class AutofillClient {
   virtual payments::MandatoryReauthManager*
   GetOrCreatePaymentsMandatoryReauthManager();
 
-  // Should only be called when we are sure re-showing the bubble will display a
-  // confirmation bubble. If the most recent bubble was an opt-in bubble and it
-  // was accepted, this will display the re-auth opt-in confirmation bubble.
-  virtual void ShowMandatoryReauthOptInConfirmation();
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Hides the virtual card enroll bubble and icon if it is visible.
   virtual void HideVirtualCardEnrollBubbleAndIconIfVisible();

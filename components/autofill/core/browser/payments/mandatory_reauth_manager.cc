@@ -248,7 +248,8 @@ void MandatoryReauthManager::OnOptInAuthenticationStepCompleted(bool success) {
         ->payments_data_manager()
         .SetPaymentMethodsMandatoryReauthEnabled(
             /*enabled=*/true);
-    client_->ShowMandatoryReauthOptInConfirmation();
+    client_->GetPaymentsAutofillClient()
+        ->ShowMandatoryReauthOptInConfirmation();
   } else {
     client_->GetPersonalDataManager()
         ->payments_data_manager()

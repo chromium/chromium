@@ -462,14 +462,6 @@ class TestAutofillClientTemplate : public T {
     device_authenticator_ = std::move(device_authenticator);
   }
 
-  void ShowMandatoryReauthOptInConfirmation() override {
-    mandatory_reauth_opt_in_prompt_was_reshown_ = true;
-  }
-
-  bool GetMandatoryReauthOptInPromptWasReshown() {
-    return mandatory_reauth_opt_in_prompt_was_reshown_;
-  }
-
 #if BUILDFLAG(IS_IOS)
   bool IsLastQueriedField(FieldGlobalId field_id) override { return true; }
 #endif
@@ -698,9 +690,6 @@ class TestAutofillClientTemplate : public T {
   // User decision when credit card / CVC local save or upload was offered.
   AutofillClient::SaveCardOfferUserDecision save_card_offer_user_decision_ =
       AutofillClient::SaveCardOfferUserDecision::kAccepted;
-
-  // Populated if mandatory re-auth opt-in was re-offered.
-  bool mandatory_reauth_opt_in_prompt_was_reshown_ = false;
 
   // Test addresses used to allow developers to test their forms.
   std::vector<AutofillProfile> test_addresses_;

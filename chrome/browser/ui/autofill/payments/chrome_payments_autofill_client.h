@@ -141,6 +141,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       base::RepeatingClosure close_mandatory_reauth_callback) override;
   IbanManager* GetIbanManager() override;
   IbanAccessManager* GetIbanAccessManager() override;
+  void ShowMandatoryReauthOptInConfirmation() override;
 
   AutofillProgressDialogControllerImpl*
   AutofillProgressDialogControllerForTesting() {

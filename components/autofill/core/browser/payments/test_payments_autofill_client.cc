@@ -158,10 +158,6 @@ void TestPaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
   mandatory_reauth_opt_in_prompt_was_shown_ = true;
 }
 
-bool TestPaymentsAutofillClient::GetMandatoryReauthOptInPromptWasShown() {
-  return mandatory_reauth_opt_in_prompt_was_shown_;
-}
-
 MockIbanManager* TestPaymentsAutofillClient::GetIbanManager() {
   if (!mock_iban_manager_) {
     mock_iban_manager_ = std::make_unique<testing::NiceMock<MockIbanManager>>(
@@ -177,6 +173,18 @@ MockIbanAccessManager* TestPaymentsAutofillClient::GetIbanAccessManager() {
             &client_.get());
   }
   return mock_iban_access_manager_.get();
+}
+
+void TestPaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {
+  mandatory_reauth_opt_in_prompt_was_reshown_ = true;
+}
+
+bool TestPaymentsAutofillClient::GetMandatoryReauthOptInPromptWasShown() {
+  return mandatory_reauth_opt_in_prompt_was_shown_;
+}
+
+bool TestPaymentsAutofillClient::GetMandatoryReauthOptInPromptWasReshown() {
+  return mandatory_reauth_opt_in_prompt_was_reshown_;
 }
 
 void TestPaymentsAutofillClient::set_virtual_card_enrollment_manager(

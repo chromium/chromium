@@ -50,7 +50,6 @@
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
-#include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/view_factory.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
@@ -519,19 +518,6 @@ ChromeAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
   }
 
   return payments_mandatory_reauth_manager_.get();
-}
-
-void ChromeAutofillClient::ShowMandatoryReauthOptInConfirmation() {
-#if BUILDFLAG(IS_ANDROID)
-  GetPaymentsAutofillClient()->GetAutofillSnackbarController()->Show(
-      AutofillSnackbarType::kMandatoryReauth);
-#else
-  MandatoryReauthBubbleControllerImpl::CreateForWebContents(web_contents());
-  // TODO(crbug.com/4555994): Pass in the bubble type as a parameter so we
-  // enforce that the confirmation bubble is shown.
-  MandatoryReauthBubbleControllerImpl::FromWebContents(web_contents())
-      ->ReshowBubble();
-#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)

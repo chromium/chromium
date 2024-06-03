@@ -494,6 +494,18 @@ IbanAccessManager* ChromePaymentsAutofillClient::GetIbanAccessManager() {
   return iban_access_manager_.get();
 }
 
+void ChromePaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {
+#if BUILDFLAG(IS_ANDROID)
+  GetAutofillSnackbarController()->Show(AutofillSnackbarType::kMandatoryReauth);
+#else
+  MandatoryReauthBubbleControllerImpl::CreateForWebContents(web_contents());
+  // TODO(crbug.com/4555994): Pass in the bubble type as a parameter so we
+  // enforce that the confirmation bubble is shown.
+  MandatoryReauthBubbleControllerImpl::FromWebContents(web_contents())
+      ->ReshowBubble();
+#endif
+}
+
 #if BUILDFLAG(IS_ANDROID)
 void ChromePaymentsAutofillClient::
     SetAutofillSaveCardBottomSheetBridgeForTesting(

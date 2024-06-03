@@ -83,8 +83,11 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       base::RepeatingClosure close_mandatory_reauth_callback) override;
   MockIbanManager* GetIbanManager() override;
   MockIbanAccessManager* GetIbanAccessManager() override;
+  void ShowMandatoryReauthOptInConfirmation() override;
 
   bool GetMandatoryReauthOptInPromptWasShown();
+
+  bool GetMandatoryReauthOptInPromptWasReshown();
 
   void set_migration_card_selections(
       const std::vector<std::string>& migration_card_selection) {
@@ -186,9 +189,10 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   std::unique_ptr<TestCreditCardRiskBasedAuthenticator>
       risk_based_authenticator_;
 
-  // Populated if mandatory re-auth opt-in was offered, or re-offered,
+  // Populated if mandatory re-auth opt-in was offered or re-offered,
   // respectively.
   bool mandatory_reauth_opt_in_prompt_was_shown_ = false;
+  bool mandatory_reauth_opt_in_prompt_was_reshown_ = false;
 
   std::unique_ptr<MockIbanManager> mock_iban_manager_;
 

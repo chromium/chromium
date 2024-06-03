@@ -275,6 +275,11 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Gets the IbanAccessManager instance associated with the client.
   virtual IbanAccessManager* GetIbanAccessManager();
+
+  // Should only be called when we are sure re-showing the bubble will display a
+  // confirmation bubble. If the most recent bubble was an opt-in bubble and it
+  // was accepted, this will display the re-auth opt-in confirmation bubble.
+  virtual void ShowMandatoryReauthOptInConfirmation();
 };
 
 }  // namespace payments

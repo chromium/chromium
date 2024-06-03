@@ -321,7 +321,8 @@ TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
 
   EXPECT_FALSE(autofill_client_->GetPrefs()->GetBoolean(
       prefs::kAutofillPaymentMethodsMandatoryReauth));
-  EXPECT_FALSE(autofill_client_->GetMandatoryReauthOptInPromptWasReshown());
+  EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
+                   ->GetMandatoryReauthOptInPromptWasReshown());
   // Counter is increased by 1 since device authentication fails during opt in.
   EXPECT_EQ(autofill_client_->GetPrefs()->GetInteger(
                 prefs::kAutofillPaymentMethodsMandatoryReauthPromoShownCounter),
@@ -347,7 +348,8 @@ TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
 
   EXPECT_TRUE(autofill_client_->GetPrefs()->GetBoolean(
       prefs::kAutofillPaymentMethodsMandatoryReauth));
-  EXPECT_TRUE(autofill_client_->GetMandatoryReauthOptInPromptWasReshown());
+  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
+                  ->GetMandatoryReauthOptInPromptWasReshown());
   EXPECT_TRUE(autofill_client_->GetPrefs()->GetUserPrefValue(
       prefs::kAutofillPaymentMethodsMandatoryReauth));
 }

@@ -149,4 +149,6 @@ IbanAccessManager* PaymentsAutofillClient::GetIbanAccessManager() {
   return nullptr;
 }
 
+void PaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {}
+
 }  // namespace autofill::payments
