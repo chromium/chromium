@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
@@ -78,6 +79,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   mojom::TriggerDataMatching trigger_data_matching =
       mojom::TriggerDataMatching::kModulus;
   EventLevelEpsilon event_level_epsilon;
+  SourceAggregatableDebugReportingConfig aggregatable_debug_reporting_config;
 };
 
 }  // namespace attribution_reporting

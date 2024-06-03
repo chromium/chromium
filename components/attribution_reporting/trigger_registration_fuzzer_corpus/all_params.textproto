@@ -403,4 +403,68 @@ object_value {
       }
     }
   }
+  field {
+    name: "aggregatable_debug_reporting"
+    value {
+      object_value {
+        field {
+          name: "key_piece"
+          value {
+            string_value {
+              value: "0x1"
+            }
+          }
+        }
+        field {
+          name: "aggregation_coordinator_origin"
+          value {
+            string_value {
+              value: "https://publickeyservice.aws.privacysandboxservices.com"
+            }
+          }
+        }
+        field {
+          name: "debug_data"
+          value {
+            array_value {
+              value {
+                object_value {
+                  field {
+                    name: "key_piece"
+                    value {
+                      string_value {
+                        value: "0x2"
+                      }
+                    }
+                  }
+                  field {
+                    name: "value"
+                    value {
+                      number_value {
+                        integer_value {
+                          value: 1
+                        }
+                      }
+                    }
+                  }
+                  field {
+                    name: "types"
+                    value {
+                      array_value {
+                        value {
+                          string_value {
+                            value: "trigger-no-matching-source"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

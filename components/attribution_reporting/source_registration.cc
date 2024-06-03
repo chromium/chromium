@@ -18,6 +18,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
@@ -149,6 +150,15 @@ SourceRegistration::Parse(base::Value::Dict registration,
 
   result.debug_reporting = ParseDebugReporting(registration);
 
+  // Deliberately ignoring errors for now to avoid dropping the registration
+  // from the optional debug reporting feature.
+  if (auto aggregatable_debug_reporting_config =
+          SourceAggregatableDebugReportingConfig::Parse(registration);
+      aggregatable_debug_reporting_config.has_value()) {
+    result.aggregatable_debug_reporting_config =
+        std::move(*aggregatable_debug_reporting_config);
+  }
+
   CHECK(result.IsValid());
   CHECK(result.IsValidForSourceType(source_type));
   return result;
@@ -209,6 +219,8 @@ base::Value::Dict SourceRegistration::ToJson() const {
   Serialize(dict, trigger_data_matching);
 
   event_level_epsilon.Serialize(dict);
+
+  aggregatable_debug_reporting_config.Serialize(dict);
 
   return dict;
 }

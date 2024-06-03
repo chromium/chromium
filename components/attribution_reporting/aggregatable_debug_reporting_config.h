@@ -41,6 +41,10 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
       absl::uint128 key_piece,
       uint32_t value);
 
+  // Creates an invalid instance for use with Mojo deserialization, which
+  // requires types to be default-constructible.
+  AggregatableDebugReportingContribution() = default;
+
   absl::uint128 key_piece() const;
   uint32_t value() const;
 

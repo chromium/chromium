@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
@@ -164,6 +165,83 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
+    StructTraits<
+        attribution_reporting::mojom::
+            AggregatableDebugReportingContributionDataView,
+        attribution_reporting::AggregatableDebugReportingContribution> {
+  static absl::uint128 key_piece(
+      const attribution_reporting::AggregatableDebugReportingContribution&
+          contribution) {
+    return contribution.key_piece();
+  }
+
+  static uint32_t value(
+      const attribution_reporting::AggregatableDebugReportingContribution&
+          contribution) {
+    return contribution.value();
+  }
+
+  static bool Read(
+      attribution_reporting::mojom::
+          AggregatableDebugReportingContributionDataView data,
+      attribution_reporting::AggregatableDebugReportingContribution* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
+    StructTraits<
+        attribution_reporting::mojom::AggregatableDebugReportingConfigDataView,
+        attribution_reporting::AggregatableDebugReportingConfig> {
+  static absl::uint128 key_piece(
+      const attribution_reporting::AggregatableDebugReportingConfig& config) {
+    return config.key_piece;
+  }
+
+  static const attribution_reporting::AggregatableDebugReportingConfig::
+      DebugData&
+      debug_data(const attribution_reporting::AggregatableDebugReportingConfig&
+                     config) {
+    return config.debug_data;
+  }
+
+  static const std::optional<attribution_reporting::SuitableOrigin>&
+  aggregation_coordinator_origin(
+      const attribution_reporting::AggregatableDebugReportingConfig& config) {
+    return config.aggregation_coordinator_origin;
+  }
+
+  static bool Read(
+      attribution_reporting::mojom::AggregatableDebugReportingConfigDataView
+          data,
+      attribution_reporting::AggregatableDebugReportingConfig* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
+    StructTraits<
+        attribution_reporting::mojom::
+            SourceAggregatableDebugReportingConfigDataView,
+        attribution_reporting::SourceAggregatableDebugReportingConfig> {
+  static uint32_t budget(
+      const attribution_reporting::SourceAggregatableDebugReportingConfig&
+          config) {
+    return config.budget();
+  }
+
+  static const attribution_reporting::AggregatableDebugReportingConfig& config(
+      const attribution_reporting::SourceAggregatableDebugReportingConfig&
+          config) {
+    return config.config();
+  }
+
+  static bool Read(
+      attribution_reporting::mojom::
+          SourceAggregatableDebugReportingConfigDataView data,
+      attribution_reporting::SourceAggregatableDebugReportingConfig* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
                  attribution_reporting::SourceRegistration> {
   static const attribution_reporting::DestinationSet& destinations(
@@ -230,6 +308,12 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   static double event_level_epsilon(
       const attribution_reporting::SourceRegistration& source) {
     return source.event_level_epsilon;
+  }
+
+  static const attribution_reporting::SourceAggregatableDebugReportingConfig&
+  aggregatable_debug_reporting_config(
+      const attribution_reporting::SourceRegistration& source) {
+    return source.aggregatable_debug_reporting_config;
   }
 
   static bool Read(
@@ -363,6 +447,12 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   static const std::optional<std::string>& trigger_context_id(
       const attribution_reporting::TriggerRegistration& trigger) {
     return trigger.aggregatable_trigger_config.trigger_context_id();
+  }
+
+  static const attribution_reporting::AggregatableDebugReportingConfig&
+  aggregatable_debug_reporting_config(
+      const attribution_reporting::TriggerRegistration& source) {
+    return source.aggregatable_debug_reporting_config;
   }
 
   static bool Read(

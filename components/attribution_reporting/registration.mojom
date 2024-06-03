@@ -6,6 +6,7 @@ module attribution_reporting.mojom;
 
 import "components/attribution_reporting/source_registration_time_config.mojom";
 import "components/attribution_reporting/trigger_data_matching.mojom";
+import "components/attribution_reporting/debug_types.mojom";
 import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
@@ -88,6 +89,26 @@ struct TriggerSpecs {
   map<uint32, uint8> trigger_data_indices;
 };
 
+// Aggregatable contribution for aggregatable debug types.
+struct AggregatableDebugReportingContribution {
+  mojo_base.mojom.Uint128 key_piece;
+  uint32 value;
+};
+
+// Configuration for aggregatable debug reporting.
+struct AggregatableDebugReportingConfig {
+  mojo_base.mojom.Uint128 key_piece;
+  map<DebugDataType,
+      AggregatableDebugReportingContribution> debug_data;
+  SuitableOrigin? aggregation_coordinator_origin;
+};
+
+// Configuration for source-side aggregatable debug reporting.
+struct SourceAggregatableDebugReportingConfig {
+  int32 budget;
+  AggregatableDebugReportingConfig config;
+};
+
 struct SourceRegistration {
   DestinationSet destinations;
 
@@ -127,6 +148,9 @@ struct SourceRegistration {
   // the containing source registration. Must be greater than or equal to 0.
   // https://wicg.github.io/attribution-reporting-api/#obtain-a-randomized-source-response
   double event_level_epsilon;
+
+  // Specifies aggregatable debug reporting configuration.
+  SourceAggregatableDebugReportingConfig aggregatable_debug_reporting_config;
 };
 
 // Mojo representation of the trigger configuration provided by a reporting
@@ -204,6 +228,9 @@ struct TriggerRegistration {
   // Specifies the context ID associated with the trigger. The context ID
   // cannot be empty or longer than 64 bytes.
   string? trigger_context_id;
+
+  // Specifies the aggregatable debug reporting configuration.
+  AggregatableDebugReportingConfig aggregatable_debug_reporting_config;
 };
 
 // Represents a source or trigger registration item that will be passed to the OS, if supported.

@@ -14,6 +14,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
@@ -125,6 +126,15 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
   ASSIGN_OR_RETURN(registration.aggregatable_trigger_config,
                    AggregatableTriggerConfig::Parse(dict));
 
+  // Deliberately ignoring errors for now to avoid dropping the registration
+  // from the optional debug reporting feature.
+  if (auto aggregatable_debug_reporting_config =
+          AggregatableDebugReportingConfig::Parse(dict);
+      aggregatable_debug_reporting_config.has_value()) {
+    registration.aggregatable_debug_reporting_config =
+        std::move(*aggregatable_debug_reporting_config);
+  }
+
   return registration;
 }
 
@@ -189,6 +199,8 @@ base::Value::Dict TriggerRegistration::ToJson() const {
   }
 
   aggregatable_trigger_config.Serialize(dict);
+
+  aggregatable_debug_reporting_config.Serialize(dict);
 
   return dict;
 }

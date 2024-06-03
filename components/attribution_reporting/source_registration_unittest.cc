@@ -10,14 +10,17 @@
 #include "base/functional/function_ref.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
+#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
@@ -38,6 +41,7 @@ using ::base::test::ErrorIs;
 using ::base::test::ValueIs;
 using ::testing::AllOf;
 using ::testing::Field;
+using ::testing::Property;
 
 SourceRegistration SourceRegistrationWith(
     DestinationSet destination_set,
@@ -90,7 +94,9 @@ TEST(SourceRegistrationTest, Parse) {
               Field(&SourceRegistration::aggregation_keys, AggregationKeys()),
               Field(&SourceRegistration::debug_reporting, false),
               Field(&SourceRegistration::trigger_data_matching,
-                    mojom::TriggerDataMatching::kModulus))),
+                    mojom::TriggerDataMatching::kModulus),
+              Field(&SourceRegistration::aggregatable_debug_reporting_config,
+                    SourceAggregatableDebugReportingConfig()))),
       },
       {
           "source_event_id_valid",
@@ -512,6 +518,55 @@ TEST(SourceRegistrationTest, IsValidForSourceType) {
   reg.expiry -= base::Microseconds(1);
   EXPECT_TRUE(reg.IsValidForSourceType(SourceType::kNavigation));
   EXPECT_FALSE(reg.IsValidForSourceType(SourceType::kEvent));
+}
+
+TEST(SourceRegistrationTest, ParseAggregatableDebugReportingConfig) {
+  const struct {
+    const char* desc;
+    const char* json;
+    ::testing::Matcher<
+        base::expected<SourceRegistration, SourceRegistrationError>>
+        matches;
+  } kTestCases[] = {
+      {
+          "valid",
+          R"json({
+            "destination": "https://d.example",
+            "aggregatable_debug_reporting": {
+              "budget": 1,
+              "key_piece": "0x2"
+            }
+          })json",
+          ValueIs(Field(
+              &SourceRegistration::aggregatable_debug_reporting_config,
+              AllOf(
+                  Property(&SourceAggregatableDebugReportingConfig::budget, 1),
+                  Property(&SourceAggregatableDebugReportingConfig::config,
+                           Field(&AggregatableDebugReportingConfig::key_piece,
+                                 2))))),
+      },
+      {
+          "invalid",
+          R"json({
+            "destination": "https://d.example",
+            "aggregatable_debug_reporting": ""
+          })json",
+          ValueIs(
+              Field(&SourceRegistration::aggregatable_debug_reporting_config,
+                    SourceAggregatableDebugReportingConfig())),
+      },
+  };
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAttributionAggregatableDebugReporting);
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+
+    EXPECT_THAT(
+        SourceRegistration::Parse(test_case.json, SourceType::kNavigation),
+        test_case.matches);
+  }
 }
 
 }  // namespace
