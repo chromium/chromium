@@ -228,8 +228,8 @@ WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
 
 WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jobject>& jassist_data_builder,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& jassist_data_builder,
     WebContents* web_contents)
     : java_ref_(env, obj),
       java_adb_ref_(env, jassist_data_builder),
@@ -674,7 +674,7 @@ jint WebContentsAccessibilityAndroid::GetEditableTextSelectionEnd(
   return node->GetSelectionEnd();
 }
 
-base::android::ScopedJavaLocalRef<jintArray>
+ScopedJavaLocalRef<jintArray>
 WebContentsAccessibilityAndroid::GetAbsolutePositionForNode(JNIEnv* env,
                                                             jint unique_id) {
   BrowserAccessibilityManagerAndroid* root_manager =
@@ -1373,7 +1373,7 @@ void WebContentsAccessibilityAndroid::LoadInlineTextBoxes(JNIEnv* env,
     node->manager()->LoadInlineTextBoxes(*node);
 }
 
-base::android::ScopedJavaLocalRef<jintArray>
+ScopedJavaLocalRef<jintArray>
 WebContentsAccessibilityAndroid::GetCharacterBoundingBoxes(JNIEnv* env,
                                                            jint unique_id,
                                                            jint start,
@@ -1417,7 +1417,7 @@ WebContentsAccessibilityAndroid::GetCharacterBoundingBoxes(JNIEnv* env,
 
 jboolean WebContentsAccessibilityAndroid::GetImageData(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& info,
+    const JavaParamRef<jobject>& info,
     jint unique_id,
     jboolean has_sent_previous_request) {
   BrowserAccessibilityManagerAndroid* root_manager =
@@ -1493,10 +1493,10 @@ void WebContentsAccessibilityAndroid::UpdateFrameInfo(float page_scale) {
 
 void WebContentsAccessibilityAndroid::RequestAccessibilityTreeSnapshot(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& view_structure_root,
-    const base::android::JavaParamRef<jobject>& accessibility_coordinates,
-    const base::android::JavaParamRef<jobject>& view,
-    const base::android::JavaParamRef<jobject>& on_done_callback) {
+    const JavaParamRef<jobject>& view_structure_root,
+    const JavaParamRef<jobject>& accessibility_coordinates,
+    const JavaParamRef<jobject>& view,
+    const JavaParamRef<jobject>& on_done_callback) {
   // This method should only be called by the unified snapshots feature.
   CHECK(base::FeatureList::IsEnabled(features::kAccessibilityUnifiedSnapshots));
 
@@ -1578,7 +1578,7 @@ void WebContentsAccessibilityAndroid::RecursivelyPopulateViewStructureTree(
   for (size_t child_index = 0; const auto& child : node->PlatformChildren()) {
     const auto& child_node =
         static_cast<const BrowserAccessibilityAndroid&>(child);
-    base::android::ScopedJavaLocalRef<jobject> java_side_child_object =
+    ScopedJavaLocalRef<jobject> java_side_child_object =
         Java_AssistDataBuilder_addChildNode(
             env, obj, java_side_assist_data_object, child_index);
     child_index++;
