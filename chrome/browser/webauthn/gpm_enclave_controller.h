@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
@@ -45,6 +46,8 @@ class Profile;
 class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
                              EnclaveManager::Observer {
  public:
+  static constexpr base::TimeDelta kDownloadAccountStateTimeout =
+      base::Seconds(1);
   struct DownloadedAccountState;
   enum class EnclaveUserVerificationMethod;
 

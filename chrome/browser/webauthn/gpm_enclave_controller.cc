@@ -512,7 +512,7 @@ void GPMEnclaveController::DownloadAccountState() {
 
   account_state_timeout_ = std::make_unique<base::OneShotTimer>();
   account_state_timeout_->Start(
-      FROM_HERE, base::Milliseconds(1000),
+      FROM_HERE, kDownloadAccountStateTimeout,
       base::BindOnce(&GPMEnclaveController::OnAccountStateTimeOut,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -545,6 +545,7 @@ void GPMEnclaveController::OnAccountStateTimeOut() {
     SetAccountStateReady();
     SetActive(true);
   } else {
+    model_->OnLoadingEnclaveTimeout();
     account_state_ = AccountState::kNone;
     SetActive(false);
   }
@@ -894,7 +895,8 @@ void GPMEnclaveController::OnGPMPasskeySelected(
                            "account state is kNone";
         model_->ContactPriorityPhone();
       } else {
-        NOTREACHED_NORETURN();
+        // This can happen if a passkey is selected after the enclave times out.
+        model_->SetStep(Step::kGPMError);
       }
       break;
 

@@ -167,6 +167,8 @@ class AuthenticatorRequestDialogController;
   AUTHENTICATOR_REQUEST_EVENT_0(PowerOnBleAdapter)                            \
   /* Show guidance about caBLE USB fallback. */                               \
   AUTHENTICATOR_REQUEST_EVENT_0(ShowCableUsbFallback)                         \
+  /* Called when loading the enclave times out. */                            \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnLoadingEnclaveTimeout)                      \
   /* Restarts the UX flow. */                                                 \
   AUTHENTICATOR_REQUEST_EVENT_0(StartOver)                                    \
   /* Like `OnAccountPreselected()`, but this takes an index into `creds()` */ \

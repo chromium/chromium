@@ -508,6 +508,12 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       }
     }
 
+    void WaitForLoadingEnclaveTimeout() {
+      run_loop_ = std::make_unique<base::RunLoop>();
+      waiting_for_loading_enclave_timeout_ = true;
+      run_loop_->Run();
+    }
+
     // Call this before the state transition you are looking to observe.
     void SetStepToObserve(AuthenticatorRequestDialogModel::Step step) {
       step_ = step;
@@ -534,6 +540,12 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       }
     }
 
+    void OnLoadingEnclaveTimeout() override {
+      if (run_loop_ && waiting_for_loading_enclave_timeout_) {
+        run_loop_->QuitWhenIdle();
+      }
+    }
+
     void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override {
       model_ = nullptr;
     }
@@ -542,6 +554,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     raw_ptr<AuthenticatorRequestDialogModel> model_;
     AuthenticatorRequestDialogModel::Step step_ =
         AuthenticatorRequestDialogModel::Step::kNotStarted;
+    bool waiting_for_loading_enclave_timeout_ = false;
     std::unique_ptr<base::RunLoop> run_loop_;
   };
 
@@ -1724,6 +1737,62 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
       DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
   registration_state_result.key_version = kSecretVersion;
   std::move(connection_cb).Run(std::move(registration_state_result));
+  model_observer()->WaitForStep();
+}
+
+// Tests tapping a passkey from autofill after the trusted vault service times
+// out. Regression test for crbug.com/343669719.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       SelectPasskeyAfterTimeout) {
+  SetVaultConnectionToTimeout();
+
+  // Execute a conditional UI request.
+  AddTestPasskeyToModel();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kGetAssertionConditionalUI);
+  delegate_observer()->WaitForUI();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kConditionalMediation);
+
+  // Wait for the request to time out.
+  clock_.Advance(GPMEnclaveController::kDownloadAccountStateTimeout);
+  model_observer()->WaitForLoadingEnclaveTimeout();
+
+  // Tap the passkey and expect an error.
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMError);
+  dialog_model()->OnAccountPreselectedIndex(0);
+  model_observer()->WaitForStep();
+}
+
+// Tests a trusted vault service timeout after tapping a passkey from autofill.
+// Regression test for crbug.com/343669719.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       SelectPasskeyThenTimeout) {
+  SetVaultConnectionToTimeout();
+
+  // Execute a conditional UI request.
+  AddTestPasskeyToModel();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kGetAssertionConditionalUI);
+  delegate_observer()->WaitForUI();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kConditionalMediation);
+
+  // Tap the passkey. The step should still be conditional mediation while
+  // autofill shows a loading indicator.
+  dialog_model()->OnAccountPreselectedIndex(0);
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kConditionalMediation);
+
+  // Wait for the request to time out.
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMError);
+  clock_.Advance(GPMEnclaveController::kDownloadAccountStateTimeout);
   model_observer()->WaitForStep();
 }
 
