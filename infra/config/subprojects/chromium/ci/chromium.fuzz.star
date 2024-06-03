@@ -11,6 +11,7 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/xcode.star", "xcode")
+load("//project.star", "settings")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -274,9 +275,10 @@ ci.builder(
     name = "Centipede Upload Linux ASan",
     branch_selector = branches.selector.LINUX_BRANCHES,
     executable = "recipe:chromium/fuzz",
+    # Schedule more concurrent builds only on trunk to reduce blamelist sizes.
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 4,
-    ),
+    ) if settings.is_main else None,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -971,9 +973,10 @@ ci.builder(
     name = "Libfuzzer Upload Linux ASan",
     branch_selector = branches.selector.LINUX_BRANCHES,
     executable = "recipe:chromium/fuzz",
+    # Schedule more concurrent builds only on trunk to reduce blamelist sizes.
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
-    ),
+    ) if settings.is_main else None,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1448,9 +1451,10 @@ ci.builder(
     name = "Libfuzzer Upload Windows ASan",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     executable = "recipe:chromium/fuzz",
+    # Schedule more concurrent builds only on trunk to reduce blamelist sizes.
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
-    ),
+    ) if settings.is_main else None,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
