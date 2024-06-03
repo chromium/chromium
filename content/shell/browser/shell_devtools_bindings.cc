@@ -360,6 +360,9 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
   } else if (*method == "getPreferences") {
     SendMessageAck(request_id, std::move(preferences_));
     return;
+  } else if (*method == "getHostConfig") {
+    SendMessageAck(request_id, {});
+    return;
   } else if (*method == "setPreference") {
     if (params.size() < 2)
       return;

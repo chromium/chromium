@@ -440,6 +440,8 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
                      &Delegate::ClearPreferences, delegate);
   d->RegisterHandlerWithCallback("getSyncInformation",
                                  &Delegate::GetSyncInformation, delegate);
+  d->RegisterHandlerWithCallback("getHostConfig", &Delegate::GetHostConfig,
+                                 delegate);
   d->RegisterHandlerWithCallback("reattach",
                                  &Delegate::Reattach, delegate);
   d->RegisterHandler("readyForTest",

@@ -1543,6 +1543,51 @@ base::Value::Dict DevToolsUIBindings::GetSyncInformationForProfile(
   return result;
 }
 
+void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
+  base::Value::Dict response_dict;
+
+  base::Value::Dict console_insights_dict;
+  console_insights_dict.Set(
+      "enabled",
+      base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights));
+  console_insights_dict.Set("aidaModelId",
+                            features::kDevToolsConsoleInsightsModelId.Get());
+  console_insights_dict.Set(
+      "aidaTemperature", features::kDevToolsConsoleInsightsTemperature.Get());
+  console_insights_dict.Set("optIn",
+                            features::kDevToolsConsoleInsightsOptIn.Get());
+  AidaClient::BlockedReason blocked_reason = AidaClient::CanUseAida(profile_);
+  console_insights_dict.Set("blocked", blocked_reason.blocked);
+  console_insights_dict.Set("blockedByAge", blocked_reason.blocked_by_age);
+  console_insights_dict.Set("blockedByEnterprisePolicy",
+                            blocked_reason.blocked_by_enterprise_policy);
+  console_insights_dict.Set("blockedByFeatureFlag",
+                            blocked_reason.blocked_by_feature_flag);
+  console_insights_dict.Set("blockedByGeo", blocked_reason.blocked_by_geo);
+  console_insights_dict.Set("blockedByRollout",
+                            blocked_reason.blocked_by_rollout);
+  console_insights_dict.Set("disallowLogging", blocked_reason.disallow_logging);
+  response_dict.Set("devToolsConsoleInsights",
+                    std::move(console_insights_dict));
+
+  base::Value::Dict console_insights_dogfood_dict;
+  console_insights_dogfood_dict.Set(
+      "enabled", base::FeatureList::IsEnabled(
+                     ::features::kDevToolsConsoleInsightsDogfood));
+  console_insights_dogfood_dict.Set(
+      "aidaModelId", features::kDevToolsConsoleInsightsDogfoodModelId.Get());
+  console_insights_dogfood_dict.Set(
+      "aidaTemperature",
+      features::kDevToolsConsoleInsightsDogfoodTemperature.Get());
+  console_insights_dogfood_dict.Set(
+      "optIn", features::kDevToolsConsoleInsightsDogfoodOptIn.Get());
+  response_dict.Set("devToolsConsoleInsightsDogfood",
+                    std::move(console_insights_dogfood_dict));
+
+  base::Value response = base::Value(std::move(response_dict));
+  std::move(callback).Run(&response);
+}
+
 void DevToolsUIBindings::Reattach(DispatchCallback callback) {
   if (agent_host_.get()) {
     agent_host_->DetachClient(this);

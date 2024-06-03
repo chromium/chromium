@@ -96,6 +96,7 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void RemovePreference(const std::string& name) = 0;
     virtual void ClearPreferences() = 0;
     virtual void GetSyncInformation(DispatchCallback callback) = 0;
+    virtual void GetHostConfig(DispatchCallback callback) = 0;
     virtual void DispatchProtocolMessageFromDevToolsFrontend(
         const std::string& message) = 0;
     virtual void RecordCountHistogram(const std::string& name,
