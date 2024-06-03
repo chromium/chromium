@@ -649,9 +649,15 @@ ScopedDrmPropertyPtr FakeDrmDevice::GetProperty(uint32_t id) const {
   return property;
 }
 
-bool FakeDrmDevice::SetProperty(uint32_t connector_id,
-                                uint32_t property_id,
-                                uint64_t value) {
+bool FakeDrmDevice::SetConnectorProperty(uint32_t connector_id,
+                                         uint32_t property_id,
+                                         uint64_t value) {
+  return true;
+}
+
+bool FakeDrmDevice::AddAndCommitObjectProperty(uint32_t connector_id,
+                                               uint32_t property_id,
+                                               uint64_t value) {
   return true;
 }
 

@@ -66,9 +66,10 @@ bool DrmDisplay::PrivacyScreenProperty::SetPrivacyScreenProperty(bool enabled) {
 
   const display::PrivacyScreenState state_to_set =
       enabled ? display::kEnabled : display::kDisabled;
-  if (!drm_->SetProperty(connector_->connector_id, property->prop_id,
-                         GetDrmValueForInternalType(state_to_set, *property,
-                                                    kPrivacyScreenStates))) {
+  if (!drm_->SetConnectorPropertyValue(
+          connector_->connector_id, property->prop_id,
+          GetDrmValueForInternalType(state_to_set, *property,
+                                     kPrivacyScreenStates))) {
     LOG(ERROR) << (enabled ? "Enabling" : "Disabling") << " property '"
                << property->name << "' failed!";
     return false;
@@ -199,8 +200,8 @@ bool DrmDisplay::SetHdcpKeyProp(const std::string& key) {
       drm_->GetProperty(connector_.get(), kContentProtectionKey));
   DCHECK(hdcp_key_property);
 
-  return drm_->SetProperty(connector_->connector_id, hdcp_key_property->prop_id,
-                           key_blob->id());
+  return drm_->SetConnectorPropertyValue(
+      connector_->connector_id, hdcp_key_property->prop_id, key_blob->id());
 }
 
 // When reading DRM state always check that it's still valid. Any sort of events
@@ -285,13 +286,15 @@ bool DrmDisplay::SetHDCPState(
         return false;
       }
       VLOG(3) << "HDCP Content Type not supported, default to Type 0";
-    } else if (!drm_->SetProperty(connector_->connector_id,
-                                  content_type_property->prop_id,
-                                  GetDrmValueForInternalType(
-                                      protection_method, *content_type_property,
-                                      kHdcpContentTypeStates))) {
-      // Failed setting HDCP Content Type.
-      return false;
+    } else {
+      if (!drm_->SetConnectorPropertyValue(
+              connector_->connector_id, content_type_property->prop_id,
+              GetDrmValueForInternalType(protection_method,
+                                         *content_type_property,
+                                         kHdcpContentTypeStates))) {
+        // Failed setting HDCP Content Type.
+        return false;
+      }
     }
   }
 
@@ -302,7 +305,7 @@ bool DrmDisplay::SetHDCPState(
     return false;
   }
 
-  return drm_->SetProperty(
+  return drm_->SetConnectorPropertyValue(
       connector_->connector_id, hdcp_property->prop_id,
       GetDrmValueForInternalType(state, *hdcp_property,
                                  kContentProtectionStates));
@@ -364,8 +367,8 @@ bool DrmDisplay::ClearHdrOutputMetadata() {
     return false;
   }
 
-  if (!drm_->SetProperty(connector_->connector_id,
-                         hdr_output_metadata_property->prop_id, 0)) {
+  if (!drm_->SetConnectorPropertyValue(
+          connector_->connector_id, hdr_output_metadata_property->prop_id, 0)) {
     PLOG(INFO) << "Cannot set '" << kHdrOutputMetadata
                << "' property on connector " << connector_->connector_id;
     return false;
@@ -436,9 +439,9 @@ bool DrmDisplay::SetHdrOutputMetadata(const gfx::ColorSpace color_space) {
   }
 
   if (!hdr_output_metadata_property->prop_id ||
-      !drm_->SetProperty(connector_->connector_id,
-                         hdr_output_metadata_property->prop_id,
-                         hdr_output_metadata_property_blob->id())) {
+      !drm_->SetConnectorPropertyValue(
+          connector_->connector_id, hdr_output_metadata_property->prop_id,
+          hdr_output_metadata_property_blob->id())) {
     PLOG(INFO) << "Cannot set '" << kHdrOutputMetadata << "' property.";
     return false;
   }
@@ -454,7 +457,7 @@ bool DrmDisplay::SetColorspaceProperty(const gfx::ColorSpace color_space) {
     return false;
   }
   if (!color_space_property->prop_id ||
-      !drm_->SetProperty(
+      !drm_->SetConnectorPropertyValue(
           connector_->connector_id, color_space_property->prop_id,
           GetEnumValueForName(*drm_, color_space_property->prop_id,
                               GetNameForColorspace(color_space)))) {
