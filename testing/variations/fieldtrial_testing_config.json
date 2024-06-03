@@ -7499,6 +7499,36 @@
             ]
         }
     ],
+    "ESBInfobarPromo": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnhancedSafeBrowsingPromo"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ESBInlineSettingsPromo": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_iOSInlineEnhancedSafeBrowsingPromo"
+                    ]
+                }
+            ]
+        }
+    ],
     "EagerPrefetchBlockUntilHeadDifferentTimeoutsRetrospective": [
         {
             "platforms": [
