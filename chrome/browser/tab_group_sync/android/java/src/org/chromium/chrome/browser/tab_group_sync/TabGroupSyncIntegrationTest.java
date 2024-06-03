@@ -130,7 +130,7 @@ public class TabGroupSyncIntegrationTest {
     private static final String TAB_TITLE_3 = "Title Of More Awesomeness";
     private static final String TAB_TITLE_4 = "iframe test";
 
-    private static final String NEW_TAB_TITLE = "New tab";
+    private static final String NEW_TAB_TITLE = TabGroupSyncUtils.NEW_TAB_TITLE;
     public static final String NEW_TAB_URL = UrlConstants.NTP_NON_NATIVE_URL;
 
     // Create individual tabs
@@ -329,10 +329,13 @@ public class TabGroupSyncIntegrationTest {
     }
 
     private void verifyTitleAndUrlForTab(TabInfo expectedTab, TabInfo actualTab) {
-        boolean isNtpUrl = TabGroupSyncUtils.isNtpOrAboutBlankUrl(expectedTab.url);
+        boolean isNtpUrl = TabGroupSyncUtils.isNtpOrAboutBlankUrl(new GURL(expectedTab.url));
         if (isNtpUrl) {
-            Assert.assertTrue(TabGroupSyncUtils.isNtpOrAboutBlankUrl(actualTab.url));
             Assert.assertTrue(
+                    "URL is not NTP",
+                    TabGroupSyncUtils.isNtpOrAboutBlankUrl(new GURL(actualTab.url)));
+            Assert.assertTrue(
+                    "Title is not new tab",
                     NEW_TAB_TITLE.equals(actualTab.title) || "about:blank".equals(actualTab.title));
         } else {
             Assert.assertEquals(expectedTab.url, actualTab.url);

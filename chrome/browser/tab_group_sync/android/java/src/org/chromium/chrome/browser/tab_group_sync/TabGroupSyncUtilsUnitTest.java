@@ -10,6 +10,9 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.util.Pair;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,6 +33,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -97,6 +101,42 @@ public class TabGroupSyncUtilsUnitTest {
 
         verify(mTabGroupSyncService, never()).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
         verify(mTabGroupSyncService).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_2);
+    }
+
+    @Test
+    public void testGetFilteredUrl_NewTab() {
+        // All types of NTP URLs.
+        expectFilteredUrlAndTitle(
+                "chrome://newtab", "New tab", "chrome-native://newtab", "New Tab");
+        expectFilteredUrlAndTitle(
+                "chrome://newtab", "New tab", "chrome-native://newtab/", "New tab");
+        expectFilteredUrlAndTitle("chrome://newtab", "New tab", "chrome://newtab", "New tab");
+        expectFilteredUrlAndTitle("chrome://newtab", "New tab", "chrome://newtab/", "New tab");
+        expectFilteredUrlAndTitle("chrome://newtab", "New tab", "chrome://new-tab-page", "New Tab");
+    }
+
+    @Test
+    public void testGetFilteredUrl_HttpHttpsChromeFile() {
+        // HTTP / HTTPS URLs.
+        expectFilteredUrlAndTitle("https://google.com", "Google", "https://google.com", "Google");
+        expectFilteredUrlAndTitle("http://google.com", "Google", "http://google.com", "Google");
+
+        // These URLs are not syncable.
+        expectFilteredUrlAndTitle("chrome://newtab", "Unsavable tab", "ftp://foo.com", "Foo");
+        expectFilteredUrlAndTitle(
+                "chrome://newtab", "Unsavable tab", "chrome://flags", "Experiments");
+        expectFilteredUrlAndTitle(
+                "chrome://newtab", "Unsavable tab", "chrome-untrusted://foo", "Foo");
+        expectFilteredUrlAndTitle("chrome://newtab", "Unsavable tab", "www.foo.com", "Foo");
+        expectFilteredUrlAndTitle("chrome://newtab", "Unsavable tab", "file://sdcard/foo", "Foo");
+    }
+
+    private void expectFilteredUrlAndTitle(
+            String filteredUrl, String filteredTitle, String inputUrl, String inputTitle) {
+        Assert.assertEquals(
+                "Failed expectation for " + inputUrl,
+                new Pair<>(new GURL(filteredUrl), filteredTitle),
+                TabGroupSyncUtils.getFilteredUrlAndTitle(new GURL(inputUrl), inputTitle));
     }
 
     private void createTabGroup(List<Tab> tabs, int rootId, Token tabGroupId) {

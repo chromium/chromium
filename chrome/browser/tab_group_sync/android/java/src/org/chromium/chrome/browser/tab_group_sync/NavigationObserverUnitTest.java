@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,6 +24,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -237,6 +237,26 @@ public class NavigationObserverUnitTest {
     }
 
     @Test
+    public void testNtpUrl() {
+        mNavigationObserver.enableObservers(true);
+        mockTab(
+                TAB_ID_1,
+                TOKEN_1,
+                mTestTitle,
+                new GURL(UrlConstants.NTP_URL),
+                /* isIncognito= */ false,
+                /* isGrouped= */ true);
+        simulateNavigation(PageTransition.LINK);
+        verify(mTabGroupSyncService)
+                .updateTab(
+                        eq(LOCAL_TAB_GROUP_ID_1),
+                        eq(TAB_ID_1),
+                        eq(TabGroupSyncUtils.NEW_TAB_TITLE),
+                        eq(TabGroupSyncUtils.NTP_URL),
+                        eq(-1));
+    }
+
+    @Test
     public void testSyncInitiatedNavigation() {
         mNavigationObserver.enableObservers(true);
         mockTab(
@@ -274,28 +294,5 @@ public class NavigationObserverUnitTest {
                 /* isGrouped= */ true);
         simulateNavigation(PageTransition.LINK, false);
         verifyNoInteractions(mTabGroupSyncService);
-    }
-
-    @Test
-    public void testSavableUrl() {
-        // All types of NTP URLs.
-        Assert.assertTrue(TabGroupSyncUtils.isSavableUrl(new GURL("chrome://newtab")));
-        Assert.assertTrue(TabGroupSyncUtils.isSavableUrl(new GURL("chrome://newtab/")));
-        Assert.assertTrue(TabGroupSyncUtils.isSavableUrl(new GURL("chrome-native://newtab")));
-        Assert.assertTrue(TabGroupSyncUtils.isSavableUrl(new GURL("chrome-native://newtab/")));
-
-        // TODO(b/339225806): This is not savable. Maybe this should?
-        Assert.assertFalse(TabGroupSyncUtils.isSavableUrl(new GURL("chrome://new-tab-page")));
-
-        // HTTP / HTTPS URLs.
-        Assert.assertTrue(TabGroupSyncUtils.isSavableUrl(new GURL("https://google.com")));
-        Assert.assertTrue(TabGroupSyncUtils.isSavableUrl(new GURL("http://google.com")));
-
-        // These URLs are not syncable.
-        Assert.assertFalse(TabGroupSyncUtils.isSavableUrl(new GURL("ftp://foo.com")));
-        Assert.assertFalse(TabGroupSyncUtils.isSavableUrl(new GURL("chrome://flags")));
-        Assert.assertFalse(TabGroupSyncUtils.isSavableUrl(new GURL("chrome://sync-internals")));
-        Assert.assertFalse(TabGroupSyncUtils.isSavableUrl(new GURL("chrome-untrusted://xyz")));
-        Assert.assertFalse(TabGroupSyncUtils.isSavableUrl(new GURL("www.foo.com")));
     }
 }
