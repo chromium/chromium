@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/permissions/prediction_based_permission_ui_selector.h"
+
 #include <memory>
 
 #include "base/command_line.h"
@@ -51,8 +52,9 @@ class PredictionBasedPermissionUiSelectorTest : public testing::Test {
   }
 
   void InitFeatureList(const std::string holdback_chance_string = "0") {
-    if (feature_list_)
+    if (feature_list_) {
       feature_list_->Reset();
+    }
     feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     feature_list_->InitWithFeaturesAndParameters(
         {{features::kQuietNotificationPrompts, {}},
@@ -170,15 +172,9 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
                 kServicePredictedVeryUnlikelyGrant,
             notification_decision.quiet_ui_reason);
 
-  // Geolocation requests are only supported on platforms that support the
-  // permission chip.
-  if (permissions::PermissionUtil::DoesPlatformSupportChip()) {
-    EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
-                  kServicePredictedVeryUnlikelyGrant,
-              geolocation_decision.quiet_ui_reason);
-  } else {
-    EXPECT_EQ(Decision::UseNormalUi(), geolocation_decision.quiet_ui_reason);
-  }
+  EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
+                kServicePredictedVeryUnlikelyGrant,
+            geolocation_decision.quiet_ui_reason);
 }
 
 TEST_F(PredictionBasedPermissionUiSelectorTest,
@@ -246,61 +242,11 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
   geolocation_decision = SelectUiToUseAndGetDecision(
       &prediction_selector, permissions::RequestType::kGeolocation);
 
-  // Geolocation requests are only supported on platforms that support the
-  // permission chip.
-  if (permissions::PermissionUtil::DoesPlatformSupportChip()) {
-    EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
-                  kServicePredictedVeryUnlikelyGrant,
-              geolocation_decision.quiet_ui_reason);
-  } else {
-    EXPECT_EQ(Decision::UseNormalUi(), geolocation_decision.quiet_ui_reason);
-  }
+  EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
+                kServicePredictedVeryUnlikelyGrant,
+            geolocation_decision.quiet_ui_reason);
 }
 
-#if BUILDFLAG(IS_ANDROID)
-
-TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
-  PredictionBasedPermissionUiSelector prediction_selector(profile());
-
-  // If both the quiet UIs are not available we shouldn't be able to use either
-  // of the CPSS servcies.
-  feature_list_->Reset();
-  feature_list_->InitWithFeatures(
-      {
-          permissions::features::kPermissionPredictionsV2,
-          permissions::features::kPermissionOnDeviceNotificationPredictions,
-          permissions::features::kPermissionOnDeviceGeolocationPredictions,
-      },
-      {
-          features::kQuietNotificationPrompts,
-      });
-  EXPECT_EQ(PredictionSource::USE_NONE,
-            prediction_selector.GetPredictionTypeToUse(
-                permissions::RequestType::kNotifications));
-  EXPECT_EQ(PredictionSource::USE_NONE,
-            prediction_selector.GetPredictionTypeToUse(
-                permissions::RequestType::kGeolocation));
-
-  // If permission quiet chip is disabled cpss should not work for geolocation.
-  feature_list_->Reset();
-  feature_list_->InitWithFeatures(
-      {
-          permissions::features::kPermissionPredictionsV2,
-          permissions::features::kPermissionOnDeviceNotificationPredictions,
-          permissions::features::kPermissionOnDeviceGeolocationPredictions,
-          features::kQuietNotificationPrompts,
-      },
-      {
-      });
-  EXPECT_EQ(PredictionSource::USE_SERVER_SIDE,
-            prediction_selector.GetPredictionTypeToUse(
-                permissions::RequestType::kNotifications));
-  EXPECT_EQ(PredictionSource::USE_NONE,
-            prediction_selector.GetPredictionTypeToUse(
-                permissions::RequestType::kGeolocation));
-}
-
-#else   // BUILDFLAG(IS_ANDROID)
 TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
   PredictionBasedPermissionUiSelector prediction_selector(profile());
 
@@ -377,7 +323,6 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUse) {
             prediction_selector.GetPredictionTypeToUse(
                 permissions::RequestType::kGeolocation));
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(PredictionBasedPermissionUiSelectorTest, HoldbackHistogramTest) {
   PredictionBasedPermissionUiSelector prediction_selector(profile());

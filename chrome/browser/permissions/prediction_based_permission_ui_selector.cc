@@ -339,13 +339,10 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
 
   const bool is_notification_cpss_enabled =
-      profile_->GetPrefs()->GetBoolean(prefs::kEnableNotificationCPSS) &&
-      (base::FeatureList::IsEnabled(features::kQuietNotificationPrompts) ||
-       permissions::PermissionUtil::DoesPlatformSupportChip());
+      profile_->GetPrefs()->GetBoolean(prefs::kEnableNotificationCPSS);
 
   const bool is_geolocation_cpss_enabled =
-      profile_->GetPrefs()->GetBoolean(prefs::kEnableGeolocationCPSS) &&
-      permissions::PermissionUtil::DoesPlatformSupportChip();
+      profile_->GetPrefs()->GetBoolean(prefs::kEnableGeolocationCPSS);
 
   if (request_type == permissions::RequestType::kNotifications &&
       !is_notification_cpss_enabled) {
