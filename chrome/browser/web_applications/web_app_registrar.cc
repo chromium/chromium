@@ -468,8 +468,10 @@ bool WebAppRegistrar::IsSystemApp(const webapps::AppId& app_id) const {
 DisplayMode WebAppRegistrar::GetAppEffectiveDisplayMode(
     const webapps::AppId& app_id,
     bool ignore_shortstand) const {
-  if (!IsLocallyInstalled(app_id))
+  if (!IsInstallState(app_id, {InstallState::kInstalledWithoutOsIntegration,
+                               InstallState::kInstalledWithOsIntegration})) {
     return DisplayMode::kBrowser;
+  }
 
   auto app_display_mode = GetAppDisplayMode(app_id);
   std::optional<mojom::UserDisplayMode> user_display_mode =
@@ -730,14 +732,10 @@ bool WebAppRegistrar::IsNotInRegistrar(const webapps::AppId& app_id) const {
   return false;
 }
 
-bool WebAppRegistrar::IsInstallState(
-    const webapps::AppId& app_id,
-    std::initializer_list<InstallState> states) const {
-  CHECK_NE(states.size(), 0ul);
-  InstallStateSet state_set(states);
-
+std::optional<InstallState> WebAppRegistrar::GetInstallState(
+    const webapps::AppId& app_id) const {
   if (IsNotInRegistrar(app_id)) {
-    return false;
+    return std::nullopt;
   }
   const WebApp* web_app = GetAppById(app_id);
   CHECK(web_app);
@@ -746,13 +744,25 @@ bool WebAppRegistrar::IsInstallState(
 
   if (web_app->is_locally_installed()) {
     if (web_app->current_os_integration_states().has_shortcut()) {
-      return state_set.Has(InstallState::kInstalledWithOsIntegration);
+      return InstallState::kInstalledWithOsIntegration;
     } else {
-      return state_set.Has(InstallState::kInstalledWithoutOsIntegration);
+      return InstallState::kInstalledWithoutOsIntegration;
     }
   } else {
-    return state_set.Has(InstallState::kSuggestedFromAnotherDevice);
+    return InstallState::kSuggestedFromAnotherDevice;
   }
+}
+
+bool WebAppRegistrar::IsInstallState(
+    const webapps::AppId& app_id,
+    std::initializer_list<InstallState> states) const {
+  CHECK_NE(states.size(), 0ul);
+  std::optional<InstallState> install_state = GetInstallState(app_id);
+  if (!install_state) {
+    return false;
+  }
+  InstallStateSet state_set(states);
+  return state_set.Has(install_state.value());
 }
 
 std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
@@ -1103,7 +1113,9 @@ bool WebAppRegistrar::CanCaptureLinksInScope(
   if (!base::FeatureList::IsEnabled(features::kDesktopPWAsLinkCapturing)) {
     return false;
   }
-  if (!IsLocallyInstalled(app_id) || IsShortcutApp(app_id)) {
+  if (!IsInstallState(app_id, {InstallState::kInstalledWithoutOsIntegration,
+                               InstallState::kInstalledWithOsIntegration}) ||
+      IsShortcutApp(app_id)) {
     return false;
   }
   return true;
@@ -1230,8 +1242,10 @@ bool WebAppRegistrar::IsLinkCapturableByApp(const webapps::AppId& app,
     } else {
       other_score = GetUrlInAppScopeScore(url.spec(), app_id);
     }
-    return IsLocallyInstalled(app_id) && !IsShortcutApp(app_id) &&
-           other_score > app_score;
+    return IsInstallState(app_id,
+                          {InstallState::kInstalledWithoutOsIntegration,
+                           InstallState::kInstalledWithOsIntegration}) &&
+           !IsShortcutApp(app_id) && other_score > app_score;
   });
 }
 
@@ -1282,7 +1296,8 @@ base::flat_map<webapps::AppId, std::string>
 WebAppRegistrar::GetAllAppsControllingUrl(const GURL& url) const {
   base::flat_map<webapps::AppId, std::string> all_controlling_apps;
   for (const webapps::AppId& app_id : GetAppIds()) {
-    if (!IsLocallyInstalled(app_id)) {
+    if (!IsInstallState(app_id, {InstallState::kInstalledWithoutOsIntegration,
+                                 InstallState::kInstalledWithOsIntegration})) {
       continue;
     }
 

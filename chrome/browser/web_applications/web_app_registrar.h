@@ -111,7 +111,12 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Returns true if the given app_id is not in the registrar.
   bool IsNotInRegistrar(const webapps::AppId& app_id) const;
 
-  // Returns true if the install state of the given `app_id` is one of the given
+  // Returns the install state of the given `app_id`, or std::nullopt if it is
+  // not in the registrar.
+  std::optional<InstallState> GetInstallState(
+      const webapps::AppId& app_id) const;
+
+  // Returns if the install state of the given `app_id` is one of the given
   // `allowed_states`. Will CHECK-fail if `allowed_states` is empty.
   bool IsInstallState(const webapps::AppId& app_id,
                       std::initializer_list<InstallState> allowed_states) const;

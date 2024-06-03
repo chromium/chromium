@@ -26,6 +26,7 @@
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
+#include "chrome/browser/web_applications/install_state.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -479,14 +480,22 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
   }
 
   {
-    EXPECT_FALSE(registrar().IsLocallyInstalled(app_id));
+    EXPECT_FALSE(registrar().IsNotInRegistrar(app_id));
+    EXPECT_FALSE(registrar().IsInstallState(
+        app_id, {InstallState::kInstalledWithoutOsIntegration,
+                 InstallState::kInstalledWithOsIntegration}));
     EXPECT_FALSE(registrar().IsActivelyInstalled(app_id));
 
-    EXPECT_FALSE(registrar().IsLocallyInstalled("unknown"));
+    EXPECT_TRUE(registrar().IsNotInRegistrar("unknown"));
+    EXPECT_FALSE(registrar().IsInstallState(
+        "unknown", {InstallState::kInstalledWithoutOsIntegration,
+                    InstallState::kInstalledWithOsIntegration}));
     base::test::TestFuture<void> future;
     fake_provider().scheduler().InstallAppLocally(app_id, future.GetCallback());
     ASSERT_TRUE(future.Wait());
-    EXPECT_TRUE(registrar().IsLocallyInstalled(app_id));
+    EXPECT_TRUE(registrar().IsInstallState(
+        app_id, {InstallState::kInstalledWithoutOsIntegration,
+                 InstallState::kInstalledWithOsIntegration}));
     EXPECT_TRUE(registrar().IsActivelyInstalled(app_id));
   }
 
