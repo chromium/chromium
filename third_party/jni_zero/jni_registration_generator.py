@@ -98,19 +98,22 @@ def _Generate(options, native_sources, java_sources):
     java_sources: A list of .jni.pickle or .java file paths. Used to assert
         against native_sources.
   """
-  # The native-based sources are the "source of truth" - the Java based ones
-  # will be used later to generate stubs and make assertions.
-  jni_objs_by_path = _LoadJniObjs(set(native_sources + java_sources), options)
+  native_sources_set = set(native_sources)
+  java_sources_set = set(java_sources)
+
+  jni_objs_by_path = _LoadJniObjs(native_sources_set | java_sources_set,
+                                  options)
   _FilterJniObjs(jni_objs_by_path, options)
 
   dicts = []
-  for jni_obj in _Flatten(jni_objs_by_path, native_sources):
+  for jni_obj in _Flatten(jni_objs_by_path,
+                          native_sources_set & java_sources_set):
     dicts.append(DictionaryGenerator(jni_obj, options).Generate())
   # Sort to make output deterministic.
   dicts.sort(key=lambda d: d['FULL_CLASS_NAME'])
 
-  stubs = _GenerateStubsAndAssert(options, jni_objs_by_path, native_sources,
-                                  java_sources)
+  stubs = _GenerateStubsAndAssert(options, jni_objs_by_path, native_sources_set,
+                                  java_sources_set)
   combined_dict = {}
   for key in MERGEABLE_KEYS:
     combined_dict[key] = ''.join(d.get(key, '') for d in dicts)
@@ -188,10 +191,8 @@ def _Generate(options, native_sources, java_sources):
                                          stub_methods=stub_methods_string))
 
 
-def _GenerateStubsAndAssert(options, jni_objs_by_path, native_sources,
-                            java_sources):
-  native_sources_set = set(native_sources)
-  java_sources_set = set(java_sources)
+def _GenerateStubsAndAssert(options, jni_objs_by_path, native_sources_set,
+                            java_sources_set):
   native_only = native_sources_set - java_sources_set
   java_only = java_sources_set - native_sources_set
 
