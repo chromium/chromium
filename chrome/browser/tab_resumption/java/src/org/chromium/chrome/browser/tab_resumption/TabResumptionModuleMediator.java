@@ -316,9 +316,6 @@ public class TabResumptionModuleMediator {
                 TabResumptionModuleProperties.SEE_MORE_LINK_CLICK_CALLBACK,
                 seeMoreLinkClickCallback);
         mModel.set(TabResumptionModuleProperties.CLICK_CALLBACK, mSuggestionClickCallbacks);
-        mModel.set(
-                TabResumptionModuleProperties.USE_SALIENT_IMAGE,
-                TabResumptionModuleUtils.TAB_RESUMPTION_USE_SALIENT_IMAGE.getValue());
     }
 
     void startSession(@NonNull TabResumptionDataProvider dataProvider) {

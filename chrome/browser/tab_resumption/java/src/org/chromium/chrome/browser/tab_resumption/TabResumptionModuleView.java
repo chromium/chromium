@@ -35,6 +35,7 @@ public class TabResumptionModuleView extends LinearLayout {
 
     public TabResumptionModuleView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        mUseSalientImage = TabResumptionModuleUtils.TAB_RESUMPTION_USE_SALIENT_IMAGE.getValue();
     }
 
     @Override
@@ -52,10 +53,6 @@ public class TabResumptionModuleView extends LinearLayout {
 
     void destroy() {
         mTileContainerView.destroy();
-    }
-
-    void setUseSalientImage(boolean useSalientImage) {
-        mUseSalientImage = useSalientImage;
     }
 
     void setUrlImageProvider(UrlImageProvider urlImageProvider) {

@@ -79,25 +79,22 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     private GURL mLastClickUrl;
     private int mLastClickTabId;
     private int mClickCount;
+    private Context mContext;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
 
-        Context context = ApplicationProvider.getApplicationContext();
-        context.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mModuleView =
-                (TabResumptionModuleView)
-                        LayoutInflater.from(context)
-                                .inflate(R.layout.tab_resumption_module_layout, null);
+        mContext = ApplicationProvider.getApplicationContext();
+        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
         when(mTab.getTitle()).thenReturn(TAB_TITLE);
         when(mTab.getTimestampMillis()).thenReturn(makeTimestamp(24 - 3, 0, 0));
         when(mTab.getId()).thenReturn(TAB_ID);
         int size =
-                context.getResources()
+                mContext.getResources()
                         .getDimensionPixelSize(
                                 org.chromium.chrome.browser.tab_ui.R.dimen
                                         .single_tab_module_tab_thumbnail_size_big);
@@ -118,10 +115,6 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                     }
                 };
         mSuggestionBundle = new SuggestionBundle(CURRENT_TIME_MS);
-        mModuleView.setUrlImageProvider(mUrlImageProvider);
-        mModuleView.setClickCallbacks(mClickCallbacks);
-        mModuleView.setThumbnailProvider(mThumbnailProvider);
-        mTileContainerView = mModuleView.getTileContainerViewForTesting();
     }
 
     @After
@@ -133,6 +126,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     @Test
     @SmallTest
     public void testSetTitle() {
+        initModuleView();
+
         String testTitle1 = "This is a test title";
         String testTitle2 = "Here is another test title";
         TextView titleTextView =
@@ -149,6 +144,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     @Test
     @SmallTest
     public void testRenderSingle() {
+        initModuleView();
+
         SuggestionEntry entry1 =
                 new SuggestionEntry(
                         /* sourceName= */ "Desktop",
@@ -205,7 +202,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     @Test
     @SmallTest
     public void testRenderSingle_SalientImage() {
-        mModuleView.setUseSalientImage(true);
+        TabResumptionModuleUtils.TAB_RESUMPTION_USE_SALIENT_IMAGE.setForTesting(true);
+        initModuleView();
 
         SuggestionEntry entry1 =
                 new SuggestionEntry(
@@ -266,6 +264,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     @Test
     @SmallTest
     public void testRenderSingleLocalView() {
+        initModuleView();
+
         SuggestionEntry entry1 = new LocalTabSuggestionEntry(mTab);
         mSuggestionBundle.entries.add(entry1);
 
@@ -329,6 +329,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     @Test
     @SmallTest
     public void testRenderDouble() {
+        initModuleView();
+
         SuggestionEntry entry1 =
                 new SuggestionEntry(
                         /* sourceName= */ "My Tablet",
@@ -410,6 +412,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     @Test
     @SmallTest
     public void testRenderDoubleWithLocalTab() {
+        initModuleView();
+
         SuggestionEntry entry1 = new LocalTabSuggestionEntry(mTab);
         SuggestionEntry entry2 =
                 new SuggestionEntry(
@@ -486,5 +490,17 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         tile2.performClick();
         Assert.assertEquals(2, mClickCount);
         Assert.assertEquals(JUnitTestGURLs.GOOGLE_URL_DOG, mLastClickUrl);
+    }
+
+    private void initModuleView() {
+        mModuleView =
+                (TabResumptionModuleView)
+                        LayoutInflater.from(mContext)
+                                .inflate(R.layout.tab_resumption_module_layout, null);
+
+        mModuleView.setUrlImageProvider(mUrlImageProvider);
+        mModuleView.setClickCallbacks(mClickCallbacks);
+        mModuleView.setThumbnailProvider(mThumbnailProvider);
+        mTileContainerView = mModuleView.getTileContainerViewForTesting();
     }
 }
