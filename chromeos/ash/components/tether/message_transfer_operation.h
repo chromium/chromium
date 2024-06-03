@@ -17,9 +17,9 @@
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
 #include "chromeos/ash/components/tether/tether_host.h"
 
-namespace cross_device {
+namespace ash::timer_factory {
 class TimerFactory;
-}  // namespace cross_device
+}  // namespace ash::timer_factory
 
 namespace ash::tether {
 
@@ -111,14 +111,14 @@ class MessageTransferOperation : public HostConnection::PayloadListener {
   void OnTimeout();
 
   void SetTimerFactoryForTest(
-      std::unique_ptr<cross_device::TimerFactory> timer_factory_for_test);
+      std::unique_ptr<ash::timer_factory::TimerFactory> timer_factory_for_test);
 
   TetherHost tether_host_;
   const HostConnection::Factory::ConnectionPriority connection_priority_;
   std::unique_ptr<HostConnection> host_connection_;
   raw_ptr<HostConnection::Factory> host_connection_factory_;
 
-  std::unique_ptr<cross_device::TimerFactory> timer_factory_;
+  std::unique_ptr<ash::timer_factory::TimerFactory> timer_factory_;
 
   bool initialized_ = false;
   bool shutting_down_ = false;

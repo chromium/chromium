@@ -13,8 +13,8 @@
 #include "chromeos/ash/components/tether/fake_host_connection.h"
 #include "chromeos/ash/components/tether/message_wrapper.h"
 #include "chromeos/ash/components/tether/proto_test_util.h"
-#include "components/cross_device/timer_factory/fake_one_shot_timer.h"
-#include "components/cross_device/timer_factory/fake_timer_factory.h"
+#include "chromeos/ash/components/timer_factory/fake_one_shot_timer.h"
+#include "chromeos/ash/components/timer_factory/fake_timer_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -122,7 +122,7 @@ class MessageTransferOperationTest : public testing::Test {
     operation_ = std::make_unique<TestOperation>(
         tether_host_, fake_host_connection_factory_.get());
     operation_->SetTimerFactoryForTest(
-        std::make_unique<cross_device::FakeTimerFactory>());
+        std::make_unique<ash::timer_factory::FakeTimerFactory>());
     VerifyOperationStartedAndFinished(false /* has_started */,
                                       false /* has_finished */);
   }
@@ -132,8 +132,8 @@ class MessageTransferOperationTest : public testing::Test {
     EXPECT_EQ(has_finished, operation_->has_operation_finished());
   }
 
-  cross_device::FakeOneShotTimer* GetOperationTimer() {
-    return static_cast<cross_device::FakeOneShotTimer*>(
+  ash::timer_factory::FakeOneShotTimer* GetOperationTimer() {
+    return static_cast<ash::timer_factory::FakeOneShotTimer*>(
         operation_->remote_device_timer_.get());
   }
 

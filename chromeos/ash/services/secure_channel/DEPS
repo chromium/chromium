@@ -1,6 +1,5 @@
 include_rules = [
   "+ash/constants",
-  "+components/cross_device/timer_factory",
   "+chromeos/ash/components/multidevice",
   "+chromeos/ash/services/device_sync",
   "+chromeos/ash/services/multidevice_setup/public/cpp",

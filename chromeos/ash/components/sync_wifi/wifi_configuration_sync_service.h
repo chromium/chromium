@@ -21,9 +21,9 @@ namespace syncer {
 class ModelTypeControllerDelegate;
 }  // namespace syncer
 
-namespace cross_device {
+namespace ash::timer_factory {
 class TimerFactory;
-}  // namespace cross_device
+}  // namespace ash::timer_factory
 
 namespace ash {
 
@@ -59,7 +59,7 @@ class WifiConfigurationSyncService : public KeyedService {
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
   std::unique_ptr<SyncedNetworkMetricsLogger> metrics_logger_;
-  std::unique_ptr<cross_device::TimerFactory> timer_factory_;
+  std::unique_ptr<ash::timer_factory::TimerFactory> timer_factory_;
   std::unique_ptr<SyncedNetworkUpdaterImpl> updater_;
   std::unique_ptr<LocalNetworkCollectorImpl> collector_;
   std::unique_ptr<WifiConfigurationBridge> bridge_;

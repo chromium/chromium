@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CROSS_DEVICE_TIMER_FACTORY_TIMER_FACTORY_IMPL_H_
-#define COMPONENTS_CROSS_DEVICE_TIMER_FACTORY_TIMER_FACTORY_IMPL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_TIMER_FACTORY_TIMER_FACTORY_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_TIMER_FACTORY_TIMER_FACTORY_IMPL_H_
 
 #include <memory>
 
-#include "components/cross_device/timer_factory/timer_factory.h"
+#include "chromeos/ash/components/timer_factory/timer_factory.h"
 
 namespace base {
 class OneShotTimer;
-}
+} // namespace base
 
-namespace cross_device {
+
+namespace ash::timer_factory {
 
 // Concrete TimerFactory implementation, which returns base::OneShotTimer
 // objects.
@@ -44,6 +45,6 @@ class TimerFactoryImpl : public TimerFactory {
   std::unique_ptr<base::OneShotTimer> CreateOneShotTimer() override;
 };
 
-}  // namespace cross_device
+}  // namespace ash::timer_factory
 
-#endif  // COMPONENTS_CROSS_DEVICE_TIMER_FACTORY_TIMER_FACTORY_IMPL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_TIMER_FACTORY_TIMER_FACTORY_IMPL_H_

@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CROSS_DEVICE_TIMER_FACTORY_FAKE_TIMER_FACTORY_H_
-#define COMPONENTS_CROSS_DEVICE_TIMER_FACTORY_FAKE_TIMER_FACTORY_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_TIMER_FACTORY_FAKE_TIMER_FACTORY_H_
+#define CHROMEOS_ASH_COMPONENTS_TIMER_FACTORY_FAKE_TIMER_FACTORY_H_
 
 #include <memory>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
-#include "components/cross_device/timer_factory/timer_factory_impl.h"
+#include "chromeos/ash/components/timer_factory/timer_factory_impl.h"
 
-namespace cross_device {
+namespace ash::timer_factory {
 
 class FakeOneShotTimer;
 
 // Test TimerFactory implementation, which returns FakeOneShotTimer objects.
-class FakeTimerFactory : public cross_device::TimerFactory {
+class FakeTimerFactory : public ash::timer_factory::TimerFactory {
  public:
   class Factory : public TimerFactoryImpl::Factory {
    public:
@@ -32,7 +32,7 @@ class FakeTimerFactory : public cross_device::TimerFactory {
 
    private:
     // TimerFactoryImpl::Factory:
-    std::unique_ptr<cross_device::TimerFactory> CreateInstance() override;
+    std::unique_ptr<ash::timer_factory::TimerFactory> CreateInstance() override;
 
     raw_ptr<FakeTimerFactory> instance_ = nullptr;
   };
@@ -84,6 +84,6 @@ class FakeTimerFactory : public cross_device::TimerFactory {
   base::WeakPtrFactory<FakeTimerFactory> weak_ptr_factory_{this};
 };
 
-}  // namespace cross_device
+}  // namespace ash::timer_factory
 
-#endif  // COMPONENTS_CROSS_DEVICE_TIMER_FACTORY_FAKE_TIMER_FACTORY_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_TIMER_FACTORY_FAKE_TIMER_FACTORY_H_

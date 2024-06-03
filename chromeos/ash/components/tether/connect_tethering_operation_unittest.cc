@@ -20,7 +20,7 @@
 #include "chromeos/ash/components/tether/message_wrapper.h"
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
 #include "chromeos/ash/components/tether/proto_test_util.h"
-#include "components/cross_device/timer_factory/fake_timer_factory.h"
+#include "chromeos/ash/components/timer_factory/fake_timer_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -68,7 +68,7 @@ class ConnectTetheringOperationTest : public testing::Test {
         /*setup_required=*/false));
 
     operation_->SetTimerFactoryForTest(
-        std::make_unique<cross_device::FakeTimerFactory>());
+        std::make_unique<ash::timer_factory::FakeTimerFactory>());
     operation_->AddObserver(&mock_observer_);
 
     test_clock_.SetNow(base::Time::UnixEpoch());

@@ -31,9 +31,9 @@
 #include "chromeos/ash/components/tether/tether_session_completion_logger.h"
 #include "chromeos/ash/components/tether/top_level_host_scan_cache.h"
 #include "chromeos/ash/components/tether/wifi_hotspot_connector.h"
+#include "chromeos/ash/components/timer_factory/timer_factory.h"
+#include "chromeos/ash/components/timer_factory/timer_factory_impl.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
-#include "components/cross_device/timer_factory/timer_factory.h"
-#include "components/cross_device/timer_factory/timer_factory_impl.h"
 
 namespace ash::tether {
 
@@ -112,7 +112,7 @@ SynchronousShutdownObjectContainerImpl::SynchronousShutdownObjectContainerImpl(
           tether_host_response_recorder_.get(),
           device_id_tether_network_guid_map_.get())),
       top_level_host_scan_cache_(std::make_unique<TopLevelHostScanCache>(
-          cross_device::TimerFactoryImpl::Factory::Create(),
+          ash::timer_factory::TimerFactoryImpl::Factory::Create(),
           active_host_.get(),
           network_host_scan_cache_.get(),
           persistent_host_scan_cache_.get())),

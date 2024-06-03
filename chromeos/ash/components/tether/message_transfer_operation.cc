@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/tether/message_wrapper.h"
-#include "components/cross_device/timer_factory/timer_factory_impl.h"
+#include "chromeos/ash/components/timer_factory/timer_factory_impl.h"
 
 namespace ash::tether {
 
@@ -22,7 +22,7 @@ MessageTransferOperation::MessageTransferOperation(
     : tether_host_(tether_host),
       connection_priority_(connection_priority),
       host_connection_factory_(host_connection_factory),
-      timer_factory_(cross_device::TimerFactoryImpl::Factory::Create()) {}
+      timer_factory_(ash::timer_factory::TimerFactoryImpl::Factory::Create()) {}
 
 MessageTransferOperation::~MessageTransferOperation() {
   // If initialization never occurred, devices were never registered.
@@ -154,7 +154,7 @@ void MessageTransferOperation::OnTimeout() {
 }
 
 void MessageTransferOperation::SetTimerFactoryForTest(
-    std::unique_ptr<cross_device::TimerFactory> timer_factory_for_test) {
+    std::unique_ptr<ash::timer_factory::TimerFactory> timer_factory_for_test) {
   timer_factory_ = std::move(timer_factory_for_test);
 }
 

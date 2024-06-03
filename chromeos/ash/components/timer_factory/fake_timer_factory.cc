@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cross_device/timer_factory/fake_timer_factory.h"
+#include "chromeos/ash/components/timer_factory/fake_timer_factory.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "components/cross_device/timer_factory/fake_one_shot_timer.h"
+#include "chromeos/ash/components/timer_factory/fake_one_shot_timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace cross_device {
+namespace ash::timer_factory {
 
 FakeTimerFactory::FakeTimerFactory() = default;
 
 FakeTimerFactory::~FakeTimerFactory() = default;
 
-std::unique_ptr<cross_device::TimerFactory>
+std::unique_ptr<ash::timer_factory::TimerFactory>
 FakeTimerFactory::Factory::CreateInstance() {
   EXPECT_FALSE(instance_);
   auto instance = std::make_unique<FakeTimerFactory>();
@@ -50,4 +50,4 @@ void FakeTimerFactory::OnOneShotTimerDeleted(
   id_to_active_one_shot_timer_map_.erase(deleted_timer_id);
 }
 
-}  // namespace cross_device
+}  // namespace ash::timer_factory

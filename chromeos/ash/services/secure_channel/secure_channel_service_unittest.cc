@@ -15,6 +15,8 @@
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/ash/components/multidevice/remote_device_cache.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
+#include "chromeos/ash/components/timer_factory/fake_timer_factory.h"
+#include "chromeos/ash/components/timer_factory/timer_factory_impl.h"
 #include "chromeos/ash/services/secure_channel/active_connection_manager_impl.h"
 #include "chromeos/ash/services/secure_channel/ble_connection_manager_impl.h"
 #include "chromeos/ash/services/secure_channel/ble_scanner_impl.h"
@@ -40,8 +42,6 @@
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/secure_channel_disconnector_impl.h"
 #include "chromeos/ash/services/secure_channel/secure_channel_initializer.h"
-#include "components/cross_device/timer_factory/fake_timer_factory.h"
-#include "components/cross_device/timer_factory/timer_factory_impl.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -239,7 +239,7 @@ class FakeBleConnectionManagerFactory
       BleSynchronizerBase* ble_synchronizer,
       BleScanner* ble_scanner,
       SecureChannelDisconnector* secure_channel_disconnector,
-      cross_device::TimerFactory* timer_factory,
+      ash::timer_factory::TimerFactory* timer_factory,
       base::Clock* clock) override {
     EXPECT_FALSE(instance_);
     EXPECT_EQ(expected_bluetooth_adapter_, bluetooth_adapter.get());
@@ -514,8 +514,8 @@ class SecureChannelServiceTest : public testing::Test {
 
     fake_nearby_connector_ = std::make_unique<FakeNearbyConnector>();
 
-    cross_device::TimerFactoryImpl::Factory::SetFactoryForTesting(
-        std::make_unique<cross_device::FakeTimerFactory::Factory>());
+    ash::timer_factory::TimerFactoryImpl::Factory::SetFactoryForTesting(
+        std::make_unique<ash::timer_factory::FakeTimerFactory::Factory>());
 
     test_remote_device_cache_factory_ =
         std::make_unique<TestRemoteDeviceCacheFactory>();
@@ -589,7 +589,8 @@ class SecureChannelServiceTest : public testing::Test {
   }
 
   void TearDown() override {
-    cross_device::TimerFactoryImpl::Factory::SetFactoryForTesting(nullptr);
+    ash::timer_factory::TimerFactoryImpl::Factory::SetFactoryForTesting(
+        nullptr);
     multidevice::RemoteDeviceCache::Factory::SetFactoryForTesting(nullptr);
     BluetoothHelperImpl::Factory::SetFactoryForTesting(nullptr);
     BleSynchronizer::Factory::SetFactoryForTesting(nullptr);

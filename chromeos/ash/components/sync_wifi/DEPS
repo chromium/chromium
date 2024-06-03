@@ -12,6 +12,6 @@ include_rules = [
   "+components/version_info",
   "+components/sync",
   "+components/sync_preferences",
-  "+components/cross_device/timer_factory",
+  "+chromeos/ash/components/timer_factory",
   "+dbus",
 ]

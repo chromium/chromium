@@ -30,7 +30,7 @@
 #include "chromeos/ash/components/sync_wifi/synced_network_metrics_logger.h"
 #include "chromeos/ash/components/sync_wifi/synced_network_updater.h"
 #include "chromeos/ash/components/sync_wifi/test_data_generator.h"
-#include "components/cross_device/timer_factory/fake_timer_factory.h"
+#include "chromeos/ash/components/timer_factory/fake_timer_factory.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/model_type.h"
@@ -155,7 +155,7 @@ class WifiConfigurationBridgeTest : public testing::Test {
     network_test_helper_->SetUp();
 
     ON_CALL(mock_processor_, IsTrackingMetadata()).WillByDefault(Return(true));
-    timer_factory_ = std::make_unique<cross_device::FakeTimerFactory>();
+    timer_factory_ = std::make_unique<ash::timer_factory::FakeTimerFactory>();
     synced_network_updater_ = std::make_unique<TestSyncedNetworkUpdater>();
     local_network_collector_ = std::make_unique<FakeLocalNetworkCollector>();
     metrics_logger_ = std::make_unique<SyncedNetworkMetricsLogger>(
@@ -257,7 +257,7 @@ class WifiConfigurationBridgeTest : public testing::Test {
     return local_network_collector_.get();
   }
 
-  cross_device::FakeTimerFactory* timer_factory() {
+  ash::timer_factory::FakeTimerFactory* timer_factory() {
     return timer_factory_.get();
   }
   NetworkMetadataStore* network_metadata_store() {
@@ -279,7 +279,7 @@ class WifiConfigurationBridgeTest : public testing::Test {
   std::unique_ptr<WifiConfigurationBridge> bridge_;
   std::unique_ptr<TestSyncedNetworkUpdater> synced_network_updater_;
   std::unique_ptr<FakeLocalNetworkCollector> local_network_collector_;
-  std::unique_ptr<cross_device::FakeTimerFactory> timer_factory_;
+  std::unique_ptr<ash::timer_factory::FakeTimerFactory> timer_factory_;
   std::unique_ptr<TestingPrefServiceSimple> device_prefs_;
   std::unique_ptr<SyncedNetworkMetricsLogger> metrics_logger_;
   std::unique_ptr<NetworkTestHelper> network_test_helper_;

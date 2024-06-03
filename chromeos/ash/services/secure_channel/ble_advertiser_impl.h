@@ -18,9 +18,9 @@
 #include "chromeos/ash/services/secure_channel/device_id_pair.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/ble_constants.h"
 
-namespace cross_device {
+namespace ash::timer_factory {
 class TimerFactory;
-}  // namespace cross_device
+}  // namespace ash::timer_factory
 
 namespace base {
 class OneShotTimer;
@@ -58,7 +58,7 @@ class BleAdvertiserImpl : public BleAdvertiser {
         Delegate* delegate,
         BluetoothHelper* bluetooth_helper,
         BleSynchronizerBase* ble_synchronizer_base,
-        cross_device::TimerFactory* timer_factory,
+        ash::timer_factory::TimerFactory* timer_factory,
         scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner =
             base::SequencedTaskRunner::GetCurrentDefault());
     static void SetFactoryForTesting(Factory* test_factory);
@@ -69,7 +69,7 @@ class BleAdvertiserImpl : public BleAdvertiser {
         Delegate* delegate,
         BluetoothHelper* bluetooth_helper,
         BleSynchronizerBase* ble_synchronizer_base,
-        cross_device::TimerFactory* timer_factory,
+        ash::timer_factory::TimerFactory* timer_factory,
         scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner) = 0;
 
    private:
@@ -106,7 +106,7 @@ class BleAdvertiserImpl : public BleAdvertiser {
       Delegate* delegate,
       BluetoothHelper* bluetooth_helper,
       BleSynchronizerBase* ble_synchronizer_base,
-      cross_device::TimerFactory* timer_factory,
+      ash::timer_factory::TimerFactory* timer_factory,
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
 
   // BleAdvertiser:
@@ -140,7 +140,7 @@ class BleAdvertiserImpl : public BleAdvertiser {
 
   raw_ptr<BluetoothHelper> bluetooth_helper_;
   raw_ptr<BleSynchronizerBase> ble_synchronizer_base_;
-  raw_ptr<cross_device::TimerFactory> timer_factory_;
+  raw_ptr<ash::timer_factory::TimerFactory> timer_factory_;
 
   // For posting tasks to the current base::SequencedTaskRunner.
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;

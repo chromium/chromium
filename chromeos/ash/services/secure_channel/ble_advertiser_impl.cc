@@ -11,11 +11,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/timer_factory/timer_factory.h"
 #include "chromeos/ash/services/secure_channel/bluetooth_helper.h"
 #include "chromeos/ash/services/secure_channel/error_tolerant_ble_advertisement_impl.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/ash/services/secure_channel/shared_resource_scheduler.h"
-#include "components/cross_device/timer_factory/timer_factory.h"
 
 namespace ash::secure_channel {
 
@@ -38,7 +38,7 @@ std::unique_ptr<BleAdvertiser> BleAdvertiserImpl::Factory::Create(
     Delegate* delegate,
     BluetoothHelper* bluetooth_helper,
     BleSynchronizerBase* ble_synchronizer_base,
-    cross_device::TimerFactory* timer_factory,
+    ash::timer_factory::TimerFactory* timer_factory,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner) {
   if (test_factory_) {
     return test_factory_->CreateInstance(delegate, bluetooth_helper,
@@ -65,7 +65,7 @@ BleAdvertiserImpl::BleAdvertiserImpl(
     Delegate* delegate,
     BluetoothHelper* bluetooth_helper,
     BleSynchronizerBase* ble_synchronizer_base,
-    cross_device::TimerFactory* timer_factory,
+    ash::timer_factory::TimerFactory* timer_factory,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
     : BleAdvertiser(delegate),
       bluetooth_helper_(bluetooth_helper),

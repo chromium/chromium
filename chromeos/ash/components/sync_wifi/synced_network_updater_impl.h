@@ -17,9 +17,9 @@
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace cross_device {
+namespace ash::timer_factory {
 class TimerFactory;
-}  // namespace cross_device
+}  // namespace ash::timer_factory
 
 namespace ash::sync_wifi {
 
@@ -34,7 +34,7 @@ class SyncedNetworkUpdaterImpl
   SyncedNetworkUpdaterImpl(
       std::unique_ptr<PendingNetworkConfigurationTracker> tracker,
       chromeos::network_config::mojom::CrosNetworkConfig* cros_network_config,
-      cross_device::TimerFactory* timer_factory,
+      ash::timer_factory::TimerFactory* timer_factory,
       SyncedNetworkMetricsLogger* metrics_logger);
   ~SyncedNetworkUpdaterImpl() override;
 
@@ -91,7 +91,7 @@ class SyncedNetworkUpdaterImpl
       cros_network_config_observer_receiver_{this};
   std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
       networks_;
-  raw_ptr<cross_device::TimerFactory> timer_factory_;
+  raw_ptr<ash::timer_factory::TimerFactory> timer_factory_;
   base::flat_map<std::string, std::unique_ptr<base::OneShotTimer>>
       change_guid_to_timer_map_;
   base::flat_map<std::string, int> network_guid_to_updates_counter_;

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cross_device/timer_factory/fake_one_shot_timer.h"
+#include "chromeos/ash/components/timer_factory/fake_one_shot_timer.h"
 
 #include "base/functional/callback.h"
 
-namespace cross_device {
+namespace ash::timer_factory {
 
 FakeOneShotTimer::FakeOneShotTimer(
     base::OnceCallback<void(const base::UnguessableToken&)> destructor_callback)
@@ -18,4 +18,4 @@ FakeOneShotTimer::~FakeOneShotTimer() {
   std::move(destructor_callback_).Run(id_);
 }
 
-}  // namespace cross_device
+}  // namespace ash::timer_factory
