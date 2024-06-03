@@ -11,8 +11,8 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
-import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './overlay_shimmer.js';
 import {getTemplate} from './post_selection_renderer.html.js';
+import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import type {GestureEvent} from './selection_utils.js';
 import {toPercent} from './values_converter.js';
 

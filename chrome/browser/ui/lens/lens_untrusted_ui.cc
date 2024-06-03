@@ -127,6 +127,8 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   html_source->AddDouble(
       "selectTextTriggerThreshold",
       lens::features::GetLensOverlaySelectTextOverRegionTriggerThreshold());
+  html_source->AddBoolean("useShimmerCanvas",
+                          lens::features::GetLensOverlayUseShimmerCanvas());
 
   // Allow FrameSrc from all Google subdomains as redirects can occur.
   GURL results_side_panel_url =

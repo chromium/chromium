@@ -15,44 +15,9 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import {getFallbackTheme, getShaderLayerColorHexes} from './color_utils.js';
 import type {OverlayTheme} from './lens.mojom-webui.js';
 import {getTemplate} from './overlay_shimmer.html.js';
+import type {OverlayShimmerFocusedRegion, OverlayShimmerUnfocusRegion} from './selection_utils.js';
+import {ShimmerControlRequester} from './selection_utils.js';
 import {toPercent} from './values_converter.js';
-
-/**
- * Helper function to dispatch event to focus the shimmer on a region. This
- * should be used instead of directly dispatching the event, so if
- * implementation changes, it can be easily changed across the codebase.
- */
-export function focusShimmerOnRegion(
-    dispatchEl: PolymerElement, top: number, left: number, width: number,
-    height: number, requester: ShimmerControlRequester) {
-  dispatchEl.dispatchEvent(
-      new CustomEvent<OverlayShimmerFocusedRegion>('focus-region', {
-        bubbles: true,
-        composed: true,
-        detail: {
-          top,
-          left,
-          width,
-          height,
-          requester,
-        },
-      }));
-}
-
-/**
- * Helper function to dispatch event to unfocus the shimmer. This should be used
- * instead of directly dispatching the event, so if implementation changes, it
- * can be easily changed across the codebase.
- */
-export function unfocusShimmer(
-    dispatchEl: PolymerElement, requester: ShimmerControlRequester) {
-  dispatchEl.dispatchEvent(
-      new CustomEvent<OverlayShimmerUnfocusRegion>('unfocus-region', {
-        bubbles: true,
-        composed: true,
-        detail: {requester},
-      }));
-}
 
 interface CircleProperties {
   // The HEX value to color the circle.
@@ -140,35 +105,6 @@ const REGION_SELECTION_STATE_FOCUS_DURATION = 750;
 
 // The time (in MS) to wait between updating the sparkle seed.
 const SPARKLE_MOTION_TIMEOUT_MS = 100;
-
-// Specifies which feature is requesting to control the Shimmer. Features are
-// ordered by priority, meaning requesters with higher enum values can take
-// control from lower value requesters, but not vice versa. For example, if
-// CURSOR is the requester, and a new focus region gets called for SEGMENTATION,
-// the focus region request will be executed. But if CURSOR sends a focus region
-// request while SEGMENTATION has control, the request will be ignored.
-export enum ShimmerControlRequester {
-  NONE = 0,
-  CURSOR = 1,
-  POST_SELECTION = 2,
-  SEGMENTATION = 3,
-  MANUAL_REGION = 4,
-}
-
-// Region sent to OverlayShimmerElement to focus the shimmer on.
-// The numbers should be normalized to the image dimensions, between 0 and 1.
-export interface OverlayShimmerFocusedRegion {
-  top: number;
-  left: number;
-  width: number;
-  height: number;
-  requester: ShimmerControlRequester;
-}
-
-// Request to unfocus a region and relinquish control from the given requester.
-export interface OverlayShimmerUnfocusRegion {
-  requester: ShimmerControlRequester;
-}
 
 export interface OverlayShimmerElement {
   $: {

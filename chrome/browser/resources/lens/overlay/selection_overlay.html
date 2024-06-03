@@ -48,7 +48,8 @@
     pointer-events: none;
   }
 
-  :host([disable-shimmer]) #overlayShimmer{
+  :host([disable-shimmer]) #overlayShimmerCanvas,
+  :host([disable-shimmer]) #overlayShimmer {
     display: none;
   }
 
@@ -249,7 +250,10 @@
   <div id="selectionElements">
     <!-- Other elements that need to be bounded to the image go here -->
     <div id="extraScrim"></div>
-    <overlay-shimmer id="overlayShimmer" theme="[[theme]]"></overlay-shimmer>
+    <overlay-shimmer-canvas hidden$="[[!useShimmerCanvas]]" theme="[[theme]]"
+      id="overlayShimmerCanvas"></overlay-shimmer-canvas>
+    <overlay-shimmer hidden$="[[useShimmerCanvas]]" theme="[[theme]]"
+      id="overlayShimmer"></overlay-shimmer>
     <post-selection-renderer id="postSelectionRenderer"
         screenshot-data-uri="[[screenshotDataUri]]">
     </post-selection-renderer>

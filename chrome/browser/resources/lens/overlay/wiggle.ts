@@ -62,12 +62,18 @@ export class Wiggle {
   private angularPosition: number;
   /** Time in seconds of previous calculation */
   private previousTimeSeconds?: number;
+  /** Value of the previous calculated wiggle simulation value. */
+  private previousWiggleValue?: number;
 
   constructor(
       frequency: number,
   ) {
     this.angularFrequency = frequencyToAngularFrequency(frequency);
     this.angularPosition = Math.random() * INITIAL_ANGULAR_POSITION_MULTIPLIER;
+  }
+
+  getPreviousWiggleValue(): number {
+    return this.previousWiggleValue ?? 0;
   }
 
   setFrequency(frequency: number) {
@@ -91,6 +97,7 @@ export class Wiggle {
     for (const {amplitude, frequency} of this.waveParams) {
       wiggle += amplitude * Math.sin(frequency * this.angularPosition);
     }
+    this.previousWiggleValue = wiggle;
     return wiggle;
   }
 }
