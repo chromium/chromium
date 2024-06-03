@@ -5,6 +5,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/fake_glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_student_view.h"
+#include "ash/glanceables/common/glanceables_time_management_bubble_view.h"
 #include "ash/glanceables/common/glanceables_util.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
@@ -19,16 +20,59 @@
 #include "ash/system/unified/glanceable_tray_bubble.h"
 #include "ash/system/unified/glanceable_tray_bubble_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/functional/bind.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/test/widget_animation_waiter.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
+
+namespace {
+
+class ResizeAnimationWaiter {
+ public:
+  explicit ResizeAnimationWaiter(
+      GlanceablesTimeManagementBubbleView* bubble_view)
+      : bubble_view_(bubble_view) {}
+  ResizeAnimationWaiter(const ResizeAnimationWaiter&) = delete;
+  ResizeAnimationWaiter& operator=(const ResizeAnimationWaiter&) = delete;
+  ~ResizeAnimationWaiter() = default;
+
+  void Wait() {
+    // Only run the `run_loop_` if the bubble is animating.
+    if (bubble_view_->is_animating_resize()) {
+      base::RunLoop run_loop;
+      bubble_view_->SetAnimationEndedClosureForTest(run_loop.QuitClosure());
+      run_loop.Run();
+    }
+
+    // Force frames and wait for all throughput trackers to be gone to allow
+    // animation throughput data to be passed from cc to ui.
+    ui::Compositor* compositor = bubble_view_->GetWidget()->GetCompositor();
+    while (compositor->has_throughput_trackers_for_testing()) {
+      compositor->ScheduleFullRedraw();
+      std::ignore = ui::WaitForNextFrameToBePresented(compositor,
+                                                      base::Milliseconds(500));
+    }
+  }
+
+ private:
+  raw_ptr<GlanceablesTimeManagementBubbleView> bubble_view_;
+  base::WeakPtrFactory<ResizeAnimationWaiter> weak_ptr_factory_{this};
+};
+
+}  // namespace
 
 class GlanceablesBaseTest : public AshTestBase {
  public:
@@ -581,6 +625,67 @@ TEST_F(GlanceablesTasksAndClassroomTest,
                               distance_to_scroll);
   EXPECT_TRUE(tasks_view->IsExpanded());
   EXPECT_FALSE(classroom_view->IsExpanded());
+}
+
+TEST_F(GlanceablesTasksAndClassroomTest,
+       ExpandCollapseAnimationSmoothnessHistogram) {
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  base::HistogramTester resize_animation_histograms;
+
+  // Smoothness should be recorded.
+  resize_animation_histograms.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Tasks.Expand.AnimationSmoothness", 0);
+  resize_animation_histograms.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Tasks.Collapse.AnimationSmoothness", 0);
+  resize_animation_histograms.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Classroom.Expand.AnimationSmoothness", 0);
+  resize_animation_histograms.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Classroom.Collapse.AnimationSmoothness",
+      0);
+
+  auto* const tasks_view = GetTasksView();
+  auto* const classroom_view = GetClassroomView();
+
+  auto* const tasks_expand_button = GetTasksExpandButtonView();
+  ASSERT_TRUE(tasks_expand_button);
+  LeftClickOn(tasks_expand_button);
+  // Make sure both view animations ended.
+  ResizeAnimationWaiter(tasks_view).Wait();
+  ResizeAnimationWaiter(classroom_view).Wait();
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
+
+  resize_animation_histograms.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Tasks.Expand.AnimationSmoothness", 0);
+  resize_animation_histograms.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Tasks.Collapse.AnimationSmoothness", 1);
+  resize_animation_histograms.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Classroom.Expand.AnimationSmoothness", 1);
+  resize_animation_histograms.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Classroom.Collapse.AnimationSmoothness",
+      0);
+
+  auto const* classroom_expand_button = GetClassroomExpandButtonView();
+  ASSERT_TRUE(classroom_expand_button);
+  LeftClickOn(classroom_expand_button);
+  // Make sure both view animations ended.
+  ResizeAnimationWaiter(tasks_view).Wait();
+  ResizeAnimationWaiter(classroom_view).Wait();
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
+
+  resize_animation_histograms.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Tasks.Expand.AnimationSmoothness", 1);
+  resize_animation_histograms.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Tasks.Collapse.AnimationSmoothness", 1);
+  resize_animation_histograms.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Classroom.Expand.AnimationSmoothness", 1);
+  resize_animation_histograms.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Classroom.Collapse.AnimationSmoothness",
+      1);
 }
 
 }  // namespace ash

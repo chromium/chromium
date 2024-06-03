@@ -4,11 +4,15 @@
 
 #include "ash/glanceables/common/glanceables_time_management_bubble_view.h"
 
+#include "ash/public/cpp/metrics_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
@@ -76,6 +80,27 @@ void GlanceablesTimeManagementBubbleView::Layout(PassKey) {
   }
 }
 
+void GlanceablesTimeManagementBubbleView::SetAnimationEndedClosureForTest(
+    base::OnceClosure closure) {
+  resize_animation_ended_closure_ = std::move(closure);
+}
+
+void GlanceablesTimeManagementBubbleView::SetUpResizeThroughputTracker(
+    const std::string& histogram_name) {
+  if (!GetWidget()) {
+    return;
+  }
+
+  resize_throughput_tracker_.emplace(
+      GetWidget()->GetCompositor()->RequestNewThroughputTracker());
+  resize_throughput_tracker_->Start(
+      ash::metrics_util::ForSmoothnessV3(base::BindRepeating(
+          [](const std::string& histogram_name, int smoothness) {
+            base::UmaHistogramPercentage(histogram_name, smoothness);
+          },
+          histogram_name)));
+}
+
 void GlanceablesTimeManagementBubbleView::MaybeDismissErrorMessage() {
   if (!error_message_.get()) {
     return;
@@ -110,7 +135,15 @@ gfx::Size GlanceablesTimeManagementBubbleView::CalculatePreferredSize(
 
 void GlanceablesTimeManagementBubbleView::AnimationEnded(
     const gfx::Animation* animation) {
+  if (resize_throughput_tracker_) {
+    resize_throughput_tracker_->Stop();
+    resize_throughput_tracker_.reset();
+  }
   resize_animation_.reset();
+  if (resize_animation_ended_closure_) {
+    std::move(resize_animation_ended_closure_).Run();
+  }
+
   PreferredSizeChanged();
 }
 
@@ -121,7 +154,14 @@ void GlanceablesTimeManagementBubbleView::AnimationProgressed(
 
 void GlanceablesTimeManagementBubbleView::AnimationCanceled(
     const gfx::Animation* animation) {
+  if (resize_throughput_tracker_) {
+    resize_throughput_tracker_->Cancel();
+    resize_throughput_tracker_.reset();
+  }
   resize_animation_.reset();
+  if (!resize_animation_ended_closure_.is_null()) {
+    std::move(resize_animation_ended_closure_).Run();
+  }
 }
 
 void GlanceablesTimeManagementBubbleView::AddObserver(Observer* observer) {

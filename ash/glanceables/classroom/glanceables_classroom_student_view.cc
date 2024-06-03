@@ -92,8 +92,13 @@ constexpr char kClassroomWebUIMissingUrl[] =
 constexpr char kClassroomWebUIDoneUrl[] =
     "https://classroom.google.com/u/0/a/turned-in/all";
 
-const char kLastSelectedAssignmentsListPref[] =
+constexpr char kLastSelectedAssignmentsListPref[] =
     "ash.glanceables.classroom.student.last_selected_assignments_list";
+
+constexpr char kExpandAnimationSmoothnessHistogramName[] =
+    "Ash.Glanceables.TimeManagement.Classroom.Expand.AnimationSmoothness";
+constexpr char kCollapseAnimationSmoothnessHistogramName[] =
+    "Ash.Glanceables.TimeManagement.Classroom.Collapse.AnimationSmoothness";
 
 constexpr size_t kMaxAssignments = 3;
 
@@ -509,6 +514,9 @@ void GlanceablesClassroomStudentView::AnimateResize() {
     return;
   }
 
+  SetUpResizeThroughputTracker(target_height > current_height
+                                   ? kExpandAnimationSmoothnessHistogramName
+                                   : kCollapseAnimationSmoothnessHistogramName);
   resize_animation_ = std::make_unique<ResizeAnimation>(
       current_height, target_height, this,
       ResizeAnimation::Type::kContainerExpandStateChanged);

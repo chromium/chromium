@@ -5,7 +5,10 @@
 #ifndef ASH_GLANCEABLES_COMMON_GLANCEABLES_TIME_MANAGEMENT_BUBBLE_VIEW_H_
 #define ASH_GLANCEABLES_COMMON_GLANCEABLES_TIME_MANAGEMENT_BUBBLE_VIEW_H_
 
+#include "ash/ash_export.h"
 #include "ash/glanceables/common/glanceables_error_message_view.h"
+#include "base/functional/callback_forward.h"
+#include "ui/compositor/throughput_tracker.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
@@ -14,8 +17,9 @@ namespace ash {
 
 // Glanceables Time Management bubble container that is a child of
 // `GlanceableTrayChildBubble`.
-class GlanceablesTimeManagementBubbleView : public views::FlexLayoutView,
-                                            public gfx::AnimationDelegate {
+class ASH_EXPORT GlanceablesTimeManagementBubbleView
+    : public views::FlexLayoutView,
+      public gfx::AnimationDelegate {
   METADATA_HEADER(GlanceablesTimeManagementBubbleView, views::FlexLayoutView)
 
  public:
@@ -56,6 +60,12 @@ class GlanceablesTimeManagementBubbleView : public views::FlexLayoutView,
   // Returns the expanded/collapsed state of the bubble view.
   virtual bool IsExpanded() const = 0;
 
+  bool is_animating_resize() const {
+    return resize_animation_ && resize_animation_->is_animating();
+  }
+
+  void SetAnimationEndedClosureForTest(base::OnceClosure closure);
+
  protected:
   // Linear animation to track time management bubble resize animation - as the
   // animation progresses, the bubble view preferred size will change causing
@@ -84,6 +94,8 @@ class GlanceablesTimeManagementBubbleView : public views::FlexLayoutView,
     const int end_height_;
   };
 
+  void SetUpResizeThroughputTracker(const std::string& histogram_name);
+
   // Removes an active `error_message_` from the view, if any.
   void MaybeDismissErrorMessage();
   void ShowErrorMessage(const std::u16string& error_message,
@@ -100,6 +112,13 @@ class GlanceablesTimeManagementBubbleView : public views::FlexLayoutView,
   base::ObserverList<Observer> observers_;
 
  private:
+  // Measure animation smoothness metrics for `resize_animation_`.
+  std::optional<ui::ThroughputTracker> resize_throughput_tracker_;
+
+  // Called when `resize_animation_` ends or is canceled. This is currently only
+  // used in test.
+  base::OnceClosure resize_animation_ended_closure_;
+
   // Owned by views hierarchy.
   raw_ptr<GlanceablesErrorMessageView> error_message_ = nullptr;
 };

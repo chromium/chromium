@@ -88,6 +88,13 @@ constexpr gfx::Insets kComboboxBorderInsets = gfx::Insets::TLBR(4, 10, 4, 4);
 
 constexpr char kTasksManagementPage[] = "https://tasks.google.com/";
 
+constexpr char kExpandAnimationSmoothnessHistogramName[] =
+    "Ash.Glanceables.TimeManagement.Tasks.Expand.AnimationSmoothness";
+constexpr char kCollapseAnimationSmoothnessHistogramName[] =
+    "Ash.Glanceables.TimeManagement.Tasks.Collapse.AnimationSmoothness";
+constexpr char kChildResizingAnimationSmoothnessHistogramName[] =
+    "Ash.Glanceables.TimeManagement.Tasks.ChildResizing.AnimationSmoothness";
+
 api::TasksClient* GetTasksClient() {
   return Shell::Get()->glanceables_controller()->GetTasksClient();
 }
@@ -937,6 +944,18 @@ void GlanceablesTasksView::AnimateResize(ResizeAnimation::Type resize_type) {
     return;
   }
 
+  switch (resize_type) {
+    case ResizeAnimation::Type::kContainerExpandStateChanged:
+      SetUpResizeThroughputTracker(
+          target_height > current_height
+              ? kExpandAnimationSmoothnessHistogramName
+              : kCollapseAnimationSmoothnessHistogramName);
+      break;
+    case ResizeAnimation::Type::kChildResize:
+      SetUpResizeThroughputTracker(
+          kChildResizingAnimationSmoothnessHistogramName);
+      break;
+  }
   running_resize_animation_ = resize_type;
   resize_animation_ = std::make_unique<ResizeAnimation>(
       current_height, target_height, this, resize_type);

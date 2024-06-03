@@ -4299,6 +4299,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Ash.Glanceables.TimeManagement.Tasks.ChildResizing.AnimationSmoothness"
+    units="%" expires_after="2024-12-31">
+  <owner>wcwang@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The animation smoothness of the resize animation of the glanceables tasks
+    bubble view. This occurs when a task is entering edit mode or an editted
+    task is committed.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Glanceables.TimeManagement.Tasks.ModifyTaskResult"
     enum="ModifyGlanceablesTaskResult" expires_after="2024-12-31">
   <owner>amitrokhin@google.com</owner>
@@ -4380,6 +4392,26 @@ chromium-metrics-reviews@google.com.
   <token key="Occurrence">
     <variant name="FirstOcurrence"/>
     <variant name="SubsequentOccurence"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Ash.Glanceables.TimeManagement.{GlanceableBubble}.{ExpandState}.AnimationSmoothness"
+    units="%" expires_after="2024-12-31">
+  <owner>wcwang@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The animation smoothness of the expand/collapse animation of the glanceables
+    bubble. This occurs when the expand state changes which is usually triggered
+    by clicking the expand button on the glanceables bubble view.
+  </summary>
+  <token key="GlanceableBubble">
+    <variant name="Classroom"/>
+    <variant name="Tasks"/>
+  </token>
+  <token key="ExpandState">
+    <variant name="Collapse"/>
+    <variant name="Expand"/>
   </token>
 </histogram>
 
