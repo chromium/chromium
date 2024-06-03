@@ -36,6 +36,7 @@
 #include "ui/gfx/font.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -228,7 +229,7 @@ ToggleEffectsButton::ToggleEffectsButton(
       l10n_util::GetStringUTF16(
           toggled_ ? VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_ON
                    : VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_OFF)));
-  SetAccessibleRole(ax::mojom::Role::kToggleButton);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   UpdateColorsAndBackground();

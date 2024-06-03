@@ -13,6 +13,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/view_class_properties.h"
@@ -27,7 +28,7 @@ constexpr int kBubbleCornerRadius = 24;
 GlanceableTrayChildBubble::GlanceableTrayChildBubble(
     bool use_glanceables_container_style) {
   if (use_glanceables_container_style) {
-    SetAccessibleRole(ax::mojom::Role::kGroup);
+    GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
 
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);

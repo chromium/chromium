@@ -177,7 +177,7 @@ END_METADATA
 GlanceablesTasksView::GlanceablesTasksView(
     const ui::ListModel<api::TaskList>* task_lists)
     : shown_time_(base::Time::Now()) {
-  SetAccessibleRole(ax::mojom::Role::kGroup);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
 
   SetInteriorMargin(gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
                                       kInteriorGlanceableBubbleMargin, 0,
@@ -239,7 +239,8 @@ GlanceablesTasksView::GlanceablesTasksView(
 
   task_items_container_view_ =
       list_view->AddChildView(std::make_unique<views::View>());
-  task_items_container_view_->SetAccessibleRole(ax::mojom::Role::kList);
+  task_items_container_view_->GetViewAccessibility().SetRole(
+      ax::mojom::Role::kList);
   task_items_container_view_->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleListContainer));
   task_items_container_view_->SetLayoutManager(

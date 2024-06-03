@@ -263,7 +263,7 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
   list_container_view_->SetOrientation(
       views::BoxLayout::Orientation::kVertical);
   list_container_view_->SetBetweenChildSpacing(4);
-  list_container_view_->SetAccessibleRole(ax::mojom::Role::kList);
+  list_container_view_->GetViewAccessibility().SetRole(ax::mojom::Role::kList);
 
   const auto* const typography_provider = TypographyProvider::Get();
   empty_list_label_ = body_container_->AddChildView(

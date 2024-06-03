@@ -43,6 +43,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view_utils.h"
@@ -161,7 +162,7 @@ VideoConferenceTrayButton::VideoConferenceTrayButton(
 
   SetToggledVectorIcon(*toggled_icon);
 
-  SetAccessibleRole(ax::mojom::Role::kToggleButton);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
 
   // Reduce the focus ring padding which is installed by default by
   // `IconButton`. The default padding results in the focus ring being painted

@@ -263,7 +263,7 @@ ClipboardHistoryItemView::ClipboardHistoryItemView(
     : item_id_(item_id),
       clipboard_history_(clipboard_history),
       container_(container) {
-  SetAccessibleRole(ax::mojom::Role::kMenuItem);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
 }
 
 bool ClipboardHistoryItemView::AdvancePseudoFocus(bool reverse) {

@@ -217,7 +217,7 @@ class GlanceablesTaskView::CheckButton : public views::ImageButton {
   explicit CheckButton(PressedCallback pressed_callback)
       : views::ImageButton(std::move(pressed_callback)) {
     SetBorder(views::CreateEmptyBorder(gfx::Insets(2)));
-    SetAccessibleRole(ax::mojom::Role::kCheckBox);
+    GetViewAccessibility().SetRole(ax::mojom::Role::kCheckBox);
     UpdateImage();
     SetFlipCanvasOnPaintForRTLUI(/*enable=*/false);
     views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
@@ -307,7 +307,7 @@ GlanceablesTaskView::GlanceablesTaskView(
       save_callback_(std::move(save_callback)),
       edit_in_browser_callback_(std::move(edit_in_browser_callback)),
       show_error_message_callback_(std::move(show_error_message_callback)) {
-  SetAccessibleRole(ax::mojom::Role::kListItem);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
   SetCrossAxisAlignment(views::LayoutAlignment::kStart);
   SetOrientation(views::LayoutOrientation::kHorizontal);
 

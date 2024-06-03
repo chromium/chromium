@@ -17,6 +17,7 @@
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/test/test_event_handler.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
@@ -65,7 +66,7 @@ class WidgetDestroyHandler : public ui::test::TestEventHandler {
 class FakeTestView : public views::View {
  public:
   FakeTestView() {
-    SetAccessibleRole(ax::mojom::Role::kStaticText);
+    GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
     SetAccessibleName(u"FakeTestView");
   }
   ~FakeTestView() override = default;

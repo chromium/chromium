@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -26,7 +27,7 @@ SearchResultBaseView::SearchResultBaseView() {
   // all relevant key events (e.g. ENTER key for result activation) to search
   // result views as needed.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-  SetAccessibleRole(ax::mojom::Role::kListBoxOption);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
 }
 
 SearchResultBaseView::~SearchResultBaseView() {

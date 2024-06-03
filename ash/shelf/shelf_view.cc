@@ -89,6 +89,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
@@ -374,7 +375,7 @@ ShelfView::ShelfView(ShelfModel* model,
   announcement_view_ = new views::View();
   AddChildView(announcement_view_.get());
 
-  SetAccessibleRole(ax::mojom::Role::kToolbar);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
 }
 
 ShelfView::~ShelfView() {

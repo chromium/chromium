@@ -93,7 +93,7 @@ SearchResultImageListView::SearchResultImageListView(
   title_label_->SetPaintToLayer();
   title_label_->layer()->SetFillsBoundsOpaquely(false);
 
-  SetAccessibleRole(ax::mojom::Role::kListBox);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
   SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_ACCESSIBLE_NAME,
       title_label_->GetText()));

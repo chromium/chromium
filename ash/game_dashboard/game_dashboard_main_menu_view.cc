@@ -53,6 +53,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
@@ -1017,7 +1018,7 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
           IDS_ASH_GAME_DASHBOARD_SCREENSHOT_TILE_BUTTON_TITLE),
       /*sub_label=*/std::nullopt));
   // `screenshot_tile` is treated as a button instead of toggle button here.
-  screenshot_tile->SetAccessibleRole(ax::mojom::Role::kButton);
+  screenshot_tile->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 
   // Remove the sub-label view from Screenshot Feature Tile.
   if (tile_type == FeatureTile::TileType::kPrimary) {

@@ -181,7 +181,7 @@ class RecentlyUsedImageButton : public views::ImageButton {
   // Called when decoding metadata complete.
   void SetAccessibilityLabelFromRecentSeaPenImageInfo(
       personalization_app::mojom::RecentSeaPenImageInfoPtr info) {
-    SetAccessibleRole(ax::mojom::Role::kListItem);
+    GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
     GetViewAccessibility().SetDescription(l10n_util::GetStringUTF16(
         IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_IMAGE_LIST_ITEM_DESCRIPTION));
 
