@@ -419,6 +419,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       const wgpu::Device& device,
       wgpu::BackendType backendType,
       wgpu::TextureUsage usage,
+      wgpu::TextureUsage internal_usage,
       std::vector<wgpu::TextureFormat> view_formats);
 
   std::unique_ptr<SharedImageRepresentationAndAccess>
@@ -427,6 +428,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       MailboxFlags flags,
       const wgpu::Device& device,
       wgpu::TextureUsage usage,
+      wgpu::TextureUsage internal_usage,
       std::vector<wgpu::TextureFormat> view_formats);
 
   // Device creation requires that an isolation key has been set for the
@@ -513,6 +515,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
            std::unique_ptr<SkiaImageRepresentation> representation,
            const wgpu::Device& device,
            wgpu::TextureUsage usage,
+           wgpu::TextureUsage internal_usage,
            std::vector<wgpu::TextureFormat> view_formats) {
       viz::SharedImageFormat format = representation->format();
       // Include list of formats this is tested to work with.
@@ -535,7 +538,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       auto result =
           base::WrapUnique(new SharedImageRepresentationAndAccessSkiaFallback(
               std::move(shared_context_state), std::move(representation),
-              device, usage, std::move(view_formats)));
+              device, usage, internal_usage, std::move(view_formats)));
       if (is_initialized && !result->PopulateFromSkia()) {
         return nullptr;
       }
@@ -570,6 +573,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
         std::unique_ptr<SkiaImageRepresentation> representation,
         const wgpu::Device& device,
         wgpu::TextureUsage usage,
+        wgpu::TextureUsage internal_usage,
         std::vector<wgpu::TextureFormat> view_formats)
         : shared_context_state_(std::move(shared_context_state)),
           representation_(std::move(representation)),
@@ -581,7 +585,13 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       // src/dst).
       // We also need RenderAttachment usage for clears, and TextureBinding for
       // copyTextureForBrowser.
+      // TODO(crbug.com/339171225): When changing Dawn reps to use
+      // client-provided internal usages under killswitch, change this code to
+      // use `internal_usage` together with CopyDst | CopySrc (since this class
+      // itself uses the texture as the dest and source of copies for transfer
+      // back and forth between Skia and Dawn).
       wgpu::DawnTextureInternalUsageDescriptor internal_usage_desc;
+
       internal_usage_desc.internalUsage = wgpu::TextureUsage::CopyDst |
                                           wgpu::TextureUsage::CopySrc |
                                           wgpu::TextureUsage::RenderAttachment |
@@ -1941,6 +1951,7 @@ WebGPUDecoderImpl::AssociateMailboxDawn(
     const wgpu::Device& device,
     wgpu::BackendType backendType,
     wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage,
     std::vector<wgpu::TextureFormat> view_formats) {
   std::unique_ptr<DawnImageRepresentation> shared_image =
       shared_image_representation_factory_->ProduceDawn(
@@ -1974,7 +1985,8 @@ WebGPUDecoderImpl::AssociateMailboxDawn(
 
   std::unique_ptr<DawnImageRepresentation::ScopedAccess> scoped_access =
       shared_image->BeginScopedAccess(
-          usage, SharedImageRepresentation::AllowUnclearedAccess::kYes);
+          usage, internal_usage,
+          SharedImageRepresentation::AllowUnclearedAccess::kYes);
   if (!scoped_access) {
     DLOG(ERROR) << "AssociateMailbox: Couldn't begin shared image access";
     return nullptr;
@@ -1990,6 +2002,7 @@ WebGPUDecoderImpl::AssociateMailboxUsingSkiaFallback(
     MailboxFlags flags,
     const wgpu::Device& device,
     wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage,
     std::vector<wgpu::TextureFormat> view_formats) {
   // Before using the shared context, ensure it is current if we're on GL.
   if (shared_context_state_->GrContextIsGL()) {
@@ -2019,7 +2032,7 @@ WebGPUDecoderImpl::AssociateMailboxUsingSkiaFallback(
 
   return SharedImageRepresentationAndAccessSkiaFallback::Create(
       shared_context_state_, std::move(shared_image), device, usage,
-      std::move(view_formats));
+      internal_usage, std::move(view_formats));
 }
 
 error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
@@ -2105,11 +2118,11 @@ error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
   DCHECK(it != known_device_metadata_.end());
   if (it->second.adapterType == wgpu::AdapterType::CPU) {
     representation_and_access = AssociateMailboxUsingSkiaFallback(
-        mailbox, flags, device, usage, std::move(view_formats));
+        mailbox, flags, device, usage, internal_usage, std::move(view_formats));
   } else {
     representation_and_access =
         AssociateMailboxDawn(mailbox, flags, device, it->second.backendType,
-                             usage, std::move(view_formats));
+                             usage, internal_usage, std::move(view_formats));
   }
 
   if (!representation_and_access) {
