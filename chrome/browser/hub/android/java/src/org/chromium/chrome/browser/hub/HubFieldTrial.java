@@ -9,34 +9,34 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Common hub feature utils for public use. */
 public class HubFieldTrial {
-    private static final String FLOATING_ACTION_BUTTON_PARAM = "floating_action_button";
-    public static final BooleanCachedFieldTrialParameter FLOATING_ACTION_BUTTON =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.ANDROID_HUB, FLOATING_ACTION_BUTTON_PARAM, false);
-
     private static final String PANE_SWITCHER_USES_TEXT_PARAM = "pane_switcher_uses_text";
     public static final BooleanCachedFieldTrialParameter PANE_SWITCHER_USES_TEXT =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.ANDROID_HUB, PANE_SWITCHER_USES_TEXT_PARAM, false);
+                    ChromeFeatureList.ANDROID_HUB_V2, PANE_SWITCHER_USES_TEXT_PARAM, false);
 
     private static final String SUPPORTS_OTHER_TABS_PARAM = "supports_other_tabs";
     public static final BooleanCachedFieldTrialParameter SUPPORTS_OTHER_TABS =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.ANDROID_HUB, SUPPORTS_OTHER_TABS_PARAM, false);
+                    ChromeFeatureList.ANDROID_HUB_V2, SUPPORTS_OTHER_TABS_PARAM, false);
 
     private static final String SUPPORTS_BOOKMARKS_PARAM = "supports_bookmarks";
     public static final BooleanCachedFieldTrialParameter SUPPORTS_BOOKMARKS =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.ANDROID_HUB, SUPPORTS_BOOKMARKS_PARAM, false);
+                    ChromeFeatureList.ANDROID_HUB_V2, SUPPORTS_BOOKMARKS_PARAM, false);
 
     private static final String SUPPORTS_SEARCH_PARAM = "supports_search";
     public static final BooleanCachedFieldTrialParameter SUPPORTS_SEARCH =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.ANDROID_HUB, SUPPORTS_SEARCH_PARAM, false);
+                    ChromeFeatureList.ANDROID_HUB_V2, SUPPORTS_SEARCH_PARAM, false);
 
     /** Returns whether the hub is enabled. */
     public static boolean isHubEnabled() {
         return ChromeFeatureList.sAndroidHub.isEnabled();
+    }
+
+    /** Returns whether the hub V2 is enabled. */
+    public static boolean isHubV2Enabled() {
+        return ChromeFeatureList.sAndroidHubV2.isEnabled();
     }
 
     /**
@@ -44,7 +44,7 @@ public class HubFieldTrial {
      * When false the button will be in part of the toolbar.
      */
     public static boolean usesFloatActionButton() {
-        return FLOATING_ACTION_BUTTON.getValue();
+        return ChromeFeatureList.sAndroidHubFloatingActionButton.isEnabled();
     }
 
     /** Returns whether the UI to switch between panes is using text names or icons. */

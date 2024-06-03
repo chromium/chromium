@@ -23,6 +23,7 @@ import org.hamcrest.Matcher;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.ViewActionOnDescendant;
+import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.HubToolbarView;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -42,6 +43,12 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
                     allOf(
                             withId(R.id.toolbar_action_button),
                             isDescendantOfA(instanceOf(HubToolbarView.class))));
+
+    public static final ViewElement FLOATING_NEW_TAB_BUTTON =
+            sharedViewElement(
+                    allOf(
+                            withId(R.id.host_action_button),
+                            isDescendantOfA(HubBaseStation.HUB_PANE_HOST.getViewMatcher())));
 
     public static final Matcher<View> TAB_CLOSE_BUTTON =
             allOf(
@@ -71,7 +78,7 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
 
-        elements.declareView(TOOLBAR_NEW_TAB_BUTTON);
+        elements.declareView(getNewTabButtonViewElement());
         elements.declareView(TAB_LIST_RECYCLER_VIEW);
     }
 
@@ -162,7 +169,16 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
                         .withIsOpeningTabs(1)
                         .withIsSelectingTabs(1)
                         .build();
-        return travelToSync(page, () -> TOOLBAR_NEW_TAB_BUTTON.perform(click()));
+
+        return travelToSync(page, () -> getNewTabButtonViewElement().perform(click()));
+    }
+
+    private ViewElement getNewTabButtonViewElement() {
+        if (HubFieldTrial.usesFloatActionButton()) {
+            return FLOATING_NEW_TAB_BUTTON;
+        } else {
+            return TOOLBAR_NEW_TAB_BUTTON;
+        }
     }
 
     /**

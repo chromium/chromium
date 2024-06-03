@@ -3635,34 +3635,22 @@ const FeatureEntry::FeatureVariation kWebAuthnAndroidCredManVariations[] = {
     {"for 3rd party passkeys", &kWebAuthnAndroidCredManGpmNotInCredManParam, 1,
      nullptr}};
 
-const FeatureEntry::FeatureParam kHubPhase1WithFab[] = {
-    {"floating_action_button", "true"}};
-const FeatureEntry::FeatureParam kHubPhase1WithoutFab[] = {
-    {"floating_action_button", "false"}};
 const FeatureEntry::FeatureParam kHubPhase2WithIcons[] = {
-    {"floating_action_button", "true"},
     {"supports_other_tabs", "true"}};
 const FeatureEntry::FeatureParam kHubPhase2WithText[] = {
-    {"floating_action_button", "true"},
     {"pane_switcher_uses_text", "true"},
     {"supports_other_tabs", "true"}};
 const FeatureEntry::FeatureParam kHubPhase3[] = {
-    {"floating_action_button", "true"},
     {"pane_switcher_uses_text", "true"},
     {"supports_other_tabs", "true"},
     {"supports_search", "true"}};
 const FeatureEntry::FeatureParam kHubPhase4[] = {
-    {"floating_action_button", "true"},
     {"pane_switcher_uses_text", "true"},
     {"supports_other_tabs", "true"},
     {"supports_search", "true"},
     {"supports_bookmarks", "true"}};
 
-const FeatureEntry::FeatureVariation kAndroidHubVariations[] = {
-    {"Phase 1 w/ FAB", kHubPhase1WithFab, std::size(kHubPhase1WithFab),
-     nullptr},
-    {"Phase 1 w/o FAB", kHubPhase1WithoutFab, std::size(kHubPhase1WithoutFab),
-     nullptr},
+const FeatureEntry::FeatureVariation kAndroidHubV2Variations[] = {
     {"Phase 2 w/ Icons", kHubPhase2WithIcons, std::size(kHubPhase2WithIcons),
      nullptr},
     {"Phase 2 w/ Text", kHubPhase2WithText, std::size(kHubPhase2WithText),
@@ -10813,9 +10801,18 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"android-hub", flag_descriptions::kAndroidHubName,
      flag_descriptions::kAndroidHubDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidHub,
-                                    kAndroidHubVariations,
-                                    "AndroidHub")},
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidHub)},
+
+    {"android-hub-floating-action-button",
+     flag_descriptions::kAndroidHubFloatingActionButtonName,
+     flag_descriptions::kAndroidHubFloatingActionButtonDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidHubFloatingActionButton)},
+
+    {"android-hub-v2", flag_descriptions::kAndroidHubV2Name,
+     flag_descriptions::kAndroidHubV2Description, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidHubV2,
+                                    kAndroidHubV2Variations,
+                                    "AndroidHubV2")},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

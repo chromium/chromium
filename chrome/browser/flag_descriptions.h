@@ -2343,6 +2343,12 @@ extern const char kAndroidHatsRefactorDescription[];
 extern const char kAndroidHubName[];
 extern const char kAndroidHubDescription[];
 
+extern const char kAndroidHubFloatingActionButtonName[];
+extern const char kAndroidHubFloatingActionButtonDescription[];
+
+extern const char kAndroidHubV2Name[];
+extern const char kAndroidHubV2Description[];
+
 extern const char kAndroidOpenPdfInlineName[];
 extern const char kAndroidOpenPdfInlineDescription[];
 

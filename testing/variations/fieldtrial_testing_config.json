@@ -469,6 +469,21 @@
             ]
         }
     ],
+    "AndroidHubFloatingActionButton": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidHubFloatingActionButton"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidLowLatencyCanvas": [
         {
             "platforms": [

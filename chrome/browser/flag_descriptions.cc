@@ -3988,6 +3988,14 @@ const char kAndroidHubDescription[] =
     "Replaces the Tab Switcher with a UI surface containing more types of "
     "data.";
 
+const char kAndroidHubFloatingActionButtonName[] =
+    "Android Hub Floating Action Button";
+const char kAndroidHubFloatingActionButtonDescription[] =
+    "Makes the main action button of a pane a floating action button.";
+
+const char kAndroidHubV2Name[] = "Android Hub V2";
+const char kAndroidHubV2Description[] = "Improvements to the Hub UI surface.";
+
 const char kAndroidOpenPdfInlineName[] = "Open PDF Inline on Android";
 const char kAndroidOpenPdfInlineDescription[] =
     "Enable Open PDF Inline on Android.";

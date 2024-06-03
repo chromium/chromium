@@ -175,6 +175,16 @@
     "expiry_milestone": 130
   },
   {
+    "name": "android-hub-floating-action-button",
+    "owners": [ "clank-hub-dev@google.com" ],
+    "expiry_milestone": 131
+  },
+  {
+    "name": "android-hub-v2",
+    "owners": [ "clank-hub-dev@google.com" ],
+    "expiry_milestone": 131
+  },
+  {
     "name": "android-improved-bookmarks",
     "owners": ["wylieb@chromium.org", "skym@chromium.org"],
     "expiry_milestone": 125

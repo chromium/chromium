@@ -16,6 +16,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Unit tests for {@link HubFieldTrial}. */
@@ -25,30 +27,49 @@ public class HubFieldTrialTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.ANDROID_HUB})
+    @EnableFeatures({ChromeFeatureList.ANDROID_HUB})
     public void testHubEnabled() {
         assertTrue(HubFieldTrial.isHubEnabled());
     }
 
     @Test
     @SmallTest
-    @Features.DisableFeatures({ChromeFeatureList.ANDROID_HUB})
+    @DisableFeatures({ChromeFeatureList.ANDROID_HUB})
     public void testHubDisabled() {
         assertFalse(HubFieldTrial.isHubEnabled());
     }
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.ANDROID_HUB})
-    public void testUsesFloatActionButton() {
-        assertFalse(HubFieldTrial.usesFloatActionButton());
-        HubFieldTrial.FLOATING_ACTION_BUTTON.setForTesting(true);
+    @EnableFeatures({ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON})
+    public void testUsesFloatActionButtonEnabled() {
         assertTrue(HubFieldTrial.usesFloatActionButton());
     }
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.ANDROID_HUB})
+    @DisableFeatures({ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON})
+    public void testUsesFloatActionButtonDisabled() {
+        assertFalse(HubFieldTrial.usesFloatActionButton());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_HUB_V2})
+    public void testHubV2Enabled() {
+        assertTrue(HubFieldTrial.isHubV2Enabled());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({ChromeFeatureList.ANDROID_HUB_V2})
+    public void testHubV2Disabled() {
+        assertFalse(HubFieldTrial.isHubV2Enabled());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_HUB_V2})
     public void testDoesPaneSwitcherUseText() {
         assertFalse(HubFieldTrial.doesPaneSwitcherUseText());
         HubFieldTrial.PANE_SWITCHER_USES_TEXT.setForTesting(true);
@@ -57,7 +78,7 @@ public class HubFieldTrialTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.ANDROID_HUB})
+    @EnableFeatures({ChromeFeatureList.ANDROID_HUB_V2})
     public void testSupportsOtherTabs() {
         assertFalse(HubFieldTrial.supportsOtherTabs());
         HubFieldTrial.SUPPORTS_OTHER_TABS.setForTesting(true);
@@ -66,7 +87,7 @@ public class HubFieldTrialTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.ANDROID_HUB})
+    @EnableFeatures({ChromeFeatureList.ANDROID_HUB_V2})
     public void testSupportsBookmarks() {
         assertFalse(HubFieldTrial.supportsBookmarks());
         HubFieldTrial.SUPPORTS_BOOKMARKS.setForTesting(true);
@@ -75,7 +96,7 @@ public class HubFieldTrialTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.ANDROID_HUB})
+    @EnableFeatures({ChromeFeatureList.ANDROID_HUB_V2})
     public void testSupportsSearch() {
         assertFalse(HubFieldTrial.supportsSearch());
         HubFieldTrial.SUPPORTS_SEARCH.setForTesting(true);
