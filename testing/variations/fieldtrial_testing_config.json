@@ -21687,6 +21687,21 @@
             ]
         }
     ],
+    "UseAppBoundEncryptionProviderForEncryption": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseAppBoundEncryptionProviderForEncryption"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseBoringSSLForRandBytes": [
         {
             "platforms": [
