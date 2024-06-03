@@ -12,6 +12,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -38,7 +39,6 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kClearForm:
     case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kEditAddressProfile:
-    case SuggestionType::kFillEverythingFromAddressProfile:
     case SuggestionType::kPasswordAccountStorageEmpty:
     case SuggestionType::kPasswordAccountStorageOptIn:
     case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
@@ -48,6 +48,10 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kShowAccountCards:
     case SuggestionType::kViewPasswordDetails:
       return true;
+    case SuggestionType::kFillEverythingFromAddressProfile:
+      return features::
+          kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam
+              .Get();
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAddressEntry:
     case SuggestionType::kAddressFieldByFieldFilling:

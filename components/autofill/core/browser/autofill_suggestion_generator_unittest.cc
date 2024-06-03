@@ -1394,7 +1394,7 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_GroupFillingLabels_AddOnlyFillName) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(),
-      /*last_targeted_fields=*/
+      /*suggestion_type=*/
       SuggestionType::kFillFullName,
       /*trigger_field_type=*/NAME_FIRST,
       /*field_types=*/{NAME_FIRST, NAME_LAST});
@@ -1508,19 +1508,6 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
 }
 
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
-       FillEverythingFromAddressProfile_NotAddedIfNoLastTargetedField) {
-  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), SuggestionType::kAddressEntry, NAME_FIRST);
-
-  ASSERT_EQ(1U, suggestions.size());
-  EXPECT_THAT(suggestions[0].children,
-              Not(Contains(EqualsSuggestion(
-                  SuggestionType::kFillEverythingFromAddressProfile))))
-      << "Children should not contain the 'fill everything' suggestion because "
-         "there is no `last_targeted_fields`.";
-}
-
-TEST_F(AutofillChildrenSuggestionGeneratorTest,
        IncognitoMode_EditAndDeleteSuggestionsAreNotAdded) {
   autofill_client()->set_is_off_the_record(true);
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
@@ -1541,29 +1528,120 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
 }
 
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
-       FillEverythingFromAddressProfile_NotAddedIfLastTargetedAllFieldTypes) {
+       FillEverythingFromAddressProfile_FullFormFilling_NotAdded) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(), SuggestionType::kAddressEntry, NAME_FIRST);
 
   ASSERT_EQ(1U, suggestions.size());
+  ASSERT_FALSE(suggestions[0].children.empty());
   EXPECT_THAT(suggestions[0].children,
               Not(Contains(EqualsSuggestion(
                   SuggestionType::kFillEverythingFromAddressProfile))))
       << "Children should not contain the 'fill everything' suggestion because "
-         "the current suggestions are full filling suggestions.";
+         "`suggestion_type` indicates full form filling.";
+}
+
+// TODO(crbug.com/40274514): Merge this test with
+// `FillEverythingFromAddressProfile_FullFormFilling_NotAdded` once the feature
+// is launched.
+TEST_F(AutofillChildrenSuggestionGeneratorTest,
+       FillEverythingFromAddressProfile_FullFormFilling_AddedAtTheTop) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillGranularFillingAvailable,
+      {{features::
+            kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam
+                .name,
+        "false"}});
+
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(), SuggestionType::kAddressEntry, NAME_FIRST);
+
+  ASSERT_EQ(1U, suggestions.size());
+  ASSERT_FALSE(suggestions[0].children.empty());
+  EXPECT_THAT(
+      suggestions[0].children[0],
+      EqualsSuggestion(SuggestionType::kFillEverythingFromAddressProfile))
+      << "The first child suggestion should be 'fill everything', regardless "
+         "of the filling mode.";
 }
 
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
-       FillEverythingFromAddressProfile_AddedIfFieldByFieldFilling) {
+       FillEverythingFromAddressProfile_FieldByFieldFilling_Added) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(), SuggestionType::kAddressFieldByFieldFilling, NAME_FIRST);
 
   ASSERT_EQ(1U, suggestions.size());
+  ASSERT_FALSE(suggestions[0].children.empty());
   EXPECT_THAT(suggestions[0].children,
               Contains(EqualsSuggestion(
                   SuggestionType::kFillEverythingFromAddressProfile)))
-      << "Children should contain the 'fill everything' suggestion because of "
-         "the last field-by-field filling.";
+      << "Children should contain the 'fill everything' suggestion because "
+         "`suggestion_type` indicates field-by-field filling.";
+}
+
+// TODO(crbug.com/40274514): Merge this test with
+// `FillEverythingFromAddressProfile_FieldByFieldFilling_Added` once the
+// feature is launched.
+TEST_F(AutofillChildrenSuggestionGeneratorTest,
+       FillEverythingFromAddressProfile_FieldByFieldFilling_AddedAtTheTop) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillGranularFillingAvailable,
+      {{features::
+            kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam
+                .name,
+        "false"}});
+
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(), SuggestionType::kAddressFieldByFieldFilling, NAME_FIRST);
+
+  ASSERT_EQ(1U, suggestions.size());
+  ASSERT_FALSE(suggestions[0].children.empty());
+  EXPECT_THAT(
+      suggestions[0].children[0],
+      EqualsSuggestion(SuggestionType::kFillEverythingFromAddressProfile))
+      << "The first child suggestion should be 'fill everything', regardless "
+         "of the filling mode.";
+}
+
+TEST_F(AutofillChildrenSuggestionGeneratorTest,
+       FillEverythingFromAddressProfile_GroupFilling_Added) {
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(), SuggestionType::kFillFullName, NAME_FIRST);
+
+  ASSERT_EQ(1U, suggestions.size());
+  ASSERT_FALSE(suggestions[0].children.empty());
+  EXPECT_THAT(suggestions[0].children,
+              Contains(EqualsSuggestion(
+                  SuggestionType::kFillEverythingFromAddressProfile)))
+      << "Children should contain the 'fill everything' suggestion because "
+         "`suggestion_type` indicates group filling.";
+}
+
+// TODO(crbug.com/40274514): Merge this test with
+// `FillEverythingFromAddressProfile_GroupFilling_Added` once the feature is
+// launched.
+TEST_F(AutofillChildrenSuggestionGeneratorTest,
+       FillEverythingFromAddressProfile_GroupFilling_AddedAtTheTop) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillGranularFillingAvailable,
+      {{features::
+            kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam
+                .name,
+        "false"}});
+
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(), SuggestionType::kFillFullName, NAME_FIRST);
+
+  ASSERT_EQ(1U, suggestions.size());
+  ASSERT_FALSE(suggestions[0].children.empty());
+  EXPECT_THAT(
+      suggestions[0].children[0],
+      EqualsSuggestion(SuggestionType::kFillEverythingFromAddressProfile))
+      << "The first child suggestion should be 'fill everything', regardless "
+         "of the filling mode.";
 }
 
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
@@ -1593,9 +1671,8 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
                   IDS_AUTOFILL_STREET_NAME_SUGGESTION_SECONDARY_TEXT))}})));
 }
 
-TEST_F(
-    AutofillChildrenSuggestionGeneratorTest,
-    CreateSuggestionsFromProfiles_LastTargetedFieldsIsSingleField_FieldByFieldFilling) {
+TEST_F(AutofillChildrenSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_FieldByFieldFilling) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(), SuggestionType::kAddressFieldByFieldFilling, NAME_FIRST);
 
@@ -1612,7 +1689,7 @@ TEST_F(
 }
 
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
-       CreateSuggestionsFromProfiles_LastTargetedFieldsIsGroup_GroupFilling) {
+       CreateSuggestionsFromProfiles_GroupFilling) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(), SuggestionType::kFillFullName, NAME_FIRST,
       {NAME_FIRST, NAME_LAST});
@@ -1624,7 +1701,7 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
 
 // Note that only full form filling has an icon.
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
-       CreateSuggestionsFromProfiles_LastTargetedFieldsAreAllFields_FullForm) {
+       CreateSuggestionsFromProfiles_FullFormFilling) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(), SuggestionType::kAddressEntry, NAME_FIRST,
       {NAME_FIRST, NAME_LAST});
@@ -1867,21 +1944,6 @@ TEST_F(
           ADDRESS_HOME_HOUSE_NUMBER, Suggestion::Guid(profile.guid()),
           {{Suggestion::Text(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_HOUSE_NUMBER_SUGGESTION_SECONDARY_TEXT))}})));
-}
-
-TEST_F(
-    AutofillChildrenSuggestionGeneratorTest,
-    CreateSuggestionsFromProfiles_GranularityNotFullForm_FillEverythingChildSuggestion) {
-  // We set only a name field as `last_targeted_fields` to denote that the user
-  // chose field by field filling.
-  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), SuggestionType::kAddressFieldByFieldFilling,
-      ADDRESS_HOME_LINE1);
-
-  ASSERT_EQ(1U, suggestions.size());
-  EXPECT_TRUE(base::ranges::any_of(suggestions[0].children, [](auto child) {
-    return child.type == SuggestionType::kFillEverythingFromAddressProfile;
-  }));
 }
 
 // This fixture contains tests for autofill being triggered from the context

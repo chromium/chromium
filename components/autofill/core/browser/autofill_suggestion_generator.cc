@@ -318,16 +318,22 @@ Suggestion GetFillFullNameSuggestion(Suggestion::BackendId backend_id) {
   return suggestion;
 }
 
-// Creates the suggestion that will fill the whole form for the profile. This
-// suggestion is displayed once the users is on group filling level or field by
-// field level. It is used as a way to allow users to go back to filling the
-// whole form.
+// Creates the suggestion that will fill the whole form for the profile.
 Suggestion GetFillEverythingFromAddressProfileSuggestion(
     Suggestion::BackendId backend_id) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED));
   suggestion.type = SuggestionType::kFillEverythingFromAddressProfile;
   suggestion.icon = Suggestion::Icon::kMagic;
+  if (!features::
+           kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam
+               .Get()) {
+    // If at the top, this suggestion has to have the same style as `Fill full
+    // name` or `Fill full address` suggestions. If at the bottom, this line has
+    // to be omitted not to interfere with the styling applied to footer
+    // suggestions.
+    suggestion.main_text.is_primary = Suggestion::Text::IsPrimary(false);
+  }
   suggestion.payload = backend_id;
   suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED);
@@ -566,7 +572,10 @@ void AddFooterChildSuggestions(const AutofillProfile& profile,
   // allows the user to go back to filling the whole form once in a more fine
   // grained filling experience.
   if (IsAddressType(trigger_field_type) &&
-      suggestion.type != SuggestionType::kAddressEntry) {
+      suggestion.type != SuggestionType::kAddressEntry &&
+      features::
+          kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam
+              .Get()) {
     suggestion.children.push_back(GetFillEverythingFromAddressProfileSuggestion(
         Suggestion::Guid(profile.guid())));
   }
@@ -679,10 +688,10 @@ std::u16string GetGranularFillingLabels(SuggestionType suggestion_type) {
 }
 
 // Returns whether the `ADDRESS_HOME_LINE1` should be included into the labels
-// of the suggestion. Returns true if `triggering_field_type` is an
-// address field (actual address field: ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY,
-// etc.; not NAME_FULL or PHONE_HOME_NUMBER) that usually does not allow users
-// to easily identify their address.
+// of the suggestion. Returns true if `trigger_field_type` is an address field
+// (actual address field: ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY, etc.; not
+// NAME_FULL or PHONE_HOME_NUMBER) that usually does not allow users to easily
+// identify their address.
 bool ShouldAddAddressLine1ToSuggestionLabels(FieldType trigger_field_type) {
   static constexpr std::array kAddressRecognizingFields = {
       ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_STREET_ADDRESS};
@@ -1338,6 +1347,25 @@ void AutofillSuggestionGenerator::AddAddressGranularFillingChildSuggestions(
   const FieldTypeGroup trigger_field_type_group =
       GroupTypeOfFieldType(trigger_field_type);
   const std::string app_locale = personal_data().app_locale();
+  // The "Fill everything" suggestion is added at the top (even if the filling
+  // mode is full form filling), in its own section of the sub-menu, if
+  // `features::kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam`
+  // is disabled. Otherwise, it is added in the footer.
+  //
+  // If the trigger field is not classified as an address field, then the
+  // filling was triggered from the context menu. In this scenario, the user
+  // should not be able to fill everything.
+  // TODO(crbug.com/40274514): Maybe separate this in a different function when
+  // the feature is launched.
+  if (IsAddressType(trigger_field_type) &&
+      !features::
+           kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam
+               .Get()) {
+    suggestion.children.push_back(GetFillEverythingFromAddressProfileSuggestion(
+        Suggestion::Guid(profile.guid())));
+    suggestion.children.push_back(
+        AutofillSuggestionGenerator::CreateSeparator());
+  }
   AddNameChildSuggestions(trigger_field_type_group, profile, app_locale,
                           suggestion);
   AddAddressChildSuggestions(trigger_field_type_group, profile, app_locale,

@@ -3800,7 +3800,15 @@ const FeatureEntry::FeatureVariation kLinkPreviewTriggerTypeVariations[] = {
 
 const FeatureEntry::FeatureParam
     kAutofillGranularFillingAvailableVariationWithoutImprovedLabels[] = {
-        {"autofill_granular_filling_with_improved_labels", "false"}};
+        {"autofill_granular_filling_with_improved_labels", "false"},
+        {"autofill_granular_filling_with_fill_everything_in_the_footer",
+         "true"}};
+
+const FeatureEntry::FeatureParam
+    kAutofillGranularFillingAvailableVariationWithFillEverythingAtTheTop[] = {
+        {"autofill_granular_filling_with_improved_labels", "true"},
+        {"autofill_granular_filling_with_fill_everything_in_the_footer",
+         "false"}};
 
 const FeatureEntry::FeatureVariation
     kAutofillGranularFillingAvailableVariations[] = {
@@ -3809,7 +3817,11 @@ const FeatureEntry::FeatureVariation
          std::size(
              kAutofillGranularFillingAvailableVariationWithoutImprovedLabels),
          nullptr},
-};
+        {"With \"Fill everything\" at the top",
+         kAutofillGranularFillingAvailableVariationWithFillEverythingAtTheTop,
+         std::size(
+             kAutofillGranularFillingAvailableVariationWithFillEverythingAtTheTop),
+         nullptr}};
 
 #if BUILDFLAG(IS_ANDROID)
 inline constexpr flags_ui::FeatureEntry::FeatureParam
