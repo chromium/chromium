@@ -33,6 +33,10 @@ export class CalendarEventElement extends PolymerElement {
   static get properties() {
     return {
       event: Object,
+      expanded: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
       formattedStartTime_: {
         type: String,
         computed: 'computeFormattedStartTime_(event.startTime)',

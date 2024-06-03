@@ -30,7 +30,7 @@ namespace {
 const char kGoogleCalendarLastDismissedTimePrefName[] =
     "NewTabPage.GoogleCalendar.LastDimissedTime";
 
-// TODO(b/343738665): Update when more granular policy is added.
+// TODO(crbug.com/343738665): Update when more granular policy is added.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("google_calendar_page_handler", R"(
        semantics {
@@ -91,7 +91,7 @@ ntp::calendar::mojom::CalendarEventPtr GetFakeEvent(int index) {
 
 std::vector<ntp::calendar::mojom::CalendarEventPtr> GetFakeEvents() {
   std::vector<ntp::calendar::mojom::CalendarEventPtr> events;
-  for (int i = 0; i < 3; ++i) {
+  for (int i = 0; i < 5; ++i) {
     events.push_back(GetFakeEvent(i));
   }
   return events;

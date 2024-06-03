@@ -1,8 +1,15 @@
 <style>
   :host {
+    box-sizing: border-box;
+    display: block;
     font-size: var(--ntp-module-text-size);
     line-height: var(--ntp-module-line-height);
     width: 100%;
+  }
+
+  :host([expanded]) #header {
+    color: var(--color-new-tab-page-primary-foreground);
+    font-weight: 500;
   }
 
   #header {

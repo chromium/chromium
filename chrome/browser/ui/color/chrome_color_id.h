@@ -245,6 +245,8 @@
   E_CPONLY(kColorNewTabPageModuleControlBorder) \
   E_CPONLY(kColorNewTabPageModuleContextMenuDivider) \
   E_CPONLY(kColorNewTabPageModuleBackground) \
+  E_CPONLY(kColorNewTabPageModuleCalendarEventCollapsedBackground) \
+  E_CPONLY(kColorNewTabPageModuleCalendarEventExpandedBackground) \
   E_CPONLY(kColorNewTabPageModuleIconBackground) \
   E_CPONLY(kColorNewTabPageModuleElementDivider) \
   E_CPONLY(kColorNewTabPageModuleIconContainerBackground) \

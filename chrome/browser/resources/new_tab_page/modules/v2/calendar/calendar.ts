@@ -23,11 +23,21 @@ export class CalendarElement extends PolymerElement {
 
   static get properties() {
     return {
+      expandedEventIndex_: {
+        type: Number,
+        value: 0,
+      },
       events: Object,
     };
   }
 
+  private expandedEventIndex_: number;
+
   events: CalendarEvent[];
+
+  private isExpanded_(index: number) {
+    return index === this.expandedEventIndex_;
+  }
 }
 
 customElements.define(CalendarElement.is, CalendarElement);

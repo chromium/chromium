@@ -199,6 +199,14 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
   }
   mixer[kColorNewTabPageModuleItemBackground] = {kColorNewTabPageBackground};
 
+  // TODO(crbug.com/342694570): Replace when there is UX design input.
+  mixer[kColorNewTabPageModuleCalendarEventCollapsedBackground] =
+      SelectBasedOnWhiteInput({kColorNewTabPageBackground}, gfx::kGoogleGrey300,
+                              element_background_color);
+  mixer[kColorNewTabPageModuleCalendarEventExpandedBackground] =
+      SelectBasedOnWhiteInput({kColorNewTabPageBackground}, gfx::kGoogleGrey100,
+                              element_background_color);
+
   mixer[kColorNewTabPageHistoryClustersModuleItemBackground] =
       SelectBasedOnWhiteInput(element_background_color, gfx::kGoogleGrey100,
                               kColorNewTabPageBackground);

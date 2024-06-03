@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {CalendarElement} from 'chrome://new-tab-page/lazy_load.js';
+import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -30,5 +31,15 @@ suite('NewTabPageModulesCalendarTest', () => {
     eventElements.forEach((element) => {
       assertTrue(isVisible(element));
     });
+  });
+
+  test('first event is expanded', async () => {
+    element.events = createEvents(3);
+    await waitAfterNextRender(element);
+
+    // Assert.
+    const firstEvent = $$(element, 'ntp-calendar-event');
+    assertTrue(!!firstEvent);
+    assertTrue(firstEvent.hasAttribute('expanded'));
   });
 });

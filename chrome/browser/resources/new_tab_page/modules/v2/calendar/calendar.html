@@ -1,3 +1,38 @@
+<style>
+  :host {
+    display: block;
+    padding: 0 8px;
+  }
+
+  ntp-calendar-event {
+    background-color: var(--color-new-tab-page-module-calendar-event-collapsed-background);
+    padding: 4px 16px;
+  }
+
+  ntp-calendar-event:first-of-type,
+  ntp-calendar-event[expanded] + ntp-calendar-event {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    margin-top: 8px;
+    padding-top: 16px;
+  }
+
+  ntp-calendar-event:last-of-type,
+  ntp-calendar-event:has(+ ntp-calendar-event[expanded]) {
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    margin-bottom: 8px;
+    padding-bottom: 16px;
+  }
+
+  ntp-calendar-event[expanded] {
+    background-color: var(--color-new-tab-page-module-calendar-event-expanded-background);
+    border-radius: 12px;
+    margin: 8px 0;
+    padding: 16px;
+  }
+</style>
 <template is="dom-repeat" items="[[events]]">
-  <ntp-calendar-event event="[[item]]"></ntp-calendar-event>
+  <ntp-calendar-event expanded="[[isExpanded_(index)]]" event="[[item]]">
+  </ntp-calendar-event>
 </template>
