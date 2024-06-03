@@ -17,6 +17,9 @@ extern const char kNotifAuthorizationStatusByProviderHistogram[];
 // Histogram name for the Content Notification Client Status filter.
 extern const char kContentNotifClientStatusByProviderHistogram[];
 
+// Histogram name for the Sports Notification Client Status filter.
+extern const char kSportsNotifClientStatusByProviderHistogram[];
+
 // Histogram name for the Tips Notification Client Status filter.
 extern const char kTipsNotifClientStatusByProviderHistogram[];
 

@@ -150,7 +150,18 @@ chromium-metrics-reviews@google.com.
     enum="Boolean" expires_after="2024-11-03">
   <owner>guiperez@google.com</owner>
   <owner>chrome-sherlock@google.com</owner>
-  <summary>The status of the push notifications client for Content.</summary>
+  <summary>
+    The status of the push notifications client toggle for Content.
+  </summary>
+</histogram>
+
+<histogram name="ContentNotifications.ClientStatus.Sports.ByProvider"
+    enum="Boolean" expires_after="2024-11-03">
+  <owner>guiperez@google.com</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <summary>
+    The status of the push notifications client toggle for Sports.
+  </summary>
 </histogram>
 
 <histogram name="ContentNotifications.EligibilityType"

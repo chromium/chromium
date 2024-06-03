@@ -34,6 +34,9 @@ void IOSPushNotificationsMetricsProvider::ProvideCurrentSessionData(
       kContentNotifClientStatusByProviderHistogram,
       PushNotificationClientId::kContent);
   IOSPushNotificationsMetricsProvider::ReportEnabledClientID(
+      kSportsNotifClientStatusByProviderHistogram,
+      PushNotificationClientId::kSports);
+  IOSPushNotificationsMetricsProvider::ReportEnabledClientID(
       kTipsNotifClientStatusByProviderHistogram,
       PushNotificationClientId::kTips);
 }
@@ -41,23 +44,36 @@ void IOSPushNotificationsMetricsProvider::ProvideCurrentSessionData(
 void IOSPushNotificationsMetricsProvider::ReportEnabledClientID(
     std::string histogram_name,
     PushNotificationClientId client_id) {
-  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    base::UmaHistogramBoolean(
-        histogram_name, push_notification_settings::
-                            GetMobileNotificationPermissionStatusForClient(
-                                client_id, identity_manager_
-                                               ->GetPrimaryAccountInfo(
-                                                   signin::ConsentLevel::kSync)
-                                               .gaia));
-  } else if (identity_manager_->HasPrimaryAccount(
-                 signin::ConsentLevel::kSignin)) {
-    base::UmaHistogramBoolean(
-        histogram_name,
-        push_notification_settings::
-            GetMobileNotificationPermissionStatusForClient(
-                client_id,
-                identity_manager_
-                    ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                    .gaia));
+  switch (client_id) {
+    case PushNotificationClientId::kCommerce:
+    case PushNotificationClientId::kContent:
+    case PushNotificationClientId::kSports:
+      if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+        base::UmaHistogramBoolean(
+            histogram_name,
+            push_notification_settings::
+                GetMobileNotificationPermissionStatusForClient(
+                    client_id,
+                    identity_manager_
+                        ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+                        .gaia));
+      } else if (identity_manager_->HasPrimaryAccount(
+                     signin::ConsentLevel::kSignin)) {
+        base::UmaHistogramBoolean(
+            histogram_name,
+            push_notification_settings::
+                GetMobileNotificationPermissionStatusForClient(
+                    client_id,
+                    identity_manager_
+                        ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                        .gaia));
+      }
+      break;
+    case PushNotificationClientId::kTips:
+      base::UmaHistogramBoolean(
+          histogram_name, push_notification_settings::
+                              GetMobileNotificationPermissionStatusForClient(
+                                  client_id, ""));
+      break;
   }
 }
