@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/uuid.h"
 #include "chrome/browser/bookmarks/url_and_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
@@ -35,6 +36,7 @@
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/stats.h"
+#include "components/saved_tab_groups/types.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -66,7 +68,8 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(Profile* profile)
       bridge_(model(),
               GetStoreFactory(),
               CreateChangeProcessor(),
-              profile->GetPrefs()) {
+              profile->GetPrefs(),
+              std::map<base::Uuid, LocalTabGroupID>()) {
   model()->AddObserver(this);
 
   metrics_timer_.Start(

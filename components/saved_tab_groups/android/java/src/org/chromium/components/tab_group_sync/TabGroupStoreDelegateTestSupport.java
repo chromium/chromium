@@ -15,6 +15,6 @@ import org.jni_zero.JNINamespace;
 public class TabGroupStoreDelegateTestSupport {
     @CalledByNative
     private static void clearTabGroupMetadataPeristentStore() {
-        TabGroupMetadataPersistentStore.clearAllDataForTesting();
+        TabGroupMetadataPersistentStore.clearAllData();
     }
 }

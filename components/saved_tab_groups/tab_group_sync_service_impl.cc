@@ -41,13 +41,15 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
     std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
     std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration,
     std::unique_ptr<TabGroupStore> tab_group_store,
-    PrefService* pref_service)
+    PrefService* pref_service,
+    std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids)
     : model_(std::move(model)),
       saved_bridge_(
           model_.get(),
           std::move(saved_tab_group_configuration->model_type_store_factory),
           std::move(saved_tab_group_configuration->change_processor),
-          pref_service),
+          pref_service,
+          std::move(migrated_android_local_ids)),
       tab_group_store_(std::move(tab_group_store)) {
   if (shared_tab_group_configuration) {
     shared_bridge_ = std::make_unique<SharedTabGroupDataSyncBridge>(

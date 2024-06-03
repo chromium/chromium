@@ -20,9 +20,13 @@ BASE_DECLARE_FEATURE(kTabGroupsSaveUIUpdate);
 
 BASE_DECLARE_FEATURE(kTabGroupSyncUno);
 
+BASE_DECLARE_FEATURE(kMigrationFromJavaSharedPrefs);
+
 extern bool IsTabGroupsSaveV2Enabled();
 
 extern bool IsTabGroupsSaveUIUpdateEnabled();
+
+extern bool IsMigrationFromJavaSharedPrefsEnabled();
 
 }  // namespace tab_groups
 

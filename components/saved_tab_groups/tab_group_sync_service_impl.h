@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SAVED_TAB_GROUPS_TAB_GROUP_SYNC_SERVICE_IMPL_H_
 #define COMPONENTS_SAVED_TAB_GROUPS_TAB_GROUP_SYNC_SERVICE_IMPL_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -49,7 +50,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
       std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration,
       std::unique_ptr<TabGroupStore> tab_group_store,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids);
   ~TabGroupSyncServiceImpl() override;
 
   // Disallow copy/assign.

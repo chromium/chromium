@@ -4,6 +4,7 @@
 
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 
+#include <map>
 #include <memory>
 
 #include "base/no_destructor.h"
@@ -14,6 +15,7 @@
 #include "chrome/common/channel_info.h"
 #include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/empty_tab_group_store_delegate.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/tab_group_store.h"
 #include "components/saved_tab_groups/tab_group_store_delegate.h"
@@ -26,6 +28,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/saved_tab_groups/android/tab_group_store_delegate_android.h"
+#include "components/saved_tab_groups/android/tab_group_store_migration_utils.h"
 #endif
 
 namespace tab_groups {
@@ -94,7 +97,11 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
 
   std::unique_ptr<TabGroupStoreDelegate> tab_group_store_delegate;
 #if BUILDFLAG(IS_ANDROID)
-  tab_group_store_delegate = std::make_unique<TabGroupStoreDelegateAndroid>();
+  if (IsMigrationFromJavaSharedPrefsEnabled()) {
+    tab_group_store_delegate = std::make_unique<EmptyTabGroupStoreDelegate>();
+  } else {
+    tab_group_store_delegate = std::make_unique<TabGroupStoreDelegateAndroid>();
+  }
 #else
   tab_group_store_delegate = std::make_unique<EmptyTabGroupStoreDelegate>();
 #endif
@@ -102,9 +109,18 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
   auto tab_group_store =
       std::make_unique<TabGroupStore>(std::move(tab_group_store_delegate));
 
+  std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids;
+#if BUILDFLAG(IS_ANDROID)
+  if (IsMigrationFromJavaSharedPrefsEnabled()) {
+    migrated_android_local_ids =
+        ReadAndClearIdMappingsForMigrationFromSharedPrefs();
+  }
+#endif
+
   return std::make_unique<TabGroupSyncServiceImpl>(
       std::move(model), std::move(saved_config), std::move(shared_config),
-      std::move(tab_group_store), profile->GetPrefs());
+      std::move(tab_group_store), profile->GetPrefs(),
+      std::move(migrated_android_local_ids));
 }
 
 }  // namespace tab_groups

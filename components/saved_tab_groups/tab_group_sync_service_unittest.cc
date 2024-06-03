@@ -93,13 +93,15 @@ class TabGroupSyncServiceTest : public testing::Test {
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kSavedTabGroupSpecificsToDataMigration, false);
 
+    std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids;
     tab_group_sync_service_ = std::make_unique<TabGroupSyncServiceImpl>(
         std::move(model),
         std::make_unique<TabGroupSyncServiceImpl::SyncDataTypeConfiguration>(
             processor_.CreateForwardingProcessor(),
             syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
                 store_.get())),
-        nullptr, std::move(tab_group_store), &pref_service_);
+        nullptr, std::move(tab_group_store), &pref_service_,
+        migrated_android_local_ids);
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
     ON_CALL(processor_, GetControllerDelegate())

@@ -40,12 +40,22 @@ BASE_FEATURE(kTabGroupSyncUno,
              "TabGroupSyncUno",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature flag on Android to control migration from Java SharedPrefs to
+// ModelTypeStore.
+BASE_FEATURE(kMigrationFromJavaSharedPrefs,
+             "MigrationFromJavaSharedPrefs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsTabGroupsSaveV2Enabled() {
   return base::FeatureList::IsEnabled(kTabGroupsSaveV2);
 }
 
 bool IsTabGroupsSaveUIUpdateEnabled() {
   return base::FeatureList::IsEnabled(kTabGroupsSaveUIUpdate);
+}
+
+bool IsMigrationFromJavaSharedPrefsEnabled() {
+  return base::FeatureList::IsEnabled(kMigrationFromJavaSharedPrefs);
 }
 
 }  // namespace tab_groups

@@ -36,6 +36,8 @@ source_set("core") {
     sources += [
       "android/tab_group_store_delegate_android.cc",
       "android/tab_group_store_delegate_android.h",
+      "android/tab_group_store_migration_utils.cc",
+      "android/tab_group_store_migration_utils.h",
       "android/tab_group_sync_conversions_bridge.cc",
       "android/tab_group_sync_conversions_bridge.h",
       "android/tab_group_sync_conversions_utils.cc",
@@ -115,6 +117,7 @@ if (is_android) {
     ]
 
     sources = [
+      "android/java/src/org/chromium/components/tab_group_sync/TabGroupMetadataPersistentStore.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupStoreDelegate.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncConversionsBridge.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceImpl.java",
@@ -181,8 +184,6 @@ source_set("unit_tests") {
   sources = [
     "saved_tab_group_model_unittest.cc",
     "saved_tab_group_proto_conversion_unittest.cc",
-    "saved_tab_group_test_utils.cc",
-    "saved_tab_group_test_utils.h",
     "saved_tab_group_unittest.cc",
     "tab_group_store_unittest.cc",
     "tab_group_sync_service_unittest.cc",
@@ -192,6 +193,7 @@ source_set("unit_tests") {
     ":saved_tab_group_bridge",
     ":saved_tab_group_bridge_unittests",
     ":shared_tab_group_bridge_unittests",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/pref_registry:pref_registry",
@@ -206,6 +208,7 @@ source_set("unit_tests") {
   if (is_android) {
     sources += [
       "android/tab_group_store_delegate_android_unittest.cc",
+      "android/tab_group_store_migration_utils_unittest.cc",
       "android/tab_group_sync_service_android_unittest.cc",
     ]
     deps += [
@@ -213,6 +216,22 @@ source_set("unit_tests") {
       ":native_java_unittests_java",
     ]
   }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "saved_tab_group_test_utils.cc",
+    "saved_tab_group_test_utils.h",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//components/tab_groups",
+    "//testing/gtest",
+    "//url",
+  ]
 }
 
 source_set("saved_tab_group_bridge") {
@@ -252,6 +271,7 @@ source_set("saved_tab_group_bridge_unittests") {
   deps = [
     ":model",
     ":saved_tab_group_bridge",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/pref_registry:pref_registry",

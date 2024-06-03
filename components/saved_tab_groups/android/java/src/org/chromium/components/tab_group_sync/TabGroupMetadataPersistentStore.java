@@ -7,10 +7,14 @@ package org.chromium.components.tab_group_sync;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
+import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+
+import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -43,6 +47,14 @@ public class TabGroupMetadataPersistentStore {
         } catch (RuntimeException e) {
             Log.e(TAG, "Unable to store data for sync GUID=", syncGuid);
         }
+    }
+
+    @CalledByNativeForTesting
+    private static void storeDataForTesting(String syncGuid, String serializedToken) {
+        TabGroupMetadataPersistentStore store = new TabGroupMetadataPersistentStore();
+        TabGroupIDMetadataProto proto =
+                TabGroupIDMetadataProto.newBuilder().setSerializedToken(serializedToken).build();
+        store.write(syncGuid, proto);
     }
 
     /**
@@ -91,8 +103,35 @@ public class TabGroupMetadataPersistentStore {
         }
     }
 
+    @CalledByNative
+    private static Pair<String, String>[] readAllDataForMigration() {
+        TabGroupMetadataPersistentStore store = new TabGroupMetadataPersistentStore();
+        Map<String, TabGroupIDMetadataProto> protoMap = store.readAll();
+        Pair<String, String>[] idPairs = new Pair[protoMap.size()];
+
+        int i = 0;
+        for (Map.Entry<String, TabGroupIDMetadataProto> entry : protoMap.entrySet()) {
+            String syncId = entry.getKey();
+            String serializedToken = entry.getValue().getSerializedToken();
+            idPairs[i++] = new Pair<>(syncId, serializedToken);
+        }
+
+        return idPairs;
+    }
+
+    @CalledByNative
+    private static String getFirstFromPair(Pair<String, String> pair) {
+        return pair.first;
+    }
+
+    @CalledByNative
+    private static String getSecondFromPair(Pair<String, String> pair) {
+        return pair.second;
+    }
+
     /** Deletes all stored content. */
-    static void clearAllDataForTesting() {
+    @CalledByNative
+    static void clearAllData() {
         getSharedPreferences().edit().clear().apply();
     }
 
