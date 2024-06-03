@@ -155,6 +155,7 @@
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
 #include "chrome/browser/ash/dbus_schedqos_state_handler.h"
 #include "chrome/browser/ash/startup_settings_cache.h"
+#include "chromeos/ash/components/memory/memory.h"
 #include "chromeos/ash/components/memory/mglru.h"
 #include "content/public/common/content_features.h"
 #include "ui/lottie/resource.h"  // nogncheck
@@ -1121,6 +1122,8 @@ void ChromeMainDelegate::CommonEarlyInitialization(InvokedIn invoked_in) {
   if (is_browser_process) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::InitializeMGLRU();
+
+    ash::LockMainProgramText();
 #endif
   }
 
