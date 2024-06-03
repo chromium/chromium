@@ -529,7 +529,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ConsumerUpdateScreen.EstimatorErrorExceed" units="ms"
-    expires_after="2024-12-01">
+    expires_after="2025-03-01">
   <owner>bchikhaoui@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -540,7 +540,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ConsumerUpdateScreen.EstimatorErrorShort" units="ms"
-    expires_after="2024-12-01">
+    expires_after="2025-03-01">
   <owner>bchikhaoui@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -551,7 +551,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ConsumerUpdateScreen.EstimatorTimeLeft" units="ms"
-    expires_after="2024-12-01">
+    expires_after="2025-03-01">
   <owner>bchikhaoui@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -669,9 +669,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.GaiaPasswordChangedScreen.UserActions"
-    enum="GaiaPasswordChangedScreenUserAction" expires_after="2024-07-07">
+    enum="GaiaPasswordChangedScreenUserAction" expires_after="2025-03-01">
   <owner>dkuzmin@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
   <summary>
     Tracks all user actions on the GaiaPasswordChanged screen. Recorded when
     user clicks on buttons on the screen.
@@ -1001,9 +1001,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Screen.SelectedRecommendedPercentage"
-    units="%" expires_after="2024-06-01">
+    units="%" expires_after="2025-03-01">
   <owner>dkuzmin@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
   <summary>The ratio of selected and recommended apps.</summary>
 </histogram>
@@ -1155,9 +1155,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.IsMinorUser" enum="Boolean"
-    expires_after="2024-07-01">
+    expires_after="2025-03-01">
   <owner>osamafathy@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
   <summary>
     Indicates whether the current user is a minor user (impacted by AADC
     regulations). We cannot use nudge techniques on UI if the user is a minor
@@ -1166,9 +1166,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.LacrosSyncOptIns.DataType.{OsDataType}"
-    enum="BooleanEnabled" expires_after="2024-07-01">
+    enum="BooleanEnabled" expires_after="2025-03-01">
   <owner>bchikhaoui@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
   <summary>
     Records the selected data type to sync during the OS Sync consent screen in
     OOBE flow with Lacros enabled.
@@ -1182,9 +1182,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.LacrosSyncOptIns.SyncEverything"
-    enum="BooleanEnabled" expires_after="2024-07-01">
+    enum="BooleanEnabled" expires_after="2025-03-01">
   <owner>bchikhaoui@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
   <summary>
     Indicate if sync all os types is enabled for the sync consent OOBE when
     Lacros enabled.
@@ -1223,9 +1223,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.UserChoice"
-    enum="SyncConsentUserChoice" expires_after="2024-07-07">
+    enum="SyncConsentUserChoice" expires_after="2025-03-01">
   <owner>osamafathy@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
   <summary>
     Which button the user clicked on the out-of-box sync consent screen.
     Recorded when the user clicks the button, which also closes the screen.
@@ -1233,7 +1233,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ThemeSelectionScreen.SelectedTheme" enum="SelectedTheme"
-    expires_after="2024-06-30">
+    expires_after="2025-03-01">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -1243,7 +1243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.UpdateScreen.CheckTimeout" enum="Boolean"
-    expires_after="2024-07-01">
+    expires_after="2025-03-01">
   <owner>bchikhaoui@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>Indicate if update screen exit with update check timeout.</summary>
@@ -1261,9 +1261,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.UpdateScreen.UpdateDownloadingTime" units="ms"
-    expires_after="2024-06-01">
+    expires_after="2025-03-01">
   <owner>dkuzmin@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
   <summary>
     Time spent on downloading ChromeOS update when critical updated is found
     during OOBE. Recorded when update is uploaded and ChromeOS device is about
