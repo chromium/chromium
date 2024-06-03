@@ -3564,6 +3564,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SIGNIN_PROMO_TURN_ON" desc="Button to turn on sync for history and tabs">
         Turn on
       </message>
+      <message name="IDS_SIGNIN_PROMO_SIGNIN" desc="Button that the user can press if they want to sign-in to Chrome.">
+        Sign in
+      </message>
       <message name="IDS_SIGNIN_SETTINGS_TITLE" desc="Title of the sign-in row in the settings page that offers the user to sign-in to Chrome.">
         Sign in
       </message>

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.signin;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -120,6 +121,7 @@ public class SyncPromoControllerUITest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testBookmarkSyncPromoViewSignedOutAndNoAccountAvailable() throws Throwable {
         ProfileDataCache profileDataCache =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
@@ -133,6 +135,29 @@ public class SyncPromoControllerUITest {
                 R.layout.sync_promo_view_bookmarks);
         onView(withText(R.string.sync_promo_title_bookmarks)).check(matches(isDisplayed()));
         onView(withText(R.string.sync_promo_description_bookmarks)).check(matches(isDisplayed()));
+        onView(withText(R.string.sync_promo_turn_on_sync)).check(matches(isDisplayed()));
+        onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void testBookmarkSyncPromoViewSignedOutAndNoAccountAvailable_replaceSyncBySigninEnabled()
+            throws Throwable {
+        ProfileDataCache profileDataCache =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                                    mActivityTestRule.getActivity());
+                        });
+        setUpSyncPromoView(
+                SigninAccessPoint.BOOKMARK_MANAGER,
+                profileDataCache,
+                R.layout.sync_promo_view_bookmarks);
+        onView(withText(R.string.signin_promo_title_bookmarks)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_promo_description_bookmarks)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_promo_signin)).check(matches(isDisplayed()));
+        onView(withText(R.string.sync_promo_turn_on_sync)).check(doesNotExist());
         onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
     }
 
@@ -580,6 +605,31 @@ public class SyncPromoControllerUITest {
     @MediumTest
     @Feature("RenderTest")
     @UseMethodParameter(NightModeParams.class)
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void testNTPSyncPromoViewSignedOutAndNoAccountAvailable_replaceSyncBySigninEnabled(
+            boolean nightModeEnabled) throws Throwable {
+        setUpNightMode(nightModeEnabled);
+        ProfileDataCache profileDataCache =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                                    mActivityTestRule.getActivity());
+                        });
+        View view =
+                setUpSyncPromoView(
+                        SigninAccessPoint.NTP_FEED_TOP_PROMO,
+                        profileDataCache,
+                        R.layout.sync_promo_view_content_suggestions);
+        mRenderTestRule.render(
+                view,
+                "ntp_content_suggestions_sync_promo_view_signed_out_and_no_account_available_replace_sync_by_signin_enabled");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @UseMethodParameter(NightModeParams.class)
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testNTPSyncPromoViewSignedOutAndAccountAvailable(boolean nightModeEnabled)
             throws Throwable {
         setUpNightMode(nightModeEnabled);

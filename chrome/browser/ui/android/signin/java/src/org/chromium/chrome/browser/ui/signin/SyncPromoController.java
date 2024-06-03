@@ -277,21 +277,7 @@ public class SyncPromoController {
                 mShouldSuppressSecodaryButton = false;
                 mHistoryOptInMode = SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
-                mDelegate =
-                        (context, profileData) -> {
-                            IdentityManager identityManager =
-                                    IdentityServicesProvider.get().getIdentityManager(mProfile);
-                            if ((!ChromeFeatureList.isEnabled(
-                                                    ChromeFeatureList
-                                                            .REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                                            && identityManager.hasPrimaryAccount(
-                                                    ConsentLevel.SIGNIN))
-                                    || profileData == null) {
-                                return context.getResources()
-                                        .getString(R.string.sync_promo_turn_on_sync);
-                            }
-                            return SigninUtils.getContinueAsButtonText(context, profileData);
-                        };
+                mDelegate = this::getPromoPrimaryButtonText;
                 break;
             case SigninAccessPoint.NTP_FEED_TOP_PROMO:
                 mImpressionUserActionName = "Signin_Impression_FromNTPFeedTopPromo";
@@ -308,28 +294,13 @@ public class SyncPromoController {
                 mShouldSuppressSecodaryButton = false;
                 mHistoryOptInMode = SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
-                mDelegate =
-                        (context, profileData) -> {
-                            IdentityManager identityManager =
-                                    IdentityServicesProvider.get().getIdentityManager(mProfile);
-                            if ((!ChromeFeatureList.isEnabled(
-                                                    ChromeFeatureList
-                                                            .REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                                            && identityManager.hasPrimaryAccount(
-                                                    ConsentLevel.SIGNIN))
-                                    || profileData == null) {
-                                return context.getResources()
-                                        .getString(R.string.sync_promo_turn_on_sync);
-                            }
-                            return SigninUtils.getContinueAsButtonText(context, profileData);
-                        };
+                mDelegate = this::getPromoPrimaryButtonText;
                 break;
             case SigninAccessPoint.RECENT_TABS:
                 mImpressionUserActionName = "Signin_Impression_FromRecentTabs";
                 mSyncPromoDismissedPreferenceTracker = null;
                 if (ChromeFeatureList.isEnabled(
                         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-                    // TODO(crbug.com/331384429): Update the strings.
                     mTitleStringId = R.string.signin_promo_title_recent_tabs;
                     mDescriptionStringId = R.string.signin_promo_description_recent_tabs;
                     mShouldSuppressSecodaryButton = true;
@@ -362,13 +333,12 @@ public class SyncPromoController {
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate =
                         (context, profileData) -> {
+                            assert !ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
+
                             IdentityManager identityManager =
                                     IdentityServicesProvider.get().getIdentityManager(mProfile);
-                            if ((!ChromeFeatureList.isEnabled(
-                                                    ChromeFeatureList
-                                                            .REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                                            && identityManager.hasPrimaryAccount(
-                                                    ConsentLevel.SIGNIN))
+                            if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
                                     || profileData == null) {
                                 return context.getResources()
                                         .getString(R.string.sync_promo_turn_on_sync);
@@ -821,6 +791,26 @@ public class SyncPromoController {
 
     private void recordSigninPromoImpression() {
         RecordUserAction.record(mImpressionUserActionName);
+    }
+
+    private String getPromoPrimaryButtonText(Context context, DisplayableProfileData profileData) {
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(mProfile);
+
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            return profileData == null
+                    ? context.getResources().getString(R.string.signin_promo_signin)
+                    : SigninUtils.getContinueAsButtonText(context, profileData);
+        }
+
+        if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN) || profileData == null) {
+            return context.getResources().getString(R.string.sync_promo_turn_on_sync);
+        }
+
+        return profileData == null
+                ? context.getResources().getString(R.string.signin_promo_turn_on)
+                : SigninUtils.getContinueAsButtonText(context, profileData);
     }
 
     public static void setPrefSigninPromoDeclinedBookmarksForTests(boolean isDeclined) {
