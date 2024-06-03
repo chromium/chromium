@@ -1402,6 +1402,8 @@ void PrefetchContainer::MakeResourceRequest(
   request->credentials_mode = network::mojom::CredentialsMode::kInclude;
   request->headers.MergeFrom(additional_headers);
   request->headers.SetHeader(kCorsExemptPurposeHeaderName, "prefetch");
+  // TODO(https://crbug.com/342089492): Use `Sec-Purpose: prefetch;prerender`
+  // for prefetch ahead of prerender.
   request->headers.SetHeader("Sec-Purpose", IsProxyRequiredForURL(url)
                                                 ? "prefetch;anonymous-client-ip"
                                                 : "prefetch");

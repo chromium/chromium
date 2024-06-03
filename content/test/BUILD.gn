@@ -1513,6 +1513,7 @@ test("content_browsertests") {
     "../browser/preloading/prefetch/nav_prefetch_browsertest.cc",
     "../browser/preloading/preloading_decider_browsertest.cc",
     "../browser/preloading/prerender/prerender_browsertest.cc",
+    "../browser/preloading/prerenderer_impl_browsertest.cc",
     "../browser/private_aggregation/private_aggregation_internals_browsertest.cc",
     "../browser/process_internals/process_internals_browsertest.cc",
     "../browser/quota/quota_browsertest.cc",

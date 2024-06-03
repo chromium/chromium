@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
+#include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_data_impl.h"
@@ -315,12 +316,22 @@ bool PrerendererImpl::MaybePrerender(
       }
       case blink::mojom::SpeculationTargetHint::kNoHint:
       case blink::mojom::SpeculationTargetHint::kSelf: {
+        if (base::FeatureList::IsEnabled(
+                features::kPrerender2FallbackPrefetchSpecRules)) {
+          auto* prefetch_document_manager =
+              content::PrefetchDocumentManager::GetOrCreateForCurrentDocument(
+                  web_contents->GetPrimaryMainFrame());
+          prefetch_document_manager->PrefetchAheadOfPrerender(
+              candidate.Clone(), enacting_predictor);
+        }
+
         // Create new PreloadingAttempt and pass all the values corresponding to
         // this prerendering attempt.
         auto* preloading_data =
             PreloadingDataImpl::GetOrCreateForWebContents(web_contents);
         PreloadingURLMatchCallback same_url_matcher =
             PreloadingData::GetSameURLMatcher(candidate->url);
+
         auto* preloading_attempt = static_cast<PreloadingAttemptImpl*>(
             preloading_data->AddPreloadingAttempt(
                 creating_predictor, enacting_predictor,

@@ -222,10 +222,13 @@ class PrerenderTestHelper {
   [[nodiscard]] ::testing::AssertionResult VerifyPrerenderingState(
       const GURL& gurl);
 
-  // Returns RenderFrameHost corresponding to `host_id`.
+  // Returns RenderFrameHost corresponding to `host_id` or `url`.
   static RenderFrameHost* GetPrerenderedMainFrameHost(WebContents& web_contents,
                                                       int host_id);
+  static RenderFrameHost* GetPrerenderedMainFrameHost(WebContents& web_contents,
+                                                      const GURL& url);
   RenderFrameHost* GetPrerenderedMainFrameHost(int host_id);
+  RenderFrameHost* GetPrerenderedMainFrameHost(const GURL& url);
 
   int GetRequestCount(const GURL& url);
   net::test_server::HttpRequest::HeaderMap GetRequestHeaders(const GURL& url);

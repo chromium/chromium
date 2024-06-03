@@ -217,6 +217,18 @@ bool PrefetchDocumentManager::MaybePrefetch(
   return true;
 }
 
+void PrefetchDocumentManager::PrefetchAheadOfPrerender(
+    blink::mojom::SpeculationCandidatePtr candidate,
+    const PreloadingPredictor& enacting_predictor) {
+  auto [prefetch_url, prefetch_type, referrer, no_vary_search_expected] =
+      SpeculationCandidateToPrefetchUrlParams(candidate);
+  PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor, referrer,
+              no_vary_search_expected,
+              // TODO(https://crbug.com/342537094): Emit CDP events for prefetch
+              // ahead of prerender.
+              /*devtools_observer=*/nullptr);
+}
+
 void PrefetchDocumentManager::PrefetchUrl(
     const GURL& url,
     const PrefetchType& prefetch_type,

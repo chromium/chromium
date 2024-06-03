@@ -62,6 +62,9 @@ class CONTENT_EXPORT PrefetchDocumentManager
       const PreloadingPredictor& enacting_predictor,
       base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer);
 
+  void PrefetchAheadOfPrerender(blink::mojom::SpeculationCandidatePtr candidate,
+                                const PreloadingPredictor& enacting_predictor);
+
   // Starts the process to prefetch |url| with the given |prefetch_type|.
   void PrefetchUrl(
       const GURL& url,

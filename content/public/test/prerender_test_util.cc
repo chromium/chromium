@@ -117,6 +117,12 @@ PrerenderHost* GetPrerenderHostById(WebContents* web_contents, int host_id) {
   return registry.FindNonReservedHostById(host_id);
 }
 
+PrerenderHost* GetPrerenderHostByUrl(WebContents* web_contents,
+                                     const GURL& url) {
+  auto& registry = GetPrerenderHostRegistry(web_contents);
+  return registry.FindHostByUrlForTesting(url);
+}
+
 }  // namespace
 
 class PrerenderHostRegistryObserverImpl
@@ -689,8 +695,22 @@ RenderFrameHost* PrerenderTestHelper::GetPrerenderedMainFrameHost(
   return prerender_host->GetPrerenderedMainFrameHost();
 }
 
+// static
+RenderFrameHost* PrerenderTestHelper::GetPrerenderedMainFrameHost(
+    WebContents& web_contents,
+    const GURL& url) {
+  auto* prerender_host = GetPrerenderHostByUrl(&web_contents, url);
+  EXPECT_NE(prerender_host, nullptr);
+  return prerender_host->GetPrerenderedMainFrameHost();
+}
+
 RenderFrameHost* PrerenderTestHelper::GetPrerenderedMainFrameHost(int host_id) {
   return GetPrerenderedMainFrameHost(*GetWebContents(), host_id);
+}
+
+RenderFrameHost* PrerenderTestHelper::GetPrerenderedMainFrameHost(
+    const GURL& url) {
+  return GetPrerenderedMainFrameHost(*GetWebContents(), url);
 }
 
 int PrerenderTestHelper::GetRequestCount(const GURL& url) {
