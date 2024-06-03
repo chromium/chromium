@@ -10,6 +10,7 @@ export function createEvents(num: number): CalendarEvent[] {
     events.push({
       title: `Test Event ${i}`,
       startTime: {internalValue: 123n},
+      url: {url: `http://foo.com/${i}`},
     });
   }
   return events;

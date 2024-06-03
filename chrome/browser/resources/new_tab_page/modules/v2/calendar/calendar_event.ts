@@ -12,8 +12,9 @@ const kWindowsToUnixEpochOffset: bigint = 11644473600000000n;
 
 export interface CalendarEventElement {
   $: {
-    startTime: HTMLParagraphElement,
-    title: HTMLParagraphElement,
+    header: HTMLAnchorElement,
+    startTime: HTMLSpanElement,
+    title: HTMLSpanElement,
   };
 }
 

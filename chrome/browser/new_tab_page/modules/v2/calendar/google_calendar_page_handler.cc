@@ -4,6 +4,7 @@
 
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -84,6 +85,7 @@ ntp::calendar::mojom::CalendarEventPtr GetFakeEvent(int index) {
       ntp::calendar::mojom::CalendarEvent::New();
   event->title = "Calendar Event " + base::NumberToString(index);
   event->start_time = base::Time::Now() + base::Minutes(index * 30);
+  event->url = GURL("https://foo.com/" + base::NumberToString(index));
   return event;
 }
 
@@ -201,6 +203,7 @@ void GoogleCalendarPageHandler::OnRequestComplete(
           ntp::calendar::mojom::CalendarEvent::New();
       formatted_event->title = event->summary();
       formatted_event->start_time = event->start_time().date_time();
+      formatted_event->url = GURL(event->html_link());
       result.push_back(std::move(formatted_event));
     }
   }

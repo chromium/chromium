@@ -31,6 +31,7 @@ suite('NewTabPageModulesCalendaEventTest', () => {
     element.event = {
       title,
       startTime: {internalValue: convertedStartTime},
+      url: {url: 'http://foo.com/1'},
     };
     await waitAfterNextRender(element);
 
@@ -40,5 +41,6 @@ suite('NewTabPageModulesCalendaEventTest', () => {
     assertTrue(isVisible(element.$.startTime));
     assertEquals(element.$.title.innerHTML, title);
     assertEquals(element.$.startTime.innerHTML, '3:04am');
+    assertEquals(element.$.header.href, element.event.url.url);
   });
 });

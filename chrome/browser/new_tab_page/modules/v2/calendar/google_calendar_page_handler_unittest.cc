@@ -4,6 +4,7 @@
 
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -178,6 +179,8 @@ TEST_F(GoogleCalendarPageHandlerTest, GetFakeEvents) {
     EXPECT_EQ(response[i]->title, "Calendar Event " + base::NumberToString(i));
     EXPECT_EQ(response[i]->start_time,
               base::Time::Now() + base::Minutes(i * 30));
+    EXPECT_EQ(response[i]->url,
+              GURL("https://foo.com/" + base::NumberToString(i)));
   }
 }
 
@@ -203,4 +206,7 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
       base::Time::FromString("2020-11-02T10:00:00-08:00", &start_time);
   ASSERT_TRUE(success);
   EXPECT_EQ(response[0]->start_time, start_time);
+  EXPECT_EQ(
+      response[0]->url.spec(),
+      "https://www.google.com/calendar/event?eid=b3I4MjIxc2lydDRvZ2Ztest");
 }
