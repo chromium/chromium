@@ -68,6 +68,8 @@ class SidePanel : public views::AccessiblePaneView,
   void RecordMetricsIfResized();
 
  private:
+  class VisibleBoundsViewClipper;
+
   void UpdateVisibility();
   bool ShouldShowAnimation() const;
 
@@ -107,6 +109,11 @@ class SidePanel : public views::AccessiblePaneView,
 
   // Animation controlling showing and hiding of the side panel.
   gfx::SlideAnimation animation_{this};
+
+  // Helps to clip layer backed children to their visible bounds.
+  // TODO: 344626785 - Remove this once WebView layer behavior has been fixed.
+  std::unique_ptr<VisibleBoundsViewClipper> visible_bounds_view_clipper_;
+
   // Monitors content views so we will be notified if their property
   // state changes.
   base::ScopedMultiSourceObservation<View, ViewObserver>
