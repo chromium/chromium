@@ -1976,6 +1976,27 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
       treat_as_error = False,
     ),
+    BanRule(
+      pattern = 'ProfileManager::GetLastUsedProfile',
+      explanation = (
+        'Most code should already be scoped to a Profile. Pass in a Profile* '
+        'or retreive from an existing entity with a reference to the Profile '
+        '(e.g. WebContents).'
+      ),
+      treat_as_error = False,
+    ),
+    BanRule(
+      pattern = (
+        r'/FindBrowserWithUiElementContext|'
+        r'FindBrowserWithTab|'
+        r'FindBrowserWithGroup'
+      ),
+      explanation = (
+        'Most code should already be scoped to a Browser. Pass in a Browser* '
+        'or retreive from an existing entity with a reference to the Browser.'
+      ),
+      treat_as_error = False,
+    ),
 )
 
 _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING = (

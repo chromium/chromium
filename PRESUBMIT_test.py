@@ -2982,6 +2982,8 @@ class BannedTypeCheckTest(unittest.TestCase):
                ['params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET']),
       MockFile('some/cpp/problematic/file4.cc',
                ['params.ownership = Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET']),
+      MockFile('some/cpp/problematic/file5.cc',
+               ['Browser* browser = chrome::FindBrowserWithTab(web_contents)']),
     ]
 
     results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
@@ -2995,6 +2997,7 @@ class BannedTypeCheckTest(unittest.TestCase):
     self.assertTrue('some/cpp/problematic/file2.cc' in results[0].message)
     self.assertTrue('some/cpp/problematic/file3.cc' in results[0].message)
     self.assertTrue('some/cpp/problematic/file4.cc' in results[0].message)
+    self.assertTrue('some/cpp/problematic/file5.cc' in results[0].message)
     self.assertFalse('some/cpp/nocheck/file.cc' in results[0].message)
     self.assertFalse('some/cpp/nocheck/file.cc' in results[1].message)
     self.assertFalse('some/cpp/comment/file.cc' in results[0].message)
