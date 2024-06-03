@@ -166,6 +166,28 @@ class GlanceablesTasksAndClassroomTest : public GlanceablesBaseTest {
         date_tray()->glanceables_bubble_for_test()->GetBubbleView());
   }
 
+  void GenerateGestureScrollEvent(gfx::Point gesture_position,
+                                  bool upward,
+                                  int distance_to_scroll) {
+    // To move the scroll view contents upward, we need to scroll the gesture
+    // downward.
+    const gfx::Vector2d scroll_distance =
+        upward ? gfx::Vector2d(0, distance_to_scroll)
+               : gfx::Vector2d(0, -distance_to_scroll);
+    GetEventGenerator()->GestureScrollSequence(
+        gesture_position, gesture_position + scroll_distance,
+        base::Milliseconds(100), /*steps=*/10);
+  }
+
+  void GenerateTrackpadScrollEvent(gfx::Point mouse_position,
+                                   bool upward,
+                                   int distance_to_scroll) {
+    GetEventGenerator()->ScrollSequence(
+        mouse_position, base::TimeDelta(), /*x_offset=*/0,
+        upward ? distance_to_scroll : -distance_to_scroll, /*steps=*/1,
+        /*num_fingers=*/2);
+  }
+
   GlanceablesTasksView* GetTasksView() const {
     return views::AsViewClass<GlanceablesTasksView>(view_->GetTasksView());
   }
@@ -272,26 +294,22 @@ TEST_F(GlanceablesTasksAndClassroomTest,
   const int distance_to_scroll = tasks_scroll_bar->GetMaxPosition() -
                                  tasks_scroll_bar->GetMinPosition() + 10;
 
-  auto generate_trackpad_scroll_event = [&](bool upward) {
-    GetEventGenerator()->ScrollSequence(
-        tasks_scroll_view_center, base::TimeDelta(), /*x_offset=*/0,
-        upward ? distance_to_scroll : -distance_to_scroll, /*steps=*/20,
-        /*num_fingers=*/2);
-  };
-
   // Scrolling upward at the top of the scroll view doesn't change expand state.
-  generate_trackpad_scroll_event(/*upward=*/true);
+  GenerateTrackpadScrollEvent(tasks_scroll_view_center, /*upward=*/true,
+                              distance_to_scroll);
   EXPECT_TRUE(tasks_view->IsExpanded());
   EXPECT_FALSE(classroom_view->IsExpanded());
 
   // Scrolling downward when there is scrollable content doesn't change expand
   // state.
-  generate_trackpad_scroll_event(/*upward=*/false);
+  GenerateTrackpadScrollEvent(tasks_scroll_view_center, /*upward=*/false,
+                              distance_to_scroll);
   EXPECT_TRUE(tasks_view->IsExpanded());
   EXPECT_FALSE(classroom_view->IsExpanded());
 
   // Scrolling downward at the bottom of the scroll view changes expand state.
-  generate_trackpad_scroll_event(/*upward=*/false);
+  GenerateTrackpadScrollEvent(tasks_scroll_view_center, /*upward=*/false,
+                              distance_to_scroll);
   EXPECT_FALSE(tasks_view->IsExpanded());
   EXPECT_TRUE(classroom_view->IsExpanded());
 }
@@ -319,29 +337,22 @@ TEST_F(GlanceablesTasksAndClassroomTest,
   const int distance_to_scroll = tasks_scroll_bar->GetMaxPosition() -
                                  tasks_scroll_bar->GetMinPosition() + 10;
 
-  auto generate_gesture_scroll_event = [&](bool upward) {
-    // Scrolling upward needs to scroll downward using the gesture.
-    const gfx::Vector2d scroll_distance =
-        upward ? gfx::Vector2d(0, distance_to_scroll)
-               : gfx::Vector2d(0, -distance_to_scroll);
-    GetEventGenerator()->GestureScrollSequence(
-        tasks_scroll_view_center, tasks_scroll_view_center + scroll_distance,
-        base::Milliseconds(100), /*steps=*/10);
-  };
-
   // Scrolling upward at the top of the scroll view doesn't change expand state.
-  generate_gesture_scroll_event(/*upward=*/true);
+  GenerateGestureScrollEvent(tasks_scroll_view_center, /*upward=*/true,
+                             distance_to_scroll);
   EXPECT_TRUE(tasks_view->IsExpanded());
   EXPECT_FALSE(classroom_view->IsExpanded());
 
   // Scrolling downward when there is scrollable content doesn't change expand
   // state.
-  generate_gesture_scroll_event(/*upward=*/false);
+  GenerateGestureScrollEvent(tasks_scroll_view_center, /*upward=*/false,
+                             distance_to_scroll);
   EXPECT_TRUE(tasks_view->IsExpanded());
   EXPECT_FALSE(classroom_view->IsExpanded());
 
   // Scrolling downward at the bottom of the scroll view changes expand state.
-  generate_gesture_scroll_event(/*upward=*/false);
+  GenerateGestureScrollEvent(tasks_scroll_view_center, /*upward=*/false,
+                             distance_to_scroll);
   EXPECT_FALSE(tasks_view->IsExpanded());
   EXPECT_TRUE(classroom_view->IsExpanded());
 }
@@ -409,27 +420,23 @@ TEST_F(GlanceablesTasksAndClassroomTest,
   const int distance_to_scroll = classroom_scroll_bar->GetMaxPosition() -
                                  classroom_scroll_bar->GetMinPosition() + 10;
 
-  auto generate_trackpad_scroll_event = [&](bool upward) {
-    GetEventGenerator()->ScrollSequence(
-        classroom_scroll_view_center, base::TimeDelta(), /*x_offset=*/0,
-        upward ? distance_to_scroll : -distance_to_scroll, /*steps=*/1,
-        /*num_fingers=*/2);
-  };
-
   // Scrolling downward to the bottom of the scroll view doesn't change expand
   // state.
-  generate_trackpad_scroll_event(/*upward=*/false);
+  GenerateTrackpadScrollEvent(classroom_scroll_view_center, /*upward=*/false,
+                              distance_to_scroll);
   EXPECT_FALSE(tasks_view->IsExpanded());
   EXPECT_TRUE(classroom_view->IsExpanded());
 
   // Scrolling upward when there is scrollable content doesn't change expand
   // state.
-  generate_trackpad_scroll_event(/*upward=*/true);
+  GenerateTrackpadScrollEvent(classroom_scroll_view_center, /*upward=*/true,
+                              distance_to_scroll);
   EXPECT_FALSE(tasks_view->IsExpanded());
   EXPECT_TRUE(classroom_view->IsExpanded());
 
   // Scrolling upward at the top of the scroll view changes expand state.
-  generate_trackpad_scroll_event(/*upward=*/true);
+  GenerateTrackpadScrollEvent(classroom_scroll_view_center, /*upward=*/true,
+                              distance_to_scroll);
   EXPECT_TRUE(tasks_view->IsExpanded());
   EXPECT_FALSE(classroom_view->IsExpanded());
 }
@@ -459,31 +466,23 @@ TEST_F(GlanceablesTasksAndClassroomTest,
   const int distance_to_scroll = classroom_scroll_bar->GetMaxPosition() -
                                  classroom_scroll_bar->GetMinPosition() + 10;
 
-  auto generate_gesture_scroll_event = [&](bool upward) {
-    // Scrolling upward needs to scroll downward using the gesture.
-    const gfx::Vector2d scroll_distance =
-        upward ? gfx::Vector2d(0, distance_to_scroll)
-               : gfx::Vector2d(0, -distance_to_scroll);
-    GetEventGenerator()->GestureScrollSequence(
-        classroom_scroll_view_center,
-        classroom_scroll_view_center + scroll_distance, base::Milliseconds(100),
-        /*steps=*/10);
-  };
-
   // Scrolling downward to the bottom of the scroll view doesn't change expand
   // state.
-  generate_gesture_scroll_event(/*upward=*/false);
+  GenerateGestureScrollEvent(classroom_scroll_view_center, /*upward=*/false,
+                             distance_to_scroll);
   EXPECT_FALSE(tasks_view->IsExpanded());
   EXPECT_TRUE(classroom_view->IsExpanded());
 
   // Scrolling upward when there is scrollable content doesn't change expand
   // state.
-  generate_gesture_scroll_event(/*upward=*/true);
+  GenerateGestureScrollEvent(classroom_scroll_view_center, /*upward=*/true,
+                             distance_to_scroll);
   EXPECT_FALSE(tasks_view->IsExpanded());
   EXPECT_TRUE(classroom_view->IsExpanded());
 
   // Scrolling upward at the top of the scroll view changes expand state.
-  generate_gesture_scroll_event(/*upward=*/true);
+  GenerateGestureScrollEvent(classroom_scroll_view_center, /*upward=*/true,
+                             distance_to_scroll);
   EXPECT_TRUE(tasks_view->IsExpanded());
   EXPECT_FALSE(classroom_view->IsExpanded());
 }
@@ -526,6 +525,62 @@ TEST_F(GlanceablesTasksAndClassroomTest,
   GetEventGenerator()->MoveMouseWheel(0, distance_to_scroll);
   EXPECT_FALSE(tasks_view->IsExpanded());
   EXPECT_TRUE(classroom_view->IsExpanded());
+}
+
+TEST_F(GlanceablesTasksAndClassroomTest,
+       NonScrollableGlanceablesCanStillScrollToToggleExpand) {
+  // Set a bigger display to fit classroom items.
+  UpdateDisplay("1920x1080");
+
+  auto* const tasks_view = GetTasksView();
+  auto* const classroom_view = GetClassroomView();
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
+
+  view()->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Make sure the tasks scroll view is not scrollable.
+  auto* const tasks_scroll_bar = GetTasksScrollView()->vertical_scroll_bar();
+  EXPECT_FALSE(tasks_scroll_bar->GetVisible());
+  const gfx::Point tasks_scroll_view_center =
+      GetTasksScrollView()->GetBoundsInScreen().CenterPoint();
+
+  const int distance_to_scroll = 10;
+
+  // Scrolling downward when tasks scroll view is not scrollable expands
+  // Classroom.
+  GenerateGestureScrollEvent(tasks_scroll_view_center, /*upward=*/false,
+                             distance_to_scroll);
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
+
+  // Make sure the classroom scroll view is not scrollable.
+  auto* const classroom_scroll_bar =
+      GetClassroomScrollView()->vertical_scroll_bar();
+  EXPECT_FALSE(classroom_scroll_bar->GetVisible());
+  const gfx::Point classroom_scroll_view_center =
+      GetClassroomScrollView()->GetBoundsInScreen().CenterPoint();
+
+  // Scrolling upward when classroom scroll view is not scrollable expands
+  // Tasks.
+  GenerateGestureScrollEvent(classroom_scroll_view_center, /*upward=*/true,
+                             distance_to_scroll);
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
+
+  // Scrolling downward when tasks scroll view is not scrollable expands
+  // Classroom.
+  GenerateTrackpadScrollEvent(tasks_scroll_view_center, /*upward=*/false,
+                              distance_to_scroll);
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
+
+  // Scrolling upward when classroom scroll view is not scrollable expands
+  // Tasks.
+  GenerateTrackpadScrollEvent(classroom_scroll_view_center, /*upward=*/true,
+                              distance_to_scroll);
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
 }
 
 }  // namespace ash

@@ -24,6 +24,7 @@ class GlanceablesContentsScrollView : public views::ScrollView {
   void SetOnOverscrollCallback(const base::RepeatingClosure& callback);
 
   // views::ScrollView:
+  void OnGestureEvent(ui::GestureEvent* event) override;
   void ChildPreferredSizeChanged(views::View* view) override;
 
  private:

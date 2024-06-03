@@ -33,13 +33,21 @@ class GlanceablesContentsScrollView::ScrollBar : public RoundedScrollBar {
       case ui::ET_GESTURE_SCROLL_BEGIN:
         // Check if the position is at the max/min position at the start of the
         // scroll event.
-        is_at_min_position_ = GetPosition() == 0;
+        if (!GetVisible()) {
+          // If the scrollbar is not visible, which means that the scroll view
+          // is not scrollable, consider the scroll bar is at the max/min
+          // position at the same time.
+          is_at_max_position_ = true;
+          is_at_min_position_ = true;
+        } else {
+          is_at_min_position_ = GetPosition() == 0;
 
-        // `GetMaxPosition()` in ScrollBar has different "position"
-        // definitions from `GetPosition()`. Calculate the max position of
-        // the thumb in the scrollbar for comparisons.
-        is_at_max_position_ = GetPosition() == GetTrackBounds().height() -
-                                                   GetThumb()->GetLength();
+          // `GetMaxPosition()` in ScrollBar has different "position"
+          // definitions from `GetPosition()`. Calculate the max position of
+          // the thumb in the scrollbar for comparisons.
+          is_at_max_position_ = GetPosition() == GetTrackBounds().height() -
+                                                     GetThumb()->GetLength();
+        }
         break;
       case ui::ET_GESTURE_SCROLL_UPDATE:
         switch (time_management_context_) {
@@ -81,13 +89,21 @@ class GlanceablesContentsScrollView::ScrollBar : public RoundedScrollBar {
       case ui::ET_SCROLL_FLING_CANCEL:
         // Check if the position is at the max/min position at the start of the
         // scroll event.
-        is_at_min_position_ = GetPosition() == 0;
+        if (!GetVisible()) {
+          // If the scrollbar is not visible, which means that the scroll view
+          // is not scrollable, consider the scroll bar is at the max/min
+          // position at the same time.
+          is_at_max_position_ = true;
+          is_at_min_position_ = true;
+        } else {
+          is_at_min_position_ = GetPosition() == 0;
 
-        // `GetMaxPosition()` in ScrollBar has different "position"
-        // definitions from `GetPosition()`. Calculate the max position of
-        // the thumb in the scrollbar for comparisons.
-        is_at_max_position_ = GetPosition() == GetTrackBounds().height() -
-                                                   GetThumb()->GetLength();
+          // `GetMaxPosition()` in ScrollBar has different "position"
+          // definitions from `GetPosition()`. Calculate the max position of
+          // the thumb in the scrollbar for comparisons.
+          is_at_max_position_ = GetPosition() == GetTrackBounds().height() -
+                                                     GetThumb()->GetLength();
+        }
         break;
       case ui::ET_SCROLL:
         switch (time_management_context_) {
@@ -171,6 +187,24 @@ GlanceablesContentsScrollView::GlanceablesContentsScrollView(
 void GlanceablesContentsScrollView::SetOnOverscrollCallback(
     const base::RepeatingClosure& callback) {
   scroll_bar_->SetOnOverscrollCallback(std::move(callback));
+}
+
+void GlanceablesContentsScrollView::OnGestureEvent(ui::GestureEvent* event) {
+  // views::ScrollView::OnGestureEvent only processes the scroll event when the
+  // scroll bar is visible and the scroll view is scrollable, but the overscroll
+  // behavior also needs to consider the case where the scroll view is not
+  // scrollable.
+  bool scroll_event = event->type() == ui::ET_GESTURE_SCROLL_UPDATE ||
+                      event->type() == ui::ET_GESTURE_SCROLL_BEGIN ||
+                      event->type() == ui::ET_GESTURE_SCROLL_END ||
+                      event->type() == ui::ET_SCROLL_FLING_START;
+
+  if (!scroll_bar_->GetVisible() && scroll_event) {
+    scroll_bar_->OnGestureEvent(event);
+    return;
+  }
+
+  views::ScrollView::OnGestureEvent(event);
 }
 
 void GlanceablesContentsScrollView::ChildPreferredSizeChanged(
