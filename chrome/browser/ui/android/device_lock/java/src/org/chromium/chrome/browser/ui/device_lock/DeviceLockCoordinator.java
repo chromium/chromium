@@ -51,15 +51,20 @@ public class DeviceLockCoordinator {
      * @param delegate The delegate invoked to interact with classes outside the module.
      * @param windowAndroid Used to launch Intents with callbacks.
      * @param activity The activity hosting this page.
-     * @param account The account that will be used for the reauthentication challenge, or null
-     *                if reauthentication is not needed.
+     * @param account The account that will be used for the reauthentication challenge, or null if
+     *     reauthentication is not needed.
      */
     public DeviceLockCoordinator(
             Delegate delegate,
             WindowAndroid windowAndroid,
             Activity activity,
             @Nullable Account account) {
-        this(delegate, windowAndroid, createDeviceLockAuthenticatorBridge(), activity, account);
+        this(
+                delegate,
+                windowAndroid,
+                createDeviceLockAuthenticatorBridge(activity),
+                activity,
+                account);
     }
 
     /**
@@ -67,11 +72,11 @@ public class DeviceLockCoordinator {
      *
      * @param delegate The delegate invoked to interact with classes outside the module.
      * @param windowAndroid Used to launch Intents with callbacks.
-     * @param deviceLockAuthenticatorBridge The {@link ReauthenticatorBridge} used to confirm
-     *         device lock credentials.
+     * @param deviceLockAuthenticatorBridge The {@link ReauthenticatorBridge} used to confirm device
+     *     lock credentials.
      * @param activity The activity hosting this page.
-     * @param account The account that will be used for the reauthentication challenge, or null
-     *        if reauthentication is not needed.
+     * @param account The account that will be used for the reauthentication challenge, or null if
+     *     reauthentication is not needed.
      */
     public DeviceLockCoordinator(
             Delegate delegate,
@@ -96,8 +101,8 @@ public class DeviceLockCoordinator {
     }
 
     /** Get a {@link ReauthenticatorBridge} for the Device Lock page. */
-    public static ReauthenticatorBridge createDeviceLockAuthenticatorBridge() {
-        return ReauthenticatorBridge.create(DeviceAuthSource.DEVICE_LOCK_PAGE);
+    public static ReauthenticatorBridge createDeviceLockAuthenticatorBridge(Activity activity) {
+        return ReauthenticatorBridge.create(activity, DeviceAuthSource.DEVICE_LOCK_PAGE);
     }
 
     /** Releases the resources used by the coordinator. */

@@ -354,7 +354,8 @@ PasswordsPrivateDelegateImpl::GetDeviceAuthenticator(
       "PasswordManager.ReauthToAccessPasswordInSettings");
 
   return ChromeDeviceAuthenticatorFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()), params);
+      Profile::FromBrowserContext(web_contents->GetBrowserContext()),
+      web_contents->GetTopLevelNativeWindow(), params);
 }
 #endif
 

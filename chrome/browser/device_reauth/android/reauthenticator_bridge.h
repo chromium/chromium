@@ -15,6 +15,7 @@ class ReauthenticatorBridge {
  public:
   explicit ReauthenticatorBridge(
       const base::android::JavaParamRef<jobject>& java_bridge,
+      const base::android::JavaParamRef<jobject>& activity,
       jint requester);
   ~ReauthenticatorBridge();
 

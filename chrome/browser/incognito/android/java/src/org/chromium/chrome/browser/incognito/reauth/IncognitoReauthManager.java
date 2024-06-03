@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.incognito.reauth;
 
+import android.app.Activity;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -37,8 +38,8 @@ public class IncognitoReauthManager {
         void onIncognitoReauthFailure();
     }
 
-    public IncognitoReauthManager() {
-        this(ReauthenticatorBridge.create(DeviceAuthSource.INCOGNITO));
+    public IncognitoReauthManager(Activity activity) {
+        this(ReauthenticatorBridge.create(activity, DeviceAuthSource.INCOGNITO));
     }
 
     public IncognitoReauthManager(ReauthenticatorBridge reauthenticatorBridge) {

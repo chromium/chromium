@@ -1030,7 +1030,8 @@ ChromeAutofillClient::GetDeviceAuthenticator() {
       base::Seconds(60), device_reauth::DeviceAuthSource::kAutofill);
 
   return ChromeDeviceAuthenticatorFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()), params);
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
+      web_contents()->GetTopLevelNativeWindow(), params);
 #else
   return nullptr;
 #endif

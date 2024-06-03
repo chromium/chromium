@@ -563,7 +563,8 @@ ChromePasswordManagerClient::GetDeviceAuthenticator() {
   device_reauth::DeviceAuthParams params(
       base::Seconds(60), device_reauth::DeviceAuthSource::kPasswordManager);
 
-  return ChromeDeviceAuthenticatorFactory::GetForProfile(profile_, params);
+  return ChromeDeviceAuthenticatorFactory::GetForProfile(
+      profile_, web_contents()->GetTopLevelNativeWindow(), params);
 #else
   return nullptr;
 #endif

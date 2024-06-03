@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -259,7 +260,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
 
         if (IncognitoReauthManager.isIncognitoReauthFeatureAvailable()
                 && mIncognitoReauthPromoMessageService == null) {
-            mIncognitoReauthManager = new IncognitoReauthManager();
+            mIncognitoReauthManager =
+                    new IncognitoReauthManager(ContextUtils.activityFromContext(mContext));
             mIncognitoReauthPromoMessageService =
                     new IncognitoReauthPromoMessageService(
                             MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE,

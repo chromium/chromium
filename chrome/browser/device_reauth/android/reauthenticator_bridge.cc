@@ -5,6 +5,7 @@
 #include "chrome/browser/device_reauth/android/reauthenticator_bridge.h"
 
 #include <jni.h>
+
 #include "base/android/jni_android.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -18,13 +19,15 @@
 static jlong JNI_ReauthenticatorBridge_Create(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& java_bridge,
+    const base::android::JavaParamRef<jobject>& activity,
     jint source) {
   return reinterpret_cast<intptr_t>(
-      new ReauthenticatorBridge(java_bridge, source));
+      new ReauthenticatorBridge(java_bridge, activity, source));
 }
 
 ReauthenticatorBridge::ReauthenticatorBridge(
     const base::android::JavaParamRef<jobject>& java_bridge,
+    const base::android::JavaParamRef<jobject>& activity,
     jint source)
     : java_bridge_(java_bridge) {
   device_reauth::DeviceAuthParams params(
@@ -33,7 +36,7 @@ ReauthenticatorBridge::ReauthenticatorBridge(
   // TODO(crbug.com/40280856): Replace GetLastUsedProfile() when Android starts
   // supporting multiple profiles.
   authenticator_ = ChromeDeviceAuthenticatorFactory::GetForProfile(
-      ProfileManager::GetLastUsedProfile(), params);
+      ProfileManager::GetLastUsedProfile(), activity, params);
 }
 
 ReauthenticatorBridge::~ReauthenticatorBridge() {

@@ -768,7 +768,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mActivity,
                         mTabModelSelectorSupplier.get(),
                         mModalDialogManagerSupplier.get(),
-                        new IncognitoReauthManager(),
+                        new IncognitoReauthManager(mActivity),
                         new SettingsLauncherImpl(),
                         incognitoReauthTopToolbarDelegate,
                         mLayoutManager,

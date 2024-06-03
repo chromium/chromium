@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.device_reauth;
 
+import android.app.Activity;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
@@ -20,8 +22,9 @@ public class ReauthenticatorBridge {
     private long mNativeReauthenticatorBridge;
     private Callback<Boolean> mAuthResultCallback;
 
-    private ReauthenticatorBridge(@DeviceAuthSource int source) {
-        mNativeReauthenticatorBridge = ReauthenticatorBridgeJni.get().create(this, source);
+    private ReauthenticatorBridge(Activity activity, @DeviceAuthSource int source) {
+        mNativeReauthenticatorBridge =
+                ReauthenticatorBridgeJni.get().create(this, activity, source);
     }
 
     /**
@@ -59,14 +62,14 @@ public class ReauthenticatorBridge {
     }
 
     /**
-     * Create an instance of {@link ReauthenticatorBridge} based on the provided
-     * {@link DeviceAuthSource}.
-     * */
-    public static ReauthenticatorBridge create(@DeviceAuthSource int source) {
+     * Create an instance of {@link ReauthenticatorBridge} based on the provided {@link
+     * DeviceAuthSource}.
+     */
+    public static ReauthenticatorBridge create(Activity activity, @DeviceAuthSource int source) {
         if (sReauthenticatorBridgeForTesting != null) {
             return sReauthenticatorBridgeForTesting;
         }
-        return new ReauthenticatorBridge(source);
+        return new ReauthenticatorBridge(activity, source);
     }
 
     /** For testing only. */
@@ -84,7 +87,7 @@ public class ReauthenticatorBridge {
 
     @NativeMethods
     interface Natives {
-        long create(ReauthenticatorBridge reauthenticatorBridge, int source);
+        long create(ReauthenticatorBridge reauthenticatorBridge, Activity activity, int source);
 
         boolean canUseAuthenticationWithBiometric(long nativeReauthenticatorBridge);
 

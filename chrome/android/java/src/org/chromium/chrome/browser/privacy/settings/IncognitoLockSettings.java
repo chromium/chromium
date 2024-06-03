@@ -77,7 +77,7 @@ public class IncognitoLockSettings {
 
         mIncognitoReauthPreference.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
-                    onIncognitoReauthPreferenceChange((boolean) newValue);
+                    onIncognitoReauthPreferenceChange(activity, (boolean) newValue);
                     return true;
                 });
         updateIncognitoReauthPreferenceIfNeeded(activity);
@@ -111,13 +111,13 @@ public class IncognitoLockSettings {
      *
      * @param newValue A boolean indicating the value of the potential new state.
      */
-    private void onIncognitoReauthPreferenceChange(boolean newValue) {
+    private void onIncognitoReauthPreferenceChange(Activity activity, boolean newValue) {
         if (mIsChromeTriggered) return;
         boolean lastPrefValue =
                 UserPrefs.get(mProfile).getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID);
 
         if (mIncognitoReauthManager == null) {
-            mIncognitoReauthManager = new IncognitoReauthManager();
+            mIncognitoReauthManager = new IncognitoReauthManager(activity);
         }
 
         mIncognitoReauthManager.startReauthenticationFlow(

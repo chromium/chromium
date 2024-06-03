@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace content {
 class BrowserContext;
@@ -27,12 +28,24 @@ class ChromeDeviceAuthenticatorFactory : public ProfileKeyedServiceFactory {
       const ChromeDeviceAuthenticatorFactory&) = delete;
 
   static ChromeDeviceAuthenticatorFactory* GetInstance();
+
   // Create an instance of the DeviceAuthenticator. Trying to use this
   // API on platforms that do not provide an implementation will result in a
   // link error.
   static std::unique_ptr<device_reauth::DeviceAuthenticator> GetForProfile(
       Profile* profile,
+      const gfx::NativeWindow window,
       const device_reauth::DeviceAuthParams& params);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Create an instance of the DeviceAuthenticator. Trying to use this
+  // API on platforms that do not provide an implementation will result in a
+  // link error.
+  static std::unique_ptr<device_reauth::DeviceAuthenticator> GetForProfile(
+      Profile* profile,
+      const base::android::JavaParamRef<jobject>& activity,
+      const device_reauth::DeviceAuthParams& params);
+#endif
 
  private:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(

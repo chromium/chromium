@@ -530,7 +530,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 mActivity,
                 mTabModelSelectorSupplier.get(),
                 mModalDialogManagerSupplier.get(),
-                new IncognitoReauthManager(),
+                new IncognitoReauthManager(mActivity),
                 new SettingsLauncherImpl(),
                 /* incognitoReauthTopToolbarDelegate= */ null,
                 /* layoutManager= */ null,

@@ -80,7 +80,7 @@ public class DeviceLockActivity extends SynchronousInitializationActivity
 
         ReauthenticatorBridge reauthenticatorBridge =
                 requireDeviceLockReauthentication
-                        ? DeviceLockCoordinator.createDeviceLockAuthenticatorBridge()
+                        ? DeviceLockCoordinator.createDeviceLockAuthenticatorBridge(this)
                         : null;
         mDeviceLockCoordinator =
                 new DeviceLockCoordinator(
