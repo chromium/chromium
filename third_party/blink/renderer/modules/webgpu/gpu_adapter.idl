@@ -10,6 +10,7 @@
 ] interface GPUAdapter {
     [SameObject] readonly attribute GPUSupportedFeatures features;
     [SameObject] readonly attribute GPUSupportedLimits limits;
+    [SameObject, RuntimeEnabled=WebGPUAdapterInfoAttribute] readonly attribute GPUAdapterInfo info;
     readonly attribute boolean isFallbackAdapter;
     [RuntimeEnabled=WebGPUExperimentalFeatures] readonly attribute boolean isCompatibilityMode;
 

@@ -595,6 +595,7 @@ interface GPU
 interface GPUAdapter
     attribute @@toStringTag
     getter features
+    getter info
     getter isFallbackAdapter
     getter limits
     method constructor
