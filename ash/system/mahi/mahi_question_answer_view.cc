@@ -179,6 +179,7 @@ std::unique_ptr<views::View> CreateQuestionAnswerRow(const std::u16string& text,
           base::BindOnce([](views::FlexLayoutView* layout) {
             layout->SetProperty(views::kFlexBehaviorKey,
                                 views::FlexSpecification(
+                                    views::LayoutOrientation::kHorizontal,
                                     views::MinimumFlexSizeRule::kScaleToZero,
                                     views::MaximumFlexSizeRule::kUnbounded,
                                     /*adjust_height_for_width=*/true));
@@ -237,9 +238,6 @@ MahiQuestionAnswerView::MahiQuestionAnswerView(MahiUiController* ui_controller)
   SetIgnoreDefaultMainAxisMargins(true);
   SetCollapseMargins(true);
   SetDefault(views::kMarginsKey, gfx::Insets::VH(kBetweenChildSpacing, 0));
-  SetProperty(views::kFlexBehaviorKey,
-              views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                       views::MaximumFlexSizeRule::kUnbounded));
 }
 
 MahiQuestionAnswerView::~MahiQuestionAnswerView() {

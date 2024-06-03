@@ -611,7 +611,15 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
                                       ui_controller_))
                                   .SetID(mahi_constants::ViewId::
                                              kQuestionAnswerView)
-                                  .CopyAddressTo(&question_answer_view_))),
+                                  .CopyAddressTo(&question_answer_view_)
+                                  .SetProperty(
+                                      views::kFlexBehaviorKey,
+                                      views::FlexSpecification(
+                                          views::LayoutOrientation::kHorizontal,
+                                          views::MinimumFlexSizeRule::
+                                              kScaleToZero,
+                                          views::MaximumFlexSizeRule::
+                                              kUnbounded)))),
               views::Builder<MahiErrorStatusView>(
                   std::make_unique<MahiErrorStatusView>(ui_controller_)))
           .Build());
