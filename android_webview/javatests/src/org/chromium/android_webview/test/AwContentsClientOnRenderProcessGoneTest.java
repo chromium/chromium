@@ -164,7 +164,6 @@ public class AwContentsClientOnRenderProcessGoneTest extends AwParameterizedTest
 
     @Test
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"disable-features=CreateSpareRendererOnBrowserContextCreation"})
     @SmallTest
     @OnlyRunIn(MULTI_PROCESS)
     public void testRenderProcessCanNotTerminateBeforeStart() throws Throwable {
@@ -231,5 +230,63 @@ public class AwContentsClientOnRenderProcessGoneTest extends AwParameterizedTest
                 "\"" + content + "\"",
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
                         mAwContents, mContentsClient, "document.body.textContent"));
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    @OnlyRunIn(MULTI_PROCESS)
+    @CommandLineFlags.Add({"enable-features=CreateSpareRendererOnBrowserContextCreation"})
+    public void testTerminateBeforeRenderProcessCreated() throws Throwable {
+        AwRenderProcess process =
+                TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());
+        mActivityTestRule.pollUiThread(() -> process.isReadyForTesting());
+        TestThreadUtils.runOnUiThreadBlocking(() -> Assert.assertFalse(process.terminate()));
+
+        mActivityTestRule.loadUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> Assert.assertSame(process, mAwContents.getRenderProcess()));
+
+        // Terminating future renderers works as expected.
+        createAndTerminateRenderProcess(
+                () -> Assert.assertTrue(mAwContents.getRenderProcess().terminate()), false);
+        mActivityTestRule.loadUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    @OnlyRunIn(MULTI_PROCESS)
+    @CommandLineFlags.Add({"enable-features=CreateSpareRendererOnBrowserContextCreation"})
+    public void testSetNetworkAvailableAfterSpareRenderTerminate() throws Throwable {
+        AwRenderProcess process =
+                TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());
+        mActivityTestRule.pollUiThread(() -> process.isReadyForTesting());
+        TestThreadUtils.runOnUiThreadBlocking(() -> Assert.assertFalse(process.terminate()));
+
+        mActivityTestRule.loadUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+
+        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+        String script = "navigator.onLine";
+        Assert.assertEquals(
+                "true",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        mAwContents, mContentsClient, script));
+
+        AwActivityTestRule.setNetworkAvailableOnUiThread(mAwContents, false);
+        Assert.assertEquals(
+                "false",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        mAwContents, mContentsClient, script));
     }
 }

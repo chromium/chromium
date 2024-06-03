@@ -253,5 +253,10 @@ BASE_FEATURE(kWebViewPreloadClasses,
              "WebViewPreloadClasses",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Creates a spare renderer on browser context creation.
+BASE_FEATURE(kCreateSpareRendererOnBrowserContextCreation,
+             "CreateSpareRendererOnBrowserContextCreation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace android_webview

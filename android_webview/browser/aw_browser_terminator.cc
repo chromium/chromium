@@ -5,11 +5,14 @@
 #include "android_webview/browser/aw_browser_terminator.h"
 
 #include <unistd.h>
+
 #include <memory>
 
 #include "android_webview/browser/aw_browser_process.h"
+#include "android_webview/browser/aw_render_process.h"
 #include "android_webview/browser/aw_render_process_gone_delegate.h"
 #include "android_webview/common/aw_descriptors.h"
+#include "android_webview/common/aw_features.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -146,6 +149,15 @@ void AwBrowserTerminator::OnChildExit(
       content::RenderProcessHost::FromID(info.process_host_id);
 
   crash_reporter::CrashMetricsReporter::GetInstance()->ChildProcessExited(info);
+
+  // If the process has never been used, this is the spare render process.
+  // Treat this as if it never existed since it's an internal performance
+  // optimization.
+  if (base::FeatureList::IsEnabled(
+          features::kCreateSpareRendererOnBrowserContextCreation) &&
+      AwRenderProcess::IsUnused(rph)) {
+    return;
+  }
 
   if (info.normal_termination) {
     return;

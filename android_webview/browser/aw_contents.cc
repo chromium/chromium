@@ -1543,6 +1543,11 @@ void AwContents::ReadyToCommitNavigation(
   navigation_handle->SetContentSettings(std::move(content_settings));
 }
 
+void AwContents::RenderViewReady() {
+  AwRenderProcess::SetRenderViewReady(
+      web_contents_->GetPrimaryMainFrame()->GetProcess());
+}
+
 bool AwContents::CanShowInterstitial() {
   JNIEnv* env = AttachCurrentThread();
   const ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);

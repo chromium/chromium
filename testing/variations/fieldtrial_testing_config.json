@@ -5580,6 +5580,21 @@
             ]
         }
     ],
+    "CreateSpareRendererOnBrowserContextCreation": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CreateSpareRendererOnBrowserContextCreation"
+                    ]
+                }
+            ]
+        }
+    ],
     "CreateWarningShownClientSafeBrowsingReports": [
         {
             "platforms": [
