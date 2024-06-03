@@ -23,7 +23,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {getTemplate} from './app.html.js';
 import {minOverflowLengthToScroll, playFromSelectionTimeout, validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, isNatural, isVoicePackStatusError, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
+import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
 import type {VoicePackStatus} from './voice_language_util.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
@@ -354,7 +354,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   // Our local representation of the status of voice pack downloads and
   // availability
-  // TODO (b/344038789) Tests for local state transitions
   private voiceStatusLocalState:
       {[language: string]: VoiceClientSideStatusCode} = {};
 
@@ -917,10 +916,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
 
-    const voicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
+    const newVoicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
+    const oldVoicePackStatus = this.getVoicePackServerStatus_(lang);
 
-    if (isVoicePackStatusError(voicePackStatus)) {
-      this.setVoicePackServerStatus_(lang, voicePackStatus);
+    if (isVoicePackStatusError(newVoicePackStatus)) {
+      // Keep the server responses
+      this.setVoicePackServerStatus_(lang, newVoicePackStatus);
+
+      // Update application state
+      this.updateApplicationState(lang, newVoicePackStatus, oldVoicePackStatus);
     } else {
       // Do not rely on the status from Install response. It has responded
       // "installed" for voices that are not installed. Instead, request the
@@ -950,74 +954,88 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private updateApplicationState(
       lang: string, newVoicePackStatus: VoicePackStatus,
       oldVoicePackStatus?: VoicePackStatus) {
-    const newStatusCode = newVoicePackStatus.code;
-    switch (newStatusCode) {
-      case VoicePackServerStatusSuccessCode.NOT_INSTALLED:
-        // Install the voice if it's not currently installed and it's marked as
-        // a language that should be installed
-        if (this.languagesForVoiceDownloads.has(lang)) {
-          // Don't re-send install request if it's already been sent
-          if (this.getVoicePackLocalStatus_(lang) !==
-              VoiceClientSideStatusCode.SENT_INSTALL_REQUEST) {
+    if (isVoicePackStatusSuccess(newVoicePackStatus)) {
+      const newStatusCode = newVoicePackStatus.code;
+
+      switch (newStatusCode) {
+        case VoicePackServerStatusSuccessCode.NOT_INSTALLED:
+          // Install the voice if it's not currently installed and it's marked
+          // as a language that should be installed
+          if (this.languagesForVoiceDownloads.has(lang)) {
+            // Don't re-send install request if it's already been sent
+            if (this.getVoicePackLocalStatus_(lang) !==
+                VoiceClientSideStatusCode.SENT_INSTALL_REQUEST) {
+              this.setVoicePackLocalStatus_(
+                  lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
+
+              chrome.readingMode.sendInstallVoicePackRequest(lang);
+            }
+          } else {
             this.setVoicePackLocalStatus_(
-                lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
-
-            chrome.readingMode.sendInstallVoicePackRequest(lang);
+                lang, VoiceClientSideStatusCode.NOT_INSTALLED);
           }
-        } else {
+          break;
+        case VoicePackServerStatusSuccessCode.INSTALLING:
+          // Do nothing- we mark our local state as installing when we send the
+          // request. Locally, we may time out a slow request and mark it as
+          // errored, and we don't want to overwrite that state here.
+          break;
+        case VoicePackServerStatusSuccessCode.INSTALLED:
+          // See if voice is newly downloaded and should have a toast notifying
+          // the user.
+          if (oldVoicePackStatus?.code !==
+              VoicePackServerStatusSuccessCode.INSTALLED) {
+            const possibleLanguageConversion =
+                convertLangToAnAvailableLangIfPresent(
+                    lang, this.availableLangs, true);
+            this.lastDownloadedLang_ =
+                possibleLanguageConversion ? possibleLanguageConversion : lang;
+            this.showToast_();
+
+            // Force a refresh of the voices list since we might not get an
+            // update the voices have changed.
+            this.getVoices(true);
+          }
+
+          // Even though the voice may be installed on disk, it still may not be
+          // available to the speechSynthesis API. Check whether to mark the
+          // voice as AVAILABLE or INSTALLED_AND_UNAVAILABLE
+          const naturalVoicesForLangAreAvailable = this.availableVoices.some(
+              voice => isNatural(voice) &&
+                  this.getConvertedLangIfExists_(voice.lang) === lang);
           this.setVoicePackLocalStatus_(
-              lang, VoiceClientSideStatusCode.NOT_INSTALLED);
-        }
-        break;
-      case VoicePackServerStatusSuccessCode.INSTALLING:
-        // DO nothing- we mark our local state as installing when we send the
-        // request. Locally, we may time out a slow request and mark it as
-        // errored, and we don't want to overwrite that state here.
-        break;
-      case VoicePackServerStatusSuccessCode.INSTALLED:
-        // See if voice is newly downloaded and should have a toast notifying
-        // the user.
-        if (oldVoicePackStatus?.code !==
-            VoicePackServerStatusSuccessCode.INSTALLED) {
-          const possibleLanguageConversion =
-              convertLangToAnAvailableLangIfPresent(
-                  lang, this.availableLangs, true);
-          this.lastDownloadedLang_ =
-              possibleLanguageConversion ? possibleLanguageConversion : lang;
-          this.showToast_();
+              lang,
+              naturalVoicesForLangAreAvailable ?
+                  VoiceClientSideStatusCode.AVAILABLE :
+                  VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
+          break;
+        default:
+          // This ensures the switch statement is exhaustive
+          return newStatusCode satisfies never;
+      }
+    } else if (isVoicePackStatusError(newVoicePackStatus)) {
+      const newStatusCode = newVoicePackStatus.code;
 
-          // Force a refresh of the voices list since we might not get an update
-          // the voices have changed.
-          this.getVoices(true);
-        }
-
-        // Even though the voice may be installed on disk, it still may not be
-        // available to the speechSynthesis API. Check whether to mark the voice
-        // as AVAILABLE or INSTALLED_AND_UNAVAILABLE
-        const naturalVoicesForLangAreAvailable = this.availableVoices.some(
-            voice => isNatural(voice) &&
-                this.getConvertedLangIfExists_(voice.lang) === lang);
-        this.setVoicePackLocalStatus_(
-            lang,
-            naturalVoicesForLangAreAvailable ?
-                VoiceClientSideStatusCode.AVAILABLE :
-                VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
-        break;
-      case VoicePackServerStatusErrorCode.OTHER:
-      case VoicePackServerStatusErrorCode.WRONG_ID:
-      case VoicePackServerStatusErrorCode.NEED_REBOOT:
-      case VoicePackServerStatusErrorCode.UNSUPPORTED_PLATFORM:
-      case 'ParseError':
-        this.setVoicePackLocalStatus_(
-            lang, VoiceClientSideStatusCode.ERROR_INSTALLING);
-        break;
-      case VoicePackServerStatusErrorCode.ALLOCATION:
-        this.setVoicePackLocalStatus_(
-            lang, VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION);
-        break;
-      default:
-        // This ensures the switch statement is exhaustive
-        return newStatusCode satisfies never;
+      switch (newStatusCode) {
+        case VoicePackServerStatusErrorCode.OTHER:
+        case VoicePackServerStatusErrorCode.WRONG_ID:
+        case VoicePackServerStatusErrorCode.NEED_REBOOT:
+        case VoicePackServerStatusErrorCode.UNSUPPORTED_PLATFORM:
+          this.setVoicePackLocalStatus_(
+              lang, VoiceClientSideStatusCode.ERROR_INSTALLING);
+          break;
+        case VoicePackServerStatusErrorCode.ALLOCATION:
+          this.setVoicePackLocalStatus_(
+              lang, VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION);
+          break;
+        default:
+          // This ensures the switch statement is exhaustive
+          return newStatusCode satisfies never;
+      }
+    } else {
+      // Couldn't parse the response
+      this.setVoicePackLocalStatus_(
+          lang, VoiceClientSideStatusCode.ERROR_INSTALLING);
     }
   }
 

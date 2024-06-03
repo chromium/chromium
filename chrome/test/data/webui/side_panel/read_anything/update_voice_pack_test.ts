@@ -5,9 +5,9 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {convertLangOrLocaleForVoicePackManager, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {convertLangOrLocaleForVoicePackManager, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
@@ -23,6 +23,21 @@ suite('UpdateVoicePack', () => {
     return app.voicePackInstallStatusServerResponses[convertedLang!];
   }
 
+  function getVoicePackLocalStatus(lang: string): VoiceClientSideStatusCode {
+    // @ts-ignore
+    return app.getVoicePackLocalStatus_(lang);
+  }
+
+  function addNaturalVoicesForLang(lang: string) {
+    const voices = app.synth.getVoices();
+    app.synth.getVoices = () => {
+      return voices.concat(
+          {lang: lang, name: 'Wall-e (Natural)'} as SpeechSynthesisVoice,
+          {lang: lang, name: 'Andy (Natural)'} as SpeechSynthesisVoice,
+      );
+    };
+  }
+
   setup(() => {
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -30,6 +45,7 @@ suite('UpdateVoicePack', () => {
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
+    app.synth = new FakeSpeechSynthesis();
   });
 
   suite('updateVoicePackStatus', () => {
@@ -56,72 +72,97 @@ suite('UpdateVoicePack', () => {
         assertEquals(
             getVoicePackServerInstallStatus(voicePackLang).code,
             VoicePackServerStatusSuccessCode.NOT_INSTALLED);
+        assertEquals(
+            getVoicePackServerInstallStatus(lang).id, 'Successful response');
         assertEquals(sentInstallRequestFor, voicePackLang);
       });
     });
   });
 
-  suite('voice pack status is', () => {
-    function addNaturalVoicesForLang(lang: string) {
-      app.synth = new FakeSpeechSynthesis();
-      const voices = app.synth.getVoices();
-      app.synth.getVoices = () => {
-        return voices.concat(
-            {lang: lang, name: 'Wall-e (Natural)'} as SpeechSynthesisVoice,
-            {lang: lang, name: 'Andy (Natural)'} as SpeechSynthesisVoice,
-        );
-      };
-    }
+  test(
+      'unavailable even if natural voices are in the list for a different lang',
+      () => {
+        const lang = 'fr';
+        addNaturalVoicesForLang('it');
 
-    test(
-        'downloaded if natural voices are in the list for a different lang',
-        () => {
-          const lang = 'fr';
-          addNaturalVoicesForLang('it');
+        app.updateVoicePackStatus(lang, 'kInstalled');
 
-          app.updateVoicePackStatus(lang, 'kInstalled');
+        assertEquals(
+            getVoicePackServerInstallStatus(lang).code,
+            VoicePackServerStatusSuccessCode.INSTALLED);
+        assertEquals(
+            getVoicePackServerInstallStatus(lang).id, 'Successful response');
+        assertEquals(
+            getVoicePackLocalStatus(lang),
+            VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
+      });
 
-          assertEquals(
-              getVoicePackServerInstallStatus(lang).code,
-              VoicePackServerStatusSuccessCode.INSTALLED);
-        });
+  test(
+      'unavailable if non-natural voices are in the list for a different lang',
+      () => {
+        const lang = 'de';
 
-    test(
-        'downloaded if non-natural voices are in the list for a different lang',
-        () => {
-          const lang = 'de';
-          app.synth = new FakeSpeechSynthesis();
+        // Installed 'de' language pack, but the fake available voice list
+        // only has english voices.
+        app.updateVoicePackStatus(lang, 'kInstalled');
 
-          // Installed 'de' language pack, but the fake available voice list
-          // only has english voices.
-          app.updateVoicePackStatus(lang, 'kInstalled');
+        assertEquals(
+            getVoicePackServerInstallStatus(lang).code,
+            VoicePackServerStatusSuccessCode.INSTALLED);
+        assertEquals(
+            getVoicePackLocalStatus(lang),
+            VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
+      });
 
-          assertEquals(
-              getVoicePackServerInstallStatus(lang).code,
-              VoicePackServerStatusSuccessCode.INSTALLED);
-        });
+  test('installed if non-natural voices are in the list for this lang', () => {
+    const lang = 'en';
 
-    test(
-        'installed if non-natural voices are in the list for this lang', () => {
-          const lang = 'en';
-          app.synth = new FakeSpeechSynthesis();
+    app.updateVoicePackStatus(lang, 'kInstalled');
 
-          app.updateVoicePackStatus(lang, 'kInstalled');
+    assertEquals(
+        getVoicePackServerInstallStatus(lang).code,
+        VoicePackServerStatusSuccessCode.INSTALLED);
+    assertEquals(
+        getVoicePackServerInstallStatus(lang).id, 'Successful response');
+    assertEquals(
+        getVoicePackLocalStatus(lang),
+        VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
+  });
 
-          assertEquals(
-              getVoicePackServerInstallStatus(lang).code,
-              VoicePackServerStatusSuccessCode.INSTALLED);
-        });
+  test(
+      'refreshes getVoices() and marks newly available voices as available',
+      () => {
+        // Confirm en-us is not in the voice list yet
+        const lang = 'en-us';
+        assertFalse(
+            app.synth.getVoices().some(v => v.lang.toLowerCase() === lang));
 
-    test('installed if natural voices are in the list for this lang', () => {
-      const lang = 'en';
-      addNaturalVoicesForLang(lang);
+        addNaturalVoicesForLang(lang);
+        app.updateVoicePackStatus(lang, 'kInstalled');
 
-      app.updateVoicePackStatus(lang, 'kInstalled');
+        // Confirm that updateVoicePackStatus refreshes the voice list and marks
+        // the language as available
+        assertEquals(
+            getVoicePackServerInstallStatus(lang).code,
+            VoicePackServerStatusSuccessCode.INSTALLED);
+        assertEquals(
+            getVoicePackServerInstallStatus(lang).id, 'Successful response');
 
-      assertEquals(
-          getVoicePackServerInstallStatus(lang).code,
-          VoicePackServerStatusSuccessCode.INSTALLED);
-    });
+        assertEquals(
+            getVoicePackLocalStatus(lang), VoiceClientSideStatusCode.AVAILABLE);
+      });
+
+  test('with error code marks the status', () => {
+    const lang = 'en-us';
+    app.updateVoicePackStatus(lang, 'kOther');
+    assertEquals(
+        getVoicePackServerInstallStatus(lang).code,
+        VoicePackServerStatusErrorCode.OTHER);
+    assertEquals(
+        getVoicePackServerInstallStatus(lang).id, 'Unsuccessful response');
+
+    assertEquals(
+        getVoicePackLocalStatus(lang),
+        VoiceClientSideStatusCode.ERROR_INSTALLING);
   });
 });
