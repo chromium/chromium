@@ -113,6 +113,7 @@ export class BrowsingContextProcessor {
         url: 'about:blank',
         newWindow,
         browserContextId: userContext === 'default' ? undefined : userContext,
+        background: params.background === true,
       });
     } catch (err) {
       if (

@@ -346,3 +346,49 @@ async def test_browsingContext_subscribe_to_contextCreated_emits_for_existing(
         'type': 'success',
         'result': {}
     }
+
+
+@pytest.mark.parametrize("type", ["window", "tab"])
+@pytest.mark.parametrize("background", [True, False])
+@pytest.mark.asyncio
+async def test_browsingContext_create_background(websocket, background,
+                                                 test_headless_mode, type):
+    resp = await execute_command(
+        websocket, {
+            "method": "browsingContext.create",
+            "params": {
+                "type": type,
+                "background": background
+            }
+        })
+    new_context_id = resp["context"]
+
+    if test_headless_mode == "old":
+        pytest.xfail("Old headless mode does not support visibility checks")
+
+    resp = await execute_command(
+        websocket, {
+            'method': 'script.evaluate',
+            'params': {
+                'expression': '[document.visibilityState, document.hasFocus()]',
+                'awaitPromise': True,
+                'target': {
+                    'context': new_context_id,
+                },
+                'userActivation': True
+            }
+        })
+    visible = resp["result"]["value"][0]["value"]
+    has_focus = resp["result"]["value"][1]["value"]
+
+    if type == "window":
+        # In case of new window, the new browsing context should be visible,
+        # even if created in background.
+        assert visible == "visible", "New window should be visible regardless of background flag"
+    else:
+        if background:
+            assert visible == "hidden", "New tab should be hidden when created in background"
+        else:
+            assert visible == "visible", "New tab should be visible when created in foreground"
+
+    assert has_focus is not background, "New context should not have focus" if background else "New context should have focus"
