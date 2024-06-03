@@ -65,7 +65,6 @@ customize-chrome-appearance {
 
 .description a {
   color: var(--cr-link-color);
-  text-decoration: none;
 }
 
 #buttonContainer {
