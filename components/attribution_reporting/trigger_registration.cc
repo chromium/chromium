@@ -11,11 +11,9 @@
 #include "base/functional/function_ref.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
-#include "components/aggregation_service/parsing_utils.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
@@ -33,33 +31,6 @@ namespace attribution_reporting {
 namespace {
 
 using ::attribution_reporting::mojom::TriggerRegistrationError;
-
-base::expected<std::optional<SuitableOrigin>, TriggerRegistrationError>
-ParseAggregationCoordinator(const base::Value* value) {
-  // The default value is used for backward compatibility prior to this
-  // attribute being added, but ideally this would invalidate the registration
-  // if other aggregatable fields were present.
-  if (!value) {
-    return std::nullopt;
-  }
-
-  const std::string* str = value->GetIfString();
-  if (!str) {
-    return base::unexpected(
-        TriggerRegistrationError::kAggregationCoordinatorValueInvalid);
-  }
-
-  std::optional<url::Origin> aggregation_coordinator =
-      aggregation_service::ParseAggregationCoordinator(*str);
-  if (!aggregation_coordinator.has_value()) {
-    return base::unexpected(
-        TriggerRegistrationError::kAggregationCoordinatorValueInvalid);
-  }
-  auto aggregation_coordinator_origin =
-      SuitableOrigin::Create(*aggregation_coordinator);
-  CHECK(aggregation_coordinator_origin.has_value(), base::NotFatalUntil::M128);
-  return *aggregation_coordinator_origin;
-}
 
 template <typename T>
 void SerializeListIfNotEmpty(base::Value::Dict& dict,
@@ -142,9 +113,11 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
       registration.aggregatable_values,
       AggregatableValues::FromJSON(dict.Find(kAggregatableValues)));
 
-    ASSIGN_OR_RETURN(
-        registration.aggregation_coordinator_origin,
-        ParseAggregationCoordinator(dict.Find(kAggregationCoordinatorOrigin)));
+  ASSIGN_OR_RETURN(
+      registration.aggregation_coordinator_origin,
+      ParseAggregationCoordinator(dict).transform_error([](ParseError) {
+        return TriggerRegistrationError::kAggregationCoordinatorValueInvalid;
+      }));
 
   registration.debug_key = ParseDebugKey(dict);
   registration.debug_reporting = ParseDebugReporting(dict);

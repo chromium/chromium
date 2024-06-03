@@ -24,6 +24,8 @@ class TimeDelta;
 
 namespace attribution_reporting {
 
+class SuitableOrigin;
+
 struct ParseError {
   friend bool operator==(ParseError, ParseError) = default;
 };
@@ -71,6 +73,9 @@ base::expected<std::optional<uint64_t>, ParseError> ParseDeduplicationKey(
 base::expected<base::TimeDelta, mojom::SourceRegistrationError>
 ParseLegacyDuration(const base::Value& value,
                     mojom::SourceRegistrationError error);
+
+base::expected<std::optional<SuitableOrigin>, ParseError>
+ParseAggregationCoordinator(const base::Value::Dict&);
 
 void SerializeUint64(base::Value::Dict&, std::string_view key, uint64_t value);
 

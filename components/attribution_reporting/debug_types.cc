@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/containers/enum_set.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/types/expected.h"
@@ -18,17 +19,19 @@ namespace {
 
 using ::attribution_reporting::mojom::DebugDataType;
 
-#define SOURCE_DEBUG_DATA_TYPES(X)                                \
-  X(kSourceChannelCapacityLimit, "source-channel-capacity-limit") \
-  X(kSourceDestinationLimit, "source-destination-limit")          \
-  X(kSourceDestinationRateLimit, "source-destination-rate-limit") \
-  X(kSourceNoised, "source-noised")                               \
-  X(kSourceReportingOriginPerSiteLimit,                           \
-    "source-reporting-origin-per-site-limit")                     \
-  X(kSourceStorageLimit, "source-storage-limit")                  \
-  X(kSourceSuccess, "source-success")                             \
-  X(kSourceTriggerStateCardinalityLimit,                          \
-    "source-trigger-state-cardinality-limit")                     \
+#define SOURCE_DEBUG_DATA_TYPES(X)                                             \
+  X(kSourceChannelCapacityLimit, "source-channel-capacity-limit")              \
+  X(kSourceDestinationGlobalRateLimit, "source-destination-global-rate-limit") \
+  X(kSourceDestinationLimit, "source-destination-limit")                       \
+  X(kSourceDestinationRateLimit, "source-destination-rate-limit")              \
+  X(kSourceNoised, "source-noised")                                            \
+  X(kSourceReportingOriginLimit, "source-reporting-origin-limit")              \
+  X(kSourceReportingOriginPerSiteLimit,                                        \
+    "source-reporting-origin-per-site-limit")                                  \
+  X(kSourceStorageLimit, "source-storage-limit")                               \
+  X(kSourceSuccess, "source-success")                                          \
+  X(kSourceTriggerStateCardinalityLimit,                                       \
+    "source-trigger-state-cardinality-limit")                                  \
   X(kSourceUnknownError, "source-unknown-error")
 
 #define TRIGGER_DEBUG_DATA_TYPES(X)                                           \
@@ -113,6 +116,18 @@ base::expected<DebugDataType, ParseError> ParseTriggerDebugDataType(
 }
 
 #undef STR_TO_TYPE
+
+#define ENUM_NAME(name, str) DebugDataType::name,
+
+DebugDataTypes SourceDebugDataTypes() {
+  return {SOURCE_DEBUG_DATA_TYPES(ENUM_NAME)};
+}
+
+DebugDataTypes TriggerDebugDataTypes() {
+  return {TRIGGER_DEBUG_DATA_TYPES(ENUM_NAME)};
+}
+
+#undef ENUM_NAME
 
 #undef OTHER_DEBUG_DATA_TYPES
 #undef TRIGGER_DEBUG_DATA_TYPES

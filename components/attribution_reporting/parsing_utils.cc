@@ -11,7 +11,10 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <utility>
 
+#include "base/check.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -19,9 +22,12 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/aggregation_service/parsing_utils.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "url/origin.h"
 
 namespace attribution_reporting {
 
@@ -134,6 +140,33 @@ ParseLegacyDuration(const base::Value& value,
   }
 
   return base::unexpected(error);
+}
+
+base::expected<std::optional<SuitableOrigin>, ParseError>
+ParseAggregationCoordinator(const base::Value::Dict& dict) {
+  const base::Value* value = dict.Find(kAggregationCoordinatorOrigin);
+
+  // The default value is used for backward compatibility prior to this
+  // attribute being added, but ideally this would invalidate the registration
+  // if other aggregatable fields were present.
+  if (!value) {
+    return std::nullopt;
+  }
+
+  const std::string* str = value->GetIfString();
+  if (!str) {
+    return base::unexpected(ParseError());
+  }
+
+  std::optional<url::Origin> aggregation_coordinator =
+      aggregation_service::ParseAggregationCoordinator(*str);
+  if (!aggregation_coordinator.has_value()) {
+    return base::unexpected(ParseError());
+  }
+  auto aggregation_coordinator_origin =
+      SuitableOrigin::Create(*aggregation_coordinator);
+  CHECK(aggregation_coordinator_origin.has_value(), base::NotFatalUntil::M128);
+  return std::move(*aggregation_coordinator_origin);
 }
 
 void SerializeUint64(base::Value::Dict& dict,

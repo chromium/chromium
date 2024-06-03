@@ -41,6 +41,8 @@ component("features") {
 
 component("attribution_reporting") {
   sources = [
+    "aggregatable_debug_reporting_config.cc",
+    "aggregatable_debug_reporting_config.h",
     "aggregatable_dedup_key.cc",
     "aggregatable_dedup_key.h",
     "aggregatable_trigger_config.cc",
@@ -138,6 +140,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "aggregatable_debug_reporting_config_unittest.cc",
     "aggregatable_dedup_key_unittest.cc",
     "aggregatable_trigger_config_unittest.cc",
     "aggregatable_trigger_data_unittest.cc",

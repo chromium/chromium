@@ -41,4 +41,6 @@ enum DebugDataType {
   kTriggerAggregateAttributionsPerSourceDestinationLimit = 31,
   kSourceChannelCapacityLimit = 32,
   kSourceTriggerStateCardinalityLimit = 33,
+  kSourceDestinationGlobalRateLimit = 34,
+  kSourceReportingOriginLimit = 35,
 };

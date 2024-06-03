@@ -3130,6 +3130,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Conversions.AggregatableDebugReporting.SourceRegistrationError"
+    enum="ConversionAggregatableDebugReportingRegistrationError"
+    expires_after="2024-11-23">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often aggregatable debug reporting parsing in source
+    registration failed and why. Recorded only when parsing failed; not recorded
+    when parsing succeeded.
+  </summary>
+</histogram>
+
+<histogram
+    name="Conversions.AggregatableDebugReporting.TriggerRegistrationError"
+    enum="ConversionAggregatableDebugReportingRegistrationError"
+    expires_after="2024-11-23">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often aggregatable debug reporting parsing in trigger
+    registration failed and why. Recorded only when parsing failed; not recorded
+    when parsing succeeded.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.AggregatableKeysPerSource" units="keys"
     expires_after="2024-11-17">
   <owner>linnan@chromium.org</owner>

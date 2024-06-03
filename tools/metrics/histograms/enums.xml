@@ -3813,6 +3813,17 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Not seen, from Long-press"/>
 </enum>
 
+<enum name="ConversionAggregatableDebugReportingRegistrationError">
+  <int value="0" label="Root JSON value has wrong type"/>
+  <int value="1" label="budget invalid"/>
+  <int value="2" label="key_piece invalid"/>
+  <int value="3" label="debug_data invalid"/>
+  <int value="4" label="debug_data key_piece invalid"/>
+  <int value="5" label="debug_data value invalid"/>
+  <int value="6" label="debug_data types invalid"/>
+  <int value="7" label="aggregation_coordinator_origin invalid"/>
+</enum>
+
 <enum name="ConversionAndroidOperationResult">
   <int value="0" label="Success"/>
   <int value="1" label="Unknown error"/>
