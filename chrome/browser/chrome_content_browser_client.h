@@ -388,7 +388,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin& top_frame_origin,
       const url::Origin& context_origin) override;
   bool IsFullCookieAccessAllowed(content::BrowserContext* browser_context,
-                                 content::RenderFrameHost* rfh,
+                                 content::WebContents* web_contents,
                                  const GURL& url,
                                  const blink::StorageKey& storage_key) override;
 #if BUILDFLAG(IS_CHROMEOS)

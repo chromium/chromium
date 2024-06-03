@@ -290,7 +290,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   GetIpProtectionProxyBypassPolicy() override;
   bool WillProvidePublicFirstPartySets() override;
   bool IsFullCookieAccessAllowed(content::BrowserContext* browser_context,
-                                 content::RenderFrameHost* rfh,
+                                 content::WebContents* web_contents,
                                  const GURL& url,
                                  const blink::StorageKey& storage_key) override;
 

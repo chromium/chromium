@@ -1357,14 +1357,13 @@ bool AwContentBrowserClient::WillProvidePublicFirstPartySets() {
 
 bool AwContentBrowserClient::IsFullCookieAccessAllowed(
     content::BrowserContext* browser_context,
-    content::RenderFrameHost* rfh,
+    content::WebContents* web_contents,
     const GURL& url,
     const blink::StorageKey& storage_key) {
-  if (!rfh) {
+  if (!web_contents) {
     // We do not allow third-party cookie access from service workers.
     return false;
   }
-  WebContents* web_contents = content::WebContents::FromRenderFrameHost(rfh);
   AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
   if (!aw_settings) {
     return false;
